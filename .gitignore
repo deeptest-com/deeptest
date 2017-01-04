@@ -1,0 +1,8 @@
+/target/
+/.idea/
+/testspace.iml
+/tmp/
+/.externalToolBuilders/
+/.settings/
+/.classpath
+/.project

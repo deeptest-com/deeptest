@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>日程</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content contentTop="4.8rem" class="schedule">
+<ion-segment [(ngModel)]="mode">
+    <ion-segment-button value="bySession" (ionSelect)="show('bySession')">
+      按会场
+    </ion-segment-button>
+    <ion-segment-button value="byDate" (ionSelect)="show('byDate')">
+      按日期
+    </ion-segment-button>
+  </ion-segment>
+  
+  <timeline [items]="data" [mode]="mode" (selected)="onItemSelected($event)"></timeline>
+</ion-content>

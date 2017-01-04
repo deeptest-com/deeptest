@@ -1,0 +1,70 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>介绍</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content contentTop="4.8rem" class="introduce">
+	<ion-card>
+	  <ion-card-content>
+	      <div class="basic">
+		      <div class="line">
+		        日期：<span class="blue">{{data?.event?.startTime | iosDate:'y年M月d号 H:mm'}}</span>
+		      </div>
+		      <div class="line">
+                地址：<span class="blue">{{data?.event?.city}} {{data?.event?.address}}</span>
+              </div>
+		      <div class="line">
+		        主办：<span class="blue">{{data?.event?.sponsor}}</span>
+		      </div>
+		  </div>
+	  </ion-card-content>
+	</ion-card>
+	
+	<ion-card>
+      <ion-card-header>
+        会议介绍
+      </ion-card-header>
+      <ion-card-content>
+          <div class="descr">
+            {{data?.event?.descr}}
+          </div>
+      </ion-card-content>
+    </ion-card>
+    
+    <ion-card>
+      <ion-card-header>
+        协办单位
+      </ion-card-header>
+      <ion-card-content>
+          <div class="sponsor">
+            <div *ngFor="let item of data?.event?.organizers?.co_organizer">
+		      {{item.name}}
+		    </div>
+          </div>
+      </ion-card-content>
+    </ion-card>
+    
+    <ion-card>
+      <ion-card-header>
+        联系方式
+      </ion-card-header>
+      <ion-card-content>
+          <div class="contactUs">
+              <div class="line">
+                网站：<a href="{{data?.event?.website}}" class="no-underline blue">{{data?.event?.website}}</a>
+              </div>
+              <div class="line">
+                邮箱：<a href="mailto:{{data?.event?.email}}" class="no-underline blue">{{data?.event?.email}}</a>
+              </div>
+              <div class="line">
+                电话：<a href="tel:{{data?.event?.phone}}" class="no-underline blue">{{data?.event?.phone}}</a>
+              </div>
+              <div class="line">
+                传真：<span class="blue">{{data?.event?.fax}}</span>
+              </div>
+          </div>
+      </ion-card-content>
+    </ion-card>
+    
+</ion-content>

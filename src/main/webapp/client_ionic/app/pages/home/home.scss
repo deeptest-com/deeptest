@@ -1,0 +1,40 @@
+.home {
+  scroll-content {
+    display: flex !important;
+    flex-flow: column;
+    ion-slides {
+        
+    }
+    .text {
+        
+    }
+    .my-grid {
+        flex:1;
+        .my-col {
+	      .col-inner {
+	        .img {
+	           height: 50%;
+               &.introduction {
+	              background-image: url(../../assets/img/icon-introduction.png);
+	           }
+	           &.schedule {
+	              background-image: url(../../assets/img/icon-schedule.png);
+	           }
+	           &.guest {
+	              background-image: url(../../assets/img/icon-guest.png);
+	           }
+	           &.register {
+	              background-image: url(../../assets/img/icon-register.png);
+	           }
+	           &.service {
+	              background-image: url(../../assets/img/icon-service.png);
+	           }
+	           &.around {
+	              background-image: url(../../assets/img/icon-around.png);
+	           }
+            }
+          }
+       }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>报名</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content contentTop="4.8rem">
+  <div class="grid" [style.height.px]="rowHeight">
+      <div class="col border register" (click)="goto('register')" >
+          <div class="col-inner">
+              <div class="img"></div>
+              <div class="space"></div>
+              <div class="text">报名</div>
+          </div>
+      </div>
+      <div class="col border countdown" (click)="goto('countdown')">
+          <div class="col-inner">
+              <div class="img"></div>
+              <div class="space"></div>
+              <div class="text">{{data?.registerCountdown}}</div>
+          </div>
+      </div>
+      <div class="col border bizcard" (click)="goto('bizcard')">
+          <div class="col-inner">
+              <div class="img"></div>
+              <div class="space"></div>
+              <div class="text">名片</div>
+          </div>
+      </div>
+  </div>
+  <div class="summary">
+    <div class="summary-inner">
+        已有<span class="number">{{data?.registerNumb}}</span>人报名
+    </div>
+  </div>
+  <div class="info">
+	<ion-list>
+		<ion-item *ngFor="let item of data?.sessions">
+		  <ion-label left>
+		      <h2>{{item.name}}</h2>
+              <p>{{item.startTime | iosDate:'MM/dd H:mm'}} - {{item.endTime | iosDate:'MM/dd H:mm'}}</p>
+		  </ion-label>
+		  <ion-checkbox [(ngModel)]="item.isRegister" item-right></ion-checkbox>
+		</ion-item>
+	</ion-list>
+  </div>
+
+</ion-content>

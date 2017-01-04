@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"  
+   	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+   	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:websocket="http://www.springframework.org/schema/websocket"
+	
+    xsi:schemaLocation="  
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket.xsd
+		">
+		
+		
+    <context:property-placeholder location="classpath:config.properties"/>
+	<context:annotation-config />
+	<context:component-scan base-package="cn.mobiu.events.config"></context:component-scan>
+	<context:component-scan base-package="cn.mobiu.events.entity"></context:component-scan>
+	<context:component-scan base-package="cn.mobiu.events.service"></context:component-scan>
+	<context:component-scan base-package="cn.mobiu.events.service.impl"></context:component-scan>
+	<context:component-scan base-package="cn.mobiu.events.dao"></context:component-scan>
+	<context:component-scan base-package="cn.mobiu.events.util"></context:component-scan>
+	<context:component-scan base-package="cn.mobiu.events.dao.impl"></context:component-scan>
+    
+	<context:component-scan base-package="cn.mobiu.events.bean"></context:component-scan>
+	<context:component-scan base-package="cn.mobiu.events.bean.websocket"></context:component-scan>
+	<context:component-scan base-package="cn.mobiu.events.websocket"></context:component-scan>
+	<context:component-scan base-package="cn.mobiu.events.job"></context:component-scan>
+    
+    <task:annotation-driven/>
+    
+    <aop:aspectj-autoproxy proxy-target-class="true" />
+    
+    <!-- 数据库连接池c3p0配置 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"  destroy-method="close">
+		<property name="jdbcUrl" value="${datasource.jdbc.url}"></property>
+		<property name="driverClass" value="${datasource.jdbc.driverClassName}"></property>
+		<property name="user" value="${datasource.jdbc.username}"></property>
+		<property name="password" value="${datasource.jdbc.password}"></property>
+		<property name="maxPoolSize" value="${c3p0.maxPoolSize}"></property>
+		<property name="minPoolSize" value="${c3p0.minPoolSize}"></property>
+		<property name="initialPoolSize" value="${c3p0.minPoolSize}"></property>
+		 <!--最大空闲时间，60秒内未使用则连接被丢弃。若为0则永不丢弃。默认值: 0 -->   
+		<property name="maxIdleTime" value="60"></property>
+		<!-- 当连接池连接耗尽时，客户端调用getConnection()后等待获取新连接的时间，超时后将抛出SQLException，如设为0则无限期等待。单位毫秒。默认: 0 -->   
+		<property name="checkoutTimeout" value="3000"/>  
+		 <!--当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。默认值: 3 --> 
+		 <property name="acquireIncrement" value="2"/> 
+		 <!--定义在从数据库获取新连接失败后重复尝试的次数。默认值: 30 ；小于等于0表示无限次-->   
+		 <property name="acquireRetryAttempts" value="0"/> 
+		 <!--重新尝试的时间间隔，默认为：1000毫秒-->  
+		 <property name="acquireRetryDelay" value="1000" /> 
+		 <!--关闭连接时，是否提交未提交的事务，默认为false，即关闭连接，回滚未提交的事务 --> 
+		 <property name="autoCommitOnClose" value="false"/>  
+		  <!--c3p0全局的PreparedStatements缓存的大小。如果maxStatements与maxStatementsPerConnection均为0，则缓存不生效，只要有一个不为0，则语句的缓存就能生效。如果默认值: 0-->   
+		   <property name="maxStatements" value="100"/>
+	</bean>
+	
+    <!-- 使用Annotation映射的sessionFactory -->
+    <bean id="sessionFactory"  class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+       <property name="dataSource"  ref="dataSource"/>
+       <property name="hibernateProperties">
+       		<props>
+       			<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+       			<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+       			 <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+                <prop key="hibernate.generate_statistics">true</prop>
+                <prop key="hibernate.connection.release_mode">auto</prop>
+                <prop key="hibernate.autoReconnect">true</prop>
+                <!-- this for oracle -->
+                <!-- 
+                <prop key="hibernate.default_schema">${hibernate.default_schema}</prop>
+                 -->
+                <prop key="hibernate.jdbc.fetch_size">${hibernate.jdbc.fetch_size}</prop>
+                <prop key="hibernate.jdbc.batch_size">${hibernate.jdbc.batch_size}</prop>
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.cache.provider_configuration_file_resource_path">classpath:ehcache.xml</prop>
+                <prop key="hibernate.cache.region.factory_class">${hibernate.cache.region.factory_class}</prop>
+                <prop key="hibernate.cache.use_query_cache">${hibernate.cache.use_query_cache}</prop>
+                <prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate4.SpringSessionContext</prop>
+       		</props>
+       </property>
+       <property name="packagesToScan">
+         	<list>
+         		 <value>${hibernate.packagesToScan}</value>  
+         	</list>
+         </property>
+         <property name="namingStrategy" ref="namingStrategy"></property>
+    </bean>
+    
+    <bean id="namingStrategy" class="org.hibernate.cfg.ImprovedNamingStrategy"/>
+         
+    <!-- 事务管理器，此处为Hibernate的事务管理器 -->
+   <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager" >
+    	<property name="sessionFactory" ref="sessionFactory"></property>
+    </bean> 
+    <!-- 事务 -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+			<tx:method name="create*" propagation="REQUIRED" />
+			<tx:method name="edit*" propagation="REQUIRED" />
+			<tx:method name="save*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="remove*" propagation="REQUIRED" />
+
+			<tx:method name="*Pers" propagation="REQUIRED" />
+
+			<tx:method name="*" propagation="REQUIRED" read-only="true" />
+        </tx:attributes>
+    </tx:advice>
+    
+    <aop:config proxy-target-class="true">
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* cn.mobiu.events.service..*.*(..))" />
+    </aop:config>
+    
+    <bean id="jdbcTemplate" name="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate" abstract="false"
+        lazy-init="false" autowire="default">
+        <property name="dataSource"  ref="dataSource"/>
+    </bean>
+
+    <bean class="cn.mobiu.events.util.SpringContextHolder" lazy-init="false"/>
+ 
+    <bean id="configBean" class="cn.mobiu.events.util.PropertyConfig">
+        <property name="location" value="classpath:config.properties" />  
+    </bean>
+    
+    <!--velocity服务引擎-->
+    <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+       <property name="resourceLoaderPath" value="/WEB-INF/vm/" />
+    </bean>
+    
+</beans>
+

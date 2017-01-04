@@ -1,0 +1,53 @@
+package cn.mobiu.events.constants;
+
+import java.util.Arrays;
+import java.util.List;
+
+public final class Constant {
+    // 配置项，初始化在 PropertyConfig.processProperties()
+    public static String WORK_DIR;
+    public static String API_BASE;
+
+    // WEB根，初始化在 SystemInterceptor.preHandle()
+    public static String WEB_ROOT = null;
+
+    // 跨域白名单
+    public static final List<String> CLIENT_URL_LIST = Arrays.asList(
+            "http://localhost:3000");
+    public static final String API_PATH_CLIENT = "api/client/v1/";
+
+    // 上传目录
+    public static final String FTP_UPLOAD_DIR = "upload/";
+
+    public static String GetUploadDir() {
+        return Constant.WORK_DIR + FTP_UPLOAD_DIR;
+    }
+
+    public static final int PAGE_SIZE = 10;
+    
+    public static final String API_PACKAGE_FOR_CLIENT = "cn.mobiu.events.action.client";
+    public static final String API_PACKAGE_FOR_ADMIN = "cn.mobiu.events.action.admin";
+
+    public static enum RespCode {
+        SUCCESS(1), BIZ_FAIL(-1), BIZ_FAIL_2(-2), INTERFACE_FAIL(-10), NOT_LOGIN(-100);
+
+        private RespCode(int code) {
+            this.code = code;
+        }
+
+        private int code;
+
+        public int getCode() {
+            return code;
+        }
+    }
+    
+    public static final String HTTP_SESSION_CLIENT_KEY = "http_session_client";
+    public static final String WEBSOCKET_CLIENT_KEY = "clientId";
+    public static final String WEBSOCKET_EVENT_KEY = "eventId";
+    public static final String WEBSOCKET_TIMESNAP = "websocket_timesnap";
+    
+    public static final String WEBSCOKET_OPT_ENTER_CHAT_ROOM = "enter_chat_room";
+	public static final String WEBSCOKET_OPT_CHAT = "chat";
+	
+}

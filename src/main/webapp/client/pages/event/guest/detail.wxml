@@ -1,0 +1,18 @@
+<view class="guest-detail my-detail">
+    <view class="photo" 
+        style="background-image: url({{url}}{{guest.avatar}});">
+    </view>
+    
+    <view class="info">
+        <view class="header">
+            {{guest.name}}
+        </view>
+        <view class="line"></view>
+        <view class="title">
+            {{guest.title}}
+        </view>
+         <view class="descr">
+            {{guest.descr}}
+        </view>
+    </view>
+</view>

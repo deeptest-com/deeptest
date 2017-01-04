@@ -1,0 +1,366 @@
+page {
+  height: 100%;
+}
+view {
+  color: #222;
+}
+.clear {
+  clear: both;
+}
+
+/** 工具栏 **/
+.has-toolbar-bottom {
+  margin-bottom: 50rpx;
+}
+.my-toolbar {
+  display: flex;
+  width: 100%;
+}
+.my-toolbar.bottom {
+  position: fixed;
+  bottom: 0rpx;
+}
+.my-toolbar .button {
+  flex: 1;
+}
+.button-no-radius {
+  border-radius: 0;
+}
+
+/** 表单 **/
+.my-form {
+    
+}
+.my-form .title {
+    margin: 20rpx 0;
+}
+
+.my-form.inline .row {
+    display: flex;
+    margin: 20rpx 0;
+}
+.my-form.inline .row .title {
+    padding-left: 20rpx;
+    font-size: 35rpx;
+} 
+.my-form.inline .row .label {
+    width: 150rpx;
+    line-height: 60rpx;
+    text-align: right;
+    font-size: 30rpx;
+}
+.my-form.inline .row .controller {
+    flex: 1;
+    padding: 0 50rpx 0 30rpx;
+}
+
+.input {
+    height: 50rpx;
+    padding: 5rpx;
+    border-color: #CCCCCC #999999 #999999 #CCCCCC;
+    border-style: solid;
+    border-width: 1rpx;
+}
+.input-textarea {
+  height: 300rpx;
+}
+.picker {
+    display: flex;
+    flex-direction: row;
+    height: 60rpx;
+}
+.picker .text {
+    flex: 1;
+    padding: 12rpx;
+    font-size: 36rpx;
+}
+.picker .button {
+    width: 60rpx;
+    height: 50rpx;
+    line-height: 50rpx;
+    font-size: 30rpx;
+    background: url(/assets/img/icon-select.png) no-repeat center;
+    background-size: contain;
+}
+
+/** 网格 **/
+.my-grid {
+  padding: 0;
+}
+.my-grid .col-inner .img {
+  margin: 0;
+  height: 60%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.my-grid .col-inner .space {
+  height: 10%;
+}
+.my-grid .col-inner .text {
+  height: 30%;
+  text-align: center;
+  font-size: 40rpx;
+}
+
+.my-grid .col-inner {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 60%;
+  height: 60%;
+}
+.my-grid .my-col {
+    position: relative;
+    float: left;
+    padding: 0;
+    border: 0;
+    width: 33%;
+}
+.my-grid .my-col.my-border {
+  border: 1rpx solid #DADADA;
+  border-left: 0;
+  border-top: 0;
+}
+.my-grid .my-col.my-border.col-3,.my-grid .my-col.my-border.col-6 { 
+  border-right: 0;
+}
+
+.my-grid .my-col.my-border.col-4,.my-grid .my-col.my-border.col-5,.my-grid .my-col.my-border.col-6 {
+  border-bottom: 0;
+}
+.my-grid .my-col.my-border.col-sigle-line {
+  border-top: 1rpx solid #DADADA;
+  border-bottom: 0;
+}
+
+/** 列表 **/
+.my-list .item {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  height: 140rpx;
+  padding-left: 16px;
+  background-color: #fff;
+}
+    
+.my-list .item:first-child{
+  border-top: 1rpx solid #c8c7cc;
+}
+.my-list .item:last-child{ 
+  border-bottom: 1rpx solid #c8c7cc;
+}
+
+.my-list .item .image {
+  margin: 15rpx 30rpx 15rpx 0;
+  width: 110rpx;
+  height: 110rpx;
+}
+.my-list .item .image .img {
+  width: 110rpx;
+  height: 110rpx;
+  border-radius: 100%;
+}
+.my-list .item .content {
+  flex: 1;
+  padding: 15rpx 15rpx 15rpx 0;
+  border-bottom: 1px solid #c8c7cc;
+}
+.my-list .item:last-child .content{ 
+  border-bottom: 0;
+}
+
+.my-list .item .content .header {
+  font-size: 30rpx;
+  line-height: 65rpx;
+  color: #222;
+}
+.my-list .item .content .descr {
+  font-size: 20rpx;
+  line-height: 40rpx;
+  color: #666;
+}
+.my-list .item .button {
+  padding: 15rpx 0 15rpx 15rpx;
+  width: 110rpx;
+  height: 110rpx;
+  line-height: 110rpx;
+  font-size: 20rpx;
+  color: #387ef5;
+}
+
+/** 细节页面 **/
+.my-detail {
+  display: flex;
+  flex-direction: column;
+  padding: 30rpx;
+  height: 100%;
+}
+.my-detail .photo {
+  flex: 4;
+  background: black no-repeat center;
+  background-size: contain;
+}
+.my-detail .info {
+  flex: 6;
+  margin-top: 10rpx;
+  padding: 20rpx;
+}
+.my-detail .header {
+  font-size: 36rpx;
+  line-height: 55rpx;
+  color: #27A1D7;
+}
+.my-detail .line {
+  margin: 5rpx 0 10rpx 0;
+  height: 1rpx;
+  border-bottom: 1px solid #CDCDCD;
+}
+.my-detail .title {
+  margin: 10rpx 0;
+  font-size: 35rpx;
+  line-height: 50rpx;
+  color: #777777;
+}
+.my-detail .descr {
+  margin-top: 20rpx;
+  color: #777777;
+  font-size: 20rpx;
+  line-height: 40rpx;
+}
+
+/** 卡片 **/
+.my-card {
+  margin: 20rpx;
+  padding: 15rpx;
+  background-color: #fff;
+  border: 1rpx solid #d4d4d4;
+  border-radius: 1rpx;
+  box-shadow: 0rem 0.1rem 0.2rem rgba(0, 0, 0, 0.3);
+}
+.my-card .title {
+    margin-bottom: 10rpx; 
+    font-size: 35rpx;
+    line-height: 50rpx;
+    color: #3399cc;
+}
+.my-card .content{
+    font-size: 20rpx;
+    line-height: 40rpx;
+    color: #999999;
+}
+
+/** 头像卡片 **/
+.avatar-card {
+    border-radius: 3rpx;
+    margin: 12rpx;
+    padding: 15rpx;
+    background: #fff;
+    box-shadow: 0rem 0.1rem 0.2rem rgba(0, 0, 0, 0.3);
+}
+
+.avatar-card .header {
+    display: flex;
+    flex-flow: row;
+}
+.avatar-card .header .avatar {
+  margin: 0rpx 30rpx 0rpx 0;
+  width: 90rpx;
+  height: 90rpx;
+}
+.avatar-card .header .avatar image {
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+}
+
+.avatar-card .header .name {
+    flex: 1;
+    margin: 0;
+    line-height: 90rpx;
+    font-size: 40rpx;
+}
+.avatar-card .header .time {
+    width: 150rpx;
+    font-size: 30rpx;
+    line-height: 90rpx;
+}
+
+.avatar-card .content {
+    margin: 3rpx 0 3rpx 0;
+    line-height: 50rpx;
+    font-size: 30rpx;
+}
+
+.avatar-card .line {
+    margin: 10rpx 0 10rpx 0;
+    border-top: 1rpx solid #CFCFCF;
+}
+
+.avatar-card .toolbar {
+    display: flex;
+    flex-flow: row;
+}
+
+.avatar-card .toolbar .left {
+    flex: 1;
+}
+.avatar-card .toolbar .center {
+    width: 1rpx;
+    margin: 3rpx 0;
+    border-left: 1rpx solid #CFCFCF;
+}
+.avatar-card .toolbar .right {
+    flex: 1;
+}
+
+.avatar-card .toolbar .content {
+    text-align: center;
+    font-size: 30rpx;
+    line-height: 30rpx;
+    color: #7ECCF9;
+}
+.avatar-card .toolbar .content image {
+    margin: 0;
+    height: 30rpx;
+    width: 35rpx;
+}
+
+/** 头像网格 **/
+.avatar-grid .avatar-col {
+        position: relative;
+        margin-bottom: 5rpx;
+        float: left;
+        padding: 0;
+        border: 0;
+        width: 25%; }
+.avatar-grid .avatar-col .col-inner {
+          position: absolute;
+          margin: auto;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          width: 80%;
+          height: 80%; }
+.avatar-grid .avatar-col .col-inner .img {
+            margin: 0;
+            height: 80%;
+            text-align: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center; }
+.avatar-grid .avatar-col .col-inner .img image {
+              height: 100%;
+              border-radius: 100%; }
+.avatar-grid .avatar-col .col-inner .space {
+              height: 20rpx; }
+.avatar-grid .avatar-col .col-inner .text {
+            color: white;
+            font-size: 30rpx; 
+            line-height: 35rpx; 
+            text-align: center; }

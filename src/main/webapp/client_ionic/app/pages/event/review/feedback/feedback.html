@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>反馈</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content contentTop="4.8rem" class="feedback">
+	<ion-list>
+	  <ion-item>
+	    <ion-label>问题类型</ion-label>
+	    <ion-select [(ngModel)]="type" okText="确定" cancelText="取消">
+	      <ion-option value="nes">建议</ion-option>
+	      <ion-option value="n64">投诉</ion-option>
+	    </ion-select>
+	  </ion-item>
+	
+		<ion-item>
+		   <ion-label stacked>问题内容</ion-label>
+		   <ion-textarea [(ngModel)]="content" rows="10"></ion-textarea>
+		 </ion-item>
+	</ion-list>
+</ion-content>

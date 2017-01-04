@@ -1,0 +1,103 @@
+.register  {
+  display: flex;
+  flex-flow: column; }
+
+  .register  .summary {
+
+    text-align: center; }
+    .register  .summary .summary-inner {
+      line-height: 80rpx;
+      font-size: 35rpx; }
+      .register  .summary .summary-inner .number {
+        font-size: 45rpx;
+        color: #27A0D7; }
+  
+  .register  .grid {
+    padding: 0; }
+    .register  .grid .col {
+      position: relative;
+      float: left;
+      padding: 0;
+      border: 0;
+      height: 100%; }
+      .register  .grid .col.register {
+        width: 30%; }
+        .register  .grid .col.register .img {
+          background-image: url(/assets/img/icon-register.png); }
+      .register  .grid .col.countdown {
+        width: 38%; }
+        .register  .grid .col.countdown .col-inner {
+          width: 90% !important; }
+        .register  .grid .col.countdown .img {
+          background-image: url(/assets/img/icon-countdown.png); }
+      .register  .grid .col.bizcard {
+        width: 30%; }
+        .register  .grid .col.bizcard .img {
+          background-image: url(/assets/img/icon-card.png); }
+      .register  .grid .col.border {
+        border: 1rpx solid #DADADA;
+        border-left: 0;
+        border-top: 0;
+        border-bottom: 0; }
+        .register  .grid .col.border.right {
+          border-right: 0; }
+      .register  .grid .col .col-inner {
+        position: absolute;
+        margin: auto;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 50%;
+        height: 50%; }
+        .register  .grid .col .col-inner .img {
+          margin: 0;
+          height: 80%;
+          background-size: contain;
+          background-repeat: no-repeat;
+          background-position: center; }
+        .register  .grid .col .col-inner .space {
+          height: 10%; }
+        .register .grid .col .col-inner .text {
+          font-size: 30rpx;
+          text-align: center; }
+
+.register .info {
+  flex: 1;
+  padding: 50rpx; 
+}
+.register .info .list {
+  
+}
+.register .info .list .item {
+  display: flex;
+  border: 1rpx solid #c8c7cc;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  padding: 15rpx;
+}
+.register .info .list .item:first-child {
+  border-top: 1rpx solid #c8c7cc;
+}
+.register .info .list .item .content  {
+  flex: 1;
+}
+.register .info .list .item .content .name {
+  font-size: 30rpx;
+  line-height: 60rpx;
+}
+.register .info .list .item .content .start-time {
+  font-size: 20rpx;
+  line-height: 40rpx;
+}
+.register .info .list .item .checkbox-container {
+  position:relative;
+  width: 50rpx;
+  height: 100rpx;
+  display:table;
+}
+.register .info .list .item .checkbox-container .checkbox {
+vertical-align:middle;
+  display:table-cell;
+}

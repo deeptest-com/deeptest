@@ -1,0 +1,57 @@
+{
+  "pages":[
+    "pages/home/home",
+    "pages/event/introduction/introduction",
+    "pages/event/schedule/schedule",
+    "pages/event/guest/guest", 
+    "pages/event/guest/detail",
+    
+    "pages/event/register/register",
+    "pages/event/service/service", 
+    "pages/event/service/detail",
+    "pages/event/qa/qa", 
+    "pages/event/qa/edit",
+
+    "pages/event/live/live", 
+    "pages/event/live/chat/chat",
+    "pages/event/live/chat/comments",
+    "pages/event/live/exchange/exchange",
+    "pages/event/live/wifi/wifi",
+
+    "pages/event/review/review", 
+    "pages/event/review/bizcard/bizcard",
+    "pages/event/review/document/document",
+    "pages/event/review/feedback/feedback",
+    
+    "pages/event/bizcard/view", 
+    "pages/event/bizcard/edit",
+
+    "pages/find/find",
+    "pages/about/about"
+  ],
+  "window":{
+    "backgroundTextStyle":"light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTextStyle":"black"
+  },
+  "tabBar": {
+    "color": "#8c8c8c",
+    "selectedColor": "#444",
+    "list": [{
+      "pagePath": "pages/home/home",
+      "text": "会议",
+      "iconPath": "assets/img/icon-home-outline.png",
+      "selectedIconPath": "assets/img/icon-home.png"
+    }, {
+      "pagePath": "pages/find/find",
+      "text": "发现",
+      "iconPath": "assets/img/icon-find-outline.png",
+      "selectedIconPath": "assets/img/icon-find.png"
+    }, {
+      "pagePath": "pages/mobiu/mobiu",
+      "text": "脉友",
+      "iconPath": "assets/img/icon-mobiu-outline.png",
+      "selectedIconPath": "assets/img/icon-mobiu.png"
+    }]
+  }
+}

@@ -1,0 +1,79 @@
+<view class="exchange">
+	<view class="result">
+		<view class="avatar-grid">
+			<view bindtap="open" class="avatar-col" style="height: {{colHeight}}rpx">
+				<view class="col-inner">
+					<view class="img">
+						<image style="width: {{imgHeight}}rpx; height: {{imgHeight}}rpx;" 
+							src="http://localhost:8080/events/upload/sample/guest/AlexisMabille.jpg" />
+					</view>
+					<view class="space"></view>
+					<view class="text">张三</view>
+				</view>
+			</view>
+			<view class="avatar-col" style="height: {{colHeight}}rpx">
+				<view class="col-inner">
+					<view class="img">
+						<image style="width: {{imgHeight}}rpx; height: {{imgHeight}}rpx;" 
+						  src="http://localhost:8080/events/upload/sample/guest/BhubawitKritpholnara.jpg" />
+					</view>
+					<view class="space"></view>
+					<view class="text">张三</view>
+				</view>
+			</view>
+			<view class="avatar-col" style="height: {{colHeight}}rpx">
+				<view class="col-inner">
+					<view class="img">
+						<image style="width: {{imgHeight}}rpx; height: {{imgHeight}}rpx;" 
+							src="http://localhost:8080/events/upload/sample/guest/BoraAksu.jpg" />
+					</view>
+					<view class="space"></view>
+					<view class="text">张三</view>
+				</view>
+			</view>
+			<view class="avatar-col" style="height: {{colHeight}}rpx">
+				<view class="col-inner">
+					<view class="img">
+						<image style="width: {{imgHeight}}rpx; height: {{imgHeight}}rpx;" 
+							src="http://localhost:8080/events/upload/sample/guest/CortoMoltedo.jpg" />
+					</view>
+					<view class="space"></view>
+					<view class="text">张三</view>
+				</view>
+			</view>
+			<view class="avatar-col" style="height: {{colHeight}}rpx">
+	            <view class="col-inner">
+	                <view class="img">
+	                    <image style="width: {{imgHeight}}rpx; height: {{imgHeight}}rpx;" 
+							src="http://localhost:8080/events/upload/sample/guest/TomasMaier.jpg" />
+	                </view>
+	                <view class="space"></view>
+	                <view class="text">张三</view>
+	            </view>
+	        </view>
+	
+			<view class="clear"></view>
+		</view>
+	</view>
+	
+	<view class="search" bindtap="startSearch">
+	    <view class="tips">
+	      <view wx:if="{{!searching}}">点击头像, 搜索希望交换名片的人</view>
+		  <view wx:if="{{searching}}"> 正在搜索同时按住头像的人...</view>
+		</view>
+		<view class="border1">
+			<view class="pointer" wx:if="{{!searching}}"></view>
+		  	<view class="pointer pointerAnim" wx:if="{{searching}}"></view>
+
+			<view class="border2">
+				<view class="border3">
+					<view class="radar">
+						<view class="avatar"> 
+							<image src="http://localhost:8080/events/upload/sample/client/me.jpg" />
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+</view>

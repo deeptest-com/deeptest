@@ -1,0 +1,51 @@
+<view class="bizcard-edit">
+    <form bindsubmit="formSubmit" bindreset="formReset" class="my-form inline has-toolbar-bottom">
+        <view class="row">
+            <view class="label photo-label">头像</view>
+            <view class="controller">
+                <view class="photo-select">
+                </view>
+            </view>
+        </view>
+        <view class="row">
+            <view class="label">姓名</view>
+            <view class="controller">
+                <input name="name" class="input"  />
+            </view>
+        </view>
+        <view class="row">
+            <view class="label">手机</view>
+            <view class="controller">
+                <input name="phone" class="input"  />
+            </view>
+        </view>
+        <view class="row">
+            <view class="label">公司</view>
+            <view class="controller">
+                <input name="company" class="input"  />
+            </view>
+        </view>
+        <view class="row">
+            <view class="label">职务</view>
+            <view class="controller">
+                <input name="title" class="input"  />
+            </view>
+        </view>
+        <view class="row">
+            <view class="label">邮箱</view>
+            <view class="controller">
+                <input name="email" class="input"  />
+            </view>
+        </view>
+        <view class="row">
+            <view class="label">网址</view>
+            <view class="controller">
+                <input name="website" class="input"  />
+            </view>
+        </view>
+
+        <view class="my-toolbar bottom">
+            <button type="primary"  formType="submit" class="button button-no-radius">保存</button>
+        </view>
+    </form>
+</view>

@@ -1,0 +1,37 @@
+.home {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.home .swiper-container {
+    flex: 1;
+    width: 100%;
+}
+.home .swiper {
+    height: 100%;
+}
+.home .grid {
+    width: 100%;
+}
+
+.home .swiper .swiper-item .slide-image{
+    width: 100%;
+    height: 100%;
+}
+
+.home .swiper .swiper-item .slider-bar {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.home .swiper .swiper-item .slider-bar .text {
+    height: 80rpx;
+    line-height: 80rpx;
+    text-align: center;
+    margin: 0;
+    text-overflow: ellipsis;
+    color: white;
+}

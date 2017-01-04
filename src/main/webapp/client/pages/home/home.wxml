@@ -1,0 +1,26 @@
+<view class="home">
+  <view class="swiper-container">
+    <swiper class="swiper" autoplay="false" interval="3000" duration="1000">
+      <block wx:for="{{event.documents}}" wx:key="{{item.id}}">
+        <swiper-item class="swiper-item">
+          <image mode="aspectFill" src="{{url}}{{item.uri}}" class="slide-image" />
+          <view class="slider-bar">
+            <view class="text">
+              {{item.title}}
+            </view>
+          </view>
+        </swiper-item>
+      </block>
+    </swiper>
+  </view>
+  <view class="my-grid" style="height:{{gridHeight}}rpx;">
+    <view wx:for="{{buttons}}" wx:key="{{item.name}}" data-name="{{item.name}}" style="height:{{colHeight}}rpx;" 
+        class="my-col my-border" bindtap="gotoPage">
+      <view class="col-inner">
+          <view class="img {{item.name}}" style="background-image: url(/assets/img/icon-{{item.name}}.png);"></view>
+          <view class="space"></view>
+          <view class="text">{{item.label}}</view>
+        </view>
+      </view>
+  </view>
+</view>

@@ -1,0 +1,31 @@
+.bizcard-view .bizcard-view-inner {
+  padding: 13rpx; }
+  .bizcard-view .bizcard-view-inner .row1 {
+    display: flex; }
+    .bizcard-view .bizcard-view-inner .row1 .photo {
+      width: 200rpx;
+      height: 200rpx;
+      background: url(/assets/img/photo.jpg) no-repeat center;
+      background-size: cover; }
+    .bizcard-view .bizcard-view-inner .row1 .info {
+      flex: 1; }
+      .bizcard-view .bizcard-view-inner .row1 .info .list {
+        margin: 5rpx 0 10rpx 0; }
+        .bizcard-view .bizcard-view-inner .row1 .info .list .item .title {
+          padding-left: 16px;
+          font-size: 40rpx;
+          line-height: 100rpx; }
+        .bizcard-view .bizcard-view-inner .row1 .info .list .item .phone {
+          padding-left: 16px;  
+          font-size: 25rpx;
+          line-height: 60rpx; }
+  .bizcard-view .bizcard-view-inner .row2 .item {
+    display: flex;
+    margin: 30rpx 0;
+    }
+    .bizcard-view .bizcard-view-inner .row2 .item .fixed {
+      width: 200rpx;
+      text-align: center; }
+    .bizcard-view .bizcard-view-inner .row2 .item .text {
+      flex: 1;
+      padding-left: 16px; }

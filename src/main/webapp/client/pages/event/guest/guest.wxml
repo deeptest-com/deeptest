@@ -1,0 +1,11 @@
+<view class="guest-list my-list">
+    <view wx:for="{{guests}}" wx:key="{{item.id}}" bindtap="gotoDetail" data-guest-id="{{item.id}}"  class="item">
+        <view class="image round">
+            <image class="img" src="{{url}}{{item.avatar}}"></image>
+        </view>
+        <view class="content">
+            <view class="header">{{item.name}}</view>
+            <view class="descr">{{item.title}}</view>
+        </view>
+    </view>
+</view>

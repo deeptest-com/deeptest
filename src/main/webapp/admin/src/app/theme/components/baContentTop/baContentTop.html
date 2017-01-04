@@ -1,0 +1,8 @@
+<div class="content-top clearfix">
+  <h1 class="al-title">{{ activePageTitle }}</h1>
+
+  <ul *ngIf="activePageTitle != '首页'" class="breadcrumb al-breadcrumb">
+    <li class="breadcrumb-item"><a routerLink="/pages/dashboard">首页</a></li>
+    <li class="breadcrumb-item active">{{ activePageTitle }}</li>
+  </ul>
+</div>

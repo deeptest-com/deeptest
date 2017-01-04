@@ -1,0 +1,34 @@
+<view class="live">
+  <view class="news">
+    <view class="msg">[系统] 10:20:30 主持人宣布大会开始</view>
+    <view class="msg">[系统] 10:25:30 开场服装表演</view>
+    <view class="msg">[系统] 10:30:00 本届大会嘉宾代表讲话</view>
+  </view>
+  
+  <view class="my-grid" style="height:{{colHeight}}rpx;">
+    <view class="my-col my-border col-sigle-line" style="height:{{colHeight}}rpx;" 
+            data-page="wifi" bindtap="gotoPage">
+        <view class="col-inner">
+        <view class="img wifi" style="background-image: url(/assets/img/icon-wifi.png);"></view>
+        <view class="space"></view>
+        <view class="text">WIFI</view>
+        </view>
+    </view>
+    <view class="my-col my-border col-sigle-line" style="height:{{colHeight}}rpx;" 
+            data-page="exchange" bindtap="gotoPage">
+        <view class="col-inner">
+        <view class="img exchange" style="background-image: url(/assets/img/icon-exchange.png);"></view>
+        <view class="space"></view>
+        <view class="text">名片</view>
+        </view>
+    </view>
+    <view class="my-col my-border col-sigle-line" style="height:{{colHeight}}rpx;" 
+            data-page="chat" bindtap="gotoPage">
+        <view class="col-inner">
+        <view class="img chat" style="background-image: url(/assets/img/icon-chat.png);"></view>
+        <view class="space"></view>
+        <view class="text">互动</view>
+        </view>
+    </view>
+   </view>
+</view>

@@ -1,0 +1,117 @@
+.chat {
+	scroll-content {
+	   background-color: #F9F9F9;
+
+	   ion-card {
+	       border-radius: 0.6rem;
+	       ion-card-header {
+		       padding: 0;
+
+		       ion-item {
+		           color: #656565;
+		           ion-avatar {
+		               margin: 0.3rem 1.2rem 0.3rem 0;
+		           }
+		           h2 {
+		              font-size: 1.6rem;
+		           }
+		           div {
+                      font-size: 1.2rem;
+
+                   }
+		       }
+            }
+	   }
+
+	   ion-card-content {
+	       padding: 0 1.2rem;
+	       .descr {
+	          font-size: 1.7rem;
+	          line-height: 2.5rem;
+	       }
+	       hr {
+	           margin: 0.3rem 0 0 0;
+	           line-height: 0.1rem;
+	           color: #CFCFCF;
+	       }
+	       .toolbar {
+	           display: flex;
+	           min-height: 3rem !important;
+	           font-size: 1.7rem;
+	           line-height: 1.7rem;
+
+	           .left {
+	               flex: 1;
+	               text-align: center;
+	           }
+	           .center {
+	                  width: 1rem;
+	                  height: 2rem;
+	                  background-image: url(../../assets/img/bg-grey.png);
+					  background-size: 0.1rem 80% ;
+					  background-repeat:no-repeat;
+					  background-position: 0;
+	           }
+	           .right {
+                   flex: 1;
+                   text-align: center;
+               }
+               img {
+                   width: 1rem;
+                   height: 1rem;
+                   display: inline;
+               }
+               span {
+                    color: #7ECCF9;
+               }
+	       }
+	   }
+	}
+}
+
+.comments {
+  scroll-content {
+    ion-list {
+      ion-item {
+        .title {
+          display: flex;
+          ion-avatar {
+            width: 4rem;
+            min-width: 3.6rem;
+            min-height: 3.6rem;
+            img {
+              max-width: 3.6rem;
+              max-height: 3.6rem;
+              border-radius: 1.8rem;
+            }
+          }
+          .center {
+            flex: 1;
+            font-size: 1.8rem;
+            line-height: 3rem;
+          }
+          .right {
+            width: 3.2rem;
+            img {
+              height: 1.5rem;
+            }
+          }
+        }
+
+        .content {
+          margin-top: 0.8rem;
+          white-space: normal;
+        }
+      }
+    }
+    ion-footer {
+        ion-toolbar {
+          padding: 0 1rem;
+	      .toolbar-background {
+	        
+	      }
+	    }
+    }
+    
+  }
+}

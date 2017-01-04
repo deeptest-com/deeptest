@@ -1,0 +1,14 @@
+<view class="qa-edit my-form">
+    <view class="qa-edit-inner has-toolbar-bottom">
+        <view class="title">
+            请填写问题内容
+        </view>
+        <view class="answer">
+            <input class="input-textarea input" type="textarea" bindinput="bindKeyInput"></input>
+        </view>
+    </view>
+
+    <view class="my-toolbar bottom">
+        <button type="primary" bindtap="save" class="button button-no-radius">提问</button>
+    </view>
+</view>

@@ -1,0 +1,13 @@
+.live {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.live .news {
+    flex: 1;
+    padding: 20rpx;
+}
+.live .news .msg {
+    font-size: 35rpx;
+    line-height: 50rpx;
+}

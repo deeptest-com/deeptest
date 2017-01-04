@@ -1,0 +1,28 @@
+
+<view class="feedback my-form">
+    <view class="feedback-inner has-toolbar-bottom">
+        <view class="title">问题类型</view>
+        <picker bindchange="bindPickerChange" value="{{index}}" range="{{types}}">
+            <view class="picker input">
+                <view class="text">
+                    {{types[index]}}
+                </view>
+                <view class="button">
+                    
+                </view>
+            </view>
+        </picker>
+
+        <view class="space"></view>
+        <view class="title">
+            问题内容
+        </view>
+        <view class="content">
+            <input class="input-textarea input" type="textarea" bindinput="bindKeyInput"></input>
+        </view>
+    </view>
+
+    <view class="my-toolbar bottom">
+        <button type="primary" bindtap="save" class="button button-no-radius">提交</button>
+    </view>
+</view>

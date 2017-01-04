@@ -1,0 +1,27 @@
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="list-toolbar col-xl-12">
+      <div class="filter">
+        <div class="btn-group">
+          <label (click)="goto('property')" class="btn btn-success" [(ngModel)]="tabModel" btnRadio="property"
+                 uncheckable>会议属性</label>
+          <label (click)="goto('schedule')" class="btn btn-success" [(ngModel)]="tabModel" btnRadio="schedule"
+                 uncheckable>会议日程</label>
+          <label (click)="goto('guest')" class="btn btn-success" [(ngModel)]="tabModel" btnRadio="guest" uncheckable>会议嘉宾</label>
+        </div>
+      </div>
+      <div class="buttons">
+        <button (click)="back()" type="button" class="btn btn-primary btn-sm">
+          返回
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+
+    嘉宾列表
+
+  </div>
+</div>

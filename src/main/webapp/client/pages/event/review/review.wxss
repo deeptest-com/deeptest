@@ -1,0 +1,13 @@
+.review {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.review .news {
+    flex: 1;
+    padding: 20rpx;
+}
+.review .news .msg {
+    font-size: 35rpx;
+    line-height: 50rpx;
+}

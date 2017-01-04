@@ -1,0 +1,85 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>名片</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content contentTop="4.8rem" class="bizcard-view">
+  <div class="bizcard-view-inner">
+    <div class="row1">
+      <div class="photo">
+
+      </div>
+      <div class="info">
+        <ion-list no-lines>
+          <ion-item>
+            <ion-label fixed>客服</ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-label fixed>12901234567</ion-label>
+          </ion-item>
+        </ion-list>
+      </div>
+    </div>
+    <div class="row2">
+      <ion-list no-lines>
+        <ion-item>
+          <ion-label class="fixed" fixed>公司</ion-label>
+          <ion-label class="text">mobiu.cn</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label class="fixed" fixed>职务</ion-label>
+          <ion-label class="text">Co-Found</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label class="fixed" fixed>邮箱</ion-label>
+          <ion-label class="text">master@mobiu.cn</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label class="fixed" fixed>网址</ion-label>
+          <ion-label class="text">http://mobiu.cn</ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+  </div>
+
+  <ion-footer>
+    <ion-toolbar secondary class="bottom-toolbar">
+      <div class="bottom-buttons" (click)="register()">
+        <div class="buttons orange">
+          <button clear class="button half">
+            确认报名
+          </button>
+        </div>
+        <div class="buttons blue" (click)="edit()">
+          <button clear class="button  half" (click)="clear()">
+            修改名片
+          </button>
+        </div>
+      </div>
+    </ion-toolbar>
+
+    <!-- 	  <ion-toolbar white class="bottom-toolbar">
+            <div class="bottom-buttons">
+              <div class="icons">
+                   <button dark clear (click)="collect()">
+                       <ion-icon *ngIf="isCollected" name="heart"></ion-icon>
+                       <ion-icon *ngIf="!isCollected" name="heart-outline"></ion-icon>
+                   </button>
+                   <button dark clear (click)="toShoppingcart()">
+                       <ion-icon name="cart"></ion-icon>
+                   </button>
+               </div>
+
+               <div class="buttons orange" (click)="addToShoppingcart()">
+                   <button clear class="button left">
+                     加入购物车
+                   </button>
+               </div>
+           </div>
+        </ion-toolbar> -->
+
+  </ion-footer>
+
+</ion-content>

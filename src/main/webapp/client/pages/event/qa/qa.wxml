@@ -1,0 +1,16 @@
+<view class="qa-list">
+    <view class="qa-list-inner has-toolbar-bottom">
+        <view wx:for="{{qas}}" wx:key="{{item.id}}" class="my-card">
+            <view class="question title">
+                {{item.question}}
+            </view>
+            <view class="answer content">
+                {{item.answer}}
+            </view>
+        </view>
+        
+        <view class="my-toolbar bottom">
+            <button type="primary" bindtap="create" class="button button-no-radius">提问</button>
+        </view>
+    </view>
+</view>

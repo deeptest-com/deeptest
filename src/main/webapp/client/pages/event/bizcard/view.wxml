@@ -1,0 +1,45 @@
+<view class="bizcard-view">
+    <view class="bizcard-view-inner has-toolbar-bottom">
+        <view class="row1">
+          <view class="photo">
+            
+          </view>
+          <view class="info">
+            <view class="list">
+              <view class="item">
+                <view class="title">客服</view>
+              </view>
+    
+              <view class="item">
+                <view class="phone">12901234567</view>
+              </view>
+            </view>
+          </view>
+        </view>
+        <view class="row2">
+          <view class="list">
+            <view class="item">
+              <view class="fixed">公司</view>
+              <view class="text">mobiu.cn</view>
+            </view>
+            <view class="item">
+              <view class="fixed">职务</view>
+              <view class="text">Co-Found</view>
+            </view>
+            <view class="item">
+              <view class="fixed" fixed>邮箱</view>
+              <view class="text">master@mobiu.cn</view>
+            </view>
+            <view class="item">
+              <view class="fixed" fixed>网址</view>
+              <view class="text">http://mobiu.cn</view>
+            </view>
+          </view>
+        </view>
+    </view>
+
+    <view class="my-toolbar bottom">
+        <button type="primary" bindtap="register" class="button button-no-radius">确认报名</button>
+        <button bindtap="edit" class="button button-no-radius">修改名片</button>
+    </view>
+</view>

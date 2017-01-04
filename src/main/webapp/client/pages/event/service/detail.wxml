@@ -1,0 +1,8 @@
+<view class="service-list my-detail">
+    <view class="title">
+        {{service.typeName}}
+    </view>
+    <view>
+        <text class="descr">{{service.descr}}</text>
+    </view>
+</view>

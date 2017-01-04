@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:mvc="http://www.springframework.org/schema/mvc"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans 
+  http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context
+  http://www.springframework.org/schema/context/spring-context-3.2.xsd
+  http://www.springframework.org/schema/mvc
+  http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+  
+	<context:component-scan base-package="cn.mobiu.events.action"></context:component-scan>
+	
+	<!-- 开启注解 -->
+	<mvc:annotation-driven />
+	
+	<!-- 取消对静态文件的拦截 -->
+	<mvc:resources mapping="/libs/**" location="/libs/"/>  
+	<mvc:resources mapping="/images/**" location="/images/"/>
+	<mvc:resources mapping="/umeditor/**" location="/umeditor/"/>
+	<mvc:resources mapping="/upload/**" location="/upload/"/>
+	<mvc:resources mapping="/c/**" location="/c/"/>
+	<mvc:default-servlet-handler />  
+	
+	<!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射 -->  
+	<bean id="jacksonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+            <list>
+                 <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+                 <ref bean="jacksonMessageConverter"/>
+            </list>
+        </property>
+	</bean>
+	
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">  
+		<property name="prefix" value="/WEB-INF/jsp/"/>  
+		<property name="suffix" value=".jsp"/>  
+	</bean>  
+	
+	<bean id="multipartResolver"  class="cn.mobiu.events.util.PJCommonsMultipartResolver">
+      <property name="defaultEncoding" value="UTF-8" />
+      <property name="maxUploadSize" value="1000000000000" />
+    </bean>
+  
+	<mvc:interceptors>
+       <mvc:interceptor>
+           <mvc:mapping path="/**"/>
+           <mvc:exclude-mapping path="/index.jsp"/>
+           <bean class="cn.mobiu.events.interceptor.SystemInterceptor"/>
+       </mvc:interceptor>
+    </mvc:interceptors>
+</beans>

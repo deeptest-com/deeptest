@@ -1,0 +1,35 @@
+<template name="timeline">
+  <view class="timeline">
+    <view wx:for="{{list}}" wx:key="{{item.id}}" class="timeline-item {{item.itemType}}" >
+        <view class="timeline-time {{item.itemType}}">
+            <view class="time two-line" wx:if="{{mode == 'bySession'}}">
+                <view class="text" wx:if="{{item.startTime}}">{{item.startTimeStr}}</view>
+            </view>
+            <view class="time one-line" wx:if="{{mode == 'byDate'}}">
+                <view class="text" wx:if="{{item.startTime}}">{{item.startTimeStr}}</view>
+            </view>
+        </view>
+
+        <view class="timeline-badge">
+            <view class="badge {{item.itemType}}"></view>
+        </view>
+
+        <view class="for-group timeline-panel" wx:if="{{item.itemType == 'for-group'}}" >
+            <view class="subject">{{item.name}} </view>
+        </view>
+        <view class="for-item timeline-panel" wx:if="{{item.itemType == 'for-item'}}" >
+
+            <view class="triangle white-bg"></view>                    <view class="triangle-shadow white-bg"></view>
+<view class="timeline-content">
+            <view class="timeline-heading">
+                {{item.subject}}
+            </view>
+            <view class="timeline-descr">
+                <span wx:if="{{mode == 'bySession'}}" >{{item.descr}}</span>
+                <span wx:if="{{mode == 'byDate'}}" >{{item.address}}</span>
+            </view>
+</view>  
+        </view>
+    </view>
+ </view>
+</template>

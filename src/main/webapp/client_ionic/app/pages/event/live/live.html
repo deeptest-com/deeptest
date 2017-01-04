@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>现场</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content contentTop="4.8rem" class="live">
+  <div class="news" [style.height.px]="newsHeight">
+    <div class="msg">[系统] 10:20:30 主持人宣布大会开始</div>
+    <div class="msg">[系统] 10:25:30 开场服装表演</div>
+    <div class="msg">[系统] 10:30:00 本届大会嘉宾代表讲话</div>
+  </div>
+  
+  <div class="my-grid">
+       <div class="my-col my-border col-1 col-sigle-line" [style.height.px]="rowHeight" (click)="goto('wifi')">
+         <div class="col-inner">
+           <div class="img wifi"></div>
+           <div class="space"></div>
+           <div class="text">WIFI</div>
+         </div>
+       </div>
+       <div class="my-col my-border col-2 col-sigle-line" [style.height.px]="rowHeight" (click)="goto('exchange')">
+         <div class="col-inner">
+           <div class="img exchange"></div>
+           <div class="space"></div>
+           <div class="text">名片</div>
+         </div>
+       </div>
+       <div class="my-col my-border col-3 col-sigle-line" [style.height.px]="rowHeight" (click)="goto('chat')">
+         <div class="col-inner">
+           <div class="img chat"></div>
+           <div class="space"></div>
+           <div class="text">互动</div>
+         </div>
+       </div>
+     </div>
+</ion-content>

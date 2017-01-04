@@ -1,0 +1,45 @@
+.bizcard-list {
+    padding: 30rpx;
+}
+
+.bizcard-list .mine {
+    display: flex;
+    flex-flow: row;
+}
+
+.bizcard-list .mine .avatar {
+  margin: 0rpx 60rpx 0rpx 0;
+  width: 110rpx;
+  height: 110rpx;
+}
+.bizcard-list .mine .avatar image {
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+}
+.bizcard-list .mine .content {
+  flex: 1;
+}
+
+.bizcard-list .mine .content .name {
+    line-height: 80rpx;
+    font-size: 35rpx;
+}
+.bizcard-list .mine .content .phone {
+    font-size: 20rpx;
+    line-height: 30rpx;
+}
+
+.bizcard-list .line {
+    margin: 20rpx 0 10rpx 0;
+    border-top: 1rpx solid #CFCFCF;
+}
+
+.bizcard-list .others .title {
+    margin-top: 0;
+    font-size: 20rpx;
+    line-height: 50rpx;
+    color: #28A1D8;
+}
+.bizcard-list .avatar-grid .avatar-col .col-inner .text {
+            color: #222;}

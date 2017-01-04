@@ -1,0 +1,85 @@
+@import "theme/theme";
+
+.no-border {
+  border: 0 !important;
+}
+.card-block.top0 {
+  padding-top: 0;
+}
+
+
+.link {
+  margin: 0 5px;
+  text-decoration:underline !important;
+  color: #209e91;
+  cursor:pointer;
+  font-size: 16px;
+}
+.pointer {
+  cursor: pointer;
+}
+
+.form-control[readonly] {
+    color: #666666 !important;
+    background-color: #ffffff !important;
+}
+.my-validate-form {
+    .ng-valid:not(form) {
+      border-left: 3px solid #a2db59 !important;
+      &.my-invalid {
+       border-left: 3px solid #fa758e !important;
+      }
+    }
+    .ng-invalid.ng-dirty:not(form)  {
+      border-left: 3px solid #fa758e !important;
+    }
+    .validate-errors {
+        margin: 0 0 5px 0;
+        .validate-error {
+           line-height:160%;
+           color: #fa758e;
+        }
+    }
+}
+
+.page-container {
+  width: 100%;
+  text-align: center;
+  .info {
+    margin: 0 auto;
+    width: 200px;
+  }
+}
+.center {
+  text-align: center;
+}
+
+tabset {
+    .tab-content {
+        border: 1px solid rgba(77, 196, 255, 0.3) ;
+    }
+}
+
+.list-toolbar {
+  display: flex;
+  margin: 0 0 10px 0;
+  padding: 0;
+  .filter {
+    flex: 1;
+  }
+  .buttons {
+    width: 200px;
+    text-align: right;
+  }
+}
+
+.bootstrap-timepicker-widget {
+  table {
+    max-width: 40px;
+    margin: 0 auto !important;
+    .separator{
+      background-color: transparent;
+    }
+  }
+}
+

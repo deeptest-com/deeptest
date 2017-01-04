@@ -1,0 +1,44 @@
+<view class="introduction">
+    <view class="section detail">
+        <view class="title">会议介绍</view>
+        <view class="desc">
+            <view class="line">
+                时间：{{event.startTime}}
+            </view>
+            <view class="line">
+                地点：{{event.address}}
+            </view>
+            <view class="line">
+                主办：上海时装周组委会办公室
+            </view>
+            <view class="line text">
+                {{event.descr}}
+            </view>
+        </view>
+    </view>
+
+    <view class="section organizer">
+        <view class="title">协办单位</view>
+        <view class="desc">
+            <view wx:for="{{event.organizers.co_organizer}}" wx:key="{{item.id}}" class="line">
+              {{item.name}}
+		    </view>
+        </view>
+    </view>
+
+    <view class="section contacts">
+        <view class="title">联系方式</view>
+        <view class="desc">
+            <view class="line">网站：
+                <a href="{{event.website}}">{{event.website}}</a>
+            </view>
+            <view class="line">邮箱：
+                <a href="mailto:{{event.email}}">{{event.email}}</a>
+            </view>
+            <view class="line">电话：
+                <a href="tel:{{event.phone}}">{{event.phone}}</a>
+            </view>
+            <view class="line">传真：{{event.fax}}</view>
+        </view>
+    </view>
+</view>

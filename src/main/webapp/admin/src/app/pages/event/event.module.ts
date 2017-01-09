@@ -18,6 +18,7 @@ import { DatetimePickerService } from '../../service/datetime-picker';
 import { EventService } from '../../service/event';
 import { SessionService } from '../../service/session';
 import { ScheduleService } from '../../service/schedule';
+import { GuestService } from '../../service/guest';
 
 import { Event } from './event.component';
 import { EventList } from './event-list';
@@ -52,7 +53,8 @@ import { EventEditGuest } from './event-edit/guest';
     DatetimePickerService,
     EventService,
     SessionService,
-    ScheduleService
+    ScheduleService,
+    GuestService
   ]
 })
 export default class EventModule {}

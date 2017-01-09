@@ -13,8 +13,6 @@ import { EventService } from '../../../service/event';
   template: require('./event-list.html')
 })
 export class EventList implements OnInit, AfterViewInit {
-  maxSize:number = 5;
-
   totalItems:number = 0;
   currentPage:number = 1;
   itemsPerPage:number = 6;

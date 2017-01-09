@@ -45,9 +45,9 @@ public class EventAction extends BaseAction {
 	OrganizerService organizerService;
 	
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "list", method = RequestMethod.POST)
+	@RequestMapping(value = "listByPage", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> list(HttpServletRequest request) {
+	public Map<String, Object> listByPage(HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		JSONObject req = reqJson(request);
 		

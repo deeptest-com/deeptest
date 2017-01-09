@@ -10,6 +10,7 @@ export var Utils: any = {
     } else {
       CONSTANT.SERVICE_URL = CONSTANT._SERVICE_URL_PRODUCTION;
     }
+    CONSTANT.API_URL = CONSTANT.SERVICE_URL + CONSTANT.API_PATH;
   },
   getUploadUrl: function() {
     return CONSTANT.SERVICE_URL + CONSTANT.UPLOAD_URI;
@@ -52,6 +53,21 @@ export var Utils: any = {
   dateCombine: function(model: any, dateKey: any, timeKey: any, datetimeKey: string) {
     let dateStr = model[dateKey] + ' ' + model[timeKey];
     model[datetimeKey] = Utils.strToDate(dateStr);
+  },
+
+  imgUrl:function(url: string, external: boolean){
+    if (!url) {
+        return 'assets/img/none.png';
+    }
+
+    if (!external)  {
+        external = true;
+    }
+
+    if (external) {
+        url = CONSTANT.SERVICE_URL + url;
+    }
+    return url;
   }
 
 };

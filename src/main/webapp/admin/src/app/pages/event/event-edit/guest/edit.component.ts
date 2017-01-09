@@ -38,6 +38,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   popupType: string;
   isSubmitted: boolean;
   uploadedFile: any;
+  hasBaseDropZoneOver:boolean = false;
 
   totalItems:number = 0;
   currentPage:number = 1;
@@ -84,6 +85,10 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   selectFile():void {
     this.uploader.clearQueue();
     jQuery('#upload-input').click();
+  }
+  fileOver(e:any):void {
+    this.hasBaseDropZoneOver = e;
+    // console.log(this.uploader.queue);
   }
   onUploadCompleteItem (item:any, response:any, status:any, headers:any) {
     let res = JSON.parse(response);

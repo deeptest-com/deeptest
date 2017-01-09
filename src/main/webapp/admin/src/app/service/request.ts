@@ -15,7 +15,7 @@ export class RequestService {
     }
     post(apiPath: string, reqBody: any) {
         let me = this;
-        let url = CONSTANT.SERVICE_URL + apiPath;
+        let url = CONSTANT.API_URL + apiPath;
 
         let body = JSON.stringify(reqBody);
         let headers = new Headers({ 'Content-Type': 'application/json', 'Authorization': CONSTANT.TOKEN });
@@ -39,7 +39,7 @@ export class RequestService {
 
     get(apiPath: string) {
       let me = this;
-      let url = CONSTANT.SERVICE_URL + apiPath;
+      let url = CONSTANT.API_URL + apiPath;
 
       console.log(url);
       let headers = new Headers({ 'Content-Type': 'application/json' });
@@ -62,7 +62,7 @@ export class RequestService {
 
     delete(apiPath: string) {
       let me = this;
-      let url = CONSTANT.SERVICE_URL + apiPath;
+      let url = CONSTANT.API_URL + apiPath;
 
       console.log(url);
       let headers = new Headers({ 'Content-Type': 'application/json', 'token': 'test' });

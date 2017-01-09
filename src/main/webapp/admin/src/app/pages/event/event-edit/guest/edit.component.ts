@@ -1,9 +1,10 @@
-import { Component,ViewEncapsulation, Pipe, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component,ViewEncapsulation, Pipe, OnInit, AfterViewInit, ViewChild, Input, ElementRef, Renderer } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import { DropdownModule} from 'ng2-bootstrap/ng2-bootstrap';
 import { ModalDirective } from 'ng2-bootstrap';
+import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
 
 import {Validate} from '../../../../service/validate';
 import { CONSTANT } from '../../../../utils/constant';
@@ -35,6 +36,8 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   item: any = {};
   form: any;
   popupType: string;
+  isSubmitted: boolean;
+  uploadedFile: any;
 
   totalItems:number = 0;
   currentPage:number = 1;
@@ -42,8 +45,19 @@ export class EventEditGuest implements OnInit, AfterViewInit {
 
   tabModel: string = 'guest';
 
+  private uploaderOptions:FileUploaderOptions = {
+    url: Utils.getUploadUrl(),
+    authToken: CONSTANT.TOKEN,
+    autoUpload: true,
+    filters: [{name: 'upload', fn: (item:any) => {
+      console.log(item.name);
+      return true; // item.size < 100 * 1024 * 1024 || item.name.indexOf('.apk') > -1;
+    }}]
+  };
+  public uploader: FileUploader;
+
   constructor(private _router: Router, private _route: ActivatedRoute, private fb: FormBuilder,
-              private _guestService: GuestService, private _eventService: EventService) {
+              private _guestService: GuestService) {
 
     let that = this;
   }
@@ -51,8 +65,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   ngOnInit() {
     let that = this;
 
-    console.log(this._route.params);
-    this._route.params.forEach((params: Params) => {
+    that._route.params.forEach((params: Params) => {
       that.eventId = +params['id'];
     });
 
@@ -60,6 +73,24 @@ export class EventEditGuest implements OnInit, AfterViewInit {
         that.loadData();
     }
     that.buildForm();
+
+    that.uploader = new FileUploader(that.uploaderOptions);
+    that.uploader.onCompleteItem = (item:any, response:any, status:any, headers:any) => {
+      this.onUploadCompleteItem(item, response, status, headers);
+    };
+    console.log(that.uploader);
+  }
+
+  selectFile():void {
+    this.uploader.clearQueue();
+    jQuery('#upload-input').click();
+  }
+  onUploadCompleteItem (item:any, response:any, status:any, headers:any) {
+    let res = JSON.parse(response);
+    console.log(res);
+    this.uploadedFile = res;
+    this.uploader.clearQueue();
+    this.isSubmitted = false;
   }
 
   ngAfterViewInit() {
@@ -86,6 +117,10 @@ export class EventEditGuest implements OnInit, AfterViewInit {
    });
   }
 
+  create($event): void {
+    let that = this;
+    that.showModal({eventId: that.eventId}, 'edit', $event);
+  }
   showModal(item: any, popupType: string, $event:any):void {
     let that = this;
 
@@ -135,11 +170,6 @@ export class EventEditGuest implements OnInit, AfterViewInit {
     } else {
       that.alertPopup.hide();
     }
-  }
-
-  initForm(): void {
-    let that = this;
-
   }
 
   buildForm(): void {

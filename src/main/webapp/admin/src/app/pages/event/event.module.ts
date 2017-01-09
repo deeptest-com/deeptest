@@ -10,6 +10,7 @@ import { TabsModule } from 'ng2-bootstrap';
 import { CollapseModule } from 'ng2-bootstrap';
 import { ModalModule } from 'ng2-bootstrap';
 import { ButtonsModule } from 'ng2-bootstrap';
+import { FileUploadModule } from 'ng2-file-upload';
 
 import { PipeModule } from '../../pipe/pipe.module';
 
@@ -38,6 +39,7 @@ import { EventEditGuest } from './event-edit/guest';
     ModalModule,
     ButtonsModule,
     CollapseModule,
+    FileUploadModule,
 
     PipeModule
   ],

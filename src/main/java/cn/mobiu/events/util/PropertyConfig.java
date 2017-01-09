@@ -28,7 +28,7 @@ public class PropertyConfig extends PropertyPlaceholderConfigurer {
         }
 
         // 初始化常量
-        Constant.WORK_DIR = PropertyConfig.getConfig("api.base");
+        Constant.WORK_DIR = PropertyConfig.getConfig("dir.base");
 
     }
 

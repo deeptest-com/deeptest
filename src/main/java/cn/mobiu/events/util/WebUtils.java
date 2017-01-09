@@ -224,7 +224,7 @@ public class WebUtils {
         res.addHeader("Access-Control-Allow-Origin", ref);
         res.addHeader("Access-Control-Allow-Credentials", "true");
 
-        res.addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, token");
+        res.addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, token, Authorization");
         
         return res;
     }

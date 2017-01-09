@@ -11,6 +11,9 @@ export var Utils: any = {
       CONSTANT.SERVICE_URL = CONSTANT._SERVICE_URL_PRODUCTION;
     }
   },
+  getUploadUrl: function() {
+    return CONSTANT.SERVICE_URL + CONSTANT.UPLOAD_URI;
+  },
 
   strToDate: function(str: string) {
     return new Date(str);

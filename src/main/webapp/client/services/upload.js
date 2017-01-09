@@ -1,14 +1,14 @@
 var constant = require('../utils/constant.js')
 var post = require('./post.js')
 
-function upload(filePath, formData, callback) {
-    var url = constant.apiUrl + 'uploadSingle?token=' + constant.token;
+function sign(filePath, formData, callback) {
+    var url = constant.apiUrl + 'sign?Authorization=' + constant.token;
     console.log(url);
 
     wx.uploadFile({
         url: url,
         filePath: filePath,
-        name: 'filePath',
+        name: 'file',
         formData: formData,
         success: function(res) {
             console.log('上传成功', res);
@@ -24,5 +24,5 @@ function upload(filePath, formData, callback) {
 }
 
 module.exports = {
-  upload: upload
+        sign: sign
 }

@@ -48,9 +48,9 @@ public class SystemInterceptor implements HandlerInterceptor {
 
             // 根据不同package处理不同身份认证逻辑
             String packageName = ((HandlerMethod) handler).getBeanType().getPackage().getName();
-            String token = request.getHeader("token");
+            String token = request.getHeader("Authorization");
             if (token == null) {
-            	token = request.getParameter("token");
+            	token = request.getParameter("Authorization");
             }
             
 			// app鉴权管理

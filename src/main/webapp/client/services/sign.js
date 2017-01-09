@@ -15,7 +15,7 @@ function sign(callback) {
                 eventId: constant.eventId,
                 extName: 'png'
             };
-            upload.upload(filePath, formData, function(res) {
+            upload.sign(filePath, formData, function(res) {
                 console.log(res);
                 // post.post('chat/getData', {
                 //     eventId: constant.eventId

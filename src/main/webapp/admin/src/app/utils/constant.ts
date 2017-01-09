@@ -4,6 +4,8 @@ export var CONSTANT: any = {
 
     SERVICE_URL: undefined,
 
+    UPLOAD_URI: 'uploadSingle',
+
     TOKEN: '123456',
 
     EventStatus: [{not_start: '未开始'}, {register: '报名'}, {sign: '签到'},

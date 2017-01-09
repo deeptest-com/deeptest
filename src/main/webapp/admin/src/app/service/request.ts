@@ -18,7 +18,7 @@ export class RequestService {
         let url = CONSTANT.SERVICE_URL + apiPath;
 
         let body = JSON.stringify(reqBody);
-        let headers = new Headers({ 'Content-Type': 'application/json', 'token': CONSTANT.TOKEN });
+        let headers = new Headers({ 'Content-Type': 'application/json', 'Authorization': CONSTANT.TOKEN });
         let options = new RequestOptions({ headers: headers });
 
         console.log(url, body);

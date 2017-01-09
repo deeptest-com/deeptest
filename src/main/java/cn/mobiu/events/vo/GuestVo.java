@@ -10,6 +10,9 @@ public class GuestVo extends BaseVo {
     private String avatar;
     private String phone;
     private String email;
+    
+    private Long eventId;
+    
 	public String getName() {
 		return name;
 	}
@@ -52,6 +55,12 @@ public class GuestVo extends BaseVo {
 	}
 	public void setTitle(String title) {
 		this.title = title;
+	}
+	public Long getEventId() {
+		return eventId;
+	}
+	public void setEventId(Long eventId) {
+		this.eventId = eventId;
 	}
 
 }

@@ -1,6 +1,6 @@
 import { NgModule }      from '@angular/core';
 
-import { ImgPathPipe } from './img-path';
+import { ImgPathPipe, ThumbPathPipe } from './img-path';
 import { KeysPipe } from './keys';
 import { DatePipe } from './date';
 import { EventStatusPipe } from './event-status';
@@ -9,8 +9,8 @@ import { EventStatusPipe } from './event-status';
   imports: [
 
   ],
-  declarations: [ImgPathPipe, KeysPipe, DatePipe,EventStatusPipe],
-  exports:      [ImgPathPipe, KeysPipe, DatePipe,EventStatusPipe],
+  declarations: [ImgPathPipe, ThumbPathPipe, KeysPipe, DatePipe,EventStatusPipe],
+  exports:      [ImgPathPipe, ThumbPathPipe, KeysPipe, DatePipe,EventStatusPipe],
 })
 export class PipeModule {
 }

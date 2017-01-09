@@ -94,6 +94,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
     let res = JSON.parse(response);
     console.log(res);
     this.uploadedFile = res;
+    this.item.avatar = res.uploadPath;
     this.uploader.clearQueue();
     this.isSubmitted = false;
   }
@@ -103,6 +104,24 @@ export class EventEditGuest implements OnInit, AfterViewInit {
 
   }
 
+  loadData() {
+   let that = this;
+
+   that._guestService.list(that.itemsPerPage, that.currentPage, that.eventId).subscribe((json:any) => {
+     that.totalItems = json.totalItems;
+     that.items = json.guests;
+   });
+  }
+
+  create($event): void {
+    let that = this;
+    that.showModal({eventId: that.eventId}, 'edit', $event);
+  }
+  pageChanged(event:any):void {
+    let that = this;
+    that.currentPage = event.page;
+    that.loadData();
+  }
   back() {
     let that = this;
 
@@ -114,18 +133,6 @@ export class EventEditGuest implements OnInit, AfterViewInit {
     that._router.navigateByUrl('/pages/event/edit/' + that.eventId + '/' + tabModel);
   }
 
-  loadData() {
-   let that = this;
-
-   that._guestService.list(that.itemsPerPage, that.currentPage, that.eventId).subscribe((json:any) => {
-      that.items = json.guests;
-   });
-  }
-
-  create($event): void {
-    let that = this;
-    that.showModal({eventId: that.eventId}, 'edit', $event);
-  }
   showModal(item: any, popupType: string, $event:any):void {
     let that = this;
 
@@ -203,7 +210,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
     'title': {
       'required':      '简介不能为空'
     },
-    '描述': {
+    'descr': {
       'required':      '描述不能为空'
     }
   };

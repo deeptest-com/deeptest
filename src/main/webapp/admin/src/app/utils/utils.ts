@@ -13,7 +13,7 @@ export var Utils: any = {
     CONSTANT.API_URL = CONSTANT.SERVICE_URL + CONSTANT.API_PATH;
   },
   getUploadUrl: function() {
-    return CONSTANT.SERVICE_URL + CONSTANT.UPLOAD_URI;
+    return CONSTANT.API_URL + CONSTANT.UPLOAD_URI;
   },
 
   strToDate: function(str: string) {
@@ -66,6 +66,23 @@ export var Utils: any = {
 
     if (external) {
         url = CONSTANT.SERVICE_URL + url;
+    }
+    return url;
+  },
+
+  thumbUrl:function(url: string, external: boolean){
+    if (!url) {
+      return 'assets/img/none.png';
+    }
+
+    url = url.replace('.', '-thumb.');
+
+    if (!external)  {
+      external = true;
+    }
+
+    if (external) {
+      url = CONSTANT.SERVICE_URL + url;
     }
     return url;
   }

@@ -1,11 +1,17 @@
 package cn.mobiu.events.action.client;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -54,13 +60,14 @@ public class FieUploadAction extends BaseAction {
         
         EvtClient client = clientService.getByToken(token);
         
-        extName = extName == null? FilenameUtils.getExtension(file.getOriginalFilename()): extName;
+        String origName = file.getOriginalFilename();
+        extName = extName == null? FilenameUtils.getExtension(origName): extName;
         
         String fileName = UUID.randomUUID().toString() + "." + extName;
 
-        String filePath = saveFile(file, "event/", fileName);
+        String filePath = FileUtils.SaveFile(file, "event/", fileName);
 
-        ret.put("origName", file.getOriginalFilename());
+        ret.put("origName", origName);
         ret.put("filePath", filePath);
         
         float flt = Float.parseFloat(String.valueOf(file.getSize()));
@@ -86,13 +93,14 @@ public class FieUploadAction extends BaseAction {
         
         EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
         
-        String extName = FilenameUtils.getExtension(file.getOriginalFilename());
+        String origName = file.getOriginalFilename();
+        String extName = FilenameUtils.getExtension(origName);
         String fileName = UUID.randomUUID().toString() + "." + extName;
 
-        String filePath = saveFile(file, "event/", fileName);
+        String uploadPath = FileUtils.SaveFile(file, "event/", fileName);
 
-        ret.put("origName", file.getOriginalFilename());
-        ret.put("filePath", filePath);
+        ret.put("origName", origName);
+        ret.put("uploadPath", uploadPath);
         
         float flt = Float.parseFloat(String.valueOf(file.getSize()));
         String fileSize = new DecimalFormat("##0.00").format(flt / 1000 / 1000);
@@ -101,24 +109,6 @@ public class FieUploadAction extends BaseAction {
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
         return ret;
-    }
-
-    public String saveFile(MultipartFile file, String uploadRelativeDist, String fileName) {
-        String dateDist = DateUtils.getDateNoSeparator();
-        
-        String localFolder = Constant.GetUploadDir() + uploadRelativeDist + dateDist + "/";
-        FileUtils.CreateDirIfNeeded(localFolder);
-        
-        String localPath = localFolder + fileName;
-        File localFile = new File(localPath);
-        try {
-            file.transferTo(localFile);
-        } catch (Exception e) {
-            logger.error(e.getStackTrace());
-            return null;
-        }
-        
-        return localPath;
     }
 
 }

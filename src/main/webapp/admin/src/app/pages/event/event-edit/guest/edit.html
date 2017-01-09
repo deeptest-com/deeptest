@@ -31,6 +31,7 @@
             <th>编号</th>
             <th>姓名</th>
             <th>简介</th>
+            <th>头像</th>
             <th>操作</th>
           </tr>
           </thead>
@@ -39,6 +40,7 @@
             <th scope="row">{{i}}-{{item.id}}</th>
             <td>{{item.name}}</td>
             <td>{{item.title}}</td>
+            <td class="img"><img class="center" [src]="item.avatar | thumbPath"></td>
             <td class="opt">
               <i (click)="showModal(item, 'edit', $event)" class="ion-edit link"></i>
               <i (click)="showModal(item, 'alert', $event);" class="ion-trash-a link"></i>

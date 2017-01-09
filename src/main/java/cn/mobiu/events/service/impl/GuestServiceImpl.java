@@ -77,7 +77,12 @@ public class GuestServiceImpl extends BaseServiceImpl implements GuestService {
 			po = (EvtGuest) get(EvtGuest.class, vo.getId());
 		}
 		
-		BeanUtilEx.copyProperties(po, vo);
+		po.setEventId(vo.getEventId());
+		po.setName(vo.getName());
+		po.setTitle(vo.getTitle());
+		po.setDescr(vo.getDescr());
+		po.setAvatar(vo.getAvatar());
+		
 		saveOrUpdate(po);
 		return po;
 	}

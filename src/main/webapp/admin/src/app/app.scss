@@ -94,6 +94,12 @@ tabset {
   }
 }
 
+table tr td.img {
+  text-align: center;
+  img {
+    height: 30px;
+  }
+}
 .file-upload {
   font-size: 1rem;
 

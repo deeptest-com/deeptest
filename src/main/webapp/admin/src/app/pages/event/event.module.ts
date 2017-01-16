@@ -21,7 +21,6 @@ import { SessionService } from '../../service/session';
 import { ScheduleService } from '../../service/schedule';
 import { GuestService } from '../../service/guest';
 import { ServiceService } from '../../service/service';
-import { AroundService } from '../../service/around';
 
 import { Event } from './event.component';
 import { EventList } from './event-list';
@@ -29,7 +28,6 @@ import { EventEditProperty } from './event-edit/property';
 import { EventEditSchedule } from './event-edit/schedule';
 import { EventEditGuest } from './event-edit/guest';
 import { EventEditService } from './event-edit/service';
-import { EventEditAround } from './event-edit/around';
 
 @NgModule({
   imports: [
@@ -53,8 +51,7 @@ import { EventEditAround } from './event-edit/around';
     EventEditProperty,
     EventEditSchedule,
     EventEditGuest,
-    EventEditService,
-    EventEditAround
+    EventEditService
   ],
   providers: [
     RequestService,
@@ -63,8 +60,7 @@ import { EventEditAround } from './event-edit/around';
     SessionService,
     ScheduleService,
     GuestService,
-    ServiceService,
-    AroundService
+    ServiceService
   ]
 })
 export default class EventModule {}

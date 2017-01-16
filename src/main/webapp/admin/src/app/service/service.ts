@@ -9,7 +9,7 @@ export class ServiceService {
     _api_url = 'service/';
 
     list(eventId: number) {
-        return this._reqService.post(this._api_url + 'list', {eventId: eventId});
+        return this._reqService.post(this._api_url + 'listForEdit', {eventId: eventId});
     }
 
     get(id: number) {
@@ -20,8 +20,8 @@ export class ServiceService {
         return this._reqService.post(this._api_url + 'save', model);
     }
 
-    remove(id: number) {
-      return this._reqService.post(this._api_url + 'remove', {id: id});
+    disable(id: number) {
+      return this._reqService.post(this._api_url + 'disable', {id: id});
     }
 }
 

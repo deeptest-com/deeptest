@@ -31,13 +31,13 @@
               <span class="pointer">{{item.typeName}}</span>
               &nbsp;&nbsp;
               <i (click)="showModal(item, 'edit', $event);" class="ion-edit link"></i>
-              <i (click)="showModal(item, 'alert', $event);" class="ion-trash-a link"></i>
+              <i (click)="disable(item, $event);" class="ion-trash-a link"></i>
             </span>
           </h5>
         </div>
         <div id="collapseOne" class="collapse in" role="tabpanel" aria-labelledby="headingOne">
           <div class="card-block top0">
-            描述
+            {{item.descr}}
           </div>
         </div>
       </div>
@@ -57,21 +57,6 @@
       </div>
       <div class="modal-body">
         <form [formGroup]="form" (ngSubmit)="onFormSubmit()" class="my-validate-form">
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label"><span>姓名</span></label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="name" formControlName="name"
-                     [(ngModel)]="item.name" #name>
-            </div>
-          </div>
-
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label">简介</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="title" formControlName="title"
-                     [(ngModel)]="item.title" #title>
-            </div>
-          </div>
           <div class="form-group row">
             <label class="col-sm-2 col-form-label"><span>描述</span></label>
             <div class="col-sm-10">
@@ -97,33 +82,6 @@
             </div>
           </div>
         </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div bsModal #alertPopup="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" aria-label="Close" (click)="hideModal('edit')">
-          <span aria-hidden="true">&times;</span>
-        </button>
-        <h4 class="modal-title">确认删除?</h4>
-      </div>
-      <div class="modal-body">
-        <div class="center">
-          <button (click)="remove()" class="btn btn-primary btn-with-icon" type="button">
-            <i class="ion-checkmark"></i>
-            确认
-          </button>
-          &nbsp;&nbsp;&nbsp;
-          <button (click)="hideModal('alert')" class="btn btn-default btn-with-icon" type="button">
-            <i class="ion-close-round"></i>
-            取消
-          </button>
-        </div>
       </div>
     </div>
   </div>

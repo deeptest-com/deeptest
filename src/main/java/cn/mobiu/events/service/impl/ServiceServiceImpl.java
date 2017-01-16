@@ -34,6 +34,22 @@ public class ServiceServiceImpl extends BaseServiceImpl implements ServiceServic
         return ls;
     }
     
+    @Override
+    public List<EvtService> listForEdit(Long eventId, ServiceType type) {
+        DetachedCriteria dc = DetachedCriteria.forClass(EvtService.class);
+        dc.add(Restrictions.eq("eventId", eventId));
+        
+        if (type != null) {
+        	dc.add(Restrictions.eq("type", type));
+        }
+        
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc.addOrder(Order.asc("id"));
+        List<EvtService> ls = findAllByCriteria(dc);
+        
+        return ls;
+    }
+    
 	@Override
 	public EvtService save(ServiceVo vo) {
 		if (vo == null) {
@@ -54,9 +70,9 @@ public class ServiceServiceImpl extends BaseServiceImpl implements ServiceServic
 	}
 	
 	@Override
-	public boolean remove(Long id) {
+	public boolean disable(Long id) {
 		EvtService po = (EvtService) get(EvtService.class, id);
-		po.setDeleted(true);
+		po.setDisabled(true);
 		saveOrUpdate(po);
 		
 		return true;

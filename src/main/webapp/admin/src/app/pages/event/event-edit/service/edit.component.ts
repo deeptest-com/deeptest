@@ -95,6 +95,14 @@ export class EventEditService implements OnInit, AfterViewInit {
 
     $event.stopPropagation();
   }
+  disable(item: any):void {
+    let that = this;
+    that._serviceService.disable(that.item.id).subscribe((json:any) => {
+      if (json.code = 1) {
+        that.loadData();
+      }
+    });
+  }
 
   onModalShow():void {
     let that = this;
@@ -115,7 +123,7 @@ export class EventEditService implements OnInit, AfterViewInit {
   remove():void {
     let that = this;
 
-    that._serviceService.remove(that.item.id).subscribe((json:any) => {
+    that._serviceService.disable(that.item.id).subscribe((json:any) => {
       if (json.code = 1) {
         that.hideModal();
         that.loadData();

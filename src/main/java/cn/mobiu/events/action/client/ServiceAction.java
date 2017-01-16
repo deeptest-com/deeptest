@@ -57,6 +57,30 @@ public class ServiceAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "listForEdit", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> listForEdit(HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		JSONObject req = reqJson(request);
+		String eventId = req.getString("eventId");
+		
+		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
+		
+		List<EvtService> pos = serviceService.listForEdit(Long.valueOf(eventId), null);
+        List<ServiceVo> vos = new LinkedList<ServiceVo>();
+        for (EvtService po: pos) {
+        	ServiceVo vo = new ServiceVo();
+        	BeanUtilEx.copyProperties(vo, po);
+        	vo.setTypeName(po.getType().getName());
+        	vos.add(vo);
+        }
+
+		ret.put("services", vos);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
 
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "get", method = RequestMethod.POST)
@@ -93,13 +117,13 @@ public class ServiceAction extends BaseAction {
 	}
 	
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "remove", method = RequestMethod.POST)
+	@RequestMapping(value = "disable", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject to) {
+	public Map<String, Object> disable(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
-		boolean success = serviceService.remove(to.getLong("id"));
+		boolean success = serviceService.disable(to.getLong("id"));
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

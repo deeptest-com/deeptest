@@ -11,9 +11,10 @@ import cn.mobiu.events.vo.ServiceVo;
 public interface ServiceService extends BaseService {
 
 	List<EvtService> list(Long eventId, ServiceType type);
+	List<EvtService> listForEdit(Long eventId, ServiceType type);
 
 	EvtService save(ServiceVo vo);
 
-	boolean remove(Long id);
+	boolean disable(Long id);
 
 }

@@ -14,9 +14,6 @@
         </div>
       </div>
       <div class="buttons">
-        <button (click)="create($event)" type="button" class="btn btn-primary btn-with-icon btn-sm">
-          <i class="ion-plus-circled"></i>新建
-        </button>
         <button (click)="back()" type="button" class="btn btn-default btn-with-icon btn-sm back">
           <i class="ion-backspace"></i>返回
         </button>
@@ -25,39 +22,23 @@
   </div>
 
   <div class="row">
-    <div class="card card-block no-border">
-      <div class="table-responsive">
-        <table class="table table-hover table-striped">
-          <thead class="thead-inverse">
-          <tr>
-            <th>编号</th>
-            <th>姓名</th>
-            <th>简介</th>
-            <th>头像</th>
-            <th>操作</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr *ngFor="let item of items; let i = index">
-            <th scope="row">{{i}}-{{item.id}}</th>
-            <td>{{item.name}}</td>
-            <td>{{item.title}}</td>
-            <td class="img"><img class="center" [src]="item.avatar | thumbPath"></td>
-            <td class="opt">
-              <i (click)="showModal(item, 'edit', $event)" class="ion-edit link"></i>
+    <div id="accordion" role="tablist" aria-multiselectable="true">
+      <div *ngFor="let item of items; let i = index" class="card">
+        <div class="card-header no-border" role="tab" id="headingOne">
+          <h5 class="mb-0">
+            <span data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true"
+                  aria-controls="collapseOne">
+              <span class="pointer">{{item.typeName}}</span>
+              &nbsp;&nbsp;
+              <i (click)="showModal(item, 'edit', $event);" class="ion-edit link"></i>
               <i (click)="showModal(item, 'alert', $event);" class="ion-trash-a link"></i>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-
-        <div class="page-container">
-          <pagination [totalItems]="totalItems" [(ngModel)]="currentPage"
-                      [maxSize]="maxSize" [itemsPerPage]="itemsPerPage" class="pagination-sm"
-                      [boundaryLinks]="true" [rotate]="false"
-                      (numPages)="numPages = $event" (pageChanged)="pageChanged($event)"
-                      previousText="上一页" nextText="下一页" firstText="第一页" lastText="最后页">
-          </pagination>
+            </span>
+          </h5>
+        </div>
+        <div id="collapseOne" class="collapse in" role="tabpanel" aria-labelledby="headingOne">
+          <div class="card-block top0">
+            描述
+          </div>
         </div>
       </div>
     </div>
@@ -76,47 +57,6 @@
       </div>
       <div class="modal-body">
         <form [formGroup]="form" (ngSubmit)="onFormSubmit()" class="my-validate-form">
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label"><span>头像</span></label>
-            <div class="col-sm-10 file-upload">
-              <div class="row">
-                <div class="col-sm-2">
-                  <div class="image">
-                    <img class="middle" [src]="item.avatar | imgPath">
-                  </div>
-                </div>
-                <div class="col-sm-10">
-                  <div ng2FileDrop
-                       [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
-                       (fileOver)="fileOver($event)"
-                       [uploader]="uploader"
-                       class="well my-drop-zone">
-                    拖动到此处上传
-                  </div>
-
-                  <div class="upload-row">
-                    <div class="upload-input-wrapper">
-                        <span class="upload-input-container">
-                            <input id="upload-input" name="upload" type="file" ng2FileSelect [uploader]="uploader"/>
-                        </span>
-                        <span class="upload-button-container">
-                            <button (click)='selectFile()' type="button" class="btn btn-secondary">选择APK文件...</button>
-                        </span>
-                    </div>
-
-                    <div class="progress-wrapper" *ngIf="uploader.queue.length">
-                      <div class="progress-bar" role="progressbar"
-                           [ngStyle]="{ 'width': uploader.queue[0].progress + '%' }"></div>
-                    </div>
-                    <div class="upload-file-name" *ngIf="!uploader.isUploading && uploadedFile">
-                      {{uploadedFile.origName}} 上传成功
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
           <div class="form-group row">
             <label class="col-sm-2 col-form-label"><span>姓名</span></label>
             <div class="col-sm-10">

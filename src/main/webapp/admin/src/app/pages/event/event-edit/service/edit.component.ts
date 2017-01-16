@@ -35,25 +35,8 @@ export class EventEditService implements OnInit, AfterViewInit {
   form: any;
   popupType: string;
   isSubmitted: boolean;
-  uploadedFile: any;
-  hasBaseDropZoneOver:boolean = false;
-
-  totalItems:number = 0;
-  currentPage:number = 1;
-  itemsPerPage:number = 6;
 
   tabModel: string = 'service';
-
-  private uploaderOptions:FileUploaderOptions = {
-    url: Utils.getUploadUrl(),
-    authToken: CONSTANT.TOKEN,
-    autoUpload: true,
-    filters: [{name: 'upload', fn: (item:any) => {
-      console.log(item.name);
-      return true; // item.size < 100 * 1024 * 1024 || item.name.indexOf('.apk') > -1;
-    }}]
-  };
-  public uploader: FileUploader;
 
   constructor(private _router: Router, private _route: ActivatedRoute, private fb: FormBuilder,
               private _serviceService: ServiceService) {
@@ -72,29 +55,6 @@ export class EventEditService implements OnInit, AfterViewInit {
         that.loadData();
     }
     that.buildForm();
-
-    that.uploader = new FileUploader(that.uploaderOptions);
-    that.uploader.onCompleteItem = (item:any, response:any, status:any, headers:any) => {
-      this.onUploadCompleteItem(item, response, status, headers);
-    };
-    console.log(that.uploader);
-  }
-
-  selectFile():void {
-    this.uploader.clearQueue();
-    jQuery('#upload-input').click();
-  }
-  fileOver(e:any):void {
-    this.hasBaseDropZoneOver = e;
-    // console.log(this.uploader.queue);
-  }
-  onUploadCompleteItem (item:any, response:any, status:any, headers:any) {
-    let res = JSON.parse(response);
-    console.log(res);
-    this.uploadedFile = res;
-    this.item.avatar = res.uploadPath;
-    this.uploader.clearQueue();
-    this.isSubmitted = false;
   }
 
   ngAfterViewInit() {
@@ -105,21 +65,11 @@ export class EventEditService implements OnInit, AfterViewInit {
   loadData() {
    let that = this;
 
-   that._serviceService.list(that.itemsPerPage, that.currentPage, that.eventId).subscribe((json:any) => {
-     that.totalItems = json.totalItems;
+   that._serviceService.list(that.eventId).subscribe((json:any) => {
      that.items = json.services;
    });
   }
 
-  create($event): void {
-    let that = this;
-    that.showModal({eventId: that.eventId}, 'edit', $event);
-  }
-  pageChanged(event:any):void {
-    let that = this;
-    that.currentPage = event.page;
-    that.loadData();
-  }
   back() {
     let that = this;
 

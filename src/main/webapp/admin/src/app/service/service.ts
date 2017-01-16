@@ -8,8 +8,8 @@ export class ServiceService {
     constructor(private _reqService: RequestService) { }
     _api_url = 'service/';
 
-    list(itemsPerPage: number, currentPage: number, eventId: number) {
-        return this._reqService.post(this._api_url + 'list', {itemsPerPage: itemsPerPage, currentPage: currentPage, eventId: eventId});
+    list(eventId: number) {
+        return this._reqService.post(this._api_url + 'list', {eventId: eventId});
     }
 
     get(id: number) {

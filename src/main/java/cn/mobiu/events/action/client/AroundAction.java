@@ -14,13 +14,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONObject;
+
 import cn.mobiu.events.constants.Constant;
 import cn.mobiu.events.entity.EvtAround;
 import cn.mobiu.events.entity.EvtClient;
+import cn.mobiu.events.entity.EvtGuest;
 import cn.mobiu.events.service.AroundService;
 import cn.mobiu.events.util.AuthPassport;
 import cn.mobiu.events.util.BeanUtilEx;
 import cn.mobiu.events.vo.AroundVo;
+import cn.mobiu.events.vo.GuestVo;
+import cn.mobiu.events.vo.Page;
 
 
 @Controller
@@ -44,6 +49,31 @@ public class AroundAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-
+	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "save", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody AroundVo vo) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
+		EvtAround around = arroundService.save(vo);
+		
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "remove", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject to) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
+		boolean success = arroundService.remove(to.getLong("id"));
+		
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
 
 }

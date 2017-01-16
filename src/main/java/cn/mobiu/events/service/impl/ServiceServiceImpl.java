@@ -7,9 +7,12 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
+import cn.mobiu.events.entity.EvtGuest;
 import cn.mobiu.events.entity.EvtService;
 import cn.mobiu.events.entity.EvtService.ServiceType;
 import cn.mobiu.events.service.ServiceService;
+import cn.mobiu.events.vo.GuestVo;
+import cn.mobiu.events.vo.ServiceVo;
 
 @Service
 public class ServiceServiceImpl extends BaseServiceImpl implements ServiceService {
@@ -30,5 +33,33 @@ public class ServiceServiceImpl extends BaseServiceImpl implements ServiceServic
         
         return ls;
     }
+    
+	@Override
+	public EvtService save(ServiceVo vo) {
+		if (vo == null) {
+			return null;
+		}
+		
+		EvtService po = new EvtService();
+		if (vo.getId() != null) {
+			po = (EvtService) get(EvtService.class, vo.getId());
+		}
+		
+		po.setEventId(vo.getEventId());
+		po.setSubject(vo.getSubject());
+		po.setDescr(vo.getDescr());
+		
+		saveOrUpdate(po);
+		return po;
+	}
+	
+	@Override
+	public boolean remove(Long id) {
+		EvtService po = (EvtService) get(EvtService.class, id);
+		po.setDeleted(true);
+		saveOrUpdate(po);
+		
+		return true;
+	}
     
 }

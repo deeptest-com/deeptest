@@ -10,7 +10,7 @@ import {Validate} from '../../../../service/validate';
 import { CONSTANT } from '../../../../utils/constant';
 import { Utils } from '../../../../utils/utils';
 import { EventService } from '../../../../service/event';
-import { GuestService } from '../../../../service/guest';
+import { AroundService } from '../../../../service/around';
 
 require('bootstrap-datepicker');
 require('bootstrap-timepicker');
@@ -18,13 +18,12 @@ require('bootstrap-timepicker');
 declare var jQuery;
 
 @Component({
-  selector: 'event-edit-guest',
+  selector: 'event-edit-around',
   encapsulation: ViewEncapsulation.None,
   styles: [require('./edit.scss')],
-
   template: require('./edit.html')
 })
-export class EventEditGuest implements OnInit, AfterViewInit {
+export class EventEditAround implements OnInit, AfterViewInit {
   @ViewChild('editPopup') public editPopup:ModalDirective;
   @ViewChild('alertPopup') public alertPopup:ModalDirective;
 
@@ -42,7 +41,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   currentPage:number = 1;
   itemsPerPage:number = 6;
 
-  tabModel: string = 'guest';
+  tabModel: string = 'around';
 
   private uploaderOptions:FileUploaderOptions = {
     url: Utils.getUploadUrl(),
@@ -56,7 +55,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   public uploader: FileUploader;
 
   constructor(private _router: Router, private _route: ActivatedRoute, private fb: FormBuilder,
-              private _guestService: GuestService) {
+              private _aroundService: AroundService) {
 
     let that = this;
   }
@@ -105,9 +104,9 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   loadData() {
    let that = this;
 
-   that._guestService.list(that.itemsPerPage, that.currentPage, that.eventId).subscribe((json:any) => {
+   that._aroundService.list(that.itemsPerPage, that.currentPage, that.eventId).subscribe((json:any) => {
      that.totalItems = json.totalItems;
-     that.items = json.guests;
+     that.items = json.arounds;
    });
   }
 
@@ -154,7 +153,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   onFormSubmit() {
     let that = this;
 
-    that._guestService.save(that.item).subscribe((json:any) => {
+    that._aroundService.save(that.item).subscribe((json:any) => {
       if (json.code = 1) {
         that.hideModal();
         that.loadData();
@@ -165,7 +164,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   remove():void {
     let that = this;
 
-    that._guestService.remove(that.item.id).subscribe((json:any) => {
+    that._aroundService.remove(that.item.id).subscribe((json:any) => {
       if (json.code = 1) {
         that.hideModal();
         that.loadData();

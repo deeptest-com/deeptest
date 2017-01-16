@@ -62,12 +62,13 @@ public class GuestAction extends BaseAction {
 	public Map<String, Object> listByPage(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
+		long eventId = json.getLong("eventId");
 		int currentPage = json.getInteger("currentPage") == null? 0: json.getInteger("currentPage") - 1;
 		int itemsPerPage = json.getInteger("itemsPerPage") == null? Constant.PAGE_SIZE: json.getInteger("itemsPerPage");
 		
 		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
 		
-		Page page = guestService.list(client.getCompanyId(), currentPage, itemsPerPage);
+		Page page = guestService.list(eventId, currentPage, itemsPerPage);
 		List<GuestVo> vos = guestService.genVos(page.getItems());
         
 		ret.put("totalItems", page.getTotal());

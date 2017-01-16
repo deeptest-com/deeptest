@@ -15,4 +15,8 @@ public interface AroundService extends BaseService {
 
 	AroundVo genVo(EvtAround po);
 
+	EvtAround save(AroundVo vo);
+
+	boolean remove(Long id);
+
 }

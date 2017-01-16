@@ -7,6 +7,8 @@ public class ServiceVo extends BaseVo {
     private String descr;
     private String type;
     private String typeName;
+    private Long eventId;
+    
 	public String getSubject() {
 		return subject;
 	}
@@ -30,6 +32,12 @@ public class ServiceVo extends BaseVo {
 	}
 	public void setTypeName(String typeName) {
 		this.typeName = typeName;
+	}
+	public Long getEventId() {
+		return eventId;
+	}
+	public void setEventId(Long eventId) {
+		this.eventId = eventId;
 	}
 
 }

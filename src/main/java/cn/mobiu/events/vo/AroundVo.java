@@ -6,6 +6,8 @@ public class AroundVo extends BaseVo {
 	private String subject;
     private String descr;
     private String type;
+    private Long eventId;
+    
 	public String getSubject() {
 		return subject;
 	}
@@ -23,6 +25,12 @@ public class AroundVo extends BaseVo {
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+	public Long getEventId() {
+		return eventId;
+	}
+	public void setEventId(Long eventId) {
+		this.eventId = eventId;
 	}
 
 }

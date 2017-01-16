@@ -9,10 +9,12 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
 import cn.mobiu.events.entity.EvtAround;
+import cn.mobiu.events.entity.EvtGuest;
 import cn.mobiu.events.entity.EvtAround.AroundType;
 import cn.mobiu.events.service.AroundService;
 import cn.mobiu.events.util.BeanUtilEx;
 import cn.mobiu.events.vo.AroundVo;
+import cn.mobiu.events.vo.GuestVo;
 
 @Service
 public class AroundServiceImpl extends BaseServiceImpl implements AroundService {
@@ -33,6 +35,34 @@ public class AroundServiceImpl extends BaseServiceImpl implements AroundService 
         
         return ls;
     }
+    
+	@Override
+	public EvtAround save(AroundVo vo) {
+		if (vo == null) {
+			return null;
+		}
+		
+		EvtAround po = new EvtAround();
+		if (vo.getId() != null) {
+			po = (EvtAround) get(EvtAround.class, vo.getId());
+		}
+		
+		po.setEventId(vo.getEventId());
+		po.setSubject(vo.getSubject());
+		po.setDescr(vo.getDescr());
+		
+		saveOrUpdate(po);
+		return po;
+	}
+	
+	@Override
+	public boolean remove(Long id) {
+		EvtAround po = (EvtAround) get(EvtAround.class, id);
+		po.setDeleted(true);
+		saveOrUpdate(po);
+		
+		return true;
+	}
 
 	@Override
 	public List<AroundVo> genVos(List<EvtAround> pos) {

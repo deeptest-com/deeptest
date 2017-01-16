@@ -27,7 +27,7 @@
           <h5 class="mb-0">
             <span data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true"
                   aria-controls="collapseOne">
-              <span class="pointer">{{item.typeName}}</span>
+              <span [class.text-deleted]="item.disabled" class="pointer">{{item.typeName}}</span>
               &nbsp;&nbsp;
               <i (click)="showModal(item, 'edit', $event);" class="ion-edit link"></i>
               <i *ngIf="!item.disabled" (click)="disable(item, 'disable', $event);" class="ion-eye-disabled link"></i>

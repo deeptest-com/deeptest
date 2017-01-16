@@ -129,8 +129,6 @@ export class EventEditService implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
       {
-        'name': [that.item.name, [Validators.required]],
-        'title': [that.item.title, [Validators.required]],
         'descr': [that.item.descr, [Validators.required]]
       }, {}
     );
@@ -146,12 +144,6 @@ export class EventEditService implements OnInit, AfterViewInit {
 
   formErrors = [];
   validateMsg = {
-    'name': {
-      'required': '姓名不能为空'
-    },
-    'title': {
-      'required': '简介不能为空'
-    },
     'descr': {
       'required': '描述不能为空'
     }

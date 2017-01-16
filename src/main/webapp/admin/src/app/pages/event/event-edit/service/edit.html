@@ -10,7 +10,6 @@
                  uncheckable>会议日程</label>
           <label (click)="goto('guest')" class="btn btn-success" [(ngModel)]="tabModel" btnRadio="service" uncheckable>会议嘉宾</label>
           <label (click)="goto('service')" class="btn btn-success" [(ngModel)]="tabModel" btnRadio="guest" uncheckable>会议服务</label>
-          <label (click)="goto('around')" class="btn btn-success" [(ngModel)]="tabModel" btnRadio="guest" uncheckable>周边场所</label>
         </div>
       </div>
       <div class="buttons">
@@ -31,11 +30,12 @@
               <span class="pointer">{{item.typeName}}</span>
               &nbsp;&nbsp;
               <i (click)="showModal(item, 'edit', $event);" class="ion-edit link"></i>
-              <i (click)="disable(item, $event);" class="ion-trash-a link"></i>
+              <i *ngIf="!item.disabled" (click)="disable(item, 'disable', $event);" class="ion-eye-disabled link"></i>
+              <i *ngIf="item.disabled" (click)="disable(item, 'enable', $event);" class="ion-eye link"></i>
             </span>
           </h5>
         </div>
-        <div id="collapseOne" class="collapse in" role="tabpanel" aria-labelledby="headingOne">
+        <div [collapse]="item.disabled" id="collapseOne" class="collapse in" role="tabpanel" aria-labelledby="headingOne">
           <div class="card-block top0">
             {{item.descr}}
           </div>

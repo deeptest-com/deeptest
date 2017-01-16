@@ -122,8 +122,11 @@ public class ServiceAction extends BaseAction {
 	public Map<String, Object> disable(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
+		long serviceId = to.getLong("id");
+		String action = to.getString("action");
+		
 		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
-		boolean success = serviceService.disable(to.getLong("id"));
+		boolean success = serviceService.disablePers(serviceId, action);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

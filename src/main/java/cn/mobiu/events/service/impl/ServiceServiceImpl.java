@@ -44,6 +44,7 @@ public class ServiceServiceImpl extends BaseServiceImpl implements ServiceServic
         }
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc.addOrder(Order.asc("disabled"));
         dc.addOrder(Order.asc("id"));
         List<EvtService> ls = findAllByCriteria(dc);
         
@@ -70,9 +71,13 @@ public class ServiceServiceImpl extends BaseServiceImpl implements ServiceServic
 	}
 	
 	@Override
-	public boolean disable(Long id) {
+	public boolean disablePers(Long id, String action) {
 		EvtService po = (EvtService) get(EvtService.class, id);
-		po.setDisabled(true);
+		if ("disable".equals(action)) {
+			po.setDisabled(true);
+		} else {
+			po.setDisabled(false);
+		}
 		saveOrUpdate(po);
 		
 		return true;

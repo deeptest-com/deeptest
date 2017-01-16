@@ -1,16 +1,9 @@
-import { Component,ViewEncapsulation, Pipe, OnInit, AfterViewInit, ViewChild, Input, ElementRef, Renderer } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router, ActivatedRoute, Params } from '@angular/router';
-
-import { DropdownModule} from 'ng2-bootstrap/ng2-bootstrap';
-import { ModalDirective } from 'ng2-bootstrap';
-import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
-
-import {Validate} from '../../../../service/validate';
-import { CONSTANT } from '../../../../utils/constant';
-import { Utils } from '../../../../utils/utils';
-import { EventService } from '../../../../service/event';
-import { ServiceService } from '../../../../service/service';
+import {Component, ViewEncapsulation, OnInit, AfterViewInit, ViewChild} from "@angular/core";
+import {FormBuilder, Validators} from "@angular/forms";
+import {Router, ActivatedRoute, Params} from "@angular/router";
+import {ModalDirective} from "ng2-bootstrap";
+import {Validate} from "../../../../service/validate";
+import {ServiceService} from "../../../../service/service";
 
 require('bootstrap-datepicker');
 require('bootstrap-timepicker');
@@ -28,18 +21,18 @@ export class EventEditService implements OnInit, AfterViewInit {
   @ViewChild('editPopup') public editPopup:ModalDirective;
   @ViewChild('alertPopup') public alertPopup:ModalDirective;
 
-  eventId: number;
+  eventId:number;
 
-  items: any;
-  item: any = {};
-  form: any;
-  popupType: string;
-  isSubmitted: boolean;
+  items:any;
+  item:any = {};
+  form:any;
+  popupType:string;
+  isSubmitted:boolean;
 
-  tabModel: string = 'service';
+  tabModel:string = 'service';
 
-  constructor(private _router: Router, private _route: ActivatedRoute, private fb: FormBuilder,
-              private _serviceService: ServiceService) {
+  constructor(private _router:Router, private _route:ActivatedRoute, private fb:FormBuilder,
+              private _serviceService:ServiceService) {
 
     let that = this;
   }
@@ -47,12 +40,12 @@ export class EventEditService implements OnInit, AfterViewInit {
   ngOnInit() {
     let that = this;
 
-    that._route.params.forEach((params: Params) => {
+    that._route.params.forEach((params:Params) => {
       that.eventId = +params['id'];
     });
 
     if (that.eventId) {
-        that.loadData();
+      that.loadData();
     }
     that.buildForm();
   }
@@ -63,11 +56,11 @@ export class EventEditService implements OnInit, AfterViewInit {
   }
 
   loadData() {
-   let that = this;
+    let that = this;
 
-   that._serviceService.list(that.eventId).subscribe((json:any) => {
-     that.items = json.services;
-   });
+    that._serviceService.list(that.eventId).subscribe((json:any) => {
+      that.items = json.services;
+    });
   }
 
   back() {
@@ -75,13 +68,14 @@ export class EventEditService implements OnInit, AfterViewInit {
 
     that._router.navigateByUrl("/pages/event/list");
   }
+
   goto(tabModel) {
     let that = this;
 
     that._router.navigateByUrl('/pages/event/edit/' + that.eventId + '/' + tabModel);
   }
 
-  showModal(item: any, popupType: string, $event:any):void {
+  showModal(item:any, popupType:string, $event:any):void {
     let that = this;
 
     that.popupType = popupType;
@@ -95,13 +89,15 @@ export class EventEditService implements OnInit, AfterViewInit {
 
     $event.stopPropagation();
   }
-  disable(item: any):void {
+
+  disable(item:any, action: string, $event:any):void {
     let that = this;
-    that._serviceService.disable(that.item.id).subscribe((json:any) => {
+    that._serviceService.disable(item.id, action).subscribe((json:any) => {
       if (json.code = 1) {
         that.loadData();
       }
     });
+    $event.stopPropagation();
   }
 
   onModalShow():void {
@@ -120,17 +116,6 @@ export class EventEditService implements OnInit, AfterViewInit {
     });
   }
 
-  remove():void {
-    let that = this;
-
-    that._serviceService.disable(that.item.id).subscribe((json:any) => {
-      if (json.code = 1) {
-        that.hideModal();
-        that.loadData();
-      }
-    });
-  }
-
   hideModal():void {
     let that = this;
     if (that.popupType == 'edit') {
@@ -140,20 +125,21 @@ export class EventEditService implements OnInit, AfterViewInit {
     }
   }
 
-  buildForm(): void {
+  buildForm():void {
     let that = this;
     this.form = this.fb.group(
-        {
-          'name': [that.item.name, [Validators.required]],
-          'title': [that.item.title, [Validators.required]],
-          'descr': [that.item.descr, [Validators.required]]
-        }, {}
+      {
+        'name': [that.item.name, [Validators.required]],
+        'title': [that.item.title, [Validators.required]],
+        'descr': [that.item.descr, [Validators.required]]
+      }, {}
     );
 
     this.form.valueChanges.subscribe(data => this.onValueChanged(data));
     this.onValueChanged();
   }
-  onValueChanged(data?: any) {
+
+  onValueChanged(data?:any) {
     let that = this;
     that.formErrors = Validate.genValidateInfo(that.form, that.validateMsg, []);
   }
@@ -161,13 +147,13 @@ export class EventEditService implements OnInit, AfterViewInit {
   formErrors = [];
   validateMsg = {
     'name': {
-      'required':      '姓名不能为空'
+      'required': '姓名不能为空'
     },
     'title': {
-      'required':      '简介不能为空'
+      'required': '简介不能为空'
     },
     'descr': {
-      'required':      '描述不能为空'
+      'required': '描述不能为空'
     }
   };
 

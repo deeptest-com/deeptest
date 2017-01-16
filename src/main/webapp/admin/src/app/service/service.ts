@@ -20,8 +20,8 @@ export class ServiceService {
         return this._reqService.post(this._api_url + 'save', model);
     }
 
-    disable(id: number) {
-      return this._reqService.post(this._api_url + 'disable', {id: id});
+    disable(id: number, action:string) {
+      return this._reqService.post(this._api_url + 'disable', {id: id, action: action});
     }
 }
 

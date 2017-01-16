@@ -15,6 +15,6 @@ public interface ServiceService extends BaseService {
 
 	EvtService save(ServiceVo vo);
 
-	boolean disable(Long id);
+	boolean disablePers(Long id, String action);
 
 }

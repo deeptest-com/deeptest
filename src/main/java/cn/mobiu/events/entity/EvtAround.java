@@ -37,14 +37,14 @@ public class EvtAround extends BaseEntity {
     private Long creatorId;
 
     public static enum AroundType {
-        food("food", ""),
-        accommodation("accommodation"),
-        transportation("transportation"),
-        tour("tour"),
-        shopping("shopping"),
-        entertainment("entertainment");
+        food("food", "吃"),
+        accommodation("accommodation", "住"),
+        transportation("transportation", "行"),
+        tour("tour", "游"),
+        shopping("shopping", "购"),
+        entertainment("entertainment", "娱");
 
-        private ServiceType(String textVal, String name) {
+        private AroundType(String textVal, String name) {
             this.textVal = textVal;
             this.name = name;
         }

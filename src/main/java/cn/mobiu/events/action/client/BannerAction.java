@@ -1,7 +1,6 @@
 package cn.mobiu.events.action.client;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,63 +16,58 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.mobiu.events.constants.Constant;
-import cn.mobiu.events.entity.EvtAround;
+import cn.mobiu.events.entity.EvtBizcard;
 import cn.mobiu.events.entity.EvtClient;
-import cn.mobiu.events.entity.EvtGuest;
-import cn.mobiu.events.service.AroundService;
+import cn.mobiu.events.service.BannerService;
+import cn.mobiu.events.service.BizcardService;
+import cn.mobiu.events.service.DocumentService;
 import cn.mobiu.events.util.AuthPassport;
 import cn.mobiu.events.util.BeanUtilEx;
-import cn.mobiu.events.vo.AroundVo;
+import cn.mobiu.events.vo.BannerVo;
+import cn.mobiu.events.vo.BizcardVo;
+import cn.mobiu.events.vo.DocumentVo;
 import cn.mobiu.events.vo.GuestVo;
 import cn.mobiu.events.vo.Page;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "around/")
-public class AroundAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_CLIENT + "banner/")
+public class BannerAction extends BaseAction {
 	@Autowired
-	AroundService arroundService;
+	BannerService bannerService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> list(HttpServletRequest request, @RequestBody Map<String, Object> json) {
+	public Map<String, Object> list(HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-
-		String eventId = json.get("eventId").toString();
+		JSONObject req = reqJson(request);
+		String eventId = req.getString("eventId");
 		
-		List<EvtAround> pos = arroundService.list(Long.valueOf(eventId), null);
-		List<AroundVo> vos = arroundService.genVos(pos);
+		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
 
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "listByPage", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> listByPage(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		long eventId = json.getLong("eventId");
+		int currentPage = json.getInteger("currentPage") == null? 0: json.getInteger("currentPage") - 1;
+		int itemsPerPage = json.getInteger("itemsPerPage") == null? Constant.PAGE_SIZE: json.getInteger("itemsPerPage");
+		
+		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
+		
+		Page page = bannerService.listByPage(eventId, currentPage, itemsPerPage);
+		List<BannerVo> vos = bannerService.genVos(page.getItems());
+        
+		ret.put("totalItems", page.getTotal());
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-	
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest request, @RequestBody AroundVo vo) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
-		EvtAround around = arroundService.save(vo);
-		
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-	
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "remove", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject to) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
-		boolean success = arroundService.remove(to.getLong("id"));
-		
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
 }

@@ -8,38 +8,36 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
+import cn.mobiu.events.entity.EvtBanner;
 import cn.mobiu.events.entity.EvtDocument;
 import cn.mobiu.events.entity.EvtDocument.DocType;
+import cn.mobiu.events.service.BannerService;
 import cn.mobiu.events.service.DocumentService;
 import cn.mobiu.events.util.BeanUtilEx;
+import cn.mobiu.events.vo.BannerVo;
 import cn.mobiu.events.vo.DocumentVo;
 import cn.mobiu.events.vo.Page;
 
 @Service
-public class DocumentServiceImpl extends BaseServiceImpl implements DocumentService {
+public class BannerServiceImpl extends BaseServiceImpl implements BannerService {
 
     @Override
-    public List<EvtDocument> listByEvent(Long eventId, DocType type) {
-        DetachedCriteria dc = DetachedCriteria.forClass(EvtDocument.class);
+    public List<EvtBanner> listByEvent(Long eventId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(EvtBanner.class);
         dc.add(Restrictions.eq("eventId", eventId));
-        dc.add(Restrictions.eq("docType", type));
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         dc.addOrder(Order.asc("id"));
-        List<EvtDocument> docPos = findAllByCriteria(dc);
+        List<EvtBanner> docPos = findAllByCriteria(dc);
         
         return docPos;
     }
     
 	@Override
-	public Page listByPage(long eventId, int currentPage, int itemsPerPage, DocType type) {
-        DetachedCriteria dc = DetachedCriteria.forClass(EvtDocument.class);
+	public Page listByPage(long eventId, int currentPage, int itemsPerPage) {
+        DetachedCriteria dc = DetachedCriteria.forClass(EvtBanner.class);
         dc.add(Restrictions.eq("eventId", eventId));
-        
-        if (type != null) {
-        	dc.add(Restrictions.eq("docType", type));
-        }
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
@@ -50,18 +48,18 @@ public class DocumentServiceImpl extends BaseServiceImpl implements DocumentServ
 	}
 
 	@Override
-	public List<DocumentVo> genVos(List<EvtDocument> pos) {
-        List<DocumentVo> vos = new LinkedList<DocumentVo>();
-        for (EvtDocument po: pos) {
-        	DocumentVo vo = genVo(po);
+	public List<BannerVo> genVos(List<EvtBanner> pos) {
+        List<BannerVo> vos = new LinkedList<BannerVo>();
+        for (EvtBanner po: pos) {
+        	BannerVo vo = genVo(po);
         	vos.add(vo);
         }
 		return vos;
 	}
 	@Override
-	public DocumentVo genVo(EvtDocument po) {
+	public BannerVo genVo(EvtBanner po) {
 
-    	DocumentVo vo = new DocumentVo();
+		BannerVo vo = new BannerVo();
     	BeanUtilEx.copyProperties(vo, po);
 
 		return vo;

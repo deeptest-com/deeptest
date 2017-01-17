@@ -10,7 +10,7 @@ import {Validate} from '../../../../service/validate';
 import { CONSTANT } from '../../../../utils/constant';
 import { Utils } from '../../../../utils/utils';
 import { EventService } from '../../../../service/event';
-import { GuestService } from '../../../../service/guest';
+import { DocumentService } from '../../../../service/document';
 
 declare var jQuery;
 
@@ -21,7 +21,7 @@ declare var jQuery;
 
   template: require('./edit.html')
 })
-export class EventEditGuest implements OnInit, AfterViewInit {
+export class EventEditDocument implements OnInit, AfterViewInit {
   @ViewChild('editPopup') public editPopup:ModalDirective;
   @ViewChild('alertPopup') public alertPopup:ModalDirective;
 
@@ -53,7 +53,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   public uploader: FileUploader;
 
   constructor(private _router: Router, private _route: ActivatedRoute, private fb: FormBuilder,
-              private _guestService: GuestService) {
+              private _ducumentService: DocumentService) {
 
     let that = this;
   }
@@ -102,7 +102,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   loadData() {
    let that = this;
 
-   that._guestService.list(that.itemsPerPage, that.currentPage, that.eventId).subscribe((json:any) => {
+   that._ducumentService.list(that.itemsPerPage, that.currentPage, that.eventId).subscribe((json:any) => {
      that.totalItems = json.totalItems;
      that.items = json.guests;
    });
@@ -151,7 +151,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   onFormSubmit() {
     let that = this;
 
-    that._guestService.save(that.item).subscribe((json:any) => {
+    that._ducumentService.save(that.item).subscribe((json:any) => {
       if (json.code = 1) {
         that.hideModal();
         that.loadData();
@@ -162,7 +162,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   remove():void {
     let that = this;
 
-    that._guestService.remove(that.item.id).subscribe((json:any) => {
+    that._ducumentService.remove(that.item.id).subscribe((json:any) => {
       if (json.code = 1) {
         that.hideModal();
         that.loadData();

@@ -10,12 +10,14 @@ import org.springframework.stereotype.Service;
 
 import cn.mobiu.events.entity.EvtBanner;
 import cn.mobiu.events.entity.EvtDocument;
+import cn.mobiu.events.entity.EvtGuest;
 import cn.mobiu.events.entity.EvtDocument.DocType;
 import cn.mobiu.events.service.BannerService;
 import cn.mobiu.events.service.DocumentService;
 import cn.mobiu.events.util.BeanUtilEx;
 import cn.mobiu.events.vo.BannerVo;
 import cn.mobiu.events.vo.DocumentVo;
+import cn.mobiu.events.vo.GuestVo;
 import cn.mobiu.events.vo.Page;
 
 @Service
@@ -45,6 +47,34 @@ public class BannerServiceImpl extends BaseServiceImpl implements BannerService 
         Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
         
         return page;
+	}
+	
+	@Override
+	public EvtBanner save(BannerVo vo) {
+		if (vo == null) {
+			return null;
+		}
+		
+		EvtBanner po = new EvtBanner();
+		if (vo.getId() != null) {
+			po = (EvtBanner) get(EvtBanner.class, vo.getId());
+		}
+		
+		po.setEventId(vo.getEventId());
+		po.setTitle(vo.getTitle());
+		po.setUri(vo.getUri());
+		
+		saveOrUpdate(po);
+		return po;
+	}
+	
+	@Override
+	public boolean remove(Long id) {
+		EvtBanner po = (EvtBanner) get(EvtBanner.class, id);
+		po.setDeleted(true);
+		saveOrUpdate(po);
+		
+		return true;
 	}
 
 	@Override

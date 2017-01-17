@@ -15,5 +15,7 @@ public interface DocumentService extends BaseService {
 	List<DocumentVo> genVos(List<EvtDocument> docPos);
 
 	DocumentVo genVo(EvtDocument po);
+	boolean remove(Long id);
+	EvtDocument save(DocumentVo vo);
 
 }

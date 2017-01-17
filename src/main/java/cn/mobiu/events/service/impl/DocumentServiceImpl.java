@@ -9,10 +9,12 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
 import cn.mobiu.events.entity.EvtDocument;
+import cn.mobiu.events.entity.EvtGuest;
 import cn.mobiu.events.entity.EvtDocument.DocType;
 import cn.mobiu.events.service.DocumentService;
 import cn.mobiu.events.util.BeanUtilEx;
 import cn.mobiu.events.vo.DocumentVo;
+import cn.mobiu.events.vo.GuestVo;
 import cn.mobiu.events.vo.Page;
 
 @Service
@@ -50,6 +52,34 @@ public class DocumentServiceImpl extends BaseServiceImpl implements DocumentServ
         Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
         
         return page;
+	}
+	
+	@Override
+	public EvtDocument save(DocumentVo vo) {
+		if (vo == null) {
+			return null;
+		}
+		
+		EvtDocument po = new EvtDocument();
+		if (vo.getId() != null) {
+			po = (EvtDocument) get(EvtDocument.class, vo.getId());
+		}
+		
+		po.setEventId(vo.getEventId());
+		po.setTitle(vo.getTitle());
+		po.setUri(vo.getUri());
+		
+		saveOrUpdate(po);
+		return po;
+	}
+	
+	@Override
+	public boolean remove(Long id) {
+		EvtDocument po = (EvtDocument) get(EvtDocument.class, id);
+		po.setDeleted(true);
+		saveOrUpdate(po);
+		
+		return true;
 	}
 
 	@Override

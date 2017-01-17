@@ -20,7 +20,7 @@ public class EvtDocument extends BaseEntity {
     private String uri;
 
     @Enumerated(EnumType.STRING)
-    private DocType docType;
+    private DocType docType = EvtDocument.DocType.file;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", insertable = false, updatable = false)

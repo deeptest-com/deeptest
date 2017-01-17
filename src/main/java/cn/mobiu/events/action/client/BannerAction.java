@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.mobiu.events.constants.Constant;
+import cn.mobiu.events.entity.EvtBanner;
 import cn.mobiu.events.entity.EvtBizcard;
 import cn.mobiu.events.entity.EvtClient;
+import cn.mobiu.events.entity.EvtGuest;
 import cn.mobiu.events.service.BannerService;
 import cn.mobiu.events.service.BizcardService;
 import cn.mobiu.events.service.DocumentService;
@@ -67,6 +69,32 @@ public class BannerAction extends BaseAction {
         
 		ret.put("totalItems", page.getTotal());
         ret.put("data", vos);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "save", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody BannerVo vo) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
+		EvtBanner banner = bannerService.save(vo);
+		
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "remove", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject to) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
+		boolean success = bannerService.remove(to.getLong("id"));
+		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

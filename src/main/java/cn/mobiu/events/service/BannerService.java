@@ -17,5 +17,7 @@ public interface BannerService extends BaseService {
 	List<BannerVo> genVos(List<EvtBanner> docPos);
 
 	BannerVo genVo(EvtBanner po);
+	boolean remove(Long id);
+	EvtBanner save(BannerVo vo);
 	
 }

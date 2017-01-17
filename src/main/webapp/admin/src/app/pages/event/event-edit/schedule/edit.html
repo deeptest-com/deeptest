@@ -1,7 +1,8 @@
 <div class="container-fluid">
 
   <div class="row">
-    <event-nav (itemClick)="goto($event)" (backClick)="back()" [tabModel]="tabModel"></event-nav>
+    <event-nav (createClick)="create($event)" (itemClick)="goto($event)" (backClick)="back()"
+               [needCreate]="needCreate" [tabModel]="tabModel"></event-nav>
   </div>
 
   <div class="row">
@@ -16,6 +17,7 @@
               &nbsp;&nbsp;
               <i (click)="showModal(session, 'session', 'edit', $event);" class="ion-edit link"></i>
               <i (click)="showModal(session, 'session', 'alert', $event);" class="ion-trash-a link"></i>
+              <i (click)="showModal(undefined, 'session', 'edit', $event);" class="ion-plus-round link"></i>
             </span>
           </h5>
         </div>

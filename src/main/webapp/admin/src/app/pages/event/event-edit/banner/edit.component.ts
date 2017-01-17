@@ -41,6 +41,7 @@ export class EventEditBanner implements OnInit, AfterViewInit {
   itemsPerPage:number = 6;
 
   tabModel: string = 'banner';
+  needCreate:boolean = true;
 
   private allowedMimeType: string[] = ['image/png', 'image/jpeg'];
   private uploaderOptions:FileUploaderOptions = {

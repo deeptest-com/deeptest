@@ -1,7 +1,8 @@
 <div class="container-fluid">
 
   <div class="row">
-    <event-nav (itemClick)="goto($event)" [tabModel]="tabModel"></event-nav>
+    <event-nav (createClick)="create($event)" (itemClick)="goto($event)"
+               [needCreate]="needCreate" [tabModel]="tabModel"></event-nav>
   </div>
 
   <div class="row">

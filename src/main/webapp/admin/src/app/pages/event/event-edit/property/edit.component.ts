@@ -32,6 +32,8 @@ export class EventEditProperty implements OnInit, AfterViewInit {
   model: any = { signBefore: 3};
   eventForm: any;
   tabModel: string = 'property';
+  needCreate:boolean = false;
+
   datePickers: string[] = ['startDate', 'endDate', 'registerStartDate', 'registerEndDate'];
   timePickers: string[] = ['startTime', 'endTime','registerStartTime', 'registerEndTime'];
 

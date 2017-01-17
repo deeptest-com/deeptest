@@ -31,6 +31,7 @@ export class EventEditService implements OnInit, AfterViewInit {
   isSubmitted:boolean;
 
   tabModel:string = 'service';
+  needCreate:boolean = false;
 
   constructor(private _routeService: RouteService, private _route:ActivatedRoute, private fb:FormBuilder,
               private _serviceService:ServiceService) {

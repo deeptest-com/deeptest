@@ -41,6 +41,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   itemsPerPage:number = 6;
 
   tabModel: string = 'guest';
+  needCreate:boolean = true;
 
   private allowedMimeType: string[] = ['image/png', 'image/jpeg'];
   private uploaderOptions:FileUploaderOptions = {

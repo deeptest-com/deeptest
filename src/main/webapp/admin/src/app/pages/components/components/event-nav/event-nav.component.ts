@@ -11,19 +11,24 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 export class EventNav {
 
   @Input() tabModel: any;
+  @Input() needCreate: any;
 
+  @Output() createClick = new EventEmitter<any>();
   @Output() itemClick = new EventEmitter<any>();
-  @Output() backClick = new EventEmitter<any>();
 
   constructor(private _router: Router) {
   }
 
+  public onCreateClick($event: any):boolean {
+    this.createClick.emit($event);
+    return false;
+  }
   public onItemClick(tabName: string, $event: any):boolean {
     $event.tabModel = tabName;
     this.itemClick.emit($event);
     return false;
   }
-  public onBackClick($event: any):void {
+  public back($event: any):void {
     let that = this;
     that._router.navigateByUrl("/pages/event/list");
   }

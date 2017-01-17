@@ -17,7 +17,10 @@
     </div>
   </div>
   <div class="buttons">
-    <button (click)="onBackClick($event)" type="button" class="btn btn-default btn-with-icon btn-sm back">
+    <button [class.hidden]="!needCreate" (click)="onCreateClick($event)" type="button" class="btn btn-primary btn-with-icon btn-sm">
+      <i class="ion-plus-circled"></i>新建
+    </button>
+    <button (click)="back($event)" type="button" class="btn btn-default btn-with-icon btn-sm back">
       <i class="ion-backspace"></i>返回
     </button>
   </div>

@@ -41,6 +41,7 @@ export class EventEditDocument implements OnInit, AfterViewInit {
   itemsPerPage:number = 6;
 
   tabModel: string = 'document';
+  needCreate:boolean = true;
 
   // private allowedMimeType: string[] = ['image/png', 'image/jpeg'];
   private uploaderOptions:FileUploaderOptions = {

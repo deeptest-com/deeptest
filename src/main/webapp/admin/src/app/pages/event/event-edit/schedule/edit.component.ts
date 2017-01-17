@@ -35,6 +35,7 @@ export class EventEditSchedule implements OnInit, AfterViewInit {
 
   eventId: number;
   tabModel: string = 'schedule';
+  needCreate:boolean = true;
   datePickers: string[] = ['startDate', 'endDate'];
   timePickers: string[] = ['startTime', 'endTime'];
 
@@ -75,6 +76,10 @@ export class EventEditSchedule implements OnInit, AfterViewInit {
 
     that._routeService.navTo('/pages/event/edit/' + that.eventId + '/' + $event.tabModel);
   }
+  create(modelType, $event): void {
+    let that = this;
+    that.showModal(undefined, 'session', 'edit', $event);
+  }
 
   loadData() {
    let that = this;
@@ -84,11 +89,15 @@ export class EventEditSchedule implements OnInit, AfterViewInit {
     });
   }
 
-  showModal(item: any, type: any, popupType: string, $event:any):void {
+  showModal(item: any, modelType: any, popupType: string, $event:any):void {
     let that = this;
 
+    that.modelType = modelType;
     that.popupType = popupType;
-    that.modelType = type;
+
+    if (!item) {
+      item = {eventId: that.eventId};
+    }
     that.item = item;
 
     if (that.popupType == 'edit') {

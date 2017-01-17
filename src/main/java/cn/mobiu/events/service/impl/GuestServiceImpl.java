@@ -36,24 +36,6 @@ public class GuestServiceImpl extends BaseServiceImpl implements GuestService {
 	}
 
 	@Override
-	public List<GuestVo> genVos(List<EvtGuest> pos) {
-        List<GuestVo> vos = new LinkedList<GuestVo>();
-
-        for (EvtGuest po: pos) {
-        	GuestVo vo = genVo(po);
-        	vos.add(vo);
-        }
-		return vos;
-	}
-
-	@Override
-	public GuestVo genVo(EvtGuest po) {
-		GuestVo vo = new GuestVo();
-		BeanUtilEx.copyProperties(vo, po);
-		return vo;
-	}
-
-	@Override
 	public Page list(Long eventId, int currentPage, int itemsPerPage) {
         DetachedCriteria dc = DetachedCriteria.forClass(EvtGuest.class);
         dc.add(Restrictions.eq("eventId", eventId));
@@ -94,6 +76,24 @@ public class GuestServiceImpl extends BaseServiceImpl implements GuestService {
 		saveOrUpdate(po);
 		
 		return true;
+	}
+	
+	@Override
+	public List<GuestVo> genVos(List<EvtGuest> pos) {
+        List<GuestVo> vos = new LinkedList<GuestVo>();
+
+        for (EvtGuest po: pos) {
+        	GuestVo vo = genVo(po);
+        	vos.add(vo);
+        }
+		return vos;
+	}
+
+	@Override
+	public GuestVo genVo(EvtGuest po) {
+		GuestVo vo = new GuestVo();
+		BeanUtilEx.copyProperties(vo, po);
+		return vo;
 	}
 	
     @Override

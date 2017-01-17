@@ -17,16 +17,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.mobiu.events.constants.Constant;
+import cn.mobiu.events.entity.EvtBanner;
 import cn.mobiu.events.entity.EvtClient;
 import cn.mobiu.events.entity.EvtDocument;
 import cn.mobiu.events.entity.EvtDocument.DocType;
 import cn.mobiu.events.entity.EvtEvent;
 import cn.mobiu.events.entity.EvtOrganizer;
+import cn.mobiu.events.service.BannerService;
 import cn.mobiu.events.service.DocumentService;
 import cn.mobiu.events.service.EventService;
 import cn.mobiu.events.service.OrganizerService;
 import cn.mobiu.events.util.AuthPassport;
 import cn.mobiu.events.util.BeanUtilEx;
+import cn.mobiu.events.vo.BannerVo;
 import cn.mobiu.events.vo.DocumentVo;
 import cn.mobiu.events.vo.EventVo;
 import cn.mobiu.events.vo.OrganizerVo;
@@ -41,6 +44,8 @@ public class EventAction extends BaseAction {
 	EventService eventService;
 	@Autowired
 	DocumentService documentService;
+	@Autowired
+	BannerService bannerService;
 	@Autowired
 	OrganizerService organizerService;
 	
@@ -80,12 +85,16 @@ public class EventAction extends BaseAction {
         EventVo eventVo = eventService.genVo(event);
 		
 		List<EvtDocument> docPos = documentService.listByEvent(Long.valueOf(eventId), DocType.banner);
-		List<DocumentVo> docVos = documentService.genVos(docPos);
+        List<DocumentVo> docVos = documentService.genVos(docPos);
+        
+		List<EvtBanner> bannerPos = bannerService.listByEvent(Long.valueOf(eventId));
+		List<BannerVo> bannerVos = bannerService.genVos(bannerPos);
         
         List<EvtOrganizer> organizerPos = organizerService.listByEvent(Long.valueOf(eventId));
         Map<String, List<OrganizerVo>> organizerMap = organizerService.genOrganizerMap(organizerPos);
         
         eventVo.setDocuments(docVos);
+        eventVo.setBanners(bannerVos);
         eventVo.setOrganizers(organizerMap);
         
         ret.put("event", eventVo);

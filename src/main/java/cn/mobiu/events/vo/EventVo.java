@@ -62,7 +62,8 @@ public class EventVo extends BaseVo {
 
     private Long companyId;
     private Long creatorId;
-
+    
+    private List<BannerVo> banners = new LinkedList<BannerVo>();
     private List<DocumentVo> documents = new LinkedList<DocumentVo>();
     private Map<String, List<OrganizerVo>> organizers = new HashMap<String, List<OrganizerVo>>();
 
@@ -392,6 +393,14 @@ public class EventVo extends BaseVo {
 
 	public void setSignEndTime(String signEndTime) {
 		this.signEndTime = signEndTime;
+	}
+
+	public List<BannerVo> getBanners() {
+		return banners;
+	}
+
+	public void setBanners(List<BannerVo> banners) {
+		this.banners = banners;
 	}
 
 }

@@ -21,6 +21,8 @@ import { SessionService } from '../../service/session';
 import { ScheduleService } from '../../service/schedule';
 import { GuestService } from '../../service/guest';
 import { ServiceService } from '../../service/service';
+import { BannerService } from '../../service/banner';
+import { DocumentService } from '../../service/document';
 
 import { Event } from './event.component';
 import { EventList } from './event-list';
@@ -28,6 +30,8 @@ import { EventEditProperty } from './event-edit/property';
 import { EventEditSchedule } from './event-edit/schedule';
 import { EventEditGuest } from './event-edit/guest';
 import { EventEditService } from './event-edit/service';
+import { EventEditBanner } from './event-edit/banner';
+import { EventEditDocument } from './event-edit/document';
 
 @NgModule({
   imports: [

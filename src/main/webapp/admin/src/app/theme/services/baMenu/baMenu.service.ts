@@ -32,6 +32,7 @@ export class BaMenuService {
 
   public selectMenuItem(menuItems:any[]):any[] {
     let items = [];
+    
     menuItems.forEach((item) => {
       this._selectItem(item);
 

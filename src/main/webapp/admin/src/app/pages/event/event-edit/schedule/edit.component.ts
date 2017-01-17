@@ -9,7 +9,7 @@ import { CONSTANT } from '../../../../utils/constant';
 import { Utils } from '../../../../utils/utils';
 
 import { ModalDirective } from 'ng2-bootstrap';
-
+import { RouteService } from '../../../../service/route';
 import { DatetimePickerService } from '../../../../service/datetime-picker';
 import { EventService } from '../../../../service/event';
 import { SessionService } from '../../../../service/session';
@@ -45,7 +45,7 @@ export class EventEditSchedule implements OnInit, AfterViewInit {
   sessionForm: any;
   itemForm: any;
 
-  constructor(private _router: Router, private _route: ActivatedRoute, private fb: FormBuilder,
+  constructor(private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
               private _datetimePickerService: DatetimePickerService,
               private _eventService: EventService, private _sessionService: SessionService, private _scheduleService: ScheduleService) {
 
@@ -70,15 +70,10 @@ export class EventEditSchedule implements OnInit, AfterViewInit {
 
   }
 
-  back() {
-    let that = this;
-
-    that._router.navigateByUrl("/pages/event/list");
-  }
   goto($event) {
     let that = this;
 
-    that._router.navigateByUrl('/pages/event/edit/' + that.eventId + '/' + $event.tabModel);
+    that._routeService.navTo('/pages/event/edit/' + that.eventId + '/' + $event.tabModel);
   }
 
   loadData() {

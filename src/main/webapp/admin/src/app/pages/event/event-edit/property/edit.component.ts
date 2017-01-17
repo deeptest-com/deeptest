@@ -8,7 +8,9 @@ import { CONSTANT } from '../../../../utils/constant';
 import { Utils } from '../../../../utils/utils';
 import {Validate} from '../../../../service/validate';
 
+import { RouteService } from '../../../../service/route';
 import { DatetimePickerService } from '../../../../service/datetime-picker';
+
 import { EventService } from '../../../../service/event';
 
 require('bootstrap-datepicker');
@@ -33,7 +35,7 @@ export class EventEditProperty implements OnInit, AfterViewInit {
   datePickers: string[] = ['startDate', 'endDate', 'registerStartDate', 'registerEndDate'];
   timePickers: string[] = ['startTime', 'endTime','registerStartTime', 'registerEndTime'];
 
-  constructor(private _router: Router, private _route: ActivatedRoute, private fb: FormBuilder,
+  constructor(private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
               private _datetimePickerService: DatetimePickerService, private _eventService: EventService) {
 
     let that = this;
@@ -58,13 +60,6 @@ export class EventEditProperty implements OnInit, AfterViewInit {
     that.initForm(false);
   }
 
-  edit(tabModel):void {
-    let that = this;
-
-    console.log(tabModel);
-    that._router.navigateByUrl('/pages/event/edit/' + that.eventId + '/' + tabModel);
-  }
-
   onSubmit():void {
     let that = this;
 
@@ -75,21 +70,16 @@ export class EventEditProperty implements OnInit, AfterViewInit {
     Utils.dateCombine(that.model, 'registerEndDate', 'registerEndTime', 'registerEndDatetime');
 
     that._eventService.save(that.model).subscribe((json:any) => {
-        console.log(json);
         if (json.code = 1) {
-            that._router.navigateByUrl("/pages/event/list");
+          that._routeService.navTo("/pages/event/list");
         }
     });
   }
-  back() {
-    let that = this;
 
-    that._router.navigateByUrl("/pages/event/list");
-  }
   goto($event) {
     let that = this;
 
-    that._router.navigateByUrl('/pages/event/edit/' + that.eventId + '/' + $event.tabModel);
+    that._routeService.navTo('/pages/event/edit/' + that.eventId + '/' + $event.tabModel);
   }
   loadData() {
    let that = this;

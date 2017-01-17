@@ -1,7 +1,7 @@
 <div class="container-fluid">
 
   <div class="row">
-    <event-nav (itemClick)="goto($event)" [tabModel]="tabModel"></event-nav>
+    <event-nav (itemClick)="goto($event)" (backClick)="back()" [tabModel]="tabModel"></event-nav>
   </div>
 
   <div class="row">
@@ -55,12 +55,12 @@
       <div class="modal-body">
         <form [formGroup]="form" (ngSubmit)="onFormSubmit()" class="my-validate-form">
           <div class="form-group row">
-            <label class="col-sm-2 col-form-label"><span>头像</span></label>
+            <label class="col-sm-2 col-form-label"><span>文件</span></label>
             <div class="col-sm-10 file-upload">
               <div class="row">
                 <div class="col-sm-2">
                   <div class="image">
-                    <img class="middle" [src]="item.avatar | imgPath">
+                    <img class="middle" [src]="item.uri | imgPath">
                   </div>
                 </div>
                 <div class="col-sm-10">
@@ -95,26 +95,12 @@
 
             </div>
           </div>
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label"><span>姓名</span></label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="name" formControlName="name"
-                     [(ngModel)]="item.name" #name>
-            </div>
-          </div>
 
           <div class="form-group row">
             <label class="col-sm-2 col-form-label">简介</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" name="title" formControlName="title"
                      [(ngModel)]="item.title" #title>
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label"><span>描述</span></label>
-            <div class="col-sm-10">
-              <textarea type="text" class="form-control" name="descr" formControlName="descr"
-                        [(ngModel)]="item.descr" #descr></textarea>
             </div>
           </div>
 

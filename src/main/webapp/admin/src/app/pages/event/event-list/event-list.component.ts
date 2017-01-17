@@ -1,9 +1,9 @@
 import {Component, ViewEncapsulation} from '@angular/core';
 
 import { NgModule, Pipe, OnInit, AfterViewInit }      from '@angular/core';
-import { Router } from '@angular/router';
 
 import { CONSTANT } from '../../../utils/constant';
+import { RouteService } from '../../../service/route';
 import { EventService } from '../../../service/event';
 
 @Component({
@@ -21,7 +21,7 @@ export class EventList implements OnInit, AfterViewInit {
   statusMap: Array<any> = CONSTANT.EventStatus;
   events: Array<any> = [];
 
-  constructor(private _router: Router,
+  constructor(private _routeService: RouteService,
               private _eventService: EventService) {
 
   }
@@ -42,7 +42,7 @@ export class EventList implements OnInit, AfterViewInit {
   create():void {
     let that = this;
 
-    that._router.navigateByUrl("/pages/event/edit/null/property");
+    that._routeService.navTo("/pages/event/edit/null/property");
   }
   statusChange(e: any):void {
     let that = this;

@@ -15,6 +15,7 @@ import { FileUploadModule } from 'ng2-file-upload';
 import { ComponentsModule } from '../components/components.module';
 import { PipeModule } from '../../pipe/pipe.module';
 
+import { RouteService } from '../../service/route';
 import { RequestService } from '../../service/request';
 import { DatetimePickerService } from '../../service/datetime-picker';
 import { EventService } from '../../service/event';
@@ -62,6 +63,7 @@ import { EventEditDocument } from './event-edit/document';
     EventEditDocument
   ],
   providers: [
+    RouteService,
     RequestService,
     DatetimePickerService,
     EventService,

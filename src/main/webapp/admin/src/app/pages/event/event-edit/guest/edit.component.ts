@@ -9,6 +9,7 @@ import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
 import {Validate} from '../../../../service/validate';
 import { CONSTANT } from '../../../../utils/constant';
 import { Utils } from '../../../../utils/utils';
+import { RouteService } from '../../../../service/route';
 import { EventService } from '../../../../service/event';
 import { GuestService } from '../../../../service/guest';
 
@@ -52,7 +53,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   };
   public uploader: FileUploader;
 
-  constructor(private _router: Router, private _route: ActivatedRoute, private fb: FormBuilder,
+  constructor(private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
               private _guestService: GuestService) {
 
     let that = this;
@@ -107,6 +108,10 @@ export class EventEditGuest implements OnInit, AfterViewInit {
      that.items = json.guests;
    });
   }
+  goto($event) {
+    let that = this;
+    that._routeService.navTo('/pages/event/edit/' + that.eventId + '/' + $event.tabModel);
+  }
 
   create($event): void {
     let that = this;
@@ -116,16 +121,6 @@ export class EventEditGuest implements OnInit, AfterViewInit {
     let that = this;
     that.currentPage = event.page;
     that.loadData();
-  }
-  back() {
-    let that = this;
-
-    that._router.navigateByUrl("/pages/event/list");
-  }
-  goto($event) {
-    let that = this;
-
-    that._router.navigateByUrl('/pages/event/edit/' + that.eventId + '/' + $event.tabModel);
   }
 
   showModal(item: any, popupType: string, $event:any):void {

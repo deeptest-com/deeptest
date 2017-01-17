@@ -1,4 +1,5 @@
 import {Component, ViewEncapsulation, Input, Output, EventEmitter} from '@angular/core';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 
 @Component({
   selector: 'event-nav',
@@ -12,8 +13,9 @@ export class EventNav {
   @Input() tabModel: any;
 
   @Output() itemClick = new EventEmitter<any>();
+  @Output() backClick = new EventEmitter<any>();
 
-  constructor() {
+  constructor(private _router: Router) {
   }
 
   public onItemClick(tabName: string, $event: any):boolean {
@@ -21,5 +23,8 @@ export class EventNav {
     this.itemClick.emit($event);
     return false;
   }
-
+  public onBackClick($event: any):void {
+    let that = this;
+    that._router.navigateByUrl("/pages/event/list");
+  }
 }

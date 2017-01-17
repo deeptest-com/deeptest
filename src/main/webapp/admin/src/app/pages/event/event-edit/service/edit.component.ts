@@ -3,6 +3,7 @@ import {FormBuilder, Validators} from "@angular/forms";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {ModalDirective} from "ng2-bootstrap";
 import {Validate} from "../../../../service/validate";
+import { RouteService } from '../../../../service/route';
 import {ServiceService} from "../../../../service/service";
 
 require('bootstrap-datepicker');
@@ -31,7 +32,7 @@ export class EventEditService implements OnInit, AfterViewInit {
 
   tabModel:string = 'service';
 
-  constructor(private _router:Router, private _route:ActivatedRoute, private fb:FormBuilder,
+  constructor(private _routeService: RouteService, private _route:ActivatedRoute, private fb:FormBuilder,
               private _serviceService:ServiceService) {
 
     let that = this;
@@ -63,16 +64,10 @@ export class EventEditService implements OnInit, AfterViewInit {
     });
   }
 
-  back() {
-    let that = this;
-
-    that._router.navigateByUrl("/pages/event/list");
-  }
-
   goto($event) {
     let that = this;
 
-    that._router.navigateByUrl('/pages/event/edit/' + that.eventId + '/' + $event.tabModel);
+    that._routeService.navTo('/pages/event/edit/' + that.eventId + '/' + $event.tabModel);
   }
 
   showModal(item:any, popupType:string, $event:any):void {

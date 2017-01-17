@@ -5,6 +5,8 @@ import {Subscription} from 'rxjs/Rx';
 import { BaMenuService } from '../../services';
 import {GlobalState} from '../../../global.state';
 
+declare var jQuery;
+
 @Component({
   selector: 'ba-menu',
   encapsulation: ViewEncapsulation.None,
@@ -30,6 +32,11 @@ export class BaMenu {
     this._onRouteChange = this._router.events.subscribe((event) => {
 
       if (event instanceof NavigationEnd) {
+        console.log(event);
+        if (event.url && event.url.indexOf('ignore_menu') > -1) {
+          return;
+        }
+
         if (this.menuItems) {
           this.selectMenuAndNotify();
         } else {

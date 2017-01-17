@@ -87,6 +87,7 @@ public class ScheduleServiceImpl extends BaseServiceImpl implements
 				group.setAddress(session.getAddress());
 				group.setHost(session.getHost());
 				group.setName(session.getName());
+				group.setSubject(session.getName());
 				group.setItemType("for-group");
 				group.setEventId(session.getEventId());
 				vosBySession.add(group);

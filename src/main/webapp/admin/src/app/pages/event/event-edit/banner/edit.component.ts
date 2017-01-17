@@ -157,7 +157,7 @@ export class EventEditBanner implements OnInit, AfterViewInit {
         that.loadData();
       }
     });
-  }
+  } 
 
   remove():void {
     let that = this;

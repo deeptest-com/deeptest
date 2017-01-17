@@ -75,11 +75,10 @@ export class EventEditSchedule implements OnInit, AfterViewInit {
 
     that._router.navigateByUrl("/pages/event/list");
   }
-  goto(tabModel) {
+  goto($event) {
     let that = this;
 
-    console.log(tabModel);
-    that._router.navigateByUrl('/pages/event/edit/' + that.eventId + '/' + tabModel);
+    that._router.navigateByUrl('/pages/event/edit/' + that.eventId + '/' + $event.tabModel);
   }
 
   loadData() {
@@ -138,7 +137,7 @@ export class EventEditSchedule implements OnInit, AfterViewInit {
 
     Utils.dateCombine(that.item, 'startDate', 'startTime', 'startDatetime');
     Utils.dateCombine(that.item, 'endDate', 'endTime', 'endDatetime');
-    
+
     that._scheduleService.save(that.item).subscribe((json:any) => {
       if (json.code = 1) {
         that.hideModal();

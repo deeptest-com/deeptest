@@ -71,22 +71,6 @@ tabset {
     }
 }
 
-.list-toolbar {
-  display: flex;
-  margin: 0 0 10px 0;
-  padding: 0;
-  .filter {
-    flex: 1;
-  }
-  .buttons {
-    width: 500px;
-    text-align: right;
-    .back {
-      margin-left: 50px;
-    }
-  }
-}
-
 .bootstrap-timepicker-widget {
   table {
     max-width: 40px;
@@ -97,10 +81,17 @@ tabset {
   }
 }
 
-table tr td.img {
-  text-align: center;
-  img {
-    height: 30px;
+table {
+  tr {
+    th, td.opt {
+      text-align: center;
+    }
+    td.img {
+      text-align: center;
+      img {
+        height: 30px;
+      }
+    }
   }
 }
 .file-upload {

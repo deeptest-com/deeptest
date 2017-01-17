@@ -6,9 +6,7 @@ import { DatePipe } from './date';
 import { EventStatusPipe } from './event-status';
 
 @NgModule({
-  imports: [
-
-  ],
+  imports: [ ],
   declarations: [ImgPathPipe, ThumbPathPipe, KeysPipe, DatePipe,EventStatusPipe],
   exports:      [ImgPathPipe, ThumbPathPipe, KeysPipe, DatePipe,EventStatusPipe],
 })

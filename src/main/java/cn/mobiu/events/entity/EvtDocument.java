@@ -41,8 +41,7 @@ public class EvtDocument extends BaseEntity {
         audio("audio"),
         video("video"),
         image("image"),
-        link("link"),
-        banner("banner");
+        link("link");
         
         private DocType(String textVal) {
             this.textVal = textVal;

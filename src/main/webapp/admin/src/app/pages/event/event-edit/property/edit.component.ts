@@ -86,11 +86,10 @@ export class EventEditProperty implements OnInit, AfterViewInit {
 
     that._router.navigateByUrl("/pages/event/list");
   }
-  goto(tabModel) {
+  goto($event) {
     let that = this;
 
-    console.log(tabModel);
-    that._router.navigateByUrl('/pages/event/edit/' + that.eventId + '/' + tabModel);
+    that._router.navigateByUrl('/pages/event/edit/' + that.eventId + '/' + $event.tabModel);
   }
   loadData() {
    let that = this;

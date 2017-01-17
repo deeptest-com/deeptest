@@ -12,6 +12,7 @@ import { ModalModule } from 'ng2-bootstrap';
 import { ButtonsModule } from 'ng2-bootstrap';
 import { FileUploadModule } from 'ng2-file-upload';
 
+import { ComponentsModule } from '../components/components.module';
 import { PipeModule } from '../../pipe/pipe.module';
 
 import { RequestService } from '../../service/request';
@@ -47,6 +48,7 @@ import { EventEditDocument } from './event-edit/document';
     CollapseModule,
     FileUploadModule,
 
+    ComponentsModule,
     PipeModule
   ],
   declarations: [
@@ -55,7 +57,9 @@ import { EventEditDocument } from './event-edit/document';
     EventEditProperty,
     EventEditSchedule,
     EventEditGuest,
-    EventEditService
+    EventEditService,
+    EventEditBanner,
+    EventEditDocument
   ],
   providers: [
     RequestService,
@@ -64,7 +68,9 @@ import { EventEditDocument } from './event-edit/document';
     SessionService,
     ScheduleService,
     GuestService,
-    ServiceService
+    ServiceService,
+    BannerService,
+    DocumentService
   ]
 })
 export default class EventModule {}

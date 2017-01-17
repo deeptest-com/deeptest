@@ -69,10 +69,10 @@ export class EventEditService implements OnInit, AfterViewInit {
     that._router.navigateByUrl("/pages/event/list");
   }
 
-  goto(tabModel) {
+  goto($event) {
     let that = this;
 
-    that._router.navigateByUrl('/pages/event/edit/' + that.eventId + '/' + tabModel);
+    that._router.navigateByUrl('/pages/event/edit/' + that.eventId + '/' + $event.tabModel);
   }
 
   showModal(item:any, popupType:string, $event:any):void {

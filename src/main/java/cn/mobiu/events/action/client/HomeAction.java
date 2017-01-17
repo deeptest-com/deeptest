@@ -65,7 +65,7 @@ public class HomeAction extends BaseAction {
 		EvtEvent event = eventService.getDetail(Long.valueOf(eventId));
         EventVo eventVo = eventService.genVo(event);
 		
-		List<EvtDocument> docPos = documentService.listByEvent(Long.valueOf(eventId), DocType.banner);
+		List<EvtDocument> docPos = documentService.listByEvent(Long.valueOf(eventId), null);
         List<DocumentVo> docVos = documentService.genVos(docPos);
         
 		List<EvtBanner> bannerPos = bannerService.listByEvent(Long.valueOf(eventId));

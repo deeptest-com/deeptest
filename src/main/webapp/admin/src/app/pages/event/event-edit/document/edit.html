@@ -1,26 +1,7 @@
 <div class="container-fluid">
 
   <div class="row">
-    <div class="list-toolbar col-xl-12">
-      <div class="filter">
-        <div class="btn-group">
-          <label (click)="goto('property')" class="btn btn-success" [(ngModel)]="tabModel" btnRadio="property"
-                 uncheckable>会议属性</label>
-          <label (click)="goto('schedule')" class="btn btn-success" [(ngModel)]="tabModel" btnRadio="schedule"
-                 uncheckable>会议日程</label>
-          <label (click)="goto('guest')" class="btn btn-success" [(ngModel)]="tabModel" btnRadio="guest" uncheckable>会议嘉宾</label>
-          <label (click)="goto('service')" class="btn btn-success" [(ngModel)]="tabModel" btnRadio="service" uncheckable>会议服务</label>
-        </div>
-      </div>
-      <div class="buttons">
-        <button (click)="create($event)" type="button" class="btn btn-primary btn-with-icon btn-sm">
-          <i class="ion-plus-circled"></i>新建
-        </button>
-        <button (click)="back()" type="button" class="btn btn-default btn-with-icon btn-sm back">
-          <i class="ion-backspace"></i>返回
-        </button>
-      </div>
-    </div>
+    <event-nav (itemClick)="goto($event)" [tabModel]="tabModel"></event-nav>
   </div>
 
   <div class="row">
@@ -30,18 +11,16 @@
           <thead class="thead-inverse">
           <tr>
             <th>编号</th>
-            <th>姓名</th>
             <th>简介</th>
-            <th>头像</th>
+            <th>文件</th>
             <th>操作</th>
           </tr>
           </thead>
           <tbody>
           <tr *ngFor="let item of items; let i = index">
             <th scope="row">{{i}}-{{item.id}}</th>
-            <td>{{item.name}}</td>
             <td>{{item.title}}</td>
-            <td class="img"><img class="center" [src]="item.avatar | thumbPath"></td>
+            <td><a class="link" [href]="item.uri | imgPath">下载</a></td>
             <td class="opt">
               <i (click)="showModal(item, 'edit', $event)" class="ion-edit link"></i>
               <i (click)="showModal(item, 'alert', $event);" class="ion-trash-a link"></i>

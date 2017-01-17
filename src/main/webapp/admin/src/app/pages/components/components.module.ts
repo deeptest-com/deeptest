@@ -1,25 +1,30 @@
-import { NgModule }      from '@angular/core';
-import { CommonModule }  from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { NgaModule } from '../../theme/nga.module';
-import { TreeComponent } from 'ng2-tree/index';
+import { NgModule, ModuleWithProviders }      from '@angular/core';
+import { TabsModule } from 'ng2-bootstrap';
+import { ButtonsModule } from 'ng2-bootstrap';
 
-import { routing }       from './components.routing';
-import { Components } from './components.component';
-import { TreeView } from './components/treeView/treeView.component';
+import {
+  EventNav
+} from './components';
 
-// TODO: tree component?
+const My_COMPONENTS = [
+  EventNav
+];
+
 @NgModule({
   imports: [
-    CommonModule,
-    FormsModule,
-    NgaModule,
-    routing
+    TabsModule,
+    ButtonsModule
   ],
   declarations: [
-    Components,
-    TreeView,
-    TreeComponent
+    ...My_COMPONENTS
+  ],
+  exports: [
+    ...My_COMPONENTS
   ]
 })
-export default class ComponentsModule {}
+export class ComponentsModule {
+  
+}
+
+
+

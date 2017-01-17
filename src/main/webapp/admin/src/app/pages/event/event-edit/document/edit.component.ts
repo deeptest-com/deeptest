@@ -39,7 +39,7 @@ export class EventEditDocument implements OnInit, AfterViewInit {
   currentPage:number = 1;
   itemsPerPage:number = 6;
 
-  tabModel: string = 'guest';
+  tabModel: string = 'document';
 
   private uploaderOptions:FileUploaderOptions = {
     url: Utils.getUploadUrl(),
@@ -104,7 +104,7 @@ export class EventEditDocument implements OnInit, AfterViewInit {
 
    that._ducumentService.list(that.itemsPerPage, that.currentPage, that.eventId).subscribe((json:any) => {
      that.totalItems = json.totalItems;
-     that.items = json.guests;
+     that.items = json.data;
    });
   }
 
@@ -122,10 +122,10 @@ export class EventEditDocument implements OnInit, AfterViewInit {
 
     that._router.navigateByUrl("/pages/event/list");
   }
-  goto(tabModel) {
+  goto($event) {
     let that = this;
 
-    that._router.navigateByUrl('/pages/event/edit/' + that.eventId + '/' + tabModel);
+    that._router.navigateByUrl('/pages/event/edit/' + that.eventId + '/' + $event.tabModel);
   }
 
   showModal(item: any, popupType: string, $event:any):void {

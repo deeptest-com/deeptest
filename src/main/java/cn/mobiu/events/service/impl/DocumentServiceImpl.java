@@ -22,7 +22,10 @@ public class DocumentServiceImpl extends BaseServiceImpl implements DocumentServ
     public List<EvtDocument> listByEvent(Long eventId, DocType type) {
         DetachedCriteria dc = DetachedCriteria.forClass(EvtDocument.class);
         dc.add(Restrictions.eq("eventId", eventId));
-        dc.add(Restrictions.eq("docType", type));
+        
+        if (type != null) {
+        	dc.add(Restrictions.eq("docType", type));
+        }
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));

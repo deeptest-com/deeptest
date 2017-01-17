@@ -1,0 +1,25 @@
+<div class="list-toolbar col-xl-12 event-nav">
+  <div class="filter">
+    <div class="btn-group">
+      <label (click)="onItemClick('property', $event)" class="btn btn-success" [(ngModel)]="tabModel"
+             btnRadio="property" uncheckable>会议属性</label>
+      <label (click)="onItemClick('schedule', $event)" class="btn btn-success" [(ngModel)]="tabModel"
+             btnRadio="schedule" uncheckable>会议日程</label>
+      <label (click)="onItemClick('guest', $event)" class="btn btn-success" [(ngModel)]="tabModel"
+             btnRadio="guest" uncheckable>会议嘉宾</label>
+      <label (click)="onItemClick('service', $event)" class="btn btn-success" [(ngModel)]="tabModel"
+             btnRadio="service" uncheckable>会议服务</label>
+      <label (click)="onItemClick('banner', $event)" class="btn btn-success" [(ngModel)]="tabModel"
+             btnRadio="banner" uncheckable>广告条</label>
+      <label (click)="onItemClick('document', $event)" class="btn btn-success" [(ngModel)]="tabModel"
+             btnRadio="document" uncheckable>资源下载</label>
+
+    </div>
+  </div>
+  <div class="buttons">
+    <button (click)="back()" type="button" class="btn btn-default btn-with-icon btn-sm back">
+      <i class="ion-backspace"></i>返回
+    </button>
+  </div>
+</div>
+

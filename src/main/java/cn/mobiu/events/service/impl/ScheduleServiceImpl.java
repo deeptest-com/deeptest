@@ -87,7 +87,6 @@ public class ScheduleServiceImpl extends BaseServiceImpl implements
 				group.setAddress(session.getAddress());
 				group.setHost(session.getHost());
 				group.setName(session.getName());
-				group.setSubject(session.getName());
 				group.setItemType("for-group");
 				group.setEventId(session.getEventId());
 				vosBySession.add(group);
@@ -126,7 +125,7 @@ public class ScheduleServiceImpl extends BaseServiceImpl implements
 				dt = poDt;
 
 				ScheduleItemVo vo = new ScheduleItemVo();
-				vo.setSubject(dt);
+				vo.setName(dt);
 				vo.setItemType("for-group");
 				vosByDate.add(vo);
 			}

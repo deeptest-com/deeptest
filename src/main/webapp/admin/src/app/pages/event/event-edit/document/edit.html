@@ -98,6 +98,9 @@
             <div class="col-sm-10">
               <input type="text" class="form-control" name="title" formControlName="title"
                      [(ngModel)]="item.title" #title>
+
+              <input type="hidden" class="form-control" name="title" formControlName="uri"
+                     [(ngModel)]="item.uri" #uri>
             </div>
           </div>
 

@@ -44,7 +44,7 @@
             <td>{{item.startDatetime | date:'yyyy/MM/dd'}}</td>
             <td>{{item.endDatetime | date:'yyyy/MM/dd'}}</td>
             <td class="opt">
-              <i [routerLink]="['/pages/event/edit',item.id,'property', {ignore_menu: true}]" class="ion-edit link"></i>
+              <i [routerLink]="['/pages/event/edit',item.id,'property', {im: true}]" class="ion-edit link"></i>
               <i (click)="delete(item.id)" class="ion-trash-a link"></i>
             </td>
           </tr>

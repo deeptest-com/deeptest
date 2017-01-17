@@ -33,7 +33,7 @@ export class BaMenu {
 
       if (event instanceof NavigationEnd) {
         console.log(event);
-        if (event.url && event.url.indexOf('ignore_menu') > -1) {
+        if (event.url && event.url.indexOf('im=true') > -1) {
           return;
         }
 

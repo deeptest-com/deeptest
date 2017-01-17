@@ -8,7 +8,7 @@ export class RouteService {
 
     navTo(url: string) {
       let that = this;
-      let urlStr = that._router.createUrlTree([url, {ignore_menu: true}]);
+      let urlStr = that._router.createUrlTree([url, {im: true}]);
       that._router.navigateByUrl(urlStr);
     }
 }

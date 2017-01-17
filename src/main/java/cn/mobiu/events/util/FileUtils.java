@@ -61,6 +61,9 @@ public class FileUtils {
             }else{  
                 rate = rate2;  
             }
+            if (rate == 0) {
+            	rate = 1;
+            }
               
             //计算缩略图最终的宽度和高度  
             int newWidth = width / rate;  

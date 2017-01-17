@@ -183,7 +183,8 @@ export class EventEditBanner implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
         {
-          'title': [that.item.title, [Validators.required]]
+          'title': [that.item.title, [Validators.required]],
+          'uri': [that.item.title, [Validators.required]]
         }, {}
     );
 
@@ -199,6 +200,9 @@ export class EventEditBanner implements OnInit, AfterViewInit {
   validateMsg = {
     'title': {
       'required':      '简介不能为空'
+    },
+    'uri': {
+      'required':      '头像不能为空'
     }
   };
 

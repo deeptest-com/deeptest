@@ -47,7 +47,7 @@ export class App {
     this._state.subscribe('menu.isCollapsed', (isCollapsed) => {
       this.isMenuCollapsed = isCollapsed;
     });
-      
+
     Utils.config();
   }
 
@@ -69,13 +69,13 @@ export class App {
       if (this.root) {
         return this.root;
       }
-      var comps = this.applicationRef.components;
+      var comps = this['applicationRef'].components;
       if (!comps.length) {
         throw new Error("ApplicationRef instance not found");
       }
       try {
         /* one more ugly hack, read issue above for details */
-        var rootComponent = this.applicationRef._rootComponents[0];
+        var rootComponent = this['applicationRef']._rootComponents[0];
         this.root = rootComponent._component.viewContainerRef;
         return this.root;
       }

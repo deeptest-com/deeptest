@@ -42,13 +42,15 @@ export class EventEditDocument implements OnInit, AfterViewInit {
 
   tabModel: string = 'document';
 
+  // private allowedMimeType: string[] = ['image/png', 'image/jpeg'];
   private uploaderOptions:FileUploaderOptions = {
     url: Utils.getUploadUrl(),
     authToken: CONSTANT.TOKEN,
     autoUpload: true,
+    // allowedMimeType: this.allowedMimeType,
     filters: [{name: 'upload', fn: (item:any) => {
       console.log(item.name);
-      return true; // item.size < 100 * 1024 * 1024 || item.name.indexOf('.apk') > -1;
+      return true;
     }}]
   };
   public uploader: FileUploader;
@@ -90,7 +92,7 @@ export class EventEditDocument implements OnInit, AfterViewInit {
     let res = JSON.parse(response);
     console.log(res);
     this.uploadedFile = res;
-    this.item.avatar = res.uploadPath;
+    this.item.uri = res.uploadPath;
     this.uploader.clearQueue();
     this.isSubmitted = false;
   }
@@ -179,9 +181,7 @@ export class EventEditDocument implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
         {
-          'name': [that.item.name, [Validators.required]],
-          'title': [that.item.title, [Validators.required]],
-          'descr': [that.item.descr, [Validators.required]]
+          'title': [that.item.title, [Validators.required]]
         }, {}
     );
 
@@ -195,14 +195,8 @@ export class EventEditDocument implements OnInit, AfterViewInit {
 
   formErrors = [];
   validateMsg = {
-    'name': {
-      'required':      '姓名不能为空'
-    },
     'title': {
       'required':      '简介不能为空'
-    },
-    'descr': {
-      'required':      '描述不能为空'
     }
   };
 

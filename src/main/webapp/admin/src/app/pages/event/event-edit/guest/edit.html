@@ -77,10 +77,11 @@
                   <div class="upload-row">
                     <div class="upload-input-wrapper">
                         <span class="upload-input-container">
-                            <input id="upload-input" name="upload" type="file" ng2FileSelect [uploader]="uploader"/>
+                            <input id="upload-input" name="upload" type="file" ng2FileSelect [uploader]="uploader"
+                                   [accept]="allowedMimeType.toString()" />
                         </span>
                         <span class="upload-button-container">
-                            <button (click)='selectFile()' type="button" class="btn btn-secondary">选择APK文件...</button>
+                            <button (click)='selectFile()' type="button" class="btn btn-secondary">选择头像...</button>
                         </span>
                     </div>
 

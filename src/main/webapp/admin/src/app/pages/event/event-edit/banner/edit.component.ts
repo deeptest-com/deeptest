@@ -42,13 +42,15 @@ export class EventEditBanner implements OnInit, AfterViewInit {
 
   tabModel: string = 'banner';
 
+  private allowedMimeType: string[] = ['image/png', 'image/jpeg'];
   private uploaderOptions:FileUploaderOptions = {
     url: Utils.getUploadUrl(),
     authToken: CONSTANT.TOKEN,
     autoUpload: true,
+    allowedMimeType: this.allowedMimeType,
     filters: [{name: 'upload', fn: (item:any) => {
       console.log(item.name);
-      return true; // item.size < 100 * 1024 * 1024 || item.name.indexOf('.apk') > -1;
+      return true;
     }}]
   };
   public uploader: FileUploader;
@@ -90,7 +92,7 @@ export class EventEditBanner implements OnInit, AfterViewInit {
     let res = JSON.parse(response);
     console.log(res);
     this.uploadedFile = res;
-    this.item.avatar = res.uploadPath;
+    this.item.uri = res.uploadPath;
     this.uploader.clearQueue();
     this.isSubmitted = false;
   }

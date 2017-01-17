@@ -42,13 +42,15 @@ export class EventEditGuest implements OnInit, AfterViewInit {
 
   tabModel: string = 'guest';
 
+  private allowedMimeType: string[] = ['image/png', 'image/jpeg'];
   private uploaderOptions:FileUploaderOptions = {
     url: Utils.getUploadUrl(),
     authToken: CONSTANT.TOKEN,
     autoUpload: true,
+    allowedMimeType: this.allowedMimeType,
     filters: [{name: 'upload', fn: (item:any) => {
-      console.log(item.name);
-      return true; // item.size < 100 * 1024 * 1024 || item.name.indexOf('.apk') > -1;
+      console.log(this.uploader);
+      return true;
     }}]
   };
   public uploader: FileUploader;

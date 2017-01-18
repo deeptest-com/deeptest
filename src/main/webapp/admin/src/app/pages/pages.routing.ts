@@ -4,11 +4,11 @@ import { Pages } from './pages.component';
 const routes: Routes = [
   {
     path: 'login',
-    loadChildren: () => System.import('./login/login.module')
+    loadChildren: () => System.import('./user/login/login.module')
   },
   {
     path: 'register',
-    loadChildren: () => System.import('./register/register.module')
+    loadChildren: () => System.import('./user/register/register.module')
   },
   {
     path: 'pages',
@@ -17,7 +17,7 @@ const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', loadChildren: () => System.import('./dashboard/dashboard.module') },
       { path: 'event', loadChildren: () => System.import('./event/event.module') },
-      
+
       { path: 'editors', loadChildren: () => System.import('./editors/editors.module') },
       //{ path: 'components', loadChildren: () => System.import('./components/components.module') }
       { path: 'charts', loadChildren: () => System.import('./charts/charts.module') },

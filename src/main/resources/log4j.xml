@@ -24,7 +24,7 @@
     </appender>       
           
     <!-- 指定logger的设置，additivity指示是否遵循缺省的继承机制-->       
-<!--     <logger name="cn.mobiu.events.service" additivity="false">       
+<!--     <logger name="cn.linkr.events.service" additivity="false">       
         <priority value ="info"/>         
         <appender-ref ref="daily" />         
     </logger>    -->
@@ -62,7 +62,7 @@
          <appender-ref ref="console"/>       
         <appender-ref ref="file"/>
      </category>
-     <category name="cn.mobiu.events.util.MyDateConverter">
+     <category name="cn.linkr.events.util.MyDateConverter">
          <priority value="error" />
          <appender-ref ref="console"/>       
         <appender-ref ref="file"/>

@@ -18,8 +18,8 @@ public class ClientServiceImpl extends BaseServiceImpl implements ClientService 
         DetachedCriteria dc = DetachedCriteria.forClass(EvtClient.class);
         dc.add(Restrictions.eq("token", token));
 
-        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+        dc.add(Restrictions.ne("deleted", Boolean.TRUE));
+        dc.add(Restrictions.ne("disabled", Boolean.TRUE));
         dc.addOrder(Order.asc("id"));
         List<EvtClient> ls = findAllByCriteria(dc);
 

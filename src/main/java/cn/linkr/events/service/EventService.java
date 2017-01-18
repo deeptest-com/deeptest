@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.linkr.events.entity.EvtClient;
 import cn.linkr.events.entity.EvtEvent;
+import cn.linkr.events.entity.SysUser;
 import cn.linkr.events.vo.EventVo;
 import cn.linkr.events.vo.Page;
 
@@ -20,7 +21,7 @@ public interface EventService extends BaseService {
 
 	public Page list(Long companyId, String status, int startIndex, int itemsPerPage);
 
-	public EvtEvent save(EventVo vo, EvtClient client);
+	public EvtEvent save(EventVo vo, SysUser user);
 
 	EvtEvent genPo(EventVo vo);
 

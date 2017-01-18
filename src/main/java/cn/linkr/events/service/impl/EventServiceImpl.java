@@ -22,6 +22,7 @@ import cn.linkr.events.entity.EvtDocument.DocType;
 import cn.linkr.events.entity.EvtEvent;
 import cn.linkr.events.entity.EvtEvent.EventStatus;
 import cn.linkr.events.entity.EvtOrganizer;
+import cn.linkr.events.entity.SysUser;
 import cn.linkr.events.service.DocumentService;
 import cn.linkr.events.service.EventService;
 import cn.linkr.events.service.OrganizerService;
@@ -52,10 +53,10 @@ public class EventServiceImpl extends BaseServiceImpl implements EventService {
     }
 	
 	@Override
-	public EvtEvent save(EventVo vo, EvtClient client) {
+	public EvtEvent save(EventVo vo, SysUser user) {
 		EvtEvent po = genPo(vo);
-		po.setCreatorId(client.getId());
-		po.setCompanyId(client.getCompanyId());
+		po.setCreatorId(user.getId());
+		po.setCompanyId(user.getCompanyId());
 		saveOrUpdate(po);
 		return po;
 	}

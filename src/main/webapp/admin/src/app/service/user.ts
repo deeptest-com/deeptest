@@ -7,6 +7,7 @@ export class UserService {
   }
 
   _login = 'user/login';
+  _logout = 'user/logout';
   _register = 'user/register';
   _forgotPassword = 'user/forgotPassword';
   _resetPassword = 'user/resetPassword';
@@ -19,20 +20,22 @@ export class UserService {
   _removeCollection = 'user/removeCollections';
   _msgs = 'msgs';
 
-
-  login(email, password, rememberMe) {
+  login(email:string, password:string, rememberMe:string) {
     return this._reqService.post(this._login, {email: email, password: password, rememberMe: rememberMe});
   }
-
-  register(name, email, password) {
-    return this._reqService.post(this._register, {name:name, email: email, password: password});
+  logout() {
+    return this._reqService.post(this._logout, {});
   }
 
-  forgotPassword(phone) {
+  register(name:string, phone:string, email:string, password:string) {
+    return this._reqService.post(this._register, {name:name, phone: phone, email: email, password: password});
+  }
+
+  forgotPassword(phone:string) {
     return this._reqService.post(this._forgotPassword, {phone: phone});
   }
 
-  resetPassword(phone) {
+  resetPassword(phone:string) {
     return this._reqService.post(this._resetPassword, {phone: phone});
   }
 
@@ -40,7 +43,7 @@ export class UserService {
     return this._reqService.post(this._getProfile, {});
   }
 
-  saveProfile(profile) {
+  saveProfile(profile:any) {
     return this._reqService.post(this._saveProfile, profile);
   }
 

@@ -1,4 +1,4 @@
-package cn.linkr.events.action.client;
+package cn.linkr.events.action.admin;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 
+import cn.linkr.events.action.client.BaseAction;
 import cn.linkr.events.constants.Constant;
 import cn.linkr.events.entity.EvtBanner;
 import cn.linkr.events.entity.EvtClient;
 import cn.linkr.events.entity.EvtDocument;
+import cn.linkr.events.entity.SysUser;
 import cn.linkr.events.entity.EvtDocument.DocType;
 import cn.linkr.events.entity.EvtEvent;
 import cn.linkr.events.entity.EvtOrganizer;
@@ -38,8 +40,8 @@ import cn.linkr.events.vo.SessionVo;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "event/")
-public class EventAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_ADMIN + "event/")
+public class EventController extends BaseAction {
 	@Autowired
 	EventService eventService;
 	@Autowired
@@ -50,30 +52,36 @@ public class EventAction extends BaseAction {
 	OrganizerService organizerService;
 	
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "get", method = RequestMethod.POST)
+	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> get(HttpServletRequest request) {
+	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject req) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		JSONObject req = reqJson(request);
-		String eventId = req.getString("eventId");
 		
-		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
+		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		EvtEvent event = eventService.getDetail(Long.valueOf(eventId));
+		int currentPage = req.getString("currentPage") == null? 0: Integer.valueOf(req.getString("currentPage")) - 1;
+		int itemsPerPage = req.getString("itemsPerPage") == null? Constant.PAGE_SIZE: Integer.valueOf(req.getString("itemsPerPage"));
+		String status = req.getString("status");
+		
+		Page page = eventService.list(user.getCompanyId(), status, currentPage, itemsPerPage);
+		List<EventVo> vos = eventService.genVos(page.getItems());
+        
+		ret.put("totalItems", page.getTotal());
+        ret.put("events", vos);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "save", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody EventVo vo) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		
+		EvtEvent event = eventService.save(vo, user);
         EventVo eventVo = eventService.genVo(event);
-		
-		List<EvtDocument> docPos = documentService.listByEvent(Long.valueOf(eventId), null);
-        List<DocumentVo> docVos = documentService.genVos(docPos);
-        
-		List<EvtBanner> bannerPos = bannerService.listByEvent(Long.valueOf(eventId));
-		List<BannerVo> bannerVos = bannerService.genVos(bannerPos);
-        
-        List<EvtOrganizer> organizerPos = organizerService.listByEvent(Long.valueOf(eventId));
-        Map<String, List<OrganizerVo>> organizerMap = organizerService.genOrganizerMap(organizerPos);
-        
-        eventVo.setDocuments(docVos);
-        eventVo.setBanners(bannerVos);
-        eventVo.setOrganizers(organizerMap);
         
         ret.put("event", eventVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

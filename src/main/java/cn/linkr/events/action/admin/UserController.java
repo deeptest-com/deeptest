@@ -1,4 +1,4 @@
-package cn.linkr.events.action.client;
+package cn.linkr.events.action.admin;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 
+import cn.linkr.events.action.client.BaseAction;
 import cn.linkr.events.constants.Constant;
 import cn.linkr.events.constants.Constant.RespCode;
 import cn.linkr.events.entity.EvtClient;
@@ -34,8 +35,8 @@ import cn.linkr.events.vo.UserVo;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "user/")
-public class UserAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_ADMIN + "user/")
+public class UserController extends BaseAction {
 	@Autowired
 	UserService userService;
 	
@@ -50,15 +51,17 @@ public class UserAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> login(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		String mobile = json.getString("phone");
+		String email = json.getString("email");
 		String password = json.getString("password");
+		boolean rememberMe = json.getBoolean("rememberMe");
 
 		String platform = json.getString("platform");
 		String isWebView = json.getString("isWebView");
 		String deviceToken = json.getString("deviceToken");
 
-		SysUser user = userService.loginPers(mobile, password, platform, isWebView, deviceToken);
 		if (user != null) {
 			ret.put("token", user.getToken());
 
@@ -73,6 +76,32 @@ public class UserAction extends BaseAction {
 
 		return ret;
 	}
+	
+	@AuthPassport(validate=false)
+	@RequestMapping(value = "logout", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> logout(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		if (user == null) {
+			ret.put("code", RespCode.BIZ_FAIL.getCode());
+			ret.put("msg", "您不在登录状态");
+			return ret;
+		}
+		userService.logoutPers(user);
+		
+		if (user != null) {
+			ret.put("token", user.getToken());
+			
+			ret.put("code", RespCode.SUCCESS.getCode());
+		} else {
+			ret.put("code", RespCode.BIZ_FAIL.getCode());
+			ret.put("msg", "登出失败");
+		}
+
+		return ret;
+	}
 
 	@AuthPassport(validate=false)
 	@RequestMapping(value = "register", method = RequestMethod.POST)
@@ -80,13 +109,15 @@ public class UserAction extends BaseAction {
 	public Map<String, Object> register(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
+		String name = json.getString("name");
 		String phone = json.getString("phone");
+		String email = json.getString("email");
 		String password = json.getString("password");
 		String platform = json.getString("platform");
 		String isWebView = json.getString("isWebView");
 		String deviceToken = json.getString("deviceToken");
 
-		SysUser user = userService.registerPers(phone, password, platform, isWebView, deviceToken);
+		SysUser user = userService.registerPers(name, email, phone, password, platform, isWebView, deviceToken);
 
 		if (user != null) {
 			ret.put("token", user.getToken());
@@ -97,7 +128,7 @@ public class UserAction extends BaseAction {
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());
-			ret.put("msg", "用户已存在");
+			ret.put("msg", "邮箱已存在");
 		}
 
 		return ret;

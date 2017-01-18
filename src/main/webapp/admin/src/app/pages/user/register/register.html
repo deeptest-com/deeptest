@@ -3,7 +3,7 @@
     <h1>聆客会议管理系统</h1>
     <a routerLink="/login" class="auth-link">已经有账号了? 去登录!</a>
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit(form.value)" class="form-horizontal">
+    <form [formGroup]="form" (ngSubmit)="onSubmit(form.value)" class="form-horizontal my-validate-form">
       <div class="form-group row" [ngClass]="{'has-error': (!name.valid && name.touched), 'has-success': (name.valid && name.touched)}">
         <label for="inputName3" class="col-sm-2 control-label">姓名</label>
 
@@ -16,6 +16,13 @@
 
         <div class="col-sm-10">
           <input [formControl]="email" type="email" class="form-control" id="inputEmail3" placeholder="邮箱">
+        </div>
+      </div>
+      <div class="form-group row" [ngClass]="{'has-error': (!phone.valid && phone.touched), 'has-success': (phone.valid && phone.touched)}">
+        <label for="inputPhone3" class="col-sm-2 control-label">手机</label>
+
+        <div class="col-sm-10">
+          <input [formControl]="phone" type="phone" class="form-control" id="inputPhone3" placeholder="手机">
         </div>
       </div>
       <div class="form-group row" [ngClass]="{'has-error': (!password.valid && password.touched), 'has-success': (password.valid && password.touched)}">
@@ -38,6 +45,18 @@
           <button [disabled]="!form.valid" type="submit" class="btn btn-default btn-auth">注册</button>
         </div>
       </div>
+
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+          <div class="validate-errors">
+            <div class="validate-error" *ngIf="errors">
+              <div>{{ errors }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </form>
 
     <!--<div class="auth-sep"><span><span>or Sign up with one click</span></span></div>

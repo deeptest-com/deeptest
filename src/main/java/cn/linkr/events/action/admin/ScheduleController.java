@@ -1,4 +1,4 @@
-package cn.linkr.events.action.client;
+package cn.linkr.events.action.admin;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 
+import cn.linkr.events.action.client.BaseAction;
 import cn.linkr.events.constants.Constant;
 import cn.linkr.events.entity.EvtClient;
 import cn.linkr.events.entity.EvtEvent;
 import cn.linkr.events.entity.EvtScheduleItem;
+import cn.linkr.events.entity.SysUser;
 import cn.linkr.events.service.EventService;
 import cn.linkr.events.service.ScheduleService;
 import cn.linkr.events.service.SessionService;
@@ -32,8 +34,8 @@ import cn.linkr.events.vo.SessionVo;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "schedule/")
-public class ScheduleAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_ADMIN + "schedule/")
+public class ScheduleController extends BaseAction {
 	
 	@Autowired
 	EventService eventService;
@@ -44,10 +46,11 @@ public class ScheduleAction extends BaseAction {
 	ScheduleService scheduleService;
 	
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "listByEvent", method = RequestMethod.POST)
+	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> listByEvent(HttpServletRequest request) {
+	public Map<String, Object> list(HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
 		JSONObject req = reqJson(request);
 		String eventId = req.getString("eventId");
@@ -64,6 +67,20 @@ public class ScheduleAction extends BaseAction {
 		ret.put("bySession", vosBySession);
 		ret.put("byDate", vosByDate);
 		
+		return ret;
+	}
+	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "save", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody ScheduleItemVo vo) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		
+		EvtScheduleItem event = scheduleService.save(vo);
+		
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
 

@@ -2,6 +2,8 @@ import { NgModule, ModuleWithProviders }      from '@angular/core';
 import { TabsModule } from 'ng2-bootstrap';
 import { ButtonsModule } from 'ng2-bootstrap';
 
+import { RouteService } from '../../service/route';
+
 import {
   EventNav
 } from './components';
@@ -23,7 +25,7 @@ const My_COMPONENTS = [
   ]
 })
 export class ComponentsModule {
-  
+
 }
 
 

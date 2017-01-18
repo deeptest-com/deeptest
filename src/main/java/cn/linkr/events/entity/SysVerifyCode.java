@@ -15,7 +15,6 @@ public class SysVerifyCode extends BaseEntity {
 	private static final long serialVersionUID = -7404422286952704677L;
 	
 	private String code;
-	private Date createTime;
 	private Date expireTime;
 
 	@ManyToOne(fetch = FetchType.LAZY)

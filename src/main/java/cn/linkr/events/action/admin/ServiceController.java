@@ -1,4 +1,4 @@
-package cn.linkr.events.action.client;
+package cn.linkr.events.action.admin;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 
+import cn.linkr.events.action.client.BaseAction;
 import cn.linkr.events.constants.Constant;
 import cn.linkr.events.entity.EvtClient;
 import cn.linkr.events.entity.EvtGuest;
 import cn.linkr.events.entity.EvtService;
+import cn.linkr.events.entity.SysUser;
 import cn.linkr.events.service.ServiceService;
 import cn.linkr.events.util.AuthPassport;
 import cn.linkr.events.util.BeanUtilEx;
@@ -29,22 +31,21 @@ import cn.linkr.events.vo.ServiceVo;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "service/")
-public class ServiceAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_ADMIN + "service/")
+public class ServiceController extends BaseAction {
 	@Autowired
 	ServiceService serviceService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> list(HttpServletRequest request) {
+	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject req) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		JSONObject req = reqJson(request);
 		String eventId = req.getString("eventId");
 		
-		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
+		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		List<EvtService> pos = serviceService.list(Long.valueOf(eventId), null);
+		List<EvtService> pos = serviceService.listForEdit(Long.valueOf(eventId), null);
         List<ServiceVo> vos = new LinkedList<ServiceVo>();
         for (EvtService po: pos) {
         	ServiceVo vo = new ServiceVo();
@@ -57,26 +58,33 @@ public class ServiceAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-
+	
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "get", method = RequestMethod.POST)
+	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> get(HttpServletRequest request) {
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody ServiceVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		JSONObject req = reqJson(request);
-		String serviceId = req.getString("serviceId");
 		
-		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
+		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		EvtService service = serviceService.save(vo);
 		
-		EvtService po = (EvtService) serviceService.get(EvtService.class, Long.valueOf(serviceId));
-
-    	ServiceVo vo = new ServiceVo();
-    	BeanUtilEx.copyProperties(vo, po);
-    	vo.setTypeName(po.getType().getName());
-
-		ret.put("service", vo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
 	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "disable", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> disable(HttpServletRequest request, @RequestBody JSONObject to) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		
+		long serviceId = to.getLong("id");
+		String action = to.getString("action");
+		
+		boolean success = serviceService.disablePers(serviceId, action);
+		
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
 }

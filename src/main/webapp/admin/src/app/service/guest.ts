@@ -9,7 +9,7 @@ export class GuestService {
     _api_url = 'guest/';
 
     list(itemsPerPage: number, currentPage: number, eventId: number) {
-        return this._reqService.post(this._api_url + 'listByPage', {itemsPerPage: itemsPerPage, currentPage: currentPage, eventId: eventId});
+        return this._reqService.post(this._api_url + 'list', {itemsPerPage: itemsPerPage, currentPage: currentPage, eventId: eventId});
     }
 
     get(id: number) {

@@ -1,6 +1,8 @@
 import {Component, ViewEncapsulation, Input, Output, EventEmitter} from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 
+import { RouteService } from '../../../../service/route';
+
 @Component({
   selector: 'event-nav',
   encapsulation: ViewEncapsulation.None,
@@ -16,7 +18,7 @@ export class EventNav {
   @Output() createClick = new EventEmitter<any>();
   @Output() itemClick = new EventEmitter<any>();
 
-  constructor(private _router: Router) {
+  constructor(private _routeService: RouteService) {
   }
 
   public onCreateClick($event: any):boolean {
@@ -30,6 +32,6 @@ export class EventNav {
   }
   public back($event: any):void {
     let that = this;
-    that._router.navigateByUrl("/pages/event/list");
+    that._routeService.navTo('/pages/event/list');
   }
 }

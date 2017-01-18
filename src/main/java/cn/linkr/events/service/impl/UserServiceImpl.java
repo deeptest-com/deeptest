@@ -19,9 +19,11 @@ import cn.linkr.events.util.StringUtil;
 public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
 	@Override
-	public SysUser getUserByToken(String token) {
+	public SysUser getByToken(String token) {
 		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
 		dc.add(Restrictions.eq("token", token));
+		dc.add(Restrictions.ge("tokenExpireTime", new Date()));
+		
 		dc.add(Restrictions.ne("deleted", true));
 		dc.add(Restrictions.ne("disabled", true));
 
@@ -34,10 +36,10 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public SysUser loginPers(String phone, String password, String platform, String isWebview, String deviceToken) {
+	public SysUser loginPers(String email, String password, Boolean rememberMe, String platform, String isWebview, String deviceToken) {
 		String newToken = null;
 		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
-		dc.add(Restrictions.eq("phone", phone));
+		dc.add(Restrictions.eq("email", email));
 		dc.add(Restrictions.eq("password", password));
 		dc.add(Restrictions.ne("deleted", true));
 		dc.add(Restrictions.ne("disabled", true));
@@ -48,6 +50,14 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 			user = ls.get(0);
 			newToken = UUID.randomUUID().toString();
 			user.setToken(newToken);
+			
+			int tokenExpireDays = 1;
+			if (rememberMe) {
+				tokenExpireDays = 30;
+			}
+			Date dt = new Date();
+			dt.setTime(dt.getTime() + tokenExpireDays * 24 * 60 * 60 * 1000);
+			user.setTokenExpireTime(dt);
 
 			if (StringUtils.isNotEmpty(platform)) {
 				user.setPlatform(SysUser.PlatformType.StringToEnum(platform.trim().toUpperCase()));
@@ -68,10 +78,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public SysUser registerPers(String phone, String password, String platform, String isWebview, String deviceToken) {
+	public SysUser registerPers(String name, String email, String phone, String password, String platform, String isWebview, String deviceToken) {
 		String newToken = null;
 		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
-		dc.add(Restrictions.eq("phone", phone));
+		
+		dc.add(Restrictions.eq("email", email));
 		dc.add(Restrictions.ne("deleted", true));
 		dc.add(Restrictions.ne("disabled", true));
 		List<SysUser> ls = (List<SysUser>) findAllByCriteria(dc);
@@ -82,7 +93,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
 		SysUser user = new SysUser();
 		newToken = UUID.randomUUID().toString();
+		user.setName(name);
 		user.setToken(newToken);
+		user.setEmail(email);
 		user.setPhone(phone);
 		user.setPassword(password);
 
@@ -98,6 +111,10 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		if (StringUtils.isNotEmpty(deviceToken)) {
 			user.setToken(deviceToken);
 		}
+		Date dt = new Date();
+		dt.setTime(dt.getTime() + 24 * 60 * 60 * 1000);
+		user.setTokenExpireTime(dt);
+		
 		user.setLastLoginTime(new Date());
 		saveOrUpdate(user);
 
@@ -106,7 +123,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
 	@Override
 	public SysVerifyCode forgetPaswordPers(String phone) {
-		SysUser user = getUserByPhone(phone);
+		SysUser user = getByPhone(phone);
 		if (user == null) {
 			return null;
 		}
@@ -124,7 +141,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public SysUser getUserByPhone(String phone) {
+	public SysUser getByPhone(String phone) {
 		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
 		dc.add(Restrictions.eq("phone", phone));
 		dc.add(Restrictions.ne("deleted", true));
@@ -143,7 +160,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 			String password, String platform, String isWebview,
 			String deviceToken) {
 
-		SysUser user = getUserByPhone(phone);
+		SysUser user = getByPhone(phone);
 		if (user == null) {
 			return null;
 		}
@@ -185,6 +202,25 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		saveOrUpdate(code);
 
 		return user;
+	}
+
+	@Override
+	public SysUser logoutPers(SysUser u) {
+		
+		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
+		dc.add(Restrictions.eq("email", u.getEmail()));
+		dc.add(Restrictions.ne("deleted", true));
+		dc.add(Restrictions.ne("disabled", true));
+		List<SysUser> ls = (List<SysUser>) findAllByCriteria(dc);
+
+		SysUser user = null;
+		if (ls.size() > 0) {
+			user = ls.get(0);
+			user.setToken("");
+			user.setTokenExpireTime(new Date());
+			saveOrUpdate(user);
+		}
+		return null;
 	}
     
 }

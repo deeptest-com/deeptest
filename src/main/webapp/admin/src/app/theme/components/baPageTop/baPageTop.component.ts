@@ -2,6 +2,12 @@ import {Component, ViewEncapsulation} from '@angular/core';
 
 import {GlobalState} from '../../../global.state';
 
+import { Cookie } from 'ng2-cookies/ng2-cookies';
+
+import { CONSTANT } from '../../../utils/constant';
+import { RouteService } from '../../../service/route';
+import { UserService } from '../../../service/user';
+
 @Component({
   selector: 'ba-page-top',
   styles: [require('./baPageTop.scss')],
@@ -13,11 +19,12 @@ export class BaPageTop {
   public isScrolled:boolean = false;
   public isMenuCollapsed:boolean = false;
 
-  constructor(private _state:GlobalState) {
+  constructor(private _state:GlobalState, private userService: UserService, private routeService: RouteService) {
     this._state.subscribe('menu.isCollapsed', (isCollapsed) => {
       this.isMenuCollapsed = isCollapsed;
     });
   }
+
 
   public toggleMenu() {
     this.isMenuCollapsed = !this.isMenuCollapsed;
@@ -27,5 +34,18 @@ export class BaPageTop {
 
   public scrolledChanged(isScrolled) {
     this.isScrolled = isScrolled;
+  }
+
+  logout() {
+
+    this.userService.logout().subscribe((json:any) => {
+      if (json.code == 1) {
+        Cookie.delete(CONSTANT.COOKIE_KEY);
+
+        this.routeService.navTo('/login');
+      }
+    });
+
+
   }
 }

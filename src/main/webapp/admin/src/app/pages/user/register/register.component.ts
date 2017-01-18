@@ -2,6 +2,8 @@ import {Component, ViewEncapsulation} from '@angular/core';
 import {FormGroup, AbstractControl, FormBuilder, Validators} from '@angular/forms';
 import {EmailValidator, EqualPasswordsValidator} from '../../../theme/validators';
 
+import { Cookie } from 'ng2-cookies/ng2-cookies';
+
 import { CONSTANT } from '../../../utils/constant';
 import { RouteService } from '../../../service/route';
 import { UserService } from '../../../service/user';
@@ -16,17 +18,20 @@ export class Register {
 
   public form:FormGroup;
   public name:AbstractControl;
+  public phone:AbstractControl;
   public email:AbstractControl;
   public password:AbstractControl;
   public repeatPassword:AbstractControl;
   public passwords:FormGroup;
 
   public submitted:boolean = false;
+  public errors: string;
 
-  constructor(fb:FormBuilder, private userService: UserService) {
+  constructor(fb:FormBuilder, private userService: UserService, private routeService: RouteService) {
 
     this.form = fb.group({
       'name': ['', Validators.compose([Validators.required, Validators.minLength(4)])],
+      'phone': ['', Validators.compose([Validators.required, Validators.minLength(11)])],
       'email': ['', Validators.compose([Validators.required, EmailValidator.validate])],
       'passwords': fb.group({
         'password': ['', Validators.compose([Validators.required, Validators.minLength(4)])],
@@ -35,6 +40,7 @@ export class Register {
     });
 
     this.name = this.form.controls['name'];
+    this.phone = this.form.controls['phone'];
     this.email = this.form.controls['email'];
     this.passwords = <FormGroup> this.form.controls['passwords'];
     this.password = this.passwords.controls['password'];
@@ -46,7 +52,19 @@ export class Register {
     this.submitted = true;
     if (this.form.valid) {
       console.log(values);
-      this.userService.register(values['name'], values['email'], values['passwords']['password']);
+
+      this.userService.register(values['name'], values['phone'], values['email'], values['passwords']['password']).subscribe((json:any) => {
+        if (json.code == 1) {
+          console.log(json);
+          that.errors = undefined;
+          CONSTANT.TOKEN = json.token;
+          Cookie.set(CONSTANT.COOKIE_KEY, CONSTANT.TOKEN, 30);
+
+          that.routeService.navTo('/pages/dashboard');
+        } else {
+          that.errors = json.msg;
+        }
+      });
     }
   }
 }

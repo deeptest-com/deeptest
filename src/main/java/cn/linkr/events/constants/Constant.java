@@ -12,9 +12,12 @@ public final class Constant {
     public static String WEB_ROOT = null;
 
     // 跨域白名单
-    public static final List<String> CLIENT_URL_LIST = Arrays.asList(
-            "http://localhost:3000");
+    public static final List<String> CLIENT_URL_LIST = Arrays.asList("http://localhost:3000");
     public static final String API_PATH_CLIENT = "api/client/v1/";
+    public static final String API_PATH_ADMIN = "api/admin/v1/";
+    
+    public static final String API_PACKAGE_FOR_CLIENT = "cn.linkr.events.action.client";
+    public static final String API_PACKAGE_FOR_ADMIN = "cn.linkr.events.action.admin";
 
     // 上传目录
     public static final String FTP_UPLOAD_DIR = "upload/";
@@ -24,12 +27,9 @@ public final class Constant {
     }
 
     public static final int PAGE_SIZE = 10;
-    
-    public static final String API_PACKAGE_FOR_CLIENT = "cn.linkr.events.action.client";
-    public static final String API_PACKAGE_FOR_ADMIN = "cn.linkr.events.action.admin";
 
     public static enum RespCode {
-        SUCCESS(1), BIZ_FAIL(-1), BIZ_FAIL_2(-2), INTERFACE_FAIL(-10), NOT_LOGIN(-100);
+        SUCCESS(1), BIZ_FAIL(101), BIZ_FAIL_2(102), INTERFACE_FAIL(-10), NOT_LOGIN(-100);
 
         private RespCode(int code) {
             this.code = code;

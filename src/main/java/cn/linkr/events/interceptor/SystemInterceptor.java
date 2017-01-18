@@ -15,7 +15,9 @@ import org.springframework.web.servlet.ModelAndView;
 import cn.linkr.events.constants.Constant;
 import cn.linkr.events.constants.Constant.RespCode;
 import cn.linkr.events.entity.EvtClient;
+import cn.linkr.events.entity.SysUser;
 import cn.linkr.events.service.ClientService;
+import cn.linkr.events.service.UserService;
 import cn.linkr.events.util.AuthPassport;
 import cn.linkr.events.util.SpringContextHolder;
 import cn.linkr.events.util.WebUtils;
@@ -53,15 +55,30 @@ public class SystemInterceptor implements HandlerInterceptor {
             	token = request.getParameter("Authorization");
             }
             
-			// app鉴权管理
+			// client请求鉴权
 			if (packageName.startsWith(Constant.API_PACKAGE_FOR_CLIENT)) {
-				
 				if (StringUtils.isNotBlank(token)) {
 					// 登录验证
 					ClientService clientService = SpringContextHolder.getBean(ClientService.class);
 					EvtClient client = clientService.getByToken(token.trim());
 					if (client != null) {
 						request.getSession(true).setAttribute(Constant.HTTP_SESSION_CLIENT_KEY, client);
+						return true;
+					}
+				}
+				
+				Map<String, Object> result = new HashMap<String, Object>();
+				result.put("code", RespCode.NOT_LOGIN.getCode());
+				result.put("msg", "not login");
+				WebUtils.renderJson(response, JSON.toJSONString(result));
+				return false;
+			} else if (packageName.startsWith(Constant.API_PACKAGE_FOR_ADMIN)) { // admin请求鉴权
+				if (StringUtils.isNotBlank(token)) {
+					// 登录验证
+					UserService userService = SpringContextHolder.getBean(UserService.class);
+					SysUser user = userService.getByToken(token.trim());
+					if (user != null) {
+						request.getSession(true).setAttribute(Constant.HTTP_SESSION_CLIENT_KEY, user);
 						return true;
 					}
 				}

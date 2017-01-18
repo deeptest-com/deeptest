@@ -5,12 +5,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.JoinColumn;
 
@@ -24,6 +26,7 @@ public class SysUser extends BaseEntity {
     private String name;
     private String password;
     private String token;
+    private Date tokenExpireTime;
 
     private String verifyCode;
     private Date lastLoginTime;
@@ -33,6 +36,13 @@ public class SysUser extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private AgentType agent;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", insertable = false, updatable = false)
+    private EvtCompany company;
+
+    @Column(name = "company_id")
+    private Long companyId;
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "r_user_role", joinColumns = { 
@@ -171,5 +181,29 @@ public class SysUser extends BaseEntity {
 
 	public void setAgent(AgentType agent) {
 		this.agent = agent;
+	}
+
+	public Date getTokenExpireTime() {
+		return tokenExpireTime;
+	}
+
+	public void setTokenExpireTime(Date tokenExpireTime) {
+		this.tokenExpireTime = tokenExpireTime;
+	}
+
+	public EvtCompany getCompany() {
+		return company;
+	}
+
+	public void setCompany(EvtCompany company) {
+		this.company = company;
+	}
+
+	public Long getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(Long companyId) {
+		this.companyId = companyId;
 	}
 }

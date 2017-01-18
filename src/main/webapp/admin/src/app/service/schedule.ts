@@ -9,7 +9,7 @@ export class ScheduleService {
     _api_url = 'schedule/';
 
     listByEvent(eventId: number) {
-        return this._reqService.post(this._api_url + 'listByEvent', {eventId: eventId, isNest: true});
+        return this._reqService.post(this._api_url + 'list', {eventId: eventId, isNest: true});
     }
 
     get(id: number) {

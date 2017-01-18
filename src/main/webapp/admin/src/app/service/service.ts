@@ -9,7 +9,7 @@ export class ServiceService {
     _api_url = 'service/';
 
     list(eventId: number) {
-        return this._reqService.post(this._api_url + 'listForEdit', {eventId: eventId});
+        return this._reqService.post(this._api_url + 'list', {eventId: eventId});
     }
 
     get(id: number) {

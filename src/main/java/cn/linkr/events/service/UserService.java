@@ -7,14 +7,15 @@ import cn.linkr.events.entity.SysVerifyCode;
 
 public interface UserService extends BaseService {
 
-	SysUser getUserByToken(String token);
+	SysUser getByToken(String token);
 
-	SysUser getUserByPhone(String token);
+	SysUser getByPhone(String token);
 
-	SysUser loginPers(String mobile, String password, String platform,
+	SysUser loginPers(String mobile, String password, Boolean rememberMe, String platform,
 			String agent, String deviceToken);
+	SysUser logoutPers(SysUser user);
 
-	SysUser registerPers(String mobile, String password, String platform,
+	SysUser registerPers(String name, String email, String phone, String password, String platform,
 			String isWebView, String deviceToken);
 
 	SysVerifyCode forgetPaswordPers(String mobile);

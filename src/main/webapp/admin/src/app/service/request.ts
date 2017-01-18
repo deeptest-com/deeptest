@@ -5,12 +5,15 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
+import { Cookie } from 'ng2-cookies/ng2-cookies';
+
 import {CONSTANT} from '../utils/constant';
+import { RouteService } from './route';
 
 @Injectable()
 export class RequestService {
 
-    constructor(private http: Http) {
+    constructor(private http: Http, private routeService: RouteService) {
 
     }
     post(apiPath: string, reqBody: any) {
@@ -18,7 +21,8 @@ export class RequestService {
         let url = CONSTANT.API_URL + apiPath;
 
         let body = JSON.stringify(reqBody);
-        let headers = new Headers({ 'Content-Type': 'application/json', 'Authorization': CONSTANT.TOKEN });
+        let headers = new Headers({ 'Content-Type': 'application/json',
+          'Authorization': Cookie.get(CONSTANT.COOKIE_KEY) });
         let options = new RequestOptions({ headers: headers });
 
         console.log(url, body);
@@ -28,10 +32,13 @@ export class RequestService {
                     let json = res.json();
                     console.log(json);
                     if (!!json.code && json.code > 0) {
-                        return json;
+
+                    } else if (json.code == -100) {
+                      me.routeService.navTo('/login');
                     } else {
                         me.handleError(json.msg);
                     }
+                    return json;
                 }
             )
             .catch(this.handleError);
@@ -51,10 +58,13 @@ export class RequestService {
             let json = res.json();
             console.log(json);
             if (!!json.code && json.code > 0) {
-              return json;
+
+            } else if (json.code == -100) {
+              me.routeService.navTo('/login');
             } else {
               me.handleError(json.msg);
             }
+            return json;
           }
         )
         .catch(this.handleError);
@@ -73,18 +83,22 @@ export class RequestService {
           function(res) {
             let json = res.json();
             console.log(json);
+
             if (!!json.code && json.code > 0) {
-              return json;
+
+            } else if (json.code == -100) {
+              me.routeService.navTo('/login');
             } else {
               me.handleError(json.msg);
             }
+            return json;
           }
         )
         .catch(this.handleError);
     }
 
-    handleError(error: Response) {
+    handleError(error: string) {
         console.error(error);
-        return Observable.throw(error.json().error || 'Server error');
+        return Observable.throw(error || 'Server error');
     }
 }

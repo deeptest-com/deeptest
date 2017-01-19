@@ -43,7 +43,9 @@ export class Login {
       if (json.code == 1) {
         that.errors = undefined;
 
-        Cookie.set(CONSTANT.PROFILE_KEY, JSON.stringify(json.data), 30);
+        let days = values['rememberMe']? 30: 1;
+
+        Cookie.set(CONSTANT.PROFILE_KEY, JSON.stringify(json.data), days);
         CONSTANT.PROFILE = json.data;
 
         console.log(CONSTANT.PROFILE_KEY);

@@ -22,23 +22,6 @@ import cn.linkr.events.vo.UserVo;
 public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
 	@Override
-	public SysUser getByToken(String token) {
-		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
-		dc.add(Restrictions.eq("token", token));
-		dc.add(Restrictions.ge("tokenExpireTime", new Date()));
-		
-		dc.add(Restrictions.ne("deleted", true));
-		dc.add(Restrictions.ne("disabled", true));
-
-		List ls = findAllByCriteria(dc);
-		if (ls.size() > 0) {
-			return (SysUser) ls.get(0);
-		} else {
-			return null;
-		}
-	}
-
-	@Override
 	public SysUser loginPers(String email, String password, Boolean rememberMe) {
 		String newToken = null;
 		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
@@ -53,13 +36,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 			user = ls.get(0);
 			newToken = UUID.randomUUID().toString();
 			user.setToken(newToken);
-			
-			int tokenExpireDays = 1;
-			if (rememberMe) {
-				tokenExpireDays = 30;
-			}
-			Date dt = DateUtils.addDays(new Date(), 30);
-			user.setTokenExpireTime(dt);
 
 			user.setLastLoginTime(new Date());
 			saveOrUpdate(user);
@@ -88,10 +64,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		user.setEmail(email);
 		user.setPhone(phone);
 		user.setPassword(password);
-
-		Date dt = new Date();
-		dt.setTime(dt.getTime() + 24 * 60 * 60 * 1000);
-		user.setTokenExpireTime(dt);
 		
 		user.setLastLoginTime(new Date());
 		saveOrUpdate(user);
@@ -195,10 +167,26 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		if (ls.size() > 0) {
 			user = ls.get(0);
 			user.setToken("");
-			user.setTokenExpireTime(new Date());
 			saveOrUpdate(user);
 		}
 		return user;
+	}
+	
+
+	@Override
+	public SysUser getByToken(String token) {
+		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
+		dc.add(Restrictions.eq("token", token));
+		
+		dc.add(Restrictions.ne("deleted", true));
+		dc.add(Restrictions.ne("disabled", true));
+
+		List ls = findAllByCriteria(dc);
+		if (ls.size() > 0) {
+			return (SysUser) ls.get(0);
+		} else {
+			return null;
+		}
 	}
 
 	@Override

@@ -26,7 +26,6 @@ public class SysUser extends BaseEntity {
     private String name;
     private String password;
     private String token;
-    private Date tokenExpireTime;
 
     private String verifyCode;
     private Date lastLoginTime;
@@ -181,14 +180,6 @@ public class SysUser extends BaseEntity {
 
 	public void setAgent(AgentType agent) {
 		this.agent = agent;
-	}
-
-	public Date getTokenExpireTime() {
-		return tokenExpireTime;
-	}
-
-	public void setTokenExpireTime(Date tokenExpireTime) {
-		this.tokenExpireTime = tokenExpireTime;
 	}
 
 	public EvtCompany getCompany() {

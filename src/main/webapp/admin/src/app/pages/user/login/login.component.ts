@@ -27,7 +27,7 @@ export class Login {
     this.form = fb.group({
       'email': ['', Validators.compose([Validators.required, Validators.minLength(4)])],
       'password': ['', Validators.compose([Validators.required, Validators.minLength(4)])],
-      'rememberMe': ['', null]
+      'rememberMe': [true, null]
     });
 
     this.email = this.form.controls['email'];

@@ -51,16 +51,12 @@ public class UserAdmin extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> login(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		String email = json.getString("email");
 		String password = json.getString("password");
-		boolean rememberMe = json.getBoolean("rememberMe");
-
-		String platform = json.getString("platform");
-		String isWebView = json.getString("isWebView");
-		String deviceToken = json.getString("deviceToken");
+		boolean rememberMe = json.getBoolean("rememberMe") != null? json.getBoolean("rememberMe"): false;
+		
+		SysUser user = userService.loginPers(email, password, rememberMe);
 
 		if (user != null) {
 			ret.put("token", user.getToken());
@@ -89,11 +85,11 @@ public class UserAdmin extends BaseAction {
 			ret.put("msg", "您不在登录状态");
 			return ret;
 		}
-		userService.logoutPers(user);
+		user = userService.logoutPers(user);
 		
 		if (user != null) {
 			ret.put("token", user.getToken());
-			
+			ret.put("data", user);
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());
@@ -113,11 +109,8 @@ public class UserAdmin extends BaseAction {
 		String phone = json.getString("phone");
 		String email = json.getString("email");
 		String password = json.getString("password");
-		String platform = json.getString("platform");
-		String isWebView = json.getString("isWebView");
-		String deviceToken = json.getString("deviceToken");
 
-		SysUser user = userService.registerPers(name, email, phone, password, platform, isWebView, deviceToken);
+		SysUser user = userService.registerPers(name, email, phone, password);
 
 		if (user != null) {
 			ret.put("token", user.getToken());

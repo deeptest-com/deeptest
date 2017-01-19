@@ -44,8 +44,8 @@ public class SystemInterceptor implements HandlerInterceptor {
             }
             
             // 已经登录
-            if (request.getSession(true).getAttribute(Constant.HTTP_SESSION_CLIENT_KEY) != null
-            		|| request.getSession(true).getAttribute(Constant.HTTP_SESSION_USER_KEY) != null) {
+            if (request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY) != null
+            		|| request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY) != null) {
             	return true;
             }
 
@@ -63,7 +63,7 @@ public class SystemInterceptor implements HandlerInterceptor {
 					ClientService clientService = SpringContextHolder.getBean(ClientService.class);
 					EvtClient client = clientService.getByToken(token.trim());
 					if (client != null) {
-						request.getSession(true).setAttribute(Constant.HTTP_SESSION_CLIENT_KEY, client);
+						request.getSession().setAttribute(Constant.HTTP_SESSION_CLIENT_KEY, client);
 						return true;
 					}
 				}
@@ -79,7 +79,7 @@ public class SystemInterceptor implements HandlerInterceptor {
 					UserService userService = SpringContextHolder.getBean(UserService.class);
 					SysUser user = userService.getByToken(token.trim());
 					if (user != null) {
-						request.getSession(true).setAttribute(Constant.HTTP_SESSION_CLIENT_KEY, user);
+						request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, user);
 						return true;
 					}
 				}

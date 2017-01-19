@@ -13,6 +13,7 @@ import cn.linkr.events.entity.SysUser;
 import cn.linkr.events.entity.SysUser.AgentType;
 import cn.linkr.events.entity.SysVerifyCode;
 import cn.linkr.events.service.UserService;
+import cn.linkr.events.util.DateUtils;
 import cn.linkr.events.util.StringUtil;
 
 @Service
@@ -36,7 +37,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public SysUser loginPers(String email, String password, Boolean rememberMe, String platform, String isWebview, String deviceToken) {
+	public SysUser loginPers(String email, String password, Boolean rememberMe) {
 		String newToken = null;
 		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
 		dc.add(Restrictions.eq("email", email));
@@ -55,22 +56,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 			if (rememberMe) {
 				tokenExpireDays = 30;
 			}
-			Date dt = new Date();
-			dt.setTime(dt.getTime() + tokenExpireDays * 24 * 60 * 60 * 1000);
+			Date dt = DateUtils.addDays(new Date(), 30);
 			user.setTokenExpireTime(dt);
 
-			if (StringUtils.isNotEmpty(platform)) {
-				user.setPlatform(SysUser.PlatformType.StringToEnum(platform.trim().toUpperCase()));
-			}
-
-			if (StringUtils.isNotEmpty(isWebview)) {
-				AgentType agent = Boolean.valueOf(isWebview)? AgentType.WEBVIEW: AgentType.BROWSER;
-				user.setAgent(agent);
-			}
-
-			if (StringUtils.isNotEmpty(deviceToken)) {
-				user.setToken(deviceToken);
-			}
 			user.setLastLoginTime(new Date());
 			saveOrUpdate(user);
 		}
@@ -78,7 +66,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public SysUser registerPers(String name, String email, String phone, String password, String platform, String isWebview, String deviceToken) {
+	public SysUser registerPers(String name, String email, String phone, String password) {
 		String newToken = null;
 		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
 		
@@ -99,18 +87,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		user.setPhone(phone);
 		user.setPassword(password);
 
-		if (StringUtils.isNotEmpty(platform)) {
-			user.setPlatform(SysUser.PlatformType.valueOf(platform.trim().toUpperCase()));
-		}
-
-		if (StringUtils.isNotEmpty(isWebview)) {
-			AgentType agent = Boolean.valueOf(isWebview)? AgentType.WEBVIEW: AgentType.BROWSER;
-			user.setAgent(agent);
-		}
-
-		if (StringUtils.isNotEmpty(deviceToken)) {
-			user.setToken(deviceToken);
-		}
 		Date dt = new Date();
 		dt.setTime(dt.getTime() + 24 * 60 * 60 * 1000);
 		user.setTokenExpireTime(dt);

@@ -11,12 +11,10 @@ public interface UserService extends BaseService {
 
 	SysUser getByPhone(String token);
 
-	SysUser loginPers(String mobile, String password, Boolean rememberMe, String platform,
-			String agent, String deviceToken);
+	SysUser loginPers(String mobile, String password, Boolean rememberMe);
 	SysUser logoutPers(SysUser user);
 
-	SysUser registerPers(String name, String email, String phone, String password, String platform,
-			String isWebView, String deviceToken);
+	SysUser registerPers(String name, String email, String phone, String password);
 
 	SysVerifyCode forgetPaswordPers(String mobile);
 

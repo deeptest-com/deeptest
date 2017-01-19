@@ -11,6 +11,7 @@ import {ComponentsHelper } from 'ng2-bootstrap';
 import { MENU } from './app.menu';
 
 import {Utils} from './utils/utils';
+import {UserService} from './service/user';
 
 /*
  * App Component
@@ -36,6 +37,7 @@ export class App {
               private _spinner: BaThemeSpinner,
               private _config: BaThemeConfig,
               private _menuService: BaMenuService,
+              private _userService: UserService,
               private viewContainerRef: ViewContainerRef) {
 
     this._menuService.updateMenuByRoutes(<Routes>MENU);
@@ -49,6 +51,7 @@ export class App {
     });
 
     Utils.config();
+    this._userService.loadProfileLocal();
   }
 
   public ngAfterViewInit(): void {

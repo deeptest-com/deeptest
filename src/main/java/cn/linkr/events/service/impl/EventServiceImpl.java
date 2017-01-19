@@ -46,8 +46,8 @@ public class EventServiceImpl extends BaseServiceImpl implements EventService {
 	@Override
 	public Page list(SysUser user, String statusStr, int currentPage, int itemsPerPage) {
         DetachedCriteria dc = DetachedCriteria.forClass(EvtEvent.class);
-//        dc.add(Restrictions.eq("companyId", companyId));
-        dc.add(Restrictions.eq("creatorId", user.getId()));
+        dc.add(Restrictions.eq("companyId", user.getCompanyId()));
+//        dc.add(Restrictions.eq("creatorId", user.getId()));
         
         if (StringUtils.isNotEmpty(statusStr)) {
         	Date now = new Date();

@@ -1,9 +1,15 @@
 import {Injectable} from "@angular/core";
+
+import { Cookie } from 'ng2-cookies/ng2-cookies';
+import {GlobalState} from '../global.state';
+
+import { CONSTANT } from '../utils/constant';
+import { RouteService } from './route';
 import {RequestService} from "./request";
 
 @Injectable()
 export class UserService {
-  constructor(private _reqService:RequestService) {
+  constructor(private _state:GlobalState, private _reqService:RequestService, private routeService: RouteService) {
   }
 
   _login = 'user/login';
@@ -21,14 +27,59 @@ export class UserService {
   _msgs = 'msgs';
 
   login(email:string, password:string, rememberMe:string) {
-    return this._reqService.post(this._login, {email: email, password: password, rememberMe: rememberMe});
+    let that = this;
+    return this._reqService.post(this._login, {email: email, password: password, rememberMe: rememberMe}).map((json:any) => {
+      let errors = undefined;
+      if (json.code == 1) {
+        let days:number = rememberMe? 30: 1;
+
+        that.saveProfileLocal(json.data, days);
+
+        that.routeService.navTo('/pages/dashboard');
+      } else {
+        errors = json.msg;
+      }
+      return errors;
+    });
   }
   logout() {
-    return this._reqService.post(this._logout, {});
-  }
+    this._reqService.post(this._logout, {}).subscribe((json:any) => {
+      if (json.code == 1) {
+        Cookie.delete(CONSTANT.PROFILE_KEY);
 
+        this.routeService.navTo('/login');
+      }
+    });
+  }
   register(name:string, phone:string, email:string, password:string) {
-    return this._reqService.post(this._register, {name:name, phone: phone, email: email, password: password});
+    let that = this;
+    return this._reqService.post(this._register, {name:name, phone: phone, email: email, password: password}).map((json:any) => {
+      let errors = undefined;
+      if (json.code == 1) {
+        that.saveProfileLocal(json.data, 1);
+
+        that.routeService.navTo('/pages/dashboard');
+      } else {
+        errors = json.msg;
+      }
+      return errors;
+    });
+  }
+  saveProfileLocal(profile:any, days:number) {
+    let that = this;
+    CONSTANT.PROFILE = profile;
+    Cookie.set(CONSTANT.PROFILE_KEY, JSON.stringify(profile), days);
+    that._state.notifyDataChanged('profile.refresh', profile);
+  }
+  loadProfileLocal() {
+    let that = this;
+    let profile = Cookie.get(CONSTANT.PROFILE_KEY);
+
+    if (profile) {
+      CONSTANT.PROFILE = JSON.parse(profile);
+      that._state.notifyDataChanged('profile.refresh', profile);
+      console.log('===loadProfile===', CONSTANT.PROFILE);
+    }
   }
 
   forgotPassword(phone:string) {

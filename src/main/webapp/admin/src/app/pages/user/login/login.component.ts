@@ -1,9 +1,6 @@
 import {Component, ViewEncapsulation} from '@angular/core';
 import {FormGroup, AbstractControl, FormBuilder, Validators} from '@angular/forms';
 
-import { Cookie } from 'ng2-cookies/ng2-cookies';
-
-import { CONSTANT } from '../../../utils/constant';
 import { RouteService } from '../../../service/route';
 import { UserService } from '../../../service/user';
 
@@ -37,23 +34,10 @@ export class Login {
 
   public onSubmit(values:Object):void {
     let that = this;
-    this.submitted = true;
+    that.submitted = true;
 
-    this.userService.login(values['email'], values['password'], values['rememberMe']).subscribe((json:any) => {
-      if (json.code == 1) {
-        that.errors = undefined;
-
-        let days = values['rememberMe']? 30: 1;
-
-        Cookie.set(CONSTANT.PROFILE_KEY, JSON.stringify(json.data), days);
-        CONSTANT.PROFILE = json.data;
-
-        console.log(CONSTANT.PROFILE_KEY);
-
-        that.routeService.navTo('/pages/dashboard');
-      } else {
-        that.errors = json.msg;
-      }
+    this.userService.login(values['email'], values['password'], values['rememberMe']).subscribe((err:any) => {
+      that.errors = err;
     });
   }
 }

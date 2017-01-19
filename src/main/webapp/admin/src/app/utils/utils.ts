@@ -12,12 +12,6 @@ export var Utils: any = {
       CONSTANT.SERVICE_URL = CONSTANT._SERVICE_URL_PRODUCTION;
     }
     CONSTANT.API_URL = CONSTANT.SERVICE_URL + CONSTANT.API_PATH;
-
-    let profile = Cookie.get(CONSTANT.PROFILE_KEY);
-    if (profile) {
-      CONSTANT.PROFILE = JSON.parse(profile);
-      console.log('======', CONSTANT.PROFILE);
-    }
   },
   getUploadUrl: function() {
     return CONSTANT.API_URL + CONSTANT.UPLOAD_URI;

@@ -51,20 +51,8 @@ export class Register {
     let that = this;
     this.submitted = true;
     if (this.form.valid) {
-      console.log(values);
-
-      this.userService.register(values['name'], values['phone'], values['email'], values['passwords']['password']).subscribe((json:any) => {
-        if (json.code == 1) {
-          console.log(json);
-          that.errors = undefined;
-
-          Cookie.set(CONSTANT.PROFILE_KEY, JSON.stringify(json.data), 1);
-          CONSTANT.PROFILE = json.data;
-
-          that.routeService.navTo('/pages/dashboard');
-        } else {
-          that.errors = json.msg;
-        }
+      this.userService.register(values['name'], values['phone'], values['email'], values['passwords']['password']).subscribe((err:any) => {
+        that.errors = err;
       });
     }
   }

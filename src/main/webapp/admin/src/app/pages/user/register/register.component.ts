@@ -57,8 +57,9 @@ export class Register {
         if (json.code == 1) {
           console.log(json);
           that.errors = undefined;
-          Cookie.set(CONSTANT.COOKIE_KEY, json.token, 30);
-          CONSTANT.TOKEN = json.token;
+
+          Cookie.set(CONSTANT.PROFILE_KEY, JSON.stringify(json.data), 30);
+          CONSTANT.PROFILE = json.data;
 
           that.routeService.navTo('/pages/dashboard');
         } else {

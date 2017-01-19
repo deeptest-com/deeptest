@@ -115,8 +115,7 @@ public class UserAdmin extends BaseAction {
 		if (user != null) {
 			ret.put("token", user.getToken());
 
-			UserVo vo = new UserVo();
-			BeanUtilEx.copyProperties(vo, user);
+			UserVo vo = userService.genVo(user); 
 			ret.put("data", vo);
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {

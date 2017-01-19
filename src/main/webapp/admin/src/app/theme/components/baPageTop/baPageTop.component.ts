@@ -18,13 +18,13 @@ export class BaPageTop {
 
   public isScrolled:boolean = false;
   public isMenuCollapsed:boolean = false;
+  public profile:any = CONSTANT.PROFILE;
 
   constructor(private _state:GlobalState, private userService: UserService, private routeService: RouteService) {
     this._state.subscribe('menu.isCollapsed', (isCollapsed) => {
       this.isMenuCollapsed = isCollapsed;
     });
   }
-
 
   public toggleMenu() {
     this.isMenuCollapsed = !this.isMenuCollapsed;
@@ -40,7 +40,7 @@ export class BaPageTop {
 
     this.userService.logout().subscribe((json:any) => {
       if (json.code == 1) {
-        Cookie.delete(CONSTANT.COOKIE_KEY);
+        Cookie.delete(CONSTANT.PROFILE_KEY);
 
         this.routeService.navTo('/login');
       }

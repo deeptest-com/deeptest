@@ -13,7 +13,11 @@ export var Utils: any = {
     }
     CONSTANT.API_URL = CONSTANT.SERVICE_URL + CONSTANT.API_PATH;
 
-    CONSTANT.TOKEN = Cookie.get(CONSTANT.COOKIE_KEY);
+    let profile = Cookie.get(CONSTANT.PROFILE_KEY);
+    if (profile) {
+      CONSTANT.PROFILE = JSON.parse(profile);
+      console.log('======', CONSTANT.PROFILE);
+    }
   },
   getUploadUrl: function() {
     return CONSTANT.API_URL + CONSTANT.UPLOAD_URI;

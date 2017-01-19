@@ -46,7 +46,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   private allowedMimeType: string[] = ['image/png', 'image/jpeg'];
   private uploaderOptions:FileUploaderOptions = {
     url: Utils.getUploadUrl(),
-    authToken: CONSTANT.TOKEN,
+    authToken: CONSTANT.PROFILE.token,
     autoUpload: true,
     allowedMimeType: this.allowedMimeType,
     filters: [{name: 'upload', fn: (item:any) => {

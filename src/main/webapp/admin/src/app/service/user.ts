@@ -70,6 +70,7 @@ export class UserService {
     CONSTANT.PROFILE = profile;
     Cookie.set(CONSTANT.PROFILE_KEY, JSON.stringify(profile), days);
     that._state.notifyDataChanged('profile.refresh', profile);
+    console.log('===saveProfileLocal===', profile);
   }
   loadProfileLocal() {
     let that = this;
@@ -78,7 +79,7 @@ export class UserService {
     if (profile) {
       CONSTANT.PROFILE = JSON.parse(profile);
       that._state.notifyDataChanged('profile.refresh', profile);
-      console.log('===loadProfile===', CONSTANT.PROFILE);
+      console.log('===loadProfile===', profile);
     }
   }
 

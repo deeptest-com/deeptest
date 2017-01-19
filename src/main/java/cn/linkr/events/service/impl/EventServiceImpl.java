@@ -42,6 +42,47 @@ public class EventServiceImpl extends BaseServiceImpl implements EventService {
 	
 	@Autowired
 	DocumentService documentService;
+	
+	@Override
+	public Page list(SysUser user, String statusStr, int currentPage, int itemsPerPage) {
+        DetachedCriteria dc = DetachedCriteria.forClass(EvtEvent.class);
+//        dc.add(Restrictions.eq("companyId", companyId));
+        dc.add(Restrictions.eq("creatorId", user.getId()));
+        
+        if (StringUtils.isNotEmpty(statusStr)) {
+        	Date now = new Date();
+    		EventStatus status = EventStatus.getValue(statusStr);
+    		if (status.equals(EventStatus.end)) {
+    			dc.add(Restrictions.lt("endDatetime", now));
+    		} else if (status.equals(EventStatus.in_progress)) {
+    			dc.add(Restrictions.le("startDatetime", now));
+    			dc.add(Restrictions.ge("endDatetime", now));
+    		} else if (status.equals(EventStatus.sign)) {
+    			dc.add(Restrictions.ne("signStartDatetime", null));
+    			dc.add(Restrictions.ne("signEndDatetime", null));
+    			
+    			dc.add(Restrictions.le("signStartDatetime", now));
+    			dc.add(Restrictions.ge("signEndDatetime", now));
+    		} else if (status.equals(EventStatus.register)) {
+    			dc.add(Restrictions.ne("registerStartDatetime", null));
+    			dc.add(Restrictions.ne("registerEndDatetime", null));
+    			
+    			dc.add(Restrictions.le("registerStartDatetime", now));
+    			dc.add(Restrictions.ge("registerEndDatetime", now));
+    		} else if (status.equals(EventStatus.not_start)) {
+    			dc.add(Restrictions.gt("startDatetime", now));
+    		} else if (status.equals(EventStatus.cancel)) {
+    			dc.add(Restrictions.eq("status", EventStatus.cancel));
+    		}
+        }
+        
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+        dc.addOrder(Order.desc("id"));
+        Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
+
+        return page;
+	}
     
     @Override
     public EvtEvent getDetail(Long eventId) {
@@ -127,44 +168,5 @@ public class EventServiceImpl extends BaseServiceImpl implements EventService {
     	
         return po;
     }
-
-	@Override
-	public Page list(Long companyId, String statusStr, int currentPage, int itemsPerPage) {
-        DetachedCriteria dc = DetachedCriteria.forClass(EvtEvent.class);
-        dc.add(Restrictions.eq("companyId", companyId));
-        if (StringUtils.isNotEmpty(statusStr)) {
-        	Date now = new Date();
-    		EventStatus status = EventStatus.getValue(statusStr);
-    		if (status.equals(EventStatus.end)) {
-    			dc.add(Restrictions.lt("endDatetime", now));
-    		} else if (status.equals(EventStatus.in_progress)) {
-    			dc.add(Restrictions.le("startDatetime", now));
-    			dc.add(Restrictions.ge("endDatetime", now));
-    		} else if (status.equals(EventStatus.sign)) {
-    			dc.add(Restrictions.ne("signStartDatetime", null));
-    			dc.add(Restrictions.ne("signEndDatetime", null));
-    			
-    			dc.add(Restrictions.le("signStartDatetime", now));
-    			dc.add(Restrictions.ge("signEndDatetime", now));
-    		} else if (status.equals(EventStatus.register)) {
-    			dc.add(Restrictions.ne("registerStartDatetime", null));
-    			dc.add(Restrictions.ne("registerEndDatetime", null));
-    			
-    			dc.add(Restrictions.le("registerStartDatetime", now));
-    			dc.add(Restrictions.ge("registerEndDatetime", now));
-    		} else if (status.equals(EventStatus.not_start)) {
-    			dc.add(Restrictions.gt("startDatetime", now));
-    		} else if (status.equals(EventStatus.cancel)) {
-    			dc.add(Restrictions.eq("status", EventStatus.cancel));
-    		}
-        }
-        
-        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-        dc.addOrder(Order.desc("id"));
-        Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
-
-        return page;
-	}
     
 }

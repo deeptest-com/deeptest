@@ -63,7 +63,7 @@ public class EventAdmin extends BaseAction {
 		int itemsPerPage = req.getString("itemsPerPage") == null? Constant.PAGE_SIZE: Integer.valueOf(req.getString("itemsPerPage"));
 		String status = req.getString("status");
 		
-		Page page = eventService.list(user.getCompanyId(), status, currentPage, itemsPerPage);
+		Page page = eventService.list(user, status, currentPage, itemsPerPage);
 		List<EventVo> vos = eventService.genVos(page.getItems());
         
 		ret.put("totalItems", page.getTotal());

@@ -43,7 +43,8 @@ export class Login {
       if (json.code == 1) {
         that.errors = undefined;
 
-        Cookie.set(CONSTANT.COOKIE_KEY, CONSTANT.TOKEN, 30);
+        Cookie.set(CONSTANT.COOKIE_KEY, json.token, 30);
+        CONSTANT.TOKEN = json.token;
 
         that.routeService.navTo('/pages/dashboard');
       } else {

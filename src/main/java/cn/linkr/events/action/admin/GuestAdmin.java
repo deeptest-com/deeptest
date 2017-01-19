@@ -1,6 +1,7 @@
 package cn.linkr.events.action.admin;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,27 +18,28 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.linkr.events.action.client.BaseAction;
 import cn.linkr.events.constants.Constant;
-import cn.linkr.events.entity.EvtBizcard;
 import cn.linkr.events.entity.EvtClient;
-import cn.linkr.events.entity.EvtDocument;
+import cn.linkr.events.entity.EvtEvent;
 import cn.linkr.events.entity.EvtGuest;
+import cn.linkr.events.entity.EvtScheduleItem;
+import cn.linkr.events.entity.EvtSession;
 import cn.linkr.events.entity.SysUser;
-import cn.linkr.events.service.BizcardService;
-import cn.linkr.events.service.DocumentService;
+import cn.linkr.events.service.GuestService;
 import cn.linkr.events.util.AuthPassport;
 import cn.linkr.events.util.BeanUtilEx;
-import cn.linkr.events.vo.BizcardVo;
-import cn.linkr.events.vo.DocumentVo;
+import cn.linkr.events.vo.EventVo;
 import cn.linkr.events.vo.GuestVo;
 import cn.linkr.events.vo.Page;
+import cn.linkr.events.vo.ScheduleItemVo;
+import cn.linkr.events.vo.SessionVo;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_ADMIN + "document/")
-public class DocumentController extends BaseAction {
+@RequestMapping(Constant.API_PATH_ADMIN + "guest/")
+public class GuestAdmin extends BaseAction {
 	@Autowired
-	DocumentService documentService;
-
+	GuestService guestService;
+	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
@@ -50,23 +52,23 @@ public class DocumentController extends BaseAction {
 		int currentPage = json.getInteger("currentPage") == null? 0: json.getInteger("currentPage") - 1;
 		int itemsPerPage = json.getInteger("itemsPerPage") == null? Constant.PAGE_SIZE: json.getInteger("itemsPerPage");
 		
-		Page page = documentService.listByPage(eventId, currentPage, itemsPerPage, null);
-		List<DocumentVo> vos = documentService.genVos(page.getItems());
+		Page page = guestService.list(eventId, currentPage, itemsPerPage);
+		List<GuestVo> vos = guestService.genVos(page.getItems());
         
 		ret.put("totalItems", page.getTotal());
-        ret.put("data", vos);
+        ret.put("guests", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-	
+
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest request, @RequestBody DocumentVo vo) {
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody GuestVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		EvtDocument doc = documentService.save(vo);
+		EvtGuest guest = guestService.save(vo);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -79,9 +81,10 @@ public class DocumentController extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		boolean success = documentService.remove(to.getLong("id"));
+		boolean success = guestService.remove(to.getLong("id"));
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+
 }

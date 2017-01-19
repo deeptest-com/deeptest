@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 
 import {CONSTANT} from '../utils/constant';
+import { Cookie } from 'ng2-cookies/ng2-cookies';
 
 export var Utils: any = {
   config: function() {
@@ -11,6 +12,8 @@ export var Utils: any = {
       CONSTANT.SERVICE_URL = CONSTANT._SERVICE_URL_PRODUCTION;
     }
     CONSTANT.API_URL = CONSTANT.SERVICE_URL + CONSTANT.API_PATH;
+
+    CONSTANT.TOKEN = Cookie.get(CONSTANT.COOKIE_KEY);
   },
   getUploadUrl: function() {
     return CONSTANT.API_URL + CONSTANT.UPLOAD_URI;

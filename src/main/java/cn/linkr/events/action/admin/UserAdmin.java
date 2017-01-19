@@ -36,7 +36,7 @@ import cn.linkr.events.vo.UserVo;
 
 @Controller
 @RequestMapping(Constant.API_PATH_ADMIN + "user/")
-public class UserController extends BaseAction {
+public class UserAdmin extends BaseAction {
 	@Autowired
 	UserService userService;
 	

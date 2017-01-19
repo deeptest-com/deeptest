@@ -22,7 +22,7 @@ export class RequestService {
 
         let body = JSON.stringify(reqBody);
         let headers = new Headers({ 'Content-Type': 'application/json',
-          'Authorization': Cookie.get(CONSTANT.COOKIE_KEY) });
+          'Authorization': CONSTANT.TOKEN });
         let options = new RequestOptions({ headers: headers });
 
         console.log(url, body);

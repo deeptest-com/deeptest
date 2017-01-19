@@ -112,7 +112,7 @@
     </filter>
     <filter-mapping>
         <filter-name>CorsFilter</filter-name>
-        <url-pattern>/api/client/*</url-pattern>
+        <url-pattern>/api/*</url-pattern>
     </filter-mapping>
 	
 	<servlet-mapping>

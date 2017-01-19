@@ -23,7 +23,7 @@ import cn.linkr.events.util.AuthPassport;
 
 @Controller
 @RequestMapping(Constant.API_PATH_ADMIN + "news/")
-public class NewsController extends BaseAction {
+public class NewsAdmin extends BaseAction {
 	@Autowired
 	NewsService newService;
 	

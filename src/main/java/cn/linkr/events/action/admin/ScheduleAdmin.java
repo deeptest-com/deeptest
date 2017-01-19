@@ -20,68 +20,65 @@ import cn.linkr.events.action.client.BaseAction;
 import cn.linkr.events.constants.Constant;
 import cn.linkr.events.entity.EvtClient;
 import cn.linkr.events.entity.EvtEvent;
-import cn.linkr.events.entity.EvtGuest;
 import cn.linkr.events.entity.EvtScheduleItem;
-import cn.linkr.events.entity.EvtSession;
 import cn.linkr.events.entity.SysUser;
-import cn.linkr.events.service.GuestService;
+import cn.linkr.events.service.EventService;
+import cn.linkr.events.service.ScheduleService;
+import cn.linkr.events.service.SessionService;
 import cn.linkr.events.util.AuthPassport;
 import cn.linkr.events.util.BeanUtilEx;
+import cn.linkr.events.util.DateUtils;
 import cn.linkr.events.vo.EventVo;
-import cn.linkr.events.vo.GuestVo;
-import cn.linkr.events.vo.Page;
 import cn.linkr.events.vo.ScheduleItemVo;
 import cn.linkr.events.vo.SessionVo;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_ADMIN + "guest/")
-public class GuestController extends BaseAction {
+@RequestMapping(Constant.API_PATH_ADMIN + "schedule/")
+public class ScheduleAdmin extends BaseAction {
+	
 	@Autowired
-	GuestService guestService;
+	EventService eventService;
+	@Autowired
+	SessionService sessionService;
+	
+	@Autowired
+	ScheduleService scheduleService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> list(HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
 		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		long eventId = json.getLong("eventId");
-		int currentPage = json.getInteger("currentPage") == null? 0: json.getInteger("currentPage") - 1;
-		int itemsPerPage = json.getInteger("itemsPerPage") == null? Constant.PAGE_SIZE: json.getInteger("itemsPerPage");
+		JSONObject req = reqJson(request);
+		String eventId = req.getString("eventId");
+		String isNest = req.getString("isNest") != null? req.getString("isNest"): "false";
 		
-		Page page = guestService.list(eventId, currentPage, itemsPerPage);
-		List<GuestVo> vos = guestService.genVos(page.getItems());
-        
-		ret.put("totalItems", page.getTotal());
-        ret.put("guests", vos);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest request, @RequestBody GuestVo vo) {
-		Map<String, Object> ret = new HashMap<String, Object>();
+		List<EvtScheduleItem> scheduleItemsBySession = scheduleService.listScheduleItemsBySession(Long.valueOf(eventId));
+		List<EvtScheduleItem> scheduleItemsByDate = scheduleService.listScheduleItemsByDate(Long.valueOf(eventId));
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		EvtGuest guest = guestService.save(vo);
+        List<ScheduleItemVo> vosBySession = scheduleService.genVosBySession(scheduleItemsBySession, Boolean.valueOf(isNest));
+        List<ScheduleItemVo> vosByDate = scheduleService.genVosByDate(scheduleItemsByDate);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		
+		ret.put("bySession", vosBySession);
+		ret.put("byDate", vosByDate);
+		
 		return ret;
 	}
 	
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "remove", method = RequestMethod.POST)
+	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject to) {
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody ScheduleItemVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		boolean success = guestService.remove(to.getLong("id"));
+		
+		EvtScheduleItem event = scheduleService.save(vo);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

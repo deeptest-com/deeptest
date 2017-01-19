@@ -44,7 +44,8 @@ public class SystemInterceptor implements HandlerInterceptor {
             }
             
             // 已经登录
-            if (request.getSession(true).getAttribute(Constant.HTTP_SESSION_CLIENT_KEY) != null) {
+            if (request.getSession(true).getAttribute(Constant.HTTP_SESSION_CLIENT_KEY) != null
+            		|| request.getSession(true).getAttribute(Constant.HTTP_SESSION_USER_KEY) != null) {
             	return true;
             }
 

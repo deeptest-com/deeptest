@@ -31,7 +31,7 @@ import cn.linkr.events.vo.SessionVo;
 
 @Controller
 @RequestMapping(Constant.API_PATH_ADMIN + "session/")
-public class SessionController extends BaseAction {
+public class SessionAdmin extends BaseAction {
 	
 	@Autowired
 	EventService eventService;

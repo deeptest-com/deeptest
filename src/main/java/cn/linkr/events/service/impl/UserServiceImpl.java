@@ -13,8 +13,10 @@ import cn.linkr.events.entity.SysUser;
 import cn.linkr.events.entity.SysUser.AgentType;
 import cn.linkr.events.entity.SysVerifyCode;
 import cn.linkr.events.service.UserService;
+import cn.linkr.events.util.BeanUtilEx;
 import cn.linkr.events.util.DateUtils;
 import cn.linkr.events.util.StringUtil;
+import cn.linkr.events.vo.UserVo;
 
 @Service
 public class UserServiceImpl extends BaseServiceImpl implements UserService {
@@ -196,7 +198,15 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 			user.setTokenExpireTime(new Date());
 			saveOrUpdate(user);
 		}
-		return null;
+		return user;
+	}
+
+	@Override
+	public UserVo genVo(SysUser user) {
+		UserVo vo = new UserVo();
+		BeanUtilEx.copyProperties(vo, user);
+		
+		return vo;
 	}
     
 }

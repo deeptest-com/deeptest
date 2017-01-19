@@ -4,6 +4,7 @@ import java.util.Map;
 
 import cn.linkr.events.entity.SysUser;
 import cn.linkr.events.entity.SysVerifyCode;
+import cn.linkr.events.vo.UserVo;
 
 public interface UserService extends BaseService {
 
@@ -21,5 +22,7 @@ public interface UserService extends BaseService {
 	SysUser resetPasswordPers(String verifyCode, String mobile,
 			String password, String platform, String isWebView,
 			String deviceToken);
+
+	UserVo genVo(SysUser user);
 
 }

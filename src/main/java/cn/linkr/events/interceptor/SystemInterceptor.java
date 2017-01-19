@@ -35,6 +35,8 @@ public class SystemInterceptor implements HandlerInterceptor {
             Constant.WORK_DIR = request.getSession().getServletContext().getRealPath("/");;
         }
         
+        System.out.println("===" + request.getSession().getId());
+        
         if (handler.getClass().isAssignableFrom(HandlerMethod.class)) {
             // 方法上是否有身份验证注解
             AuthPassport authPassport = ((HandlerMethod) handler).getMethodAnnotation(AuthPassport.class);
@@ -51,9 +53,9 @@ public class SystemInterceptor implements HandlerInterceptor {
 
             // 根据不同package处理不同身份认证逻辑
             String packageName = ((HandlerMethod) handler).getBeanType().getPackage().getName();
-            String token = request.getHeader("Authorization");
+            String token = request.getHeader("token");
             if (token == null) {
-            	token = request.getParameter("Authorization");
+            	token = request.getParameter("token");
             }
             
 			// client请求鉴权

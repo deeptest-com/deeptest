@@ -61,8 +61,7 @@ public class UserAdmin extends BaseAction {
 		if (user != null) {
 			ret.put("token", user.getToken());
 
-			UserVo vo = new UserVo();
-			BeanUtilEx.copyProperties(vo, user);
+			UserVo vo = userService.genVo(user); 
 			ret.put("data", vo);
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {
@@ -73,7 +72,7 @@ public class UserAdmin extends BaseAction {
 		return ret;
 	}
 	
-	@AuthPassport(validate=false)
+	@AuthPassport(validate=true)
 	@RequestMapping(value = "logout", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> logout(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -88,8 +87,9 @@ public class UserAdmin extends BaseAction {
 		user = userService.logoutPers(user);
 		
 		if (user != null) {
+			request.getSession().removeAttribute(Constant.HTTP_SESSION_USER_KEY);
+			
 			ret.put("token", user.getToken());
-			ret.put("data", user);
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());

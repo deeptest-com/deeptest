@@ -22,8 +22,8 @@ export class RequestService {
 
         let body = JSON.stringify(reqBody);
         let headers = new Headers({ 'Content-Type': 'application/json',
-          'Authorization': CONSTANT.TOKEN });
-        let options = new RequestOptions({ headers: headers });
+          'token': CONSTANT.TOKEN });
+        let options = new RequestOptions({ headers: headers, withCredentials: true });
 
         console.log(url, body);
         return this.http.post(url, body, options)

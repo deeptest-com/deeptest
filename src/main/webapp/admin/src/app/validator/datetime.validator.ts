@@ -45,7 +45,7 @@ export var DateTimeValidator:any = {
           let endTm = Utils.strToTimestamp(endValue);
 
           if (startTm >= endTm) {
-            console.log(resultKey + '=true');
+            console.log(resultKey + ' fail');
             fail = true;
             result[resultKey] = true;
           }

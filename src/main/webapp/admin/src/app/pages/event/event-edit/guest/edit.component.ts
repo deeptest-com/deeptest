@@ -6,7 +6,7 @@ import { DropdownModule} from 'ng2-bootstrap/ng2-bootstrap';
 import { ModalDirective } from 'ng2-bootstrap';
 import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
 
-import {Validate} from '../../../../service/validate';
+import {ValidatorUtils} from '../../../../validator/validator.utils';
 import { CONSTANT } from '../../../../utils/constant';
 import { Utils } from '../../../../utils/utils';
 import { RouteService } from '../../../../service/route';
@@ -192,7 +192,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   }
   onValueChanged(data?: any) {
     let that = this;
-    that.formErrors = Validate.genValidateInfo(that.form, that.validateMsg, []);
+    that.formErrors = ValidatorUtils.genMsg(that.form, that.validateMsg, []);
   }
 
   formErrors = [];

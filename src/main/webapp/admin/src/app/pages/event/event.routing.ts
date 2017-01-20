@@ -1,7 +1,7 @@
 import { Routes, RouterModule }  from '@angular/router';
 
 import { Event } from './event.component';
-import { EventList } from './event-list/event-list.component';
+import { EventList } from './event-list/list.component';
 import { EventEditProperty } from './event-edit/property/edit.component';
 import { EventEditSchedule } from './event-edit/schedule/edit.component';
 import { EventEditGuest } from './event-edit/guest/edit.component';

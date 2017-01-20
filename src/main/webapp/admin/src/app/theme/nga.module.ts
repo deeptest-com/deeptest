@@ -49,11 +49,6 @@ import {
   BaThemeSpinner
 } from './services';
 
-import {
-  EmailValidator,
-  EqualPasswordsValidator
-} from './validators';
-
 const NGA_COMPONENTS = [
   BaAmChart,
   BaBackTop,
@@ -91,11 +86,6 @@ const NGA_SERVICES = [
   BaMenuService
 ];
 
-const NGA_VALIDATORS = [
-  EmailValidator,
-  EqualPasswordsValidator
-];
-
 @NgModule({
   declarations: [
     ...NGA_PIPES,
@@ -121,7 +111,6 @@ export class NgaModule {
       providers: [
         BaThemeConfigProvider,
         BaThemeConfig,
-        ...NGA_VALIDATORS,
         ...NGA_SERVICES
       ],
     };

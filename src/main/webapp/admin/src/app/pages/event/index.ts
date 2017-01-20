@@ -1,1 +1,1 @@
-export * from './dashboard.component';
+export * from './event.component';

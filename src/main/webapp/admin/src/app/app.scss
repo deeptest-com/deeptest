@@ -48,13 +48,13 @@
     background-color: #ffffff !important;
 }
 .my-validate-form {
-    .ng-valid:not(form) {
+    .form-control.ng-valid {
       border-left: 3px solid #a2db59 !important;
       &.my-invalid {
        border-left: 3px solid #fa758e !important;
       }
     }
-    .ng-invalid.ng-dirty:not(form)  {
+    .form-control.ng-invalid.ng-dirty  {
       border-left: 3px solid #fa758e !important;
     }
     .validate-errors {

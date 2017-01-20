@@ -14,7 +14,7 @@ export const PAGES_MENU = [
           }
         }
       },
-          {
+      {
         path: 'event',
         data: {
           menu: {
@@ -44,7 +44,37 @@ export const PAGES_MENU = [
           }
         ]
       },
-      
+      {
+        path: 'settings',
+        data: {
+          menu: {
+            title: '账号设置',
+            icon: 'ion-calendar',
+            selected: false,
+            expanded: true,
+            order: 100,
+          }
+        },
+        children: [
+          {
+            path: 'company',
+            data: {
+              menu: {
+                title: '公司管理'
+              }
+            }
+          },
+          {
+            path: 'account',
+            data: {
+              menu: {
+                title: '个人信息'
+              }
+            }
+          }
+        ]
+      },
+
       {
         path: 'editors',
         data: {

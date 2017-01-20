@@ -1,6 +1,6 @@
 import {Component, ViewEncapsulation} from '@angular/core';
 import {FormGroup, AbstractControl, FormBuilder, Validators} from '@angular/forms';
-import {EmailValidator, EqualPasswordsValidator} from '../../../theme/validators';
+import {EmailValidator, EqualPasswordsValidator} from '../../../validator';
 
 import { Cookie } from 'ng2-cookies/ng2-cookies';
 
@@ -32,7 +32,7 @@ export class Register {
     this.form = fb.group({
       'name': ['', Validators.compose([Validators.required, Validators.minLength(4)])],
       'phone': ['', Validators.compose([Validators.required, Validators.minLength(11)])],
-      'email': ['', Validators.compose([Validators.required, EmailValidator.validate])],
+      'email': ['', Validators.compose([Validators.required, EmailValidator.validate()])],
       'passwords': fb.group({
         'password': ['', Validators.compose([Validators.required, Validators.minLength(4)])],
         'repeatPassword': ['', Validators.compose([Validators.required, Validators.minLength(4)])]

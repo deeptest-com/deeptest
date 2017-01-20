@@ -2,7 +2,7 @@ import {Component, ViewEncapsulation, OnInit, AfterViewInit, ViewChild} from "@a
 import {FormBuilder, Validators} from "@angular/forms";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {ModalDirective} from "ng2-bootstrap";
-import {Validate} from "../../../../service/validate";
+import {ValidatorUtils} from '../../../../validator/validator.utils';
 import { RouteService } from '../../../../service/route';
 import {ServiceService} from "../../../../service/service";
 
@@ -135,7 +135,7 @@ export class EventEditService implements OnInit, AfterViewInit {
 
   onValueChanged(data?:any) {
     let that = this;
-    that.formErrors = Validate.genValidateInfo(that.form, that.validateMsg, []);
+    that.formErrors = ValidatorUtils.genMsg(that.form, that.validateMsg, []);
   }
 
   formErrors = [];
@@ -144,5 +144,4 @@ export class EventEditService implements OnInit, AfterViewInit {
       'required': '描述不能为空'
     }
   };
-
 }

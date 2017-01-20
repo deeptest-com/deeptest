@@ -4,7 +4,9 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import { DropdownModule} from 'ng2-bootstrap/ng2-bootstrap';
 
-import {Validate} from '../../../../service/validate';
+import {ValidatorUtils} from '../../../../validator/validator.utils';
+import {EmailValidator} from '../../../../validator/email.validator';
+import {DateTimeValidator} from '../../../../validator/datetime.validator';
 import { CONSTANT } from '../../../../utils/constant';
 import { Utils } from '../../../../utils/utils';
 
@@ -183,12 +185,12 @@ export class EventEditSchedule implements OnInit, AfterViewInit {
       {
         'subject': [that.item.subject, [Validators.required]],
         // 'guest': [that.item.guest, [Validators.required]],
-        'startDate': [that.item.startDate, [Validators.required, Validate.dateValidator()]],
-        'startTime': [that.item.startTime, [Validators.required, Validate.timeValidator()]],
-        'endDate': [that.item.endDate, [Validators.required, Validate.dateValidator()]],
-        'endTime': [that.item.endTime, [Validators.required, Validate.timeValidator()]],
+        'startDate': [that.item.startDate, [Validators.required, DateTimeValidator.validateDate()]],
+        'startTime': [that.item.startTime, [Validators.required, DateTimeValidator.validateTime()]],
+        'endDate': [that.item.endDate, [Validators.required, DateTimeValidator.validateDate()]],
+        'endTime': [that.item.endTime, [Validators.required, DateTimeValidator.validateTime()]],
       }, {
-        validator: Validate.compareDatetime([
+        validator: DateTimeValidator.compareDatetime([
           ['datetimeCompare', 'startDate','startTime','endDate','endTime']
         ])
       }
@@ -202,11 +204,11 @@ export class EventEditSchedule implements OnInit, AfterViewInit {
   }
   onSessionValueChanged(data?: any) {
     let that = this;
-    that.sessionFormErrors = Validate.genValidateInfo(that.sessionForm, that.validateMsg);
+    that.sessionFormErrors = ValidatorUtils.genMsg(that.sessionForm, that.validateMsg, []);
   }
   onItemValueChanged(data?: any) {
     let that = this;
-    that.itemFormErrors = Validate.genValidateInfo(that.itemForm, that.validateMsg, ['datetimeCompare']);
+    that.itemFormErrors = ValidatorUtils.genMsg(that.itemForm, that.validateMsg, ['datetimeCompare']);
   }
 
   itemFormErrors = [];

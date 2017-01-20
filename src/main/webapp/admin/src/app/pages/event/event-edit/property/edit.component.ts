@@ -6,7 +6,9 @@ import { DropdownModule} from 'ng2-bootstrap/ng2-bootstrap';
 
 import { CONSTANT } from '../../../../utils/constant';
 import { Utils } from '../../../../utils/utils';
-import {Validate} from '../../../../service/validate';
+import {ValidatorUtils} from '../../../../validator/validator.utils';
+import {EmailValidator} from '../../../../validator/email.validator';
+import {DateTimeValidator} from '../../../../validator/datetime.validator';
 
 import { RouteService } from '../../../../service/route';
 import { DatetimePickerService } from '../../../../service/datetime-picker';
@@ -115,23 +117,23 @@ export class EventEditProperty implements OnInit, AfterViewInit {
         {
           'title': [that.model.email, [Validators.required]],
 
-          'startDate': [that.model.startDate, [Validators.required, Validate.dateValidator()]],
-          'startTime': [that.model.startTime, [Validators.required, Validate.timeValidator()]],
-          'endDate': [that.model.endDate, [Validators.required, Validate.dateValidator()]],
-          'endTime': [that.model.endTime, [Validators.required, Validate.timeValidator()]],
+          'startDate': [that.model.startDate, [Validators.required, DateTimeValidator.validateDate()]],
+          'startTime': [that.model.startTime, [Validators.required, DateTimeValidator.validateTime()]],
+          'endDate': [that.model.endDate, [Validators.required, DateTimeValidator.validateDate()]],
+          'endTime': [that.model.endTime, [Validators.required, DateTimeValidator.validateTime()]],
 
-          'registerStartDate': [that.model.startDate, [Validators.required, Validate.dateValidator()]],
-          'registerStartTime': [that.model.startTime, [Validators.required, Validate.timeValidator()]],
-          'registerEndDate': [that.model.endDate, [Validators.required, Validate.dateValidator()]],
-          'registerEndTime': [that.model.endTime, [Validators.required, Validate.timeValidator()]],
+          'registerStartDate': [that.model.startDate, [Validators.required, DateTimeValidator.validateDate()]],
+          'registerStartTime': [that.model.startTime, [Validators.required, DateTimeValidator.validateTime()]],
+          'registerEndDate': [that.model.endDate, [Validators.required, DateTimeValidator.validateDate()]],
+          'registerEndTime': [that.model.endTime, [Validators.required, DateTimeValidator.validateTime()]],
 
           'signBefore': [that.model.signBefore, [Validators.required]],
           'address': [that.model.address, [Validators.required]],
           'phone': [that.model.phone, [Validators.required]],
-          'email': [that.model.email, [Validators.required, Validate.emailValidator()]],
+          'email': [that.model.email, [Validators.required, EmailValidator.validate]],
           'website': [that.model.website, []]
         }, {
-           validator: Validate.compareDatetime([
+           validator: DateTimeValidator.compareDatetime([
              ['eventTimeCompare', 'startDate','startTime','endDate','endTime'],
              ['registerTimeCompare', 'registerStartDate','registerStartTime','registerEndDate','registerEndTime']
            ])
@@ -145,7 +147,7 @@ export class EventEditProperty implements OnInit, AfterViewInit {
     let that = this;
     if (!that.eventForm) { return; }
 
-    that.formErrors = Validate.genValidateInfo(that.eventForm, that.validateMsg, ['eventTimeCompare', 'registerTimeCompare']);
+    that.formErrors = ValidatorUtils.genMsg(that.eventForm, that.validateMsg, ['eventTimeCompare', 'registerTimeCompare']);
   }
 
   formErrors = [];

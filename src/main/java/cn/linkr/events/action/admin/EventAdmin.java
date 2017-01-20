@@ -73,6 +73,37 @@ public class EventAdmin extends BaseAction {
 	}
 	
 	@AuthPassport(validate = true)
+	@RequestMapping(value = "get", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> get(HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		JSONObject req = reqJson(request);
+		String eventId = req.getString("eventId");
+		
+		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
+		
+		EvtEvent event = eventService.getDetail(Long.valueOf(eventId));
+        EventVo eventVo = eventService.genVo(event);
+		
+		List<EvtDocument> docPos = documentService.listByEvent(Long.valueOf(eventId), null);
+        List<DocumentVo> docVos = documentService.genVos(docPos);
+        
+		List<EvtBanner> bannerPos = bannerService.listByEvent(Long.valueOf(eventId));
+		List<BannerVo> bannerVos = bannerService.genVos(bannerPos);
+        
+        List<EvtOrganizer> organizerPos = organizerService.listByEvent(Long.valueOf(eventId));
+        Map<String, List<OrganizerVo>> organizerMap = organizerService.genOrganizerMap(organizerPos);
+        
+        eventVo.setDocuments(docVos);
+        eventVo.setBanners(bannerVos);
+        eventVo.setOrganizers(organizerMap);
+        
+        ret.put("event", eventVo);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+	
+	@AuthPassport(validate = true)
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody EventVo vo) {

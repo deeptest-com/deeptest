@@ -4,9 +4,7 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import { DropdownModule} from 'ng2-bootstrap/ng2-bootstrap';
 
-import {ValidatorUtils} from '../../../../validator/validator.utils';
-import {EmailValidator} from '../../../../validator/email.validator';
-import {DateTimeValidator} from '../../../../validator/datetime.validator';
+import {ValidatorUtils, DateTimeValidator} from '../../../../validator';
 import { CONSTANT } from '../../../../utils/constant';
 import { Utils } from '../../../../utils/utils';
 

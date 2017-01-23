@@ -76,6 +76,7 @@ export class AccountEdit implements OnInit, AfterViewInit {
     let that = this;
     that._routeService.navTo('/pages/business/account-list');
   }
+  
 
   initForm() {
     let that = this;

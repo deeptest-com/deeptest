@@ -1,15 +1,4 @@
 <div class="container-fluid">
-  <div class="row">
-    <div class="list-toolbar col-xl-12 event-nav">
-      <div class="filter">
-      </div>
-      <div class="buttons">
-        <button (click)="back($event)" type="button" class="btn btn-default btn-with-icon btn-sm back">
-          <i class="ion-backspace"></i>返回
-        </button>
-      </div>
-    </div>
-  </div>
 
   <div class="row">
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="my-validate-form">

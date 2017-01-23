@@ -38,50 +38,31 @@ export class CompanyEdit implements OnInit, AfterViewInit {
     let that = this;
 
     that.buildForm();
-    this._route.params.forEach((params: Params) => {
-      that.modelId = +params['id'];
-    });
-
-    if (that.modelId) {
-        that.loadData();
-    }
+    that.loadData();
   }
 
   ngAfterViewInit() {
     let that = this;
 
-    that.initForm(false);
   }
 
   onSubmit():void {
     let that = this;
 
-    that.model.status = undefined;
-
     that._companyService.save(that.model).subscribe((json:any) => {
         if (json.code = 1) {
-          that._routeService.navTo("/pages/company/list");
+          that.loadData();
+          that.formErrors = ['保存成功'];
         }
     });
   }
 
-  goto($company) {
-    let that = this;
-
-    that._routeService.navTo('/pages/company/edit/' + that.modelId + '/' + $company.tabModel);
-  }
   loadData() {
    let that = this;
 
-   that._companyService.get(that.modelId).subscribe((json:any) => {
-      that.model = json.company;
-
-     that.initForm(true);
+   that._companyService.get().subscribe((json:any) => {
+      that.model = json.data;
    });
-  }
-
-  initForm(dataLoaded): void {
-    let that = this;
   }
 
   buildForm(): void {

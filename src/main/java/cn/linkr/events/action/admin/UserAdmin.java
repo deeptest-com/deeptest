@@ -71,13 +71,13 @@ public class UserAdmin extends BaseAction {
 	public Map<String, Object> logout(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		if (user == null) {
+		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		if (vo == null) {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());
 			ret.put("msg", "您不在登录状态");
 			return ret;
 		}
-		user = userService.logoutPers(user);
+		SysUser user = userService.logoutPers(vo.getEmail());
 		
 		if (user != null) {
 			request.getSession().removeAttribute(Constant.HTTP_SESSION_USER_KEY);
@@ -175,10 +175,8 @@ public class UserAdmin extends BaseAction {
 	public Map<String, Object> getProfile(HttpServletRequest request, @RequestBody Map<String, String> json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		UserVo vo = new UserVo();
-		BeanUtilEx.copyProperties(vo, user);
 		ret.put("data", vo);
 		ret.put("code", RespCode.SUCCESS.getCode());
 
@@ -187,20 +185,13 @@ public class UserAdmin extends BaseAction {
 
 	@RequestMapping(value = "saveProfile", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> saveProfile(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> saveProfile(HttpServletRequest request, @RequestBody UserVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
-		String phone = json.getString("phone");
-		String name = json.getString("name");
-
-		user.setPhone(phone);
-		user.setName(name);
-		userService.saveOrUpdate(user);
-
+		SysUser user = (SysUser) userService.saveProfile(vo);
+		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));
+		
 		ret.put("code", RespCode.SUCCESS.getCode());
-
 		return ret;
 	}
 

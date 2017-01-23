@@ -22,12 +22,13 @@ import cn.linkr.events.service.UserService;
 import cn.linkr.events.util.AuthPassport;
 import cn.linkr.events.vo.CompanyVo;
 import cn.linkr.events.vo.DocumentVo;
+import cn.linkr.events.vo.UserVo;
 
 import com.alibaba.fastjson.JSONObject;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_ADMIN + "user/")
+@RequestMapping(Constant.API_PATH_ADMIN + "company/")
 public class CompanyAdmin extends BaseAction {
 	@Autowired
 	UserService userService;
@@ -38,17 +39,16 @@ public class CompanyAdmin extends BaseAction {
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "get", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> get(HttpServletRequest request) {
+	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject req) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		JSONObject req = reqJson(request);
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		long companyId = user.getCompanyId();
+		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		long companyId = vo.getCompanyId();
 		
 		SysCompany po = (SysCompany) companyService.get(SysCompany.class, companyId);
 		CompanyVo eventVo = companyService.genVo(po);
         
-        ret.put("event", eventVo);
+        ret.put("data", eventVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -59,7 +59,6 @@ public class CompanyAdmin extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody CompanyVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		SysCompany doc = companyService.save(vo);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

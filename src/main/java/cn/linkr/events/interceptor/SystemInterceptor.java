@@ -81,7 +81,7 @@ public class SystemInterceptor implements HandlerInterceptor {
 					UserService userService = SpringContextHolder.getBean(UserService.class);
 					SysUser user = userService.getByToken(token.trim());
 					if (user != null) {
-						request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, user);
+						request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));
 						return true;
 					}
 				}

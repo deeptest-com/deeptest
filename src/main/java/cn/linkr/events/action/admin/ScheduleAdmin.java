@@ -43,7 +43,6 @@ public class ScheduleAdmin extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> list(HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
 		JSONObject req = reqJson(request);
 		String eventId = req.getString("eventId");
@@ -69,7 +68,6 @@ public class ScheduleAdmin extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody ScheduleItemVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
 		EvtScheduleItem event = scheduleService.save(vo);
 		

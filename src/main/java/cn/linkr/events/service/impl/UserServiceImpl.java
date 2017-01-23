@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
@@ -161,10 +162,10 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public SysUser logoutPers(SysUser u) {
+	public SysUser logoutPers(String email) {
 		
 		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
-		dc.add(Restrictions.eq("email", u.getEmail()));
+		dc.add(Restrictions.eq("email", email));
 		dc.add(Restrictions.ne("deleted", true));
 		dc.add(Restrictions.ne("disabled", true));
 		List<SysUser> ls = (List<SysUser>) findAllByCriteria(dc);
@@ -205,8 +206,15 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
 	@Override
 	public Page listByPage(long companyId, int currentPage, int itemsPerPage) {
-		// TODO Auto-generated method stub
-		return null;
+        DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
+        dc.add(Restrictions.eq("companyId", companyId));
+        
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+        dc.addOrder(Order.asc("id"));
+        Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
+		
+		return page;
 	}
 
 	@Override
@@ -255,6 +263,21 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         	vos.add(vo);
         }
 		return vos;
+	}
+
+	@Override
+	public SysUser saveProfile(UserVo vo) {
+		SysUser po = (SysUser) get(SysUser.class, vo.getId());
+
+		String name = vo.getName();
+		String email = vo.getEmail(); 
+		String phone = vo.getPhone(); 
+
+		po.setPhone(phone);
+		po.setName(name);
+		po.setEmail(email);
+		saveOrUpdate(po);
+		return po;
 	}
     
 }

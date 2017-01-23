@@ -13,7 +13,7 @@ export class AccountService {
     }
 
     get(id: number) {
-        return this._reqService.post(this._api_url + 'get', {eventId: id});
+        return this._reqService.post(this._api_url + 'get', {id: id});
     }
 
     save(model: any) {

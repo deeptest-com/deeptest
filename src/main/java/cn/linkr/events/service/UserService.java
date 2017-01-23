@@ -15,7 +15,7 @@ public interface UserService extends BaseService {
 	SysUser getByPhone(String token);
 
 	SysUser loginPers(String mobile, String password, Boolean rememberMe);
-	SysUser logoutPers(SysUser user);
+	SysUser logoutPers(String email);
 
 	SysUser registerPers(String name, String email, String phone, String password);
 
@@ -33,5 +33,7 @@ public interface UserService extends BaseService {
 
 	List<UserVo> genVos(List<SysUser> pos);
 	UserVo genVo(SysUser user);
+
+	SysUser saveProfile(UserVo vo);
 
 }

@@ -39,50 +39,31 @@ export class ProfileEdit implements OnInit, AfterViewInit {
     let that = this;
 
     that.buildForm();
-    this._route.params.forEach((params: Params) => {
-      that.modelId = +params['id'];
-    });
-
-    if (that.modelId) {
-        that.loadData();
-    }
+    that.loadData();
   }
 
   ngAfterViewInit() {
     let that = this;
-
-    that.initForm(false);
   }
 
   onSubmit():void {
     let that = this;
 
-    that.model.status = undefined;
-
     that._userService.saveProfile(that.model).subscribe((json:any) => {
         if (json.code = 1) {
-          that._routeService.navTo("/pages/profile/list");
+          that.loadData();
+          that.formErrors = ['保存成功'];
         }
     });
   }
 
-  goto($profile) {
-    let that = this;
-
-    that._routeService.navTo('/pages/profile/edit/' + that.modelId + '/' + $profile.tabModel);
-  }
   loadData() {
    let that = this;
 
-   that._userService.getProfile(that.modelId).subscribe((json:any) => {
-      that.model = json.profile;
-
-     that.initForm(true);
+   that._userService.getProfile().subscribe((json:any) => {
+      that.model = json.data;
+      that._userService.saveProfileLocal(that.model, null);
    });
-  }
-
-  initForm(dataLoaded): void {
-    let that = this;
   }
 
   buildForm(): void {

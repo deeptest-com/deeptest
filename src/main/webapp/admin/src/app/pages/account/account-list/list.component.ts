@@ -18,8 +18,7 @@ export class AccountList implements OnInit, AfterViewInit {
   itemsPerPage:number = 6;
 
   model: any = {status: ''};
-  statusMap: Array<any> = CONSTANT.AccountStatus;
-  accounts: Array<any> = [];
+  items: Array<any> = [];
 
   constructor(private _routeService: RouteService,
               private _accountService: AccountService) {
@@ -42,7 +41,7 @@ export class AccountList implements OnInit, AfterViewInit {
   create():void {
     let that = this;
 
-    that._routeService.navTo("/pages/account/edit/null/property");
+    that._routeService.navTo("/pages/account/edit/null");
   }
   statusChange(e: any):void {
     let that = this;
@@ -60,10 +59,10 @@ export class AccountList implements OnInit, AfterViewInit {
 
   loadData() {
     let that = this;
-    
+
     that._accountService.list(that.itemsPerPage, that.currentPage, that.model.status).subscribe((json:any) => {
       that.totalItems = json.totalItems;
-      that.accounts = json.accounts;
+      that.items = json.data;
     });
   }
 }

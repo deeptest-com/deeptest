@@ -18,8 +18,8 @@ export class UserService {
   _forgotPassword = 'user/forgotPassword';
   _resetPassword = 'user/resetPassword';
 
-  _getProfile = 'user/profile/get';
-  _saveProfile = 'user/profile/save';
+  _getProfile = 'user/getProfile';
+  _saveProfile = 'user/saveProfile';
   _suggestions = 'suggestions/:id';
 
   _collections = 'collections/:id';
@@ -65,12 +65,18 @@ export class UserService {
       return errors;
     });
   }
-  saveProfileLocal(profile:any, days:number) {
+  saveProfileLocal(profile:any, expireDays:number) {
     let that = this;
     CONSTANT.PROFILE = profile;
-    Cookie.set(CONSTANT.PROFILE_KEY, JSON.stringify(profile), days);
+
+    if (!expireDays) {
+      expireDays = parseInt(Cookie.get(CONSTANT.PROFILE_EXPIRE));
+    } else {
+      Cookie.set(CONSTANT.PROFILE_EXPIRE, expireDays + '', 365);
+    }
+
+    Cookie.set(CONSTANT.PROFILE_KEY, JSON.stringify(profile), expireDays);
     that._state.notifyDataChanged('profile.refresh', profile);
-    console.log('===saveProfileLocal===', profile);
   }
   loadProfileLocal() {
     let that = this;
@@ -79,7 +85,6 @@ export class UserService {
     if (profile) {
       CONSTANT.PROFILE = JSON.parse(profile);
       that._state.notifyDataChanged('profile.refresh', profile);
-      console.log('===loadProfile===', profile);
     }
   }
 
@@ -91,7 +96,7 @@ export class UserService {
     return this._reqService.post(this._resetPassword, {phone: phone});
   }
 
-  getProfile(userId: number) {
+  getProfile() {
     return this._reqService.post(this._getProfile, {});
   }
 

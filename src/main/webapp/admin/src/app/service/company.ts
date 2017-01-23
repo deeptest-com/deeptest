@@ -12,8 +12,8 @@ export class CompanyService {
         return this._reqService.post(this._api_url + 'list', {itemsPerPage: itemsPerPage, currentPage: currentPage, eventId: eventId});
     }
 
-    get(id: number) {
-        return this._reqService.post(this._api_url + 'get', {eventId: id});
+    get() {
+        return this._reqService.post(this._api_url + 'get', {});
     }
 
     save(model: number) {

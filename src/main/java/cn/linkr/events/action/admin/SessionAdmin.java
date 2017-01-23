@@ -43,7 +43,6 @@ public class SessionAdmin extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody SessionVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		EvtSession session = sessionService.save(vo);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -56,7 +55,6 @@ public class SessionAdmin extends BaseAction {
 	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		boolean success = sessionService.remove(to.getLong("id"), to.getString("type"));
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

@@ -39,8 +39,6 @@ public class ServiceAdmin extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		String eventId = req.getString("eventId");
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
 		List<EvtService> pos = serviceService.listForEdit(Long.valueOf(eventId), null);
         List<ServiceVo> vos = new LinkedList<ServiceVo>();
         for (EvtService po: pos) {
@@ -61,7 +59,6 @@ public class ServiceAdmin extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody ServiceVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		EvtService service = serviceService.save(vo);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -73,7 +70,6 @@ public class ServiceAdmin extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> disable(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
 		long serviceId = to.getLong("id");
 		String action = to.getString("action");

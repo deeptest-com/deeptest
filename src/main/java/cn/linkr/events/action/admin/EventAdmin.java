@@ -31,6 +31,7 @@ import cn.linkr.events.vo.DocumentVo;
 import cn.linkr.events.vo.EventVo;
 import cn.linkr.events.vo.OrganizerVo;
 import cn.linkr.events.vo.Page;
+import cn.linkr.events.vo.UserVo;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -53,13 +54,13 @@ public class EventAdmin extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject req) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
 		int currentPage = req.getString("currentPage") == null? 0: Integer.valueOf(req.getString("currentPage")) - 1;
 		int itemsPerPage = req.getString("itemsPerPage") == null? Constant.PAGE_SIZE: Integer.valueOf(req.getString("itemsPerPage"));
 		String status = req.getString("status");
 		
-		Page page = eventService.list(user, status, currentPage, itemsPerPage);
+		Page page = eventService.list(vo.getCompanyId(), status, currentPage, itemsPerPage);
 		List<EventVo> vos = eventService.genVos(page.getItems());
         
 		ret.put("totalItems", page.getTotal());
@@ -105,9 +106,9 @@ public class EventAdmin extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody EventVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		EvtEvent event = eventService.save(vo, user);
+		EvtEvent event = eventService.save(vo, userVo.getId(), userVo.getCompanyId());
         EventVo eventVo = eventService.genVo(event);
         
         ret.put("event", eventVo);

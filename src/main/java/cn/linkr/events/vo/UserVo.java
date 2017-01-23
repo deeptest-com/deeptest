@@ -8,6 +8,8 @@ public class UserVo extends BaseVo {
 //	private String password;
     private String phone;
     
+    private Long companyId;
+    
     private String token;
 	public String getEmail() {
 		return email;
@@ -39,5 +41,11 @@ public class UserVo extends BaseVo {
 //	public void setPassword(String password) {
 //		this.password = password;
 //	}
+	public Long getCompanyId() {
+		return companyId;
+	}
+	public void setCompanyId(Long companyId) {
+		this.companyId = companyId;
+	}
 
 }

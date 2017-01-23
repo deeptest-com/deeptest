@@ -59,7 +59,7 @@ export class EventEditProperty implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     let that = this;
 
-    that.initForm(false);
+    that.initForm();
   }
 
   onSubmit():void {
@@ -94,11 +94,11 @@ export class EventEditProperty implements OnInit, AfterViewInit {
      Utils.dateDivide(that.model, 'registerStartDate', 'registerStartTime', 'registerStartDatetime');
      Utils.dateDivide(that.model, 'registerEndDate', 'registerEndTime', 'registerEndDatetime');
 
-     that.initForm(true);
+     that.initForm();
    });
   }
 
-  initForm(dataLoaded): void {
+  initForm(): void {
     let that = this;
 
     jQuery.each(that.datePickers, function( index, value ) {

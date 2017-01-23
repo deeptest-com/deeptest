@@ -23,11 +23,10 @@ declare var jQuery;
   template: require('./edit.html')
 })
 export class AccountEdit implements OnInit, AfterViewInit {
-  accountId: number;
+  public accountId: number;
+  public model:any = {};
   public form:FormGroup;
-  public model:{};
 
-  public submitted:boolean = false;
   public errors: string;
 
   constructor(private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
@@ -52,7 +51,7 @@ export class AccountEdit implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     let that = this;
 
-    that.initForm(false);
+    that.initForm();
   }
 
   onSubmit():void {
@@ -65,26 +64,29 @@ export class AccountEdit implements OnInit, AfterViewInit {
     });
   }
 
+  loadData() {
+   let that = this;
+
+   that._accountService.get(that.accountId).subscribe((json:any) => {
+      that.model = json.data;
+
+     that.buildForm();
+   });
+  }
   goto($account) {
     let that = this;
 
     that._routeService.navTo('/pages/account/edit/' + that.accountId + '/' + $account.tabModel);
   }
-  loadData() {
-   let that = this;
-
-   that._accountService.get(that.accountId).subscribe((json:any) => {
-      that.model = json.account;
-
-     that.initForm(true);
-   });
-  }
-
-  initForm(dataLoaded): void {
+  back($event: any):void {
     let that = this;
-
+    that._routeService.navTo('/pages/account/list');
   }
 
+  initForm() {
+    let that = this;
+    // init controller
+  }
   buildForm(): void {
     let that = this;
     this.form = this.fb.group(

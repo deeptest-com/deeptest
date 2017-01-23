@@ -37,8 +37,8 @@ public class AccountAdmin extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		long companyId = user.getCompanyId();
+		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		long companyId = vo.getCompanyId();
 		
 		int currentPage = json.getInteger("currentPage") == null? 0: json.getInteger("currentPage") - 1;
 		int itemsPerPage = json.getInteger("itemsPerPage") == null? Constant.PAGE_SIZE: json.getInteger("itemsPerPage");
@@ -55,17 +55,16 @@ public class AccountAdmin extends BaseAction {
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "get", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> get(HttpServletRequest request) {
+	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject req) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		JSONObject req = reqJson(request);
-		String companyId = req.getString("companyId");
+		String accountId = req.getString("id");
 		
 		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
 		
-		SysUser po = (SysUser) userService.get(SysUser.class, Long.valueOf(companyId));
+		SysUser po = (SysUser) userService.get(SysUser.class, Long.valueOf(accountId));
 		UserVo vo = userService.genVo(po);
         
-        ret.put("event", vo);
+        ret.put("data", vo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -76,7 +75,6 @@ public class AccountAdmin extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody UserVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		SysUser po = userService.save(vo);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -89,7 +87,6 @@ public class AccountAdmin extends BaseAction {
 	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		boolean success = userService.remove(to.getLong("id"));
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -102,7 +99,6 @@ public class AccountAdmin extends BaseAction {
 	public Map<String, Object> disable(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		boolean success = userService.disable(to.getLong("id"));
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

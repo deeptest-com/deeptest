@@ -45,10 +45,10 @@ export const PAGES_MENU = [
         ]
       },
       {
-        path: '',
+        path: 'business',
         data: {
           menu: {
-            title: '账号设置',
+            title: '业务设置',
             icon: 'ion-calendar',
             selected: false,
             expanded: true,

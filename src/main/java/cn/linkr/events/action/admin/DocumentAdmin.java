@@ -37,8 +37,6 @@ public class DocumentAdmin extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
 		long eventId = json.getLong("eventId");
 		int currentPage = json.getInteger("currentPage") == null? 0: json.getInteger("currentPage") - 1;
 		int itemsPerPage = json.getInteger("itemsPerPage") == null? Constant.PAGE_SIZE: json.getInteger("itemsPerPage");
@@ -58,7 +56,6 @@ public class DocumentAdmin extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody DocumentVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		EvtDocument doc = documentService.save(vo);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -71,7 +68,6 @@ public class DocumentAdmin extends BaseAction {
 	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		SysUser user = (SysUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		boolean success = documentService.remove(to.getLong("id"));
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

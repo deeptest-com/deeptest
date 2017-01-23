@@ -16,7 +16,7 @@ export class AccountService {
         return this._reqService.post(this._api_url + 'get', {eventId: id});
     }
 
-    save(model: number) {
+    save(model: any) {
         return this._reqService.post(this._api_url + 'save', model);
     }
 

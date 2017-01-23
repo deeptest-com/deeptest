@@ -27,24 +27,23 @@
           <thead class="thead-inverse">
           <tr>
             <th>编号</th>
-            <th>名称</th>
-            <th>地点</th>
+            <th>姓名</th>
+            <th>邮箱</th>
+            <th>手机</th>
             <th>状态</th>
-            <th>开始时间</th>
-            <th>结束时间</th>
             <th>操作</th>
           </tr>
           </thead>
           <tbody>
           <tr *ngFor="let item of accounts; let i = index">
             <th scope="row">{{i}}-{{item.id}}</th>
-            <td>{{item.title}}</td>
-            <td>{{item.address}}</td>
-            <td>{{item.status | accountStatus}}</td>
-            <td>{{item.startDatetime | date:'yyyy/MM/dd'}}</td>
-            <td>{{item.endDatetime | date:'yyyy/MM/dd'}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.email}}</td>
+            <td>{{item.phone}}</td>
+            <td>{{item.status | modelStatus}}</td>
             <td class="opt">
               <i [routerLink]="['/pages/account/edit',item.id,'property', {im: true}]" class="ion-edit link"></i>
+              <i (click)="disable(item.id)" class="ion-eye-disabled link"></i>
               <i (click)="delete(item.id)" class="ion-trash-a link"></i>
             </td>
           </tr>

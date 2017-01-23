@@ -91,7 +91,7 @@ export class UserService {
     return this._reqService.post(this._resetPassword, {phone: phone});
   }
 
-  getProfile() {
+  getProfile(userId: number) {
     return this._reqService.post(this._getProfile, {});
   }
 

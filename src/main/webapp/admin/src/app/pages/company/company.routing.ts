@@ -9,7 +9,7 @@ const routes: Routes = [
     path: '',
     component: Company,
     children: [
-      { path: 'edit/:id', component: CompanyEdit }
+      { path: 'edit', component: CompanyEdit }
     ]
   }
 ];

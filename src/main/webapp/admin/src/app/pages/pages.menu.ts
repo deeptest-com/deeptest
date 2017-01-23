@@ -45,7 +45,7 @@ export const PAGES_MENU = [
         ]
       },
       {
-        path: 'settings',
+        path: '',
         data: {
           menu: {
             title: '账号设置',
@@ -57,7 +57,7 @@ export const PAGES_MENU = [
         },
         children: [
           {
-            path: 'company',
+            path: ['company', 'edit'],
             data: {
               menu: {
                 title: '公司管理'
@@ -65,13 +65,21 @@ export const PAGES_MENU = [
             }
           },
           {
-            path: 'account',
+            path: ['account', 'list'],
+            data: {
+              menu: {
+                title: '账号管理'
+              }
+            }
+          },
+          {
+            path: ['profile', 'edit'],
             data: {
               menu: {
                 title: '个人信息'
               }
             }
-          }
+          },
         ]
       },
 

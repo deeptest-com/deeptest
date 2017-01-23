@@ -9,8 +9,8 @@ import { AccountService } from '../../../service/account';
 @Component({
   selector: 'account-list',
   encapsulation: ViewEncapsulation.None,
-  styles: [require('./account-list.scss')],
-  template: require('./account-list.html')
+  styles: [require('./list.scss')],
+  template: require('./list.html')
 })
 export class AccountList implements OnInit, AfterViewInit {
   totalItems:number = 0;
@@ -49,6 +49,10 @@ export class AccountList implements OnInit, AfterViewInit {
     that.model.status = e;
     that.loadData();
   }
+  disable(accountId: string):void {
+    let that = this;
+    console.log('accountId=' + accountId);
+  }
   delete(accountId: string):void {
     let that = this;
     console.log('accountId=' + accountId);
@@ -56,6 +60,7 @@ export class AccountList implements OnInit, AfterViewInit {
 
   loadData() {
     let that = this;
+    
     that._accountService.list(that.itemsPerPage, that.currentPage, that.model.status).subscribe((json:any) => {
       that.totalItems = json.totalItems;
       that.accounts = json.accounts;

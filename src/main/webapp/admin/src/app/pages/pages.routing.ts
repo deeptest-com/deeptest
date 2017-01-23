@@ -19,6 +19,7 @@ const routes: Routes = [
       { path: 'event', loadChildren: () => System.import('./event/event.module') },
       { path: 'account', loadChildren: () => System.import('./account/account.module') },
       { path: 'company', loadChildren: () => System.import('./company/company.module') },
+      { path: 'profile', loadChildren: () => System.import('./user/profile/profile.module') },
 
       { path: 'editors', loadChildren: () => System.import('./editors/editors.module') },
       //{ path: 'components', loadChildren: () => System.import('./components/components.module') }

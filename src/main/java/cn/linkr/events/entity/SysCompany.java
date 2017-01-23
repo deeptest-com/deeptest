@@ -8,8 +8,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "clt_company")
-public class EvtCompany extends BaseEntity {
+@Table(name = "sys_company")
+public class SysCompany extends BaseEntity {
 	private static final long serialVersionUID = -970910958057582029L;
 	
 	private String name;

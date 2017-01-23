@@ -1,153 +1,44 @@
 <div class="container-fluid">
-
   <div class="row">
-    <account-nav (itemClick)="goto($account)" (backClick)="back()"
-               [needCreate]="needCreate" [tabModel]="tabModel"></account-nav>
+    <div class="list-toolbar col-xl-12 event-nav">
+      <div class="filter">
+      </div>
+      <div class="buttons">
+        <button (click)="back($event)" type="button" class="btn btn-default btn-with-icon btn-sm back">
+          <i class="ion-backspace"></i>返回
+        </button>
+      </div>
+    </div>
   </div>
 
   <div class="row">
-    <form [formGroup]="accountForm" (ngSubmit)="onSubmit()" class="my-validate-form">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="my-validate-form">
       <div class="form-group row">
-
-        <label class="col-sm-2 col-form-label">会议名称</label>
+        <label class="col-sm-2 col-form-label"><span>姓名</span></label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" name="title" formControlName="title"
-                 [(ngModel)]="model.title" #title>
-        </div>
-      </div>
-
-      <div class="form-group row">
-        <label class="col-sm-2 col-form-label">会议开始时间</label>
-        <div class="col-sm-5">
-          <div class="input-group date">
-            <input readonly="readonly" type="text" class="form-control date-time" name="startDate"
-                   formControlName="startDate"
-                   [class.my-invalid]="accountForm.errors?.accountTimeCompare"
-                   [(ngModel)]="model.startDate" #startDate>
-            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-          </div>
-        </div>
-        <div class="col-sm-5">
-          <div class="input-group bootstrap-timepicker timepicker">
-            <input readonly="readonly" type="text" class="form-control date-time" name="startTime"
-                   formControlName="startTime"
-                   [class.my-invalid]="accountForm.errors?.accountTimeCompare"
-                   [(ngModel)]="model.startTime" #startTime>
-            <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
-          </div>
+          <input type="text" class="form-control" name="name" formControlName="name"
+                 [(ngModel)]="model.name" #name>
         </div>
       </div>
       <div class="form-group row">
-        <label class="col-sm-2 col-form-label">会议结束时间</label>
-        <div class="col-sm-5">
-          <div class="input-group date">
-            <input readonly="readonly" type="text" class="form-control date-time" name="endDate"
-                   formControlName="endDate"
-                   [class.my-invalid]="accountForm.errors?.accountTimeCompare"
-                   [(ngModel)]="model.endDate" #endDate>
-            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-          </div>
-        </div>
-        <div class="col-sm-5">
-          <div class="input-group bootstrap-timepicker timepicker">
-            <input readonly="readonly" type="text" class="form-control date-time" name="endTime"
-                   formControlName="endTime"
-                   [class.my-invalid]="accountForm.errors?.accountTimeCompare"
-                   [(ngModel)]="model.endTime" #endTime>
-            <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-group row">
-        <label class="col-sm-2 col-form-label">报名开始时间</label>
-        <div class="col-sm-5">
-          <div class="input-group date">
-            <input readonly="readonly" type="text" class="form-control date-time" name="registerStartDate"
-                   formControlName="registerStartDate"
-                   [class.my-invalid]="accountForm.errors?.registerTimeCompare"
-                   [(ngModel)]="model.registerStartDate" #registerStartDate>
-            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-          </div>
-        </div>
-        <div class="col-sm-5">
-          <div class="input-group bootstrap-timepicker timepicker">
-            <input readonly="readonly" type="text" class="form-control date-time" name="registerStartTime"
-                   formControlName="registerStartTime"
-                   [class.my-invalid]="accountForm.errors?.registerTimeCompare"
-                   [(ngModel)]="model.registerStartTime" #registerStartTime>
-            <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
-          </div>
-        </div>
-      </div>
-      <div class="form-group row">
-        <label class="col-sm-2 col-form-label">报名结束时间</label>
-        <div class="col-sm-5">
-          <div class="input-group date">
-            <input readonly="readonly" type="text" class="form-control date-time" name="registerEndDate"
-                   formControlName="registerEndDate"
-                   [class.my-invalid]="accountForm.errors?.registerTimeCompare"
-                   [(ngModel)]="model.registerEndDate" #registerEndDate>
-            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-          </div>
-        </div>
-        <div class="col-sm-5">
-          <div class="input-group bootstrap-timepicker timepicker">
-            <input readonly="readonly" type="text" class="form-control date-time" name="registerEndTime"
-                   formControlName="registerEndTime"
-                   [class.my-invalid]="accountForm.errors?.registerTimeCompare"
-                   [(ngModel)]="model.registerEndTime" #registerEndTime>
-            <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-group row">
-        <label class="col-sm-2 col-form-label">提前签到时间</label>
-        <div class="col-sm-10">
-          <select [(ngModel)]="model.signBefore" class="form-control form-control-sm" name="signBefore"
-                  formControlName="signBefore">
-            <option value="1">1小时</option>
-            <option value="3">3小时</option>
-            <option value="5">5小时</option>
-            <option value="12">12小时</option>
-            <option value="24">24小时</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-group row">
-        <label class="col-sm-2 col-form-label">地点</label>
-        <div class="col-sm-10">
-          <input type="text" class="form-control" name="address" formControlName="address"
-                 [(ngModel)]="model.address" #address>
-        </div>
-      </div>
-      <div class="form-group row">
-        <label class="col-sm-2 col-form-label">电话</label>
-        <div class="col-sm-10">
-          <input type="text" class="form-control" name="phone" formControlName="phone"
-                 [(ngModel)]="model.phone" #phone>
-        </div>
-      </div>
-      <div class="form-group row">
-        <label class="col-sm-2 col-form-label">邮箱</label>
+        <label class="col-sm-2 col-form-label"><span>邮箱</span></label>
         <div class="col-sm-10">
           <input type="text" class="form-control" name="email" formControlName="email"
                  [(ngModel)]="model.email" #email>
         </div>
       </div>
       <div class="form-group row">
-        <label class="col-sm-2 col-form-label">网站</label>
+        <label class="col-sm-2 col-form-label"><span>电话</span></label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" name="website" formControlName="website"
-                 [(ngModel)]="model.website" #website>
+          <input type="text" class="form-control" name="phone" formControlName="phone"
+                 [(ngModel)]="model.phone" #phone>
         </div>
       </div>
+
       <div class="form-group row">
         <label class="col-sm-2 col-form-label"></label>
         <div class="col-sm-10">
-          <button type="submit" class="btn btn-default" [disabled]="!accountForm.valid">保存</button>
+          <button type="submit" class="btn btn-default" [disabled]="!form.valid">保存</button>
         </div>
       </div>
       <div class="form-group row">

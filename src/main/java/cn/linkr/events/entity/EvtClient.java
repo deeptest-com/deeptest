@@ -21,7 +21,7 @@ public class EvtClient extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", insertable = false, updatable = false)
-    private EvtCompany company;
+    private SysCompany company;
 
     @Column(name = "company_id")
     private Long companyId;
@@ -58,11 +58,11 @@ public class EvtClient extends BaseEntity {
         this.title = title;
     }
 
-    public EvtCompany getCompany() {
+    public SysCompany getCompany() {
         return company;
     }
 
-    public void setCompany(EvtCompany company) {
+    public void setCompany(SysCompany company) {
         this.company = company;
     }
 

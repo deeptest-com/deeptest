@@ -5,12 +5,9 @@ import { NgaModule } from '../../theme/nga.module';
 
 import { routing }       from './account.routing';
 
-import { PaginationModule} from 'ng2-bootstrap';
-import { TabsModule } from 'ng2-bootstrap';
-import { CollapseModule } from 'ng2-bootstrap';
 import { ModalModule } from 'ng2-bootstrap';
 import { ButtonsModule } from 'ng2-bootstrap';
-import { FileUploadModule } from 'ng2-file-upload';
+import { PaginationModule} from 'ng2-bootstrap';
 
 import { ComponentsModule } from '../components/components.module';
 import { PipeModule } from '../../pipe/pipe.module';
@@ -30,13 +27,9 @@ import { AccountEdit } from './account-edit';
     NgaModule,
     routing,
 
-    TabsModule,
-    PaginationModule,
     ModalModule,
     ButtonsModule,
-    CollapseModule,
-    FileUploadModule,
-
+    PaginationModule,
     ComponentsModule,
     PipeModule
   ],

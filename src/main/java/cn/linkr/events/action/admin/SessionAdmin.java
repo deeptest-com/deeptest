@@ -12,21 +12,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSONObject;
-
 import cn.linkr.events.action.client.BaseAction;
 import cn.linkr.events.constants.Constant;
-import cn.linkr.events.entity.EvtClient;
-import cn.linkr.events.entity.EvtEvent;
 import cn.linkr.events.entity.EvtSession;
 import cn.linkr.events.entity.SysUser;
 import cn.linkr.events.service.EventService;
 import cn.linkr.events.service.RegisterService;
 import cn.linkr.events.service.SessionService;
 import cn.linkr.events.util.AuthPassport;
-import cn.linkr.events.vo.BaseVo;
-import cn.linkr.events.vo.EventVo;
 import cn.linkr.events.vo.SessionVo;
+
+import com.alibaba.fastjson.JSONObject;
 
 
 @Controller

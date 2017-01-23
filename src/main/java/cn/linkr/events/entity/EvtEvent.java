@@ -56,7 +56,7 @@ public class EvtEvent extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", insertable = false, updatable = false)
-    private EvtCompany company;
+    private SysCompany company;
 
     @Column(name = "company_id")
     private Long companyId;
@@ -139,11 +139,11 @@ public class EvtEvent extends BaseEntity {
         this.status = status;
     }
 
-    public EvtCompany getCompany() {
+    public SysCompany getCompany() {
         return company;
     }
 
-    public void setCompany(EvtCompany company) {
+    public void setCompany(SysCompany company) {
         this.company = company;
     }
 

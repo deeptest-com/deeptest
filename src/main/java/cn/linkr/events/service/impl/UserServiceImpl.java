@@ -1,6 +1,7 @@
 package cn.linkr.events.service.impl;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,6 +10,8 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
+import cn.linkr.events.entity.EvtGuest;
+import cn.linkr.events.entity.SysCompany;
 import cn.linkr.events.entity.SysUser;
 import cn.linkr.events.entity.SysUser.AgentType;
 import cn.linkr.events.entity.SysVerifyCode;
@@ -16,6 +19,9 @@ import cn.linkr.events.service.UserService;
 import cn.linkr.events.util.BeanUtilEx;
 import cn.linkr.events.util.DateUtils;
 import cn.linkr.events.util.StringUtil;
+import cn.linkr.events.vo.CompanyVo;
+import cn.linkr.events.vo.GuestVo;
+import cn.linkr.events.vo.Page;
 import cn.linkr.events.vo.UserVo;
 
 @Service
@@ -195,6 +201,60 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		BeanUtilEx.copyProperties(vo, user);
 		
 		return vo;
+	}
+
+	@Override
+	public Page listByPage(long companyId, int currentPage, int itemsPerPage) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SysUser save(UserVo vo) {
+		if (vo == null) {
+			return null;
+		}
+		
+		SysUser po = new SysUser();
+		if (vo.getId() != null) {
+			po = (SysUser) get(SysUser.class, vo.getId());
+		}
+		
+		po.setName(vo.getName());
+		po.setPhone(vo.getPhone());
+		po.setEmail(vo.getEmail());
+		
+		saveOrUpdate(po);
+		return po;
+	}
+
+	@Override
+	public boolean remove(Long id) {
+		SysUser po = (SysUser) get(SysUser.class, id);
+		po.setDeleted(true);
+		saveOrUpdate(po);
+		
+		return true;
+	}
+
+	@Override
+	public boolean disable(Long id) {
+		SysUser po = (SysUser) get(SysUser.class, id);
+		po.setDisabled(true);
+		saveOrUpdate(po);
+		
+		return true;
+	}
+
+	@Override
+	public List<UserVo> genVos(List<SysUser> pos) {
+        List<UserVo> vos = new LinkedList<UserVo>();
+
+        for (SysUser po: pos) {
+        	UserVo vo = genVo(po);
+        	vos.add(vo);
+        }
+		return vos;
 	}
     
 }

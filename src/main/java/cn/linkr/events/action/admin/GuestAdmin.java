@@ -1,7 +1,6 @@
 package cn.linkr.events.action.admin;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,24 +13,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSONObject;
-
 import cn.linkr.events.action.client.BaseAction;
 import cn.linkr.events.constants.Constant;
-import cn.linkr.events.entity.EvtClient;
-import cn.linkr.events.entity.EvtEvent;
 import cn.linkr.events.entity.EvtGuest;
-import cn.linkr.events.entity.EvtScheduleItem;
-import cn.linkr.events.entity.EvtSession;
 import cn.linkr.events.entity.SysUser;
 import cn.linkr.events.service.GuestService;
 import cn.linkr.events.util.AuthPassport;
-import cn.linkr.events.util.BeanUtilEx;
-import cn.linkr.events.vo.EventVo;
 import cn.linkr.events.vo.GuestVo;
 import cn.linkr.events.vo.Page;
-import cn.linkr.events.vo.ScheduleItemVo;
-import cn.linkr.events.vo.SessionVo;
+
+import com.alibaba.fastjson.JSONObject;
 
 
 @Controller

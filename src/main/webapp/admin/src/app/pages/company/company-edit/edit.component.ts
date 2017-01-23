@@ -6,7 +6,7 @@ import { DropdownModule} from 'ng2-bootstrap/ng2-bootstrap';
 
 import { CONSTANT } from '../../../utils/constant';
 import { Utils } from '../../../utils/utils';
-import {Validate} from '../../../service/validate';
+import {ValidatorUtils} from '../../../validator/validator.utils';
 
 import { RouteService } from '../../../service/route';
 
@@ -22,9 +22,9 @@ declare var jQuery;
   template: require('./edit.html')
 })
 export class CompanyEdit implements OnInit, AfterViewInit {
-  companyId: number;
-  model: any = { signBefore: 3};
-  companyForm: any;
+  modelId: number;
+  model: any = {};
+  form: any;
   tabModel: string = 'property';
   needCreate:boolean = false;
 
@@ -39,10 +39,10 @@ export class CompanyEdit implements OnInit, AfterViewInit {
 
     that.buildForm();
     this._route.params.forEach((params: Params) => {
-      that.companyId = +params['id'];
+      that.modelId = +params['id'];
     });
 
-    if (that.companyId) {
+    if (that.modelId) {
         that.loadData();
     }
   }
@@ -68,12 +68,12 @@ export class CompanyEdit implements OnInit, AfterViewInit {
   goto($company) {
     let that = this;
 
-    that._routeService.navTo('/pages/company/edit/' + that.companyId + '/' + $company.tabModel);
+    that._routeService.navTo('/pages/company/edit/' + that.modelId + '/' + $company.tabModel);
   }
   loadData() {
    let that = this;
 
-   that._companyService.get(that.companyId).subscribe((json:any) => {
+   that._companyService.get(that.modelId).subscribe((json:any) => {
       that.model = json.company;
 
      that.initForm(true);
@@ -86,22 +86,18 @@ export class CompanyEdit implements OnInit, AfterViewInit {
 
   buildForm(): void {
     let that = this;
-    that.companyForm = that.fb.group(
-        {
-          'name': [that.model.email, [Validators.required]]
-        }, {
-           validator: Validate.compareDatetime([])
-        }
+    this.form = this.fb.group(
+      {
+        'name': [that.model['name'], [Validators.required]]
+      }, {}
     );
 
-    that.companyForm.valueChanges.subscribe(data => that.onValueChanged(data));
-    that.onValueChanged();
+    this.form.valueChanges.subscribe(data => this.onValueChanged(data));
+    this.onValueChanged();
   }
   onValueChanged(data?: any) {
     let that = this;
-    if (!that.companyForm) { return; }
-
-    that.formErrors = Validate.genValidateInfo(that.companyForm, that.validateMsg, []);
+    that.formErrors = ValidatorUtils.genMsg(that.form, that.validateMsg, []);
   }
 
   formErrors = [];

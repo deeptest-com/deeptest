@@ -16,7 +16,6 @@ import { RequestService } from '../../service/request';
 import { CompanyService } from '../../service/company';
 
 import { Company } from './company.component';
-import { CompanyList } from './company-list';
 import { CompanyEdit } from './company-edit';
 
 @NgModule({
@@ -25,26 +24,19 @@ import { CompanyEdit } from './company-edit';
     ReactiveFormsModule,
     NgaModule,
     routing,
-
-    TabsModule,
-    PaginationModule,
     ModalModule,
     ButtonsModule,
-    CollapseModule,
-    FileUploadModule,
 
     ComponentsModule,
     PipeModule
   ],
   declarations: [
     Company,
-    CompanyList,
     CompanyEdit
   ],
   providers: [
     RouteService,
     RequestService,
-    DatetimePickerService,
     CompanyService
   ]
 })

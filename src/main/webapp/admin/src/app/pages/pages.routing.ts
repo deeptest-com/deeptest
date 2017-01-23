@@ -17,10 +17,8 @@ const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', loadChildren: () => System.import('./dashboard/dashboard.module') },
       { path: 'event', loadChildren: () => System.import('./event/event.module') },
-      { path: 'account', loadChildren: () => System.import('./account/account.module') },
-      { path: 'company', loadChildren: () => System.import('./company/company.module') },
-      { path: 'profile', loadChildren: () => System.import('./user/profile/profile.module') },
-
+      { path: 'business', loadChildren: () => System.import('./business/business.module') },
+      
       { path: 'editors', loadChildren: () => System.import('./editors/editors.module') },
       //{ path: 'components', loadChildren: () => System.import('./components/components.module') }
       { path: 'charts', loadChildren: () => System.import('./charts/charts.module') },

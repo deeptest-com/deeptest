@@ -26,7 +26,6 @@ export class ValidatorUtils {
         errors.push(validateMsg[validator]);
       }
     }
-    console.log(form.errors);
     return errors;
   }
 

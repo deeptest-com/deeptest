@@ -35,7 +35,7 @@ export const PAGES_MENU = [
             }
           },
           {
-            path: 'event-settings',
+            path: 'settings',
             data: {
               menu: {
                 title: '全局设置',
@@ -48,8 +48,8 @@ export const PAGES_MENU = [
         path: 'business',
         data: {
           menu: {
-            title: '业务设置',
-            icon: 'ion-calendar',
+            title: '业务管理',
+            icon: 'ion-settings',
             selected: false,
             expanded: true,
             order: 100,
@@ -57,7 +57,7 @@ export const PAGES_MENU = [
         },
         children: [
           {
-            path: ['company', 'edit'],
+            path: 'company-edit',
             data: {
               menu: {
                 title: '公司管理'
@@ -65,7 +65,7 @@ export const PAGES_MENU = [
             }
           },
           {
-            path: ['account', 'list'],
+            path: 'account-list',
             data: {
               menu: {
                 title: '账号管理'
@@ -73,10 +73,10 @@ export const PAGES_MENU = [
             }
           },
           {
-            path: ['profile', 'edit'],
+            path: 'profile-edit',
             data: {
               menu: {
-                title: '个人信息'
+                title: '个人设置'
               }
             }
           },

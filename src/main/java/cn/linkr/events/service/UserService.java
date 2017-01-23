@@ -29,7 +29,7 @@ public interface UserService extends BaseService {
 	Page listByPage(long companyId, int currentPage, int itemsPerPage);
 	SysUser save(UserVo vo);
 	boolean remove(Long id);
-	boolean disable(Long id);
+	boolean disablePers(Long id);
 
 	List<UserVo> genVos(List<SysUser> pos);
 	UserVo genVo(SysUser user);

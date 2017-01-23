@@ -86,9 +86,9 @@ export class EventEditService implements OnInit, AfterViewInit {
     $event.stopPropagation();
   }
 
-  disable(item:any, action: string, $event:any):void {
+  disable(item:any, $event:any):void {
     let that = this;
-    that._serviceService.disable(item.id, action).subscribe((json:any) => {
+    that._serviceService.disable(item.id).subscribe((json:any) => {
       if (json.code = 1) {
         that.loadData();
       }

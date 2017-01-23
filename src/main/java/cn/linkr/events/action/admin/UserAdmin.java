@@ -191,8 +191,10 @@ public class UserAdmin extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		SysUser user = (SysUser) userService.saveProfile(vo);
-		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));
+		vo = userService.genVo(user);
+		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, vo);
 		
+		ret.put("data", vo);
 		ret.put("code", RespCode.SUCCESS.getCode());
 		return ret;
 	}

@@ -19,7 +19,9 @@ export class AccountService {
     save(model: any) {
         return this._reqService.post(this._api_url + 'save', model);
     }
-
+    disable(id: number) {
+      return this._reqService.post(this._api_url + 'disable', {id: id});
+    }
     remove(id: number) {
       return this._reqService.post(this._api_url + 'remove', {id: id});
     }

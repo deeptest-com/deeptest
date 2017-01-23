@@ -15,8 +15,8 @@
               <span [class.text-deleted]="item.disabled" class="pointer">{{item.typeName}}</span>
               &nbsp;&nbsp;
               <i (click)="showModal(item, 'edit', $event);" class="ion-edit link"></i>
-              <i *ngIf="!item.disabled" (click)="disable(item, 'disable', $event);" class="ion-eye-disabled link"></i>
-              <i *ngIf="item.disabled" (click)="disable(item, 'enable', $event);" class="ion-eye link"></i>
+              <i [class.ion-eye-disabled]="!item.disabled" [class.ion-eye]="item.disabled"
+                 (click)="disable(item, $event);" class=" link"></i>
             </span>
           </h5>
         </div>

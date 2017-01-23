@@ -210,7 +210,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         dc.add(Restrictions.eq("companyId", companyId));
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         dc.addOrder(Order.asc("id"));
         Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
 		
@@ -246,9 +246,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean disable(Long id) {
+	public boolean disablePers(Long id) {
 		SysUser po = (SysUser) get(SysUser.class, id);
-		po.setDisabled(true);
+		po.setDisabled(!po.getDisabled());
 		saveOrUpdate(po);
 		
 		return true;

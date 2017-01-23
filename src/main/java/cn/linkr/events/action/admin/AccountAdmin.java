@@ -99,7 +99,7 @@ public class AccountAdmin extends BaseAction {
 	public Map<String, Object> disable(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		boolean success = userService.disable(to.getLong("id"));
+		boolean success = userService.disablePers(to.getLong("id"));
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

@@ -72,9 +72,8 @@ public class ServiceAdmin extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		long serviceId = to.getLong("id");
-		String action = to.getString("action");
 		
-		boolean success = serviceService.disablePers(serviceId, action);
+		boolean success = serviceService.disablePers(serviceId);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

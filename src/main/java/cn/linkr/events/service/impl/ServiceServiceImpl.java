@@ -71,13 +71,9 @@ public class ServiceServiceImpl extends BaseServiceImpl implements ServiceServic
 	}
 	
 	@Override
-	public boolean disablePers(Long id, String action) {
+	public boolean disablePers(Long id) {
 		EvtService po = (EvtService) get(EvtService.class, id);
-		if ("disable".equals(action)) {
-			po.setDisabled(true);
-		} else {
-			po.setDisabled(false);
-		}
+		po.setDisabled(!po.getDisabled());
 		saveOrUpdate(po);
 		
 		return true;

@@ -17,6 +17,7 @@ export class AccountList implements OnInit, AfterViewInit {
   currentPage:number = 1;
   itemsPerPage:number = 6;
 
+  me: any = CONSTANT.PROFILE;
   model: any = {status: ''};
   items: Array<any> = [];
 
@@ -43,18 +44,17 @@ export class AccountList implements OnInit, AfterViewInit {
 
     that._routeService.navTo("/pages/account/edit/null");
   }
-  statusChange(e: any):void {
+  disable(accountId: number):void {
     let that = this;
-    that.model.status = e;
-    that.loadData();
+    that._accountService.disable(accountId).subscribe((json:any) => {
+      that.loadData();
+    });
   }
-  disable(accountId: string):void {
+  remove(accountId: number):void {
     let that = this;
-    console.log('accountId=' + accountId);
-  }
-  delete(accountId: string):void {
-    let that = this;
-    console.log('accountId=' + accountId);
+    that._accountService.remove(accountId).subscribe((json:any) => {
+      that.loadData();
+    });
   }
 
   loadData() {

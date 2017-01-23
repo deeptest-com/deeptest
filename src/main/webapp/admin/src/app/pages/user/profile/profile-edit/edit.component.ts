@@ -51,7 +51,7 @@ export class ProfileEdit implements OnInit, AfterViewInit {
 
     that._userService.saveProfile(that.model).subscribe((json:any) => {
         if (json.code = 1) {
-          that.loadData();
+          that._userService.saveProfileLocal(json.data, null);
           that.formErrors = ['保存成功'];
         }
     });
@@ -62,7 +62,6 @@ export class ProfileEdit implements OnInit, AfterViewInit {
 
    that._userService.getProfile().subscribe((json:any) => {
       that.model = json.data;
-      that._userService.saveProfileLocal(that.model, null);
    });
   }
 

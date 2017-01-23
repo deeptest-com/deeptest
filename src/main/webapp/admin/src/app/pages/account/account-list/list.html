@@ -37,14 +37,16 @@
           <tbody>
           <tr *ngFor="let item of items; let i = index">
             <th scope="row">{{i}}-{{item.id}}</th>
-            <td>{{item.name}}</td>
+            <td>{{item.name}} <span *ngIf="me.id == item.id">(我)</span> </td>
             <td>{{item.email}}</td>
             <td>{{item.phone}}</td>
-            <td>{{item.status | modelStatus}}</td>
+            <td>{{item.disabled | modelStatus}}</td>
             <td class="opt">
-              <i [routerLink]="['/pages/account/edit',item.id, {im: true}]" class="ion-edit link"></i>
-              <i (click)="disable(item.id)" class="ion-eye-disabled link"></i>
-              <i (click)="delete(item.id)" class="ion-trash-a link"></i>
+              <i *ngIf="me.id != item.id" [routerLink]="['/pages/account/edit',item.id, {im: true}]" class="ion-edit link"></i>
+              <i *ngIf="me.id != item.id" [class.ion-eye-disabled]="!item.disabled" [class.ion-eye]="item.disabled"
+                  (click)="disable(item.id)" class="link"></i>
+
+              <i *ngIf="me.id != item.id" (click)="remove(item.id)" class="ion-trash-a link"></i>
             </td>
           </tr>
           </tbody>

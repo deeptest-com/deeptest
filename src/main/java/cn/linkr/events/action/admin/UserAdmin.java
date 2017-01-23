@@ -50,6 +50,7 @@ public class UserAdmin extends BaseAction {
 		boolean rememberMe = json.getBoolean("rememberMe") != null? json.getBoolean("rememberMe"): false;
 		
 		SysUser user = userService.loginPers(email, password, rememberMe);
+		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));
 
 		if (user != null) {
 			ret.put("token", user.getToken());
@@ -104,6 +105,7 @@ public class UserAdmin extends BaseAction {
 		String password = json.getString("password");
 
 		SysUser user = userService.registerPers(name, email, phone, password);
+		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));
 
 		if (user != null) {
 			ret.put("token", user.getToken());

@@ -21,7 +21,7 @@
           <tr *ngFor="let item of items; let i = index">
             <th scope="row">{{i}}-{{item.id}}</th>
             <td>{{item.title}}</td>
-            <td><a class="link" [href]="item.uri | imgPath">下载</a></td>
+            <td><a class="link" [href]="item.uri | imgPath" target="_blank">下载</a></td>
             <td class="opt">
               <i (click)="showModal(item, 'edit', $event)" class="ion-edit link"></i>
               <i (click)="showModal(item, 'alert', $event);" class="ion-trash-a link"></i>
@@ -107,7 +107,7 @@
           <div class="form-group row">
             <label class="col-sm-2 col-form-label"></label>
             <div class="col-sm-10">
-              <button type="submit" class="btn btn-default" [disabled]="!form.valid">保存</button>
+              <button type="submit" class="btn btn-primary" [disabled]="!form.valid">保存</button>
             </div>
           </div>
           <div class="form-group row">

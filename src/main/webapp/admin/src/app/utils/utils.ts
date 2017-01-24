@@ -3,6 +3,8 @@ import {Injectable} from '@angular/core';
 import {CONSTANT} from '../utils/constant';
 import { Cookie } from 'ng2-cookies/ng2-cookies';
 
+declare var unescape;
+
 export var Utils: any = {
   config: function() {
     var host = window.location.host;
@@ -86,6 +88,26 @@ export var Utils: any = {
       url = CONSTANT.SERVICE_URL + url;
     }
     return url;
+  },
+  getUrlParam: function (pname) {
+    var rt = '';
+    var url = unescape(window.location.href);
+    url = url.split('#')[1];
+
+    var allArgs = url.split("?")[1];
+    if (!allArgs) {
+      return '';
+    }
+    var args = allArgs.split("&");
+    for (var i = 0; i < args.length; i++) {
+      var arg = args[i].split("=");
+      if (arg[0] == pname) {
+        console.log('find url param: ' + arg[0] + '="' + arg[1] + '";');
+        rt = arg[1];
+        return rt;
+      }
+    }
+    return rt;
   }
 
 };

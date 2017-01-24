@@ -11,6 +11,10 @@ const routes: Routes = [
     loadChildren: () => System.import('./user/register/register.module')
   },
   {
+    path: 'forgot-password',
+    loadChildren: () => System.import('./user/forgot-password/forgot-password.module')
+  },
+  {
     path: 'pages',
     component: Pages,
     children: [

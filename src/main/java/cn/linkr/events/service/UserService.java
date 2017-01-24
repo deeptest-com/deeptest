@@ -19,7 +19,7 @@ public interface UserService extends BaseService {
 	boolean changePasswordPers(Long userId, String oldPassword, String password);
 
 	SysVerifyCode forgotPasswordPers(Long userId);
-	SysUser resetPasswordPers(String verifyCode, Long userId, String password);
+	SysUser resetPasswordPers(String verifyCode, String password);
 
 	Page listByPage(long companyId, int currentPage, int itemsPerPage);
 	SysUser saveProfile(UserVo vo);
@@ -29,6 +29,7 @@ public interface UserService extends BaseService {
 
 	SysUser getByToken(String token);
 	SysUser getByPhone(String token);
+	SysUser getByEmail(String email);
 
 	List<UserVo> genVos(List<SysUser> pos);
 	UserVo genVo(SysUser user);

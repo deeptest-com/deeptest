@@ -23,6 +23,7 @@ import cn.linkr.events.service.SessionService;
 import cn.linkr.events.service.UserService;
 import cn.linkr.events.util.AuthPassport;
 import cn.linkr.events.util.BeanUtilEx;
+import cn.linkr.events.util.PropertyConfig;
 import cn.linkr.events.vo.UserVo;
 
 import com.alibaba.fastjson.JSONObject;
@@ -128,15 +129,20 @@ public class UserAdmin extends BaseAction {
 	public Map<String, Object> forgotPassword(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		Long userId = json.getLong("id");
-		SysUser user = (SysUser) userService.get(SysUser.class, userId);
-
+		String email = json.getString("email");
+		SysUser user = (SysUser) userService.getByEmail(email);
+		if (user == null) {
+			ret.put("code", RespCode.BIZ_FAIL.getCode());
+			ret.put("msg", "用户不存在");
+		}
 		
-		SysVerifyCode verifyCode = userService.forgotPasswordPers(userId);
+		SysVerifyCode verifyCode = userService.forgotPasswordPers(user.getId());
 		if (verifyCode != null) {
 			Map map = new HashMap<String, String>();
 			map.put("name", user.getName());
-			map.put("url", "http://baidu.com");
+			map.put("vcode", verifyCode.getCode());
+			// map.put("url", Constant.WEB_ROOT + "admin-path");
+			map.put("url", PropertyConfig.getConfig("admin.url.forgot.password"));
 			mailService.sendTemplateMail("[聆客]忘记密码", "forgot-password.ftl", user.getEmail(), map);
 			
 			ret.put("data", verifyCode);
@@ -155,13 +161,14 @@ public class UserAdmin extends BaseAction {
 	public Map<String, Object> resetPassword(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		String verifyCode = json.getString("verifyCode");
-		Long userId = json.getLong("id");
+		String verifyCode = json.getString("vcode");
 		String password = json.getString("password");
 
-		SysUser user = userService.resetPasswordPers(verifyCode, userId, password);
+		SysUser user = userService.resetPasswordPers(verifyCode, password);
 
 		if (user != null) {
+			request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));
+			
 			ret.put("token", user.getToken());
 
 			UserVo vo = new UserVo();
@@ -170,7 +177,7 @@ public class UserAdmin extends BaseAction {
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());
-			ret.put("msg", "重置密码失败");
+			ret.put("data", "重置密码失败");
 		}
 
 		return ret;

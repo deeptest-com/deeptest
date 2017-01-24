@@ -86,7 +86,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		}
 
 		SysVerifyCode po = new SysVerifyCode();
-		String code = StringUtil.RandomNumbString(4);
+		String code = UUID.randomUUID().toString().replaceAll("-", "");
 		Date now = new Date();
 		po.setRefId(user.getId());
 		po.setCode(code);
@@ -111,18 +111,26 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 			return null;
 		}
 	}
-
 	@Override
-	public SysUser resetPasswordPers(String verifyCode, Long userId, String password) {
+	public SysUser getByEmail(String email) {
+		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
+		dc.add(Restrictions.eq("email", email));
+		dc.add(Restrictions.ne("deleted", true));
+		dc.add(Restrictions.ne("disabled", true));
 
-		SysUser user = (SysUser) get(SysUser.class, userId);
-		if (user == null) {
+		List ls = findAllByCriteria(dc);
+		if (ls.size() > 0) {
+			return (SysUser) ls.get(0);
+		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public SysUser resetPasswordPers(String verifyCode, String password) {
 
 		String newToken = null;
 		DetachedCriteria dc = DetachedCriteria.forClass(SysVerifyCode.class);
-		dc.add(Restrictions.eq("refId", userId));
 		dc.add(Restrictions.eq("code", verifyCode));
 		dc.add(Restrictions.ge("expireTime", new Date()));
 		dc.add(Restrictions.ne("deleted", true));
@@ -133,13 +141,18 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		if (ls.size() < 1) {
 			return null;
 		}
+		
 		SysVerifyCode code = ls.get(0);
 		code.setDeleted(true);
 		saveOrUpdate(code);
+		
+		SysUser user = (SysUser) get(SysUser.class, code.getRefId());
+		if (user == null) {
+			return null;
+		}
 
 		newToken = UUID.randomUUID().toString();
 		user.setToken(newToken);
-//		user.setPhone(phone);
 		user.setPassword(password);
 
 		user.setLastLoginTime(new Date());

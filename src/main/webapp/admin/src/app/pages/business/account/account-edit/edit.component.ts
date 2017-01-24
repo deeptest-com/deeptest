@@ -65,7 +65,7 @@ export class AccountEdit implements OnInit, AfterViewInit {
   forgotPassword():void {
     let that = this;
 
-    that._userService.forgotPassword(that.model.id).subscribe((json:any) => {
+    that._userService.forgotPassword(that.model.email).subscribe((json:any) => {
       if (json.code == 1) {
         that.formErrors = ['重置密码成功'];
       }

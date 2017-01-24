@@ -67,6 +67,41 @@ export class UserService {
       return errors;
     });
   }
+
+  forgotPassword(email:number) {
+    return this._reqService.post(this._forgotPassword, {email: email});
+  }
+
+  resetPassword(model:number) {
+    let that = this;
+    return this._reqService.post(this._resetPassword, model).map((json:any) => {
+      let errors = undefined;
+      if (json.code == 1) {
+        that.saveProfileLocal(json.data, 1);
+
+        that.routeService.navTo('/pages/dashboard');
+      } else {
+        errors = json.data;
+      }
+      return errors;
+    });
+  }
+
+  getProfile() {
+    return this._reqService.post(this._getProfile, {});
+  }
+
+  saveProfile(profile:any) {
+    return this._reqService.post(this._saveProfile, profile);
+  }
+  changePassword(model:any) {
+    return this._reqService.post(this._changePassword, model);
+  }
+
+  saveSuggestion(content) {
+    return this._reqService.post(this._suggestions.replace(':id', ''), {suggestion: {content: content}});
+  }
+
   saveProfileLocal(profile:any, expireDays:number) {
     let that = this;
     CONSTANT.PROFILE = profile;
@@ -88,29 +123,6 @@ export class UserService {
       CONSTANT.PROFILE = JSON.parse(profile);
       that._state.notifyDataChanged('profile.refresh', profile);
     }
-  }
-
-  forgotPassword(id:number) {
-    return this._reqService.post(this._forgotPassword, {id: id});
-  }
-
-  resetPassword(id:number) {
-    return this._reqService.post(this._resetPassword, {id: id});
-  }
-
-  getProfile() {
-    return this._reqService.post(this._getProfile, {});
-  }
-
-  saveProfile(profile:any) {
-    return this._reqService.post(this._saveProfile, profile);
-  }
-  changePassword(model:any) {
-    return this._reqService.post(this._changePassword, model);
-  }
-
-  saveSuggestion(content) {
-    return this._reqService.post(this._suggestions.replace(':id', ''), {suggestion: {content: content}});
   }
 }
 

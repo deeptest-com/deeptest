@@ -70,9 +70,9 @@ public class MailServiceImpl extends BaseServiceImpl implements MailService {
 			String htmlText = FreeMarkerTemplateUtils.processTemplateIntoString(template, map);
 			mail.setMsg(htmlText);
 			send(subject, htmlText, toEmail);
-			log.debug("至" + toEmail + "的邮件发送成功");
+			log.error("至" + toEmail + "的邮件发送成功");
 		} catch (Exception e) {
-			log.debug("email send error! detail:" + e.getMessage());
+			log.debug("邮件发送错误：" + e.getMessage());
 		}
 	}
 

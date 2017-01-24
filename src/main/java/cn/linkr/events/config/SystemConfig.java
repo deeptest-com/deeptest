@@ -9,11 +9,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-/**
- * 手机命令执行返回命令监听RabbitMQ配置
- *
- * @author Ethan
- */
 @Configuration
 public class SystemConfig {
 
@@ -33,7 +28,7 @@ public class SystemConfig {
     public SimpleMailMessage simpleMailMessage() {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setFrom(mailUserName);
-        mailMessage.setSubject("[服务]Tinypace");
+        mailMessage.setSubject("来自《聆客会议管理系统》的邮件");
         return mailMessage;
     }
 

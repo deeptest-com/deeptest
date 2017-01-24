@@ -17,6 +17,7 @@ import cn.linkr.events.constants.Constant;
 import cn.linkr.events.constants.Constant.RespCode;
 import cn.linkr.events.entity.SysUser;
 import cn.linkr.events.entity.SysVerifyCode;
+import cn.linkr.events.service.MailService;
 import cn.linkr.events.service.RegisterService;
 import cn.linkr.events.service.SessionService;
 import cn.linkr.events.service.UserService;
@@ -37,7 +38,7 @@ public class UserAdmin extends BaseAction {
 	RegisterService registerService;
 	
 	@Autowired
-	SessionService sessionService;
+	MailService mailService;
 	
 	@AuthPassport(validate=false)
 	@RequestMapping(value = "login", method = RequestMethod.POST)
@@ -128,10 +129,16 @@ public class UserAdmin extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		Long userId = json.getLong("id");
+		SysUser user = (SysUser) userService.get(SysUser.class, userId);
 
-		SysVerifyCode verifyCode = userService.forgetPaswordPers(userId);
-
+		
+		SysVerifyCode verifyCode = userService.forgotPasswordPers(userId);
 		if (verifyCode != null) {
+			Map map = new HashMap<String, String>();
+			map.put("name", user.getName());
+			map.put("url", "http://baidu.com");
+			mailService.sendTemplateMail("[聆客]忘记密码", "forgot-password.ftl", user.getEmail(), map);
+			
 			ret.put("data", verifyCode);
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {

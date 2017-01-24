@@ -18,7 +18,7 @@ public interface UserService extends BaseService {
 	
 	boolean changePasswordPers(Long userId, String oldPassword, String password);
 
-	SysVerifyCode forgetPaswordPers(Long userId);
+	SysVerifyCode forgotPasswordPers(Long userId);
 	SysUser resetPasswordPers(String verifyCode, Long userId, String password);
 
 	Page listByPage(long companyId, int currentPage, int itemsPerPage);

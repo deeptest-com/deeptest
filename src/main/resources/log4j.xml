@@ -15,7 +15,7 @@
     </appender>     
          
     <appender name="file" class="org.apache.log4j.DailyRollingFileAppender">       
-        <param name="File" value="logs/events.log" />         
+        <param name="File" value="logs/events.log" />
         <param name="DatePattern" value="'.'yyyy-MM-dd'.log'" />         
         <layout class="org.apache.log4j.PatternLayout">       
          <param name="ConversionPattern"         
@@ -57,9 +57,9 @@
         <appender-ref ref="file"/>
      </category>
      
-     <category name="com.tinypace.events">
+     <category name="cn.linkr.events">
          <priority value="debug" />
-         <appender-ref ref="console"/>       
+         <appender-ref ref="console"/>
         <appender-ref ref="file"/>
      </category>
      <category name="cn.linkr.events.util.MyDateConverter">

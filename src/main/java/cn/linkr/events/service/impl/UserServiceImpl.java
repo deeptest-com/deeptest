@@ -79,7 +79,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public SysVerifyCode forgetPaswordPers(Long userId) {
+	public SysVerifyCode forgotPasswordPers(Long userId) {
 		SysUser user = (SysUser) get(SysUser.class, userId);
 		if (user == null) {
 			return null;
@@ -124,6 +124,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		DetachedCriteria dc = DetachedCriteria.forClass(SysVerifyCode.class);
 		dc.add(Restrictions.eq("refId", userId));
 		dc.add(Restrictions.eq("code", verifyCode));
+		dc.add(Restrictions.ge("expireTime", new Date()));
 		dc.add(Restrictions.ne("deleted", true));
 		dc.add(Restrictions.ne("disabled", true));
 		dc.addOrder(Order.desc("id"));

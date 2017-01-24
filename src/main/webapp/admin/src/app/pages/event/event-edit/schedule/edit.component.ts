@@ -130,7 +130,7 @@ export class EventEditSchedule implements OnInit, AfterViewInit {
 
     let data = Object.assign({}, that.item, {children: undefined});
     that._sessionService.save(data).subscribe((json:any) => {
-      if (json.code = 1) {
+      if (json.code == 1) {
         that.hideModal();
         that.loadData();
       }
@@ -143,7 +143,7 @@ export class EventEditSchedule implements OnInit, AfterViewInit {
     Utils.dateCombine(that.item, 'endDate', 'endTime', 'endDatetime');
 
     that._scheduleService.save(that.item).subscribe((json:any) => {
-      if (json.code = 1) {
+      if (json.code == 1) {
         that.hideModal();
         that.loadData();
       }
@@ -154,7 +154,7 @@ export class EventEditSchedule implements OnInit, AfterViewInit {
     let that = this;
 
     that._sessionService.remove(that.item.id, that.modelType).subscribe((json:any) => {
-      if (json.code = 1) {
+      if (json.code == 1) {
         that.hideModal();
         that.loadData();
       }

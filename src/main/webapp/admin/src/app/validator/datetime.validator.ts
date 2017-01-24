@@ -7,7 +7,7 @@ export var DateTimeValidator:any = {
         let DATE_REGEXP = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/i
 
         return DATE_REGEXP.test(c.value) ? null : {
-          validateEmail: {
+          validateDate: {
             valid: false
           }
         };
@@ -18,7 +18,7 @@ export var DateTimeValidator:any = {
         let TIME_REGEXP = /^[0-9]{2}\:[0-9]{2}$/i
 
         return TIME_REGEXP.test(c.value) ? null : {
-          validateEmail: {
+          validateTime: {
             valid: false
           }
         };
@@ -47,7 +47,9 @@ export var DateTimeValidator:any = {
           if (startTm >= endTm) {
             console.log(resultKey + ' fail');
             fail = true;
-            result[resultKey] = true;
+            result[resultKey] = {
+              valid: false
+            };
           }
         }
       }

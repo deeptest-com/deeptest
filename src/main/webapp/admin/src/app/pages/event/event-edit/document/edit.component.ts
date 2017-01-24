@@ -151,7 +151,7 @@ export class EventEditDocument implements OnInit, AfterViewInit {
     let that = this;
 
     that._ducumentService.save(that.item).subscribe((json:any) => {
-      if (json.code = 1) {
+      if (json.code == 1) {
         that.hideModal();
         that.loadData();
       }
@@ -162,7 +162,7 @@ export class EventEditDocument implements OnInit, AfterViewInit {
     let that = this;
 
     that._ducumentService.remove(that.item.id).subscribe((json:any) => {
-      if (json.code = 1) {
+      if (json.code == 1) {
         that.hideModal();
         that.loadData();
       }

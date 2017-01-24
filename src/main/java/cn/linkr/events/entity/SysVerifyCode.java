@@ -10,19 +10,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "str_verify_code")
+@Table(name = "sys_verify_code")
 public class SysVerifyCode extends BaseEntity {
 	private static final long serialVersionUID = -7404422286952704677L;
 	
 	private String code;
 	private Date expireTime;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", insertable = false, updatable = false)
-	private SysUser user;
 	
-	@Column(name="user_id")
-	private Long userId;
+	@Column(name="ref_id")
+	private Long refId;
 
 	public String getCode() {
 		return code;
@@ -48,20 +44,12 @@ public class SysVerifyCode extends BaseEntity {
 		this.expireTime = expireTime;
 	}
 
-	public SysUser getUser() {
-		return user;
+	public Long getRefId() {
+		return refId;
 	}
 
-	public void setUser(SysUser user) {
-		this.user = user;
-	}
-
-	public Long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setRefId(Long refId) {
+		this.refId = refId;
 	}
 
 }

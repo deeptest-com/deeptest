@@ -15,6 +15,8 @@ export class UserService {
   _login = 'user/login';
   _logout = 'user/logout';
   _register = 'user/register';
+  _changePassword = 'user/changePassword';
+
   _forgotPassword = 'user/forgotPassword';
   _resetPassword = 'user/resetPassword';
 
@@ -88,12 +90,12 @@ export class UserService {
     }
   }
 
-  forgotPassword(phone:string) {
-    return this._reqService.post(this._forgotPassword, {phone: phone});
+  forgotPassword(id:number) {
+    return this._reqService.post(this._forgotPassword, {id: id});
   }
 
-  resetPassword(phone:string) {
-    return this._reqService.post(this._resetPassword, {phone: phone});
+  resetPassword(id:number) {
+    return this._reqService.post(this._resetPassword, {id: id});
   }
 
   getProfile() {
@@ -102,6 +104,9 @@ export class UserService {
 
   saveProfile(profile:any) {
     return this._reqService.post(this._saveProfile, profile);
+  }
+  changePassword(model:any) {
+    return this._reqService.post(this._changePassword, model);
   }
 
   saveSuggestion(content) {

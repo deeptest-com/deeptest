@@ -152,7 +152,7 @@ export class EventEditBanner implements OnInit, AfterViewInit {
     let that = this;
 
     that._bannerService.save(that.item).subscribe((json:any) => {
-      if (json.code = 1) {
+      if (json.code == 1) {
         that.hideModal();
         that.loadData();
       }
@@ -163,7 +163,7 @@ export class EventEditBanner implements OnInit, AfterViewInit {
     let that = this;
 
     that._bannerService.remove(that.item.id).subscribe((json:any) => {
-      if (json.code = 1) {
+      if (json.code == 1) {
         that.hideModal();
         that.loadData();
       }

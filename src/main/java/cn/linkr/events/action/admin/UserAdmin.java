@@ -127,9 +127,9 @@ public class UserAdmin extends BaseAction {
 	public Map<String, Object> forgotPassword(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		String phone = json.getString("phone");
+		Long userId = json.getLong("id");
 
-		SysVerifyCode verifyCode = userService.forgetPaswordPers(phone);
+		SysVerifyCode verifyCode = userService.forgetPaswordPers(userId);
 
 		if (verifyCode != null) {
 			ret.put("data", verifyCode);
@@ -149,13 +149,10 @@ public class UserAdmin extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		String verifyCode = json.getString("verifyCode");
-		String phone = json.getString("phone");
+		Long userId = json.getLong("id");
 		String password = json.getString("password");
-		String platform = json.getString("platform");
-		String isWebView = json.getString("isWebView");
-		String deviceToken = json.getString("deviceToken");
 
-		SysUser user = userService.resetPasswordPers(verifyCode, phone, password, platform, isWebView, deviceToken);
+		SysUser user = userService.resetPasswordPers(verifyCode, userId, password);
 
 		if (user != null) {
 			ret.put("token", user.getToken());
@@ -174,7 +171,7 @@ public class UserAdmin extends BaseAction {
 
 	@RequestMapping(value = "getProfile", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> getProfile(HttpServletRequest request, @RequestBody Map<String, String> json) {
+	public Map<String, Object> getProfile(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
@@ -198,5 +195,21 @@ public class UserAdmin extends BaseAction {
 		ret.put("code", RespCode.SUCCESS.getCode());
 		return ret;
 	}
-
+	
+	@RequestMapping(value = "changePassword", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> changePassword(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		String oldPassword = json.getString("oldPassword");
+		String password = json.getString("password");
+		
+		boolean success = userService.changePasswordPers(vo.getId(), oldPassword, password);
+		int code = success?RespCode.SUCCESS.getCode(): RespCode.BIZ_FAIL.getCode();
+		
+		ret.put("code", code);
+		return ret;
+	}
+		
 }

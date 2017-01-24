@@ -9,9 +9,6 @@ import { AccountEdit } from './account/account-edit';
 import { Company } from './company';
 import { CompanyEdit } from './company/company-edit';
 
-import { Profile } from './profile';
-import { ProfileEdit } from './profile/profile-edit';
-
 const routes: Routes = [
   {
     path: '',
@@ -19,8 +16,7 @@ const routes: Routes = [
     children: [
       { path: 'account-list', component: AccountList },
       { path: 'account-edit/:id', component: AccountEdit },
-      { path: 'company-edit', component: CompanyEdit },
-      { path: 'profile-edit', component: ProfileEdit }
+      { path: 'company-edit', component: CompanyEdit }
     ]
   }
 ];

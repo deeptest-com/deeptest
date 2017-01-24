@@ -72,7 +72,7 @@ export class EventEditProperty implements OnInit, AfterViewInit {
     Utils.dateCombine(that.model, 'registerEndDate', 'registerEndTime', 'registerEndDatetime');
 
     that._eventService.save(that.model).subscribe((json:any) => {
-        if (json.code = 1) {
+        if (json.code == 1) {
           that._routeService.navTo("/pages/event/list");
         }
     });

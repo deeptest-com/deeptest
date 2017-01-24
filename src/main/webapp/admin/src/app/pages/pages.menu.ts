@@ -71,15 +71,37 @@ export const PAGES_MENU = [
                 title: '账号管理'
               }
             }
-          },
+          }
+        ]
+      },
+      {
+        path: 'personal',
+        data: {
+          menu: {
+            title: '个人设置',
+            icon: 'ion-person',
+            selected: false,
+            expanded: true,
+            order: 100,
+          }
+        },
+        children: [
           {
-            path: 'profile-edit',
+            path: 'profile',
             data: {
               menu: {
-                title: '个人设置'
+                title: '修改信息'
               }
             }
           },
+          {
+            path: 'password',
+            data: {
+              menu: {
+                title: '修改密码'
+              }
+            }
+          }
         ]
       },
 

@@ -33,9 +33,6 @@ import { AccountEdit } from './account/account-edit';
 import { Company } from './company';
 import { CompanyEdit } from './company/company-edit';
 
-import { Profile } from './profile';
-import { ProfileEdit } from './profile/profile-edit';
-
 @NgModule({
   imports: [
     CommonModule,
@@ -59,9 +56,7 @@ import { ProfileEdit } from './profile/profile-edit';
     AccountList,
     AccountEdit,
     Company,
-    CompanyEdit,
-    Profile,
-    ProfileEdit
+    CompanyEdit
   ],
   providers: [
     RouteService,

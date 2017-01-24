@@ -50,7 +50,7 @@ export class CompanyEdit implements OnInit, AfterViewInit {
     let that = this;
 
     that._companyService.save(that.model).subscribe((json:any) => {
-        if (json.code = 1) {
+        if (json.code == 1) {
           that.loadData();
           that.formErrors = ['保存成功'];
         }

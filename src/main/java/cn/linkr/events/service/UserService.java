@@ -10,30 +10,27 @@ import cn.linkr.events.vo.UserVo;
 
 public interface UserService extends BaseService {
 
-	SysUser getByToken(String token);
-
-	SysUser getByPhone(String token);
 
 	SysUser loginPers(String mobile, String password, Boolean rememberMe);
 	SysUser logoutPers(String email);
 
 	SysUser registerPers(String name, String email, String phone, String password);
+	
+	boolean changePasswordPers(Long userId, String oldPassword, String password);
 
-	SysVerifyCode forgetPaswordPers(String mobile);
-
-	SysUser resetPasswordPers(String verifyCode, String mobile,
-			String password, String platform, String isWebView,
-			String deviceToken);
-
+	SysVerifyCode forgetPaswordPers(Long userId);
+	SysUser resetPasswordPers(String verifyCode, Long userId, String password);
 
 	Page listByPage(long companyId, int currentPage, int itemsPerPage);
+	SysUser saveProfile(UserVo vo);
 	SysUser save(UserVo vo);
 	boolean remove(Long id);
 	boolean disablePers(Long id);
 
+	SysUser getByToken(String token);
+	SysUser getByPhone(String token);
+
 	List<UserVo> genVos(List<SysUser> pos);
 	UserVo genVo(SysUser user);
-
-	SysUser saveProfile(UserVo vo);
 
 }

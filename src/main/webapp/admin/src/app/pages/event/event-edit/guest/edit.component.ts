@@ -150,7 +150,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
     let that = this;
 
     that._guestService.save(that.item).subscribe((json:any) => {
-      if (json.code = 1) {
+      if (json.code == 1) {
         that.hideModal();
         that.loadData();
       }
@@ -161,7 +161,7 @@ export class EventEditGuest implements OnInit, AfterViewInit {
     let that = this;
 
     that._guestService.remove(that.item.id).subscribe((json:any) => {
-      if (json.code = 1) {
+      if (json.code == 1) {
         that.hideModal();
         that.loadData();
       }

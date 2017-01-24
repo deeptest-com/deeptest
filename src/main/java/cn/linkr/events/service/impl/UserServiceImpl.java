@@ -79,8 +79,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public SysVerifyCode forgetPaswordPers(String phone) {
-		SysUser user = getByPhone(phone);
+	public SysVerifyCode forgetPaswordPers(Long userId) {
+		SysUser user = (SysUser) get(SysUser.class, userId);
 		if (user == null) {
 			return null;
 		}
@@ -88,10 +88,10 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		SysVerifyCode po = new SysVerifyCode();
 		String code = StringUtil.RandomNumbString(4);
 		Date now = new Date();
-		po.setUserId(user.getId());
+		po.setRefId(user.getId());
 		po.setCode(code);
 		po.setCreateTime(now);
-		po.setExpireTime(new Date(now.getTime() + 300000));
+		po.setExpireTime(new Date(now.getTime() + 60 * 60 * 1000));
 		saveOrUpdate(po);
 
 		return po;
@@ -113,51 +113,37 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public SysUser resetPasswordPers(String verifyCode, String phone,
-			String password, String platform, String isWebview,
-			String deviceToken) {
+	public SysUser resetPasswordPers(String verifyCode, Long userId, String password) {
 
-		SysUser user = getByPhone(phone);
+		SysUser user = (SysUser) get(SysUser.class, userId);
 		if (user == null) {
 			return null;
 		}
 
 		String newToken = null;
 		DetachedCriteria dc = DetachedCriteria.forClass(SysVerifyCode.class);
-		dc.add(Restrictions.eq("userId", user.getId()));
+		dc.add(Restrictions.eq("refId", userId));
 		dc.add(Restrictions.eq("code", verifyCode));
 		dc.add(Restrictions.ne("deleted", true));
 		dc.add(Restrictions.ne("disabled", true));
+		dc.addOrder(Order.desc("id"));
 		List<SysVerifyCode> ls = (List<SysVerifyCode>) findAllByCriteria(dc);
 
 		if (ls.size() < 1) {
 			return null;
 		}
-
-		newToken = UUID.randomUUID().toString();
-		user.setToken(newToken);
-		user.setPhone(phone);
-		user.setPassword(password);
-
-		if (StringUtils.isNotEmpty(platform)) {
-			user.setPlatform(SysUser.PlatformType.valueOf(platform.trim().toUpperCase()));
-		}
-
-		if (StringUtils.isNotEmpty(isWebview)) {
-			AgentType agent = Boolean.valueOf(isWebview)? AgentType.WEBVIEW: AgentType.BROWSER;
-			user.setAgent(agent);
-		}
-
-		if (StringUtils.isNotEmpty(deviceToken)) {
-			user.setToken(deviceToken);
-		}
-		user.setLastLoginTime(new Date());
-		saveOrUpdate(user);
-
 		SysVerifyCode code = ls.get(0);
 		code.setDeleted(true);
 		saveOrUpdate(code);
 
+		newToken = UUID.randomUUID().toString();
+		user.setToken(newToken);
+//		user.setPhone(phone);
+		user.setPassword(password);
+
+		user.setLastLoginTime(new Date());
+		saveOrUpdate(user);
+		
 		return user;
 	}
 
@@ -278,6 +264,19 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		po.setEmail(email);
 		saveOrUpdate(po);
 		return po;
+	}
+
+	@Override
+	public boolean changePasswordPers(Long userId, String oldPassword, String password) {
+		
+		SysUser po = (SysUser) get(SysUser.class, userId);
+		if (po == null || !po.getPassword().equals(oldPassword)) {
+			return false;
+		}
+		
+		po.setPassword(password);
+		saveOrUpdate(po);
+		return true;
 	}
     
 }

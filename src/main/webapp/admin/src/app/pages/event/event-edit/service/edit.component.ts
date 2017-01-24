@@ -89,7 +89,7 @@ export class EventEditService implements OnInit, AfterViewInit {
   disable(item:any, $event:any):void {
     let that = this;
     that._serviceService.disable(item.id).subscribe((json:any) => {
-      if (json.code = 1) {
+      if (json.code == 1) {
         that.loadData();
       }
     });
@@ -105,7 +105,7 @@ export class EventEditService implements OnInit, AfterViewInit {
     let that = this;
 
     that._serviceService.save(that.item).subscribe((json:any) => {
-      if (json.code = 1) {
+      if (json.code == 1) {
         that.hideModal();
         that.loadData();
       }

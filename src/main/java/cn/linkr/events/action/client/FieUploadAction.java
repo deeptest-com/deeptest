@@ -28,11 +28,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSONObject;
 
-import cn.linkr.events.constants.Constant;
 import cn.linkr.events.entity.EvtClient;
 import cn.linkr.events.service.ClientService;
 import cn.linkr.events.service.QrcodeService;
 import cn.linkr.events.util.AuthPassport;
+import cn.linkr.events.util.Constant;
 import cn.linkr.events.util.DateUtils;
 import cn.linkr.events.util.FileUtils;
 

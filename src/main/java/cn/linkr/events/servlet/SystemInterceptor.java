@@ -1,4 +1,4 @@
-package cn.linkr.events.interceptor;
+package cn.linkr.events.servlet;
 
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -12,15 +12,15 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import cn.linkr.events.constants.Constant;
-import cn.linkr.events.constants.Constant.RespCode;
 import cn.linkr.events.entity.EvtClient;
 import cn.linkr.events.entity.SysUser;
 import cn.linkr.events.service.ClientService;
 import cn.linkr.events.service.UserService;
 import cn.linkr.events.util.AuthPassport;
+import cn.linkr.events.util.Constant;
 import cn.linkr.events.util.SpringContextHolder;
 import cn.linkr.events.util.WebUtils;
+import cn.linkr.events.util.Constant.RespCode;
 
 import com.alibaba.fastjson.JSON;
 

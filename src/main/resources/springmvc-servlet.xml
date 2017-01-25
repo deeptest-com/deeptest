@@ -47,7 +47,7 @@
        <mvc:interceptor>
            <mvc:mapping path="/**"/>
            <mvc:exclude-mapping path="/index.jsp"/>
-           <bean class="cn.linkr.events.interceptor.SystemInterceptor"/>
+           <bean class="cn.linkr.events.servlet.SystemInterceptor"/>
        </mvc:interceptor>
     </mvc:interceptors>
 </beans>

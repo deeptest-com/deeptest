@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 
-import cn.linkr.events.constants.Constant;
 import cn.linkr.events.entity.EvtClient;
 import cn.linkr.events.service.NewsService;
 import cn.linkr.events.util.AuthPassport;
+import cn.linkr.events.util.Constant;
 
 
 @Controller

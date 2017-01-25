@@ -8,7 +8,7 @@ import cn.linkr.events.service.impl.MailServiceImpl;
 public interface MailService extends BaseService {
 
 	void send(String subject, String text, String toEmail);
-	void sendTemplateMail(String subject, String templateName, String toEmail, Map<String, Object> map);
+	void sendTemplateMail(String subject, String templateName, String toEmail, Map<String, String> map);
 
 	String getAppPath(Class<?> cls);
 	String getFileName(String path);

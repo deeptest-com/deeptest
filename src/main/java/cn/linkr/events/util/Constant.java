@@ -1,4 +1,4 @@
-package cn.linkr.events.constants;
+package cn.linkr.events.util;
 
 import java.util.Arrays;
 import java.util.List;

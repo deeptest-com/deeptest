@@ -13,8 +13,6 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import cn.linkr.events.constants.Constant;
-
 public class FileUtils {
 	
 	public static final int THUMB_WIDTH = 100;

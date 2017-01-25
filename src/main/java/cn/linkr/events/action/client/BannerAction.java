@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 
-import cn.linkr.events.constants.Constant;
 import cn.linkr.events.entity.EvtBanner;
 import cn.linkr.events.entity.EvtBizcard;
 import cn.linkr.events.entity.EvtClient;
@@ -25,6 +24,7 @@ import cn.linkr.events.service.BizcardService;
 import cn.linkr.events.service.DocumentService;
 import cn.linkr.events.util.AuthPassport;
 import cn.linkr.events.util.BeanUtilEx;
+import cn.linkr.events.util.Constant;
 import cn.linkr.events.vo.BannerVo;
 import cn.linkr.events.vo.BizcardVo;
 import cn.linkr.events.vo.DocumentVo;

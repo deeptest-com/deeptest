@@ -8,7 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import cn.linkr.events.constants.Constant;
+import cn.linkr.events.util.Constant;
 
 @Controller
 @RequestMapping(Constant.API_PATH_CLIENT)

@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.linkr.events.action.client.BaseAction;
-import cn.linkr.events.constants.Constant;
 import cn.linkr.events.entity.EvtSession;
 import cn.linkr.events.entity.SysUser;
 import cn.linkr.events.service.EventService;
 import cn.linkr.events.service.RegisterService;
 import cn.linkr.events.service.SessionService;
 import cn.linkr.events.util.AuthPassport;
+import cn.linkr.events.util.Constant;
 import cn.linkr.events.vo.SessionVo;
 
 import com.alibaba.fastjson.JSONObject;

@@ -14,9 +14,9 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import cn.linkr.events.bean.ApplicationScopeBean;
-import cn.linkr.events.constants.Constant;
 import cn.linkr.events.entity.EvtClient;
 import cn.linkr.events.service.ClientService;
+import cn.linkr.events.util.Constant;
 import cn.linkr.events.util.SpringContextHolder;
 
 public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {

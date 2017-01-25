@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 
-import cn.linkr.events.constants.Constant;
 import cn.linkr.events.entity.EvtClient;
 import cn.linkr.events.entity.EvtEvent;
 import cn.linkr.events.entity.EvtScheduleItem;
@@ -25,6 +24,7 @@ import cn.linkr.events.service.ScheduleService;
 import cn.linkr.events.service.SessionService;
 import cn.linkr.events.util.AuthPassport;
 import cn.linkr.events.util.BeanUtilEx;
+import cn.linkr.events.util.Constant;
 import cn.linkr.events.util.DateUtils;
 import cn.linkr.events.vo.EventVo;
 import cn.linkr.events.vo.ScheduleItemVo;

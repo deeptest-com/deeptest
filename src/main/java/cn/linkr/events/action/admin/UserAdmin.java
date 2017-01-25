@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.linkr.events.action.client.BaseAction;
-import cn.linkr.events.constants.Constant;
-import cn.linkr.events.constants.Constant.RespCode;
 import cn.linkr.events.entity.SysUser;
 import cn.linkr.events.entity.SysVerifyCode;
 import cn.linkr.events.service.MailService;
@@ -23,7 +21,9 @@ import cn.linkr.events.service.SessionService;
 import cn.linkr.events.service.UserService;
 import cn.linkr.events.util.AuthPassport;
 import cn.linkr.events.util.BeanUtilEx;
+import cn.linkr.events.util.Constant;
 import cn.linkr.events.util.PropertyConfig;
+import cn.linkr.events.util.Constant.RespCode;
 import cn.linkr.events.vo.UserVo;
 
 import com.alibaba.fastjson.JSONObject;
@@ -138,7 +138,7 @@ public class UserAdmin extends BaseAction {
 		
 		SysVerifyCode verifyCode = userService.forgotPasswordPers(user.getId());
 		if (verifyCode != null) {
-			Map map = new HashMap<String, String>();
+			Map<String, String> map = new HashMap<String, String>();
 			map.put("name", user.getName());
 			map.put("vcode", verifyCode.getCode());
 			// map.put("url", Constant.WEB_ROOT + "admin-path");

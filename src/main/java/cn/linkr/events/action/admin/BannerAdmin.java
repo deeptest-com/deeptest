@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.linkr.events.action.client.BaseAction;
-import cn.linkr.events.constants.Constant;
 import cn.linkr.events.entity.EvtBanner;
 import cn.linkr.events.entity.SysUser;
 import cn.linkr.events.service.BannerService;
 import cn.linkr.events.util.AuthPassport;
+import cn.linkr.events.util.Constant;
 import cn.linkr.events.vo.BannerVo;
 import cn.linkr.events.vo.Page;
 

@@ -1,4 +1,4 @@
-package cn.linkr.events.filter;
+package cn.linkr.events.servlet;
 
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import cn.linkr.events.constants.Constant;
+import cn.linkr.events.util.Constant;
 import cn.linkr.events.util.WebUtils;
 
 public class CorsFilter implements Filter {

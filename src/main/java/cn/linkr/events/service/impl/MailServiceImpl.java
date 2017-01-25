@@ -55,7 +55,7 @@ public class MailServiceImpl extends BaseServiceImpl implements MailService {
 	}
 
 	@Override
-	public void sendTemplateMail(String subject, String templateName, String toEmail, Map<String, Object> map) {
+	public void sendTemplateMail(String subject, String templateName, String toEmail, Map<String, String> map) {
 		Template template = null;
 		Configuration freeMarkerConfig = null;
 		HtmlEmail mail = new HtmlEmail();

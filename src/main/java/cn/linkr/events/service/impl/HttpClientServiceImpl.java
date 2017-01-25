@@ -14,8 +14,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Service;
-
-import cn.linkr.events.constants.HttpServerConstants;
 import cn.linkr.events.service.HttpClientService;
 import cn.linkr.events.vo.JsonBean;
 import cn.linkr.events.vo.JsonResult;
@@ -25,20 +23,11 @@ import com.alibaba.fastjson.JSONObject;
 @Service
 public class HttpClientServiceImpl extends BaseServiceImpl implements HttpClientService {
     Log logger = LogFactory.getLog(HttpClientServiceImpl.class);
-
-    @Override
-    public JsonResult operator(Long hostIp, String FwPort, JsonBean bean) {
-
-        String url = HttpServerConstants.PROTOCOL_HTTP + hostIp + ":" +
-                (HttpServerConstants.ServicePortPrefix + FwPort);
-        String json = JSONObject.toJSONString(bean);
-        String result = this.post(url, json);
-        JsonResult jsonResult = null;
-        if (StringUtils.isNotEmpty(result)) {
-            jsonResult = JSONObject.parseObject(result, JsonResult.class);
-        }
-        return jsonResult;
-    }
+    
+    public static final String PROTOCOL_HTTP = "http://";
+    public static final String PROTOCOL_HTTPS = "https://";
+    public static final String ContentType = "application/json";
+    public static final String Encoding = "UTF-8";
 
     @Override
     public String post(String url, String json) {
@@ -52,13 +41,13 @@ public class HttpClientServiceImpl extends BaseServiceImpl implements HttpClient
         httppost.setConfig(requestConfig);
         CloseableHttpResponse response = null;
         try {
-            StringEntity entity = new StringEntity(json, HttpServerConstants.Encoding);
-            entity.setContentEncoding(HttpServerConstants.Encoding);
-            entity.setContentType(HttpServerConstants.ContentType);
+            StringEntity entity = new StringEntity(json, Encoding);
+            entity.setContentEncoding(Encoding);
+            entity.setContentType(ContentType);
             httppost.setEntity(entity);
             response = httpclient.execute(httppost);
             HttpEntity result = response.getEntity();
-            resultJson = EntityUtils.toString(result, HttpServerConstants.Encoding);
+            resultJson = EntityUtils.toString(result, Encoding);
         } catch (Exception e) {
             logger.error(e.getMessage());
         } finally {

@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.fastjson.JSONObject;
 
-import cn.linkr.events.constants.Constant.RespCode;
+import cn.linkr.events.util.Constant.RespCode;
 import cn.linkr.events.vo.BaseVo;
 
 public class BaseAction {

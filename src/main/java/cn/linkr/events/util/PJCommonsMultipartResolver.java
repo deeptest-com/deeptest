@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
-import cn.linkr.events.listener.PJProgressListener;
+import cn.linkr.events.servlet.PJProgressListener;
 
 /**
  * 重写CommonsMultipartResolver以监听文件上传进度

@@ -1,4 +1,4 @@
-package cn.linkr.events.listener;
+package cn.linkr.events.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;

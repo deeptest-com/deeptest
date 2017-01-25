@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
-import cn.linkr.events.constants.Constant;
-import cn.linkr.events.constants.Constant.RespCode;
+import cn.linkr.events.util.Constant;
+import cn.linkr.events.util.Constant.RespCode;
 import cn.linkr.events.websocket.SystemWebSocketHandler;
 
 import com.alibaba.fastjson.JSONObject;

@@ -15,7 +15,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 import cn.linkr.events.bean.ApplicationScopeBean;
 import cn.linkr.events.bean.websocket.OptFacade;
-import cn.linkr.events.constants.Constant;
+import cn.linkr.events.util.Constant;
 
 import com.alibaba.fastjson.JSONObject;
 

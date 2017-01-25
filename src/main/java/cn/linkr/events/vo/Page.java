@@ -2,7 +2,7 @@ package cn.linkr.events.vo;
 
 import java.util.List;
 
-import cn.linkr.events.constants.Constant;
+import cn.linkr.events.util.Constant;
 
 /**
  * 分页使用的组件

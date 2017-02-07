@@ -3,7 +3,7 @@
         <view class="title">会议介绍</view>
         <view class="desc">
             <view class="line">
-                时间：{{event.startTime}}
+                时间：{{event.startDatetimeStr}}
             </view>
             <view class="line">
                 地点：{{event.address}}

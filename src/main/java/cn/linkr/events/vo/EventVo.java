@@ -33,12 +33,22 @@ public class EventVo extends BaseVo {
 
     private Date startDatetime;
     private Date endDatetime;
-
+    
     private Date registerStartDatetime;
     private Date registerEndDatetime;   
     
     private Date signStartDatetime;
     private Date signEndDatetime;
+    
+    // 微信小程序显示用
+    private String startDatetimeStr;
+    private String endDatetimeStr;
+    
+    private String registerStartDatetimeStr;
+    private String registerEndDatetimeStr; 
+    
+    private String signStartDatetimeStr;
+    private String signEndDatetimeStr;
     
     // 接受页面数据用
     private String startDate;
@@ -401,6 +411,54 @@ public class EventVo extends BaseVo {
 
 	public void setBanners(List<BannerVo> banners) {
 		this.banners = banners;
+	}
+
+	public String getStartDatetimeStr() {
+		return startDatetimeStr;
+	}
+
+	public void setStartDatetimeStr(String startDatetimeStr) {
+		this.startDatetimeStr = startDatetimeStr;
+	}
+
+	public String getEndDatetimeStr() {
+		return endDatetimeStr;
+	}
+
+	public void setEndDatetimeStr(String endDatetimeStr) {
+		this.endDatetimeStr = endDatetimeStr;
+	}
+
+	public String getRegisterStartDatetimeStr() {
+		return registerStartDatetimeStr;
+	}
+
+	public void setRegisterStartDatetimeStr(String registerStartDatetimeStr) {
+		this.registerStartDatetimeStr = registerStartDatetimeStr;
+	}
+
+	public String getRegisterEndDatetimeStr() {
+		return registerEndDatetimeStr;
+	}
+
+	public void setRegisterEndDatetimeStr(String registerEndDatetimeStr) {
+		this.registerEndDatetimeStr = registerEndDatetimeStr;
+	}
+
+	public String getSignStartDatetimeStr() {
+		return signStartDatetimeStr;
+	}
+
+	public void setSignStartDatetimeStr(String signStartDatetimeStr) {
+		this.signStartDatetimeStr = signStartDatetimeStr;
+	}
+
+	public String getSignEndDatetimeStr() {
+		return signEndDatetimeStr;
+	}
+
+	public void setSignEndDatetimeStr(String signEndDatetimeStr) {
+		this.signEndDatetimeStr = signEndDatetimeStr;
 	}
 
 }

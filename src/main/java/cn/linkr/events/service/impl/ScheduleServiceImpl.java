@@ -95,7 +95,9 @@ public class ScheduleServiceImpl extends BaseServiceImpl implements
 			ScheduleItemVo vo = new ScheduleItemVo();
 			
 			BeanUtilEx.copyProperties(vo, po);
-			vo.setSubject(po.getSubject());
+			vo.setStartDatetimeStr(DateUtils.formatDate(po.getStartDatetime(), "MM/dd HH:mm"));
+			vo.setEndDatetimeStr(DateUtils.formatDate(po.getEndDatetime(), "MM-dd HH:mm"));
+//			vo.setSubject(po.getSubject());
 
 			// vo.setAddress(po.getSession().getAddress());
 			vo.setItemType("for-item");
@@ -132,6 +134,9 @@ public class ScheduleServiceImpl extends BaseServiceImpl implements
 
 			ScheduleItemVo vo = new ScheduleItemVo();
 			BeanUtilEx.copyProperties(vo, po);
+			vo.setStartDatetimeStr(DateUtils.formatDate(po.getStartDatetime(), "HH:mm"));
+			vo.setEndDatetimeStr(DateUtils.formatDate(po.getEndDatetime(), "HH:mm"));
+			
 			vo.setAddress(po.getSession().getAddress());
 			vo.setItemType("for-item");
 			vosByDate.add(vo);

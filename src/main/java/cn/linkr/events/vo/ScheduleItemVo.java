@@ -23,6 +23,9 @@ public class ScheduleItemVo extends BaseVo {
     private Date startDatetime;
     private Date endDatetime;
     
+    private String startDatetimeStr;
+    private String endDatetimeStr;
+    
     private String startDate;
     private String endDate;
     private String startTime;
@@ -134,6 +137,18 @@ public class ScheduleItemVo extends BaseVo {
 	}
 	public void setEndTime(String endTime) {
 		this.endTime = endTime;
+	}
+	public String getStartDatetimeStr() {
+		return startDatetimeStr;
+	}
+	public void setStartDatetimeStr(String startDatetimeStr) {
+		this.startDatetimeStr = startDatetimeStr;
+	}
+	public String getEndDatetimeStr() {
+		return endDatetimeStr;
+	}
+	public void setEndDatetimeStr(String endDatetimeStr) {
+		this.endDatetimeStr = endDatetimeStr;
 	}
 
 }

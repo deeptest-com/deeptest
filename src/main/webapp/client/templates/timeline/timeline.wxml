@@ -3,10 +3,10 @@
     <view wx:for="{{list}}" wx:key="{{item.id}}" class="timeline-item {{item.itemType}}" >
         <view class="timeline-time {{item.itemType}}">
             <view class="time two-line" wx:if="{{mode == 'bySession'}}">
-                <view class="text" wx:if="{{item.startTime}}">{{item.startTimeStr}}</view>
+                <view class="text" wx:if="{{item.startDatetimeStr}}">{{item.startDatetimeStr}}</view>
             </view>
             <view class="time one-line" wx:if="{{mode == 'byDate'}}">
-                <view class="text" wx:if="{{item.startTime}}">{{item.startTimeStr}}</view>
+                <view class="text" wx:if="{{item.startDatetimeStr}}">{{item.startDatetimeStr}}</view>
             </view>
         </view>
 

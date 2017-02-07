@@ -15,6 +15,7 @@
 .introduction .section .desc .line {
     margin: 16rpx 0;
     font-size: 28rpx;
+    line-height: 38rpx;
 }
 .introduction .section .desc .line.text {
     margin-top: 26rpx;

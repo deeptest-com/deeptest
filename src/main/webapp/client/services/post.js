@@ -1,7 +1,7 @@
 var constant = require('../utils/constant.js')
 
 function post(path, data, callback) {
-    var url = constant.apiUrl + path + '?Authorization=' + constant.token;
+    var url = constant.apiUrl + path + '?token=' + constant.token;
     console.log(url);
 
      wx.request({

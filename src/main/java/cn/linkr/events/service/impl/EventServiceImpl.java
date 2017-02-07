@@ -143,6 +143,13 @@ public class EventServiceImpl extends BaseServiceImpl implements EventService {
 //    	this.updateStatus(po);
         EventVo vo = new EventVo();
 		BeanUtilEx.copyProperties(vo, po);
+		
+		vo.setStartDatetimeStr(DateUtils.formatDate(po.getStartDatetime(), "yyyy-MM-dd HH:mm"));
+		vo.setEndDatetimeStr(DateUtils.formatDate(po.getEndDatetime(), "yyyy-MM-dd HH:mm"));
+		vo.setRegisterStartDatetimeStr(DateUtils.formatDate(po.getRegisterStartDatetime(), "yyyy-MM-dd HH:mm"));
+		vo.setRegisterEndDatetimeStr(DateUtils.formatDate(po.getRegisterEndDatetime(), "yyyy-MM-dd HH:mm"));
+		vo.setSignStartDatetimeStr(DateUtils.formatDate(po.getSignStartDatetime(), "yyyy-MM-dd HH:mm"));
+		vo.setSignEndDatetimeStr(DateUtils.formatDate(po.getSignEndDatetime(), "yyyy-MM-dd HH:mm"));
     	
         return vo;
     }

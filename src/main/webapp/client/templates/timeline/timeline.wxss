@@ -21,10 +21,11 @@
       .timeline .timeline-item .timeline-time.for-item {
         height: 80rpx;}
       .timeline .timeline-item .timeline-time.for-item .one-line {
-        padding: 30rpx;
+        padding: 33rpx 30rpx;
         height: 20rpx; }
       .timeline .timeline-item .timeline-time.for-item .two-line {
-        padding: 20rpx;
+        line-height: 30rpx;
+        padding: 13rpx 20rpx;
         height: 40rpx; }
 
     .timeline .timeline-item .timeline-badge {

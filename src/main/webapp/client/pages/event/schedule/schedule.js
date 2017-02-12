@@ -5,7 +5,11 @@ var schedule = require('../../../services/schedule.js')
 var app = getApp()
 Page({
   data: {
-    mode: 'bySession'
+    mode: 'bySession',
+    timelineData: {
+      mode: 'bySession',
+      list: []
+    }
   },
 
   onLoad: function () {
@@ -26,7 +30,6 @@ Page({
     that.setData({
       timelineData: {mode: that.data.mode, list : that.data.all[that.data.mode]}
     });
-    console.log(that.data.timelineData);
   },
 
   changBy: function (event) {

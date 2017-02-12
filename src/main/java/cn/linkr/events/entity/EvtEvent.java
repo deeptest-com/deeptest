@@ -63,7 +63,7 @@ public class EvtEvent extends BaseEntity {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", insertable = false, updatable = false)
-    private EvtClient creator;
+    private SysUser creator;
 
     @Column(name = "creator_id")
     private Long creatorId;
@@ -155,11 +155,11 @@ public class EvtEvent extends BaseEntity {
         this.companyId = companyId;
     }
 
-    public EvtClient getCreator() {
+    public SysUser getCreator() {
         return creator;
     }
 
-    public void setCreator(EvtClient creator) {
+    public void setCreator(SysUser creator) {
         this.creator = creator;
     }
 

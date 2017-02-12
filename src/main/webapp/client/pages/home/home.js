@@ -49,10 +49,10 @@ Page({
             {label: '日程', name: 'schedule'},
             {label: '嘉宾', name: 'guest'},
             
-             //{label: label, name: name},
+             {label: label, name: name},
              //{label: '现场', name: 'live'},
              //{label: '回顾', name: 'review'},
-            {label: '签到', name: 'sign'},
+             //{label: '签到', name: 'sign'},
             
             {label: '服务', name: 'service'},
             {label: '问答', name: 'qa'}

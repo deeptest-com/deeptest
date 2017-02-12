@@ -37,7 +37,7 @@
           </thead>
           <tbody>
           <tr *ngFor="let item of events; let i = index">
-            <th scope="row">{{i}}-{{item.id}}</th>
+            <th scope="row">{{i}}</th>
             <td>{{item.title}}</td>
             <td>{{item.address}}</td>
             <td>{{item.status | eventStatus}}</td>

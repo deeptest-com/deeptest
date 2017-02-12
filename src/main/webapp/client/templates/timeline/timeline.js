@@ -4,7 +4,8 @@ var mobiu = require('../../service/mobiu.js')
 var app = getApp()
 Page({
   data: {
-    
+    mode: 'bySession',
+    list: []
   },
 
   onLoad: function () {

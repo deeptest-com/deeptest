@@ -95,9 +95,13 @@ public class EventServiceImpl extends BaseServiceImpl implements EventService {
 	
 	@Override
 	public EvtEvent save(EventVo vo, Long userId, Long companyId) {
+		
 		EvtEvent po = genPo(vo);
-		po.setCreatorId(userId);
-		po.setCompanyId(companyId);
+		
+		if (vo.getId() != null) {
+			po.setCreatorId(userId);
+			po.setCompanyId(companyId);
+		}
 		saveOrUpdate(po);
 		return po;
 	}

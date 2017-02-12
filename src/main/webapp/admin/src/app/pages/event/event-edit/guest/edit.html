@@ -20,7 +20,7 @@
           </thead>
           <tbody>
           <tr *ngFor="let item of items; let i = index">
-            <th scope="row">{{i}}-{{item.id}}</th>
+            <th scope="row">{{i}}</th>
             <td>{{item.name}}</td>
             <td>{{item.title}}</td>
             <td class="img"><img class="center" [src]="item.avatar | thumbPath"></td>

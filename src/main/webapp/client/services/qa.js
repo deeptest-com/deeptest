@@ -6,9 +6,10 @@ function list(callback) {
         eventId: constant.eventId
     }, callback);
 }
-function save(callback) {
+function save(content, callback) {
     post.post('qa/save', {
-        eventId: constant.eventId
+        eventId: constant.eventId,
+        content: content
     }, callback);
 }
 module.exports = {

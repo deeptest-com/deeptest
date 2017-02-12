@@ -7,6 +7,7 @@ public class UserVo extends BaseVo {
 	private String email;
 //	private String password;
     private String phone;
+    private String avatar;
     
     private Long companyId;
     
@@ -46,6 +47,12 @@ public class UserVo extends BaseVo {
 	}
 	public void setCompanyId(Long companyId) {
 		this.companyId = companyId;
+	}
+	public String getAvatar() {
+		return avatar;
+	}
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
 	}
 
 }

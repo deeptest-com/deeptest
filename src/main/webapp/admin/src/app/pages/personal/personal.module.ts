@@ -13,7 +13,6 @@ import { ButtonsModule } from 'ng2-bootstrap';
 import { FileUploadModule } from 'ng2-file-upload';
 
 import { ComponentsModule } from '../components/components.module';
-import { PipeModule } from '../../pipe/pipe.module';
 
 import { RouteService } from '../../service/route';
 import { RequestService } from '../../service/request';
@@ -46,8 +45,7 @@ import { ProfileEdit } from './profile/profile-edit';
     CollapseModule,
     FileUploadModule,
 
-    ComponentsModule,
-    PipeModule
+    ComponentsModule
   ],
   declarations: [
     Personal,

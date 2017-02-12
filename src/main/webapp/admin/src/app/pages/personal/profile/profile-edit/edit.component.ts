@@ -3,6 +3,8 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import { DropdownModule} from 'ng2-bootstrap/ng2-bootstrap';
+import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
+
 import {EmailValidator} from '../../../../validator';
 
 import { CONSTANT } from '../../../../utils/constant';
@@ -26,8 +28,25 @@ export class ProfileEdit implements OnInit, AfterViewInit {
   modelId: number;
   model: any = {};
   form: any;
+  isSubmitted: boolean;
   tabModel: string = 'property';
   needCreate:boolean = false;
+
+  uploadedFile: any;
+  hasBaseDropZoneOver:boolean = false;
+
+  private allowedMimeType: string[] = ['image/png', 'image/jpeg'];
+  private uploaderOptions:FileUploaderOptions = {
+    url: Utils.getUploadUrl(),
+    authToken: CONSTANT.PROFILE.token,
+    autoUpload: true,
+    allowedMimeType: this.allowedMimeType,
+    filters: [{name: 'upload', fn: (item:any) => {
+      console.log(this.uploader);
+      return true;
+    }}]
+  };
+  public uploader: FileUploader;
 
   constructor(private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
               private _userService: UserService) {
@@ -39,7 +58,27 @@ export class ProfileEdit implements OnInit, AfterViewInit {
     let that = this;
 
     that.buildForm();
+    that.uploader = new FileUploader(that.uploaderOptions);
+    that.uploader.onCompleteItem = (item:any, response:any, status:any, headers:any) => {
+      this.onUploadCompleteItem(item, response, status, headers);
+    };
+
     that.loadData();
+  }
+  selectFile():void {
+    this.uploader.clearQueue();
+    jQuery('#upload-input').click();
+  }
+  fileOver(e:any):void {
+    this.hasBaseDropZoneOver = e;
+  }
+  onUploadCompleteItem (item:any, response:any, status:any, headers:any) {
+    let res = JSON.parse(response);
+    console.log(res);
+    this.uploadedFile = res;
+    this.model.avatar = res.uploadPath;
+    this.uploader.clearQueue();
+    this.isSubmitted = false;
   }
 
   ngAfterViewInit() {

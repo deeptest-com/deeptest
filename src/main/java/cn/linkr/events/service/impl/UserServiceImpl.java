@@ -272,10 +272,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		String name = vo.getName();
 		String email = vo.getEmail(); 
 		String phone = vo.getPhone(); 
-
+		String avatar = vo.getAvatar();
 		po.setPhone(phone);
 		po.setName(name);
 		po.setEmail(email);
+		po.setAvatar(avatar);
 		saveOrUpdate(po);
 		return po;
 	}

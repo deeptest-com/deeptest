@@ -62,7 +62,7 @@ public class QaAction extends BaseAction {
 		
 		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
 		
-		qaService.save(Long.valueOf(eventId), content);
+		qaService.save(Long.valueOf(eventId), client.getId(), content);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

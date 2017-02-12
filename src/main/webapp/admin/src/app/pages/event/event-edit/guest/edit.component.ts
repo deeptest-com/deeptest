@@ -78,7 +78,6 @@ export class EventEditGuest implements OnInit, AfterViewInit {
     that.uploader.onCompleteItem = (item:any, response:any, status:any, headers:any) => {
       this.onUploadCompleteItem(item, response, status, headers);
     };
-    console.log(that.uploader);
   }
 
   selectFile():void {
@@ -87,7 +86,6 @@ export class EventEditGuest implements OnInit, AfterViewInit {
   }
   fileOver(e:any):void {
     this.hasBaseDropZoneOver = e;
-    // console.log(this.uploader.queue);
   }
   onUploadCompleteItem (item:any, response:any, status:any, headers:any) {
     let res = JSON.parse(response);

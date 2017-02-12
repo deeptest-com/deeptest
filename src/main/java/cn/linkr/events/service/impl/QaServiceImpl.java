@@ -33,8 +33,9 @@ public class QaServiceImpl extends BaseServiceImpl implements QaService {
 	}
 
 	@Override
-	public void save(Long eventId, String content) {
+	public void save(Long eventId,Long clientId, String content) {
 		EvtQa qa = new EvtQa();
+		qa.setAuthorId(clientId);
 		qa.setEventId(eventId);
 		qa.setQuestion(content);
 		

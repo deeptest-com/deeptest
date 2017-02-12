@@ -21,7 +21,11 @@ Page({
   },
   save: function(e) {
     var that = this;
-
+    qa.save(that.data.qustion, function(json) {
+      wx.navigateTo({
+        url: './qa'
+      });
+    });
     console.log(that.data);
   }
 })

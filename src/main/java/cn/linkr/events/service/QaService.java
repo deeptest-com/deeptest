@@ -11,7 +11,7 @@ public interface QaService extends BaseService {
 
 	List<EvtQa> list(Long eventId, Long clientId);
 
-	void save(Long eventId, String content);
+	void save(Long eventId, Long clientId, String content);
 
 	List<QaVo> genVos(List<EvtQa> pos);
 

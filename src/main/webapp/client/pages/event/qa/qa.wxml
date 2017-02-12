@@ -5,7 +5,8 @@
                 {{item.question}}
             </view>
             <view class="answer content">
-                {{item.answer}}
+                <view wx:if="{{item.answer}}">{{item.answer}}</view>
+                <view wx:if="{{!item.answer}}">暂无应答</view>
             </view>
         </view>
         

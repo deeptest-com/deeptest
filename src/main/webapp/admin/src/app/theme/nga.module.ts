@@ -3,6 +3,12 @@ import { CommonModule }  from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
+import { ImgPathPipe, ThumbPathPipe } from '../pipe/img-path';
+import { KeysPipe } from '../pipe/keys';
+import { DatePipe } from '../pipe/date';
+import { ModelStatusPipe } from '../pipe/model-status';
+import { EventStatusPipe } from '../pipe/event-status';
+
 import {
   BaThemeConfig
 } from './theme.config';
@@ -78,6 +84,9 @@ const NGA_PIPES = [
   BaKameleonPicturePipe,
   BaProfilePicturePipe
 ];
+const MY_PIPES = [
+  ImgPathPipe, ThumbPathPipe, KeysPipe, DatePipe,ModelStatusPipe, EventStatusPipe
+];
 
 const NGA_SERVICES = [
   BaImageLoaderService,
@@ -90,18 +99,22 @@ const NGA_SERVICES = [
   declarations: [
     ...NGA_PIPES,
     ...NGA_DIRECTIVES,
-    ...NGA_COMPONENTS
+    ...NGA_COMPONENTS,
+
+    ...MY_PIPES
   ],
   imports: [
     CommonModule,
     RouterModule,
     FormsModule,
-    ReactiveFormsModule,
+    ReactiveFormsModule
   ],
   exports: [
     ...NGA_PIPES,
     ...NGA_DIRECTIVES,
-    ...NGA_COMPONENTS
+    ...NGA_COMPONENTS,
+
+    ...MY_PIPES
   ]
 })
 export class NgaModule {

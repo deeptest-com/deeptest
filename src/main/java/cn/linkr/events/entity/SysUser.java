@@ -26,6 +26,7 @@ public class SysUser extends BaseEntity {
     private String name;
     private String password;
     private String token;
+    private String avatar;
 
     private String verifyCode;
     private Date lastLoginTime;
@@ -196,5 +197,13 @@ public class SysUser extends BaseEntity {
 
 	public void setCompanyId(Long companyId) {
 		this.companyId = companyId;
+	}
+
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
 	}
 }

@@ -150,6 +150,7 @@ public class EventServiceImpl extends BaseServiceImpl implements EventService {
 		
 		vo.setStartDatetimeStr(DateUtils.formatDate(po.getStartDatetime(), "yyyy-MM-dd HH:mm"));
 		vo.setEndDatetimeStr(DateUtils.formatDate(po.getEndDatetime(), "yyyy-MM-dd HH:mm"));
+		vo.setRegisterStartDayStr(DateUtils.formatDate(po.getRegisterStartDatetime(), "M月d号"));
 		vo.setRegisterStartDatetimeStr(DateUtils.formatDate(po.getRegisterStartDatetime(), "yyyy-MM-dd HH:mm"));
 		vo.setRegisterEndDatetimeStr(DateUtils.formatDate(po.getRegisterEndDatetime(), "yyyy-MM-dd HH:mm"));
 		vo.setSignStartDatetimeStr(DateUtils.formatDate(po.getSignStartDatetime(), "yyyy-MM-dd HH:mm"));

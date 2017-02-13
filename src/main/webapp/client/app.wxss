@@ -102,6 +102,10 @@ view {
   text-align: center;
   font-size: 40rpx;
 }
+.my-grid .col-inner .text .small {
+  margin-top: 5rpx;
+  font-size: 30rpx;
+}
 
 .my-grid .col-inner {
   position: absolute;
@@ -110,7 +114,7 @@ view {
   bottom: 0;
   left: 0;
   right: 0;
-  width: 60%;
+  width: 90%;
   height: 60%;
 }
 .my-grid .my-col {
@@ -180,7 +184,7 @@ view {
   color: #222;
 }
 .my-list .item .content .descr {
-  font-size: 20rpx;
+  font-size: 25rpx;
   line-height: 40rpx;
   color: #666;
 }

@@ -9,7 +9,7 @@
                 地点：{{event.address}}
             </view>
             <view class="line">
-                主办：上海时装周组委会办公室
+                主办：{{event.organizers.sponsor[0].name}}
             </view>
             <view class="line text">
                 {{event.descr}}

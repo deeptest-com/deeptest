@@ -13,7 +13,7 @@ Page({
 
     if(page == 'sign') {
       sign.sign();
-    } else {
+    } else if(page != 'to-register') {
       wx.navigateTo({
         url: '../event/' + page + '/' + page
       });
@@ -38,9 +38,12 @@ Page({
       } else if (constant.event.status == 'sign') {
         label = '签到';
         name = 'sign';
-      } else {
+      } else if(constant.event.status == 'register') {
         label = '报名';
         name = 'register';
+      } else if(constant.event.status == 'not_start') {
+        label = constant.event.registerStartDayStr;
+        name = 'to-register';
       }
       that.setData({
         event: constant.event,

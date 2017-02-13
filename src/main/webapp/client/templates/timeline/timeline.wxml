@@ -17,6 +17,7 @@
         <view class="for-group timeline-panel" wx:if="{{item.itemType == 'for-group'}}" >
             <view class="subject">{{item.name}} </view>
         </view>
+        
         <view class="for-item timeline-panel" wx:if="{{item.itemType == 'for-item'}}" >
 
             <view class="triangle white-bg"></view>                    <view class="triangle-shadow white-bg"></view>

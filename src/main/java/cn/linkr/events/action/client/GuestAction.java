@@ -56,4 +56,22 @@ public class GuestAction extends BaseAction {
 		return ret;
 	}
 	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "get", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> get(HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		JSONObject req = reqJson(request);
+		String guestId = req.getString("guestId");
+		
+		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
+		
+		EvtGuest po = (EvtGuest) guestService.get(EvtGuest.class, Long.valueOf(guestId));
+		GuestVo vo = guestService.genVo(po);
+
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		ret.put("guest", vo);
+		return ret;
+	}
+	
 }

@@ -19,7 +19,12 @@
       <view class="col-inner">
           <view class="img {{item.name}}" style="background-image: url(/assets/img/icon-{{item.name}}.png);"></view>
           <view class="space"></view>
-          <view class="text">{{item.label}}</view>
+          <view class="text">
+            {{item.label}}
+            <view wx:if="{{item.name=='to-register'}}" class="small">
+              <br/>开始报名
+            </view>
+          </view>
         </view>
       </view>
   </view>

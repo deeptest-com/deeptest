@@ -26,7 +26,7 @@
     "pages/event/bizcard/view", 
     "pages/event/bizcard/edit",
 
-    "pages/find/find",
+    "pages/sponsor/sponsor",
     "pages/about/about"
   ],
   "window":{
@@ -43,15 +43,15 @@
       "iconPath": "assets/img/icon-home-outline.png",
       "selectedIconPath": "assets/img/icon-home.png"
     }, {
-      "pagePath": "pages/find/find",
-      "text": "发现",
-      "iconPath": "assets/img/icon-find-outline.png",
-      "selectedIconPath": "assets/img/icon-find.png"
+      "pagePath": "pages/sponsor/sponsor",
+      "text": "主办方",
+      "iconPath": "assets/img/icon-sponsor-outline.png",
+      "selectedIconPath": "assets/img/icon-sponsor.png"
     }, {
-      "pagePath": "pages/mobiu/mobiu",
-      "text": "脉友",
-      "iconPath": "assets/img/icon-mobiu-outline.png",
-      "selectedIconPath": "assets/img/icon-mobiu.png"
+      "pagePath": "pages/about/about",
+      "text": "关于聆客",
+      "iconPath": "assets/img/icon-about-outline.png",
+      "selectedIconPath": "assets/img/icon-about.png"
     }]
   }
 }

@@ -19,9 +19,9 @@
       .timeline .timeline-item .timeline-time.for-group .subject {
         display: none; }
       .timeline .timeline-item .timeline-time.for-item {
-        height: 80rpx;}
+        height: 85rpx;}
       .timeline .timeline-item .timeline-time.for-item .one-line {
-        padding: 33rpx 30rpx;
+        padding: 35rpx 30rpx;
         height: 20rpx; }
       .timeline .timeline-item .timeline-time.for-item .two-line {
         line-height: 30rpx;
@@ -31,7 +31,7 @@
     .timeline .timeline-item .timeline-badge {
           position: relative;
           width: 80rpx;
-          height: 80rpx; }
+          height: 85rpx; }
           .timeline .timeline-item .timeline-badge .badge {
             position: absolute;
             margin: auto;
@@ -89,14 +89,18 @@
         box-shadow: none;
         color: #4AB8FE; }
         .timeline .timeline-item .timeline-panel.for-group .subject {
-          line-height: 80rpx; }
+          font-size: 30rpx;
+          line-height: 85rpx; }
       .timeline .timeline-item .timeline-panel.for-item {
         padding: 0rpx 15rpx; 
-        height: 80rpx; }
+        height: 85rpx; }
+        .timeline .timeline-item .timeline-panel.for-item .timeline-content {
+          margin: 5rpx 0rpx;
+        }
         .timeline .timeline-item .timeline-panel.for-item .timeline-heading {
-          line-height: 50rpx;
-          font-size: 20rpx; }
+          line-height: 46rpx;
+          font-size: 23rpx; }
         .timeline .timeline-item .timeline-panel.for-item .timeline-descr {
-          line-height: 19rpx;
-          font-size: 19rpx; }
+          line-height: 21rpx;
+          font-size: 21rpx; }
     

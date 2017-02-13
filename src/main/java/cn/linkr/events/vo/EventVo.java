@@ -44,6 +44,7 @@ public class EventVo extends BaseVo {
     private String startDatetimeStr;
     private String endDatetimeStr;
     
+    private String registerStartDayStr;
     private String registerStartDatetimeStr;
     private String registerEndDatetimeStr; 
     
@@ -459,6 +460,14 @@ public class EventVo extends BaseVo {
 
 	public void setSignEndDatetimeStr(String signEndDatetimeStr) {
 		this.signEndDatetimeStr = signEndDatetimeStr;
+	}
+
+	public String getRegisterStartDayStr() {
+		return registerStartDayStr;
+	}
+
+	public void setRegisterStartDayStr(String registerStartDayStr) {
+		this.registerStartDayStr = registerStartDayStr;
 	}
 
 }

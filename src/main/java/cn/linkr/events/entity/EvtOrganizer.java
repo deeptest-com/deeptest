@@ -27,9 +27,7 @@ public class EvtOrganizer extends BaseEntity {
     	organizer("organizer"),
     	co_organizer("co_organizer"),
     	sponsor("sponsor"),
-    	title_sponsor("title_sponsor"),
-        success("success"),
-        cancel("cancel");
+    	title_sponsor("title_sponsor");
 
         private OrganizerType(String textVal) {
             this.textVal = textVal;

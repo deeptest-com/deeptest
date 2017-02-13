@@ -9,7 +9,7 @@
                 地点：{{event.address}}
             </view>
             <view class="line">
-                主办：{{event.organizers.sponsor[0].name}}
+                主办：{{event.organizers.host[0].name}}
             </view>
             <view class="line text">
                 {{event.descr}}
@@ -17,7 +17,34 @@
         </view>
     </view>
 
-    <view class="section organizer">
+    <view wx:if="{{event.organizers.title_sponsor}}" class="section organizer">
+        <view class="title">冠名单位</view>
+        <view class="desc">
+            <view wx:for="{{event.organizers.title_sponsor}}" wx:key="{{item.id}}" class="line">
+              {{item.name}}
+		    </view>
+        </view>
+    </view>
+
+     <view wx:if="{{event.organizers.sponsor}}" class="section organizer">
+        <view class="title">赞助单位</view>
+        <view class="desc">
+            <view wx:for="{{event.organizers.sponsor}}" wx:key="{{item.id}}" class="line">
+              {{item.name}}
+		    </view>
+        </view>
+    </view>
+
+    <view wx:if="{{event.organizers.organizer}}" class="section organizer">
+        <view class="title">承办单位</view>
+        <view class="desc">
+            <view wx:for="{{event.organizers.organizer}}" wx:key="{{item.id}}" class="line">
+              {{item.name}}
+		    </view>
+        </view>
+    </view>
+
+    <view wx:if="{{event.organizers.co_organizer}}" class="section organizer">
         <view class="title">协办单位</view>
         <view class="desc">
             <view wx:for="{{event.organizers.co_organizer}}" wx:key="{{item.id}}" class="line">

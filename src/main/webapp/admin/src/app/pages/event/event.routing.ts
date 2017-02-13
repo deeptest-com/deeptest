@@ -3,6 +3,7 @@ import { Routes, RouterModule }  from '@angular/router';
 import { Event } from './event.component';
 import { EventList } from './event-list/list.component';
 import { EventEditProperty } from './event-edit/property/edit.component';
+import { EventEditOrganizer } from './event-edit/organizer/edit.component';
 import { EventEditSchedule } from './event-edit/schedule/edit.component';
 import { EventEditGuest } from './event-edit/guest/edit.component';
 import { EventEditService } from './event-edit/service/edit.component';
@@ -17,6 +18,8 @@ const routes: Routes = [
     children: [
       { path: 'list', component: EventList },
       { path: 'edit/:id/property', component: EventEditProperty },
+      { path: 'edit/:id/organizer', component: EventEditOrganizer},
+      { path: 'edit/:id/schedule', component: EventEditSchedule },
       { path: 'edit/:id/schedule', component: EventEditSchedule },
       { path: 'edit/:id/guest', component: EventEditGuest },
       { path: 'edit/:id/service', component: EventEditService },

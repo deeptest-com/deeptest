@@ -24,11 +24,13 @@ public class EvtOrganizer extends BaseEntity {
     private EvtEvent event;
     
     public static enum OrganizerType {
-    	organizer("organizer"),
-    	co_organizer("co_organizer"),
-    	sponsor("sponsor"),
-    	title_sponsor("title_sponsor");
-
+    	host("host"), // 主办
+    	organizer("organizer"), // 承办
+    	co_organizer("co_organizer"), // 协办
+    	
+    	title_sponsor("title_sponsor"), // 冠名
+    	sponsor("sponsor"); // 赞助
+    	
         private OrganizerType(String textVal) {
             this.textVal = textVal;
         }

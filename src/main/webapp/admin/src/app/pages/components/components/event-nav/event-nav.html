@@ -2,18 +2,28 @@
   <div class="filter">
     <div class="btn-group">
       <label (click)="onItemClick('property', $event)" class="btn btn-success" [(ngModel)]="tabModel"
-             btnRadio="property" uncheckable>会议属性</label>
+             btnRadio="property" uncheckable>概要</label>
+      <label (click)="onItemClick('organizer', $event)" class="btn btn-success" [(ngModel)]="tabModel"
+             btnRadio="organizer" uncheckable>举办方</label>
       <label (click)="onItemClick('schedule', $event)" class="btn btn-success" [(ngModel)]="tabModel"
-             btnRadio="schedule" uncheckable>会议日程</label>
+             btnRadio="schedule" uncheckable>日程</label>
       <label (click)="onItemClick('guest', $event)" class="btn btn-success" [(ngModel)]="tabModel"
-             btnRadio="guest" uncheckable>会议嘉宾</label>
+             btnRadio="guest" uncheckable>嘉宾</label>
       <label (click)="onItemClick('service', $event)" class="btn btn-success" [(ngModel)]="tabModel"
-             btnRadio="service" uncheckable>会议服务</label>
+             btnRadio="service" uncheckable>服务</label>
       <label (click)="onItemClick('banner', $event)" class="btn btn-success" [(ngModel)]="tabModel"
-             btnRadio="banner" uncheckable>广告条</label>
+             btnRadio="banner" uncheckable>广告</label>
       <label (click)="onItemClick('document', $event)" class="btn btn-success" [(ngModel)]="tabModel"
-             btnRadio="document" uncheckable>资源下载</label>
-
+             btnRadio="document" uncheckable>资源</label>
+    </div>
+    &nbsp;&nbsp;&nbsp;
+    <div class="btn-group">
+      <label (click)="onItemClick('bizcard', $event)" class="btn btn-info" [(ngModel)]="tabModel"
+             btnRadio="bizcard" uncheckable>名片</label>
+      <label (click)="onItemClick('qa', $event)" class="btn btn-info" [(ngModel)]="tabModel"
+             btnRadio="qa" uncheckable>问答</label>
+      <label (click)="onItemClick('feedback', $event)" class="btn btn-info" [(ngModel)]="tabModel"
+             btnRadio="feedback" uncheckable>反馈</label>
     </div>
   </div>
   <div class="buttons">

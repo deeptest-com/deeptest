@@ -24,10 +24,12 @@ import { GuestService } from '../../service/guest';
 import { ServiceService } from '../../service/service';
 import { BannerService } from '../../service/banner';
 import { DocumentService } from '../../service/document';
+import { OrganizerService } from '../../service/organizer';
 
 import { Event } from './event.component';
 import { EventList } from './event-list';
 import { EventEditProperty } from './event-edit/property';
+import { EventEditOrganizer } from './event-edit/organizer';
 import { EventEditSchedule } from './event-edit/schedule';
 import { EventEditGuest } from './event-edit/guest';
 import { EventEditService } from './event-edit/service';
@@ -54,6 +56,7 @@ import { EventEditDocument } from './event-edit/document';
     Event,
     EventList,
     EventEditProperty,
+    EventEditOrganizer,
     EventEditSchedule,
     EventEditGuest,
     EventEditService,
@@ -65,6 +68,7 @@ import { EventEditDocument } from './event-edit/document';
     RequestService,
     DatetimePickerService,
     EventService,
+    OrganizerService,
     SessionService,
     ScheduleService,
     GuestService,

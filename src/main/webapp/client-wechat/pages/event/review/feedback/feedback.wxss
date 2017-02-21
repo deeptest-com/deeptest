@@ -1,7 +1,0 @@
-.feedback .feedback-inner {
-    padding: 20rpx;
-}
-
-.feedback .space {
-    height: 20rpx;
-}

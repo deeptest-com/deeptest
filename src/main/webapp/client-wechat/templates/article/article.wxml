@@ -1,5 +1,0 @@
-<template name="html">
-  <view class="article">
-    {{header}}
-  </view>
-</template>

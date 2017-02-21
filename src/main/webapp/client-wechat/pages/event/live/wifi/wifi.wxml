@@ -1,6 +1,0 @@
-<view class="wifi my-detail">
-    <view class="header">请使用以下WIFI账户接入无线网络：</view>
-    <view class="line"></view>
-    <view class="name content">热点：meeting-free</view>
-	<view class="password content">密码：password</view>
-</view>

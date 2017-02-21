@@ -1,9 +1,0 @@
-.wifi {
-
-}
-.wifi .content {
-  margin: 0;
-  font-size: 35rpx;
-  line-height: 50rpx;
-  color: #777777;
-}

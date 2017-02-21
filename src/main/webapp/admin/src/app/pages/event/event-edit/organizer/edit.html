@@ -1,0 +1,172 @@
+<div class="container-fluid">
+
+  <div class="row">
+    <event-nav (createClick)="create($event)" (itemClick)="goto($event)"
+               [needCreate]="needCreate" [tabModel]="tabModel"></event-nav>
+  </div>
+
+  <div class="row">
+    <div class="card card-block no-border">
+      <div class="table-responsive">
+        <table class="table table-hover table-striped">
+          <thead class="thead-inverse">
+          <tr>
+            <th>编号</th>
+            <th>姓名</th>
+            <th>简介</th>
+            <th>头像</th>
+            <th>操作</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let item of items; let i = index">
+            <th scope="row">{{i}}</th>
+            <td>{{item.name}}</td>
+            <td>{{item.title}}</td>
+            <td class="img"><img class="center" [src]="item.avatar | thumbPath"></td>
+            <td class="opt">
+              <i (click)="showModal(item, 'edit', $event)" class="ion-edit link"></i>
+              <i (click)="showModal(item, 'alert', $event);" class="ion-trash-a link"></i>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+        <div class="page-container">
+          <pagination [totalItems]="totalItems" [(ngModel)]="currentPage"
+                      [maxSize]="maxSize" [itemsPerPage]="itemsPerPage" class="pagination-sm"
+                      [boundaryLinks]="true" [rotate]="false"
+                      (numPages)="numPages = $event" (pageChanged)="pageChanged($event)"
+                      previousText="上一页" nextText="下一页" firstText="第一页" lastText="最后页">
+          </pagination>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div bsModal #editPopup="bs-modal" class="modal fade" tabindex="-1" role="dialog"
+     (onShown)="onModalShow()" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" (click)="hideModal('edit')" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">编辑</h4>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="form" (ngSubmit)="onFormSubmit()" class="my-validate-form">
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label"><span>头像</span></label>
+            <div class="col-sm-10 file-upload">
+              <div class="row">
+                <div class="col-sm-2">
+                  <div class="image">
+                    <img class="middle" [src]="item.avatar | imgPath">
+                  </div>
+                </div>
+                <div class="col-sm-10">
+                  <div ng2FileDrop
+                       [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
+                       (fileOver)="fileOver($event)"
+                       [uploader]="uploader"
+                       class="well my-drop-zone">
+                    拖动到此处上传
+                  </div>
+
+                  <div class="upload-row">
+                    <div class="upload-input-wrapper">
+                        <span class="upload-input-container">
+                            <input id="upload-input" name="upload" type="file" ng2FileSelect [uploader]="uploader"
+                                   [accept]="allowedMimeType.toString()" />
+                        </span>
+                        <span class="upload-button-container">
+                            <button (click)='selectFile()' type="button" class="btn btn-secondary">选择头像...</button>
+                        </span>
+                    </div>
+
+                    <div class="progress-wrapper" *ngIf="uploader.queue.length">
+                      <div class="progress-bar" role="progressbar"
+                           [ngStyle]="{ 'width': uploader.queue[0].progress + '%' }"></div>
+                    </div>
+                    <div class="upload-file-name" *ngIf="!uploader.isUploading && uploadedFile">
+                      {{uploadedFile.origName}} 上传成功
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label"><span>姓名</span></label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" name="name" formControlName="name"
+                     [(ngModel)]="item.name" #name>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">简介</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" name="title" formControlName="title"
+                     [(ngModel)]="item.title" #title>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label"><span>描述</span></label>
+            <div class="col-sm-10">
+              <textarea type="text" class="form-control" name="descr" formControlName="descr"
+                        [(ngModel)]="item.descr" #descr></textarea>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-10">
+              <button type="submit" class="btn btn-primary" [disabled]="!form.valid">保存</button>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-10">
+              <div class="validate-errors">
+                <div class="validate-error" *ngFor="let msg of formErrors">
+                  <div>{{ msg }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div bsModal #alertPopup="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" aria-label="Close" (click)="hideModal('edit')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">确认删除?</h4>
+      </div>
+      <div class="modal-body">
+        <div class="center">
+          <button (click)="remove()" class="btn btn-primary btn-with-icon" type="button">
+            <i class="ion-checkmark"></i>
+            确认
+          </button>
+          &nbsp;&nbsp;&nbsp;
+          <button (click)="hideModal('alert')" class="btn btn-default btn-with-icon" type="button">
+            <i class="ion-close-round"></i>
+            取消
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

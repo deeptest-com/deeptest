@@ -8,7 +8,7 @@ export class OrganizerService {
     constructor(private _reqService: RequestService) { }
     _api_url = 'organizer/';
 
-    list(itemsPerPage: number, eventId: number) {
+    list(eventId: number) {
         return this._reqService.post(this._api_url + 'list', {eventId: eventId});
     }
 

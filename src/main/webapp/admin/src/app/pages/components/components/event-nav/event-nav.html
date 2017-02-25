@@ -1,20 +1,23 @@
 <div class="list-toolbar col-xl-12 event-nav">
   <div class="filter">
     <div class="btn-group">
+      <label (click)="onItemClick('theme', $event)" class="btn btn-success" [(ngModel)]="tabModel"
+             btnRadio="theme" uncheckable>主题</label>
       <label (click)="onItemClick('property', $event)" class="btn btn-success" [(ngModel)]="tabModel"
              btnRadio="property" uncheckable>概要</label>
-      <label (click)="onItemClick('organizer', $event)" class="btn btn-success" [(ngModel)]="tabModel"
-             btnRadio="organizer" uncheckable>举办方</label>
       <label (click)="onItemClick('schedule', $event)" class="btn btn-success" [(ngModel)]="tabModel"
              btnRadio="schedule" uncheckable>日程</label>
+      <label (click)="onItemClick('organizer', $event)" class="btn btn-success" [(ngModel)]="tabModel"
+             btnRadio="organizer" uncheckable>举办方</label>
       <label (click)="onItemClick('guest', $event)" class="btn btn-success" [(ngModel)]="tabModel"
              btnRadio="guest" uncheckable>嘉宾</label>
       <label (click)="onItemClick('service', $event)" class="btn btn-success" [(ngModel)]="tabModel"
              btnRadio="service" uncheckable>服务</label>
       <label (click)="onItemClick('banner', $event)" class="btn btn-success" [(ngModel)]="tabModel"
-             btnRadio="banner" uncheckable>广告</label>
+             btnRadio="banner" uncheckable>广告栏</label>
       <label (click)="onItemClick('document', $event)" class="btn btn-success" [(ngModel)]="tabModel"
              btnRadio="document" uncheckable>资源</label>
+
     </div>
     &nbsp;&nbsp;&nbsp;
     <div class="btn-group">

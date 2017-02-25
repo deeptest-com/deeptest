@@ -1,6 +1,6 @@
 export var CONSTANT: any = {
-    _SERVICE_URL_DEV: 'http://localhost:8080/events/',
-    _SERVICE_URL_PRODUCTION: 'http://localhost:8080/events/',
+    _SERVICE_URL_DEV: 'http://localhost:8080/',
+    _SERVICE_URL_PRODUCTION: 'http://localhost:8080/',
 
     SERVICE_URL: undefined,
     API_URL: undefined,

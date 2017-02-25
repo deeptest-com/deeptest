@@ -104,7 +104,7 @@ export class EventEditOrganizer implements OnInit, AfterViewInit {
   loadData() {
    let that = this;
 
-   that._organizerService.list(that.itemsPerPage, that.currentPage, that.eventId).subscribe((json:any) => {
+   that._organizerService.list(that.eventId).subscribe((json:any) => {
      that.totalItems = json.totalItems;
      that.items = json.organizers;
    });

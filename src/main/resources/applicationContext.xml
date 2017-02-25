@@ -22,18 +22,18 @@
 		
     <context:property-placeholder location="classpath:config.properties"/>
 	<context:annotation-config />
-	<context:component-scan base-package="cn.linkr.events.config"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.events.entity"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.events.service"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.events.service.impl"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.events.dao"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.events.util"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.events.dao.impl"></context:component-scan>
+	<context:component-scan base-package="cn.linkr.testspace.config"></context:component-scan>
+	<context:component-scan base-package="cn.linkr.testspace.entity"></context:component-scan>
+	<context:component-scan base-package="cn.linkr.testspace.service"></context:component-scan>
+	<context:component-scan base-package="cn.linkr.testspace.service.impl"></context:component-scan>
+	<context:component-scan base-package="cn.linkr.testspace.dao"></context:component-scan>
+	<context:component-scan base-package="cn.linkr.testspace.util"></context:component-scan>
+	<context:component-scan base-package="cn.linkr.testspace.dao.impl"></context:component-scan>
     
-	<context:component-scan base-package="cn.linkr.events.bean"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.events.bean.websocket"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.events.websocket"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.events.job"></context:component-scan>
+	<context:component-scan base-package="cn.linkr.testspace.bean"></context:component-scan>
+	<context:component-scan base-package="cn.linkr.testspace.bean.websocket"></context:component-scan>
+	<context:component-scan base-package="cn.linkr.testspace.websocket"></context:component-scan>
+	<context:component-scan base-package="cn.linkr.testspace.job"></context:component-scan>
     
     <task:annotation-driven/>
     
@@ -118,7 +118,7 @@
     </tx:advice>
     
     <aop:config proxy-target-class="true">
-        <aop:advisor advice-ref="txAdvice" pointcut="execution(* cn.linkr.events.service..*.*(..))" />
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* cn.linkr.testspace.service..*.*(..))" />
     </aop:config>
     
     <bean id="jdbcTemplate" name="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate" abstract="false"
@@ -126,9 +126,9 @@
         <property name="dataSource"  ref="dataSource"/>
     </bean>
 
-    <bean class="cn.linkr.events.util.SpringContextHolder" lazy-init="false"/>
+    <bean class="cn.linkr.testspace.util.SpringContextHolder" lazy-init="false"/>
  
-    <bean id="configBean" class="cn.linkr.events.util.PropertyConfig">
+    <bean id="configBean" class="cn.linkr.testspace.util.PropertyConfig">
         <property name="location" value="classpath:config.properties" />  
     </bean>
     

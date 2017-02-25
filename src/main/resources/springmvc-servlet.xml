@@ -9,7 +9,7 @@
   http://www.springframework.org/schema/mvc
   http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
   
-	<context:component-scan base-package="cn.linkr.events.action"></context:component-scan>
+	<context:component-scan base-package="cn.linkr.testspace.action"></context:component-scan>
 	
 	<!-- 开启注解 -->
 	<mvc:annotation-driven />
@@ -38,7 +38,7 @@
 		<property name="suffix" value=".jsp"/>  
 	</bean>  
 	
-	<bean id="multipartResolver"  class="cn.linkr.events.util.PJCommonsMultipartResolver">
+	<bean id="multipartResolver"  class="cn.linkr.testspace.util.PJCommonsMultipartResolver">
       <property name="defaultEncoding" value="UTF-8" />
       <property name="maxUploadSize" value="1000000000000" />
     </bean>
@@ -47,7 +47,7 @@
        <mvc:interceptor>
            <mvc:mapping path="/**"/>
            <mvc:exclude-mapping path="/index.jsp"/>
-           <bean class="cn.linkr.events.servlet.SystemInterceptor"/>
+           <bean class="cn.linkr.testspace.servlet.SystemInterceptor"/>
        </mvc:interceptor>
     </mvc:interceptors>
 </beans>

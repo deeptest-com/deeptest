@@ -83,7 +83,7 @@
   </filter-mapping>
   <filter>
     <filter-name>CorsFilter</filter-name>
-    <filter-class>cn.linkr.events.servlet.CorsFilter</filter-class>
+    <filter-class>cn.linkr.testspace.servlet.CorsFilter</filter-class>
     <async-supported>true</async-supported>
   </filter>
   <filter-mapping>

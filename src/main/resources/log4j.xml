@@ -50,7 +50,7 @@
 		<appender-ref ref="console" />
 		<appender-ref ref="file" />
 	</category>
-	<category name="cn.linkr.events.util.MyDateConverter" additivity="false">
+	<category name="cn.linkr.testspace.util.MyDateConverter" additivity="false">
 		<priority value="error" />
 		<appender-ref ref="console" />
 		<appender-ref ref="file" />

@@ -9,7 +9,7 @@
       </button>
       <ul class="dropdown-menu" dropdownMenu>
         <li class="dropdown-item">当前项目</li>
-        <li class="dropdown-item"><a [routerLink]="['/pages/event/list', {title: '项目详情'}]">TestSpace</a></li>
+        <li class="dropdown-item"><a [routerLink]="['dashboard', {title: ''}]">TestSpace</a></li>
         <li class="dropdown-divider"></li>
 
         <li class="dropdown-item">最近查看</li>
@@ -26,27 +26,21 @@
 
     <div class="btn-group" dropdown>
       <button type="button" class="btn btn-default" dropdownToggle addToggleClass="true">
-        测试用例
+        测试设计
       </button>
       <ul class="dropdown-menu" dropdownMenu>
-        <li class="dropdown-item"><a href="#">Action</a></li>
-        <li class="dropdown-item"><a href="#">Another action</a></li>
-        <li class="dropdown-item"><a href="#">Something else here</a></li>
-        <li class="dropdown-divider"></li>
-        <li class="dropdown-item"><a href="#">Separated link</a></li>
+        <li class="dropdown-item"><a [routerLink]="['/pages/testcase/list', {title: '测试用例'}]">测试用例</a></li>
+        <li class="dropdown-item"><a href="#">用例集合</a></li>
       </ul>
     </div>
 
     <div class="btn-group" dropdown>
       <button type="button" class="btn btn-default" dropdownToggle addToggleClass="true">
-        测试计划
+        测试规划
       </button>
       <ul class="dropdown-menu" dropdownMenu>
-        <li class="dropdown-item"><a href="#">Action</a></li>
-        <li class="dropdown-item"><a href="#">Another action</a></li>
-        <li class="dropdown-item"><a href="#">Something else here</a></li>
-        <li class="dropdown-divider"></li>
-        <li class="dropdown-item"><a href="#">Separated link</a></li>
+        <li class="dropdown-item"><a href="#">测试环境</a></li>
+        <li class="dropdown-item"><a href="#">测试计划</a></li>
       </ul>
     </div>
 
@@ -55,24 +49,24 @@
         测试执行
       </button>
       <ul class="dropdown-menu" dropdownMenu>
-        <li class="dropdown-item"><a href="#">Action</a></li>
-        <li class="dropdown-item"><a href="#">Another action</a></li>
-        <li class="dropdown-item"><a href="#">Something else here</a></li>
-        <li class="dropdown-divider"></li>
-        <li class="dropdown-item"><a href="#">Separated link</a></li>
+          <li class="dropdown-item">当前任务</li>
+          <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">TestSpace冒烟测试</a></li>
+          <li class="dropdown-divider"></li>
+
+          <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">查看所有任务</a></li>
       </ul>
     </div>
 
     <div class="btn-group" dropdown>
       <button type="button" class="btn btn-default" dropdownToggle addToggleClass="true">
-        测试结果
+        测试分析
       </button>
       <ul class="dropdown-menu" dropdownMenu>
-        <li class="dropdown-item"><a href="#">Action</a></li>
-        <li class="dropdown-item"><a href="#">Another action</a></li>
-        <li class="dropdown-item"><a href="#">Something else here</a></li>
-        <li class="dropdown-divider"></li>
-        <li class="dropdown-item"><a href="#">Separated link</a></li>
+          <li class="dropdown-item">当前任务</li>
+          <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">TestSpace冒烟测试</a></li>
+          <li class="dropdown-divider"></li>
+
+          <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">查看所有任务</a></li>
       </ul>
     </div>
   </div>

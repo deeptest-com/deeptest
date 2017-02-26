@@ -20,6 +20,9 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', loadChildren: () => System.import('./dashboard/dashboard.module') },
+      { path: 'testcase', loadChildren: () => System.import('./testcase/testcase.module') },
+        
+
       { path: 'event', loadChildren: () => System.import('./event/event.module') },
       { path: 'business', loadChildren: () => System.import('./business/business.module') },
       { path: 'personal', loadChildren: () => System.import('./personal/personal.module') },

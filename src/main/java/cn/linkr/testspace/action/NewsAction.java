@@ -11,7 +11,7 @@ import cn.linkr.testspace.util.Constant;
 
 @Controller
 @RequestMapping(Constant.API_PATH_ADMIN + "news/")
-public class NewsAdmin extends BaseAction {
+public class NewsAction extends BaseAction {
 	@Autowired
 	NewsService newService;
 	

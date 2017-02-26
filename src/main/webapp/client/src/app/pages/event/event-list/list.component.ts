@@ -63,7 +63,7 @@ export class EventList implements OnInit, AfterViewInit {
       that.totalItems = json.totalItems;
       that.events = json.events;
 
-      this._state.notifyDataChanged('title.change', 'TestSpace');
+      this._state.notifyDataChanged('title.change', '项目列表');
     });
   }
 }

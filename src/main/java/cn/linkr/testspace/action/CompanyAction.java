@@ -29,7 +29,7 @@ import com.alibaba.fastjson.JSONObject;
 
 @Controller
 @RequestMapping(Constant.API_PATH_ADMIN + "company/")
-public class CompanyAdmin extends BaseAction {
+public class CompanyAction extends BaseAction {
 	@Autowired
 	UserService userService;
 	

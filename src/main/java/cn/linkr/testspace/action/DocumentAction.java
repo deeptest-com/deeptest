@@ -1,7 +1,6 @@
 package cn.linkr.testspace.action;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,40 +14,38 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
-import cn.linkr.testspace.entity.EvtService;
+import cn.linkr.testspace.entity.EvtDocument;
 import cn.linkr.testspace.entity.SysUser;
-import cn.linkr.testspace.service.ServiceService;
+import cn.linkr.testspace.service.DocumentService;
 import cn.linkr.testspace.util.AuthPassport;
-import cn.linkr.testspace.util.BeanUtilEx;
 import cn.linkr.testspace.util.Constant;
-import cn.linkr.testspace.vo.ServiceVo;
+import cn.linkr.testspace.vo.DocumentVo;
+import cn.linkr.testspace.vo.Page;
 
 import com.alibaba.fastjson.JSONObject;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_ADMIN + "service/")
-public class ServiceAdmin extends BaseAction {
+@RequestMapping(Constant.API_PATH_ADMIN + "document/")
+public class DocumentAction extends BaseAction {
 	@Autowired
-	ServiceService serviceService;
-	
+	DocumentService documentService;
+
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject req) {
+	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		String eventId = req.getString("eventId");
 		
-		List<EvtService> pos = serviceService.listForEdit(Long.valueOf(eventId), null);
-        List<ServiceVo> vos = new LinkedList<ServiceVo>();
-        for (EvtService po: pos) {
-        	ServiceVo vo = new ServiceVo();
-        	BeanUtilEx.copyProperties(vo, po);
-        	vo.setTypeName(po.getType().getName());
-        	vos.add(vo);
-        }
-
-		ret.put("services", vos);
+		long eventId = json.getLong("eventId");
+		int currentPage = json.getInteger("currentPage") == null? 0: json.getInteger("currentPage") - 1;
+		int itemsPerPage = json.getInteger("itemsPerPage") == null? Constant.PAGE_SIZE: json.getInteger("itemsPerPage");
+		
+		Page page = documentService.listByPage(eventId, currentPage, itemsPerPage, null);
+		List<DocumentVo> vos = documentService.genVos(page.getItems());
+        
+		ret.put("totalItems", page.getTotal());
+        ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -56,24 +53,22 @@ public class ServiceAdmin extends BaseAction {
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest request, @RequestBody ServiceVo vo) {
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody DocumentVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		EvtService service = serviceService.save(vo);
+		EvtDocument doc = documentService.save(vo);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
 	
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "disable", method = RequestMethod.POST)
+	@RequestMapping(value = "remove", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> disable(HttpServletRequest request, @RequestBody JSONObject to) {
+	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		long serviceId = to.getLong("id");
-		
-		boolean success = serviceService.disablePers(serviceId);
+		boolean success = documentService.remove(to.getLong("id"));
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

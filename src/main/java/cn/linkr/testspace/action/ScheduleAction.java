@@ -28,7 +28,7 @@ import com.alibaba.fastjson.JSONObject;
 
 @Controller
 @RequestMapping(Constant.API_PATH_ADMIN + "schedule/")
-public class ScheduleAdmin extends BaseAction {
+public class ScheduleAction extends BaseAction {
 	
 	@Autowired
 	EventService eventService;

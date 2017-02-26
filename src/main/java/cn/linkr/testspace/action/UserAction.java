@@ -31,7 +31,7 @@ import com.alibaba.fastjson.JSONObject;
 
 @Controller
 @RequestMapping(Constant.API_PATH_ADMIN + "user/")
-public class UserAdmin extends BaseAction {
+public class UserAction extends BaseAction {
 	@Autowired
 	UserService userService;
 	

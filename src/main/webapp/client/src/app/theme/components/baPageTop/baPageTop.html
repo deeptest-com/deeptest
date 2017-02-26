@@ -1,12 +1,6 @@
 <div class="page-top clearfix" baScrollPosition maxHeight="50" (scrollChange)="scrolledChanged($event)"
      [ngClass]="{scrolled: isScrolled}">
   <a routerLink="/pages/dashboard" class="al-logo clearfix"><span>Test</span>Space</a>
-  <a href (click)="toggleMenu()" class="collapse-menu-link ion-navicon"></a>
-
-  <div class="search">
-    <i class="ion-ios-search-strong" ng-click="startSearch()"></i>
-    <input id="searchInput" type="text" placeholder="搜索...">
-  </div>
 
   <div class="menu">
     <div class="btn-group" dropdown>
@@ -26,7 +20,7 @@
         <li class="dropdown-item"><a href="#">项目5</a></li>
         <li class="dropdown-divider"></li>
 
-        <li class="dropdown-item"><a href="#">查看所有项目</a></li>
+        <li class="dropdown-item"><a [routerLink]="['/pages/event/list', {title: '所有项目'}]">查看所有项目</a></li>
       </ul>
     </div>
 
@@ -82,6 +76,11 @@
       </ul>
     </div>
   </div>
+
+    <div class="search">
+        <i class="ion-ios-search-strong" ng-click="startSearch()"></i>
+        <input id="searchInput" type="text" placeholder="搜索...">
+    </div>
 
   <div class="user-profile clearfix">
     <div class="dropdown al-user-profile">

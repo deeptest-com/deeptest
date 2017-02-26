@@ -75,22 +75,6 @@ public class SystemInterceptor implements HandlerInterceptor {
 				result.put("msg", "not login");
 				WebUtils.renderJson(response, JSON.toJSONString(result));
 				return false;
-			} else if (packageName.startsWith(Constant.API_PACKAGE_FOR_ADMIN)) { // admin请求鉴权
-				if (StringUtils.isNotBlank(token)) {
-					// 登录验证
-					UserService userService = SpringContextHolder.getBean(UserService.class);
-					SysUser user = userService.getByToken(token.trim());
-					if (user != null) {
-						request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));
-						return true;
-					}
-				}
-				
-				Map<String, Object> result = new HashMap<String, Object>();
-				result.put("code", RespCode.NOT_LOGIN.getCode());
-				result.put("msg", "not login");
-				WebUtils.renderJson(response, JSON.toJSONString(result));
-				return false;
 			}
         }
         return true;

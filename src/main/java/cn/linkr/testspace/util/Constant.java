@@ -16,8 +16,7 @@ public final class Constant {
     public static final String API_PATH_CLIENT = "api/client/v1/";
     public static final String API_PATH_ADMIN = "api/admin/v1/";
     
-    public static final String API_PACKAGE_FOR_CLIENT = "cn.linkr.testspace.action.client";
-    public static final String API_PACKAGE_FOR_ADMIN = "cn.linkr.testspace.action.admin";
+    public static final String API_PACKAGE_FOR_CLIENT = "cn.linkr.testspace.action";
 
     // 上传目录
     public static final String FTP_UPLOAD_DIR = "upload/";

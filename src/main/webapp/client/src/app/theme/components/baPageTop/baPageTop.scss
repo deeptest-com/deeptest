@@ -11,9 +11,7 @@
   min-width: $resMin;
   padding: 0 32px 0 40px;
 
-  .dropdown-toggle::after {
-    display: none;
-  }
+
 }
 
 .blur {
@@ -149,6 +147,16 @@ a.collapse-menu-link {
     padding: 0;
     margin: 0 0 0 -3px;
     height: 27px;
+  }
+}
+
+.menu {
+  margin: 20px 0 0 0px;
+  width: 600px;
+  float: left;
+  .dropdown button.btn.btn-default.dropdown-toggle {
+    color: #ffffff;
+    border: 0;
   }
 }
 

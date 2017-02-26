@@ -1,11 +1,86 @@
 <div class="page-top clearfix" baScrollPosition maxHeight="50" (scrollChange)="scrolledChanged($event)"
      [ngClass]="{scrolled: isScrolled}">
-  <a routerLink="/pages/dashboard" class="al-logo clearfix"><span>聆</span>客</a>
+  <a routerLink="/pages/dashboard" class="al-logo clearfix"><span>Test</span>Space</a>
   <a href (click)="toggleMenu()" class="collapse-menu-link ion-navicon"></a>
 
   <div class="search">
     <i class="ion-ios-search-strong" ng-click="startSearch()"></i>
     <input id="searchInput" type="text" placeholder="搜索...">
+  </div>
+
+  <div class="menu">
+    <div class="btn-group" dropdown>
+      <button type="button" class="btn btn-default" dropdownToggle addToggleClass="true">
+        项目
+      </button>
+      <ul class="dropdown-menu" dropdownMenu>
+        <li class="dropdown-item">当前项目</li>
+        <li class="dropdown-item"><a [routerLink]="['/pages/event/list', {title: '项目详情'}]">TestSpace</a></li>
+        <li class="dropdown-divider"></li>
+
+        <li class="dropdown-item">最近查看</li>
+        <li class="dropdown-item"><a href="#">项目1</a></li>
+        <li class="dropdown-item"><a href="#">项目2</a></li>
+        <li class="dropdown-item"><a href="#">项目3</a></li>
+        <li class="dropdown-item"><a href="#">项目4</a></li>
+        <li class="dropdown-item"><a href="#">项目5</a></li>
+        <li class="dropdown-divider"></li>
+
+        <li class="dropdown-item"><a href="#">查看所有项目</a></li>
+      </ul>
+    </div>
+
+    <div class="btn-group" dropdown>
+      <button type="button" class="btn btn-default" dropdownToggle addToggleClass="true">
+        测试用例
+      </button>
+      <ul class="dropdown-menu" dropdownMenu>
+        <li class="dropdown-item"><a href="#">Action</a></li>
+        <li class="dropdown-item"><a href="#">Another action</a></li>
+        <li class="dropdown-item"><a href="#">Something else here</a></li>
+        <li class="dropdown-divider"></li>
+        <li class="dropdown-item"><a href="#">Separated link</a></li>
+      </ul>
+    </div>
+
+    <div class="btn-group" dropdown>
+      <button type="button" class="btn btn-default" dropdownToggle addToggleClass="true">
+        测试计划
+      </button>
+      <ul class="dropdown-menu" dropdownMenu>
+        <li class="dropdown-item"><a href="#">Action</a></li>
+        <li class="dropdown-item"><a href="#">Another action</a></li>
+        <li class="dropdown-item"><a href="#">Something else here</a></li>
+        <li class="dropdown-divider"></li>
+        <li class="dropdown-item"><a href="#">Separated link</a></li>
+      </ul>
+    </div>
+
+    <div class="btn-group" dropdown>
+      <button type="button" class="btn btn-default" dropdownToggle addToggleClass="true">
+        测试执行
+      </button>
+      <ul class="dropdown-menu" dropdownMenu>
+        <li class="dropdown-item"><a href="#">Action</a></li>
+        <li class="dropdown-item"><a href="#">Another action</a></li>
+        <li class="dropdown-item"><a href="#">Something else here</a></li>
+        <li class="dropdown-divider"></li>
+        <li class="dropdown-item"><a href="#">Separated link</a></li>
+      </ul>
+    </div>
+
+    <div class="btn-group" dropdown>
+      <button type="button" class="btn btn-default" dropdownToggle addToggleClass="true">
+        测试结果
+      </button>
+      <ul class="dropdown-menu" dropdownMenu>
+        <li class="dropdown-item"><a href="#">Action</a></li>
+        <li class="dropdown-item"><a href="#">Another action</a></li>
+        <li class="dropdown-item"><a href="#">Something else here</a></li>
+        <li class="dropdown-divider"></li>
+        <li class="dropdown-item"><a href="#">Separated link</a></li>
+      </ul>
+    </div>
   </div>
 
   <div class="user-profile clearfix">

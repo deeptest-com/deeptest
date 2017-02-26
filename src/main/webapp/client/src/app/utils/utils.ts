@@ -108,6 +108,14 @@ export var Utils: any = {
       }
     }
     return rt;
+  },
+
+  getRouterUrlParam: function (url: string, param: string) {
+    var rt = '';
+    let reg = new RegExp('.*' + param + '=(.*)(;|$)');
+    let r = url.match(reg);
+    if(r != null) rt = decodeURIComponent(r[1]);
+    return rt;
   }
 
 };

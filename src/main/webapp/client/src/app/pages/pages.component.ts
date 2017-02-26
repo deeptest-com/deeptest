@@ -4,7 +4,7 @@ import {Component, ViewEncapsulation} from '@angular/core';
   encapsulation: ViewEncapsulation.None,
   styles: [],
   template: `
-    <ba-sidebar></ba-sidebar>
+    <!--<ba-sidebar></ba-sidebar>-->
     <ba-page-top></ba-page-top>
     <div class="al-main">
       <div class="al-content">

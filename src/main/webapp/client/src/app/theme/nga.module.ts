@@ -3,6 +3,8 @@ import { CommonModule }  from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
+import { DropdownModule } from 'ng2-bootstrap/ng2-bootstrap';
+
 import { ImgPathPipe, ThumbPathPipe } from '../pipe/img-path';
 import { KeysPipe } from '../pipe/keys';
 import { DatePipe } from '../pipe/date';
@@ -107,7 +109,8 @@ const NGA_SERVICES = [
     CommonModule,
     RouterModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    DropdownModule
   ],
   exports: [
     ...NGA_PIPES,

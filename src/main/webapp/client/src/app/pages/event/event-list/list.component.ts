@@ -2,6 +2,8 @@ import {Component, ViewEncapsulation} from '@angular/core';
 
 import { NgModule, Pipe, OnInit, AfterViewInit }      from '@angular/core';
 
+import {GlobalState} from '../../../global.state';
+
 import { CONSTANT } from '../../../utils/constant';
 import { RouteService } from '../../../service/route';
 import { EventService } from '../../../service/event';
@@ -21,12 +23,13 @@ export class EventList implements OnInit, AfterViewInit {
   statusMap: Array<any> = CONSTANT.EventStatus;
   events: Array<any> = [];
 
-  constructor(private _routeService: RouteService,
+  constructor(private _routeService: RouteService, private _state:GlobalState,
               private _eventService: EventService) {
 
   }
   ngOnInit() {
     let that = this;
+
     that.loadData();
   }
 
@@ -59,6 +62,8 @@ export class EventList implements OnInit, AfterViewInit {
     that._eventService.list(that.itemsPerPage, that.currentPage, that.model.status).subscribe((json:any) => {
       that.totalItems = json.totalItems;
       that.events = json.events;
+
+      this._state.notifyDataChanged('title.change', 'TestSpace');
     });
   }
 }

@@ -16,6 +16,29 @@
   padding-top: 0;
 }
 
+.my-toolbar {
+  display: flex;
+  margin: 0 0 15px 0;
+  padding: 0;
+  .title {
+    flex: 1;
+    font-weight: 700;
+    color: #666666;
+    line-height: 30px;
+    font-size: 24px;
+    opacity: 0.9;
+  }
+  .filter {
+    flex: 1;
+  }
+  .buttons {
+    width: 200px;
+    text-align: right;
+    .back {
+      margin-left: 50px;
+    }
+  }
+}
 .list-toolbar {
   display: flex;
   margin: 0 0 10px 0;

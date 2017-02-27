@@ -73,8 +73,6 @@ public class ApplicationScopeBean {
     public void sendMessageToClient(String clientId, TextMessage message) {
     	WebSocketSession session = getOnlines().get(clientId);
     	
-    	System.out.println("======");
-    	
         if (session == null) {
             return;
         }

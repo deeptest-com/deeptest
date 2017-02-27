@@ -1,0 +1,163 @@
+.node-menu {
+  position: relative;
+  width: 150px;
+}
+
+.node-menu .node-menu-content {
+  width: 100%;
+  padding: 5px;
+  position: absolute;
+  border: 1px solid #bdbdbd;
+  border-radius: 5%;
+  box-shadow: 0 0 5px #bdbdbd;
+  background-color: #eee;
+  color: #212121;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.node-menu .node-menu-content li.node-menu-item {
+  list-style: none;
+  padding: 3px;
+}
+
+.node-menu .node-menu-content .node-menu-item:hover {
+  border-radius: 5%;
+  opacity: unset;
+  cursor: pointer;
+  background-color: #bdbdbd;
+  transition: background-color 0.2s ease-out;
+}
+
+.node-menu .node-menu-content .node-menu-item .node-menu-item-icon {
+  display: inline-block;
+  width: 16px;
+}
+
+.node-menu .node-menu-content .node-menu-item .node-menu-item-icon.new-tag:before {
+  content: '\f016';
+}
+.node-menu .node-menu-content .node-menu-item .node-menu-item-icon.new-folder:before {
+  content: '\f114';
+}
+
+.node-menu .node-menu-content .node-menu-item .node-menu-item-icon.rename:before {
+  content: '\f044';
+}
+
+.node-menu .node-menu-content .node-menu-item .node-menu-item-icon.remove:before {
+  content: '\f00d';
+}
+
+.node-menu .node-menu-content .node-menu-item .node-menu-item-value {
+  margin-left: 5px;
+}
+
+tree {
+  line-height: 18px;
+  font-size: 16px;
+}
+tree > tree-internal > ul {
+  margin: 0px;
+  padding: 0px;
+}
+
+tree-internal ul {
+  padding: 3px 0 3px 25px;
+}
+
+tree-internal li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+tree-internal .over-drop-target {
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  transition: padding 0.2s ease-out;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+tree-internal .tree {
+  box-sizing: border-box;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+tree-internal .tree li {
+  list-style: none;
+  cursor: default;
+}
+
+tree-internal .tree li div {
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+tree-internal .tree .node-value {
+  display: inline-block;
+  padding: 5px;
+  color: #212121;
+  border: 1px solid transparent;
+}
+
+tree-internal .tree .node-selected {
+  color: #0066cc;
+}
+
+tree-internal .tree .folding {
+  width: 25px;
+  display: inline-block;
+  line-height: 28px;
+  padding: 0 5px;
+  font-weight: bold;
+}
+.value-container {
+  display: flex !important;
+  width: 100%;
+}
+.value-container:hover {
+  border: 1px solid #dae2ea;
+  background: #f8faff;
+  border-radius: 3px;
+}
+.value-container .node-value {
+  flex: 1;
+}
+
+tree-internal .tree .folding.node-collapsed {
+  cursor: pointer;
+}
+
+tree-internal .tree .folding.node-collapsed:before {
+  color: #757575;
+  content: "\f114";
+}
+
+tree-internal .tree .folding.node-expanded {
+  cursor: pointer;
+}
+
+tree-internal .tree .folding.node-expanded:before {
+  color: #757575;
+  content: "\f115";
+}
+
+tree-internal .tree .folding.node-leaf {
+  color: #212121;
+  text-align: center;
+  font-size: 0.89em;
+}
+
+tree-internal .tree .folding.node-leaf:before {
+  color: #757575;
+  content: "\f016";
+}
+
+tree-internal ul.rootless {
+  padding: 0;
+}
+
+tree-internal div.rootless {
+  display: none !important;
+}

@@ -12,8 +12,6 @@ import { ModalModule } from 'ng2-bootstrap';
 import { ButtonsModule } from 'ng2-bootstrap';
 import { FileUploadModule } from 'ng2-file-upload';
 
-import { ComponentsModule } from '../components/components.module';
-
 import { RouteService } from '../../service/route';
 import { RequestService } from '../../service/request';
 import { DatetimePickerService } from '../../service/datetime-picker';
@@ -44,9 +42,7 @@ import { CompanyEdit } from './company/company-edit';
     ModalModule,
     ButtonsModule,
     CollapseModule,
-    FileUploadModule,
-
-    ComponentsModule
+    FileUploadModule
   ],
   declarations: [
     Business,

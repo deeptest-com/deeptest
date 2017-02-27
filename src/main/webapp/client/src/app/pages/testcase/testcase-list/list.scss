@@ -1,0 +1,11 @@
+.testcase-list {
+  .main {
+    display: flex;
+    .list {
+      width: 500px;
+    }
+    .detail {
+      flex: 1;
+    }
+  }
+}

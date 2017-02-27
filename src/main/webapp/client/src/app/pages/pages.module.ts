@@ -4,7 +4,6 @@ import { CommonModule }  from '@angular/common';
 import { routing }       from './pages.routing';
 import { NgaModule } from '../theme/nga.module';
 
-import { ComponentsModule } from './components/components.module';
 import { Pages } from './pages.component';
 
 import { RouteService } from '../service/route';
@@ -13,7 +12,7 @@ import { RequestService } from '../service/request';
 
 @NgModule({
   imports: [
-    CommonModule, NgaModule, routing, ComponentsModule
+    CommonModule, NgaModule, routing
   ],
   declarations: [Pages],
   providers: [RouteService, UserService, RequestService]
@@ -21,3 +20,4 @@ import { RequestService } from '../service/request';
 export class PagesModule {
 
 }
+

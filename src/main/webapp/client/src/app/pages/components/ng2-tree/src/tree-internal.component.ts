@@ -1,5 +1,5 @@
 import { Input, Component, OnInit, ElementRef, Inject } from '@angular/core';
-import { Ng2TreeSettings } from './tree.types';
+import { Ng2TreeSettings, Ng2TreeOptions } from './tree.types';
 import { Tree } from './tree';
 import { NodeMenuService } from './menu/node-menu.service';
 import { NodeMenuItemSelectedEvent, NodeMenuItemAction } from './menu/menu.events';
@@ -31,10 +31,11 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
            (valueChanged)="applyNewValue($event)"/>
       </div>
 
-      <node-menu *ngIf="isMenuVisible" (menuItemSelected)="onMenuItemSelected($event)"></node-menu>
+      <node-menu *ngIf="isMenuVisible" (menuItemSelected)="onMenuItemSelected($event)"
+            [options]="options"></node-menu>
 
       <template [ngIf]="tree.isNodeExpanded()">
-        <tree-internal *ngFor="let child of tree.children" [tree]="child"></tree-internal>
+        <tree-internal *ngFor="let child of tree.children" [tree]="child" [options]="options"></tree-internal>
       </template>
     </li>
   </ul>
@@ -47,6 +48,9 @@ export class TreeInternalComponent implements OnInit {
   @Input()
   public settings: Ng2TreeSettings;
 
+    @Input()
+    public options: Ng2TreeOptions;
+
   public isSelected: boolean = false;
   private isMenuVisible: boolean = false;
 
@@ -56,6 +60,7 @@ export class TreeInternalComponent implements OnInit {
   }
 
   public ngOnInit(): void {
+
     this.settings = this.settings || { rootIsVisible: true };
 
     this.nodeMenuService.hideMenuStream(this.element)
@@ -66,13 +71,13 @@ export class TreeInternalComponent implements OnInit {
 
     this.treeService.draggedStream(this.tree, this.element)
       .subscribe((e: NodeDraggableEvent) => {
-        if (this.tree.hasSibling(e.captured.tree)) {
+        if (this.tree.hasSibling(e.captured.tree)) { // 同级交换
           console.log('--1--');
           this.swapWithSibling(e.captured.tree, this.tree);
-        } else if (this.tree.isBranch()) {
+        } else if (this.tree.isBranch()) { // 移动到文件夹
           console.log('--2--');
           this.moveNodeToThisTreeAndRemoveFromPreviousOne(e, this.tree);
-        } else {
+        } else { // 移动到节点的父文件夹
           console.log('--3--');
           this.moveNodeToParentTreeAndRemoveFromPreviousOne(e, this.tree);
         }

@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Output, Renderer, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, Renderer, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Ng2TreeOptions } from '../tree.types';
 import { NodeMenuService } from './node-menu.service';
 import { NodeMenuItemSelectedEvent, NodeMenuItemAction, NodeMenuAction } from './menu.events';
 import { isLeftButtonClicked, isEscapePressed } from '../utils/event.utils';
@@ -18,31 +19,12 @@ import { isLeftButtonClicked, isEscapePressed } from '../utils/event.utils';
   `
 })
 export class NodeMenuComponent implements OnInit, OnDestroy {
+    @Input()
+    public options: Ng2TreeOptions;
+
   @Output()
   public menuItemSelected: EventEmitter<NodeMenuItemSelectedEvent> = new EventEmitter<NodeMenuItemSelectedEvent>();
-
-  public availableMenuItems: NodeMenuItem[] = [
-    {
-      name: '新建节点',
-      action: NodeMenuItemAction.NewTag,
-      cssClass: 'new-tag'
-    },
-    {
-      name: '新建文件夹',
-      action: NodeMenuItemAction.NewFolder,
-      cssClass: 'new-folder'
-    },
-    {
-      name: '重命名',
-      action: NodeMenuItemAction.Rename,
-      cssClass: 'rename'
-    },
-    {
-      name: '删除',
-      action: NodeMenuItemAction.Remove,
-      cssClass: 'remove'
-    }
-  ];
+  public availableMenuItems: NodeMenuItem[] = [];
 
   private disposersForGlobalListeners: Function[] = [];
 
@@ -51,6 +33,31 @@ export class NodeMenuComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+      let that = this;
+
+      this.availableMenuItems = [
+          {
+              name: '新建' + that.options.nodeName,
+              action: NodeMenuItemAction.NewTag,
+              cssClass: 'new-tag'
+          },
+          {
+              name: '新建' + that.options.folderName,
+              action: NodeMenuItemAction.NewFolder,
+              cssClass: 'new-folder'
+          },
+          {
+              name: '编辑',
+              action: NodeMenuItemAction.Rename,
+              cssClass: 'rename'
+          },
+          {
+              name: '删除',
+              action: NodeMenuItemAction.Remove,
+              cssClass: 'remove'
+          }
+      ];
+
     this.disposersForGlobalListeners.push(this.renderer.listenGlobal('document', 'keyup', this.closeMenu.bind(this)));
     this.disposersForGlobalListeners.push(this.renderer.listenGlobal('document', 'click', this.closeMenu.bind(this)));
   }

@@ -43,6 +43,10 @@ export interface Ng2TreeSettings {
    */
   rootIsVisible?: boolean;
 }
+export interface Ng2TreeOptions {
+  nodeName: string;
+  folderName: string;
+}
 
 export enum TreeStatus {
   New,

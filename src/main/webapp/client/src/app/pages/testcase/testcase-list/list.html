@@ -26,6 +26,7 @@
   <div class="row main">
     <div class="list">
       <tree [tree]="tree"
+            [options]="{ nodeName: '用例', folderName: '模块' }"
             (nodeRemoved)="onNodeRemoved($event)"
             (nodeRenamed)="onNodeRenamed($event)"
             (nodeSelected)="onNodeSelected($event)"

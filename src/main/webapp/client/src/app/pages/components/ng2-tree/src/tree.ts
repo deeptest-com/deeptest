@@ -26,7 +26,10 @@ export class Tree {
     tree.markAsNew();
 
     if (this.isLeaf()) {
-      return this.addSibling(tree);
+      const thisTreeIndex = this.positionInParent;
+      console.log('thisTreeIndex', thisTreeIndex);
+
+      return this.addSibling(tree, thisTreeIndex);
     } else {
       return this.addChild(tree);
     }
@@ -81,6 +84,8 @@ export class Tree {
   }
 
   private _addChild(child: Tree, position: number = _.size(this._children) || 0): Tree {
+    console.log('position', position);
+
     child.parent = this;
 
     let msg  = child.node.value + '挂到' + this.node.value;

@@ -1,12 +1,12 @@
 import { Input, Component, OnInit, EventEmitter, Output, Inject, OnChanges, SimpleChanges } from '@angular/core';
 import { TreeService } from './tree.service';
-import { TreeModel, Ng2TreeSettings } from './tree.types';
+import { TreeModel, Ng2TreeSettings, Ng2TreeOptions } from './tree.types';
 import { NodeEvent } from './tree.events';
 import { Tree } from './tree';
 
 @Component({
   selector: 'tree',
-  template: `<tree-internal [tree]="tree" [settings]="settings"></tree-internal>`,
+  template: `<tree-internal [tree]="tree" [options]="options"></tree-internal>`,
   providers: [TreeService]
 })
 export class TreeComponent implements OnInit, OnChanges {
@@ -19,6 +19,9 @@ export class TreeComponent implements OnInit, OnChanges {
 
   @Input()
   public settings: Ng2TreeSettings;
+
+    @Input()
+    public options: Ng2TreeOptions;
 
   @Output()
   public nodeCreated: EventEmitter<any> = new EventEmitter();
@@ -38,6 +41,7 @@ export class TreeComponent implements OnInit, OnChanges {
   public tree: Tree;
 
   public constructor(@Inject(TreeService) private treeService: TreeService) {
+
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
@@ -49,6 +53,8 @@ export class TreeComponent implements OnInit, OnChanges {
   }
 
   public ngOnInit(): void {
+      let that = this;
+
     this.treeService.nodeRemoved$.subscribe((e: NodeEvent) => {
       this.nodeRemoved.emit(e);
     });

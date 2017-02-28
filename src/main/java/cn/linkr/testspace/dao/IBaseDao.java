@@ -238,4 +238,6 @@ public interface IBaseDao {
     public List<Map> findMapByHQL(String hqlString, Object... values);
 
     void flush();
+
+    public List findObjectByProcedure(String name, Class<?> pojoClass, Object... values);
 }

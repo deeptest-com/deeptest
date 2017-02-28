@@ -8,8 +8,8 @@ export class TestcaseService {
     constructor(private _reqService: RequestService) { }
     _api_url = 'testcase/';
 
-    list(itemsPerPage: number, currentPage: number, status: string) {
-        return this._reqService.post(this._api_url + 'list', {itemsPerPage: itemsPerPage, currentPage: currentPage, status: status});
+    query(query: any) {
+        return this._reqService.post(this._api_url + 'query', query);
     }
 
     get(id: number) {

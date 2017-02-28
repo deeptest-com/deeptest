@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -404,6 +405,26 @@ public class BaseDAOImpl implements IBaseDao {
         }
         retValue.setItems(itemList);
         return retValue;
+    }
+    
+    @Override
+    public List findObjectByProcedure(String name, Class<?> pojoClass, Object... values) {
+//    	Query query =  this.getSession().getNamedQuery(name);
+    	SQLQuery query = this.getSession().createSQLQuery("{Call " + name + "(?, ?, ?)}");  
+    	query.setLong(0, 1);
+    	query.setString(1, "");
+    	query.setBoolean(2, false); 
+    	
+        if (values != null) {
+            for (int i = 0; i < values.length; i++) {
+                query.setParameter(i, values[i]);
+            }
+        }
+        
+        query.setResultTransformer(new EscColumnToBean(pojoClass));
+
+        List ls = query.list();
+        return ls;
     }
 
 /*    *//**

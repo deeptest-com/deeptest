@@ -19,8 +19,14 @@ public class TestCase extends BaseEntity {
 	@Column(name = "descr", length = 1000)
     private String descr;
 	
-	private Integer lft;
-	private Integer rgt;
+	private String path;
+	
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id", insertable = false, updatable = false)
+    private TestProject project;
+
+    @Column(name = "project_id")
+    private Long projectId;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "module_id", insertable = false, updatable = false)
@@ -53,22 +59,6 @@ public class TestCase extends BaseEntity {
 		this.descr = descr;
 	}
 
-	public Integer getLft() {
-		return lft;
-	}
-
-	public void setLft(Integer lft) {
-		this.lft = lft;
-	}
-
-	public Integer getRgt() {
-		return rgt;
-	}
-
-	public void setRgt(Integer rgt) {
-		this.rgt = rgt;
-	}
-
 	public TestModule getModule() {
 		return module;
 	}
@@ -91,5 +81,13 @@ public class TestCase extends BaseEntity {
 
 	public void setEstimate(Integer estimate) {
 		this.estimate = estimate;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 }

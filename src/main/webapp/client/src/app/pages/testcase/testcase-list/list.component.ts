@@ -21,28 +21,7 @@ export class TestcaseList implements OnInit, AfterViewInit {
   query: any = {keywords: '', status: ''};
     cases: Array<any> = [];
 
-  public tree: TreeModel = {
-    value: 'root',
-    children: [
-      {
-        value: 'A',
-        children: [
-          {value: 'A1'},
-          {value: 'A2'},
-          {value: 'A3'},
-            {value: 'A4'}
-        ]
-      },
-      {
-        value: 'B',
-        children: [
-          {value: 'B1'},
-          {value: 'B2'},
-          {value: 'B3'},
-        ]
-      }
-    ]
-  };
+  public tree: TreeModel;
 
   constructor(private _routeService: RouteService, private _state:GlobalState,
               private _testcaseService: TestcaseService) {
@@ -76,7 +55,7 @@ export class TestcaseList implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
     that._testcaseService.query(that.query).subscribe((json:any) => {
-      that.cases = json.cases;
+      that.tree = json.data;
 
       this._state.notifyDataChanged('title.change', '测试用例');
     });

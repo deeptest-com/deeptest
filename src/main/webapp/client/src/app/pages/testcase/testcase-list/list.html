@@ -8,7 +8,7 @@
         <form class="form-inline">
           <div class="form-group">
             <label for="status">状态</label>
-            <select (ngModelChange)="statusChange($event)" [(ngModel)]="model.status" class="form-control form-control-sm" id="status" name="status">
+            <select (ngModelChange)="statusChange($event)" [(ngModel)]="query.status" class="form-control form-control-sm" id="status" name="status">
               <option value="">  所有  </option>
               <option *ngFor="let entry of (statusMap | mapKeys)" value="{{entry.key}}">{{entry.value}}</option>
             </select>

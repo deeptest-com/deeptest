@@ -1,5 +1,17 @@
 @import "theme/theme";
 
+main {
+  background: #fff;
+  footer {
+    background: #F0F3F4;
+    height: 34px;
+    line-height: 34px;
+    .al-share {
+      margin: 2px 0 0 12px;
+    }
+  }
+}
+
 .hidden {
   display: none;
 }

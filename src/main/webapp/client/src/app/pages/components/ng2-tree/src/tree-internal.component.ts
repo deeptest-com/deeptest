@@ -67,10 +67,13 @@ export class TreeInternalComponent implements OnInit {
     this.treeService.draggedStream(this.tree, this.element)
       .subscribe((e: NodeDraggableEvent) => {
         if (this.tree.hasSibling(e.captured.tree)) {
+          console.log('--1--');
           this.swapWithSibling(e.captured.tree, this.tree);
         } else if (this.tree.isBranch()) {
+          console.log('--2--');
           this.moveNodeToThisTreeAndRemoveFromPreviousOne(e, this.tree);
         } else {
+          console.log('--3--');
           this.moveNodeToParentTreeAndRemoveFromPreviousOne(e, this.tree);
         }
       });
@@ -82,6 +85,7 @@ export class TreeInternalComponent implements OnInit {
   }
 
   private moveNodeToThisTreeAndRemoveFromPreviousOne(e: NodeDraggableEvent, tree: Tree): void {
+
     this.treeService.fireNodeRemoved(e.captured.tree);
     const addedChild = tree.addChild(e.captured.tree);
     this.treeService.fireNodeMoved(addedChild, e.captured.tree.parent);
@@ -89,6 +93,7 @@ export class TreeInternalComponent implements OnInit {
 
   private moveNodeToParentTreeAndRemoveFromPreviousOne(e: NodeDraggableEvent, tree: Tree): void {
     this.treeService.fireNodeRemoved(e.captured.tree);
+
     const addedSibling = tree.addSibling(e.captured.tree, tree.positionInParent);
     this.treeService.fireNodeMoved(addedSibling, e.captured.tree.parent);
   }

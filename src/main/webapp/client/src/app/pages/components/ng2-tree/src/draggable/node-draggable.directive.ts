@@ -45,6 +45,7 @@ export class NodeDraggableDirective implements OnDestroy, OnInit {
   private handleDragStart(e: DragEvent): any {
     e.stopPropagation();
 
+    console.log('===', this.nodeDraggable, this.tree);
     this.nodeDraggableService.captureNode(new CapturedNode(this.nodeDraggable, this.tree));
 
     e.dataTransfer.setData('text', NodeDraggableDirective.DATA_TRANSFER_STUB_DATA);

@@ -83,6 +83,12 @@ export class Tree {
   private _addChild(child: Tree, position: number = _.size(this._children) || 0): Tree {
     child.parent = this;
 
+    let msg  = child.node.value + '挂到' + this.node.value;
+    if (!!this._children && this._children[position]) {
+      msg += ' 并替换' + this._children[position].node.value;
+    }
+    console.log('_addChild', msg);
+
     if (Array.isArray(this._children)) {
       this._children.splice(position, 0, child);
     } else {
@@ -99,12 +105,15 @@ export class Tree {
     if (!this.hasSibling(sibling)) {
       return;
     }
-
+    console.log('swapWithSibling', sibling.node.value + '替换' + this.node.value);
     const siblingIndex = sibling.positionInParent;
     const thisTreeIndex = this.positionInParent;
 
-    this.parent._children[siblingIndex] = this;
-    this.parent._children[thisTreeIndex] = sibling;
+    // 交换改成插入
+    this.parent._children.splice(siblingIndex, 1);
+    this.parent._children.splice(thisTreeIndex, 0, sibling);
+    // this.parent._children[siblingIndex] = this;
+    // this.parent._children[thisTreeIndex] = sibling;
   }
 
   /**

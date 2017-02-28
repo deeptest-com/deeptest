@@ -13,7 +13,6 @@ export class NodeDraggableService {
     if (!captured.tree || captured.tree.isStatic()) {
       return;
     }
-
     this.draggableNodeEvents$.next(new NodeDraggableEvent(captured, target));
   }
 

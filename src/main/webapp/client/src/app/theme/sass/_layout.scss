@@ -63,13 +63,14 @@ a {
   padding: 66px 0 34px 0;
   min-height: 500px;
   position: relative;
+  background: #fff;
 }
 
 .al-footer {
   height: 34px;
   padding: 0 18px 0 ($left-space + 20px);
   width: 100%;
-  position: absolute;
+  position: fixed;
   display: block;
   bottom: 0;
   font-size: 13px;
@@ -137,7 +138,7 @@ a {
 
 .al-content {
   padding: 15px;
-  background: #fff;
+
 }
 
 @media screen and (max-width: $resXS) {

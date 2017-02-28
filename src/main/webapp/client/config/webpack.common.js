@@ -23,8 +23,8 @@ const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
  */
 const HMR = helpers.hasProcessFlag('hot');
 const METADATA = {
-  title: '聆客会议管理系统',
-  description: '聆客会议管理系统 - linkr.cn',
+  title: 'TestSpace',
+  description: 'TestSpace - linkr.cn',
   baseUrl: '/',
   isDevServer: helpers.isWebpackDevServer()
 };

@@ -50,7 +50,14 @@ export class TreeService {
 
   public draggedStream(tree: Tree, element: ElementRef): Observable<NodeDraggableEvent> {
     return this.nodeDraggableService.draggableNodeEvents$
-      .filter((e: NodeDraggableEvent) => e.target === element)
+      .filter((e: NodeDraggableEvent) => {
+        if (e.target === element) {
+          console.log('e.target', e.target.nativeElement['children'][0]['innerText']);
+          console.log('element', element.nativeElement['children'][0]['innerText']);
+        }
+
+        return e.target === element;
+      })
       .filter((e: NodeDraggableEvent) => !e.captured.tree.hasChild(tree));
   }
 }

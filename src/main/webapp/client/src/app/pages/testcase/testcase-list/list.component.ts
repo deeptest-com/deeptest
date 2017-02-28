@@ -26,22 +26,23 @@ export class TestcaseList implements OnInit, AfterViewInit {
   events: Array<any> = [];
 
   public tree: TreeModel = {
-    value: 'Programming languages by programming paradigm',
+    value: 'root',
     children: [
       {
-        value: 'Object-oriented programming',
+        value: 'A',
         children: [
-          {value: 'Java'},
-          {value: 'C++'},
-          {value: 'C#'},
+          {value: 'A1'},
+          {value: 'A2'},
+          {value: 'A3'},
+            {value: 'A4'}
         ]
       },
       {
-        value: 'Prototype-based programming',
+        value: 'B',
         children: [
-          {value: 'JavaScript'},
-          {value: 'CoffeeScript'},
-          {value: 'Lua'},
+          {value: 'B1'},
+          {value: 'B2'},
+          {value: 'B3'},
         ]
       }
     ]

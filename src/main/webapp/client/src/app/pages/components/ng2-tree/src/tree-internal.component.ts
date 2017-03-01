@@ -19,16 +19,17 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
         [nodeDraggable]="element"
         [tree]="tree">
 
-        <div class="folding" (click)="tree.switchFoldingType()" [ngClass]="tree.foldingType.cssClass"></div>
-        <div class="node-value" 
-          *ngIf="!shouldShowInputForTreeValue()" 
-          [class.node-selected]="isSelected" 
-          (click)="onNodeSelected($event)">{{tree.value}}</div>
-
-        <input type="text" class="node-value" 
-           *ngIf="shouldShowInputForTreeValue()"
-           [nodeEditable]="tree.value"
-           (valueChanged)="applyNewValue($event)"/>
+            <div class="folding" (click)="tree.switchFoldingType()" [ngClass]="tree.foldingType.cssClass"></div>
+            <div class="node-value" 
+              *ngIf="!shouldShowInputForTreeValue()" 
+              [class.node-selected]="isSelected" 
+              (click)="onNodeSelected($event)">{{tree.value}}
+            </div>
+    
+            <input type="text" class="node-value" 
+               *ngIf="shouldShowInputForTreeValue()"
+               [nodeEditable]="tree.value"
+               (valueChanged)="applyNewValue($event)"/>
       </div>
 
       <node-menu *ngIf="isMenuVisible" (menuItemSelected)="onMenuItemSelected($event)"
@@ -72,32 +73,37 @@ export class TreeInternalComponent implements OnInit {
     this.treeService.draggedStream(this.tree, this.element)
       .subscribe((e: NodeDraggableEvent) => {
         if (this.tree.hasSibling(e.captured.tree)) { // 同级交换
-          console.log('--1--');
-          this.swapWithSibling(e.captured.tree, this.tree);
-        } else if (this.tree.isBranch()) { // 移动到文件夹
-          console.log('--2--');
-          this.moveNodeToThisTreeAndRemoveFromPreviousOne(e, this.tree);
-        } else { // 移动到节点的父文件夹
-          console.log('--3--');
-          this.moveNodeToParentTreeAndRemoveFromPreviousOne(e, this.tree);
+          console.log('--1 同级交换--');
+          this.swapWithSibling(e.captured.tree, this.tree, e.isCopy);
+        } else if (this.tree.isBranch()) { // 移动到当前文件夹节点之下
+          console.log('--2 移动到当前文件夹节点之下--');
+          this.moveNodeToThisTreeAndRemoveFromPreviousOne(e, this.tree, e.isCopy);
+        } else { // 移动到当前文件节点的父文件夹
+          console.log('--3 移动到当前文件节点的父文件夹--');
+          this.moveNodeToParentTreeAndRemoveFromPreviousOne(e, this.tree, e.isCopy);
         }
       });
   }
 
-  private swapWithSibling(sibling: Tree, tree: Tree): void {
-    tree.swapWithSibling(sibling);
+  private swapWithSibling(sibling: Tree, tree: Tree, isCopy: boolean): void {
+    tree.swapWithSibling(sibling, isCopy);
     this.treeService.fireNodeMoved(sibling, sibling.parent);
   }
 
-  private moveNodeToThisTreeAndRemoveFromPreviousOne(e: NodeDraggableEvent, tree: Tree): void {
+  private moveNodeToThisTreeAndRemoveFromPreviousOne(e: NodeDraggableEvent, tree: Tree, isCopy: boolean): void {
+      console.log('===isCopy', isCopy);
+    if (!isCopy) {
+        this.treeService.fireNodeRemoved(e.captured.tree);
+    }
 
-    this.treeService.fireNodeRemoved(e.captured.tree);
     const addedChild = tree.addChild(e.captured.tree);
     this.treeService.fireNodeMoved(addedChild, e.captured.tree.parent);
   }
 
-  private moveNodeToParentTreeAndRemoveFromPreviousOne(e: NodeDraggableEvent, tree: Tree): void {
-    this.treeService.fireNodeRemoved(e.captured.tree);
+  private moveNodeToParentTreeAndRemoveFromPreviousOne(e: NodeDraggableEvent, tree: Tree, isCopy: boolean): void {
+      if (!isCopy) {
+          this.treeService.fireNodeRemoved(e.captured.tree);
+      }
 
     const addedSibling = tree.addSibling(e.captured.tree, tree.positionInParent);
     this.treeService.fireNodeMoved(addedSibling, e.captured.tree.parent);

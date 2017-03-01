@@ -15,6 +15,8 @@ export class NodeDraggableDirective implements OnDestroy, OnInit {
   @Input()
   public tree: Tree;
 
+  isCopy: boolean;
+
   private nodeNativeElement: HTMLElement;
   private disposersForDragListeners: Function[] = [];
 
@@ -49,12 +51,19 @@ export class NodeDraggableDirective implements OnDestroy, OnInit {
     this.nodeDraggableService.captureNode(new CapturedNode(this.nodeDraggable, this.tree));
 
     e.dataTransfer.setData('text', NodeDraggableDirective.DATA_TRANSFER_STUB_DATA);
-    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.effectAllowed = 'all';
   }
 
   private handleDragOver(e: DragEvent): any {
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
+    if (e.shiftKey) {
+      e.dataTransfer.dropEffect = 'copy';
+      this.isCopy = true;
+    } else {
+      e.dataTransfer.dropEffect = 'move';
+      this.isCopy = false;
+    }
+    console.log('DragOver', e.shiftKey);
   }
 
   private handleDragEnter(e: DragEvent): any {
@@ -113,6 +122,6 @@ export class NodeDraggableDirective implements OnDestroy, OnInit {
   }
 
   private notifyThatNodeWasDropped(): void {
-    this.nodeDraggableService.fireNodeDragged(this.nodeDraggableService.getCapturedNode(), this.nodeDraggable);
+    this.nodeDraggableService.fireNodeDragged(this.nodeDraggableService.getCapturedNode(), this.nodeDraggable, this.isCopy);
   }
 }

@@ -57,4 +57,12 @@ public class TestCaseTreeVo implements Serializable {
 		this.pid = pid;
 	}
 
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
 }

@@ -57,8 +57,6 @@ public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseServ
 		int i = 0;
 		Map<Long, TestCaseTreeVo> nodeMap = new HashMap<Long, TestCaseTreeVo>();
         for (TestCase po : ls) {
-        	System.out.println(po.getId());
-        	
         	Long id = po.getId();
         	String title = po.getTitle();
         	Integer type = po.getType();

@@ -111,7 +111,7 @@ export class Tree {
    * Swap position of the current node with the given sibling. If node passed as a parameter is not a sibling - nothing happens.
    * @param {Tree} sibling - A sibling with which current node shold be swapped.
    */
-  public swapWithSibling(sibling: Tree): void {
+  public swapWithSibling(sibling: Tree, isCopy: boolean): void {
     if (!this.hasSibling(sibling)) {
       return;
     }
@@ -120,8 +120,11 @@ export class Tree {
     const thisTreeIndex = this.positionInParent;
 
     // 交换改成插入
-    this.parent._children.splice(siblingIndex, 1);
-    this.parent._children.splice(thisTreeIndex, 0, sibling);
+      if (!isCopy) {
+          this.parent._children.splice(siblingIndex, 1); // 删除
+      }
+    this.parent._children.splice(thisTreeIndex, 0, sibling); // 插入
+
     // this.parent._children[siblingIndex] = this;
     // this.parent._children[thisTreeIndex] = sibling;
   }
@@ -191,6 +194,7 @@ export class Tree {
    * @param {Tree} tree - A tree that should be removed.
    */
   public removeChild(tree: Tree): void {
+
     const childIndex = _.findIndex(this._children, (child: Tree) => child === tree);
     if (childIndex >= 0) {
       this._children.splice(childIndex, 1);
@@ -201,6 +205,7 @@ export class Tree {
    * Remove current tree from its parent.
    */
   public removeItselfFromParent(): void {
+
     if (!this.parent) {
       return;
     }
@@ -234,7 +239,7 @@ export class Tree {
    */
   public get foldingType(): FoldingType {
     if (!this.node._foldingType) {
-      if (this._children) {
+      if (this.node.type < 2) {
         this.node._foldingType = FoldingType.Expanded;
       } else {
         this.node._foldingType = FoldingType.Leaf;

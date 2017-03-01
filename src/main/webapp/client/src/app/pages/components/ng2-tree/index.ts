@@ -10,11 +10,19 @@ import { Tree } from './src/tree';
 
 import {
     NodeEvent,
+
     NodeCreatedEvent,
-    NodeDeletedEvent,
+  NodeCreatedRemoteEvent,
+
     NodeRemovedEvent,
+  NodeRemovedRemoteEvent,
+
     NodeRenamedEvent,
+  NodeRenamedRemoteEvent,
+
     NodeMovedEvent,
+  NodeMovedRemoteEvent,
+
     NodeSelectedEvent,
     NodeDestructiveEvent
 } from './src/tree.events';
@@ -30,11 +38,19 @@ export {
     RenamableNode,
     FoldingType,
     NodeEvent,
+
     NodeCreatedEvent,
-    NodeDeletedEvent,
+  NodeCreatedRemoteEvent,
+
     NodeRemovedEvent,
+  NodeRemovedRemoteEvent,
+
     NodeRenamedEvent,
+  NodeRenamedRemoteEvent,
+
     NodeMovedEvent,
+  NodeMovedRemoteEvent,
+
     NodeSelectedEvent,
     NodeDestructiveEvent,
     TreeComponent,

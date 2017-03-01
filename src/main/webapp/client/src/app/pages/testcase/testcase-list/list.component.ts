@@ -2,7 +2,12 @@ import {Component, ViewEncapsulation} from '@angular/core';
 
 import { NgModule, Pipe, OnInit, AfterViewInit }      from '@angular/core';
 
-import {NodeEvent, NodeMovedEvent, NodeRemovedEvent, NodeDeletedEvent, NodeCreatedEvent, NodeRenamedEvent, NodeSelectedEvent, TreeModel } from '../../components/ng2-tree';
+import {NodeEvent,
+  NodeMovedEvent, NodeMovedRemoteEvent,
+  NodeRemovedEvent, NodeRemovedRemoteEvent,
+  NodeCreatedEvent, NodeCreatedRemoteEvent,
+  NodeRenamedEvent, NodeRenamedRemoteEvent,
+  NodeSelectedEvent, TreeModel } from '../../components/ng2-tree';
 
 import {GlobalState} from '../../../global.state';
 
@@ -63,38 +68,33 @@ export class TestcaseList implements OnInit, AfterViewInit {
     });
   }
 
-    public onNodeRemoved(e: NodeRemovedEvent): void {
+    public onNodeRemovedRemote(e: NodeRemovedRemoteEvent): void {
         let that = this;
-        this.logEvent(e, 'Removed');
-    }
-
-    public onNodeDeleted(e: NodeDeletedEvent): void {
-        let that = this;
-        this.logEvent(e, 'Deleted');
+        this.logEvent(e, 'NodeRemovedRemoteEvent');
         that._testcaseService.delete(e.node.node).subscribe((json:any) => {
             this._treeService.fireNodeRemoved(e.node);
         });
     }
 
-    public onNodeMoved(e: NodeMovedEvent): void {
+    public onNodeMovedRemote(e: NodeMovedRemoteEvent): void {
         let that = this;
-        this.logEvent(e, 'Moved');
-        that._testcaseService.move(e.node.node, e.previousParent.node, e.options).subscribe((json:any) => {
-
+        this.logEvent(e, 'NodeMovedRemoteEvent');
+        that._testcaseService.move(e.node.node, e.srcTree.node, e.options).subscribe((json:any) => {
+          this._treeService.fireNodeMoved(e.node, e.srcTree, e.options);
         });
     }
 
-    public onNodeRenamed(e: NodeRenamedEvent): void {
+    public onNodeRenamedRemote(e: NodeRenamedEvent): void {
         let that = this;
-        this.logEvent(e, 'Renamed');
+        this.logEvent(e, 'NodeRenamedEvent');
         that._testcaseService.rename(e.node.node).subscribe((json:any) => {
 
         });
     }
 
-    public onNodeCreated(e: NodeCreatedEvent): void {
+    public onNodeCreatedRemote(e: NodeCreatedEvent): void {
         let that = this;
-        that.logEvent(e, 'Created');
+        that.logEvent(e, 'NodeCreatedEvent');
         that._testcaseService.create(e.node.node).subscribe((json:any) => {
 
         });

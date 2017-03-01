@@ -1,10 +1,19 @@
 import {
-    NodeDeletedEvent,
+
   NodeRemovedEvent,
+  NodeRemovedRemoteEvent,
+
   NodeRenamedEvent,
+  NodeRenamedRemoteEvent,
+
   NodeCreatedEvent,
-  NodeSelectedEvent,
-  NodeMovedEvent
+  NodeCreatedRemoteEvent,
+
+  NodeMovedEvent,
+  NodeMovedRemoteEvent,
+
+  NodeSelectedEvent
+
 } from './tree.events';
 import { RenamableNode } from './tree.types';
 import { Tree } from './tree';
@@ -16,14 +25,38 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
 @Injectable()
 export class TreeService {
   public nodeMoved$: Subject<NodeMovedEvent> = new Subject<NodeMovedEvent>();
-  public nodeDeleted$: Subject<NodeDeletedEvent> = new Subject<NodeDeletedEvent>();
+  public nodeMovedRemote$: Subject<NodeMovedRemoteEvent> = new Subject<NodeMovedRemoteEvent>();
+
   public nodeRemoved$: Subject<NodeRemovedEvent> = new Subject<NodeRemovedEvent>();
+  public nodeRemovedRemote$: Subject<NodeRemovedRemoteEvent> = new Subject<NodeRemovedRemoteEvent>();
+
   public nodeRenamed$: Subject<NodeRenamedEvent> = new Subject<NodeRenamedEvent>();
+  public nodeRenamedRemote$: Subject<NodeRenamedRemoteEvent> = new Subject<NodeRenamedRemoteEvent>();
+
   public nodeCreated$: Subject<NodeCreatedEvent> = new Subject<NodeCreatedEvent>();
+  public nodeCreatedRemote$: Subject<NodeCreatedRemoteEvent> = new Subject<NodeCreatedRemoteEvent>();
+
   public nodeSelected$: Subject<NodeSelectedEvent> = new Subject<NodeSelectedEvent>();
 
   public constructor(@Inject(NodeDraggableService) private nodeDraggableService: NodeDraggableService) {
-    this.nodeRemoved$.subscribe((e: NodeRemovedEvent) => e.node.removeItselfFromParent());
+    this.nodeRemoved$.subscribe((e: NodeRemovedEvent) => {
+      e.node.removeItselfFromParent();
+      console.log(e, 'NodeRemovedEvent');
+    });
+
+    this.nodeMoved$.subscribe((e: NodeMovedEvent) => {
+
+      this.moveNodeToFolder(e);
+    });
+  }
+
+  private moveNodeToFolder(e: NodeMovedEvent): void {
+    if (!e.options.isCopy) {
+        this.fireNodeRemoved(e.srcTree);
+    }
+
+    console.log('***', e);
+    e.node.addChild(e.srcTree);
   }
 
   public unselectStream(tree: Tree): Observable<any> {
@@ -33,25 +66,33 @@ export class TreeService {
   public fireNodeRemoved(tree: Tree): void {
     this.nodeRemoved$.next(new NodeRemovedEvent(tree));
   }
-
-  public fireNodeDeleted(tree: Tree): void {
-    this.nodeDeleted$.next(new NodeDeletedEvent(tree));
+  public fireNodeRemovedRemote(tree: Tree): void {
+    this.nodeRemovedRemote$.next(new NodeRemovedRemoteEvent(tree));
   }
 
   public fireNodeCreated(tree: Tree): void {
     this.nodeCreated$.next(new NodeCreatedEvent(tree));
   }
-
-  public fireNodeSelected(tree: Tree): void {
-    this.nodeSelected$.next(new NodeSelectedEvent(tree));
+  public fireNodeCreatedRemote(tree: Tree): void {
+    this.nodeCreatedRemote$.next(new NodeCreatedRemoteEvent(tree));
   }
 
   public fireNodeRenamed(oldValue: RenamableNode | string, tree: Tree): void {
     this.nodeRenamed$.next(new NodeRenamedEvent(tree, oldValue, tree.value));
   }
+  public fireNodeRenamedRemote(oldValue: RenamableNode | string, tree: Tree): void {
+    this.nodeRenamedRemote$.next(new NodeRenamedRemoteEvent(tree, oldValue, tree.value));
+  }
 
   public fireNodeMoved(tree: Tree, parent: Tree, options: any): void {
     this.nodeMoved$.next(new NodeMovedEvent(tree, parent, options));
+  }
+  public fireNodeMovedRemote(targetTree: Tree, srcTree: Tree, options: any): void {
+    this.nodeMovedRemote$.next(new NodeMovedRemoteEvent(targetTree, srcTree, options));
+  }
+
+  public fireNodeSelected(tree: Tree): void {
+    this.nodeSelected$.next(new NodeSelectedEvent(tree));
   }
 
   public draggedStream(tree: Tree, element: ElementRef): Observable<NodeDraggableEvent> {

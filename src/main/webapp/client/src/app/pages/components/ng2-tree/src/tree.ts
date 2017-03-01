@@ -157,7 +157,7 @@ export class Tree {
    * @returns {boolean} A flag indicating whether or not this tree is a "Branch".
    */
   public isBranch(): boolean {
-    return this.node.type == 1;
+    return this.node.type < 2;
   }
 
   /**

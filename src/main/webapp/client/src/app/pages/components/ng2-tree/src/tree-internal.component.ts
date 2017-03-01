@@ -1,6 +1,18 @@
 import { Input, Component, OnInit, ElementRef, Inject } from '@angular/core';
 import { Ng2TreeSettings, Ng2TreeOptions } from './tree.types';
+import { Subject, Observable } from 'rxjs/Rx';
 import { Tree } from './tree';
+import {
+  NodeRemovedEvent,
+
+  NodeRenamedEvent,
+
+  NodeCreatedEvent,
+
+  NodeMovedEvent
+
+} from './tree.events';
+
 import { NodeMenuService } from './menu/node-menu.service';
 import { NodeMenuItemSelectedEvent, NodeMenuItemAction } from './menu/menu.events';
 import { NodeEditableEvent, NodeEditableEventAction } from './editable/editable.events';
@@ -55,9 +67,15 @@ export class TreeInternalComponent implements OnInit {
   public isSelected: boolean = false;
   private isMenuVisible: boolean = false;
 
+  public nodeMoved$: Subject<NodeMovedEvent> = new Subject<NodeMovedEvent>();
+
   public constructor(@Inject(NodeMenuService) private nodeMenuService: NodeMenuService,
                      @Inject(TreeService) private treeService: TreeService,
                      @Inject(ElementRef) public element: ElementRef) {
+
+    this.nodeMoved$.subscribe((e: NodeMovedEvent) => {
+      alert(1);
+    });
   }
 
   public ngOnInit(): void {
@@ -75,7 +93,7 @@ export class TreeInternalComponent implements OnInit {
         console.log('mode', e.mode);
           if (this.tree.isBranch() && e.mode === 'inner') {
               console.log('--移动到文件夹下--');
-              this.moveNodeToFolder(e, this.tree, e.mode, e.isCopy);
+              this.moveNodeToFolder(e);
           } else if (this.tree.hasSibling(e.captured.tree)) { // 同级交换
               console.log('--同级移动--');
               this.swapWithSibling(e.captured.tree, this.tree, e.mode, e.isCopy);
@@ -86,19 +104,23 @@ export class TreeInternalComponent implements OnInit {
       });
   }
 
+  private moveNodeToFolder(e: NodeDraggableEvent): void {
+    
+    this.treeService.fireNodeMovedRemote(this.tree, e.captured.tree, {mode: e.mode, isCopy: e.isCopy});
+  }
+
+  // private moveNodeToFolder(e: NodeDraggableEvent, tree: Tree, mode: string, isCopy: boolean): void {
+  //   if (!isCopy) {
+  //       this.treeService.fireNodeRemoved(e.captured.tree);
+  //   }
+  //
+  //   const addedChild = tree.addChild(e.captured.tree);
+  //   this.treeService.fireNodeMoved(addedChild, e.captured.tree.parent, {mode: mode, isCopy: isCopy});
+  // }
+
   private swapWithSibling(sibling: Tree, tree: Tree, mode: string, isCopy: boolean): void {
     tree.swapWithSibling(sibling, mode, isCopy);
     this.treeService.fireNodeMoved(sibling, sibling.parent, {mode: mode, isCopy: isCopy});
-  }
-
-  private moveNodeToFolder(e: NodeDraggableEvent, tree: Tree, mode: string, isCopy: boolean): void {
-      console.log('===isCopy', isCopy);
-    if (!isCopy) {
-        this.treeService.fireNodeRemoved(e.captured.tree);
-    }
-
-    const addedChild = tree.addChild(e.captured.tree);
-    this.treeService.fireNodeMoved(addedChild, e.captured.tree.parent, {mode: mode, isCopy: isCopy});
   }
 
   private moveNodeToNearOtherNode(e: NodeDraggableEvent, tree: Tree, mode: string, isCopy: boolean): void {
@@ -163,7 +185,7 @@ export class TreeInternalComponent implements OnInit {
   }
 
   private onRemoveSelected(): void {
-      this.treeService.fireNodeDeleted(this.tree);
+      this.treeService.fireNodeRemovedRemote(this.tree);
   }
 
   public applyNewValue(e: NodeEditableEvent): void {

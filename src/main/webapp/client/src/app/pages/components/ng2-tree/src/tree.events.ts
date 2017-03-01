@@ -19,17 +19,22 @@ export class NodeDestructiveEvent extends NodeEvent {
 }
 
 export class NodeMovedEvent extends NodeDestructiveEvent {
-  public constructor(node: Tree, public previousParent: Tree, public options: any) {
+  public constructor(node: Tree, public srcTree: Tree, public options: any) {
+    super(node);
+  }
+}
+export class NodeMovedRemoteEvent extends NodeDestructiveEvent {
+  public constructor(node: Tree, public srcTree: Tree, public options: any) {
     super(node);
   }
 }
 
-export class NodeDeletedEvent extends NodeDestructiveEvent {
+export class NodeRemovedEvent extends NodeDestructiveEvent {
   public constructor(node: Tree) {
     super(node);
   }
 }
-export class NodeRemovedEvent extends NodeDestructiveEvent {
+export class NodeRemovedRemoteEvent extends NodeDestructiveEvent {
   public constructor(node: Tree) {
     super(node);
   }
@@ -40,8 +45,18 @@ export class NodeCreatedEvent extends NodeDestructiveEvent {
     super(node);
   }
 }
+export class NodeCreatedRemoteEvent extends NodeDestructiveEvent {
+  public constructor(node: Tree) {
+    super(node);
+  }
+}
 
 export class NodeRenamedEvent extends NodeDestructiveEvent {
+  public constructor(node: Tree, public oldValue: string | RenamableNode, public newValue: string | RenamableNode) {
+    super(node);
+  }
+}
+export class NodeRenamedRemoteEvent extends NodeDestructiveEvent {
   public constructor(node: Tree, public oldValue: string | RenamableNode, public newValue: string | RenamableNode) {
     super(node);
   }

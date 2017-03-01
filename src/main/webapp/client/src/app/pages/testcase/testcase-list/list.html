@@ -28,6 +28,7 @@
       <tree [tree]="tree"
             [options]="{ nodeName: '用例', folderName: '模块' }"
             (nodeRemoved)="onNodeRemoved($event)"
+            (nodeDeleted)="onNodeDeleted($event)"
             (nodeRenamed)="onNodeRenamed($event)"
             (nodeSelected)="onNodeSelected($event)"
             (nodeMoved)="onNodeMoved($event)"

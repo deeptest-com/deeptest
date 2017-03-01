@@ -1,4 +1,5 @@
 import {
+    NodeDeletedEvent,
   NodeRemovedEvent,
   NodeRenamedEvent,
   NodeCreatedEvent,
@@ -15,6 +16,7 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
 @Injectable()
 export class TreeService {
   public nodeMoved$: Subject<NodeMovedEvent> = new Subject<NodeMovedEvent>();
+  public nodeDeleted$: Subject<NodeDeletedEvent> = new Subject<NodeDeletedEvent>();
   public nodeRemoved$: Subject<NodeRemovedEvent> = new Subject<NodeRemovedEvent>();
   public nodeRenamed$: Subject<NodeRenamedEvent> = new Subject<NodeRenamedEvent>();
   public nodeCreated$: Subject<NodeCreatedEvent> = new Subject<NodeCreatedEvent>();
@@ -30,6 +32,10 @@ export class TreeService {
 
   public fireNodeRemoved(tree: Tree): void {
     this.nodeRemoved$.next(new NodeRemovedEvent(tree));
+  }
+
+  public fireNodeDeleted(tree: Tree): void {
+    this.nodeDeleted$.next(new NodeDeletedEvent(tree));
   }
 
   public fireNodeCreated(tree: Tree): void {

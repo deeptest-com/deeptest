@@ -26,7 +26,7 @@ import com.alibaba.fastjson.JSONObject;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_ADMIN + "guest/")
+@RequestMapping(Constant.API_PATH_CLIENT + "guest/")
 public class GuestAction extends BaseAction {
 	@Autowired
 	GuestService guestService;

@@ -96,5 +96,30 @@ public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseServ
 		return vo;
 	}
 
+	@Override
+	public TestCase delete(Long vo, Long clientId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TestCase move(Long id, Long pid, Long prePid, Long id2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TestCase create(Long id, String value, Integer type, Long pid,
+			Long id2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TestCase rename(Long id, String value, Long id2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
 

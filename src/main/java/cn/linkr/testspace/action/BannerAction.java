@@ -26,7 +26,7 @@ import com.alibaba.fastjson.JSONObject;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_ADMIN + "banner/")
+@RequestMapping(Constant.API_PATH_CLIENT + "banner/")
 public class BannerAction extends BaseAction {
 	@Autowired
 	BannerService bannerService;

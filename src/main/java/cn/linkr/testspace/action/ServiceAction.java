@@ -27,7 +27,7 @@ import com.alibaba.fastjson.JSONObject;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_ADMIN + "service/")
+@RequestMapping(Constant.API_PATH_CLIENT + "service/")
 public class ServiceAction extends BaseAction {
 	@Autowired
 	ServiceService serviceService;

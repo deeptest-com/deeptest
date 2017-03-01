@@ -1,4 +1,5 @@
 .node-menu {
+  display: block !important;
   position: relative;
   width: 150px;
 }

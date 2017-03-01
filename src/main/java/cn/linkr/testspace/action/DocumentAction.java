@@ -26,7 +26,7 @@ import com.alibaba.fastjson.JSONObject;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_ADMIN + "document/")
+@RequestMapping(Constant.API_PATH_CLIENT + "document/")
 public class DocumentAction extends BaseAction {
 	@Autowired
 	DocumentService documentService;

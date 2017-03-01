@@ -152,7 +152,7 @@ export class TreeInternalComponent implements OnInit {
   }
 
   private onRemoveSelected(): void {
-    this.treeService.fireNodeRemoved(this.tree);
+      this.treeService.fireNodeDeleted(this.tree);
   }
 
   public applyNewValue(e: NodeEditableEvent): void {

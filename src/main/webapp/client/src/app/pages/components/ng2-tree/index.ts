@@ -11,6 +11,7 @@ import { Tree } from './src/tree';
 import {
     NodeEvent,
     NodeCreatedEvent,
+    NodeDeletedEvent,
     NodeRemovedEvent,
     NodeRenamedEvent,
     NodeMovedEvent,
@@ -30,6 +31,7 @@ export {
     FoldingType,
     NodeEvent,
     NodeCreatedEvent,
+    NodeDeletedEvent,
     NodeRemovedEvent,
     NodeRenamedEvent,
     NodeMovedEvent,

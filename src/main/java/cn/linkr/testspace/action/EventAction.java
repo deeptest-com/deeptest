@@ -37,7 +37,7 @@ import com.alibaba.fastjson.JSONObject;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_ADMIN + "event/")
+@RequestMapping(Constant.API_PATH_CLIENT + "event/")
 public class EventAction extends BaseAction {
 	@Autowired
 	EventService eventService;

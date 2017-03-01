@@ -12,8 +12,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "evt_document")
 public class EvtDocument extends BaseEntity {
-	private static final long serialVersionUID = 7976342062933224218L;
-	
+	private static final long serialVersionUID = 2390019554025797778L;
 	private String title;
     @Column(name = "msg", length = 10000)
     private String descr;
@@ -30,11 +29,11 @@ public class EvtDocument extends BaseEntity {
     private Long eventId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", insertable = false, updatable = false)
-    private EvtClient author;
+    @JoinColumn(name = "client_id", insertable = false, updatable = false)
+    private EvtClient client;
 
-    @Column(name = "author_id")
-    private Long authorId;
+    @Column(name = "client_id")
+    private Long clientId;
 
     public static enum DocType {
         file("file"),
@@ -85,22 +84,6 @@ public class EvtDocument extends BaseEntity {
         this.eventId = eventId;
     }
 
-    public EvtClient getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(EvtClient author) {
-        this.author = author;
-    }
-
-    public Long getAuthorId() {
-        return authorId;
-    }
-
-    public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
-    }
-
 	public DocType getDocType() {
 		return docType;
 	}
@@ -115,5 +98,21 @@ public class EvtDocument extends BaseEntity {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public EvtClient getClient() {
+		return client;
+	}
+
+	public void setClient(EvtClient client) {
+		this.client = client;
+	}
+
+	public Long getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
 	}
 }

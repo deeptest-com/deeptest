@@ -24,6 +24,11 @@ export class NodeMovedEvent extends NodeDestructiveEvent {
   }
 }
 
+export class NodeDeletedEvent extends NodeDestructiveEvent {
+  public constructor(node: Tree) {
+    super(node);
+  }
+}
 export class NodeRemovedEvent extends NodeDestructiveEvent {
   public constructor(node: Tree) {
     super(node);

@@ -26,6 +26,9 @@ export class TreeComponent implements OnInit, OnChanges {
   @Output()
   public nodeCreated: EventEmitter<any> = new EventEmitter();
 
+    @Output()
+    public nodeDeleted: EventEmitter<any> = new EventEmitter();
+
   @Output()
   public nodeRemoved: EventEmitter<any> = new EventEmitter();
 
@@ -54,6 +57,10 @@ export class TreeComponent implements OnInit, OnChanges {
 
   public ngOnInit(): void {
       let that = this;
+
+      this.treeService.nodeDeleted$.subscribe((e: NodeEvent) => {
+          this.nodeDeleted.emit(e);
+      });
 
     this.treeService.nodeRemoved$.subscribe((e: NodeEvent) => {
       this.nodeRemoved.emit(e);

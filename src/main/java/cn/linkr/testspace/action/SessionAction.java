@@ -26,7 +26,7 @@ import com.alibaba.fastjson.JSONObject;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_ADMIN + "session/")
+@RequestMapping(Constant.API_PATH_CLIENT + "session/")
 public class SessionAction extends BaseAction {
 	
 	@Autowired

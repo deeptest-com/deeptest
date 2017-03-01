@@ -2,12 +2,14 @@ import {Component, ViewEncapsulation} from '@angular/core';
 
 import { NgModule, Pipe, OnInit, AfterViewInit }      from '@angular/core';
 
-import { NodeEvent, TreeModel, RenamableNode } from '../../components/ng2-tree';
+import {NodeEvent, NodeMovedEvent, NodeRemovedEvent, NodeDeletedEvent, NodeCreatedEvent, NodeRenamedEvent, NodeSelectedEvent, TreeModel } from '../../components/ng2-tree';
 
 import {GlobalState} from '../../../global.state';
 
 import { CONSTANT } from '../../../utils/constant';
 import { RouteService } from '../../../service/route';
+import { TreeService } from '../../components/ng2-tree/src/tree.service';
+
 import { TestcaseService } from '../../../service/testcase';
 
 @Component({
@@ -24,7 +26,7 @@ export class TestcaseList implements OnInit, AfterViewInit {
   public tree: TreeModel;
 
   constructor(private _routeService: RouteService, private _state:GlobalState,
-              private _testcaseService: TestcaseService) {
+              private _treeService: TreeService, private _testcaseService: TestcaseService) {
 
   }
   ngOnInit() {
@@ -61,23 +63,44 @@ export class TestcaseList implements OnInit, AfterViewInit {
     });
   }
 
-    public onNodeRemoved(e: NodeEvent): void {
+    public onNodeRemoved(e: NodeRemovedEvent): void {
+        let that = this;
         this.logEvent(e, 'Removed');
     }
 
-    public onNodeMoved(e: NodeEvent): void {
+    public onNodeDeleted(e: NodeDeletedEvent): void {
+        let that = this;
+        this.logEvent(e, 'Deleted');
+        that._testcaseService.delete(e.node.node).subscribe((json:any) => {
+            this._treeService.fireNodeRemoved(e.node);
+        });
+    }
+
+    public onNodeMoved(e: NodeMovedEvent): void {
+        let that = this;
         this.logEvent(e, 'Moved');
+        that._testcaseService.move(e.node.node, e.previousParent.node).subscribe((json:any) => {
+
+        });
     }
 
-    public onNodeRenamed(e: NodeEvent): void {
+    public onNodeRenamed(e: NodeRenamedEvent): void {
+        let that = this;
         this.logEvent(e, 'Renamed');
+        that._testcaseService.rename(e.node.node).subscribe((json:any) => {
+
+        });
     }
 
-    public onNodeCreated(e: NodeEvent): void {
-        this.logEvent(e, 'Created');
+    public onNodeCreated(e: NodeCreatedEvent): void {
+        let that = this;
+        that.logEvent(e, 'Created');
+        that._testcaseService.create(e.node.node).subscribe((json:any) => {
+
+        });
     }
 
-    public onNodeSelected(e: NodeEvent): void {
+    public onNodeSelected(e: NodeSelectedEvent): void {
         this.logEvent(e, 'Selected');
     }
 
@@ -85,3 +108,4 @@ export class TestcaseList implements OnInit, AfterViewInit {
         console.log(e, message);
     }
 }
+

@@ -5,7 +5,7 @@ export var CONSTANT: any = {
     SERVICE_URL: undefined,
     API_URL: undefined,
 
-    API_PATH: 'api/admin/v1/',
+    API_PATH: 'api/client/v1/',
     UPLOAD_URI: 'uploadSingle',
 
     TOKEN: '',

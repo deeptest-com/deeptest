@@ -19,8 +19,9 @@ export class TestcaseService {
         return this._reqService.post(this._api_url + 'create', model);
     }
 
-    move(node: TreeModel, prevParent: TreeModel) {
+    move(node: TreeModel, prevParent: TreeModel, options: any) {
         let model = {id: node.id, pid: node.pid, prePid: prevParent.id};
+        _.merge(model, options);
         return this._reqService.post(this._api_url + 'move', model);
     }
 

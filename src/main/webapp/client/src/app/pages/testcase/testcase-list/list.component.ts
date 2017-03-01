@@ -79,7 +79,7 @@ export class TestcaseList implements OnInit, AfterViewInit {
     public onNodeMoved(e: NodeMovedEvent): void {
         let that = this;
         this.logEvent(e, 'Moved');
-        that._testcaseService.move(e.node.node, e.previousParent.node).subscribe((json:any) => {
+        that._testcaseService.move(e.node.node, e.previousParent.node, e.options).subscribe((json:any) => {
 
         });
     }

@@ -50,8 +50,8 @@ export class TreeService {
     this.nodeRenamed$.next(new NodeRenamedEvent(tree, oldValue, tree.value));
   }
 
-  public fireNodeMoved(tree: Tree, parent: Tree): void {
-    this.nodeMoved$.next(new NodeMovedEvent(tree, parent));
+  public fireNodeMoved(tree: Tree, parent: Tree, options: any): void {
+    this.nodeMoved$.next(new NodeMovedEvent(tree, parent, options));
   }
 
   public draggedStream(tree: Tree, element: ElementRef): Observable<NodeDraggableEvent> {

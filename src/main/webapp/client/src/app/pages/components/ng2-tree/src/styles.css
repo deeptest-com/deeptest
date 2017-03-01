@@ -73,11 +73,32 @@ tree-internal li {
   list-style: none;
 }
 
-tree-internal .over-drop-target {
-  background: #f5f5f5;
-  border: 1px solid #ccc;
-  transition: padding 0.2s ease-out;
-  border-radius: 1px;
+tree-internal .value-container.over-drop-target-before,
+tree-internal .value-container.over-drop-target-inner,
+tree-internal .value-container.over-drop-target-after {
+    position: relative;
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    transition: padding 0.2s ease-out;
+    border-radius: 1px;
+    line-height: 14px;
+}
+tree-internal .value-container.over-drop-target-before:before,
+tree-internal .value-container.over-drop-target-inner:before,
+tree-internal .value-container.over-drop-target-after:before {
+    position: absolute;
+    left: -16px;
+    color: #757575;
+    content: "\f178";
+}
+tree-internal .value-container.over-drop-target-before:before {
+    top: -7px;
+}
+tree-internal .value-container.over-drop-target-inner:before {
+    top: 4px;
+}
+tree-internal .value-container.over-drop-target-after:before {
+    top: 15px;
 }
 
 tree-internal .tree {
@@ -98,6 +119,7 @@ tree-internal .tree li div {
 tree-internal .tree .node-value {
   display: inline-block;
   padding: 0px;
+    line-height: 20px;
   color: #212121;
   border: 1px solid transparent;
 }

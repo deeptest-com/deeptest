@@ -15,6 +15,7 @@ export class NodeDraggableDirective implements OnDestroy, OnInit {
   @Input()
   public tree: Tree;
 
+    mode: string;
   isCopy: boolean;
 
   private nodeNativeElement: HTMLElement;
@@ -52,6 +53,8 @@ export class NodeDraggableDirective implements OnDestroy, OnInit {
 
     e.dataTransfer.setData('text', NodeDraggableDirective.DATA_TRANSFER_STUB_DATA);
     e.dataTransfer.effectAllowed = 'all';
+
+    e.dataTransfer.setDragImage(this.nodeDraggable.nativeElement.querySelector('.value-container'), '10px', '10px');
   }
 
   private handleDragOver(e: DragEvent): any {
@@ -63,19 +66,50 @@ export class NodeDraggableDirective implements OnDestroy, OnInit {
       e.dataTransfer.dropEffect = 'move';
       this.isCopy = false;
     }
-    console.log('DragOver', e.shiftKey);
+
+    let yOfCursor = e.offsetY;
+    if (!yOfCursor) return ;
+    if (!this.isDropPossible(e)) {
+      return false;
+    }
+
+      this.removeClassForInsert();
+
+    let tagHeight = this.element.nativeElement.offsetHeight;
+    let space;
+
+    let type = this.tree.node.type;
+      if (type < 2) { // 文件夹
+          space = tagHeight / 3;
+          if (yOfCursor < space) {
+              this.addClass('over-drop-target-before');
+              this.mode = 'before';
+          } else if (yOfCursor >= space && yOfCursor <= space * 2) {
+              this.addClass('over-drop-target-inner');
+              this.mode = 'inner';
+          } else {
+              this.addClass('over-drop-target-after');
+              this.mode = 'after';
+          }
+      } else {
+          space = tagHeight / 2;
+          if (yOfCursor < space) {
+              this.addClass('over-drop-target-before');
+              this.mode = 'before';
+          } else {
+              this.addClass('over-drop-target-after');
+              this.mode = 'after';
+          }
+      }
   }
 
   private handleDragEnter(e: DragEvent): any {
     e.preventDefault();
-    if (this.containsElementAt(e)) {
-      this.addClass('over-drop-target');
-    }
   }
 
   private handleDragLeave(e: DragEvent): any {
     if (!this.containsElementAt(e)) {
-      this.removeClass('over-drop-target');
+      this.removeClassForInsert();
     }
   }
 
@@ -83,7 +117,7 @@ export class NodeDraggableDirective implements OnDestroy, OnInit {
     e.preventDefault();
     e.stopPropagation();
 
-    this.removeClass('over-drop-target');
+    this.removeClassForInsert();
 
     if (!this.isDropPossible(e)) {
       return false;
@@ -102,7 +136,7 @@ export class NodeDraggableDirective implements OnDestroy, OnInit {
   }
 
   private handleDragEnd(e: DragEvent): any {
-    this.removeClass('over-drop-target');
+    this.removeClassForInsert();
     this.nodeDraggableService.releaseCapturedNode();
   }
 
@@ -115,13 +149,18 @@ export class NodeDraggableDirective implements OnDestroy, OnInit {
     const classList: DOMTokenList = this.nodeNativeElement.classList;
     classList.add(className);
   }
-
+  private removeClassForInsert(): void {
+    this.removeClass('over-drop-target-before');
+    this.removeClass('over-drop-target-inner');
+    this.removeClass('over-drop-target-after');
+  }
   private removeClass(className: string): void {
     const classList: DOMTokenList = this.nodeNativeElement.classList;
     classList.remove(className);
   }
 
   private notifyThatNodeWasDropped(): void {
-    this.nodeDraggableService.fireNodeDragged(this.nodeDraggableService.getCapturedNode(), this.nodeDraggable, this.isCopy);
+    this.nodeDraggableService.fireNodeDragged(this.nodeDraggableService.getCapturedNode(), this.nodeDraggable,
+        this.mode, this.isCopy);
   }
 }

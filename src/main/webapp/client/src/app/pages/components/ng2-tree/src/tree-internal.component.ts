@@ -13,7 +13,7 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
   template: `
   <ul class="tree" *ngIf="tree" [ngClass]="{rootless: isRootHidden()}">
     <li>
-      <div class="value-container"
+      <div class="value-container fa"
         [ngClass]="{rootless: isRootHidden()}" 
         (contextmenu)="showMenu($event)" 
         [nodeDraggable]="element"
@@ -72,41 +72,46 @@ export class TreeInternalComponent implements OnInit {
 
     this.treeService.draggedStream(this.tree, this.element)
       .subscribe((e: NodeDraggableEvent) => {
-        if (this.tree.hasSibling(e.captured.tree)) { // 同级交换
-          console.log('--1 同级交换--');
-          this.swapWithSibling(e.captured.tree, this.tree, e.isCopy);
-        } else if (this.tree.isBranch()) { // 移动到当前文件夹节点之下
-          console.log('--2 移动到当前文件夹节点之下--');
-          this.moveNodeToThisTreeAndRemoveFromPreviousOne(e, this.tree, e.isCopy);
-        } else { // 移动到当前文件节点的父文件夹
-          console.log('--3 移动到当前文件节点的父文件夹--');
-          this.moveNodeToParentTreeAndRemoveFromPreviousOne(e, this.tree, e.isCopy);
-        }
+        console.log('mode', e.mode);
+          if (this.tree.isBranch() && e.mode === 'inner') {
+              console.log('--移动到文件夹下--');
+              this.moveNodeToFolder(e, this.tree, e.mode, e.isCopy);
+          } else if (this.tree.hasSibling(e.captured.tree)) { // 同级交换
+              console.log('--同级移动--');
+              this.swapWithSibling(e.captured.tree, this.tree, e.mode, e.isCopy);
+          } else {
+              console.log('--跨文件夹,移动到节点前--');
+              this.moveNodeToNearOtherNode(e, this.tree, e.mode, e.isCopy);
+          }
       });
   }
 
-  private swapWithSibling(sibling: Tree, tree: Tree, isCopy: boolean): void {
-    tree.swapWithSibling(sibling, isCopy);
-    this.treeService.fireNodeMoved(sibling, sibling.parent);
+  private swapWithSibling(sibling: Tree, tree: Tree, mode: string, isCopy: boolean): void {
+    tree.swapWithSibling(sibling, mode, isCopy);
+    this.treeService.fireNodeMoved(sibling, sibling.parent, {mode: mode, isCopy: isCopy});
   }
 
-  private moveNodeToThisTreeAndRemoveFromPreviousOne(e: NodeDraggableEvent, tree: Tree, isCopy: boolean): void {
+  private moveNodeToFolder(e: NodeDraggableEvent, tree: Tree, mode: string, isCopy: boolean): void {
       console.log('===isCopy', isCopy);
     if (!isCopy) {
         this.treeService.fireNodeRemoved(e.captured.tree);
     }
 
     const addedChild = tree.addChild(e.captured.tree);
-    this.treeService.fireNodeMoved(addedChild, e.captured.tree.parent);
+    this.treeService.fireNodeMoved(addedChild, e.captured.tree.parent, {mode: mode, isCopy: isCopy});
   }
 
-  private moveNodeToParentTreeAndRemoveFromPreviousOne(e: NodeDraggableEvent, tree: Tree, isCopy: boolean): void {
+  private moveNodeToNearOtherNode(e: NodeDraggableEvent, tree: Tree, mode: string, isCopy: boolean): void {
       if (!isCopy) {
           this.treeService.fireNodeRemoved(e.captured.tree);
       }
 
-    const addedSibling = tree.addSibling(e.captured.tree, tree.positionInParent);
-    this.treeService.fireNodeMoved(addedSibling, e.captured.tree.parent);
+      let positionInParent = tree.positionInParent;
+        if (mode === 'after') {
+            positionInParent++;
+        }
+    const addedSibling = tree.addSibling(e.captured.tree, positionInParent);
+    this.treeService.fireNodeMoved(addedSibling, e.captured.tree.parent, {mode: mode, isCopy: isCopy});
   }
 
   public onNodeSelected(e: MouseEvent): void {

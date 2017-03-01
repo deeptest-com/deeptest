@@ -15,8 +15,9 @@ export class FoldingType {
 
 export interface TreeModel {
   id: number;
-  path: string;
+  type: number;
   value: string | RenamableNode;
+  pid?: number;
   children?: TreeModel[];
   settings?: TreeModelSettings;
   _status?: TreeStatus;

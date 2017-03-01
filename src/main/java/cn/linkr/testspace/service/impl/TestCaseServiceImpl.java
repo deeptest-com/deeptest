@@ -45,7 +45,7 @@ public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseServ
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-        dc.addOrder(Order.asc("path"));
+        dc.addOrder(Order.asc("id"));
         List<TestCase> ls = findAllByCriteria(dc);
         
         return ls;
@@ -55,24 +55,24 @@ public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseServ
 	public TestCaseTreeVo buildTree(List<TestCase> ls) {
 		TestCaseTreeVo root = null;
 		int i = 0;
-		Map<String, TestCaseTreeVo> nodeMap = new HashMap<String, TestCaseTreeVo>();
+		Map<Long, TestCaseTreeVo> nodeMap = new HashMap<Long, TestCaseTreeVo>();
         for (TestCase po : ls) {
-        	System.out.println(po.getPath());
+        	System.out.println(po.getId());
         	
-        	String nodePath = po.getPath();
+        	Long id = po.getId();
+        	String title = po.getTitle();
+        	Integer type = po.getType();
+        	Long pid = po.getPid();
         	
-        	TestCaseTreeVo newNode = new TestCaseTreeVo(po.getId(), po.getTitle(), po.getPath());
-        	nodeMap.put(newNode.getPath(), newNode);
+        	TestCaseTreeVo newNode = new TestCaseTreeVo(id, title, type, pid);
+        	nodeMap.put(id, newNode);
         	
-        	if (nodePath.split("/").length == 1) {
+        	if (type == 0) {
         		root = newNode;
         		continue;
         	}
         	
-        	String parentPath = nodePath.substring(0, nodePath.length() - 1);
-        	parentPath = nodePath.substring(0, parentPath.lastIndexOf("/") + 1);
-        	nodeMap.get(parentPath).getChildren().add(newNode);
-        	
+        	nodeMap.get(pid).getChildren().add(newNode);
         }
 		
         return root;

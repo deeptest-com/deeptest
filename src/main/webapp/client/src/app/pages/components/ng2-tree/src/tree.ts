@@ -2,6 +2,8 @@ import * as _ from 'lodash';
 import { TreeModel, RenamableNode, FoldingType, TreeStatus, TreeModelSettings } from './tree.types';
 
 export class Tree {
+    private id: number;
+    private pid: number;
   private _children: Tree[];
 
   public constructor(public node: TreeModel, public parent: Tree = null, isBranch: boolean = false) {
@@ -22,7 +24,9 @@ export class Tree {
    * @returns {Tree} A newly created child node.
    */
   public createNode(isBranch: boolean): Tree {
-    const tree = new Tree({ value: '' }, null, isBranch);
+      let type = isBranch ? 1 : 2;
+
+    const tree = new Tree({id: undefined, value: '', type: type }, null, isBranch);
     tree.markAsNew();
 
     if (this.isLeaf()) {
@@ -87,6 +91,7 @@ export class Tree {
     console.log('position', position);
 
     child.parent = this;
+      child.node.pid = this.node.id;
 
     let msg  = child.node.value + '挂到' + this.node.value;
     if (!!this._children && this._children[position]) {
@@ -150,7 +155,7 @@ export class Tree {
    * @returns {boolean} A flag indicating whether or not this tree is a "Branch".
    */
   public isBranch(): boolean {
-    return Array.isArray(this._children);
+    return this.node.type == 1;
   }
 
   /**

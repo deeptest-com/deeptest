@@ -19,7 +19,8 @@ public class TestCase extends BaseEntity {
 	@Column(name = "descr", length = 1000)
     private String descr;
 	
-	private String path;
+	private Long pid;
+	private Integer type; // 0 root, 1 folder, 2 node
 	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
@@ -83,11 +84,35 @@ public class TestCase extends BaseEntity {
 		this.estimate = estimate;
 	}
 
-	public String getPath() {
-		return path;
+	public Long getPid() {
+		return pid;
 	}
 
-	public void setPath(String path) {
-		this.path = path;
+	public void setPid(Long pid) {
+		this.pid = pid;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public TestProject getProject() {
+		return project;
+	}
+
+	public void setProject(TestProject project) {
+		this.project = project;
+	}
+
+	public Long getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
 	}
 }

@@ -12,14 +12,17 @@ public class TestCaseTreeVo implements Serializable {
 	
 	private Long id;
 	private String value;
-	private String path;
+	private Long pid;
+	
+	private Integer type; // 0 root, 1 folder, 2 node
     
 	LinkedHashSet<TestCaseTreeVo> children = new LinkedHashSet<TestCaseTreeVo>();
     
-    public TestCaseTreeVo(Long id, String value, String path) {
+    public TestCaseTreeVo(Long id, String value, Integer type, Long pid) {
 		this.id = id;
 		this.value = value;
-		this.path = path;
+		this.type = type;
+		this.pid = pid;
 	}
 
 	public Long getId() {
@@ -38,20 +41,20 @@ public class TestCaseTreeVo implements Serializable {
 		this.children = children;
 	}
 
-	public String getPath() {
-		return path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
-
 	public String getValue() {
 		return value;
 	}
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public Long getPid() {
+		return pid;
+	}
+
+	public void setPid(Long pid) {
+		this.pid = pid;
 	}
 
 }

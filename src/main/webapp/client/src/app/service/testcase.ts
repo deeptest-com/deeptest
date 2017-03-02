@@ -20,7 +20,12 @@ export class TestcaseService {
     }
 
     move(target: TreeModel, src: TreeModel, options: any) {
-        let model = {id: src.id, newPid: target.id, prePid: src.pid};
+        let model;
+      if (options.mode === 'inner') {
+        model = {id: src.id, newPid: target.id, prePid: src.pid};
+      } else {
+        model = {id: src.id, newPid: target.pid, prePid: src.pid};
+      }
         _.merge(model, options);
         return this._reqService.post(this._api_url + 'move', model);
     }

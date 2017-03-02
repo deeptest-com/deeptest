@@ -45,8 +45,13 @@ export class TreeService {
     });
 
     this.nodeMoved$.subscribe((e: NodeMovedEvent) => {
+      console.log(e, 'NodeMovedEvent');
 
-      this.moveNodeToFolder(e);
+      if (e.options.mode === 'inner') {
+        this.moveNodeToFolder(e);
+      } else {
+        this.moveToBeforeOrAfter(e);
+      }
     });
   }
 
@@ -54,9 +59,23 @@ export class TreeService {
     if (!e.options.isCopy) {
         this.fireNodeRemoved(e.srcTree);
     }
-
-    console.log('***', e);
     e.node.addChild(e.srcTree);
+  }
+
+  private moveToBeforeOrAfter(e: NodeMovedEvent): void {
+    if (!e.options.isCopy) {
+      this.fireNodeRemoved(e.srcTree);
+    }
+
+    if (e.node.hasSibling(e.srcTree)) {
+      e.node.swapWithSibling(e.srcTree, e.options.mode, e.options.isCopy);
+    } else {
+      let positionInParent = e.node.positionInParent;
+      if (e.options.mode === 'after') {
+          positionInParent++;
+      }
+      e.node.addSibling(e.srcTree, positionInParent);
+    }
   }
 
   public unselectStream(tree: Tree): Observable<any> {

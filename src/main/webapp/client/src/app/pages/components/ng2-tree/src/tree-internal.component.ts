@@ -90,50 +90,12 @@ export class TreeInternalComponent implements OnInit {
 
     this.treeService.draggedStream(this.tree, this.element)
       .subscribe((e: NodeDraggableEvent) => {
-        console.log('mode', e.mode);
-          if (this.tree.isBranch() && e.mode === 'inner') {
-              console.log('--移动到文件夹下--');
-              this.moveNodeToFolder(e);
-          } else if (this.tree.hasSibling(e.captured.tree)) { // 同级交换
-              console.log('--同级移动--');
-              this.swapWithSibling(e.captured.tree, this.tree, e.mode, e.isCopy);
-          } else {
-              console.log('--跨文件夹,移动到节点前--');
-              this.moveNodeToNearOtherNode(e, this.tree, e.mode, e.isCopy);
-          }
+        this.moveNode(e);
       });
   }
 
-  private moveNodeToFolder(e: NodeDraggableEvent): void {
-    
+  private moveNode(e: NodeDraggableEvent): void {
     this.treeService.fireNodeMovedRemote(this.tree, e.captured.tree, {mode: e.mode, isCopy: e.isCopy});
-  }
-
-  // private moveNodeToFolder(e: NodeDraggableEvent, tree: Tree, mode: string, isCopy: boolean): void {
-  //   if (!isCopy) {
-  //       this.treeService.fireNodeRemoved(e.captured.tree);
-  //   }
-  //
-  //   const addedChild = tree.addChild(e.captured.tree);
-  //   this.treeService.fireNodeMoved(addedChild, e.captured.tree.parent, {mode: mode, isCopy: isCopy});
-  // }
-
-  private swapWithSibling(sibling: Tree, tree: Tree, mode: string, isCopy: boolean): void {
-    tree.swapWithSibling(sibling, mode, isCopy);
-    this.treeService.fireNodeMoved(sibling, sibling.parent, {mode: mode, isCopy: isCopy});
-  }
-
-  private moveNodeToNearOtherNode(e: NodeDraggableEvent, tree: Tree, mode: string, isCopy: boolean): void {
-      if (!isCopy) {
-          this.treeService.fireNodeRemoved(e.captured.tree);
-      }
-
-      let positionInParent = tree.positionInParent;
-        if (mode === 'after') {
-            positionInParent++;
-        }
-    const addedSibling = tree.addSibling(e.captured.tree, positionInParent);
-    this.treeService.fireNodeMoved(addedSibling, e.captured.tree.parent, {mode: mode, isCopy: isCopy});
   }
 
   public onNodeSelected(e: MouseEvent): void {

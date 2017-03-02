@@ -111,12 +111,12 @@ export class Tree {
    * Swap position of the current node with the given sibling. If node passed as a parameter is not a sibling - nothing happens.
    * @param {Tree} sibling - A sibling with which current node shold be swapped.
    */
-  public swapWithSibling(sibling: Tree, mode: string, isCopy: boolean): void {
-    if (!this.hasSibling(sibling)) {
+  public swapWithSibling(srcTree: Tree, mode: string, isCopy: boolean): void {
+    if (!this.hasSibling(srcTree)) {
       return;
     }
 
-    const siblingIndex = sibling.positionInParent;
+    const siblingIndex = srcTree.positionInParent;
     let thisTreeIndex = this.positionInParent;
 
       if (!isCopy) {
@@ -125,7 +125,7 @@ export class Tree {
       if (mode === 'after') {
           thisTreeIndex++;
       }
-      this.parent._children.splice(thisTreeIndex, 0, sibling); // 插入
+      this.parent._children.splice(thisTreeIndex, 0, srcTree); // 插入
   }
 
   /**

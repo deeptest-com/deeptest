@@ -184,3 +184,23 @@ tree-internal ul.rootless {
 tree-internal div.rootless {
   display: none !important;
 }
+
+.tree-toolbar {
+  display: flex;
+  margin: 10px 10px 5px 10px;
+  padding: 0;
+}
+.tree-toolbar .title {
+  width: 100px;
+  font-weight: 700;
+  color: #666666;
+  line-height: 22px;
+  font-size: 15px;
+  opacity: 0.9;
+}
+
+.tree-toolbar .buttons {
+  flex: 1;
+  line-height: 22px;
+  font-size: 13px;
+}

@@ -110,8 +110,5 @@ export class TestcaseList implements OnInit, AfterViewInit {
         console.log(e, message);
     }
 
-    expandOrNot(): void {
-      this.options.isExpanded = !this.options.isExpanded;
-    }
 }
 

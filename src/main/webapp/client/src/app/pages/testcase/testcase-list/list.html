@@ -1,20 +1,4 @@
 <div class="testcase-list">
-  <div class="row my-toolbar">
-    <div class="title">
-      测试用例
-    </div>
-    <div class="filter">
-      <a (click)="expandOrNot()" href="javascript:void(0);">
-        <span *ngIf="!isExpanded">展开</span>
-        <span *ngIf="isExpanded">收缩</span>
-      </a>
-    </div>
-    <div class="buttons">
-      <button (click)="create()" type="button" class="btn btn-primary btn-with-icon btn-xs">
-        <i class="ion-plus-circled"></i>新建
-      </button>
-    </div>
-  </div>
   <!-- /.row -->
   <div class="row main">
     <div class="list y-scrollable" [style.height]="mainHeight">

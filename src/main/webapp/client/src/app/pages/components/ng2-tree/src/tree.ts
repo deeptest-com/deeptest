@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { TreeModel, RenamableNode, FoldingType, TreeStatus, TreeModelSettings } from './tree.types';
+import { TreeModel, RenamableNode, FoldingType, TreeStatus, TreeModelSettings, Ng2TreeOptions } from './tree.types';
 
 export class Tree {
     private id: number;
@@ -31,7 +31,6 @@ export class Tree {
 
     if (this.isLeaf()) {
       const thisTreeIndex = this.positionInParent;
-      console.log('thisTreeIndex', thisTreeIndex);
 
       return this.addSibling(tree, thisTreeIndex);
     } else {
@@ -88,7 +87,6 @@ export class Tree {
   }
 
   private _addChild(child: Tree, position: number = _.size(this._children) || 0): Tree {
-    console.log('position', position);
 
     child.parent = this;
       child.node.pid = this.node.id;
@@ -233,6 +231,29 @@ export class Tree {
         }
       });
     }
+  }
+
+  public expandOrNot(options: Ng2TreeOptions, next?: boolean): void {
+    if (!next) {
+      options.isExpanded = !options.isExpanded;
+    }
+
+    if (this.isLeaf()) {
+      return;
+    }
+    if (options.isExpanded) {
+      this.node._foldingType = FoldingType.Expanded;
+    } else {
+      if (this.node.type == 0) {
+        this.node._foldingType = FoldingType.Expanded;
+      } else {
+        this.node._foldingType = FoldingType.Collapsed;
+      }
+    }
+
+    _.forEach(this.children, (child: Tree, index: number) => {
+      child.expandOrNot(options, true);
+    });
   }
 
   /**

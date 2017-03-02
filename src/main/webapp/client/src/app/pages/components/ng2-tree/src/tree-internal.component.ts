@@ -173,7 +173,6 @@ export class TreeInternalComponent implements OnInit {
   }
 
   public isRootHidden(): boolean {
-    console.log(this.settings);
     return this.tree.isRoot() && !this.settings.rootIsVisible;
   }
 }

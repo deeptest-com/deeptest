@@ -221,7 +221,18 @@ export class Tree {
       return;
     }
 
-    this.node._foldingType = this.isNodeExpanded() ? FoldingType.Collapsed : FoldingType.Expanded;
+    if (this.isNodeExpanded()) {
+      this.node._foldingType = FoldingType.Collapsed
+    } else {
+      this.node._foldingType = FoldingType.Expanded;
+
+      // 打开空节点
+      _.forEach(this.children, (child: Tree, index: number) => {
+        if ( child.node.type == 1 && (!child.children || child.children.length == 0) ) {
+          child.node._foldingType = FoldingType.Expanded;
+        }
+      });
+    }
   }
 
   /**
@@ -238,8 +249,10 @@ export class Tree {
    */
   public get foldingType(): FoldingType {
     if (!this.node._foldingType) {
-      if (this.node.type < 2) {
+      if (this.node.type == 0) {
         this.node._foldingType = FoldingType.Expanded;
+      } else if (this.node.type == 1) {
+        this.node._foldingType = FoldingType.Collapsed;
       } else {
         this.node._foldingType = FoldingType.Leaf;
       }

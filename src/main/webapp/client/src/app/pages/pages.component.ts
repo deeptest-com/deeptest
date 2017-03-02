@@ -4,7 +4,7 @@ import {Component, ViewEncapsulation} from '@angular/core';
   encapsulation: ViewEncapsulation.None,
   styles: [],
   template: `
-    <ba-page-top></ba-page-top>
+    <ba-page-top class="al-header"></ba-page-top>
     
     <div class="al-main">
       <div class="al-content">
@@ -31,7 +31,7 @@ import {Component, ViewEncapsulation} from '@angular/core';
 })
 export class Pages {
   constructor() {
-    
+
   }
 
   ngOnInit() {

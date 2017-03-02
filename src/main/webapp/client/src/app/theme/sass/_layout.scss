@@ -49,28 +49,30 @@ a {
   display: none;
 }
 
+
+pages {
+  display: flex;
+  flex-direction: column;
+}
 .al-header {
-  display: block;
-  height: 49px;
+  height: 66px;
   margin: 0;
   background-repeat: repeat-x;
-  position: relative;
   z-index: 905;
   color: #444444;
 }
 
 .al-main {
-  padding: 66px 0 34px 0;
-  position: relative;
+  flex: 1;
+  padding: 0;
   background: #fff;
 }
 
 .al-footer {
+  position: fixed;
   height: 34px;
   padding: 0 18px 0 ($left-space + 20px);
   width: 100%;
-  position: fixed;
-  display: block;
   bottom: 0;
   font-size: 13px;
   color: $default-text;

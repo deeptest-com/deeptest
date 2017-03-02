@@ -4,11 +4,17 @@ import { TreeModel, Ng2TreeSettings, Ng2TreeOptions } from './tree.types';
 import { NodeEvent } from './tree.events';
 import { Tree } from './tree';
 
+import { Utils } from '../../../../utils/utils';
+
 @Component({
   selector: 'tree',
   template: `
-    <tree-toolbar [tree]="tree" [options]="options"></tree-toolbar>
-    <tree-internal [tree]="tree" [options]="options"></tree-internal>
+    <div>
+      <tree-toolbar [tree]="tree" [options]="options"></tree-toolbar>
+    </div>
+     <div class="y-scrollable" [style.height]="mainHeight">
+      <tree-internal [tree]="tree" [options]="options"></tree-internal>
+    </div>
    `,
   providers: [TreeService]
 })
@@ -42,9 +48,10 @@ export class TreeComponent implements OnInit, OnChanges {
   public nodeSelected: EventEmitter<any> = new EventEmitter();
 
   public tree: Tree;
+  mainHeight: string;
 
   public constructor(@Inject(TreeService) private treeService: TreeService) {
-
+    this.mainHeight = Utils.getScreenSize().h - 110 + 'px';
   }
 
   public ngOnChanges(changes: SimpleChanges): void {

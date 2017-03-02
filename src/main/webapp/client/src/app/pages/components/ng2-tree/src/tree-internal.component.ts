@@ -4,13 +4,9 @@ import { Subject, Observable } from 'rxjs/Rx';
 import { Tree } from './tree';
 import {
   NodeRemovedEvent,
-
   NodeRenamedEvent,
-
   NodeCreatedEvent,
-
   NodeMovedEvent
-
 } from './tree.events';
 
 import { NodeMenuService } from './menu/node-menu.service';
@@ -23,7 +19,7 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
 @Component({
   selector: 'tree-internal',
   template: `
-  <ul class="tree" *ngIf="tree" [ngClass]="{rootless: isRootHidden()}">
+  <ul *ngIf="tree" [ngClass]="{rootless: isRootHidden()}" class="tree">
     <li> 
       <div class="value-container fa"
         [ngClass]="{rootless: isRootHidden()}" 
@@ -72,14 +68,12 @@ export class TreeInternalComponent implements OnInit {
                      @Inject(TreeService) private treeService: TreeService,
                      @Inject(ElementRef) public element: ElementRef) {
 
-    this.nodeMoved$.subscribe((e: NodeMovedEvent) => {
-      alert(1);
-    });
+
   }
 
   public ngOnInit(): void {
 
-    this.settings = this.settings || { rootIsVisible: false };
+    this.settings = this.settings || { rootIsVisible: true };
 
     this.nodeMenuService.hideMenuStream(this.element)
       .subscribe(() => this.isMenuVisible = false);

@@ -58,7 +58,7 @@ tree {
   font-size: 14px;
 }
 tree > tree-internal > ul {
-  margin: 0px 15px 0px 15px;
+  margin: 0px 0px 0px 0px;
 }
 
 tree-internal ul {

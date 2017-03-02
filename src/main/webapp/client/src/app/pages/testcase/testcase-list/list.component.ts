@@ -26,7 +26,7 @@ import { TestcaseService } from '../../../service/testcase';
   template: require('./list.html')
 })
 export class TestcaseList implements OnInit, AfterViewInit {
-  mainHeight: string;
+
   public options: Ng2TreeOptions = { isExpanded: false, nodeName: '用例', folderName: '模块'};
 
   query: any = {keywords: '', status: ''};
@@ -35,7 +35,7 @@ export class TestcaseList implements OnInit, AfterViewInit {
 
   constructor(private _routeService: RouteService, private _state:GlobalState,
               private _treeService: TreeService, private _testcaseService: TestcaseService) {
-    this.mainHeight = Utils.getScreenSize().h - 150 + 'px';
+    
   }
   ngOnInit() {
     let that = this;

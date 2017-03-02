@@ -116,6 +116,20 @@ export var Utils: any = {
     let r = url.match(reg);
     if(r != null) rt = decodeURIComponent(r[1]);
     return rt;
+  },
+
+  getScreenSize: function() {
+    var sh = window.screen.height;
+    if (document.body.clientHeight < sh) {
+      sh = document.body.clientHeight;
+    }
+
+    var sw = window.screen.width;
+    if (document.body.clientWidth < sw) {
+      sw = document.body.clientWidth;
+    }
+
+    return {h: sh, w: sw};
   }
 
 };

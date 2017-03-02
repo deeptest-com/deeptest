@@ -1,17 +1,19 @@
 import {Component, ViewEncapsulation} from '@angular/core';
 
 import { NgModule, Pipe, OnInit, AfterViewInit }      from '@angular/core';
+import { Ng2TreeOptions } from '../../components/ng2-tree/src/tree.types';
 
 import {NodeEvent,
   NodeMovedEvent, NodeMovedRemoteEvent,
   NodeRemovedEvent, NodeRemovedRemoteEvent,
   NodeCreatedEvent, NodeCreatedRemoteEvent,
   NodeRenamedEvent, NodeRenamedRemoteEvent,
-  NodeSelectedEvent, TreeModel } from '../../components/ng2-tree';
+  NodeSelectedEvent, TreeModel, Ng2TreeSettings} from '../../components/ng2-tree';
 
 import {GlobalState} from '../../../global.state';
 
 import { CONSTANT } from '../../../utils/constant';
+import { Utils } from '../../../utils/utils';
 import { RouteService } from '../../../service/route';
 import { TreeService } from '../../components/ng2-tree/src/tree.service';
 
@@ -24,19 +26,19 @@ import { TestcaseService } from '../../../service/testcase';
   template: require('./list.html')
 })
 export class TestcaseList implements OnInit, AfterViewInit {
+  mainHeight: string;
+  public options: Ng2TreeOptions = { isExpanded: false, nodeName: '用例', folderName: '模块'};
 
   query: any = {keywords: '', status: ''};
-    cases: Array<any> = [];
 
   public tree: TreeModel;
 
   constructor(private _routeService: RouteService, private _state:GlobalState,
               private _treeService: TreeService, private _testcaseService: TestcaseService) {
-
+    this.mainHeight = Utils.getScreenSize().h - 150 + 'px';
   }
   ngOnInit() {
     let that = this;
-
     that.loadData();
   }
 
@@ -106,6 +108,10 @@ export class TestcaseList implements OnInit, AfterViewInit {
 
     public logEvent(e: NodeEvent, message: string): void {
         console.log(e, message);
+    }
+
+    expandOrNot(): void {
+      this.options.isExpanded = !this.options.isExpanded;
     }
 }
 

@@ -24,13 +24,12 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
   selector: 'tree-internal',
   template: `
   <ul class="tree" *ngIf="tree" [ngClass]="{rootless: isRootHidden()}">
-    <li>
+    <li> 
       <div class="value-container fa"
         [ngClass]="{rootless: isRootHidden()}" 
         (contextmenu)="showMenu($event)" 
         [nodeDraggable]="element"
         [tree]="tree">
-
             <div class="folding" (click)="tree.switchFoldingType()" [ngClass]="tree.foldingType.cssClass"></div>
             <div class="node-value" 
               *ngIf="!shouldShowInputForTreeValue()" 
@@ -80,7 +79,7 @@ export class TreeInternalComponent implements OnInit {
 
   public ngOnInit(): void {
 
-    this.settings = this.settings || { rootIsVisible: true };
+    this.settings = this.settings || { rootIsVisible: false };
 
     this.nodeMenuService.hideMenuStream(this.element)
       .subscribe(() => this.isMenuVisible = false);
@@ -174,6 +173,7 @@ export class TreeInternalComponent implements OnInit {
   }
 
   public isRootHidden(): boolean {
+    console.log(this.settings);
     return this.tree.isRoot() && !this.settings.rootIsVisible;
   }
 }

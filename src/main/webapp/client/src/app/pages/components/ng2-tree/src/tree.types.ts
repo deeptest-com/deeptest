@@ -47,6 +47,7 @@ export interface Ng2TreeSettings {
   rootIsVisible?: boolean;
 }
 export interface Ng2TreeOptions {
+  isExpanded: boolean;
   nodeName: string;
   folderName: string;
 }

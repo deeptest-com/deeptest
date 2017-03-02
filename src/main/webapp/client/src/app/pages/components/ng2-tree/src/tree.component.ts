@@ -23,23 +23,15 @@ export class TreeComponent implements OnInit, OnChanges {
     @Input()
     public options: Ng2TreeOptions;
 
-  // @Output()
-  // public nodeCreated: EventEmitter<any> = new EventEmitter();
   @Output()
   public nodeCreatedRemote: EventEmitter<any> = new EventEmitter();
 
-  // @Output()
-  // public nodeRemoved: EventEmitter<any> = new EventEmitter();
     @Output()
     public nodeRemovedRemote: EventEmitter<any> = new EventEmitter();
 
-  // @Output()
-  // public nodeRenamed: EventEmitter<any> = new EventEmitter();
   @Output()
   public nodeRenamedRemote: EventEmitter<any> = new EventEmitter();
 
-  // @Output()
-  // public nodeMoved: EventEmitter<any> = new EventEmitter();
   @Output()
   public nodeMovedRemote: EventEmitter<any> = new EventEmitter();
 
@@ -63,30 +55,18 @@ export class TreeComponent implements OnInit, OnChanges {
   public ngOnInit(): void {
       let that = this;
 
-    // this.treeService.nodeRemoved$.subscribe((e: NodeEvent) => {
-    //   this.nodeRemoved.emit(e);
-    // });
       this.treeService.nodeRemovedRemote$.subscribe((e: NodeEvent) => {
           this.nodeRemovedRemote.emit(e);
       });
 
-    // this.treeService.nodeRenamed$.subscribe((e: NodeEvent) => {
-    //   this.nodeRenamed.emit(e);
-    // });
     this.treeService.nodeRenamedRemote$.subscribe((e: NodeEvent) => {
       this.nodeRenamedRemote.emit(e);
     });
 
-    // this.treeService.nodeCreated$.subscribe((e: NodeEvent) => {
-    //   this.nodeCreated.emit(e);
-    // });
     this.treeService.nodeCreatedRemote$.subscribe((e: NodeEvent) => {
       this.nodeCreatedRemote.emit(e);
     });
 
-    // this.treeService.nodeMoved$.subscribe((e: NodeEvent) => {
-    //   this.nodeMoved.emit(e);
-    // });
     this.treeService.nodeMovedRemote$.subscribe((e: NodeEvent) => {
       this.nodeMovedRemote.emit(e);
     });

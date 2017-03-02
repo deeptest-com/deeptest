@@ -1,32 +1,25 @@
-<div class="container-fluid testcase-list">
-  <div class="row">
-    <div class="my-toolbar">
-      <div class="title">
-        测试用例
-      </div>
-      <div class="filter">
-        <form class="form-inline">
-          <div class="form-group">
-            <label for="status">状态</label>
-            <select (ngModelChange)="statusChange($event)" [(ngModel)]="query.status" class="form-control form-control-sm" id="status" name="status">
-              <option value="">  所有  </option>
-              <option *ngFor="let entry of (statusMap | mapKeys)" value="{{entry.key}}">{{entry.value}}</option>
-            </select>
-          </div>
-        </form>
-      </div>
-      <div class="buttons">
-        <button (click)="create()" type="button" class="btn btn-primary btn-with-icon btn-sm">
-          <i class="ion-plus-circled"></i>新建
-        </button>
-      </div>
+<div class="testcase-list">
+  <div class="row my-toolbar">
+    <div class="title">
+      测试用例
+    </div>
+    <div class="filter">
+      <a (click)="expandOrNot()" href="javascript:void(0);">
+        <span *ngIf="!isExpanded">展开</span>
+        <span *ngIf="isExpanded">收缩</span>
+      </a>
+    </div>
+    <div class="buttons">
+      <button (click)="create()" type="button" class="btn btn-primary btn-with-icon btn-xs">
+        <i class="ion-plus-circled"></i>新建
+      </button>
     </div>
   </div>
   <!-- /.row -->
   <div class="row main">
-    <div class="list">
+    <div class="list y-scrollable" [style.height]="mainHeight">
       <tree [tree]="tree"
-            [options]="{ nodeName: '用例', folderName: '模块' }"
+            [options]="options"
             (nodeRemovedRemote)="onNodeRemovedRemote($event)"
             (nodeRenamedRemote)="onNodeRenamedRemote($event)"
             (nodeMovedRemote)="onNodeMovedRemote($event)"

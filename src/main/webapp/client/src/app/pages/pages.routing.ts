@@ -20,20 +20,12 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', loadChildren: () => System.import('./dashboard/dashboard.module') },
-      { path: 'testcase', loadChildren: () => System.import('./testcase/testcase.module') },
-        
+
+      { path: 'testcase', loadChildren: () => System.import('./testdesign/testcase/testcase.module') },
 
       { path: 'event', loadChildren: () => System.import('./event/event.module') },
       { path: 'business', loadChildren: () => System.import('./business/business.module') },
       { path: 'personal', loadChildren: () => System.import('./personal/personal.module') },
-
-      { path: 'editors', loadChildren: () => System.import('./editors/editors.module') },
-      //{ path: 'components', loadChildren: () => System.import('./components/components.module') }
-      { path: 'charts', loadChildren: () => System.import('./charts/charts.module') },
-      { path: 'ui', loadChildren: () => System.import('./ui/ui.module') },
-      { path: 'forms', loadChildren: () => System.import('./forms/forms.module') },
-      { path: 'tables', loadChildren: () => System.import('./tables/tables.module') },
-      { path: 'maps', loadChildren: () => System.import('./maps/maps.module') }
     ]
   }
 ];

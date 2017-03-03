@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {CONSTANT} from '../utils/constant';
 import {RequestService} from './request';
 
-import { TreeModel } from '../pages/components/ng2-tree/src/tree.types';
+import { TreeModel } from '../components/ng2-tree/src/tree.types';
 
 @Injectable()
 export class TestcaseService {
@@ -12,6 +12,15 @@ export class TestcaseService {
 
     query(query: TreeModel) {
         return this._reqService.post(this._api_url + 'query', query);
+    }
+
+    get(id: number) {
+      let model = {id: id};
+      return this._reqService.post(this._api_url + 'get', id);
+    }
+
+    save(model: number) {
+      return this._reqService.post(this._api_url + 'save', model);
     }
 
     create(node: TreeModel) {

@@ -40,7 +40,7 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
       </div>
 
       <node-menu *ngIf="isMenuVisible" (menuItemSelected)="onMenuItemSelected($event)"
-            [options]="options"></node-menu>
+            [isLeaf]="tree.isLeaf()" [options]="options"></node-menu>
 
       <template [ngIf]="tree.isNodeExpanded()">
         <tree-internal *ngFor="let child of tree.children" [tree]="child" [options]="options"></tree-internal>
@@ -115,7 +115,13 @@ export class TreeInternalComponent implements OnInit {
       case NodeMenuItemAction.NewTag:
         this.onNewSelected(e);
         break;
+      case NodeMenuItemAction.NewTagInner:
+        this.onNewSelected(e);
+        break;
       case NodeMenuItemAction.NewFolder:
+        this.onNewSelected(e);
+        break;
+      case NodeMenuItemAction.NewFolderInner:
         this.onNewSelected(e);
         break;
       case NodeMenuItemAction.Rename:
@@ -130,7 +136,7 @@ export class TreeInternalComponent implements OnInit {
   }
 
   private onNewSelected(e: NodeMenuItemSelectedEvent): void {
-    this.tree.createNode(e.nodeMenuItemAction === NodeMenuItemAction.NewFolder);
+    this.tree.createNode(e.nodeMenuItemAction);
     this.isMenuVisible = false;
   }
 

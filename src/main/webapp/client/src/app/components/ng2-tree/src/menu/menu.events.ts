@@ -1,6 +1,8 @@
 export enum NodeMenuItemAction {
   NewFolder,
   NewTag,
+  NewFolderInner,
+  NewTagInner,
   Rename,
   Remove
 }

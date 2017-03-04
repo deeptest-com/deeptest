@@ -5,10 +5,10 @@ import { ResizeDirective } from './resize/resize.directive';
 @NgModule({
   imports: [CommonModule],
   declarations: [ResizeDirective],
-  exports: [],
+  exports: [ResizeDirective],
   providers: []
 })
 export class DirectiveModule {
-  
+
 }
 

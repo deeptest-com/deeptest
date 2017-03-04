@@ -12,7 +12,8 @@ import { ModalModule } from 'ng2-bootstrap';
 import { ButtonsModule } from 'ng2-bootstrap';
 import { FileUploadModule } from 'ng2-file-upload';
 
-import { ResizeDirective } from '../../../directive/resize/resize.directive';
+import { DirectiveModule } from '../../../directive/directive.module';
+import { SlimLoadingBarModule } from '../../../components/ng2-loading-bar';
 import { TreeModule } from '../../../components/ng2-tree';
 
 import { RouteService } from '../../../service/route';
@@ -37,10 +38,12 @@ import { TestcaseEdit } from './edit/edit.component';
     ButtonsModule,
     CollapseModule,
     FileUploadModule,
+
+    DirectiveModule,
+    SlimLoadingBarModule.forRoot(),
     TreeModule
   ],
   declarations: [
-    ResizeDirective,
     Testcase,
     TestcaseList,
     TestcaseEdit

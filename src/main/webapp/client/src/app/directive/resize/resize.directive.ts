@@ -59,8 +59,6 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
   }
 
   private onmousemove(e):any {
-    console.log('===')
-
     if (!this.isResizing) {
       return;
     }

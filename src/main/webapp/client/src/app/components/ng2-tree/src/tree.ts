@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
-import { TreeModel, RenamableNode, FoldingType, TreeStatus, TreeModelSettings, Ng2TreeOptions } from './tree.types';
+import { TreeModel, RenamableNode, FoldingType, TreeStatus, TreeModelSettings, Ng2TreeOptions} from './tree.types';
+import { NodeMenuItemAction} from './menu/menu.events';
 
 export class Tree {
     private id: number;
@@ -23,13 +24,14 @@ export class Tree {
    * @param {boolean} isBranch - A flag that indicates whether a new node should be a "Branch". "Leaf" node will be created by default
    * @returns {Tree} A newly created child node.
    */
-  public createNode(isBranch: boolean): Tree {
-      let type = isBranch ? 1 : 2;
+  public createNode(action: NodeMenuItemAction): Tree {
+    let isBranch = action === NodeMenuItemAction.NewFolder || action === NodeMenuItemAction.NewFolderInner;
+    let type =  isBranch? 1 : 2;
 
     const tree = new Tree({id: undefined, value: '', type: type }, null, isBranch);
     tree.markAsNew();
 
-    if (this.isLeaf()) {
+    if (action === NodeMenuItemAction.NewFolder || action === NodeMenuItemAction.NewTag) {
       const thisTreeIndex = this.positionInParent;
 
       return this.addSibling(tree, thisTreeIndex);

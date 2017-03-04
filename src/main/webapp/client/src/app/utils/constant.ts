@@ -15,6 +15,8 @@ export var CONSTANT: any = {
     PROFILE_EXPIRE: 'cn.linkr.events.expire',
 
     EventStatus: [{not_start: '未开始'}, {register: '报名'}, {sign: '签到'},
-                             {in_progress: '进行中'}, {end: '已结束'}, {cancel: '取消'}]
+                             {in_progress: '进行中'}, {end: '已结束'}, {cancel: '取消'}],
+
+    ScreenSize: {h: 0, w: 0}
 };
 

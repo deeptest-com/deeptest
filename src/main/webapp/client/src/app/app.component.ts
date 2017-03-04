@@ -10,6 +10,7 @@ import {ComponentsHelper } from 'ng2-bootstrap';
 
 import { MENU } from './app.menu';
 
+import {CONSTANT} from './utils/constant';
 import {Utils} from './utils/utils';
 import {UserService} from './service/user';
 
@@ -52,6 +53,8 @@ export class App {
 
     Utils.config();
     this._userService.loadProfileLocal();
+
+    CONSTANT.ScreenSize = Utils.getScreenSize();
   }
 
   public ngAfterViewInit(): void {

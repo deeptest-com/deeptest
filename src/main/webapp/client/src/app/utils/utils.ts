@@ -130,6 +130,10 @@ export var Utils: any = {
     }
 
     return {h: sh, w: sw};
+  },
+
+  getContainerHeight: function (h: number) {
+    return CONSTANT.ScreenSize.h - h + 'px'
   }
 
 };

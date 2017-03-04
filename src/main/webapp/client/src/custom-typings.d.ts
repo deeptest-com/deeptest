@@ -125,3 +125,7 @@ interface JQuery {
   datepicker(...args):void;
   timepicker(...args):void;
 }
+
+interface DataTransfer extends DataTransfer {
+  setDragImage(img: HTMLElement, xOffset: string, yOffset: string): number;
+}

@@ -31,23 +31,19 @@
             <tr>
               <th>编号</th>
               <th>名称</th>
-              <th>地点</th>
+              <th>描述</th>
               <th>状态</th>
-              <th>开始时间</th>
-              <th>结束时间</th>
               <th>操作</th>
             </tr>
             </thead>
             <tbody>
             <tr *ngFor="let item of models; let i = index">
-              <th scope="row">{{i}}</th>
-              <td>{{item.title}}</td>
-              <td>{{item.address}}</td>
-              <td>{{item.status | eventStatus}}</td>
-              <td>{{item.startDatetime | date:'yyyy/MM/dd'}}</td>
-              <td>{{item.endDatetime | date:'yyyy/MM/dd'}}</td>
+              <th scope="row">{{i + 1}}</th>
+              <td>{{item.name}}</td>
+              <td>{{item.descr}}</td>
+              <td>{{item.isActive | isActive}}</td>
               <td class="opt">
-                <i [routerLink]="['/pages/event/edit',item.id,'property', {im: true}]" class="ion-edit link"></i>
+                <i [routerLink]="['/pages/event/edit',item.id]" class="ion-edit link"></i>
                 <i (click)="delete(item.id)" class="ion-trash-a link"></i>
               </td>
             </tr>

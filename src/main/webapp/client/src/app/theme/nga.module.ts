@@ -10,6 +10,7 @@ import { KeysPipe } from '../pipe/keys';
 import { DatePipe } from '../pipe/date';
 import { ModelStatusPipe } from '../pipe/model-status';
 import { EventStatusPipe } from '../pipe/event-status';
+import { IsActivePipe } from '../pipe/is-active';
 
 import {
   BaThemeConfig
@@ -87,7 +88,7 @@ const NGA_PIPES = [
   BaProfilePicturePipe
 ];
 const MY_PIPES = [
-  ImgPathPipe, ThumbPathPipe, KeysPipe, DatePipe,ModelStatusPipe, EventStatusPipe
+  ImgPathPipe, ThumbPathPipe, KeysPipe, DatePipe,ModelStatusPipe, EventStatusPipe, IsActivePipe
 ];
 
 const NGA_SERVICES = [

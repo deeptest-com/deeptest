@@ -34,11 +34,11 @@ import cn.linkr.testspace.vo.TestProjectVo;
 public class TestProjectServiceImpl extends BaseServiceImpl implements TestProjectService {
 
 	@Override
-	public List<TestProject> list(String status, String keywords) {
-        DetachedCriteria dc = DetachedCriteria.forClass(TestCase.class);
+	public Page list(String isActive, String keywords, int currentPage, int itemsPerPage) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
         
-        if (status != null) {
-			dc.add(Restrictions.eq("status", EventStatus.cancel));
+        if (isActive != null) {
+			dc.add(Restrictions.eq("isActive", Boolean.valueOf(isActive)));
 		}
         if (StringUtil.isNotEmpty(keywords)) {
         	dc.add(Restrictions.like("name", "%" + keywords + "%"));
@@ -47,9 +47,9 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements TestProje
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         dc.addOrder(Order.asc("id"));
-        List<TestProject> ls = findAllByCriteria(dc);
+        Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
         
-        return ls;
+        return page;
 	}
 	
 	@Override

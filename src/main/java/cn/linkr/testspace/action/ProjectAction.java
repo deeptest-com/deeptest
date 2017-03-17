@@ -46,13 +46,17 @@ public class ProjectAction extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		String status = json.getString("status");
+		String isActive = json.getString("isActive");
 		String keywords = json.getString("keywords");
+	
+		int currentPage = json.getString("currentPage") == null? 0: Integer.valueOf(json.getString("currentPage")) - 1;
+		int itemsPerPage = json.getString("itemsPerPage") == null? Constant.PAGE_SIZE: Integer.valueOf(json.getString("itemsPerPage"));
 		
-		List<TestProject> pos = projectService.list(status, keywords);
-		List<TestProjectVo> vos = projectService.genVos(pos);
+		Page page = projectService.list(isActive, keywords, currentPage, itemsPerPage);
+		List<TestProjectVo> vos = projectService.genVos(page.getItems());
 		
         ret.put("data", vos);
+        ret.put("totalItems", page.getTotal());
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

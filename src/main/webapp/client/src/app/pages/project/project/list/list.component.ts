@@ -1,5 +1,5 @@
 import {Component, ViewEncapsulation, OnInit, AfterViewInit, ViewChild} from "@angular/core";
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 import {GlobalState} from "../../../../global.state";
 import {CONSTANT} from "../../../../utils/constant";
@@ -14,11 +14,15 @@ import {ProjectService} from "../../../../service/project";
   template: require('./list.html')
 })
 export class ProjectList implements OnInit, AfterViewInit {
-  queryForm: any;
+  totalItems:number = 0;
+  currentPage:number = 1;
+  itemsPerPage:number = 6;
+
+  queryForm: FormGroup;
   queryModel:any = {keywords: '', status: ''};
 
   models: any = [];
-  statusMap: Array<any> = CONSTANT.EntityStatus;
+  statusMap: Array<any> = CONSTANT.EntityActive;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder,
               private _projectService:ProjectService) {
@@ -29,8 +33,8 @@ export class ProjectList implements OnInit, AfterViewInit {
 
     that.queryForm = that.fb.group(
       {
-        'status': [that.queryModel.email, []],
-        'keywords': [that.queryModel.website, []]
+        'status': [that.queryModel.status, []],
+        'keywords': [that.queryModel.keywords, []]
       }, {}
     );
 
@@ -64,8 +68,10 @@ export class ProjectList implements OnInit, AfterViewInit {
 
   loadData() {
     let that = this;
-    that._projectService.list(that.queryModel).subscribe((json:any) => {
-      that.models = [];
+    that._projectService.list(that.queryModel, that.currentPage, that.itemsPerPage).subscribe((json:any) => {
+      console.log('json', json);
+      that.models = json.data;
+      that.totalItems = json.totalItems;
     });
   }
 

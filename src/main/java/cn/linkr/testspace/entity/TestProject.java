@@ -17,6 +17,8 @@ public class TestProject extends BaseEntity {
     
 	@Column(name = "descr", length = 1000)
     private String descr;
+	
+	private Boolean isActive;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", insertable = false, updatable = false)
@@ -55,6 +57,14 @@ public class TestProject extends BaseEntity {
 
 	public void setCompanyId(Long companyId) {
 		this.companyId = companyId;
+	}
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
 	}
     
     

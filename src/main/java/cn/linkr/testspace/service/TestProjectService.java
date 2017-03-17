@@ -13,7 +13,7 @@ import cn.linkr.testspace.vo.TestProjectVo;
 
 public interface TestProjectService extends BaseService {
 
-	List<TestProject> list(String status, String keywords);
+	Page list(String status, String keywords, int currentPage, int itemsPerPage);
 
 	TestProjectVo genVo(TestProject po);
 	List<TestProjectVo> genVos(List<TestProject> pos);

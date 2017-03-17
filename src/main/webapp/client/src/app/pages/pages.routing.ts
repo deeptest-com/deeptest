@@ -16,12 +16,14 @@ const routes: Routes = [
   },
   {
     path: 'pages',
+
     component: Pages,
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', loadChildren: () => System.import('./dashboard/dashboard.module') },
 
-      { path: 'testcase', loadChildren: () => System.import('./testdesign/testcase/testcase.module') },
+      { path: 'project', loadChildren: () => System.import('./project/project/project.module') },
+      { path: 'case', loadChildren: () => System.import('./design/case/case.module') },
 
       { path: 'event', loadChildren: () => System.import('./event/event.module') },
       { path: 'business', loadChildren: () => System.import('./business/business.module') },

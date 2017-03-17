@@ -1,0 +1,69 @@
+<div class="project-list container-fluid">
+    <div class="row">
+      <div class="list-toolbar col-xl-12">
+        <div class="filter">
+          <form [formGroup]="queryForm" class="form-inline">
+                <label for="status">状态</label>
+                <select [(ngModel)]="queryModel.status" formControlName="status"
+                        class="form-control form-control-sm" id="status" name="status">
+                  <option value="">  所有  </option>
+                  <option *ngFor="let entry of (statusMap | mapKeys)" value="{{entry.key}}">{{entry.value}}</option>
+                </select>
+                &nbsp;&nbsp;&nbsp;
+                <label for="keywords">关键字</label>
+                <input [(ngModel)]="queryModel.keywords" formControlName="keywords"
+                       type="text" class="form-control form-control-sm" placeholder="" id="keywords" name="keywords">
+          </form>
+        </div>
+        <div class="buttons">
+          <button (click)="create()" type="button" class="btn btn-primary btn-with-icon btn-sm">
+            <i class="ion-plus-circled"></i>新建
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- /.row -->
+    <div class="row">
+      <div class="card card-block no-border">
+        <div class="table-responsive">
+          <table class="table table-hover table-striped">
+            <thead class="thead-inverse">
+            <tr>
+              <th>编号</th>
+              <th>名称</th>
+              <th>地点</th>
+              <th>状态</th>
+              <th>开始时间</th>
+              <th>结束时间</th>
+              <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of models; let i = index">
+              <th scope="row">{{i}}</th>
+              <td>{{item.title}}</td>
+              <td>{{item.address}}</td>
+              <td>{{item.status | eventStatus}}</td>
+              <td>{{item.startDatetime | date:'yyyy/MM/dd'}}</td>
+              <td>{{item.endDatetime | date:'yyyy/MM/dd'}}</td>
+              <td class="opt">
+                <i [routerLink]="['/pages/event/edit',item.id,'property', {im: true}]" class="ion-edit link"></i>
+                <i (click)="delete(item.id)" class="ion-trash-a link"></i>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+
+          <div class="page-container">
+            <pagination [totalItems]="totalItems" [(ngModel)]="currentPage"
+                        [maxSize]="maxSize" [itemsPerPage]="itemsPerPage" class="pagination-sm"
+                        [boundaryLinks]="true" [rotate]="false"
+                        (numPages)="numPages = $event" (pageChanged)="pageChanged($event)"
+                        previousText="上一页" nextText="下一页" firstText="第一页" lastText="最后页">
+            </pagination>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</div>

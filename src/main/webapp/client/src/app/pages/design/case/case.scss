@@ -1,11 +1,7 @@
-.testcase {
+.case {
   .main {
     position: relative;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: moz-none;
-    -ms-user-select: none;
+    touch-callout: none;
     user-select: none;
 
     .list {
@@ -13,7 +9,7 @@
       left: 0;
       top: 0;
       bottom: 0;
-      right: 100px;
+      right: 3px;
       width: 30%;
     }
     .detail {
@@ -26,11 +22,11 @@
     .handle {
       position:absolute;
       top:0;
-      left: 0;
-      height:100%;
+      left: 30%;
       width: 3px;
       cursor: col-resize;
       background-color: #eeeeee;
+      z-index: 99999;
     }
   }
 }

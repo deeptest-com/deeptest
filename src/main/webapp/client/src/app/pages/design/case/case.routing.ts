@@ -1,14 +1,14 @@
 import { Routes, RouterModule }  from '@angular/router';
 
-import { Testcase } from './testcase.component';
-import { TestcaseList } from './list/list.component';
-import { TestcaseEdit } from './edit/edit.component';
+import { Case } from './case.component';
+import { CaseList } from './list/list.component';
+import { CaseEdit } from './edit/edit.component';
 
 // noinspection TypeScriptValidateTypes
 const routes: Routes = [
   {
     path: '',
-    component: Testcase,
+    component: Case,
     children: [
       
     ]

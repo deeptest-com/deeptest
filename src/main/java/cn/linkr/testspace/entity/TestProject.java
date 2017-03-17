@@ -7,8 +7,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import cn.linkr.testspace.entity.EvtEvent.EventStatus;
+
 @Entity
-@Table(name = "test_project")
+@Table(name = "tst_project")
 public class TestProject extends BaseEntity {
 	private static final long serialVersionUID = 7813647435255173689L;
 	private String name;
@@ -18,7 +20,7 @@ public class TestProject extends BaseEntity {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", insertable = false, updatable = false)
-    private TestCompany company;
+    private SysCompany company;
 
     @Column(name = "company_id")
     private Long companyId;
@@ -39,11 +41,11 @@ public class TestProject extends BaseEntity {
 		this.descr = descr;
 	}
 
-	public TestCompany getCompany() {
+	public SysCompany getCompany() {
 		return company;
 	}
 
-	public void setCompany(TestCompany company) {
+	public void setCompany(SysCompany company) {
 		this.company = company;
 	}
 

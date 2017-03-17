@@ -41,7 +41,7 @@ a.al-logo:hover {
 
 .user-profile {
   float: right;
-  min-width: 230px;
+  min-width: 180px;
   margin-top: 10px;
 }
 
@@ -125,7 +125,7 @@ a.collapse-menu-link {
   overflow: hidden;
   width: 162px;
   float: left;
-  margin: 20px 0 0 30px;
+  margin: 20px 0 0 10px;
 
   label {
     cursor: pointer;
@@ -152,9 +152,9 @@ a.collapse-menu-link {
 
 .menu {
   margin: 20px 0 0 30px;
-  width: 600px;
+  width: 700px;
   float: left;
-  .dropdown button.btn.btn-default.dropdown-toggle {
+  .dropdown button.btn.btn-default {
     color: #ffffff;
     border: 0;
   }

@@ -11,25 +11,23 @@ import { Utils } from '../../../../utils/utils';
 import {ValidatorUtils} from '../../../../validator/validator.utils';
 import { RouteService } from '../../../../service/route';
 
-import { TestcaseService } from '../../../../service/testcase';
+import { CaseService } from '../../../../service/case';
 
 declare var jQuery;
 
 @Component({
-  selector: 'testcase-edit',
+  selector: 'case-edit',
   encapsulation: ViewEncapsulation.None,
   styles: [require('./edit.scss')],
   template: require('./edit.html')
 })
-export class TestcaseEdit implements OnInit, AfterViewInit {
+export class CaseEdit implements OnInit, AfterViewInit {
   id: number;
   model: any = {};
   form: any;
   isSubmitted: boolean;
   uploadedFile: any;
   hasBaseDropZoneOver:boolean = false;
-
-  contentHeight = Utils.getContainerHeight(120);
 
   private allowedMimeType: string[] = ['image/png', 'image/jpeg'];
   private uploaderOptions:FileUploaderOptions = {
@@ -44,7 +42,7 @@ export class TestcaseEdit implements OnInit, AfterViewInit {
   };
   public uploader: FileUploader;
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
-              private _testcaseService: TestcaseService) {
+              private _caseService: CaseService) {
 
   }
   ngOnInit() {
@@ -115,7 +113,7 @@ export class TestcaseEdit implements OnInit, AfterViewInit {
 
   loadData() {
     let that = this;
-    that._testcaseService.get(that.id).subscribe((json:any) => {
+    that._caseService.get(that.id).subscribe((json:any) => {
       that.model = json.data;
     });
   }
@@ -123,7 +121,7 @@ export class TestcaseEdit implements OnInit, AfterViewInit {
   save() {
     let that = this;
 
-    that._testcaseService.save(that.model).subscribe((json:any) => {
+    that._caseService.save(that.model).subscribe((json:any) => {
       if (json.code == 1) {
         that.model = json.data;
       }

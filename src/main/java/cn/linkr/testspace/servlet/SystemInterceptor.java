@@ -35,8 +35,6 @@ public class SystemInterceptor implements HandlerInterceptor {
             Constant.WORK_DIR = request.getSession().getServletContext().getRealPath("/");;
         }
         
-        System.out.println("===" + request.getSession().getId());
-        
         if (handler.getClass().isAssignableFrom(HandlerMethod.class)) {
             // 方法上是否有身份验证注解
             AuthPassport authPassport = ((HandlerMethod) handler).getMethodAnnotation(AuthPassport.class);

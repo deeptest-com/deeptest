@@ -16,59 +16,57 @@
         <li class="dropdown-item"><a href="#">项目1</a></li>
         <li class="dropdown-item"><a href="#">项目2</a></li>
         <li class="dropdown-item"><a href="#">项目3</a></li>
-        <li class="dropdown-item"><a href="#">项目4</a></li>
-        <li class="dropdown-item"><a href="#">项目5</a></li>
         <li class="dropdown-divider"></li>
 
-        <li class="dropdown-item"><a [routerLink]="['/pages/event/list', {title: '所有项目'}]">查看所有项目</a></li>
+        <li class="dropdown-item"><a [routerLink]="['/pages/project/list', {title: '所有项目'}]">所有项目</a></li>
       </ul>
     </div>
 
     <div class="btn-group" dropdown>
+      <button type="button" class="btn btn-default">
+        需求
+      </button>
+    </div>
+
+    <div class="btn-group" dropdown>
       <button type="button" class="btn btn-default" dropdownToggle addToggleClass="true">
-        测试设计
+        设计
       </button>
       <ul class="dropdown-menu" dropdownMenu>
-        <li class="dropdown-item"><a [routerLink]="['/pages/testcase', {title: '测试用例'}]">测试用例</a></li>
+        <li class="dropdown-item"><a [routerLink]="['/pages/case', {title: '测试用例'}]">测试用例</a></li>
         <li class="dropdown-item"><a href="#">用例集合</a></li>
       </ul>
     </div>
 
     <div class="btn-group" dropdown>
       <button type="button" class="btn btn-default" dropdownToggle addToggleClass="true">
-        测试规划
+        执行
       </button>
       <ul class="dropdown-menu" dropdownMenu>
-        <li class="dropdown-item"><a href="#">测试环境</a></li>
-        <li class="dropdown-item"><a href="#">测试计划</a></li>
+          <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">测试计划</a></li>
+          <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">测试环境</a></li>
       </ul>
     </div>
 
     <div class="btn-group" dropdown>
-      <button type="button" class="btn btn-default" dropdownToggle addToggleClass="true">
-        测试执行
+      <button type="button" class="btn btn-default">
+        分析
       </button>
-      <ul class="dropdown-menu" dropdownMenu>
-          <li class="dropdown-item">当前任务</li>
-          <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">TestSpace冒烟测试</a></li>
-          <li class="dropdown-divider"></li>
-
-          <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">查看所有任务</a></li>
-      </ul>
     </div>
 
     <div class="btn-group" dropdown>
       <button type="button" class="btn btn-default" dropdownToggle addToggleClass="true">
-        测试分析
+        系统
       </button>
       <ul class="dropdown-menu" dropdownMenu>
-          <li class="dropdown-item">当前任务</li>
-          <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">TestSpace冒烟测试</a></li>
-          <li class="dropdown-divider"></li>
-
-          <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">查看所有任务</a></li>
+        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">用户角色</a></li>
+        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">站点设置</a></li>
+        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">自定义属性</a></li>
+        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">第三方集成</a></li>
+        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">许可证</a></li>
       </ul>
     </div>
+
   </div>
 
     <div class="search">

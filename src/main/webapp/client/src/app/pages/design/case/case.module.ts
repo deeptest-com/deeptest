@@ -3,7 +3,7 @@ import { CommonModule }  from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgaModule } from '../../../theme/nga.module';
 
-import { routing }       from './testcase.routing';
+import { routing }       from './case.routing';
 
 import { PaginationModule} from 'ng2-bootstrap';
 import { TabsModule } from 'ng2-bootstrap';
@@ -19,11 +19,11 @@ import { TreeModule } from '../../../components/ng2-tree';
 import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
 import { DatetimePickerService } from '../../../service/datetime-picker';
-import { TestcaseService } from '../../../service/testcase';
+import { CaseService } from '../../../service/case';
 
-import { Testcase } from './testcase.component';
-import { TestcaseList } from './list/list.component';
-import { TestcaseEdit } from './edit/edit.component';
+import { Case } from './case.component';
+import { CaseList } from './list/list.component';
+import { CaseEdit } from './edit/edit.component';
 
 @NgModule({
   imports: [
@@ -44,16 +44,16 @@ import { TestcaseEdit } from './edit/edit.component';
     TreeModule
   ],
   declarations: [
-    Testcase,
-    TestcaseList,
-    TestcaseEdit
+    Case,
+    CaseList,
+    CaseEdit
   ],
   providers: [
     RouteService,
     RequestService,
     DatetimePickerService,
-    TestcaseService,
+    CaseService,
   ]
 })
-export default class TestcaseModule {}
+export default class CaseModule {}
 

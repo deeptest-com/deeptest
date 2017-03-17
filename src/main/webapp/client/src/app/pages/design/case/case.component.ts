@@ -4,13 +4,13 @@ import { CONSTANT } from '../../../utils/constant';
 import { Utils } from '../../../utils/utils';
 
 @Component({
-  selector: 'testcase',
-  styles: [require('./testcase.scss')],
-  template: require('./testcase.html')
+  selector: 'case',
+  styles: [require('./case.scss')],
+  template: require('./case.html')
 })
-export class Testcase {
+export class Case {
 
-  contentHeight = Utils.getContainerHeight(100);
+  contentHeight = Utils.getContainerHeight(105);
 
   constructor() {
   }

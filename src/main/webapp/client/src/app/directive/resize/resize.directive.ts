@@ -12,7 +12,7 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
   private container:any;
   private left:any;
   private right:any;
-  private bar:any;
+  private handle:any;
   private disX:number;
 
   private isResizing: boolean;
@@ -38,7 +38,7 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
 
     this.left = jQuery(left);
     this.right = jQuery(right);
-    this.bar = jQuery(handle);
+    this.handle = jQuery(handle);
 
     this.disposersForDragListeners.push(
       this.renderer.listen(handle, 'mousedown', this.onmousedown.bind(this)));
@@ -65,7 +65,8 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
 
     let rightWidth = this.container.width() - (e.clientX - this.container.offset().left);
     this.left.css('right', rightWidth);
-    this.left.css('width', e.clientX - 5);
+    this.left.css('width', e.clientX);
+    this.handle.css('left', e.clientX);
     this.right.css('width', rightWidth);
   }
 

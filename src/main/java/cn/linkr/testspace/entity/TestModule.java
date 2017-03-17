@@ -8,7 +8,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "test_module")
+@Table(name = "tst_module")
 public class TestModule extends BaseEntity {
 	private static final long serialVersionUID = 1143003229222439772L;
 	

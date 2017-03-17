@@ -52,7 +52,6 @@ export interface Ng2TreeOptions {
   isExpanded: boolean;
   nodeName: string;
   folderName: string;
-  contentHeight: string;
 }
 
 export enum TreeStatus {

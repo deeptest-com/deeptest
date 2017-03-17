@@ -6,9 +6,9 @@ import {RequestService} from './request';
 import { TreeModel } from '../components/ng2-tree/src/tree.types';
 
 @Injectable()
-export class TestcaseService {
+export class CaseService {
     constructor(private _reqService: RequestService) { }
-    _api_url = 'testcase/';
+    _api_url = 'case/';
 
     query(query: TreeModel) {
         return this._reqService.post(this._api_url + 'query', query);

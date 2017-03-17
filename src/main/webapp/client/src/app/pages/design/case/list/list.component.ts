@@ -14,29 +14,27 @@ import {Utils} from "../../../../utils/utils";
 import {RouteService} from "../../../../service/route";
 import {SlimLoadingBarService} from "../../../../components/ng2-loading-bar";
 import {TreeService} from "../../../../components/ng2-tree/src/tree.service";
-import {TestcaseService} from "../../../../service/testcase";
+import {CaseService} from "../../../../service/case";
 
 @Component({
-  selector: 'testcase-list',
+  selector: 'case-list',
   encapsulation: ViewEncapsulation.None,
   styles: [require('./list.scss'), require('../../../../components/ng2-tree/src/styles.scss')],
   template: require('./list.html')
 })
-export class TestcaseList implements OnInit, AfterViewInit {
+export class CaseList implements OnInit, AfterViewInit {
   query:any = {keywords: '', status: ''};
 
   public options:Ng2TreeOptions = {
     isExpanded: false,
     nodeName: '用例',
-    folderName: '模块',
-    contentHeight: Utils.getContainerHeight(110)
+    folderName: '模块'
   }
   public tree:TreeModel;
 
   constructor(private _routeService:RouteService, private _state:GlobalState,
-              private _treeService:TreeService, private _testcaseService:TestcaseService,
+              private _treeService:TreeService, private _caseService:CaseService,
               private slimLoadingBarService:SlimLoadingBarService) {
-
   }
 
   ngOnInit() {
@@ -68,7 +66,7 @@ export class TestcaseList implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
     this.startLoading();
-    that._testcaseService.query(that.query).subscribe((json:any) => {
+    that._caseService.query(that.query).subscribe((json:any) => {
       that.tree = json.data;
       that.completeLoading();
       this._state.notifyDataChanged('title.change', '测试用例');
@@ -80,7 +78,7 @@ export class TestcaseList implements OnInit, AfterViewInit {
     this.logEvent(e, 'NodeRemovedRemoteEvent');
 
     this.startLoading();
-    that._testcaseService.delete(e.node.node).subscribe((json:any) => {
+    that._caseService.delete(e.node.node).subscribe((json:any) => {
       this._treeService.fireNodeRemoved(e.node);
       that.completeLoading();
     });
@@ -90,7 +88,7 @@ export class TestcaseList implements OnInit, AfterViewInit {
     let that = this;
     this.logEvent(e, 'NodeMovedRemoteEvent');
     this.startLoading();
-    that._testcaseService.move(e.node.node, e.srcTree.node, e.options).subscribe((json:any) => {
+    that._caseService.move(e.node.node, e.srcTree.node, e.options).subscribe((json:any) => {
       this._treeService.fireNodeMoved(e.node, e.srcTree, e.options);
       that.completeLoading();
     });
@@ -100,7 +98,7 @@ export class TestcaseList implements OnInit, AfterViewInit {
     let that = this;
     this.logEvent(e, 'NodeRenamedEvent');
     this.startLoading();
-    that._testcaseService.rename(e.node.node).subscribe((json:any) => {
+    that._caseService.rename(e.node.node).subscribe((json:any) => {
       that.completeLoading();
     });
   }
@@ -109,7 +107,7 @@ export class TestcaseList implements OnInit, AfterViewInit {
     let that = this;
     that.logEvent(e, 'NodeCreatedEvent');
     this.startLoading();
-    that._testcaseService.create(e.node.node).subscribe((json:any) => {
+    that._caseService.create(e.node.node).subscribe((json:any) => {
       that.completeLoading();
     });
   }

@@ -1,6 +1,7 @@
 package cn.linkr.testspace.action;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -48,15 +49,13 @@ public class ProjectAction extends BaseAction {
 		
 		String isActive = json.getString("isActive");
 		String keywords = json.getString("keywords");
-	
-		int currentPage = json.getString("currentPage") == null? 0: Integer.valueOf(json.getString("currentPage")) - 1;
-		int itemsPerPage = json.getString("itemsPerPage") == null? Constant.PAGE_SIZE: Integer.valueOf(json.getString("itemsPerPage"));
 		
-		Page page = projectService.list(isActive, keywords, currentPage, itemsPerPage);
-		List<TestProjectVo> vos = projectService.genVos(page.getItems());
+		List pos = projectService.list(isActive, keywords);
+		Map<String, Integer> param = new HashMap<String, Integer>();
+		HashSet<TestProjectVo> vos = projectService.genVos(pos, param);
 		
         ret.put("data", vos);
-        ret.put("totalItems", page.getTotal());
+        ret.put("maxDepth", param.get("maxDepth"));
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

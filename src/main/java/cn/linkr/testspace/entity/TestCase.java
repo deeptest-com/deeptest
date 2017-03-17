@@ -18,9 +18,15 @@ public class TestCase extends BaseEntity {
     
 	@Column(name = "descr", length = 1000)
     private String descr;
-	
-	private Long pid;
+
 	private Integer type; // 0 root, 1 folder, 2 node
+	
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", insertable = false, updatable = false)
+    private TestCase parent;
+
+    @Column(name = "parent_id")
+    private Long parentId;
 	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
@@ -84,14 +90,6 @@ public class TestCase extends BaseEntity {
 		this.estimate = estimate;
 	}
 
-	public Long getPid() {
-		return pid;
-	}
-
-	public void setPid(Long pid) {
-		this.pid = pid;
-	}
-
 	public Integer getType() {
 		return type;
 	}
@@ -114,5 +112,21 @@ public class TestCase extends BaseEntity {
 
 	public void setProjectId(Long projectId) {
 		this.projectId = projectId;
+	}
+
+	public TestCase getParent() {
+		return parent;
+	}
+
+	public void setParent(TestCase parent) {
+		this.parent = parent;
+	}
+
+	public Long getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(Long parentId) {
+		this.parentId = parentId;
 	}
 }

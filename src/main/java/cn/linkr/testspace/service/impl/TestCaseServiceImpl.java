@@ -54,13 +54,13 @@ public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseServ
 	@Override
 	public TestCaseTreeVo buildTree(List<TestCase> ls) {
 		TestCaseTreeVo root = null;
-		int i = 0;
+
 		Map<Long, TestCaseTreeVo> nodeMap = new HashMap<Long, TestCaseTreeVo>();
         for (TestCase po : ls) {
         	Long id = po.getId();
         	String title = po.getTitle();
         	Integer type = po.getType();
-        	Long pid = po.getPid();
+        	Long pid = po.getParentId();
         	
         	TestCaseTreeVo newNode = new TestCaseTreeVo(id, title, type, pid);
         	nodeMap.put(id, newNode);

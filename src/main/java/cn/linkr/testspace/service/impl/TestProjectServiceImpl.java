@@ -1,6 +1,9 @@
 package cn.linkr.testspace.service.impl;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +37,7 @@ import cn.linkr.testspace.vo.TestProjectVo;
 public class TestProjectServiceImpl extends BaseServiceImpl implements TestProjectService {
 
 	@Override
-	public Page list(String isActive, String keywords, int currentPage, int itemsPerPage) {
+	public List list(String isActive, String keywords) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
         
         if (isActive != null) {
@@ -46,10 +49,11 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements TestProje
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+        dc.addOrder(Order.asc("parent"));
         dc.addOrder(Order.asc("id"));
-        Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
+        List ls = findAllByCriteria(dc);
         
-        return page;
+        return ls;
 	}
 	
 	@Override
@@ -65,23 +69,73 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements TestProje
 		return null;
 	}
 
+	// need to be cache
 	@Override
-	public List<TestProjectVo> genVos(List<TestProject> pos) {
-        List<TestProjectVo> vos = new LinkedList<TestProjectVo>();
-
+	public HashSet<TestProjectVo> genVos(List<TestProject> pos, Map<String, Integer> ret) {
+		int maxDepth = 0;
+		
+        TestProjectVo root = new TestProjectVo();
+        Map<Long, TestProjectVo> voMap = new HashMap<Long, TestProjectVo>();
         for (TestProject po: pos) {
+        	if (po.getDepth() > maxDepth) {
+        		maxDepth = po.getDepth();
+        	}
+        	
+        	Long id = po.getId();
+        	Long pid = po.getParentId();
+        	
         	TestProjectVo vo = genVo(po);
-        	vos.add(vo);
+        	voMap.put(id, vo);
+        	
+        	if (voMap.get(pid) != null) {
+        		voMap.get(pid).getChildren().add(vo);
+        	} else {
+        		root.getChildren().add(vo);
+        	}
         }
-		return vos;
+        
+        HashSet<TestProjectVo> out = new LinkedHashSet<TestProjectVo>();
+        this.toList(root, out);
+        for (TestProjectVo vo: out) {
+        	vo.setChildren(null);
+        }
+        ret.put("maxDepth", maxDepth);
+		return out;
 	}
 	
 	@Override
 	public TestProjectVo genVo(TestProject po) {
 		TestProjectVo vo = new TestProjectVo();
 		BeanUtilEx.copyProperties(vo, po);
+		if (po.getParentId() == null) {
+			vo.setParentId(null);
+		}
 		return vo;
 	}
-
+	
+	@Override
+	public void toList(TestProjectVo root, HashSet<TestProjectVo> out) {
+		Iterator<TestProjectVo> it = root.getChildren().iterator();
+		while (it.hasNext()) {
+			TestProjectVo vo = it.next();
+			int count = 0;
+			count = this.countChildrenNumb(vo, count);
+			vo.setChildrenNumb(count);
+			
+			out.add(vo);
+			this.toList(vo, out);
+		}
+	}
+	
+	@Override
+	public int countChildrenNumb(TestProjectVo vo, int count) {
+		Iterator<TestProjectVo> it = vo.getChildren().iterator();
+		while (it.hasNext()) {
+			TestProjectVo child = it.next();
+			count++;
+			
+			count = this.countChildrenNumb(child, count);
+		}
+		return count;
+	}
 }
-

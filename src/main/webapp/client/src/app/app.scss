@@ -106,6 +106,9 @@ main {
   color: #209e91;
   cursor:pointer;
   font-size: 16px;
+  &.no-underline {
+    text-decoration: none !important;
+  }
 }
 .pointer {
   cursor: pointer;

@@ -13,8 +13,6 @@ import { ButtonsModule } from 'ng2-bootstrap';
 import { FileUploadModule } from 'ng2-file-upload';
 
 import { DirectiveModule } from '../../../directive/directive.module';
-import { SlimLoadingBarModule } from '../../../components/ng2-loading-bar';
-import { TreeModule } from '../../../components/ng2-tree';
 
 import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
@@ -39,9 +37,7 @@ import { ProjectEdit } from './edit/edit.component';
     CollapseModule,
     FileUploadModule,
 
-    DirectiveModule,
-    SlimLoadingBarModule.forRoot(),
-    TreeModule
+    DirectiveModule
   ],
   declarations: [
     Project,

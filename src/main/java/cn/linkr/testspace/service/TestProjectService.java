@@ -1,6 +1,8 @@
 package cn.linkr.testspace.service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import cn.linkr.testspace.entity.EvtGuest;
 import cn.linkr.testspace.entity.TestCase;
@@ -13,12 +15,16 @@ import cn.linkr.testspace.vo.TestProjectVo;
 
 public interface TestProjectService extends BaseService {
 
-	Page list(String status, String keywords, int currentPage, int itemsPerPage);
+	List list(String status, String keywords);
 
 	TestProjectVo genVo(TestProject po);
-	List<TestProjectVo> genVos(List<TestProject> pos);
+	HashSet<TestProjectVo> genVos(List<TestProject> pos, Map<String, Integer> ret);
 	
 	TestProject delete(Long vo, Long clientId);
 	TestProject save(Long id, String value, Integer type, Long pid, Long id2);
+
+	void toList(TestProjectVo root, HashSet<TestProjectVo> vos);
+
+	int countChildrenNumb(TestProjectVo vo, int count);
 	
 }

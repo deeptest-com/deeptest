@@ -1,3 +1,20 @@
 .project-list {
   padding: 15px;
+  .table {
+    border: 1px solid gainsboro;
+    thead th {
+      border-color: #373a3c;
+    }
+    tbody tr td {
+      text-align: left;
+      border: 1px solid gainsboro;
+      &.depth-span {
+        width: 30px;
+      }
+      .link {
+        font-size: 14px;
+        text-decoration: none !important;
+      }
+    }
+  }
 }

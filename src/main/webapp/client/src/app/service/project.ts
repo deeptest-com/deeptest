@@ -8,8 +8,7 @@ export class ProjectService {
     constructor(private _reqService: RequestService) { }
     _api_url = 'project/';
 
-    list(query: any, currentPage: number, itemsPerPage: number) {
-        _.merge(query, {itemsPerPage: itemsPerPage, currentPage: currentPage});
+    list(query: any) {
         return this._reqService.post(this._api_url + 'list', query);
     }
 

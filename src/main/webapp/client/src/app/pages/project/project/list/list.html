@@ -1,65 +1,54 @@
 <div class="project-list container-fluid">
-    <div class="row">
-      <div class="list-toolbar col-xl-12">
-        <div class="filter">
-          <form [formGroup]="queryForm" class="form-inline">
-                <label for="status">状态</label>
-                <select [(ngModel)]="queryModel.status" formControlName="status"
-                        class="form-control form-control-sm" id="status" name="status">
-                  <option value="">  所有  </option>
-                  <option *ngFor="let entry of (statusMap | mapKeys)" value="{{entry.key}}">{{entry.value}}</option>
-                </select>
-                &nbsp;&nbsp;&nbsp;
-                <label for="keywords">关键字</label>
-                <input [(ngModel)]="queryModel.keywords" formControlName="keywords"
-                       type="text" class="form-control form-control-sm" placeholder="" id="keywords" name="keywords">
-          </form>
-        </div>
-        <div class="buttons">
-          <button (click)="create()" type="button" class="btn btn-primary btn-with-icon btn-sm">
-            <i class="ion-plus-circled"></i>新建
-          </button>
-        </div>
+  <div class="row">
+    <div class="list-toolbar col-xl-12">
+      <div class="filter">
+        <form [formGroup]="queryForm" class="form-inline">
+          <label for="status">状态</label>
+          <select [(ngModel)]="queryModel.status" formControlName="status"
+                  class="form-control form-control-sm" id="status" name="status">
+            <option value=""> 所有</option>
+            <option *ngFor="let entry of (statusMap | mapKeys)" value="{{entry.key}}">{{entry.value}}</option>
+          </select>
+          &nbsp;&nbsp;&nbsp;
+          <label for="keywords">关键字</label>
+          <input [(ngModel)]="queryModel.keywords" formControlName="keywords"
+                 type="text" class="form-control form-control-sm" placeholder="" id="keywords" name="keywords">
+        </form>
+      </div>
+      <div class="buttons">
+        <button (click)="create()" type="button" class="btn btn-primary btn-with-icon btn-sm">
+          <i class="ion-plus-circled"></i>新建
+        </button>
       </div>
     </div>
-    <!-- /.row -->
-    <div class="row">
-      <div class="card card-block no-border">
-        <div class="table-responsive">
-          <table class="table table-hover table-striped">
-            <thead class="thead-inverse">
-            <tr>
-              <th>编号</th>
-              <th>名称</th>
-              <th>描述</th>
-              <th>状态</th>
-              <th>操作</th>
-            </tr>
-            </thead>
-            <tbody>
+  </div>
+  <!-- /.row -->
+  <div class="row">
+        <table class="table table-striped table-bordered">
+          <thead class="thead-inverse">
+          <tr>
+            <th scope="row" [colSpan]="maxDepth">名称</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+          </thead>
+          <tbody>
             <tr *ngFor="let item of models; let i = index">
-              <th scope="row">{{i + 1}}</th>
-              <td>{{item.name}}</td>
-              <td>{{item.descr}}</td>
+              <td *ngIf="models[i-1] && models[i-1].id == item.parentId" [attr.rowspan]="models[i-1].childrenNumb" class="depth-span"></td>
+
+              <td [attr.colSpan]="maxDepth - (item.depth - 1)">{{item.name}}</td>
               <td>{{item.isActive | isActive}}</td>
               <td class="opt">
-                <i [routerLink]="['/pages/event/edit',item.id]" class="ion-edit link"></i>
-                <i (click)="delete(item.id)" class="ion-trash-a link"></i>
+                <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">任务</span>
+                <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">设计</span>
+                <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">执行</span>
+                <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">分析</span>
               </td>
             </tr>
-            </tbody>
-          </table>
 
-          <div class="page-container">
-            <pagination [totalItems]="totalItems" [(ngModel)]="currentPage"
-                        [maxSize]="maxSize" [itemsPerPage]="itemsPerPage" class="pagination-sm"
-                        [boundaryLinks]="true" [rotate]="false"
-                        (numPages)="numPages = $event" (pageChanged)="pageChanged($event)"
-                        previousText="上一页" nextText="下一页" firstText="第一页" lastText="最后页">
-            </pagination>
-          </div>
-        </div>
-      </div>
-    </div>
+          </tbody>
+        </table>
+
+  </div>
 
 </div>

@@ -237,6 +237,12 @@ public class StringUtil extends StringUtils {
     	return mformat.format(d);
     }
     
+    public static String formatString(Long d, Long max){
+    	int length = max.toString().length();
+    	
+    	return String.format("%0"+length+"d", d);
+    }
+    
     public static void main(String[] args) {
 //    	String aa = "1234567890ABCDEFG";
 //    	System.out.println(aa);

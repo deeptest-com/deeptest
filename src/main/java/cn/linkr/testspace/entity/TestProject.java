@@ -18,6 +18,15 @@ public class TestProject extends BaseEntity {
 	@Column(name = "descr", length = 1000)
     private String descr;
 	
+	private Integer depth;
+	
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", insertable = false, updatable = false)
+    private TestProject parent;
+
+    @Column(name = "parent_id")
+    private Long parentId;
+	
 	private Boolean isActive;
     
     @ManyToOne(fetch = FetchType.LAZY)
@@ -66,6 +75,29 @@ public class TestProject extends BaseEntity {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
-    
+
+	public TestProject getParent() {
+		return parent;
+	}
+
+	public void setParent(TestProject parent) {
+		this.parent = parent;
+	}
+
+	public Long getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(Long parentId) {
+		this.parentId = parentId;
+	}
+
+	public Integer getDepth() {
+		return depth;
+	}
+
+	public void setDepth(Integer depth) {
+		this.depth = depth;
+	}
     
 }

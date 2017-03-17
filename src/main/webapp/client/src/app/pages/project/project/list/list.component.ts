@@ -14,14 +14,13 @@ import {ProjectService} from "../../../../service/project";
   template: require('./list.html')
 })
 export class ProjectList implements OnInit, AfterViewInit {
-  totalItems:number = 0;
-  currentPage:number = 1;
-  itemsPerPage:number = 6;
 
   queryForm: FormGroup;
   queryModel:any = {keywords: '', status: ''};
 
   models: any = [];
+  maxDepth: number;
+  counter = Array;
   statusMap: Array<any> = CONSTANT.EntityActive;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder,
@@ -61,17 +60,28 @@ export class ProjectList implements OnInit, AfterViewInit {
 
     that.loadData();
   }
-
-  delete(eventId:string):void {
+  pageChanged(event:any):void {
     let that = this;
+    that.loadData();
+  }
+
+  edit($event: any):void {
+    let that = this;
+
+    console.log($event);
+  }
+  delete($event: any):void {
+    let that = this;
+
+    console.log($event);
   }
 
   loadData() {
     let that = this;
-    that._projectService.list(that.queryModel, that.currentPage, that.itemsPerPage).subscribe((json:any) => {
+    that._projectService.list(that.queryModel).subscribe((json:any) => {
       console.log('json', json);
       that.models = json.data;
-      that.totalItems = json.totalItems;
+      that.maxDepth = json.maxDepth;
     });
   }
 

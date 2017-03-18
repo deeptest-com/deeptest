@@ -11,10 +11,13 @@ import java.util.Map;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
 
+import cn.linkr.testspace.dao.BaseDao;
+import cn.linkr.testspace.dao.ProjectDao;
 import cn.linkr.testspace.entity.EvtGuest;
 import cn.linkr.testspace.entity.EvtScheduleItem;
 import cn.linkr.testspace.entity.EvtSession;
@@ -35,9 +38,13 @@ import cn.linkr.testspace.vo.TestProjectVo;
 
 @Service
 public class TestProjectServiceImpl extends BaseServiceImpl implements TestProjectService {
+	
+	   @Autowired
+	    private ProjectDao projectDao;
+	
 
 	@Override
-	public List list(String isActive, String keywords) {
+	public List list(String isActive, String keywords, Long companyId) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
         
         if (isActive != null) {
@@ -49,7 +56,6 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements TestProje
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-        dc.addOrder(Order.asc("parent"));
         dc.addOrder(Order.asc("id"));
         List ls = findAllByCriteria(dc);
         
@@ -72,13 +78,16 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements TestProje
 	// need to be cache
 	@Override
 	public HashSet<TestProjectVo> genVos(List<TestProject> pos, Map<String, Integer> ret) {
-		int maxDepth = 0;
+		int maxLevel = 0;
 		
         TestProjectVo root = new TestProjectVo();
         Map<Long, TestProjectVo> voMap = new HashMap<Long, TestProjectVo>();
         for (TestProject po: pos) {
-        	if (po.getDepth() > maxDepth) {
-        		maxDepth = po.getDepth();
+        	if (po.getId() < 1) {
+        		continue;
+        	}
+        	if (po.getLevel() > maxLevel) {
+        		maxLevel = po.getLevel();
         	}
         	
         	Long id = po.getId();
@@ -92,6 +101,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements TestProje
         	} else {
         		root.getChildren().add(vo);
         	}
+        	
         }
         
         HashSet<TestProjectVo> out = new LinkedHashSet<TestProjectVo>();
@@ -99,7 +109,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements TestProje
         for (TestProjectVo vo: out) {
         	vo.setChildren(null);
         }
-        ret.put("maxDepth", maxDepth);
+        ret.put("maxLevel", maxLevel);
 		return out;
 	}
 	

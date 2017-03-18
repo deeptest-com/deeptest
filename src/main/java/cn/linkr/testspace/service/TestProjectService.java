@@ -15,7 +15,7 @@ import cn.linkr.testspace.vo.TestProjectVo;
 
 public interface TestProjectService extends BaseService {
 
-	List list(String status, String keywords);
+	List list(String status, String keywords, Long companyId);
 
 	TestProjectVo genVo(TestProject po);
 	HashSet<TestProjectVo> genVos(List<TestProject> pos, Map<String, Integer> ret);

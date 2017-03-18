@@ -9,7 +9,10 @@
       </button>
       <ul class="dropdown-menu" dropdownMenu>
         <li class="dropdown-item">当前项目</li>
-        <li class="dropdown-item"><a [routerLink]="['dashboard', {title: ''}]">TestSpace</a></li>
+        <li class="dropdown-item">
+          <!--<a [routerLink]="['dashboard', {title: ''}]">TestSpace</a>-->
+          <a [routerLink]="['dashboard']">TestSpace</a>
+        </li>
         <li class="dropdown-divider"></li>
 
         <li class="dropdown-item">最近查看</li>
@@ -18,7 +21,7 @@
         <li class="dropdown-item"><a href="#">项目3</a></li>
         <li class="dropdown-divider"></li>
 
-        <li class="dropdown-item"><a [routerLink]="['/pages/project/list', {title: '所有项目'}]">所有项目</a></li>
+        <li class="dropdown-item"><a [routerLink]="['/pages/project/list']">所有项目</a></li>
       </ul>
     </div>
 
@@ -33,7 +36,7 @@
         设计
       </button>
       <ul class="dropdown-menu" dropdownMenu>
-        <li class="dropdown-item"><a [routerLink]="['/pages/case', {title: '测试用例'}]">测试用例</a></li>
+        <li class="dropdown-item"><a [routerLink]="['/pages/case']">测试用例</a></li>
         <li class="dropdown-item"><a href="#">用例集合</a></li>
       </ul>
     </div>
@@ -43,8 +46,8 @@
         执行
       </button>
       <ul class="dropdown-menu" dropdownMenu>
-          <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">测试计划</a></li>
-          <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">测试环境</a></li>
+          <li class="dropdown-item"><a [routerLink]="['/pages/dashboard']">测试计划</a></li>
+          <li class="dropdown-item"><a [routerLink]="['/pages/dashboard']">测试环境</a></li>
       </ul>
     </div>
 
@@ -59,11 +62,11 @@
         系统
       </button>
       <ul class="dropdown-menu" dropdownMenu>
-        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">用户角色</a></li>
-        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">站点设置</a></li>
-        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">自定义属性</a></li>
-        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">第三方集成</a></li>
-        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard', {title: ''}]">许可证</a></li>
+        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard']">用户角色</a></li>
+        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard']">站点设置</a></li>
+        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard']">自定义属性</a></li>
+        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard']">第三方集成</a></li>
+        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard']">许可证</a></li>
       </ul>
     </div>
 

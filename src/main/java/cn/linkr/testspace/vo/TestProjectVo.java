@@ -10,8 +10,9 @@ public class TestProjectVo extends BaseVo {
     private Boolean isActive;
     
     private Long parentId;
+    private String path;
     
-    private Integer depth;
+    private Integer level;
     private Integer childrenNumb = 0;
     
     LinkedHashSet<TestProjectVo> children = new LinkedHashSet<TestProjectVo>();
@@ -40,12 +41,6 @@ public class TestProjectVo extends BaseVo {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
-	public Integer getDepth() {
-		return depth;
-	}
-	public void setDepth(Integer depth) {
-		this.depth = depth;
-	}
 
 	public Long getParentId() {
 		return parentId;
@@ -65,6 +60,18 @@ public class TestProjectVo extends BaseVo {
 	}
 	public void setChildrenNumb(Integer childrenNumb) {
 		this.childrenNumb = childrenNumb;
+	}
+	public String getPath() {
+		return path;
+	}
+	public void setPath(String path) {
+		this.path = path;
+	}
+	public Integer getLevel() {
+		return level;
+	}
+	public void setLevel(Integer level) {
+		this.level = level;
 	}
 
 }

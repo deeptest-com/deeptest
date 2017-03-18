@@ -34,8 +34,8 @@ export class Register {
       'phone': ['', Validators.compose([Validators.required, Validators.minLength(11)])],
       'email': ['', Validators.compose([Validators.required, EmailValidator.validate()])],
       'passwords': fb.group({
-        'password': ['', Validators.compose([Validators.required, Validators.minLength(4)])],
-        'repeatPassword': ['', Validators.compose([Validators.required, Validators.minLength(4)])]
+        'password': ['', Validators.compose([Validators.required, Validators.minLength(6)])],
+        'repeatPassword': ['', Validators.compose([Validators.required, Validators.minLength(6)])]
       }, {validator: EqualPasswordsValidator.validate('password', 'repeatPassword')})
     });
 

@@ -47,15 +47,17 @@ public class ProjectAction extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		
 		String isActive = json.getString("isActive");
 		String keywords = json.getString("keywords");
 		
-		List pos = projectService.list(isActive, keywords);
+		List pos = projectService.list(isActive, keywords, userVo.getCompanyId());
 		Map<String, Integer> param = new HashMap<String, Integer>();
 		HashSet<TestProjectVo> vos = projectService.genVos(pos, param);
 		
         ret.put("data", vos);
-        ret.put("maxDepth", param.get("maxDepth"));
+        ret.put("maxLevel", param.get("maxLevel"));
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

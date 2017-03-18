@@ -17,7 +17,7 @@ import cn.linkr.testspace.vo.Page;
  * @version $Id$
  * @see
  */
-public interface IBaseDao {
+public interface BaseDao {
 
     /**
      * 保存实体
@@ -239,5 +239,5 @@ public interface IBaseDao {
 
     void flush();
 
-    public List findObjectByProcedure(String name, Class<?> pojoClass, Object... values);
+   
 }

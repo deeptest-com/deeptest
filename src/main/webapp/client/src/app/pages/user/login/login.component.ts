@@ -1,6 +1,8 @@
 import {Component, ViewEncapsulation} from '@angular/core';
 import {FormGroup, AbstractControl, FormBuilder, Validators} from '@angular/forms';
 
+import {ValidatorUtils, EmailValidator} from '../../../validator';
+
 import { RouteService } from '../../../service/route';
 import { UserService } from '../../../service/user';
 
@@ -13,23 +15,26 @@ import { UserService } from '../../../service/user';
 export class Login {
 
   public form:FormGroup;
-  public email:AbstractControl;
-  public password:AbstractControl;
-  public rememberMe:AbstractControl;
+  model: any = { rememberMe: true};
 
   public submitted:boolean = false;
-  public errors: string;
 
   constructor(fb:FormBuilder, private userService: UserService, private routeService: RouteService) {
     this.form = fb.group({
-      'email': ['', Validators.compose([Validators.required, Validators.minLength(4)])],
-      'password': ['', Validators.compose([Validators.required, Validators.minLength(4)])],
-      'rememberMe': [true, null]
+      'email': [this.model.email, Validators.compose([Validators.required, EmailValidator.validate()])],
+      'password': [this.model.password, Validators.compose([Validators.required, Validators.minLength(6)])],
+      'rememberMe': [this.model.rememberMe, null]
     });
 
-    this.email = this.form.controls['email'];
-    this.password = this.form.controls['password'];
-    this.rememberMe = this.form.controls['rememberMe'];
+    this.form.valueChanges.subscribe(data => this.onValueChanged(data));
+    this.onValueChanged();
+  }
+
+  onValueChanged(data?: any) {
+    let that = this;
+    if (!that.form) { return; }
+
+    that.formErrors = ValidatorUtils.genMsg(that.form, that.validateMsg, []);
   }
 
   public onSubmit(values:Object):void {
@@ -37,7 +42,20 @@ export class Login {
     that.submitted = true;
 
     this.userService.login(values['email'], values['password'], values['rememberMe']).subscribe((err:any) => {
-      that.errors = err;
+      that.formErrors = err;
     });
   }
+
+  formErrors = [];
+  validateMsg = {
+    'email': {
+      'required':      '邮箱不能为空',
+      'validateEmail': '邮箱格式错误'
+    },
+    'password': {
+      'required':      '密码不能为空',
+      'minlength': '密码不能少于6位'
+    }
+  };
 }
+

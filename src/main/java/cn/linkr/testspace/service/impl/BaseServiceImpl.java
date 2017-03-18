@@ -19,7 +19,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 
-import cn.linkr.testspace.dao.IBaseDao;
+import cn.linkr.testspace.dao.BaseDao;
 import cn.linkr.testspace.entity.BaseEntity;
 import cn.linkr.testspace.service.BaseService;
 import cn.linkr.testspace.util.DaoHelper;
@@ -39,7 +39,7 @@ public class BaseServiceImpl implements BaseService {
      * 基本dao
      */
     @Autowired
-    private IBaseDao dao;
+    private BaseDao dao;
 
     /**
      * jdbcTemplate
@@ -52,9 +52,9 @@ public class BaseServiceImpl implements BaseService {
      *
      * @return 返回dao
      */
-    protected IBaseDao getDao() {
+    protected BaseDao getDao() {
         if (dao == null) {
-            dao = SpringContextHolder.getBean("baseDao", IBaseDao.class);
+            dao = SpringContextHolder.getBean("baseDao", BaseDao.class);
         }
         return dao;
     }

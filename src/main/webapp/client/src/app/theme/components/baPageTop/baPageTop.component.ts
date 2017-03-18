@@ -22,14 +22,14 @@ export class BaPageTop {
   constructor(private _router:Router, private _state:GlobalState, private userService: UserService) {
     let that = this;
     this._onRouteChange = this._router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        if (event.url && event.url.indexOf('im=true') > -1) {
-          return;
-        }
-        let title = Utils.getRouterUrlParam(event.url, 'title');
-
-        this._state.notifyDataChanged('menu.change', title);
-      }
+      // if (event instanceof NavigationEnd) {
+      //   if (event.url && event.url.indexOf('im=true') > -1) {
+      //     return;
+      //   }
+      //   let title = Utils.getRouterUrlParam(event.url, 'title');
+      //
+      //   this._state.notifyDataChanged('menu.change', title);
+      // }
     });
 
     that._state.subscribe('profile.refresh', (profile) => {

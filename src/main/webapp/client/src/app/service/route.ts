@@ -8,7 +8,8 @@ export class RouteService {
 
     navTo(url: string) {
       let that = this;
-      let urlStr = that._router.createUrlTree([url, {im: true}]);
+      // let urlStr = that._router.createUrlTree([url, {im: true}]);
+      let urlStr = that._router.createUrlTree([url]);
       that._router.navigateByUrl(urlStr);
     }
 }

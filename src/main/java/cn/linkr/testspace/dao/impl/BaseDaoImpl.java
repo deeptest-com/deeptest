@@ -30,7 +30,7 @@ import org.hibernate.transform.ResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import cn.linkr.testspace.dao.IBaseDao;
+import cn.linkr.testspace.dao.BaseDao;
 import cn.linkr.testspace.dao.RowMapper;
 import cn.linkr.testspace.util.EscColumnToBean;
 import cn.linkr.testspace.util.ReflectionUtils;
@@ -46,7 +46,7 @@ import cn.linkr.testspace.vo.Page;
  */
 @Repository("baseDao")
 @SuppressWarnings("all")
-public class BaseDAOImpl implements IBaseDao {
+public class BaseDaoImpl implements BaseDao {
 
     /**
      * sessionFactory
@@ -59,7 +59,7 @@ public class BaseDAOImpl implements IBaseDao {
      * <完整保存实体>
      *
      * @param t 实体参数
-     * @see com.itv.launcher.util.IBaseDao#save(java.lang.Object)
+     * @see com.BaseDao.launcher.util.IBaseDao#save(java.lang.Object)
      */
     @Override
     public void save(Object t) {
@@ -81,7 +81,7 @@ public class BaseDAOImpl implements IBaseDao {
      * @param clazz clazz
      * @param id    实体的id
      * @return 查询出来的实体
-     * @see cn.linkr.testspace.dao.IBaseDao#load(java.io.Serializable)
+     * @see cn.linkr.testspace.dao.BaseDao#load(java.io.Serializable)
      */
     @Override
     public Object load(Class clazz, Serializable id) {
@@ -109,7 +109,7 @@ public class BaseDAOImpl implements IBaseDao {
      *
      * @param t 实体
      * @return 是否包含
-     * @see cn.linkr.testspace.dao.IBaseDao#contains(java.lang.Object)
+     * @see cn.linkr.testspace.dao.BaseDao#contains(java.lang.Object)
      */
     @Override
     public boolean contains(Object t) {
@@ -121,7 +121,7 @@ public class BaseDAOImpl implements IBaseDao {
      * <删除表中的t数据>
      *
      * @param t 实体
-     * @see cn.linkr.testspace.dao.IBaseDao#delete(java.lang.Object)
+     * @see cn.linkr.testspace.dao.BaseDao#delete(java.lang.Object)
      */
     @Override
     public void delete(Object t) {
@@ -150,7 +150,7 @@ public class BaseDAOImpl implements IBaseDao {
      * <删除所有>
      *
      * @param entities 实体的Collection集合
-     * @see cn.linkr.testspace.dao.IBaseDao#deleteAll(java.util.Collection)
+     * @see cn.linkr.testspace.dao.BaseDao#deleteAll(java.util.Collection)
      */
     @Override
     public void deleteAll(Collection entities) {
@@ -164,7 +164,7 @@ public class BaseDAOImpl implements IBaseDao {
      *
      * @param hqlString hql
      * @param values    不定参数数组
-     * @see cn.linkr.testspace.dao.IBaseDao#queryHql(java.lang.String, java.lang.Object[])
+     * @see cn.linkr.testspace.dao.BaseDao#queryHql(java.lang.String, java.lang.Object[])
      */
     @Override
     public void queryHql(String hqlString, Object... values) {
@@ -182,7 +182,7 @@ public class BaseDAOImpl implements IBaseDao {
      *
      * @param sqlString sql
      * @param values    不定参数数组
-     * @see cn.linkr.testspace.dao.IBaseDao#querySql(java.lang.String, java.lang.Object[])
+     * @see cn.linkr.testspace.dao.BaseDao#querySql(java.lang.String, java.lang.Object[])
      */
     @Override
     public void querySql(String sqlString, Object... values) {
@@ -201,7 +201,7 @@ public class BaseDAOImpl implements IBaseDao {
      * @param hqlString HQL语句
      * @param values    不定参数的Object数组
      * @return 查询实体
-     * @see cn.linkr.testspace.dao.IBaseDao#getByHQL(java.lang.String, java.lang.Object[])
+     * @see cn.linkr.testspace.dao.BaseDao#getByHQL(java.lang.String, java.lang.Object[])
      */
     @Override
     public Object getByHQL(String hqlString, Object... values) {
@@ -220,7 +220,7 @@ public class BaseDAOImpl implements IBaseDao {
      * @param sqlString SQL语句
      * @param values    不定参数的Object数组
      * @return 查询实体
-     * @see cn.linkr.testspace.dao.IBaseDao#getBySQL(java.lang.String, java.lang.Object[])
+     * @see cn.linkr.testspace.dao.BaseDao#getBySQL(java.lang.String, java.lang.Object[])
      */
     @Override
     public Object getBySQL(String sqlString, Object... values) {
@@ -239,7 +239,7 @@ public class BaseDAOImpl implements IBaseDao {
      * @param hqlString HQL语句
      * @param values    不定参数的Object数组
      * @return 查询多个实体的List集合
-     * @see cn.linkr.testspace.dao.IBaseDao#getListByHQL(java.lang.String, java.lang.Object[])
+     * @see cn.linkr.testspace.dao.BaseDao#getListByHQL(java.lang.String, java.lang.Object[])
      */
     @Override
     public List<Object> getListByHQL(String hqlString, Object... values) {
@@ -269,7 +269,7 @@ public class BaseDAOImpl implements IBaseDao {
      * @param sqlString HQL语句
      * @param values    不定参数的Object数组
      * @return 查询多个实体的List集合
-     * @see cn.linkr.testspace.dao.IBaseDao#getListBySQL(java.lang.String, java.lang.Object[])
+     * @see cn.linkr.testspace.dao.BaseDao#getListBySQL(java.lang.String, java.lang.Object[])
      */
     @Override
     public List<Object> getListBySQL(String sqlString, Object... values) {
@@ -289,7 +289,7 @@ public class BaseDAOImpl implements IBaseDao {
      * @param map    map
      * @param values 值
      * @return List
-     * @see cn.linkr.testspace.dao.IBaseDao#findListBySql(java.lang.String, com.itv.launcher.util.RowMapper, java.lang.Object[])
+     * @see cn.linkr.testspace.dao.BaseDao#findListBySql(java.lang.String, com.itv.launcher.util.RowMapper, java.lang.Object[])
      */
     @Override
     public List findListBySql(final String sql, final RowMapper map, final Object... values) {
@@ -331,7 +331,7 @@ public class BaseDAOImpl implements IBaseDao {
      * <refresh>
      *
      * @param t 实体
-     * @see cn.linkr.testspace.dao.IBaseDao#refresh(java.lang.Object)
+     * @see cn.linkr.testspace.dao.BaseDao#refresh(java.lang.Object)
      */
     @Override
     public void refresh(Object t) {
@@ -342,7 +342,7 @@ public class BaseDAOImpl implements IBaseDao {
      * <update>
      *
      * @param t 实体
-     * @see cn.linkr.testspace.dao.IBaseDao#update(java.lang.Object)
+     * @see cn.linkr.testspace.dao.BaseDao#update(java.lang.Object)
      */
     @Override
     public void update(Object t) {
@@ -355,7 +355,7 @@ public class BaseDAOImpl implements IBaseDao {
      * @param hql    HQL语句
      * @param values 不定参数的Object数组
      * @return 记录总数
-     * @see cn.linkr.testspace.dao.IBaseDao#countByHql(java.lang.String, java.lang.Object[])
+     * @see cn.linkr.testspace.dao.BaseDao#countByHql(java.lang.String, java.lang.Object[])
      */
     @Override
     public Long countByHql(String hql, Object... values) {
@@ -377,7 +377,7 @@ public class BaseDAOImpl implements IBaseDao {
      * @param pageSize 一页总条数
      * @param values   不定Object数组参数
      * @return Page的封装类，里面包含了页码的信息以及查询的数据List集合
-     * @see cn.linkr.testspace.dao.IBaseDao#findPageByFetchedHql(java.lang.String, java.lang.String, int, int, java.lang.Object[])
+     * @see cn.linkr.testspace.dao.BaseDao#findPageByFetchedHql(java.lang.String, java.lang.String, int, int, java.lang.Object[])
      */
     @Override
     public Page<Object> findPageByFetchedHql(String hql, String countHql, int pageNo, int pageSize, Object... values) {
@@ -405,26 +405,6 @@ public class BaseDAOImpl implements IBaseDao {
         }
         retValue.setItems(itemList);
         return retValue;
-    }
-    
-    @Override
-    public List findObjectByProcedure(String name, Class<?> pojoClass, Object... values) {
-//    	Query query =  this.getSession().getNamedQuery(name);
-    	SQLQuery query = this.getSession().createSQLQuery("{Call " + name + "(?, ?, ?)}");  
-    	query.setLong(0, 1);
-    	query.setString(1, "");
-    	query.setBoolean(2, false); 
-    	
-        if (values != null) {
-            for (int i = 0; i < values.length; i++) {
-                query.setParameter(i, values[i]);
-            }
-        }
-        
-        query.setResultTransformer(new EscColumnToBean(pojoClass));
-
-        List ls = query.list();
-        return ls;
     }
 
 /*    *//**

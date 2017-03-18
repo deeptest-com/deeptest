@@ -19,7 +19,7 @@ export class ProjectList implements OnInit, AfterViewInit {
   queryModel:any = {keywords: '', status: ''};
 
   models: any = [];
-  maxDepth: number;
+  maxLevel: number;
   counter = Array;
   statusMap: Array<any> = CONSTANT.EntityActive;
 
@@ -81,7 +81,7 @@ export class ProjectList implements OnInit, AfterViewInit {
     that._projectService.list(that.queryModel).subscribe((json:any) => {
       console.log('json', json);
       that.models = json.data;
-      that.maxDepth = json.maxDepth;
+      that.maxLevel = json.maxLevel;
     });
   }
 

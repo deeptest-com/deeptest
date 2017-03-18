@@ -13,6 +13,7 @@ export class ValidatorUtils {
       if (control && control.dirty && !control.valid) {
         const messages = validateMsg[field];
         for (const key in control.errors) {
+
           errors.push(messages[key]);
         }
       }

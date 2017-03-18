@@ -27,18 +27,19 @@
         <table class="table table-striped table-bordered">
           <thead class="thead-inverse">
           <tr>
-            <th scope="row" [colSpan]="maxDepth">名称</th>
+            <th scope="row" [colSpan]="maxLevel">名称</th>
             <th>状态</th>
             <th>操作</th>
           </tr>
           </thead>
           <tbody>
             <tr *ngFor="let item of models; let i = index">
-              <td *ngIf="models[i-1] && models[i-1].id == item.parentId" [attr.rowspan]="models[i-1].childrenNumb" class="depth-span"></td>
+              <td *ngIf="models[i-1] && models[i-1].id == item.parentId" [attr.rowspan]="models[i-1].childrenNumb" class="level-span"></td>
 
-              <td [attr.colSpan]="maxDepth - (item.depth - 1)">{{item.name}}</td>
+              <td [attr.colSpan]="maxLevel - (item.level - 1)">{{item.name}}</td>
               <td>{{item.isActive | isActive}}</td>
               <td class="opt">
+                <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">编辑</span>
                 <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">任务</span>
                 <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">设计</span>
                 <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">执行</span>

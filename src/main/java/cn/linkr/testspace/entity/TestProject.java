@@ -18,7 +18,9 @@ public class TestProject extends BaseEntity {
 	@Column(name = "descr", length = 1000)
     private String descr;
 	
-	private Integer depth;
+	private Integer level;
+	
+	private Boolean isActive;
 	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", insertable = false, updatable = false)
@@ -26,8 +28,6 @@ public class TestProject extends BaseEntity {
 
     @Column(name = "parent_id")
     private Long parentId;
-	
-	private Boolean isActive;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", insertable = false, updatable = false)
@@ -92,12 +92,12 @@ public class TestProject extends BaseEntity {
 		this.parentId = parentId;
 	}
 
-	public Integer getDepth() {
-		return depth;
+	public Integer getLevel() {
+		return level;
 	}
 
-	public void setDepth(Integer depth) {
-		this.depth = depth;
+	public void setLevel(Integer level) {
+		this.level = level;
 	}
     
 }

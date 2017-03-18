@@ -1,5 +1,6 @@
 package cn.linkr.testspace.action;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -7,6 +8,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +25,7 @@ import cn.linkr.testspace.entity.TestProject;
 import cn.linkr.testspace.service.GuestService;
 import cn.linkr.testspace.service.TestCaseService;
 import cn.linkr.testspace.service.TestProjectService;
+import cn.linkr.testspace.service.impl.TestProjectServiceImpl;
 import cn.linkr.testspace.util.AuthPassport;
 import cn.linkr.testspace.util.Constant;
 import cn.linkr.testspace.vo.EventVo;
@@ -38,6 +42,8 @@ import com.alibaba.fastjson.JSONObject;
 @Controller
 @RequestMapping(Constant.API_PATH_CLIENT + "project/")
 public class ProjectAction extends BaseAction {
+	private static final Log log = LogFactory.getLog(ProjectAction.class);
+	
 	@Autowired
 	TestProjectService projectService;
 	
@@ -45,6 +51,7 @@ public class ProjectAction extends BaseAction {
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
+		
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
@@ -52,13 +59,19 @@ public class ProjectAction extends BaseAction {
 		String isActive = json.getString("isActive");
 		String keywords = json.getString("keywords");
 		
+		Long t1 = new Date().getTime();
+		
 		List pos = projectService.list(isActive, keywords, userVo.getCompanyId());
 		Map<String, Integer> param = new HashMap<String, Integer>();
 		HashSet<TestProjectVo> vos = projectService.genVos(pos, param);
 		
+		Long t2 = new Date().getTime();
+		log.debug("获取项目信息花了" + (t1 - t2) + "毫秒");
+			
         ret.put("data", vos);
         ret.put("maxLevel", param.get("maxLevel"));
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		
 		return ret;
 	}
 

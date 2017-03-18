@@ -45,7 +45,7 @@
 		<appender-ref ref="file" />
 	</category>
 
-	<category name="cn.linkr.events" additivity="false">
+	<category name="cn.linkr.testspace" additivity="false">
 		<priority value="debug" />
 		<appender-ref ref="console" />
 		<appender-ref ref="file" />

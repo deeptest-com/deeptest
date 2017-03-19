@@ -47,7 +47,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	private ProjectDao projectDao;
 
 	@Override
-	public List list(String isActive, String keywords, Long companyId) {
+	public List<TestProject> list(String isActive, String keywords, Long companyId) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
 
 		if (isActive != null) {
@@ -80,43 +80,49 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 
 	// need to be cache
 	@Override
-	public HashSet<TestProjectVo> genVos(List<TestProject> pos,
-			Map<String, Integer> ret) {
-
+	public TestProjectVo genVos(List<TestProject> pos, Map<String, Integer> ret) {
+		TestProjectVo root = null;
 		int maxLevel = 0;
-
-		TestProjectVo root = new TestProjectVo();
-		Map<Long, TestProjectVo> voMap = new HashMap<Long, TestProjectVo>();
-		for (TestProject po : pos) {
-			if (po.getId() < 1) {
-				continue;
-			}
-			if (po.getLevel() > maxLevel) {
+		
+		Map<Long, TestProjectVo> nodeMap = new HashMap<Long, TestProjectVo>();
+        for (TestProject po : pos) {
+        	Long id = po.getId();
+        	Long pid = po.getParentId();
+        	
+        	TestProjectVo newNode = genVo(po);
+        	
+        	nodeMap.put(id, newNode);
+        	
+        	if (id == 0) {
+        		root = newNode;
+        		continue;
+        	}
+        	
+        	LinkedList<TestProjectVo> children = nodeMap.get(pid).getChildren();
+        	children.add(newNode);
+        	
+        	if (po.getLevel() > maxLevel) {
 				maxLevel = po.getLevel();
 			}
-
-			Long id = po.getId();
-			Long pid = po.getParentId();
-
-			TestProjectVo vo = genVo(po);
-			voMap.put(id, vo);
-
-			if (voMap.get(pid) != null) {
-				voMap.get(pid).getChildren().add(vo);
-			} else {
-				root.getChildren().add(vo);
+        }
+        
+        for (Long key : nodeMap.keySet()) {
+        	TestProjectVo vo = nodeMap.get(key);
+        	
+			if (vo.getId() != 0 && vo.getChildren().size() > 0) {
+				TestProjectVo firstChild = vo.getChildren().get(0);
+				
+				firstChild.setIsFirstChild(true);
+				
+				int count = 0;
+				count = this.countDescendantsNumb(vo, count);
+				firstChild.setParentDescendantNumber(count);
+				firstChild.setBrotherNumb(count);
 			}
-
-		}
-
-		HashSet<TestProjectVo> out = new LinkedHashSet<TestProjectVo>();
-		this.toList(root, out);
-		for (TestProjectVo vo : out) {
-			vo.setChildren(null);
-		}
-		ret.put("maxLevel", maxLevel);
-
-		return out;
+        }
+		
+        ret.put("maxLevel", maxLevel);
+        return root;
 	}
 
 	@Override
@@ -130,27 +136,13 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	}
 
 	@Override
-	public void toList(TestProjectVo root, HashSet<TestProjectVo> out) {
-		Iterator<TestProjectVo> it = root.getChildren().iterator();
-		while (it.hasNext()) {
-			TestProjectVo vo = it.next();
-			int count = 0;
-			count = this.countChildrenNumb(vo, count);
-			vo.setChildrenNumb(count);
-
-			out.add(vo);
-			this.toList(vo, out);
-		}
-	}
-
-	@Override
-	public int countChildrenNumb(TestProjectVo vo, int count) {
+	public int countDescendantsNumb(TestProjectVo vo, int count) {
 		Iterator<TestProjectVo> it = vo.getChildren().iterator();
 		while (it.hasNext()) {
 			TestProjectVo child = it.next();
 			count++;
 
-			count = this.countChildrenNumb(child, count);
+			count = this.countDescendantsNumb(child, count);
 		}
 		return count;
 	}

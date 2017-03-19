@@ -1,6 +1,8 @@
 package cn.linkr.testspace.vo;
 
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 public class TestProjectVo extends BaseVo {
 	private static final long serialVersionUID = -9069520320732281911L;
@@ -8,14 +10,16 @@ public class TestProjectVo extends BaseVo {
     private String descr;
     private Long companyId;
     private Boolean isActive;
+    private Boolean isFirstChild;
     
     private Long parentId;
     private String path;
     
     private Integer level;
-    private Integer childrenNumb = 0;
+    private Integer brotherNumb = 0;
+    private Integer parentDescendantNumber = 0;
     
-    LinkedHashSet<TestProjectVo> children = new LinkedHashSet<TestProjectVo>();
+    LinkedList<TestProjectVo> children = new LinkedList<TestProjectVo>();
     
 	public String getName() {
 		return name;
@@ -49,18 +53,13 @@ public class TestProjectVo extends BaseVo {
 		this.parentId = parentId;
 	}
 
-	public LinkedHashSet<TestProjectVo> getChildren() {
+	public LinkedList<TestProjectVo> getChildren() {
 		return children;
 	}
-	public void setChildren(LinkedHashSet<TestProjectVo> children) {
+	public void setChildren(LinkedList<TestProjectVo> children) {
 		this.children = children;
 	}
-	public Integer getChildrenNumb() {
-		return childrenNumb;
-	}
-	public void setChildrenNumb(Integer childrenNumb) {
-		this.childrenNumb = childrenNumb;
-	}
+
 	public String getPath() {
 		return path;
 	}
@@ -72,6 +71,25 @@ public class TestProjectVo extends BaseVo {
 	}
 	public void setLevel(Integer level) {
 		this.level = level;
+	}
+	public Boolean getIsFirstChild() {
+		return isFirstChild;
+	}
+	public void setIsFirstChild(Boolean isFirstChild) {
+		this.isFirstChild = isFirstChild;
+	}
+	public Integer getBrotherNumb() {
+		return brotherNumb;
+	}
+	public void setBrotherNumb(Integer brotherNumb) {
+		this.brotherNumb = brotherNumb;
+	}
+
+	public Integer getParentDescendantNumber() {
+		return parentDescendantNumber;
+	}
+	public void setParentDescendantNumber(Integer parentDescendantNumber) {
+		this.parentDescendantNumber = parentDescendantNumber;
 	}
 
 }

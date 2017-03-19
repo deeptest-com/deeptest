@@ -18,13 +18,11 @@ public interface TestProjectService extends BaseService {
 	List list(String status, String keywords, Long companyId);
 
 	TestProjectVo genVo(TestProject po);
-	HashSet<TestProjectVo> genVos(List<TestProject> pos, Map<String, Integer> ret);
+	TestProjectVo genVos(List<TestProject> pos, Map<String, Integer> ret);
 	
 	TestProject delete(Long vo, Long clientId);
 	TestProject save(Long id, String value, Integer type, Long pid, Long id2);
 
-	void toList(TestProjectVo root, HashSet<TestProjectVo> vos);
-
-	int countChildrenNumb(TestProjectVo vo, int count);
+	int countDescendantsNumb(TestProjectVo vo, int count);
 	
 }

@@ -1,7 +1,7 @@
 import {Component, ViewEncapsulation, OnInit, AfterViewInit, ViewChild} from "@angular/core";
 import { FormBuilder, FormGroup } from '@angular/forms';
-
 import {GlobalState} from "../../../../global.state";
+
 import {CONSTANT} from "../../../../utils/constant";
 import {Utils} from "../../../../utils/utils";
 import {RouteService} from "../../../../service/route";
@@ -10,7 +10,7 @@ import {ProjectService} from "../../../../service/project";
 @Component({
   selector: 'project-list',
   encapsulation: ViewEncapsulation.None,
-  styles: [require('./list.scss'), require('../../../../components/ng2-tree/src/styles.scss')],
+  styles: [require('./list.scss'), require('../../../../components/table-tree/src/styles.scss')],
   template: require('./list.html')
 })
 export class ProjectList implements OnInit, AfterViewInit {
@@ -18,7 +18,7 @@ export class ProjectList implements OnInit, AfterViewInit {
   queryForm: FormGroup;
   queryModel:any = {keywords: '', status: ''};
 
-  models: any = [];
+  models: any;
   maxLevel: number;
   counter = Array;
   statusMap: Array<any> = CONSTANT.EntityActive;

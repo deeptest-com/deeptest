@@ -77,7 +77,7 @@ public class EventAction extends BaseAction {
 		JSONObject req = reqJson(request);
 		String eventId = req.getString("eventId");
 		
-		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
+		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
 		EvtEvent event = eventService.getDetail(Long.valueOf(eventId));
         EventVo eventVo = eventService.genVo(event);

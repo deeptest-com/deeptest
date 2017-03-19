@@ -14,7 +14,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import cn.linkr.testspace.entity.EvtClient;
 import cn.linkr.testspace.entity.SysUser;
-import cn.linkr.testspace.service.ClientService;
 import cn.linkr.testspace.service.UserService;
 import cn.linkr.testspace.util.AuthPassport;
 import cn.linkr.testspace.util.Constant;
@@ -44,7 +43,7 @@ public class SystemInterceptor implements HandlerInterceptor {
             }
             
             // 已经登录
-            if (request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY) != null
+            if (request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY) != null
             		|| request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY) != null) {
             	return true;
             }
@@ -60,10 +59,11 @@ public class SystemInterceptor implements HandlerInterceptor {
 			if (packageName.startsWith(Constant.API_PACKAGE_FOR_CLIENT)) {
 				if (StringUtils.isNotBlank(token)) {
 					// 登录验证
-					ClientService clientService = SpringContextHolder.getBean(ClientService.class);
-					EvtClient client = clientService.getByToken(token.trim());
-					if (client != null) {
-						request.getSession().setAttribute(Constant.HTTP_SESSION_CLIENT_KEY, client);
+					UserService userService = SpringContextHolder.getBean(UserService.class);
+					SysUser user = userService.getByToken(token.trim());
+					
+					if (user != null) {
+						request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));
 						return true;
 					}
 				}

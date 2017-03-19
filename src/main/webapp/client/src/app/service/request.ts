@@ -5,8 +5,6 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
-import { Cookie } from 'ng2-cookies/ng2-cookies';
-
 import {CONSTANT} from '../utils/constant';
 import { RouteService } from './route';
 
@@ -18,6 +16,10 @@ export class RequestService {
     }
     post(apiPath: string, reqBody: any) {
         let me = this;
+        // if (!CONSTANT.PROFILE){
+        //   CONSTANT.userService.loadProfileLocal();
+        // }
+
         let url = CONSTANT.API_URL + apiPath;
 
         let body = JSON.stringify(reqBody);

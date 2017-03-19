@@ -1,0 +1,69 @@
+
+<tr *ngIf="models?.id != 0">
+  <td *ngIf="models.isFirstChild" [attr.rowspan]="models.parentDescendantNumber" class="level-span"></td>
+
+  <td [attr.colSpan]="maxLevel - (models.level - 1)">{{models.name}}</td>
+  <td>
+    <span *ngIf="models.isActive">活动</span>
+    <span *ngIf="!models.isActive">关闭</span>
+  </td>
+  <td class="opt">
+    <span [routerLink]="['/pages/event/edit',models.id]" class="link no-underline">编辑</span>
+    <span [routerLink]="['/pages/event/edit',models.id]" class="link no-underline">任务</span>
+    <span [routerLink]="['/pages/event/edit',models.id]" class="link no-underline">设计</span>
+    <span [routerLink]="['/pages/event/edit',models.id]" class="link no-underline">执行</span>
+    <span [routerLink]="['/pages/event/edit',models.id]" class="link no-underline">分析</span>
+  </td>
+</tr>
+
+<ng-container *ngFor="let child of models.children">
+  <table-tree [models]="child" [maxLevel]="maxLevel"></table-tree>
+</ng-container>
+
+<!--
+<ng-container *ngFor="let item of models">
+  <tr *ngFor="let item of models; let i = index">
+    <td *ngIf="models[i-1] && models[i-1].id == item.parentId" [attr.rowspan]="models[i-1].childrenNumb" class="level-span"></td>
+
+    <td [attr.colSpan]="maxLevel - (item.level - 1)">{{item.name}}</td>
+    <td>{{item.isActive | isActive}}</td>
+    <td class="opt">
+      <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">编辑</span>
+      <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">任务</span>
+      <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">设计</span>
+      <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">执行</span>
+      <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">分析</span>
+    </td>
+  </tr>
+
+  <tr>
+    <td [attr.colSpan]="maxDepth - (item.depth - 1)">{{item.name}}</td>
+    <td>{{item.descr}}</td>
+    <td>
+      <span *ngIf="item.isActive">活动</span>
+      <span *ngIf="!item.isActive">关闭</span>
+    </td>
+    <td class="opt">
+      <i (click)="onEdit($event, child.id)" class="ion-edit link"></i>
+      <i (click)="onDelete($event, item.id)" class="ion-trash-a link"></i>
+    </td>
+  </tr>
+
+  <ng-container *ngFor="let child of item.children; let i = index">
+    <tr>
+      <td *ngIf="i == 0" [attr.rowspan]="item.children.length" class="depth-span"></td>
+
+      <td>{{child.name}}</td>
+      <td>{{child.descr}}</td>
+      <td>
+        <span *ngIf="child.isActive">活动</span>
+        <span *ngIf="!child.isActive">关闭</span>
+      </td>
+      <td class="opt">
+        <i (click)="onEdit($event, child.id)" class="ion-edit link"></i>
+        <i (click)="onDelete($event, child.id)" class="ion-trash-a link"></i>
+      </td>
+    </tr>
+  </ng-container>
+</ng-container>
+-->

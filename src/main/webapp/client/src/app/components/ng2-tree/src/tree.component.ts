@@ -13,7 +13,7 @@ import { Utils } from '../../../utils/utils';
     <div>
       <tree-toolbar [tree]="tree" [options]="options"></tree-toolbar>
     </div>
-     <div class="y-scrollable">
+     <div class="">
       <tree-internal [tree]="tree" [options]="options"></tree-internal>
     </div>
    `,

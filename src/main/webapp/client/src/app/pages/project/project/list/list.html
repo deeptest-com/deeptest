@@ -33,23 +33,9 @@
           </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of models; let i = index">
-              <td *ngIf="models[i-1] && models[i-1].id == item.parentId" [attr.rowspan]="models[i-1].childrenNumb" class="level-span"></td>
-
-              <td [attr.colSpan]="maxLevel - (item.level - 1)">{{item.name}}</td>
-              <td>{{item.isActive | isActive}}</td>
-              <td class="opt">
-                <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">编辑</span>
-                <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">任务</span>
-                <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">设计</span>
-                <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">执行</span>
-                <span [routerLink]="['/pages/event/edit',item.id]" class="link no-underline">分析</span>
-              </td>
-            </tr>
-
+            <table-tree *ngIf="models" [models]="models" [maxLevel]="maxLevel" (action)="action($event)"></table-tree>
           </tbody>
         </table>
-
   </div>
 
 </div>

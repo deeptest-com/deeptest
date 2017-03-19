@@ -90,7 +90,7 @@ export class ProfileEdit implements OnInit, AfterViewInit {
 
     that._userService.saveProfile(that.model).subscribe((json:any) => {
         if (json.code == 1) {
-          that._userService.saveProfileLocal(json.data, null);
+          Utils.saveProfileLocal(json.data, null);
           that.formErrors = ['保存成功'];
         }
     });

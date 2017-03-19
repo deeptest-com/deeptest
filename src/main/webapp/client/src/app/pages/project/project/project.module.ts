@@ -13,6 +13,7 @@ import { ButtonsModule } from 'ng2-bootstrap';
 import { FileUploadModule } from 'ng2-file-upload';
 
 import { DirectiveModule } from '../../../directive/directive.module';
+import { TableTreeModule } from '../../../components/table-tree';
 
 import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
@@ -37,7 +38,8 @@ import { ProjectEdit } from './edit/edit.component';
     CollapseModule,
     FileUploadModule,
 
-    DirectiveModule
+    DirectiveModule,
+    TableTreeModule
   ],
   declarations: [
     Project,

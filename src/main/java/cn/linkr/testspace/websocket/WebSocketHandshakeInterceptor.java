@@ -15,7 +15,7 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import cn.linkr.testspace.bean.ApplicationScopeBean;
 import cn.linkr.testspace.entity.EvtClient;
-import cn.linkr.testspace.service.ClientService;
+import cn.linkr.testspace.entity.SysUser;
 import cn.linkr.testspace.util.Constant;
 import cn.linkr.testspace.util.SpringContextHolder;
 
@@ -35,13 +35,13 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
             
             String test = (String) httpSession.getAttribute("TEST");
             
-            EvtClient client = null;
-            if (httpSession.getAttribute(Constant.HTTP_SESSION_CLIENT_KEY) != null) {
-                client = (EvtClient) httpSession.getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
+            SysUser user = null;
+            if (httpSession.getAttribute(Constant.HTTP_SESSION_USER_KEY) != null) {
+            	user = (SysUser) httpSession.getAttribute(Constant.HTTP_SESSION_USER_KEY);
             }
             
-            if (client != null) {
-                attributes.put(Constant.WEBSOCKET_CLIENT_KEY, client.getId().toString());
+            if (user != null) {
+                attributes.put(Constant.WEBSOCKET_CLIENT_KEY, user.getId().toString());
                 attributes.put("somthing", "somthing");
                 return true;
             }

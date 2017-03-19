@@ -61,9 +61,9 @@ public class ProjectAction extends BaseAction {
 		
 		Long t1 = new Date().getTime();
 		
-		List pos = projectService.list(isActive, keywords, userVo.getCompanyId());
+		List<TestProject> pos = projectService.list(isActive, keywords, userVo.getCompanyId());
 		Map<String, Integer> param = new HashMap<String, Integer>();
-		HashSet<TestProjectVo> vos = projectService.genVos(pos, param);
+		TestProjectVo vos = projectService.genVos(pos, param);
 		
 		Long t2 = new Date().getTime();
 		log.debug("获取项目信息花了" + (t1 - t2) + "毫秒");

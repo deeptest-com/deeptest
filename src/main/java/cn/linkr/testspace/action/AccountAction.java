@@ -59,7 +59,7 @@ public class AccountAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		String accountId = req.getString("id");
 		
-		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_CLIENT_KEY);
+		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
 		SysUser po = (SysUser) userService.get(SysUser.class, Long.valueOf(accountId));
 		UserVo vo = userService.genVo(po);

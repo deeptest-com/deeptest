@@ -32,6 +32,7 @@ import cn.linkr.testspace.service.TestProjectService;
 import cn.linkr.testspace.service.impl.TestProjectServiceImpl;
 import cn.linkr.testspace.util.AuthPassport;
 import cn.linkr.testspace.util.Constant;
+import cn.linkr.testspace.util.StringUtil;
 import cn.linkr.testspace.vo.BannerVo;
 import cn.linkr.testspace.vo.DocumentVo;
 import cn.linkr.testspace.vo.EventVo;
@@ -63,12 +64,18 @@ public class ProjectAction extends BaseAction {
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		String isActive = json.getString("isActive");
+		String isActive = json.getString("isActive") != null?json.getString("isActive"): "true";
 		String keywords = json.getString("keywords");
 		
 		Long t1 = new Date().getTime();
 		
-		List<TestProject> pos = projectService.list(isActive, keywords, userVo.getCompanyId());
+		List<TestProject> pos;
+		if (StringUtil.isEmpty(keywords)) {
+			pos = projectService.listCache(userVo.getCompanyId(), isActive);
+		} else {
+			pos = projectService.list(isActive, keywords, userVo.getCompanyId());
+		}
+		
 		Map<String, Integer> param = new HashMap<String, Integer>();
 		TestProjectVo vos = projectService.genVos(pos, param);
 		

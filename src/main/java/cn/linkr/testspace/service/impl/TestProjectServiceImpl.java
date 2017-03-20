@@ -15,6 +15,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
@@ -46,12 +47,18 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 
 	@Autowired
 	private ProjectDao projectDao;
+	
+	@Override
+	@Cacheable(value="companyProjects",key="#isActive.concat('-').concat(#companyId)")
+	public List<TestProject> listCache(Long companyId, String isActive) {
+		return this.list(isActive, null, companyId);
+	}
 
 	@Override
 	public List<TestProject> list(String isActive, String keywords, Long companyId) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
 
-		if (isActive != null) {
+		if (StringUtil.isNotEmpty(isActive)) {
 			dc.add(Restrictions.eq("isActive", Boolean.valueOf(isActive)));
 		}
 		if (StringUtil.isNotEmpty(keywords)) {

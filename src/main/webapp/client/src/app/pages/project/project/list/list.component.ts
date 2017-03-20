@@ -16,7 +16,7 @@ import {ProjectService} from "../../../../service/project";
 export class ProjectList implements OnInit, AfterViewInit {
 
   queryForm: FormGroup;
-  queryModel:any = {keywords: '', status: ''};
+  queryModel:any = {keywords: '', isActive: 'true'};
 
   models: any;
   maxLevel: number;
@@ -32,7 +32,7 @@ export class ProjectList implements OnInit, AfterViewInit {
 
     that.queryForm = that.fb.group(
       {
-        'status': [that.queryModel.status, []],
+        'isActive': [that.queryModel.isActive, []],
         'keywords': [that.queryModel.keywords, []]
       }, {}
     );

@@ -69,20 +69,17 @@
         timeToIdleSeconds="300"
         timeToLiveSeconds="600"
         overflowToDisk="true"
-        />
+    />
 
     <!-- Sample cache named sampleCache2
         This cache contains 1000 elements. Elements will always be held in memory.
         They are not expired. -->
-    <cache name="sampleCache2"
+    <cache name="companyProjects"
         maxElementsInMemory="1000"
         eternal="true"
         timeToIdleSeconds="0"
         timeToLiveSeconds="0"
         overflowToDisk="false"
-        />
-
-    <!-- Place configuration for your caches following -->
-	
+    />
 	
 </ehcache>

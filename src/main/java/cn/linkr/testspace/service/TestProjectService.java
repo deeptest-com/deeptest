@@ -26,5 +26,7 @@ public interface TestProjectService extends BaseService {
 	int countDescendantsNumb(TestProjectVo vo, int count);
 
 	TestProject getDetail(Long id);
+
+	List<TestProject> listCache(Long companyId, String isActive);
 	
 }

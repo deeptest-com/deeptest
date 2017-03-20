@@ -3,10 +3,9 @@
     <div class="list-toolbar col-xl-12">
       <div class="filter">
         <form [formGroup]="queryForm" class="form-inline">
-          <label for="status">状态</label>
-          <select [(ngModel)]="queryModel.status" formControlName="status"
-                  class="form-control form-control-sm" id="status" name="status">
-            <option value=""> 所有</option>
+          <label for="isActive">状态</label>
+          <select [(ngModel)]="queryModel.isActive" formControlName="isActive"
+                  class="form-control form-control-sm" id="isActive" name="isActive">
             <option *ngFor="let entry of (statusMap | mapKeys)" value="{{entry.key}}">{{entry.value}}</option>
           </select>
           &nbsp;&nbsp;&nbsp;
@@ -32,8 +31,11 @@
             <th>操作</th>
           </tr>
           </thead>
-          <tbody>
-            <table-tree *ngIf="models" [models]="models" [maxLevel]="maxLevel" (action)="action($event)"></table-tree>
+          <tbody *ngIf="models">
+            <table-tree [models]="models" [maxLevel]="maxLevel" (action)="action($event)"></table-tree>
+          </tbody>
+          <tbody *ngIf="!models">
+            <tr><td [colSpan]="3">暂无数据</td></tr>
           </tbody>
         </table>
   </div>

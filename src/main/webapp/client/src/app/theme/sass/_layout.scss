@@ -51,11 +51,14 @@ a {
 
 
 pages {
-  display: flex;
-  flex-direction: column;
+
 }
 .al-header {
+  position: fixed;
+  top: 0;
+
   height: 66px;
+  width: 100%;
   margin: 0;
   background-repeat: repeat-x;
   z-index: 905;
@@ -63,17 +66,20 @@ pages {
 }
 
 .al-main {
-  flex: 1;
+
   padding: 0;
   background: #fff;
 }
 
 .al-footer {
   position: fixed;
-  height: 34px;
-  padding: 0 18px 0 ($left-space + 20px);
-  width: 100%;
   bottom: 0;
+
+  height: 34px;
+  width: 100%;
+
+  padding: 0 18px 0 ($left-space + 20px);
+  
   font-size: 13px;
   color: $default-text;
   transition: padding-left 0.5s ease;
@@ -138,7 +144,8 @@ pages {
 }
 
 .al-content {
-  padding: 0px;
+  padding-top: 66px;
+  padding-bottom: 34px;
 
 }
 

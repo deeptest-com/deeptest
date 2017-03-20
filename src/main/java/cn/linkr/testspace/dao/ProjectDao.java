@@ -10,5 +10,5 @@ import org.hibernate.criterion.DetachedCriteria;
 import cn.linkr.testspace.vo.Page;
 
 public interface ProjectDao {
-	 public List findProjectByProcedure(Long companyId, Long parentId);
+	 public List findProjectByProcedure(Long companyId, Boolean isActive, String keywords);
 }

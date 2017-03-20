@@ -7,6 +7,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import cn.linkr.testspace.util.Constant.TreeNodeType;
+
 @Entity
 @Table(name = "tst_case")
 public class TestCase extends BaseEntity {
@@ -19,7 +21,8 @@ public class TestCase extends BaseEntity {
 	@Column(name = "descr", length = 1000)
     private String descr;
 
-	private Integer type; // 0 root, 1 folder, 2 node
+	private TreeNodeType type; // 0 root, 1 folder, 2 node
+	private String path;
 	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", insertable = false, updatable = false)
@@ -90,11 +93,11 @@ public class TestCase extends BaseEntity {
 		this.estimate = estimate;
 	}
 
-	public Integer getType() {
+	public TreeNodeType getType() {
 		return type;
 	}
 
-	public void setType(Integer type) {
+	public void setType(TreeNodeType type) {
 		this.type = type;
 	}
 
@@ -128,5 +131,13 @@ public class TestCase extends BaseEntity {
 
 	public void setParentId(Long parentId) {
 		this.parentId = parentId;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 }

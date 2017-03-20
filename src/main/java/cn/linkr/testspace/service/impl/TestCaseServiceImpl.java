@@ -19,6 +19,7 @@ import cn.linkr.testspace.entity.TestCase;
 import cn.linkr.testspace.service.GuestService;
 import cn.linkr.testspace.service.TestCaseService;
 import cn.linkr.testspace.util.BeanUtilEx;
+import cn.linkr.testspace.util.Constant.TreeNodeType;
 import cn.linkr.testspace.util.StringUtil;
 import cn.linkr.testspace.vo.GuestVo;
 import cn.linkr.testspace.vo.Page;
@@ -39,12 +40,17 @@ public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseServ
         if (moduleId != null) {
         	dc.add(Restrictions.eq("moduleId", moduleId));
         }
-        if (StringUtil.isNotEmpty(keywords)) {
-        	dc.add(Restrictions.like("title", "%" + keywords + "%"));
-        }
+        
+		if (StringUtil.isNotEmpty(keywords)) {
+			dc.add(Restrictions.or(
+				Restrictions.ne("type", TreeNodeType.NODE), 
+				Restrictions.like("title", "%" + keywords + "%"))
+			);
+		}
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+        dc.addOrder(Order.asc("path"));
         dc.addOrder(Order.asc("id"));
         List<TestCase> ls = findAllByCriteria(dc);
         
@@ -59,13 +65,13 @@ public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseServ
         for (TestCase po : ls) {
         	Long id = po.getId();
         	String title = po.getTitle();
-        	Integer type = po.getType();
+        	TreeNodeType type = po.getType();
         	Long pid = po.getParentId();
         	
-        	TestCaseTreeVo newNode = new TestCaseTreeVo(id, title, type, pid);
+        	TestCaseTreeVo newNode = new TestCaseTreeVo(id, title, type.getVal(), pid);
         	nodeMap.put(id, newNode);
         	
-        	if (type == 0) {
+        	if (type.equals(TreeNodeType.ROOT)) {
         		root = newNode;
         		continue;
         	}

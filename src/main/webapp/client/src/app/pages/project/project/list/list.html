@@ -1,4 +1,4 @@
-<div class="project-list container-fluid">
+<div class="project-list container-fluid y-scrollable">
   <div class="row">
     <div class="list-toolbar col-xl-12">
       <div class="filter">
@@ -34,7 +34,7 @@
           <tbody *ngIf="models">
             <table-tree [models]="models" [maxLevel]="maxLevel" (action)="action($event)"></table-tree>
           </tbody>
-          <tbody *ngIf="!models">
+          <tbody *ngIf="!models" #tree>
             <tr><td [colSpan]="3">暂无数据</td></tr>
           </tbody>
         </table>

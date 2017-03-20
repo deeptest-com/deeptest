@@ -1,4 +1,8 @@
 import {Component, ViewEncapsulation} from '@angular/core';
+
+import { CONSTANT } from '../utils/constant';
+import { Utils } from '../utils/utils';
+
 @Component({
   selector: 'pages',
   encapsulation: ViewEncapsulation.None,
@@ -30,6 +34,7 @@ import {Component, ViewEncapsulation} from '@angular/core';
     `
 })
 export class Pages {
+
   constructor() {
 
   }

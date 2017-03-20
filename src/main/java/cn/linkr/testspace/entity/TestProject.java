@@ -7,7 +7,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import cn.linkr.testspace.entity.EvtEvent.EventStatus;
+import cn.linkr.testspace.util.Constant.TreeNodeType;
 
 @Entity
 @Table(name = "tst_project")
@@ -19,8 +19,9 @@ public class TestProject extends BaseEntity {
     private String descr;
 	
 	private Integer level;
-	
 	private Boolean isActive;
+	private TreeNodeType type; // 0 root, 1 folder, 2 node
+	private String path;
 	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", insertable = false, updatable = false)
@@ -98,6 +99,22 @@ public class TestProject extends BaseEntity {
 
 	public void setLevel(Integer level) {
 		this.level = level;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public TreeNodeType getType() {
+		return type;
+	}
+
+	public void setType(TreeNodeType type) {
+		this.type = type;
 	}
     
 }

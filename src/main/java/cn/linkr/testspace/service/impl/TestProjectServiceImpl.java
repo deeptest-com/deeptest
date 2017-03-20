@@ -33,6 +33,8 @@ import cn.linkr.testspace.service.GuestService;
 import cn.linkr.testspace.service.TestCaseService;
 import cn.linkr.testspace.service.TestProjectService;
 import cn.linkr.testspace.util.BeanUtilEx;
+import cn.linkr.testspace.util.Constant;
+import cn.linkr.testspace.util.Constant.TreeNodeType;
 import cn.linkr.testspace.util.StringUtil;
 import cn.linkr.testspace.vo.GuestVo;
 import cn.linkr.testspace.vo.Page;
@@ -49,7 +51,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	private ProjectDao projectDao;
 	
 	@Override
-	@Cacheable(value="companyProjects",key="#isActive.concat('-').concat(#companyId)")
+//	@Cacheable(value="companyProjects",key="#isActive.concat('-').concat(#companyId)")
 	public List<TestProject> listCache(Long companyId, String isActive) {
 		return this.list(isActive, null, companyId);
 	}
@@ -62,11 +64,14 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 			dc.add(Restrictions.eq("isActive", Boolean.valueOf(isActive)));
 		}
 		if (StringUtil.isNotEmpty(keywords)) {
-			dc.add(Restrictions.like("name", "%" + keywords + "%"));
+			dc.add(Restrictions.or(
+				Restrictions.ne("type", TreeNodeType.NODE),
+				Restrictions.like("name", "%" + keywords + "%")));
 		}
 
 		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+		dc.addOrder(Order.asc("path"));
 		dc.addOrder(Order.asc("id"));
 		List ls = findAllByCriteria(dc);
 
@@ -102,18 +107,20 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		Map<Long, TestProjectVo> nodeMap = new HashMap<Long, TestProjectVo>();
         for (TestProject po : pos) {
         	Long id = po.getId();
+        	TreeNodeType type = po.getType();
         	Long pid = po.getParentId();
         	
         	TestProjectVo newNode = genVo(po);
         	
         	nodeMap.put(id, newNode);
         	
-        	if (id == 0) {
+        	if (type.equals(Constant.TreeNodeType.ROOT)) {
         		root = newNode;
         		continue;
         	}
         	
-        	LinkedList<TestProjectVo> children = nodeMap.get(pid).getChildren();
+        	TestProjectVo pvo = nodeMap.get(pid);
+        	LinkedList<TestProjectVo> children = pvo.getChildren();
         	children.add(newNode);
         	
         	if (po.getLevel() > maxLevel) {

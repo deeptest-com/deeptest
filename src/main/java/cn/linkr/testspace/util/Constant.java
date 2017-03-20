@@ -3,6 +3,8 @@ package cn.linkr.testspace.util;
 import java.util.Arrays;
 import java.util.List;
 
+import cn.linkr.testspace.entity.EvtEvent.EventStatus;
+
 public final class Constant {
     // 配置项，初始化在 PropertyConfig.processProperties()
     public static String WORK_DIR;
@@ -48,5 +50,21 @@ public final class Constant {
     
     public static final String WEBSCOKET_OPT_ENTER_CHAT_ROOM = "enter_chat_room";
 	public static final String WEBSCOKET_OPT_CHAT = "chat";
+	
+    public static enum TreeNodeType {
+        ROOT(0),
+        FOLDER(1),
+        NODE(2);
+
+        private TreeNodeType(Integer val) {
+            this.val = val;
+        }
+
+        private Integer val;
+
+		public Integer getVal() {
+			return val;
+		}
+    }
 	
 }

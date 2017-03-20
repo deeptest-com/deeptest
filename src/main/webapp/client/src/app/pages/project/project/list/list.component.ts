@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation, OnInit, AfterViewInit, ViewChild} from "@angular/core";
+import {Component, ViewEncapsulation, OnInit, AfterViewInit, ViewChild, ElementRef} from "@angular/core";
 import { FormBuilder, FormGroup } from '@angular/forms';
 import {GlobalState} from "../../../../global.state";
 
@@ -15,6 +15,8 @@ import {ProjectService} from "../../../../service/project";
 })
 export class ProjectList implements OnInit, AfterViewInit {
 
+  @ViewChild('#tree')tree :ElementRef;
+
   queryForm: FormGroup;
   queryModel:any = {keywords: '', isActive: 'true'};
 
@@ -23,7 +25,7 @@ export class ProjectList implements OnInit, AfterViewInit {
   counter = Array;
   statusMap: Array<any> = CONSTANT.EntityActive;
 
-  constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder,
+  constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
               private _projectService:ProjectService) {
   }
 
@@ -44,6 +46,8 @@ export class ProjectList implements OnInit, AfterViewInit {
     let that = this;
 
     this.queryForm.valueChanges.debounceTime(500).subscribe(values => this.queryChange(values));
+    // this.queryForm.controls['isActive'].valueChanges.debounceTime(500).subscribe(values => this.queryChange(values));
+    // this.queryForm.controls['isActive'].valueChanges.debounceTime(500).subscribe(values => console.log('------'));
   }
 
   create():void {
@@ -79,7 +83,7 @@ export class ProjectList implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
     that._projectService.list(that.queryModel).subscribe((json:any) => {
-      console.log('json', json);
+
       that.models = json.data;
       that.maxLevel = json.maxLevel;
     });

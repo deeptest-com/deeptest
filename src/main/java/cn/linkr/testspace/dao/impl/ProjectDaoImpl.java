@@ -47,8 +47,8 @@ public class ProjectDaoImpl implements ProjectDao {
     private SessionFactory sessionFactory;
     
     @Override
-    public List findProjectByProcedure(Long companyId, Long parentId) {
-    	String functionStr = "queryProjectChildren(" + companyId + "," + parentId + ")";
+    public List<TestProject> findProjectByProcedure(Long companyId, Boolean isActive, String keywords) {
+    	String functionStr = "queryProjectChildren(" + companyId + "," + isActive + "," + keywords + ")";
     	String queryString = "select " + functionStr;
         Query query = this.getSession().createSQLQuery(queryString);
         query.setResultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP);
@@ -58,8 +58,8 @@ public class ProjectDaoImpl implements ProjectDao {
         String selectStr = "select * from tst_project where id in (" + ids + ")";
     	SQLQuery select = this.getSession().createSQLQuery(selectStr);
         
-    	select.setResultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP);
-        List<Map> ls2 = select.list();
+    	query.setResultTransformer(new EscColumnToBean(TestProject.class));
+        List<TestProject> ls2 = select.list();
         return ls2;
     }
     

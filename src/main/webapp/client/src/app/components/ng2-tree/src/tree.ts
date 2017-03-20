@@ -26,7 +26,7 @@ export class Tree {
    */
   public createNode(action: NodeMenuItemAction): Tree {
     let isBranch = action === NodeMenuItemAction.NewFolder || action === NodeMenuItemAction.NewFolderInner;
-    let type =  isBranch? 1 : 2;
+    let type =  isBranch? 'branch' : 'leaf';
 
     const tree = new Tree({id: undefined, value: '', type: type }, null, isBranch);
     tree.markAsNew();
@@ -153,7 +153,7 @@ export class Tree {
    * @returns {boolean} A flag indicating whether or not this tree is a "Branch".
    */
   public isBranch(): boolean {
-    return this.node.type < 2;
+    return this.node.type != 'leaf';
   }
 
   /**
@@ -224,7 +224,7 @@ export class Tree {
 
       // 打开空节点
       _.forEach(this.children, (child: Tree, index: number) => {
-        if ( child.node.type == 1 && (!child.children || child.children.length == 0) ) {
+        if ( child.node.type == 'branch' && (!child.children || child.children.length == 0) ) {
           child.node._foldingType = FoldingType.Expanded;
         }
       });
@@ -242,7 +242,7 @@ export class Tree {
     if (options.isExpanded) {
       this.node._foldingType = FoldingType.Expanded;
     } else {
-      if (this.node.type == 0) {
+      if (this.node.type == 'root') {
         this.node._foldingType = FoldingType.Expanded;
       } else {
         this.node._foldingType = FoldingType.Collapsed;
@@ -268,9 +268,9 @@ export class Tree {
    */
   public get foldingType(): FoldingType {
     if (!this.node._foldingType) {
-      if (this.node.type == 0) {
+      if (this.node.type == 'root') {
         this.node._foldingType = FoldingType.Expanded;
-      } else if (this.node.type == 1) {
+      } else if (this.node.type == 'branch') {
         this.node._foldingType = FoldingType.Collapsed;
       } else {
         this.node._foldingType = FoldingType.Leaf;

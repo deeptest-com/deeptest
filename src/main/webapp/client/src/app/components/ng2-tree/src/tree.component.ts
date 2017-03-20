@@ -21,7 +21,7 @@ import { Utils } from '../../../utils/utils';
   providers: [TreeService]
 })
 export class TreeComponent implements OnInit, OnChanges {
-  private static EMPTY_TREE: Tree = new Tree({id: undefined, value: '', type: 0});
+  private static EMPTY_TREE: Tree = new Tree({id: undefined, value: '', type: 'root'});
 
   @Input('tree')
   public treeModel: TreeModel;

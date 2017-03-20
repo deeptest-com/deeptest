@@ -76,7 +76,7 @@ export class NodeDraggableDirective implements OnDestroy, OnInit, OnDestroy {
     let space;
 
     let type = this.tree.node.type;
-      if (type < 2) { // 文件夹
+      if (type != 'leaf') { // 文件夹
           space = tagHeight / 3;
           if (yOfCursor < space) {
               this.addClass('over-drop-target-before');

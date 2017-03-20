@@ -1,4 +1,4 @@
-<div class="project-list container-fluid y-scrollable">
+<div class="project-list container-fluid">
   <div class="row">
     <div class="list-toolbar col-xl-12">
       <div class="filter">
@@ -23,21 +23,7 @@
   </div>
   <!-- /.row -->
   <div class="row">
-        <table class="table table-striped table-bordered">
-          <thead class="thead-inverse">
-          <tr>
-            <th scope="row" [colSpan]="maxLevel">名称</th>
-            <th>状态</th>
-            <th>操作</th>
-          </tr>
-          </thead>
-          <tbody *ngIf="models">
-            <table-tree [models]="models" [maxLevel]="maxLevel" (action)="action($event)"></table-tree>
-          </tbody>
-          <tbody *ngIf="!models" #tree>
-            <tr><td [colSpan]="3">暂无数据</td></tr>
-          </tbody>
-        </table>
+    <table-tree [models]="models" [maxLevel]="maxLevel"></table-tree>
   </div>
 
 </div>

@@ -43,7 +43,7 @@ public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseServ
         
 		if (StringUtil.isNotEmpty(keywords)) {
 			dc.add(Restrictions.or(
-				Restrictions.ne("type", TreeNodeType.NODE), 
+				Restrictions.ne("type", TreeNodeType.leaf), 
 				Restrictions.like("title", "%" + keywords + "%"))
 			);
 		}
@@ -68,10 +68,10 @@ public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseServ
         	TreeNodeType type = po.getType();
         	Long pid = po.getParentId();
         	
-        	TestCaseTreeVo newNode = new TestCaseTreeVo(id, title, type.getVal(), pid);
+        	TestCaseTreeVo newNode = new TestCaseTreeVo(id, title, type.toString(), pid);
         	nodeMap.put(id, newNode);
         	
-        	if (type.equals(TreeNodeType.ROOT)) {
+        	if (type.equals(TreeNodeType.root)) {
         		root = newNode;
         		continue;
         	}

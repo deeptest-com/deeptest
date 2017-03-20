@@ -12,5 +12,11 @@ export class RouteService {
       let urlStr = that._router.createUrlTree([url]);
       that._router.navigateByUrl(urlStr);
     }
+
+  nav(urls: any[]) {
+    let that = this;
+    let urlStr = that._router.createUrlTree(urls);
+    that._router.navigateByUrl(urlStr);
+  }
 }
 

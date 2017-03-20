@@ -52,19 +52,19 @@ public final class Constant {
 	public static final String WEBSCOKET_OPT_CHAT = "chat";
 	
     public static enum TreeNodeType {
-        ROOT(0),
-        FOLDER(1),
-        NODE(2);
+    	root("root"),
+        branch("branch"),
+        leaf("leaf");
 
-        private TreeNodeType(Integer val) {
-            this.val = val;
+        private TreeNodeType(String textVal) {
+            this.textVal = textVal;
         }
 
-        private Integer val;
+        private String textVal;
 
-		public Integer getVal() {
-			return val;
-		}
+        public String toString() {
+            return textVal;
+        }
     }
 	
 }

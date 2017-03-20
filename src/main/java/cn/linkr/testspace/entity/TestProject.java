@@ -2,6 +2,8 @@ package cn.linkr.testspace.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -20,7 +22,8 @@ public class TestProject extends BaseEntity {
 	
 	private Integer level;
 	private Boolean isActive;
-	private TreeNodeType type; // 0 root, 1 folder, 2 node
+	@Enumerated(EnumType.STRING)
+	private TreeNodeType type;
 	private String path;
 	
     @ManyToOne(fetch = FetchType.LAZY)

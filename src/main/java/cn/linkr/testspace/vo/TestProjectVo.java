@@ -1,8 +1,6 @@
 package cn.linkr.testspace.vo;
 
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 
 public class TestProjectVo extends BaseVo {
 	private static final long serialVersionUID = -9069520320732281911L;
@@ -14,6 +12,7 @@ public class TestProjectVo extends BaseVo {
     
     private Long parentId;
     private String path;
+    private String type;
     
     private Integer level;
     private Integer brotherNumb = 0;
@@ -90,6 +89,12 @@ public class TestProjectVo extends BaseVo {
 	}
 	public void setParentDescendantNumber(Integer parentDescendantNumber) {
 		this.parentDescendantNumber = parentDescendantNumber;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

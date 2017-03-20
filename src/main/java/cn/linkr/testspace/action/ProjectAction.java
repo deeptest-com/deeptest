@@ -77,7 +77,7 @@ public class ProjectAction extends BaseAction {
 		}
 		
 		Map<String, Integer> param = new HashMap<String, Integer>();
-		TestProjectVo vos = projectService.genVos(pos, param);
+		List<TestProjectVo> vos = projectService.genVos(pos, param);
 		
 		Long t2 = new Date().getTime();
 		log.debug("获取项目信息花了" + (t1 - t2) + "毫秒");

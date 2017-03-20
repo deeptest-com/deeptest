@@ -11,6 +11,7 @@ public class TestCaseVo extends BaseVo {
     private String descr;
 
 	private Integer path;
+	private String type;
 
     private Long moduleId;
     
@@ -70,6 +71,14 @@ public class TestCaseVo extends BaseVo {
 
 	public void setChildren(LinkedList<TestCaseVo> children) {
 		this.children = children;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 

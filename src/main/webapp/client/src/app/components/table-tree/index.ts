@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 import { TableTreeComponent } from './src/table-tree.component';
+import { TableRowComponent } from './src/table-row.component';
 
 export * from './src/table-tree.component';
 
 @NgModule({
   imports: [CommonModule, RouterModule],
-  declarations: [TableTreeComponent],
-  exports: [TableTreeComponent],
+  declarations: [TableTreeComponent, TableRowComponent],
+  exports: [TableTreeComponent, TableRowComponent],
   providers: []
 })
 export class TableTreeModule {

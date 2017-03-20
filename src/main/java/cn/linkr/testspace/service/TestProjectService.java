@@ -1,6 +1,7 @@
 package cn.linkr.testspace.service;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,15 +19,17 @@ public interface TestProjectService extends BaseService {
 	List list(String status, String keywords, Long companyId);
 
 	TestProjectVo genVo(TestProject po);
-	TestProjectVo genVos(List<TestProject> pos, Map<String, Integer> ret);
+	LinkedList<TestProjectVo> genVos(List<TestProject> pos, Map<String, Integer> ret);
 	
 	TestProject delete(Long vo, Long clientId);
 	TestProject save(Long id, String value, Integer type, Long pid, Long id2);
 
-	int countDescendantsNumb(TestProjectVo vo, int count);
-
 	TestProject getDetail(Long id);
 
 	List<TestProject> listCache(Long companyId, String isActive);
+
+	int countDescendantsNumb(Long id, String childrenPath);
+	
+//	int countDescendantsNumb(TestProjectVo vo, int count);
 	
 }

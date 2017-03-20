@@ -14,11 +14,11 @@ public class TestCaseTreeVo implements Serializable {
 	private String value;
 	private Long pid;
 	
-	private Integer type; // 0 root, 1 folder, 2 node
+	private String type;
     
 	LinkedHashSet<TestCaseTreeVo> children = new LinkedHashSet<TestCaseTreeVo>();
     
-    public TestCaseTreeVo(Long id, String value, Integer type, Long pid) {
+    public TestCaseTreeVo(Long id, String value, String type, Long pid) {
 		this.id = id;
 		this.value = value;
 		this.type = type;
@@ -57,11 +57,11 @@ public class TestCaseTreeVo implements Serializable {
 		this.pid = pid;
 	}
 
-	public Integer getType() {
+	public String getType() {
 		return type;
 	}
 
-	public void setType(Integer type) {
+	public void setType(String type) {
 		this.type = type;
 	}
 

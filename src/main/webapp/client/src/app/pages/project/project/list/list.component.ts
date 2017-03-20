@@ -46,8 +46,6 @@ export class ProjectList implements OnInit, AfterViewInit {
     let that = this;
 
     this.queryForm.valueChanges.debounceTime(500).subscribe(values => this.queryChange(values));
-    // this.queryForm.controls['isActive'].valueChanges.debounceTime(500).subscribe(values => this.queryChange(values));
-    // this.queryForm.controls['isActive'].valueChanges.debounceTime(500).subscribe(values => console.log('------'));
   }
 
   create():void {
@@ -60,7 +58,12 @@ export class ProjectList implements OnInit, AfterViewInit {
     let that = this;
 
     that.queryModel = values;
-    console.log(that.queryModel);
+
+    // var nativeElement: HTMLElement = this.el.nativeElement;
+    //
+    // _.forEach(nativeElement.querySelectorAll('tr'), (tr: HTMLElement, index: number) => {
+    //   tr.remove();
+    // });
 
     that.loadData();
   }
@@ -90,4 +93,3 @@ export class ProjectList implements OnInit, AfterViewInit {
   }
 
 }
-

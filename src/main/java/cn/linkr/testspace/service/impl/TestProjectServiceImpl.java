@@ -8,6 +8,8 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,7 +67,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		}
 		if (StringUtil.isNotEmpty(keywords)) {
 			dc.add(Restrictions.or(
-				Restrictions.ne("type", TreeNodeType.NODE),
+				Restrictions.ne("type", TreeNodeType.leaf),
 				Restrictions.like("name", "%" + keywords + "%")));
 		}
 
@@ -97,54 +99,62 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 
 		return null;
 	}
-
-	// need to be cache
+	
 	@Override
-	public TestProjectVo genVos(List<TestProject> pos, Map<String, Integer> ret) {
+	public LinkedList<TestProjectVo> genVos(List<TestProject> pos, Map<String, Integer> ret) {
 		TestProjectVo root = null;
 		int maxLevel = 0;
 		
+		String childrenPath = "";
 		Map<Long, TestProjectVo> nodeMap = new HashMap<Long, TestProjectVo>();
-        for (TestProject po : pos) {
-        	Long id = po.getId();
-        	TreeNodeType type = po.getType();
-        	Long pid = po.getParentId();
-        	
-        	TestProjectVo newNode = genVo(po);
-        	
-        	nodeMap.put(id, newNode);
-        	
-        	if (type.equals(Constant.TreeNodeType.ROOT)) {
-        		root = newNode;
-        		continue;
-        	}
-        	
-        	TestProjectVo pvo = nodeMap.get(pid);
-        	LinkedList<TestProjectVo> children = pvo.getChildren();
-        	children.add(newNode);
-        	
-        	if (po.getLevel() > maxLevel) {
-				maxLevel = po.getLevel();
-			}
-        }
-        
-        for (Long key : nodeMap.keySet()) {
-        	TestProjectVo vo = nodeMap.get(key);
-        	
-			if (vo.getId() != 0 && vo.getChildren().size() > 0) {
-				TestProjectVo firstChild = vo.getChildren().get(0);
-				
-				firstChild.setIsFirstChild(true);
-				
-				int count = 0;
-				count = this.countDescendantsNumb(vo, count);
-				firstChild.setParentDescendantNumber(count);
-				firstChild.setBrotherNumb(count);
-			}
-        }
+	      for (TestProject po : pos) {
+	        	Long id = po.getId();
+	        	TreeNodeType type = po.getType();
+	        	Long pid = po.getParentId();
+	        	
+	        	TestProjectVo newNode = genVo(po);
+	        	
+	        	nodeMap.put(id, newNode);
+	        	
+	        	if (type.equals(Constant.TreeNodeType.root)) {
+	        		root = newNode;
+	        		continue;
+	        	}
+	        	
+	        	TestProjectVo pvo = nodeMap.get(pid);
+	        	LinkedList<TestProjectVo> children = pvo.getChildren();
+	        	children.add(newNode);
+	        	
+	        	childrenPath += newNode.getPath() + ",";
+	        	if (po.getLevel() > maxLevel) {
+					maxLevel = po.getLevel();
+				}
+	        }
+	        
+	      LinkedList<TestProjectVo> voList = new LinkedList<TestProjectVo>();
+	        for (Long key : nodeMap.keySet()) {
+	        	
+	        	TestProjectVo vo = nodeMap.get(key);
+	        	if (!vo.getType().toString().equals(Constant.TreeNodeType.root.toString())) {
+	        		voList.add(vo);
+	        	}
+	        	
+				if (vo.getId() != 0 && vo.getChildren().size() > 0) {
+					TestProjectVo firstChild = vo.getChildren().get(0);
+					
+					firstChild.setIsFirstChild(true);
+					
+//					int count = 0;
+//					count = this.countDescendantsNumb(vo, count);
+					
+					int count = this.countDescendantsNumb(vo.getId(), childrenPath);
+					firstChild.setParentDescendantNumber(count);
+					firstChild.setBrotherNumb(count);
+				}
+	        }
 		
         ret.put("maxLevel", maxLevel);
-        return root;
+        return voList;
 	}
 
 	@Override
@@ -156,16 +166,27 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		}
 		return vo;
 	}
-
+	
 	@Override
-	public int countDescendantsNumb(TestProjectVo vo, int count) {
-		Iterator<TestProjectVo> it = vo.getChildren().iterator();
-		while (it.hasNext()) {
-			TestProjectVo child = it.next();
-			count++;
-
-			count = this.countDescendantsNumb(child, count);
-		}
-		return count;
+	public int countDescendantsNumb(Long id, String childrenPath) {
+		int count = 0;  
+        Pattern p = Pattern.compile("/"  + id + "/");  
+        Matcher m = p.matcher(childrenPath);  
+        while (m.find()) {  
+            count++;  
+        }  
+        return count;
 	}
+
+//	@Override
+//	public int countDescendantsNumb(TestProjectVo vo, int count) {
+//		Iterator<TestProjectVo> it = vo.getChildren().iterator();
+//		while (it.hasNext()) {
+//			TestProjectVo child = it.next();
+//			count++;
+//
+//			count = this.countDescendantsNumb(child, count);
+//		}
+//		return count;
+//	}
 }

@@ -17,8 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.linkr.testspace.entity.EvtBanner;
+import cn.linkr.testspace.entity.EvtClient;
+import cn.linkr.testspace.entity.EvtDocument;
 import cn.linkr.testspace.entity.EvtEvent;
 import cn.linkr.testspace.entity.EvtGuest;
+import cn.linkr.testspace.entity.EvtOrganizer;
 import cn.linkr.testspace.entity.SysUser;
 import cn.linkr.testspace.entity.TestCase;
 import cn.linkr.testspace.entity.TestProject;
@@ -28,8 +32,11 @@ import cn.linkr.testspace.service.TestProjectService;
 import cn.linkr.testspace.service.impl.TestProjectServiceImpl;
 import cn.linkr.testspace.util.AuthPassport;
 import cn.linkr.testspace.util.Constant;
+import cn.linkr.testspace.vo.BannerVo;
+import cn.linkr.testspace.vo.DocumentVo;
 import cn.linkr.testspace.vo.EventVo;
 import cn.linkr.testspace.vo.GuestVo;
+import cn.linkr.testspace.vo.OrganizerVo;
 import cn.linkr.testspace.vo.Page;
 import cn.linkr.testspace.vo.TestCaseTreeVo;
 import cn.linkr.testspace.vo.TestCaseVo;
@@ -72,6 +79,24 @@ public class ProjectAction extends BaseAction {
         ret.put("maxLevel", param.get("maxLevel"));
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		
+		return ret;
+	}
+	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "get", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> get(HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		JSONObject req = reqJson(request);
+		String id = req.getString("id");
+		
+		UserVo user = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		
+		TestProject project = projectService.getDetail(Long.valueOf(id));
+		TestProjectVo vo = projectService.genVo(project);
+        
+        ret.put("data", vo);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
 

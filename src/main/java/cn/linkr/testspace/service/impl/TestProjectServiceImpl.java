@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.linkr.testspace.dao.BaseDao;
 import cn.linkr.testspace.dao.ProjectDao;
+import cn.linkr.testspace.entity.EvtEvent;
 import cn.linkr.testspace.entity.EvtGuest;
 import cn.linkr.testspace.entity.EvtScheduleItem;
 import cn.linkr.testspace.entity.EvtSession;
@@ -64,6 +65,13 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 
 		return ls;
 	}
+	
+    @Override
+    public TestProject getDetail(Long id) {
+    	TestProject po = (TestProject) get(TestProject.class, id);
+		
+		return po;
+    }
 
 	@Override
 	public TestProject delete(Long vo, Long clientId) {

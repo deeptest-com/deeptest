@@ -24,5 +24,7 @@ public interface TestProjectService extends BaseService {
 	TestProject save(Long id, String value, Integer type, Long pid, Long id2);
 
 	int countDescendantsNumb(TestProjectVo vo, int count);
+
+	TestProject getDetail(Long id);
 	
 }

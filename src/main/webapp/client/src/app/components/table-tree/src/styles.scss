@@ -12,6 +12,8 @@
       border: 1px solid gainsboro;
       &.level-span {
         width: 30px;
+        border-right: 0px;
+        border-left: 0px;
       }
       .link {
         font-size: 14px;

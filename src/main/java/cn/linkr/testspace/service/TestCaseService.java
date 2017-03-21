@@ -11,7 +11,7 @@ import cn.linkr.testspace.vo.TestCaseVo;
 
 public interface TestCaseService extends BaseService {
 
-	List<TestCase> query(Long projectId, Long moduleId, String keywords);
+	List<TestCase> query(Long projectId, Long moduleId);
 	TestCaseTreeVo buildTree(List<TestCase> ls);
 
 	List<TestCaseVo> genVos(List<TestCase> pos);

@@ -9,7 +9,7 @@ import { CONSTANT } from '../../../utils/constant';
   styles: [require('./styles.scss')],
   template: require('./table-tree.html')
 })
-export class TableTreeComponent implements OnInit, AfterViewInit, OnChanges{
+export class TableTreeComponent implements OnInit, AfterViewInit{
   @Input()
   public models: any;
   @Input()
@@ -30,9 +30,7 @@ export class TableTreeComponent implements OnInit, AfterViewInit, OnChanges{
 
   }
 
-  ngOnChanges() {
-    let that = this;
-
+  public isHidden(model: any): boolean {
+    return !!this.keywords && model.name.toLowerCase().indexOf(this.keywords.toLowerCase()) === -1
   }
-
 }

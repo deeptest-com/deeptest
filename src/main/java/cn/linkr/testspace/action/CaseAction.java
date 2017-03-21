@@ -45,9 +45,8 @@ public class CaseAction extends BaseAction {
 		
 		Long projectId = json.getLong("projectId");
 		Long moduleId = json.getLong("moduleId");
-		String keywords = json.getString("keywords");
 		
-		List<TestCase> ls = caseService.query(projectId, moduleId, keywords);
+		List<TestCase> ls = caseService.query(projectId, moduleId);
 		
 		TestCaseTreeVo tree = caseService.buildTree(ls);
 		

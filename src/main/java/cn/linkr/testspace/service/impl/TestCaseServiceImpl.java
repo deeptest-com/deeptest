@@ -31,7 +31,7 @@ import cn.linkr.testspace.vo.TestCaseVo;
 public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseService {
 
 	@Override
-	public List<TestCase> query(Long projectId, Long moduleId, String keywords) {
+	public List<TestCase> query(Long projectId, Long moduleId) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestCase.class);
         
         if (projectId != null) {
@@ -40,13 +40,6 @@ public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseServ
         if (moduleId != null) {
         	dc.add(Restrictions.eq("moduleId", moduleId));
         }
-        
-		if (StringUtil.isNotEmpty(keywords)) {
-			dc.add(Restrictions.or(
-				Restrictions.ne("type", TreeNodeType.leaf), 
-				Restrictions.like("title", "%" + keywords + "%"))
-			);
-		}
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));

@@ -1,17 +1,14 @@
+<td *ngFor="let level of counter(model.level - 1)" class="level-span"></td>
 
-  <td *ngIf="model.isFirstChild" [attr.rowspan]="model.parentDescendantNumber" class="level-span"></td>
-
-  <td [attr.colSpan]="maxLevel - (model.level - 1)">{{model.name}}</td>
-  <td>
-    <span *ngIf="model.isActive">活动</span>
-    <span *ngIf="!model.isActive">关闭</span>
-  </td>
-  <td class="opt">
-    <span [routerLink]="['/pages/project/edit',model.id]" class="link no-underline">编辑</span>
-    <span [routerLink]="['/pages/project/edit',model.id]" class="link no-underline">任务</span>
-    <span [routerLink]="['/pages/project/edit',model.id]" class="link no-underline">设计</span>
-    <span [routerLink]="['/pages/project/edit',model.id]" class="link no-underline">执行</span>
-    <span [routerLink]="['/pages/project/edit',model.id]" class="link no-underline">分析</span>
-  </td>
-
-
+<td [attr.colSpan]="maxLevel - (model.level - 1)">{{model.name}}</td>
+<td>
+  <span *ngIf="model.isActive">活动</span>
+  <span *ngIf="!model.isActive">关闭</span>
+</td>
+<td class="opt">
+  <span [routerLink]="['/pages/project/edit',model.id]" class="link no-underline">编辑</span>
+  <span [routerLink]="['/pages/project/edit',model.id]" class="link no-underline">任务</span>
+  <span [routerLink]="['/pages/project/edit',model.id]" class="link no-underline">设计</span>
+  <span [routerLink]="['/pages/project/edit',model.id]" class="link no-underline">执行</span>
+  <span [routerLink]="['/pages/project/edit',model.id]" class="link no-underline">分析</span>
+</td>

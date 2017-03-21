@@ -1,4 +1,4 @@
-<table *ngIf="models" class="table table-bordered table-tree">
+<table *ngIf="models" class="table table-bordered table-striped table-tree">
   <thead class="thead-inverse">
   <tr>
     <th scope="row" [colSpan]="maxLevel">名称</th>
@@ -8,9 +8,7 @@
   </thead>
   <tbody>
     <ng-container *ngFor="let model of models">
-      <tr *ngIf="!keywords" table-row [model]="model" [maxLevel]="maxLevel" [keywords]="keywords"></tr>
-      <tr *ngIf="keywords" table-row [model]="model" [maxLevel]="maxLevel"
-          [class.highlight]="model.name.toLowerCase().indexOf(keywords.toLowerCase()) > -1">{{keywords}}</tr>
+      <tr table-row [model]="model" [maxLevel]="maxLevel" [class.hidden]="isHidden(model)"></tr>
     </ng-container>
   </tbody>
 </table>

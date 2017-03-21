@@ -57,7 +57,7 @@ export class ProjectList implements OnInit, AfterViewInit {
   queryChange(values:any):void {
     let that = this;
 
-    that.queryModel = values;
+    that.queryModel.isActive = values;
 
     that.loadData();
   }
@@ -79,6 +79,8 @@ export class ProjectList implements OnInit, AfterViewInit {
 
   loadData() {
     let that = this;
+    console.log(that.queryModel);
+
     that._projectService.list(that.queryModel).subscribe((json:any) => {
 
       that.models = json.data.models;

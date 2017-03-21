@@ -16,13 +16,15 @@ export class TableRowComponent implements OnInit {
   @Input()
   public keywords: string;
 
+  counter = Array;
+
   constructor(private _state:GlobalState, private el: ElementRef) {
     let that = this;
 
   }
 
   public ngOnInit(): void {
-    
+
   }
 
 }

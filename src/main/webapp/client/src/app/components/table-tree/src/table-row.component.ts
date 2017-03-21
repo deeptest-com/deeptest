@@ -13,6 +13,8 @@ export class TableRowComponent implements OnInit {
   public model: any;
   @Input()
   public maxLevel: number;
+  @Input()
+  public keywords: string;
 
   constructor(private _state:GlobalState, private el: ElementRef) {
     let that = this;
@@ -20,14 +22,7 @@ export class TableRowComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    // let nativeElement: HTMLElement = this.el.nativeElement;
-    // let parentElement: HTMLElement = nativeElement.parentElement;
-    // // move all children out of the element
-    // while (nativeElement.firstChild) {
-    //   parentElement.insertBefore(nativeElement.firstChild, nativeElement);
-    // }
-    // // remove the empty element(the host)
-    // parentElement.removeChild(nativeElement);
+    
   }
 
 }

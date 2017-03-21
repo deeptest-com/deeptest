@@ -65,25 +65,15 @@ public class ProjectAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
 		String isActive = json.getString("isActive") != null?json.getString("isActive"): "true";
-		String keywords = json.getString("keywords");
 		
 		Long t1 = new Date().getTime();
-		
-		List<TestProject> pos;
-		if (StringUtil.isEmpty(keywords)) {
-			pos = projectService.listCache(userVo.getCompanyId(), isActive);
-		} else {
-			pos = projectService.list(isActive, keywords, userVo.getCompanyId());
-		}
-		
-		Map<String, Integer> param = new HashMap<String, Integer>();
-		List<TestProjectVo> vos = projectService.genVos(pos, param);
+
+		Map<String, Object> out = projectService.listCache(userVo.getCompanyId(), isActive);
 		
 		Long t2 = new Date().getTime();
 		log.debug("获取项目信息花了" + (t1 - t2) + "毫秒");
-			
-        ret.put("data", vos);
-        ret.put("maxLevel", param.get("maxLevel"));
+		
+        ret.put("data", out);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		
 		return ret;

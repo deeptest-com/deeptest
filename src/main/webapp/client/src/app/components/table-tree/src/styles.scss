@@ -3,11 +3,20 @@
   thead th {
     border-color: #373a3c;
   }
-  tbody tr td {
-    text-align: left;
-    border: 1px solid gainsboro;
-    &.depth-span {
-      width: 50px;
+  tbody tr {
+    &.highlight td {
+      color: #E64320;
+    }
+    td {
+      text-align: left;
+      border: 1px solid gainsboro;
+      &.level-span {
+        width: 30px;
+      }
+      .link {
+        font-size: 14px;
+        text-decoration: none !important;
+      }
     }
   }
 }

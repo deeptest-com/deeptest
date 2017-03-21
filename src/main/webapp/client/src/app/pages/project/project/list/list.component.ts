@@ -45,7 +45,7 @@ export class ProjectList implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     let that = this;
 
-    this.queryForm.valueChanges.debounceTime(500).subscribe(values => this.queryChange(values));
+    this.queryForm.controls['isActive'].valueChanges.debounceTime(500).subscribe(values => this.queryChange(values));
   }
 
   create():void {
@@ -58,12 +58,6 @@ export class ProjectList implements OnInit, AfterViewInit {
     let that = this;
 
     that.queryModel = values;
-
-    // var nativeElement: HTMLElement = this.el.nativeElement;
-    //
-    // _.forEach(nativeElement.querySelectorAll('tr'), (tr: HTMLElement, index: number) => {
-    //   tr.remove();
-    // });
 
     that.loadData();
   }
@@ -87,8 +81,8 @@ export class ProjectList implements OnInit, AfterViewInit {
     let that = this;
     that._projectService.list(that.queryModel).subscribe((json:any) => {
 
-      that.models = json.data;
-      that.maxLevel = json.maxLevel;
+      that.models = json.data.models;
+      that.maxLevel = json.data.maxLevel;
     });
   }
 

@@ -124,7 +124,7 @@ tree-internal .tree .node-value {
 }
 
 tree-internal .tree .node-selected {
-  color: #0066cc;
+  color: #E64320;
 }
 
 tree-internal .tree .folding {
@@ -179,21 +179,21 @@ tree-internal div.rootless {
 }
 
 .tree-toolbar {
-  display: flex;
-  padding: 10px 10px 3px 10px;
-  border-bottom: 1px solid #eeeeee !important;
-}
-.tree-toolbar .title {
-  width: 100px;
-  font-weight: 700;
-  color: #666666;
-  line-height: 22px;
-  font-size: 15px;
-  opacity: 0.9;
+
 }
 
-.tree-toolbar .buttons {
-  flex: 1;
-  line-height: 22px;
-  font-size: 13px;
+.tree-toolbar {
+  display: flex;
+  padding: 5px 10px 5px 10px;
+  border-bottom: 1px solid #eeeeee !important;
+  label {
+    flex: 1;
+    line-height: 27px;
+    font-size: 13px;
+  }
+  .form-control {
+    vertical-align: baseline;
+  }
 }
+
+

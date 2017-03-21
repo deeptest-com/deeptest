@@ -11,7 +11,7 @@
           &nbsp;&nbsp;&nbsp;
           <label for="keywords">关键字</label>
           <input [(ngModel)]="queryModel.keywords" formControlName="keywords"
-                 type="text" class="form-control form-control-sm" placeholder="" id="keywords" name="keywords">
+                 type="search" class="form-control form-control-sm" placeholder="" id="keywords" name="keywords">
         </form>
       </div>
       <div class="buttons">
@@ -23,7 +23,7 @@
   </div>
   <!-- /.row -->
   <div class="row">
-    <table-tree [models]="models" [maxLevel]="maxLevel"></table-tree>
+    <table-tree [models]="models" [maxLevel]="maxLevel" [keywords]="queryModel.keywords"></table-tree>
   </div>
 
 </div>

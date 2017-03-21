@@ -13,8 +13,8 @@ import { Utils } from '../../../utils/utils';
     <div>
       <tree-toolbar [tree]="tree" [options]="options"></tree-toolbar>
     </div>
-     <div class="">
-      <tree-internal [tree]="tree" [options]="options"></tree-internal>
+     <div>
+      <tree-internal [tree]="tree" [options]="options" [class.filter]="options.keywords"></tree-internal>
     </div>
    `,
   styles: [require('./styles.scss')],

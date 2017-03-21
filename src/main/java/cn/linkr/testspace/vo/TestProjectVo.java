@@ -13,6 +13,7 @@ public class TestProjectVo extends BaseVo {
     private Long parentId;
     private String path;
     private String type;
+    private Boolean isFilterOut;
     
     private Integer level;
     private Integer brotherNumb = 0;
@@ -95,6 +96,12 @@ public class TestProjectVo extends BaseVo {
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+	public Boolean getIsFilterOut() {
+		return isFilterOut;
+	}
+	public void setIsFilterOut(Boolean isFilterOut) {
+		this.isFilterOut = isFilterOut;
 	}
 
 }

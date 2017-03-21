@@ -14,6 +14,8 @@ export class TableTreeComponent implements OnInit, AfterViewInit, OnChanges{
   public models: any;
   @Input()
   public maxLevel: number;
+  @Input()
+  public keywords: string;
 
   isInit: boolean = false;
 
@@ -30,7 +32,7 @@ export class TableTreeComponent implements OnInit, AfterViewInit, OnChanges{
 
   ngOnChanges() {
     let that = this;
-    
+
   }
 
 }

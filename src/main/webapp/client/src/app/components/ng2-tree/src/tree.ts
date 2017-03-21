@@ -365,6 +365,10 @@ export class Tree {
       && (_.has(value, 'toString') && _.isFunction(value.toString) && value.toString !== Object.toString);
   }
 
+  public filter(keywords: string): void {
+    console.log(keywords);
+  }
+
   private static cloneTreeShallow(origin: Tree): Tree {
     const tree = new Tree(_.clone(origin.node));
     tree._children = origin._children;

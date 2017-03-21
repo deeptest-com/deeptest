@@ -19,7 +19,7 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
 @Component({
   selector: 'tree-internal',
   template: `
-  <ul *ngIf="tree" [ngClass]="{rootless: isRootHidden()}" class="tree">
+  <ul *ngIf="tree" [ngClass]="{rootless: isRootHidden(), hidden: isHidden()}" class="tree">
     <li> 
       <div class="value-container fa"
         [ngClass]="{rootless: isRootHidden()}" 
@@ -174,5 +174,11 @@ export class TreeInternalComponent implements OnInit {
 
   public isRootHidden(): boolean {
     return this.tree.isRoot() && !this.settings.rootIsVisible;
+  }
+
+  public isHidden(): boolean {
+    return !!this.options.keywords
+      && this.tree.isLeaf()
+      && this.tree.value.toLowerCase().indexOf(this.options.keywords.toLowerCase()) == -1;
   }
 }

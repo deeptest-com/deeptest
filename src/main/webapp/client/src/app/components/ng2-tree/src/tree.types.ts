@@ -15,7 +15,7 @@ export class FoldingType {
 
 export interface TreeModel {
   id: number;
-  type: number;
+  type: string;
   value: string | RenamableNode;
   pid?: number;
   children?: TreeModel[];
@@ -52,6 +52,7 @@ export interface Ng2TreeOptions {
   isExpanded: boolean;
   nodeName: string;
   folderName: string;
+  keywords?: string;
 }
 
 export enum TreeStatus {

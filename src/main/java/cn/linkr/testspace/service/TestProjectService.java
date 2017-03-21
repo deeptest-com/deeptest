@@ -16,9 +16,6 @@ import cn.linkr.testspace.vo.TestProjectVo;
 
 public interface TestProjectService extends BaseService {
 
-	List list(String status, String keywords, Long companyId);
-
-	TestProjectVo genVo(TestProject po);
 	LinkedList<TestProjectVo> genVos(List<TestProject> pos, Map<String, Integer> ret);
 	
 	TestProject delete(Long vo, Long clientId);
@@ -26,10 +23,11 @@ public interface TestProjectService extends BaseService {
 
 	TestProject getDetail(Long id);
 
-	List<TestProject> listCache(Long companyId, String isActive);
-
 	int countDescendantsNumb(Long id, String childrenPath);
-	
-//	int countDescendantsNumb(TestProjectVo vo, int count);
+
+	void toOrderList(TestProjectVo root, String childrenPath, LinkedList<TestProjectVo> resultList);
+
+	Map<String, Object> listCache(Long companyId, String isActive);
+	TestProjectVo genVo(TestProject po);
 	
 }

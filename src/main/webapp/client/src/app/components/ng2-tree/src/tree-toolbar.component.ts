@@ -1,17 +1,8 @@
 import { Input, Component, OnInit, ElementRef, Inject } from '@angular/core';
+import { FormControl } from '@angular/forms';
+
 import { Ng2TreeSettings, Ng2TreeOptions } from './tree.types';
-import { Subject, Observable } from 'rxjs/Rx';
 import { Tree } from './tree';
-import {
-  NodeRemovedEvent,
-
-  NodeRenamedEvent,
-
-  NodeCreatedEvent,
-
-  NodeMovedEvent
-
-} from './tree.events';
 
 import { NodeMenuService } from './menu/node-menu.service';
 import { TreeService } from './tree.service';
@@ -20,12 +11,13 @@ import { TreeService } from './tree.service';
   selector: 'tree-toolbar',
   template: `
   <div class="tree-toolbar">
-    <div class="buttons">
-      <a (click)="tree.expandOrNot(options)" href="javascript:void(0);">
+    <form class="form-inline">
+      <label (click)="tree.expandOrNot(options)" class="link no-underline mr-xs-2">
         <span *ngIf="!options.isExpanded">展开全部</span>
         <span *ngIf="options.isExpanded">收缩全部</span>
-      </a>
-    </div>
+      </label>
+      <input [value]="keywords" [formControl]="keywordsControl" name="keywords" type="search" class="form-control form-control-sm" placeholder="过滤">
+    </form>
   </div>
   `
 })
@@ -34,20 +26,22 @@ export class TreeToolbarComponent implements OnInit {
   public tree: Tree;
 
   @Input()
-  public settings: Ng2TreeSettings;
+  public options: Ng2TreeOptions;
 
-    @Input()
-    public options: Ng2TreeOptions;
+  public keywords: string = '';
+  keywordsControl = new FormControl();
 
-
-  public constructor(@Inject(NodeMenuService) private nodeMenuService: NodeMenuService,
-                     @Inject(TreeService) private treeService: TreeService,
+  public constructor(@Inject(TreeService) private treeService: TreeService,
                      @Inject(ElementRef) public element: ElementRef) {
 
   }
 
   public ngOnInit(): void {
+    this.keywordsControl.valueChanges.debounceTime(800).subscribe(values => this.onChange(values));
+  }
 
+  onChange(values) {
+    this.options['keywords'] = values;
   }
 
 }

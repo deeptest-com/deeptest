@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.criterion.DetachedCriteria;
@@ -53,34 +54,30 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	private ProjectDao projectDao;
 	
 	@Override
-//	@Cacheable(value="companyProjects",key="#isActive.concat('-').concat(#companyId)")
-	public List<TestProject> listCache(Long companyId, String isActive) {
-		return this.list(isActive, null, companyId);
-	}
-
-	@Override
-	public List<TestProject> list(String isActive, String keywords, Long companyId) {
+//	@Cacheable(value="companyProjects",key="#companyId.concat('-').concat(#isActive)")
+	public Map<String, Object> listCache(Long companyId, String isActive) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
 
 		if (StringUtil.isNotEmpty(isActive)) {
 			dc.add(Restrictions.eq("isActive", Boolean.valueOf(isActive)));
-		}
-		if (StringUtil.isNotEmpty(keywords)) {
-			dc.add(Restrictions.or(
-				Restrictions.ne("type", TreeNodeType.leaf),
-				Restrictions.like("name", "%" + keywords + "%")));
 		}
 
 		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 		dc.addOrder(Order.asc("path"));
 		dc.addOrder(Order.asc("id"));
-		List ls = findAllByCriteria(dc);
+		List<TestProject> pos = findAllByCriteria(dc);
+		
+		Map<String, Integer> out = new HashMap<String, Integer>();
+		LinkedList<TestProjectVo> vos = this.genVos(pos, out);
 
-		return ls;
+		Map<String, Object> ret = new HashMap<String, Object>();
+		ret.put("models", vos);
+		ret.put("maxLevel", out.get("maxLevel"));
+		return ret;
 	}
-	
-    @Override
+
+	@Override
     public TestProject getDetail(Long id) {
     	TestProject po = (TestProject) get(TestProject.class, id);
 		
@@ -132,26 +129,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	        }
 	        
 	      LinkedList<TestProjectVo> voList = new LinkedList<TestProjectVo>();
-	        for (Long key : nodeMap.keySet()) {
-	        	
-	        	TestProjectVo vo = nodeMap.get(key);
-	        	if (!vo.getType().toString().equals(Constant.TreeNodeType.root.toString())) {
-	        		voList.add(vo);
-	        	}
-	        	
-				if (vo.getId() != 0 && vo.getChildren().size() > 0) {
-					TestProjectVo firstChild = vo.getChildren().get(0);
-					
-					firstChild.setIsFirstChild(true);
-					
-//					int count = 0;
-//					count = this.countDescendantsNumb(vo, count);
-					
-					int count = this.countDescendantsNumb(vo.getId(), childrenPath);
-					firstChild.setParentDescendantNumber(count);
-					firstChild.setBrotherNumb(count);
-				}
-	        }
+	      this.toOrderList(root, childrenPath, voList);
 		
         ret.put("maxLevel", maxLevel);
         return voList;
@@ -178,15 +156,26 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
         return count;
 	}
 
-//	@Override
-//	public int countDescendantsNumb(TestProjectVo vo, int count) {
-//		Iterator<TestProjectVo> it = vo.getChildren().iterator();
-//		while (it.hasNext()) {
-//			TestProjectVo child = it.next();
-//			count++;
-//
-//			count = this.countDescendantsNumb(child, count);
-//		}
-//		return count;
-//	}
+	@Override
+	public void toOrderList(TestProjectVo root, String childrenPath, LinkedList<TestProjectVo> resultList) {
+		Iterator<TestProjectVo> it = root.getChildren().iterator();
+		while (it.hasNext()) {
+			TestProjectVo vo = it.next();
+			
+        	if (!vo.getType().toString().equals(Constant.TreeNodeType.root.toString())) {
+        		resultList.add(vo);
+        		if (vo.getChildren().size() > 0) {
+					TestProjectVo firstChild = vo.getChildren().get(0);
+					
+					firstChild.setIsFirstChild(true);
+					
+					int count = this.countDescendantsNumb(vo.getId(), childrenPath);
+					firstChild.setParentDescendantNumber(count);
+					firstChild.setBrotherNumb(count);
+        		}
+			}
+        	
+        	this.toOrderList(vo, childrenPath, resultList);
+		}
+	}
 }

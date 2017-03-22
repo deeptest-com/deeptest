@@ -24,6 +24,7 @@ declare var jQuery;
 export class ProjectEdit implements OnInit, AfterViewInit {
   id: number;
   model: any = {};
+  projects: any[] = [];
   form: any;
   isSubmitted: boolean;
 
@@ -50,8 +51,8 @@ export class ProjectEdit implements OnInit, AfterViewInit {
     this.form = this.fb.group(
       {
         'name': [that.model.name, [Validators.required]],
-        'title': [that.model.title, [Validators.required]],
-        'descr': [that.model.descr, [Validators.required]]
+        'descr': [that.model.descr, []],
+        'parentId': [that.model.parentId, [Validators.required]],
       }, {}
     );
 
@@ -68,11 +69,8 @@ export class ProjectEdit implements OnInit, AfterViewInit {
     'name': {
       'required':      '姓名不能为空'
     },
-    'title': {
-      'required':      '简介不能为空'
-    },
-    'descr': {
-      'required':      '描述不能为空'
+    'parentId': {
+      'required':      '父级项目不能为空'
     }
   };
 
@@ -80,6 +78,10 @@ export class ProjectEdit implements OnInit, AfterViewInit {
     let that = this;
     that._projectService.get(that.id).subscribe((json:any) => {
       that.model = json.data;
+      that.projects = json.projects;
+      that.projects = json.projects.map(function(project) {
+        return {id: project.id, name: String.fromCharCode(160).repeat((project.level - 1) * 5) + project.name};
+      });
     });
   }
 
@@ -89,6 +91,11 @@ export class ProjectEdit implements OnInit, AfterViewInit {
     that._projectService.save(that.model).subscribe((json:any) => {
       if (json.code == 1) {
         that.model = json.data;
+
+        that.formErrors = ['保存成功'];
+        that._routeService.navTo("/pages/project/list");
+      } else {
+        that.formErrors = ['保存失败'];
       }
     });
   }

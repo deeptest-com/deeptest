@@ -18,8 +18,8 @@ public interface TestProjectService extends BaseService {
 
 	LinkedList<TestProjectVo> genVos(List<TestProject> pos, Map<String, Integer> ret);
 	
-	TestProject delete(Long vo, Long clientId);
-	TestProject save(Long id, String value, Integer type, Long pid, Long id2);
+	TestProject delete(Long vo, Long userId);
+	TestProject save(TestProjectVo vo, Long companyId);
 
 	TestProject getDetail(Long id);
 
@@ -31,5 +31,7 @@ public interface TestProjectService extends BaseService {
 	TestProjectVo genVo(TestProject po);
 
 	void removeChildren(LinkedList<TestProjectVo> resultList);
+
+	LinkedList<TestProjectVo> removeMe(LinkedList<TestProjectVo> linkedList, TestProjectVo vo);
 	
 }

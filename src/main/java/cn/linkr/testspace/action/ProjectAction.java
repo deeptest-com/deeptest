@@ -3,6 +3,7 @@ package cn.linkr.testspace.action;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -87,12 +88,16 @@ public class ProjectAction extends BaseAction {
 		JSONObject req = reqJson(request);
 		String id = req.getString("id");
 		
-		UserVo user = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
 		TestProject project = projectService.getDetail(Long.valueOf(id));
 		TestProjectVo vo = projectService.genVo(project);
+		
+		Map<String, Object> out = projectService.listCache(userVo.getCompanyId(), "true");
+		LinkedList<TestProjectVo> vos = projectService.removeMe((LinkedList<TestProjectVo>)out.get("models"), vo);
         
         ret.put("data", vo);
+        ret.put("projects", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -100,20 +105,15 @@ public class ProjectAction extends BaseAction {
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody TestProjectVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		Long id = json.getLong("id");
-		String value = json.getString("value");
-		Integer type = json.getInteger("type");
-		Long pid = json.getLong("pid");
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		TestProject po = projectService.save(id, value, type, pid, userVo.getId());
-		TestProjectVo caseVo = projectService.genVo(po);
+		TestProject po = projectService.save(vo, userVo.getCompanyId());
+		TestProjectVo projectVo = projectService.genVo(po);
         
-        ret.put("data", caseVo);
+        ret.put("data", projectVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

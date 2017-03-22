@@ -58,42 +58,41 @@ main {
   padding-top: 0;
 }
 
-.my-toolbar {
+.list-toolbar {
   display: flex;
-  margin: 10px 10px 5px 10px;
+  margin: 0 0 20px 0;
   padding: 0;
   .title {
-    width: 100px;
-    font-weight: 700;
-    color: #666666;
-    line-height: 22px;
-    font-size: 15px;
-    opacity: 0.9;
+    width: 150px;
+    font-size: 20px;
+    line-height: 30px;
   }
   .filter {
     flex: 1;
-    line-height: 22px;
-    font-size: 13px;
   }
   .buttons {
     width: 200px;
     text-align: right;
-    .back {
+    button {
       margin-left: 50px;
     }
   }
 }
-.list-toolbar {
+.edit-toolbar {
   display: flex;
-  margin: 0 0 10px 0;
-  padding: 0;
-  .filter {
+  margin: 0 0 20px 0;
+  padding: 0 0 10px 0;
+  border-bottom: 1px solid #ddd;
+  .title {
     flex: 1;
+    width: 150px;
+    font-size: 20px;
+    line-height: 30px;
   }
   .buttons {
     width: 200px;
     text-align: right;
-    .back {
+    button {
       margin-left: 50px;
     }
   }
@@ -134,6 +133,11 @@ main {
            color: #fa758e;
         }
     }
+}
+.edit-card {
+  margin-left: auto;
+  margin-right: auto;
+  width: 800px;
 }
 
 .page-container {

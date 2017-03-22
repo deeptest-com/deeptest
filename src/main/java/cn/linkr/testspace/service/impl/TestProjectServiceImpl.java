@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.management.Cache;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,6 +32,7 @@ import cn.linkr.testspace.entity.EvtEvent;
 import cn.linkr.testspace.entity.EvtGuest;
 import cn.linkr.testspace.entity.EvtScheduleItem;
 import cn.linkr.testspace.entity.EvtSession;
+import cn.linkr.testspace.entity.SysCompany;
 import cn.linkr.testspace.entity.TestCase;
 import cn.linkr.testspace.entity.TestProject;
 import cn.linkr.testspace.entity.EvtEvent.EventStatus;
@@ -54,7 +58,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	private ProjectDao projectDao;
 	
 	@Override
-//	@Cacheable(value="companyProjects",key="#companyId.concat('-').concat(#isActive)")
+//	@Cacheable(value="companyProjects",key="#companyId.toString().concat('-').concat(#isActive)")
 	public Map<String, Object> listCache(Long companyId, String isActive) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
 
@@ -83,16 +87,41 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		
 		return po;
     }
-
+	
 	@Override
-	public TestProject delete(Long vo, Long clientId) {
-
-		return null;
+	public TestProject save(TestProjectVo vo, Long companyId) {
+		if (vo == null) {
+			return null;
+		}
+		
+		TestProject po = new TestProject();
+		if (vo.getId() != null) {
+			po = (TestProject) get(TestProject.class, vo.getId());
+		}
+		
+		po.setName(vo.getName());
+		po.setDescr(vo.getDescr());
+		po.setParentId(vo.getParentId());
+		
+		TestProject parent = (TestProject) get(TestProject.class, vo.getParentId());
+		po.setLevel(parent.getLevel() + 1);
+		po.setPath(parent.getPath() + parent.getId() + "/");
+		
+		saveOrUpdate(po);
+		
+		CacheManager manager = CacheManager.create();
+        net.sf.ehcache.Cache cache = manager.getCache("companyProjects");
+        if(cache.isKeyInCache(companyId + '-' + "true")){
+            cache.remove(companyId + '-' + "true");
+        }
+        if(cache.isKeyInCache(companyId + '-' + "false")){
+            cache.remove(companyId + '-' + "false");
+        }
+		return po;
 	}
 
 	@Override
-	public TestProject save(Long id, String value, Integer type, Long pid,
-			Long id2) {
+	public TestProject delete(Long vo, Long clientId) {
 
 		return null;
 	}
@@ -178,5 +207,21 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 			TestProjectVo vo = it.next();
 			vo.setChildren(null);
 		}
+	}
+
+	@Override
+	public LinkedList<TestProjectVo> removeMe(LinkedList<TestProjectVo> linkedList, TestProjectVo curr) {
+		LinkedList<TestProjectVo> ret = new LinkedList<TestProjectVo>();
+		
+		Iterator<TestProjectVo> it = linkedList.iterator();
+		
+		while (it.hasNext()) {
+			TestProjectVo vo = it.next();
+			if (curr.getId() != vo.getId() && vo.getPath().indexOf("/" + curr.getId() + "/") == -1) {
+				ret.add(vo);
+			}
+		}
+		
+		return ret;
 	}
 }

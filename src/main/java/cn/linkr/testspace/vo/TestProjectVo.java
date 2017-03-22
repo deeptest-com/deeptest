@@ -13,11 +13,8 @@ public class TestProjectVo extends BaseVo {
     private Long parentId;
     private String path;
     private String type;
-    private Boolean isFilterOut;
     
     private Integer level;
-    private Integer brotherNumb = 0;
-    private Integer parentDescendantNumber = 0;
     
     LinkedList<TestProjectVo> children = new LinkedList<TestProjectVo>();
     
@@ -78,30 +75,11 @@ public class TestProjectVo extends BaseVo {
 	public void setIsFirstChild(Boolean isFirstChild) {
 		this.isFirstChild = isFirstChild;
 	}
-	public Integer getBrotherNumb() {
-		return brotherNumb;
-	}
-	public void setBrotherNumb(Integer brotherNumb) {
-		this.brotherNumb = brotherNumb;
-	}
-
-	public Integer getParentDescendantNumber() {
-		return parentDescendantNumber;
-	}
-	public void setParentDescendantNumber(Integer parentDescendantNumber) {
-		this.parentDescendantNumber = parentDescendantNumber;
-	}
 	public String getType() {
 		return type;
 	}
 	public void setType(String type) {
 		this.type = type;
-	}
-	public Boolean getIsFilterOut() {
-		return isFilterOut;
-	}
-	public void setIsFilterOut(Boolean isFilterOut) {
-		this.isFilterOut = isFilterOut;
 	}
 
 }

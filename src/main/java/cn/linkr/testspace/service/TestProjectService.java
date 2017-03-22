@@ -29,5 +29,7 @@ public interface TestProjectService extends BaseService {
 
 	Map<String, Object> listCache(Long companyId, String isActive);
 	TestProjectVo genVo(TestProject po);
+
+	void removeChildren(LinkedList<TestProjectVo> resultList);
 	
 }

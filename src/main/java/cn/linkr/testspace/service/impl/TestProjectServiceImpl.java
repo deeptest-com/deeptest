@@ -130,6 +130,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	        
 	      LinkedList<TestProjectVo> voList = new LinkedList<TestProjectVo>();
 	      this.toOrderList(root, childrenPath, voList);
+	      this.removeChildren(voList);
 		
         ret.put("maxLevel", maxLevel);
         return voList;
@@ -164,18 +165,18 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 			
         	if (!vo.getType().toString().equals(Constant.TreeNodeType.root.toString())) {
         		resultList.add(vo);
-        		if (vo.getChildren().size() > 0) {
-					TestProjectVo firstChild = vo.getChildren().get(0);
-					
-					firstChild.setIsFirstChild(true);
-					
-					int count = this.countDescendantsNumb(vo.getId(), childrenPath);
-					firstChild.setParentDescendantNumber(count);
-					firstChild.setBrotherNumb(count);
-        		}
 			}
         	
         	this.toOrderList(vo, childrenPath, resultList);
+		}
+	}
+	
+	@Override
+	public void removeChildren(LinkedList<TestProjectVo> resultList) {
+		Iterator<TestProjectVo> it = resultList.iterator();
+		while (it.hasNext()) {
+			TestProjectVo vo = it.next();
+			vo.setChildren(null);
 		}
 	}
 }

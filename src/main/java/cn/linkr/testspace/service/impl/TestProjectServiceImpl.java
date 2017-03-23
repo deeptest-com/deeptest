@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
 
+import cn.linkr.testspace.action.ProjectAction;
 import cn.linkr.testspace.dao.BaseDao;
 import cn.linkr.testspace.dao.ProjectDao;
 import cn.linkr.testspace.entity.EvtEvent;
@@ -55,6 +56,8 @@ import cn.linkr.testspace.vo.UserVo;
 @Service
 public class TestProjectServiceImpl extends BaseServiceImpl implements
 		TestProjectService {
+	
+	private static final Log log = LogFactory.getLog(TestProjectServiceImpl.class);
 
 	@Autowired
 	private ProjectDao projectDao;
@@ -120,7 +123,11 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		
 		saveOrUpdate(po);
 		
+		Long t1 = new Date().getTime();
 		getDao().moveProject(po.getId(), newParentId);
+		Long t2 = new Date().getTime();
+		log.warn("移动节点花了" + (t2 - t1) + "毫秒");
+		
 		this.removeCache(user.getCompanyId());
 		
 		return po;

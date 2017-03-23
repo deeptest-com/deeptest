@@ -572,7 +572,7 @@ public class BaseDaoImpl implements BaseDao {
   			  .setParameter("node_table", "tst_project")
   			  .setParameter("project_id", projectId)
   			  .setParameter("parent_id", newParentId);
-  	
+    	
     	TestProject projec = (TestProject) query.uniqueResult();
 	  	return 1;
 	}

@@ -44,7 +44,7 @@ public class TestProject extends BaseEntity {
     private Long companyId;
     
 	public Integer getLevel() {
-		return getPath().split("/").length;
+		return getPath().split("/").length - 1;
 	}
 
 	public String getName() {

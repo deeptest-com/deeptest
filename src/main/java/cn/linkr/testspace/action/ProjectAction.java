@@ -65,7 +65,7 @@ public class ProjectAction extends BaseAction {
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		String isActive = json.getString("isActive") != null?json.getString("isActive"): "true";
+		String isActive = json.getString("isActive");
 		
 		Long t1 = new Date().getTime();
 

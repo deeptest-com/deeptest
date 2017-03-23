@@ -24,8 +24,6 @@ public interface TestProjectService extends BaseService {
 
 	TestProject getDetail(Long id);
 
-	int countDescendantsNumb(Long id, String childrenPath);
-
 	void toOrderList(TestProjectVo root, String childrenPath, LinkedList<TestProjectVo> resultList);
 
 	Map<String, Object> listCache(Long companyId, String isActive);

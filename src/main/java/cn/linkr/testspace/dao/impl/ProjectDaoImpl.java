@@ -80,16 +80,3 @@ public class ProjectDaoImpl implements ProjectDao {
     }
 
 }
-
-//String functionStr = "queryProjectChildren(" + companyId + "," + isActive + "," + keywords + ")";
-//String queryString = "select " + functionStr;
-//Query query = this.getSession().createSQLQuery(queryString);
-//query.setResultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP);
-//List<Map<String, String>> ls = query.list();
-//String ids = ls.get(0).get(functionStr).replace("$,", "");
-//
-//String selectStr = "select * from tst_project where id in (" + ids + ")";
-//SQLQuery select = this.getSession().createSQLQuery(selectStr);
-//
-//query.setResultTransformer(new EscColumnToBean(TestProject.class));
-//List<TestProject> ls2 = select.list();

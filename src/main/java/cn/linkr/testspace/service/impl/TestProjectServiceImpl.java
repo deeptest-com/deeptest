@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 import net.sf.ehcache.management.Cache;
 
 import org.apache.commons.lang.StringUtils;
@@ -59,8 +60,17 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	private ProjectDao projectDao;
 	
 	@Override
-//	@Cacheable(value="companyProjects",key="#companyId.toString().concat('-').concat(#isActive)")
+//	@Cacheable(value="companyProjects",key="#companyId.toString().concat('_').concat(#isActive)")
 	public Map<String, Object> listCache(Long companyId, String isActive) {
+		CacheManager manager = CacheManager.create();
+		net.sf.ehcache.Cache cache = manager.getCache("companyProjects");
+		String key = companyId + "_" + isActive;
+		Element el = null;
+        if(cache.isKeyInCache(key)){
+        	el = cache.get(key);
+            return (Map<String, Object>)el.getObjectValue();
+        }
+        
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
 
 		if (StringUtil.isNotEmpty(isActive)) {
@@ -79,6 +89,9 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		Map<String, Object> ret = new HashMap<String, Object>();
 		ret.put("models", vos);
 		ret.put("maxLevel", out.get("maxLevel"));
+		
+		el = new Element(key, ret);
+        cache.put(el);
 		return ret;
 	}
 
@@ -99,7 +112,6 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		if (vo.getId() != null) {
 			po = (TestProject) get(TestProject.class, vo.getId());
 		}
-		Long oldParentId = po.getParentId();
 		Long newParentId = vo.getParentId();
 		
 		po.setName(vo.getName());
@@ -122,11 +134,12 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	public void removeCache(Long companyId) {
 		CacheManager manager = CacheManager.create();
         net.sf.ehcache.Cache cache = manager.getCache("companyProjects");
-        if(cache.isKeyInCache(companyId + '-' + "true")){
-            cache.remove(companyId + '-' + "true");
+        String prefix = companyId + "_";
+        if(cache.isKeyInCache(prefix + "true")){
+            cache.remove(prefix + "true");
         }
-        if(cache.isKeyInCache(companyId + '-' + "false")){
-            cache.remove(companyId + '-' + "false");
+        if(cache.isKeyInCache(prefix)){
+            cache.remove(prefix);
         }
 	}
 	
@@ -177,17 +190,6 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 			vo.setParentId(null);
 		}
 		return vo;
-	}
-	
-	@Override
-	public int countDescendantsNumb(Long id, String childrenPath) {
-		int count = 0;  
-        Pattern p = Pattern.compile("/"  + id + "/");  
-        Matcher m = p.matcher(childrenPath);  
-        while (m.find()) {  
-            count++;  
-        }  
-        return count;
 	}
 
 	@Override

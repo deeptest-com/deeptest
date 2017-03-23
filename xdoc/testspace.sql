@@ -11,7 +11,7 @@
  Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 03/23/2017 11:11:17 AM
+ Date: 03/23/2017 14:41:25 PM
 */
 
 SET NAMES utf8;
@@ -571,6 +571,7 @@ CREATE TABLE `tst_case` (
   `type` varchar(255) DEFAULT NULL,
   `parent_id` bigint(20) DEFAULT NULL,
   `path` varchar(255) DEFAULT NULL,
+  `oder_in_parent` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_mqw7t5g6myypi1hob10xahm6g` (`module_id`),
   KEY `FK_d023qp0i62gmdoejro44i6pmh` (`project_id`),
@@ -584,7 +585,7 @@ CREATE TABLE `tst_case` (
 --  Records of `tst_case`
 -- ----------------------------
 BEGIN;
-INSERT INTO `tst_case` VALUES ('1', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '测试用例', '1', 'root', null, '/'), ('2', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '用户账号', '1', 'branch', '1', '/1/'), ('3', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '注册', '1', 'branch', '2', '/1/2/'), ('4', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '登录', '1', 'branch', '2', '/1/2/'), ('5', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '忘记密码', '1', 'branch', '2', '/1/2/'), ('6', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '测试管理', '1', 'branch', '1', '/1/'), ('7', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '测试设计', '1', 'branch', '6', '/1/6/'), ('8', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '测试用例管理', '1', 'branch', '7', '/1/6/7/'), ('9', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '测试规划', '1', 'branch', '6', '/1/6/'), ('10', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '测试执行', '1', 'branch', '6', '/1/6/'), ('11', '2017-03-01 17:34:05', b'0', b'0', '2017-03-01 17:34:08', '1', '描述', '10', '-1', '1', '用户登录成功', '1', 'leaf', '4', '/1/2/4/'), ('12', '2017-03-01 17:42:35', b'0', b'0', '2017-03-01 17:42:38', '1', '描述', '10', '-1', '1', '输入密码错误', '1', 'leaf', '4', '/1/2/4/'), ('13', '2017-03-01 17:44:08', b'0', b'0', '2017-03-01 17:44:11', '1', '描述', '10', '-1', '1', '新建用例', '1', 'leaf', '8', '/1/6/7/8/');
+INSERT INTO `tst_case` VALUES ('1', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '测试用例', '1', 'root', null, '/', '0'), ('2', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '用户账号', '1', 'branch', '1', '/1/', '1'), ('3', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '注册', '1', 'branch', '2', '/1/2/', '1'), ('4', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '登录', '1', 'branch', '2', '/1/2/', '2'), ('5', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '忘记密码', '1', 'branch', '2', '/1/2/', '3'), ('6', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '测试管理', '1', 'branch', '1', '/1/', '2'), ('7', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '测试设计', '1', 'branch', '6', '/1/6/', '1'), ('8', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '测试用例管理', '1', 'branch', '7', '/1/6/7/', '1'), ('9', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '测试规划', '1', 'branch', '6', '/1/6/', '2'), ('10', '2017-02-28 14:37:47', b'0', b'0', '2017-02-28 14:37:50', '1', '描述', '10', '-1', '1', '测试执行', '1', 'branch', '6', '/1/6/', '3'), ('11', '2017-03-01 17:34:05', b'0', b'0', '2017-03-01 17:34:08', '1', '描述', '10', '-1', '1', '用户登录成功', '1', 'leaf', '4', '/1/2/4/', '1'), ('12', '2017-03-01 17:42:35', b'0', b'0', '2017-03-01 17:42:38', '1', '描述', '10', '-1', '1', '输入密码错误', '1', 'leaf', '4', '/1/2/4/', '2'), ('13', '2017-03-01 17:44:08', b'0', b'0', '2017-03-01 17:44:11', '1', '描述', '10', '-1', '1', '新建用例', '1', 'leaf', '8', '/1/6/7/8/', '1');
 COMMIT;
 
 -- ----------------------------
@@ -653,42 +654,81 @@ CREATE TABLE `tst_project` (
   `name` varchar(255) DEFAULT NULL,
   `is_active` bit(1) DEFAULT NULL,
   `parent_id` bigint(20) DEFAULT NULL,
-  `level` int(11) DEFAULT NULL,
   `path` varchar(255) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
+  `oder_in_parent` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_88h46xtiew6swo3puoi4wkhj5` (`company_id`),
   KEY `FK_rm5uawwl53dtse1l5qhwci30v` (`parent_id`),
   CONSTRAINT `FK_88h46xtiew6swo3puoi4wkhj5` FOREIGN KEY (`company_id`) REFERENCES `tst_company` (`id`),
   CONSTRAINT `FK_rm5uawwl53dtse1l5qhwci30v` FOREIGN KEY (`parent_id`) REFERENCES `tst_project` (`id`),
   CONSTRAINT `FK_tofebdwwpqg556vv34bvl15ay` FOREIGN KEY (`company_id`) REFERENCES `sys_company` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `tst_project`
 -- ----------------------------
 BEGIN;
-INSERT INTO `tst_project` VALUES ('0', '2017-03-18 15:22:39', b'0', b'0', '2017-03-18 15:22:42', '1', '-1', '描述', 'ROOT', b'1', null, '0', '/', 'root'), ('1', '2017-02-28 14:27:53', b'0', b'0', '2017-03-22 17:06:35', '5', '-1', '描述', 'TestSpace', b'1', '0', '1', '/0/', 'branch'), ('2', '2017-02-28 14:27:53', b'0', b'0', '2017-02-28 14:27:56', '1', '-1', '描述', 'TestSpace前端', b'1', '1', '2', '/0/1/', 'leaf'), ('3', '2017-02-28 14:27:53', b'0', b'0', '2017-02-28 14:27:56', '1', '-1', '描述', 'TestSpace后端', b'1', '1', '2', '/0/1/', 'leaf'), ('4', '2017-02-28 14:27:53', b'0', b'0', '2017-02-28 14:27:56', '1', '-1', '描述', 'Docker部署', b'1', '1', '2', '/0/1/', 'leaf'), ('5', '2017-02-28 14:27:53', b'0', b'0', '2017-03-22 19:33:56', '2', '-1', '描述', '项目组1', b'1', '0', '2', '/0/1/', 'branch'), ('6', '2017-02-28 14:27:53', b'0', b'0', '2017-02-28 14:27:56', '1', '-1', '描述', '项目A', b'1', '5', '2', '/0/5/', 'branch'), ('7', '2017-02-28 14:27:53', b'0', b'0', '2017-03-22 19:03:47', '3', '-1', '描述', '项目B', b'1', '5', '2', '/0/5/', 'leaf'), ('8', '2017-03-17 23:29:55', b'0', b'0', '2017-03-22 19:32:53', '17', '-1', '描述', '项目A1', b'1', '6', '3', '/0/5/6/', 'leaf'), ('9', '2017-03-18 02:31:28', b'0', b'0', '2017-03-18 02:31:32', '1', '-1', '描述', '项目A2', b'0', '6', '3', '/0/5/6/', 'leaf');
+INSERT INTO `tst_project` VALUES ('0', '2017-03-18 15:22:39', b'0', b'0', '2017-03-18 15:22:42', '1', '-1', '描述', 'ROOT', b'1', null, '/', 'root', '0'), ('1', '2017-02-28 14:27:53', b'0', b'0', '2017-03-22 17:06:35', '5', '-1', '描述', 'TestSpace', b'1', '0', '/0/', 'branch', '1'), ('2', '2017-02-28 14:27:53', b'0', b'0', '2017-02-28 14:27:56', '1', '-1', '描述', 'TestSpace前端', b'1', '1', '/0/1/', 'leaf', '1'), ('3', '2017-02-28 14:27:53', b'0', b'0', '2017-02-28 14:27:56', '1', '-1', '描述', 'TestSpace后端', b'1', '1', '/0/1/', 'leaf', '2'), ('4', '2017-02-28 14:27:53', b'0', b'0', '2017-02-28 14:27:56', '1', '-1', '描述', 'Docker部署', b'1', '1', '/0/1/', 'leaf', '3'), ('5', '2017-02-28 14:27:53', b'0', b'0', '2017-03-22 19:33:56', '2', '-1', '描述', '项目组1', b'1', '0', '/0/', 'branch', '4'), ('6', '2017-02-28 14:27:53', b'0', b'0', '2017-03-23 14:37:49', '4', '-1', '描述', '项目A', b'1', '5', '/0/5/', 'branch', '1'), ('7', '2017-02-28 14:27:53', b'0', b'0', '2017-03-23 14:02:28', '5', '-1', '描述', '项目B', b'1', '5', '/0/5/', 'leaf', '2'), ('8', '2017-03-17 23:29:55', b'0', b'0', '2017-03-23 14:25:08', '18', '-1', '描述', '项目A1', b'1', '6', '/0/5/6/', 'leaf', '1'), ('9', '2017-03-18 02:31:28', b'0', b'0', '2017-03-18 02:31:32', '1', '-1', '描述', '项目A2', b'0', '6', '/0/5/6/', 'leaf', '2');
 COMMIT;
 
 -- ----------------------------
---  Function structure for `queryProjectChildren`
+--  Procedure structure for `move_node`
 -- ----------------------------
-DROP FUNCTION IF EXISTS `queryProjectChildren`;
+DROP PROCEDURE IF EXISTS `move_node`;
 delimiter ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `queryProjectChildren`(companyId BIGINT, projectId BIGINT) RETURNS varchar(4000) CHARSET utf8
+CREATE DEFINER=`root`@`localhost` PROCEDURE `move_node`(node_table varchar(100), node_id BIGINT, parent_id BIGINT)
 BEGIN
-	DECLARE sTemp VARCHAR(4000);
-	DECLARE sTempChd VARCHAR(4000);
+DECLARE sql_str varchar(5000);
 
-	SET sTemp = '$';
-	SET sTempChd = cast(projectId as char);
+set sql_str = '';
+set sql_str = concat(sql_str, '  SELECT node.path into @old_path FROM  ', node_table, ' node');
+set sql_str = concat(sql_str, '     WHERE node.id = ', node_id);
 
-	WHILE sTempChd is not NULL DO
-		SET sTemp = CONCAT(sTemp,',',sTempChd);
-		SELECT group_concat(id) INTO sTempChd FROM tst_project where FIND_IN_SET(parent_id,sTempChd)>0 AND company_id = companyId;
-	END WHILE;
-	return sTemp;
+set @sql_str = sql_str;
+PREPARE stmt FROM @sql_str;  
+EXECUTE stmt;
+
+set @old_path = concat(@old_path, node_id, '/');
+
+set sql_str = '';
+set sql_str = concat(sql_str, '  SELECT node.path into @node_path FROM  ', node_table, ' node');
+set sql_str = concat(sql_str, '     WHERE node.id = ', parent_id);
+
+set @sql_str = sql_str;
+PREPARE stmt FROM @sql_str;  
+EXECUTE stmt;
+
+set @node_path = concat(@node_path, parent_id, '/');
+set @child_path = concat(@node_path, node_id, '/');
+
+set sql_str = '';
+set sql_str = concat(sql_str, '  UPDATE ', node_table , ' SET parent_id = ' , parent_id, ',');
+set sql_str = concat(sql_str, '             path = ', '''' , @node_path, '''');
+set sql_str = concat(sql_str, '  WHERE id = ', node_id);
+
+set @sql_str = sql_str;
+PREPARE stmt FROM @sql_str;
+EXECUTE stmt;
+
+set sql_str = '';
+set sql_str = concat(sql_str, '  UPDATE ', node_table);
+set sql_str = concat(sql_str, '   SET path = REPLACE(path, ', '''', @old_path , '''', ',', '''' , @child_path, '''', ')');
+set sql_str = concat(sql_str, '  WHERE path LIKE ', '''', @old_path, '%''');
+
+set @sql_str = sql_str;
+PREPARE stmt FROM @sql_str;
+EXECUTE stmt;
+
+set sql_str = '';
+set sql_str = concat(sql_str, '  SELECT * FROM  ', node_table, ' node');
+set sql_str = concat(sql_str, '     WHERE node.id = ', node_id);
+
+set @sql_str = sql_str;
+PREPARE stmt FROM @sql_str;
+EXECUTE stmt;  
+DEALLOCATE PREPARE stmt;
+
 END
  ;;
 delimiter ;

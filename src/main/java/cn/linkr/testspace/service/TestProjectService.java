@@ -13,13 +13,14 @@ import cn.linkr.testspace.vo.Page;
 import cn.linkr.testspace.vo.TestCaseTreeVo;
 import cn.linkr.testspace.vo.TestCaseVo;
 import cn.linkr.testspace.vo.TestProjectVo;
+import cn.linkr.testspace.vo.UserVo;
 
 public interface TestProjectService extends BaseService {
 
 	LinkedList<TestProjectVo> genVos(List<TestProject> pos, Map<String, Integer> ret);
 	
 	TestProject delete(Long vo, Long userId);
-	TestProject save(TestProjectVo vo, Long companyId);
+	TestProject save(TestProjectVo vo, UserVo user);
 
 	TestProject getDetail(Long id);
 
@@ -33,5 +34,7 @@ public interface TestProjectService extends BaseService {
 	void removeChildren(LinkedList<TestProjectVo> resultList);
 
 	LinkedList<TestProjectVo> removeMe(LinkedList<TestProjectVo> linkedList, TestProjectVo vo);
+
+	void removeCache(Long companyId);
 	
 }

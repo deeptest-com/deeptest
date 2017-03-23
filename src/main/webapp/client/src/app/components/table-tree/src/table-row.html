@@ -3,7 +3,7 @@
 <td [attr.colSpan]="maxLevel - (model.level - 1)">{{model.name}}</td>
 <td>
   <span *ngIf="model.isActive">活动</span>
-  <span *ngIf="!model.isActive">关闭</span>
+  <span *ngIf="!model.isActive">归档</span>
 </td>
 <td class="opt">
   <span [routerLink]="['/pages/project/edit',model.id]" class="link no-underline">编辑</span>

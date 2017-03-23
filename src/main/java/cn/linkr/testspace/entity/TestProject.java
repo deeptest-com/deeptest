@@ -8,6 +8,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import cn.linkr.testspace.util.Constant.TreeNodeType;
 
@@ -20,11 +21,13 @@ public class TestProject extends BaseEntity {
 	@Column(name = "descr", length = 1000)
     private String descr;
 	
-	private Integer level;
 	private Boolean isActive;
 	@Enumerated(EnumType.STRING)
 	private TreeNodeType type;
 	private String path;
+	@Transient
+	private Integer level;
+	private Integer oderInParent;
 	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", insertable = false, updatable = false)
@@ -39,6 +42,10 @@ public class TestProject extends BaseEntity {
 
     @Column(name = "company_id")
     private Long companyId;
+    
+	public Integer getLevel() {
+		return getPath().split("/").length;
+	}
 
 	public String getName() {
 		return name;
@@ -96,14 +103,6 @@ public class TestProject extends BaseEntity {
 		this.parentId = parentId;
 	}
 
-	public Integer getLevel() {
-		return level;
-	}
-
-	public void setLevel(Integer level) {
-		this.level = level;
-	}
-
 	public String getPath() {
 		return path;
 	}
@@ -118,6 +117,14 @@ public class TestProject extends BaseEntity {
 
 	public void setType(TreeNodeType type) {
 		this.type = type;
+	}
+
+	public Integer getOderInParent() {
+		return oderInParent;
+	}
+
+	public void setOderInParent(Integer oderInParent) {
+		this.oderInParent = oderInParent;
 	}
     
 }

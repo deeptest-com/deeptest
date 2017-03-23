@@ -1,5 +1,0 @@
-git clone https://github.com/start-angular/SB-Admin-BS4-Angular-2.git
-
-npm run build.dev
-npm run build.prod
-npm run build.prod.exp

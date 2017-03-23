@@ -1,14 +1,10 @@
 package cn.linkr.testspace.dao;
 
-import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
-import org.hibernate.criterion.DetachedCriteria;
-
-import cn.linkr.testspace.vo.Page;
+import cn.linkr.testspace.entity.TestProject;
 
 public interface ProjectDao {
-	 public List findProjectByProcedure(Long companyId, Boolean isActive, String keywords);
+	 public List findProjectByProcedure(Long companyId, Boolean isActive);
+	 public TestProject moveProject(Long projectId, Long newParentId);
 }

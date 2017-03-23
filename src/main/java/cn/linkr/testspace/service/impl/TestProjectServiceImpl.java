@@ -49,6 +49,7 @@ import cn.linkr.testspace.vo.SessionVo;
 import cn.linkr.testspace.vo.TestCaseTreeVo;
 import cn.linkr.testspace.vo.TestCaseVo;
 import cn.linkr.testspace.vo.TestProjectVo;
+import cn.linkr.testspace.vo.UserVo;
 
 @Service
 public class TestProjectServiceImpl extends BaseServiceImpl implements
@@ -89,7 +90,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
     }
 	
 	@Override
-	public TestProject save(TestProjectVo vo, Long companyId) {
+	public TestProject save(TestProjectVo vo, UserVo user) {
 		if (vo == null) {
 			return null;
 		}
@@ -98,17 +99,27 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		if (vo.getId() != null) {
 			po = (TestProject) get(TestProject.class, vo.getId());
 		}
+		Long oldParentId = po.getParentId();
+		Long newParentId = vo.getParentId();
 		
 		po.setName(vo.getName());
 		po.setDescr(vo.getDescr());
-		po.setParentId(vo.getParentId());
-		
-		TestProject parent = (TestProject) get(TestProject.class, vo.getParentId());
-		po.setLevel(parent.getLevel() + 1);
-		po.setPath(parent.getPath() + parent.getId() + "/");
 		
 		saveOrUpdate(po);
 		
+		projectDao.moveProject(po.getId(), newParentId);
+		this.removeCache(user.getCompanyId());
+		
+		return po;
+	}
+	
+	@Override
+	public TestProject delete(Long vo, Long userId) {
+		return null;
+	}
+	
+	@Override
+	public void removeCache(Long companyId) {
 		CacheManager manager = CacheManager.create();
         net.sf.ehcache.Cache cache = manager.getCache("companyProjects");
         if(cache.isKeyInCache(companyId + '-' + "true")){
@@ -117,13 +128,6 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
         if(cache.isKeyInCache(companyId + '-' + "false")){
             cache.remove(companyId + '-' + "false");
         }
-		return po;
-	}
-
-	@Override
-	public TestProject delete(Long vo, Long clientId) {
-
-		return null;
 	}
 	
 	@Override

@@ -110,7 +110,7 @@ public class ProjectAction extends BaseAction {
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		TestProject po = projectService.save(vo, userVo.getCompanyId());
+		TestProject po = projectService.save(vo, userVo);
 		TestProjectVo projectVo = projectService.genVo(po);
         
         ret.put("data", projectVo);

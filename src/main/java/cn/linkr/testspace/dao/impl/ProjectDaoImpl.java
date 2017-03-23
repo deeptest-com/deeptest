@@ -14,6 +14,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.ParameterMode;
+
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -26,6 +28,10 @@ import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.Projections;
 import org.hibernate.internal.CriteriaImpl;
 import org.hibernate.jdbc.Work;
+import org.hibernate.procedure.ProcedureCall;
+import org.hibernate.procedure.ProcedureOutputs;
+import org.hibernate.result.Output;
+import org.hibernate.result.ResultSetOutput;
 import org.hibernate.transform.ResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -46,24 +52,44 @@ public class ProjectDaoImpl implements ProjectDao {
     @Autowired
     private SessionFactory sessionFactory;
     
+	@Override
+	public TestProject moveProject(Long projectId, Long newParentId) {
+    	Query query = this.getSession().createSQLQuery("CALL move_node(:node_table, :project_id, :parent_id)")
+  			  .addEntity(TestProject.class)
+  			  .setParameter("node_table", "tst_project")
+  			  .setParameter("project_id", projectId)
+  			  .setParameter("parent_id", newParentId);
+  	
+	  	List<TestProject> ls = query.list();
+	  	return ls.get(0);
+	}
+    
     @Override
-    public List<TestProject> findProjectByProcedure(Long companyId, Boolean isActive, String keywords) {
-    	String functionStr = "queryProjectChildren(" + companyId + "," + isActive + "," + keywords + ")";
-    	String queryString = "select " + functionStr;
-        Query query = this.getSession().createSQLQuery(queryString);
-        query.setResultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP);
-        List<Map<String, String>> ls = query.list();
-        String ids = ls.get(0).get(functionStr).replace("$,", "");
-        
-        String selectStr = "select * from tst_project where id in (" + ids + ")";
-    	SQLQuery select = this.getSession().createSQLQuery(selectStr);
-        
-    	query.setResultTransformer(new EscColumnToBean(TestProject.class));
-        List<TestProject> ls2 = select.list();
-        return ls2;
+    public List<TestProject> findProjectByProcedure(Long companyId, Boolean isActive) {
+    	Query query = this.getSession().createSQLQuery("CALL query_project(:company_id, :is_active)")
+    			  .addEntity(TestProject.class)
+    			  .setParameter("company_id", companyId)
+    			  .setParameter("is_active", isActive);
+    	
+    	List ls = query.list();
+    	return ls;
     }
     
     public Session getSession() {
         return sessionFactory.getCurrentSession();
     }
+
 }
+
+//String functionStr = "queryProjectChildren(" + companyId + "," + isActive + "," + keywords + ")";
+//String queryString = "select " + functionStr;
+//Query query = this.getSession().createSQLQuery(queryString);
+//query.setResultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP);
+//List<Map<String, String>> ls = query.list();
+//String ids = ls.get(0).get(functionStr).replace("$,", "");
+//
+//String selectStr = "select * from tst_project where id in (" + ids + ")";
+//SQLQuery select = this.getSession().createSQLQuery(selectStr);
+//
+//query.setResultTransformer(new EscColumnToBean(TestProject.class));
+//List<TestProject> ls2 = select.list();

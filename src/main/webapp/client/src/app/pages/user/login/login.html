@@ -23,9 +23,13 @@
 
       <div class="form-group row">
         <div class="offset-sm-2 col-sm-10">
-          <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe" formControlName="rememberMe"
-                 [(ngModel)]="model.rememberMe" #rememberMe>
-          &nbsp;&nbsp;记住我
+          <div class="form-check">
+            <label class="form-check-label">
+              <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe" formControlName="rememberMe"
+                     [(ngModel)]="model.rememberMe" #rememberMe>
+              &nbsp;&nbsp;记住我
+            </label>
+          </div>
         </div>
       </div>
 

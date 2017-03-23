@@ -48,9 +48,7 @@ main {
 .no-border {
   border: 0 !important;
 }
-.form-check-input {
-  margin-left: 0;
-}
+
 .text-deleted {
   text-decoration:line-through;
 }
@@ -115,6 +113,9 @@ main {
 .form-control[readonly] {
     color: #666666 !important;
     background-color: #ffffff !important;
+}
+.form-group label {
+  text-align: right;
 }
 .my-validate-form {
     .form-control.ng-valid {

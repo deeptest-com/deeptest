@@ -116,6 +116,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		
 		po.setName(vo.getName());
 		po.setDescr(vo.getDescr());
+		po.setIsActive(vo.getIsActive());
 		
 		saveOrUpdate(po);
 		

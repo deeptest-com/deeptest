@@ -44,11 +44,11 @@ set sql_str = concat(sql_str, '  UPDATE ', node_table);
 set sql_str = concat(sql_str, '   SET path = REPLACE(path, ', '''', @old_path , '''', ',', '''' , @child_path, '''', ')');
 set sql_str = concat(sql_str, '  WHERE path LIKE ', '''', @old_path, '%''');
 
-/*查询*/
 set @sql_str = sql_str;
 PREPARE stmt FROM @sql_str;
 EXECUTE stmt;
 
+/*查询*/
 set sql_str = '';
 set sql_str = concat(sql_str, '  SELECT * FROM  ', node_table, ' node');
 set sql_str = concat(sql_str, '     WHERE node.id = ', node_id);

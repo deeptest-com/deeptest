@@ -53,6 +53,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
         'name': [that.model.name, [Validators.required]],
         'descr': [that.model.descr, []],
         'parentId': [that.model.parentId, [Validators.required]],
+        'isActive': [that.model.isActive]
       }, {}
     );
 

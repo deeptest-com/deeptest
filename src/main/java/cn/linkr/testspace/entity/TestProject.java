@@ -27,7 +27,7 @@ public class TestProject extends BaseEntity {
 	private String path;
 	@Transient
 	private Integer level;
-	private Integer oderInParent;
+	private Integer orderInParent;
 	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", insertable = false, updatable = false)
@@ -119,12 +119,12 @@ public class TestProject extends BaseEntity {
 		this.type = type;
 	}
 
-	public Integer getOderInParent() {
-		return oderInParent;
+	public Integer getOrderInParent() {
+		return orderInParent;
 	}
 
-	public void setOderInParent(Integer oderInParent) {
-		this.oderInParent = oderInParent;
+	public void setOrderInParent(Integer orderInParent) {
+		this.orderInParent = orderInParent;
 	}
     
 }

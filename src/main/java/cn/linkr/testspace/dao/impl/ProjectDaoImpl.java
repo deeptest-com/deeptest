@@ -51,32 +51,5 @@ public class ProjectDaoImpl implements ProjectDao {
 
     @Autowired
     private SessionFactory sessionFactory;
-    
-	@Override
-	public TestProject moveProject(Long projectId, Long newParentId) {
-    	Query query = this.getSession().createSQLQuery("CALL move_node(:node_table, :project_id, :parent_id)")
-  			  .addEntity(TestProject.class)
-  			  .setParameter("node_table", "tst_project")
-  			  .setParameter("project_id", projectId)
-  			  .setParameter("parent_id", newParentId);
-  	
-	  	List<TestProject> ls = query.list();
-	  	return ls.get(0);
-	}
-    
-    @Override
-    public List<TestProject> findProjectByProcedure(Long companyId, Boolean isActive) {
-    	Query query = this.getSession().createSQLQuery("CALL query_project(:company_id, :is_active)")
-    			  .addEntity(TestProject.class)
-    			  .setParameter("company_id", companyId)
-    			  .setParameter("is_active", isActive);
-    	
-    	List ls = query.list();
-    	return ls;
-    }
-    
-    public Session getSession() {
-        return sessionFactory.getCurrentSession();
-    }
 
 }

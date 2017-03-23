@@ -32,6 +32,7 @@ import org.springframework.stereotype.Repository;
 
 import cn.linkr.testspace.dao.BaseDao;
 import cn.linkr.testspace.dao.RowMapper;
+import cn.linkr.testspace.entity.TestProject;
 import cn.linkr.testspace.util.EscColumnToBean;
 import cn.linkr.testspace.util.ReflectionUtils;
 import cn.linkr.testspace.vo.Page;
@@ -563,4 +564,16 @@ public class BaseDaoImpl implements BaseDao {
 
         return (T) ca.uniqueResult();
     }
+    
+	@Override
+	public Integer moveProject(Long projectId, Long newParentId) {
+    	Query query = this.getSession().createSQLQuery("CALL move_node(:node_table, :project_id, :parent_id)")
+  			  .addEntity(TestProject.class)
+  			  .setParameter("node_table", "tst_project")
+  			  .setParameter("project_id", projectId)
+  			  .setParameter("parent_id", newParentId);
+  	
+    	TestProject projec = (TestProject) query.uniqueResult();
+	  	return 1;
+	}
 }

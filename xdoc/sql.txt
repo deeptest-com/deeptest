@@ -1,6 +1,6 @@
 DROP PROCEDURE IF EXISTS `testspace`.`move_node`; 
 CREATE DEFINER = `root`@`localhost` PROCEDURE 
-    `testspace`.`move_node`(node_table varchar(100), node_id BIGINT, parent_id BIGINT)
+    `testspace`.`move_node`(IN node_table varchar(100), IN node_id BIGINT, IN parent_id BIGINT)
 
 BEGIN
 DECLARE sql_str varchar(5000);
@@ -55,7 +55,7 @@ set sql_str = concat(sql_str, '     WHERE node.id = ', node_id);
 
 set @sql_str = sql_str;
 PREPARE stmt FROM @sql_str;
-EXECUTE stmt;  
+EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
 END

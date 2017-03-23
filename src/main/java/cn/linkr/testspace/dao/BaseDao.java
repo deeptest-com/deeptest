@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.hibernate.criterion.DetachedCriteria;
 
+import cn.linkr.testspace.entity.TestProject;
 import cn.linkr.testspace.vo.Page;
 
 /**
@@ -238,6 +239,6 @@ public interface BaseDao {
     public List<Map> findMapByHQL(String hqlString, Object... values);
 
     void flush();
-
-   
+    
+    public Integer moveProject(Long projectId, Long newParentId);
 }

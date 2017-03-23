@@ -66,10 +66,10 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		net.sf.ehcache.Cache cache = manager.getCache("companyProjects");
 		String key = companyId + "_" + isActive;
 		Element el = null;
-        if(cache.isKeyInCache(key)){
-        	el = cache.get(key);
-            return (Map<String, Object>)el.getObjectValue();
-        }
+//        if(cache.isKeyInCache(key)){
+//        	el = cache.get(key);
+//            return (Map<String, Object>)el.getObjectValue();
+//        }
         
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
 
@@ -120,7 +120,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		
 		saveOrUpdate(po);
 		
-		projectDao.moveProject(po.getId(), newParentId);
+		getDao().moveProject(po.getId(), newParentId);
 		this.removeCache(user.getCompanyId());
 		
 		return po;

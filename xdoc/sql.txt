@@ -5,6 +5,7 @@ CREATE DEFINER = `root`@`localhost` PROCEDURE
 BEGIN
 DECLARE sql_str varchar(5000);
 
+/*获取老的原路径*/
 set sql_str = '';
 set sql_str = concat(sql_str, '  SELECT node.path into @old_path FROM  ', node_table, ' node');
 set sql_str = concat(sql_str, '     WHERE node.id = ', node_id);
@@ -15,6 +16,7 @@ EXECUTE stmt;
 
 set @old_path = concat(@old_path, node_id, '/');
 
+/*获取新的父路径*/
 set sql_str = '';
 set sql_str = concat(sql_str, '  SELECT node.path into @node_path FROM  ', node_table, ' node');
 set sql_str = concat(sql_str, '     WHERE node.id = ', parent_id);
@@ -26,6 +28,7 @@ EXECUTE stmt;
 set @node_path = concat(@node_path, parent_id, '/');
 set @child_path = concat(@node_path, node_id, '/');
 
+/*更新自己*/
 set sql_str = '';
 set sql_str = concat(sql_str, '  UPDATE ', node_table , ' SET parent_id = ' , parent_id, ',');
 set sql_str = concat(sql_str, '             path = ', '''' , @node_path, '''');
@@ -35,11 +38,13 @@ set @sql_str = sql_str;
 PREPARE stmt FROM @sql_str;
 EXECUTE stmt;
 
+/*更新后代*/
 set sql_str = '';
 set sql_str = concat(sql_str, '  UPDATE ', node_table);
 set sql_str = concat(sql_str, '   SET path = REPLACE(path, ', '''', @old_path , '''', ',', '''' , @child_path, '''', ')');
 set sql_str = concat(sql_str, '  WHERE path LIKE ', '''', @old_path, '%''');
 
+/*查询*/
 set @sql_str = sql_str;
 PREPARE stmt FROM @sql_str;
 EXECUTE stmt;

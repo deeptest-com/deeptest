@@ -239,6 +239,9 @@ public interface BaseDao {
     public List<Map> findMapByHQL(String hqlString, Object... values);
 
     void flush();
-    
-    public Integer moveProject(Long projectId, Long newParentId);
+
+	Integer moveNode(String nodeTable, Long nodeId, Long newParentId);
+
+	Integer updateNode(String nodeTable, Long nodeId, String statusName,
+			String statusValue);
 }

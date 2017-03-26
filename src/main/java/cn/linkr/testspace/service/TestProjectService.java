@@ -19,19 +19,19 @@ public interface TestProjectService extends BaseService {
 
 	LinkedList<TestProjectVo> genVos(List<TestProject> pos, Map<String, Integer> ret);
 	
-	TestProject delete(Long vo, Long userId);
+	Boolean delete(Long id, Long userId);
 	TestProject save(TestProjectVo vo, UserVo user);
 
 	TestProject getDetail(Long id);
 
-	void toOrderList(TestProjectVo root, String childrenPath, LinkedList<TestProjectVo> resultList);
+	void toOrderList(TestProjectVo root, LinkedList<TestProjectVo> resultList);
 
 	Map<String, Object> listCache(Long companyId, String isActive);
 	TestProjectVo genVo(TestProject po);
 
 	void removeChildren(LinkedList<TestProjectVo> resultList);
 
-	LinkedList<TestProjectVo> removeMe(LinkedList<TestProjectVo> linkedList, TestProjectVo vo);
+	LinkedList<TestProjectVo> removeChildren(LinkedList<TestProjectVo> linkedList, TestProjectVo vo);
 
 	void removeCache(Long companyId);
 	

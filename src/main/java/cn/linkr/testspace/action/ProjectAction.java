@@ -83,18 +83,17 @@ public class ProjectAction extends BaseAction {
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "get", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> get(HttpServletRequest request) {
+	public Map<String, Object> get(HttpServletRequest request, @RequestBody TestProjectVo json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		JSONObject req = reqJson(request);
-		String id = req.getString("id");
+		Long id = json.getId();
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		TestProject project = projectService.getDetail(Long.valueOf(id));
+		TestProject project = projectService.getDetail(id);
 		TestProjectVo vo = projectService.genVo(project);
 		
 		Map<String, Object> out = projectService.listCache(userVo.getCompanyId(), "true");
-		LinkedList<TestProjectVo> vos = projectService.removeMe((LinkedList<TestProjectVo>)out.get("models"), vo);
+		LinkedList<TestProjectVo> vos = projectService.removeChildren((LinkedList<TestProjectVo>)out.get("models"), vo);
         
         ret.put("data", vo);
         ret.put("projects", vos);
@@ -121,17 +120,14 @@ public class ProjectAction extends BaseAction {
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> delete(HttpServletRequest request, @RequestBody TestProjectVo json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		Long id = json.getLong("id");
-		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long id = json.getId();
 		
-		TestProject po = projectService.delete(id, userVo.getId());
-		TestProjectVo caseVo = projectService.genVo(po);
+		projectService.delete(id, userVo.getId());
         
-        ret.put("data", caseVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

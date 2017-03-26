@@ -60,10 +60,10 @@ main {
   display: flex;
   margin: 0 0 20px 0;
   padding: 0;
+  line-height: 30px;
   .title {
     width: 150px;
     font-size: 20px;
-    line-height: 30px;
   }
   .filter {
     flex: 1;
@@ -96,12 +96,15 @@ main {
   }
 }
 
+table .dropdown-toggle::after {
+  margin-left: 0px;
+}
+
 .link {
   margin: 0 5px;
   text-decoration:underline !important;
   color: #209e91;
   cursor:pointer;
-  font-size: 16px;
   &.no-underline {
     text-decoration: none !important;
   }
@@ -179,8 +182,8 @@ tabset {
 
 table {
   tr {
-    th, td.opt {
-      text-align: center;
+    th:first-child,td:first-child {
+      text-align: left !important;
     }
     td.img {
       text-align: center;

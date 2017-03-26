@@ -12,7 +12,7 @@ import { MENU } from './app.menu';
 
 import {CONSTANT} from './utils/constant';
 import {Utils} from './utils/utils';
-import {UserService} from './service/user';
+import {AccountService} from './service/account';
 
 /*
  * App Component
@@ -38,7 +38,7 @@ export class App {
               private _spinner: BaThemeSpinner,
               private _config: BaThemeConfig,
               private _menuService: BaMenuService,
-              private _userService: UserService,
+              private accountService: AccountService,
               private viewContainerRef: ViewContainerRef) {
 
     this._menuService.updateMenuByRoutes(<Routes>MENU);
@@ -52,7 +52,7 @@ export class App {
     });
 
     Utils.config();
-    this._userService.loadProfileLocal();
+    this.accountService.loadProfileLocal();
 
     CONSTANT.ScreenSize = Utils.getScreenSize();
   }

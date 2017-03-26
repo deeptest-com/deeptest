@@ -13,7 +13,7 @@ import {ValidatorUtils} from '../../../../validator/validator.utils';
 
 import { RouteService } from '../../../../service/route';
 
-import { UserService } from '../../../../service/user';
+import {AccountService} from './../../../../service/account';
 
 declare var jQuery;
 
@@ -49,7 +49,7 @@ export class ProfileEdit implements OnInit, AfterViewInit {
   public uploader: FileUploader;
 
   constructor(private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
-              private _userService: UserService) {
+              private accountService: AccountService) {
 
     let that = this;
   }
@@ -88,7 +88,7 @@ export class ProfileEdit implements OnInit, AfterViewInit {
   onSubmit():void {
     let that = this;
 
-    that._userService.saveProfile(that.model).subscribe((json:any) => {
+    that.accountService.saveProfile(that.model).subscribe((json:any) => {
         if (json.code == 1) {
           Utils.saveProfileLocal(json.data, null);
           that.formErrors = ['保存成功'];
@@ -99,7 +99,7 @@ export class ProfileEdit implements OnInit, AfterViewInit {
   loadData() {
    let that = this;
 
-   that._userService.getProfile().subscribe((json:any) => {
+   that.accountService.getProfile().subscribe((json:any) => {
       that.model = json.data;
    });
   }

@@ -46,23 +46,23 @@ export class AccountList implements OnInit, AfterViewInit {
   }
   disable(accountId: number):void {
     let that = this;
-    that._accountService.disable(accountId).subscribe((json:any) => {
-      that.loadData();
-    });
+    // that._accountService.disable(accountId).subscribe((json:any) => {
+    //   that.loadData();
+    // });
   }
   remove(accountId: number):void {
     let that = this;
-    that._accountService.remove(accountId).subscribe((json:any) => {
-      that.loadData();
-    });
+    // that._accountService.remove(accountId).subscribe((json:any) => {
+    //   that.loadData();
+    // });
   }
 
   loadData() {
     let that = this;
 
-    that._accountService.list(that.itemsPerPage, that.currentPage, that.model.status).subscribe((json:any) => {
-      that.totalItems = json.totalItems;
-      that.items = json.data;
-    });
+    // that._accountService.list(that.itemsPerPage, that.currentPage, that.model.status).subscribe((json:any) => {
+    //   that.totalItems = json.totalItems;
+    //   that.items = json.data;
+    // });
   }
 }

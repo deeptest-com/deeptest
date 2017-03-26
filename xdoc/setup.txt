@@ -1,0 +1,6 @@
+Redmine
+sudo installdir/ctlscript.sh start
+ctlscript.sh status
+
+Jira
+sudo /opt/atlassian/jira/bin/startup.sh

@@ -16,9 +16,6 @@ export class RequestService {
     }
     post(apiPath: string, reqBody: any) {
         let me = this;
-        // if (!CONSTANT.PROFILE){
-        //   CONSTANT.userService.loadProfileLocal();
-        // }
 
         let url = CONSTANT.API_URL + apiPath;
 

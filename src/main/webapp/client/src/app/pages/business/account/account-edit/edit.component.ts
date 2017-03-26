@@ -9,7 +9,6 @@ import {ValidatorUtils} from '../../../../validator/validator.utils';
 
 import { RouteService } from '../../../../service/route';
 
-import { UserService } from '../../../../service/user';
 import { AccountService } from '../../../../service/account';
 
 declare var jQuery;
@@ -29,7 +28,7 @@ export class AccountEdit implements OnInit, AfterViewInit {
   public errors: string;
 
   constructor(private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
-              private _accountService: AccountService, private _userService: UserService) {
+              private _accountService: AccountService) {
 
     let that = this;
   }
@@ -56,16 +55,16 @@ export class AccountEdit implements OnInit, AfterViewInit {
   onSubmit():void {
     let that = this;
 
-    that._accountService.save(that.model).subscribe((json:any) => {
-        if (json.code == 1) {
-          that._routeService.navTo("/pages/business/account-list");
-        }
-    });
+    // that._accountService.save(that.model).subscribe((json:any) => {
+    //     if (json.code == 1) {
+    //       that._routeService.navTo("/pages/business/account-list");
+    //     }
+    // });
   }
   forgotPassword():void {
     let that = this;
 
-    that._userService.forgotPassword(that.model.email).subscribe((json:any) => {
+    that._accountService.forgotPassword(that.model.email).subscribe((json:any) => {
       if (json.code == 1) {
         that.formErrors = ['重置密码成功'];
       }
@@ -75,11 +74,11 @@ export class AccountEdit implements OnInit, AfterViewInit {
   loadData() {
    let that = this;
 
-   that._accountService.get(that.accountId).subscribe((json:any) => {
-      that.model = json.data;
-
-     that.buildForm();
-   });
+   // that._accountService.get(that.accountId).subscribe((json:any) => {
+   //    that.model = json.data;
+   //
+   //   that.buildForm();
+   // });
   }
 
   back($event: any):void {
@@ -125,5 +124,4 @@ export class AccountEdit implements OnInit, AfterViewInit {
       'emailValidator': '邮件格式错误'
     }
   };
-
 }

@@ -56,8 +56,11 @@
         <div class="form-group row">
           <label class="col-sm-2 col-form-label"></label>
           <div class="col-sm-10">
-            <button type="submit" class="btn btn-primary" [disabled]="!form.valid">保存</button>&nbsp;&nbsp;&nbsp;&nbsp;
+            <button type="submit" class="btn btn-primary" [disabled]="!form.valid">保存</button>
+            &nbsp;
             <button type="reset" class="btn btn-default">重置</button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button (click)="showModal()" type="button" class="btn btn-danger">删除</button>
           </div>
         </div>
 
@@ -73,5 +76,26 @@
         </div>
       </form>
     </ba-card>
+  </div>
+</div>
+
+<div bsModal #modal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="close" aria-label="Close" (click)="hideModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">提示</h4>
+      </div>
+      <div class="modal-body">
+        确认删除名为{{model.name}}"的项目及其子节点?
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary confirm-btn" (click)="delete()">确认</button>
+        &nbsp;&nbsp;
+        <button class="btn btn-default confirm-btn" (click)="hideModal()">取消</button>
+      </div>
+    </div>
   </div>
 </div>

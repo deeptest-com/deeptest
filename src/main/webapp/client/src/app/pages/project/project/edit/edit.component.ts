@@ -1,9 +1,8 @@
-import {Component, ViewEncapsulation} from '@angular/core';
+import {Component, ViewEncapsulation, ViewChild} from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
 import { NgModule, Pipe, OnInit, AfterViewInit }      from '@angular/core';
-
+import { ModalDirective } from 'ng2-bootstrap';
 import {GlobalState} from '../../../../global.state';
 
 import { CONSTANT } from '../../../../utils/constant';
@@ -27,6 +26,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
   projects: any[] = [];
   form: any;
   isSubmitted: boolean;
+  @ViewChild('modal') modal: ModalDirective;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
               private fb: FormBuilder, private _projectService: ProjectService) {
@@ -81,7 +81,11 @@ export class ProjectEdit implements OnInit, AfterViewInit {
       that.model = json.data;
       that.projects = json.projects;
       that.projects = json.projects.map(function(project) {
-        return {id: project.id, name: String.fromCharCode(160).repeat((project.level - 1) * 5) + project.name};
+        let name = project.name;
+        if (project.level > 0) {
+          name = String.fromCharCode(160).repeat((project.level) * 5) + project.name;
+        }
+        return {id: project.id, name: name};
       });
     });
   }
@@ -99,6 +103,32 @@ export class ProjectEdit implements OnInit, AfterViewInit {
         that.formErrors = ['保存失败'];
       }
     });
+  }
+
+  delete() {
+    let that = this;
+
+    that._projectService.delete(that.model.id).subscribe((json:any) => {
+      if (json.code == 1) {
+        that.model = json.data;
+
+        that.formErrors = ['删除成功'];
+        that._routeService.navTo("/pages/project/list");
+      } else {
+        that.formErrors = ['删除失败'];
+      }
+    });
+  }
+
+  showModal(): void {
+    this.modal.show();
+  }
+  onModalShow():void {
+    // init jquery components if needed
+  }
+
+  hideModal(): void {
+    this.modal.hide();
   }
 
 }

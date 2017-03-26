@@ -21,7 +21,7 @@ export class ProjectService {
       return this._reqService.post(this._api_url + 'save', model);
     }
 
-    delete(id: number) {
+  delete(id: number) {
         let model = {id: id};
         return this._reqService.post(this._api_url + 'delete', model);
     }

@@ -4,15 +4,15 @@ import { Pages } from './pages.component';
 const routes: Routes = [
   {
     path: 'login',
-    loadChildren: () => System.import('./user/login/login.module')
+    loadChildren: () => System.import('./account/login/login.module')
   },
   {
     path: 'register',
-    loadChildren: () => System.import('./user/register/register.module')
+    loadChildren: () => System.import('./account/register/register.module')
   },
   {
     path: 'forgot-password',
-    loadChildren: () => System.import('./user/forgot-password/forgot-password.module')
+    loadChildren: () => System.import('./account/forgot-password/forgot-password.module')
   },
   {
     path: 'pages',
@@ -25,9 +25,7 @@ const routes: Routes = [
       { path: 'project', loadChildren: () => System.import('./project/project/project.module') },
       { path: 'case', loadChildren: () => System.import('./design/case/case.module') },
 
-      { path: 'event', loadChildren: () => System.import('./event/event.module') },
-      { path: 'business', loadChildren: () => System.import('./business/business.module') },
-      { path: 'personal', loadChildren: () => System.import('./personal/personal.module') },
+      { path: 'admin', loadChildren: () => System.import('./admin/admin.module') }
     ]
   }
 ];

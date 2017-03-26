@@ -16,7 +16,6 @@ import { RouteService } from '../../service/route';
 import { RequestService } from '../../service/request';
 import { DatetimePickerService } from '../../service/datetime-picker';
 
-import { UserService } from '../../service/user';
 import { AccountService } from '../../service/account';
 import { CompanyService } from '../../service/company';
 
@@ -56,7 +55,7 @@ import { CompanyEdit } from './company/company-edit';
     RouteService,
     RequestService,
     DatetimePickerService,
-    UserService,
+    
     AccountService,
     CompanyService
   ]

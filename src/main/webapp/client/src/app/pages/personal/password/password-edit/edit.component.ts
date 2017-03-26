@@ -11,7 +11,7 @@ import {EqualPasswordsValidator} from '../../../../validator';
 
 import { RouteService } from '../../../../service/route';
 
-import { UserService } from '../../../../service/user';
+import {AccountService} from './../../../../service/account';
 
 declare var jQuery;
 
@@ -29,7 +29,7 @@ export class PasswordEdit implements OnInit, AfterViewInit {
   needCreate:boolean = false;
 
   constructor(private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
-              private _userService: UserService) {
+              private accountService: AccountService) {
 
     let that = this;
   }
@@ -49,7 +49,7 @@ export class PasswordEdit implements OnInit, AfterViewInit {
   onSubmit():void {
     let that = this;
 
-    that._userService.changePassword(that.model).subscribe((json:any) => {
+    that.accountService.changePassword(that.model).subscribe((json:any) => {
         if (json.code == 1) {
           that.loadData();
           that.formErrors = ['修改密码成功'];

@@ -69,10 +69,10 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		net.sf.ehcache.Cache cache = manager.getCache("companyProjects");
 		String key = companyId + "_" + isActive;
 		Element el = null;
-        if(cache.isKeyInCache(key)){
-        	el = cache.get(key);
-            return (Map<String, Object>)el.getObjectValue();
-        }
+//        if(cache.isKeyInCache(key)){
+//        	el = cache.get(key);
+//            return (Map<String, Object>)el.getObjectValue();
+//        }
         
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
 
@@ -115,18 +115,19 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		if (vo.getId() != null) {
 			po = (TestProject) get(TestProject.class, vo.getId());
 		}
-		Long newParentId = vo.getParentId();
 		
 		po.setName(vo.getName());
 		po.setDescr(vo.getDescr());
-		po.setIsActive(vo.getIsActive());
 		
 		saveOrUpdate(po);
 		
-		Long t1 = new Date().getTime();
-		getDao().moveProject(po.getId(), newParentId);
-		Long t2 = new Date().getTime();
-		log.warn("移动节点花了" + (t2 - t1) + "毫秒");
+		if (vo.getParentId() != po.getParentId()) {
+			getDao().moveNode("tst_project", po.getId(), vo.getParentId());
+		}
+		
+		if (vo.getIsActive() != po.getIsActive()) {
+			getDao().updateNode("tst_project", po.getId(), "is_active", vo.getIsActive().toString());
+		}
 		
 		this.removeCache(user.getCompanyId());
 		
@@ -134,8 +135,18 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	}
 	
 	@Override
-	public TestProject delete(Long vo, Long userId) {
-		return null;
+	public Boolean delete(Long id, Long userId) {
+		if (id == null) {
+			return null;
+		}
+		
+		TestProject po = (TestProject) get(TestProject.class, id);
+		po.setDeleted(true);
+		saveOrUpdate(po);
+		
+		getDao().updateNode("tst_project", po.getId(), "deleted", "true");
+		
+		return true;
 	}
 	
 	@Override
@@ -156,7 +167,6 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		TestProjectVo root = null;
 		int maxLevel = 0;
 		
-		String childrenPath = "";
 		Map<Long, TestProjectVo> nodeMap = new HashMap<Long, TestProjectVo>();
 	      for (TestProject po : pos) {
 	        	Long id = po.getId();
@@ -176,14 +186,13 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	        	LinkedList<TestProjectVo> children = pvo.getChildren();
 	        	children.add(newNode);
 	        	
-	        	childrenPath += newNode.getPath() + ",";
 	        	if (po.getLevel() > maxLevel) {
 					maxLevel = po.getLevel();
 				}
 	        }
 	        
 	      LinkedList<TestProjectVo> voList = new LinkedList<TestProjectVo>();
-	      this.toOrderList(root, childrenPath, voList);
+	      this.toOrderList(root, voList);
 	      this.removeChildren(voList);
 		
         ret.put("maxLevel", maxLevel);
@@ -201,16 +210,13 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	}
 
 	@Override
-	public void toOrderList(TestProjectVo root, String childrenPath, LinkedList<TestProjectVo> resultList) {
+	public void toOrderList(TestProjectVo root, LinkedList<TestProjectVo> resultList) {
+		resultList.add(root);
+		
 		Iterator<TestProjectVo> it = root.getChildren().iterator();
 		while (it.hasNext()) {
 			TestProjectVo vo = it.next();
-			
-        	if (!vo.getType().toString().equals(Constant.TreeNodeType.root.toString())) {
-        		resultList.add(vo);
-			}
-        	
-        	this.toOrderList(vo, childrenPath, resultList);
+        	this.toOrderList(vo, resultList);
 		}
 	}
 	
@@ -224,7 +230,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	}
 
 	@Override
-	public LinkedList<TestProjectVo> removeMe(LinkedList<TestProjectVo> linkedList, TestProjectVo curr) {
+	public LinkedList<TestProjectVo> removeChildren(LinkedList<TestProjectVo> linkedList, TestProjectVo curr) {
 		LinkedList<TestProjectVo> ret = new LinkedList<TestProjectVo>();
 		
 		Iterator<TestProjectVo> it = linkedList.iterator();

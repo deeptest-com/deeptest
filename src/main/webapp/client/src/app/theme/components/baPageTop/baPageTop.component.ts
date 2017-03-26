@@ -6,7 +6,7 @@ import {GlobalState} from '../../../global.state';
 
 import { CONSTANT } from '../../../utils/constant';
 import { Utils } from '../../../utils/utils';
-import { UserService } from '../../../service/user';
+import { AccountService } from '../../../service/account';
 
 @Component({
   selector: 'ba-page-top',
@@ -19,7 +19,7 @@ export class BaPageTop {
   public isScrolled:boolean = false;
   public profile:any = CONSTANT.PROFILE;
 
-  constructor(private _router:Router, private _state:GlobalState, private userService: UserService) {
+  constructor(private _router:Router, private _state:GlobalState, private accountService: AccountService) {
     let that = this;
     this._onRouteChange = this._router.events.subscribe((event) => {
       // if (event instanceof NavigationEnd) {
@@ -43,6 +43,6 @@ export class BaPageTop {
   }
 
   logout() {
-    this.userService.logout();
+    this.accountService.logout();
   }
 }

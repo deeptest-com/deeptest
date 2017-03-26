@@ -7,7 +7,7 @@ import { NgaModule } from '../theme/nga.module';
 import { Pages } from './pages.component';
 
 import { RouteService } from '../service/route';
-import { UserService } from '../service/user';
+import { AccountService } from '../service/account';
 import { RequestService } from '../service/request';
 
 @NgModule({
@@ -15,7 +15,7 @@ import { RequestService } from '../service/request';
     CommonModule, NgaModule, routing
   ],
   declarations: [Pages],
-  providers: [RouteService, UserService, RequestService]
+  providers: [RouteService, RequestService, AccountService]
 })
 export class PagesModule {
 

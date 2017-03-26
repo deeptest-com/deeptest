@@ -8,7 +8,7 @@
   </thead>
   <tbody>
     <ng-container *ngFor="let model of models">
-      <tr table-row [model]="model" [maxLevel]="maxLevel" [class.hidden]="isHidden(model)"></tr>
+      <tr table-row *ngIf="model.type != 'root'" [model]="model" [maxLevel]="maxLevel" [class.hidden]="isHidden(model)"></tr>
     </ng-container>
   </tbody>
 </table>

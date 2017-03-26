@@ -566,12 +566,25 @@ public class BaseDaoImpl implements BaseDao {
     }
     
 	@Override
-	public Integer moveProject(Long projectId, Long newParentId) {
+	public Integer moveNode(String nodeTable, Long nodeId, Long newParentId) {
     	Query query = this.getSession().createSQLQuery("CALL move_node(:node_table, :project_id, :parent_id)")
   			  .addEntity(TestProject.class)
-  			  .setParameter("node_table", "tst_project")
-  			  .setParameter("project_id", projectId)
+  			  .setParameter("node_table", nodeTable)
+  			  .setParameter("project_id", nodeId)
   			  .setParameter("parent_id", newParentId);
+    	
+    	TestProject projec = (TestProject) query.uniqueResult();
+	  	return 1;
+	}
+	
+	@Override
+	public Integer updateNode(String nodeTable, Long nodeId, String statusName, String statusValue) {
+    	Query query = this.getSession().createSQLQuery("CALL update_node(:node_table, :node_id, :status_name, :status_value)")
+  			  .addEntity(TestProject.class)
+  			  .setParameter("node_table", nodeTable)
+  			  .setParameter("node_id", nodeId)
+  			  .setParameter("status_name", statusName)
+    		  .setParameter("status_value", statusValue);
     	
     	TestProject projec = (TestProject) query.uniqueResult();
 	  	return 1;

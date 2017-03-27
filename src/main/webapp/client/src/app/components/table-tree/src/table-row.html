@@ -2,7 +2,10 @@
 
 <td *ngIf="model.type=='project'" [attr.colSpan]="1">{{model.name}}</td>
 <td *ngIf="model.type=='group'" [attr.colSpan]="2">{{model.name}}</td>
-
+<td>
+  <span *ngIf="model.type=='group'">组 ({{model.childrenNumb}})</span>
+  <span *ngIf="model.type=='project'">项目</span>
+</td>
 <td>
   <span *ngIf="!model.disabled">启用</span>
   <span *ngIf="model.disabled">归档</span>

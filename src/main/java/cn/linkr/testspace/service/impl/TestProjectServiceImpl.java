@@ -197,14 +197,17 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 			TestProjectVo vo = genVo(po);
 			voList.add(vo);
 			
+			List<TestProjectVo> voList2 = new LinkedList<TestProjectVo>();
 			List<TestProject> children = po.getChildren();
 			for (TestProject child : children) {
 				if ( (StringUtil.IsEmpty(keywords) || child.getName().toLowerCase().indexOf(keywords.toLowerCase()) > -1) 
 						&& ( StringUtil.IsEmpty(disabled) || child.getDisabled() == Boolean.valueOf(disabled)) ) {
 					TestProjectVo childVo = genVo(child);
-					voList.add(childVo);
+					voList2.add(childVo);
 				}
 			}
+			vo.setChildrenNumb(voList2.size());
+			voList.addAll(voList2);
 		}
 		
 		return voList;

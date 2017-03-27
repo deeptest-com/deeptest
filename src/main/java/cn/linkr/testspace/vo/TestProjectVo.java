@@ -11,6 +11,7 @@ public class TestProjectVo extends BaseVo {
     private Long parentId;
     private String type;
     private Integer order;
+    private Integer childrenNumb;
     
 	public String getName() {
 		return name;
@@ -50,6 +51,12 @@ public class TestProjectVo extends BaseVo {
 	}
 	public void setOrder(Integer order) {
 		this.order = order;
+	}
+	public Integer getChildrenNumb() {
+		return childrenNumb;
+	}
+	public void setChildrenNumb(Integer childrenNumb) {
+		this.childrenNumb = childrenNumb;
 	}
 
 }

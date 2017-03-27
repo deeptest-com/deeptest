@@ -63,17 +63,9 @@
     </div>
 
     <div class="btn-group" dropdown>
-      <button type="button" class="btn btn-default" dropdownToggle addToggleClass="true">
+      <button type="button" class="btn btn-default" [routerLink]="['/pages/admin/user/list']">
         系统设置
       </button>
-      <ul class="dropdown-menu" dropdownMenu>
-        <li class="dropdown-item"><a [routerLink]="['/pages/admin/user/list']">用户&分组</a></li>
-        <li class="dropdown-item"><a [routerLink]="['/pages/admin/role/list']">角色&权限</a></li>
-        <li class="dropdown-item"><a [routerLink]="['/pages/admin/custom']">自定义属性</a></li>
-        <!--<li class="dropdown-item"><a [routerLink]="['/pages/settings']">站点配置</a></li>
-        <li class="dropdown-item"><a [routerLink]="['/pages/integration']">第三方集成</a></li>
-        <li class="dropdown-item"><a [routerLink]="['/pages/license']">许可证</a></li>-->
-      </ul>
     </div>
 
   </div>

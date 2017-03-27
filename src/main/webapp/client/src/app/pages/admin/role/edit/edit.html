@@ -1,0 +1,101 @@
+<div class="project-edit container-fluid">
+  <div class="row">
+    <ba-card baCardClass="with-scroll edit-card">
+      <div class="row">
+        <div class="edit-toolbar col-xl-12">
+          <div class="title">
+            编辑项目
+          </div>
+          <div class="buttons">
+            <button [routerLink]="['/pages/project/list']" type="button" class="btn btn-secondary btn-with-icon btn-sm back">
+              <i class="ion-backspace"></i>返回
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="save()" class="my-validate-form">
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label"><span>名称</span></label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" name="name" formControlName="name"
+                   [(ngModel)]="model.name" #name>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label"><span>简介</span></label>
+          <div class="col-sm-10">
+              <textarea type="text" class="form-control" name="descr" formControlName="descr"
+                        [(ngModel)]="model.descr" #descr></textarea>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label">父级项目</label>
+          <div class="col-sm-10">
+            <select [(ngModel)]="model.parentId" formControlName="parentId" class="form-control" name="parentId">
+                <option *ngFor="let entry of projects" value="{{entry.id}}">
+                  <span>{{entry.name}}</span>
+                </option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="offset-sm-2 col-sm-10">
+            <div class="form-check">
+              <label class="form-check-label">
+                <input type="checkbox" class="form-check-input" name="isActive" formControlName="isActive"
+                       [(ngModel)]="model.isActive" #isActive>
+                &nbsp;&nbsp;是否激活
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label"></label>
+          <div class="col-sm-10">
+            <button type="submit" class="btn btn-primary" [disabled]="!form.valid">保存</button>
+            &nbsp;
+            <button type="reset" class="btn btn-default">重置</button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button (click)="showModal()" type="button" class="btn btn-danger">删除</button>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label"></label>
+          <div class="col-sm-10">
+            <div class="validate-errors">
+              <div class="validate-error" *ngFor="let msg of formErrors">
+                <div>{{ msg }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </ba-card>
+  </div>
+</div>
+
+<div bsModal #modal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="close" aria-label="Close" (click)="hideModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">提示</h4>
+      </div>
+      <div class="modal-body">
+        确认删除名为{{model.name}}"的项目及其子节点?
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary confirm-btn" (click)="delete()">确认</button>
+        &nbsp;&nbsp;
+        <button class="btn btn-default confirm-btn" (click)="hideModal()">取消</button>
+      </div>
+    </div>
+  </div>
+</div>

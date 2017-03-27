@@ -1,0 +1,58 @@
+<div class="user-list container-fluid">
+  <div class="row">
+    <div class="list-toolbar col-xl-12">
+      <div class="title">
+        用户列表
+      </div>
+
+      <div class="filter">
+        <form [formGroup]="queryForm" class="form-inline">
+          <label for="isActive">状态</label>
+          <select [(ngModel)]="queryModel.isActive" formControlName="isActive"
+                  class="form-control form-control-sm" id="isActive" name="isActive">
+            <option *ngFor="let entry of (statusMap | mapKeys)" value="{{entry.key}}">{{entry.value}}</option>
+          </select>
+          &nbsp;&nbsp;&nbsp;
+          <label for="keywords">关键字</label>
+          <input [(ngModel)]="queryModel.keywords" formControlName="keywords"
+                 type="search" class="form-control form-control-sm" placeholder="" id="keywords" name="keywords">
+        </form>
+      </div>
+
+      <div class="buttons">
+        <button (click)="create()" type="button" class="btn btn-primary btn-with-icon btn-sm">
+          <i class="ion-plus-circled"></i>新建
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <table class="table table-bordered table-striped">
+      <thead class="thead-inverse">
+      <tr>
+        <th>姓名</th>
+        <th>状态</th>
+        <th>操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let item of tableData">
+        <td>{{ item.username }}</td>
+        <td>活动</td>
+        <td>
+          <span [routerLink]="['/pages/admin/user/edit']" class="link no-underline">编辑</span>
+                  <span dropdown class="link no-underline">
+                    <span href id="user-dropdown" dropdownToggle>
+                      {{roleData[0].name}}
+                    </span>
+                    <ul class="dropdown-menu" dropdownMenu aria-labelledby="user-dropdown">
+                        <span *ngFor="let item of roleData" (click)="changeRole(item.id)" class="dropdown-item">
+                          {{item.name}}</span>
+                    </ul>
+                  </span>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

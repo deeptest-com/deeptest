@@ -1,0 +1,34 @@
+<div class="project-list container-fluid">
+  <div class="row">
+    <div class="list-toolbar col-xl-12">
+      <div class="title">
+        项目列表
+      </div>
+
+      <div class="filter">
+        <form [formGroup]="queryForm" class="form-inline">
+          <label for="isActive">状态</label>
+          <select [(ngModel)]="queryModel.isActive" formControlName="isActive"
+                  class="form-control form-control-sm" id="isActive" name="isActive">
+            <option *ngFor="let entry of (statusMap | mapKeys)" value="{{entry.key}}">{{entry.value}}</option>
+          </select>
+          &nbsp;&nbsp;&nbsp;
+          <label for="keywords">关键字</label>
+          <input [(ngModel)]="queryModel.keywords" formControlName="keywords"
+                 type="search" class="form-control form-control-sm" placeholder="" id="keywords" name="keywords">
+        </form>
+      </div>
+
+      <div class="buttons">
+        <button (click)="create()" type="button" class="btn btn-primary btn-with-icon btn-sm">
+          <i class="ion-plus-circled"></i>新建
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- /.row -->
+  <div class="row">
+    <table-tree [models]="models" [maxLevel]="maxLevel" [keywords]="queryModel.keywords"></table-tree>
+  </div>
+
+</div>

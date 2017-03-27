@@ -29,8 +29,4 @@ export class TableTreeComponent implements OnInit, AfterViewInit{
   ngAfterViewInit() {
 
   }
-
-  public isHidden(model: any): boolean {
-    return !!this.keywords && model.name.toLowerCase().indexOf(this.keywords.toLowerCase()) === -1
-  }
 }

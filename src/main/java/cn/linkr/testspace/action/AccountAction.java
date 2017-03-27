@@ -1,7 +1,6 @@
 package cn.linkr.testspace.action;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,13 +12,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
-import cn.linkr.testspace.entity.EvtClient;
 import cn.linkr.testspace.entity.SysUser;
+import cn.linkr.testspace.entity.SysVerifyCode;
+import cn.linkr.testspace.service.AccountService;
+import cn.linkr.testspace.service.MailService;
+import cn.linkr.testspace.service.RegisterService;
+import cn.linkr.testspace.service.SessionService;
 import cn.linkr.testspace.service.UserService;
 import cn.linkr.testspace.util.AuthPassport;
+import cn.linkr.testspace.util.BeanUtilEx;
 import cn.linkr.testspace.util.Constant;
-import cn.linkr.testspace.vo.Page;
+import cn.linkr.testspace.util.PropertyConfig;
+import cn.linkr.testspace.util.Constant.RespCode;
 import cn.linkr.testspace.vo.UserVo;
 
 import com.alibaba.fastjson.JSONObject;
@@ -29,79 +33,199 @@ import com.alibaba.fastjson.JSONObject;
 @RequestMapping(Constant.API_PATH_CLIENT + "account/")
 public class AccountAction extends BaseAction {
 	@Autowired
+	AccountService accountService;
+	@Autowired
 	UserService userService;
 	
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "list", method = RequestMethod.POST)
+	@Autowired
+	RegisterService registerService;
+	
+	@Autowired
+	MailService mailService;
+	
+	@AuthPassport(validate=false)
+	@RequestMapping(value = "login", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> login(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		String email = json.getString("email");
+		String password = json.getString("password");
+		boolean rememberMe = json.getBoolean("rememberMe") != null? json.getBoolean("rememberMe"): false;
+		
+		SysUser user = accountService.loginPers(email, password, rememberMe);
+		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));
+
+		if (user != null) {
+			ret.put("token", user.getToken());
+
+			UserVo vo = userService.genVo(user); 
+			ret.put("data", vo);
+			ret.put("code", RespCode.SUCCESS.getCode());
+		} else {
+			ret.put("code", RespCode.BIZ_FAIL.getCode());
+			ret.put("msg", "登录失败");
+		}
+
+		return ret;
+	}
+	
+	@AuthPassport(validate=true)
+	@RequestMapping(value = "logout", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> logout(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		long companyId = vo.getCompanyId();
+		if (vo == null) {
+			ret.put("code", RespCode.BIZ_FAIL.getCode());
+			ret.put("msg", "您不在登录状态");
+			return ret;
+		}
+		SysUser user = accountService.logoutPers(vo.getEmail());
 		
-		int currentPage = json.getInteger("currentPage") == null? 0: json.getInteger("currentPage") - 1;
-		int itemsPerPage = json.getInteger("itemsPerPage") == null? Constant.PAGE_SIZE: json.getInteger("itemsPerPage");
-		
-		Page page = userService.listByPage(companyId, currentPage, itemsPerPage);
-		List<UserVo> vos = userService.genVos(page.getItems());
-        
-		ret.put("totalItems", page.getTotal());
-        ret.put("data", vos);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-	
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "get", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject req) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		String accountId = req.getString("id");
-		
-		EvtClient client = (EvtClient) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
-		SysUser po = (SysUser) userService.get(SysUser.class, Long.valueOf(accountId));
-		UserVo vo = userService.genVo(po);
-        
-        ret.put("data", vo);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-	
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest request, @RequestBody UserVo vo) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		SysUser po = userService.save(vo);
-		
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-	
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "remove", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject to) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		boolean success = userService.remove(to.getLong("id"));
-		
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		if (user != null) {
+			request.getSession().removeAttribute(Constant.HTTP_SESSION_USER_KEY);
+			
+			ret.put("token", user.getToken());
+			ret.put("code", RespCode.SUCCESS.getCode());
+		} else {
+			ret.put("code", RespCode.BIZ_FAIL.getCode());
+			ret.put("msg", "登出失败");
+		}
+
 		return ret;
 	}
 
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "disable", method = RequestMethod.POST)
+	@AuthPassport(validate=false)
+	@RequestMapping(value = "register", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> disable(HttpServletRequest request, @RequestBody JSONObject to) {
+	public Map<String, Object> register(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		boolean success = userService.disablePers(to.getLong("id"));
-		
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+
+		String name = json.getString("name");
+		String phone = json.getString("phone");
+		String email = json.getString("email");
+		String password = json.getString("password");
+
+		SysUser user = accountService.registerPers(name, email, phone, password);
+		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));
+
+		if (user != null) {
+			ret.put("token", user.getToken());
+
+			UserVo vo = userService.genVo(user); 
+			ret.put("data", vo);
+			ret.put("code", RespCode.SUCCESS.getCode());
+		} else {
+			ret.put("code", RespCode.BIZ_FAIL.getCode());
+			ret.put("msg", "邮箱已存在");
+		}
+
 		return ret;
 	}
+
+	@AuthPassport(validate=false)
+	@RequestMapping(value = "forgotPassword", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> forgotPassword(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		String email = json.getString("email");
+		SysUser user = (SysUser) accountService.getByEmail(email);
+		if (user == null) {
+			ret.put("code", RespCode.BIZ_FAIL.getCode());
+			ret.put("msg", "用户不存在");
+		}
+		
+		SysVerifyCode verifyCode = accountService.forgotPasswordPers(user.getId());
+		if (verifyCode != null) {
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("name", user.getName());
+			map.put("vcode", verifyCode.getCode());
+			// map.put("url", Constant.WEB_ROOT + "admin-path");
+			map.put("url", PropertyConfig.getConfig("admin.url.forgot.password"));
+			mailService.sendTemplateMail("[聆客]忘记密码", "forgot-password.ftl", user.getEmail(), map);
+			
+			ret.put("data", verifyCode);
+			ret.put("code", RespCode.SUCCESS.getCode());
+		} else {
+			ret.put("code", RespCode.BIZ_FAIL.getCode());
+			ret.put("msg", "用户不存在");
+		}
+
+		return ret;
+	}
+
+	@AuthPassport(validate=false)
+	@RequestMapping(value = "resetPassword", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> resetPassword(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		String verifyCode = json.getString("vcode");
+		String password = json.getString("password");
+
+		SysUser user = accountService.resetPasswordPers(verifyCode, password);
+
+		if (user != null) {
+			request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));
+			
+			ret.put("token", user.getToken());
+
+			UserVo vo = new UserVo();
+			BeanUtilEx.copyProperties(vo, user);
+			ret.put("data", vo);
+			ret.put("code", RespCode.SUCCESS.getCode());
+		} else {
+			ret.put("code", RespCode.BIZ_FAIL.getCode());
+			ret.put("data", "重置密码失败");
+		}
+
+		return ret;
+	}
+
+	@RequestMapping(value = "getProfile", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> getProfile(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+		ret.put("data", vo);
+		ret.put("code", RespCode.SUCCESS.getCode());
+
+		return ret;
+	}
+
+	@RequestMapping(value = "saveProfile", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> saveProfile(HttpServletRequest request, @RequestBody UserVo vo) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		SysUser user = (SysUser) accountService.saveProfile(vo);
+		vo = userService.genVo(user);
+		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, vo);
+		
+		ret.put("data", vo);
+		ret.put("code", RespCode.SUCCESS.getCode());
+		return ret;
+	}
+	
+	@RequestMapping(value = "changePassword", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> changePassword(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		String oldPassword = json.getString("oldPassword");
+		String password = json.getString("password");
+		
+		boolean success = accountService.changePasswordPers(vo.getId(), oldPassword, password);
+		int code = success?RespCode.SUCCESS.getCode(): RespCode.BIZ_FAIL.getCode();
+		
+		ret.put("code", code);
+		return ret;
+	}
+		
 }

@@ -18,12 +18,12 @@ export class ProjectList implements OnInit, AfterViewInit {
   @ViewChild('#tree')tree :ElementRef;
 
   queryForm: FormGroup;
-  queryModel:any = {keywords: '', isActive: 'true'};
+  queryModel:any = {keywords: '', disabled: 'false'};
 
   models: any;
   maxLevel: number;
   counter = Array;
-  statusMap: Array<any> = CONSTANT.EntityActive;
+  statusMap: Array<any> = CONSTANT.EntityDisabled;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
               private _projectService:ProjectService) {
@@ -34,7 +34,7 @@ export class ProjectList implements OnInit, AfterViewInit {
 
     that.queryForm = that.fb.group(
       {
-        'isActive': [that.queryModel.isActive, []],
+        'disabled': [that.queryModel.disabled, []],
         'keywords': [that.queryModel.keywords, []]
       }, {}
     );
@@ -45,19 +45,17 @@ export class ProjectList implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     let that = this;
 
-    this.queryForm.controls['isActive'].valueChanges.debounceTime(500).subscribe(values => this.queryChange(values));
+    this.queryForm.valueChanges.debounceTime(500).subscribe(values => this.queryChange(values));
   }
 
-  create():void {
+  create(type: string):void {
     let that = this;
 
-    that._routeService.navTo("/pages/event/edit/null/property");
+    that._routeService.navTo('/pages/project/edit/' + type + '/null');
   }
 
   queryChange(values:any):void {
     let that = this;
-
-    that.queryModel.isActive = values;
 
     that.loadData();
   }
@@ -68,8 +66,6 @@ export class ProjectList implements OnInit, AfterViewInit {
 
   edit($event: any):void {
     let that = this;
-
-    console.log($event);
   }
   delete($event: any):void {
     let that = this;
@@ -79,12 +75,9 @@ export class ProjectList implements OnInit, AfterViewInit {
 
   loadData() {
     let that = this;
-    console.log(that.queryModel);
 
     that._projectService.list(that.queryModel).subscribe((json:any) => {
-
-      that.models = json.data.models;
-      that.maxLevel = json.data.maxLevel;
+      that.models = json.data;
     });
   }
 

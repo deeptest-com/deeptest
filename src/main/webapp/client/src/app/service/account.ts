@@ -12,16 +12,16 @@ export class AccountService {
   constructor(private _state:GlobalState, private _reqService:RequestService, private routeService: RouteService) {
   }
 
-  _login = 'user/login';
-  _logout = 'user/logout';
-  _register = 'user/register';
-  _changePassword = 'user/changePassword';
+  _login = 'account/login';
+  _logout = 'account/logout';
+  _register = 'account/register';
+  _changePassword = 'account/changePassword';
 
-  _forgotPassword = 'user/forgotPassword';
-  _resetPassword = 'user/resetPassword';
+  _forgotPassword = 'account/forgotPassword';
+  _resetPassword = 'account/resetPassword';
 
-  _getProfile = 'user/getProfile';
-  _saveProfile = 'user/saveProfile';
+  _getProfile = 'account/getProfile';
+  _saveProfile = 'account/saveProfile';
   _suggestions = 'suggestions/:id';
 
   _collections = 'collections/:id';

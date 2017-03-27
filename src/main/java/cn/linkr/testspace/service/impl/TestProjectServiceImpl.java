@@ -38,6 +38,7 @@ import cn.linkr.testspace.entity.SysCompany;
 import cn.linkr.testspace.entity.TestCase;
 import cn.linkr.testspace.entity.TestProject;
 import cn.linkr.testspace.entity.EvtEvent.EventStatus;
+import cn.linkr.testspace.entity.TestProject.ProjectType;
 import cn.linkr.testspace.service.GuestService;
 import cn.linkr.testspace.service.TestCaseService;
 import cn.linkr.testspace.service.TestProjectService;
@@ -56,151 +57,174 @@ import cn.linkr.testspace.vo.UserVo;
 @Service
 public class TestProjectServiceImpl extends BaseServiceImpl implements
 		TestProjectService {
-	
-	private static final Log log = LogFactory.getLog(TestProjectServiceImpl.class);
+
+	private static final Log log = LogFactory
+			.getLog(TestProjectServiceImpl.class);
 
 	@Autowired
 	private ProjectDao projectDao;
-	
-	@Override
-//	@Cacheable(value="companyProjects",key="#companyId.toString().concat('_').concat(#isActive)")
-	public Map<String, Object> listCache(Long companyId, String isActive) {
-		CacheManager manager = CacheManager.create();
-		net.sf.ehcache.Cache cache = manager.getCache("companyProjects");
-		String key = companyId + "_" + isActive;
-		Element el = null;
-//        if(cache.isKeyInCache(key)){
-//        	el = cache.get(key);
-//            return (Map<String, Object>)el.getObjectValue();
-//        }
-        
-		DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
 
-		if (StringUtil.isNotEmpty(isActive)) {
-			dc.add(Restrictions.eq("isActive", Boolean.valueOf(isActive)));
+	@Override
+	// @Cacheable(value="companyProjects",key="#companyId.toString().concat('_').concat(#disabled)")
+	public List<TestProjectVo> list(Long companyId, String keywords, String disabled) {
+		// CacheManager manager = CacheManager.create();
+		// net.sf.ehcache.Cache cache = manager.getCache("companyProjects");
+		// String key = companyId + "_" + disabled;
+		// Element el = null;
+		// if(cache.isKeyInCache(key)){
+		// el = cache.get(key);
+		// return (Map<String, Object>)el.getObjectValue();
+		// }
+
+		DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
+		
+		if (StringUtil.isNotEmpty(disabled)) {
+			dc.add(Restrictions.eq("disabled", Boolean.valueOf(disabled)));
 		}
 
+		dc.add(Restrictions.eq("type", ProjectType.group));
 		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-		dc.addOrder(Order.asc("path"));
 		dc.addOrder(Order.asc("id"));
 		List<TestProject> pos = findAllByCriteria(dc);
-		
-		Map<String, Integer> out = new HashMap<String, Integer>();
-		LinkedList<TestProjectVo> vos = this.genVos(pos, out);
 
-		Map<String, Object> ret = new HashMap<String, Object>();
-		ret.put("models", vos);
-		ret.put("maxLevel", out.get("maxLevel"));
+		List<TestProjectVo> vos = this.genVos(pos, keywords, disabled);
+
+		// el = new Element(key, ret);
+		// cache.put(el);
+		return vos;
+	}
+	
+	@Override
+	public List<TestProjectVo> listGroups(Long companyId) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
+
+		dc.add(Restrictions.eq("type", ProjectType.group));
+		dc.add(Restrictions.eq("disabled", false));
 		
-		el = new Element(key, ret);
-        cache.put(el);
-		return ret;
+		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+		dc.addOrder(Order.asc("id"));
+		List<TestProject> pos = findAllByCriteria(dc);
+
+		List<TestProjectVo> vos = this.genGroupVos(pos);
+
+		return vos;
 	}
 
 	@Override
-    public TestProject getDetail(Long id) {
-    	TestProject po = (TestProject) get(TestProject.class, id);
-		
+	public TestProject getDetail(Long id) {
+		if (id == null) {
+			return null;
+		}
+		TestProject po = (TestProject) get(TestProject.class, id);
+
 		return po;
-    }
-	
+	}
+
 	@Override
 	public TestProject save(TestProjectVo vo, UserVo user) {
 		if (vo == null) {
 			return null;
 		}
-		
+
+		boolean isNew = vo.getId() == null;
 		TestProject po = new TestProject();
-		if (vo.getId() != null) {
+		if (!isNew) {
 			po = (TestProject) get(TestProject.class, vo.getId());
+		} else {
+			po.setCompanyId(user.getCompanyId());
 		}
-		
+		po.setParentId(vo.getParentId());
 		po.setName(vo.getName());
 		po.setDescr(vo.getDescr());
-		
+		po.setType(ProjectType.getEnum(vo.getType()));
+		po.setDisabled(vo.getDisabled());
+
 		saveOrUpdate(po);
 		
-		if (vo.getParentId() != po.getParentId()) {
-			getDao().moveNode("tst_project", po.getId(), vo.getParentId());
+		// 项目被启用
+		TestProject parent = po.getParent();
+		if (parent != null && po.getType().equals(ProjectType.project) && !po.getDisabled() && parent.getDisabled()) { 
+			parent.setDisabled(false);
+			saveOrUpdate(parent);
 		}
 		
-		if (vo.getIsActive() != po.getIsActive()) {
-			getDao().updateNode("tst_project", po.getId(), "is_active", vo.getIsActive().toString());
+		// 项目组被禁用
+		if (po.getType().equals(ProjectType.group) && po.getDisabled()) {
+			for (TestProject child : po.getChildren()) {
+				child.setDisabled(true);
+				saveOrUpdate(child);
+			}
+			
 		}
-		
-		this.removeCache(user.getCompanyId());
-		
+
+		// this.removeCache(user.getCompanyId());
+
 		return po;
 	}
-	
+
 	@Override
 	public Boolean delete(Long id, Long userId) {
 		if (id == null) {
 			return null;
 		}
-		
+
 		TestProject po = (TestProject) get(TestProject.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
-		
+
 		getDao().updateNode("tst_project", po.getId(), "deleted", "true");
-		
+
 		return true;
 	}
-	
+
+	// @Override
+	// public void removeCache(Long companyId) {
+	// CacheManager manager = CacheManager.create();
+	// net.sf.ehcache.Cache cache = manager.getCache("companyProjects");
+	// String prefix = companyId + "_";
+	// if(cache.isKeyInCache(prefix + "true")){
+	// cache.remove(prefix + "true");
+	// }
+	// if(cache.isKeyInCache(prefix)){
+	// cache.remove(prefix);
+	// }
+	// }
+
 	@Override
-	public void removeCache(Long companyId) {
-		CacheManager manager = CacheManager.create();
-        net.sf.ehcache.Cache cache = manager.getCache("companyProjects");
-        String prefix = companyId + "_";
-        if(cache.isKeyInCache(prefix + "true")){
-            cache.remove(prefix + "true");
-        }
-        if(cache.isKeyInCache(prefix)){
-            cache.remove(prefix);
-        }
-	}
-	
-	@Override
-	public LinkedList<TestProjectVo> genVos(List<TestProject> pos, Map<String, Integer> ret) {
-		TestProjectVo root = null;
-		int maxLevel = 0;
-		
-		Map<Long, TestProjectVo> nodeMap = new HashMap<Long, TestProjectVo>();
-	      for (TestProject po : pos) {
-	        	Long id = po.getId();
-	        	TreeNodeType type = po.getType();
-	        	Long pid = po.getParentId();
-	        	
-	        	TestProjectVo newNode = genVo(po);
-	        	
-	        	nodeMap.put(id, newNode);
-	        	
-	        	if (type.equals(Constant.TreeNodeType.root)) {
-	        		root = newNode;
-	        		continue;
-	        	}
-	        	
-	        	TestProjectVo pvo = nodeMap.get(pid);
-	        	LinkedList<TestProjectVo> children = pvo.getChildren();
-	        	children.add(newNode);
-	        	
-	        	if (po.getLevel() > maxLevel) {
-					maxLevel = po.getLevel();
+	public List<TestProjectVo> genVos(List<TestProject> pos, String keywords, String disabled) {
+		List<TestProjectVo> voList = new LinkedList<TestProjectVo>();
+		for (TestProject po : pos) {
+			TestProjectVo vo = genVo(po);
+			voList.add(vo);
+			
+			List<TestProject> children = po.getChildren();
+			for (TestProject child : children) {
+				if ( (StringUtil.IsEmpty(keywords) || child.getName().toLowerCase().indexOf(keywords.toLowerCase()) > -1) 
+						&& ( StringUtil.IsEmpty(disabled) || child.getDisabled() == Boolean.valueOf(disabled)) ) {
+					TestProjectVo childVo = genVo(child);
+					voList.add(childVo);
 				}
-	        }
-	        
-	      LinkedList<TestProjectVo> voList = new LinkedList<TestProjectVo>();
-	      this.toOrderList(root, voList);
-	      this.removeChildren(voList);
+			}
+		}
 		
-        ret.put("maxLevel", maxLevel);
-        return voList;
+		return voList;
+	}
+	@Override
+	public List<TestProjectVo> genGroupVos(List<TestProject> pos) {
+		List<TestProjectVo> voList = new LinkedList<TestProjectVo>();
+		for (TestProject po : pos) {
+				TestProjectVo vo = genVo(po);
+				voList.add(vo);
+		}
+		
+		return voList;
 	}
 
 	@Override
 	public TestProjectVo genVo(TestProject po) {
+		if (po == null) {
+			return null;
+		}
 		TestProjectVo vo = new TestProjectVo();
 		BeanUtilEx.copyProperties(vo, po);
 		if (po.getParentId() == null) {
@@ -209,39 +233,4 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		return vo;
 	}
 
-	@Override
-	public void toOrderList(TestProjectVo root, LinkedList<TestProjectVo> resultList) {
-		resultList.add(root);
-		
-		Iterator<TestProjectVo> it = root.getChildren().iterator();
-		while (it.hasNext()) {
-			TestProjectVo vo = it.next();
-        	this.toOrderList(vo, resultList);
-		}
-	}
-	
-	@Override
-	public void removeChildren(LinkedList<TestProjectVo> resultList) {
-		Iterator<TestProjectVo> it = resultList.iterator();
-		while (it.hasNext()) {
-			TestProjectVo vo = it.next();
-			vo.setChildren(null);
-		}
-	}
-
-	@Override
-	public LinkedList<TestProjectVo> removeChildren(LinkedList<TestProjectVo> linkedList, TestProjectVo curr) {
-		LinkedList<TestProjectVo> ret = new LinkedList<TestProjectVo>();
-		
-		Iterator<TestProjectVo> it = linkedList.iterator();
-		
-		while (it.hasNext()) {
-			TestProjectVo vo = it.next();
-			if (curr.getId() != vo.getId() && vo.getPath().indexOf("/" + curr.getId() + "/") == -1) {
-				ret.add(vo);
-			}
-		}
-		
-		return ret;
-	}
 }

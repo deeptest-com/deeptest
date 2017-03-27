@@ -16,12 +16,12 @@ import {GroupService} from "../../../../service/group";
 export class GroupList implements OnInit, AfterViewInit {
 
   queryForm: FormGroup;
-  queryModel:any = {keywords: '', isActive: 'true'};
+  queryModel:any = {keywords: '', disabled: 'false'};
 
   models: any;
   maxLevel: number;
   counter = Array;
-  statusMap: Array<any> = CONSTANT.EntityActive;
+  statusMap: Array<any> = CONSTANT.EntityDisabled;
 
   tableData = [
     {
@@ -57,7 +57,7 @@ export class GroupList implements OnInit, AfterViewInit {
 
     that.queryForm = that.fb.group(
       {
-        'isActive': [that.queryModel.isActive, []],
+        'disabled': [that.queryModel.disabled, []],
         'keywords': [that.queryModel.keywords, []]
       }, {}
     );
@@ -68,7 +68,7 @@ export class GroupList implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     let that = this;
 
-    this.queryForm.controls['isActive'].valueChanges.debounceTime(500).subscribe(values => this.queryChange(values));
+    this.queryForm.controls['disabled'].valueChanges.debounceTime(500).subscribe(values => this.queryChange(values));
   }
 
   create():void {
@@ -80,7 +80,7 @@ export class GroupList implements OnInit, AfterViewInit {
   queryChange(values:any):void {
     let that = this;
 
-    that.queryModel.isActive = values;
+    that.queryModel.disabled = values;
 
     that.loadData();
   }

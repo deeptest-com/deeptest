@@ -7,9 +7,9 @@
 
       <div class="filter">
         <form [formGroup]="queryForm" class="form-inline">
-          <label for="isActive">状态</label>
-          <select [(ngModel)]="queryModel.isActive" formControlName="isActive"
-                  class="form-control form-control-sm" id="isActive" name="isActive">
+          <label for="disabled">状态</label>
+          <select [(ngModel)]="queryModel.disabled" formControlName="disabled"
+                  class="form-control form-control-sm" id="disabled" name="disabled">
             <option *ngFor="let entry of (statusMap | mapKeys)" value="{{entry.key}}">{{entry.value}}</option>
           </select>
           &nbsp;&nbsp;&nbsp;
@@ -36,23 +36,22 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let item of tableData">
-        <td>{{ item.username }}</td>
+      <tr *ngFor="let item of models">
+        <td>{{ item.name }}</td>
         <td>活动</td>
         <td>
-          <span [routerLink]="['/pages/admin/user/edit']" class="link no-underline">编辑</span>
-                  <span dropdown class="link no-underline">
-                    <span href id="user-dropdown" dropdownToggle>
-                      {{roleData[0].name}}
-                    </span>
-                    <ul class="dropdown-menu" dropdownMenu aria-labelledby="user-dropdown">
-                        <span *ngFor="let item of roleData" (click)="changeRole(item.id)" class="dropdown-item">
-                          {{item.name}}</span>
-                    </ul>
-                  </span>
+          <span [routerLink]="['/pages/admin/user/edit', item.id]" class="link no-underline">编辑</span>
         </td>
       </tr>
       </tbody>
     </table>
+    <div class="page-container">
+      <pagination [totalItems]="totalItems" [(ngModel)]="currentPage"
+                  [maxSize]="maxSize" [itemsPerPage]="itemsPerPage" class="pagination-sm"
+                  [boundaryLinks]="true" [rotate]="false"
+                  (numPages)="numPages = $event" (pageChanged)="pageChanged($event)"
+                  previousText="上一页" nextText="下一页" firstText="第一页" lastText="最后页">
+      </pagination>
+    </div>
   </div>
 </div>

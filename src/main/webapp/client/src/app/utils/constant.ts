@@ -14,7 +14,7 @@ export var CONSTANT: any = {
     PROFILE_KEY: 'cn.linkr.events.profile',
     PROFILE_EXPIRE: 'cn.linkr.events.expire',
 
-    EntityActive: [{'true': '活动'}, {'': '所有'}],
+    EntityDisabled: [{'false': '启用'}, {'true': '禁用'}, {'': '所有'}],
 
     ScreenSize: {h: 0, w: 0}
 };

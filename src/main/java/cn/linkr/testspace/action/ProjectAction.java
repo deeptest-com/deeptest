@@ -65,16 +65,17 @@ public class ProjectAction extends BaseAction {
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		String isActive = json.getString("isActive");
+		String keywords = json.getString("keywords");
+		String disabled = json.getString("disabled");
 		
 		Long t1 = new Date().getTime();
 
-		Map<String, Object> out = projectService.listCache(userVo.getCompanyId(), isActive);
+		List<TestProjectVo> vos = projectService.list(userVo.getCompanyId(), keywords, disabled);
 		
 		Long t2 = new Date().getTime();
 		log.debug("获取项目信息花了" + (t1 - t2) + "毫秒");
 		
-        ret.put("data", out);
+        ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		
 		return ret;
@@ -92,11 +93,10 @@ public class ProjectAction extends BaseAction {
 		TestProject project = projectService.getDetail(id);
 		TestProjectVo vo = projectService.genVo(project);
 		
-		Map<String, Object> out = projectService.listCache(userVo.getCompanyId(), "true");
-		LinkedList<TestProjectVo> vos = projectService.removeChildren((LinkedList<TestProjectVo>)out.get("models"), vo);
+		List<TestProjectVo> vos = projectService.listGroups(userVo.getCompanyId());
         
         ret.put("data", vo);
-        ret.put("projects", vos);
+        ret.put("groups", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

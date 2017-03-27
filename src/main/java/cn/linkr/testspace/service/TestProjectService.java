@@ -17,22 +17,20 @@ import cn.linkr.testspace.vo.UserVo;
 
 public interface TestProjectService extends BaseService {
 
-	LinkedList<TestProjectVo> genVos(List<TestProject> pos, Map<String, Integer> ret);
+	List<TestProjectVo> list(Long companyId, String keywords, String disabled);
+	List<TestProjectVo> listGroups(Long companyId);
 	
-	Boolean delete(Long id, Long userId);
-	TestProject save(TestProjectVo vo, UserVo user);
-
 	TestProject getDetail(Long id);
 
-	void toOrderList(TestProjectVo root, LinkedList<TestProjectVo> resultList);
-
-	Map<String, Object> listCache(Long companyId, String isActive);
+	TestProject save(TestProjectVo vo, UserVo user);
+	Boolean delete(Long id, Long userId);
+	
 	TestProjectVo genVo(TestProject po);
-
-	void removeChildren(LinkedList<TestProjectVo> resultList);
-
-	LinkedList<TestProjectVo> removeChildren(LinkedList<TestProjectVo> linkedList, TestProjectVo vo);
-
-	void removeCache(Long companyId);
+	List<TestProjectVo> genVos(List<TestProject> pos, String keywords, String disabled);
+	List<TestProjectVo> genGroupVos(List<TestProject> pos);
+	
+//	void removeCache(Long companyId);
+	
+	
 	
 }

@@ -1,14 +1,14 @@
 <table *ngIf="models" class="table table-bordered table-striped table-tree">
   <thead class="thead-inverse">
   <tr>
-    <th scope="row" [colSpan]="maxLevel">名称</th>
+    <th scope="row" [colSpan]="2">名称</th>
     <th>状态</th>
     <th>操作</th>
   </tr>
   </thead>
   <tbody>
     <ng-container *ngFor="let model of models">
-      <tr table-row *ngIf="model.type != 'root'" [model]="model" [maxLevel]="maxLevel" [class.hidden]="isHidden(model)"></tr>
+      <tr table-row *ngIf="model.type != 'root'" [model]="model"></tr>
     </ng-container>
   </tbody>
 </table>

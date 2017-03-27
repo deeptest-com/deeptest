@@ -16,37 +16,13 @@ import {UserService} from "../../../../service/user";
 export class UserList implements OnInit, AfterViewInit {
 
   queryForm: FormGroup;
-  queryModel:any = {keywords: '', isActive: 'true'};
+  queryModel:any = {keywords: '', disabled: 'false'};
+  statusMap: Array<any> = CONSTANT.EntityDisabled;
 
   models: any;
-  maxLevel: number;
-  counter = Array;
-  statusMap: Array<any> = CONSTANT.EntityActive;
-
-  tableData = [
-    {
-      username: '@mdo',
-      status: 'info'
-    },
-    {
-      username: '@fat',
-      status: 'primary'
-    },
-    {
-      username: '@twitter',
-      status: 'success'
-    }
-  ];
-  roleData = [
-    {
-      id: 1,
-      name: '主管'
-    },
-    {
-      id: 2,
-      name: '工程师'
-    }
-  ];
+  totalItems:number = 0;
+  currentPage:number = 1;
+  itemsPerPage:number = 6;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
               private userService:UserService) {
@@ -57,30 +33,30 @@ export class UserList implements OnInit, AfterViewInit {
 
     that.queryForm = that.fb.group(
       {
-        'isActive': [that.queryModel.isActive, []],
+        'disabled': [that.queryModel.disabled, []],
         'keywords': [that.queryModel.keywords, []]
       }, {}
     );
 
-    // that.loadData();
+    that.loadData();
   }
 
   ngAfterViewInit() {
     let that = this;
 
-    this.queryForm.controls['isActive'].valueChanges.debounceTime(500).subscribe(values => this.queryChange(values));
+    this.queryForm.valueChanges.debounceTime(500).subscribe(values => this.queryChange(values));
   }
 
   create():void {
     let that = this;
 
-    that._routeService.navTo("/pages/event/edit/null/property");
+    that._routeService.navTo("/pages/user/edit/null");
   }
 
   queryChange(values:any):void {
     let that = this;
 
-    that.queryModel.isActive = values;
+    // that.queryModel = values;
 
     that.loadData();
   }
@@ -99,19 +75,13 @@ export class UserList implements OnInit, AfterViewInit {
 
     console.log($event);
   }
-  changeRole(id: number):void {
-    let that = this;
-
-    console.log('===', id);
-  }
 
   loadData() {
     let that = this;
-    console.log(that.queryModel);
 
     that.userService.list(that.queryModel).subscribe((json:any) => {
-      that.models = json.data.models;
-      that.maxLevel = json.data.maxLevel;
+      that.totalItems = json.totalItems;
+      that.models = json.data;
     });
   }
 

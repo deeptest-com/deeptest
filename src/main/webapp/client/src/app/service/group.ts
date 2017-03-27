@@ -17,8 +17,8 @@ export class GroupService {
   _save = 'group/save';
 
 
-  list() {
-    return this._reqService.post(this._list, {});
+  list(query: any) {
+    return this._reqService.post(this._list, query);
   }
 
   get(profile:any) {

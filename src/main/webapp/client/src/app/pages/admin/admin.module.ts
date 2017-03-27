@@ -4,7 +4,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NgaModule } from '../../theme/nga.module';
 
 import { routing }       from './admin.routing';
-
 import { CollapseModule } from 'ng2-bootstrap';
 import { ModalModule } from 'ng2-bootstrap';
 import { ButtonsModule } from 'ng2-bootstrap';

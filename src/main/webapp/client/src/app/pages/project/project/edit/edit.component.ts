@@ -21,39 +21,46 @@ declare var jQuery;
   template: require('./edit.html')
 })
 export class ProjectEdit implements OnInit, AfterViewInit {
+  type: string;
   id: number;
   model: any = {};
-  projects: any[] = [];
+  groups: any[] = [];
   form: any;
   isSubmitted: boolean;
   @ViewChild('modal') modal: ModalDirective;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
               private fb: FormBuilder, private _projectService: ProjectService) {
-
-  }
-  ngOnInit() {
     let that = this;
 
     that._route.params.forEach((params: Params) => {
+      that.type = params['type'];
       that.id = +params['id'];
     });
 
-    if (that.id) {
-      that.loadData();
-    }
+    that.loadData();
+
     that.buildForm();
+  }
+  ngOnInit() {
+
   }
   ngAfterViewInit() {}
 
   buildForm(): void {
     let that = this;
+
+    let parentValidate = [];
+    if (that.type === 'project') {
+      parentValidate = [Validators.required];
+    }
     this.form = this.fb.group(
       {
         'name': [that.model.name, [Validators.required]],
         'descr': [that.model.descr, []],
-        'parentId': [that.model.parentId, [Validators.required]],
-        'isActive': [that.model.isActive]
+        'parentId': [that.model.parentId, parentValidate],
+        'disabled': [that.model.disabled],
+
       }, {}
     );
 
@@ -77,16 +84,10 @@ export class ProjectEdit implements OnInit, AfterViewInit {
 
   loadData() {
     let that = this;
+
     that._projectService.get(that.id).subscribe((json:any) => {
-      that.model = json.data;
-      that.projects = json.projects;
-      that.projects = json.projects.map(function(project) {
-        let name = project.name;
-        if (project.level > 0) {
-          name = String.fromCharCode(160).repeat((project.level) * 5) + project.name;
-        }
-        return {id: project.id, name: name};
-      });
+      that.groups = json.groups;
+      that.model = !!json.data? json.data: {type: that.type, disabled: false};
     });
   }
 

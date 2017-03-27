@@ -7,10 +7,10 @@
 
       <div class="filter">
         <form [formGroup]="queryForm" class="form-inline">
-          <label for="isActive">状态</label>
-          <select [(ngModel)]="queryModel.isActive" formControlName="isActive"
-                  class="form-control form-control-sm" id="isActive" name="isActive">
-            <option *ngFor="let entry of (statusMap | mapKeys)" value="{{entry.key}}">{{entry.value}}</option>
+          <label for="disabled">状态</label>
+          <select [(ngModel)]="queryModel.disabled" formControlName="disabled"
+                  class="form-control form-control-sm" id="disabled" name="disabled">
+            <option *ngFor="let entry of (statusMap | mapKeys:'true')" value="{{entry.key}}">{{entry.value}}</option>
           </select>
           &nbsp;&nbsp;&nbsp;
           <label for="keywords">关键字</label>
@@ -20,8 +20,11 @@
       </div>
 
       <div class="buttons">
-        <button (click)="create()" type="button" class="btn btn-primary btn-with-icon btn-sm">
-          <i class="ion-plus-circled"></i>新建
+        <button (click)="create('group')" type="button" class="btn btn-primary btn-with-icon btn-sm">
+          <i class="ion-plus-circled"></i>新建项目组
+        </button>
+        <button (click)="create('project')" type="button" class="btn btn-primary btn-with-icon btn-sm">
+          <i class="ion-plus-circled"></i>新建项目
         </button>
       </div>
     </div>

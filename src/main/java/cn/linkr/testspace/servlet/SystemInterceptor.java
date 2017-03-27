@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import cn.linkr.testspace.entity.EvtClient;
 import cn.linkr.testspace.entity.SysUser;
+import cn.linkr.testspace.service.AccountService;
 import cn.linkr.testspace.service.UserService;
 import cn.linkr.testspace.util.AuthPassport;
 import cn.linkr.testspace.util.Constant;
@@ -59,8 +60,9 @@ public class SystemInterceptor implements HandlerInterceptor {
 			if (packageName.startsWith(Constant.API_PACKAGE_FOR_CLIENT)) {
 				if (StringUtils.isNotBlank(token)) {
 					// 登录验证
+					AccountService accountService = SpringContextHolder.getBean(AccountService.class);
 					UserService userService = SpringContextHolder.getBean(UserService.class);
-					SysUser user = userService.getByToken(token.trim());
+					SysUser user = accountService.getByToken(token.trim());
 					
 					if (user != null) {
 						request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));

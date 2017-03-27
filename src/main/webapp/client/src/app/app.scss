@@ -69,13 +69,14 @@ main {
     flex: 1;
   }
   .buttons {
-    width: 200px;
+    width: 300px;
     text-align: right;
     button {
-      margin-left: 50px;
+      margin-left: 10px;
     }
   }
 }
+
 .edit-toolbar {
   display: flex;
   margin: 0 0 20px 0;

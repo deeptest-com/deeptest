@@ -1,5 +1,8 @@
 package cn.linkr.testspace.entity;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -7,9 +10,12 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import cn.linkr.testspace.entity.EvtEvent.EventStatus;
 import cn.linkr.testspace.util.Constant.TreeNodeType;
 
 @Entity
@@ -21,13 +27,10 @@ public class TestProject extends BaseEntity {
 	@Column(name = "descr", length = 1000)
     private String descr;
 	
-	private Boolean isActive;
 	@Enumerated(EnumType.STRING)
-	private TreeNodeType type;
-	private String path;
-	@Transient
-	private Integer level;
-	private Integer orderInParent;
+	private ProjectType type;
+
+	private Integer ord;
 	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", insertable = false, updatable = false)
@@ -43,9 +46,34 @@ public class TestProject extends BaseEntity {
     @Column(name = "company_id")
     private Long companyId;
     
-	public Integer getLevel() {
-		return getPath().split("/").length - 1;
-	}
+    @OneToMany(mappedBy="parent") 
+    @OrderBy("id")
+    private List<TestProject> children = new LinkedList<TestProject>();
+    
+    public static enum ProjectType {
+        group("group"),
+        project("project");
+
+        private ProjectType(String textVal) {
+            this.textVal = textVal;
+        }
+
+        private String textVal;
+        
+        public static ProjectType getEnum(String str) {
+        	ProjectType type = null;
+        	switch(str) { 
+            	case "group": type = ProjectType.group; break;
+            	case "project": type = ProjectType.project; break;
+            }
+        	
+        	return type;
+        }
+
+        public String toString() {
+            return textVal;
+        }
+    }
 
 	public String getName() {
 		return name;
@@ -79,14 +107,6 @@ public class TestProject extends BaseEntity {
 		this.companyId = companyId;
 	}
 
-	public Boolean getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
-	}
-
 	public TestProject getParent() {
 		return parent;
 	}
@@ -103,28 +123,28 @@ public class TestProject extends BaseEntity {
 		this.parentId = parentId;
 	}
 
-	public String getPath() {
-		return path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
-
-	public TreeNodeType getType() {
+	public ProjectType getType() {
 		return type;
 	}
 
-	public void setType(TreeNodeType type) {
+	public void setType(ProjectType type) {
 		this.type = type;
 	}
 
-	public Integer getOrderInParent() {
-		return orderInParent;
+	public List<TestProject> getChildren() {
+		return children;
 	}
 
-	public void setOrderInParent(Integer orderInParent) {
-		this.orderInParent = orderInParent;
+	public void setChildren(List<TestProject> children) {
+		this.children = children;
+	}
+
+	public Integer getOrd() {
+		return ord;
+	}
+
+	public void setOrd(Integer ord) {
+		this.ord = ord;
 	}
     
 }

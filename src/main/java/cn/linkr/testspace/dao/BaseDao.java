@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 
 import cn.linkr.testspace.entity.TestProject;
@@ -244,4 +245,7 @@ public interface BaseDao {
 
 	Integer updateNode(String nodeTable, Long nodeId, String statusName,
 			String statusValue);
+
+	Session getSession();
+
 }

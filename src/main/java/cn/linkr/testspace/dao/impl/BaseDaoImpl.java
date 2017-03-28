@@ -425,6 +425,7 @@ public class BaseDaoImpl implements BaseDao {
     /**
      * @return session
      */
+    @Override
     public Session getSession() {
         //需要开启事物，才能得到CurrentSession
         return sessionFactory.getCurrentSession();

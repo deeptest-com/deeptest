@@ -13,13 +13,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import cn.linkr.testspace.entity.EvtEvent.EventStatus;
-import cn.linkr.testspace.util.Constant.TreeNodeType;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 
 @Entity
 @Table(name = "tst_project")
+@FilterDef(name="filter_disabled", 
+	parameters={@ParamDef( name="isDeleted", type="boolean" ) })
 public class TestProject extends BaseEntity {
 	private static final long serialVersionUID = 7813647435255173689L;
 	private String name;
@@ -46,8 +48,9 @@ public class TestProject extends BaseEntity {
     @Column(name = "company_id")
     private Long companyId;
     
-    @OneToMany(mappedBy="parent") 
+    @OneToMany(mappedBy="parent", fetch = FetchType.LAZY) 
     @OrderBy("id")
+    @Filter(name="filter_disabled", condition="deleted = :isDeleted ")
     private List<TestProject> children = new LinkedList<TestProject>();
     
     public static enum ProjectType {

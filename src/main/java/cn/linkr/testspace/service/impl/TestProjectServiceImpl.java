@@ -18,6 +18,9 @@ import net.sf.ehcache.management.Cache;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.FetchMode;
+import org.hibernate.Filter;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -85,7 +88,14 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		dc.add(Restrictions.eq("type", ProjectType.group));
 		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 		dc.addOrder(Order.asc("id"));
+		
+		dc.setFetchMode("children", FetchMode.JOIN);
+		dc.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY); 
+		
+		Filter filter = getDao().getSession().enableFilter("filter_disabled");
+		filter.setParameter("isDeleted", Boolean.valueOf(false));
 		List<TestProject> pos = findAllByCriteria(dc);
+		getDao().getSession().disableFilter("filter_disabled");
 
 		List<TestProjectVo> vos = this.genVos(pos, keywords, disabled);
 
@@ -103,6 +113,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		
 		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 		dc.addOrder(Order.asc("id"));
+		
 		List<TestProject> pos = findAllByCriteria(dc);
 
 		List<TestProjectVo> vos = this.genGroupVos(pos);
@@ -141,14 +152,14 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 
 		saveOrUpdate(po);
 		
-		// 项目被启用
+		// 项目被启用，启用父项目
 		TestProject parent = po.getParent();
 		if (parent != null && po.getType().equals(ProjectType.project) && !po.getDisabled() && parent.getDisabled()) { 
 			parent.setDisabled(false);
 			saveOrUpdate(parent);
 		}
 		
-		// 项目组被禁用
+		// 项目组被禁用，禁用子项目
 		if (po.getType().equals(ProjectType.group) && po.getDisabled()) {
 			for (TestProject child : po.getChildren()) {
 				child.setDisabled(true);
@@ -171,8 +182,15 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		TestProject po = (TestProject) get(TestProject.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
-
-		getDao().updateNode("tst_project", po.getId(), "deleted", "true");
+		
+		// 项目组被删除，删除子项目
+		if (po.getType().equals(ProjectType.group)) {
+			for (TestProject child : po.getChildren()) {
+				child.setDeleted(true);
+				saveOrUpdate(child);
+			}
+			
+		}
 
 		return true;
 	}

@@ -32,9 +32,10 @@
         </div>
 
         <div *ngIf="model.type=='project'" class="form-group row">
-          <label class="col-sm-2 col-form-label">父级项目</label>
+          <label class="col-sm-2 col-form-label">项目组</label>
           <div class="col-sm-10">
             <select [(ngModel)]="model.parentId" formControlName="parentId" class="form-control" name="parentId">
+                <option value=""></option>
                 <option *ngFor="let entry of groups" value="{{entry.id}}">
                   <span>{{entry.name}}</span>
                 </option>
@@ -47,7 +48,7 @@
               <label class="form-check-label">
                 <input type="checkbox" class="form-check-input" name="disabled" formControlName="disabled"
                        [(ngModel)]="model.disabled" #disabled>
-                &nbsp;&nbsp;是否禁用
+                &nbsp;&nbsp;归档
               </label>
             </div>
           </div>

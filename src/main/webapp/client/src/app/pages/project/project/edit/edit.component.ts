@@ -78,7 +78,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
       'required':      '姓名不能为空'
     },
     'parentId': {
-      'required':      '父级项目不能为空'
+      'required':      '项目组不能为空'
     }
   };
 

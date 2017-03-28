@@ -144,6 +144,9 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		} else {
 			po.setCompanyId(user.getCompanyId());
 		}
+		
+		boolean disableChanged = vo.getDisabled() != po.getDisabled();
+		
 		po.setParentId(vo.getParentId());
 		po.setName(vo.getName());
 		po.setDescr(vo.getDescr());
@@ -152,20 +155,38 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 
 		saveOrUpdate(po);
 		
-		// 项目被启用，启用父项目
-		TestProject parent = po.getParent();
-		if (parent != null && po.getType().equals(ProjectType.project) && !po.getDisabled() && parent.getDisabled()) { 
-			parent.setDisabled(false);
-			saveOrUpdate(parent);
+		if (!disableChanged) {
+			return po;
 		}
 		
-		// 项目组被禁用，禁用子项目
-		if (po.getType().equals(ProjectType.group) && po.getDisabled()) {
-			for (TestProject child : po.getChildren()) {
-				child.setDisabled(true);
-				saveOrUpdate(child);
+		// 项目被启用
+		if (!po.getDisabled()) {
+			if (po.getType().equals(ProjectType.project)) {
+				// 启用父
+				TestProject parent = po.getParent();
+				if (parent.getDisabled()) {
+					parent.setDisabled(false);
+					saveOrUpdate(parent);
+				}
+			} else {
+				// 启用子
+				for (TestProject child : po.getChildren()) {
+					if (child.getDisabled()) {
+						child.setDisabled(false);
+						saveOrUpdate(child);
+					}
+				}
 			}
-			
+		}
+		
+		// 项目组被归档，归档子项目
+		if (po.getDisabled() && po.getType().equals(ProjectType.group)) {
+			for (TestProject child : po.getChildren()) {
+				if (!child.getDisabled()) {
+					child.setDisabled(true);
+					saveOrUpdate(child);
+				}
+			}
 		}
 
 		// this.removeCache(user.getCompanyId());

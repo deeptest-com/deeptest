@@ -14,21 +14,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ngtesting.platform.entity.EvtClient;
-import com.ngtesting.platform.entity.SysUser;
-import com.ngtesting.platform.service.UserService;
+import com.ngtesting.platform.entity.SysGroup;
+import com.ngtesting.platform.service.GroupService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.vo.Page;
+import com.ngtesting.platform.vo.GroupVo;
 import com.ngtesting.platform.vo.UserVo;
-
 import com.alibaba.fastjson.JSONObject;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "user/")
-public class UserAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_CLIENT + "group/")
+public class GroupAction extends BaseAction {
 	@Autowired
-	UserService userService;
+	GroupService groupService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
@@ -44,8 +44,8 @@ public class UserAction extends BaseAction {
 		int currentPage = json.getInteger("currentPage") == null? 0: json.getInteger("currentPage") - 1;
 		int itemsPerPage = json.getInteger("itemsPerPage") == null? Constant.PAGE_SIZE: json.getInteger("itemsPerPage");
 		
-		Page page = userService.listByPage(companyId, keywords, disabled, currentPage, itemsPerPage);
-		List<UserVo> vos = userService.genVos(page.getItems());
+		Page page = groupService.listByPage(companyId, keywords, disabled, currentPage, itemsPerPage);
+		List<GroupVo> vos = groupService.genVos(page.getItems());
         
 		ret.put("totalItems", page.getTotal());
         ret.put("data", vos);
@@ -62,8 +62,8 @@ public class UserAction extends BaseAction {
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		SysUser po = (SysUser) userService.get(SysUser.class, Long.valueOf(accountId));
-		UserVo vo = userService.genVo(po);
+		SysGroup po = (SysGroup) groupService.get(SysGroup.class, Long.valueOf(accountId));
+		GroupVo vo = groupService.genVo(po);
         
         ret.put("data", vo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -73,12 +73,12 @@ public class UserAction extends BaseAction {
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest request, @RequestBody UserVo vo) {
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody GroupVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		SysUser po = userService.save(vo, userVo.getCompanyId());
+		SysGroup po = groupService.save(vo, userVo.getCompanyId());
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -90,7 +90,7 @@ public class UserAction extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		boolean success = userService.delete(to.getLong("id"));
+		boolean success = groupService.delete(to.getLong("id"));
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -102,7 +102,7 @@ public class UserAction extends BaseAction {
 	public Map<String, Object> disable(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		boolean success = userService.disable(to.getLong("id"));
+		boolean success = groupService.disable(to.getLong("id"));
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

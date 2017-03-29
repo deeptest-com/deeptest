@@ -13,9 +13,11 @@ import org.springframework.stereotype.Service;
 
 import com.ngtesting.platform.entity.EvtGuest;
 import com.ngtesting.platform.entity.SysCompany;
+import com.ngtesting.platform.entity.SysRole;
 import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.entity.SysUser.AgentType;
 import com.ngtesting.platform.entity.SysVerifyCode;
+import com.ngtesting.platform.service.RoleService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.DateUtils;
@@ -23,22 +25,21 @@ import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.CompanyVo;
 import com.ngtesting.platform.vo.GuestVo;
 import com.ngtesting.platform.vo.Page;
+import com.ngtesting.platform.vo.RoleVo;
 import com.ngtesting.platform.vo.UserVo;
 
 @Service
-public class UserServiceImpl extends BaseServiceImpl implements UserService {
+public class RoleServiceImpl extends BaseServiceImpl implements RoleService {
 
 	@Override
 	public Page listByPage(Long companyId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
-        DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
+        DetachedCriteria dc = DetachedCriteria.forClass(SysRole.class);
         dc.add(Restrictions.eq("companyId", companyId));
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         
         if (StringUtil.isNotEmpty(keywords)) {
-        	dc.add(Restrictions.or(Restrictions.like("name", "%" + keywords + "%"),
-        		   Restrictions.like("email", "%" + keywords + "%"),
-        		   Restrictions.like("phone", "%" + keywords + "%") ));
+        	dc.add(Restrictions.like("name", "%" + keywords + "%"));
         }
         if (StringUtil.isNotEmpty(disabled)) {
         	dc.add(Restrictions.eq("disabled", Boolean.valueOf(disabled)));
@@ -51,24 +52,20 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public SysUser save(UserVo vo, Long companyId) {
+	public SysRole save(RoleVo vo, Long companyId) {
 		if (vo == null) {
 			return null;
 		}
 		
-		SysUser po = new SysUser();
+		SysRole po = new SysRole();
 		if (vo.getId() != null) {
-			po = (SysUser) get(SysUser.class, vo.getId());
+			po = (SysRole) get(SysRole.class, vo.getId());
 		}
 		
 		po.setName(vo.getName());
-		po.setPhone(vo.getPhone());
-		po.setEmail(vo.getEmail());
-		po.setDisabled(vo.getDisabled());
+		po.setDescr(vo.getDescr());
 		po.setCompanyId(companyId);
-		if (vo.getAvatar() == null) {
-			po.setAvatar("upload/sample/user/avatar.png");
-		}
+		po.setDisabled(vo.getDisabled());
 		
 		saveOrUpdate(po);
 		return po;
@@ -85,7 +82,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
 	@Override
 	public boolean disable(Long id) {
-		SysUser po = (SysUser) get(SysUser.class, id);
+		SysRole po = (SysRole) get(SysRole.class, id);
 		po.setDisabled(!po.getDisabled());
 		saveOrUpdate(po);
 		
@@ -93,18 +90,18 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
     
 	@Override
-	public UserVo genVo(SysUser user) {
-		UserVo vo = new UserVo();
-		BeanUtilEx.copyProperties(vo, user);
+	public RoleVo genVo(SysRole role) {
+		RoleVo vo = new RoleVo();
+		BeanUtilEx.copyProperties(vo, role);
 		
 		return vo;
 	}
 	@Override
-	public List<UserVo> genVos(List<SysUser> pos) {
-        List<UserVo> vos = new LinkedList<UserVo>();
+	public List<RoleVo> genVos(List<SysRole> pos) {
+        List<RoleVo> vos = new LinkedList<RoleVo>();
 
-        for (SysUser po: pos) {
-        	UserVo vo = genVo(po);
+        for (SysRole po: pos) {
+        	RoleVo vo = genVo(po);
         	vos.add(vo);
         }
 		return vos;

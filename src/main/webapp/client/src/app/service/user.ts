@@ -1,10 +1,5 @@
 import {Injectable} from "@angular/core";
 
-import { Cookie } from 'ng2-cookies/ng2-cookies';
-import {GlobalState} from '../global.state';
-
-import { CONSTANT } from '../utils/constant';
-import { RouteService } from './route';
 import {RequestService} from "./request";
 
 @Injectable()

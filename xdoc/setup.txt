@@ -1,5 +1,5 @@
 Redmine
-sudo installdir/ctlscript.sh start
+sudo /opt/testlink-1.9.16-0/ctlscript.sh start
 ctlscript.sh status
 
 Jira

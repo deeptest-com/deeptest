@@ -10,7 +10,7 @@ import { Utils } from '../../../../utils/utils';
 import {ValidatorUtils} from '../../../../validator/validator.utils';
 import { RouteService } from '../../../../service/route';
 
-import { ProjectService } from '../../../../service/project';
+import { RoleService } from '../../../../service/role';
 
 declare var jQuery;
 
@@ -29,7 +29,7 @@ export class RoleEdit implements OnInit, AfterViewInit {
   @ViewChild('modal') modal: ModalDirective;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
-              private fb: FormBuilder, private _projectService: ProjectService) {
+              private fb: FormBuilder, private roleService: RoleService) {
 
   }
   ngOnInit() {
@@ -52,7 +52,6 @@ export class RoleEdit implements OnInit, AfterViewInit {
       {
         'name': [that.model.name, [Validators.required]],
         'descr': [that.model.descr, []],
-        'parentId': [that.model.parentId, [Validators.required]],
         'disabled': [that.model.disabled]
       }, {}
     );
@@ -70,35 +69,26 @@ export class RoleEdit implements OnInit, AfterViewInit {
     'name': {
       'required':      '姓名不能为空'
     },
-    'parentId': {
-      'required':      '父级项目不能为空'
+    'descr': {
     }
   };
 
   loadData() {
     let that = this;
-    that._projectService.get(that.id).subscribe((json:any) => {
+    that.roleService.get(that.id).subscribe((json:any) => {
       that.model = json.data;
-      that.projects = json.projects;
-      that.projects = json.projects.map(function(project) {
-        let name = project.name;
-        if (project.level > 0) {
-          name = String.fromCharCode(160).repeat((project.level) * 5) + project.name;
-        }
-        return {id: project.id, name: name};
-      });
     });
   }
 
   save() {
     let that = this;
 
-    that._projectService.save(that.model).subscribe((json:any) => {
+    that.roleService.save(that.model).subscribe((json:any) => {
       if (json.code == 1) {
         that.model = json.data;
 
         that.formErrors = ['保存成功'];
-        that._routeService.navTo("/pages/project/list");
+        that._routeService.navTo("/pages/admin/role/list");
       } else {
         that.formErrors = ['保存失败'];
       }
@@ -108,7 +98,7 @@ export class RoleEdit implements OnInit, AfterViewInit {
   delete() {
     let that = this;
 
-    that._projectService.delete(that.model.id).subscribe((json:any) => {
+    that.roleService.delete(that.model.id).subscribe((json:any) => {
       if (json.code == 1) {
         that.model = json.data;
 

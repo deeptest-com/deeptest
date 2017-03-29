@@ -43,5 +43,5 @@ import { UserEdit } from './edit';
     UserService,
   ]
 })
-export default class ProjectModule {}
+export default class UserModule {}
 

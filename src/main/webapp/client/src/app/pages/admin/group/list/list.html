@@ -2,7 +2,7 @@
   <div class="row">
     <div class="list-toolbar col-xl-12">
       <div class="title">
-        用户组列表
+        用户组
       </div>
 
       <div class="filter">
@@ -10,7 +10,7 @@
           <label for="disabled">状态</label>
           <select [(ngModel)]="queryModel.disabled" formControlName="disabled"
                   class="form-control form-control-sm" id="disabled" name="disabled">
-            <option *ngFor="let entry of (statusMap | mapKeys)" value="{{entry.key}}">{{entry.value}}</option>
+            <option *ngFor="let entry of (statusMap | mapToArray)" value="{{entry.key}}">{{entry.value}}</option>
           </select>
           &nbsp;&nbsp;&nbsp;
           <label for="keywords">关键字</label>
@@ -31,21 +31,29 @@
       <thead class="thead-inverse">
       <tr>
         <th>名称</th>
-        <th>用户数</th>
+        <th>描述</th>
+        <th>状态</th>
         <th>操作</th>
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let item of tableData">
-        <td>{{ item.groupname }}</td>
+      <tr *ngFor="let item of models">
+        <td>{{ item.name }}</td>
+        <th>{{ item.descr }}</th>
+        <td>{{statusMap[''+item.disabled]}}</td>
         <td>
-          <a href="#">1</a>
-        </td>
-        <td>
-          <span [routerLink]="['/pages/admin/group/edit']" class="link no-underline">编辑</span>
+          <span [routerLink]="['/pages/admin/group/edit', item.id]" class="link no-underline">编辑</span>
         </td>
       </tr>
       </tbody>
     </table>
+    <div class="page-container">
+      <pagination [totalItems]="totalItems" [(ngModel)]="currentPage"
+                  [maxSize]="maxSize" [itemsPerPage]="itemsPerPage" class="pagination-sm"
+                  [boundaryLinks]="true" [rotate]="false"
+                  (numPages)="numPages = $event" (pageChanged)="pageChanged($event)"
+                  previousText="上一页" nextText="下一页" firstText="第一页" lastText="最后页">
+      </pagination>
+    </div>
   </div>
 </div>

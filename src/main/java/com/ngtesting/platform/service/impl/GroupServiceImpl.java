@@ -13,32 +13,33 @@ import org.springframework.stereotype.Service;
 
 import com.ngtesting.platform.entity.EvtGuest;
 import com.ngtesting.platform.entity.SysCompany;
+import com.ngtesting.platform.entity.SysGroup;
 import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.entity.SysUser.AgentType;
 import com.ngtesting.platform.entity.SysVerifyCode;
+import com.ngtesting.platform.service.GroupService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.DateUtils;
 import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.CompanyVo;
+import com.ngtesting.platform.vo.GroupVo;
 import com.ngtesting.platform.vo.GuestVo;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.UserVo;
 
 @Service
-public class UserServiceImpl extends BaseServiceImpl implements UserService {
+public class GroupServiceImpl extends BaseServiceImpl implements GroupService {
 
 	@Override
 	public Page listByPage(Long companyId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
-        DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
+        DetachedCriteria dc = DetachedCriteria.forClass(SysGroup.class);
         dc.add(Restrictions.eq("companyId", companyId));
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         
         if (StringUtil.isNotEmpty(keywords)) {
-        	dc.add(Restrictions.or(Restrictions.like("name", "%" + keywords + "%"),
-        		   Restrictions.like("email", "%" + keywords + "%"),
-        		   Restrictions.like("phone", "%" + keywords + "%") ));
+        	dc.add(Restrictions.like("name", "%" + keywords + "%"));
         }
         if (StringUtil.isNotEmpty(disabled)) {
         	dc.add(Restrictions.eq("disabled", Boolean.valueOf(disabled)));
@@ -51,24 +52,20 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public SysUser save(UserVo vo, Long companyId) {
+	public SysGroup save(GroupVo vo, Long companyId) {
 		if (vo == null) {
 			return null;
 		}
 		
-		SysUser po = new SysUser();
+		SysGroup po = new SysGroup();
 		if (vo.getId() != null) {
-			po = (SysUser) get(SysUser.class, vo.getId());
+			po = (SysGroup) get(SysGroup.class, vo.getId());
 		}
 		
 		po.setName(vo.getName());
-		po.setPhone(vo.getPhone());
-		po.setEmail(vo.getEmail());
+		po.setDescr(vo.getDescr());
 		po.setDisabled(vo.getDisabled());
 		po.setCompanyId(companyId);
-		if (vo.getAvatar() == null) {
-			po.setAvatar("upload/sample/user/avatar.png");
-		}
 		
 		saveOrUpdate(po);
 		return po;
@@ -93,18 +90,18 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
     
 	@Override
-	public UserVo genVo(SysUser user) {
-		UserVo vo = new UserVo();
-		BeanUtilEx.copyProperties(vo, user);
+	public GroupVo genVo(SysGroup group) {
+		GroupVo vo = new GroupVo();
+		BeanUtilEx.copyProperties(vo, group);
 		
 		return vo;
 	}
 	@Override
-	public List<UserVo> genVos(List<SysUser> pos) {
-        List<UserVo> vos = new LinkedList<UserVo>();
+	public List<GroupVo> genVos(List<SysGroup> pos) {
+        List<GroupVo> vos = new LinkedList<GroupVo>();
 
-        for (SysUser po: pos) {
-        	UserVo vo = genVo(po);
+        for (SysGroup po: pos) {
+        	GroupVo vo = genVo(po);
         	vos.add(vo);
         }
 		return vos;

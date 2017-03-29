@@ -17,36 +17,12 @@ export class GroupList implements OnInit, AfterViewInit {
 
   queryForm: FormGroup;
   queryModel:any = {keywords: '', disabled: 'false'};
-
-  models: any;
-  maxLevel: number;
-  counter = Array;
   statusMap: Array<any> = CONSTANT.EntityDisabled;
 
-  tableData = [
-    {
-      groupname: '@mdo',
-      status: 'info'
-    },
-    {
-      groupname: '@fat',
-      status: 'primary'
-    },
-    {
-      groupname: '@twitter',
-      status: 'success'
-    }
-  ];
-  roleData = [
-    {
-      id: 1,
-      name: '主管'
-    },
-    {
-      id: 2,
-      name: '工程师'
-    }
-  ];
+  models: any;
+  totalItems:number = 0;
+  currentPage:number = 1;
+  itemsPerPage:number = 6;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
               private groupService:GroupService) {
@@ -62,25 +38,23 @@ export class GroupList implements OnInit, AfterViewInit {
       }, {}
     );
 
-    // that.loadData();
+    that.loadData();
   }
 
   ngAfterViewInit() {
     let that = this;
 
-    this.queryForm.controls['disabled'].valueChanges.debounceTime(500).subscribe(values => this.queryChange(values));
+    this.queryForm.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.queryChange(values));
   }
 
   create():void {
     let that = this;
 
-    that._routeService.navTo("/pages/event/edit/null/property");
+    that._routeService.navTo("/pages/admin/group/edit/null");
   }
 
   queryChange(values:any):void {
     let that = this;
-
-    that.queryModel.disabled = values;
 
     that.loadData();
   }
@@ -99,19 +73,13 @@ export class GroupList implements OnInit, AfterViewInit {
 
     console.log($event);
   }
-  changeRole(id: number):void {
-    let that = this;
-
-    console.log('===', id);
-  }
 
   loadData() {
     let that = this;
-    console.log(that.queryModel);
 
     that.groupService.list(that.queryModel).subscribe((json:any) => {
-      that.models = json.data.models;
-      that.maxLevel = json.data.maxLevel;
+      that.totalItems = json.totalItems;
+      that.models = json.data;
     });
   }
 

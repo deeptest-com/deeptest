@@ -114,6 +114,7 @@
 			<tx:method name="save*" propagation="REQUIRED" />
 			<tx:method name="update*" propagation="REQUIRED" />
 			<tx:method name="delete" propagation="REQUIRED" />
+			<tx:method name="disable" propagation="REQUIRED" />
 
 			<tx:method name="*Pers" propagation="REQUIRED" />
 

@@ -9,23 +9,25 @@ import {RequestService} from "./request";
 
 @Injectable()
 export class GroupService {
-  constructor(private _state:GlobalState, private _reqService:RequestService, private routeService: RouteService) {
-  }
-
-  _list = 'group/list';
-  _get = 'group/get';
-  _save = 'group/save';
-
+  constructor(private _reqService: RequestService) { }
+  _api_url = 'group/';
 
   list(query: any) {
-    return this._reqService.post(this._list, query);
+    return this._reqService.post(this._api_url + 'list', query);
   }
 
-  get(profile:any) {
-    return this._reqService.post(this._get, profile);
+  get(id: number) {
+    let model = {id: id};
+    return this._reqService.post(this._api_url + 'get', model);
   }
-  save(model:any) {
-    return this._reqService.post(this._save, model);
+
+  save(model: any) {
+    return this._reqService.post(this._api_url + 'save', model);
+  }
+
+  delete(id: number) {
+    let model = {id: id};
+    return this._reqService.post(this._api_url + 'delete', model);
   }
 }
 

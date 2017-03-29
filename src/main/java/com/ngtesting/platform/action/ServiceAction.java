@@ -73,7 +73,7 @@ public class ServiceAction extends BaseAction {
 		
 		long serviceId = to.getLong("id");
 		
-		boolean success = serviceService.disablePers(serviceId);
+		boolean success = serviceService.disable(serviceId);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

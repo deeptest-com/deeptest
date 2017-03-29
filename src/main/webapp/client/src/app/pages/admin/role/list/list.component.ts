@@ -5,7 +5,7 @@ import {GlobalState} from "../../../../global.state";
 import {CONSTANT} from "../../../../utils/constant";
 import {Utils} from "../../../../utils/utils";
 import {RouteService} from "../../../../service/route";
-import {ProjectService} from "../../../../service/project";
+import {RoleService} from "../../../../service/role";
 
 @Component({
   selector: 'role-list',
@@ -19,14 +19,15 @@ export class RoleList implements OnInit, AfterViewInit {
 
   queryForm: FormGroup;
   queryModel:any = {keywords: '', disabled: 'false'};
-
-  models: any;
-  maxLevel: number;
-  counter = Array;
   statusMap: Array<any> = CONSTANT.EntityDisabled;
 
+  models: any;
+  totalItems:number = 0;
+  currentPage:number = 1;
+  itemsPerPage:number = 6;
+
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
-              private _projectService:ProjectService) {
+              private roleService: RoleService) {
   }
 
   ngOnInit() {
@@ -45,7 +46,7 @@ export class RoleList implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     let that = this;
 
-    this.queryForm.controls['disabled'].valueChanges.debounceTime(500).subscribe(values => this.queryChange(values));
+    this.queryForm.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.queryChange(values));
   }
 
   create():void {
@@ -56,8 +57,6 @@ export class RoleList implements OnInit, AfterViewInit {
 
   queryChange(values:any):void {
     let that = this;
-
-    that.queryModel.disabled = values;
 
     that.loadData();
   }
@@ -79,12 +78,10 @@ export class RoleList implements OnInit, AfterViewInit {
 
   loadData() {
     let that = this;
-    console.log(that.queryModel);
 
-    that._projectService.list(that.queryModel).subscribe((json:any) => {
-
-      that.models = json.data.models;
-      that.maxLevel = json.data.maxLevel;
+    that.roleService.list(that.queryModel).subscribe((json:any) => {
+      that.totalItems = json.totalItems;
+      that.models = json.data;
     });
   }
 

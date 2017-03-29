@@ -5,8 +5,9 @@ import { NgaModule } from '../../../theme/nga.module';
 
 import { routing }       from './group.routing';
 
+import { ModalModule } from 'ng2-bootstrap';
+import { PaginationModule} from 'ng2-bootstrap';
 import { DropdownModule } from 'ng2-bootstrap/ng2-bootstrap';
-
 import { DirectiveModule } from '../../../directive/directive.module';
 
 import { RouteService } from '../../../service/route';
@@ -25,6 +26,8 @@ import { GroupEdit } from './edit';
     NgaModule,
     routing,
 
+    ModalModule,
+    PaginationModule,
     DropdownModule,
     DirectiveModule
   ],
@@ -40,5 +43,5 @@ import { GroupEdit } from './edit';
     GroupService,
   ]
 })
-export default class ProjectModule {}
+export default class GroupModule {}
 

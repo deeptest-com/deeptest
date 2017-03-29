@@ -20,7 +20,7 @@ import { Utils } from '../utils/utils';
     <footer class="al-footer clearfix">
       <div class="al-footer-right">Created with <i class="ion-heart"></i></div>
       <div class="al-footer-main clearfix">
-        <div class="al-copy">&copy; <a href="http://linkr.cn">linkr.cn</a> 2017</div>
+        <div class="al-copy">&copy; <a href="http://ngtesting.com">linkr.cn</a> 2017</div>
         <ul class="al-share clearfix">
           <li><i class="socicon socicon-qq"></i></li>
           <li><i class="socicon socicon-wechat"></i></li>

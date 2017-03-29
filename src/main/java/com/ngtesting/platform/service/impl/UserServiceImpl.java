@@ -64,6 +64,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		po.setName(vo.getName());
 		po.setPhone(vo.getPhone());
 		po.setEmail(vo.getEmail());
+		po.setDisabled(vo.getDisabled());
 		po.setCompanyId(companyId);
 		if (vo.getAvatar() == null) {
 			po.setAvatar("upload/sample/user/avatar.png");

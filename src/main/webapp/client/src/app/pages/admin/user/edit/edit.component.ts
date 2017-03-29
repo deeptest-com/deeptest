@@ -7,7 +7,7 @@ import {GlobalState} from '../../../../global.state';
 
 import { CONSTANT } from '../../../../utils/constant';
 import { Utils } from '../../../../utils/utils';
-import {ValidatorUtils} from '../../../../validator/validator.utils';
+import {ValidatorUtils, EmailValidator, PhoneValidator} from '../../../../validator';
 import { RouteService } from '../../../../service/route';
 
 import { UserService } from '../../../../service/user';
@@ -50,8 +50,8 @@ export class UserEdit implements OnInit, AfterViewInit {
     this.form = this.fb.group(
       {
         'name': [that.model.name, [Validators.required]],
-        'email': [that.model.email, [Validators.required]],
-        'phone': [that.model.phone, [Validators.required]],
+        'email': [that.model.email, [Validators.required, EmailValidator.validate()]],
+        'phone': [that.model.phone, [Validators.required, PhoneValidator.validate()]],
         'disabled': [that.model.disabled]
       }, {}
     );
@@ -70,7 +70,12 @@ export class UserEdit implements OnInit, AfterViewInit {
       'required':      '姓名不能为空'
     },
     'email': {
-      'required':      '邮箱不能为空'
+      'required':      '邮箱不能为空',
+      'validate':      '邮箱格式不正确'
+    },
+    'phone': {
+      'required':      '手机不能为空',
+      'validate':      '手机格式不正确'
     }
   };
 

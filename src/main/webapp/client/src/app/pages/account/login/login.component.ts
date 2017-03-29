@@ -50,7 +50,7 @@ export class Login {
   validateMsg = {
     'email': {
       'required':      '邮箱不能为空',
-      'validateEmail': '邮箱格式错误'
+      'validate': '邮箱格式错误'
     },
     'password': {
       'required':      '密码不能为空',

@@ -9,7 +9,7 @@
   </thead>
   <tbody>
     <ng-container *ngFor="let model of models">
-      <tr table-row *ngIf="model.type != 'root'" [model]="model"></tr>
+      <tr table-row [model]="model"></tr>
     </ng-container>
   </tbody>
 </table>

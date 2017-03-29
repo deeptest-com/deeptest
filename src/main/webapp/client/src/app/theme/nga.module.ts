@@ -6,7 +6,7 @@ import { RouterModule } from '@angular/router';
 import { DropdownModule } from 'ng2-bootstrap/ng2-bootstrap';
 
 import { ImgPathPipe, ThumbPathPipe } from '../pipe/img-path';
-import { KeysPipe } from '../pipe/keys';
+import { MapToArrayPipe } from '../pipe/map-to-array';
 import { DatePipe } from '../pipe/date';
 import { ModelStatusPipe } from '../pipe/model-status';
 import { EventStatusPipe } from '../pipe/event-status';
@@ -88,7 +88,7 @@ const NGA_PIPES = [
   BaProfilePicturePipe
 ];
 const MY_PIPES = [
-  ImgPathPipe, ThumbPathPipe, KeysPipe, DatePipe,ModelStatusPipe, EventStatusPipe, DisabledPipe
+  ImgPathPipe, ThumbPathPipe, MapToArrayPipe, DatePipe,ModelStatusPipe, EventStatusPipe, DisabledPipe
 ];
 
 const NGA_SERVICES = [

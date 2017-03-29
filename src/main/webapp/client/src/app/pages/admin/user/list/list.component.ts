@@ -44,19 +44,17 @@ export class UserList implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     let that = this;
 
-    this.queryForm.valueChanges.debounceTime(500).subscribe(values => this.queryChange(values));
+    this.queryForm.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.queryChange(values));
   }
 
   create():void {
     let that = this;
 
-    that._routeService.navTo("/pages/user/edit/null");
+    that._routeService.navTo("/pages/admin/user/edit/null");
   }
 
   queryChange(values:any):void {
     let that = this;
-
-    // that.queryModel = values;
 
     that.loadData();
   }

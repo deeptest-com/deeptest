@@ -10,7 +10,7 @@
           <label for="disabled">状态</label>
           <select [(ngModel)]="queryModel.disabled" formControlName="disabled"
                   class="form-control form-control-sm" id="disabled" name="disabled">
-            <option *ngFor="let entry of (statusMap | mapKeys:'true')" value="{{entry.key}}">{{entry.value}}</option>
+            <option *ngFor="let entry of (statusMap | mapToArray:'true')" value="{{entry.key}}">{{entry.value}}</option>
           </select>
           &nbsp;&nbsp;&nbsp;
           <label for="keywords">关键字</label>

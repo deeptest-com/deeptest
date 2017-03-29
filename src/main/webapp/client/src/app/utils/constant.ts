@@ -11,11 +11,12 @@ export var CONSTANT: any = {
     TOKEN: '',
     PROFILE: {},
 
-    PROFILE_KEY: 'cn.linkr.events.profile',
-    PROFILE_EXPIRE: 'cn.linkr.events.expire',
+    PROFILE_KEY: 'com.ngtesting.events.profile',
+    PROFILE_EXPIRE: 'com.ngtesting.events.expire',
 
-    EntityDisabled: [{'false': '启用'}, {'true': '禁用'}, {'': '所有'}],
+    EntityDisabled: {'false': '启用', 'true': '禁用', '': '所有'},
 
-    ScreenSize: {h: 0, w: 0}
+    ScreenSize: {h: 0, w: 0},
+    DebounceTime: 800
 };
 

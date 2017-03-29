@@ -45,7 +45,7 @@ export class ProjectList implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     let that = this;
 
-    this.queryForm.valueChanges.debounceTime(500).subscribe(values => this.queryChange(values));
+    this.queryForm.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.queryChange(values));
   }
 
   create(type: string):void {

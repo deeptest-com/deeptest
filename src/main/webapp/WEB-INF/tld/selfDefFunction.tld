@@ -11,7 +11,7 @@
       
         <function>  
             <name>toStringArr</name>  
-            <function-class>cn.linkr.testspace.util.SelfDefFunctionUtils</function-class>
+            <function-class>com.ngtesting.platform.util.SelfDefFunctionUtils</function-class>
             <function-signature>  
                 java.lang.String[] toStringArr(java.lang.Long)  
             </function-signature>  
@@ -19,7 +19,7 @@
         
         <function>  
             <name>toStringArr1</name>  
-            <function-class>cn.linkr.testspace.util.SelfDefFunctionUtils</function-class>
+            <function-class>com.ngtesting.platform.util.SelfDefFunctionUtils</function-class>
             <function-signature>  
                 java.lang.String[] toStringArr1(java.lang.String)  
             </function-signature>  

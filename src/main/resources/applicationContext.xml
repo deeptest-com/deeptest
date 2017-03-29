@@ -26,18 +26,18 @@
 		
     <context:property-placeholder location="classpath:config.properties"/>
 	<context:annotation-config />
-	<context:component-scan base-package="cn.linkr.testspace.config"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.testspace.entity"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.testspace.service"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.testspace.service.impl"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.testspace.dao"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.testspace.util"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.testspace.dao.impl"></context:component-scan>
+	<context:component-scan base-package="com.ngtesting.platform.config"></context:component-scan>
+	<context:component-scan base-package="com.ngtesting.platform.entity"></context:component-scan>
+	<context:component-scan base-package="com.ngtesting.platform.service"></context:component-scan>
+	<context:component-scan base-package="com.ngtesting.platform.service.impl"></context:component-scan>
+	<context:component-scan base-package="com.ngtesting.platform.dao"></context:component-scan>
+	<context:component-scan base-package="com.ngtesting.platform.util"></context:component-scan>
+	<context:component-scan base-package="com.ngtesting.platform.dao.impl"></context:component-scan>
     
-	<context:component-scan base-package="cn.linkr.testspace.bean"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.testspace.bean.websocket"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.testspace.websocket"></context:component-scan>
-	<context:component-scan base-package="cn.linkr.testspace.job"></context:component-scan>
+	<context:component-scan base-package="com.ngtesting.platform.bean"></context:component-scan>
+	<context:component-scan base-package="com.ngtesting.platform.bean.websocket"></context:component-scan>
+	<context:component-scan base-package="com.ngtesting.platform.websocket"></context:component-scan>
+	<context:component-scan base-package="com.ngtesting.platform.job"></context:component-scan>
     
     <task:annotation-driven/>
     
@@ -122,7 +122,7 @@
     </tx:advice>
     
     <aop:config proxy-target-class="true">
-        <aop:advisor advice-ref="txAdvice" pointcut="execution(* cn.linkr.testspace.service..*.*(..))" />
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* com.ngtesting.platform.service..*.*(..))" />
     </aop:config>
     
     <bean id="jdbcTemplate" name="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate" abstract="false"
@@ -130,9 +130,9 @@
         <property name="dataSource"  ref="dataSource"/>
     </bean>
 
-    <bean class="cn.linkr.testspace.util.SpringContextHolder" lazy-init="false"/>
+    <bean class="com.ngtesting.platform.util.SpringContextHolder" lazy-init="false"/>
  
-    <bean id="configBean" class="cn.linkr.testspace.util.PropertyConfig">
+    <bean id="configBean" class="com.ngtesting.platform.util.PropertyConfig">
         <property name="location" value="classpath:config.properties" />  
     </bean>
     

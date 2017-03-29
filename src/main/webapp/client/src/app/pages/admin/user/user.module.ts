@@ -5,6 +5,7 @@ import { NgaModule } from '../../../theme/nga.module';
 
 import { routing }       from './user.routing';
 
+import { ModalModule } from 'ng2-bootstrap';
 import { PaginationModule} from 'ng2-bootstrap';
 import { DropdownModule } from 'ng2-bootstrap/ng2-bootstrap';
 import { DirectiveModule } from '../../../directive/directive.module';
@@ -25,6 +26,7 @@ import { UserEdit } from './edit';
     NgaModule,
     routing,
 
+    ModalModule,
     PaginationModule,
     DropdownModule,
     DirectiveModule

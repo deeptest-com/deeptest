@@ -10,7 +10,7 @@
           <label for="disabled">状态</label>
           <select [(ngModel)]="queryModel.disabled" formControlName="disabled"
                   class="form-control form-control-sm" id="disabled" name="disabled">
-            <option *ngFor="let entry of (statusMap | mapKeys)" value="{{entry.key}}">{{entry.value}}</option>
+            <option *ngFor="let entry of (statusMap | mapToArray)" value="{{entry.key}}">{{entry.value}}</option>
           </select>
           &nbsp;&nbsp;&nbsp;
           <label for="keywords">关键字</label>
@@ -31,6 +31,8 @@
       <thead class="thead-inverse">
       <tr>
         <th>姓名</th>
+        <th>邮箱</th>
+        <th>手机</th>
         <th>状态</th>
         <th>操作</th>
       </tr>
@@ -38,7 +40,9 @@
       <tbody>
       <tr *ngFor="let item of models">
         <td>{{ item.name }}</td>
-        <td>活动</td>
+        <th>{{ item.email }}</th>
+        <th>{{ item.phone }}</th>
+        <td>{{statusMap[''+item.disabled]}}</td>
         <td>
           <span [routerLink]="['/pages/admin/user/edit', item.id]" class="link no-underline">编辑</span>
         </td>

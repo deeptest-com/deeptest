@@ -7,11 +7,9 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.EvtGuest;
 import com.ngtesting.platform.entity.EvtService;
 import com.ngtesting.platform.entity.EvtService.ServiceType;
 import com.ngtesting.platform.service.ServiceService;
-import com.ngtesting.platform.vo.GuestVo;
 import com.ngtesting.platform.vo.ServiceVo;
 
 @Service

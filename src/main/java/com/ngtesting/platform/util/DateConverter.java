@@ -2,7 +2,8 @@ package com.ngtesting.platform.util;
 
 import org.apache.commons.beanutils.ConversionException;
 import org.apache.commons.beanutils.Converter;
-import org.apache.commons.logging.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public final class DateConverter implements Converter {
 

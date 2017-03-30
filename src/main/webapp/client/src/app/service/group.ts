@@ -29,5 +29,12 @@ export class GroupService {
     let model = {id: id};
     return this._reqService.post(this._api_url + 'delete', model);
   }
+
+  listByUser(id: number) {
+    return this._reqService.post(this._api_url + 'listByUser', {userId: id});
+  }
+  saveByUser(model: any) {
+    return this._reqService.post(this._api_url + 'saveByUser', {model: model});
+  }
 }
 

@@ -1,21 +1,8 @@
 package com.ngtesting.platform.service.impl;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
-import net.sf.ehcache.management.Cache;
-
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.FetchMode;
@@ -25,35 +12,14 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSONObject;
-
-import com.ngtesting.platform.action.ProjectAction;
-import com.ngtesting.platform.dao.BaseDao;
 import com.ngtesting.platform.dao.ProjectDao;
-import com.ngtesting.platform.entity.EvtEvent;
-import com.ngtesting.platform.entity.EvtGuest;
-import com.ngtesting.platform.entity.EvtScheduleItem;
-import com.ngtesting.platform.entity.EvtSession;
-import com.ngtesting.platform.entity.SysCompany;
-import com.ngtesting.platform.entity.TestCase;
 import com.ngtesting.platform.entity.TestProject;
-import com.ngtesting.platform.entity.EvtEvent.EventStatus;
 import com.ngtesting.platform.entity.TestProject.ProjectType;
-import com.ngtesting.platform.service.GuestService;
-import com.ngtesting.platform.service.TestCaseService;
 import com.ngtesting.platform.service.TestProjectService;
 import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.util.Constant;
-import com.ngtesting.platform.util.Constant.TreeNodeType;
 import com.ngtesting.platform.util.StringUtil;
-import com.ngtesting.platform.vo.GuestVo;
-import com.ngtesting.platform.vo.Page;
-import com.ngtesting.platform.vo.SessionVo;
-import com.ngtesting.platform.vo.TestCaseTreeVo;
-import com.ngtesting.platform.vo.TestCaseVo;
 import com.ngtesting.platform.vo.TestProjectVo;
 import com.ngtesting.platform.vo.UserVo;
 

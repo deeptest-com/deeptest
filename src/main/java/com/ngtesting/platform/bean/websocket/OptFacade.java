@@ -1,6 +1,5 @@
 package com.ngtesting.platform.bean.websocket;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
@@ -10,11 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.util.Constant.RespCode;
 import com.ngtesting.platform.websocket.SystemWebSocketHandler;
-
-import com.alibaba.fastjson.JSONObject;
 
 @Service
 public class OptFacade {

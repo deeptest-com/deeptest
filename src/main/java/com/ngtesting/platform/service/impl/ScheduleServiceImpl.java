@@ -1,6 +1,5 @@
 package com.ngtesting.platform.service.impl;
 
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
-
-import com.ngtesting.platform.entity.EvtClient;
 import com.ngtesting.platform.entity.EvtEvent;
 import com.ngtesting.platform.entity.EvtScheduleItem;
 import com.ngtesting.platform.entity.EvtSession;

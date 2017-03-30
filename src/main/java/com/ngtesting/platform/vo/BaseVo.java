@@ -1,7 +1,6 @@
 package com.ngtesting.platform.vo;
 
 import java.io.Serializable;
-import java.util.Date;
 
 
 public abstract class BaseVo implements Serializable {

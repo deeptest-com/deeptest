@@ -1,6 +1,5 @@
 package com.ngtesting.platform.vo;
 
-import java.util.LinkedList;
 
 public class TestProjectVo extends BaseVo {
 	private static final long serialVersionUID = -9069520320732281911L;

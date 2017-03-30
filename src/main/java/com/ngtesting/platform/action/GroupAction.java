@@ -13,15 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ngtesting.platform.entity.EvtClient;
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.SysGroup;
 import com.ngtesting.platform.service.GroupService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
-import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.GroupVo;
+import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.UserVo;
-import com.alibaba.fastjson.JSONObject;
 
 
 @Controller
@@ -103,6 +102,37 @@ public class GroupAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		boolean success = groupService.disable(to.getLong("id"));
+		
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+	
+	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "listByUser", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> listByUser(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		long companyId = vo.getCompanyId();
+		Long userId = json.getLong("userId");
+		
+		List<SysGroup> list = groupService.listByUser(companyId, userId);
+		List<GroupVo> vos = groupService.genVos(list);
+        
+        ret.put("data", vos);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "saveByUser", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> saveByUser(HttpServletRequest request, @RequestBody JSONObject to) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		boolean success = groupService.saveGroupsByUser(to);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

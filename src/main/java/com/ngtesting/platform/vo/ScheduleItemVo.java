@@ -4,14 +4,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
-import com.ngtesting.platform.entity.EvtGuest;
-import com.ngtesting.platform.entity.EvtSession;
-
 public class ScheduleItemVo extends BaseVo {
 	private static final long serialVersionUID = 777381642582610049L;
 	private String name; // for session

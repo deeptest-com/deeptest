@@ -2,7 +2,6 @@ package com.ngtesting.platform.service.impl;
 
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -14,11 +13,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Service;
-import com.ngtesting.platform.service.HttpClientService;
-import com.ngtesting.platform.vo.JsonBean;
-import com.ngtesting.platform.vo.JsonResult;
 
-import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.service.HttpClientService;
 
 @Service
 public class HttpClientServiceImpl extends BaseServiceImpl implements HttpClientService {

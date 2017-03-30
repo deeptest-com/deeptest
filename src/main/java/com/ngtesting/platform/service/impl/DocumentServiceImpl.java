@@ -9,12 +9,10 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
 import com.ngtesting.platform.entity.EvtDocument;
-import com.ngtesting.platform.entity.EvtGuest;
 import com.ngtesting.platform.entity.EvtDocument.DocType;
 import com.ngtesting.platform.service.DocumentService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.DocumentVo;
-import com.ngtesting.platform.vo.GuestVo;
 import com.ngtesting.platform.vo.Page;
 
 @Service

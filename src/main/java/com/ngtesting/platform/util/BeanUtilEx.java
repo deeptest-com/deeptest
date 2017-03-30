@@ -1,7 +1,5 @@
 package com.ngtesting.platform.util;
 
-import java.lang.reflect.InvocationTargetException;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 

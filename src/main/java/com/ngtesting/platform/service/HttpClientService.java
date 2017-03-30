@@ -2,9 +2,6 @@ package com.ngtesting.platform.service;
 
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.vo.JsonBean;
-import com.ngtesting.platform.vo.JsonResult;
-
 @Service
 public interface HttpClientService extends BaseService {
 

@@ -8,7 +8,6 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.EvtGuest;
 import com.ngtesting.platform.entity.EvtQa;
 import com.ngtesting.platform.service.QaService;
 import com.ngtesting.platform.util.BeanUtilEx;

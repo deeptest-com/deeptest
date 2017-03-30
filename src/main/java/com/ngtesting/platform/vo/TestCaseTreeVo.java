@@ -1,11 +1,7 @@
 package com.ngtesting.platform.vo;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-
-import javax.persistence.Column;
 
 public class TestCaseTreeVo implements Serializable {
 	private static final long serialVersionUID = 1375843844627636495L;

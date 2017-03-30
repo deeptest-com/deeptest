@@ -13,13 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.EvtBanner;
 import com.ngtesting.platform.entity.EvtClient;
 import com.ngtesting.platform.entity.EvtDocument;
 import com.ngtesting.platform.entity.EvtEvent;
 import com.ngtesting.platform.entity.EvtOrganizer;
-import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.service.BannerService;
 import com.ngtesting.platform.service.DocumentService;
 import com.ngtesting.platform.service.EventService;
@@ -32,8 +31,6 @@ import com.ngtesting.platform.vo.EventVo;
 import com.ngtesting.platform.vo.OrganizerVo;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.UserVo;
-
-import com.alibaba.fastjson.JSONObject;
 
 
 @Controller

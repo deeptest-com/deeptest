@@ -4,7 +4,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.server.ServerHttpRequest;
@@ -14,7 +13,6 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import com.ngtesting.platform.bean.ApplicationScopeBean;
-import com.ngtesting.platform.entity.EvtClient;
 import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.util.SpringContextHolder;

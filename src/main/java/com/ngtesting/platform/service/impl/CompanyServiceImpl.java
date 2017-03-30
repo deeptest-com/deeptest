@@ -2,12 +2,10 @@ package com.ngtesting.platform.service.impl;
 
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.EvtGuest;
 import com.ngtesting.platform.entity.SysCompany;
 import com.ngtesting.platform.service.CompanyService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.CompanyVo;
-import com.ngtesting.platform.vo.GuestVo;
 
 @Service
 public class CompanyServiceImpl extends BaseServiceImpl implements CompanyService {

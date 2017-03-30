@@ -25,9 +25,5 @@ export class UserService {
     return this._reqService.post(this._api_url + 'delete', model);
   }
 
-  saveGroups(model: any) {
-    return this._reqService.post(this._api_url + 'saveGroups', {model: model});
-  }
-
 }
 

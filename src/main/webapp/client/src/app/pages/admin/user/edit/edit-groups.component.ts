@@ -11,6 +11,7 @@ import {ValidatorUtils, EmailValidator, PhoneValidator} from '../../../../valida
 import { RouteService } from '../../../../service/route';
 
 import { UserService } from '../../../../service/user';
+import { GroupService } from '../../../../service/group';
 
 declare var jQuery;
 
@@ -27,7 +28,7 @@ export class UserEditGroups implements OnInit, AfterViewInit {
   form: any;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
-              private fb: FormBuilder, private userService: UserService) {
+              private fb: FormBuilder, private userService: UserService, private groupService: GroupService) {
 
   }
   ngOnInit() {
@@ -57,17 +58,15 @@ export class UserEditGroups implements OnInit, AfterViewInit {
 
   loadData() {
     let that = this;
-    // that.userService.get(that.id).subscribe((json:any) => {
-    //   that.model = json.data;
-    // });
-
-    that.models = [{name: '测试人员', id: 1}, {name: '开发人员', id: 2}];
+    that.groupService.listByUser(that.id).subscribe((json:any) => {
+      that.models = json.data;
+    });
   }
 
   save() {
     let that = this;
 
-    that.userService.saveGroups(that.models).subscribe((json:any) => {
+    that.groupService.saveByUser(that.models).subscribe((json:any) => {
       if (json.code == 1) {
         that.formErrors = ['保存成功'];
       } else {

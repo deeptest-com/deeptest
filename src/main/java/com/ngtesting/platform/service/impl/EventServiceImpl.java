@@ -1,10 +1,8 @@
 package com.ngtesting.platform.service.impl;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
@@ -13,26 +11,15 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSONObject;
-
-import com.ngtesting.platform.entity.EvtClient;
-import com.ngtesting.platform.entity.EvtDocument;
-import com.ngtesting.platform.entity.EvtQa;
-import com.ngtesting.platform.entity.EvtDocument.DocType;
 import com.ngtesting.platform.entity.EvtEvent;
 import com.ngtesting.platform.entity.EvtEvent.EventStatus;
-import com.ngtesting.platform.entity.EvtOrganizer;
-import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.service.DocumentService;
 import com.ngtesting.platform.service.EventService;
 import com.ngtesting.platform.service.OrganizerService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.DateUtils;
-import com.ngtesting.platform.vo.DocumentVo;
 import com.ngtesting.platform.vo.EventVo;
-import com.ngtesting.platform.vo.OrganizerVo;
 import com.ngtesting.platform.vo.Page;
-import com.ngtesting.platform.vo.QaVo;
 
 @Service
 public class EventServiceImpl extends BaseServiceImpl implements EventService {

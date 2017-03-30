@@ -4,9 +4,6 @@ package com.ngtesting.platform.service;
 import java.util.List;
 
 import com.alibaba.fastjson.JSONObject;
-
-import com.ngtesting.platform.entity.EvtClient;
-import com.ngtesting.platform.entity.EvtEvent;
 import com.ngtesting.platform.entity.EvtRegisterRecord;
 import com.ngtesting.platform.entity.EvtSession;
 import com.ngtesting.platform.vo.SessionVo;

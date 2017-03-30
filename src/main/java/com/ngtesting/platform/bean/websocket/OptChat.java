@@ -9,14 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.EvtThread;
 import com.ngtesting.platform.service.ChatService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.vo.ThreadVo;
 import com.ngtesting.platform.websocket.SystemWebSocketHandler;
-
-import com.alibaba.fastjson.JSONObject;
 
 @Service
 public class OptChat {

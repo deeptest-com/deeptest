@@ -2,7 +2,6 @@ package com.ngtesting.platform.websocket;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,11 +12,10 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.bean.ApplicationScopeBean;
 import com.ngtesting.platform.bean.websocket.OptFacade;
 import com.ngtesting.platform.util.Constant;
-
-import com.alibaba.fastjson.JSONObject;
 
 public class SystemWebSocketHandler implements WebSocketHandler {
 

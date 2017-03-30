@@ -10,20 +10,10 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSONObject;
-
-import com.ngtesting.platform.entity.EvtGuest;
-import com.ngtesting.platform.entity.EvtScheduleItem;
-import com.ngtesting.platform.entity.EvtSession;
 import com.ngtesting.platform.entity.TestCase;
-import com.ngtesting.platform.service.GuestService;
 import com.ngtesting.platform.service.TestCaseService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.Constant.TreeNodeType;
-import com.ngtesting.platform.util.StringUtil;
-import com.ngtesting.platform.vo.GuestVo;
-import com.ngtesting.platform.vo.Page;
-import com.ngtesting.platform.vo.SessionVo;
 import com.ngtesting.platform.vo.TestCaseTreeVo;
 import com.ngtesting.platform.vo.TestCaseVo;
 

@@ -1,32 +1,21 @@
 package com.ngtesting.platform.service.impl;
 
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.EvtGuest;
-import com.ngtesting.platform.entity.SysCompany;
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.SysGroup;
 import com.ngtesting.platform.entity.SysUser;
-import com.ngtesting.platform.entity.SysUser.AgentType;
-import com.ngtesting.platform.entity.SysVerifyCode;
 import com.ngtesting.platform.service.GroupService;
-import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.util.DateUtils;
 import com.ngtesting.platform.util.StringUtil;
-import com.ngtesting.platform.vo.CompanyVo;
 import com.ngtesting.platform.vo.GroupVo;
-import com.ngtesting.platform.vo.GuestVo;
 import com.ngtesting.platform.vo.Page;
-import com.ngtesting.platform.vo.UserVo;
 
 @Service
 public class GroupServiceImpl extends BaseServiceImpl implements GroupService {
@@ -87,6 +76,20 @@ public class GroupServiceImpl extends BaseServiceImpl implements GroupService {
 		saveOrUpdate(po);
 		
 		return true;
+	}
+	
+	@Override
+	public List<SysGroup> listByUser(Long companyId, Long userId){
+		
+
+		return null;
+	}
+	
+	@Override
+	public boolean saveGroupsByUser(JSONObject to) {
+		
+		
+		return false;
 	}
     
 	@Override

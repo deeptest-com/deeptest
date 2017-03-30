@@ -6,14 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Validator;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.ngtesting.platform.util.Constant.RespCode;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.util.Constant.RespCode;
 
 public class BaseAction {
 

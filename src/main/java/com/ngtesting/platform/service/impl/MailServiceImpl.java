@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,11 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import com.ngtesting.platform.service.MailService;
+
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 
 @Service
 public class MailServiceImpl extends BaseServiceImpl implements MailService {

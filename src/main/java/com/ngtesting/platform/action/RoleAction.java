@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ngtesting.platform.entity.EvtClient;
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.SysRole;
 import com.ngtesting.platform.service.RoleService;
 import com.ngtesting.platform.util.AuthPassport;
@@ -21,7 +21,6 @@ import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.RoleVo;
 import com.ngtesting.platform.vo.UserVo;
-import com.alibaba.fastjson.JSONObject;
 
 
 @Controller

@@ -1,6 +1,5 @@
 package com.ngtesting.platform.servlet;
 
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,17 +11,15 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.ngtesting.platform.entity.EvtClient;
+import com.alibaba.fastjson.JSON;
 import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.service.AccountService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.util.Constant.RespCode;
 import com.ngtesting.platform.util.SpringContextHolder;
 import com.ngtesting.platform.util.WebUtils;
-import com.ngtesting.platform.util.Constant.RespCode;
-
-import com.alibaba.fastjson.JSON;
 
 public class SystemInterceptor implements HandlerInterceptor {
 

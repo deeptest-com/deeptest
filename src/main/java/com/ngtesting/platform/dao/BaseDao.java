@@ -8,7 +8,6 @@ import java.util.Map;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 
-import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.vo.Page;
 
 /**

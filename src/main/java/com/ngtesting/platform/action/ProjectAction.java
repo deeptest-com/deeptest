@@ -2,8 +2,6 @@ package com.ngtesting.platform.action;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,34 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ngtesting.platform.entity.EvtBanner;
-import com.ngtesting.platform.entity.EvtClient;
-import com.ngtesting.platform.entity.EvtDocument;
-import com.ngtesting.platform.entity.EvtEvent;
-import com.ngtesting.platform.entity.EvtGuest;
-import com.ngtesting.platform.entity.EvtOrganizer;
-import com.ngtesting.platform.entity.SysUser;
-import com.ngtesting.platform.entity.TestCase;
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestProject;
-import com.ngtesting.platform.service.GuestService;
-import com.ngtesting.platform.service.TestCaseService;
 import com.ngtesting.platform.service.TestProjectService;
-import com.ngtesting.platform.service.impl.TestProjectServiceImpl;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
-import com.ngtesting.platform.util.StringUtil;
-import com.ngtesting.platform.vo.BannerVo;
-import com.ngtesting.platform.vo.DocumentVo;
-import com.ngtesting.platform.vo.EventVo;
-import com.ngtesting.platform.vo.GuestVo;
-import com.ngtesting.platform.vo.OrganizerVo;
-import com.ngtesting.platform.vo.Page;
-import com.ngtesting.platform.vo.TestCaseTreeVo;
-import com.ngtesting.platform.vo.TestCaseVo;
 import com.ngtesting.platform.vo.TestProjectVo;
 import com.ngtesting.platform.vo.UserVo;
-
-import com.alibaba.fastjson.JSONObject;
 
 
 @Controller

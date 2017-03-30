@@ -3,10 +3,12 @@ package com.ngtesting.platform.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -23,7 +25,6 @@ import org.hibernate.annotations.DynamicUpdate;
 public class SysRole extends BaseEntity {
     private static final long serialVersionUID = 4490780384999462762L;
 
-    private String code;
     private String name;
     private String descr;
     
@@ -34,16 +35,19 @@ public class SysRole extends BaseEntity {
     @Column(name = "company_id")
     private Long companyId;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "roleSet")
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinTable(name = "r_role_user", joinColumns = { 
+			@JoinColumn(name = "role_id", nullable = false, updatable = false) }, 
+			inverseJoinColumns = { @JoinColumn(name = "user_id", 
+					nullable = false, updatable = false) })
     private Set<SysUser> userSet = new HashSet<SysUser>(0);
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
+    
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinTable(name = "r_role_priviledge", joinColumns = { 
+			@JoinColumn(name = "role_id", nullable = false, updatable = false) }, 
+			inverseJoinColumns = { @JoinColumn(name = "priviledge_id", 
+					nullable = false, updatable = false) })
+    private Set<SysPriviledge> priviledgeSet = new HashSet<SysPriviledge>(0);
 
 	public String getName() {
 		return name;

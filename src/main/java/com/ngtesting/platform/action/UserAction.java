@@ -13,15 +13,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ngtesting.platform.entity.EvtClient;
+import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.entity.SysGroup;
 import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.service.GroupService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.vo.GroupVo;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.UserVo;
-
-import com.alibaba.fastjson.JSONObject;
 
 
 @Controller
@@ -29,6 +30,8 @@ import com.alibaba.fastjson.JSONObject;
 public class UserAction extends BaseAction {
 	@Autowired
 	UserService userService;
+	@Autowired
+	GroupService groupService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
@@ -103,18 +106,6 @@ public class UserAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		boolean success = userService.delete(to.getLong("id"));
-		
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-	
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "saveGroups", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> saveGroups(HttpServletRequest request, @RequestBody JSONObject to) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		boolean success = userService.saveGroups(to);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

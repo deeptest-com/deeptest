@@ -1,9 +1,6 @@
 package com.ngtesting.platform.service;
 
-import java.io.File;
 import java.util.Map;
-
-import com.ngtesting.platform.service.impl.MailServiceImpl;
 
 public interface MailService extends BaseService {
 

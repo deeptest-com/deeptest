@@ -3,8 +3,6 @@ package com.ngtesting.platform.util;
 import java.util.Arrays;
 import java.util.List;
 
-import com.ngtesting.platform.entity.EvtEvent.EventStatus;
-
 public final class Constant {
     // 配置项，初始化在 PropertyConfig.processProperties()
     public static String WORK_DIR;

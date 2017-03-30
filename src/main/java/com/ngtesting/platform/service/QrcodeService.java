@@ -1,6 +1,6 @@
 package com.ngtesting.platform.service;
 
-import com.alibaba.fastjson.JSONObject;;
+import com.alibaba.fastjson.JSONObject;
 
 public interface QrcodeService extends BaseService {
 

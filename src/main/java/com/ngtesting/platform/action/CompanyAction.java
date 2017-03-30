@@ -12,19 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
-import com.ngtesting.platform.entity.EvtClient;
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.SysCompany;
-import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.service.CompanyService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.vo.CompanyVo;
-import com.ngtesting.platform.vo.DocumentVo;
 import com.ngtesting.platform.vo.UserVo;
-
-import com.alibaba.fastjson.JSONObject;
 
 
 @Controller

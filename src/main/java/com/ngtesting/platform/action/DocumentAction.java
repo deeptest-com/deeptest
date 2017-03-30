@@ -13,16 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.EvtDocument;
-import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.service.DocumentService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.vo.DocumentVo;
 import com.ngtesting.platform.vo.Page;
-
-import com.alibaba.fastjson.JSONObject;
 
 
 @Controller

@@ -6,9 +6,8 @@ import java.util.Map;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.websocket.SystemWebSocketHandler;
-
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.websocket.SystemWebSocketHandler;
 
 @Service
 public class OptNews {

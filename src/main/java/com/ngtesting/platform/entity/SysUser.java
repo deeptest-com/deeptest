@@ -7,14 +7,11 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.JoinColumn;
 
 @Entity
 @Table(name = "sys_user")
@@ -31,12 +28,6 @@ public class SysUser extends BaseEntity {
     private String verifyCode;
     private Date lastLoginTime;
     
-    @Enumerated(EnumType.STRING)
-    private PlatformType platform;
-
-    @Enumerated(EnumType.STRING)
-    private AgentType agent;
-    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", insertable = false, updatable = false)
     private SysCompany company;
@@ -44,64 +35,12 @@ public class SysUser extends BaseEntity {
     @Column(name = "company_id")
     private Long companyId;
     
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "r_user_role", joinColumns = { 
-			@JoinColumn(name = "user_id", nullable = false, updatable = false) }, 
-			inverseJoinColumns = { @JoinColumn(name = "role_id", 
-					nullable = false, updatable = false) })
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userSet")
     private Set<SysRole> roleSet = new HashSet<SysRole>(0);
     
-	public static enum PlatformType{
-		IOS("IOS"), ANDROID("ANDROID"),WINDOWS("WINDOWS"), MACINTEL("MACINTEL"), OTHER("OTHER");
-		
-		private PlatformType(String textVal){
-  			this.textVal=textVal;
-  		}
-  		private String textVal;
-  		
-  		public String value(){
-  			return textVal;
-  		}
-  		
-  		public static PlatformType StringToEnum(String var){
-  			
-  			PlatformType type;
-  			if ("IOS".equals(var)) {
-  				type = IOS;
-  			} else if ("ANDROID".equals(var)) {
-  				type = ANDROID;
-  			} else if ("WINDOWS".equals(var)) {
-  				type = WINDOWS;
-  			}  else if ("MACINTEL".equals(var)) {
-  				type = MACINTEL;
-  			}  else {
-  				type = OTHER;
-  			}
-  			
-  			return type;
-  		}
-  		
-  		public String toString(){
-  			return textVal;
-  		}
-  		
-	}
-	public static enum AgentType{
-		WEBVIEW("WEBVIEW"), BROWSER("BROWSER");
-		
-		private AgentType(String textVal){
-  			this.textVal=textVal;
-  		}
-  		private String textVal;
-  		
-  		public String value(){
-  			return textVal;
-  		}
-  		
-  		public String toString(){
-  			return textVal;
-  		}
-	}
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userSet")
+    private Set<SysGroup> groupSet = new HashSet<SysGroup>(0);
+    
 
     public String getEmail() {
         return email;
@@ -165,22 +104,6 @@ public class SysUser extends BaseEntity {
 
 	public void setRoleSet(Set<SysRole> roleSet) {
 		this.roleSet = roleSet;
-	}
-
-	public PlatformType getPlatform() {
-		return platform;
-	}
-
-	public void setPlatform(PlatformType platform) {
-		this.platform = platform;
-	}
-
-	public AgentType getAgent() {
-		return agent;
-	}
-
-	public void setAgent(AgentType agent) {
-		this.agent = agent;
 	}
 
 	public SysCompany getCompany() {

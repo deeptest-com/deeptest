@@ -12,21 +12,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.entity.SysVerifyCode;
 import com.ngtesting.platform.service.AccountService;
 import com.ngtesting.platform.service.MailService;
 import com.ngtesting.platform.service.RegisterService;
-import com.ngtesting.platform.service.SessionService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.Constant;
-import com.ngtesting.platform.util.PropertyConfig;
 import com.ngtesting.platform.util.Constant.RespCode;
+import com.ngtesting.platform.util.PropertyConfig;
 import com.ngtesting.platform.vo.UserVo;
-
-import com.alibaba.fastjson.JSONObject;
 
 
 @Controller

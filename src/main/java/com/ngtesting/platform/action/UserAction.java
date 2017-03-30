@@ -85,18 +85,6 @@ public class UserAction extends BaseAction {
 	}
 	
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject to) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		boolean success = userService.delete(to.getLong("id"));
-		
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
-	@AuthPassport(validate = true)
 	@RequestMapping(value = "disable", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> disable(HttpServletRequest request, @RequestBody JSONObject to) {
@@ -107,4 +95,29 @@ public class UserAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "delete", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject to) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		boolean success = userService.delete(to.getLong("id"));
+		
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "saveGroups", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> saveGroups(HttpServletRequest request, @RequestBody JSONObject to) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		boolean success = userService.saveGroups(to);
+		
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+	
 }

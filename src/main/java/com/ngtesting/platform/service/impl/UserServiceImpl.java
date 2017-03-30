@@ -11,6 +11,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.EvtGuest;
 import com.ngtesting.platform.entity.SysCompany;
 import com.ngtesting.platform.entity.SysUser;
@@ -73,6 +74,15 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		saveOrUpdate(po);
 		return po;
 	}
+	
+	@Override
+	public boolean disable(Long id) {
+		SysUser po = (SysUser) get(SysUser.class, id);
+		po.setDisabled(!po.getDisabled());
+		saveOrUpdate(po);
+		
+		return true;
+	}
 
 	@Override
 	public boolean delete(Long id) {
@@ -84,12 +94,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean disable(Long id) {
-		SysUser po = (SysUser) get(SysUser.class, id);
-		po.setDisabled(!po.getDisabled());
-		saveOrUpdate(po);
+	public boolean saveGroups(JSONObject to) {
 		
-		return true;
+		return false;
 	}
     
 	@Override
@@ -109,4 +116,5 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         }
 		return vos;
 	}
+
 }

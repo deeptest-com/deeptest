@@ -3,6 +3,7 @@ package com.ngtesting.platform.service;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.entity.SysVerifyCode;
 import com.ngtesting.platform.vo.Page;
@@ -18,5 +19,7 @@ public interface UserService extends BaseService {
 
 	List<UserVo> genVos(List<SysUser> pos);
 	UserVo genVo(SysUser user);
+
+	boolean saveGroups(JSONObject to);
 
 }

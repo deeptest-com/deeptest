@@ -50,7 +50,7 @@ export class UserList implements OnInit, AfterViewInit {
   create():void {
     let that = this;
 
-    that._routeService.navTo("/pages/admin/user/edit/null");
+    that._routeService.navTo("/pages/admin/user/edit/null/info/null");
   }
 
   queryChange(values:any):void {

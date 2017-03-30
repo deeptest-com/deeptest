@@ -79,9 +79,7 @@ main {
 
 .edit-toolbar {
   display: flex;
-  margin: 0 0 20px 0;
-  padding: 0 0 10px 0;
-  border-bottom: 1px solid #ddd;
+  margin: 0;
   .title {
     flex: 1;
     width: 150px;
@@ -264,4 +262,59 @@ table {
 .main-with-slidebar {
   margin-left: 180px;
 }
+
+.nav-tabs {
+  .nav-item {
+    line-height: 20px;
+    .nav-link.active, .nav-link.active:focus, .nav-link.active:hover, &.open .nav-link, &.open .nav-link:focus, &.open .nav-link:hover {
+      color: #ffffff;
+      background-color: #209e91;
+    }
+  }
+}
+
+.checkbox-list {
+  min-height: 300px;
+  overflow-y: scroll;
+  border: 1px solid #d7d7d7;
+
+  .checkbox-list-inner {
+    padding: 10px;
+    .toolbar {
+      border: 1px solid #d7d7d7;
+      background-color: #f5f5f5;
+      border-radius: 2px;
+      margin-bottom: 10px;
+
+      .toolbar-inner {
+        line-height: 30px;
+        padding: 0 8px;
+        color: #505050;
+      }
+    }
+    .checkbox-list-item {
+      margin: 7px 0;
+      padding-left: 30px;
+      height: 20px;
+      position: relative;
+      label {
+        position: relative;
+        cursor: pointer;
+        .checkbox-name {
+          line-height: 20px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+        input {
+          position: absolute;
+          top: 0px;
+          left: 0px;
+          padding: 0;
+        }
+      }
+    }
+  }
+}
+
 

@@ -1,7 +1,7 @@
 import {AbstractControl} from '@angular/forms';
 
 export class ValidatorUtils {
-  public static genMsg(form:any, validateMsg:any, customValidators:string[]) {
+  public static genMsg(form:any, validateMsg: any, customValidators:string[]) {
     if (!form) {
       return;
     }

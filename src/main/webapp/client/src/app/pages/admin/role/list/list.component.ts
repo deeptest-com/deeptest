@@ -35,8 +35,8 @@ export class RoleList implements OnInit, AfterViewInit {
 
     that.queryForm = that.fb.group(
       {
-        'disabled': [that.queryModel.disabled, []],
-        'keywords': [that.queryModel.keywords, []]
+        'disabled': [],
+        'keywords': []
       }, {}
     );
 

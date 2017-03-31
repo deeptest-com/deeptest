@@ -55,10 +55,10 @@ export class UserEdit implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
       {
-        'name': ['', [Validators.required]],
-        'email': ['', [Validators.required, EmailValidator.validate()]],
-        'phone': ['', [Validators.required, PhoneValidator.validate()]],
-        'disabled': [that.user.disabled],
+        'name': [Validators.required],
+        'email': [Validators.required, EmailValidator.validate()],
+        'phone': [Validators.required, PhoneValidator.validate()],
+        'disabled': [],
         'groups': []
       }, {}
     );

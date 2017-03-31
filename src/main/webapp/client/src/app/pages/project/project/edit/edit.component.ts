@@ -56,10 +56,10 @@ export class ProjectEdit implements OnInit, AfterViewInit {
     }
     this.form = this.fb.group(
       {
-        'name': [that.model.name, [Validators.required]],
-        'descr': [that.model.descr, []],
-        'parentId': [that.model.parentId, parentValidate],
-        'disabled': [that.model.disabled],
+        'name': [Validators.required],
+        'descr': [],
+        'parentId': [parentValidate],
+        'disabled': [],
 
       }, {}
     );

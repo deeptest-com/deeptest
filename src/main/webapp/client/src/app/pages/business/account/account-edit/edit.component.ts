@@ -95,9 +95,9 @@ export class AccountEdit implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
       {
-        'name': [that.model['name'], [Validators.required]],
-        'phone': [that.model['phone'], [Validators.required]],
-        'email': [that.model['email'], [Validators.required, EmailValidator.validate()]]
+        'name': [Validators.required],
+        'phone': [Validators.required],
+        'email': [Validators.required, EmailValidator.validate()]
       }, {}
     );
 

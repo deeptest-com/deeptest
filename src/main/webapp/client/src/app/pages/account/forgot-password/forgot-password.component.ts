@@ -49,8 +49,8 @@ export class ForgotPassword implements OnInit, AfterViewInit {
   onSubmit():void {
     let that = this;
 
-    that.accountService.resetPassword(that.model).subscribe((err:any) => {
-      that.formErrors = [err];
+    that.accountService.resetPassword(that.model).subscribe((errors: any) => {
+      this.formErrors = [errors];
     });
   }
 
@@ -63,9 +63,9 @@ export class ForgotPassword implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
       {
-        'vcode': [that.model['vcode']],
-        'password': [that.model['password'], [Validators.required, Validators.pattern(/^[0-9a-zA-Z]{6,10}$/)]],
-        'rePassword': [that.model['rePassword'], [Validators.required, Validators.pattern(/^[0-9a-zA-Z]{6,10}$/)]],
+        'vcode': [],
+        'password': [Validators.required, Validators.pattern(/^[0-9a-zA-Z]{6,10}$/)],
+        'rePassword': [Validators.required, Validators.pattern(/^[0-9a-zA-Z]{6,10}$/)],
       }, {validator: EqualPasswordsValidator.validate('password', 'rePassword')}
     );
 

@@ -69,7 +69,7 @@ export class CompanyEdit implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
       {
-        'name': [that.model['name'], [Validators.required]]
+        'name': [Validators.required]
       }, {}
     );
 

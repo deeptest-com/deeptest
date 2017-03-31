@@ -17,13 +17,11 @@ export class Login {
   public form:FormGroup;
   model: any = { rememberMe: true};
 
-  public submitted:boolean = false;
-
   constructor(fb:FormBuilder, private accountService: AccountService, private routeService: RouteService) {
     this.form = fb.group({
-      'email': [this.model.email, Validators.compose([Validators.required, EmailValidator.validate()])],
-      'password': [this.model.password, Validators.compose([Validators.required, Validators.minLength(6)])],
-      'rememberMe': [this.model.rememberMe, null]
+      'email': [Validators.required, EmailValidator.validate()],
+      'password': [Validators.required, Validators.minLength(6)],
+      'rememberMe': []
     });
 
     this.form.valueChanges.subscribe(data => this.onValueChanged(data));
@@ -35,14 +33,14 @@ export class Login {
     if (!that.form) { return; }
 
     that.formErrors = ValidatorUtils.genMsg(that.form, that.validateMsg, []);
+    console.log(that.formErrors);
   }
 
   public onSubmit(values:Object):void {
     let that = this;
-    that.submitted = true;
 
-    this.accountService.login(values['email'], values['password'], values['rememberMe']).subscribe((err:any) => {
-      that.formErrors = err;
+    this.accountService.login(this.model).subscribe((errors: any) => {
+      this.formErrors = [errors];
     });
   }
 

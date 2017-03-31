@@ -28,12 +28,12 @@ export class AccountService {
   _removeCollection = 'user/removeCollections';
   _msgs = 'msgs';
 
-  login(email:string, password:string, rememberMe:string) {
+  login(model: any) {
     let that = this;
-    return this._reqService.post(this._login, {email: email, password: password, rememberMe: rememberMe}).map((json:any) => {
+    return this._reqService.post(this._login, model).map((json:any) => {
       let errors = undefined;
       if (json.code == 1) {
-        let days:number = rememberMe? 30: 1;
+        let days:number = model.rememberMe? 30: 1;
 
         that.saveProfileLocal(json.data, days);
 
@@ -53,9 +53,9 @@ export class AccountService {
       }
     });
   }
-  register(name:string, phone:string, email:string, password:string) {
+  register(model: any) {
     let that = this;
-    return this._reqService.post(this._register, {name:name, phone: phone, email: email, password: password}).map((json:any) => {
+    return this._reqService.post(this._register, model).map((json:any) => {
       let errors = undefined;
       if (json.code == 1) {
         that.saveProfileLocal(json.data, 1);

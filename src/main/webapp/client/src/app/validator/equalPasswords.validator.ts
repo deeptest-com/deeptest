@@ -1,21 +1,25 @@
-import {AbstractControl, FormGroup, ValidatorFn} from "@angular/forms";
-import {Utils} from "../utils/utils";
+import {FormGroup, ValidatorFn} from "@angular/forms";
 
 export var EqualPasswordsValidator:any = {
-  validate: function(firstField, secondField):ValidatorFn {
+  validate: function (resultKey, firstField, secondField):ValidatorFn {
     return (c:FormGroup) => {
+      let result = {};
+      let fail = false;
+
       let pass = c.controls && c.controls[firstField].value == c.controls[secondField].value;
 
-      if (pass) {
-        return null;
-      } else {
+      if (!pass) {
         console.log('passwordsEqual fail');
-        return {
-          passwordsEqual: {
-            valid: false
-          }
+        fail = true;
+        result[resultKey] = {
+          valid: false
         };
+      }
+      if (fail) {
+        return result;
+      } else {
+        return null;
       }
     }
   }
-};
+}

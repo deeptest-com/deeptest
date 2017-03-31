@@ -34,8 +34,8 @@ export class ProjectList implements OnInit, AfterViewInit {
 
     that.queryForm = that.fb.group(
       {
-        'disabled': [that.queryModel.disabled, []],
-        'keywords': [that.queryModel.keywords, []]
+        'disabled': [],
+        'keywords': []
       }, {}
     );
 

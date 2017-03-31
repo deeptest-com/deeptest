@@ -59,6 +59,7 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 		user.setEmail(email);
 		user.setPhone(phone);
 		user.setPassword(password);
+		user.setAvatar("upload/sample/user/avatar.png");
 		
 		user.setLastLoginTime(new Date());
 		saveOrUpdate(user);

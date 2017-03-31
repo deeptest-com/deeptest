@@ -1,6 +1,6 @@
 import {Component, ViewEncapsulation} from '@angular/core';
 import {FormGroup, AbstractControl, FormBuilder, Validators} from '@angular/forms';
-import {EmailValidator, EqualPasswordsValidator} from '../../../validator';
+import {ValidatorUtils, EmailValidator, PhoneValidator, EqualPasswordsValidator} from '../../../validator';
 
 import { Cookie } from 'ng2-cookies/ng2-cookies';
 
@@ -17,43 +17,60 @@ import { AccountService } from '../../../service/account';
 export class Register {
 
   public form:FormGroup;
-  public name:AbstractControl;
-  public phone:AbstractControl;
-  public email:AbstractControl;
-  public password:AbstractControl;
-  public repeatPassword:AbstractControl;
-  public passwords:FormGroup;
 
-  public submitted:boolean = false;
-  public errors: string;
+  public model: any = {};
 
   constructor(fb:FormBuilder, private accountService: AccountService, private routeService: RouteService) {
 
     this.form = fb.group({
-      'name': ['', Validators.compose([Validators.required, Validators.minLength(4)])],
-      'phone': ['', Validators.compose([Validators.required, Validators.minLength(11)])],
-      'email': ['', Validators.compose([Validators.required, EmailValidator.validate()])],
-      'passwords': fb.group({
-        'password': ['', Validators.compose([Validators.required, Validators.minLength(6)])],
-        'repeatPassword': ['', Validators.compose([Validators.required, Validators.minLength(6)])]
-      }, {validator: EqualPasswordsValidator.validate('password', 'repeatPassword')})
-    });
+      'name': [Validators.required, Validators.minLength(2)],
+      'email': [Validators.required, EmailValidator.validate()],
+      'phone': [Validators.required, PhoneValidator.validate()],
+      'password': [Validators.required, Validators.minLength(6)],
+      'repeatPassword': [Validators.required, Validators.minLength(6)]
+      },
+      {
+        validator: EqualPasswordsValidator.validate('passwordsEqual', 'password', 'repeatPassword')
+      });
+    this.form.valueChanges.subscribe(data => this.onValueChanged(data));
+    this.onValueChanged();
+  }
 
-    this.name = this.form.controls['name'];
-    this.phone = this.form.controls['phone'];
-    this.email = this.form.controls['email'];
-    this.passwords = <FormGroup> this.form.controls['passwords'];
-    this.password = this.passwords.controls['password'];
-    this.repeatPassword = this.passwords.controls['repeatPassword'];
+  onValueChanged(data?: any) {
+    let that = this;
+    if (!that.form) { return; }
+
+    that.formErrors = ValidatorUtils.genMsg(that.form, that.validateMsg, ['passwordsEqual']);
   }
 
   public onSubmit(values:Object):void {
-    let that = this;
-    this.submitted = true;
-    if (this.form.valid) {
-      this.accountService.register(values['name'], values['phone'], values['email'], values['passwords']['password']).subscribe((err:any) => {
-        that.errors = err;
-      });
-    }
+    this.accountService.register(this.model).subscribe((errors: any) => {
+      this.formErrors = [errors];
+    });
   }
+
+  formErrors = [];
+  validateMsg = {
+    'name': {
+      'required':      '姓名不能为空',
+      'minlength': '姓名不能少于2位'
+    },
+    'email': {
+      'required':      '邮箱不能为空',
+      'validate': '邮箱格式错误'
+    },
+    'phone': {
+      'required':      '手机不能为空',
+      'validate': '手机号码格式错误'
+    },
+    'password': {
+      'required':      '密码不能为空',
+      'minlength': '密码不能少于6位'
+    },
+    'repeatPassword': {
+      'required':      '重复密码不能为空',
+      'minlength': '重复密码不能少于6位'
+    },
+    'passwordsEqual': '两次密码不一致'
+  };
 }

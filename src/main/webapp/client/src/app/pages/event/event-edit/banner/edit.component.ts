@@ -183,8 +183,8 @@ export class EventEditBanner implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
         {
-          'title': [that.item.title, [Validators.required]],
-          'uri': [that.item.title, [Validators.required]]
+          'title': [Validators.required],
+          'uri': [Validators.required]
         }, {}
     );
 

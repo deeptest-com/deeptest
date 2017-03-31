@@ -113,23 +113,23 @@ export class EventEditProperty implements OnInit, AfterViewInit {
     let that = this;
     that.eventForm = that.fb.group(
         {
-          'title': [that.model.email, [Validators.required]],
+          'title': [Validators.required],
 
-          'startDate': [that.model.startDate, [Validators.required, DateTimeValidator.validateDate()]],
-          'startTime': [that.model.startTime, [Validators.required, DateTimeValidator.validateTime()]],
-          'endDate': [that.model.endDate, [Validators.required, DateTimeValidator.validateDate()]],
-          'endTime': [that.model.endTime, [Validators.required, DateTimeValidator.validateTime()]],
+          'startDate': [Validators.required, DateTimeValidator.validateDate()],
+          'startTime': [Validators.required, DateTimeValidator.validateTime()],
+          'endDate': [Validators.required, DateTimeValidator.validateDate()],
+          'endTime': [Validators.required, DateTimeValidator.validateTime()],
 
-          'registerStartDate': [that.model.startDate, [Validators.required, DateTimeValidator.validateDate()]],
-          'registerStartTime': [that.model.startTime, [Validators.required, DateTimeValidator.validateTime()]],
-          'registerEndDate': [that.model.endDate, [Validators.required, DateTimeValidator.validateDate()]],
-          'registerEndTime': [that.model.endTime, [Validators.required, DateTimeValidator.validateTime()]],
+          'registerStartDate': [Validators.required, DateTimeValidator.validateDate()],
+          'registerStartTime': [Validators.required, DateTimeValidator.validateTime()],
+          'registerEndDate': [Validators.required, DateTimeValidator.validateDate()],
+          'registerEndTime': [Validators.required, DateTimeValidator.validateTime()],
 
-          'signBefore': [that.model.signBefore, [Validators.required]],
-          'address': [that.model.address, [Validators.required]],
-          'phone': [that.model.phone, [Validators.required]],
-          'email': [that.model.email, [Validators.required, EmailValidator.validate]],
-          'website': [that.model.website, []]
+          'signBefore': [Validators.required],
+          'address': [Validators.required],
+          'phone': [Validators.required],
+          'email': [Validators.required, EmailValidator.validate],
+          'website': []
         }, {
            validator: DateTimeValidator.compareDatetime([
              ['eventTimeCompare', 'startDate','startTime','endDate','endTime'],

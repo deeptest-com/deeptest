@@ -49,9 +49,9 @@ export class GroupEdit implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
       {
-        'name': [that.model.name, [Validators.required]],
-        'descr': [that.model.email, []],
-        'disabled': [that.model.disabled]
+        'name': [Validators.required],
+        'descr': [],
+        'disabled': []
       }, {}
     );
 

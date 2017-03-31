@@ -76,7 +76,7 @@ export class UserEditGroups implements OnInit, AfterViewInit {
   select(key: string) {
     let val = key ==='all'? true: false;
     for (let model of this.models) {
-      model.selected = val;
+      model.checked = val;
     }
   }
   reset() {

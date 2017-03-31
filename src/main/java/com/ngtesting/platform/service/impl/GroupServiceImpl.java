@@ -146,7 +146,7 @@ public class GroupServiceImpl extends BaseServiceImpl implements GroupService {
         dc.addOrder(Order.asc("id"));
         List<SysGroupUser> ls = findAllByCriteria(dc);
         
-        if (ls.size() > 0) {
+        if (ls.size() == 0) {
         	return null;
         }
 		return ls.get(0);

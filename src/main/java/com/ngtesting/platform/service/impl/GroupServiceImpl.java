@@ -98,11 +98,11 @@ public class GroupServiceImpl extends BaseServiceImpl implements GroupService {
         	GroupVo vo = genVo(group);
         	
         	vo.setSelected(false);
-        	vo.setChecked(false);
+        	vo.setSelecting(false);
         	for (SysGroupUser po : userGroups) {
         		if (po.getGroupId() == group.getId()) {
             		vo.setSelected(true);
-            		vo.setChecked(true);
+            		vo.setSelecting(true);
             	}
         	}
         	vos.add(vo);
@@ -118,9 +118,9 @@ public class GroupServiceImpl extends BaseServiceImpl implements GroupService {
 		
 		for (Object obj: ls) {
 			GroupVo groupVo = JSON.parseObject(JSON.toJSONString(obj), GroupVo.class);
-			if (groupVo.getChecked() != groupVo.getSelected()) { // 变化了
+			if (groupVo.getSelecting() != groupVo.getSelected()) { // 变化了
 				SysGroupUser userGroup;
-    			if (groupVo.getChecked()) { // 勾选
+    			if (groupVo.getSelecting()) { // 勾选
     				userGroup = new SysGroupUser(companyId, userId, groupVo.getId());
     			} else { // 取消
     				userGroup = getGroupUser(companyId, userId, groupVo.getId());

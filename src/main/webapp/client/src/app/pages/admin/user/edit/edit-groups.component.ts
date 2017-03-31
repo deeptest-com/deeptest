@@ -25,7 +25,6 @@ export class UserEditGroups implements OnInit, AfterViewInit {
   id: number;
   models: any[] = [];
   formErrors: any[] = [];
-  form: any;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
               private fb: FormBuilder, private userService: UserService, private groupService: GroupService) {
@@ -41,18 +40,8 @@ export class UserEditGroups implements OnInit, AfterViewInit {
     if (that.id) {
       that.loadData();
     }
-    that.buildForm();
   }
   ngAfterViewInit() {}
-
-  buildForm(): void {
-    let that = this;
-    this.form = this.fb.group(
-      {
-        'groups': [null, []]
-      }, {}
-    );
-  }
 
   loadData() {
     let that = this;
@@ -76,7 +65,7 @@ export class UserEditGroups implements OnInit, AfterViewInit {
   select(key: string) {
     let val = key ==='all'? true: false;
     for (let model of this.models) {
-      model.checked = val;
+      model.selecting = val;
     }
   }
   reset() {

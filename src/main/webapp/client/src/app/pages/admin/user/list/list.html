@@ -44,7 +44,7 @@
         <th>{{ item.phone }}</th>
         <td>{{statusMap[''+item.disabled]}}</td>
         <td>
-          <span [routerLink]="['/pages/admin/user/edit', item.id, 'info', item.id]" class="link no-underline">编辑</span>
+          <span [routerLink]="['/pages/admin/user/edit', item.id]" class="link no-underline">编辑</span>
         </td>
       </tr>
       </tbody>

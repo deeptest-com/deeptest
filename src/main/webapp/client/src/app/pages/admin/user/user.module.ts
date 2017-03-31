@@ -17,7 +17,7 @@ import { RoleService } from '../../../service/role';
 
 import { User } from './user.component';
 import { UserList } from './list';
-import {UserEdit, UserEditInfo, UserEditGroups } from './edit';
+import {UserEdit } from './edit';
 
 @NgModule({
   imports: [
@@ -35,10 +35,7 @@ import {UserEdit, UserEditInfo, UserEditGroups } from './edit';
   declarations: [
     User,
     UserList,
-
-    UserEdit,
-    UserEditInfo,
-    UserEditGroups
+    UserEdit
   ],
   providers: [
     RouteService,

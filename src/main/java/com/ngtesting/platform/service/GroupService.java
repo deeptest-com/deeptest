@@ -18,7 +18,7 @@ public interface GroupService extends BaseService {
 	boolean disable(Long id);
 	
 	List<GroupVo> listByUser(Long companyId, Long userId);
-	boolean saveGroupsByUser(JSONObject to, Long companyId, Long userId);
+	boolean saveGroupsByUser(List<GroupVo> groups, Long companyId, Long userId);
 
 	List<GroupVo> genVos(List<SysGroup> pos);
 	GroupVo genVo(SysGroup user);

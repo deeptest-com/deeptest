@@ -112,11 +112,10 @@ public class GroupServiceImpl extends BaseServiceImpl implements GroupService {
 	}
 
 	@Override
-	public boolean saveGroupsByUser(JSONObject to, Long companyId, Long userId) {
-		List<GroupVo> ls = (List<GroupVo>)to.getObject("models", List.class);
+	public boolean saveGroupsByUser(List<GroupVo> groups, Long companyId, Long userId) {
 		SysUser user = (SysUser)get(SysUser.class, userId);
 		
-		for (Object obj: ls) {
+		for (Object obj: groups) {
 			GroupVo groupVo = JSON.parseObject(JSON.toJSONString(obj), GroupVo.class);
 			if (groupVo.getSelecting() != groupVo.getSelected()) { // 变化了
 				SysGroupUser userGroup;

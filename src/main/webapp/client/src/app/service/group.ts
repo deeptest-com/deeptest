@@ -28,8 +28,8 @@ export class GroupService {
   listByUser(id: number) {
     return this._reqService.post(this._api_url + 'listByUser', {userId: id});
   }
-  saveByUser(model: any) {
-    return this._reqService.post(this._api_url + 'saveByUser', {models: model});
+  saveByUser(userId: number, models: any) {
+    return this._reqService.post(this._api_url + 'saveByUser', {userId: userId, models: models});
   }
 }
 

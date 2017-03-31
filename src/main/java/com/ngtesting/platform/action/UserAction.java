@@ -1,5 +1,6 @@
 package com.ngtesting.platform.action;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.SysGroup;
 import com.ngtesting.platform.entity.SysUser;
@@ -61,14 +63,17 @@ public class UserAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject req) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		String accountId = req.getString("id");
+		String userId = req.getString("id");
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		SysUser po = (SysUser) userService.get(SysUser.class, Long.valueOf(accountId));
-		UserVo vo = userService.genVo(po);
+		SysUser po = (SysUser) userService.get(SysUser.class, Long.valueOf(userId));
+		UserVo user = userService.genVo(po);
+		
+		List<GroupVo> groups = groupService.listByUser(user.getCompanyId(), Long.valueOf(userId));
         
-        ret.put("data", vo);
+        ret.put("user", user);
+        ret.put("groups", groups);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -76,12 +81,16 @@ public class UserAction extends BaseAction {
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest request, @RequestBody UserVo vo) {
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		SysUser po = userService.save(vo, userVo.getCompanyId());
+		UserVo user = JSON.parseObject(JSON.toJSONString(json.get("user")), UserVo.class);;
+		List<GroupVo> groups = (List<GroupVo>) json.get("groups");
+		
+		SysUser po = userService.save(user, userVo.getCompanyId());
+		boolean success = groupService.saveGroupsByUser(groups, user.getCompanyId(), user.getId());
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

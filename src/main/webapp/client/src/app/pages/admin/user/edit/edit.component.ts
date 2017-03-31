@@ -24,13 +24,24 @@ export class UserEdit implements OnInit, AfterViewInit {
 
   id: number;
   tab: string = 'info';
-  constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute) {
+
+  user: any = {disabled: false};
+  groups: any[] = [];
+  form: any;
+  isSubmitted: boolean;
+  @ViewChild('modal') modal: ModalDirective;
+
+  constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
+              private fb: FormBuilder, private userService: UserService) {
 
   }
   ngOnInit() {
     this._route.params.forEach((params: Params) => {
-      this.id = +params['pid'];
+      this.id = +params['id'];
     });
+
+    this.loadData();
+    this.buildForm();
   }
   ngAfterViewInit() {}
 
@@ -38,7 +49,96 @@ export class UserEdit implements OnInit, AfterViewInit {
   selectTab(tab: string) {
     let that = this;
     that.tab = tab;
-    that._routeService.nav(["/pages/admin/user/edit/", that.id+'', tab, that.id+'']);
+  }
+
+  buildForm(): void {
+    let that = this;
+    this.form = this.fb.group(
+      {
+        'name': [that.user.name, [Validators.required]],
+        'email': [that.user.email, [Validators.required, EmailValidator.validate()]],
+        'phone': [that.user.phone, [Validators.required, PhoneValidator.validate()]],
+        'disabled': [that.user.disabled]
+      }, {}
+    );
+
+    this.form.valueChanges.subscribe(data => this.onValueChanged(data));
+    this.onValueChanged();
+  }
+  onValueChanged(data?: any) {
+    let that = this;
+    that.formErrors = ValidatorUtils.genMsg(that.form, that.validateMsg, []);
+  }
+
+  formErrors = [];
+  validateMsg = {
+    'name': {
+      'required':      '姓名不能为空'
+    },
+    'email': {
+      'required':      '邮箱不能为空',
+      'validate':      '邮箱格式不正确'
+    },
+    'phone': {
+      'required':      '手机不能为空',
+      'validate':      '手机格式不正确'
+    }
+  };
+
+  loadData() {
+    let that = this;
+    that.userService.get(that.id).subscribe((json:any) => {
+      that.user = json.user;
+      that.groups = json.groups;
+    });
+  }
+
+  save() {
+    let that = this;
+
+    that.userService.save(that.user, that.groups).subscribe((json:any) => {
+      if (json.code == 1) {
+
+        that.formErrors = ['保存成功'];
+        that._routeService.navTo("/pages/admin/user/list");
+      } else {
+        that.formErrors = ['保存失败'];
+      }
+    });
+  }
+
+  delete() {
+    let that = this;
+
+    that.userService.delete(that.user.id).subscribe((json:any) => {
+      if (json.code == 1) {
+        that.formErrors = ['删除成功'];
+        that._routeService.navTo("/pages/admin/user/list");
+      } else {
+        that.formErrors = ['删除失败'];
+      }
+    });
+  }
+
+  select(key: string) {
+    let val = key ==='all'? true: false;
+    for (let group of this.groups) {
+      group.selecting = val;
+    }
+  }
+  reset() {
+    this.loadData();
+  }
+
+  showModal(): void {
+    this.modal.show();
+  }
+  onModalShow():void {
+    // init jquery components if needed
+  }
+
+  hideModal(): void {
+    this.modal.hide();
   }
 
 }

@@ -106,36 +106,5 @@ public class GroupAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-	
-	
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "listByUser", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> listByUser(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		long companyId = vo.getCompanyId();
-		Long userId = json.getLong("userId");
-		
-		List<GroupVo> vos = groupService.listByUser(companyId, userId);
-        
-        ret.put("data", vos);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-	
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "saveByUser", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> saveByUser(HttpServletRequest request, @RequestBody JSONObject to) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
-		boolean success = groupService.saveGroupsByUser(to, vo.getCompanyId(), vo.getId());
-		
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
+
 }

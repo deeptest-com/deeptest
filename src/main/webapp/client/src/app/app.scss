@@ -266,6 +266,13 @@ table {
 .nav-tabs {
   .nav-item {
     line-height: 20px;
+    color: #ffffff;
+    .nav-link {
+      border: 0;
+      cursor: pointer;
+      border-top-right-radius: 6px;
+      border-top-left-radius: 6px;
+    }
     .nav-link.active, .nav-link.active:focus, .nav-link.active:hover, &.open .nav-link, &.open .nav-link:focus, &.open .nav-link:hover {
       color: #ffffff;
       background-color: #209e91;
@@ -299,9 +306,10 @@ table {
       position: relative;
       label {
         position: relative;
+        display: inline;
         cursor: pointer;
         .checkbox-name {
-          line-height: 20px;
+          padding-bottom: 2px;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;

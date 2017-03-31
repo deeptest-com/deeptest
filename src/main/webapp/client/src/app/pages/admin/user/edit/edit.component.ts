@@ -23,9 +23,8 @@ declare var jQuery;
 export class UserEdit implements OnInit, AfterViewInit {
 
   id: number;
-
-  constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
-              private fb: FormBuilder, private userService: UserService) {
+  tab: string = 'info';
+  constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute) {
 
   }
   ngOnInit() {
@@ -38,6 +37,7 @@ export class UserEdit implements OnInit, AfterViewInit {
 
   selectTab(tab: string) {
     let that = this;
+    that.tab = tab;
     that._routeService.nav(["/pages/admin/user/edit/", that.id+'', tab, that.id+'']);
   }
 

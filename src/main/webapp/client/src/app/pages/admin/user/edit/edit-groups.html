@@ -14,8 +14,7 @@
             <div *ngFor="let item of models" class="checkbox-list-item">
               <label>
                 <span class="checkbox-name">{{item.name}}<span></span></span>
-                <input type="checkbox" class="form-check-input" name="groups"
-                       [(ngModel)]="item.selecting" #groups>
+                <input type="checkbox" class="form-check-input" [(ngModel)]="item.selecting">
               </label>
             </div>
           </div>

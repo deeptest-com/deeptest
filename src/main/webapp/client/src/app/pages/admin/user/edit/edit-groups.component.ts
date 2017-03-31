@@ -1,16 +1,7 @@
 import {Component, ViewEncapsulation, ViewChild} from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { NgModule, Pipe, OnInit, AfterViewInit }      from '@angular/core';
-import { ModalDirective } from 'ng2-bootstrap';
-import {GlobalState} from '../../../../global.state';
 
-import { CONSTANT } from '../../../../utils/constant';
-import { Utils } from '../../../../utils/utils';
-import {ValidatorUtils, EmailValidator, PhoneValidator} from '../../../../validator';
-import { RouteService } from '../../../../service/route';
-
-import { UserService } from '../../../../service/user';
 import { GroupService } from '../../../../service/group';
 
 declare var jQuery;
@@ -26,8 +17,7 @@ export class UserEditGroups implements OnInit, AfterViewInit {
   models: any[] = [];
   formErrors: any[] = [];
 
-  constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
-              private fb: FormBuilder, private userService: UserService, private groupService: GroupService) {
+  constructor(private _route: ActivatedRoute, private groupService: GroupService) {
 
   }
   ngOnInit() {

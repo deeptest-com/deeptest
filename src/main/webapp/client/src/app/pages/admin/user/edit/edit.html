@@ -13,10 +13,16 @@
         </div>
       </div>
       <hr/>
-        <tabset #staticTabs>
-          <tab (select)="selectTab('info')" heading="基本信息"></tab>
-          <tab (select)="selectTab('groups')" heading="用户组"></tab>
-          <router-outlet></router-outlet>
-        </tabset>
+
+      <ul class="nav nav-tabs">
+        <li (click)="selectTab('info')" class="nav-item">
+          <span [class.active]="tab == 'info'" class="nav-link active">基本信息</span>
+        </li>
+        <li (click)="selectTab('groups')" class="nav-item">
+          <span [class.active]="tab == 'groups'" class="nav-link">用户组</span>
+        </li>
+      </ul>
+      <div class="space"></div>
+      <router-outlet></router-outlet>
   </div>
 </div>

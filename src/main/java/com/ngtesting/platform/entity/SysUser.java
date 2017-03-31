@@ -37,10 +37,6 @@ public class SysUser extends BaseEntity {
     
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userSet")
     private Set<SysRole> roleSet = new HashSet<SysRole>(0);
-    
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userSet")
-    private Set<SysGroup> groupSet = new HashSet<SysGroup>(0);
-    
 
     public String getEmail() {
         return email;
@@ -129,4 +125,5 @@ public class SysUser extends BaseEntity {
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
 	}
+	
 }

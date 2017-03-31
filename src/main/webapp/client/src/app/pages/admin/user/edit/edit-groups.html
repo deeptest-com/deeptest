@@ -1,5 +1,4 @@
-<div class="user-edit-groups">
-  <form [formGroup]="form" (ngSubmit)="save()" class="my-validate-form">
+<div class="user-edit-groups my-validate-form">
     <div class="form-group row">
       <label class="col-sm-1"></label>
       <div class="col-sm-10">
@@ -14,8 +13,8 @@
             <div>
               <div *ngFor="let item of models" class="checkbox-list-item">
                 <label>
-                  <span class="checkbox-name">{{item.name}}<span>(0)</span></span>
-                  <input type="checkbox" class="form-check-input" name="groups" formControlName="groups"
+                  <span class="checkbox-name">{{item.name}}<span></span></span>
+                  <input type="checkbox" class="form-check-input" name="groups"
                          [(ngModel)]="item.checked" #groups>
                 </label>
               </div>
@@ -28,9 +27,9 @@
 
     <div class="form-group row">
       <div class="col-sm-10 offset-sm-2">
-        <button type="submit" class="btn btn-primary">保存</button>
+        <button (click)="save()" type="button" class="btn btn-primary">保存</button>
         &nbsp;
-        <button (click)="reset()" type="reset" class="btn btn-default">重置</button>
+        <button (click)="reset()" type="button" class="btn btn-default">重置</button>
       </div>
     </div>
 
@@ -44,6 +43,4 @@
         </div>
       </div>
     </div>
-
-  </form>
 </div>

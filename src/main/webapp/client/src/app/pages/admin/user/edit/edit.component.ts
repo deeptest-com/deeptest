@@ -38,7 +38,6 @@ export class UserEdit implements OnInit, AfterViewInit {
 
   selectTab(tab: string) {
     let that = this;
-
     that._routeService.nav(["/pages/admin/user/edit/", that.id+'', tab, that.id+'']);
   }
 

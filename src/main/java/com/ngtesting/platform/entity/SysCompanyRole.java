@@ -17,19 +17,19 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
-@Table(name = "sys_project_role")
-public class SysProjectRole extends BaseEntity {
+@Table(name = "sys_company_role")
+public class SysCompanyRole extends BaseEntity {
 	private static final long serialVersionUID = -3556080851163371948L;
 	
 	private String name;
     private String descr;
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "r_project_role_priviledge", joinColumns = { 
-			@JoinColumn(name = "project_role_id", nullable = false, updatable = false) }, 
-			inverseJoinColumns = { @JoinColumn(name = "project_priviledge_id", 
+	@JoinTable(name = "r_company_role_priviledge", joinColumns = { 
+			@JoinColumn(name = "company_role_id", nullable = false, updatable = false) }, 
+			inverseJoinColumns = { @JoinColumn(name = "company_priviledge_id", 
 					nullable = false, updatable = false) })
-    private Set<SysProjectPriviledge> projectPriviledgeSet = new HashSet<SysProjectPriviledge>(0);
+    private Set<SysCompanyPriviledge> companyPriviledgeSet = new HashSet<SysCompanyPriviledge>(0);
     
 	public String getName() {
 		return name;
@@ -43,11 +43,11 @@ public class SysProjectRole extends BaseEntity {
 	public void setDescr(String descr) {
 		this.descr = descr;
 	}
-	public Set<SysProjectPriviledge> getProjectPriviledgeSet() {
-		return projectPriviledgeSet;
+	public Set<SysCompanyPriviledge> getCompanyPriviledgeSet() {
+		return companyPriviledgeSet;
 	}
-	public void setProjectPriviledgeSet(
-			Set<SysProjectPriviledge> projectPriviledgeSet) {
-		this.projectPriviledgeSet = projectPriviledgeSet;
+	public void setCompanyPriviledgeSet(
+			Set<SysCompanyPriviledge> companyPriviledgeSet) {
+		this.companyPriviledgeSet = companyPriviledgeSet;
 	}
 }

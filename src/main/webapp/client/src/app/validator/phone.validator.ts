@@ -5,9 +5,6 @@ export var PhoneValidator:any = {
   validate: function ():ValidatorFn {
     return (c:AbstractControl):{[key:string]:any} => {
       if (!c.value) {
-
-        console.log('===', c);
-
         return null;
       }
       let REGEXP = /^1[0-9]{10}$/i;

@@ -12,6 +12,8 @@ import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
 import { DatetimePickerService } from '../../../service/datetime-picker';
 import { UserService } from '../../../service/user';
+import { GroupService } from '../../../service/group';
+import { RoleService } from '../../../service/role';
 
 import { User } from './user.component';
 import { UserList } from './list';
@@ -43,6 +45,8 @@ import {UserEdit, UserEditInfo, UserEditGroups } from './edit';
     RequestService,
     DatetimePickerService,
     UserService,
+    GroupService,
+    RoleService
   ]
 })
 export default class UserModule {}

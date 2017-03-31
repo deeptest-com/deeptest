@@ -118,8 +118,7 @@ public class GroupAction extends BaseAction {
 		long companyId = vo.getCompanyId();
 		Long userId = json.getLong("userId");
 		
-		List<SysGroup> list = groupService.listByUser(companyId, userId);
-		List<GroupVo> vos = groupService.genVos(list);
+		List<GroupVo> vos = groupService.listByUser(companyId, userId);
         
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -132,7 +131,9 @@ public class GroupAction extends BaseAction {
 	public Map<String, Object> saveByUser(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		boolean success = groupService.saveGroupsByUser(to);
+		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		
+		boolean success = groupService.saveGroupsByUser(to, vo.getCompanyId(), vo.getId());
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

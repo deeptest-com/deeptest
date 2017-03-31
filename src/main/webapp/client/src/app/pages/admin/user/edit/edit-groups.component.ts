@@ -23,8 +23,8 @@ declare var jQuery;
 })
 export class UserEditGroups implements OnInit, AfterViewInit {
   id: number;
-  models: any = {};
-  modelsClone: any = {};
+  models: any[] = [];
+  formErrors: any[] = [];
   form: any;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
@@ -54,8 +54,6 @@ export class UserEditGroups implements OnInit, AfterViewInit {
     );
   }
 
-  formErrors = [];
-
   loadData() {
     let that = this;
     that.groupService.listByUser(that.id).subscribe((json:any) => {
@@ -78,7 +76,7 @@ export class UserEditGroups implements OnInit, AfterViewInit {
   select(key: string) {
     let val = key ==='all'? true: false;
     for (let model of this.models) {
-      model.checked = val;
+      model.selected = val;
     }
   }
   reset() {

@@ -15,8 +15,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "sys_priviledge")
-@DynamicInsert @DynamicUpdate
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class SysPriviledge extends BaseEntity {
 	private static final long serialVersionUID = -5510206858644860272L;
 

@@ -14,8 +14,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "r_project_role_user")
-@DynamicInsert @DynamicUpdate
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class SysProjectRoleUser extends BaseEntity {
 	private static final long serialVersionUID = 5513768856000982338L;
 
@@ -29,7 +27,7 @@ public class SysProjectRoleUser extends BaseEntity {
     private Long projectRoleId;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id", insertable = false, updatable = false)
+    @JoinColumn(name = "project_role_id", insertable = false, updatable = false)
     private SysProjectRole projectRole;
     
 	public Long getProjectId() {

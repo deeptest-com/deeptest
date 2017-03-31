@@ -19,35 +19,12 @@ public class SysCompany extends BaseEntity {
     private String city;
     private String address;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id", insertable = false, updatable = false)
-    private EvtClient admin;
-
-    @Column(name = "admin_id")
-    private Long adminId;
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public EvtClient getAdmin() {
-        return admin;
-    }
-
-    public void setAdmin(EvtClient admin) {
-        this.admin = admin;
-    }
-
-    public Long getAdminId() {
-        return adminId;
-    }
-
-    public void setAdminId(Long adminId) {
-        this.adminId = adminId;
     }
 
 	public String getProvince() {

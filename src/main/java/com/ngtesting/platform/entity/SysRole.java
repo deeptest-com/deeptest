@@ -20,8 +20,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "sys_role")
-@DynamicInsert @DynamicUpdate
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class SysRole extends BaseEntity {
     private static final long serialVersionUID = 4490780384999462762L;
 
@@ -34,7 +32,7 @@ public class SysRole extends BaseEntity {
 
     @Column(name = "company_id")
     private Long companyId;
-
+    
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "r_role_user", joinColumns = { 
 			@JoinColumn(name = "role_id", nullable = false, updatable = false) }, 
@@ -55,14 +53,6 @@ public class SysRole extends BaseEntity {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public Set<SysUser> getUserSet() {
-		return userSet;
-	}
-
-	public void setUserSet(Set<SysUser> userSet) {
-		this.userSet = userSet;
 	}
 
 	public String getDescr() {
@@ -87,6 +77,22 @@ public class SysRole extends BaseEntity {
 
 	public void setCompanyId(Long companyId) {
 		this.companyId = companyId;
+	}
+
+	public Set<SysUser> getUserSet() {
+		return userSet;
+	}
+
+	public void setUserSet(Set<SysUser> userSet) {
+		this.userSet = userSet;
+	}
+
+	public Set<SysPriviledge> getPriviledgeSet() {
+		return priviledgeSet;
+	}
+
+	public void setPriviledgeSet(Set<SysPriviledge> priviledgeSet) {
+		this.priviledgeSet = priviledgeSet;
 	}
     
 }

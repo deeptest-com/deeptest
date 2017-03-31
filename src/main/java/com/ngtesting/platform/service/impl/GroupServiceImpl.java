@@ -122,11 +122,11 @@ public class GroupServiceImpl extends BaseServiceImpl implements GroupService {
 				SysGroupUser userGroup;
     			if (groupVo.getSelecting()) { // 勾选
     				userGroup = new SysGroupUser(companyId, userId, groupVo.getId());
+    				saveOrUpdate(userGroup);
     			} else { // 取消
     				userGroup = getGroupUser(companyId, userId, groupVo.getId());
-    				userGroup.setDeleted(true);
+    				getDao().delete(userGroup);
     			}
-    			saveOrUpdate(userGroup);
 			}
 		}
 		saveOrUpdate(user);

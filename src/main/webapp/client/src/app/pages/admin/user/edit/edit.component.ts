@@ -1,6 +1,6 @@
 import {Component, ViewEncapsulation, ViewChild} from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { NgModule, Pipe, OnInit, AfterViewInit }      from '@angular/core';
 import { ModalDirective } from 'ng2-bootstrap';
 import {GlobalState} from '../../../../global.state';
@@ -27,7 +27,7 @@ export class UserEdit implements OnInit, AfterViewInit {
 
   user: any = {disabled: false};
   groups: any[] = [];
-  form: any;
+  form: FormGroup;
   isSubmitted: boolean;
   @ViewChild('modal') modal: ModalDirective;
 
@@ -55,10 +55,11 @@ export class UserEdit implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
       {
-        'name': [that.user.name, [Validators.required]],
-        'email': [that.user.email, [Validators.required, EmailValidator.validate()]],
-        'phone': [that.user.phone, [Validators.required, PhoneValidator.validate()]],
-        'disabled': [that.user.disabled]
+        'name': ['', [Validators.required]],
+        'email': ['', [Validators.required, EmailValidator.validate()]],
+        'phone': ['', [Validators.required, PhoneValidator.validate()]],
+        'disabled': [that.user.disabled],
+        'groups': []
       }, {}
     );
 
@@ -90,6 +91,10 @@ export class UserEdit implements OnInit, AfterViewInit {
     that.userService.get(that.id).subscribe((json:any) => {
       that.user = json.user;
       that.groups = json.groups;
+
+      _.forEach(that.groups, (group: any, index: number) => {
+        this.form.addControl('group-' + group.id, new FormControl('', []))
+      });
     });
   }
 

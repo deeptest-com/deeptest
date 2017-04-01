@@ -63,14 +63,21 @@ public class UserAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject req) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		String userId = req.getString("id");
-		
+		Long userId = req.getLong("id");
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		
+		if (userId == null) {
+			List<GroupVo> groups = groupService.listByUser(userVo.getCompanyId(), userVo.getId());
+			ret.put("user", new SysUser());
+	        ret.put("groups", groups);
+			ret.put("code", Constant.RespCode.SUCCESS.getCode());
+			return ret;
+		}
 		
 		SysUser po = (SysUser) userService.get(SysUser.class, Long.valueOf(userId));
 		UserVo user = userService.genVo(po);
 		
-		List<GroupVo> groups = groupService.listByUser(user.getCompanyId(), Long.valueOf(userId));
+		List<GroupVo> groups = groupService.listByUser(userVo.getCompanyId(), Long.valueOf(userId));
         
         ret.put("user", user);
         ret.put("groups", groups);

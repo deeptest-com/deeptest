@@ -108,9 +108,9 @@ export class ProfileEdit implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
       {
-        'name': [Validators.required, Validators.minLength(4)],
-        'phone': [Validators.required, Validators.minLength(11)],
-        'email': [Validators.required, EmailValidator.validate()]
+        'name': ['', [Validators.required, Validators.minLength(4)]],
+        'phone': ['', [Validators.required, Validators.minLength(11)]],
+        'email': ['', [Validators.required, EmailValidator.validate()]]
       }, {}
     );
 

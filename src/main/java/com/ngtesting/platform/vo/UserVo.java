@@ -11,6 +11,9 @@ public class UserVo extends BaseVo {
     
     private Long companyId;
     
+    private Boolean selected;
+    private Boolean selecting;
+    
     private String token;
 	public String getEmail() {
 		return email;
@@ -53,6 +56,18 @@ public class UserVo extends BaseVo {
 	}
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
+	}
+	public Boolean getSelected() {
+		return selected;
+	}
+	public void setSelected(Boolean selected) {
+		this.selected = selected;
+	}
+	public Boolean getSelecting() {
+		return selecting;
+	}
+	public void setSelecting(Boolean selecting) {
+		this.selecting = selecting;
 	}
 
 }

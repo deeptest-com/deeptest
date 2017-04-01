@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation, ViewChild} from '@angular/core';
+import {Component, ViewEncapsulation, ViewChild, QueryList, Query} from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { NgModule, Pipe, OnInit, AfterViewInit }      from '@angular/core';
@@ -9,6 +9,8 @@ import { CONSTANT } from '../../../../utils/constant';
 import { Utils } from '../../../../utils/utils';
 import {ValidatorUtils} from '../../../../validator/validator.utils';
 import { RouteService } from '../../../../service/route';
+
+import { PopDialogComponent } from '../../../../components/pop-dialog'
 
 import { ProjectService } from '../../../../service/project';
 
@@ -27,7 +29,8 @@ export class ProjectEdit implements OnInit, AfterViewInit {
   groups: any[] = [];
   form: any;
   isSubmitted: boolean;
-  @ViewChild('modal') modal: ModalDirective;
+
+  @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
               private fb: FormBuilder, private _projectService: ProjectService) {
@@ -56,11 +59,10 @@ export class ProjectEdit implements OnInit, AfterViewInit {
     }
     this.form = this.fb.group(
       {
-        'name': [Validators.required],
-        'descr': [],
-        'parentId': [parentValidate],
-        'disabled': [],
-
+        'name': ['', [Validators.required]],
+        'descr': ['', []],
+        'parentId': ['', [parentValidate]],
+        'disabled': ['', []]
       }, {}
     );
 
@@ -122,14 +124,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
   }
 
   showModal(): void {
-    this.modal.show();
-  }
-  onModalShow():void {
-    // init jquery components if needed
-  }
-
-  hideModal(): void {
-    this.modal.hide();
+    this.modalWrapper.showModal();
   }
 
 }

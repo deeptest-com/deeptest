@@ -14,6 +14,7 @@ import { FileUploadModule } from 'ng2-file-upload';
 
 import { DirectiveModule } from '../../../directive/directive.module';
 import { TableTreeModule } from '../../../components/table-tree';
+import { PopDialogModule } from '../../../components/pop-dialog';
 
 import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
@@ -39,7 +40,8 @@ import { ProjectEdit } from './edit/edit.component';
     FileUploadModule,
 
     DirectiveModule,
-    TableTreeModule
+    TableTreeModule,
+    PopDialogModule
   ],
   declarations: [
     Project,

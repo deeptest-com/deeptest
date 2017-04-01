@@ -23,11 +23,11 @@ export class Register {
   constructor(fb:FormBuilder, private accountService: AccountService, private routeService: RouteService) {
 
     this.form = fb.group({
-      'name': [Validators.required, Validators.minLength(2)],
-      'email': [Validators.required, EmailValidator.validate()],
-      'phone': [Validators.required, PhoneValidator.validate()],
-      'password': [Validators.required, Validators.minLength(6)],
-      'repeatPassword': [Validators.required, Validators.minLength(6)]
+      'name': ['', [Validators.required, Validators.minLength(2)]],
+      'email': ['', [Validators.required, EmailValidator.validate()]],
+      'phone': ['', [Validators.required, PhoneValidator.validate()]],
+      'password': ['', [Validators.required, Validators.minLength(6)]],
+      'repeatPassword': ['', [Validators.required, Validators.minLength(6)]]
       },
       {
         validator: EqualPasswordsValidator.validate('passwordsEqual', 'password', 'repeatPassword')

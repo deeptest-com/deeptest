@@ -23,8 +23,4 @@ public interface GroupService extends BaseService {
 	List<GroupVo> genVos(List<SysGroup> pos);
 	GroupVo genVo(SysGroup user);
 
-	List<SysGroupUser> listUserGroups(Long companyId, Long userId);
-
-	SysGroupUser getGroupUser(Long companyId, Long userId, Long groupId);
-
 }

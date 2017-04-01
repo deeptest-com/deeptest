@@ -25,7 +25,8 @@ const routes: Routes = [
       { path: 'project', loadChildren: () => System.import('./project/project/project.module') },
       { path: 'case', loadChildren: () => System.import('./design/case/case.module') },
 
-      { path: 'admin', loadChildren: () => System.import('./admin/admin.module') }
+      { path: 'org-admin', loadChildren: () => System.import('./admin-org/org-admin.module') },
+      { path: 'sys-admin', loadChildren: () => System.import('./admin-sys/sys-admin.module') }
     ]
   }
 ];

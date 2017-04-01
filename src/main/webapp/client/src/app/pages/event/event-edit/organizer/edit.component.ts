@@ -179,9 +179,9 @@ export class EventEditOrganizer implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
         {
-          'name': [Validators.required],
-          'title': [Validators.required],
-          'descr': [Validators.required]
+          'name': ['', [Validators.required]],
+          'title': ['', [Validators.required]],
+          'descr': ['', [Validators.required]]
         }, {}
     );
 

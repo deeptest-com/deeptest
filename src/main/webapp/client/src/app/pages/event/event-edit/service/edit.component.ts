@@ -125,7 +125,7 @@ export class EventEditService implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
       {
-        'descr': [Validators.required]
+        'descr': ['', [Validators.required]]
       }, {}
     );
 

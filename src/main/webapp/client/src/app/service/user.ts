@@ -16,7 +16,7 @@ export class UserService {
     return this._reqService.post(this._api_url + 'get', model);
   }
 
-  save(user: any, groups: any) {
+  save(user: any, groups: any[]) {
     return this._reqService.post(this._api_url + 'save', {user: user, groups: groups});
   }
 

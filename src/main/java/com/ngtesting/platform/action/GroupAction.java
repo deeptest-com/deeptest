@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.SysGroup;
+import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.service.GroupService;
+import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.vo.GroupVo;
@@ -26,6 +29,9 @@ import com.ngtesting.platform.vo.UserVo;
 @Controller
 @RequestMapping(Constant.API_PATH_CLIENT + "group/")
 public class GroupAction extends BaseAction {
+	@Autowired
+	UserService userService;
+	
 	@Autowired
 	GroupService groupService;
 	
@@ -57,14 +63,25 @@ public class GroupAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject req) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		String accountId = req.getString("id");
+
+		UserVo user = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long groupId = req.getLong("id");
+		if (groupId == null) {
+			List<UserVo> users = userService.listByGroup(user.getCompanyId(), groupId);
+			ret.put("group", new SysGroup());
+	        ret.put("users", users);
+			ret.put("code", Constant.RespCode.SUCCESS.getCode());
+			return ret;
+		}
 		
-		SysGroup po = (SysGroup) groupService.get(SysGroup.class, Long.valueOf(accountId));
-		GroupVo vo = groupService.genVo(po);
+		SysGroup po = (SysGroup) groupService.get(SysGroup.class, Long.valueOf(groupId));
+		GroupVo group = groupService.genVo(po);
+		
+		List<UserVo> users = userService.listByGroup(user.getCompanyId(), Long.valueOf(groupId));
         
-        ret.put("data", vo);
+        ret.put("group", group);
+        ret.put("users", users);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -72,12 +89,16 @@ public class GroupAction extends BaseAction {
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest request, @RequestBody GroupVo vo) {
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
+
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		SysGroup po = groupService.save(vo, userVo.getCompanyId());
+		GroupVo group = JSON.parseObject(JSON.toJSONString(json.get("group")), GroupVo.class);;
+		List<UserVo> users = (List<UserVo>) json.get("users");
+		
+		SysGroup po = groupService.save(group, userVo.getCompanyId());
+		boolean success = userService.saveUsersByGroup(users, group.getCompanyId(), group.getId());
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

@@ -69,9 +69,9 @@ export class PasswordEdit implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
       {
-        'oldPassword': [Validators.required],
-        'password': [Validators.required, Validators.pattern(/^[0-9a-zA-Z]{6,10}$/)],
-        'rePassword': [Validators.required, Validators.pattern(/^[0-9a-zA-Z]{6,10}$/)],
+        'oldPassword': ['', [Validators.required]],
+        'password': ['', [Validators.required, Validators.pattern(/^[0-9a-zA-Z]{6,10}$/)]],
+        'rePassword': ['', [Validators.required, Validators.pattern(/^[0-9a-zA-Z]{6,10}$/)]]
       }, {validator: EqualPasswordsValidator.validate('password', 'rePassword')}
     );
 

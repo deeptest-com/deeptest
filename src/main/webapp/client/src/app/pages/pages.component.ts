@@ -18,9 +18,16 @@ import { Utils } from '../utils/utils';
     </div>
     
     <footer class="al-footer clearfix">
-      <div class="al-footer-right">Created with <i class="ion-heart"></i></div>
+      <div class="al-footer-right">
+        <a href="mailto:master@ngtesting.com">master@ngtesting.com</a>
+        <i class="ion-ios-email"></i>
+      </div>
       <div class="al-footer-main clearfix">
-        <div class="al-copy">&copy; <a href="http://ngtesting.com">linkr.cn</a> 2017</div>
+        <div class="al-copy">
+          <span>&copy;</span>
+          <a href="http://www.ngtesting.com">ngtesting.com</a>
+          <span>2017</span>
+        </div>
         <ul class="al-share clearfix">
           <li><i class="socicon socicon-qq"></i></li>
           <li><i class="socicon socicon-wechat"></i></li>

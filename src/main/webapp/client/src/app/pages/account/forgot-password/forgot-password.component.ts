@@ -63,9 +63,9 @@ export class ForgotPassword implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
       {
-        'vcode': [],
-        'password': [Validators.required, Validators.pattern(/^[0-9a-zA-Z]{6,10}$/)],
-        'rePassword': [Validators.required, Validators.pattern(/^[0-9a-zA-Z]{6,10}$/)],
+        'vcode': ['', []],
+        'password': ['', [Validators.required, Validators.pattern(/^[0-9a-zA-Z]{6,10}$/)]],
+        'rePassword': ['', [Validators.required, Validators.pattern(/^[0-9a-zA-Z]{6,10}$/)]],
       }, {validator: EqualPasswordsValidator.validate('password', 'rePassword')}
     );
 

@@ -16,4 +16,8 @@ public interface UserService extends BaseService {
 	List<UserVo> genVos(List<SysUser> pos);
 	UserVo genVo(SysUser user);
 
+	List<UserVo> listByGroup(Long companyId, Long groupId);
+
+	boolean saveUsersByGroup(List<UserVo> users, Long companyId, Long groupId);
+
 }

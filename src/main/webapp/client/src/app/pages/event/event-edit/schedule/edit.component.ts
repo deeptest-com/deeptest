@@ -174,19 +174,19 @@ export class EventEditSchedule implements OnInit, AfterViewInit {
     let that = this;
     this.sessionForm = this.fb.group(
       {
-        'name': [Validators.required],
-        'address': [Validators.required],
-        'host': [Validators.required]
+        'name': ['', [Validators.required]],
+        'address': ['', [Validators.required]],
+        'host': ['', [Validators.required]]
       }, {}
     );
     this.itemForm = this.fb.group(
       {
-        'subject': [Validators.required],
-        // 'guest': [Validators.required],
-        'startDate': [Validators.required, DateTimeValidator.validateDate()],
-        'startTime': [Validators.required, DateTimeValidator.validateTime()],
-        'endDate': [Validators.required, DateTimeValidator.validateDate()],
-        'endTime': [Validators.required, DateTimeValidator.validateTime()],
+        'subject': ['', [Validators.required]],
+        // 'guest': ['', [Validators.required]],
+        'startDate': ['', [Validators.required, DateTimeValidator.validateDate()]],
+        'startTime': ['', [Validators.required, DateTimeValidator.validateTime()]],
+        'endDate': ['', [Validators.required, DateTimeValidator.validateDate()]],
+        'endTime': ['', [Validators.required, DateTimeValidator.validateTime()]]
       }, {
         validator: DateTimeValidator.compareDatetime([
           ['datetimeCompare', 'startDate','startTime','endDate','endTime']

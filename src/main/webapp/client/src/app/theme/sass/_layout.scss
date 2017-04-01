@@ -81,7 +81,7 @@ pages {
 
   padding: 0 18px 0 ($left-space + 20px);
 
-  font-size: 13px;
+  font-size: 15px;
   color: $default-text;
   transition: padding-left 0.5s ease;
 }
@@ -93,19 +93,38 @@ pages {
 
 .al-copy {
   float: left;
+  span {
+    display: block;
+    float: left;
+    padding-top: 1px;
+  }
+  a {
+    display: block;
+    float: left;
+    margin: 0 3px;
+  }
 }
 
 .al-footer-right {
   float: right;
   margin-right: 12px;
   i {
+    display: block;
+    float: left;
+    padding-top: 1px;
+
     margin: 0 4px;
     color: $danger;
-    font-size: 12px;
+    font-size: 18px;
   }
   a {
+    display: block;
+    float: left;
+
     margin-left: 4px;
     color: $default-text;
+    cursor: pointer;
+    font-size: 13px;
     &:hover {
       color: $danger;
     }

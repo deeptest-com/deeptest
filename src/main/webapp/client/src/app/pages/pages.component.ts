@@ -25,7 +25,7 @@ import { Utils } from '../utils/utils';
       <div class="al-footer-main clearfix">
         <div class="al-copy">
           <span>&copy;</span>
-          <a href="http://www.ngtesting.com">ngtesting.com</a>
+          <a href="http://www.ngtesting.com" target="_blank">ngtesting.com</a>
           <span>2017</span>
         </div>
         <ul class="al-share clearfix">

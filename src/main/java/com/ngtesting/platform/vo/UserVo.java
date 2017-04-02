@@ -9,12 +9,12 @@ public class UserVo extends BaseVo {
     private String phone;
     private String avatar;
     
-    private Long companyId;
+    private String token;
+    private Long defaultOrgId;
     
     private Boolean selected;
     private Boolean selecting;
     
-    private String token;
 	public String getEmail() {
 		return email;
 	}
@@ -45,12 +45,6 @@ public class UserVo extends BaseVo {
 //	public void setPassword(String password) {
 //		this.password = password;
 //	}
-	public Long getCompanyId() {
-		return companyId;
-	}
-	public void setCompanyId(Long companyId) {
-		this.companyId = companyId;
-	}
 	public String getAvatar() {
 		return avatar;
 	}
@@ -68,6 +62,12 @@ public class UserVo extends BaseVo {
 	}
 	public void setSelecting(Boolean selecting) {
 		this.selecting = selecting;
+	}
+	public Long getDefaultOrgId() {
+		return defaultOrgId;
+	}
+	public void setDefaultOrgId(Long defaultOrgId) {
+		this.defaultOrgId = defaultOrgId;
 	}
 
 }

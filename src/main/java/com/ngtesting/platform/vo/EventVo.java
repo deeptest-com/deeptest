@@ -71,7 +71,7 @@ public class EventVo extends BaseVo {
 
     private String status;
 
-    private Long companyId;
+    private Long orgId;
     private Long creatorId;
     
     private List<BannerVo> banners = new LinkedList<BannerVo>();
@@ -102,12 +102,12 @@ public class EventVo extends BaseVo {
         this.status = status;
     }
 
-    public Long getCompanyId() {
-        return companyId;
+    public Long getOrgId() {
+        return orgId;
     }
 
-    public void setCompanyId(Long companyId) {
-        this.companyId = companyId;
+    public void setOrgId(Long orgId) {
+        this.orgId = orgId;
     }
 
     public Long getCreatorId() {

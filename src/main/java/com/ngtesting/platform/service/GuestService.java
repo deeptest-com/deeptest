@@ -14,7 +14,7 @@ public interface GuestService extends BaseService {
 
 	GuestVo genVo(EvtGuest po);
 
-	Page list(Long companyId, int currentPage, int itemsPerPage);
+	Page list(Long orgId, int currentPage, int itemsPerPage);
 
 	EvtGuest save(GuestVo vo);
 

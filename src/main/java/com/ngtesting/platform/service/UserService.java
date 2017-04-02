@@ -7,17 +7,13 @@ import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.UserVo;
 
 public interface UserService extends BaseService {
-	Page listByPage(Long companyId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage);
+	Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage);
 	
-	SysUser save(UserVo vo, Long companyId);
-	boolean delete(Long id);
-	boolean disable(Long id);
+	SysUser save(UserVo vo, Long orgId);
+	boolean disable(Long userId, Long orgId);
+	boolean remove(Long userId, Long orgId);
 
 	List<UserVo> genVos(List<SysUser> pos);
 	UserVo genVo(SysUser user);
-
-	List<UserVo> listByGroup(Long companyId, Long groupId);
-
-	boolean saveUsersByGroup(List<UserVo> users, Long companyId, Long groupId);
 
 }

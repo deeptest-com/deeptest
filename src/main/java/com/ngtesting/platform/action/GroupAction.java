@@ -15,14 +15,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.SysGroup;
+import com.ngtesting.platform.entity.SysOrgGroup;
 import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.service.GroupService;
-import com.ngtesting.platform.service.UserService;
+import com.ngtesting.platform.service.RelationOrgGroupUserService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.vo.GroupVo;
 import com.ngtesting.platform.vo.Page;
+import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
 import com.ngtesting.platform.vo.UserVo;
 
 
@@ -30,10 +31,10 @@ import com.ngtesting.platform.vo.UserVo;
 @RequestMapping(Constant.API_PATH_CLIENT + "group/")
 public class GroupAction extends BaseAction {
 	@Autowired
-	UserService userService;
+	GroupService groupService;
 	
 	@Autowired
-	GroupService groupService;
+	RelationOrgGroupUserService orgGroupUserService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
@@ -42,14 +43,14 @@ public class GroupAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		long companyId = vo.getCompanyId();
+		Long orgId = json.getLong("orgId");
 		
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
 		int currentPage = json.getInteger("currentPage") == null? 0: json.getInteger("currentPage") - 1;
 		int itemsPerPage = json.getInteger("itemsPerPage") == null? Constant.PAGE_SIZE: json.getInteger("itemsPerPage");
 		
-		Page page = groupService.listByPage(companyId, keywords, disabled, currentPage, itemsPerPage);
+		Page page = groupService.listByPage(orgId, keywords, disabled, currentPage, itemsPerPage);
 		List<GroupVo> vos = groupService.genVos(page.getItems());
         
 		ret.put("totalItems", page.getTotal());
@@ -61,27 +62,30 @@ public class GroupAction extends BaseAction {
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "get", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject req) {
+	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		UserVo user = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		Long groupId = req.getLong("id");
-		if (groupId == null) {
-			List<UserVo> users = userService.listByGroup(user.getCompanyId(), groupId);
-			ret.put("group", new SysGroup());
-	        ret.put("users", users);
+		Long orgId = json.getLong("orgId");
+		Long orgGroupId = json.getLong("orgGroupId");
+		Long userId = json.getLong("userId");
+
+		if (orgGroupId == null) {
+			List<RelationOrgGroupUserVo> relations = orgGroupUserService.listRelationsOrgGroupUsers(orgId, orgGroupId, userId);
+			ret.put("user", new SysUser());
+	        ret.put("relations", relations);
 			ret.put("code", Constant.RespCode.SUCCESS.getCode());
 			return ret;
 		}
 		
-		SysGroup po = (SysGroup) groupService.get(SysGroup.class, Long.valueOf(groupId));
+		SysOrgGroup po = (SysOrgGroup) groupService.get(SysOrgGroup.class, Long.valueOf(orgGroupId));
 		GroupVo group = groupService.genVo(po);
 		
-		List<UserVo> users = userService.listByGroup(user.getCompanyId(), Long.valueOf(groupId));
-        
+		List<RelationOrgGroupUserVo> relations = orgGroupUserService.listRelationsOrgGroupUsers(orgId, orgGroupId, userId);
+		
         ret.put("group", group);
-        ret.put("users", users);
+        ret.put("relations", relations);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -94,11 +98,13 @@ public class GroupAction extends BaseAction {
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		GroupVo group = JSON.parseObject(JSON.toJSONString(json.get("group")), GroupVo.class);;
-		List<UserVo> users = (List<UserVo>) json.get("users");
+		Long orgId = json.getLong("orgId");
 		
-		SysGroup po = groupService.save(group, userVo.getCompanyId());
-		boolean success = userService.saveUsersByGroup(users, group.getCompanyId(), group.getId());
+		GroupVo group = JSON.parseObject(JSON.toJSONString(json.get("group")), GroupVo.class);;
+		List<RelationOrgGroupUserVo> relations = (List<RelationOrgGroupUserVo>) json.get("relations");
+		
+		SysOrgGroup po = groupService.save(group, orgId);
+		boolean success = orgGroupUserService.saveRelations(relations);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

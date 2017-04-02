@@ -1,3 +1,11 @@
 <div class="al-sidebar" (mouseleave)="hoverElemTop=outOfArea">
+  <form class="form-inline">
+    <div class="form-group">
+      <select (ngModelChange)="companyChange()" [(ngModel)]="company" class="form-control form-control-sm" name="company">
+        <option *ngFor="let entry of companies" value="{{entry.id}}">{{entry.name}}</option>
+      </select>
+    </div>
+  </form>
+
   <slidebar-menu [menuItems]="menuItems"></slidebar-menu>
 </div>

@@ -13,11 +13,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-
 @Entity
 @Table(name = "sys_role")
 public class SysRole extends BaseEntity {
@@ -27,11 +22,11 @@ public class SysRole extends BaseEntity {
     private String descr;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id", insertable = false, updatable = false)
-    private SysCompany company;
+    @JoinColumn(name = "org_id", insertable = false, updatable = false)
+    private SysOrg org;
 
-    @Column(name = "company_id")
-    private Long companyId;
+    @Column(name = "org_id")
+    private Long orgId;
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "r_role_user", joinColumns = { 
@@ -63,20 +58,20 @@ public class SysRole extends BaseEntity {
 		this.descr = descr;
 	}
 
-	public SysCompany getCompany() {
-		return company;
+	public SysOrg getOrg() {
+		return org;
 	}
 
-	public void setCompany(SysCompany company) {
-		this.company = company;
+	public void setOrg(SysOrg org) {
+		this.org = org;
 	}
 
-	public Long getCompanyId() {
-		return companyId;
+	public Long getOrgId() {
+		return orgId;
 	}
 
-	public void setCompanyId(Long companyId) {
-		this.companyId = companyId;
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
 	}
 
 	public Set<SysUser> getUserSet() {

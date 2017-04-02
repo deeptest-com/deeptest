@@ -53,11 +53,12 @@ public class EventAction extends BaseAction {
 		
 		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
+		Long orgId = req.getLong("orgId");
 		int currentPage = req.getString("currentPage") == null? 0: Integer.valueOf(req.getString("currentPage")) - 1;
 		int itemsPerPage = req.getString("itemsPerPage") == null? Constant.PAGE_SIZE: Integer.valueOf(req.getString("itemsPerPage"));
 		String status = req.getString("status");
 		
-		Page page = eventService.list(vo.getCompanyId(), status, currentPage, itemsPerPage);
+		Page page = eventService.list(orgId, status, currentPage, itemsPerPage);
 		List<EventVo> vos = eventService.genVos(page.getItems());
         
 		ret.put("totalItems", page.getTotal());
@@ -102,13 +103,14 @@ public class EventAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody EventVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
-		EvtEvent event = eventService.save(vo, userVo.getId(), userVo.getCompanyId());
-        EventVo eventVo = eventService.genVo(event);
-        
-        ret.put("event", eventVo);
+//		Long orgId = req.getLong("orgId");
+//		
+//		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+//		
+//		EvtEvent event = eventService.save(vo, userVo.getId(), orgId);
+//        EventVo eventVo = eventService.genVo(event);
+//        
+//        ret.put("event", eventVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

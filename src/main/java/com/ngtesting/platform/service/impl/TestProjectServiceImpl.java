@@ -21,7 +21,6 @@ import com.ngtesting.platform.service.TestProjectService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.TestProjectVo;
-import com.ngtesting.platform.vo.UserVo;
 
 @Service
 public class TestProjectServiceImpl extends BaseServiceImpl implements
@@ -34,11 +33,11 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	private ProjectDao projectDao;
 
 	@Override
-	// @Cacheable(value="companyProjects",key="#companyId.toString().concat('_').concat(#disabled)")
-	public List<TestProjectVo> list(Long companyId, String keywords, String disabled) {
+	// @Cacheable(value="orgProjects",key="#orgId.toString().concat('_').concat(#disabled)")
+	public List<TestProjectVo> list(Long orgId, String keywords, String disabled) {
 		// CacheManager manager = CacheManager.create();
-		// net.sf.ehcache.Cache cache = manager.getCache("companyProjects");
-		// String key = companyId + "_" + disabled;
+		// net.sf.ehcache.Cache cache = manager.getCache("orgProjects");
+		// String key = orgId + "_" + disabled;
 		// Element el = null;
 		// if(cache.isKeyInCache(key)){
 		// el = cache.get(key);
@@ -58,10 +57,10 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		dc.setFetchMode("children", FetchMode.JOIN);
 		dc.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY); 
 		
-		Filter filter = getDao().getSession().enableFilter("filter_disabled");
+		Filter filter = getDao().getSession().enableFilter("filter_project_deleted");
 		filter.setParameter("isDeleted", Boolean.valueOf(false));
 		List<TestProject> pos = findAllByCriteria(dc);
-		getDao().getSession().disableFilter("filter_disabled");
+		getDao().getSession().disableFilter("filter_project_deleted");
 
 		List<TestProjectVo> vos = this.genVos(pos, keywords, disabled);
 
@@ -71,7 +70,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	}
 	
 	@Override
-	public List<TestProjectVo> listGroups(Long companyId) {
+	public List<TestProjectVo> listGroups(Long orgId) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
 
 		dc.add(Restrictions.eq("type", ProjectType.group));
@@ -98,7 +97,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	}
 
 	@Override
-	public TestProject save(TestProjectVo vo, UserVo user) {
+	public TestProject save(TestProjectVo vo, Long orgId) {
 		if (vo == null) {
 			return null;
 		}
@@ -108,7 +107,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		if (!isNew) {
 			po = (TestProject) get(TestProject.class, vo.getId());
 		} else {
-			po.setCompanyId(user.getCompanyId());
+			po.setOrgId(orgId);
 		}
 		
 		boolean disableChanged = vo.getDisabled() != po.getDisabled();
@@ -155,7 +154,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 			}
 		}
 
-		// this.removeCache(user.getCompanyId());
+		// this.removeCache(user.getOrgId());
 
 		return po;
 	}
@@ -183,10 +182,10 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	}
 
 	// @Override
-	// public void removeCache(Long companyId) {
+	// public void removeCache(Long orgId) {
 	// CacheManager manager = CacheManager.create();
-	// net.sf.ehcache.Cache cache = manager.getCache("companyProjects");
-	// String prefix = companyId + "_";
+	// net.sf.ehcache.Cache cache = manager.getCache("orgProjects");
+	// String prefix = orgId + "_";
 	// if(cache.isKeyInCache(prefix + "true")){
 	// cache.remove(prefix + "true");
 	// }

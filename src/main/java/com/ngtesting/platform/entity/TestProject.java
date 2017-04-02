@@ -20,8 +20,7 @@ import org.hibernate.annotations.ParamDef;
 
 @Entity
 @Table(name = "tst_project")
-@FilterDef(name="filter_disabled", 
-	parameters={@ParamDef( name="isDeleted", type="boolean" ) })
+@FilterDef(name="filter_project_deleted", parameters={@ParamDef( name="isDeleted", type="boolean" ) })
 public class TestProject extends BaseEntity {
 	private static final long serialVersionUID = 7813647435255173689L;
 	private String name;
@@ -42,15 +41,15 @@ public class TestProject extends BaseEntity {
     private Long parentId;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id", insertable = false, updatable = false)
-    private SysCompany company;
+    @JoinColumn(name = "org_id", insertable = false, updatable = false)
+    private SysOrg org;
 
-    @Column(name = "company_id")
-    private Long companyId;
+    @Column(name = "org_id")
+    private Long orgId;
     
     @OneToMany(mappedBy="parent", fetch = FetchType.LAZY) 
     @OrderBy("id")
-    @Filter(name="filter_disabled", condition="deleted = :isDeleted ")
+    @Filter(name="filter_project_deleted", condition="deleted = :isDeleted ")
     private List<TestProject> children = new LinkedList<TestProject>();
     
     public static enum ProjectType {
@@ -94,20 +93,20 @@ public class TestProject extends BaseEntity {
 		this.descr = descr;
 	}
 
-	public SysCompany getCompany() {
-		return company;
+	public SysOrg getOrg() {
+		return org;
 	}
 
-	public void setCompany(SysCompany company) {
-		this.company = company;
+	public void setOrg(SysOrg org) {
+		this.org = org;
 	}
 
-	public Long getCompanyId() {
-		return companyId;
+	public Long getOrgId() {
+		return orgId;
 	}
 
-	public void setCompanyId(Long companyId) {
-		this.companyId = companyId;
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
 	}
 
 	public TestProject getParent() {

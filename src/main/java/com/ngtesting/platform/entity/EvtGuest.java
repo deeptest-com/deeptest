@@ -13,7 +13,7 @@ public class EvtGuest extends BaseEntity {
 	private static final long serialVersionUID = 6516620452856787677L;
 	
 	private String name;
-    private String company;
+    private String org;
     private String title;
     private String descr;
     private String avatar;
@@ -35,12 +35,12 @@ public class EvtGuest extends BaseEntity {
 		this.name = name;
 	}
 
-	public String getCompany() {
-		return company;
+	public String getOrg() {
+		return org;
 	}
 
-	public void setCompany(String company) {
-		this.company = company;
+	public void setOrg(String org) {
+		this.org = org;
 	}
 
 	public String getAvatar() {

@@ -15,9 +15,9 @@ public interface EventService extends BaseService {
 
 	List<EventVo> genVos(List<EvtEvent> pos);
 
-	public Page list(Long companyId, String status, int startIndex, int itemsPerPage);
+	public Page list(Long orgId, String status, int startIndex, int itemsPerPage);
 
-	public EvtEvent save(EventVo vo, Long userId, Long companyId);
+	public EvtEvent save(EventVo vo, Long userId, Long orgId);
 
 	EvtEvent genPo(EventVo vo);
 

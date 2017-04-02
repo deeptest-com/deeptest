@@ -3,6 +3,7 @@ package com.ngtesting.platform.service;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.hibernate.criterion.DetachedCriteria;
 
@@ -93,4 +94,8 @@ public interface BaseService {
     List<Map> findMapByHQL(String hqlString, Object... values);
 
     void saveOrUpdate(BaseEntity e);
+
+	boolean contains(Set<BaseEntity> set, BaseEntity e);
+
+	boolean contains(Set set, Long id);
 }

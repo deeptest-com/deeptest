@@ -5,7 +5,7 @@ public class TestProjectVo extends BaseVo {
 	private static final long serialVersionUID = -9069520320732281911L;
 	private String name;
     private String descr;
-    private Long companyId;
+    private Long orgId;
     
     private Long parentId;
     private String type;
@@ -24,11 +24,11 @@ public class TestProjectVo extends BaseVo {
 	public void setDescr(String descr) {
 		this.descr = descr;
 	}
-	public Long getCompanyId() {
-		return companyId;
+	public Long getOrgId() {
+		return orgId;
 	}
-	public void setCompanyId(Long companyId) {
-		this.companyId = companyId;
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
 	}
 
 	public Long getParentId() {

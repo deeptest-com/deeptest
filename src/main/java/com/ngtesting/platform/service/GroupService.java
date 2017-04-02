@@ -1,26 +1,20 @@
 package com.ngtesting.platform.service;
 
 import java.util.List;
-import java.util.Set;
 
-import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.SysGroup;
-import com.ngtesting.platform.entity.SysGroupUser;
+import com.ngtesting.platform.entity.SysOrgGroup;
 import com.ngtesting.platform.vo.GroupVo;
 import com.ngtesting.platform.vo.Page;
 
 public interface GroupService extends BaseService {
 
-	Page listByPage(Long companyId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage);
+	Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage);
 	
-	SysGroup save(GroupVo vo, Long companyId);
+	SysOrgGroup save(GroupVo vo, Long orgId);
 	boolean delete(Long id);
 	boolean disable(Long id);
-	
-	List<GroupVo> listByUser(Long companyId, Long userId);
-	boolean saveGroupsByUser(List<GroupVo> groups, Long companyId, Long userId);
 
-	List<GroupVo> genVos(List<SysGroup> pos);
-	GroupVo genVo(SysGroup user);
+	List<GroupVo> genVos(List<SysOrgGroup> pos);
+	GroupVo genVo(SysOrgGroup user);
 
 }

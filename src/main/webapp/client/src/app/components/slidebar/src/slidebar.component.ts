@@ -12,6 +12,10 @@ export class Slidebar {
   @Input()
   public menuItems: any[];
 
+  @Input()
+  companies: any[];
+  company: any;
+
   constructor(private _elementRef:ElementRef, private _state:GlobalState) {
 
   }
@@ -21,6 +25,10 @@ export class Slidebar {
   }
 
   public ngAfterViewInit():void {
+
+  }
+
+  companyChange():void {
 
   }
 }

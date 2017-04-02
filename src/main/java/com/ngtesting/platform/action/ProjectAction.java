@@ -37,8 +37,9 @@ public class ProjectAction extends BaseAction {
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
-		
 		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		Long orgId = json.getLong("orgId");
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
@@ -47,7 +48,7 @@ public class ProjectAction extends BaseAction {
 		
 		Long t1 = new Date().getTime();
 
-		List<TestProjectVo> vos = projectService.list(userVo.getCompanyId(), keywords, disabled);
+		List<TestProjectVo> vos = projectService.list(orgId, keywords, disabled);
 		
 		Long t2 = new Date().getTime();
 		log.debug("获取项目信息花了" + (t1 - t2) + "毫秒");
@@ -61,18 +62,21 @@ public class ProjectAction extends BaseAction {
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "get", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> get(HttpServletRequest request, @RequestBody TestProjectVo json) {
+	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		Long id = json.getId();
+		
+		Long orgId = json.getLong("orgId");
+		TestProjectVo vo = json.getObject("vo", TestProjectVo.class);
+		Long id = vo.getId();
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
 		TestProject project = projectService.getDetail(id);
-		TestProjectVo vo = projectService.genVo(project);
+		TestProjectVo vo2 = projectService.genVo(project);
 		
-		List<TestProjectVo> vos = projectService.listGroups(userVo.getCompanyId());
+		List<TestProjectVo> vos = projectService.listGroups(orgId);
         
-        ret.put("data", vo);
+        ret.put("data", vo2);
         ret.put("groups", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -81,12 +85,16 @@ public class ProjectAction extends BaseAction {
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest request, @RequestBody TestProjectVo vo) {
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		Long orgId = json.getLong("orgId");
+		TestProjectVo vo = json.getObject("vo", TestProjectVo.class);
+		Long id = vo.getId();
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		TestProject po = projectService.save(vo, userVo);
+		TestProject po = projectService.save(vo, orgId);
 		TestProjectVo projectVo = projectService.genVo(po);
         
         ret.put("data", projectVo);

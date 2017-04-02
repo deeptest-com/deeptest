@@ -13,7 +13,7 @@ public class EvtBizcard extends BaseEntity {
 	private static final long serialVersionUID = -3763972342233755352L;
 	
 	private String name;
-    private String company;
+    private String org;
     private String title;
     private String avatar;
     private String phone;
@@ -32,11 +32,11 @@ public class EvtBizcard extends BaseEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getCompany() {
-		return company;
+	public String getOrg() {
+		return org;
 	}
-	public void setCompany(String company) {
-		this.company = company;
+	public void setOrg(String org) {
+		this.org = org;
 	}
 	public String getTitle() {
 		return title;

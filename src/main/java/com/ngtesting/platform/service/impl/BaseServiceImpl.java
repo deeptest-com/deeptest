@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
@@ -268,5 +269,26 @@ public class BaseServiceImpl implements BaseService {
         } else {
             getDao().save(e);
         }
+    }
+    
+    @Override
+    public boolean contains(Set set,BaseEntity e) {
+        for (Object obj: set) {
+        	BaseEntity item = (BaseEntity) obj;
+        	if (item.getId() == e.getId()) {
+        		return true;
+        	}
+        }
+        return false;
+    }
+    @Override
+    public boolean contains(Set set, Long id) {
+        for (Object obj: set) {
+        	BaseEntity item = (BaseEntity) obj;
+        	if (item.getId() == id) {
+        		return true;
+        	}
+        }
+        return false;
     }
 }

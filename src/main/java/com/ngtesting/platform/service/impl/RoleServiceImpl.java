@@ -20,9 +20,9 @@ import com.ngtesting.platform.vo.RoleVo;
 public class RoleServiceImpl extends BaseServiceImpl implements RoleService {
 
 	@Override
-	public Page listByPage(Long companyId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
+	public Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
         DetachedCriteria dc = DetachedCriteria.forClass(SysRole.class);
-        dc.add(Restrictions.eq("companyId", companyId));
+        dc.add(Restrictions.eq("orgId", orgId));
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         
@@ -40,7 +40,7 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService {
 	}
 
 	@Override
-	public SysRole save(RoleVo vo, Long companyId) {
+	public SysRole save(RoleVo vo, Long orgId) {
 		if (vo == null) {
 			return null;
 		}
@@ -52,7 +52,7 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService {
 		
 		po.setName(vo.getName());
 		po.setDescr(vo.getDescr());
-		po.setCompanyId(companyId);
+		po.setOrgId(orgId);
 		po.setDisabled(vo.getDisabled());
 		
 		saveOrUpdate(po);

@@ -20,11 +20,11 @@ public class EvtClient extends BaseEntity {
     private String token;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id", insertable = false, updatable = false)
-    private SysCompany company;
+    @JoinColumn(name = "org_id", insertable = false, updatable = false)
+    private SysOrg org;
 
-    @Column(name = "company_id")
-    private Long companyId;
+    @Column(name = "org_id")
+    private Long orgId;
 
     public String getName() {
         return name;
@@ -58,20 +58,20 @@ public class EvtClient extends BaseEntity {
         this.title = title;
     }
 
-    public SysCompany getCompany() {
-        return company;
+    public SysOrg getOrg() {
+        return org;
     }
 
-    public void setCompany(SysCompany company) {
-        this.company = company;
+    public void setOrg(SysOrg org) {
+        this.org = org;
     }
 
-    public Long getCompanyId() {
-        return companyId;
+    public Long getOrgId() {
+        return orgId;
     }
 
-    public void setCompanyId(Long companyId) {
-        this.companyId = companyId;
+    public void setOrgId(Long orgId) {
+        this.orgId = orgId;
     }
 
 	public String getToken() {

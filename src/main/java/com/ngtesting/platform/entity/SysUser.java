@@ -5,13 +5,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Filter;
 
 @Entity
 @Table(name = "sys_user")
@@ -28,15 +26,13 @@ public class SysUser extends BaseEntity {
     private String verifyCode;
     private Date lastLoginTime;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id", insertable = false, updatable = false)
-    private SysCompany company;
-
-    @Column(name = "company_id")
-    private Long companyId;
+    private Long defaultOrgId;
     
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userSet")
     private Set<SysRole> roleSet = new HashSet<SysRole>(0);
+    
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userSet")
+    private Set<SysOrg> orgSet = new HashSet<SysOrg>(0);
 
     public String getEmail() {
         return email;
@@ -102,28 +98,28 @@ public class SysUser extends BaseEntity {
 		this.roleSet = roleSet;
 	}
 
-	public SysCompany getCompany() {
-		return company;
-	}
-
-	public void setCompany(SysCompany company) {
-		this.company = company;
-	}
-
-	public Long getCompanyId() {
-		return companyId;
-	}
-
-	public void setCompanyId(Long companyId) {
-		this.companyId = companyId;
-	}
-
 	public String getAvatar() {
 		return avatar;
 	}
 
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
+	}
+
+	public Long getDefaultOrgId() {
+		return defaultOrgId;
+	}
+
+	public void setDefaultOrgId(Long defaultOrgId) {
+		this.defaultOrgId = defaultOrgId;
+	}
+
+	public Set<SysOrg> getOrgSet() {
+		return orgSet;
+	}
+
+	public void setOrgSet(Set<SysOrg> orgSet) {
+		this.orgSet = orgSet;
 	}
 	
 }

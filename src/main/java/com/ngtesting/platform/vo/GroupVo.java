@@ -7,7 +7,7 @@ public class GroupVo extends BaseVo {
 	private String name;
     private String descr;
     
-    private Long companyId;
+    private Long orgId;
     
     private Boolean selecting;
     private Boolean selected;
@@ -28,12 +28,12 @@ public class GroupVo extends BaseVo {
 		this.descr = descr;
 	}
 
-	public Long getCompanyId() {
-		return companyId;
+	public Long getOrgId() {
+		return orgId;
 	}
 
-	public void setCompanyId(Long companyId) {
-		this.companyId = companyId;
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
 	}
 
 	public Boolean getSelected() {

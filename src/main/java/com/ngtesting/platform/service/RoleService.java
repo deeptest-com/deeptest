@@ -8,9 +8,9 @@ import com.ngtesting.platform.vo.RoleVo;
 
 public interface RoleService extends BaseService {
 
-	Page listByPage(Long companyId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage);
+	Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage);
 	
-	SysRole save(RoleVo vo, Long companyId);
+	SysRole save(RoleVo vo, Long orgId);
 	boolean delete(Long id);
 	boolean disable(Long id);
 

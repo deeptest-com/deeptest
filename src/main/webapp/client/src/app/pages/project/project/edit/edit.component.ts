@@ -27,7 +27,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
   id: number;
   model: any = {};
   groups: any[] = [];
-  form: any;
+  form: FormGroup;
   isSubmitted: boolean;
 
   @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;

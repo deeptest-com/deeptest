@@ -8,7 +8,7 @@ public class RoleVo extends BaseVo {
     private String name;
     private String descr;
     
-    private Long companyId;
+    private Long orgId;
 
 	public String getCode() {
 		return code;
@@ -26,12 +26,12 @@ public class RoleVo extends BaseVo {
 		this.name = name;
 	}
 
-	public Long getCompanyId() {
-		return companyId;
+	public Long getOrgId() {
+		return orgId;
 	}
 
-	public void setCompanyId(Long companyId) {
-		this.companyId = companyId;
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
 	}
 
 	public String getDescr() {

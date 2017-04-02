@@ -31,9 +31,9 @@ public class EventServiceImpl extends BaseServiceImpl implements EventService {
 	DocumentService documentService;
 	
 	@Override
-	public Page list(Long companyId, String statusStr, int currentPage, int itemsPerPage) {
+	public Page list(Long orgId, String statusStr, int currentPage, int itemsPerPage) {
         DetachedCriteria dc = DetachedCriteria.forClass(EvtEvent.class);
-        dc.add(Restrictions.eq("companyId", companyId));
+        dc.add(Restrictions.eq("orgId", orgId));
 //        dc.add(Restrictions.eq("creatorId", user.getId()));
         
         if (StringUtils.isNotEmpty(statusStr)) {
@@ -81,13 +81,13 @@ public class EventServiceImpl extends BaseServiceImpl implements EventService {
     }
 	
 	@Override
-	public EvtEvent save(EventVo vo, Long userId, Long companyId) {
+	public EvtEvent save(EventVo vo, Long userId, Long orgId) {
 		
 		EvtEvent po = genPo(vo);
 		
 		if (vo.getId() != null) {
 			po.setCreatorId(userId);
-			po.setCompanyId(companyId);
+			po.setOrgId(orgId);
 		}
 		saveOrUpdate(po);
 		return po;

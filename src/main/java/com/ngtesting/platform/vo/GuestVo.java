@@ -4,7 +4,7 @@ package com.ngtesting.platform.vo;
 public class GuestVo extends BaseVo {
 	private static final long serialVersionUID = -4234413706846609000L;
 	private String name;
-    private String company;
+    private String org;
     private String title;
     private String descr;
     private String avatar;
@@ -19,11 +19,11 @@ public class GuestVo extends BaseVo {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getCompany() {
-		return company;
+	public String getOrg() {
+		return org;
 	}
-	public void setCompany(String company) {
-		this.company = company;
+	public void setOrg(String org) {
+		this.org = org;
 	}
 
 	public String getAvatar() {

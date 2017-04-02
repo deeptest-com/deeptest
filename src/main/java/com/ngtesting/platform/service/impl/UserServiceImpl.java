@@ -9,16 +9,14 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSON;
-import com.ngtesting.platform.entity.SysGroup;
-import com.ngtesting.platform.entity.SysGroupUser;
+import com.ngtesting.platform.entity.SysOrg;
 import com.ngtesting.platform.entity.SysUser;
-import com.ngtesting.platform.service.GroupService;
-import com.ngtesting.platform.service.UserGroupService;
+import com.ngtesting.platform.service.AccountService;
+import com.ngtesting.platform.service.RelationOrgGroupUserService;
+import com.ngtesting.platform.service.RelationProjectRoleUserService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
-import com.ngtesting.platform.vo.GroupVo;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.UserVo;
 
@@ -26,12 +24,18 @@ import com.ngtesting.platform.vo.UserVo;
 public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	
 	@Autowired
-	UserGroupService userGroupService;
+	AccountService accountService;
+	@Autowired
+	RelationProjectRoleUserService relationProjectRoleUserService;
+	@Autowired
+	RelationOrgGroupUserService relationOrgGroupUserService;
 
 	@Override
-	public Page listByPage(Long companyId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
+	public Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
         DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
-        dc.add(Restrictions.eq("companyId", companyId));
+        
+        dc.createAlias("orgSet", "companies");
+        dc.add(Restrictions.eq("companies.id", orgId));
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         
@@ -51,23 +55,34 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public SysUser save(UserVo vo, Long companyId) {
-		if (vo == null) {
+	public SysUser save(UserVo userVo, Long orgId) {
+		if (userVo == null) {
 			return null;
 		}
 		
-		SysUser po = new SysUser();
-		if (vo.getId() != null) {
-			po = (SysUser) get(SysUser.class, vo.getId());
+		SysUser po;
+		if (userVo.getId() != null) {
+			po = (SysUser) get(SysUser.class, userVo.getId());
+		} else {
+			po = accountService.getByEmail(userVo.getEmail());
+			if (po == null) {
+				po = new SysUser();
+				po.setDefaultOrgId(orgId);
+			}
 		}
 		
-		po.setName(vo.getName());
-		po.setPhone(vo.getPhone());
-		po.setEmail(vo.getEmail());
-		po.setDisabled(vo.getDisabled());
-		po.setCompanyId(companyId);
-		if (vo.getAvatar() == null) {
+		po.setName(userVo.getName());
+		po.setPhone(userVo.getPhone());
+		po.setEmail(userVo.getEmail());
+		po.setDisabled(userVo.getDisabled());
+		if (userVo.getAvatar() == null) {
 			po.setAvatar("upload/sample/user/avatar.png");
+		}
+		
+		SysOrg org = (SysOrg)get(SysOrg.class, orgId);
+		if (!contains(org.getUserSet(), userVo.getId())) {
+			org.getUserSet().add(po);
+			saveOrUpdate(org);
 		}
 		
 		saveOrUpdate(po);
@@ -75,8 +90,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 	
 	@Override
-	public boolean disable(Long id) {
-		SysUser po = (SysUser) get(SysUser.class, id);
+	public boolean disable(Long userId, Long orgId) {
+		SysUser po = (SysUser) get(SysUser.class, userId);
 		po.setDisabled(!po.getDisabled());
 		saveOrUpdate(po);
 		
@@ -84,59 +99,10 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean delete(Long id) {
-		SysUser po = (SysUser) get(SysUser.class, id);
+	public boolean remove(Long userId, Long orgId) {
+		SysUser po = (SysUser) get(SysUser.class, userId);
 		po.setDeleted(true);
 		saveOrUpdate(po);
-		
-		return true;
-	}
-	
-	@Override
-	public List<UserVo> listByGroup(Long companyId, Long groupId){
-        DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
-        dc.add(Restrictions.eq("companyId", companyId));
-        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-        dc.addOrder(Order.asc("id"));
-        List<SysUser> allUsers = findAllByCriteria(dc);
-        
-        List<SysGroupUser> userGroups = userGroupService.listUserGroups(companyId, null, groupId);
-        List<UserVo> vos = new LinkedList<UserVo>();
-        
-        for (SysUser user : allUsers) {
-        	UserVo vo = genVo(user);
-        	
-        	vo.setSelected(false);
-        	vo.setSelecting(false);
-        	for (SysGroupUser po : userGroups) {
-        		if (po.getUserId() == user.getId()) {
-            		vo.setSelected(true);
-            		vo.setSelecting(true);
-            	}
-        	}
-        	vos.add(vo);
-        }
-
-		return vos;
-	}
-
-	@Override
-	public boolean saveUsersByGroup(List<UserVo> users, Long companyId, Long groupId) {
-		for (Object obj: users) {
-			UserVo userVo = JSON.parseObject(JSON.toJSONString(obj), UserVo.class);
-			if (userVo.getSelecting() != userVo.getSelected()) { // 变化了
-				SysGroupUser userGroup;
-				userGroup = userGroupService.getGroupUser(companyId, userVo.getId(), groupId);
-				
-    			if (userVo.getSelecting() && userGroup == null) { // 勾选
-    				userGroup = new SysGroupUser(companyId, userVo.getId(), groupId);
-    				saveOrUpdate(userGroup);
-    			} else if (userGroup != null) { // 取消
-    				getDao().delete(userGroup);
-    			}
-			}
-		}
 		
 		return true;
 	}

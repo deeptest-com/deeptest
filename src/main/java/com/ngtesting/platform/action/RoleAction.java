@@ -36,14 +36,14 @@ public class RoleAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		long companyId = userVo.getCompanyId();
+		Long orgId = json.getLong("orgId");
 		
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
 		int currentPage = json.getInteger("currentPage") == null? 0: json.getInteger("currentPage") - 1;
 		int itemsPerPage = json.getInteger("itemsPerPage") == null? Constant.PAGE_SIZE: json.getInteger("itemsPerPage");
 		
-		Page page = roleService.listByPage(companyId, keywords, disabled, currentPage, itemsPerPage);
+		Page page = roleService.listByPage(orgId, keywords, disabled, currentPage, itemsPerPage);
 		List<RoleVo> vos = roleService.genVos(page.getItems());
         
 		ret.put("totalItems", page.getTotal());
@@ -72,12 +72,16 @@ public class RoleAction extends BaseAction {
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest request, @RequestBody RoleVo vo) {
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		SysRole po = roleService.save(vo, userVo.getCompanyId());
+		Long orgId = json.getLong("orgId");
+		RoleVo vo = json.getObject("vo", RoleVo.class);
+		Long id = vo.getId();
+		
+		SysRole po = roleService.save(vo, orgId);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

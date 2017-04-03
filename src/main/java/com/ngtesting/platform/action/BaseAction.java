@@ -10,25 +10,23 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.util.Constant.RespCode;
+import com.ngtesting.platform.vo.UserVo;
 
 public class BaseAction {
-
-	public JSONObject reqJson(HttpServletRequest request) { // for wechat
-		StringBuffer jb = new StringBuffer();
-		String line = null;
-		JSONObject jsonObject = null;
-		BufferedReader reader;
-		try {
-			reader = request.getReader();
-			while ((line = reader.readLine()) != null) {
-				jb.append(line);
-			}
-			jsonObject = JSONObject.parseObject(jb.toString());
-		} catch (IOException e) {
-			e.printStackTrace();
+	
+	public UserVo genRequest(HttpServletRequest request, JSONObject json) {
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		
+		if (json.getLong("orgId") == null) {
+			json.put("orgId", userVo.getDefaultOrgId());
 		}
-		return jsonObject;
+		if (json.getLong("projectId") == null) {
+			json.put("projectId", userVo.getDefaultProjectId());
+		}
+
+		return userVo;
 	}
 
 	public boolean parameIsEmpty(String... params) {

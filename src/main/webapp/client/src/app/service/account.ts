@@ -35,22 +35,15 @@ export class AccountService {
       if (json.code == 1) {
         let days:number = model.rememberMe? 30: 1;
 
-        that.saveProfileLocal(json.data, days);
+        that.saveTokenLocal(json.token, days);
+        that.changeProfile(json.profile);
+        that.changeRecentProject(json.recentProjects);
 
         that.routeService.navTo('/pages/dashboard');
       } else {
         errors = json.msg;
       }
       return errors;
-    });
-  }
-  logout() {
-    this._reqService.post(this._logout, {}).subscribe((json:any) => {
-      if (json.code == 1) {
-        Cookie.delete(CONSTANT.PROFILE_KEY);
-
-        this.routeService.navTo('/login');
-      }
     });
   }
   register(model: any) {
@@ -58,7 +51,10 @@ export class AccountService {
     return this._reqService.post(this._register, model).map((json:any) => {
       let errors = undefined;
       if (json.code == 1) {
-        that.saveProfileLocal(json.data, 1);
+        that.saveTokenLocal(json.token, 1);
+
+        that.changeProfile(json.profile);
+        that.changeRecentProject(json.recentProjects);
 
         that.routeService.navTo('/pages/dashboard');
       } else {
@@ -68,16 +64,15 @@ export class AccountService {
     });
   }
 
-  forgotPassword(email:number) {
-    return this._reqService.post(this._forgotPassword, {email: email});
-  }
-
   resetPassword(model:number) {
     let that = this;
     return this._reqService.post(this._resetPassword, model).map((json:any) => {
       let errors = undefined;
       if (json.code == 1) {
-        that.saveProfileLocal(json.data, 1);
+        that.saveTokenLocal(json.token, 1);
+
+        that.changeProfile(json.profile);
+        that.changeRecentProject(json.recentProjects);
 
         that.routeService.navTo('/pages/dashboard');
       } else {
@@ -85,6 +80,20 @@ export class AccountService {
       }
       return errors;
     });
+  }
+
+  logout() {
+    this._reqService.post(this._logout, {}).subscribe((json:any) => {
+      if (json.code == 1) {
+        Cookie.delete(CONSTANT.TOKEN_KEY);
+
+        this.routeService.navTo('/login');
+      }
+    });
+  }
+
+  forgotPassword(email:number) {
+    return this._reqService.post(this._forgotPassword, {email: email});
   }
 
   getProfile() {
@@ -102,26 +111,40 @@ export class AccountService {
     return this._reqService.post(this._suggestions.replace(':id', ''), {suggestion: {content: content}});
   }
 
-  saveProfileLocal(profile:any, expireDays:number) {
+  saveTokenLocal(token: any, expireDays: number) {
     let that = this;
-    CONSTANT.PROFILE = profile;
+    CONSTANT.TOKEN = token;
 
     if (!expireDays) {
-      expireDays = parseInt(Cookie.get(CONSTANT.PROFILE_EXPIRE));
+      expireDays = parseInt(Cookie.get(CONSTANT.TOKEN_EXPIRE));
     } else {
-      Cookie.set(CONSTANT.PROFILE_EXPIRE, expireDays + '', 365);
+      Cookie.set(CONSTANT.TOKEN_EXPIRE, expireDays + '', 365);
     }
 
-    Cookie.set(CONSTANT.PROFILE_KEY, JSON.stringify(profile), expireDays);
-    that._state.notifyDataChanged('profile.refresh', profile);
+    Cookie.set(CONSTANT.TOKEN_KEY, JSON.stringify(token), expireDays);
   }
-  loadProfileLocal() {
+  loadProfileRemote() {
     let that = this;
-    let profile = Cookie.get(CONSTANT.PROFILE_KEY);
+    let token = Cookie.get(CONSTANT.TOKEN_KEY);
+    console.log('token', token);
 
-    if (profile) {
-      CONSTANT.PROFILE = JSON.parse(profile);
-      that._state.notifyDataChanged('profile.refresh', profile);
+    if (token) {
+      CONSTANT.TOKEN = JSON.parse(token);
+
+      this._reqService.post(that._getProfile, {}).subscribe((json: any) => {
+        that.changeProfile(json.profile);
+        that.changeRecentProject(json.recentProjects);
+      });
     }
+  }
+
+  changeProfile(profile: any) {
+    CONSTANT.PROFILE = profile;
+    this._state.notifyDataChanged('profile.refresh', profile);
+  }
+
+  changeRecentProject(recentProjects: any[]) {
+    CONSTANT.RECENT_PROJECT = recentProjects;
+    this._state.notifyDataChanged('recent.projects.change', recentProjects);
   }
 }

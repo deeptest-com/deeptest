@@ -1,6 +1,7 @@
 package com.ngtesting.platform.action;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,10 +16,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.SysOrg;
+import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.service.OrgService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.vo.OrgVo;
+import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
+import com.ngtesting.platform.vo.TestProjectVo;
 import com.ngtesting.platform.vo.UserVo;
 
 
@@ -37,10 +41,10 @@ public class OrgAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
 		String keywords = json.getString("keywords");
-		Boolean disabled = json.getBoolean("disabled");
+		String disabled = json.getString("disabled");
 		
 		List<SysOrg> ls = orgService.list(keywords, disabled, userVo.getId());
-		List<OrgVo> vos = orgService.genVos(ls);
+		List<OrgVo> vos = orgService.genVos(ls, userVo.getId());
         
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -52,16 +56,22 @@ public class OrgAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		Long orgId = json.getLong("orgId");
-		Long orgGroupId = json.getLong("orgGroupId");
-		Long userId = json.getLong("userId");
+		Long orgId = json.getLong("id");
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		SysOrg po = (SysOrg) orgService.get(SysOrg.class, Long.valueOf(orgId));
-		OrgVo vo = orgService.genVo(po);
+		if (orgId != null) {
+			SysOrg po = (SysOrg) orgService.get(SysOrg.class, orgId);
+			OrgVo vo = orgService.genVo(po);
+			
+			SysUser user = (SysUser)orgService.get(SysUser.class, userVo.getId());
+			if (po.getId() == user.getDefaultOrgId()) {
+				vo.setDefaultOrg(true);
+			}
+			
+	        ret.put("data", vo);
+		}
 		
-        ret.put("data", vo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -101,12 +111,28 @@ public class OrgAction extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		Long userId = json.getLong("id");
-		Long orgId = json.getLong("orgId");
+		Long orgId = json.getLong("id");
 		
 		boolean success = orgService.delete(orgId);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "setDefault", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		
+		Long orgId = json.getLong("id");
+		
+		List<TestProjectAccessHistoryVo> recentProjects = orgService.setDefaultPers(orgId, userVo);
+		
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		ret.put("recentProjects", recentProjects);
+		
 		return ret;
 	}
 	

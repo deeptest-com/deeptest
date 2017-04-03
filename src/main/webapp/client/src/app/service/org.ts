@@ -16,13 +16,18 @@ export class OrgService {
     return this._reqService.post(this._api_url + 'get', model);
   }
 
-  save(user: any, groups: any[]) {
-    return this._reqService.post(this._api_url + 'save', {user: user, groups: groups});
+  save(org: any) {
+    return this._reqService.post(this._api_url + 'save', org);
   }
 
   delete(id: number) {
     let model = {id: id};
     return this._reqService.post(this._api_url + 'delete', model);
+  }
+
+  setDefault(id: number) {
+    let model = {id: id};
+    return this._reqService.post(this._api_url + 'setDefault', model);
   }
 
 }

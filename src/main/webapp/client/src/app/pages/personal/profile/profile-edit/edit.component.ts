@@ -38,7 +38,7 @@ export class ProfileEdit implements OnInit, AfterViewInit {
   private allowedMimeType: string[] = ['image/png', 'image/jpeg'];
   private uploaderOptions:FileUploaderOptions = {
     url: Utils.getUploadUrl(),
-    authToken: CONSTANT.PROFILE.token,
+    authToken: CONSTANT.token,
     autoUpload: true,
     allowedMimeType: this.allowedMimeType,
     filters: [{name: 'upload', fn: (item:any) => {

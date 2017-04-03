@@ -18,6 +18,7 @@ export class BaPageTop {
   protected _onRouteChange:Subscription;
   public isScrolled:boolean = false;
   public profile:any = CONSTANT.PROFILE;
+  projects: any[] = CONSTANT.RECENT_PROJECT;
 
   constructor(private _router:Router, private _state:GlobalState, private accountService: AccountService) {
     let that = this;
@@ -30,6 +31,13 @@ export class BaPageTop {
       //
       //   this._state.notifyDataChanged('menu.change', title);
       // }
+    });
+
+    this._state.subscribe('recent.projects.change', (projects) => {
+      if (projects) {
+        this.projects = projects;
+        console.log('recent.projects.change', this.projects);
+      }
     });
 
     that._state.subscribe('profile.refresh', (profile) => {

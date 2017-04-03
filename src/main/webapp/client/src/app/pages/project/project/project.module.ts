@@ -24,6 +24,7 @@ import { ProjectService } from '../../../service/project';
 import { Project } from './project.component';
 import { ProjectList } from './list/list.component';
 import { ProjectEdit } from './edit/edit.component';
+import { ProjectView } from './view/view.component';
 
 @NgModule({
   imports: [
@@ -46,7 +47,8 @@ import { ProjectEdit } from './edit/edit.component';
   declarations: [
     Project,
     ProjectList,
-    ProjectEdit
+    ProjectEdit,
+    ProjectView
   ],
   providers: [
     RouteService,

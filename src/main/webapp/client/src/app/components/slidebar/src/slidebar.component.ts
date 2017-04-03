@@ -15,9 +15,10 @@ export class Slidebar {
   @Input()
   companies: any[];
   company: any;
+  orgReady: boolean = false;
 
-  constructor(private _elementRef:ElementRef, private _state:GlobalState) {
-
+  constructor(private _state:GlobalState) {
+    
   }
 
   public ngOnInit():void {

@@ -16,9 +16,10 @@
         <li class="dropdown-divider"></li>
 
         <li class="dropdown-item">最近查看</li>
-        <li class="dropdown-item"><a href="#">项目1</a></li>
-        <li class="dropdown-item"><a href="#">项目2</a></li>
-        <li class="dropdown-item"><a href="#">项目3</a></li>
+        <li *ngFor="let item of projects" class="dropdown-item">
+          <a [routerLink]="['/pages/project/view/', item.projectId]">{{item.projectName}}</a>
+        </li>
+
         <li class="dropdown-divider"></li>
 
         <li class="dropdown-item"><a [routerLink]="['/pages/project/list']">所有项目</a></li>
@@ -63,7 +64,7 @@
     </div>
 
     <div class="btn-group" dropdown>
-      <button type="button" class="btn btn-default" [routerLink]="['/pages/org-admin/user/list']">
+      <button type="button" class="btn btn-default" [routerLink]="['/pages/org-admin/org/list']">
         公司管理
       </button>
     </div>
@@ -84,13 +85,13 @@
   <div class="user-profile clearfix">
     <div class="dropdown al-user-profile">
       <a class="profile-toggle-link dropdown-toggle" id="user-profile-dd" data-toggle="dropdown" aria-expanded="false">
-        <img src="{{profile.avatar | imgPath}}">
+        <img src="{{profile?.avatar | imgPath}}">
       </a>
       <ul class="dropdown-menu top-dropdown-menu profile-dropdown" aria-labelledby="user-profile-dd">
         <li class="dropdown-item"><i class="dropdown-arr"></i></li>
         <li [routerLink]="['/pages/profile']" class="dropdown-item">
           <a href="javascript:void(0)">
-            <i class="fa fa-user"></i>{{profile.name}}</a></li>
+            <i class="fa fa-user"></i>{{profile?.name}}</a></li>
         <li [routerLink]="['/pages/settings']" class="dropdown-item"><a href="javascript:void(0)"><i class="fa fa-cog"></i>设置</a></li>
         <li (click)="logout()" class="dropdown-item"><a href="javascript:void(0)" class="signout"><i class="fa fa-power-off"></i>登出</a></li>
       </ul>

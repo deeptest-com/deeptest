@@ -1,4 +1,5 @@
 import {Component} from "@angular/core";
+import { GlobalState } from '../../global.state';
 
 @Component({
   selector: 'org-admin',
@@ -7,8 +8,8 @@ import {Component} from "@angular/core";
 })
 export class OrgAdmin {
 
-  public menuItems:any[] = [
-    {link:'/pages/org-admin/org/list', title: '我的公司'},
+  menus:any[] = [
+    {link:'/pages/org-admin/org/list', title: '我的公司', selected: true},
     {link:'/pages/org-admin/user/list', title: '公司用户'},
     {link:'/pages/org-admin/group/list', title: '公司群组'},
     {link:'/pages/org-admin/role/list', title: '公司角色'},
@@ -18,7 +19,19 @@ export class OrgAdmin {
     {link:'/pages/org-admin/license', title: '许可证'}
   ];
 
-  constructor() {
+  menuItems:any[] = this.menus;
+
+  constructor(private _state: GlobalState) {
+    this._state.subscribe('org.ready', (orgReady) => {
+
+      if (!orgReady) {
+        this.menuItems = [
+          {link:'/pages/org-admin/org/edit/null', title: '新建公司', selected: true}
+        ];
+      } else {
+        this.menuItems = this.menus;
+      }
+    });
   }
 
   ngOnInit() {

@@ -2,7 +2,7 @@
   <div class="row">
     <div class="list-toolbar col-xl-12">
       <div class="title">
-        用户列表
+        公司列表
       </div>
 
       <div class="filter">
@@ -33,6 +33,7 @@
         <th>名称</th>
         <th>网站</th>
         <th>状态</th>
+        <th>当前活动公司</th>
         <th>操作</th>
       </tr>
       </thead>
@@ -41,6 +42,10 @@
         <td>{{ item.name }}</td>
         <th>{{ item.website }}</th>
         <td>{{statusMap[''+item.disabled]}}</td>
+        <td>
+          <input *ngIf="!item.defaultOrg" (change)="setDefault(item)" [(ngModel)]="item.defaultOrg" type="checkbox" name="defaultOrg" #defaultOrg>
+          <input *ngIf="item.defaultOrg" onclick="return false;" [(ngModel)]="item.defaultOrg" type="checkbox" name="defaultOrg" #defaultOrg>
+        </td>
         <td>
           <span [routerLink]="['/pages/org-admin/org/edit', item.id]" class="link no-underline">编辑</span>
         </td>

@@ -25,7 +25,7 @@ export class SlidebarMenu {
   }
 
   public ngOnInit():void {
-    this.menuItems[0].selected = true;
+    
   }
 
   public ngOnDestroy():void {

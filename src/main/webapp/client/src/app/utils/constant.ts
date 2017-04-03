@@ -1,22 +1,26 @@
-export var CONSTANT: any = {
-    _SERVICE_URL_DEV: 'http://localhost:8080/ngtesting/',
-    _SERVICE_URL_PRODUCTION: 'http://localhost:8080/ngtesting/',
+export var CONSTANT:any = {
+  _SERVICE_URL_DEV: 'http://localhost:8080/ngtesting/',
+  _SERVICE_URL_PRODUCTION: 'http://localhost:8080/ngtesting/',
 
-    SERVICE_URL: undefined,
-    API_URL: undefined,
+  SERVICE_URL: undefined,
+  API_URL: undefined,
 
-    API_PATH: 'api/client/v1/',
-    UPLOAD_URI: 'uploadSingle',
+  API_PATH: 'api/client/v1/',
+  UPLOAD_URI: 'uploadSingle',
 
-    TOKEN: '',
-    PROFILE: {},
+  TOKEN: undefined,
+  ORG_ID: undefined,
+  PROJECT_ID: undefined,
 
-    PROFILE_KEY: 'com.ngtesting.events.profile',
-    PROFILE_EXPIRE: 'com.ngtesting.events.expire',
+  PROFILE: undefined,
+  RECENT_PROJECT: undefined,
 
-    EntityDisabled: {'false': '启用', 'true': '禁用', '': '所有'},
+  TOKEN_KEY: 'com.ngtesting.token',
+  TOKEN_EXPIRE: 'com.ngtesting.expire',
 
-    ScreenSize: {h: 0, w: 0},
-    DebounceTime: 800
+  EntityDisabled: {'false': '启用', 'true': '禁用', '': '所有'},
+
+  ScreenSize: {h: 0, w: 0},
+  DebounceTime: 800
 };
 

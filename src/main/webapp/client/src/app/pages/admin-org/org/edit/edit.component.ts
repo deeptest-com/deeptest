@@ -10,6 +10,8 @@ import { Utils } from '../../../../utils/utils';
 import {ValidatorUtils, EmailValidator, PhoneValidator} from '../../../../validator';
 import { RouteService } from '../../../../service/route';
 
+import { PopDialogComponent } from '../../../../components/pop-dialog'
+
 import { OrgService } from '../../../../service/org';
 
 declare var jQuery;
@@ -23,13 +25,12 @@ declare var jQuery;
 export class OrgEdit implements OnInit, AfterViewInit {
 
   id: number;
-  tab: string = 'info';
 
-  org: any = {disabled: false};
+  model: any = {disabled: false};
   groups: any[] = [];
   form: FormGroup;
   isSubmitted: boolean;
-  @ViewChild('modal') modal: ModalDirective;
+  @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
               private fb: FormBuilder, private orgService: OrgService) {
@@ -40,26 +41,21 @@ export class OrgEdit implements OnInit, AfterViewInit {
       this.id = +params['id'];
     });
 
-    this.loadData();
+    if (this.id) {
+      this.loadData();
+    }
+
     this.buildForm();
   }
   ngAfterViewInit() {}
-
-
-  selectTab(tab: string) {
-    let that = this;
-    that.tab = tab;
-  }
 
   buildForm(): void {
     let that = this;
     this.form = this.fb.group(
       {
         'name': ['', [Validators.required]],
-        'email': ['', [Validators.required, EmailValidator.validate()]],
-        'phone': ['', [Validators.required, PhoneValidator.validate()]],
-        'disabled': ['', []],
-        'groups': ['', []]
+        'website': ['', []],
+        'disabled': ['', []]
       }, {}
     );
 
@@ -75,33 +71,20 @@ export class OrgEdit implements OnInit, AfterViewInit {
   validateMsg = {
     'name': {
       'required':      '姓名不能为空'
-    },
-    'email': {
-      'required':      '邮箱不能为空',
-      'validate':      '邮箱格式不正确'
-    },
-    'phone': {
-      'required':      '手机不能为空',
-      'validate':      '手机格式不正确'
     }
   };
 
   loadData() {
     let that = this;
     that.orgService.get(that.id).subscribe((json:any) => {
-      that.org = json.org;
-      that.groups = json.groups;
-
-      _.forEach(that.groups, (group: any, index: number) => {
-        this.form.addControl('group-' + group.id, new FormControl('', []))
-      });
+      that.model = json.data;
     });
   }
 
   save() {
     let that = this;
 
-    that.orgService.save(that.org, that.groups).subscribe((json:any) => {
+    that.orgService.save(that.model).subscribe((json:any) => {
       if (json.code == 1) {
 
         that.formErrors = ['保存成功'];
@@ -115,7 +98,7 @@ export class OrgEdit implements OnInit, AfterViewInit {
   delete() {
     let that = this;
 
-    that.orgService.delete(that.org.id).subscribe((json:any) => {
+    that.orgService.delete(that.model.id).subscribe((json:any) => {
       if (json.code == 1) {
         that.formErrors = ['删除成功'];
         that._routeService.navTo("/pages/org-admin/org/list");
@@ -125,25 +108,16 @@ export class OrgEdit implements OnInit, AfterViewInit {
     });
   }
 
-  select(key: string) {
-    let val = key ==='all'? true: false;
-    for (let group of this.groups) {
-      group.selecting = val;
-    }
-  }
   reset() {
     this.loadData();
   }
 
   showModal(): void {
-    this.modal.show();
-  }
-  onModalShow():void {
-    // init jquery components if needed
-  }
-
-  hideModal(): void {
-    this.modal.hide();
+    if (this.model.defaultOrg) {
+      this.formErrors = ['无法删除当前活动的公司'];
+    } else {
+      this.modalWrapper.showModal();
+    }
   }
 
 }

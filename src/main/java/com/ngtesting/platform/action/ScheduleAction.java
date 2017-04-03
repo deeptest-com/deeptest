@@ -38,12 +38,11 @@ public class ScheduleAction extends BaseAction {
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> list(HttpServletRequest request) {
+	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		JSONObject req = reqJson(request);
-		String eventId = req.getString("eventId");
-		String isNest = req.getString("isNest") != null? req.getString("isNest"): "false";
+		String eventId = json.getString("eventId");
+		String isNest = json.getString("isNest") != null? json.getString("isNest"): "false";
 		
 		List<EvtScheduleItem> scheduleItemsBySession = scheduleService.listScheduleItemsBySession(Long.valueOf(eventId));
 		List<EvtScheduleItem> scheduleItemsByDate = scheduleService.listScheduleItemsByDate(Long.valueOf(eventId));

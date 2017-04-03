@@ -17,7 +17,7 @@ export class AccountList implements OnInit, AfterViewInit {
   currentPage:number = 1;
   itemsPerPage:number = 6;
 
-  me: any = CONSTANT.PROFILE;
+  me: any = {};
   model: any = {status: ''};
   items: Array<any> = [];
 

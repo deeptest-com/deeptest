@@ -6,6 +6,7 @@ import {CONSTANT} from "../../../../utils/constant";
 import {Utils} from "../../../../utils/utils";
 import {RouteService} from "../../../../service/route";
 import {OrgService} from "../../../../service/org";
+import {AccountService} from "../../../../service/account";
 
 @Component({
   selector: 'org-list',
@@ -22,7 +23,7 @@ export class OrgList implements OnInit, AfterViewInit {
   models: any;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
-              private orgService:OrgService) {
+              private orgService:OrgService, private accountService: AccountService) {
   }
 
   ngOnInit() {
@@ -45,9 +46,7 @@ export class OrgList implements OnInit, AfterViewInit {
   }
 
   create():void {
-    let that = this;
-
-    that._routeService.navTo("/pages/org-admin/org/edit/null");
+    this._routeService.navTo('/pages/org-admin/org/edit/null');
   }
 
   queryChange(values:any):void {
@@ -55,9 +54,15 @@ export class OrgList implements OnInit, AfterViewInit {
 
     that.loadData();
   }
-  pageChanged(event:any):void {
-    let that = this;
-    that.loadData();
+  setDefault(item: any):void {
+    this.orgService.setDefault(item.id).subscribe((json:any) => {
+      if (json.code == 1) {
+        CONSTANT.ORG_ID = item.id;
+
+        this.accountService.changeRecentProject(json.recentProjects);
+        this.loadData();
+      }
+    });
   }
 
   edit($event: any):void {
@@ -76,6 +81,13 @@ export class OrgList implements OnInit, AfterViewInit {
 
     that.orgService.list(that.queryModel).subscribe((json:any) => {
       that.models = json.data;
+
+      if (that.models.length == 0) {
+        this._state.notifyDataChanged('org.ready', false);
+        this._routeService.navTo('/pages/org-admin/org/edit/null');
+      } else {
+        this._state.notifyDataChanged('org.ready', true);
+      }
     });
   }
 

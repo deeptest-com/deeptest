@@ -1,29 +1,35 @@
-import {Injectable} from '@angular/core';
-
-import {CONSTANT} from '../utils/constant';
-import {RequestService} from './request';
+import {Injectable} from "@angular/core";
+import {GlobalState} from "../global.state";
+import {RequestService} from "./request";
 
 @Injectable()
 export class ProjectService {
-    constructor(private _reqService: RequestService) { }
-    _api_url = 'project/';
+  constructor(private _reqService:RequestService, private _state:GlobalState) {
+  }
 
-    list(query: any) {
-        return this._reqService.post(this._api_url + 'list', query);
-    }
+  _api_url = 'project/';
 
-    get(id: number) {
-      let model = {id: id};
-      return this._reqService.post(this._api_url + 'get', model);
-    }
+  list(query:any) {
+    return this._reqService.post(this._api_url + 'list', query);
+  }
 
-    save(model: any) {
-      return this._reqService.post(this._api_url + 'save', model);
-    }
+  get(id:number) {
+    let model = {id: id};
+    return this._reqService.post(this._api_url + 'get', model);
+  }
 
-  delete(id: number) {
-        let model = {id: id};
-        return this._reqService.post(this._api_url + 'delete', model);
-    }
+  save(model:any) {
+    return this._reqService.post(this._api_url + 'save', model);
+  }
+
+  delete(id:number) {
+    let model = {id: id};
+    return this._reqService.post(this._api_url + 'delete', model);
+  }
+
+  view(projectId: number) {
+    let model = {projectId: projectId};
+    return this._reqService.post(this._api_url + 'view', model);
+  }
 }
 

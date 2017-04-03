@@ -1,5 +1,6 @@
 package com.ngtesting.platform.entity;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class TestProject extends BaseEntity {
 	private ProjectType type;
 
 	private Integer ord;
+	private Date lastAccessTime;
 	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", insertable = false, updatable = false)
@@ -147,6 +149,14 @@ public class TestProject extends BaseEntity {
 
 	public void setOrd(Integer ord) {
 		this.ord = ord;
+	}
+
+	public Date getLastAccessTime() {
+		return lastAccessTime;
+	}
+
+	public void setLastAccessTime(Date lastAccessTime) {
+		this.lastAccessTime = lastAccessTime;
 	}
     
 }

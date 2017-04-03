@@ -33,7 +33,6 @@ export class Login {
     if (!that.form) { return; }
 
     that.formErrors = ValidatorUtils.genMsg(that.form, that.validateMsg, []);
-    console.log(that.formErrors);
   }
 
   public onSubmit(values:Object):void {

@@ -1,6 +1,7 @@
 package com.ngtesting.platform.action;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,12 +19,15 @@ import com.ngtesting.platform.entity.SysVerifyCode;
 import com.ngtesting.platform.service.AccountService;
 import com.ngtesting.platform.service.MailService;
 import com.ngtesting.platform.service.RegisterService;
+import com.ngtesting.platform.service.TestProjectService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.util.Constant.RespCode;
 import com.ngtesting.platform.util.PropertyConfig;
+import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
+import com.ngtesting.platform.vo.TestProjectVo;
 import com.ngtesting.platform.vo.UserVo;
 
 
@@ -34,6 +38,8 @@ public class AccountAction extends BaseAction {
 	AccountService accountService;
 	@Autowired
 	UserService userService;
+	@Autowired
+	TestProjectService projectService;
 	
 	@Autowired
 	RegisterService registerService;
@@ -53,12 +59,15 @@ public class AccountAction extends BaseAction {
 		
 		SysUser user = accountService.loginPers(email, password, rememberMe);
 		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));
-
+		
 		if (user != null) {
+			UserVo userVo = userService.genVo(user);
+			
+			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), user.getDefaultProjectId());
+			
+			ret.put("profile", userVo);
+			ret.put("recentProjects", recentProjects);
 			ret.put("token", user.getToken());
-
-			UserVo vo = userService.genVo(user); 
-			ret.put("data", vo);
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());
@@ -68,33 +77,6 @@ public class AccountAction extends BaseAction {
 		return ret;
 	}
 	
-	@AuthPassport(validate=true)
-	@RequestMapping(value = "logout", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> logout(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		if (vo == null) {
-			ret.put("code", RespCode.BIZ_FAIL.getCode());
-			ret.put("msg", "您不在登录状态");
-			return ret;
-		}
-		SysUser user = accountService.logoutPers(vo.getEmail());
-		
-		if (user != null) {
-			request.getSession().removeAttribute(Constant.HTTP_SESSION_USER_KEY);
-			
-			ret.put("token", user.getToken());
-			ret.put("code", RespCode.SUCCESS.getCode());
-		} else {
-			ret.put("code", RespCode.BIZ_FAIL.getCode());
-			ret.put("msg", "登出失败");
-		}
-
-		return ret;
-	}
-
 	@AuthPassport(validate=false)
 	@RequestMapping(value = "register", method = RequestMethod.POST)
 	@ResponseBody
@@ -107,18 +89,70 @@ public class AccountAction extends BaseAction {
 		String password = json.getString("password");
 
 		SysUser user = accountService.registerPers(name, email, phone, password);
+		
 		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));
 
 		if (user != null) {
+			UserVo userVo = userService.genVo(user);
+			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), user.getDefaultProjectId());
+			
+			ret.put("profile", userVo);
+			ret.put("recentProjects", recentProjects);
 			ret.put("token", user.getToken());
-
-			UserVo vo = userService.genVo(user); 
-			ret.put("data", vo);
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());
 			ret.put("msg", "邮箱已存在");
 		}
+
+		return ret;
+	}
+	
+
+	@AuthPassport(validate=false)
+	@RequestMapping(value = "resetPassword", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> resetPassword(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		String verifyCode = json.getString("vcode");
+		String password = json.getString("password");
+
+		SysUser user = accountService.resetPasswordPers(verifyCode, password);
+
+		if (user != null) {
+			UserVo userVo = userService.genVo(user);
+			request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
+			
+			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), userVo.getDefaultProjectId());
+			
+			ret.put("profile", userVo);
+			ret.put("recentProjects", recentProjects);
+			ret.put("token", user.getToken());
+			ret.put("code", RespCode.SUCCESS.getCode());
+		} else {
+			ret.put("code", RespCode.BIZ_FAIL.getCode());
+			ret.put("data", "重置密码失败");
+		}
+
+		return ret;
+	}
+	
+	@RequestMapping(value = "getProfile", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> getProfile(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		UserVo userVo = genRequest(request, json);
+		Long orgId = json.getLong("orgId");
+		Long projectId = json.getLong("projectId");
+		
+		List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(orgId, userVo.getId());
+
+		ret.put("profile", userVo);
+		ret.put("recentProjects", recentProjects);
+		
+		ret.put("code", RespCode.SUCCESS.getCode());
 
 		return ret;
 	}
@@ -154,44 +188,31 @@ public class AccountAction extends BaseAction {
 
 		return ret;
 	}
-
-	@AuthPassport(validate=false)
-	@RequestMapping(value = "resetPassword", method = RequestMethod.POST)
+	
+	
+	@AuthPassport(validate=true)
+	@RequestMapping(value = "logout", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> resetPassword(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> logout(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-
-		String verifyCode = json.getString("vcode");
-		String password = json.getString("password");
-
-		SysUser user = accountService.resetPasswordPers(verifyCode, password);
-
+		
+		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		if (vo == null) {
+			ret.put("code", RespCode.BIZ_FAIL.getCode());
+			ret.put("msg", "您不在登录状态");
+			return ret;
+		}
+		SysUser user = accountService.logoutPers(vo.getEmail());
+		
 		if (user != null) {
-			request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));
+			request.getSession().removeAttribute(Constant.HTTP_SESSION_USER_KEY);
 			
 			ret.put("token", user.getToken());
-
-			UserVo vo = new UserVo();
-			BeanUtilEx.copyProperties(vo, user);
-			ret.put("data", vo);
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());
-			ret.put("data", "重置密码失败");
+			ret.put("msg", "登出失败");
 		}
-
-		return ret;
-	}
-
-	@RequestMapping(value = "getProfile", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> getProfile(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
-		ret.put("data", vo);
-		ret.put("code", RespCode.SUCCESS.getCode());
 
 		return ret;
 	}

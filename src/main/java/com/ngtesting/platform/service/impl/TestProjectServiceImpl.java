@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,12 +16,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ngtesting.platform.dao.ProjectDao;
+import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestProject.ProjectType;
+import com.ngtesting.platform.entity.TestProjectAccessHistory;
 import com.ngtesting.platform.service.TestProjectService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
+import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
 import com.ngtesting.platform.vo.TestProjectVo;
+import com.ngtesting.platform.vo.UserVo;
 
 @Service
 public class TestProjectServiceImpl extends BaseServiceImpl implements
@@ -45,7 +50,8 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		// }
 
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
-		
+
+		dc.add(Restrictions.eq("orgId", orgId));
 		if (StringUtil.isNotEmpty(disabled)) {
 			dc.add(Restrictions.eq("disabled", Boolean.valueOf(disabled)));
 		}
@@ -70,7 +76,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	}
 	
 	@Override
-	public List<TestProjectVo> listGroups(Long orgId) {
+	public List<TestProjectVo> listProjectGroups(Long orgId) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
 
 		dc.add(Restrictions.eq("type", ProjectType.group));
@@ -82,6 +88,28 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		List<TestProject> pos = findAllByCriteria(dc);
 
 		List<TestProjectVo> vos = this.genGroupVos(pos);
+
+		return vos;
+	}
+	
+	@Override
+	public List<TestProjectAccessHistory> listRecentProject(Long orgId, Long userId) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestProjectAccessHistory.class);
+
+		dc.add(Restrictions.eq("orgId", orgId));
+		dc.add(Restrictions.eq("userId", userId));
+		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+		dc.add(Restrictions.eq("disabled", false));
+		dc.addOrder(Order.desc("lastAccessTime"));
+		 
+		List<TestProjectAccessHistory> pos = findPage(dc, 0, 4).getItems();
+
+		return pos;
+	}
+	@Override
+	public List<TestProjectAccessHistoryVo> listRecentProjectVo(Long orgId, Long userId) {
+		List<TestProjectAccessHistory> pos = listRecentProject(orgId, userId);
+		List<TestProjectAccessHistoryVo> vos = genHistoryVos(pos);
 
 		return vos;
 	}
@@ -180,6 +208,22 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 
 		return true;
 	}
+	
+	@Override
+	public List<TestProjectAccessHistoryVo> setDefaultPers(Long orgId, Long projectId, UserVo userVo) {
+		SysUser user = (SysUser) get(SysUser.class, userVo.getId());
+		
+		List<TestProjectAccessHistoryVo> recentProjects = listRecentProjectVo(orgId, userVo.getId());
+		if (recentProjects.size() > 0) {
+			user.setDefaultProjectId(recentProjects.get(0).getId());
+		}
+		
+		saveOrUpdate(user);
+		
+		userVo.setDefaultProjectId(user.getDefaultProjectId());
+		
+		return recentProjects;
+	}
 
 	// @Override
 	// public void removeCache(Long orgId) {
@@ -194,6 +238,10 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	// }
 	// }
 
+	@Override
+	public List<TestProjectVo> genVos(List<TestProject> pos) {
+		return this.genVos(pos, null, null);
+	}
 	@Override
 	public List<TestProjectVo> genVos(List<TestProject> pos, String keywords, String disabled) {
 		List<TestProjectVo> voList = new LinkedList<TestProjectVo>();
@@ -238,6 +286,70 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 			vo.setParentId(null);
 		}
 		return vo;
+	}
+	
+	@Override
+	public List<TestProjectAccessHistoryVo> genHistoryVos(List<TestProjectAccessHistory> pos) {
+		List<TestProjectAccessHistoryVo> voList = new LinkedList<TestProjectAccessHistoryVo>();
+		for (TestProjectAccessHistory po : pos) {
+			TestProjectAccessHistoryVo vo = genHistoryVo(po);
+			voList.add(vo);
+		}
+		
+		return voList;
+	}
+	
+	@Override
+	public TestProjectAccessHistoryVo genHistoryVo(TestProjectAccessHistory po) {
+		if (po == null) {
+			return null;
+		}
+		TestProjectAccessHistoryVo vo = new TestProjectAccessHistoryVo();
+		BeanUtilEx.copyProperties(vo, po);
+		vo.setProjectName(po.getProjectName());
+		
+		return vo;
+	}
+
+	@Override
+	public TestProjectVo viewPers(Long orgId, UserVo userVo, Long projectId) {
+		SysUser user = (SysUser) get(SysUser.class, userVo.getId());
+		TestProject project = getDetail(projectId);
+		
+		TestProjectAccessHistory history = getHistory(orgId, userVo.getId(), projectId, project.getName());
+		history.setLastAccessTime(new Date());
+		saveOrUpdate(history);
+		
+		if (user.getDefaultOrgId() != orgId || user.getDefaultProjectId() != projectId) {
+			user.setDefaultOrgId(orgId);
+			user.setDefaultProjectId(projectId);
+			
+			saveOrUpdate(user);
+			
+			userVo.setDefaultOrgId(orgId);
+			userVo.setDefaultProjectId(projectId);
+		}
+		
+		TestProjectVo vo = genVo(project);
+		return vo;
+	}
+
+	private TestProjectAccessHistory getHistory(Long orgId, Long userId, Long projectId, String projectName) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestProjectAccessHistory.class);
+
+		dc.add(Restrictions.eq("projectId", projectId));
+		dc.add(Restrictions.eq("userId", userId));
+		dc.add(Restrictions.eq("deleted", false));
+		dc.add(Restrictions.eq("disabled", false));
+		 
+		TestProjectAccessHistory history;
+		List<TestProjectAccessHistory> pos = findAllByCriteria(dc);
+		if (pos.size() > 0) {
+			history = pos.get(0);
+		} else {
+			history = new TestProjectAccessHistory(orgId, userId, projectId, projectName);
+		}
+		return history;
 	}
 
 }

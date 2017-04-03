@@ -27,6 +27,7 @@ public class SysUser extends BaseEntity {
     private Date lastLoginTime;
     
     private Long defaultOrgId;
+    private Long defaultProjectId;
     
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userSet")
     private Set<SysRole> roleSet = new HashSet<SysRole>(0);
@@ -120,6 +121,14 @@ public class SysUser extends BaseEntity {
 
 	public void setOrgSet(Set<SysOrg> orgSet) {
 		this.orgSet = orgSet;
+	}
+
+	public Long getDefaultProjectId() {
+		return defaultProjectId;
+	}
+
+	public void setDefaultProjectId(Long defaultProjectId) {
+		this.defaultProjectId = defaultProjectId;
 	}
 	
 }

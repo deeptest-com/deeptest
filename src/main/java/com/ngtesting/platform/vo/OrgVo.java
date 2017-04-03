@@ -5,6 +5,7 @@ public class OrgVo extends BaseVo {
 	private static final long serialVersionUID = -7115478651798848319L;
 	private String name;
     private String website;
+    private Boolean defaultOrg;
     
 	public String getName() {
 		return name;
@@ -17,6 +18,12 @@ public class OrgVo extends BaseVo {
 	}
 	public void setWebsite(String website) {
 		this.website = website;
+	}
+	public Boolean getDefaultOrg() {
+		return defaultOrg;
+	}
+	public void setDefaultOrg(Boolean defaultOrg) {
+		this.defaultOrg = defaultOrg;
 	}
 
 	

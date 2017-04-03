@@ -14,6 +14,7 @@ import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
 import { DatetimePickerService } from '../../../service/datetime-picker';
 import { OrgService } from '../../../service/org';
+import { ProjectService } from '../../../service/project';
 import { GroupService } from '../../../service/group';
 import { RoleService } from '../../../service/role';
 
@@ -45,6 +46,7 @@ import {OrgEdit } from './edit';
     RequestService,
     DatetimePickerService,
     OrgService,
+    ProjectService,
     GroupService,
     RoleService
   ]

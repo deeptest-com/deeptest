@@ -2,7 +2,8 @@
   <div class="row">
     <div class="edit-toolbar col-xl-12">
       <div class="title">
-        编辑项目
+        <span *ngIf="!model?.id">新建公司</span>
+        <span *ngIf="model?.id">编辑公司</span>
       </div>
       <div class="buttons">
         <button [routerLink]="['/pages/org-admin/org/list']" type="button"
@@ -14,37 +15,20 @@
   </div>
   <hr/>
 
-  <ul class="nav nav-tabs">
-    <li (click)="selectTab('info')" class="nav-item">
-      <span [class.active]="tab == 'info'" class="nav-link active">基本信息</span>
-    </li>
-    <li (click)="selectTab('groups')" class="nav-item">
-      <span [class.active]="tab == 'groups'" class="nav-link">用户组</span>
-    </li>
-  </ul>
-  <div class="space"></div>
-
   <form [formGroup]="form" class="my-validate-form">
-    <div [class.hidden]="tab != 'info'" class="org-edit-info">
+    <div class="org-edit">
       <div class="form-group row">
-        <label class="col-sm-2 col-form-label"><span>姓名</span></label>
+        <label class="col-sm-2 col-form-label"><span>名称</span></label>
         <div class="col-sm-10">
           <input type="text" class="form-control" name="name" formControlName="name"
-                 [(ngModel)]="org.name" #name>
+                 [(ngModel)]="model.name" #name>
         </div>
       </div>
       <div class="form-group row">
-        <label class="col-sm-2 col-form-label"><span>邮箱</span></label>
+        <label class="col-sm-2 col-form-label"><span>网站</span></label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" name="email" formControlName="email"
-                 [(ngModel)]="org.email" #email>
-        </div>
-      </div>
-      <div class="form-group row">
-        <label class="col-sm-2 col-form-label"><span>手机</span></label>
-        <div class="col-sm-10">
-          <input type="text" class="form-control" name="phone" formControlName="phone"
-                 [(ngModel)]="org.phone" #phone>
+          <input type="text" class="form-control" name="website" formControlName="website"
+                 [(ngModel)]="model.website" #website>
         </div>
       </div>
 
@@ -53,39 +37,11 @@
           <div class="form-check">
             <label class="form-check-label">
               <input type="checkbox" class="form-check-input" name="disabled" formControlName="disabled"
-                     [(ngModel)]="org.disabled" #disabled>
+                     [(ngModel)]="model.disabled" #disabled>
               &nbsp;&nbsp;禁用
             </label>
           </div>
         </div>
-      </div>
-    </div>
-
-    <div [class.hidden]="tab != 'groups'" class="org-edit-groups">
-      <div class="form-group row">
-        <label class="col-sm-1"></label>
-        <div class="col-sm-10">
-          <div class="checkbox-list">
-            <div class="checkbox-list-inner">
-              <div class="toolbar">
-                <div class="toolbar-inner">
-                  <span (click)="select('all')" class="link">全选</span> |
-                  <span (click)="select('none')" class="link">全不选</span>
-                </div>
-              </div>
-              <div>
-                <div *ngFor="let item of groups" class="checkbox-list-item">
-                  <label>
-                    <span class="checkbox-name">{{item.name}}<span></span></span>
-                    <input type="checkbox" class="form-check-input"
-                           [(ngModel)]="item.selecting" formControlName="{{'group-' + item.id}}">
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <label class="col-sm-1"></label>
       </div>
     </div>
 
@@ -114,3 +70,7 @@
   </form>
 
 </div>
+
+<pop-dialog #modalWrapper (confirm)="delete()" [title]="'提示'">
+  确认删除名为"{{model.name}}"的公司?
+</pop-dialog>

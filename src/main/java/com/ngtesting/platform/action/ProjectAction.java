@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestProject;
+import com.ngtesting.platform.entity.TestProjectAccessHistory;
 import com.ngtesting.platform.service.TestProjectService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
 import com.ngtesting.platform.vo.TestProjectVo;
 import com.ngtesting.platform.vo.UserVo;
 
@@ -39,10 +41,8 @@ public class ProjectAction extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
+		UserVo userVo = genRequest(request, json);
 		Long orgId = json.getLong("orgId");
-		
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
 		
@@ -74,7 +74,7 @@ public class ProjectAction extends BaseAction {
 		TestProject project = projectService.getDetail(id);
 		TestProjectVo vo2 = projectService.genVo(project);
 		
-		List<TestProjectVo> vos = projectService.listGroups(orgId);
+		List<TestProjectVo> vos = projectService.listProjectGroups(orgId);
         
         ret.put("data", vo2);
         ret.put("groups", vos);
@@ -114,6 +114,26 @@ public class ProjectAction extends BaseAction {
 		projectService.delete(id, userVo.getId());
         
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "view", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		UserVo userVo = genRequest(request, json);
+		Long orgId = json.getLong("orgId");
+		Long projectId = json.getLong("projectId");
+		
+		TestProjectVo vo = projectService.viewPers(orgId, userVo, projectId);
+		
+		List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(orgId, userVo.getId());
+		
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		ret.put("project", vo);
+		ret.put("recentProjects", recentProjects);
 		return ret;
 	}
 }

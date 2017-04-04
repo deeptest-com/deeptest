@@ -58,15 +58,14 @@ public class AccountAction extends BaseAction {
 		boolean rememberMe = json.getBoolean("rememberMe") != null? json.getBoolean("rememberMe"): false;
 		
 		SysUser user = accountService.loginPers(email, password, rememberMe);
-		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));
-		
+			
 		if (user != null) {
-			UserVo userVo = userService.genVo(user);
+			UserVo userVo = userService.genVo(user);	
+			request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
 			
-			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), user.getDefaultProjectId());
-			
-			ret.put("profile", userVo);
-			ret.put("recentProjects", recentProjects);
+//			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), user.getDefaultProjectId());		
+//			ret.put("profile", userVo);
+//			ret.put("recentProjects", recentProjects);
 			ret.put("token", user.getToken());
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {
@@ -89,15 +88,14 @@ public class AccountAction extends BaseAction {
 		String password = json.getString("password");
 
 		SysUser user = accountService.registerPers(name, email, phone, password);
-		
-		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));
 
 		if (user != null) {
-			UserVo userVo = userService.genVo(user);
-			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), user.getDefaultProjectId());
+			UserVo userVo = userService.genVo(user);	
+			request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
 			
-			ret.put("profile", userVo);
-			ret.put("recentProjects", recentProjects);
+//			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), user.getDefaultProjectId());		
+//			ret.put("profile", userVo);
+//			ret.put("recentProjects", recentProjects);
 			ret.put("token", user.getToken());
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {
@@ -119,15 +117,14 @@ public class AccountAction extends BaseAction {
 		String password = json.getString("password");
 
 		SysUser user = accountService.resetPasswordPers(verifyCode, password);
-
+		
 		if (user != null) {
-			UserVo userVo = userService.genVo(user);
+			UserVo userVo = userService.genVo(user);	
 			request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
 			
-			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), userVo.getDefaultProjectId());
-			
-			ret.put("profile", userVo);
-			ret.put("recentProjects", recentProjects);
+//			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), userVo.getDefaultProjectId());
+//			ret.put("profile", userVo);
+//			ret.put("recentProjects", recentProjects);
 			ret.put("token", user.getToken());
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {

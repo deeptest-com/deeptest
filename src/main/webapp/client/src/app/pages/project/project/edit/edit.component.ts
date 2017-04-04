@@ -36,12 +36,12 @@ export class ProjectEdit implements OnInit, AfterViewInit {
               private fb: FormBuilder, private _projectService: ProjectService) {
     let that = this;
 
-    that._route.params.forEach((params: Params) => {
+    this._route.params.subscribe(params => {
       that.type = params['type'];
       that.id = +params['id'];
-    });
 
-    that.loadData();
+      that.loadData();
+    });
 
     that.buildForm();
   }
@@ -61,7 +61,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
       {
         'name': ['', [Validators.required]],
         'descr': ['', []],
-        'parentId': ['', [parentValidate]],
+        'parentId': ['', parentValidate],
         'disabled': ['', []]
       }, {}
     );

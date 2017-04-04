@@ -1,5 +1,8 @@
 import {Injectable} from "@angular/core";
 
+import {Observable} from 'rxjs/Observable';
+import 'rxjs/Rx';
+
 import { Cookie } from 'ng2-cookies/ng2-cookies';
 import {GlobalState} from '../global.state';
 
@@ -36,8 +39,8 @@ export class AccountService {
         let days:number = model.rememberMe? 30: 1;
 
         that.saveTokenLocal(json.token, days);
-        that.changeProfile(json.profile);
-        that.changeRecentProject(json.recentProjects);
+        // that.changeProfile(json.profile);
+        // that.changeRecentProject(json.recentProjects);
 
         that.routeService.navTo('/pages/dashboard');
       } else {
@@ -53,8 +56,8 @@ export class AccountService {
       if (json.code == 1) {
         that.saveTokenLocal(json.token, 1);
 
-        that.changeProfile(json.profile);
-        that.changeRecentProject(json.recentProjects);
+        // that.changeProfile(json.profile);
+        // that.changeRecentProject(json.recentProjects);
 
         that.routeService.navTo('/pages/dashboard');
       } else {
@@ -71,8 +74,8 @@ export class AccountService {
       if (json.code == 1) {
         that.saveTokenLocal(json.token, 1);
 
-        that.changeProfile(json.profile);
-        that.changeRecentProject(json.recentProjects);
+        // that.changeProfile(json.profile);
+        // that.changeRecentProject(json.recentProjects);
 
         that.routeService.navTo('/pages/dashboard');
       } else {
@@ -80,6 +83,25 @@ export class AccountService {
       }
       return errors;
     });
+  }
+
+  loadProfileRemote(): Observable<any> {
+    let that = this;
+    let token = Cookie.get(CONSTANT.TOKEN_KEY);
+    console.log('token from cookie: ', token);
+
+    if (token) {
+      CONSTANT.TOKEN = JSON.parse(token);
+
+      return this._reqService.post(that._getProfile, {}).map(json => {
+        that.changeProfile(json.profile);
+        that.changeRecentProject(json.recentProjects);
+
+        return json;
+      });
+    } else  {
+      return Observable.of(false);
+    }
   }
 
   logout() {
@@ -122,20 +144,6 @@ export class AccountService {
     }
 
     Cookie.set(CONSTANT.TOKEN_KEY, JSON.stringify(token), expireDays);
-  }
-  loadProfileRemote() {
-    let that = this;
-    let token = Cookie.get(CONSTANT.TOKEN_KEY);
-    console.log('token', token);
-
-    if (token) {
-      CONSTANT.TOKEN = JSON.parse(token);
-
-      this._reqService.post(that._getProfile, {}).subscribe((json: any) => {
-        that.changeProfile(json.profile);
-        that.changeRecentProject(json.recentProjects);
-      });
-    }
   }
 
   changeProfile(profile: any) {

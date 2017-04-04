@@ -65,19 +65,20 @@ public class ProjectAction extends BaseAction {
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		Long orgId = json.getLong("orgId");
-		TestProjectVo vo = json.getObject("vo", TestProjectVo.class);
-		Long id = vo.getId();
-		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long orderId = userVo.getDefaultOrgId();
+
+		Long projectId = json.getLong("id");
 		
-		TestProject project = projectService.getDetail(id);
-		TestProjectVo vo2 = projectService.genVo(project);
+		if (projectId != null) {
+			TestProject project = projectService.getDetail(projectId);
+			TestProjectVo vo = projectService.genVo(project);
+			ret.put("data", vo);
+		}
 		
-		List<TestProjectVo> vos = projectService.listProjectGroups(orgId);
+		List<TestProjectVo> groups = projectService.listProjectGroups(orderId);
         
-        ret.put("data", vo2);
-        ret.put("groups", vos);
+        ret.put("groups", groups);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -88,11 +89,10 @@ public class ProjectAction extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
+		UserVo userVo = genRequest(request, json);
 		Long orgId = json.getLong("orgId");
-		TestProjectVo vo = json.getObject("vo", TestProjectVo.class);
-		Long id = vo.getId();
 		
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TestProjectVo vo = json.getObject("model", TestProjectVo.class);
 		
 		TestProject po = projectService.save(vo, orgId);
 		TestProjectVo projectVo = projectService.genVo(po);

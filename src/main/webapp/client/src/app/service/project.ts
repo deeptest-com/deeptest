@@ -19,7 +19,7 @@ export class ProjectService {
   }
 
   save(model:any) {
-    return this._reqService.post(this._api_url + 'save', model);
+    return this._reqService.post(this._api_url + 'save', {model: model});
   }
 
   delete(id:number) {

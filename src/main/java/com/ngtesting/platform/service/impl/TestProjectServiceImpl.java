@@ -79,6 +79,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	public List<TestProjectVo> listProjectGroups(Long orgId) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
 
+		dc.add(Restrictions.eq("orgId", orgId));
 		dc.add(Restrictions.eq("type", ProjectType.group));
 		dc.add(Restrictions.eq("disabled", false));
 		

@@ -10,19 +10,28 @@
       <ul class="dropdown-menu" dropdownMenu>
         <li class="dropdown-item">当前项目</li>
         <li class="dropdown-item">
-          <!--<a [routerLink]="['dashboard', {title: ''}]">ngtesting</a>-->
-          <a [routerLink]="['dashboard']">ngtesting</a>
+          <a *ngIf="projects && projects[0]" [routerLink]="['/pages/project/view/', projects[0].projectId]">{{projects[0].projectName}}</a>
+          <a *ngIf="!projects || projects.length == 0">无</a>
         </li>
         <li class="dropdown-divider"></li>
 
         <li class="dropdown-item">最近查看</li>
-        <li *ngFor="let item of projects" class="dropdown-item">
-          <a [routerLink]="['/pages/project/view/', item.projectId]">{{item.projectName}}</a>
+        <li *ngFor="let item of projects; let i = index" class="dropdown-item">
+          <a *ngIf="i > 0" [routerLink]="['/pages/project/view/', item.projectId]">{{item.projectName}}</a>
+        </li>
+        <li *ngIf="!projects || projects.length == 0" class="dropdown-item">
+          <a>无</a>
         </li>
 
         <li class="dropdown-divider"></li>
 
-        <li class="dropdown-item"><a [routerLink]="['/pages/project/list']">所有项目</a></li>
+        <li *ngIf="projects && projects[0]" class="dropdown-item">
+          <a [routerLink]="['/pages/project/list']">所有项目</a>
+        </li>
+        <li *ngIf="!projects || projects.length == 0" class="dropdown-item">
+          <a [routerLink]="['/pages/project/list']">新建项目</a>
+        </li>
+
       </ul>
     </div>
 

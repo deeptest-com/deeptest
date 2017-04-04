@@ -6,6 +6,7 @@ import {GlobalState} from '../../../global.state';
 
 import { CONSTANT } from '../../../utils/constant';
 import { Utils } from '../../../utils/utils';
+import { RouteService } from '../../../service/route';
 import { AccountService } from '../../../service/account';
 
 @Component({
@@ -20,8 +21,27 @@ export class BaPageTop {
   public profile:any = CONSTANT.PROFILE;
   projects: any[] = CONSTANT.RECENT_PROJECT;
 
-  constructor(private _router:Router, private _state:GlobalState, private accountService: AccountService) {
+  constructor(private _router:Router, private _state:GlobalState, private _routeService: RouteService, private accountService: AccountService) {
     let that = this;
+
+    if (!CONSTANT.PROFILE) {
+      this._state.subscribe('recent.projects.change', (projects) => {
+        if (projects) {
+          this.projects = projects;
+          console.log('recent.projects.change', this.projects);
+        }
+      });
+
+      that._state.subscribe('profile.refresh', (profile) => {
+        that.profile = profile;
+        console.log('profile.refresh', that.profile);
+      });
+
+      this.accountService.loadProfileRemote().subscribe((data: any) => {
+        console.log('data', data);
+      });
+    }
+
     this._onRouteChange = this._router.events.subscribe((event) => {
       // if (event instanceof NavigationEnd) {
       //   if (event.url && event.url.indexOf('im=true') > -1) {
@@ -33,17 +53,6 @@ export class BaPageTop {
       // }
     });
 
-    this._state.subscribe('recent.projects.change', (projects) => {
-      if (projects) {
-        this.projects = projects;
-        console.log('recent.projects.change', this.projects);
-      }
-    });
-
-    that._state.subscribe('profile.refresh', (profile) => {
-      that.profile = profile;
-      console.log('profile.refresh', that.profile);
-    });
   }
 
   public scrolledChanged(isScrolled) {
@@ -53,4 +62,5 @@ export class BaPageTop {
   logout() {
     this.accountService.logout();
   }
+
 }

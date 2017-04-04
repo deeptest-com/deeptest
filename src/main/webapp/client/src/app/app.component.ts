@@ -52,9 +52,6 @@ export class App {
     });
 
     Utils.config();
-    if (!CONSTANT.PROFILE) {
-      this.accountService.loadProfileRemote();
-    }
 
     CONSTANT.ScreenSize = Utils.getScreenSize();
   }

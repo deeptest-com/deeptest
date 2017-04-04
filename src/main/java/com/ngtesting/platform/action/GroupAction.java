@@ -42,8 +42,8 @@ public class GroupAction extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		Long orgId = json.getLong("orgId");
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long orgId = userVo.getDefaultOrgId();
 		
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
@@ -66,11 +66,10 @@ public class GroupAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
-		Long orgId = json.getLong("orgId");
+		Long orgId = userVo.getDefaultOrgId();
 		Long orgGroupId = json.getLong("id");
 
-		List<RelationOrgGroupUserVo> relations = orgGroupUserService.listRelationsByUsers(orgId, orgGroupId);
+		List<RelationOrgGroupUserVo> relations = orgGroupUserService.listRelationsByGroup(orgId, orgGroupId);
 		if (orgGroupId == null) {
 			
 			ret.put("group", new SysOrgGroup());
@@ -95,8 +94,7 @@ public class GroupAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
-		Long orgId = json.getLong("orgId");
+		Long orgId = userVo.getDefaultOrgId();
 		
 		GroupVo group = JSON.parseObject(JSON.toJSONString(json.get("group")), GroupVo.class);;
 		List<RelationOrgGroupUserVo> relations = (List<RelationOrgGroupUserVo>) json.get("relations");

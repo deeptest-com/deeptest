@@ -66,7 +66,7 @@ public class UserAction extends BaseAction {
 		Long orgId = userVo.getDefaultOrgId();
 		Long userId = json.getLong("id");
 		
-		List<RelationOrgGroupUserVo> relations = orgGroupUserService.listRelationsByUsers(orgId, userId);
+		List<RelationOrgGroupUserVo> relations = orgGroupUserService.listRelationsByUser(orgId, userId);
 		
 		if (userId == null) {
 			ret.put("user", new SysUser());
@@ -89,9 +89,9 @@ public class UserAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		Long orgId = json.getLong("orgId");
-		
+
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long orgId = userVo.getDefaultOrgId();
 		
 		UserVo user = JSON.parseObject(JSON.toJSONString(json.get("user")), UserVo.class);;
 		List<RelationOrgGroupUserVo> relations = (List<RelationOrgGroupUserVo>) json.get("relations");

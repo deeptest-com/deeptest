@@ -21,15 +21,20 @@ import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
 public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements RelationOrgGroupUserService {
 
 	@Override
-	public List<RelationOrgGroupUserVo> listRelationsByUsers(Long orgId, Long userId) {
+	public List<RelationOrgGroupUserVo> listRelationsByUser(Long orgId, Long userId) {
 
         List<SysOrgGroup> allOrgGroups = listAllOrgGroups(orgId);
         
-        List<SysRelationOrgGroupUser> relations = listRelations(orgId, null, userId);
+        List<SysRelationOrgGroupUser> relations;
+        if (userId == null) {
+        	relations = new LinkedList<SysRelationOrgGroupUser>();
+        } else {
+        	relations = listRelations(orgId, null, userId);
+        }
         
         List<RelationOrgGroupUserVo> vos = new LinkedList<RelationOrgGroupUserVo>();
         for (SysOrgGroup orgGroup : allOrgGroups) {
-        	RelationOrgGroupUserVo vo = genVo(orgId, orgGroup, userId);
+        	RelationOrgGroupUserVo vo = genVo(orgId, orgGroup.getId(), userId);
         	
         	vo.setSelected(false);
         	vo.setSelecting(false);
@@ -50,12 +55,16 @@ public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements 
 
         List<SysUser> allUsers = listAllOrgUsers(orgId);
         
-        List<SysRelationOrgGroupUser> relations = listRelations(orgId, orgGroupId, null);
+        List<SysRelationOrgGroupUser> relations;
+        if (orgGroupId == null) {
+        	relations = new LinkedList<SysRelationOrgGroupUser>();
+        } else {
+        	relations = listRelations(orgId, orgGroupId, null);
+        }
         
         List<RelationOrgGroupUserVo> vos = new LinkedList<RelationOrgGroupUserVo>();
         for (SysUser user : allUsers) {
-        	SysOrgGroup orgGroup = (SysOrgGroup) get(SysOrgGroup.class, orgGroupId);
-        	RelationOrgGroupUserVo vo = genVo(orgId, orgGroup, user.getId());
+        	RelationOrgGroupUserVo vo = genVo(orgId, orgGroupId, user.getId());
         	
         	vo.setSelected(false);
         	vo.setSelecting(false);
@@ -156,15 +165,22 @@ public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements 
 		return ls.get(0);
 	}
 	
-	private RelationOrgGroupUserVo genVo(Long orgId, SysOrgGroup orgGroup, Long userId) {
-		SysUser user = (SysUser) get(SysUser.class, userId);
+	private RelationOrgGroupUserVo genVo(Long orgId, Long orgGroupId, Long userId) {
 		
 		RelationOrgGroupUserVo vo = new RelationOrgGroupUserVo();
 		vo.setOrgId(orgId);
-		vo.setOrgGroupId(orgGroup.getId());
-		vo.setOrgGroupName(orgGroup.getName());
-		vo.setUserId(user.getId());
-		vo.setUserName(user.getName());
+		
+		if (orgGroupId != null) {
+			SysOrgGroup orgGroup = (SysOrgGroup) get(SysOrgGroup.class, orgGroupId);
+			vo.setOrgGroupId(orgGroupId);
+			vo.setOrgGroupName(orgGroup.getName());
+		}
+		
+		if (userId != null) {
+			SysUser user = (SysUser) get(SysUser.class, userId);
+			vo.setUserId(user.getId());
+			vo.setUserName(user.getName());
+		}
 		
 		return vo;
 	}

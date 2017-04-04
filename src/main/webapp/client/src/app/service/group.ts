@@ -17,7 +17,7 @@ export class GroupService {
   }
 
   save(group: any, users: any[]) {
-    return this._reqService.post(this._api_url + 'save', {group: group, users: users});
+    return this._reqService.post(this._api_url + 'save', {group: group, relations: users});
   }
 
   delete(id: number) {

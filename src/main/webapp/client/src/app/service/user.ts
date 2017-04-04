@@ -17,7 +17,7 @@ export class UserService {
   }
 
   save(user: any, groups: any[]) {
-    return this._reqService.post(this._api_url + 'save', {user: user, groups: groups});
+    return this._reqService.post(this._api_url + 'save', {user: user, relations: groups});
   }
 
   delete(id: number) {

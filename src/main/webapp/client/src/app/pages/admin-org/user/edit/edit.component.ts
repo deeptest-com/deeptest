@@ -26,7 +26,7 @@ export class UserEdit implements OnInit, AfterViewInit {
   tab: string = 'info';
 
   user: any = {disabled: false};
-  groups: any[] = [];
+  relations: any[] = [];
   form: FormGroup;
   isSubmitted: boolean;
   @ViewChild('modal') modal: ModalDirective;
@@ -90,10 +90,12 @@ export class UserEdit implements OnInit, AfterViewInit {
     let that = this;
     that.userService.get(that.id).subscribe((json:any) => {
       that.user = json.user;
-      that.groups = json.groups;
+      that.relations = json.relations;
 
-      _.forEach(that.groups, (group: any, index: number) => {
-        this.form.addControl('group-' + group.id, new FormControl('', []))
+      _.forEach(that.relations, (group: any, index: number) => {
+        console.log(group);
+
+        this.form.addControl('group-' + group.orgGroupId, new FormControl('', []))
       });
     });
   }
@@ -101,7 +103,7 @@ export class UserEdit implements OnInit, AfterViewInit {
   save() {
     let that = this;
 
-    that.userService.save(that.user, that.groups).subscribe((json:any) => {
+    that.userService.save(that.user, that.relations).subscribe((json:any) => {
       if (json.code == 1) {
 
         that.formErrors = ['保存成功'];
@@ -127,7 +129,7 @@ export class UserEdit implements OnInit, AfterViewInit {
 
   select(key: string) {
     let val = key ==='all'? true: false;
-    for (let group of this.groups) {
+    for (let group of this.relations) {
       group.selecting = val;
     }
   }

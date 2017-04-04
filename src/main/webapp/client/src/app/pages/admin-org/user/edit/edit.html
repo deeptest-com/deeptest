@@ -2,7 +2,7 @@
   <div class="row">
     <div class="edit-toolbar col-xl-12">
       <div class="title">
-        编辑项目
+        编辑用户
       </div>
       <div class="buttons">
         <button [routerLink]="['/pages/org-admin/user/list']" type="button"
@@ -19,7 +19,7 @@
       <span [class.active]="tab == 'info'" class="nav-link active">基本信息</span>
     </li>
     <li (click)="selectTab('groups')" class="nav-item">
-      <span [class.active]="tab == 'groups'" class="nav-link">用户组</span>
+      <span [class.active]="tab == 'groups'" class="nav-link">群组</span>
     </li>
   </ul>
   <div class="space"></div>
@@ -74,11 +74,11 @@
                 </div>
               </div>
               <div>
-                <div *ngFor="let item of groups" class="checkbox-list-item">
+                <div *ngFor="let item of relations" class="checkbox-list-item">
                   <label>
-                    <span class="checkbox-name">{{item.name}}<span></span></span>
+                    <span class="checkbox-name">{{item.orgGroupName}}<span></span></span>
                     <input type="checkbox" class="form-check-input"
-                           [(ngModel)]="item.selecting" formControlName="{{'group-' + item.id}}">
+                           [(ngModel)]="item.selecting" formControlName="{{'group-' + item.orgGroupId}}">
                   </label>
                 </div>
               </div>

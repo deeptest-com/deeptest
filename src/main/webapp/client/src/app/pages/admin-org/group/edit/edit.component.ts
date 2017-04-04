@@ -26,7 +26,7 @@ export class GroupEdit implements OnInit, AfterViewInit {
   tab: string = 'info';
 
   group: any = {disabled: false};
-  users: any[] = [];
+  relations: any[] = [];
   form: FormGroup;
   isSubmitted: boolean;
   @ViewChild('modal') modal: ModalDirective;
@@ -81,10 +81,10 @@ export class GroupEdit implements OnInit, AfterViewInit {
     let that = this;
     that.groupService.get(that.id).subscribe((json:any) => {
       that.group = json.group;
-      that.users = json.users;
+      that.relations = json.relations;
 
-      _.forEach(that.users, (user: any, index: number) => {
-        this.form.addControl('user-' + user.id, new FormControl('', []))
+      _.forEach(that.relations, (user: any, index: number) => {
+        this.form.addControl('user-' + user.userId, new FormControl('', []))
       });
     });
   }
@@ -92,7 +92,7 @@ export class GroupEdit implements OnInit, AfterViewInit {
   save() {
     let that = this;
 
-    that.groupService.save(that.group, that.users).subscribe((json:any) => {
+    that.groupService.save(that.group, that.relations).subscribe((json:any) => {
       if (json.code == 1) {
 
         that.formErrors = ['保存成功'];
@@ -118,10 +118,11 @@ export class GroupEdit implements OnInit, AfterViewInit {
 
   select(key: string) {
     let val = key ==='all'? true: false;
-    for (let user of this.users) {
+    for (let user of this.relations) {
       user.selecting = val;
     }
   }
+
   reset() {
     this.loadData();
   }

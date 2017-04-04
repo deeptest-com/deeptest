@@ -1,12 +1,14 @@
 package com.ngtesting.platform.vo;
 
 
-public class RoleVo extends BaseVo {
-	private static final long serialVersionUID = 3252975025180725858L;
+public class OrgRoleVo extends BaseVo {
+	private static final long serialVersionUID = 2846494844575998128L;
 	
 	private String code;
     private String name;
     private String descr;
+    
+    private Long orgId;
 
 	public String getCode() {
 		return code;
@@ -22,6 +24,14 @@ public class RoleVo extends BaseVo {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
 	}
 
 	public String getDescr() {

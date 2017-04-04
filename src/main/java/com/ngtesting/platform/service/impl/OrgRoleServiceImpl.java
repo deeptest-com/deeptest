@@ -8,20 +8,22 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.SysRole;
+import com.ngtesting.platform.entity.SysOrgRole;
 import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.service.OrgRoleService;
 import com.ngtesting.platform.service.RoleService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
+import com.ngtesting.platform.vo.OrgRoleVo;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.RoleVo;
 
 @Service
-public class RoleServiceImpl extends BaseServiceImpl implements RoleService {
+public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleService {
 
 	@Override
 	public Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
-        DetachedCriteria dc = DetachedCriteria.forClass(SysRole.class);
+        DetachedCriteria dc = DetachedCriteria.forClass(SysOrgRole.class);
         dc.add(Restrictions.eq("orgId", orgId));
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
@@ -40,18 +42,19 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService {
 	}
 
 	@Override
-	public SysRole save(RoleVo vo, Long orgId) {
+	public SysOrgRole save(OrgRoleVo vo, Long orgId) {
 		if (vo == null) {
 			return null;
 		}
 		
-		SysRole po = new SysRole();
+		SysOrgRole po = new SysOrgRole();
 		if (vo.getId() != null) {
-			po = (SysRole) get(SysRole.class, vo.getId());
+			po = (SysOrgRole) get(SysOrgRole.class, vo.getId());
 		}
 		
 		po.setName(vo.getName());
 		po.setDescr(vo.getDescr());
+		po.setOrgId(orgId);
 		po.setDisabled(vo.getDisabled());
 		
 		saveOrUpdate(po);
@@ -69,7 +72,7 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService {
 
 	@Override
 	public boolean disable(Long id) {
-		SysRole po = (SysRole) get(SysRole.class, id);
+		SysOrgRole po = (SysOrgRole) get(SysOrgRole.class, id);
 		po.setDisabled(!po.getDisabled());
 		saveOrUpdate(po);
 		
@@ -77,18 +80,18 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService {
 	}
     
 	@Override
-	public RoleVo genVo(SysRole role) {
-		RoleVo vo = new RoleVo();
+	public OrgRoleVo genVo(SysOrgRole role) {
+		OrgRoleVo vo = new OrgRoleVo();
 		BeanUtilEx.copyProperties(vo, role);
 		
 		return vo;
 	}
 	@Override
-	public List<RoleVo> genVos(List<SysRole> pos) {
-        List<RoleVo> vos = new LinkedList<RoleVo>();
+	public List<OrgRoleVo> genVos(List<SysOrgRole> pos) {
+        List<OrgRoleVo> vos = new LinkedList<OrgRoleVo>();
 
-        for (SysRole po: pos) {
-        	RoleVo vo = genVo(po);
+        for (SysOrgRole po: pos) {
+        	OrgRoleVo vo = genVo(po);
         	vos.add(vo);
         }
 		return vos;

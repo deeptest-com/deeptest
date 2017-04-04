@@ -5,7 +5,7 @@ import {GlobalState} from "../../../../global.state";
 import {CONSTANT} from "../../../../utils/constant";
 import {Utils} from "../../../../utils/utils";
 import {RouteService} from "../../../../service/route";
-import {RoleService} from "../../../../service/role";
+import {OrgRoleService} from "../../../../service/org-role";
 
 @Component({
   selector: 'role-list',
@@ -27,7 +27,7 @@ export class RoleList implements OnInit, AfterViewInit {
   itemsPerPage:number = 6;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
-              private roleService: RoleService) {
+              private roleService: OrgRoleService) {
   }
 
   ngOnInit() {

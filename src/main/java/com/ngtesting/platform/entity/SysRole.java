@@ -21,13 +21,6 @@ public class SysRole extends BaseEntity {
     private String name;
     private String descr;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "org_id", insertable = false, updatable = false)
-    private SysOrg org;
-
-    @Column(name = "org_id")
-    private Long orgId;
-    
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "r_role_user", joinColumns = { 
 			@JoinColumn(name = "role_id", nullable = false, updatable = false) }, 
@@ -56,22 +49,6 @@ public class SysRole extends BaseEntity {
 
 	public void setDescr(String descr) {
 		this.descr = descr;
-	}
-
-	public SysOrg getOrg() {
-		return org;
-	}
-
-	public void setOrg(SysOrg org) {
-		this.org = org;
-	}
-
-	public Long getOrgId() {
-		return orgId;
-	}
-
-	public void setOrgId(Long orgId) {
-		this.orgId = orgId;
 	}
 
 	public Set<SysUser> getUserSet() {

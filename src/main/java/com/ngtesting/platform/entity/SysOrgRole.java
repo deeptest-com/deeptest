@@ -4,11 +4,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -18,6 +20,13 @@ public class SysOrgRole extends BaseEntity {
 	
 	private String name;
     private String descr;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "org_id", insertable = false, updatable = false)
+    private SysOrg org;
+
+    @Column(name = "org_id")
+    private Long orgId;
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "r_org_role_user", joinColumns = { 
@@ -51,5 +60,23 @@ public class SysOrgRole extends BaseEntity {
 	public void setOrgPriviledgeSet(
 			Set<SysOrgPriviledge> orgPriviledgeSet) {
 		this.orgPriviledgeSet = orgPriviledgeSet;
+	}
+	public SysOrg getOrg() {
+		return org;
+	}
+	public void setOrg(SysOrg org) {
+		this.org = org;
+	}
+	public Long getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
+	}
+	public Set<SysUser> getUserSet() {
+		return userSet;
+	}
+	public void setUserSet(Set<SysUser> userSet) {
+		this.userSet = userSet;
 	}
 }

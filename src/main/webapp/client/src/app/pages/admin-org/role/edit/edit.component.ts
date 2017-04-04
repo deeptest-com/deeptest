@@ -10,7 +10,7 @@ import { Utils } from '../../../../utils/utils';
 import {ValidatorUtils} from '../../../../validator/validator.utils';
 import { RouteService } from '../../../../service/route';
 
-import { RoleService } from '../../../../service/role';
+import { OrgRoleService } from '../../../../service/org-role';
 
 declare var jQuery;
 
@@ -22,14 +22,14 @@ declare var jQuery;
 })
 export class RoleEdit implements OnInit, AfterViewInit {
   id: number;
-  model: any = {};
+  model: any = {disabled: false};
   projects: any[] = [];
   form: any;
   isSubmitted: boolean;
   @ViewChild('modal') modal: ModalDirective;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
-              private fb: FormBuilder, private roleService: RoleService) {
+              private fb: FormBuilder, private roleService: OrgRoleService) {
 
   }
   ngOnInit() {

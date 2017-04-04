@@ -18,7 +18,7 @@ import { PopDialogModule } from '../../../components/pop-dialog';
 import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
 import { DatetimePickerService } from '../../../service/datetime-picker';
-import { RoleService } from '../../../service/role';
+import { OrgRoleService } from '../../../service/org-role';
 
 import { Role } from './role.component';
 import { RoleList } from './list';
@@ -50,7 +50,7 @@ import { RoleEdit } from './edit';
     RouteService,
     RequestService,
     DatetimePickerService,
-    RoleService,
+    OrgRoleService,
   ]
 })
 export default class RoleModule {}

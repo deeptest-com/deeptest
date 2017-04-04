@@ -27,10 +27,10 @@ import com.ngtesting.platform.vo.UserVo;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "role/")
-public class RoleAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_CLIENT + "org_role/")
+public class OrgRoleAction extends BaseAction {
 	@Autowired
-	RoleService roleService;
+	OrgRoleService orgRoleService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
@@ -39,15 +39,15 @@ public class RoleAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		Long orgId = json.getLong("orgId");
+		Long orgId = userVo.getDefaultOrgId();
 		
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
 		int currentPage = json.getInteger("currentPage") == null? 0: json.getInteger("currentPage") - 1;
 		int itemsPerPage = json.getInteger("itemsPerPage") == null? Constant.PAGE_SIZE: json.getInteger("itemsPerPage");
 		
-		Page page = roleService.listByPage(orgId, keywords, disabled, currentPage, itemsPerPage);
-		List<RoleVo> vos = roleService.genVos(page.getItems());
+		Page page = orgRoleService.listByPage(orgId, keywords, disabled, currentPage, itemsPerPage);
+		List<OrgRoleVo> vos = orgRoleService.genVos(page.getItems());
         
 		ret.put("totalItems", page.getTotal());
         ret.put("data", vos);
@@ -64,8 +64,8 @@ public class RoleAction extends BaseAction {
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		SysRole po = (SysRole) roleService.get(SysRole.class, Long.valueOf(accountId));
-		RoleVo vo = roleService.genVo(po);
+		SysOrgRole po = (SysOrgRole) orgRoleService.get(SysOrgRole.class, Long.valueOf(accountId));
+		OrgRoleVo vo = orgRoleService.genVo(po);
         
         ret.put("data", vo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -81,9 +81,9 @@ public class RoleAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
 		Long orgId = userVo.getDefaultOrgId();
-		RoleVo vo = json.getObject("role", RoleVo.class);
+		OrgRoleVo vo = json.getObject("role", OrgRoleVo.class);
 		
-		SysRole po = roleService.save(vo, orgId);
+		SysOrgRole po = orgRoleService.save(vo, orgId);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -95,7 +95,7 @@ public class RoleAction extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		boolean success = roleService.delete(to.getLong("id"));
+		boolean success = orgRoleService.delete(to.getLong("id"));
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -107,7 +107,7 @@ public class RoleAction extends BaseAction {
 	public Map<String, Object> disable(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		boolean success = roleService.disable(to.getLong("id"));
+		boolean success = orgRoleService.disable(to.getLong("id"));
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

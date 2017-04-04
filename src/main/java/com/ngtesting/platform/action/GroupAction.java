@@ -68,12 +68,12 @@ public class GroupAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
 		Long orgId = json.getLong("orgId");
-		Long orgGroupId = json.getLong("orgGroupId");
-		Long userId = json.getLong("userId");
+		Long orgGroupId = json.getLong("id");
 
+		List<RelationOrgGroupUserVo> relations = orgGroupUserService.listRelationsByUsers(orgId, orgGroupId);
 		if (orgGroupId == null) {
-			List<RelationOrgGroupUserVo> relations = orgGroupUserService.listRelationsOrgGroupUsers(orgId, orgGroupId, userId);
-			ret.put("user", new SysUser());
+			
+			ret.put("group", new SysOrgGroup());
 	        ret.put("relations", relations);
 			ret.put("code", Constant.RespCode.SUCCESS.getCode());
 			return ret;
@@ -81,8 +81,6 @@ public class GroupAction extends BaseAction {
 		
 		SysOrgGroup po = (SysOrgGroup) groupService.get(SysOrgGroup.class, Long.valueOf(orgGroupId));
 		GroupVo group = groupService.genVo(po);
-		
-		List<RelationOrgGroupUserVo> relations = orgGroupUserService.listRelationsOrgGroupUsers(orgId, orgGroupId, userId);
 		
         ret.put("group", group);
         ret.put("relations", relations);

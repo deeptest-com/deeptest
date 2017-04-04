@@ -5,7 +5,9 @@ import java.util.List;
 import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
 
 public interface RelationOrgGroupUserService extends BaseService {
-	List<RelationOrgGroupUserVo> listRelationsOrgGroupUsers(Long orgId, Long orgGroupId, Long userId);
+	List<RelationOrgGroupUserVo> listRelationsByUsers(Long orgId, Long userId);
+	List<RelationOrgGroupUserVo> listRelationsByGroup(Long orgId, Long orgGroupId);
 
 	boolean saveRelations(List<RelationOrgGroupUserVo> orgGroupUserVos);
+
 }

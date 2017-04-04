@@ -4,6 +4,8 @@ package com.ngtesting.platform.vo;
 public class RelationOrgGroupUserVo extends BaseVo {
 	private static final long serialVersionUID = -7361457861754458408L;
 
+	private Long orgId;
+	
 	private Long orgGroupId;
     
     private String orgGroupName;
@@ -61,6 +63,14 @@ public class RelationOrgGroupUserVo extends BaseVo {
 
 	public void setSelecting(Boolean selecting) {
 		this.selecting = selecting;
+	}
+
+	public Long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
 	}
 
 }

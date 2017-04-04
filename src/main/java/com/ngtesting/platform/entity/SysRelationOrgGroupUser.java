@@ -14,15 +14,19 @@ public class SysRelationOrgGroupUser extends BaseEntity {
 	
 	public SysRelationOrgGroupUser() {
 	}
-	public SysRelationOrgGroupUser(Long orgGroupId, Long userId) {
+	public SysRelationOrgGroupUser(Long orgId, Long orgGroupId, Long userId) {
+		this.orgId = orgId;
 		this.orgGroupId = orgGroupId;
 		this.userId = userId;
 	}
+	
+	@Column(name = "org_id")
+    private Long orgId;
     
+	private String orgGroupName;
+	
     @Column(name = "org_group_id")
     private Long orgGroupId;
-    
-    private String orgGroupName;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_group_id", insertable = false, updatable = false)

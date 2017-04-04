@@ -16,7 +16,7 @@ public interface TestProjectService extends BaseService {
 	TestProject getDetail(Long id);
 
 	TestProject save(TestProjectVo vo, Long orgId);
-	Boolean delete(Long id, Long userId);
+	Boolean delete(Long id);
 	
 	List<TestProjectAccessHistoryVo> setDefaultPers(Long orgId, Long projectId, UserVo userVo);
 	
@@ -30,7 +30,7 @@ public interface TestProjectService extends BaseService {
 	TestProjectAccessHistoryVo genHistoryVo(TestProjectAccessHistory po);
 	List<TestProjectAccessHistoryVo> genHistoryVos(
 			List<TestProjectAccessHistory> pos);
-	TestProjectVo viewPers(Long orgId, UserVo userVo, Long projectId);
+	TestProjectVo viewPers(UserVo userVo, Long projectId);
 	
 //	void removeCache(Long orgId);
 	

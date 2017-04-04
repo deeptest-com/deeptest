@@ -28,7 +28,7 @@ export class ProjectService {
   }
 
   view(projectId: number) {
-    let model = {projectId: projectId};
+    let model = {id: projectId};
     return this._reqService.post(this._api_url + 'view', model);
   }
 }

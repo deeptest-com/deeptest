@@ -57,7 +57,6 @@ export class OrgList implements OnInit, AfterViewInit {
   setDefault(item: any):void {
     this.orgService.setDefault(item.id).subscribe((json:any) => {
       if (json.code == 1) {
-        CONSTANT.ORG_ID = item.id;
 
         this.accountService.changeRecentProject(json.recentProjects);
         this.loadData();

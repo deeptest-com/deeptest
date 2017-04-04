@@ -140,11 +140,10 @@ public class AccountAction extends BaseAction {
 	public Map<String, Object> getProfile(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		UserVo userVo = genRequest(request, json);
-		Long orgId = json.getLong("orgId");
-		Long projectId = json.getLong("projectId");
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(orgId, userVo.getId());
+		List<TestProjectAccessHistoryVo> recentProjects 
+			= projectService.listRecentProjectVo(userVo.getDefaultOrgId(), userVo.getId());
 
 		ret.put("profile", userVo);
 		ret.put("recentProjects", recentProjects);

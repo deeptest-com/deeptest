@@ -19,17 +19,14 @@
         <li *ngFor="let item of projects; let i = index" class="dropdown-item">
           <a *ngIf="i > 0" [routerLink]="['/pages/project/view/', item.projectId]">{{item.projectName}}</a>
         </li>
-        <li *ngIf="!projects || projects.length == 0" class="dropdown-item">
+        <li *ngIf="!projects || projects.length < 2" class="dropdown-item">
           <a>无</a>
         </li>
 
         <li class="dropdown-divider"></li>
 
-        <li *ngIf="projects && projects[0]" class="dropdown-item">
+        <li class="dropdown-item">
           <a [routerLink]="['/pages/project/list']">所有项目</a>
-        </li>
-        <li *ngIf="!projects || projects.length == 0" class="dropdown-item">
-          <a [routerLink]="['/pages/project/list']">新建项目</a>
         </li>
 
       </ul>

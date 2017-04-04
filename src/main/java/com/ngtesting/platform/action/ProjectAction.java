@@ -41,8 +41,9 @@ public class ProjectAction extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		UserVo userVo = genRequest(request, json);
-		Long orgId = json.getLong("orgId");
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long orgId = userVo.getDefaultOrgId();
+		
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
 		
@@ -66,7 +67,7 @@ public class ProjectAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		Long orderId = userVo.getDefaultOrgId();
+		Long orgId = userVo.getDefaultOrgId();
 
 		Long projectId = json.getLong("id");
 		
@@ -76,7 +77,7 @@ public class ProjectAction extends BaseAction {
 			ret.put("data", vo);
 		}
 		
-		List<TestProjectVo> groups = projectService.listProjectGroups(orderId);
+		List<TestProjectVo> groups = projectService.listProjectGroups(orgId);
         
         ret.put("groups", groups);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -89,8 +90,8 @@ public class ProjectAction extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		UserVo userVo = genRequest(request, json);
-		Long orgId = json.getLong("orgId");
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long orgId = userVo.getDefaultOrgId();
 		
 		TestProjectVo vo = json.getObject("model", TestProjectVo.class);
 		
@@ -105,13 +106,12 @@ public class ProjectAction extends BaseAction {
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> delete(HttpServletRequest request, @RequestBody TestProjectVo json) {
+	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		Long id = json.getId();
+		Long id = json.getLong("id");
 		
-		projectService.delete(id, userVo.getId());
+		projectService.delete(id);
         
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -123,13 +123,13 @@ public class ProjectAction extends BaseAction {
 	public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		UserVo userVo = genRequest(request, json);
-		Long orgId = json.getLong("orgId");
-		Long projectId = json.getLong("projectId");
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long id = json.getLong("id");
 		
-		TestProjectVo vo = projectService.viewPers(orgId, userVo, projectId);
+		TestProjectVo vo = projectService.viewPers(userVo, id);
 		
-		List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(orgId, userVo.getId());
+		List<TestProjectAccessHistoryVo> recentProjects 
+			= projectService.listRecentProjectVo(userVo.getDefaultOrgId(), userVo.getId());
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		ret.put("project", vo);

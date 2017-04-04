@@ -20,10 +20,11 @@ export class RequestService {
         let me = this;
 
         let url = CONSTANT.API_URL + apiPath;
-        _.merge(reqBody, {orgId: CONSTANT.ORG_ID, projectId: CONSTANT.PROJECT_ID})
 
         let body = JSON.stringify(reqBody);
-        let headers = new Headers({ 'Content-Type': 'application/json', 'token': CONSTANT.TOKEN });
+        let headers = new Headers({ 'Content-Type': 'application/json',
+                'token': CONSTANT.TOKEN });
+                // , orgId: CONSTANT.ORG_ID, projectId: CONSTANT.PROJECT_ID
         let options = new RequestOptions({ headers: headers, withCredentials: true });
 
         console.log(url, body);

@@ -189,7 +189,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	}
 
 	@Override
-	public Boolean delete(Long id, Long userId) {
+	public Boolean delete(Long id) {
 		if (id == null) {
 			return null;
 		}
@@ -313,21 +313,19 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	}
 
 	@Override
-	public TestProjectVo viewPers(Long orgId, UserVo userVo, Long projectId) {
+	public TestProjectVo viewPers(UserVo userVo, Long projectId) {
 		SysUser user = (SysUser) get(SysUser.class, userVo.getId());
 		TestProject project = getDetail(projectId);
 		
-		TestProjectAccessHistory history = getHistory(orgId, userVo.getId(), projectId, project.getName());
+		TestProjectAccessHistory history = getHistory(userVo.getDefaultOrgId(), userVo.getId(), projectId, project.getName());
 		history.setLastAccessTime(new Date());
 		saveOrUpdate(history);
 		
-		if (user.getDefaultOrgId() != orgId || user.getDefaultProjectId() != projectId) {
-			user.setDefaultOrgId(orgId);
+		if (user.getDefaultProjectId() != projectId) {
 			user.setDefaultProjectId(projectId);
 			
 			saveOrUpdate(user);
 			
-			userVo.setDefaultOrgId(orgId);
 			userVo.setDefaultProjectId(projectId);
 		}
 		
@@ -338,6 +336,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	private TestProjectAccessHistory getHistory(Long orgId, Long userId, Long projectId, String projectName) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProjectAccessHistory.class);
 
+		dc.add(Restrictions.eq("orgId", orgId));
 		dc.add(Restrictions.eq("projectId", projectId));
 		dc.add(Restrictions.eq("userId", userId));
 		dc.add(Restrictions.eq("deleted", false));

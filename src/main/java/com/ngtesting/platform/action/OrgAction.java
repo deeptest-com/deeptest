@@ -56,12 +56,12 @@ public class OrgAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		Long orgId = json.getLong("id");
+		Long id = json.getLong("id");
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		if (orgId != null) {
-			SysOrg po = (SysOrg) orgService.get(SysOrg.class, orgId);
+		if (id != null) {
+			SysOrg po = (SysOrg) orgService.get(SysOrg.class, id);
 			OrgVo vo = orgService.genVo(po);
 			
 			SysUser user = (SysUser)orgService.get(SysUser.class, userVo.getId());
@@ -91,29 +91,14 @@ public class OrgAction extends BaseAction {
 	}
 	
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "disable", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> disable(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		Long userId = json.getLong("id");
-		Long orgId = json.getLong("orgId");
-		
-		boolean success = orgService.disable(orgId);
-		
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-	
-	@AuthPassport(validate = true)
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		Long orgId = json.getLong("id");
+		Long id = json.getLong("id");
 		
-		boolean success = orgService.delete(orgId);
+		boolean success = orgService.delete(id);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -124,8 +109,8 @@ public class OrgAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long orgId = json.getLong("id");
 		
 		List<TestProjectAccessHistoryVo> recentProjects = orgService.setDefaultPers(orgId, userVo);

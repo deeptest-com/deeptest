@@ -108,7 +108,7 @@ public class ProjectRoleAction extends BaseAction {
 		ProjectRoleVo projectRoleVo = JSON.parseObject(JSON.toJSONString(json.get("projectRole")), ProjectRoleVo.class);
 		SysProjectRole po = projectRoleService.save(projectRoleVo, orgId);
 		
-		List<ProjectPrivilegeVo> projectPrivileges = (List<ProjectPrivilegeVo>) json.get("projectPrivileges");
+		Map<String, List<ProjectPrivilegeVo>> projectPrivileges = (Map<String, List<ProjectPrivilegeVo>>) json.get("projectPrivileges");
 		boolean success = projectPrivilegeService.saveProjectPrivileges(po.getId(), projectPrivileges);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

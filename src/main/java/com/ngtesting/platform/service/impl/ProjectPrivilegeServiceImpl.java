@@ -105,26 +105,31 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 	}
 
 	@Override
-	public boolean saveProjectPrivileges(Long roleId, List<ProjectPrivilegeVo> projectPrivileges) {
-		if (projectPrivileges == null) {
+	public boolean saveProjectPrivileges(Long roleId, Map<String, List<ProjectPrivilegeVo>> map) {
+		if (map == null) {
 			return false;
 		}
 		
 		SysProjectRole orgRole = (SysProjectRole) get(SysProjectRole.class, roleId);
 		Set<SysProjectPrivilege> privilegeSet = orgRole.getProjectPrivilegeSet();
 		
-		for (Object obj: projectPrivileges) {
-			ProjectPrivilegeVo vo = JSON.parseObject(JSON.toJSONString(obj), ProjectPrivilegeVo.class);
-			if (vo.getSelecting() != vo.getSelected()) { // 变化了
-				SysProjectPrivilege orgPrivilege = (SysProjectPrivilege) get(SysProjectPrivilege.class, vo.getId());
-				
-    			if (vo.getSelecting() && !privilegeSet.contains(orgPrivilege)) { // 勾选
-    				privilegeSet.add(orgPrivilege);
-    			} else if (orgPrivilege != null) { // 取消
-    				privilegeSet.remove(orgPrivilege);
-    			}
+		for (String key: map.keySet()) {
+			List<ProjectPrivilegeVo> ls = JSON.parseObject(JSON.toJSONString(map.get(key)), List.class);
+			
+			for (Object obj: ls) {
+				ProjectPrivilegeVo vo = JSON.parseObject(JSON.toJSONString(obj), ProjectPrivilegeVo.class);
+				if (vo.getSelecting() != vo.getSelected()) { // 变化了
+					SysProjectPrivilege orgPrivilege = (SysProjectPrivilege) get(SysProjectPrivilege.class, vo.getId());
+					
+	    			if (vo.getSelecting() && !privilegeSet.contains(orgPrivilege)) { // 勾选
+	    				privilegeSet.add(orgPrivilege);
+	    			} else if (orgPrivilege != null) { // 取消
+	    				privilegeSet.remove(orgPrivilege);
+	    			}
+				}
 			}
 		}
+		
 		saveOrUpdate(orgRole);
 		
 		return true;

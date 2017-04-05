@@ -13,6 +13,6 @@ public interface ProjectPrivilegeService extends BaseService {
 
 	Map<String, List<ProjectPrivilegeVo>> listPrivilegesByOrg(Long orgId, Long projectRoleId);
 
-	boolean saveProjectPrivileges(Long roleId, List<ProjectPrivilegeVo> projectPrivileges);
+	boolean saveProjectPrivileges(Long roleId, Map<String, List<ProjectPrivilegeVo>> map);
 
 }

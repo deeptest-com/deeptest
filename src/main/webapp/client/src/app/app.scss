@@ -95,10 +95,6 @@ main {
   }
 }
 
-table .dropdown-toggle::after {
-  margin-left: 0px;
-}
-
 .link {
   margin: 0 5px;
   text-decoration:underline !important;
@@ -190,6 +186,9 @@ table {
         height: 30px;
       }
     }
+  }
+  .dropdown-toggle::after {
+    margin-left: 0px;
   }
 }
 .file-upload {

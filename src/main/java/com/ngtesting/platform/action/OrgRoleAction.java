@@ -13,15 +13,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.SysOrgRole;
 import com.ngtesting.platform.entity.SysRole;
+import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.service.OrgPriviledgeService;
 import com.ngtesting.platform.service.OrgRoleService;
 import com.ngtesting.platform.service.RoleService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.util.Constant.RespCode;
+import com.ngtesting.platform.vo.OrgGroupVo;
+import com.ngtesting.platform.vo.OrgPriviledgeVo;
 import com.ngtesting.platform.vo.OrgRoleVo;
 import com.ngtesting.platform.vo.Page;
+import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
 import com.ngtesting.platform.vo.RoleVo;
 import com.ngtesting.platform.vo.UserVo;
 
@@ -31,6 +38,8 @@ import com.ngtesting.platform.vo.UserVo;
 public class OrgRoleAction extends BaseAction {
 	@Autowired
 	OrgRoleService orgRoleService;
+	@Autowired
+	OrgPriviledgeService orgPriviledgeService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
@@ -60,14 +69,24 @@ public class OrgRoleAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject req) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		String accountId = req.getString("id");
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long orgId = userVo.getDefaultOrgId();
+		Long orgRoleId = req.getLong("id");
 		
-		SysOrgRole po = (SysOrgRole) orgRoleService.get(SysOrgRole.class, Long.valueOf(accountId));
+		List<OrgPriviledgeVo> orgPriviledges = orgPriviledgeService.listPriviledgesByOrg(orgId, orgRoleId);
+		if (orgRoleId == null) {
+			ret.put("data", new OrgGroupVo());
+	        ret.put("orgPriviledges", orgPriviledges);
+			ret.put("code", Constant.RespCode.SUCCESS.getCode());
+			return ret;
+		}
+		
+		SysOrgRole po = (SysOrgRole) orgRoleService.get(SysOrgRole.class, orgRoleId);
 		OrgRoleVo vo = orgRoleService.genVo(po);
         
-        ret.put("data", vo);
+        ret.put("orgRole", vo);
+        ret.put("orgPriviledges", orgPriviledges);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -79,11 +98,13 @@ public class OrgRoleAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
 		Long orgId = userVo.getDefaultOrgId();
-		OrgRoleVo vo = json.getObject("role", OrgRoleVo.class);
 		
-		SysOrgRole po = orgRoleService.save(vo, orgId);
+		OrgRoleVo orgRoleVo = JSON.parseObject(JSON.toJSONString(json.get("orgRole")), OrgRoleVo.class);
+		SysOrgRole po = orgRoleService.save(orgRoleVo, orgId);
+		
+		List<OrgPriviledgeVo> orgPriviledges = (List<OrgPriviledgeVo>) json.get("orgPriviledges");
+		boolean success = orgPriviledgeService.saveOrgPriviledges(orgRoleVo.getId(), orgPriviledges);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -101,15 +122,4 @@ public class OrgRoleAction extends BaseAction {
 		return ret;
 	}
 
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "disable", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> disable(HttpServletRequest request, @RequestBody JSONObject to) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		boolean success = orgRoleService.disable(to.getLong("id"));
-		
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
 }

@@ -13,9 +13,7 @@ import {OrgRoleService} from "../../../../service/org-role";
   styles: [require('./list.scss'), require('../../../../components/table-tree/src/styles.scss')],
   template: require('./list.html')
 })
-export class RoleList implements OnInit, AfterViewInit {
-
-  @ViewChild('#tree')tree :ElementRef;
+export class OrgRoleList implements OnInit, AfterViewInit {
 
   queryForm: FormGroup;
   queryModel:any = {keywords: '', disabled: 'false'};
@@ -27,7 +25,7 @@ export class RoleList implements OnInit, AfterViewInit {
   itemsPerPage:number = 6;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
-              private roleService: OrgRoleService) {
+              private orgRoleService: OrgRoleService) {
   }
 
   ngOnInit() {
@@ -52,7 +50,7 @@ export class RoleList implements OnInit, AfterViewInit {
   create():void {
     let that = this;
 
-    that._routeService.navTo("/pages/org-admin/role/edit/null");
+    that._routeService.navTo("/pages/org-admin/org-role/edit/null");
   }
 
   queryChange(values:any):void {
@@ -79,7 +77,7 @@ export class RoleList implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
 
-    that.roleService.list(that.queryModel).subscribe((json:any) => {
+    that.orgRoleService.list(that.queryModel).subscribe((json:any) => {
       that.totalItems = json.totalItems;
       that.models = json.data;
     });

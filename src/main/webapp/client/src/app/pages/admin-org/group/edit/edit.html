@@ -2,7 +2,8 @@
   <div class="row">
     <div class="edit-toolbar col-xl-12">
       <div class="title">
-        编辑群组
+        <span *ngIf="!group?.id">新建群组</span>
+        <span *ngIf="group?.id">编辑群组</span>
       </div>
       <div class="buttons">
         <button [routerLink]="['/pages/org-admin/group/list']" type="button"
@@ -18,11 +19,11 @@
     <li (click)="selectTab('info')" class="nav-item">
       <span [class.active]="tab == 'info'" class="nav-link active">基本信息</span>
     </li>
-    <li (click)="selectTab('groups')" class="nav-item">
-      <span [class.active]="tab == 'groups'" class="nav-link">用户</span>
+    <li (click)="selectTab('users')" class="nav-item">
+      <span [class.active]="tab == 'users'" class="nav-link">用户</span>
     </li>
   </ul>
-  <div class="space"></div>
+  <div class="tab-bottom-space"></div>
 
   <form [formGroup]="form" class="my-validate-form">
     <div [class.hidden]="tab != 'info'" class="group-edit-info">
@@ -37,7 +38,7 @@
         <label class="col-sm-2 col-form-label"><span>描述</span></label>
         <div class="col-sm-10">
           <textarea type="text" class="form-control" name="descr" formControlName="descr"
-                 [(ngModel)]="group.descr" #descr></textarea>
+                    [(ngModel)]="group.descr" #descr></textarea>
         </div>
       </div>
 
@@ -54,7 +55,7 @@
       </div>
     </div>
 
-    <div [class.hidden]="tab != 'groups'" class="group-edit-groups">
+    <div [class.hidden]="tab != 'users'" class="group-edit-groups">
       <div class="form-group row">
         <label class="col-sm-1"></label>
         <div class="col-sm-10">
@@ -107,3 +108,7 @@
   </form>
 
 </div>
+
+<pop-dialog #modalWrapper (confirm)="delete()" [title]="'提示'">
+  确认删除名为"{{group.name}}"的群组?
+</pop-dialog>

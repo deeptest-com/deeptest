@@ -3,7 +3,7 @@ import { CommonModule }  from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgaModule } from '../../../theme/nga.module';
 
-import { routing }       from './role.routing';
+import { routing }       from './org-role.routing';
 
 import { PaginationModule} from 'ng2-bootstrap';
 import { TabsModule } from 'ng2-bootstrap';
@@ -20,9 +20,9 @@ import { RequestService } from '../../../service/request';
 import { DatetimePickerService } from '../../../service/datetime-picker';
 import { OrgRoleService } from '../../../service/org-role';
 
-import { Role } from './role.component';
-import { RoleList } from './list';
-import { RoleEdit } from './edit';
+import { OrgRole } from './org-role.component';
+import { OrgRoleList } from './list';
+import { OrgRoleEdit } from './edit';
 
 @NgModule({
   imports: [
@@ -42,9 +42,9 @@ import { RoleEdit } from './edit';
     PopDialogModule
   ],
   declarations: [
-    Role,
-    RoleList,
-    RoleEdit
+    OrgRole,
+    OrgRoleList,
+    OrgRoleEdit
   ],
   providers: [
     RouteService,

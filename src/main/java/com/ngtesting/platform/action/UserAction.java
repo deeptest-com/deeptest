@@ -20,6 +20,7 @@ import com.ngtesting.platform.service.RelationOrgGroupUserService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.util.Constant.RespCode;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
 import com.ngtesting.platform.vo.UserVo;
@@ -69,16 +70,16 @@ public class UserAction extends BaseAction {
 		List<RelationOrgGroupUserVo> relations = orgGroupUserService.listRelationsByUser(orgId, userId);
 		
 		if (userId == null) {
-			ret.put("user", new SysUser());
+			ret.put("user", new UserVo());
 	        ret.put("relations", relations);
 			ret.put("code", Constant.RespCode.SUCCESS.getCode());
 			return ret;
 		}
 		
 		SysUser po = (SysUser) userService.get(SysUser.class, Long.valueOf(userId));
-		UserVo user = userService.genVo(po);
+		UserVo vo = userService.genVo(po);
 		
-        ret.put("user", user);
+        ret.put("user", vo);
         ret.put("relations", relations);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -93,13 +94,19 @@ public class UserAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long orgId = userVo.getDefaultOrgId();
 		
-		UserVo user = JSON.parseObject(JSON.toJSONString(json.get("user")), UserVo.class);;
-		List<RelationOrgGroupUserVo> relations = (List<RelationOrgGroupUserVo>) json.get("relations");
-		
+		UserVo user = JSON.parseObject(JSON.toJSONString(json.get("user")), UserVo.class);
 		SysUser po = userService.save(user, orgId);
-		boolean success = orgGroupUserService.saveRelations(relations);
 		
+		if (po == null) {
+			ret.put("code", RespCode.BIZ_FAIL.getCode());
+			ret.put("msg", "邮箱已存在");
+			return ret;
+		} 
+
+		List<RelationOrgGroupUserVo> relations = (List<RelationOrgGroupUserVo>) json.get("relations");
+		boolean success = orgGroupUserService.saveRelations(relations);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		
 		return ret;
 	}
 	

@@ -136,14 +136,13 @@ public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements 
 		for (Object obj: orgGroupUserVos) {
 			RelationOrgGroupUserVo vo = JSON.parseObject(JSON.toJSONString(obj), RelationOrgGroupUserVo.class);
 			if (vo.getSelecting() != vo.getSelected()) { // 变化了
-				SysRelationOrgGroupUser orgGroupUserVo 
-					= this.getRelationOrgGroupUser(vo.getOrgGroupId(), vo.getUserId());
+				SysRelationOrgGroupUser relationOrgGroupUser = this.getRelationOrgGroupUser(vo.getOrgGroupId(), vo.getUserId());
 				
-    			if (vo.getSelecting() && orgGroupUserVo == null) { // 勾选
-    				orgGroupUserVo = new SysRelationOrgGroupUser(vo.getOrgId(), vo.getOrgGroupId(), vo.getUserId());
-    				saveOrUpdate(orgGroupUserVo);
-    			} else if (orgGroupUserVo != null) { // 取消
-    				getDao().delete(orgGroupUserVo);
+    			if (vo.getSelecting() && relationOrgGroupUser == null) { // 勾选
+    				relationOrgGroupUser = new SysRelationOrgGroupUser(vo.getOrgId(), vo.getOrgGroupId(), vo.getUserId());
+    				saveOrUpdate(relationOrgGroupUser);
+    			} else if (relationOrgGroupUser != null) { // 取消
+    				getDao().delete(relationOrgGroupUser);
     			}
 			}
 		}

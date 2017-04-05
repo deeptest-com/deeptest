@@ -5,8 +5,8 @@ import java.io.Serializable;
 
 public abstract class BaseVo implements Serializable {
 	protected Long id;
-    protected Boolean deleted;
-    protected Boolean disabled;
+    protected Boolean deleted = false;
+    protected Boolean disabled = false;
     protected Integer version;
     
 	public Long getId() {

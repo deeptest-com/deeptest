@@ -1,9 +1,8 @@
 package com.ngtesting.platform.vo;
 
 
-public class GroupVo extends BaseVo {
-	private static final long serialVersionUID = -8567752946862450791L;
-	
+public class OrgGroupVo extends BaseVo {
+	private static final long serialVersionUID = 9011842501304591654L;
 	private String name;
     private String descr;
     

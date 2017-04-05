@@ -14,7 +14,6 @@ public interface OrgRoleService extends BaseService {
 	
 	SysOrgRole save(OrgRoleVo vo, Long orgId);
 	boolean delete(Long id);
-	boolean disable(Long id);
 
 	List<OrgRoleVo> genVos(List<SysOrgRole> pos);
 	OrgRoleVo genVo(SysOrgRole role);

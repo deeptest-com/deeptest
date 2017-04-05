@@ -60,15 +60,17 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 			return null;
 		}
 		
+		SysUser temp = accountService.getByEmail(userVo.getEmail());
+		if (temp != null && temp.getId() != userVo.getId()) {
+			return null;
+		}
+		
 		SysUser po;
 		if (userVo.getId() != null) {
 			po = (SysUser) get(SysUser.class, userVo.getId());
 		} else {
-			po = accountService.getByEmail(userVo.getEmail());
-			if (po == null) {
-				po = new SysUser();
-				po.setDefaultOrgId(orgId);
-			}
+			po = new SysUser();
+			po.setDefaultOrgId(orgId);
 		}
 		
 		po.setName(userVo.getName());

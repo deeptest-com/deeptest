@@ -11,18 +11,15 @@ import org.springframework.stereotype.Service;
 
 import com.ngtesting.platform.entity.SysOrgGroup;
 import com.ngtesting.platform.entity.SysUser;
-import com.ngtesting.platform.service.GroupService;
+import com.ngtesting.platform.service.OrgGroupService;
 import com.ngtesting.platform.service.RelationOrgGroupUserService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
-import com.ngtesting.platform.vo.GroupVo;
+import com.ngtesting.platform.vo.OrgGroupVo;
 import com.ngtesting.platform.vo.Page;
 
 @Service
-public class GroupServiceImpl extends BaseServiceImpl implements GroupService {
-	
-	@Autowired
-	RelationOrgGroupUserService userGroupService;
+public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupService {
 
 	@Override
 	public Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
@@ -45,7 +42,7 @@ public class GroupServiceImpl extends BaseServiceImpl implements GroupService {
 	}
 
 	@Override
-	public SysOrgGroup save(GroupVo vo, Long orgId) {
+	public SysOrgGroup save(OrgGroupVo vo, Long orgId) {
 		if (vo == null) {
 			return null;
 		}
@@ -66,7 +63,7 @@ public class GroupServiceImpl extends BaseServiceImpl implements GroupService {
 
 	@Override
 	public boolean delete(Long id) {
-		SysUser po = (SysUser) get(SysUser.class, id);
+		SysOrgGroup po = (SysOrgGroup) get(SysOrgGroup.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
 		
@@ -74,27 +71,18 @@ public class GroupServiceImpl extends BaseServiceImpl implements GroupService {
 	}
 
 	@Override
-	public boolean disable(Long id) {
-		SysUser po = (SysUser) get(SysUser.class, id);
-		po.setDisabled(!po.getDisabled());
-		saveOrUpdate(po);
-		
-		return true;
-	}
-
-	@Override
-	public GroupVo genVo(SysOrgGroup group) {
-		GroupVo vo = new GroupVo();
+	public OrgGroupVo genVo(SysOrgGroup group) {
+		OrgGroupVo vo = new OrgGroupVo();
 		BeanUtilEx.copyProperties(vo, group);
 		
 		return vo;
 	}
 	@Override
-	public List<GroupVo> genVos(List<SysOrgGroup> pos) {
-        List<GroupVo> vos = new LinkedList<GroupVo>();
+	public List<OrgGroupVo> genVos(List<SysOrgGroup> pos) {
+        List<OrgGroupVo> vos = new LinkedList<OrgGroupVo>();
 
         for (SysOrgGroup po: pos) {
-        	GroupVo vo = genVo(po);
+        	OrgGroupVo vo = genVo(po);
         	vos.add(vo);
         }
 		return vos;

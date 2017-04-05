@@ -11,6 +11,7 @@ import {ValidatorUtils, EmailValidator, PhoneValidator} from '../../../../valida
 import { RouteService } from '../../../../service/route';
 
 import { GroupService } from '../../../../service/group';
+import { PopDialogComponent } from '../../../../components/pop-dialog'
 
 declare var jQuery;
 
@@ -25,11 +26,11 @@ export class GroupEdit implements OnInit, AfterViewInit {
   id: number;
   tab: string = 'info';
 
-  group: any = {disabled: false};
+  group: any = {};
   relations: any[] = [];
   form: FormGroup;
   isSubmitted: boolean;
-  @ViewChild('modal') modal: ModalDirective;
+  @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
               private fb: FormBuilder, private groupService: GroupService) {
@@ -128,14 +129,7 @@ export class GroupEdit implements OnInit, AfterViewInit {
   }
 
   showModal(): void {
-    this.modal.show();
-  }
-  onModalShow():void {
-    // init jquery components if needed
-  }
-
-  hideModal(): void {
-    this.modal.hide();
+    this.modalWrapper.showModal();
   }
 
 }

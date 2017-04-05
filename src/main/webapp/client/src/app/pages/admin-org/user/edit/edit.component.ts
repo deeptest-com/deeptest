@@ -11,6 +11,7 @@ import {ValidatorUtils, EmailValidator, PhoneValidator} from '../../../../valida
 import { RouteService } from '../../../../service/route';
 
 import { UserService } from '../../../../service/user';
+import { PopDialogComponent } from '../../../../components/pop-dialog'
 
 declare var jQuery;
 
@@ -25,11 +26,11 @@ export class UserEdit implements OnInit, AfterViewInit {
   id: number;
   tab: string = 'info';
 
-  user: any = {disabled: false};
+  user: any = {};
   relations: any[] = [];
   form: FormGroup;
   isSubmitted: boolean;
-  @ViewChild('modal') modal: ModalDirective;
+  @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
               private fb: FormBuilder, private userService: UserService) {
@@ -93,8 +94,6 @@ export class UserEdit implements OnInit, AfterViewInit {
       that.relations = json.relations;
 
       _.forEach(that.relations, (group: any, index: number) => {
-        console.log(group);
-
         this.form.addControl('group-' + group.orgGroupId, new FormControl('', []))
       });
     });
@@ -109,7 +108,7 @@ export class UserEdit implements OnInit, AfterViewInit {
         that.formErrors = ['保存成功'];
         that._routeService.navTo("/pages/org-admin/user/list");
       } else {
-        that.formErrors = ['保存失败'];
+        that.formErrors = [json.msg];
       }
     });
   }
@@ -138,14 +137,7 @@ export class UserEdit implements OnInit, AfterViewInit {
   }
 
   showModal(): void {
-    this.modal.show();
-  }
-  onModalShow():void {
-    // init jquery components if needed
-  }
-
-  hideModal(): void {
-    this.modal.hide();
+    this.modalWrapper.showModal();
   }
 
 }

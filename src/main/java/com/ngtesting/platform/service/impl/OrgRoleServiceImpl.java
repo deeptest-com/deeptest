@@ -63,17 +63,8 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 
 	@Override
 	public boolean delete(Long id) {
-		SysUser po = (SysUser) get(SysUser.class, id);
-		po.setDeleted(true);
-		saveOrUpdate(po);
-		
-		return true;
-	}
-
-	@Override
-	public boolean disable(Long id) {
 		SysOrgRole po = (SysOrgRole) get(SysOrgRole.class, id);
-		po.setDisabled(!po.getDisabled());
+		po.setDeleted(true);
 		saveOrUpdate(po);
 		
 		return true;

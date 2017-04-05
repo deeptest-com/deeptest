@@ -17,21 +17,20 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.SysOrgGroup;
 import com.ngtesting.platform.entity.SysUser;
-import com.ngtesting.platform.service.GroupService;
+import com.ngtesting.platform.service.OrgGroupService;
 import com.ngtesting.platform.service.RelationOrgGroupUserService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
-import com.ngtesting.platform.vo.GroupVo;
+import com.ngtesting.platform.vo.OrgGroupVo;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
 import com.ngtesting.platform.vo.UserVo;
 
-
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "group/")
-public class GroupAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_CLIENT + "org_group/")
+public class OrgGroupAction extends BaseAction {
 	@Autowired
-	GroupService groupService;
+	OrgGroupService orgGroupService;
 	
 	@Autowired
 	RelationOrgGroupUserService orgGroupUserService;
@@ -50,8 +49,8 @@ public class GroupAction extends BaseAction {
 		int currentPage = json.getInteger("currentPage") == null? 0: json.getInteger("currentPage") - 1;
 		int itemsPerPage = json.getInteger("itemsPerPage") == null? Constant.PAGE_SIZE: json.getInteger("itemsPerPage");
 		
-		Page page = groupService.listByPage(orgId, keywords, disabled, currentPage, itemsPerPage);
-		List<GroupVo> vos = groupService.genVos(page.getItems());
+		Page page = orgGroupService.listByPage(orgId, keywords, disabled, currentPage, itemsPerPage);
+		List<OrgGroupVo> vos = orgGroupService.genVos(page.getItems());
         
 		ret.put("totalItems", page.getTotal());
         ret.put("data", vos);
@@ -72,14 +71,14 @@ public class GroupAction extends BaseAction {
 		List<RelationOrgGroupUserVo> relations = orgGroupUserService.listRelationsByGroup(orgId, orgGroupId);
 		if (orgGroupId == null) {
 			
-			ret.put("group", new SysOrgGroup());
+			ret.put("group", new OrgGroupVo());
 	        ret.put("relations", relations);
 			ret.put("code", Constant.RespCode.SUCCESS.getCode());
 			return ret;
 		}
 		
-		SysOrgGroup po = (SysOrgGroup) groupService.get(SysOrgGroup.class, Long.valueOf(orgGroupId));
-		GroupVo group = groupService.genVo(po);
+		SysOrgGroup po = (SysOrgGroup) orgGroupService.get(SysOrgGroup.class, Long.valueOf(orgGroupId));
+		OrgGroupVo group = orgGroupService.genVo(po);
 		
         ret.put("group", group);
         ret.put("relations", relations);
@@ -96,10 +95,10 @@ public class GroupAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long orgId = userVo.getDefaultOrgId();
 		
-		GroupVo group = JSON.parseObject(JSON.toJSONString(json.get("group")), GroupVo.class);;
+		OrgGroupVo group = JSON.parseObject(JSON.toJSONString(json.get("group")), OrgGroupVo.class);;
 		List<RelationOrgGroupUserVo> relations = (List<RelationOrgGroupUserVo>) json.get("relations");
 		
-		SysOrgGroup po = groupService.save(group, orgId);
+		SysOrgGroup po = orgGroupService.save(group, orgId);
 		boolean success = orgGroupUserService.saveRelations(relations);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -112,19 +111,9 @@ public class GroupAction extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		boolean success = groupService.delete(to.getLong("id"));
+		Long id = to.getLong("id");
 		
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "disable", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> disable(HttpServletRequest request, @RequestBody JSONObject to) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		boolean success = groupService.disable(to.getLong("id"));
+		boolean success = orgGroupService.delete(id);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

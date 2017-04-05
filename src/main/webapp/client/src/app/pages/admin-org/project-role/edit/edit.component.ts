@@ -25,7 +25,7 @@ export class ProjectRoleEdit implements OnInit, AfterViewInit {
   id: number;
   tab: string = 'info';
   projectRole: any = {disabled: false};
-  projectPriviledges: any[] = [];
+  projectPrivileges: any[] = [];
   form: any;
   @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;
 
@@ -49,18 +49,14 @@ export class ProjectRoleEdit implements OnInit, AfterViewInit {
     let that = this;
     that.projectRoleService.get(that.id).subscribe((json:any) => {
       that.projectRole = json.projectRole;
-      that.projectPriviledges = json.projectPriviledges;
-
-      _.forEach(that.projectPriviledges, (priviledge: any, index: number) => {
-        this.form.addControl('priviledge-' + priviledge.id, new FormControl('', []))
-      });
+      that.projectPrivileges = json.projectPrivileges;
     });
   }
 
   save() {
     let that = this;
 
-    that.projectRoleService.save(that.projectRole, that.projectPriviledges).subscribe((json:any) => {
+    that.projectRoleService.save(that.projectRole, that.projectPrivileges).subscribe((json:any) => {
       if (json.code == 1) {
 
         that.formErrors = ['保存成功'];
@@ -90,7 +86,7 @@ export class ProjectRoleEdit implements OnInit, AfterViewInit {
 
   select(key: string) {
     let val = key ==='all'? true: false;
-    for (let user of this.projectPriviledges) {
+    for (let user of this.projectPrivileges) {
       user.selecting = val;
     }
   }

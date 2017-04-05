@@ -1,7 +1,7 @@
 package com.ngtesting.platform.vo;
 
 
-public class ProjectPriviledgeVo extends BaseVo {
+public class OrgPrivilegeVo extends BaseVo {
 	private static final long serialVersionUID = -6981838223153872057L;
 	
 	private String name;
@@ -12,10 +12,10 @@ public class ProjectPriviledgeVo extends BaseVo {
     private Boolean selecting;
     private Boolean selected;
     
-    public ProjectPriviledgeVo() {
+    public OrgPrivilegeVo() {
 	}
 
-	public ProjectPriviledgeVo(Long id, String name, String descr, Long orgId) {
+	public OrgPrivilegeVo(Long id, String name, String descr, Long orgId) {
 		this.id = id;
 		this.name = name;
 		this.descr = descr;

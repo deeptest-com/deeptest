@@ -19,14 +19,14 @@
     <li (click)="selectTab('info')" class="nav-item">
       <span [class.active]="tab == 'info'" class="nav-link active">基本信息</span>
     </li>
-    <li (click)="selectTab('priviledges')" class="nav-item">
-      <span [class.active]="tab == 'priviledges'" class="nav-link">权限</span>
+    <li (click)="selectTab('privileges')" class="nav-item">
+      <span [class.active]="tab == 'privileges'" class="nav-link">权限</span>
     </li>
   </ul>
   <div class="tab-bottom-space"></div>
 
-  <form [formGroup]="form" class="my-validate-form">
-    <div [class.hidden]="tab != 'info'" class="project-role-edit">
+  <div [class.hidden]="tab != 'info'" class="project-role-edit-info">
+    <form [formGroup]="form" class="my-validate-form">
       <div class="form-group row">
         <label class="col-sm-2 col-form-label"><span>名称</span></label>
         <div class="col-sm-4">
@@ -53,59 +53,72 @@
           </div>
         </div>
       </div>
-    </div>
+    </form>
+  </div>
 
-    <div [class.hidden]="tab != 'priviledges'" class="group-edit-groups">
-      <div class="form-group row">
-        <label class="col-sm-1"></label>
-        <div class="col-sm-10">
-          <div class="checkbox-list">
-            <div class="checkbox-list-inner">
-              <div class="toolbar">
-                <div class="toolbar-inner">
-                  <span (click)="select('all')" class="link">全选</span> |
-                  <span (click)="select('none')" class="link">全不选</span>
-                </div>
-              </div>
-              <div>
-                <div *ngFor="let item of projectPriviledges" class="checkbox-list-item">
-                  <label>
-                    <span class="checkbox-name">{{item.name}}<span></span></span>
-                    <input type="checkbox" class="form-check-input"
-                           [(ngModel)]="item.selecting" formControlName="{{'priviledge-' + item.id}}">
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <label class="col-sm-1"></label>
-      </div>
-    </div>
-
+  <div [class.hidden]="tab != 'privileges'" class="project-role-edit-privileges">
     <div class="form-group row">
-      <label class="col-sm-2 col-form-label"></label>
+      <label class="col-sm-1"></label>
       <div class="col-sm-10">
-        <button (click)="save()" type="button" class="btn btn-primary" [disabled]="!form.valid">保存</button>
-        &nbsp;
-        <button (click)="reset()" type="button" class="btn btn-default">重置</button>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <button (click)="showModal()" *ngIf="projectRole.id" type="button" class="btn btn-danger">删除</button>
-      </div>
-    </div>
+        <table class="grid">
+          <colgroup>
+            <col style="width: 200px">
+            <col style="width: 150px">
+            <col style="width: 150px">
+            <col style="width: 150px">
+          </colgroup>
+          <tbody>
+            <tr class="header">
+              <th>权限</th>
+              <th class="checkboxWithTitle">编辑</th>
+              <th class="checkboxWithTitle">删除</th>
+              <th class="checkboxWithTitle">关闭</th>
+            </tr>
 
-    <div class="form-group row">
-      <label class="col-sm-2 col-form-label"></label>
-      <div class="col-sm-10">
-        <div class="validate-errors">
-          <div class="validate-error" *ngFor="let msg of formErrors">
-            <div>{{ msg }}</div>
-          </div>
+            <tr *ngFor="let items of (projectPrivileges | mapToArray)" class="row even">
+              <td>{{items.key}} - {{items.value.length}}</td>
+              <td class="tick">
+                <span class="checkbox-name"></span>
+                <input type="checkbox" [(ngModel)]="items.value[0].selecting">
+              </td>
+              <td class="tick">
+                <span class="checkbox-name"></span>
+                <input type="checkbox" [(ngModel)]="items.value[1].selecting">
+              </td>
+              <td class="checkboxWithTitle">
+                <span class="checkbox-name"></span>
+                <input *ngIf="items.length > 2" type="checkbox" class="form-check-input"
+                       [(ngModel)]="items.value[2].selecting">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <label class="col-sm-1"></label>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-sm-2 col-form-label"></label>
+    <div class="col-sm-10">
+      <button (click)="save()" type="button" class="btn btn-primary" [disabled]="!form.valid">保存</button>
+      &nbsp;
+      <button (click)="reset()" type="button" class="btn btn-default">重置</button>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <button (click)="showModal()" *ngIf="projectRole.id" type="button" class="btn btn-danger">删除</button>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-sm-2 col-form-label"></label>
+    <div class="col-sm-10">
+      <div class="validate-errors">
+        <div class="validate-error" *ngFor="let msg of formErrors">
+          <div>{{ msg }}</div>
         </div>
       </div>
     </div>
-
-  </form>
+  </div>
 
 </div>
 

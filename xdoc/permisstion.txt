@@ -1,0 +1,21 @@
+===Company===
+Projects
+Users & Roles
+Customizations
+Integration
+Subscription
+Site Settings
+
+===Project===
+Add/Edit    Delete  Close
+
+Attachments         
+Cases & Sections            
+Configurations          
+Milestones          
+Runs & Plans            
+Runs & Plans (Closed)           
+Reports         
+Reports (Scheduled)         
+Suites          
+Test Results        

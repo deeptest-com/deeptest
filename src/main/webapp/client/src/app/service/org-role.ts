@@ -21,8 +21,8 @@ export class OrgRoleService {
     return this._reqService.post(this._api_url + 'get', model);
   }
 
-  save(orgRole: any, orgPriviledges: any[]) {
-    return this._reqService.post(this._api_url + 'save', {orgRole: orgRole, orgPriviledges: orgPriviledges});
+  save(orgRole: any, orgPrivileges: any[]) {
+    return this._reqService.post(this._api_url + 'save', {orgRole: orgRole, orgPrivileges: orgPrivileges});
   }
 
   delete(id: number) {

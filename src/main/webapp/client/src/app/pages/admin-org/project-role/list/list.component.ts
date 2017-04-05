@@ -17,7 +17,7 @@ export class ProjectRoleList implements OnInit, AfterViewInit {
 
   queryForm: FormGroup;
   queryModel:any = {keywords: '', disabled: 'false'};
-  statusMap: Array<any> = CONSTANT.EntityDisabled;
+  statusMap: any = CONSTANT.EntityDisabled;
 
   models: any;
   totalItems:number = 0;

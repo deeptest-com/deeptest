@@ -19,14 +19,14 @@
     <li (click)="selectTab('info')" class="nav-item">
       <span [class.active]="tab == 'info'" class="nav-link active">基本信息</span>
     </li>
-    <li (click)="selectTab('priviledges')" class="nav-item">
-      <span [class.active]="tab == 'priviledges'" class="nav-link">权限</span>
+    <li (click)="selectTab('privileges')" class="nav-item">
+      <span [class.active]="tab == 'privileges'" class="nav-link">权限</span>
     </li>
   </ul>
   <div class="tab-bottom-space"></div>
 
   <form [formGroup]="form" class="my-validate-form">
-    <div [class.hidden]="tab != 'info'" class="org-role-edit">
+    <div [class.hidden]="tab != 'info'" class="org-role-edit-info">
       <div class="form-group row">
         <label class="col-sm-2 col-form-label"><span>名称</span></label>
         <div class="col-sm-4">
@@ -55,7 +55,7 @@
       </div>
     </div>
 
-    <div [class.hidden]="tab != 'priviledges'" class="group-edit-groups">
+    <div [class.hidden]="tab != 'privileges'" class="org-role-edit-privileges">
       <div class="form-group row">
         <label class="col-sm-1"></label>
         <div class="col-sm-10">
@@ -68,11 +68,11 @@
                 </div>
               </div>
               <div>
-                <div *ngFor="let item of orgPriviledges" class="checkbox-list-item">
+                <div *ngFor="let item of orgPrivileges" class="checkbox-list-item">
                   <label>
                     <span class="checkbox-name">{{item.name}}<span></span></span>
                     <input type="checkbox" class="form-check-input"
-                           [(ngModel)]="item.selecting" formControlName="{{'priviledge-' + item.id}}">
+                           [(ngModel)]="item.selecting" formControlName="{{'privilege-' + item.id}}">
                   </label>
                 </div>
               </div>

@@ -6,6 +6,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -17,6 +19,9 @@ import javax.persistence.Table;
 @Table(name = "sys_org_role")
 public class SysOrgRole extends BaseEntity {
 	private static final long serialVersionUID = -3556080851163371948L;
+	
+	@Enumerated(EnumType.STRING)
+    private OrgRoleCode code;
 	
 	private String name;
     private String descr;
@@ -36,11 +41,35 @@ public class SysOrgRole extends BaseEntity {
     private Set<SysUser> userSet = new HashSet<SysUser>(0);
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "r_org_role_priviledge", joinColumns = { 
+	@JoinTable(name = "r_org_role_privilege", joinColumns = { 
 			@JoinColumn(name = "org_role_id", nullable = false, updatable = false) }, 
-			inverseJoinColumns = { @JoinColumn(name = "org_priviledge_id", 
+			inverseJoinColumns = { @JoinColumn(name = "org_privilege_id", 
 					nullable = false, updatable = false) })
-    private Set<SysOrgPriviledge> orgPriviledgeSet = new HashSet<SysOrgPriviledge>(0);
+    private Set<SysOrgPrivilege> orgPrivilegeSet = new HashSet<SysOrgPrivilege>(0);
+    
+    public static enum OrgRoleCode {
+        org_admin("org_admin"),
+        project_admin("project_admin");
+
+        private OrgRoleCode(String textVal) {
+            this.textVal = textVal;
+        }
+
+        private String textVal;
+        public String toString() {
+            return textVal;
+        }
+        
+        public static OrgRoleCode getValue(String str) {
+        	OrgRoleCode status = null;
+        	switch(str) { 
+            	case "org_admin": status = OrgRoleCode.org_admin; break;
+            	case "project_admin": status = OrgRoleCode.project_admin; break;
+            }
+        	
+        	return status;
+        }
+    }
     
 	public String getName() {
 		return name;
@@ -54,12 +83,12 @@ public class SysOrgRole extends BaseEntity {
 	public void setDescr(String descr) {
 		this.descr = descr;
 	}
-	public Set<SysOrgPriviledge> getOrgPriviledgeSet() {
-		return orgPriviledgeSet;
+	public Set<SysOrgPrivilege> getOrgPrivilegeSet() {
+		return orgPrivilegeSet;
 	}
-	public void setOrgPriviledgeSet(
-			Set<SysOrgPriviledge> orgPriviledgeSet) {
-		this.orgPriviledgeSet = orgPriviledgeSet;
+	public void setOrgPrivilegeSet(
+			Set<SysOrgPrivilege> orgPrivilegeSet) {
+		this.orgPrivilegeSet = orgPrivilegeSet;
 	}
 	public SysOrg getOrg() {
 		return org;

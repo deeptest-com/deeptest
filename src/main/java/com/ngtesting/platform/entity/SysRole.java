@@ -29,11 +29,11 @@ public class SysRole extends BaseEntity {
     private Set<SysUser> userSet = new HashSet<SysUser>(0);
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "r_role_priviledge", joinColumns = { 
+	@JoinTable(name = "r_role_privilege", joinColumns = { 
 			@JoinColumn(name = "role_id", nullable = false, updatable = false) }, 
-			inverseJoinColumns = { @JoinColumn(name = "priviledge_id", 
+			inverseJoinColumns = { @JoinColumn(name = "privilege_id", 
 					nullable = false, updatable = false) })
-    private Set<SysPriviledge> priviledgeSet = new HashSet<SysPriviledge>(0);
+    private Set<SysPrivilege> privilegeSet = new HashSet<SysPrivilege>(0);
 
 	public String getName() {
 		return name;
@@ -59,12 +59,12 @@ public class SysRole extends BaseEntity {
 		this.userSet = userSet;
 	}
 
-	public Set<SysPriviledge> getPriviledgeSet() {
-		return priviledgeSet;
+	public Set<SysPrivilege> getPrivilegeSet() {
+		return privilegeSet;
 	}
 
-	public void setPriviledgeSet(Set<SysPriviledge> priviledgeSet) {
-		this.priviledgeSet = priviledgeSet;
+	public void setPrivilegeSet(Set<SysPrivilege> privilegeSet) {
+		this.privilegeSet = privilegeSet;
 	}
     
 }

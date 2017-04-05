@@ -9,15 +9,15 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "sys_project_priviledge")
-public class SysProjectPriviledge extends BaseEntity {
+@Table(name = "sys_privilege")
+public class SysPrivilege extends BaseEntity {
 	private static final long serialVersionUID = -5510206858644860272L;
 
     private String name;
     private String descr;
     
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "projectPriviledgeSet")
-    private Set<SysProjectRole> projectRoleSet = new HashSet<SysProjectRole>(0);
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "privilegeSet")
+    private Set<SysRole> roleSet = new HashSet<SysRole>(0);
 
 	public String getName() {
 		return name;
@@ -35,12 +35,12 @@ public class SysProjectPriviledge extends BaseEntity {
 		this.descr = descr;
 	}
 
-	public Set<SysProjectRole> getProjectRoleSet() {
-		return projectRoleSet;
+	public Set<SysRole> getRoleSet() {
+		return roleSet;
 	}
 
-	public void setProjectRoleSet(Set<SysProjectRole> projectRoleSet) {
-		this.projectRoleSet = projectRoleSet;
+	public void setRoleSet(Set<SysRole> roleSet) {
+		this.roleSet = roleSet;
 	}
     
 }

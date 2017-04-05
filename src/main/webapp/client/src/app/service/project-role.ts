@@ -21,8 +21,8 @@ export class ProjectRoleService {
     return this._reqService.post(this._api_url + 'get', model);
   }
 
-  save(projectRole: any, projectPriviledges: any[]) {
-    return this._reqService.post(this._api_url + 'save', {projectRole: projectRole, projectPriviledges: projectPriviledges});
+  save(projectRole: any, projectPrivileges: any[]) {
+    return this._reqService.post(this._api_url + 'save', {projectRole: projectRole, projectPrivileges: projectPrivileges});
   }
 
   delete(id: number) {

@@ -18,14 +18,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.SysOrgRole;
 import com.ngtesting.platform.entity.SysRole;
 import com.ngtesting.platform.entity.SysUser;
-import com.ngtesting.platform.service.OrgPriviledgeService;
+import com.ngtesting.platform.service.OrgPrivilegeService;
 import com.ngtesting.platform.service.OrgRoleService;
 import com.ngtesting.platform.service.RoleService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.util.Constant.RespCode;
 import com.ngtesting.platform.vo.OrgGroupVo;
-import com.ngtesting.platform.vo.OrgPriviledgeVo;
+import com.ngtesting.platform.vo.OrgPrivilegeVo;
 import com.ngtesting.platform.vo.OrgRoleVo;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
@@ -39,7 +39,7 @@ public class OrgRoleAction extends BaseAction {
 	@Autowired
 	OrgRoleService orgRoleService;
 	@Autowired
-	OrgPriviledgeService orgPriviledgeService;
+	OrgPrivilegeService orgPrivilegeService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
@@ -74,10 +74,10 @@ public class OrgRoleAction extends BaseAction {
 		Long orgId = userVo.getDefaultOrgId();
 		Long orgRoleId = req.getLong("id");
 		
-		List<OrgPriviledgeVo> orgPriviledges = orgPriviledgeService.listPriviledgesByOrg(orgId, orgRoleId);
+		List<OrgPrivilegeVo> orgPrivileges = orgPrivilegeService.listPrivilegesByOrg(orgId, orgRoleId);
 		if (orgRoleId == null) {
 			ret.put("orgRole", new OrgGroupVo());
-	        ret.put("orgPriviledges", orgPriviledges);
+	        ret.put("orgPrivileges", orgPrivileges);
 			ret.put("code", Constant.RespCode.SUCCESS.getCode());
 			return ret;
 		}
@@ -86,7 +86,7 @@ public class OrgRoleAction extends BaseAction {
 		OrgRoleVo vo = orgRoleService.genVo(po);
         
         ret.put("orgRole", vo);
-        ret.put("orgPriviledges", orgPriviledges);
+        ret.put("orgPrivileges", orgPrivileges);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -103,8 +103,8 @@ public class OrgRoleAction extends BaseAction {
 		OrgRoleVo orgRoleVo = JSON.parseObject(JSON.toJSONString(json.get("orgRole")), OrgRoleVo.class);
 		SysOrgRole po = orgRoleService.save(orgRoleVo, orgId);
 		
-		List<OrgPriviledgeVo> orgPriviledges = (List<OrgPriviledgeVo>) json.get("orgPriviledges");
-		boolean success = orgPriviledgeService.saveOrgPriviledges(po.getId(), orgPriviledges);
+		List<OrgPrivilegeVo> orgPrivileges = (List<OrgPrivilegeVo>) json.get("orgPrivileges");
+		boolean success = orgPrivilegeService.saveOrgPrivileges(po.getId(), orgPrivileges);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

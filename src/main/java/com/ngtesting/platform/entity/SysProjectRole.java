@@ -6,6 +6,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -13,10 +15,15 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.ngtesting.platform.entity.SysOrgRole.OrgRoleCode;
+
 @Entity
 @Table(name = "sys_project_role")
 public class SysProjectRole extends BaseEntity {
 	private static final long serialVersionUID = -3556080851163371948L;
+	
+	@Enumerated(EnumType.STRING)
+    private ProjectRoleCode code;
 	
 	private String name;
     private String descr;
@@ -29,11 +36,39 @@ public class SysProjectRole extends BaseEntity {
     private Long orgId;
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "r_project_role_priviledge", joinColumns = { 
+	@JoinTable(name = "r_project_role_privilege", joinColumns = { 
 			@JoinColumn(name = "project_role_id", nullable = false, updatable = false) }, 
-			inverseJoinColumns = { @JoinColumn(name = "project_priviledge_id", 
+			inverseJoinColumns = { @JoinColumn(name = "project_privilege_id", 
 					nullable = false, updatable = false) })
-    private Set<SysProjectPriviledge> projectPriviledgeSet = new HashSet<SysProjectPriviledge>(0);
+    private Set<SysProjectPrivilege> projectPrivilegeSet = new HashSet<SysProjectPrivilege>(0);
+    
+    public static enum ProjectRoleCode {
+    	project_manager("project_manager"),
+        test_designer("test_designer"),
+        tester("tester"),
+        developer("developer");
+
+        private ProjectRoleCode(String textVal) {
+            this.textVal = textVal;
+        }
+
+        private String textVal;
+        public String toString() {
+            return textVal;
+        }
+        
+        public static ProjectRoleCode getValue(String str) {
+        	ProjectRoleCode status = null;
+        	switch(str) { 
+            	case "project_manager": status = ProjectRoleCode.project_manager; break;
+            	case "test_designer": status = ProjectRoleCode.test_designer; break;
+            	case "tester": status = ProjectRoleCode.tester; break;
+            	case "developer": status = ProjectRoleCode.developer; break;
+            }
+        	
+        	return status;
+        }
+    }
     
 	public String getName() {
 		return name;
@@ -47,12 +82,12 @@ public class SysProjectRole extends BaseEntity {
 	public void setDescr(String descr) {
 		this.descr = descr;
 	}
-	public Set<SysProjectPriviledge> getProjectPriviledgeSet() {
-		return projectPriviledgeSet;
+	public Set<SysProjectPrivilege> getProjectPrivilegeSet() {
+		return projectPrivilegeSet;
 	}
-	public void setProjectPriviledgeSet(
-			Set<SysProjectPriviledge> projectPriviledgeSet) {
-		this.projectPriviledgeSet = projectPriviledgeSet;
+	public void setProjectPrivilegeSet(
+			Set<SysProjectPrivilege> projectPrivilegeSet) {
+		this.projectPrivilegeSet = projectPrivilegeSet;
 	}
 	public SysOrg getOrg() {
 		return org;

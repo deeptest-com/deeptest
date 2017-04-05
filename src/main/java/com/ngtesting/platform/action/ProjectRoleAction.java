@@ -19,19 +19,19 @@ import com.ngtesting.platform.entity.SysOrgRole;
 import com.ngtesting.platform.entity.SysProjectRole;
 import com.ngtesting.platform.entity.SysRole;
 import com.ngtesting.platform.entity.SysUser;
-import com.ngtesting.platform.service.OrgPriviledgeService;
+import com.ngtesting.platform.service.OrgPrivilegeService;
 import com.ngtesting.platform.service.OrgRoleService;
-import com.ngtesting.platform.service.ProjectPriviledgeService;
+import com.ngtesting.platform.service.ProjectPrivilegeService;
 import com.ngtesting.platform.service.ProjectRoleService;
 import com.ngtesting.platform.service.RoleService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.util.Constant.RespCode;
 import com.ngtesting.platform.vo.OrgGroupVo;
-import com.ngtesting.platform.vo.OrgPriviledgeVo;
+import com.ngtesting.platform.vo.OrgPrivilegeVo;
 import com.ngtesting.platform.vo.OrgRoleVo;
 import com.ngtesting.platform.vo.Page;
-import com.ngtesting.platform.vo.ProjectPriviledgeVo;
+import com.ngtesting.platform.vo.ProjectPrivilegeVo;
 import com.ngtesting.platform.vo.ProjectRoleVo;
 import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
 import com.ngtesting.platform.vo.RoleVo;
@@ -44,7 +44,7 @@ public class ProjectRoleAction extends BaseAction {
 	@Autowired
 	ProjectRoleService projectRoleService;
 	@Autowired
-	ProjectPriviledgeService projectPriviledgeService;
+	ProjectPrivilegeService projectPrivilegeService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
@@ -79,10 +79,10 @@ public class ProjectRoleAction extends BaseAction {
 		Long orgId = userVo.getDefaultOrgId();
 		Long orgRoleId = req.getLong("id");
 		
-		List<ProjectPriviledgeVo> orgPriviledges = projectPriviledgeService.listPriviledgesByOrg(orgId, orgRoleId);
+		Map<String, List<ProjectPrivilegeVo>> orgPrivileges = projectPrivilegeService.listPrivilegesByOrg(orgId, orgRoleId);
 		if (orgRoleId == null) {
 			ret.put("projectRole", new OrgGroupVo());
-	        ret.put("projectPriviledges", orgPriviledges);
+	        ret.put("projectPrivileges", orgPrivileges);
 			ret.put("code", Constant.RespCode.SUCCESS.getCode());
 			return ret;
 		}
@@ -91,7 +91,7 @@ public class ProjectRoleAction extends BaseAction {
 		ProjectRoleVo vo = projectRoleService.genVo(po);
         
         ret.put("projectRole", vo);
-        ret.put("projectPriviledges", orgPriviledges);
+        ret.put("projectPrivileges", orgPrivileges);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -108,8 +108,8 @@ public class ProjectRoleAction extends BaseAction {
 		ProjectRoleVo projectRoleVo = JSON.parseObject(JSON.toJSONString(json.get("projectRole")), ProjectRoleVo.class);
 		SysProjectRole po = projectRoleService.save(projectRoleVo, orgId);
 		
-		List<ProjectPriviledgeVo> projectPriviledges = (List<ProjectPriviledgeVo>) json.get("projectPriviledges");
-		boolean success = projectPriviledgeService.saveProjectPriviledges(po.getId(), projectPriviledges);
+		List<ProjectPrivilegeVo> projectPrivileges = (List<ProjectPrivilegeVo>) json.get("projectPrivileges");
+		boolean success = projectPrivilegeService.saveProjectPrivileges(po.getId(), projectPrivileges);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

@@ -25,6 +25,10 @@ export class ProjectList implements OnInit, AfterViewInit {
   counter = Array;
   statusMap: Array<any> = CONSTANT.EntityDisabled;
 
+  totalItems:number = 0;
+  currentPage:number = 1;
+  itemsPerPage:number = 6;
+
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
               private _projectService:ProjectService) {
   }
@@ -60,8 +64,8 @@ export class ProjectList implements OnInit, AfterViewInit {
     that.loadData();
   }
   pageChanged(event:any):void {
-    let that = this;
-    that.loadData();
+    this.currentPage = event.page;
+    this.loadData();
   }
 
   edit($event: any):void {
@@ -76,7 +80,7 @@ export class ProjectList implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
 
-    that._projectService.list(that.queryModel).subscribe((json:any) => {
+    that._projectService.list(that.queryModel, that.currentPage, that.itemsPerPage).subscribe((json:any) => {
       that.models = json.data;
     });
   }

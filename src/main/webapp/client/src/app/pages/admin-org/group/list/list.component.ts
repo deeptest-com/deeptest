@@ -53,14 +53,12 @@ export class GroupList implements OnInit, AfterViewInit {
     that._routeService.navTo("/pages/org-admin/group/edit/null");
   }
 
-  queryChange(values:any):void {
-    let that = this;
-
-    that.loadData();
+  queryChange(values: any):void {
+    this.loadData();
   }
   pageChanged(event:any):void {
-    let that = this;
-    that.loadData();
+    this.currentPage = event.page;
+    this.loadData();
   }
 
   edit($event: any):void {
@@ -77,7 +75,7 @@ export class GroupList implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
 
-    that.groupService.list(that.queryModel).subscribe((json:any) => {
+    that.groupService.list(that.queryModel, that.currentPage, that.itemsPerPage).subscribe((json:any) => {
       that.totalItems = json.totalItems;
       that.models = json.data;
     });

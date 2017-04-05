@@ -132,9 +132,6 @@ export class UserEdit implements OnInit, AfterViewInit {
       group.selecting = val;
     }
   }
-  reset() {
-    this.loadData();
-  }
 
   showModal(): void {
     this.modalWrapper.showModal();

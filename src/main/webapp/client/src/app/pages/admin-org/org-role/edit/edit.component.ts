@@ -71,10 +71,6 @@ export class OrgRoleEdit implements OnInit, AfterViewInit {
     });
   }
 
-  reset() {
-    this.loadData();
-  }
-
   delete() {
     let that = this;
 

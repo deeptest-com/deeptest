@@ -7,7 +7,8 @@ export class UserService {
   constructor(private _reqService: RequestService) { }
   _api_url = 'user/';
 
-  list(query: any) {
+  list(query: any, currentPage: number, itemsPerPage: number) {
+    _.merge(query, {currentPage: currentPage, itemsPerPage: itemsPerPage});
     return this._reqService.post(this._api_url + 'list', query);
   }
 

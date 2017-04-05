@@ -80,7 +80,7 @@ export class OrgEdit implements OnInit, AfterViewInit {
       that.model = json.data;
     });
   }
- 
+
   save() {
     let that = this;
 
@@ -106,10 +106,6 @@ export class OrgEdit implements OnInit, AfterViewInit {
         that.formErrors = ['删除失败'];
       }
     });
-  }
-
-  reset() {
-    this.loadData();
   }
 
   showModal(): void {

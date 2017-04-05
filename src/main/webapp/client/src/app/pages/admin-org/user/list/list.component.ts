@@ -59,8 +59,8 @@ export class UserList implements OnInit, AfterViewInit {
     that.loadData();
   }
   pageChanged(event:any):void {
-    let that = this;
-    that.loadData();
+    this.currentPage = event.page;
+    this.loadData();
   }
 
   edit($event: any):void {
@@ -77,7 +77,7 @@ export class UserList implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
 
-    that.userService.list(that.queryModel).subscribe((json:any) => {
+    that.userService.list(that.queryModel, that.currentPage, that.itemsPerPage).subscribe((json:any) => {
       that.totalItems = json.totalItems;
       that.models = json.data;
     });

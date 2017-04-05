@@ -21,6 +21,9 @@ export class OrgList implements OnInit, AfterViewInit {
   statusMap: Array<any> = CONSTANT.EntityDisabled;
 
   models: any;
+  totalItems:number = 0;
+  currentPage:number = 1;
+  itemsPerPage:number = 6;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
               private orgService:OrgService, private accountService: AccountService) {
@@ -51,9 +54,13 @@ export class OrgList implements OnInit, AfterViewInit {
 
   queryChange(values:any):void {
     let that = this;
-
     that.loadData();
   }
+  pageChanged(event:any):void {
+    this.currentPage = event.page;
+    this.loadData();
+  }
+  
   setDefault(item: any):void {
     this.orgService.setDefault(item.id).subscribe((json:any) => {
       if (json.code == 1) {
@@ -78,7 +85,7 @@ export class OrgList implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
 
-    that.orgService.list(that.queryModel).subscribe((json:any) => {
+    that.orgService.list(that.queryModel, that.currentPage, that.itemsPerPage).subscribe((json:any) => {
       that.models = json.data;
 
       if (that.models.length == 0) {

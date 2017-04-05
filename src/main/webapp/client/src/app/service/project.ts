@@ -9,7 +9,8 @@ export class ProjectService {
 
   _api_url = 'project/';
 
-  list(query:any) {
+  list(query:any, currentPage: number, itemsPerPage: number) {
+    _.merge(query, {currentPage: currentPage, itemsPerPage: itemsPerPage});
     return this._reqService.post(this._api_url + 'list', query);
   }
 

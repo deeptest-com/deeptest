@@ -124,10 +124,6 @@ export class GroupEdit implements OnInit, AfterViewInit {
     }
   }
 
-  reset() {
-    this.loadData();
-  }
-
   showModal(): void {
     this.modalWrapper.showModal();
   }

@@ -61,7 +61,7 @@
             &nbsp;
             <button type="reset" class="btn btn-default">重置</button>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <button *ngIf="model.id" (click)="showModal()" type="button" class="btn btn-danger">删除</button>
+            <button (click)="showModal()" *ngIf="model.id" type="button" class="btn btn-danger">删除</button>
           </div>
         </div>
 

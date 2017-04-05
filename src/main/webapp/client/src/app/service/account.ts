@@ -100,6 +100,7 @@ export class AccountService {
         return json;
       });
     } else  {
+      //noinspection TypeScriptUnresolvedFunction
       return Observable.of(false);
     }
   }
@@ -113,7 +114,7 @@ export class AccountService {
       }
     });
   }
-
+  
   forgotPassword(email:number) {
     return this._reqService.post(this._forgotPassword, {email: email});
   }

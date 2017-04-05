@@ -12,7 +12,7 @@ const routes: Routes = [
       { path: 'user', loadChildren: () => System.import('./user/user.module')  },
       { path: 'group', loadChildren: () => System.import('./group/group.module') },
       { path: 'org-role', loadChildren: () => System.import('./org-role/org-role.module') },
-      /*{ path: 'project-role', loadChildren: () => System.import('./project-role/project-role.module') }*/
+      { path: 'project-role', loadChildren: () => System.import('./project-role/project-role.module') }
     ]
   }
 ];

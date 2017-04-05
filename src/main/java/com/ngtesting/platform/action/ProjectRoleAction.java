@@ -16,10 +16,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.SysOrgRole;
+import com.ngtesting.platform.entity.SysProjectRole;
 import com.ngtesting.platform.entity.SysRole;
 import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.service.OrgPriviledgeService;
 import com.ngtesting.platform.service.OrgRoleService;
+import com.ngtesting.platform.service.ProjectPriviledgeService;
+import com.ngtesting.platform.service.ProjectRoleService;
 import com.ngtesting.platform.service.RoleService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
@@ -28,18 +31,20 @@ import com.ngtesting.platform.vo.OrgGroupVo;
 import com.ngtesting.platform.vo.OrgPriviledgeVo;
 import com.ngtesting.platform.vo.OrgRoleVo;
 import com.ngtesting.platform.vo.Page;
+import com.ngtesting.platform.vo.ProjectPriviledgeVo;
+import com.ngtesting.platform.vo.ProjectRoleVo;
 import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
 import com.ngtesting.platform.vo.RoleVo;
 import com.ngtesting.platform.vo.UserVo;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "org_role/")
-public class OrgRoleAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_CLIENT + "project_role/")
+public class ProjectRoleAction extends BaseAction {
 	@Autowired
-	OrgRoleService orgRoleService;
+	ProjectRoleService projectRoleService;
 	@Autowired
-	OrgPriviledgeService orgPriviledgeService;
+	ProjectPriviledgeService projectPriviledgeService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
@@ -55,8 +60,8 @@ public class OrgRoleAction extends BaseAction {
 		int currentPage = json.getInteger("currentPage") == null? 0: json.getInteger("currentPage") - 1;
 		int itemsPerPage = json.getInteger("itemsPerPage") == null? Constant.PAGE_SIZE: json.getInteger("itemsPerPage");
 		
-		Page page = orgRoleService.listByPage(orgId, keywords, disabled, currentPage, itemsPerPage);
-		List<OrgRoleVo> vos = orgRoleService.genVos(page.getItems());
+		Page page = projectRoleService.listByPage(orgId, keywords, disabled, currentPage, itemsPerPage);
+		List<ProjectRoleVo> vos = projectRoleService.genVos(page.getItems());
         
 		ret.put("totalItems", page.getTotal());
         ret.put("data", vos);
@@ -74,19 +79,19 @@ public class OrgRoleAction extends BaseAction {
 		Long orgId = userVo.getDefaultOrgId();
 		Long orgRoleId = req.getLong("id");
 		
-		List<OrgPriviledgeVo> orgPriviledges = orgPriviledgeService.listPriviledgesByOrg(orgId, orgRoleId);
+		List<ProjectPriviledgeVo> orgPriviledges = projectPriviledgeService.listPriviledgesByOrg(orgId, orgRoleId);
 		if (orgRoleId == null) {
-			ret.put("orgRole", new OrgGroupVo());
-	        ret.put("orgPriviledges", orgPriviledges);
+			ret.put("projectRole", new OrgGroupVo());
+	        ret.put("projectPriviledges", orgPriviledges);
 			ret.put("code", Constant.RespCode.SUCCESS.getCode());
 			return ret;
 		}
 		
-		SysOrgRole po = (SysOrgRole) orgRoleService.get(SysOrgRole.class, orgRoleId);
-		OrgRoleVo vo = orgRoleService.genVo(po);
+		SysProjectRole po = (SysProjectRole) projectRoleService.get(SysProjectRole.class, orgRoleId);
+		ProjectRoleVo vo = projectRoleService.genVo(po);
         
-        ret.put("orgRole", vo);
-        ret.put("orgPriviledges", orgPriviledges);
+        ret.put("projectRole", vo);
+        ret.put("projectPriviledges", orgPriviledges);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -100,11 +105,11 @@ public class OrgRoleAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long orgId = userVo.getDefaultOrgId();
 		
-		OrgRoleVo orgRoleVo = JSON.parseObject(JSON.toJSONString(json.get("orgRole")), OrgRoleVo.class);
-		SysOrgRole po = orgRoleService.save(orgRoleVo, orgId);
+		ProjectRoleVo projectRoleVo = JSON.parseObject(JSON.toJSONString(json.get("projectRole")), ProjectRoleVo.class);
+		SysProjectRole po = projectRoleService.save(projectRoleVo, orgId);
 		
-		List<OrgPriviledgeVo> orgPriviledges = (List<OrgPriviledgeVo>) json.get("orgPriviledges");
-		boolean success = orgPriviledgeService.saveOrgPriviledges(po.getId(), orgPriviledges);
+		List<ProjectPriviledgeVo> projectPriviledges = (List<ProjectPriviledgeVo>) json.get("projectPriviledges");
+		boolean success = projectPriviledgeService.saveProjectPriviledges(po.getId(), projectPriviledges);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -116,7 +121,7 @@ public class OrgRoleAction extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		boolean success = orgRoleService.delete(to.getLong("id"));
+		boolean success = projectRoleService.delete(to.getLong("id"));
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

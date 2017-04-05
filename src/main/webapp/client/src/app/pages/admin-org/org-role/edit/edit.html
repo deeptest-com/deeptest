@@ -90,7 +90,7 @@
         &nbsp;
         <button (click)="reset()" type="button" class="btn btn-default">重置</button>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <button (click)="showModal()" type="button" class="btn btn-danger">删除</button>
+        <button (click)="showModal()" *ngIf="orgRole.id" type="button" class="btn btn-danger">删除</button>
       </div>
     </div>
 
@@ -110,5 +110,5 @@
 </div>
 
 <pop-dialog #modalWrapper (confirm)="delete()" [title]="'提示'">
-  确认删除名为"{{orgRole.name}}"的公司角色?
+  确认删除名为"{{orgRole?.name}}"的公司角色?
 </pop-dialog>

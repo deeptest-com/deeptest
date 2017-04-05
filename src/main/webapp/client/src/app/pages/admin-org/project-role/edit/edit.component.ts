@@ -10,27 +10,27 @@ import { Utils } from '../../../../utils/utils';
 import {ValidatorUtils} from '../../../../validator/validator.utils';
 import { RouteService } from '../../../../service/route';
 
-import { OrgRoleService } from '../../../../service/org-role';
+import { ProjectRoleService } from '../../../../service/project-role';
 import { PopDialogComponent } from '../../../../components/pop-dialog'
 
 declare var jQuery;
 
 @Component({
-  selector: 'org-role-edit',
+  selector: 'project-role-edit',
   encapsulation: ViewEncapsulation.None,
   styles: [require('./edit.scss')],
   template: require('./edit.html')
 })
-export class OrgRoleEdit implements OnInit, AfterViewInit {
+export class ProjectRoleEdit implements OnInit, AfterViewInit {
   id: number;
   tab: string = 'info';
-  orgRole: any = {disabled: false};
-  orgPriviledges: any[] = [];
+  projectRole: any = {disabled: false};
+  projectPriviledges: any[] = [];
   form: any;
   @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
-              private fb: FormBuilder, private orgRoleService: OrgRoleService) {
+              private fb: FormBuilder, private projectRoleService: ProjectRoleService) {
 
   }
   ngOnInit() {
@@ -47,11 +47,11 @@ export class OrgRoleEdit implements OnInit, AfterViewInit {
 
   loadData() {
     let that = this;
-    that.orgRoleService.get(that.id).subscribe((json:any) => {
-      that.orgRole = json.orgRole;
-      that.orgPriviledges = json.orgPriviledges;
+    that.projectRoleService.get(that.id).subscribe((json:any) => {
+      that.projectRole = json.projectRole;
+      that.projectPriviledges = json.projectPriviledges;
 
-      _.forEach(that.orgPriviledges, (priviledge: any, index: number) => {
+      _.forEach(that.projectPriviledges, (priviledge: any, index: number) => {
         this.form.addControl('priviledge-' + priviledge.id, new FormControl('', []))
       });
     });
@@ -60,11 +60,11 @@ export class OrgRoleEdit implements OnInit, AfterViewInit {
   save() {
     let that = this;
 
-    that.orgRoleService.save(that.orgRole, that.orgPriviledges).subscribe((json:any) => {
+    that.projectRoleService.save(that.projectRole, that.projectPriviledges).subscribe((json:any) => {
       if (json.code == 1) {
 
         that.formErrors = ['保存成功'];
-        that._routeService.navTo("/pages/org-admin/org-role/list");
+        that._routeService.navTo("/pages/org-admin/project-role/list");
       } else {
         that.formErrors = ['保存失败'];
       }
@@ -78,10 +78,10 @@ export class OrgRoleEdit implements OnInit, AfterViewInit {
   delete() {
     let that = this;
 
-    that.orgRoleService.delete(that.orgRole.id).subscribe((json:any) => {
+    that.projectRoleService.delete(that.projectRole.id).subscribe((json:any) => {
       if (json.code == 1) {
         that.formErrors = ['删除成功'];
-        that._routeService.navTo("/pages/org-admin/org-role/list");
+        that._routeService.navTo("/pages/org-admin/project-role/list");
       } else {
         that.formErrors = [json.msg];
       }
@@ -90,7 +90,7 @@ export class OrgRoleEdit implements OnInit, AfterViewInit {
 
   select(key: string) {
     let val = key ==='all'? true: false;
-    for (let user of this.orgPriviledges) {
+    for (let user of this.projectPriviledges) {
       user.selecting = val;
     }
   }

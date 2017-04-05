@@ -62,10 +62,10 @@
       <div class="col-sm-10">
         <table class="grid">
           <colgroup>
-            <col style="width: 200px">
-            <col style="width: 150px">
-            <col style="width: 150px">
-            <col style="width: 150px">
+            <col class="col-name">
+            <col class="col-input">
+            <col class="col-input">
+            <col class="col-input">
           </colgroup>
           <tbody>
             <tr class="header">
@@ -76,7 +76,7 @@
             </tr>
 
             <tr *ngFor="let items of (projectPrivileges | mapToArray)" class="row even">
-              <td>{{items.key}} - {{items.value.length}}</td>
+              <td>{{items.key}}</td>
               <td class="tick">
                 <span class="checkbox-name"></span>
                 <input type="checkbox" [(ngModel)]="items.value[0].selecting">
@@ -103,7 +103,7 @@
     <div class="col-sm-10">
       <button (click)="save()" type="button" class="btn btn-primary" [disabled]="!form.valid">保存</button>
       &nbsp;
-      <button (click)="reset()" type="button" class="btn btn-default">重置</button>
+      <button [routerLink]="['/pages/org-admin/project-role/list']" type="button" class="btn btn-default">取消</button>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       <button (click)="showModal()" *ngIf="projectRole.id" type="button" class="btn btn-danger">删除</button>
     </div>

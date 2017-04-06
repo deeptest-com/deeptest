@@ -1,0 +1,17 @@
+.property {
+  .nav-tabs-container {
+    margin: 15px;
+    display: flex;
+    .nav-tabs{
+      flex: 1;
+    }
+    .buttons-container {
+      width: 100px;
+      text-align: right;
+      .btn {
+        height: 34px;
+      }
+    }
+  }
+
+}

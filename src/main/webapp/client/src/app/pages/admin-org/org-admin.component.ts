@@ -14,7 +14,8 @@ export class OrgAdmin {
     {link:'/pages/org-admin/group/list', title: '公司群组'},
     {link:'/pages/org-admin/org-role/list', title: '公司角色'},
     {link:'/pages/org-admin/project-role/list', title: '项目角色'},
-    {link:'/pages/org-admin/custom', title: '属性定义'},
+    {link:'/pages/org-admin/property/case-type/list', title: '属性设置'},
+
     {link:'/pages/org-admin/settings', title: '站点配置'},
     {link:'/pages/org-admin/integration', title: '第三方集成'},
     {link:'/pages/org-admin/license', title: '许可证'}

@@ -95,6 +95,10 @@ main {
   }
 }
 
+button.no-transform:hover {
+  transform: none;
+}
+
 .link {
   margin: 0 5px;
   text-decoration:underline !important;

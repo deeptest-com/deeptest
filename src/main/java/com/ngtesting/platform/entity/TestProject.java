@@ -1,15 +1,19 @@
 package com.ngtesting.platform.entity;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
@@ -53,6 +57,9 @@ public class TestProject extends BaseEntity {
     @OrderBy("id")
     @Filter(name="filter_project_deleted", condition="deleted = :isDeleted ")
     private List<TestProject> children = new LinkedList<TestProject>();
+    
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "projectSet")
+    private Set<SysCustomField> customFieldSet = new HashSet<SysCustomField>(0);
     
     public static enum ProjectType {
         group("group"),
@@ -157,6 +164,14 @@ public class TestProject extends BaseEntity {
 
 	public void setLastAccessTime(Date lastAccessTime) {
 		this.lastAccessTime = lastAccessTime;
+	}
+
+	public Set<SysCustomField> getCustomFieldSet() {
+		return customFieldSet;
+	}
+
+	public void setCustomFieldSet(Set<SysCustomField> customFieldSet) {
+		this.customFieldSet = customFieldSet;
 	}
     
 }

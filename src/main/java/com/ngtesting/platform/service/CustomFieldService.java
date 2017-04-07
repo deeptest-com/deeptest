@@ -19,4 +19,10 @@ public interface CustomFieldService extends BaseService {
 
 	List<CustomFieldVo> listVos(Long orgId);
 
+	List<String> listApplyTo();
+
+	List<String> listType();
+
+	List<String> listFormat();
+
 }

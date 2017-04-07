@@ -41,6 +41,10 @@ public class CustomFieldAction extends BaseAction {
 		Long orgId = userVo.getDefaultOrgId();
 		
 		List<CustomFieldVo> vos = customFieldService.listVos(orgId);
+		
+		List<String> applyToList = customFieldService.listApplyTo();
+		List<String> typeList = customFieldService.listType();
+		List<String> formatList = customFieldService.listFormat();
         
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

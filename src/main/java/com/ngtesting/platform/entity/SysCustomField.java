@@ -25,7 +25,7 @@ public class SysCustomField extends BaseEntity {
     private String descr;
     
     @Enumerated(EnumType.STRING)
-    private FieldApplyType applyTo;
+    private FieldApplyTo applyTo;
     
     @Enumerated(EnumType.STRING)
     private FieldType type;
@@ -103,11 +103,11 @@ public class SysCustomField extends BaseEntity {
         }
     }
     
-    public static enum FieldApplyType {
+    public static enum FieldApplyTo {
     	test_case("test_case"),
         test_result("test_result");
 
-        private FieldApplyType(String textVal) {
+        private FieldApplyTo(String textVal) {
             this.textVal = textVal;
         }
 
@@ -116,11 +116,11 @@ public class SysCustomField extends BaseEntity {
             return textVal;
         }
         
-        public static FieldApplyType getValue(String str) {
-        	FieldApplyType status = null;
+        public static FieldApplyTo getValue(String str) {
+        	FieldApplyTo status = null;
         	switch(str) { 
-            	case "test_case": status = FieldApplyType.test_case; break;
-            	case "test_result": status = FieldApplyType.test_result; break;
+            	case "test_case": status = FieldApplyTo.test_case; break;
+            	case "test_result": status = FieldApplyTo.test_result; break;
             }
         	
         	return status;
@@ -207,11 +207,11 @@ public class SysCustomField extends BaseEntity {
 		this.projectSet = projectSet;
 	}
 
-	public FieldApplyType getApplyTo() {
+	public FieldApplyTo getApplyTo() {
 		return applyTo;
 	}
 
-	public void setApplyTo(FieldApplyType applyTo) {
+	public void setApplyTo(FieldApplyTo applyTo) {
 		this.applyTo = applyTo;
 	}
 

@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import com.ngtesting.platform.entity.SysCustomField;
 import com.ngtesting.platform.entity.SysCustomField;
+import com.ngtesting.platform.entity.SysCustomField.FieldApplyTo;
+import com.ngtesting.platform.entity.SysCustomField.FieldFormat;
+import com.ngtesting.platform.entity.SysCustomField.FieldType;
 import com.ngtesting.platform.entity.SysOrg;
 import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.service.AccountService;
@@ -76,6 +79,31 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 		saveOrUpdate(po);
 		
 		return true;
+	}
+	
+	@Override
+	public List<String> listApplyTo() {
+		List<String> ls = new LinkedList<String>();
+		for (FieldApplyTo item: SysCustomField.FieldApplyTo.values()) {
+			ls.add(item.toString());
+		}
+		return ls;
+	}
+	@Override
+	public List<String> listType() {
+		List<String> ls = new LinkedList<String>();
+		for (FieldType item: SysCustomField.FieldType.values()) {
+			ls.add(item.toString());
+		}
+		return ls;
+	}
+	@Override
+	public List<String> listFormat() {
+		List<String> ls = new LinkedList<String>();
+		for (FieldFormat item: SysCustomField.FieldFormat.values()) {
+			ls.add(item.toString());
+		}
+		return ls;
 	}
     
 	@Override

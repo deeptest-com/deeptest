@@ -1,27 +1,18 @@
 <div class="case-type-edit container-fluid">
 
   <form [formGroup]="form" class="my-validate-form">
-    <div [class.hidden]="tab != 'info'" class="field-edit-info">
       <div class="form-group row">
-        <label class="col-sm-2 col-form-label"><span>姓名</span></label>
+        <label class="col-sm-2 col-form-label"><span>名称</span></label>
         <div class="col-sm-10">
           <input type="text" class="form-control" name="name" formControlName="name"
-                 [(ngModel)]="field.name" #name>
+                 [(ngModel)]="model.name" #name>
         </div>
       </div>
-      <div class="form-group row">
-        <label class="col-sm-2 col-form-label"><span>邮箱</span></label>
-        <div class="col-sm-10">
-          <input type="text" class="form-control" name="email" formControlName="email"
-                 [(ngModel)]="field.email" #email>
-        </div>
-      </div>
-      <div class="form-group row">
-        <label class="col-sm-2 col-form-label"><span>手机</span></label>
-        <div class="col-sm-10">
-          <input type="text" class="form-control" name="phone" formControlName="phone"
-                 [(ngModel)]="field.phone" #phone>
-        </div>
+      <div class="form-group row just-label">
+        <label class="col-sm-2 col-form-label"><span>是否默认</span></label>
+        <label class="col-sm-10 col-form-label left">
+          {{model.isDefault | trueOrFalse}}
+        </label>
       </div>
 
       <div class="form-group row">
@@ -29,50 +20,21 @@
           <div class="form-check">
             <label class="form-check-label">
               <input type="checkbox" class="form-check-input" name="disabled" formControlName="disabled"
-                     [(ngModel)]="field.disabled" #disabled>
+                     [(ngModel)]="model.disabled" #disabled>
               &nbsp;&nbsp;禁用
             </label>
           </div>
         </div>
       </div>
-    </div>
-
-    <div [class.hidden]="tab != 'groups'" class="field-edit-groups">
-      <div class="form-group row">
-        <label class="col-sm-1"></label>
-        <div class="col-sm-10">
-          <div class="checkbox-list">
-            <div class="checkbox-list-inner">
-              <div class="toolbar">
-                <div class="toolbar-inner">
-                  <span (click)="select('all')" class="link">全选</span> |
-                  <span (click)="select('none')" class="link">全不选</span>
-                </div>
-              </div>
-              <div>
-                <div *ngFor="let item of relations" class="checkbox-list-item">
-                  <label>
-                    <span class="checkbox-name">{{item.orgGroupName}}<span></span></span>
-                    <input type="checkbox" class="form-check-input"
-                           [(ngModel)]="item.selecting" formControlName="{{'group-' + item.orgGroupId}}">
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <label class="col-sm-1"></label>
-      </div>
-    </div>
 
     <div class="form-group row">
       <label class="col-sm-2 col-form-label"></label>
       <div class="col-sm-10">
         <button (click)="save()" type="button" class="btn btn-primary" [disabled]="!form.valid">保存</button>
         &nbsp;
-        <button [routerLink]="['/pages/org-admin/field/list']" type="button" class="btn btn-default">取消</button>
+        <button [routerLink]="['/pages/org-admin/property/case-type/list']" type="button" class="btn btn-default">取消</button>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <button (click)="showModal()" *ngIf="field.id" type="button" class="btn btn-danger">删除</button>
+        <button (click)="showModal()" *ngIf="model.id" type="button" class="btn btn-danger">删除</button>
       </div>
     </div>
 
@@ -92,5 +54,5 @@
 </div>
 
 <pop-dialog #modalWrapper (confirm)="delete()" [title]="'提示'">
-  确认删除名为"{{field.name}}"的用户?
+  确认删除名为"{{model.name}}"的用户?
 </pop-dialog>

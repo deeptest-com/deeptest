@@ -9,28 +9,29 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.SysCustomField;
+import com.ngtesting.platform.entity.SysCaseExeStatus;
 import com.ngtesting.platform.entity.SysCustomField;
 import com.ngtesting.platform.entity.SysOrg;
 import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.service.AccountService;
+import com.ngtesting.platform.service.CaseExeStatusService;
 import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.service.RelationOrgGroupUserService;
 import com.ngtesting.platform.service.RelationProjectRoleUserService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
-import com.ngtesting.platform.vo.CasePriorityVo;
-import com.ngtesting.platform.vo.CustomFieldVo;
+import com.ngtesting.platform.vo.CaseExeStatusVo;
+import com.ngtesting.platform.vo.CaseTypeVo;
 import com.ngtesting.platform.vo.CustomFieldVo;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.UserVo;
 
 @Service
-public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFieldService {
+public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExeStatusService {
 	@Override
-	public List<SysCustomField> list(Long orgId) {
-        DetachedCriteria dc = DetachedCriteria.forClass(SysCustomField.class);
+	public List<SysCaseExeStatus> list(Long orgId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(SysCaseExeStatus.class);
         
         dc.add(Restrictions.eq("orgId", orgId));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
@@ -42,24 +43,24 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 		return ls;
 	}
 	@Override
-	public List<CustomFieldVo> listVos(Long orgId) {
+	public List<CaseExeStatusVo> listVos(Long orgId) {
         List ls = list(orgId);
         
-        List<CustomFieldVo> vos = genVos(ls);
+        List<CaseExeStatusVo> vos = genVos(ls);
 		return vos;
 	}
 
 	@Override
-	public SysCustomField save(CustomFieldVo vo, Long orgId) {
+	public SysCaseExeStatus save(CaseExeStatusVo vo, Long orgId) {
 		if (vo == null) {
 			return null;
 		}
 		
-		SysCustomField po;
+		SysCaseExeStatus po;
 		if (vo.getId() != null) {
-			po = (SysCustomField) get(SysCustomField.class, vo.getId());
+			po = (SysCaseExeStatus) get(SysCaseExeStatus.class, vo.getId());
 		} else {
-			po = new SysCustomField();
+			po = new SysCaseExeStatus();
 		}
 		po.setOrgId(orgId);
 		
@@ -71,7 +72,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 
 	@Override
 	public boolean delete(Long id) {
-		SysCustomField po = (SysCustomField) get(SysCustomField.class, id);
+		SysCaseExeStatus po = (SysCaseExeStatus) get(SysCaseExeStatus.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
 		
@@ -79,21 +80,21 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 	}
     
 	@Override
-	public CustomFieldVo genVo(SysCustomField po) {
+	public CaseExeStatusVo genVo(SysCaseExeStatus po) {
 		if (po == null) {
 			return null;
 		}
-		CustomFieldVo vo = new CustomFieldVo();
+		CaseExeStatusVo vo = new CaseExeStatusVo();
 		BeanUtilEx.copyProperties(vo, po);
 		
 		return vo;
 	}
 	@Override
-	public List<CustomFieldVo> genVos(List<SysCustomField> pos) {
-        List<CustomFieldVo> vos = new LinkedList<CustomFieldVo>();
+	public List<CaseExeStatusVo> genVos(List<SysCaseExeStatus> pos) {
+        List<CaseExeStatusVo> vos = new LinkedList<CaseExeStatusVo>();
 
-        for (SysCustomField po: pos) {
-        	CustomFieldVo vo = genVo(po);
+        for (SysCaseExeStatus po: pos) {
+        	CaseExeStatusVo vo = genVo(po);
         	vos.add(vo);
         }
 		return vos;

@@ -10,7 +10,7 @@ import { MapToArrayPipe } from '../pipe/map-to-array';
 import { DatePipe } from '../pipe/date';
 import { ModelStatusPipe } from '../pipe/model-status';
 import { EventStatusPipe } from '../pipe/event-status';
-import { DisabledPipe } from '../pipe/disabled';
+import { FieldTypePipe, FieldApplyToPipe, FieldFormatPipe, TrueOrFalsePipe, DisableOrNotPipe } from '../pipe/field-property';
 
 import {
   BaThemeConfig
@@ -88,7 +88,8 @@ const NGA_PIPES = [
   BaProfilePicturePipe
 ];
 const MY_PIPES = [
-  ImgPathPipe, ThumbPathPipe, MapToArrayPipe, DatePipe,ModelStatusPipe, EventStatusPipe, DisabledPipe
+  ImgPathPipe, ThumbPathPipe, MapToArrayPipe, DatePipe,ModelStatusPipe, EventStatusPipe,
+  FieldTypePipe, FieldApplyToPipe, FieldFormatPipe, TrueOrFalsePipe, DisableOrNotPipe
 ];
 
 const NGA_SERVICES = [

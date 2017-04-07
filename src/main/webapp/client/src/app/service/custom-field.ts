@@ -7,8 +7,7 @@ export class CustomFieldService {
   constructor(private _reqService: RequestService) { }
   _api_url = 'custom_field/';
 
-  list(query: any, currentPage: number, itemsPerPage: number) {
-    _.merge(query, {currentPage: currentPage, itemsPerPage: itemsPerPage});
+  list(query: any) {
     return this._reqService.post(this._api_url + 'list', query);
   }
 

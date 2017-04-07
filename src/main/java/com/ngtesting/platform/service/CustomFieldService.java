@@ -9,12 +9,14 @@ import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.UserVo;
 
 public interface CustomFieldService extends BaseService {
-	Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage);
+	List<SysCustomField> list(Long orgId);
 	
 	SysCustomField save(CustomFieldVo vo, Long orgId);
 	boolean delete(Long id);
 
 	List<CustomFieldVo> genVos(List<SysCustomField> pos);
-	CustomFieldVo genVo(SysCustomField user);
+	CustomFieldVo genVo(SysCustomField po);
+
+	List<CustomFieldVo> listVos(Long orgId);
 
 }

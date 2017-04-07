@@ -25,5 +25,10 @@ export class CaseTypeService {
     return this._reqService.post(this._api_url + 'delete', model);
   }
 
+  setDefault(id: number) {
+    let model = {id: id};
+    return this._reqService.post(this._api_url + 'setDefault', model);
+  }
+
 }
 

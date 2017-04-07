@@ -9,57 +9,59 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.SysCustomField;
+import com.ngtesting.platform.entity.SysCasePriority;
+import com.ngtesting.platform.entity.SysCaseType;
 import com.ngtesting.platform.entity.SysCustomField;
 import com.ngtesting.platform.entity.SysOrg;
 import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.service.AccountService;
+import com.ngtesting.platform.service.CasePriorityService;
 import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.service.RelationOrgGroupUserService;
 import com.ngtesting.platform.service.RelationProjectRoleUserService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
+import com.ngtesting.platform.vo.CaseExeStatusVo;
 import com.ngtesting.platform.vo.CasePriorityVo;
-import com.ngtesting.platform.vo.CustomFieldVo;
 import com.ngtesting.platform.vo.CustomFieldVo;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.UserVo;
 
 @Service
-public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFieldService {
+public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePriorityService {
 	@Override
-	public List<SysCustomField> list(Long orgId) {
-        DetachedCriteria dc = DetachedCriteria.forClass(SysCustomField.class);
+	public List<SysCasePriority> list(Long orgId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(SysCasePriority.class);
         
         dc.add(Restrictions.eq("orgId", orgId));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         
-        dc.addOrder(Order.asc("displayOrder"));
+        dc.addOrder(Order.desc("priority"));
         List ls = findAllByCriteria(dc);
 		
 		return ls;
 	}
 	@Override
-	public List<CustomFieldVo> listVos(Long orgId) {
+	public List<CasePriorityVo> listVos(Long orgId) {
         List ls = list(orgId);
         
-        List<CustomFieldVo> vos = genVos(ls);
+        List<CasePriorityVo> vos = genVos(ls);
 		return vos;
 	}
 
 	@Override
-	public SysCustomField save(CustomFieldVo vo, Long orgId) {
+	public SysCasePriority save(CasePriorityVo vo, Long orgId) {
 		if (vo == null) {
 			return null;
 		}
 		
-		SysCustomField po;
+		SysCasePriority po;
 		if (vo.getId() != null) {
-			po = (SysCustomField) get(SysCustomField.class, vo.getId());
+			po = (SysCasePriority) get(SysCasePriority.class, vo.getId());
 		} else {
-			po = new SysCustomField();
+			po = new SysCasePriority();
 		}
 		po.setOrgId(orgId);
 		
@@ -71,7 +73,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 
 	@Override
 	public boolean delete(Long id) {
-		SysCustomField po = (SysCustomField) get(SysCustomField.class, id);
+		SysCasePriority po = (SysCasePriority) get(SysCasePriority.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
 		
@@ -79,24 +81,40 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 	}
     
 	@Override
-	public CustomFieldVo genVo(SysCustomField po) {
+	public CasePriorityVo genVo(SysCasePriority po) {
 		if (po == null) {
 			return null;
 		}
-		CustomFieldVo vo = new CustomFieldVo();
+		CasePriorityVo vo = new CasePriorityVo();
 		BeanUtilEx.copyProperties(vo, po);
 		
 		return vo;
 	}
 	@Override
-	public List<CustomFieldVo> genVos(List<SysCustomField> pos) {
-        List<CustomFieldVo> vos = new LinkedList<CustomFieldVo>();
+	public List<CasePriorityVo> genVos(List<SysCasePriority> pos) {
+        List<CasePriorityVo> vos = new LinkedList<CasePriorityVo>();
 
-        for (SysCustomField po: pos) {
-        	CustomFieldVo vo = genVo(po);
+        for (SysCasePriority po: pos) {
+        	CasePriorityVo vo = genVo(po);
         	vos.add(vo);
         }
 		return vos;
+	}
+
+	@Override
+	public boolean setDefaultPers(Long id, Long orgId) {
+		List<SysCasePriority> ls = list(orgId);
+		for (SysCasePriority type : ls) {
+			if (type.getId() == id) {
+				type.setIsDefault(true);
+				saveOrUpdate(type);
+			} else if (type.getIsDefault()) {
+				type.setIsDefault(false);
+				saveOrUpdate(type);
+			}
+		}
+		
+		return true;
 	}
 
 }

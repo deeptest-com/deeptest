@@ -20,9 +20,6 @@ export class CaseTypeList implements OnInit, AfterViewInit {
   statusMap: Array<any> = CONSTANT.EntityDisabled;
 
   models: any;
-  totalItems:number = 0;
-  currentPage:number = 1;
-  itemsPerPage:number = 6;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
               private caseTypeService: CaseTypeService) {
@@ -38,29 +35,11 @@ export class CaseTypeList implements OnInit, AfterViewInit {
       }, {}
     );
 
-    // that.loadData();
+    that.loadData();
   }
 
   ngAfterViewInit() {
-    let that = this;
 
-    this.queryForm.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.queryChange(values));
-  }
-
-  create():void {
-    let that = this;
-
-    that._routeService.navTo("/pages/org-admin/field/edit/null");
-  }
-
-  queryChange(values:any):void {
-    let that = this;
-
-    that.loadData();
-  }
-  pageChanged(event:any):void {
-    this.currentPage = event.page;
-    this.loadData();
   }
 
   edit($event: any):void {
@@ -73,12 +52,18 @@ export class CaseTypeList implements OnInit, AfterViewInit {
 
     console.log($event);
   }
+  setDefault(item: any):void {
+    this.caseTypeService.setDefault(item.id).subscribe((json:any) => {
+      if (json.code == 1) {
+        this.loadData();
+      }
+    });
+  }
 
   loadData() {
     let that = this;
 
     that.caseTypeService.list(that.queryModel).subscribe((json:any) => {
-      that.totalItems = json.totalItems;
       that.models = json.data;
     });
   }

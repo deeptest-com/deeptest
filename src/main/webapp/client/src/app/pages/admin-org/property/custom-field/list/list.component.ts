@@ -20,9 +20,6 @@ export class CustomFieldList implements OnInit, AfterViewInit {
   statusMap: Array<any> = CONSTANT.EntityDisabled;
 
   models: any;
-  totalItems:number = 0;
-  currentPage:number = 1;
-  itemsPerPage:number = 6;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
               private customFieldService: CustomFieldService) {
@@ -42,25 +39,6 @@ export class CustomFieldList implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    let that = this;
-
-    this.queryForm.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.queryChange(values));
-  }
-
-  create():void {
-    let that = this;
-
-    that._routeService.navTo("/pages/org-admin/field/edit/null");
-  }
-
-  queryChange(values:any):void {
-    let that = this;
-
-    that.loadData();
-  }
-  pageChanged(event:any):void {
-    this.currentPage = event.page;
-    this.loadData();
   }
 
   edit($event: any):void {
@@ -77,8 +55,7 @@ export class CustomFieldList implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
 
-    that.customFieldService.list(that.queryModel, that.currentPage, that.itemsPerPage).subscribe((json:any) => {
-      that.totalItems = json.totalItems;
+    that.customFieldService.list(that.queryModel).subscribe((json:any) => {
       that.models = json.data;
     });
   }

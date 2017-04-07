@@ -17,12 +17,12 @@ export class Property {
   constructor(private _router:Router, private _state: GlobalState, private _routeService: RouteService) {
 
     this._onRouteChange = this._router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        if (event.url && event.url.indexOf('/list') > -1) {
-          this.status = 'list';
-        } else if (event.url && event.url.indexOf('/edit') > -1) {
-          this.status = 'edit';
-        }
+      if (event instanceof NavigationEnd && event.url) {
+        console.log(event.url.split('property/'));
+
+        let arr = event.url.split('property/')[1].split('/');
+        this.tab = arr[0];
+        this.status = arr[1];
       }
     });
   }
@@ -39,10 +39,14 @@ export class Property {
   create() {
     this.status = 'edit';
     this._routeService.navTo("/pages/org-admin/property/" + this.tab + "/edit/null");
+
+    console.log("/pages/org-admin/property/" + this.tab + "/edit/null");
   }
   back() {
     this.status = 'list';
     this._routeService.navTo("/pages/org-admin/property/" + this.tab + "/list");
+
+    console.log("/pages/org-admin/property/" + this.tab + "/edit/null");
   }
 
 }

@@ -112,13 +112,20 @@ button.no-transform:hover {
   cursor: pointer;
 }
 
+.form-group.row.just-label:not(:last-child){
+  margin-bottom: 0;
+}
+.form-group label {
+  text-align: right;
+  &.row.just-label:not(:last-child){
+    margin-bottom: 0;
+  }
+}
 .form-control[readonly] {
     color: #666666 !important;
     background-color: #ffffff !important;
 }
-.form-group label {
-  text-align: right;
-}
+
 .my-validate-form {
     .form-control.ng-valid {
       border-left: 3px solid #a2db59 !important;
@@ -151,8 +158,14 @@ button.no-transform:hover {
     width: 200px;
   }
 }
+.left {
+   text-align: left !important;
+ }
 .center {
-  text-align: center;
+  text-align: center !important;
+}
+.right {
+  text-align: right !important;
 }
 .middle {
      position: absolute;

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -11,6 +12,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -19,7 +21,6 @@ public class SysCustomField extends BaseEntity {
 	private static final long serialVersionUID = -1940351858441687302L;
 	
 	private String name;
-    private String label;
     private String code;
     private String descr;
     
@@ -39,6 +40,13 @@ public class SysCustomField extends BaseEntity {
     private Boolean isBuildIn = false;
     
     private Integer displayOrder;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "org_id", insertable = false, updatable = false)
+    private SysOrg org;
+
+    @Column(name = "org_id")
+    private Long orgId;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "r_custom_field_project", joinColumns = { 
@@ -48,7 +56,7 @@ public class SysCustomField extends BaseEntity {
     private Set<TestProject> projectSet = new HashSet<TestProject>(0);
     
     public static enum FieldType {
-    	integer("integer"),
+    	number("number"),
     	string("string"),
     	text("text"),
     	checkbox("checkbox"),
@@ -75,7 +83,7 @@ public class SysCustomField extends BaseEntity {
         public static FieldType getValue(String str) {
         	FieldType status = null;
         	switch(str) { 
-            	case "integer": status = FieldType.integer; break;
+            	case "number": status = FieldType.number; break;
             	case "string": status = FieldType.string; break;
             	case "text": status = FieldType.text; break;
             	case "checkbox": status = FieldType.checkbox; break;
@@ -149,14 +157,6 @@ public class SysCustomField extends BaseEntity {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public void setLabel(String label) {
-		this.label = label;
 	}
 
 	public String getCode() {
@@ -253,6 +253,22 @@ public class SysCustomField extends BaseEntity {
 
 	public void setDisplayOrder(Integer displayOrder) {
 		this.displayOrder = displayOrder;
+	}
+
+	public SysOrg getOrg() {
+		return org;
+	}
+
+	public void setOrg(SysOrg org) {
+		this.org = org;
+	}
+
+	public Long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
 	}
 	
 }

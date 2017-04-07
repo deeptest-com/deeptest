@@ -24,10 +24,8 @@ declare var jQuery;
 export class CaseExeStatusEdit implements OnInit, AfterViewInit {
 
   id: number;
-  tab: string = 'info';
 
-  field: any = {};
-  relations: any[] = [];
+  model: any = {};
   form: FormGroup;
   isSubmitted: boolean;
   @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;
@@ -46,21 +44,13 @@ export class CaseExeStatusEdit implements OnInit, AfterViewInit {
   }
   ngAfterViewInit() {}
 
-
-  selectTab(tab: string) {
-    let that = this;
-    that.tab = tab;
-  }
-
   buildForm(): void {
-    let that = this;
     this.form = this.fb.group(
       {
         'name': ['', [Validators.required]],
-        'email': ['', [Validators.required, EmailValidator.validate()]],
-        'phone': ['', [Validators.required, PhoneValidator.validate()]],
-        'disabled': ['', []],
-        'groups': ['', []]
+        'descr': ['', []],
+        'isFinal': ['', []],
+        'disabled': ['', []]
       }, {}
     );
 
@@ -90,23 +80,18 @@ export class CaseExeStatusEdit implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
     that.caseExeStatusService.get(that.id).subscribe((json:any) => {
-      that.field = json.field;
-      that.relations = json.relations;
-
-      _.forEach(that.relations, (group: any, index: number) => {
-        this.form.addControl('group-' + group.orgGroupId, new FormControl('', []))
-      });
+      that.model = json.data;
     });
   }
 
   save() {
     let that = this;
 
-    that.caseExeStatusService.save(that.field).subscribe((json:any) => {
+    that.caseExeStatusService.save(that.model).subscribe((json:any) => {
       if (json.code == 1) {
 
         that.formErrors = ['保存成功'];
-        that._routeService.navTo("/pages/org-admin/field/list");
+        that._routeService.navTo("/pages/org-admin/property/case-exe-status/list");
       } else {
         that.formErrors = [json.msg];
       }
@@ -116,21 +101,14 @@ export class CaseExeStatusEdit implements OnInit, AfterViewInit {
   delete() {
     let that = this;
 
-    that.caseExeStatusService.delete(that.field.id).subscribe((json:any) => {
+    that.caseExeStatusService.delete(that.model.id).subscribe((json:any) => {
       if (json.code == 1) {
         that.formErrors = ['删除成功'];
-        that._routeService.navTo("/pages/org-admin/field/list");
+        that._routeService.navTo("/pages/org-admin/property/case-exe-status/list");
       } else {
         that.formErrors = ['删除失败'];
       }
     });
-  }
-
-  select(key: string) {
-    let val = key ==='all'? true: false;
-    for (let group of this.relations) {
-      group.selecting = val;
-    }
   }
 
   showModal(): void {

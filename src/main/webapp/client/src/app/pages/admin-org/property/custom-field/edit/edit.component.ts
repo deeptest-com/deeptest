@@ -26,7 +26,7 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
   id: number;
   tab: string = 'info';
 
-  field: any = {};
+  model: any = {};
   relations: any[] = [];
   form: FormGroup;
   isSubmitted: boolean;
@@ -57,10 +57,14 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
     this.form = this.fb.group(
       {
         'name': ['', [Validators.required]],
-        'email': ['', [Validators.required, EmailValidator.validate()]],
-        'phone': ['', [Validators.required, PhoneValidator.validate()]],
-        'disabled': ['', []],
-        'groups': ['', []]
+        'code': ['', [Validators.required]],
+        'applyTo': ['', [Validators.required]],
+        type: ['', [Validators.required]],
+        format: ['', [Validators.required]],
+        descr: ['', []],
+        isGlobal: ['', []],
+        isRequired: ['', []],
+        'disabled': ['', []]
       }, {}
     );
 
@@ -77,32 +81,31 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
     'name': {
       'required':      '姓名不能为空'
     },
-    'email': {
-      'required':      '邮箱不能为空',
-      'validate':      '邮箱格式不正确'
+    'code': {
+      'required':      '编码不能为空',
     },
-    'phone': {
-      'required':      '手机不能为空',
-      'validate':      '手机格式不正确'
+    'applyTo': {
+      'required':      '应用对象不能为空'
+    },
+    'type': {
+      'required':      '类型不能为空'
+    },
+    'format': {
+      'required':      '格式不能为空'
     }
   };
 
   loadData() {
     let that = this;
     that.customFieldService.get(that.id).subscribe((json:any) => {
-      that.field = json.field;
-      that.relations = json.relations;
-
-      _.forEach(that.relations, (group: any, index: number) => {
-        this.form.addControl('group-' + group.orgGroupId, new FormControl('', []))
-      });
+      that.model = json.data;
     });
   }
 
   save() {
     let that = this;
 
-    that.customFieldService.save(that.field, that.relations).subscribe((json:any) => {
+    that.customFieldService.save(that.model, that.relations).subscribe((json:any) => {
       if (json.code == 1) {
 
         that.formErrors = ['保存成功'];
@@ -116,7 +119,7 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
   delete() {
     let that = this;
 
-    that.customFieldService.delete(that.field.id).subscribe((json:any) => {
+    that.customFieldService.delete(that.model.id).subscribe((json:any) => {
       if (json.code == 1) {
         that.formErrors = ['删除成功'];
         that._routeService.navTo("/pages/org-admin/field/list");

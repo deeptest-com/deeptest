@@ -4,21 +4,20 @@
     <table class="table table-bordered table-striped">
       <thead class="thead-inverse">
       <tr>
-        <th style="width: 200px">姓名</th>
-        <th>邮箱</th>
-        <th style="width: 150px">手机</th>
-        <th style="width: 150px">状态</th>
-        <th style="width: 150px">操作</th>
+        <th>名称</th>
+        <th>是否默认</th>
+        <th>操作</th>
       </tr>
       </thead>
       <tbody>
       <tr *ngFor="let item of models">
         <td>{{ item.name }}</td>
-        <th>{{ item.email }}</th>
-        <th>{{ item.phone }}</th>
-        <td>{{statusMap[''+item.disabled]}}</td>
         <td>
-          <span [routerLink]="['/pages/org-admin/field/edit', item.id]" class="link no-underline">编辑</span>
+          <input *ngIf="!item.isDefault" (change)="setDefault(item)" [(ngModel)]="item.isDefault" type="checkbox" name="isDefault" #isDefault>
+          <input *ngIf="item.isDefault" onclick="return false;" [(ngModel)]="item.isDefault" type="checkbox" name="isDefault" #isDefault>
+        </td>
+        <td>
+          <span [routerLink]="['/pages/org-admin/property/case-type/edit', item.id]" class="link no-underline">编辑</span>
         </td>
       </tr>
       </tbody>

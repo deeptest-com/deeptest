@@ -42,12 +42,7 @@ public class CustomFieldAction extends BaseAction {
 		
 		List<CustomFieldVo> vos = customFieldService.listVos(orgId);
 		
-		List<String> applyToList = customFieldService.listApplyTo();
-		List<String> typeList = customFieldService.listType();
-		List<String> formatList = customFieldService.listFormat();
-        
-        ret.put("data", vos);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		ret.put("data", vos);
 		return ret;
 	}
 	
@@ -69,7 +64,14 @@ public class CustomFieldAction extends BaseAction {
 		SysCustomField po = (SysCustomField) customFieldService.get(SysCustomField.class, Long.valueOf(customFieldId));
 		CustomFieldVo vo = customFieldService.genVo(po);
 		
+		List<String> applyToList = customFieldService.listApplyTo();
+		List<String> typeList = customFieldService.listType();
+		List<String> formatList = customFieldService.listFormat();
+        
         ret.put("data", vo);
+        ret.put("applyToList", applyToList);
+        ret.put("typeList", typeList);
+        ret.put("formatList", formatList);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

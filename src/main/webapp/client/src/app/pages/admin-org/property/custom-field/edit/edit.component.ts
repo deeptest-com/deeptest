@@ -27,6 +27,10 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
   tab: string = 'info';
 
   model: any = {};
+  applyToList: string[];
+  typeList: string[];
+  formatList: string[];
+
   relations: any[] = [];
   form: FormGroup;
   isSubmitted: boolean;
@@ -99,6 +103,10 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
     let that = this;
     that.customFieldService.get(that.id).subscribe((json:any) => {
       that.model = json.data;
+
+      that.applyToList = json.applyToList;
+      that.typeList = json.typeList;
+      that.formatList = json.formatList;
     });
   }
 

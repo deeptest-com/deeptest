@@ -43,8 +43,7 @@ public class OrgAction extends BaseAction {
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
 		
-		List<SysOrg> ls = orgService.list(keywords, disabled, userVo.getId());
-		List<OrgVo> vos = orgService.genVos(ls, userVo.getId());
+		List<OrgVo> vos = orgService.listVo(keywords, disabled, userVo.getId());
         
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -113,9 +112,15 @@ public class OrgAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long orgId = json.getLong("id");
 		
+		String keywords = json.getString("keywords");
+		String disabled = json.getString("disabled");
+		
 		List<TestProjectAccessHistoryVo> recentProjects = orgService.setDefaultPers(orgId, userVo);
 		
+		List<OrgVo> vos = orgService.listVo(keywords, disabled, userVo.getId());
+        
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		ret.put("data", vos);
 		ret.put("recentProjects", recentProjects);
 		
 		return ret;

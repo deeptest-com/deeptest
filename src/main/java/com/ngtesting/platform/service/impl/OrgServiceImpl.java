@@ -47,6 +47,13 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 
 		return ls;
 	}
+	
+	@Override
+	public List<OrgVo> listVo(String keywords, String disabled, Long id) {
+		List ls = list(keywords, disabled, id);
+		List<OrgVo> vos = genVos(ls, id);
+		return vos;
+	}
 
 	@Override
 	public SysOrg getDetail(Long id) {

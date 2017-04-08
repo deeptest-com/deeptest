@@ -1,7 +1,7 @@
 <div class="case-exe-status-list container-fluid">
 
   <div class="row">
-    <table class="table table-bordered table-striped">
+    <table class="table table-hover">
       <thead class="thead-inverse">
       <tr>
         <th>名称</th>
@@ -12,24 +12,22 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let item of models">
+      <tr *ngFor="let item of models; let i = index;">
         <td>{{ item.name }}</td>
-        <th>{{ item.descr }}</th>
+        <td>{{ item.descr }}</td>
         <td>{{item.isFinal | trueOrFalse}}</td>
         <td>{{item.isBuildIn | trueOrFalse}}</td>
         <td>
+          <span *ngIf="i == 0" class="ionic-icon link"></span>
+          <span (click)="up(item)" *ngIf="i > 0" class="ion-arrow-up-a ionic-icon link"></span>
+
+          <span (click)="down(item)" *ngIf="i < models.length - 1" class="ion-arrow-down-a ionic-icon link"></span>
+          <span *ngIf="i == models.length - 1" class="ionic-icon link"></span>
+          &nbsp;
           <span [routerLink]="['/pages/org-admin/property/case-exe-status/edit', item.id]" class="link no-underline">编辑</span>
         </td>
       </tr>
       </tbody>
     </table>
-    <div class="page-container">
-      <pagination [totalItems]="totalItems" [(ngModel)]="currentPage"
-                  [maxSize]="maxSize" [itemsPerPage]="itemsPerPage" class="pagination-sm"
-                  [boundaryLinks]="true" [rotate]="false"
-                  (numPages)="numPages = $event" (pageChanged)="pageChanged($event)"
-                  previousText="上一页" nextText="下一页" firstText="第一页" lastText="最后页">
-      </pagination>
-    </div>
   </div>
 </div>

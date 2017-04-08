@@ -56,17 +56,13 @@ export class OrgList implements OnInit, AfterViewInit {
     let that = this;
     that.loadData();
   }
-  pageChanged(event:any):void {
-    this.currentPage = event.page;
-    this.loadData();
-  }
-  
+
   setDefault(item: any):void {
-    this.orgService.setDefault(item.id).subscribe((json:any) => {
+    this.orgService.setDefault(item.id, this.queryModel).subscribe((json:any) => {
       if (json.code == 1) {
 
+        this.models = json.data;
         this.accountService.changeRecentProject(json.recentProjects);
-        this.loadData();
       }
     });
   }
@@ -85,10 +81,10 @@ export class OrgList implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
 
-    that.orgService.list(that.queryModel, that.currentPage, that.itemsPerPage).subscribe((json:any) => {
+    that.orgService.list(that.queryModel).subscribe((json:any) => {
       that.models = json.data;
 
-      if (that.models.length == 0) {
+      if (that.models.length == 0 && !that.queryModel.keywords && !that.queryModel.disabled) {
         this._state.notifyDataChanged('org.ready', false);
         this._routeService.navTo('/pages/org-admin/org/edit/null');
       } else {

@@ -15,10 +15,6 @@ import {CasePriorityService} from "../../../../../service/case-priority";
 })
 export class CasePriorityList implements OnInit, AfterViewInit {
 
-  queryForm: FormGroup;
-  queryModel:any = {keywords: '', disabled: 'false'};
-  statusMap: Array<any> = CONSTANT.EntityDisabled;
-
   models: any;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
@@ -27,13 +23,6 @@ export class CasePriorityList implements OnInit, AfterViewInit {
 
   ngOnInit() {
     let that = this;
-
-    that.queryForm = that.fb.group(
-      {
-        'disabled': ['', []],
-        'keywords': ['', []]
-      }, {}
-    );
 
     that.loadData();
   }
@@ -54,7 +43,7 @@ export class CasePriorityList implements OnInit, AfterViewInit {
   setDefault(item: any):void {
     this.casePriorityService.setDefault(item.id).subscribe((json:any) => {
       if (json.code == 1) {
-        this.loadData();
+        this.models = json.data;
       }
     });
   }
@@ -62,8 +51,23 @@ export class CasePriorityList implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
 
-    that.casePriorityService.list(that.queryModel).subscribe((json:any) => {
+    that.casePriorityService.list().subscribe((json:any) => {
       that.models = json.data;
+    });
+  }
+
+  up(item: any) {
+    this.casePriorityService.changeOrder(item.id, 'up').subscribe((json:any) => {
+      if (json.code == 1) {
+        this.models = json.data;
+      }
+    });
+  }
+  down(item: any) {
+    this.casePriorityService.changeOrder(item.id, 'down').subscribe((json:any) => {
+      if (json.code == 1) {
+        this.models = json.data;
+      }
     });
   }
 

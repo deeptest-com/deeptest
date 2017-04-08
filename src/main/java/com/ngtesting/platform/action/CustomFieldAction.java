@@ -20,6 +20,7 @@ import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.util.Constant.RespCode;
+import com.ngtesting.platform.vo.CaseTypeVo;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.CustomFieldVo;
 import com.ngtesting.platform.vo.UserVo;
@@ -42,6 +43,7 @@ public class CustomFieldAction extends BaseAction {
 		
 		List<CustomFieldVo> vos = customFieldService.listVos(orgId);
 		
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		ret.put("data", vos);
 		return ret;
 	}
@@ -102,6 +104,27 @@ public class CustomFieldAction extends BaseAction {
 		boolean success = customFieldService.delete(id);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "changeOrder", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long orgId = userVo.getDefaultOrgId();
+		Long id = json.getLong("id");
+		String act = json.getString("act");
+		
+		boolean success = customFieldService.changeOrderPers(id, act);
+		
+		List<CustomFieldVo> vos = customFieldService.listVos(orgId);
+		
+        ret.put("data", vos);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		
 		return ret;
 	}
 	

@@ -24,6 +24,7 @@ import com.ngtesting.platform.service.CasePriorityService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.vo.CasePriorityVo;
+import com.ngtesting.platform.vo.CaseTypeVo;
 import com.ngtesting.platform.vo.CustomFieldVo;
 import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
 import com.ngtesting.platform.vo.UserVo;
@@ -121,7 +122,30 @@ public class CasePriorityAction extends BaseAction {
 		Long id = json.getLong("id");
 		
 		boolean success = casePriorityService.setDefaultPers(id, orgId);
+		List<CasePriorityVo> vos = casePriorityService.listVos(orgId);
 		
+        ret.put("data", vos);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		
+		return ret;
+	}
+	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "changeOrder", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long orgId = userVo.getDefaultOrgId();
+		Long id = json.getLong("id");
+		String act = json.getString("act");
+		
+		boolean success = casePriorityService.changeOrderPers(id, act);
+		
+		List<CasePriorityVo> vos = casePriorityService.listVos(orgId);
+		
+        ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		
 		return ret;

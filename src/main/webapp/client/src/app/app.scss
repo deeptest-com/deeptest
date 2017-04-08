@@ -111,6 +111,11 @@ button.no-transform:hover {
 .pointer {
   cursor: pointer;
 }
+.ionic-icon {
+  display: inline-block;
+  width: 10.5px;
+  text-align: center;
+}
 
 .form-group.row.just-label:not(:last-child){
   margin-bottom: 0;

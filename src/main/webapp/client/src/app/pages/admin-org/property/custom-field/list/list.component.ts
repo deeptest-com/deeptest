@@ -15,11 +15,7 @@ import {CustomFieldService} from "../../../../../service/custom-field";
 })
 export class CustomFieldList implements OnInit, AfterViewInit {
 
-  queryForm: FormGroup;
-  queryModel:any = {keywords: '', disabled: 'false'};
-  statusMap: Array<any> = CONSTANT.EntityDisabled;
-
-  models: any;
+  models: any[];
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
               private customFieldService: CustomFieldService) {
@@ -27,13 +23,6 @@ export class CustomFieldList implements OnInit, AfterViewInit {
 
   ngOnInit() {
     let that = this;
-
-    that.queryForm = that.fb.group(
-      {
-        'disabled': ['', []],
-        'keywords': ['', []]
-      }, {}
-    );
 
     that.loadData();
   }
@@ -55,8 +44,23 @@ export class CustomFieldList implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
 
-    that.customFieldService.list(that.queryModel).subscribe((json:any) => {
+    that.customFieldService.list().subscribe((json:any) => {
       that.models = json.data;
+    });
+  }
+
+  up(item: any) {
+    this.customFieldService.changeOrder(item.id, 'up').subscribe((json:any) => {
+      if (json.code == 1) {
+        this.models = json.data;
+      }
+    });
+  }
+  down(item: any) {
+    this.customFieldService.changeOrder(item.id, 'down').subscribe((json:any) => {
+      if (json.code == 1) {
+        this.models = json.data;
+      }
     });
   }
 

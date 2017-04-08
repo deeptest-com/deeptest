@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ngtesting.platform.entity.SysCasePriority;
-import com.ngtesting.platform.entity.SysCaseType;
+import com.ngtesting.platform.entity.SysCasePriority;
 import com.ngtesting.platform.entity.SysCustomField;
 import com.ngtesting.platform.entity.SysOrg;
 import com.ngtesting.platform.entity.SysUser;
@@ -38,7 +38,7 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         
-        dc.addOrder(Order.desc("priority"));
+        dc.addOrder(Order.asc("displayOrder"));
         List ls = findAllByCriteria(dc);
 		
 		return ls;
@@ -79,6 +79,48 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 		
 		return true;
 	}
+
+	@Override
+	public boolean setDefaultPers(Long id, Long orgId) {
+		List<SysCasePriority> ls = list(orgId);
+		for (SysCasePriority type : ls) {
+			if (type.getId() == id) {
+				type.setIsDefault(true);
+				saveOrUpdate(type);
+			} else if (type.getIsDefault()) {
+				type.setIsDefault(false);
+				saveOrUpdate(type);
+			}
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public boolean changeOrderPers(Long id, String act) {
+		SysCasePriority type = (SysCasePriority) get(SysCasePriority.class, id);
+		
+        String hql = "from SysCasePriority tp where tp.deleted = false and tp.disabled = false ";
+        if ("up".equals(act)) {
+        	hql += "and tp.displayOrder < ? order by displayOrder desc";
+        } else if ("down".equals(act)) {
+        	hql += "and tp.displayOrder > ? order by displayOrder asc";
+        } else {
+        	return false;
+        }
+        
+        SysCasePriority neighbor = (SysCasePriority) getDao().findFirstByHQL(hql, type.getDisplayOrder());
+		
+        Integer order = type.getDisplayOrder();
+        type.setDisplayOrder(neighbor.getDisplayOrder());
+        neighbor.setDisplayOrder(order);
+        
+        saveOrUpdate(type);
+        saveOrUpdate(neighbor);
+		
+		return true;
+	}
+	
     
 	@Override
 	public CasePriorityVo genVo(SysCasePriority po) {
@@ -99,22 +141,6 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
         	vos.add(vo);
         }
 		return vos;
-	}
-
-	@Override
-	public boolean setDefaultPers(Long id, Long orgId) {
-		List<SysCasePriority> ls = list(orgId);
-		for (SysCasePriority type : ls) {
-			if (type.getId() == id) {
-				type.setIsDefault(true);
-				saveOrUpdate(type);
-			} else if (type.getIsDefault()) {
-				type.setIsDefault(false);
-				saveOrUpdate(type);
-			}
-		}
-		
-		return true;
 	}
 
 }

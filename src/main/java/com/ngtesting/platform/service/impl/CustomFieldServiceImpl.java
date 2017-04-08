@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.ngtesting.platform.entity.SysCustomField;
 import com.ngtesting.platform.entity.SysCustomField;
+import com.ngtesting.platform.entity.SysCustomField;
 import com.ngtesting.platform.entity.SysCustomField.FieldApplyTo;
 import com.ngtesting.platform.entity.SysCustomField.FieldFormat;
 import com.ngtesting.platform.entity.SysCustomField.FieldType;
@@ -46,7 +47,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 	}
 	@Override
 	public List<CustomFieldVo> listVos(Long orgId) {
-        List ls = list(orgId);
+        List<SysCustomField> ls = list(orgId);
         
         List<CustomFieldVo> vos = genVos(ls);
 		return vos;
@@ -105,6 +106,31 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 		}
 		return ls;
 	}
+	
+	@Override
+	public boolean changeOrderPers(Long id, String act) {
+		SysCustomField type = (SysCustomField) get(SysCustomField.class, id);
+		
+        String hql = "from SysCustomField tp where tp.deleted = false and tp.disabled = false ";
+        if ("up".equals(act)) {
+        	hql += "and tp.displayOrder < ? order by displayOrder desc";
+        } else if ("down".equals(act)) {
+        	hql += "and tp.displayOrder > ? order by displayOrder asc";
+        } else {
+        	return false;
+        }
+        
+        SysCustomField neighbor = (SysCustomField) getDao().findFirstByHQL(hql, type.getDisplayOrder());
+		
+        Integer order = type.getDisplayOrder();
+        type.setDisplayOrder(neighbor.getDisplayOrder());
+        neighbor.setDisplayOrder(order);
+        
+        saveOrUpdate(type);
+        saveOrUpdate(neighbor);
+		
+		return true;
+	}
     
 	@Override
 	public CustomFieldVo genVo(SysCustomField po) {
@@ -126,5 +152,4 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
         }
 		return vos;
 	}
-
 }

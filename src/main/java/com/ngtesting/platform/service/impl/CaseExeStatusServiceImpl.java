@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ngtesting.platform.entity.SysCaseExeStatus;
+import com.ngtesting.platform.entity.SysCaseExeStatus;
 import com.ngtesting.platform.entity.SysCustomField;
 import com.ngtesting.platform.entity.SysOrg;
 import com.ngtesting.platform.entity.SysUser;
@@ -78,6 +79,31 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
 		
 		return true;
 	}
+	
+	@Override
+	public boolean changeOrderPers(Long id, String act) {
+		SysCaseExeStatus type = (SysCaseExeStatus) get(SysCaseExeStatus.class, id);
+		
+        String hql = "from SysCaseExeStatus tp where tp.deleted = false and tp.disabled = false ";
+        if ("up".equals(act)) {
+        	hql += "and tp.displayOrder < ? order by displayOrder desc";
+        } else if ("down".equals(act)) {
+        	hql += "and tp.displayOrder > ? order by displayOrder asc";
+        } else {
+        	return false;
+        }
+        
+        SysCaseExeStatus neighbor = (SysCaseExeStatus) getDao().findFirstByHQL(hql, type.getDisplayOrder());
+		
+        Integer order = type.getDisplayOrder();
+        type.setDisplayOrder(neighbor.getDisplayOrder());
+        neighbor.setDisplayOrder(order);
+        
+        saveOrUpdate(type);
+        saveOrUpdate(neighbor);
+		
+		return true;
+	}
     
 	@Override
 	public CaseExeStatusVo genVo(SysCaseExeStatus po) {
@@ -99,5 +125,6 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
         }
 		return vos;
 	}
+	
 
 }

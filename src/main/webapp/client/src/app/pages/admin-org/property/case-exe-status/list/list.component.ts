@@ -14,11 +14,6 @@ import {CaseExeStatusService} from "../../../../../service/case-exe-status";
   template: require('./list.html')
 })
 export class CaseExeStatusList implements OnInit, AfterViewInit {
-
-  queryForm: FormGroup;
-  queryModel:any = {keywords: '', disabled: 'false'};
-  statusMap: Array<any> = CONSTANT.EntityDisabled;
-
   models: any;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
@@ -27,13 +22,6 @@ export class CaseExeStatusList implements OnInit, AfterViewInit {
 
   ngOnInit() {
     let that = this;
-
-    that.queryForm = that.fb.group(
-      {
-        'disabled': ['', []],
-        'keywords': ['', []]
-      }, {}
-    );
 
     that.loadData();
   }
@@ -55,8 +43,23 @@ export class CaseExeStatusList implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
 
-    that.caseExeStatusService.list(that.queryModel).subscribe((json:any) => {
+    that.caseExeStatusService.list().subscribe((json:any) => {
       that.models = json.data;
+    });
+  }
+
+  up(item: any) {
+    this.caseExeStatusService.changeOrder(item.id, 'up').subscribe((json:any) => {
+      if (json.code == 1) {
+        this.models = json.data;
+      }
+    });
+  }
+  down(item: any) {
+    this.caseExeStatusService.changeOrder(item.id, 'down').subscribe((json:any) => {
+      if (json.code == 1) {
+        this.models = json.data;
+      }
     });
   }
 

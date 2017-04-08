@@ -7,8 +7,8 @@ export class CaseExeStatusService {
   constructor(private _reqService: RequestService) { }
   _api_url = 'case_exe_status/';
 
-  list(query: any) {
-    return this._reqService.post(this._api_url + 'list', query);
+  list() {
+    return this._reqService.post(this._api_url + 'list', {});
   }
 
   get(id: number) {
@@ -25,5 +25,9 @@ export class CaseExeStatusService {
     return this._reqService.post(this._api_url + 'delete', model);
   }
 
+  changeOrder(id: number, act: string) {
+    let model = {id: id, act: act};
+    return this._reqService.post(this._api_url + 'changeOrder', model);
+  }
 }
 

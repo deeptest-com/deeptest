@@ -1,4 +1,4 @@
-import {Component} from "@angular/core";
+import {Component, OnInit, OnDestroy} from "@angular/core";
 import {Router, NavigationEnd} from '@angular/router';
 import {Subscription} from 'rxjs/Rx';
 import { GlobalState } from '../../../global.state';
@@ -9,7 +9,7 @@ import { RouteService } from '../../../service/route';
   styles: [require('./property.scss')],
   template: require('./property.html')
 })
-export class Property {
+export class Property implements OnInit, OnDestroy {
   protected _onRouteChange:Subscription;
   tab: string = 'case-type';
   status: string = 'list';
@@ -29,6 +29,9 @@ export class Property {
 
   ngOnInit() {
 
+  }
+  ngOnDestroy(): void {
+    this._onRouteChange.unsubscribe();
   }
 
   selectTab(tab: string) {

@@ -7,8 +7,8 @@ export class CasePriorityService {
   constructor(private _reqService: RequestService) { }
   _api_url = 'case_priority/';
 
-  list(query: any) {
-    return this._reqService.post(this._api_url + 'list', query);
+  list() {
+    return this._reqService.post(this._api_url + 'list', {});
   }
 
   get(id: number) {
@@ -29,6 +29,10 @@ export class CasePriorityService {
     let model = {id: id};
     return this._reqService.post(this._api_url + 'setDefault', model);
   }
-
+  
+  changeOrder(id: number, act: string) {
+    let model = {id: id, act: act};
+    return this._reqService.post(this._api_url + 'changeOrder', model);
+  }
 }
 

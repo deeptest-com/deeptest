@@ -18,4 +18,6 @@ public interface CaseTypeService extends BaseService {
 
 	List<CaseTypeVo> listVos(Long orgId);
 
+	boolean changeOrderPers(Long id, String act);
+
 }

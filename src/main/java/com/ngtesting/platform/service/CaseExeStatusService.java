@@ -21,4 +21,6 @@ public interface CaseExeStatusService extends BaseService {
 
 	List<CaseExeStatusVo> listVos(Long orgId);
 
+	boolean changeOrderPers(Long id, String act);
+
 }

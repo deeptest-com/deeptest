@@ -78,6 +78,47 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 		
 		return true;
 	}
+
+	@Override
+	public boolean setDefaultPers(Long id, Long orgId) {
+		List<SysCaseType> ls = list(orgId);
+		for (SysCaseType type : ls) {
+			if (type.getId() == id) {
+				type.setIsDefault(true);
+				saveOrUpdate(type);
+			} else if (type.getIsDefault()) {
+				type.setIsDefault(false);
+				saveOrUpdate(type);
+			}
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public boolean changeOrderPers(Long id, String act) {
+		SysCaseType type = (SysCaseType) get(SysCaseType.class, id);
+		
+        String hql = "from SysCaseType tp where tp.deleted = false and tp.disabled = false ";
+        if ("up".equals(act)) {
+        	hql += "and tp.displayOrder < ? order by displayOrder desc";
+        } else if ("down".equals(act)) {
+        	hql += "and tp.displayOrder > ? order by displayOrder asc";
+        } else {
+        	return false;
+        }
+        
+        SysCaseType neighbor = (SysCaseType) getDao().findFirstByHQL(hql, type.getDisplayOrder());
+		
+        Integer order = type.getDisplayOrder();
+        type.setDisplayOrder(neighbor.getDisplayOrder());
+        neighbor.setDisplayOrder(order);
+        
+        saveOrUpdate(type);
+        saveOrUpdate(neighbor);
+		
+		return true;
+	}
     
 	@Override
 	public CaseTypeVo genVo(SysCaseType po) {
@@ -98,22 +139,6 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
         	vos.add(vo);
         }
 		return vos;
-	}
-
-	@Override
-	public boolean setDefaultPers(Long id, Long orgId) {
-		List<SysCaseType> ls = list(orgId);
-		for (SysCaseType type : ls) {
-			if (type.getId() == id) {
-				type.setIsDefault(true);
-				saveOrUpdate(type);
-			} else if (type.getIsDefault()) {
-				type.setIsDefault(false);
-				saveOrUpdate(type);
-			}
-		}
-		
-		return true;
 	}
 
 }

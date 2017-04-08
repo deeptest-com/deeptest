@@ -14,6 +14,7 @@ import com.ngtesting.platform.vo.UserVo;
 public interface OrgService extends BaseService {
 
 	List<SysOrg> list(String keywords, String disabled, Long userId);
+	List<OrgVo> listVo(String keywords, String disabled, Long id);
 
 	SysOrg getDetail(Long id);
 
@@ -27,5 +28,7 @@ public interface OrgService extends BaseService {
 	SysOrg save(OrgVo vo, Long userId);
 
 	List<TestProjectAccessHistoryVo> setDefaultPers(Long orgId, UserVo user);
+
+	
 
 }

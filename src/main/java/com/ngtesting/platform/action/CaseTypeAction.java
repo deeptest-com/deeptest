@@ -121,8 +121,33 @@ public class CaseTypeAction extends BaseAction {
 		
 		boolean success = caseTypeService.setDefaultPers(id, orgId);
 		
+		List<CaseTypeVo> vos = caseTypeService.listVos(orgId);
+		
+        ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		
 		return ret;
 	}
+	
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "changeOrder", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long orgId = userVo.getDefaultOrgId();
+		Long id = json.getLong("id");
+		String act = json.getString("act");
+		
+		boolean success = caseTypeService.changeOrderPers(id, act);
+		
+		List<CaseTypeVo> vos = caseTypeService.listVos(orgId);
+		
+        ret.put("data", vos);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		
+		return ret;
+	}
+	
 }

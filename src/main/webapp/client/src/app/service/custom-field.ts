@@ -7,8 +7,8 @@ export class CustomFieldService {
   constructor(private _reqService: RequestService) { }
   _api_url = 'custom_field/';
 
-  list(query: any) {
-    return this._reqService.post(this._api_url + 'list', query);
+  list() {
+    return this._reqService.post(this._api_url + 'list', {});
   }
 
   get(id: number) {
@@ -25,5 +25,9 @@ export class CustomFieldService {
     return this._reqService.post(this._api_url + 'delete', model);
   }
 
+  changeOrder(id: number, act: string) {
+    let model = {id: id, act: act};
+    return this._reqService.post(this._api_url + 'changeOrder', model);
+  }
 }
 

@@ -25,4 +25,6 @@ public interface CustomFieldService extends BaseService {
 
 	List<String> listFormat();
 
+	boolean changeOrderPers(Long id, String act);
+
 }

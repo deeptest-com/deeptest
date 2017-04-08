@@ -22,7 +22,7 @@ public class SysCasePriority extends BaseEntity {
 	
 	private String code;
 	private String name;
-    private Integer priority;
+    private Integer displayOrder;
     private Boolean isDefault;
     
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,12 +37,6 @@ public class SysCasePriority extends BaseEntity {
 	}
 	public void setName(String name) {
 		this.name = name;
-	}
-	public Integer getPriority() {
-		return priority;
-	}
-	public void setPriority(Integer priority) {
-		this.priority = priority;
 	}
 	public Boolean getIsDefault() {
 		return isDefault;
@@ -67,6 +61,12 @@ public class SysCasePriority extends BaseEntity {
 	}
 	public void setOrgId(Long orgId) {
 		this.orgId = orgId;
+	}
+	public Integer getDisplayOrder() {
+		return displayOrder;
+	}
+	public void setDisplayOrder(Integer displayOrder) {
+		this.displayOrder = displayOrder;
 	}
     
 }

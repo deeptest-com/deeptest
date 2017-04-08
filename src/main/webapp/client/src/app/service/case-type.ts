@@ -7,8 +7,8 @@ export class CaseTypeService {
   constructor(private _reqService: RequestService) { }
   _api_url = 'case_type/';
 
-  list(query: any) {
-    return this._reqService.post(this._api_url + 'list', query);
+  list() {
+    return this._reqService.post(this._api_url + 'list', {});
   }
 
   get(id: number) {
@@ -28,6 +28,10 @@ export class CaseTypeService {
   setDefault(id: number) {
     let model = {id: id};
     return this._reqService.post(this._api_url + 'setDefault', model);
+  }
+  changeOrder(id: number, act: string) {
+    let model = {id: id, act: act};
+    return this._reqService.post(this._api_url + 'changeOrder', model);
   }
 
 }

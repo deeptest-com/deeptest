@@ -7,8 +7,7 @@ export class OrgService {
   constructor(private _reqService: RequestService) { }
   _api_url = 'org/';
 
-  list(query: any, currentPage: number, itemsPerPage: number) {
-    _.merge(query, {currentPage: currentPage, itemsPerPage: itemsPerPage});
+  list(query: any) {
     return this._reqService.post(this._api_url + 'list', query);
   }
 
@@ -26,8 +25,8 @@ export class OrgService {
     return this._reqService.post(this._api_url + 'delete', model);
   }
 
-  setDefault(id: number) {
-    let model = {id: id};
+  setDefault(id: number, queryModel: any) {
+    let model = {id: id, keywords: queryModel.keywords, disabled: queryModel.disabled};
     return this._reqService.post(this._api_url + 'setDefault', model);
   }
 

@@ -2,6 +2,7 @@
   <ul id="al-sidebar-list" class="al-sidebar-list">
     <slidebar-item *ngFor="let item of menuItems"
       [menuItem]="item"
+      [selected]="item.key == currLink"
       (itemHover)="hoverItem($event)"
       (itemSelect)="selectItem($event)"
     ></slidebar-item>

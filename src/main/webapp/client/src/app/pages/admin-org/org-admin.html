@@ -1,8 +1,9 @@
 <div class="org-admin">
-  <slidebar [menuItems]="menuItems">
+  <slidebar [menuItems]="(menuItems | mapToArray)">
 
   </slidebar>
   <div class="main-with-slidebar">
     <router-outlet></router-outlet>
   </div>
 </div>
+

@@ -27,7 +27,7 @@ export class FieldApplyToPipe implements PipeTransform {
 
 @Pipe({name: 'fieldFormat'})
 export class FieldFormatPipe implements PipeTransform {
-  map: any = {'markdown': 'Markdown富文本', 'plain_text': '纯文本'};
+  map: any = {'markdown': 'Markdown', 'plain_text': '纯文本'};
 
   transform(s: string) : string {
     if (!s) {

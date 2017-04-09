@@ -18,8 +18,6 @@ export class Property implements OnInit, OnDestroy {
 
     this._onRouteChange = this._router.events.subscribe((event) => {
       if (event instanceof NavigationEnd && event.url) {
-        console.log(event.url.split('property/'));
-
         let arr = event.url.split('property/')[1].split('/');
         this.tab = arr[0];
         this.status = arr[1];

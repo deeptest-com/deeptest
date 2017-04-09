@@ -19,7 +19,7 @@ import { RoleService } from '../../../service/role';
 
 import { User } from './user.component';
 import { UserList } from './list';
-import {UserEdit } from './edit';
+import { UserEdit } from './edit';
 
 @NgModule({
   imports: [

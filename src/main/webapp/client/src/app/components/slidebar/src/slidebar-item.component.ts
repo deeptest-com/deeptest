@@ -9,6 +9,7 @@ import {Component, ViewEncapsulation, Input, Output, EventEmitter} from '@angula
 export class SlidebarItem {
 
   @Input() menuItem:any;
+  @Input() selected:boolean = false;
   @Input() child:boolean = false;
 
   @Output() itemHover = new EventEmitter<any>();

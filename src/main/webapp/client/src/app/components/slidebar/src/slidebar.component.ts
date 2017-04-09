@@ -10,7 +10,7 @@ import {layoutSizes} from '../../../theme';
 })
 export class Slidebar {
   @Input()
-  public menuItems: any[];
+  public menuItems: any;
 
   @Input()
   companies: any[];
@@ -18,7 +18,7 @@ export class Slidebar {
   orgReady: boolean = false;
 
   constructor(private _state:GlobalState) {
-    
+
   }
 
   public ngOnInit():void {

@@ -1,6 +1,6 @@
-<li (click)="onSelectItem($event, menuItem)" [title]="menuItem.title" [class.selected]="menuItem.selected" class="al-sidebar-list-item">
+<li (click)="onSelectItem($event, menuItem)" [class.selected]="selected" class="al-sidebar-list-item">
   <span (mouseenter)="onHoverItem($event, item)" class="al-sidebar-list-link">
     <i></i>
-    <span>{{ menuItem.title }}</span>
+    <span>{{ menuItem.value }}</span>
   </span>
 </li>

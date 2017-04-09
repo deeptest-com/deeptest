@@ -13,7 +13,6 @@ declare var jQuery;
   template: require('./slidebar-menu.html')
 })
 export class SlidebarMenu {
-  protected _onRouteChange:Subscription;
 
   @Input()
   public menuItems: any;
@@ -28,14 +27,6 @@ export class SlidebarMenu {
     this.currLink = _router.url;
   }
 
-  public ngOnInit():void {
-
-  }
-
-  public ngOnDestroy():void {
-
-  }
-
   public hoverItem($event):void {
     this.showHoverElem = true;
     this.hoverElemHeight = $event.currentTarget.clientHeight;
@@ -44,7 +35,7 @@ export class SlidebarMenu {
   }
 
   public selectItem($event):void {
-    this.currLink = $event.item.key;
-    this._routeService.navTo($event.item.key);
+    this.currLink = $event.item.link;
+    this._routeService.navTo($event.item.link);
   }
 }

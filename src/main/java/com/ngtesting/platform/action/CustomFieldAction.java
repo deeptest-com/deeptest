@@ -16,13 +16,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.SysCustomField;
+import com.ngtesting.platform.entity.SysOrgRole;
 import com.ngtesting.platform.service.CustomFieldService;
+import com.ngtesting.platform.service.TestProjectService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.util.Constant.RespCode;
 import com.ngtesting.platform.vo.CaseTypeVo;
+import com.ngtesting.platform.vo.OrgPrivilegeVo;
+import com.ngtesting.platform.vo.OrgRoleVo;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.CustomFieldVo;
+import com.ngtesting.platform.vo.TestProjectVo;
 import com.ngtesting.platform.vo.UserVo;
 
 
@@ -55,25 +60,29 @@ public class CustomFieldAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long orgId = userVo.getDefaultOrgId();
 		
 		Long customFieldId = json.getLong("id");
-		if (customFieldId == null) {
-			ret.put("data", new CustomFieldVo());
-			ret.put("code", Constant.RespCode.SUCCESS.getCode());
-			return ret;
-		}
 		
-		SysCustomField po = (SysCustomField) customFieldService.get(SysCustomField.class, Long.valueOf(customFieldId));
-		CustomFieldVo vo = customFieldService.genVo(po);
+		CustomFieldVo vo;
+		if (customFieldId == null) {
+			vo = new CustomFieldVo();
+		} else {
+			SysCustomField po = (SysCustomField) customFieldService.get(SysCustomField.class, customFieldId);
+			vo = customFieldService.genVo(po);
+		}
 		
 		List<String> applyToList = customFieldService.listApplyTo();
 		List<String> typeList = customFieldService.listType();
 		List<String> formatList = customFieldService.listFormat();
+		List<TestProjectVo> projectList = customFieldService.listProjectsForField(orgId, customFieldId);
         
         ret.put("data", vo);
         ret.put("applyToList", applyToList);
         ret.put("typeList", typeList);
         ret.put("formatList", formatList);
+        ret.put("projects", projectList);
+        
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -87,9 +96,13 @@ public class CustomFieldAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long orgId = userVo.getDefaultOrgId();
 		
-		CustomFieldVo customField = JSON.parseObject(JSON.toJSONString(json.get("customField")), CustomFieldVo.class);
-		SysCustomField po = customFieldService.save(customField, orgId);
+		CustomFieldVo customField = JSON.parseObject(JSON.toJSONString(json.get("model")), CustomFieldVo.class);
+		List<TestProjectVo> projects = (List<TestProjectVo>) json.get("relations");
 		
+		SysCustomField po = customFieldService.save(customField, orgId);
+		boolean success = customFieldService.saveRelationsProjects(po.getId(), projects);
+		
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
 	

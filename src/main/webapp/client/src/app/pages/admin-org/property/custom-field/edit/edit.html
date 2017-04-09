@@ -8,37 +8,75 @@
                [(ngModel)]="model.name" #name>
       </div>
     </div>
-    <div class="form-group row">
+<!--    <div class="form-group row">
       <label class="col-sm-2 col-form-label"><span>编码</span></label>
-      <div class="col-sm-10">
+      <div *ngIf="!model.isBuildIn" class="col-sm-10">
         <input type="text" class="form-control" name="code" formControlName="code"
                [(ngModel)]="model.code" #code>
       </div>
-    </div>
+      <label *ngIf="model.isBuildIn" class="col-sm-10 col-form-label left">
+        {{model.code}}
+        <input type="hidden" class="form-control" name="code" formControlName="code"
+               [(ngModel)]="model.code" #code>
+      </label>
+    </div>-->
 
     <div class="form-group row">
       <label class="col-sm-2 col-form-label"><span>应用对象</span></label>
-      <div class="col-sm-10">
+      <div *ngIf="!model.isBuildIn" class="col-sm-10">
         <select [(ngModel)]="model.applyTo" formControlName="applyTo" name="applyTo" class="form-control form-control-sm">
+          <option value=""></option>
           <option *ngFor="let item of applyToList" value="{{item}}">{{item | fieldApplyTo}}</option>
         </select>
       </div>
+      <label *ngIf="model.isBuildIn" class="col-sm-10 col-form-label left">
+        {{model.applyTo | fieldApplyTo}}
+        <input type="hidden" class="form-control" name="applyTo" formControlName="applyTo"
+               [(ngModel)]="model.applyTo" #applyTo>
+      </label>
     </div>
+
     <div class="form-group row">
       <label class="col-sm-2 col-form-label"><span>类型</span></label>
-      <div class="col-sm-10">
+      <div *ngIf="!model.isBuildIn" class="col-sm-10">
         <select [(ngModel)]="model.type" formControlName="type" name="type" class="form-control form-control-sm">
+          <option value=""></option>
           <option *ngFor="let item of typeList" value="{{item}}">{{item | fieldType}}</option>
         </select>
       </div>
+      <label *ngIf="model.isBuildIn" class="col-sm-10 col-form-label left">
+        {{model.type | fieldType}}
+        <input type="hidden" class="form-control" name="type" formControlName="type"
+               [(ngModel)]="model.type" #type>
+      </label>
     </div>
+
+    <div *ngIf="model.type == 'text'" class="form-group row">
+      <label class="col-sm-2 col-form-label"><span>行数</span></label>
+      <div *ngIf="!model.isBuildIn" class="col-sm-10">
+        <input type="text" class="form-control" name="rows" formControlName="rows"
+               [(ngModel)]="model.rows" #rows>
+      </div>
+      <label *ngIf="model.isBuildIn" class="col-sm-10 col-form-label left">
+        {{model.rows }}
+        <input type="hidden" class="form-control" name="rows" formControlName="rows"
+               [(ngModel)]="model.rows" #rows>
+      </label>
+    </div>
+
     <div *ngIf="model.type == 'text'" class="form-group row">
       <label class="col-sm-2 col-form-label"><span>格式</span></label>
-      <div class="col-sm-10">
+      <div *ngIf="!model.isBuildIn" class="col-sm-10">
         <select [(ngModel)]="model.format" formControlName="format" name="format" class="form-control form-control-sm">
+          <option value=""></option>
           <option *ngFor="let item of formatList" value="{{item}}">{{item | fieldFormat}}</option>
         </select>
       </div>
+      <label *ngIf="model.isBuildIn" class="col-sm-10 col-form-label left">
+        {{model.format | fieldFormat}}
+        <input type="hidden" class="form-control" name="format" formControlName="format"
+               [(ngModel)]="model.format" #format>
+      </label>
     </div>
 
     <div class="form-group row">
@@ -49,17 +87,6 @@
       </div>
     </div>
 
-    <div class="form-group row just-label">
-      <div class="offset-sm-2 col-sm-10">
-        <div class="form-check">
-          <label class="form-check-label">
-            <input type="checkbox" class="form-check-input" name="isGlobal" formControlName="isGlobal"
-                   [(ngModel)]="model.isGlobal" #isGlobal>
-            &nbsp;&nbsp;是否全局
-          </label>
-        </div>
-      </div>
-    </div>
     <div class="form-group row just-label">
       <div class="offset-sm-2 col-sm-10">
         <div class="form-check">
@@ -76,20 +103,57 @@
       <div class="offset-sm-2 col-sm-10">
         <div class="form-check">
           <label class="form-check-label">
+            <input type="checkbox" class="form-check-input" name="isGlobal" formControlName="isGlobal"
+                   [(ngModel)]="model.isGlobal" #isGlobal>
+            &nbsp;&nbsp;是否全局
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div [class.hidden]="model.isGlobal" class="form-group row">
+      <label class="col-sm-2">项目</label>
+      <div class="col-sm-10">
+        <div class="checkbox-list">
+          <div class="checkbox-list-inner">
+            <div class="toolbar">
+              <div class="toolbar-inner">
+                <span (click)="select('all')" class="link">全选</span> |
+                <span (click)="select('none')" class="link">全不选</span>
+              </div>
+            </div>
+            <div>
+              <div *ngFor="let item of relations" class="checkbox-list-item">
+                <label>
+                  <span class="checkbox-name">{{item.name}}<span></span></span>
+                  <input type="checkbox" class="form-check-input"
+                         [(ngModel)]="item.selecting" formControlName="{{'project-' + item.id}}">
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!--    <div class="form-group row just-label">
+      <div class="offset-sm-2 col-sm-10">
+        <div class="form-check">
+          <label class="form-check-label">
             <input type="checkbox" class="form-check-input" name="disabled" formControlName="disabled"
                    [(ngModel)]="model.disabled" #disabled>
             &nbsp;&nbsp;禁用
           </label>
         </div>
       </div>
-    </div>
+    </div>-->
 
     <div class="form-group row">
       <label class="col-sm-2 col-form-label"></label>
       <div class="col-sm-10">
         <button (click)="save()" type="button" class="btn btn-primary" [disabled]="!form.valid">保存</button>
         &nbsp;
-        <button [routerLink]="['/pages/org-admin/field/list']" type="button" class="btn btn-default">取消</button>
+        <button [routerLink]="['/pages/org-admin/property/custom-field/list']" type="button" class="btn btn-default">取消</button>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <button (click)="showModal()" *ngIf="model.id" type="button" class="btn btn-danger">删除</button>
       </div>

@@ -16,8 +16,8 @@ export class CustomFieldService {
     return this._reqService.post(this._api_url + 'get', model);
   }
 
-  save(user: any, groups: any[]) {
-    return this._reqService.post(this._api_url + 'save', {user: user, relations: groups});
+  save(model: any, relations: any[]) {
+    return this._reqService.post(this._api_url + 'save', {model: model, relations: relations});
   }
 
   delete(id: number) {

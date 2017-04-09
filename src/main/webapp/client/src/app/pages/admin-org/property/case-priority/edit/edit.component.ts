@@ -48,9 +48,7 @@ export class CasePriorityEdit implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
       {
-        'name': ['', [Validators.required]],
-        'priority': ['', [Validators.required, Validators.pattern('')]],
-        'disabled': ['', []]
+        'name': ['', [Validators.required]]
       }, {}
     );
 
@@ -66,10 +64,6 @@ export class CasePriorityEdit implements OnInit, AfterViewInit {
   validateMsg = {
     'name': {
       'required':      '名称不能为空'
-    },
-    'priority': {
-      'required':      '优先级不能为空',
-      'pattern':       '优先级必须为整数',
     }
   };
 

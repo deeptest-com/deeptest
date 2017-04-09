@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -63,9 +64,18 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
 		} else {
 			po = new SysCaseExeStatus();
 		}
-		po.setOrgId(orgId);
 		
 		BeanUtilEx.copyProperties(po, vo);
+		
+		po.setOrgId(orgId);
+		
+		if (vo.getId() == null) {
+			po.setCode(UUID.randomUUID().toString());
+			
+			String hql = "select max(displayOrder) from SysCaseExeStatus";
+			Integer maxOrder = (Integer) getByHQL(hql);
+	        po.setDisplayOrder(maxOrder + 10);
+		}
 		
 		saveOrUpdate(po);
 		return po;

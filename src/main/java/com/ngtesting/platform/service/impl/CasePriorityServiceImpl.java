@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -63,9 +64,18 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 		} else {
 			po = new SysCasePriority();
 		}
-		po.setOrgId(orgId);
 		
 		BeanUtilEx.copyProperties(po, vo);
+		
+		po.setOrgId(orgId);
+		
+		if (vo.getId() == null) {
+			po.setCode(UUID.randomUUID().toString());
+			
+			String hql = "select max(displayOrder) from SysCasePriority";
+			Integer maxOrder = (Integer) getByHQL(hql);
+	        po.setDisplayOrder(maxOrder + 10);
+		}
 		
 		saveOrUpdate(po);
 		return po;

@@ -49,7 +49,7 @@ public class ProjectAction extends BaseAction {
 		
 		Long t1 = new Date().getTime();
 
-		List<TestProjectVo> vos = projectService.list(orgId, keywords, disabled);
+		List<TestProjectVo> vos = projectService.listVos(orgId, keywords, disabled);
 		
 		Long t2 = new Date().getTime();
 		log.debug("获取项目信息花了" + (t1 - t2) + "毫秒");

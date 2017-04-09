@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -62,9 +63,17 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 		} else {
 			po = new SysCaseType();
 		}
-		po.setOrgId(orgId);
 		
 		BeanUtilEx.copyProperties(po, vo);
+		po.setOrgId(orgId);
+		
+		if (vo.getId() == null) {
+			po.setCode(UUID.randomUUID().toString());
+			
+			String hql = "select max(displayOrder) from SysCaseType";
+			Integer maxOrder = (Integer) getByHQL(hql);
+	        po.setDisplayOrder(maxOrder + 10);
+		}
 		
 		saveOrUpdate(po);
 		return po;
@@ -108,7 +117,7 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
         	return false;
         }
         
-        SysCaseType neighbor = (SysCaseType) getDao().findFirstByHQL(hql, type.getDisplayOrder());
+        SysCaseType neighbor = (SysCaseType) getFirstByHql(hql, type.getDisplayOrder());
 		
         Integer order = type.getDisplayOrder();
         type.setDisplayOrder(neighbor.getDisplayOrder());

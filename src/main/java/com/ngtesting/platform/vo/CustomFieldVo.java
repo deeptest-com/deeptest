@@ -3,6 +3,7 @@ package com.ngtesting.platform.vo;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.ngtesting.platform.entity.SysCustomField;
 import com.ngtesting.platform.entity.TestProject;
 
 public class CustomFieldVo extends BaseVo {
@@ -16,16 +17,14 @@ public class CustomFieldVo extends BaseVo {
     private String type;
 
     private String configs;
-    private Integer rows;
+    private Integer rows = 3;
     private Boolean isRequired;
-    private String format;
+    private String format = SysCustomField.FieldFormat.plain_text.toString();
     private Boolean isMulti;
-    private Boolean isGlobal;
-    private Boolean isBuildIn;
+    private Boolean isGlobal = true;
+    private Boolean isBuildIn = false;
     
     private Integer displayOrder;
-    
-    private Set<TestProject> projectSet = new HashSet<TestProject>(0);
 
 	public String getName() {
 		return name;
@@ -97,14 +96,6 @@ public class CustomFieldVo extends BaseVo {
 
 	public void setIsBuildIn(Boolean isBuildIn) {
 		this.isBuildIn = isBuildIn;
-	}
-
-	public Set<TestProject> getProjectSet() {
-		return projectSet;
-	}
-
-	public void setProjectSet(Set<TestProject> projectSet) {
-		this.projectSet = projectSet;
 	}
 
 	public String getApplyTo() {

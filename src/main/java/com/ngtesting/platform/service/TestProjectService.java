@@ -10,7 +10,7 @@ import com.ngtesting.platform.vo.UserVo;
 
 public interface TestProjectService extends BaseService {
 
-	List<TestProjectVo> list(Long orgId, String keywords, String disabled);
+	List<TestProjectVo> listVos(Long orgId, String keywords, String disabled);
 	List<TestProjectVo> listProjectGroups(Long orgId);
 	
 	TestProject getDetail(Long id);
@@ -31,6 +31,7 @@ public interface TestProjectService extends BaseService {
 	List<TestProjectAccessHistoryVo> genHistoryVos(
 			List<TestProjectAccessHistory> pos);
 	TestProjectVo viewPers(UserVo userVo, Long projectId);
+	List<TestProject> list(Long orgId, String keywords, String disabled);
 	
 //	void removeCache(Long orgId);
 	

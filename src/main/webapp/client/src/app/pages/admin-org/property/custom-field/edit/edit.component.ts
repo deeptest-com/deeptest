@@ -7,7 +7,7 @@ import {GlobalState} from '../../../../../global.state';
 
 import { CONSTANT } from '../../../../../utils/constant';
 import { Utils } from '../../../../../utils/utils';
-import {ValidatorUtils, EmailValidator, PhoneValidator} from '../../../../../validator';
+import {ValidatorUtils, CustomValidator} from '../../../../../validator';
 import { RouteService } from '../../../../../service/route';
 
 import { CustomFieldService } from '../../../../../service/custom-field';
@@ -26,7 +26,7 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
   id: number;
   tab: string = 'info';
 
-  model: any = {};
+  model: any = {isGlobal: true, rows: 3};
   applyToList: string[];
   typeList: string[];
   formatList: string[];
@@ -61,14 +61,14 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
     this.form = this.fb.group(
       {
         'name': ['', [Validators.required]],
-        'code': ['', [Validators.required]],
+        'code': ['', []],
         'applyTo': ['', [Validators.required]],
         type: ['', [Validators.required]],
-        format: ['', [Validators.required]],
+        rows:  ['', [Validators.pattern('^[1-9]$'), CustomValidator.validate('required_if_other_is', 'required_rows', 'rows', 'type', 'text')]],
+        format: ['', [CustomValidator.validate('required_if_other_is', 'required_format', 'format', 'type', 'text')]],
         descr: ['', []],
         isGlobal: ['', []],
-        isRequired: ['', []],
-        'disabled': ['', []]
+        isRequired: ['', []]
       }, {}
     );
 
@@ -85,17 +85,18 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
     'name': {
       'required':      '姓名不能为空'
     },
-    'code': {
-      'required':      '编码不能为空',
-    },
     'applyTo': {
       'required':      '应用对象不能为空'
     },
     'type': {
       'required':      '类型不能为空'
     },
+    'rows': {
+      'pattern': '字段行数必须为1-9的整数',
+      'required_rows':      '字段行数不能为空'
+    },
     'format': {
-      'required':      '格式不能为空'
+      'required_format':      '字段格式不能为空'
     }
   };
 
@@ -107,6 +108,11 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
       that.applyToList = json.applyToList;
       that.typeList = json.typeList;
       that.formatList = json.formatList;
+      that.relations = json.projects;
+
+      _.forEach(that.relations, (project: any, index: number) => {
+        this.form.addControl('project-' + project.id, new FormControl('', []))
+      });
     });
   }
 
@@ -117,7 +123,7 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
       if (json.code == 1) {
 
         that.formErrors = ['保存成功'];
-        that._routeService.navTo("/pages/org-admin/field/list");
+        that._routeService.navTo("/pages/org-admin/property/custom-field/list");
       } else {
         that.formErrors = [json.msg];
       }

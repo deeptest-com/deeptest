@@ -6,6 +6,7 @@ import com.ngtesting.platform.entity.SysCustomField;
 import com.ngtesting.platform.entity.SysUser;
 import com.ngtesting.platform.vo.CustomFieldVo;
 import com.ngtesting.platform.vo.Page;
+import com.ngtesting.platform.vo.TestProjectVo;
 import com.ngtesting.platform.vo.UserVo;
 
 public interface CustomFieldService extends BaseService {
@@ -26,5 +27,11 @@ public interface CustomFieldService extends BaseService {
 	List<String> listFormat();
 
 	boolean changeOrderPers(Long id, String act);
+
+	List<TestProjectVo> listProjectsForField(Long orgId, Long fieldId);
+
+	boolean saveRelationsProjects(Long id, List<TestProjectVo> projects);
+
+	void initPo(SysCustomField po, CustomFieldVo vo);
 
 }

@@ -39,7 +39,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 
 	@Override
 	// @Cacheable(value="orgProjects",key="#orgId.toString().concat('_').concat(#disabled)")
-	public List<TestProjectVo> list(Long orgId, String keywords, String disabled) {
+	public List<TestProjectVo> listVos(Long orgId, String keywords, String disabled) {
 		// CacheManager manager = CacheManager.create();
 		// net.sf.ehcache.Cache cache = manager.getCache("orgProjects");
 		// String key = orgId + "_" + disabled;
@@ -48,7 +48,18 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		// el = cache.get(key);
 		// return (Map<String, Object>)el.getObjectValue();
 		// }
+		
+		List<TestProject> pos = list(orgId, keywords, disabled);
 
+		List<TestProjectVo> vos = this.genVos(pos, keywords, disabled);
+
+		// el = new Element(key, ret);
+		// cache.put(el);
+		return vos;
+	}
+	
+	@Override
+	public List<TestProject> list(Long orgId, String keywords, String disabled) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
 
 		dc.add(Restrictions.eq("orgId", orgId));
@@ -68,11 +79,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		List<TestProject> pos = findAllByCriteria(dc);
 		getDao().getSession().disableFilter("filter_project_deleted");
 
-		List<TestProjectVo> vos = this.genVos(pos, keywords, disabled);
-
-		// el = new Element(key, ret);
-		// cache.put(el);
-		return vos;
+		return pos;
 	}
 	
 	@Override

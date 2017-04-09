@@ -20,7 +20,10 @@
         <td>{{ item.code }}</td>
         <td>{{ item.applyTo | fieldApplyTo}}</td>
         <td>{{ item.type | fieldType }}</td>
-        <td>{{ item.format | fieldFormat }}</td>
+        <td>
+          {{ item.format | fieldFormat }}
+          <span *ngIf="item.type == 'text'">({{item.rows}})</span>
+        </td>
         <td>{{item.isGlobal | trueOrFalse}}</td>
         <td>{{item.isRequired | trueOrFalse}}</td>
         <td>

@@ -12,6 +12,9 @@ public class TestProjectVo extends BaseVo {
     private Integer order;
     private Integer childrenNumb;
     
+    private Boolean selected = false;
+    private Boolean selecting = false;
+    
 	public String getName() {
 		return name;
 	}
@@ -56,6 +59,18 @@ public class TestProjectVo extends BaseVo {
 	}
 	public void setChildrenNumb(Integer childrenNumb) {
 		this.childrenNumb = childrenNumb;
+	}
+	public Boolean getSelected() {
+		return selected;
+	}
+	public void setSelected(Boolean selected) {
+		this.selected = selected;
+	}
+	public Boolean getSelecting() {
+		return selecting;
+	}
+	public void setSelecting(Boolean selecting) {
+		this.selecting = selecting;
 	}
 
 }

@@ -20,6 +20,17 @@ import javax.persistence.Table;
 public class SysCustomField extends BaseEntity {
 	private static final long serialVersionUID = -1940351858441687302L;
 	
+	public SysCustomField() {
+		
+	}
+	public void setValues(String name, String descr, Integer rows, Boolean isGlobal, Boolean isRequired) {
+		this.name = name;
+		this.descr = descr;
+		this.rows = rows;
+		this.isGlobal = isGlobal;
+		this.isRequired = isRequired;
+	}
+	
 	private String name;
     private String code;
     private String descr;
@@ -37,7 +48,7 @@ public class SysCustomField extends BaseEntity {
     private Integer rows;
     private Boolean isGlobal;
     private Boolean isRequired;
-    private Boolean isBuildIn = false;
+    private Boolean isBuildIn;
     
     private Integer displayOrder;
     

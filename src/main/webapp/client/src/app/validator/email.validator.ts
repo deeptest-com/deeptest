@@ -4,7 +4,7 @@ export var EmailValidator:any = {
   validate: function ():ValidatorFn {
     return (c:AbstractControl):{[key:string]:any} => {
       if (!c.value) {
-        
+
         return null;
       }
 

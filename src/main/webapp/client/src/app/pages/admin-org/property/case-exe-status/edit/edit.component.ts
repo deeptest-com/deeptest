@@ -49,8 +49,7 @@ export class CaseExeStatusEdit implements OnInit, AfterViewInit {
       {
         'name': ['', [Validators.required]],
         'descr': ['', []],
-        'isFinal': ['', []],
-        'disabled': ['', []]
+        'isFinal': ['', []]
       }, {}
     );
 

@@ -42,6 +42,10 @@ export class TrueOrFalsePipe implements PipeTransform {
   map: any = {'true': '是', 'false': '否'};
 
   transform(b: boolean) : string {
+    if (!b) {
+      return '否';
+    }
+
     return this.map['' + b];
   }
 }

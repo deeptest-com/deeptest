@@ -5,7 +5,7 @@ import {CONSTANT} from '../utils/constant';
 @Pipe({name: 'fieldType'})
 export class FieldTypePipe implements PipeTransform {
   map: any = {'number': '数字', 'string': '字符串', 'text': '多行文本',
-              'checkbox': '选择框', 'dropdown': '下拉菜单', 'multi_select': '多选菜单',
+              'radio': '单选按钮', 'checkbox': '多选框', 'dropdown': '下拉菜单', 'multi_select': '多选菜单',
               'date': '日期', 'url': '网址',
               'user': '用户', 'version': '版本',
               'steps': '测试步骤', 'results': '测试结果'

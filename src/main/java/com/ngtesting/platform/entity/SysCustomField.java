@@ -70,7 +70,10 @@ public class SysCustomField extends BaseEntity {
     	number("number"),
     	string("string"),
     	text("text"),
+    	
+    	radio("radio"),
     	checkbox("checkbox"),
+    	
     	dropdown("dropdown"),
     	multi_select("multi_select"),
     	
@@ -97,6 +100,8 @@ public class SysCustomField extends BaseEntity {
             	case "number": status = FieldType.number; break;
             	case "string": status = FieldType.string; break;
             	case "text": status = FieldType.text; break;
+            	
+            	case "radio": status = FieldType.radio; break;
             	case "checkbox": status = FieldType.checkbox; break;
             	case "dropdown": status = FieldType.dropdown; break;
             	case "multi_select": status = FieldType.multi_select; break;

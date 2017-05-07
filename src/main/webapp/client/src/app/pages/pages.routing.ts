@@ -1,34 +1,36 @@
 import { Routes, RouterModule }  from '@angular/router';
 import { Pages } from './pages.component';
+import { ModuleWithProviders } from '@angular/core';
 // noinspection TypeScriptValidateTypes
-const routes: Routes = [
+
+// export function loadChildren(path) { return System.import(path); };
+
+export const routes: Routes = [
   {
     path: 'login',
-    loadChildren: () => System.import('./account/login/login.module')
+    loadChildren: 'app/pages/login/login.module#LoginModule'
   },
   {
     path: 'register',
-    loadChildren: () => System.import('./account/register/register.module')
-  },
-  {
-    path: 'forgot-password',
-    loadChildren: () => System.import('./account/forgot-password/forgot-password.module')
+    loadChildren: 'app/pages/register/register.module#RegisterModule'
   },
   {
     path: 'pages',
-
     component: Pages,
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', loadChildren: () => System.import('./dashboard/dashboard.module') },
+      { path: 'dashboard', loadChildren: './dashboard/dashboard.module#DashboardModule' },
+      { path: '', loadChildren: './autotest/autotest.module#AutoTestModule' },
 
-      { path: 'project', loadChildren: () => System.import('./project/project/project.module') },
-      { path: 'case', loadChildren: () => System.import('./design/case/case.module') },
-
-      { path: 'org-admin', loadChildren: () => System.import('./admin-org/org-admin.module') },
-      { path: 'sys-admin', loadChildren: () => System.import('./admin-sys/sys-admin.module') }
+      { path: 'editors', loadChildren: './editors/editors.module#EditorsModule' },
+      { path: 'components', loadChildren: './components/components.module#ComponentsModule' },
+      { path: 'charts', loadChildren: './charts/charts.module#ChartsModule' },
+      { path: 'ui', loadChildren: './ui/ui.module#UiModule' },
+      { path: 'forms', loadChildren: './forms/forms.module#FormsModule' },
+      { path: 'tables', loadChildren: './tables/tables.module#TablesModule' },
+      { path: 'maps', loadChildren: './maps/maps.module#MapsModule' }
     ]
   }
 ];
 
-export const routing = RouterModule.forChild(routes);
+export const routing: ModuleWithProviders = RouterModule.forChild(routes);

@@ -1,105 +1,108 @@
 <div class="page-top clearfix" baScrollPosition maxHeight="50" (scrollChange)="scrolledChanged($event)"
      [ngClass]="{scrolled: isScrolled}">
-  <a routerLink="/pages/dashboard" class="al-logo clearfix"><span>ng</span>testing</a>
+  <a routerLink="/pages/dashboard" class="al-logo clearfix"><span>ng</span>Testing</a>
+
+<!-- <a href (click)="toggleMenu()" class="collapse-menu-link ion-navicon"></a>-->
 
   <div class="menu">
-    <div class="btn-group" dropdown>
-      <button type="button" class="btn btn-default" dropdownToggle addToggleClass="true">
-        测试项目
-      </button>
-      <ul class="dropdown-menu" dropdownMenu>
-        <li class="dropdown-item">当前项目</li>
-        <li class="dropdown-item">
+    <div ngbDropdown class="btn-group">
+      <button class="btn btn-default" ngbDropdownToggle>测试项目</button>
+      <div class="dropdown-menu">
+        <button class="dropdown-item">当前项目</button>
+        <button class="dropdown-item">
           <a *ngIf="projects && projects[0]" [routerLink]="['/pages/project/view/', projects[0].projectId]">{{projects[0].projectName}}</a>
           <a *ngIf="!projects || projects.length == 0">无</a>
-        </li>
-        <li class="dropdown-divider"></li>
+        </button>
 
-        <li class="dropdown-item">最近查看</li>
-        <li *ngFor="let item of projects; let i = index" class="dropdown-item">
+        <button class="dropdown-item">最近查看</button>
+        <button class="dropdown-item" *ngFor="let item of projects; let i = index" class="dropdown-item">
           <a *ngIf="i > 0" [routerLink]="['/pages/project/view/', item.projectId]">{{item.projectName}}</a>
-        </li>
-        <li *ngIf="!projects || projects.length < 2" class="dropdown-item">
-          <a>无</a>
-        </li>
+        </button>
+        <button *ngIf="!projects || projects.length < 2" class="dropdown-item">
+          无
+        </button>
 
         <li class="dropdown-divider"></li>
-
-        <li class="dropdown-item">
+        
+        <button class="dropdown-item">
           <a [routerLink]="['/pages/project/list']">所有项目</a>
-        </li>
+        </button>
 
-      </ul>
+      </div>
     </div>
 
-<!--    <div class="btn-group" dropdown>
-      <button type="button" class="btn btn-default">
-        需求
-      </button>
-    </div>-->
-
-    <div class="btn-group" dropdown>
-      <button type="button" class="btn btn-default" dropdownToggle addToggleClass="true">
-        测试设计
-      </button>
-      <ul class="dropdown-menu" dropdownMenu>
-        <li class="dropdown-item"><a [routerLink]="['/pages/case']">测试用例</a></li>
-        <li class="dropdown-item"><a href="#">用例集合</a></li>
-      </ul>
+    <div ngbDropdown class="btn-group">
+      <button class="btn btn-default" ngbDropdownToggle>测试设计</button>
+      <div class="dropdown-menu">
+        <button class="dropdown-item">
+          <a [routerLink]="['/pages/dashboard']">测试用例</a>
+        </button>
+        <button class="dropdown-item">
+          <a [routerLink]="['/pages/dashboard']">用例集合</a>
+        </button>
+      </div>
     </div>
 
-    <div class="btn-group" dropdown>
-      <button type="button" class="btn btn-default" dropdownToggle addToggleClass="true">
-        测试执行
-      </button>
-      <ul class="dropdown-menu" dropdownMenu>
-          <li class="dropdown-item"><a [routerLink]="['/pages/dashboard']">测试计划</a></li>
-          <li class="dropdown-item"><a [routerLink]="['/pages/dashboard']">测试环境</a></li>
-      </ul>
+    <div ngbDropdown class="btn-group">
+      <button class="btn btn-default" ngbDropdownToggle>测试执行</button>
+      <div class="dropdown-menu">
+        <button class="dropdown-item">
+          <a [routerLink]="['/pages/dashboard']">测试计划</a>
+        </button>
+        <button class="dropdown-item">
+          <a [routerLink]="['/pages/dashboard']">测试环境</a>
+        </button>
+      </div>
     </div>
 
-    <div class="btn-group" dropdown>
-      <button type="button" class="btn btn-default" dropdownToggle addToggleClass="true">
-        测试分析
-      </button>
-      <ul class="dropdown-menu" dropdownMenu>
-        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard']">测试摘要</a></li>
-        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard']">测试用例</a></li>
-        <li class="dropdown-item"><a [routerLink]="['/pages/dashboard']">测试结果</a></li>
-      </ul>
+    <div ngbDropdown class="btn-group">
+      <button class="btn btn-default" ngbDropdownToggle>测试分析</button>
+      <div class="dropdown-menu">
+        <button class="dropdown-item">
+          <a [routerLink]="['/pages/dashboard']">测试摘要</a>
+        </button>
+        <button class="dropdown-item">
+          <a [routerLink]="['/pages/dashboard']">测试结果</a>
+        </button>
+        <button class="dropdown-item">
+          <a [routerLink]="['/pages/dashboard']">分析图表</a>
+        </button>
+      </div>
     </div>
 
-    <div class="btn-group" dropdown>
-      <button type="button" class="btn btn-default" [routerLink]="['/pages/org-admin/org/list']">
-        公司管理
-      </button>
+    <div ngbDropdown class="btn-group">
+      <button class="btn btn-default" ngbDropdownToggle>测试分析</button>
+      <div class="dropdown-menu">
+        <button class="dropdown-item">
+          <a [routerLink]="['/pages/org-admin/org/list']">公司管理</a>
+        </button>
+      </div>
     </div>
-
-    <div class="btn-group" dropdown>
-      <button type="button" class="btn btn-default" [routerLink]="['/pages/sys-admin']">
-        系统管理
-      </button>
+    <div ngbDropdown class="btn-group">
+      <button class="btn btn-default" ngbDropdownToggle>测试分析</button>
+      <div class="dropdown-menu">
+        <button class="dropdown-item">
+          <a [routerLink]="['/pages/sys-admin']">系统管理</a>
+        </button>
+      </div>
     </div>
 
   </div>
 
-    <div class="search">
-        <i class="ion-ios-search-strong" ng-click="startSearch()"></i>
-        <input id="searchInput" type="text" placeholder="搜索...">
-    </div>
+  <div class="search">
+    <i class="ion-ios-search-strong" ng-click="startSearch()"></i>
+    <input id="searchInput" type="text" placeholder="Search for...">
+  </div>
 
   <div class="user-profile clearfix">
     <div class="dropdown al-user-profile">
       <a class="profile-toggle-link dropdown-toggle" id="user-profile-dd" data-toggle="dropdown" aria-expanded="false">
-        <img src="{{profile?.avatar | imgPath}}">
+        <img src="{{ ( 'aaron' | baProfilePicture ) }}">
       </a>
       <ul class="dropdown-menu top-dropdown-menu profile-dropdown" aria-labelledby="user-profile-dd">
-        <li class="dropdown-item"><i class="dropdown-arr"></i></li>
-        <li [routerLink]="['/pages/profile']" class="dropdown-item">
-          <a href="javascript:void(0)">
-            <i class="fa fa-user"></i>{{profile?.name}}</a></li>
-        <li [routerLink]="['/pages/settings']" class="dropdown-item"><a href="javascript:void(0)"><i class="fa fa-cog"></i>设置</a></li>
-        <li (click)="logout()" class="dropdown-item"><a href="javascript:void(0)" class="signout"><i class="fa fa-power-off"></i>登出</a></li>
+        <li class="dropdown-item"><a href><i class="fa fa-user"></i>Profile</a></li>
+        <li class="dropdown-item"><a href><i class="fa fa-cog"></i>Settings</a></li>
+        <li class="dropdown-item"><a href class="signout"><i class="fa fa-power-off"></i>Sign out</a></li>
       </ul>
     </div>
     <ba-msg-center></ba-msg-center>

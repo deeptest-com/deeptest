@@ -6,7 +6,7 @@ export const PAGES_MENU = [
         path: 'dashboard',
         data: {
           menu: {
-            title: '首页',
+            title: 'general.menu.dashboard',
             icon: 'ion-android-home',
             selected: false,
             expanded: false,
@@ -15,96 +15,116 @@ export const PAGES_MENU = [
         }
       },
       {
-        path: 'event',
+        path: 'report',
         data: {
           menu: {
-            title: '会议管理',
-            icon: 'ion-calendar',
+            title: 'general.menu.report',
+            icon: 'ion-ios-paper',
+            selected: false,
+            expanded: false,
+            order: 0
+          }
+        }
+      },
+
+      {
+        path: 'test-site',
+        data: {
+          menu: {
+            title: 'general.menu.test-site',
+            icon: 'ion-wrench',
             selected: false,
             expanded: true,
-            order: 100,
+            order: 10,
           }
         },
         children: [
           {
-            path: 'list',
+            path: '',
             data: {
               menu: {
-                title: '我的会议',
+                title: 'general.menu.devsite',
+                url: 'http://dev.console.aispeech.com/console/index.html',
+                target: '_blank'
               }
             }
           },
           {
-            path: 'settings',
+            path: '',
             data: {
               menu: {
-                title: '全局设置',
+                title: 'general.menu.testsite',
+                url: 'http://test.console.aispeech.com/console/index.html',
+                target: '_blank'
+              }
+            }
+          },
+          {
+            path: '',
+            data: {
+              menu: {
+                title: 'general.menu.demosite',
+                url: 'http://demo.console.aispeech.com/console/index.html',
+                target: '_blank'
               }
             }
           }
         ]
       },
       {
-        path: 'business',
+        path: 'work-site',
         data: {
           menu: {
-            title: '业务管理',
-            icon: 'ion-settings',
+            title: 'general.menu.work-site',
+            icon: 'ion-hammer',
             selected: false,
             expanded: true,
-            order: 100,
+            order: 10,
           }
         },
         children: [
           {
-            path: 'company-edit',
+            path: '',
             data: {
               menu: {
-                title: '公司管理'
+                title: 'general.menu.devops',
+                url: 'http://172.16.10.9:8000',
+                target: '_blank'
               }
             }
           },
           {
-            path: 'account-list',
+            path: '',
             data: {
               menu: {
-                title: '账号管理'
-              }
-            }
-          }
-        ]
-      },
-      {
-        path: 'personal',
-        data: {
-          menu: {
-            title: '个人设置',
-            icon: 'ion-person',
-            selected: false,
-            expanded: true,
-            order: 100,
-          }
-        },
-        children: [
-          {
-            path: 'profile',
-            data: {
-              menu: {
-                title: '修改信息'
+                title: 'general.menu.gitlab',
+                url: 'https://gitlab.spetechcular.com',
+                target: '_blank'
               }
             }
           },
           {
-            path: 'password',
+            path: '',
             data: {
               menu: {
-                title: '修改密码'
+                title: 'general.menu.jira',
+                url: 'https://jira.spetechcular.com',
+                target: '_blank'
+              }
+            }
+          },
+          {
+            path: '',
+            data: {
+              menu: {
+                title: 'general.menu.wiki',
+                url: 'https://wiki.spetechcular.com/display/DevPlatform/AISPEECH+DUI',
+                target: '_blank'
               }
             }
           }
         ]
       }
-
     ]
   }
 ];

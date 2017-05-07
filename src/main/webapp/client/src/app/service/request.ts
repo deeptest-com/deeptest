@@ -1,8 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Http, Headers, RequestOptions, Response} from '@angular/http';
 
-import { Cookie } from 'ng2-cookies/ng2-cookies';
-
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -24,7 +22,6 @@ export class RequestService {
         let body = JSON.stringify(reqBody);
         let headers = new Headers({ 'Content-Type': 'application/json',
                 'token': CONSTANT.TOKEN });
-                // , orgId: CONSTANT.ORG_ID, projectId: CONSTANT.PROJECT_ID
         let options = new RequestOptions({ headers: headers, withCredentials: true });
 
         console.log(url, body);

@@ -2,9 +2,9 @@ import { NgModule }      from '@angular/core';
 import { CommonModule }  from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgaModule } from '../../theme/nga.module';
+import { NgbDropdownModule, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { routing }       from './ui.routing';
-import { DropdownModule, ModalModule } from 'ng2-bootstrap/ng2-bootstrap';
 import { Ui } from './ui.component';
 import { Buttons } from './components/buttons/buttons.component';
 import { Grid } from './components/grid/grid.component';
@@ -21,6 +21,7 @@ import { LargeButtons } from './components/buttons/components/largeButtons';
 import { DropdownButtons } from './components/buttons/components/dropdownButtons';
 import { GroupButtons } from './components/buttons/components/groupButtons';
 import { IconsService } from './components/icons/icons.service';
+import { DefaultModal } from './components/modals/default-modal/default-modal.component';
 
 
 @NgModule({
@@ -28,8 +29,8 @@ import { IconsService } from './components/icons/icons.service';
     CommonModule,
     FormsModule,
     NgaModule,
-    DropdownModule,
-    ModalModule,
+    NgbDropdownModule,
+    NgbModalModule,
     routing
   ],
   declarations: [
@@ -46,11 +47,15 @@ import { IconsService } from './components/icons/icons.service';
     IconButtons,
     LargeButtons,
     DropdownButtons,
-    GroupButtons
+    GroupButtons,
+    DefaultModal
+  ],
+  entryComponents: [
+    DefaultModal
   ],
   providers: [
     IconsService
   ]
 })
-export default class UiModule {
+export class UiModule {
 }

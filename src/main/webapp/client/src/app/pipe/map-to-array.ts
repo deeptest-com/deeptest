@@ -1,5 +1,7 @@
 import {Pipe, PipeTransform} from "@angular/core";
 
+import * as _ from 'lodash';
+
 @Pipe({name: 'mapToArray'})
 export class MapToArrayPipe implements PipeTransform {
   transform(map: any, ignore:string[]):any {

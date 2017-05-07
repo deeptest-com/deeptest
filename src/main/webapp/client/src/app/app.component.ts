@@ -1,18 +1,13 @@
-import { Routes } from '@angular/router';
-import './app.loader.ts';
-import { Component, ViewEncapsulation, ViewContainerRef } from '@angular/core';
+import { Component, ViewContainerRef } from '@angular/core';
+import * as $ from 'jquery';
+
 import { GlobalState } from './global.state';
 import { BaImageLoaderService, BaThemePreloader, BaThemeSpinner } from './theme/services';
-import { layoutPaths } from './theme/theme.constants';
 import { BaThemeConfig } from './theme/theme.config';
-import { BaMenuService } from './theme';
-import {ComponentsHelper } from 'ng2-bootstrap';
-
-import { MENU } from './app.menu';
+import { layoutPaths } from './theme/theme.constants';
 
 import {CONSTANT} from './utils/constant';
 import {Utils} from './utils/utils';
-import {AccountService} from './service/account';
 
 /*
  * App Component
@@ -20,10 +15,9 @@ import {AccountService} from './service/account';
  */
 @Component({
   selector: 'app',
-  encapsulation: ViewEncapsulation.None,
-  styles: [require('normalize.css'), require('./app.scss')],
+  styleUrls: ['./app.component.scss'],
   template: `
-    <main [ngClass]="{'menu-collapsed': isMenuCollapsed}" baThemeRun>
+    <main [class.menu-collapsed]="isMenuCollapsed" baThemeRun>
       <div class="additional-bg"></div>
       <router-outlet></router-outlet>
     </main>
@@ -36,14 +30,10 @@ export class App {
   constructor(private _state: GlobalState,
               private _imageLoader: BaImageLoaderService,
               private _spinner: BaThemeSpinner,
-              private _config: BaThemeConfig,
-              private _menuService: BaMenuService,
-              private accountService: AccountService,
-              private viewContainerRef: ViewContainerRef) {
+              private viewContainerRef: ViewContainerRef,
+              private themeConfig: BaThemeConfig) {
 
-    this._menuService.updateMenuByRoutes(<Routes>MENU);
-
-    this._fixModals();
+    themeConfig.config();
 
     this._loadImages();
 
@@ -65,28 +55,7 @@ export class App {
 
   private _loadImages(): void {
     // register some loaders
-    BaThemePreloader.registerLoader(this._imageLoader.load(layoutPaths.images.root + 'sky-bg.jpg'));
+    BaThemePreloader.registerLoader(this._imageLoader.load('/assets/img/sky-bg.jpg'));
   }
 
-  private _fixModals(): void {
-    ComponentsHelper.prototype.getRootViewContainerRef = function () {
-      // https://github.com/angular/angular/issues/9293
-      if (this.root) {
-        return this.root;
-      }
-      var comps = this['applicationRef'].components;
-      if (!comps.length) {
-        throw new Error("ApplicationRef instance not found");
-      }
-      try {
-        /* one more ugly hack, read issue above for details */
-        var rootComponent = this['applicationRef']._rootComponents[0];
-        this.root = rootComponent._component.viewContainerRef;
-        return this.root;
-      }
-      catch (e) {
-        throw new Error("ApplicationRef instance not found");
-      }
-    };
-  }
 }

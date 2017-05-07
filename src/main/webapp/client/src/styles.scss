@@ -1,0 +1,76 @@
+.link {
+  margin: 0 5px;
+  text-decoration:none !important;
+  color: #209e91;
+  cursor:pointer;
+  &.underline {
+    text-decoration: underline !important;
+  }
+}
+.center {
+  text-align: center;
+}
+
+.Pass {
+  font-weight: bolder;
+  color: green;
+}
+.Fail {
+  font-weight: bolder;
+  color: red;
+}
+.Skipped {
+  font-weight: bolder;
+  color: blue;
+}
+
+ngb-pagination {
+  .pagination{
+    margin: 10px 0 10px 0;
+  }
+}
+
+.list-toolbar {
+  display: flex;
+  margin: 15px 0 15px 0;
+  padding: 0;
+  line-height: 30px;
+  .title {
+    width: 150px;
+    font-size: 20px;
+  }
+  .filter {
+    flex: 1;
+    label {
+      margin-right: 5px;
+    }
+    input {
+      margin-right: 20px;
+    }
+  }
+  .buttons {
+    width: 300px;
+    text-align: right;
+    button {
+      margin-left: 10px;
+    }
+  }
+}
+
+.edit-toolbar {
+  display: flex;
+  margin: 15px 0 15px 0;
+
+  .title {
+    flex: 1;
+    font-size: 20px;
+    line-height: 30px;
+  }
+  .buttons {
+    width: 200px;
+    text-align: right;
+    button {
+      margin-left: 50px;
+    }
+  }
+}

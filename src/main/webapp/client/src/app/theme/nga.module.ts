@@ -2,15 +2,10 @@ import { NgModule, ModuleWithProviders }      from '@angular/core';
 import { CommonModule }  from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { NgUploaderModule } from 'ngx-uploader';
+import { AppTranslationModule } from '../app.translation.module';
 
-import { DropdownModule } from 'ng2-bootstrap/ng2-bootstrap';
-
-import { ImgPathPipe, ThumbPathPipe } from '../pipe/img-path';
-import { MapToArrayPipe } from '../pipe/map-to-array';
-import { DatePipe } from '../pipe/date';
-import { ModelStatusPipe } from '../pipe/model-status';
-import { EventStatusPipe } from '../pipe/event-status';
-import { FieldTypePipe, FieldApplyToPipe, FieldFormatPipe, TrueOrFalsePipe, DisableOrNotPipe } from '../pipe/field-property';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
 import {
   BaThemeConfig
@@ -34,7 +29,8 @@ import {
   BaMultiCheckbox,
   BaPageTop,
   BaPictureUploader,
-  BaSidebar
+  BaSidebar,
+  BaFileUploader
 } from './components';
 
 import { BaCardBlur } from './components/baCard/baCardBlur.directive';
@@ -58,6 +54,11 @@ import {
   BaThemeSpinner
 } from './services';
 
+import {
+  EmailValidator,
+  EqualPasswordsValidator
+} from './validators';
+
 const NGA_COMPONENTS = [
   BaAmChart,
   BaBackTop,
@@ -72,7 +73,8 @@ const NGA_COMPONENTS = [
   BaMultiCheckbox,
   BaPageTop,
   BaPictureUploader,
-  BaSidebar
+  BaSidebar,
+  BaFileUploader
 ];
 
 const NGA_DIRECTIVES = [
@@ -87,10 +89,6 @@ const NGA_PIPES = [
   BaKameleonPicturePipe,
   BaProfilePicturePipe
 ];
-const MY_PIPES = [
-  ImgPathPipe, ThumbPathPipe, MapToArrayPipe, DatePipe,ModelStatusPipe, EventStatusPipe,
-  FieldTypePipe, FieldApplyToPipe, FieldFormatPipe, TrueOrFalsePipe, DisableOrNotPipe
-];
 
 const NGA_SERVICES = [
   BaImageLoaderService,
@@ -99,27 +97,30 @@ const NGA_SERVICES = [
   BaMenuService
 ];
 
+const NGA_VALIDATORS = [
+  EmailValidator,
+  EqualPasswordsValidator
+];
+
 @NgModule({
   declarations: [
     ...NGA_PIPES,
     ...NGA_DIRECTIVES,
-    ...NGA_COMPONENTS,
-
-    ...MY_PIPES
+    ...NGA_COMPONENTS
   ],
   imports: [
     CommonModule,
     RouterModule,
     FormsModule,
     ReactiveFormsModule,
-    DropdownModule
+    AppTranslationModule,
+    NgUploaderModule,
+    NgbDropdownModule
   ],
   exports: [
     ...NGA_PIPES,
     ...NGA_DIRECTIVES,
-    ...NGA_COMPONENTS,
-
-    ...MY_PIPES
+    ...NGA_COMPONENTS
   ]
 })
 export class NgaModule {
@@ -129,6 +130,7 @@ export class NgaModule {
       providers: [
         BaThemeConfigProvider,
         BaThemeConfig,
+        ...NGA_VALIDATORS,
         ...NGA_SERVICES
       ],
     };

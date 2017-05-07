@@ -1,18 +1,16 @@
-import {Component, ElementRef, HostListener, ViewEncapsulation} from '@angular/core';
+import {Component, ElementRef, HostListener} from '@angular/core';
 import {GlobalState} from '../../../global.state';
 import {layoutSizes} from '../../../theme';
 
 @Component({
   selector: 'ba-sidebar',
-  encapsulation: ViewEncapsulation.None,
-  styles: [require('./baSidebar.scss')],
-  template: require('./baSidebar.html')
+  templateUrl: './baSidebar.html',
+  styleUrls: ['./baSidebar.scss']
 })
 export class BaSidebar {
   public menuHeight:number;
   public isMenuCollapsed:boolean = false;
   public isMenuShouldCollapsed:boolean = false;
-
 
   constructor(private _elementRef:ElementRef, private _state:GlobalState) {
 

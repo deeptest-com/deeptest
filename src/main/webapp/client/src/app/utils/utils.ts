@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 
 import {CONSTANT} from '../utils/constant';
-import { Cookie } from 'ng2-cookies/ng2-cookies';
 
 declare var unescape;
 

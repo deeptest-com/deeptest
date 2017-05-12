@@ -269,7 +269,35 @@
             <artifactId>javase</artifactId>
             <version>3.3.0</version>
         </dependency>
-	</dependencies>
+
+<!-- 		<dependency>
+		    <groupId>net.oauth.core</groupId>
+		    <artifactId>oauth</artifactId>
+		    <version>20100601-atlassian-2</version>
+		</dependency>
+		<dependency>
+		    <groupId>net.oauth.core</groupId>
+		    <artifactId>oauth-httpclient4</artifactId>
+		    <version>20100601-atlassian-2</version>
+		</dependency> -->
+		
+		<dependency>
+    <groupId>com.google.collections</groupId>
+    <artifactId>google-collections</artifactId>
+    <version>1.0</version>
+</dependency>
+		 <dependency>
+            <groupId>net.oauth.core</groupId>
+            <artifactId>oauth</artifactId>
+            <version>20090617</version>
+        </dependency>
+        <dependency>
+            <groupId>net.oauth.core</groupId>
+            <artifactId>oauth-httpclient4</artifactId>
+            <version>20090913</version>
+        </dependency>
+
+	</dependencies> 
     
 	<build>
 	<sourceDirectory>src/main/java</sourceDirectory>
@@ -333,4 +361,9 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<repositories>
+		
+    </repositories>
+    
 </project>

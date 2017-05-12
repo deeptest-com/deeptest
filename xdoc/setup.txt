@@ -3,4 +3,12 @@ sudo /opt/testlink-1.9.16-0/ctlscript.sh start
 ctlscript.sh status
 
 Jira
+docker run --detach --publish 9000:8080 cptactionhank/atlassian-jira-software:latest
+openssl genrsa -out jira.pem 1024
+openssl rsa -in jira.pem -pubout -out jira.pub
+java -jar rest-oauth-client-1.0.one-jar.jar requestToken http://localhost:9000/
+
 sudo /opt/atlassian/jira/bin/startup.sh
+
+docker images
+docker rmi -f 7f79690e67e0

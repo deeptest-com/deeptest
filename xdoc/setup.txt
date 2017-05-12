@@ -6,7 +6,7 @@ Jira
 docker run --detach --publish 9000:8080 cptactionhank/atlassian-jira-software:latest
 openssl genrsa -out jira.pem 1024
 openssl rsa -in jira.pem -pubout -out jira.pub
-java -jar rest-oauth-client-1.0.one-jar.jar requestToken http://localhost:9000/
+openssl pkcs8 -topk8 -inform PEM -in jira.pem -outform PEM -nocrypt
 
 sudo /opt/atlassian/jira/bin/startup.sh
 

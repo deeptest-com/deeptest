@@ -7,6 +7,10 @@ import { AppTranslationModule } from '../app.translation.module';
 
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { RouteService } from '../service/route';
+import { RequestService } from '../service/request';
+import { AccountService } from '../service/account';
+
 import {
   BaThemeConfig
 } from './theme.config';
@@ -94,7 +98,11 @@ const NGA_SERVICES = [
   BaImageLoaderService,
   BaThemePreloader,
   BaThemeSpinner,
-  BaMenuService
+  BaMenuService,
+
+  RouteService,
+  RequestService,
+  AccountService
 ];
 
 const NGA_VALIDATORS = [

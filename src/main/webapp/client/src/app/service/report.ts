@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+
 import {Injectable} from "@angular/core";
 
 import {RequestService} from "./request";
@@ -18,4 +19,3 @@ export class ReportService {
     return this._reqService.post(this._api_url + 'get', model);
   }
 }
-

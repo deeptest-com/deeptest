@@ -1,6 +1,6 @@
 <div class="page-top clearfix" baScrollPosition maxHeight="50" (scrollChange)="scrolledChanged($event)"
      [ngClass]="{scrolled: isScrolled}">
-  <a routerLink="/pages/dashboard" class="al-logo clearfix"><span>ng</span>Testing</a>
+  <a routerLink="/pages/dashboard" class="al-logo clearfix"><span>ng</span>testing</a>
 
 <!-- <a href (click)="toggleMenu()" class="collapse-menu-link ion-navicon"></a>-->
 
@@ -23,7 +23,7 @@
         </button>
 
         <li class="dropdown-divider"></li>
-        
+
         <button class="dropdown-item">
           <a [routerLink]="['/pages/project/list']">所有项目</a>
         </button>
@@ -71,20 +71,14 @@
     </div>
 
     <div ngbDropdown class="btn-group">
-      <button class="btn btn-default" ngbDropdownToggle>测试分析</button>
-      <div class="dropdown-menu">
-        <button class="dropdown-item">
-          <a [routerLink]="['/pages/org-admin/org/list']">公司管理</a>
-        </button>
-      </div>
+      <button [routerLink]="['/pages/org-admin/org/list']" class="btn btn-default">
+        公司管理
+      </button>
     </div>
     <div ngbDropdown class="btn-group">
-      <button class="btn btn-default" ngbDropdownToggle>测试分析</button>
-      <div class="dropdown-menu">
-        <button class="dropdown-item">
-          <a [routerLink]="['/pages/sys-admin']">系统管理</a>
-        </button>
-      </div>
+      <button [routerLink]="['/pages/sys-admin']" class="btn btn-default">
+        系统管理
+      </button>
     </div>
 
   </div>

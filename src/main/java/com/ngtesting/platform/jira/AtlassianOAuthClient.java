@@ -10,6 +10,8 @@ import net.oauth.client.OAuthClient;
 import net.oauth.client.httpclient4.HttpClient4;
 import net.oauth.signature.RSA_SHA1;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -85,8 +87,7 @@ public class AtlassianOAuthClient
         }
     }
 
-    public String makeAuthenticatedRequest(String url, String accessToken)
-    {
+    public String getAuthenticatedRequest(String url, String accessToken) {
         try
         {
             OAuthAccessor accessor = getAccessor();
@@ -94,6 +95,27 @@ public class AtlassianOAuthClient
             accessor.accessToken = accessToken;
             OAuthMessage response = client.invoke(accessor, url, Collections.<Map.Entry<?, ?>>emptySet());
             return response.readBodyAsString();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("Failed to make an authenticated request.", e);
+        }
+    }
+    
+    public String postAuthenticatedRequest(String url, String accessToken, List<OAuth.Parameter> params) {
+        try
+        {
+            OAuthAccessor accessor = getAccessor();
+            OAuthClient client = new OAuthClient(new HttpClient4());
+            accessor.accessToken = accessToken;
+            
+            List<Map.Entry> p = new ArrayList<Map.Entry>(1);
+            p.add(new OAuth.Parameter("jql", "project = QA"));
+            
+            OAuthMessage response = client.invoke(accessor, "POST", url, p);
+            
+            return response.readBodyAsString();
+            
         }
         catch (Exception e)
         {

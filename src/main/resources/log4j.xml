@@ -10,7 +10,7 @@
 	</appender>
 
 	<appender name="file" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="File" value="logs/events.log" />
+		<param name="File" value="logs/ngtesting.log" />
 		<param name="DatePattern" value="'.'yyyy-MM-dd'.log'" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="[%d{MMdd HH:mm:ss SSS\} %-5p] [%t] %c{3\} - %m%n" />

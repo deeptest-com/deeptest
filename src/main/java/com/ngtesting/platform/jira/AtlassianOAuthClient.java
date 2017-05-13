@@ -63,8 +63,7 @@ public class AtlassianOAuthClient
             tokenSecretVerifier.verifier = message.getParameter(OAUTH_VERIFIER);
             return tokenSecretVerifier;
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             throw new RuntimeException("Failed to obtain request token", e);
         }
     }
@@ -87,7 +86,7 @@ public class AtlassianOAuthClient
         }
     }
 
-    public String getAuthenticatedRequest(String url, String accessToken) {
+    public String getAuthenticatedRequest(String url, String accessToken, List<OAuth.Parameter> params) {
         try
         {
             OAuthAccessor accessor = getAccessor();

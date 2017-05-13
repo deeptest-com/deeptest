@@ -32,50 +32,50 @@ public class JIRAOAuthClient
 
     public static void main(String[] args)
     {
-        ArrayList<String> arguments = Lists.newArrayList(args);
-        if (arguments.isEmpty())
-        {
-            throw new IllegalArgumentException("No command specified. Use one of " + getCommandNames() );
-        }
-        String action = arguments.get(0);
-        if (Command.REQUEST_TOKEN.getName().equals(action))
-        {
-            String baseUrl = arguments.get(1);
-            String callBack = "oob";
-            if (arguments.size() == 3)
-            {
-                callBack = arguments.get(2);
-            }
-            AtlassianOAuthClient jiraoAuthClient = new AtlassianOAuthClient(CONSUMER_KEY, CONSUMER_PRIVATE_KEY, baseUrl, callBack);
-            //STEP 1: Get request token
-            TokenSecretVerifierHolder requestToken = jiraoAuthClient.getRequestToken();
-            String authorizeUrl = jiraoAuthClient.getAuthorizeUrlForToken(requestToken.token);
-            System.out.println("Token is " + requestToken.token);
-            System.out.println("Token secret is " + requestToken.secret);
-            System.out.println("Retrieved request token. go to " + authorizeUrl);
-        }
-        else if (Command.ACCESS_TOKEN.getName().equals(action))
-        {
-            String baseUrl = arguments.get(1);
-            AtlassianOAuthClient jiraoAuthClient = new AtlassianOAuthClient(CONSUMER_KEY, CONSUMER_PRIVATE_KEY, baseUrl, CALLBACK_URI);
-            String requestToken = arguments.get(2);
-            String tokenSecret = arguments.get(3);
-            String verifier = arguments.get(4);
-            String accessToken = jiraoAuthClient.swapRequestTokenForAccessToken(requestToken, tokenSecret, verifier);
-            System.out.println("Access token is : " + accessToken);
-        }
-        else if (Command.REQUEST.getName().equals(action))
-        {
-            AtlassianOAuthClient jiraoAuthClient = new AtlassianOAuthClient(CONSUMER_KEY, CONSUMER_PRIVATE_KEY, null, CALLBACK_URI);
-            String accessToken = arguments.get(1);
-            String url = arguments.get(2);
-            String responseAsString = jiraoAuthClient.getAuthenticatedRequest(url, accessToken);
-            System.out.println("RESPONSE IS" + responseAsString);
-        }
-        else
-        {
-            System.out.println("Command " + action + " not supported. Only " + getCommandNames() + " are supported.");
-        }
+//        ArrayList<String> arguments = Lists.newArrayList(args);
+//        if (arguments.isEmpty())
+//        {
+//            throw new IllegalArgumentException("No command specified. Use one of " + getCommandNames() );
+//        }
+//        String action = arguments.get(0);
+//        if (Command.REQUEST_TOKEN.getName().equals(action))
+//        {
+//            String baseUrl = arguments.get(1);
+//            String callBack = "oob";
+//            if (arguments.size() == 3)
+//            {
+//                callBack = arguments.get(2);
+//            }
+//            AtlassianOAuthClient jiraoAuthClient = new AtlassianOAuthClient(CONSUMER_KEY, CONSUMER_PRIVATE_KEY, baseUrl, callBack);
+//            //STEP 1: Get request token
+//            TokenSecretVerifierHolder requestToken = jiraoAuthClient.getRequestToken();
+//            String authorizeUrl = jiraoAuthClient.getAuthorizeUrlForToken(requestToken.token);
+//            System.out.println("Token is " + requestToken.token);
+//            System.out.println("Token secret is " + requestToken.secret);
+//            System.out.println("Retrieved request token. go to " + authorizeUrl);
+//        }
+//        else if (Command.ACCESS_TOKEN.getName().equals(action))
+//        {
+//            String baseUrl = arguments.get(1);
+//            AtlassianOAuthClient jiraoAuthClient = new AtlassianOAuthClient(CONSUMER_KEY, CONSUMER_PRIVATE_KEY, baseUrl, CALLBACK_URI);
+//            String requestToken = arguments.get(2);
+//            String tokenSecret = arguments.get(3);
+//            String verifier = arguments.get(4);
+//            String accessToken = jiraoAuthClient.swapRequestTokenForAccessToken(requestToken, tokenSecret, verifier);
+//            System.out.println("Access token is : " + accessToken);
+//        }
+//        else if (Command.REQUEST.getName().equals(action))
+//        {
+//            AtlassianOAuthClient jiraoAuthClient = new AtlassianOAuthClient(CONSUMER_KEY, CONSUMER_PRIVATE_KEY, null, CALLBACK_URI);
+//            String accessToken = arguments.get(1);
+//            String url = arguments.get(2);
+//            String responseAsString = jiraoAuthClient.getAuthenticatedRequest(url, accessToken);
+//            System.out.println("RESPONSE IS" + responseAsString);
+//        }
+//        else
+//        {
+//            System.out.println("Command " + action + " not supported. Only " + getCommandNames() + " are supported.");
+//        }
     }
 
     private static String getCommandNames()

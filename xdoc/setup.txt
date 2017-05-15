@@ -12,3 +12,6 @@ sudo /opt/atlassian/jira/bin/startup.sh
 
 docker images
 docker rmi -f 7f79690e67e0
+
+docker commit f06ed0e4fd4c my-jira
+docker run -t -i my-jira

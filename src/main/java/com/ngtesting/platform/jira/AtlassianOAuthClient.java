@@ -92,29 +92,8 @@ public class AtlassianOAuthClient
             OAuthAccessor accessor = getAccessor();
             OAuthClient client = new OAuthClient(new HttpClient4());
             accessor.accessToken = accessToken;
-            OAuthMessage response = client.invoke(accessor, url, Collections.<Map.Entry<?, ?>>emptySet());
+            OAuthMessage response = client.invoke(accessor, url, params);
             return response.readBodyAsString();
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException("Failed to make an authenticated request.", e);
-        }
-    }
-    
-    public String postAuthenticatedRequest(String url, String accessToken, List<OAuth.Parameter> params) {
-        try
-        {
-            OAuthAccessor accessor = getAccessor();
-            OAuthClient client = new OAuthClient(new HttpClient4());
-            accessor.accessToken = accessToken;
-            
-            List<Map.Entry> p = new ArrayList<Map.Entry>(1);
-            p.add(new OAuth.Parameter("jql", "project = QA"));
-            
-            OAuthMessage response = client.invoke(accessor, "POST", url, p);
-            
-            return response.readBodyAsString();
-            
         }
         catch (Exception e)
         {

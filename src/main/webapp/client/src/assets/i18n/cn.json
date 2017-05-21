@@ -122,5 +122,11 @@
     "simple_pie": "Simple Pie",
     "pie_with_labels": "Pie with labels",
     "donut": "Donut"
+  },
+
+  "common": {
+    "list": "列表",
+    "project": "项目"
   }
+
 }

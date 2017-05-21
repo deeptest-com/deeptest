@@ -15,7 +15,7 @@ import {
   NodeSelectedEvent
 
 } from './tree.events';
-import { RenamableNode } from './tree.types';
+import { RenamableNode } from './type/renamable.node';
 import { Tree } from './tree';
 import { Subject, Observable } from 'rxjs/Rx';
 import { Injectable, Inject, ElementRef } from '@angular/core';

@@ -27,13 +27,6 @@ import com.ngtesting.platform.util.DaoHelper;
 import com.ngtesting.platform.util.SpringContextHolder;
 import com.ngtesting.platform.vo.Page;
 
-/**
- * service实现类的基类
- *
- * @author xuxiang
- * @version $Id$
- * @see
- */
 public class BaseServiceImpl implements BaseService {
 
     /**

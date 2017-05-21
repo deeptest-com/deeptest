@@ -10,23 +10,8 @@ import org.hibernate.criterion.DetachedCriteria;
 
 import com.ngtesting.platform.vo.Page;
 
-/**
- * <简述>baseDao 接口
- * <详细描述>
- *
- * @author xuxiang
- * @version $Id$
- * @see
- */
 public interface BaseDao {
 
-    /**
-     * 保存实体
-     * 完整保存实体
-     *
-     * @param t 对象
-     * @author xuxiang
-     */
     void save(Object t);
 
     /**

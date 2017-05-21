@@ -18,13 +18,6 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.ngtesting.platform.servlet.PJProgressListener;
 
-/**
- * 重写CommonsMultipartResolver以监听文件上传进度
- *
- * @author xuxiang
- * @version $Id$
- * @see
- */
 public class PJCommonsMultipartResolver extends CommonsMultipartResolver {
     private HttpServletRequest request;
 

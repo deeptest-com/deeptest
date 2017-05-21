@@ -1,12 +1,5 @@
 package com.ngtesting.platform.vo;
 
-/**
- * 心跳信息
- *
- * @author xuxiang
- * @version $Id$
- * @see
- */
 public class HeartBeat {
 
     private Long deviceId = 0L;

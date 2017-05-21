@@ -7,13 +7,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-/**
- * 时间处理工具类
- *
- * @author xuxiang
- * @version $Id$
- * @see
- */
 public class DateUtils {
 
     /**

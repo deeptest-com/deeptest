@@ -13,14 +13,6 @@ import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 import net.sf.json.util.CycleDetectionStrategy;
 
-/**
- * JsonUtils
- *
- * @author xuxiang
- * @version $Id$
- * @see
- */
-
 public class JsonUtils {
 
     /**

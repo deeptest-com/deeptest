@@ -17,13 +17,6 @@
 		</layout>
 	</appender>
 
-	<!-- 根logger的设置 -->
-	<root>
-		<priority value="info" />
-		<appender-ref ref="console" />
-		<appender-ref ref="file" />
-	</root>
-
 	<category name="org.springframework">
 		<priority value="WARN" />
 		<appender-ref ref="console" />
@@ -55,4 +48,11 @@
 		<appender-ref ref="console" />
 		<appender-ref ref="file" />
 	</category>
+	
+	<!-- 根logger的设置 -->
+	<root>
+		<priority value="info" />
+		<appender-ref ref="console" />
+		<appender-ref ref="file" />
+	</root>
 </log4j:configuration> 

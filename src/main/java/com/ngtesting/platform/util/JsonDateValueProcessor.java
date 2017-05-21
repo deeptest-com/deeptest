@@ -6,13 +6,6 @@ import java.util.Date;
 import net.sf.json.JsonConfig;
 import net.sf.json.processors.JsonValueProcessor;
 
-/**
- * JsonDateValueProcessor
- *
- * @author xuxiang
- * @version $Id$
- * @see
- */
 public class JsonDateValueProcessor implements JsonValueProcessor {
 
     /**

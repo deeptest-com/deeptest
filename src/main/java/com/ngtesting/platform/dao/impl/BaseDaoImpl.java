@@ -36,14 +36,6 @@ import com.ngtesting.platform.util.EscColumnToBean;
 import com.ngtesting.platform.util.ReflectionUtils;
 import com.ngtesting.platform.vo.Page;
 
-/**
- * <简述>base dao的实现
- * <详细描述>
- *
- * @author xuxiang
- * @version $Id$
- * @see
- */
 @Repository("baseDao")
 @SuppressWarnings("all")
 public class BaseDaoImpl implements BaseDao {

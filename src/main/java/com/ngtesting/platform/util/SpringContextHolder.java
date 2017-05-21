@@ -6,14 +6,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-/**
- * SpringContextHolder spring 工具类
- *
- * @author xuxiang
- * @version $Id$
- * @see
- */
-
 public class SpringContextHolder implements ApplicationContextAware {
 
     /**

@@ -2,14 +2,6 @@ package com.ngtesting.platform.vo;
 
 import com.ngtesting.platform.util.NumberUtil;
 
-/**
- * 文件上传进度信息
- *
- * @author xuxiang
- * @version $Id$
- * @since
- * @see
- */
 public class ProgressEntity {
 	/** 已读字节 **/
 	private long pBytesRead = 0L;

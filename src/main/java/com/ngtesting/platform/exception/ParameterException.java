@@ -1,12 +1,5 @@
 package com.ngtesting.platform.exception;
 
-/**
- * 参数异常
- *
- * @author xuxiang
- * @version $Id$
- * @see
- */
 public class ParameterException extends RuntimeException {
 
     /**

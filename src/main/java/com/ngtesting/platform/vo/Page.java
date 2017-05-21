@@ -4,14 +4,6 @@ import java.util.List;
 
 import com.ngtesting.platform.util.Constant;
 
-/**
- * 分页使用的组件
- *
- * @param <T>
- * @author xuxiang
- * @version $Id$
- * @see
- */
 public class Page<T> {
 
     /**

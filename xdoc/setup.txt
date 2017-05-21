@@ -1,17 +1,11 @@
 Redmine
-sudo /opt/testlink-1.9.16-0/ctlscript.sh start
-ctlscript.sh status
+docker run --name redmine --detach  --publish 9090:3000 -v /Users/aaron/dev/docker/redmine/files:/usr/src/redmine/files redmine
 
 Jira
-docker run --detach --publish 9000:8080 cptactionhank/atlassian-jira-software:latest
+docker run --name jira --detach --publish 9000:8080 -v /Users/aaron/dev/docker/jira/home:/opt/jira/home -v /Users/aaron/dev/docker/jira/install:/opt/jira/install -e JIRA_HOME=/opt/jira/home -e JIRA_INSTALL=/opt/jira/install cptactionhank/atlassian-jira-software:latest
+docker run --rm -it --privileged --pid=host walkerlee/nsenter -t 1 -m -u -i -n sh
+
+证书
 openssl genrsa -out jira.pem 1024
 openssl rsa -in jira.pem -pubout -out jira.pub
 openssl pkcs8 -topk8 -inform PEM -in jira.pem -outform PEM -nocrypt
-
-sudo /opt/atlassian/jira/bin/startup.sh
-
-docker images
-docker rmi -f 7f79690e67e0
-
-docker commit f06ed0e4fd4c my-jira
-docker run -t -i my-jira

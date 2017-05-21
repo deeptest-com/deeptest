@@ -7,14 +7,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * WebUtils 工具类
- * <详细描述>
- *
- * @author xuxiang
- * @version $Id$
- * @see
- */
 public class WebUtils {
 
     /**

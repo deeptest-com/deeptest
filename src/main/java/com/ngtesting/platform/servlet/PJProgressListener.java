@@ -7,13 +7,6 @@ import org.apache.commons.fileupload.ProgressListener;
 
 import com.ngtesting.platform.vo.ProgressEntity;
 
-/**
- * 文件上传进度监听服务
- *
- * @author xuxiang
- * @version $Id$
- * @see
- */
 public class PJProgressListener implements ProgressListener {
     private HttpServletRequest request;
     private HttpSession session;

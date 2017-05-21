@@ -11,13 +11,6 @@ import org.hibernate.property.PropertyAccessorFactory;
 import org.hibernate.property.Setter;
 import org.hibernate.transform.ResultTransformer;
 
-/**
- * sql语句查询的结果字段自动转化成java bean
- *
- * @author xuxiang
- * @version $Id$
- * @see
- */
 public class EscColumnToBean implements ResultTransformer {
 
     /**

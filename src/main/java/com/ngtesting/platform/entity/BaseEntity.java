@@ -10,15 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 
-
-/**
- * <简述>entity基类
- * <详细描述>
- *
- * @author xuxiang
- * @version $Id$
- * @see
- */
 @MappedSuperclass
 public class BaseEntity implements Serializable {
 

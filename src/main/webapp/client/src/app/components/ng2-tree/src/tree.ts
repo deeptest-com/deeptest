@@ -1,5 +1,11 @@
 import * as _ from 'lodash';
-import { TreeModel, RenamableNode, FoldingType, TreeStatus, TreeModelSettings, Ng2TreeOptions} from './tree.types';
+
+import {TreeModel} from "./type/tree.model";
+import {TreeModelSettings, FoldingType, TreeStatus} from "./type/tree.types";
+import {TreeSettings} from "./type/tree.settings";
+import {TreeOptions} from "./type/tree.options";
+import {RenamableNode} from "./type/renamable.node";
+
 import { NodeMenuItemAction} from './menu/menu.events';
 
 export class Tree {
@@ -231,7 +237,7 @@ export class Tree {
     }
   }
 
-  public expandOrNot(options: Ng2TreeOptions, next?: boolean): void {
+  public expandOrNot(options: TreeOptions, next?: boolean): void {
     if (!next) {
       options.isExpanded = !options.isExpanded;
     }

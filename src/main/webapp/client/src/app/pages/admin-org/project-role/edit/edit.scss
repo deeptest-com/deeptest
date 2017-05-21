@@ -1,0 +1,63 @@
+.project-role-edit {
+  padding: 15px;
+
+  .project-role-edit-info {
+
+  }
+
+  .project-role-edit-privileges {
+    table.grid {
+      margin-bottom: 20px;
+      border-collapse: collapse;
+      border-spacing: 0;
+      width: 100%;
+      border: 0;
+      table-layout: fixed;
+
+      colgroup {
+        .col-name {
+          width: 200px;
+        }
+        .col-input {
+          width: 150px;
+        }
+      }
+
+      tr {
+        th {
+          color: #303030;
+          font-weight: normal;
+        }
+        td {
+          font-weight: normal;
+          border-bottom: 1px solid #eaeaea;
+          vertical-align: top;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          &.tick {
+            padding-bottom: 0;
+          }
+        }
+        th, td {
+          padding: 8px;
+          margin: 0;
+          text-align: left;
+          line-height: 1.2;
+        }
+        &.header {
+          background-color: #f5f5f5;
+          th {
+            border-top: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+          }
+        }
+        &.row {
+          display: table-row;
+        }
+
+      }
+    }
+
+  }
+}

@@ -1,58 +1,48 @@
+import {TreeModel} from "./src/type/tree.model";
+import {TreeModelSettings, FoldingType} from "./src/type/tree.types";
+import {TreeSettings} from "./src/type/tree.settings";
+import {RenamableNode} from "./src/type/renamable.node";
+
+import {Tree} from "./src/tree";
 import {
-    TreeModel,
-    TreeModelSettings,
-    Ng2TreeSettings,
-    RenamableNode,
-    FoldingType
-} from './src/tree.types';
-
-import { Tree } from './src/tree';
-
-import {
-    NodeEvent,
-
-    NodeCreatedEvent,
+  NodeEvent,
+  NodeCreatedEvent,
   NodeCreatedRemoteEvent,
-
-    NodeRemovedEvent,
+  NodeRemovedEvent,
   NodeRemovedRemoteEvent,
-
-    NodeRenamedEvent,
+  NodeRenamedEvent,
   NodeRenamedRemoteEvent,
-
-    NodeMovedEvent,
+  NodeMovedEvent,
   NodeMovedRemoteEvent,
-
-    NodeSelectedEvent,
-    NodeDestructiveEvent
-} from './src/tree.events';
-
-import { TreeComponent } from './src/tree.component';
-import { TreeModule } from './src/tree.module';
+  NodeSelectedEvent,
+  NodeDestructiveEvent
+} from "./src/tree.events";
+import {TreeComponent} from "./src/tree.component";
+import {TreeModule} from "./src/tree.module";
 
 export {
-    Tree,
-    TreeModel,
-    TreeModelSettings,
-    Ng2TreeSettings,
-    RenamableNode,
-    FoldingType,
-    NodeEvent,
+  Tree,
+  TreeModel,
+  TreeModelSettings,
+  TreeSettings,
+  RenamableNode,
+  FoldingType,
+  NodeEvent,
 
-    NodeCreatedEvent,
+  NodeCreatedEvent,
   NodeCreatedRemoteEvent,
 
-    NodeRemovedEvent,
+  NodeRemovedEvent,
   NodeRemovedRemoteEvent,
 
-    NodeRenamedEvent,
+  NodeRenamedEvent,
   NodeRenamedRemoteEvent,
 
-    NodeMovedEvent,
+  NodeMovedEvent,
   NodeMovedRemoteEvent,
 
-    NodeSelectedEvent,
-    NodeDestructiveEvent,
-    TreeComponent,
-    TreeModule
+  NodeSelectedEvent,
+  NodeDestructiveEvent,
+  TreeComponent,
+  TreeModule
 };

@@ -20,15 +20,13 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', loadChildren: './dashboard/dashboard.module#DashboardModule' },
-      { path: '', loadChildren: './autotest/autotest.module#AutoTestModule' },
 
-      { path: 'editors', loadChildren: './editors/editors.module#EditorsModule' },
-      { path: 'components', loadChildren: './components/components.module#ComponentsModule' },
-      { path: 'charts', loadChildren: './charts/charts.module#ChartsModule' },
-      { path: 'ui', loadChildren: './ui/ui.module#UiModule' },
-      { path: 'forms', loadChildren: './forms/forms.module#FormsModule' },
-      { path: 'tables', loadChildren: './tables/tables.module#TablesModule' },
-      { path: 'maps', loadChildren: './maps/maps.module#MapsModule' }
+      { path: 'project', loadChildren: './project/project/project.module' },
+      { path: 'case', loadChildren: './design/case/case.module' },
+
+      { path: 'org-admin', loadChildren: './admin-org/org-admin.module' },
+      { path: 'sys-admin', loadChildren: './admin-sys/sys-admin.module' }
+
     ]
   }
 ];

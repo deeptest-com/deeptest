@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, Renderer, Inject, OnDestroy, OnInit } from '@angular/core';
-import { Ng2TreeOptions } from '../tree.types';
+import {TreeOptions} from "../type/tree.options";
 import { NodeMenuService } from './node-menu.service';
 import { NodeMenuItemSelectedEvent, NodeMenuItemAction, NodeMenuAction } from './menu.events';
 import { isLeftButtonClicked, isEscapePressed } from '../utils/event.utils';
@@ -20,7 +20,7 @@ import { isLeftButtonClicked, isEscapePressed } from '../utils/event.utils';
 })
 export class NodeMenuComponent implements OnInit, OnDestroy {
     @Input()
-    public options: Ng2TreeOptions;
+    public options: TreeOptions;
 
   @Input()
   public isLeaf: boolean;

@@ -8,8 +8,6 @@ declare var jQuery;
 
 @Component({
   selector: 'slidebar-menu',
-  encapsulation: ViewEncapsulation.None,
-  styleUrls: [],
   templateUrl: './slidebar-menu.html'
 })
 export class SlidebarMenu {

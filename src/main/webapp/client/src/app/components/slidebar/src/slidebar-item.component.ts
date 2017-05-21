@@ -3,7 +3,6 @@ import {Component, ViewEncapsulation, Input, Output, EventEmitter} from '@angula
 @Component({
   selector: 'slidebar-item',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: [],
   templateUrl: './slidebar-item.html'
 })
 export class SlidebarItem {

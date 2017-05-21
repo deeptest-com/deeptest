@@ -1,5 +1,7 @@
 import { Input, Component, OnInit, ElementRef, Inject } from '@angular/core';
-import { Ng2TreeSettings, Ng2TreeOptions } from './tree.types';
+import {TreeSettings} from "./type/tree.settings";
+import {TreeOptions} from "./type/tree.options";
+
 import { Subject, Observable } from 'rxjs/Rx';
 import { Tree } from './tree';
 import {
@@ -54,10 +56,10 @@ export class TreeInternalComponent implements OnInit {
   public tree: Tree;
 
   @Input()
-  public settings: Ng2TreeSettings;
+  public settings: TreeSettings;
 
     @Input()
-    public options: Ng2TreeOptions;
+    public options: TreeOptions;
 
   public isSelected: boolean = false;
   private isMenuVisible: boolean = false;

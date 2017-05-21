@@ -1,6 +1,5 @@
 import {Component, ElementRef, HostListener, ViewEncapsulation, Input} from '@angular/core';
 import {GlobalState} from '../../../global.state';
-import {layoutSizes} from '../../../theme';
 
 @Component({
   selector: 'slidebar',
@@ -15,7 +14,6 @@ export class Slidebar {
   @Input()
   companies: any[];
   company: any;
-  orgReady: boolean = false;
 
   constructor(private _state:GlobalState) {
 

@@ -1,6 +1,10 @@
 import { Input, Component, OnInit, EventEmitter, Output, Inject, OnChanges, SimpleChanges } from '@angular/core';
 import { TreeService } from './tree.service';
-import { TreeModel, Ng2TreeSettings, Ng2TreeOptions } from './tree.types';
+
+import { TreeModel } from './type/tree-model';
+import { Ng2TreeSettings } from './type/ng2-tree-settings';
+import { Ng2TreeOptions } from './type/ng2-tree-options';
+
 import { NodeEvent } from './tree.events';
 import { Tree } from './tree';
 

@@ -1,7 +1,8 @@
 import { Input, Component, OnInit, ElementRef, Inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
-import { Ng2TreeSettings, Ng2TreeOptions } from './tree.types';
+import {TreeSettings} from "./type/tree.settings";
+import {TreeOptions} from "./type/tree.options";
 import { Tree } from './tree';
 
 import { NodeMenuService } from './menu/node-menu.service';
@@ -26,7 +27,7 @@ export class TreeToolbarComponent implements OnInit {
   public tree: Tree;
 
   @Input()
-  public options: Ng2TreeOptions;
+  public options: TreeOptions;
 
   public keywords: string = '';
   keywordsControl = new FormControl();

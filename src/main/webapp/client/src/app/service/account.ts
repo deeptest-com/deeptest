@@ -44,7 +44,7 @@ export class AccountService {
         // that.changeProfile(json.profile);
         // that.changeRecentProject(json.recentProjects);
 
-        that.routeService.navTo('/pages/dashboard');
+        that.routeService.navTo('/pages/project/list');
       } else {
         errors = json.msg;
       }

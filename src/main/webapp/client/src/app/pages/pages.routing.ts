@@ -8,12 +8,17 @@ import { ModuleWithProviders } from '@angular/core';
 export const routes: Routes = [
   {
     path: 'login',
-    loadChildren: 'app/pages/login/login.module#LoginModule'
+    loadChildren: './account/login/login.module'
   },
   {
     path: 'register',
-    loadChildren: 'app/pages/register/register.module#RegisterModule'
+    loadChildren: './account/register/register.module'
   },
+  {
+    path: 'forgot-password',
+    loadChildren: './account/forgot-password/forgot-password.module'
+  },
+
   {
     path: 'pages',
     component: Pages,

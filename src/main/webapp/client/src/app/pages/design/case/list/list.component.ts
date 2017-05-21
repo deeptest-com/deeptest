@@ -1,5 +1,5 @@
 import {Component, ViewEncapsulation, OnInit, AfterViewInit} from "@angular/core";
-import {Ng2TreeOptions} from "../../../../components/ng2-tree/src/tree.types";
+
 import {
   NodeEvent,
   NodeMovedRemoteEvent,
@@ -7,8 +7,10 @@ import {
   NodeCreatedEvent,
   NodeRenamedEvent,
   NodeSelectedEvent,
-  TreeModel
+  TreeModel,
+  TreeOptions
 } from "../../../../components/ng2-tree";
+
 import {GlobalState} from "../../../../global.state";
 import {Utils} from "../../../../utils/utils";
 import {RouteService} from "../../../../service/route";
@@ -25,7 +27,7 @@ import {CaseService} from "../../../../service/case";
 export class CaseList implements OnInit, AfterViewInit {
   query:any = {keywords: '', status: ''};
 
-  public options:Ng2TreeOptions = {
+  public options:TreeOptions = {
     isExpanded: false,
     nodeName: '用例',
     folderName: '模块'

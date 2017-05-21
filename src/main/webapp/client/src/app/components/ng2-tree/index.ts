@@ -1,6 +1,7 @@
 import {TreeModel} from "./src/type/tree.model";
 import {TreeModelSettings, FoldingType} from "./src/type/tree.types";
 import {TreeSettings} from "./src/type/tree.settings";
+import {TreeOptions} from "./src/type/tree.options";
 import {RenamableNode} from "./src/type/renamable.node";
 
 import {Tree} from "./src/tree";
@@ -25,6 +26,7 @@ export {
   TreeModel,
   TreeModelSettings,
   TreeSettings,
+  TreeOptions,
   RenamableNode,
   FoldingType,
   NodeEvent,

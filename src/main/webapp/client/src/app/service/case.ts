@@ -5,7 +5,7 @@ import {Injectable} from '@angular/core';
 import {CONSTANT} from '../utils/constant';
 import {RequestService} from './request';
 
-import { TreeModel } from '../components/ng2-tree/src/tree.types';
+import { TreeModel } from '../components/ng2-tree';
 
 @Injectable()
 export class CaseService {

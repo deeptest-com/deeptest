@@ -1,6 +1,6 @@
 export var CONSTANT:any = {
-  _SERVICE_URL_DEV: 'http://localhost:8080/automation/',
-  _SERVICE_URL_PRODUCTION: 'http://172.16.20.224:8080/automation/',
+  _SERVICE_URL_DEV: 'http://localhost:8080/ngtesting/',
+  _SERVICE_URL_PRODUCTION: 'http://172.16.90.66:8080/ngtesting/',
 
   SERVICE_URL: undefined,
   API_URL: undefined,

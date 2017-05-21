@@ -1,1 +1,13 @@
 @import '../../../theme/sass/auth';
+
+.auth-block {
+  background-color: transparent;
+
+  h1 {
+    color: #666;
+  }
+  .control-label {
+    color: #666;
+  }
+
+}

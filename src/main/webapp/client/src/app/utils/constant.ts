@@ -18,7 +18,7 @@ export var CONSTANT:any = {
   TOKEN_KEY: 'com.ngtesting.token',
   TOKEN_EXPIRE: 'com.ngtesting.expire',
 
-  EntityDisabled: {'false': '启用', 'true': '禁用', '': '所有'},
+  EntityDisabled: {'false': '启用', 'true': '归档', '': '所有'},
 
   ScreenSize: {h: 0, w: 0},
   DebounceTime: 800

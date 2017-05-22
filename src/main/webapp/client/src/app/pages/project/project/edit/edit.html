@@ -7,7 +7,7 @@
             编辑项目
           </div>
           <div class="buttons">
-            <button [routerLink]="['/pages/project/list']" type="button" class="btn btn-secondary btn-with-icon btn-sm back">
+            <button [routerLink]="['/pages/project/list']" type="button" class="btn btn-primary btn-with-icon btn-sm back">
               <i class="ion-backspace"></i>返回
             </button>
           </div>
@@ -17,7 +17,7 @@
       <form [formGroup]="form" (ngSubmit)="save()" class="my-validate-form">
         <div class="form-group row">
           <label class="col-sm-2 col-form-label"><span>名称</span></label>
-          <div class="col-sm-4">
+          <div class="col-sm-10">
             <input type="text" class="form-control" name="name" formControlName="name"
                    [(ngModel)]="model.name" #name>
           </div>

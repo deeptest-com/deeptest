@@ -123,7 +123,7 @@ export class ProjectRoleEdit implements OnInit, AfterViewInit {
   };
 
   showModal(): void {
-    this.modalWrapper.showModal(null, '');
+    this.modalWrapper.showModal('');
   }
 
 }

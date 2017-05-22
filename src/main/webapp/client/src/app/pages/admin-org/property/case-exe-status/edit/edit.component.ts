@@ -116,7 +116,7 @@ export class CaseExeStatusEdit implements OnInit, AfterViewInit {
   }
 
   showModal(): void {
-    this.modalWrapper.showModal(null, '');
+    this.modalWrapper.showModal('');
   }
 
 }

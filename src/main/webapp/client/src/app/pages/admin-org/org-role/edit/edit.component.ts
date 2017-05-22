@@ -124,7 +124,7 @@ export class OrgRoleEdit implements OnInit, AfterViewInit {
   };
 
   showModal(): void {
-    this.modalWrapper.showModal(null, '');
+    this.modalWrapper.showModal('');
   }
 
 }

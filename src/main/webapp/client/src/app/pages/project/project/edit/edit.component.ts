@@ -28,7 +28,6 @@ export class ProjectEdit implements OnInit, AfterViewInit {
   model: any = {};
   groups: any[] = [];
   form: FormGroup;
-  isSubmitted: boolean;
 
   @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;
 
@@ -117,6 +116,8 @@ export class ProjectEdit implements OnInit, AfterViewInit {
 
         that.formErrors = ['删除成功'];
         that._routeService.navTo("/pages/project/list");
+
+        this.modalWrapper.closeModal();
       } else {
         that.formErrors = ['删除失败'];
       }
@@ -124,7 +125,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
   }
 
   showModal(): void {
-    this.modalWrapper.showModal(null, '');
+    this.modalWrapper.showModal('');
   }
 
 }

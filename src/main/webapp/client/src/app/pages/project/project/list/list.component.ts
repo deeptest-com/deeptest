@@ -26,7 +26,6 @@ export class ProjectList implements OnInit, AfterViewInit {
 
   models: any;
   maxLevel: number;
-  counter = Array;
   statusMap: Array<any> = CONSTANT.EntityDisabled;
 
   totalItems:number = 0;

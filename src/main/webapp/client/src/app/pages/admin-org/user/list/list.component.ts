@@ -20,9 +20,9 @@ export class UserList implements OnInit, AfterViewInit {
   statusMap: Array<any> = CONSTANT.EntityDisabled;
 
   models: any;
-  totalItems:number = 0;
-  currentPage:number = 1;
-  itemsPerPage:number = 6;
+  collectionSize:number = 0;
+  page:number = 1;
+  pageSize:number = 6;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
               private userService:UserService) {
@@ -59,7 +59,7 @@ export class UserList implements OnInit, AfterViewInit {
     that.loadData();
   }
   pageChanged(event:any):void {
-    this.currentPage = event.page;
+    this.page = event.page;
     this.loadData();
   }
 
@@ -77,8 +77,8 @@ export class UserList implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
 
-    that.userService.list(that.queryModel, that.currentPage, that.itemsPerPage).subscribe((json:any) => {
-      that.totalItems = json.totalItems;
+    that.userService.list(that.queryModel, that.page, that.pageSize).subscribe((json:any) => {
+      that.collectionSize = json.collectionSize;
       that.models = json.data;
     });
   }

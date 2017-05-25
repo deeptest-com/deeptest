@@ -9,6 +9,7 @@ import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { PipeModule } from '../../../pipe/pipe.module';
 import { DirectiveModule } from '../../../directive/directive.module';
 import { PopDialogModule } from '../../../components/pop-dialog';
 
@@ -31,9 +32,8 @@ import { GroupEdit } from './edit';
     NgbModalModule,
     NgbPaginationModule,
     NgbDropdownModule,
-    
-    DirectiveModule,
-    PopDialogModule
+
+    PipeModule, DirectiveModule, PopDialogModule
   ],
   declarations: [
     Group,

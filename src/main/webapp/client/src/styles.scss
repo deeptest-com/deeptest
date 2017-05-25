@@ -30,6 +30,30 @@ ngb-pagination {
   }
 }
 
+.al-content {
+  padding: 15px;
+}
+.row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+.my-validate-form {
+  width: 100%;
+  .form-group {
+    label {
+      text-align: right;
+    }
+  }
+}
+
+.main-with-slidebar {
+  margin-left: 180px;
+}
+
+.al-sidebar-list-item.selected .al-sidebar-list-link {
+  color: #fff !important;
+}
+
 .list-toolbar {
   display: flex;
   margin: 15px 0 15px 0;
@@ -101,3 +125,4 @@ ul.al-share {
     }
   }
 }
+

@@ -44,9 +44,9 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
       <node-menu *ngIf="isMenuVisible" (menuItemSelected)="onMenuItemSelected($event)"
             [isLeaf]="tree.isLeaf()" [options]="options"></node-menu>
 
-      <template [ngIf]="tree.isNodeExpanded()">
+      <ng-template [ngIf]="tree.isNodeExpanded()">
         <tree-internal *ngFor="let child of tree.children" [tree]="child" [options]="options"></tree-internal>
-      </template>
+      </ng-template>
     </li>
   </ul>
   `

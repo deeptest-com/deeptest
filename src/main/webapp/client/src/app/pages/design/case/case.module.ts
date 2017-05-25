@@ -1,14 +1,13 @@
 import { NgModule }      from '@angular/core';
 import { CommonModule }  from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { NgaModule } from '../../../theme/nga.module';
-
-import { routing }       from './case.routing';
 
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
-import { BrowserModule } from '@angular/platform-browser';
 import { NgUploaderModule } from 'ngx-uploader';
+
+import { NgaModule } from '../../../theme/nga.module';
+import { routing }       from './case.routing';
 
 import { DirectiveModule } from '../../../directive/directive.module';
 import { SlimLoadingBarModule } from '../../../components/ng2-loading-bar';
@@ -32,7 +31,7 @@ import { CaseEdit } from './edit/edit.component';
 
     NgbModalModule, NgbPaginationModule, NgbDropdownModule,
     NgbTabsetModule, NgbButtonsModule, NgbCollapseModule,
-    BrowserModule, NgUploaderModule,
+    NgUploaderModule,
 
     DirectiveModule,
     SlimLoadingBarModule.forRoot(),

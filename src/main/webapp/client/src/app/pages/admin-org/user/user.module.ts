@@ -7,9 +7,9 @@ import { routing }       from './user.routing';
 
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
-import { BrowserModule } from '@angular/platform-browser';
 import { NgUploaderModule } from 'ngx-uploader';
 
+import { PipeModule } from '../../../pipe/pipe.module';
 import { DirectiveModule } from '../../../directive/directive.module';
 import { PopDialogModule } from '../../../components/pop-dialog';
 
@@ -33,7 +33,9 @@ import { UserEdit } from './edit';
 
     NgbModalModule, NgbPaginationModule, NgbDropdownModule,
     NgbTabsetModule, NgbButtonsModule, NgbCollapseModule,
-    BrowserModule, NgUploaderModule,
+    NgUploaderModule,
+
+    PipeModule, DirectiveModule, PopDialogModule
   ],
   declarations: [
     User,

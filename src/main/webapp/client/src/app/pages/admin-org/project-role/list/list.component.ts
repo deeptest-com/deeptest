@@ -20,9 +20,6 @@ export class ProjectRoleList implements OnInit, AfterViewInit {
   statusMap: any = CONSTANT.EntityDisabled;
 
   models: any;
-  collectionSize:number = 0;
-  page:number = 1;
-  pageSize:number = 6;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
               private projectRoleService: ProjectRoleService) {
@@ -58,10 +55,6 @@ export class ProjectRoleList implements OnInit, AfterViewInit {
 
     that.loadData();
   }
-  pageChanged(event:any):void {
-    this.page = event.page;
-    this.loadData();
-  }
 
   edit($event: any):void {
     let that = this;
@@ -77,8 +70,7 @@ export class ProjectRoleList implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
 
-    that.projectRoleService.list(that.queryModel, that.page, that.pageSize).subscribe((json:any) => {
-      that.collectionSize = json.totalItems;
+    that.projectRoleService.list(that.queryModel).subscribe((json:any) => {
       that.models = json.data;
     });
   }

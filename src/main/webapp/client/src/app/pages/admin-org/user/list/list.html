@@ -51,9 +51,8 @@
     </table>
     <div class="page-container">
       <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
-                  [maxSize]="5"  [boundaryLinks]="true" class="pagination-sm"
-                      (pageChanged)="pageChanged($event)"
-                  previousText="上一页" nextText="下一页" firstText="第一页" lastText="最后页">
+                      [maxSize]="5"  [boundaryLinks]="true"
+                      (pageChange)="pageChange($event)">
       </ngb-pagination>
     </div>
   </div>

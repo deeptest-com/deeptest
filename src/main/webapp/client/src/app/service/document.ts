@@ -10,8 +10,8 @@ export class DocumentService {
     constructor(private _reqService: RequestService) { }
     _api_url = 'document/';
 
-    list(itemsPerPage: number, currentPage: number, eventId: number) {
-        return this._reqService.post(this._api_url + 'list', {itemsPerPage: itemsPerPage, currentPage: currentPage, eventId: eventId});
+    list(pageSize: number, page: number, eventId: number) {
+        return this._reqService.post(this._api_url + 'list', {pageSize: pageSize, page: page, eventId: eventId});
     }
 
     get(id: number) {

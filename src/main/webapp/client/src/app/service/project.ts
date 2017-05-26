@@ -8,11 +8,10 @@ import {RequestService} from "./request";
 export class ProjectService {
   constructor(private _reqService:RequestService, private _state:GlobalState) {
   }
- 
+
   _api_url = 'project/';
 
-  list(query:any, currentPage: number, itemsPerPage: number) {
-    _.merge(query, {currentPage: currentPage, itemsPerPage: itemsPerPage});
+  list(query:any) {
     return this._reqService.post(this._api_url + 'list', query);
   }
 

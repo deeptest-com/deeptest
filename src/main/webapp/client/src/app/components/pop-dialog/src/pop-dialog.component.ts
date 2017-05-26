@@ -28,8 +28,9 @@ export class PopDialogComponent implements OnInit, AfterViewInit{
 
   }
 
-  public showModal(cls: string): void {
-    this.modalRef = this.modalService.open(this.content, { windowClass: cls });
+  public showModal(cls?: string): void {
+    let clsMap = cls? { windowClass: cls }: {};
+    this.modalRef = this.modalService.open(this.content, clsMap);
   }
 
   public closeModal(): void {

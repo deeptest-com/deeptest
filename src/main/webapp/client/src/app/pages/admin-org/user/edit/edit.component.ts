@@ -31,7 +31,6 @@ export class UserEdit implements OnInit, AfterViewInit {
   user: any = {};
   relations: any[] = [];
   form: FormGroup;
-  isSubmitted: boolean;
   @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
@@ -48,10 +47,8 @@ export class UserEdit implements OnInit, AfterViewInit {
   }
   ngAfterViewInit() {}
 
-
-  selectTab(tab: string) {
-    let that = this;
-    that.tab = tab;
+  tabChange(event: any) {
+    this.tab = event.nextId;
   }
 
   buildForm(): void {
@@ -109,6 +106,7 @@ export class UserEdit implements OnInit, AfterViewInit {
 
         that.formErrors = ['保存成功'];
         that._routeService.navTo("/pages/org-admin/user/list");
+
       } else {
         that.formErrors = [json.msg];
       }
@@ -122,6 +120,8 @@ export class UserEdit implements OnInit, AfterViewInit {
       if (json.code == 1) {
         that.formErrors = ['删除成功'];
         that._routeService.navTo("/pages/org-admin/user/list");
+
+        this.modalWrapper.closeModal();
       } else {
         that.formErrors = ['删除失败'];
       }
@@ -136,7 +136,7 @@ export class UserEdit implements OnInit, AfterViewInit {
   }
 
   showModal(): void {
-    this.modalWrapper.showModal('');
+    this.modalWrapper.showModal();
   }
 
 }

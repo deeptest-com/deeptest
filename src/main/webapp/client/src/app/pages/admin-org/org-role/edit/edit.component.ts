@@ -80,6 +80,8 @@ export class OrgRoleEdit implements OnInit, AfterViewInit {
       if (json.code == 1) {
         that.formErrors = ['删除成功'];
         that._routeService.navTo("/pages/org-admin/org-role/list");
+
+        this.modalWrapper.closeModal();
       } else {
         that.formErrors = [json.msg];
       }
@@ -92,9 +94,8 @@ export class OrgRoleEdit implements OnInit, AfterViewInit {
       user.selecting = val;
     }
   }
-  selectTab(tab: string) {
-    let that = this;
-    that.tab = tab;
+  tabChange(event: any) {
+    this.tab = event.nextId;
   }
 
   buildForm(): void {
@@ -124,7 +125,7 @@ export class OrgRoleEdit implements OnInit, AfterViewInit {
   };
 
   showModal(): void {
-    this.modalWrapper.showModal('');
+    this.modalWrapper.showModal();
   }
 
 }

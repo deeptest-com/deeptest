@@ -125,7 +125,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
   }
 
   showModal(): void {
-    this.modalWrapper.showModal('');
+    this.modalWrapper.showModal();
   }
 
 }

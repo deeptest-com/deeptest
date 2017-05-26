@@ -107,6 +107,8 @@ export class OrgEdit implements OnInit, AfterViewInit {
       if (json.code == 1) {
         that.formErrors = ['删除成功'];
         that._routeService.navTo("/pages/org-admin/org/list");
+
+        this.modalWrapper.closeModal();
       } else {
         that.formErrors = ['删除失败'];
       }
@@ -117,7 +119,7 @@ export class OrgEdit implements OnInit, AfterViewInit {
     if (this.model.defaultOrg) {
       this.formErrors = ['无法删除当前活动的公司'];
     } else {
-      this.modalWrapper.showModal('');
+      this.modalWrapper.showModal();
     }
   }
 

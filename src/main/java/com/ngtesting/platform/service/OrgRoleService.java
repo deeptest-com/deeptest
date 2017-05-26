@@ -10,7 +10,7 @@ import com.ngtesting.platform.vo.RoleVo;
 
 public interface OrgRoleService extends BaseService {
 
-	Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage);
+	List list(Long orgId, String keywords, String disabled);
 	
 	SysOrgRole save(OrgRoleVo vo, Long orgId);
 	boolean delete(Long id);

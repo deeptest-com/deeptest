@@ -12,7 +12,7 @@ import com.ngtesting.platform.vo.RoleVo;
 
 public interface ProjectRoleService extends BaseService {
 
-	Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage);
+	List list(Long orgId, String keywords, String disabled);
 	
 	SysProjectRole save(ProjectRoleVo vo, Long orgId);
 	boolean delete(Long id);

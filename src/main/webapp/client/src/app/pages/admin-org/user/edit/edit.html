@@ -15,14 +15,21 @@
   </div>
   <hr/>
 
-  <ul class="nav nav-tabs">
-    <li (click)="selectTab('info')" class="nav-item">
-      <span [class.active]="tab == 'info'" class="nav-link active">基本信息</span>
-    </li>
-    <li (click)="selectTab('groups')" class="nav-item">
-      <span [class.active]="tab == 'groups'" class="nav-link">群组</span>
-    </li>
-  </ul>
+  <div class="tabs-container">
+    <div class="tabs">
+      <ngb-tabset  (tabChange)="tabChange($event)">
+        <ngb-tab id="info">
+          <ng-template ngbTabTitle>基本信息</ng-template>
+          <ng-template ngbTabContent></ng-template>
+        </ngb-tab>
+        <ngb-tab id="groups">
+          <ng-template ngbTabTitle>群组</ng-template>
+          <ng-template ngbTabContent></ng-template>
+        </ngb-tab>
+      </ngb-tabset>
+    </div>
+  </div>
+
   <div class="tab-bottom-space"></div>
 
   <form [formGroup]="form" class="my-validate-form">

@@ -52,13 +52,10 @@ public class OrgRoleAction extends BaseAction {
 		
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
-		int page = json.getInteger("page") == null? 0: json.getInteger("page") - 1;
-		int pageSize = json.getInteger("pageSize") == null? Constant.PAGE_SIZE: json.getInteger("pageSize");
 		
-		Page pageData = orgRoleService.listByPage(orgId, keywords, disabled, page, pageSize);
-		List<OrgRoleVo> vos = orgRoleService.genVos(pageData.getItems());
-        
-		ret.put("collectionSize", pageData.getTotal());
+		List ls = orgRoleService.list(orgId, keywords, disabled);
+		List<OrgRoleVo> vos = orgRoleService.genVos(ls);
+
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

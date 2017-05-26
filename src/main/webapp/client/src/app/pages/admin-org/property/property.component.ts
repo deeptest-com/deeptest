@@ -11,7 +11,6 @@ import { RouteService } from '../../../service/route';
 })
 export class Property implements OnInit, OnDestroy {
   protected _onRouteChange:Subscription;
-  tabs: string[] = ['case-type', 'case-priority', 'case-exe-status', 'custom-field'];
   tab: string = 'case-type';
   status: string = 'list';
 
@@ -34,8 +33,7 @@ export class Property implements OnInit, OnDestroy {
   }
 
   tabChange(event: any) {
-    let index = event.activeId.replace('ngb-tab-', '');
-    this.tab = this.tabs[index];
+    this.tab = event.nextId;
     this._routeService.navTo("/pages/org-admin/property/" + this.tab + "/list");
   }
 

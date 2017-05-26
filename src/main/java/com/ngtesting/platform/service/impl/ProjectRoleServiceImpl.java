@@ -19,7 +19,7 @@ import com.ngtesting.platform.vo.ProjectRoleVo;
 public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRoleService {
 
 	@Override
-	public Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
+	public List list(Long orgId, String keywords, String disabled) {
         DetachedCriteria dc = DetachedCriteria.forClass(SysProjectRole.class);
         dc.add(Restrictions.eq("orgId", orgId));
         
@@ -33,9 +33,9 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
         }
         
         dc.addOrder(Order.asc("id"));
-        Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
+        List ls = findAllByCriteria(dc);
 		
-		return page;
+		return ls;
 	}
 
 	@Override

@@ -5,9 +5,9 @@ import { NgaModule } from '../../../theme/nga.module';
 
 import { routing }       from './group.routing';
 
-import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
-import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
+  NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgUploaderModule } from 'ngx-uploader';
 
 import { PipeModule } from '../../../pipe/pipe.module';
 import { DirectiveModule } from '../../../directive/directive.module';
@@ -29,9 +29,9 @@ import { GroupEdit } from './edit';
     NgaModule,
     routing,
 
-    NgbModalModule,
-    NgbPaginationModule,
-    NgbDropdownModule,
+    NgbModalModule, NgbPaginationModule, NgbDropdownModule,
+    NgbTabsetModule, NgbButtonsModule, NgbCollapseModule,
+    NgUploaderModule,
 
     PipeModule, DirectiveModule, PopDialogModule
   ],

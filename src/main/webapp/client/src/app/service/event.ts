@@ -10,8 +10,8 @@ export class EventService {
     constructor(private _reqService: RequestService) { }
     _api_url = 'event/';
 
-    list(itemsPerPage: number, currentPage: number, status: string) {
-        return this._reqService.post(this._api_url + 'list', {itemsPerPage: itemsPerPage, currentPage: currentPage, status: status});
+    list(pageSize: number, page: number, status: string) {
+        return this._reqService.post(this._api_url + 'list', {pageSize: pageSize, page: page, status: status});
     }
 
     get(id: number) {

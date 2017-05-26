@@ -57,8 +57,8 @@ export class GroupList implements OnInit, AfterViewInit {
   queryChange(values: any):void {
     this.loadData();
   }
-  pageChanged(event:any):void {
-    this.page = event.page;
+  pageChange(event:any):void {
+    this.page = event;
     this.loadData();
   }
 

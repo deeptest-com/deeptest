@@ -58,10 +58,6 @@ export class OrgRoleList implements OnInit, AfterViewInit {
 
     that.loadData();
   }
-  pageChanged(event:any):void {
-    this.page = event.page;
-    this.loadData();
-  }
 
   edit($event: any):void {
     let that = this;
@@ -77,8 +73,7 @@ export class OrgRoleList implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
 
-    that.orgRoleService.list(that.queryModel, that.page, that.pageSize).subscribe((json:any) => {
-      that.collectionSize = json.totalItems;
+    that.orgRoleService.list(that.queryModel).subscribe((json:any) => {
       that.models = json.data;
     });
   }

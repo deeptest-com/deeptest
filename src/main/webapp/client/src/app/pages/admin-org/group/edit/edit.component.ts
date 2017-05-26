@@ -48,9 +48,8 @@ export class GroupEdit implements OnInit, AfterViewInit {
   ngAfterViewInit() {}
 
 
-  selectTab(tab: string) {
-    let that = this;
-    that.tab = tab;
+  tabChange(event: any) {
+    this.tab = event.nextId;
   }
 
   buildForm(): void {
@@ -112,6 +111,8 @@ export class GroupEdit implements OnInit, AfterViewInit {
       if (json.code == 1) {
         that.formErrors = ['删除成功'];
         that._routeService.navTo("/pages/org-admin/group/list");
+
+        this.modalWrapper.closeModal();
       } else {
         that.formErrors = ['删除失败'];
       }
@@ -126,7 +127,7 @@ export class GroupEdit implements OnInit, AfterViewInit {
   }
 
   showModal(): void {
-    this.modalWrapper.showModal('');
+    this.modalWrapper.showModal();
   }
 
 }

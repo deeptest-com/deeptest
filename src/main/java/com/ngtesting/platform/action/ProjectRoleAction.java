@@ -57,13 +57,13 @@ public class ProjectRoleAction extends BaseAction {
 		
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
-		int currentPage = json.getInteger("currentPage") == null? 0: json.getInteger("currentPage") - 1;
-		int itemsPerPage = json.getInteger("itemsPerPage") == null? Constant.PAGE_SIZE: json.getInteger("itemsPerPage");
+		int page = json.getInteger("page") == null? 0: json.getInteger("page") - 1;
+		int pageSize = json.getInteger("pageSize") == null? Constant.PAGE_SIZE: json.getInteger("pageSize");
 		
-		Page page = projectRoleService.listByPage(orgId, keywords, disabled, currentPage, itemsPerPage);
-		List<ProjectRoleVo> vos = projectRoleService.genVos(page.getItems());
+		Page pageData = projectRoleService.listByPage(orgId, keywords, disabled, page, pageSize);
+		List<ProjectRoleVo> vos = projectRoleService.genVos(pageData.getItems());
         
-		ret.put("totalItems", page.getTotal());
+		ret.put("collectionSize", pageData.getTotal());
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

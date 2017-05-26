@@ -45,13 +45,13 @@ public class UserAction extends BaseAction {
 		
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
-		int pag = json.getInteger("page") == null? 0: json.getInteger("page") - 1;
-		int collectionSize = json.getInteger("collectionSize") == null? Constant.PAGE_SIZE: json.getInteger("collectionSize");
+		int page = json.getInteger("page") == null? 0: json.getInteger("page") - 1;
+		int pageSize = json.getInteger("pageSize") == null? Constant.PAGE_SIZE: json.getInteger("pageSize");
 		
-		Page page = userService.listByPage(orgId, keywords, disabled, pag, collectionSize);
-		List<UserVo> vos = userService.genVos(page.getItems());
+		Page pageDate = userService.listByPage(orgId, keywords, disabled, page, pageSize);
+		List<UserVo> vos = userService.genVos(pageDate.getItems());
         
-		ret.put("collectionSize", page.getTotal());
+		ret.put("collectionSize", pageDate.getTotal());
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

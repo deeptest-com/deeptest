@@ -22,9 +22,6 @@ export class OrgList implements OnInit, AfterViewInit {
   statusMap: Array<any> = CONSTANT.EntityDisabled;
 
   models: any;
-  totalItems:number = 0;
-  currentPage:number = 1;
-  itemsPerPage:number = 6;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
               private orgService:OrgService, private accountService: AccountService) {

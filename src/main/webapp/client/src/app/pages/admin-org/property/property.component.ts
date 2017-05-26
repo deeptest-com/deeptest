@@ -7,10 +7,11 @@ import { RouteService } from '../../../service/route';
 @Component({
   selector: 'property',
   styleUrls: ['./property.scss'],
-  template: './property.html'
+  templateUrl: './property.html'
 })
 export class Property implements OnInit, OnDestroy {
   protected _onRouteChange:Subscription;
+  tabs: string[] = ['case-type', 'case-priority', 'case-exe-status', 'custom-field'];
   tab: string = 'case-type';
   status: string = 'list';
 
@@ -32,22 +33,19 @@ export class Property implements OnInit, OnDestroy {
     this._onRouteChange.unsubscribe();
   }
 
-  selectTab(tab: string) {
-    this.tab = tab;
+  tabChange(event: any) {
+    let index = event.activeId.replace('ngb-tab-', '');
+    this.tab = this.tabs[index];
     this._routeService.navTo("/pages/org-admin/property/" + this.tab + "/list");
   }
 
   create() {
     this.status = 'edit';
     this._routeService.navTo("/pages/org-admin/property/" + this.tab + "/edit/null");
-
-    console.log("/pages/org-admin/property/" + this.tab + "/edit/null");
   }
   back() {
     this.status = 'list';
     this._routeService.navTo("/pages/org-admin/property/" + this.tab + "/list");
-
-    console.log("/pages/org-admin/property/" + this.tab + "/edit/null");
   }
 
 }

@@ -1,6 +1,6 @@
 import { NgModule }      from '@angular/core';
 import { CommonModule }  from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgaModule } from '../../../theme/nga.module';
 
 import { routing }       from './project-role.routing';
@@ -25,7 +25,7 @@ import { ProjectRoleEdit } from './edit';
 @NgModule({
   imports: [
     CommonModule,
-    ReactiveFormsModule,
+    FormsModule, ReactiveFormsModule,
     NgaModule,
     routing,
 

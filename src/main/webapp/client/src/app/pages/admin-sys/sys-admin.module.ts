@@ -6,7 +6,6 @@ import { NgaModule } from '../../theme/nga.module';
 import { routing }       from './sys-admin.routing';
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
-import { BrowserModule } from '@angular/platform-browser';
 import { NgUploaderModule } from 'ngx-uploader';
 
 import { SlidebarModule } from '../../components/slidebar';
@@ -22,7 +21,7 @@ import { SysAdmin } from './sys-admin.component';
 
     NgbModalModule, NgbPaginationModule, NgbDropdownModule,
     NgbTabsetModule, NgbButtonsModule, NgbCollapseModule,
-    BrowserModule, NgUploaderModule,
+    NgUploaderModule,
 
     SlidebarModule
   ],

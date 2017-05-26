@@ -21,9 +21,9 @@ export class GroupList implements OnInit, AfterViewInit {
   statusMap: Array<any> = CONSTANT.EntityDisabled;
 
   models: any;
-  totalItems:number = 0;
-  currentPage:number = 1;
-  itemsPerPage:number = 6;
+  collectionSize:number = 0;
+  page:number = 1;
+  pageSize:number = 6;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
               private groupService:GroupService) {
@@ -58,7 +58,7 @@ export class GroupList implements OnInit, AfterViewInit {
     this.loadData();
   }
   pageChanged(event:any):void {
-    this.currentPage = event.page;
+    this.page = event.page;
     this.loadData();
   }
 
@@ -76,8 +76,8 @@ export class GroupList implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
 
-    that.groupService.list(that.queryModel, that.currentPage, that.itemsPerPage).subscribe((json:any) => {
-      that.totalItems = json.totalItems;
+    that.groupService.list(that.queryModel, that.page, that.pageSize).subscribe((json:any) => {
+      that.collectionSize = json.totalItems;
       that.models = json.data;
     });
   }

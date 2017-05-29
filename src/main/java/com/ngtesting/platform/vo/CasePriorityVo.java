@@ -16,6 +16,7 @@ public class CasePriorityVo extends BaseVo {
 	
 	private String code;
 	private String name;
+	private String descr;
     private Integer priority;
     private Boolean isDefault;
     private Integer displayOrder;
@@ -56,6 +57,12 @@ public class CasePriorityVo extends BaseVo {
 	}
 	public void setOrgId(Long orgId) {
 		this.orgId = orgId;
+	}
+	public String getDescr() {
+		return descr;
+	}
+	public void setDescr(String descr) {
+		this.descr = descr;
 	}
 
 }

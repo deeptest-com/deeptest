@@ -16,6 +16,7 @@ public class CaseTypeVo extends BaseVo {
 	
 	private String code;
 	private String name;
+	private String descr;
     private Boolean isDefault;
     private Integer displayOrder;
     private Long orgId;
@@ -49,6 +50,12 @@ public class CaseTypeVo extends BaseVo {
 	}
 	public void setOrgId(Long orgId) {
 		this.orgId = orgId;
+	}
+	public String getDescr() {
+		return descr;
+	}
+	public void setDescr(String descr) {
+		this.descr = descr;
 	}
 
 }

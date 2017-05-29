@@ -90,5 +90,4 @@ export class OrgList implements OnInit, AfterViewInit {
       }
     });
   }
-
 }

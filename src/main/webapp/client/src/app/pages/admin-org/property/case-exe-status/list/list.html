@@ -5,7 +5,6 @@
       <thead class="thead-inverse">
       <tr>
         <th>名称</th>
-        <th>描述</th>
         <th>终极状态</th>
         <th>系统內置</th>
         <th>操作</th>
@@ -14,7 +13,6 @@
       <tbody>
       <tr *ngFor="let item of models; let i = index;">
         <td>{{ item.name }}</td>
-        <td>{{ item.descr }}</td>
         <td>{{item.isFinal | trueOrFalse}}</td>
         <td>{{item.isBuildIn | trueOrFalse}}</td>
         <td>

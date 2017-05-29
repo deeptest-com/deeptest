@@ -22,6 +22,7 @@ public class SysCasePriority extends BaseEntity {
 	
 	private String code;
 	private String name;
+	private String descr;
     private Integer displayOrder;
     private Boolean isDefault;
     
@@ -67,6 +68,12 @@ public class SysCasePriority extends BaseEntity {
 	}
 	public void setDisplayOrder(Integer displayOrder) {
 		this.displayOrder = displayOrder;
+	}
+	public String getDescr() {
+		return descr;
+	}
+	public void setDescr(String descr) {
+		this.descr = descr;
 	}
     
 }

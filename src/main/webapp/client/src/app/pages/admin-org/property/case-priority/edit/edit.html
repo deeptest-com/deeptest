@@ -8,6 +8,13 @@
                  [(ngModel)]="model.name" #name>
         </div>
       </div>
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label"><span>描述</span></label>
+      <div class="col-sm-10">
+        <textarea type="text" class="form-control" name="descr" formControlName="descr" rows="3"
+                  [(ngModel)]="model.descr" #descr></textarea>
+      </div>
+    </div>
     <div class="form-group row just-label">
       <label class="col-sm-2 col-form-label"><span>是否默认</span></label>
       <label class="col-sm-10 col-form-label left">

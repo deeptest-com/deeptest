@@ -54,6 +54,7 @@ export class CaseTypeEdit implements OnInit, AfterViewInit {
     this.form = this.fb.group(
       {
         'name': ['', [Validators.required]],
+        'descr': ['', []],
         'disabled': ['', []],
       }, {}
     );

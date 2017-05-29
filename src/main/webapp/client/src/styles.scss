@@ -231,4 +231,12 @@ ul.al-share {
   display: inline-block;
   width: 10.5px;
 }
+.table tr {
+  th:first-child {
+    text-align: left !important;
+  }
+  td:first-child {
+    text-align: left !important;
+  }
+}
 

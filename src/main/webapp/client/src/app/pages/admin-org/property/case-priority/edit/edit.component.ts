@@ -53,7 +53,8 @@ export class CasePriorityEdit implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
       {
-        'name': ['', [Validators.required]]
+        'name': ['', [Validators.required]],
+        'descr': ['', []]
       }, {}
     );
 

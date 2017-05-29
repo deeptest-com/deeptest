@@ -22,6 +22,7 @@ public class SysCaseType extends BaseEntity {
 	
 	private String code;
 	private String name;
+	private String descr;
     private Boolean isDefault;
     private Integer displayOrder;
     
@@ -67,6 +68,12 @@ public class SysCaseType extends BaseEntity {
 	}
 	public void setOrgId(Long orgId) {
 		this.orgId = orgId;
+	}
+	public String getDescr() {
+		return descr;
+	}
+	public void setDescr(String descr) {
+		this.descr = descr;
 	}
     
 }

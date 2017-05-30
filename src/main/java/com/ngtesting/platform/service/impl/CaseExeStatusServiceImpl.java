@@ -10,11 +10,11 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.SysCaseExeStatus;
-import com.ngtesting.platform.entity.SysCaseExeStatus;
-import com.ngtesting.platform.entity.SysCustomField;
-import com.ngtesting.platform.entity.SysOrg;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestCaseExeStatus;
+import com.ngtesting.platform.entity.TestCaseExeStatus;
+import com.ngtesting.platform.entity.TestCustomField;
+import com.ngtesting.platform.entity.TestOrg;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.AccountService;
 import com.ngtesting.platform.service.CaseExeStatusService;
 import com.ngtesting.platform.service.CustomFieldService;
@@ -32,8 +32,8 @@ import com.ngtesting.platform.vo.UserVo;
 @Service
 public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExeStatusService {
 	@Override
-	public List<SysCaseExeStatus> list(Long orgId) {
-        DetachedCriteria dc = DetachedCriteria.forClass(SysCaseExeStatus.class);
+	public List<TestCaseExeStatus> list(Long orgId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestCaseExeStatus.class);
         
         dc.add(Restrictions.eq("orgId", orgId));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
@@ -53,16 +53,16 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
 	}
 
 	@Override
-	public SysCaseExeStatus save(CaseExeStatusVo vo, Long orgId) {
+	public TestCaseExeStatus save(CaseExeStatusVo vo, Long orgId) {
 		if (vo == null) {
 			return null;
 		}
 		
-		SysCaseExeStatus po;
+		TestCaseExeStatus po;
 		if (vo.getId() != null) {
-			po = (SysCaseExeStatus) get(SysCaseExeStatus.class, vo.getId());
+			po = (TestCaseExeStatus) get(TestCaseExeStatus.class, vo.getId());
 		} else {
-			po = new SysCaseExeStatus();
+			po = new TestCaseExeStatus();
 		}
 		
 		BeanUtilEx.copyProperties(po, vo);
@@ -72,7 +72,7 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
 		if (vo.getId() == null) {
 			po.setCode(UUID.randomUUID().toString());
 			
-			String hql = "select max(displayOrder) from SysCaseExeStatus";
+			String hql = "select max(displayOrder) from TestCaseExeStatus";
 			Integer maxOrder = (Integer) getByHQL(hql);
 	        po.setDisplayOrder(maxOrder + 10);
 		}
@@ -83,7 +83,7 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
 
 	@Override
 	public boolean delete(Long id) {
-		SysCaseExeStatus po = (SysCaseExeStatus) get(SysCaseExeStatus.class, id);
+		TestCaseExeStatus po = (TestCaseExeStatus) get(TestCaseExeStatus.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
 		
@@ -92,9 +92,9 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
 	
 	@Override
 	public boolean changeOrderPers(Long id, String act) {
-		SysCaseExeStatus type = (SysCaseExeStatus) get(SysCaseExeStatus.class, id);
+		TestCaseExeStatus type = (TestCaseExeStatus) get(TestCaseExeStatus.class, id);
 		
-        String hql = "from SysCaseExeStatus tp where tp.deleted = false and tp.disabled = false ";
+        String hql = "from TestCaseExeStatus tp where tp.deleted = false and tp.disabled = false ";
         if ("up".equals(act)) {
         	hql += "and tp.displayOrder < ? order by displayOrder desc";
         } else if ("down".equals(act)) {
@@ -103,7 +103,7 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
         	return false;
         }
         
-        SysCaseExeStatus neighbor = (SysCaseExeStatus) getDao().findFirstByHQL(hql, type.getDisplayOrder());
+        TestCaseExeStatus neighbor = (TestCaseExeStatus) getDao().findFirstByHQL(hql, type.getDisplayOrder());
 		
         Integer order = type.getDisplayOrder();
         type.setDisplayOrder(neighbor.getDisplayOrder());
@@ -116,7 +116,7 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
 	}
     
 	@Override
-	public CaseExeStatusVo genVo(SysCaseExeStatus po) {
+	public CaseExeStatusVo genVo(TestCaseExeStatus po) {
 		if (po == null) {
 			return null;
 		}
@@ -126,10 +126,10 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
 		return vo;
 	}
 	@Override
-	public List<CaseExeStatusVo> genVos(List<SysCaseExeStatus> pos) {
+	public List<CaseExeStatusVo> genVos(List<TestCaseExeStatus> pos) {
         List<CaseExeStatusVo> vos = new LinkedList<CaseExeStatusVo>();
 
-        for (SysCaseExeStatus po: pos) {
+        for (TestCaseExeStatus po: pos) {
         	CaseExeStatusVo vo = genVo(po);
         	vos.add(vo);
         }

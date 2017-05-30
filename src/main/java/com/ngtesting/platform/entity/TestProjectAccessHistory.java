@@ -36,14 +36,14 @@ public class TestProjectAccessHistory extends BaseEntity {
 	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
-    private SysUser org;
+    private TestUser org;
 
     @Column(name = "org_id")
     private Long orgId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private SysUser user;
+    private TestUser user;
 
     @Column(name = "user_id")
     private Long userId;
@@ -65,11 +65,11 @@ public class TestProjectAccessHistory extends BaseEntity {
 		this.lastAccessTime = lastAccessTime;
 	}
 
-	public SysUser getUser() {
+	public TestUser getUser() {
 		return user;
 	}
 
-	public void setUser(SysUser user) {
+	public void setUser(TestUser user) {
 		this.user = user;
 	}
 
@@ -97,11 +97,11 @@ public class TestProjectAccessHistory extends BaseEntity {
 		this.projectId = projectId;
 	}
 
-	public SysUser getOrg() {
+	public TestUser getOrg() {
 		return org;
 	}
 
-	public void setOrg(SysUser org) {
+	public void setOrg(TestUser org) {
 		this.org = org;
 	}
 

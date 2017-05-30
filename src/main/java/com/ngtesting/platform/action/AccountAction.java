@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.SysUser;
-import com.ngtesting.platform.entity.SysVerifyCode;
+import com.ngtesting.platform.entity.TestUser;
+import com.ngtesting.platform.entity.TestVerifyCode;
 import com.ngtesting.platform.service.AccountService;
 import com.ngtesting.platform.service.MailService;
 import com.ngtesting.platform.service.RegisterService;
@@ -57,7 +57,7 @@ public class AccountAction extends BaseAction {
 		String password = json.getString("password");
 		boolean rememberMe = json.getBoolean("rememberMe") != null? json.getBoolean("rememberMe"): false;
 		
-		SysUser user = accountService.loginPers(email, password, rememberMe);
+		TestUser user = accountService.loginPers(email, password, rememberMe);
 			
 		if (user != null) {
 			UserVo userVo = userService.genVo(user);	
@@ -87,7 +87,7 @@ public class AccountAction extends BaseAction {
 		String email = json.getString("email");
 		String password = json.getString("password");
 
-		SysUser user = accountService.registerPers(name, email, phone, password);
+		TestUser user = accountService.registerPers(name, email, phone, password);
 
 		if (user != null) {
 			UserVo userVo = userService.genVo(user);	
@@ -116,7 +116,7 @@ public class AccountAction extends BaseAction {
 		String verifyCode = json.getString("vcode");
 		String password = json.getString("password");
 
-		SysUser user = accountService.resetPasswordPers(verifyCode, password);
+		TestUser user = accountService.resetPasswordPers(verifyCode, password);
 		
 		if (user != null) {
 			UserVo userVo = userService.genVo(user);	
@@ -160,13 +160,13 @@ public class AccountAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		String email = json.getString("email");
-		SysUser user = (SysUser) accountService.getByEmail(email);
+		TestUser user = (TestUser) accountService.getByEmail(email);
 		if (user == null) {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());
 			ret.put("msg", "用户不存在");
 		}
 		
-		SysVerifyCode verifyCode = accountService.forgotPasswordPers(user.getId());
+		TestVerifyCode verifyCode = accountService.forgotPasswordPers(user.getId());
 		if (verifyCode != null) {
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("name", user.getName());
@@ -198,7 +198,7 @@ public class AccountAction extends BaseAction {
 			ret.put("msg", "您不在登录状态");
 			return ret;
 		}
-		SysUser user = accountService.logoutPers(vo.getEmail());
+		TestUser user = accountService.logoutPers(vo.getEmail());
 		
 		if (user != null) {
 			request.getSession().removeAttribute(Constant.HTTP_SESSION_USER_KEY);
@@ -218,7 +218,7 @@ public class AccountAction extends BaseAction {
 	public Map<String, Object> saveProfile(HttpServletRequest request, @RequestBody UserVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		SysUser user = (SysUser) accountService.saveProfile(vo);
+		TestUser user = (TestUser) accountService.saveProfile(vo);
 		vo = userService.genVo(user);
 		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, vo);
 		

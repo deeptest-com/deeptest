@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.SysCustomField;
-import com.ngtesting.platform.entity.SysOrgRole;
+import com.ngtesting.platform.entity.TestCustomField;
+import com.ngtesting.platform.entity.TestOrgRole;
 import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.service.TestProjectService;
 import com.ngtesting.platform.util.AuthPassport;
@@ -68,7 +68,7 @@ public class CustomFieldAction extends BaseAction {
 		if (customFieldId == null) {
 			vo = new CustomFieldVo();
 		} else {
-			SysCustomField po = (SysCustomField) customFieldService.get(SysCustomField.class, customFieldId);
+			TestCustomField po = (TestCustomField) customFieldService.get(TestCustomField.class, customFieldId);
 			vo = customFieldService.genVo(po);
 		}
 		
@@ -99,7 +99,7 @@ public class CustomFieldAction extends BaseAction {
 		CustomFieldVo customField = JSON.parseObject(JSON.toJSONString(json.get("model")), CustomFieldVo.class);
 		List<TestProjectVo> projects = (List<TestProjectVo>) json.get("relations");
 		
-		SysCustomField po = customFieldService.save(customField, orgId);
+		TestCustomField po = customFieldService.save(customField, orgId);
 		boolean success = customFieldService.saveRelationsProjects(po.getId(), projects);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.RelationOrgGroupUserService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.AuthPassport;
@@ -76,7 +76,7 @@ public class UserAction extends BaseAction {
 			return ret;
 		}
 		
-		SysUser po = (SysUser) userService.get(SysUser.class, Long.valueOf(userId));
+		TestUser po = (TestUser) userService.get(TestUser.class, Long.valueOf(userId));
 		UserVo vo = userService.genVo(po);
 		
         ret.put("user", vo);
@@ -95,7 +95,7 @@ public class UserAction extends BaseAction {
 		Long orgId = userVo.getDefaultOrgId();
 		
 		UserVo user = JSON.parseObject(JSON.toJSONString(json.get("user")), UserVo.class);
-		SysUser po = userService.save(user, orgId);
+		TestUser po = userService.save(user, orgId);
 		
 		if (po == null) {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());

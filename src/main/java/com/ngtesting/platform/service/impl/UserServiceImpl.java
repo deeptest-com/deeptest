@@ -9,8 +9,8 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.SysOrg;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestOrg;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.AccountService;
 import com.ngtesting.platform.service.RelationOrgGroupUserService;
 import com.ngtesting.platform.service.RelationProjectRoleUserService;
@@ -32,7 +32,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
 	@Override
 	public Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
-        DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
+        DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
         
         dc.createAlias("orgSet", "companies");
         dc.add(Restrictions.eq("companies.id", orgId));
@@ -55,21 +55,21 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public SysUser save(UserVo userVo, Long orgId) {
+	public TestUser save(UserVo userVo, Long orgId) {
 		if (userVo == null) {
 			return null;
 		}
 		
-		SysUser temp = accountService.getByEmail(userVo.getEmail());
+		TestUser temp = accountService.getByEmail(userVo.getEmail());
 		if (temp != null && temp.getId() != userVo.getId()) {
 			return null;
 		}
 		
-		SysUser po;
+		TestUser po;
 		if (userVo.getId() != null) {
-			po = (SysUser) get(SysUser.class, userVo.getId());
+			po = (TestUser) get(TestUser.class, userVo.getId());
 		} else {
-			po = new SysUser();
+			po = new TestUser();
 			po.setDefaultOrgId(orgId);
 		}
 		
@@ -81,7 +81,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 			po.setAvatar("upload/sample/user/avatar.png");
 		}
 		
-		SysOrg org = (SysOrg)get(SysOrg.class, orgId);
+		TestOrg org = (TestOrg)get(TestOrg.class, orgId);
 		if (!contains(org.getUserSet(), userVo.getId())) {
 			org.getUserSet().add(po);
 			saveOrUpdate(org);
@@ -93,7 +93,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	
 	@Override
 	public boolean disable(Long userId, Long orgId) {
-		SysUser po = (SysUser) get(SysUser.class, userId);
+		TestUser po = (TestUser) get(TestUser.class, userId);
 		po.setDisabled(!po.getDisabled());
 		saveOrUpdate(po);
 		
@@ -102,7 +102,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
 	@Override
 	public boolean remove(Long userId, Long orgId) {
-		SysUser po = (SysUser) get(SysUser.class, userId);
+		TestUser po = (TestUser) get(TestUser.class, userId);
 		po.setDeleted(true);
 		saveOrUpdate(po);
 		
@@ -110,7 +110,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
     
 	@Override
-	public UserVo genVo(SysUser user) {
+	public UserVo genVo(TestUser user) {
 		if (user == null) {
 			return null;
 		}
@@ -120,10 +120,10 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		return vo;
 	}
 	@Override
-	public List<UserVo> genVos(List<SysUser> pos) {
+	public List<UserVo> genVos(List<TestUser> pos) {
         List<UserVo> vos = new LinkedList<UserVo>();
 
-        for (SysUser po: pos) {
+        for (TestUser po: pos) {
         	UserVo vo = genVo(po);
         	vos.add(vo);
         }

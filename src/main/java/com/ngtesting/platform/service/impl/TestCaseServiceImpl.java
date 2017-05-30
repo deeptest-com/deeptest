@@ -84,28 +84,53 @@ public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseServ
 	}
 
 	@Override
-	public TestCase delete(Long vo, Long clientId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TestCase move(Long id, Long pid, Long prePid, Long id2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TestCase create(Long id, String value, Integer type, Long pid,
-			Long id2) {
-		// TODO Auto-generated method stub
-		return null;
+	public TestCase create(Long id, String value, String type, Long pid, Long userId) {
+		TestCase parent = (TestCase) get(TestCase.class, pid);
+		
+		TestCase testCase = new TestCase();
+		testCase.setTitle(value);
+		testCase.setType(TreeNodeType.getType(type));
+		testCase.setParentId(pid);
+		testCase.setProjectId(parent.getProjectId());
+		testCase.setUserId(userId);
+		
+		testCase.setPath(parent.getPath() + parent.getId() + "/");
+		
+		testCase.setOrderInParent(getChildMaxOrderNumb(parent) + 1);
+		
+		saveOrUpdate(testCase);
+		
+		return testCase;
 	}
 
 	@Override
 	public TestCase rename(Long id, String value, Long id2) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public TestCase move(Long id, Long pid, Long prePid, Long id2) {
+		
+		
+		return null;
+	}
+
+	@Override
+	public TestCase delete(Long vo, Long clientId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	private Integer getChildMaxOrderNumb(TestCase parent) {
+		String hql = "select max(orderInParent) from TestCase where parentId = " + parent.getId();
+		Integer maxOrder = (Integer) getByHQL(hql);
+		
+		if (maxOrder == null) {
+			maxOrder = 0;
+		}
+        
+		return maxOrder;
 	}
 
 }

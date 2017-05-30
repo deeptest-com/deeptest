@@ -16,8 +16,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "sys_case_type")
-public class SysCaseType extends BaseEntity {
+@Table(name = "tst_case_type")
+public class TestCaseType extends BaseEntity {
 	private static final long serialVersionUID = 1958544577851394376L;
 	
 	private String code;
@@ -28,7 +28,7 @@ public class SysCaseType extends BaseEntity {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
-    private SysOrg org;
+    private TestOrg org;
 
     @Column(name = "org_id")
     private Long orgId;
@@ -57,10 +57,10 @@ public class SysCaseType extends BaseEntity {
 	public void setDisplayOrder(Integer displayOrder) {
 		this.displayOrder = displayOrder;
 	}
-	public SysOrg getOrg() {
+	public TestOrg getOrg() {
 		return org;
 	}
-	public void setOrg(SysOrg org) {
+	public void setOrg(TestOrg org) {
 		this.org = org;
 	}
 	public Long getOrgId() {

@@ -3,7 +3,7 @@ package com.ngtesting.platform.vo;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.ngtesting.platform.entity.SysCustomField;
+import com.ngtesting.platform.entity.TestCustomField;
 import com.ngtesting.platform.entity.TestProject;
 
 public class CustomFieldVo extends BaseVo {
@@ -19,7 +19,7 @@ public class CustomFieldVo extends BaseVo {
     private String configs;
     private Integer rows = 3;
     private Boolean isRequired;
-    private String format = SysCustomField.FieldFormat.plain_text.toString();
+    private String format = TestCustomField.FieldFormat.plain_text.toString();
     private Boolean isMulti;
     private Boolean isGlobal = true;
     private Boolean isBuildIn = false;

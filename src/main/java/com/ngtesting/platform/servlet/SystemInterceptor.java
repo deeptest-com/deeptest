@@ -12,7 +12,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.AccountService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.AuthPassport;
@@ -59,7 +59,7 @@ public class SystemInterceptor implements HandlerInterceptor {
 					// 登录验证
 					AccountService accountService = SpringContextHolder.getBean(AccountService.class);
 					UserService userService = SpringContextHolder.getBean(UserService.class);
-					SysUser user = accountService.getByToken(token.trim());
+					TestUser user = accountService.getByToken(token.trim());
 					
 					if (user != null) {
 						request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));

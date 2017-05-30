@@ -11,8 +11,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "sys_org_privilege")
-public class SysOrgPrivilege extends BaseEntity {
+@Table(name = "tst_org_privilege")
+public class TestOrgPrivilege extends BaseEntity {
 	private static final long serialVersionUID = -5510206858644860272L;
 	
 	@Enumerated(EnumType.STRING)
@@ -22,7 +22,7 @@ public class SysOrgPrivilege extends BaseEntity {
     private String descr;
     
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "orgPrivilegeSet")
-    private Set<SysOrgRole> orgRoleSet = new HashSet<SysOrgRole>(0);
+    private Set<TestOrgRole> orgRoleSet = new HashSet<TestOrgRole>(0);
     
     public static enum OrgPrivilegeCode {
     	org_admin("org_admin"),
@@ -66,11 +66,11 @@ public class SysOrgPrivilege extends BaseEntity {
 		this.descr = descr;
 	}
 
-	public Set<SysOrgRole> getOrgRoleSet() {
+	public Set<TestOrgRole> getOrgRoleSet() {
 		return orgRoleSet;
 	}
 
-	public void setOrgRoleSet(Set<SysOrgRole> orgRoleSet) {
+	public void setOrgRoleSet(Set<TestOrgRole> orgRoleSet) {
 		this.orgRoleSet = orgRoleSet;
 	}
     

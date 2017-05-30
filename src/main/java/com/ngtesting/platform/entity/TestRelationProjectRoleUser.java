@@ -8,8 +8,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "r_project_role_user")
-public class SysRelationProjectRoleUser extends BaseEntity {
+@Table(name = "tst_r_project_role_user")
+public class TestRelationProjectRoleUser extends BaseEntity {
 	private static final long serialVersionUID = 5513768856000982338L;
 	
     @Column(name = "project_role_id")
@@ -17,14 +17,14 @@ public class SysRelationProjectRoleUser extends BaseEntity {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_role_id", insertable = false, updatable = false)
-    private SysProjectRole projectRole;
+    private TestProjectRole projectRole;
 
     @Column(name = "user_id")
     private Long userId;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private SysUser user;
+    private TestUser user;
 
 	public Long getUserId() {
 		return userId;
@@ -38,16 +38,16 @@ public class SysRelationProjectRoleUser extends BaseEntity {
 	public void setProjectRoleId(Long projectRoleId) {
 		this.projectRoleId = projectRoleId;
 	}
-	public SysProjectRole getProjectRole() {
+	public TestProjectRole getProjectRole() {
 		return projectRole;
 	}
-	public void setProjectRole(SysProjectRole projectRole) {
+	public void setProjectRole(TestProjectRole projectRole) {
 		this.projectRole = projectRole;
 	}
-	public SysUser getUser() {
+	public TestUser getUser() {
 		return user;
 	}
-	public void setUser(SysUser user) {
+	public void setUser(TestUser user) {
 		this.user = user;
 	}
     

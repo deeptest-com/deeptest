@@ -7,18 +7,18 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.SysRelationProjectRoleUser;
+import com.ngtesting.platform.entity.TestRelationProjectRoleUser;
 import com.ngtesting.platform.service.RelationProjectRoleUserService;
 
 @Service
 public class RelationProjectRoleUserServiceImpl extends BaseServiceImpl implements RelationProjectRoleUserService {
 	@Override
-	public SysRelationProjectRoleUser getRelationProjectRoleUser(Long projectRoleId) {
-		DetachedCriteria dc = DetachedCriteria.forClass(SysRelationProjectRoleUser.class);
+	public TestRelationProjectRoleUser getRelationProjectRoleUser(Long projectRoleId) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestRelationProjectRoleUser.class);
         dc.add(Restrictions.eq("projectRoleId", projectRoleId));
         
         dc.addOrder(Order.asc("id"));
-        List<SysRelationProjectRoleUser> ls = findAllByCriteria(dc);
+        List<TestRelationProjectRoleUser> ls = findAllByCriteria(dc);
         
         if (ls.size() == 0) {
         	return null;
@@ -27,15 +27,15 @@ public class RelationProjectRoleUserServiceImpl extends BaseServiceImpl implemen
 	}
 
 	@Override
-	public List<SysRelationProjectRoleUser> listRelationProjectRoleUsers(Long projectRoleId) {
-		DetachedCriteria dc = DetachedCriteria.forClass(SysRelationProjectRoleUser.class);
+	public List<TestRelationProjectRoleUser> listRelationProjectRoleUsers(Long projectRoleId) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestRelationProjectRoleUser.class);
         dc.add(Restrictions.eq("projectRoleId", projectRoleId));
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         
         dc.addOrder(Order.asc("id"));
-        List<SysRelationProjectRoleUser> ls = findAllByCriteria(dc);
+        List<TestRelationProjectRoleUser> ls = findAllByCriteria(dc);
         
 		return ls;
 	}

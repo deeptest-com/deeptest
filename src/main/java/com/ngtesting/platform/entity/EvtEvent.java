@@ -56,14 +56,14 @@ public class EvtEvent extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
-    private SysOrg org;
+    private TestOrg org;
 
     @Column(name = "org_id")
     private Long orgId;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", insertable = false, updatable = false)
-    private SysUser creator;
+    private TestUser creator;
 
     @Column(name = "creator_id")
     private Long creatorId;
@@ -139,11 +139,11 @@ public class EvtEvent extends BaseEntity {
         this.status = status;
     }
 
-    public SysOrg getOrg() {
+    public TestOrg getOrg() {
         return org;
     }
 
-    public void setOrg(SysOrg org) {
+    public void setOrg(TestOrg org) {
         this.org = org;
     }
 
@@ -155,11 +155,11 @@ public class EvtEvent extends BaseEntity {
         this.orgId = orgId;
     }
 
-    public SysUser getCreator() {
+    public TestUser getCreator() {
         return creator;
     }
 
-    public void setCreator(SysUser creator) {
+    public void setCreator(TestUser creator) {
         this.creator = creator;
     }
 

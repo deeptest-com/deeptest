@@ -48,7 +48,7 @@ public class TestProject extends BaseEntity {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
-    private SysOrg org;
+    private TestOrg org;
 
     @Column(name = "org_id")
     private Long orgId;
@@ -59,7 +59,7 @@ public class TestProject extends BaseEntity {
     private List<TestProject> children = new LinkedList<TestProject>();
     
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "projectSet")
-    private Set<SysCustomField> customFieldSet = new HashSet<SysCustomField>(0);
+    private Set<TestCustomField> customFieldSet = new HashSet<TestCustomField>(0);
     
     public static enum ProjectType {
         group("group"),
@@ -102,11 +102,11 @@ public class TestProject extends BaseEntity {
 		this.descr = descr;
 	}
 
-	public SysOrg getOrg() {
+	public TestOrg getOrg() {
 		return org;
 	}
 
-	public void setOrg(SysOrg org) {
+	public void setOrg(TestOrg org) {
 		this.org = org;
 	}
 
@@ -166,11 +166,11 @@ public class TestProject extends BaseEntity {
 		this.lastAccessTime = lastAccessTime;
 	}
 
-	public Set<SysCustomField> getCustomFieldSet() {
+	public Set<TestCustomField> getCustomFieldSet() {
 		return customFieldSet;
 	}
 
-	public void setCustomFieldSet(Set<SysCustomField> customFieldSet) {
+	public void setCustomFieldSet(Set<TestCustomField> customFieldSet) {
 		this.customFieldSet = customFieldSet;
 	}
     

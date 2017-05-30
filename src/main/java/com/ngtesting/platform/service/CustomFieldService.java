@@ -2,21 +2,21 @@ package com.ngtesting.platform.service;
 
 import java.util.List;
 
-import com.ngtesting.platform.entity.SysCustomField;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestCustomField;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.vo.CustomFieldVo;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.TestProjectVo;
 import com.ngtesting.platform.vo.UserVo;
 
 public interface CustomFieldService extends BaseService {
-	List<SysCustomField> list(Long orgId);
+	List<TestCustomField> list(Long orgId);
 	
-	SysCustomField save(CustomFieldVo vo, Long orgId);
+	TestCustomField save(CustomFieldVo vo, Long orgId);
 	boolean delete(Long id);
 
-	List<CustomFieldVo> genVos(List<SysCustomField> pos);
-	CustomFieldVo genVo(SysCustomField po);
+	List<CustomFieldVo> genVos(List<TestCustomField> pos);
+	CustomFieldVo genVo(TestCustomField po);
 
 	List<CustomFieldVo> listVos(Long orgId);
 
@@ -32,6 +32,6 @@ public interface CustomFieldService extends BaseService {
 
 	boolean saveRelationsProjects(Long id, List<TestProjectVo> projects);
 
-	void initPo(SysCustomField po, CustomFieldVo vo);
+	void initPo(TestCustomField po, CustomFieldVo vo);
 
 }

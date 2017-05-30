@@ -9,9 +9,9 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
-import com.ngtesting.platform.entity.SysOrgGroup;
-import com.ngtesting.platform.entity.SysRelationOrgGroupUser;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestOrgGroup;
+import com.ngtesting.platform.entity.TestRelationOrgGroupUser;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.RelationOrgGroupUserService;
 import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.Page;
@@ -23,22 +23,22 @@ public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements 
 	@Override
 	public List<RelationOrgGroupUserVo> listRelationsByUser(Long orgId, Long userId) {
 
-        List<SysOrgGroup> allOrgGroups = listAllOrgGroups(orgId);
+        List<TestOrgGroup> allOrgGroups = listAllOrgGroups(orgId);
         
-        List<SysRelationOrgGroupUser> relations;
+        List<TestRelationOrgGroupUser> relations;
         if (userId == null) {
-        	relations = new LinkedList<SysRelationOrgGroupUser>();
+        	relations = new LinkedList<TestRelationOrgGroupUser>();
         } else {
         	relations = listRelations(orgId, null, userId);
         }
         
         List<RelationOrgGroupUserVo> vos = new LinkedList<RelationOrgGroupUserVo>();
-        for (SysOrgGroup orgGroup : allOrgGroups) {
+        for (TestOrgGroup orgGroup : allOrgGroups) {
         	RelationOrgGroupUserVo vo = genVo(orgId, orgGroup.getId(), userId);
         	
         	vo.setSelected(false);
         	vo.setSelecting(false);
-        	for (SysRelationOrgGroupUser po : relations) {
+        	for (TestRelationOrgGroupUser po : relations) {
         		if (po.getOrgGroupId() == orgGroup.getId() && po.getUserId() == userId) {
             		vo.setSelected(true);
             		vo.setSelecting(true);
@@ -53,22 +53,22 @@ public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements 
 	@Override
 	public List<RelationOrgGroupUserVo> listRelationsByGroup(Long orgId, Long orgGroupId) {
 
-        List<SysUser> allUsers = listAllOrgUsers(orgId);
+        List<TestUser> allUsers = listAllOrgUsers(orgId);
         
-        List<SysRelationOrgGroupUser> relations;
+        List<TestRelationOrgGroupUser> relations;
         if (orgGroupId == null) {
-        	relations = new LinkedList<SysRelationOrgGroupUser>();
+        	relations = new LinkedList<TestRelationOrgGroupUser>();
         } else {
         	relations = listRelations(orgId, orgGroupId, null);
         }
         
         List<RelationOrgGroupUserVo> vos = new LinkedList<RelationOrgGroupUserVo>();
-        for (SysUser user : allUsers) {
+        for (TestUser user : allUsers) {
         	RelationOrgGroupUserVo vo = genVo(orgId, orgGroupId, user.getId());
         	
         	vo.setSelected(false);
         	vo.setSelecting(false);
-        	for (SysRelationOrgGroupUser po : relations) {
+        	for (TestRelationOrgGroupUser po : relations) {
         		if (po.getUserId() == user.getId() && po.getOrgGroupId() == orgGroupId) {
             		vo.setSelected(true);
             		vo.setSelecting(true);
@@ -80,8 +80,8 @@ public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements 
 		return vos;
 	}
 
-	private List<SysRelationOrgGroupUser> listRelations(Long orgId, Long orgGroupId, Long userId) {
-		DetachedCriteria dc2 = DetachedCriteria.forClass(SysRelationOrgGroupUser.class);
+	private List<TestRelationOrgGroupUser> listRelations(Long orgId, Long orgGroupId, Long userId) {
+		DetachedCriteria dc2 = DetachedCriteria.forClass(TestRelationOrgGroupUser.class);
 		if (orgId != null) {
         	dc2.add(Restrictions.eq("orgId", orgId));
         }
@@ -96,25 +96,25 @@ public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements 
         dc2.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc2.add(Restrictions.eq("disabled", Boolean.FALSE));
         dc2.addOrder(Order.asc("id"));
-        List<SysRelationOrgGroupUser> relations = findAllByCriteria(dc2);
+        List<TestRelationOrgGroupUser> relations = findAllByCriteria(dc2);
         
 		return relations;
 	}
 
-	private List<SysOrgGroup> listAllOrgGroups(Long orgId) {
-		DetachedCriteria dc = DetachedCriteria.forClass(SysOrgGroup.class);
+	private List<TestOrgGroup> listAllOrgGroups(Long orgId) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestOrgGroup.class);
         dc.add(Restrictions.eq("orgId", orgId));
 
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         dc.addOrder(Order.asc("id"));
-        List<SysOrgGroup> ls = findAllByCriteria(dc);
+        List<TestOrgGroup> ls = findAllByCriteria(dc);
         
 		return ls;
 	}
 	
-	private List<SysUser> listAllOrgUsers(Long orgId) {
-		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
+	private List<TestUser> listAllOrgUsers(Long orgId) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
         
         dc.createAlias("orgSet", "orgs");
         dc.add(Restrictions.eq("orgs.id", orgId));
@@ -123,7 +123,7 @@ public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements 
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         
         dc.addOrder(Order.asc("id"));
-        List<SysUser> ls = findAllByCriteria(dc);
+        List<TestUser> ls = findAllByCriteria(dc);
 		
 		return ls;
 	}
@@ -136,10 +136,10 @@ public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements 
 		for (Object obj: orgGroupUserVos) {
 			RelationOrgGroupUserVo vo = JSON.parseObject(JSON.toJSONString(obj), RelationOrgGroupUserVo.class);
 			if (vo.getSelecting() != vo.getSelected()) { // 变化了
-				SysRelationOrgGroupUser relationOrgGroupUser = this.getRelationOrgGroupUser(vo.getOrgGroupId(), vo.getUserId());
+				TestRelationOrgGroupUser relationOrgGroupUser = this.getRelationOrgGroupUser(vo.getOrgGroupId(), vo.getUserId());
 				
     			if (vo.getSelecting() && relationOrgGroupUser == null) { // 勾选
-    				relationOrgGroupUser = new SysRelationOrgGroupUser(vo.getOrgId(), vo.getOrgGroupId(), vo.getUserId());
+    				relationOrgGroupUser = new TestRelationOrgGroupUser(vo.getOrgId(), vo.getOrgGroupId(), vo.getUserId());
     				saveOrUpdate(relationOrgGroupUser);
     			} else if (relationOrgGroupUser != null) { // 取消
     				getDao().delete(relationOrgGroupUser);
@@ -150,13 +150,13 @@ public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements 
 		return true;
 	}
 
-	private SysRelationOrgGroupUser getRelationOrgGroupUser(Long orgGroupId, Long userId) {
-		DetachedCriteria dc = DetachedCriteria.forClass(SysRelationOrgGroupUser.class);
+	private TestRelationOrgGroupUser getRelationOrgGroupUser(Long orgGroupId, Long userId) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestRelationOrgGroupUser.class);
         dc.add(Restrictions.eq("orgGroupId", orgGroupId));
         dc.add(Restrictions.eq("userId", userId));
         
         dc.addOrder(Order.asc("id"));
-        List<SysRelationOrgGroupUser> ls = findAllByCriteria(dc);
+        List<TestRelationOrgGroupUser> ls = findAllByCriteria(dc);
         
         if (ls.size() == 0) {
         	return null;
@@ -170,13 +170,13 @@ public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements 
 		vo.setOrgId(orgId);
 		
 		if (orgGroupId != null) {
-			SysOrgGroup orgGroup = (SysOrgGroup) get(SysOrgGroup.class, orgGroupId);
+			TestOrgGroup orgGroup = (TestOrgGroup) get(TestOrgGroup.class, orgGroupId);
 			vo.setOrgGroupId(orgGroupId);
 			vo.setOrgGroupName(orgGroup.getName());
 		}
 		
 		if (userId != null) {
-			SysUser user = (SysUser) get(SysUser.class, userId);
+			TestUser user = (TestUser) get(TestUser.class, userId);
 			vo.setUserId(user.getId());
 			vo.setUserName(user.getName());
 		}

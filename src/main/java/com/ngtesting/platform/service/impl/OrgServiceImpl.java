@@ -9,8 +9,8 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.SysOrg;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestOrg;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.service.OrgService;
 import com.ngtesting.platform.service.TestProjectService;
@@ -28,8 +28,8 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	TestProjectService projectService;
 
 	@Override
-	public List<SysOrg> list(String keywords, String disabled, Long userId) {
-        DetachedCriteria dc = DetachedCriteria.forClass(SysOrg.class);
+	public List<TestOrg> list(String keywords, String disabled, Long userId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestOrg.class);
         dc.createAlias("userSet", "users");
         dc.add(Restrictions.eq("users.id", userId));
         
@@ -43,7 +43,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		}
         
         dc.addOrder(Order.asc("id"));
-        List<SysOrg> ls = findAllByCriteria(dc);
+        List<TestOrg> ls = findAllByCriteria(dc);
 
 		return ls;
 	}
@@ -56,27 +56,27 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	}
 
 	@Override
-	public SysOrg getDetail(Long id) {
+	public TestOrg getDetail(Long id) {
 		if (id == null) {
 			return null;
 		}
-		SysOrg po = (SysOrg) get(SysOrg.class, id);
+		TestOrg po = (TestOrg) get(TestOrg.class, id);
 
 		return po;
 	}
 
 	@Override
-	public SysOrg save(OrgVo vo, Long userId) {
+	public TestOrg save(OrgVo vo, Long userId) {
 		if (vo == null) {
 			return null;
 		}
 
-		SysUser user = (SysUser)get(SysUser.class, userId);
+		TestUser user = (TestUser)get(TestUser.class, userId);
 		
 		boolean isNew = vo.getId() == null;
-		SysOrg po = new SysOrg();
+		TestOrg po = new TestOrg();
 		if (!isNew) {
-			po = (SysOrg) get(SysOrg.class, vo.getId());
+			po = (TestOrg) get(TestOrg.class, vo.getId());
 		} else {
 			po.setAdminId(userId);
 			po.getUserSet().add(user);
@@ -102,7 +102,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 			return false;
 		}
 
-		SysOrg po = (SysOrg) get(SysOrg.class, id);
+		TestOrg po = (TestOrg) get(TestOrg.class, id);
 		po.setDisabled(true);
 		saveOrUpdate(po);
 
@@ -115,7 +115,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 			return false;
 		}
 
-		SysOrg po = (SysOrg) get(SysOrg.class, id);
+		TestOrg po = (TestOrg) get(TestOrg.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
 
@@ -124,7 +124,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	
 	@Override
 	public List<TestProjectAccessHistoryVo> setDefaultPers(Long orgId, UserVo userVo) {
-		SysUser user = (SysUser) get(SysUser.class, userVo.getId());
+		TestUser user = (TestUser) get(TestUser.class, userVo.getId());
 		
 		user.setDefaultOrgId(orgId);
 		
@@ -142,11 +142,11 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	}
 
 	@Override
-	public List<OrgVo> genVos(List<SysOrg> pos, Long userId) {
-		SysUser user = (SysUser)get(SysUser.class, userId);
+	public List<OrgVo> genVos(List<TestOrg> pos, Long userId) {
+		TestUser user = (TestUser)get(TestUser.class, userId);
 		
 		List<OrgVo> voList = new LinkedList<OrgVo>();
-		for (SysOrg po : pos) {
+		for (TestOrg po : pos) {
 			OrgVo vo = genVo(po);
 			if (po.getId() == user.getDefaultOrgId()) {
 				vo.setDefaultOrg(true);
@@ -159,7 +159,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	}
 
 	@Override
-	public OrgVo genVo(SysOrg po) {
+	public OrgVo genVo(TestOrg po) {
 		if (po == null) {
 			return null;
 		}

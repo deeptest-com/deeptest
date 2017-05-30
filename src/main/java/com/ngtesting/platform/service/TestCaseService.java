@@ -15,9 +15,9 @@ public interface TestCaseService extends BaseService {
 
 	TestCaseVo genVo(TestCase po);
 	
-	TestCase delete(Long vo, Long clientId);
-	TestCase move(Long id, Long pid, Long prePid, Long id2);
-	TestCase create(Long id, String value, Integer type, Long pid, Long id2);
-	TestCase rename(Long id, String value, Long id2);
+	TestCase delete(Long vo, Long userId);
+	TestCase move(Long id, Long pid, Long prePid, Long userId);
+	TestCase create(Long id, String value, String type, Long pid, Long userId);
+	TestCase rename(Long id, String value, Long userId);
 	
 }

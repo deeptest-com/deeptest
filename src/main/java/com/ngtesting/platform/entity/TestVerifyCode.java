@@ -7,8 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "sys_verify_code")
-public class SysVerifyCode extends BaseEntity {
+@Table(name = "tst_verify_code")
+public class TestVerifyCode extends BaseEntity {
 	private static final long serialVersionUID = -7404422286952704677L;
 	
 	private String code;

@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.SysOrg;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestOrg;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.OrgService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
@@ -60,10 +60,10 @@ public class OrgAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
 		if (id != null) {
-			SysOrg po = (SysOrg) orgService.get(SysOrg.class, id);
+			TestOrg po = (TestOrg) orgService.get(TestOrg.class, id);
 			OrgVo vo = orgService.genVo(po);
 			
-			SysUser user = (SysUser)orgService.get(SysUser.class, userVo.getId());
+			TestUser user = (TestUser)orgService.get(TestUser.class, userVo.getId());
 			if (po.getId() == user.getDefaultOrgId()) {
 				vo.setDefaultOrg(true);
 			}
@@ -83,7 +83,7 @@ public class OrgAction extends BaseAction {
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		SysOrg po = orgService.save(vo, userVo.getId());
+		TestOrg po = orgService.save(vo, userVo.getId());
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

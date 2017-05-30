@@ -8,7 +8,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import com.ngtesting.platform.entity.SysOrg;
+import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestProject;
 
 public class CaseExeStatusVo extends BaseVo {

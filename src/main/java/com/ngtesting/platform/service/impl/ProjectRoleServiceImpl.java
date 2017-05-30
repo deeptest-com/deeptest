@@ -8,7 +8,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.SysProjectRole;
+import com.ngtesting.platform.entity.TestProjectRole;
 import com.ngtesting.platform.service.ProjectRoleService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
@@ -20,7 +20,7 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 
 	@Override
 	public List list(Long orgId, String keywords, String disabled) {
-        DetachedCriteria dc = DetachedCriteria.forClass(SysProjectRole.class);
+        DetachedCriteria dc = DetachedCriteria.forClass(TestProjectRole.class);
         dc.add(Restrictions.eq("orgId", orgId));
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
@@ -39,14 +39,14 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 	}
 
 	@Override
-	public SysProjectRole save(ProjectRoleVo vo, Long orgId) {
+	public TestProjectRole save(ProjectRoleVo vo, Long orgId) {
 		if (vo == null) {
 			return null;
 		}
 		
-		SysProjectRole po = new SysProjectRole();
+		TestProjectRole po = new TestProjectRole();
 		if (vo.getId() != null) {
-			po = (SysProjectRole) get(SysProjectRole.class, vo.getId());
+			po = (TestProjectRole) get(TestProjectRole.class, vo.getId());
 		}
 		
 		po.setName(vo.getName());
@@ -60,7 +60,7 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 
 	@Override
 	public boolean delete(Long id) {
-		SysProjectRole po = (SysProjectRole) get(SysProjectRole.class, id);
+		TestProjectRole po = (TestProjectRole) get(TestProjectRole.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
 		
@@ -68,17 +68,17 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 	}
     
 	@Override
-	public ProjectRoleVo genVo(SysProjectRole role) {
+	public ProjectRoleVo genVo(TestProjectRole role) {
 		ProjectRoleVo vo = new ProjectRoleVo();
 		BeanUtilEx.copyProperties(vo, role);
 		
 		return vo;
 	}
 	@Override
-	public List<ProjectRoleVo> genVos(List<SysProjectRole> pos) {
+	public List<ProjectRoleVo> genVos(List<TestProjectRole> pos) {
         List<ProjectRoleVo> vos = new LinkedList<ProjectRoleVo>();
 
-        for (SysProjectRole po: pos) {
+        for (TestProjectRole po: pos) {
         	ProjectRoleVo vo = genVo(po);
         	vos.add(vo);
         }

@@ -16,11 +16,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "sys_custom_field")
-public class SysCustomField extends BaseEntity {
+@Table(name = "tst_custom_field")
+public class TestCustomField extends BaseEntity {
 	private static final long serialVersionUID = -1940351858441687302L;
 	
-	public SysCustomField() {
+	public TestCustomField() {
 		
 	}
 	public void setValues(String name, String descr, Integer rows, Boolean isGlobal, Boolean isRequired) {
@@ -54,13 +54,13 @@ public class SysCustomField extends BaseEntity {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
-    private SysOrg org;
+    private TestOrg org;
 
     @Column(name = "org_id")
     private Long orgId;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "r_custom_field_project", joinColumns = { 
+	@JoinTable(name = "tst_r_custom_field_project", joinColumns = { 
 			@JoinColumn(name = "custom_field_id", nullable = false, updatable = false) }, 
 			inverseJoinColumns = { @JoinColumn(name = "project_id", 
 					nullable = false, updatable = false) })
@@ -271,11 +271,11 @@ public class SysCustomField extends BaseEntity {
 		this.displayOrder = displayOrder;
 	}
 
-	public SysOrg getOrg() {
+	public TestOrg getOrg() {
 		return org;
 	}
 
-	public void setOrg(SysOrg org) {
+	public void setOrg(TestOrg org) {
 		this.org = org;
 	}
 

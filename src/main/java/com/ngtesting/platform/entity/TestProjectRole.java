@@ -15,11 +15,11 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.ngtesting.platform.entity.SysOrgRole.OrgRoleCode;
+import com.ngtesting.platform.entity.TestOrgRole.OrgRoleCode;
 
 @Entity
-@Table(name = "sys_project_role")
-public class SysProjectRole extends BaseEntity {
+@Table(name = "tst_project_role")
+public class TestProjectRole extends BaseEntity {
 	private static final long serialVersionUID = -3556080851163371948L;
 	
 	@Enumerated(EnumType.STRING)
@@ -30,17 +30,17 @@ public class SysProjectRole extends BaseEntity {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
-    private SysOrg org;
+    private TestOrg org;
 
     @Column(name = "org_id")
     private Long orgId;
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "r_project_role_privilege", joinColumns = { 
+	@JoinTable(name = "tst_r_project_role_privilege", joinColumns = { 
 			@JoinColumn(name = "project_role_id", nullable = false, updatable = false) }, 
 			inverseJoinColumns = { @JoinColumn(name = "project_privilege_id", 
 					nullable = false, updatable = false) })
-    private Set<SysProjectPrivilege> projectPrivilegeSet = new HashSet<SysProjectPrivilege>(0);
+    private Set<TestProjectPrivilege> projectPrivilegeSet = new HashSet<TestProjectPrivilege>(0);
     
     public static enum ProjectRoleCode {
     	project_manager("project_manager"),
@@ -82,17 +82,17 @@ public class SysProjectRole extends BaseEntity {
 	public void setDescr(String descr) {
 		this.descr = descr;
 	}
-	public Set<SysProjectPrivilege> getProjectPrivilegeSet() {
+	public Set<TestProjectPrivilege> getProjectPrivilegeSet() {
 		return projectPrivilegeSet;
 	}
 	public void setProjectPrivilegeSet(
-			Set<SysProjectPrivilege> projectPrivilegeSet) {
+			Set<TestProjectPrivilege> projectPrivilegeSet) {
 		this.projectPrivilegeSet = projectPrivilegeSet;
 	}
-	public SysOrg getOrg() {
+	public TestOrg getOrg() {
 		return org;
 	}
-	public void setOrg(SysOrg org) {
+	public void setOrg(TestOrg org) {
 		this.org = org;
 	}
 	public Long getOrgId() {

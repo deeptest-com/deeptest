@@ -52,6 +52,13 @@ public class TestCase extends BaseEntity {
     @Column(name = "module_id")
     private Long moduleId;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private TestUser user;
+
+    @Column(name = "user_id")
+    private Long userId;
+    
 	public Integer getLevel() {
 		return getPath().split("/").length - 1;
 	}
@@ -144,13 +151,13 @@ public class TestCase extends BaseEntity {
 		this.parentId = parentId;
 	}
 
-	public String getPath() {
-		return path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
+//	public String getPath() {
+//		return path;
+//	}
+//
+//	public void setPath(String path) {
+//		this.path = path;
+//	}
 
 	public Integer getOrderInParent() {
 		return orderInParent;
@@ -158,5 +165,29 @@ public class TestCase extends BaseEntity {
 
 	public void setOrderInParent(Integer orderInParent) {
 		this.orderInParent = orderInParent;
+	}
+
+	public TestUser getUser() {
+		return user;
+	}
+
+	public void setUser(TestUser user) {
+		this.user = user;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 }

@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.SysCasePriority;
-import com.ngtesting.platform.entity.SysCaseType;
-import com.ngtesting.platform.entity.SysCustomField;
+import com.ngtesting.platform.entity.TestCasePriority;
+import com.ngtesting.platform.entity.TestCaseType;
+import com.ngtesting.platform.entity.TestCustomField;
 import com.ngtesting.platform.service.CasePriorityService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
@@ -70,7 +70,7 @@ public class CasePriorityAction extends BaseAction {
 			return ret;
 		}
 		
-		SysCasePriority po = (SysCasePriority) casePriorityService.get(SysCasePriority.class, id);
+		TestCasePriority po = (TestCasePriority) casePriorityService.get(TestCasePriority.class, id);
 		CasePriorityVo vo = casePriorityService.genVo(po);
 		ret.put("data", vo);
 		
@@ -89,7 +89,7 @@ public class CasePriorityAction extends BaseAction {
 		
 		CasePriorityVo vo = json.getObject("model", CasePriorityVo.class);
 		
-		SysCasePriority po = casePriorityService.save(vo, orgId);
+		TestCasePriority po = casePriorityService.save(vo, orgId);
 		CasePriorityVo projectVo = casePriorityService.genVo(po);
         
         ret.put("data", projectVo);

@@ -3,7 +3,7 @@ package com.ngtesting.platform.service;
 import java.util.List;
 import java.util.Map;
 
-import com.ngtesting.platform.entity.SysOrgGroup;
+import com.ngtesting.platform.entity.TestOrgGroup;
 import com.ngtesting.platform.vo.OrgGroupVo;
 import com.ngtesting.platform.vo.OrgPrivilegeVo;
 import com.ngtesting.platform.vo.Page;

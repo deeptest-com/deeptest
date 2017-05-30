@@ -59,6 +59,23 @@ public final class Constant {
         }
 
         private String textVal;
+        
+        public static TreeNodeType getType(String str) {
+        	TreeNodeType type = null;
+        	
+        	switch (str) {
+        	case "root":
+        		type = TreeNodeType.root;
+        	    break;
+        	case "branch":
+        		type = TreeNodeType.branch;
+        	    break;
+        	case "leaf":
+        		type = TreeNodeType.leaf;
+        	    break;
+        	}
+            return type;
+        }
 
         public String toString() {
             return textVal;

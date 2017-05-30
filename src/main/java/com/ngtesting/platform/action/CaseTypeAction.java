@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.SysCaseType;
-import com.ngtesting.platform.entity.SysCustomField;
+import com.ngtesting.platform.entity.TestCaseType;
+import com.ngtesting.platform.entity.TestCustomField;
 import com.ngtesting.platform.service.CaseTypeService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
@@ -68,7 +68,7 @@ public class CaseTypeAction extends BaseAction {
 			return ret;
 		}
 		
-		SysCaseType po = (SysCaseType) caseTypeService.get(SysCaseType.class, id);
+		TestCaseType po = (TestCaseType) caseTypeService.get(TestCaseType.class, id);
 		CaseTypeVo vo = caseTypeService.genVo(po);
 		ret.put("data", vo);
 		
@@ -87,7 +87,7 @@ public class CaseTypeAction extends BaseAction {
 		
 		CaseTypeVo vo = json.getObject("model", CaseTypeVo.class);
 		
-		SysCaseType po = caseTypeService.save(vo, orgId);
+		TestCaseType po = caseTypeService.save(vo, orgId);
 		CaseTypeVo projectVo = caseTypeService.genVo(po);
         
         ret.put("data", projectVo);

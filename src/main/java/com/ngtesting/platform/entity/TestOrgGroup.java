@@ -8,8 +8,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "sys_org_group")
-public class SysOrgGroup extends BaseEntity {
+@Table(name = "tst_org_group")
+public class TestOrgGroup extends BaseEntity {
 	private static final long serialVersionUID = -939369827579807183L;
 	
 	private String name;
@@ -17,7 +17,7 @@ public class SysOrgGroup extends BaseEntity {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
-    private SysOrg org;
+    private TestOrg org;
 
     @Column(name = "org_id")
     private Long orgId;
@@ -34,10 +34,10 @@ public class SysOrgGroup extends BaseEntity {
 	public void setDescr(String descr) {
 		this.descr = descr;
 	}
-	public SysOrg getOrg() {
+	public TestOrg getOrg() {
 		return org;
 	}
-	public void setOrg(SysOrg org) {
+	public void setOrg(TestOrg org) {
 		this.org = org;
 	}
 	public Long getOrgId() {

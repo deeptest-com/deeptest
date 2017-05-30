@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.SysCaseExeStatus;
-import com.ngtesting.platform.entity.SysCustomField;
+import com.ngtesting.platform.entity.TestCaseExeStatus;
+import com.ngtesting.platform.entity.TestCustomField;
 import com.ngtesting.platform.service.CaseExeStatusService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
@@ -68,7 +68,7 @@ public class CaseExeStatusAction extends BaseAction {
 			return ret;
 		}
 		
-		SysCaseExeStatus po = (SysCaseExeStatus) caseExeStatusService.get(SysCaseExeStatus.class, id);
+		TestCaseExeStatus po = (TestCaseExeStatus) caseExeStatusService.get(TestCaseExeStatus.class, id);
 		CaseExeStatusVo vo = caseExeStatusService.genVo(po);
 		ret.put("data", vo);
 		
@@ -87,7 +87,7 @@ public class CaseExeStatusAction extends BaseAction {
 		
 		CaseExeStatusVo vo = json.getObject("model", CaseExeStatusVo.class);
 		
-		SysCaseExeStatus po = caseExeStatusService.save(vo, orgId);
+		TestCaseExeStatus po = caseExeStatusService.save(vo, orgId);
 		CaseExeStatusVo projectVo = caseExeStatusService.genVo(po);
         
         ret.put("data", projectVo);

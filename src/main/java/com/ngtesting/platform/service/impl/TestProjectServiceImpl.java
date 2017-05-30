@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ngtesting.platform.dao.ProjectDao;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestProject.ProjectType;
 import com.ngtesting.platform.entity.TestProjectAccessHistory;
@@ -219,7 +219,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 	
 	@Override
 	public List<TestProjectAccessHistoryVo> setDefaultPers(Long orgId, Long projectId, UserVo userVo) {
-		SysUser user = (SysUser) get(SysUser.class, userVo.getId());
+		TestUser user = (TestUser) get(TestUser.class, userVo.getId());
 		
 		List<TestProjectAccessHistoryVo> recentProjects = listRecentProjectVo(orgId, userVo.getId());
 		if (recentProjects.size() > 0) {
@@ -321,7 +321,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 
 	@Override
 	public TestProjectVo viewPers(UserVo userVo, Long projectId) {
-		SysUser user = (SysUser) get(SysUser.class, userVo.getId());
+		TestUser user = (TestUser) get(TestUser.class, userVo.getId());
 		TestProject project = getDetail(projectId);
 		
 		TestProjectAccessHistory history = getHistory(userVo.getDefaultOrgId(), userVo.getId(), projectId, project.getName());

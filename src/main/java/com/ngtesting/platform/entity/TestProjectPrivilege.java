@@ -13,8 +13,8 @@ import javax.persistence.Table;
 import com.ngtesting.platform.entity.EvtEvent.EventStatus;
 
 @Entity
-@Table(name = "sys_project_privilege")
-public class SysProjectPrivilege extends BaseEntity {
+@Table(name = "tst_project_privilege")
+public class TestProjectPrivilege extends BaseEntity {
 	private static final long serialVersionUID = -5510206858644860272L;
 
 	@Enumerated(EnumType.STRING)
@@ -27,7 +27,7 @@ public class SysProjectPrivilege extends BaseEntity {
     private PrivilegeAction action;
     
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "projectPrivilegeSet")
-    private Set<SysProjectRole> projectRoleSet = new HashSet<SysProjectRole>(0);
+    private Set<TestProjectRole> projectRoleSet = new HashSet<TestProjectRole>(0);
     
     public static enum ProjectPrivilegeCode {
     	req("req"),
@@ -103,11 +103,11 @@ public class SysProjectPrivilege extends BaseEntity {
 		this.descr = descr;
 	}
 
-	public Set<SysProjectRole> getProjectRoleSet() {
+	public Set<TestProjectRole> getProjectRoleSet() {
 		return projectRoleSet;
 	}
 
-	public void setProjectRoleSet(Set<SysProjectRole> projectRoleSet) {
+	public void setProjectRoleSet(Set<TestProjectRole> projectRoleSet) {
 		this.projectRoleSet = projectRoleSet;
 	}
 

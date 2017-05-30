@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.SysOrgGroup;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestOrgGroup;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.OrgGroupService;
 import com.ngtesting.platform.service.RelationOrgGroupUserService;
 import com.ngtesting.platform.util.AuthPassport;
@@ -77,7 +77,7 @@ public class OrgGroupAction extends BaseAction {
 			return ret;
 		}
 		
-		SysOrgGroup po = (SysOrgGroup) orgGroupService.get(SysOrgGroup.class, Long.valueOf(orgGroupId));
+		TestOrgGroup po = (TestOrgGroup) orgGroupService.get(TestOrgGroup.class, Long.valueOf(orgGroupId));
 		OrgGroupVo group = orgGroupService.genVo(po);
 		
         ret.put("group", group);
@@ -98,7 +98,7 @@ public class OrgGroupAction extends BaseAction {
 		OrgGroupVo group = JSON.parseObject(JSON.toJSONString(json.get("group")), OrgGroupVo.class);;
 		List<RelationOrgGroupUserVo> relations = (List<RelationOrgGroupUserVo>) json.get("relations");
 		
-		SysOrgGroup po = orgGroupService.save(group, orgId);
+		TestOrgGroup po = orgGroupService.save(group, orgId);
 		boolean success = orgGroupUserService.saveRelations(relations);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

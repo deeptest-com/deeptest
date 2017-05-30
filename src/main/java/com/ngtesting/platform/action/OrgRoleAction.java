@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.SysOrgRole;
-import com.ngtesting.platform.entity.SysRole;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestOrgRole;
+import com.ngtesting.platform.entity.TestRole;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.OrgPrivilegeService;
 import com.ngtesting.platform.service.OrgRoleService;
 import com.ngtesting.platform.service.RoleService;
@@ -79,7 +79,7 @@ public class OrgRoleAction extends BaseAction {
 			return ret;
 		}
 		
-		SysOrgRole po = (SysOrgRole) orgRoleService.get(SysOrgRole.class, orgRoleId);
+		TestOrgRole po = (TestOrgRole) orgRoleService.get(TestOrgRole.class, orgRoleId);
 		OrgRoleVo vo = orgRoleService.genVo(po);
         
         ret.put("orgRole", vo);
@@ -98,7 +98,7 @@ public class OrgRoleAction extends BaseAction {
 		Long orgId = userVo.getDefaultOrgId();
 		
 		OrgRoleVo orgRoleVo = JSON.parseObject(JSON.toJSONString(json.get("orgRole")), OrgRoleVo.class);
-		SysOrgRole po = orgRoleService.save(orgRoleVo, orgId);
+		TestOrgRole po = orgRoleService.save(orgRoleVo, orgId);
 		
 		List<OrgPrivilegeVo> orgPrivileges = (List<OrgPrivilegeVo>) json.get("orgPrivileges");
 		boolean success = orgPrivilegeService.saveOrgPrivileges(po.getId(), orgPrivileges);

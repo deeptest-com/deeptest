@@ -10,11 +10,11 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.SysCasePriority;
-import com.ngtesting.platform.entity.SysCasePriority;
-import com.ngtesting.platform.entity.SysCustomField;
-import com.ngtesting.platform.entity.SysOrg;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestCasePriority;
+import com.ngtesting.platform.entity.TestCasePriority;
+import com.ngtesting.platform.entity.TestCustomField;
+import com.ngtesting.platform.entity.TestOrg;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.AccountService;
 import com.ngtesting.platform.service.CasePriorityService;
 import com.ngtesting.platform.service.CustomFieldService;
@@ -32,8 +32,8 @@ import com.ngtesting.platform.vo.UserVo;
 @Service
 public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePriorityService {
 	@Override
-	public List<SysCasePriority> list(Long orgId) {
-        DetachedCriteria dc = DetachedCriteria.forClass(SysCasePriority.class);
+	public List<TestCasePriority> list(Long orgId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestCasePriority.class);
         
         dc.add(Restrictions.eq("orgId", orgId));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
@@ -53,16 +53,16 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 	}
 
 	@Override
-	public SysCasePriority save(CasePriorityVo vo, Long orgId) {
+	public TestCasePriority save(CasePriorityVo vo, Long orgId) {
 		if (vo == null) {
 			return null;
 		}
 		
-		SysCasePriority po;
+		TestCasePriority po;
 		if (vo.getId() != null) {
-			po = (SysCasePriority) get(SysCasePriority.class, vo.getId());
+			po = (TestCasePriority) get(TestCasePriority.class, vo.getId());
 		} else {
-			po = new SysCasePriority();
+			po = new TestCasePriority();
 		}
 		
 		BeanUtilEx.copyProperties(po, vo);
@@ -72,7 +72,7 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 		if (vo.getId() == null) {
 			po.setCode(UUID.randomUUID().toString());
 			
-			String hql = "select max(displayOrder) from SysCasePriority";
+			String hql = "select max(displayOrder) from TestCasePriority";
 			Integer maxOrder = (Integer) getByHQL(hql);
 	        po.setDisplayOrder(maxOrder + 10);
 		}
@@ -83,7 +83,7 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 
 	@Override
 	public boolean delete(Long id) {
-		SysCasePriority po = (SysCasePriority) get(SysCasePriority.class, id);
+		TestCasePriority po = (TestCasePriority) get(TestCasePriority.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
 		
@@ -92,8 +92,8 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 
 	@Override
 	public boolean setDefaultPers(Long id, Long orgId) {
-		List<SysCasePriority> ls = list(orgId);
-		for (SysCasePriority type : ls) {
+		List<TestCasePriority> ls = list(orgId);
+		for (TestCasePriority type : ls) {
 			if (type.getId() == id) {
 				type.setIsDefault(true);
 				saveOrUpdate(type);
@@ -108,9 +108,9 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 	
 	@Override
 	public boolean changeOrderPers(Long id, String act) {
-		SysCasePriority type = (SysCasePriority) get(SysCasePriority.class, id);
+		TestCasePriority type = (TestCasePriority) get(TestCasePriority.class, id);
 		
-        String hql = "from SysCasePriority tp where tp.deleted = false and tp.disabled = false ";
+        String hql = "from TestCasePriority tp where tp.deleted = false and tp.disabled = false ";
         if ("up".equals(act)) {
         	hql += "and tp.displayOrder < ? order by displayOrder desc";
         } else if ("down".equals(act)) {
@@ -119,7 +119,7 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
         	return false;
         }
         
-        SysCasePriority neighbor = (SysCasePriority) getDao().findFirstByHQL(hql, type.getDisplayOrder());
+        TestCasePriority neighbor = (TestCasePriority) getDao().findFirstByHQL(hql, type.getDisplayOrder());
 		
         Integer order = type.getDisplayOrder();
         type.setDisplayOrder(neighbor.getDisplayOrder());
@@ -133,7 +133,7 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 	
     
 	@Override
-	public CasePriorityVo genVo(SysCasePriority po) {
+	public CasePriorityVo genVo(TestCasePriority po) {
 		if (po == null) {
 			return null;
 		}
@@ -143,10 +143,10 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 		return vo;
 	}
 	@Override
-	public List<CasePriorityVo> genVos(List<SysCasePriority> pos) {
+	public List<CasePriorityVo> genVos(List<TestCasePriority> pos) {
         List<CasePriorityVo> vos = new LinkedList<CasePriorityVo>();
 
-        for (SysCasePriority po: pos) {
+        for (TestCasePriority po: pos) {
         	CasePriorityVo vo = genVo(po);
         	vos.add(vo);
         }

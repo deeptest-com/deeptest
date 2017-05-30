@@ -14,11 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
-import com.ngtesting.platform.entity.SysProjectPrivilege;
-import com.ngtesting.platform.entity.SysProjectRole;
-import com.ngtesting.platform.entity.SysProjectPrivilege;
-import com.ngtesting.platform.entity.SysRelationOrgGroupUser;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestProjectPrivilege;
+import com.ngtesting.platform.entity.TestProjectRole;
+import com.ngtesting.platform.entity.TestProjectPrivilege;
+import com.ngtesting.platform.entity.TestRelationOrgGroupUser;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.OrgGroupService;
 import com.ngtesting.platform.service.OrgPrivilegeService;
 import com.ngtesting.platform.service.ProjectPrivilegeService;
@@ -37,17 +37,17 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 	@Override
 	public Map<String, List<ProjectPrivilegeVo>> listPrivilegesByOrg(Long orgId, Long projectRoleId) {
 		
-        List<SysProjectPrivilege> allPrivileges = listAllProjectPrivileges();
+        List<TestProjectPrivilege> allPrivileges = listAllProjectPrivileges();
         
-        List<SysProjectPrivilege> projectRolePrivileges;
+        List<TestProjectPrivilege> projectRolePrivileges;
         if (projectRoleId == null) {
-        	projectRolePrivileges = new LinkedList<SysProjectPrivilege>();
+        	projectRolePrivileges = new LinkedList<TestProjectPrivilege>();
         } else {
         	projectRolePrivileges = listProjectRolePrivileges(orgId, projectRoleId);
         }
         
         Map<String, List<ProjectPrivilegeVo>> map = new LinkedHashMap<String, List<ProjectPrivilegeVo>>();
-        for (SysProjectPrivilege po1 : allPrivileges) {
+        for (TestProjectPrivilege po1 : allPrivileges) {
         	String key = po1.getName();
         	if (!map.containsKey(key)) {
         		List<ProjectPrivilegeVo> vos = new LinkedList<ProjectPrivilegeVo>();
@@ -58,7 +58,7 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
         	
         	vo.setSelected(false);
         	vo.setSelecting(false);
-        	for (SysProjectPrivilege po2 : projectRolePrivileges) {
+        	for (TestProjectPrivilege po2 : projectRolePrivileges) {
         		if (po1.getId() == po2.getId()) {
             		vo.setSelected(true);
             		vo.setSelecting(true);
@@ -70,16 +70,16 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 		return map;
 	}
 
-	private ProjectPrivilegeVo genVo(Long orgId, SysProjectPrivilege po1) {
+	private ProjectPrivilegeVo genVo(Long orgId, TestProjectPrivilege po1) {
 		ProjectPrivilegeVo vo = new ProjectPrivilegeVo(po1.getId(), po1.getCode().toString(), po1.getAction().toString(), 
 				po1.getName(), po1.getDescr(), orgId);
 		
 		return vo;
 	}
 
-	private List<SysProjectPrivilege> listProjectRolePrivileges(Long orgId, Long projectRoleId) {
+	private List<TestProjectPrivilege> listProjectRolePrivileges(Long orgId, Long projectRoleId) {
 		
-		DetachedCriteria dc = DetachedCriteria.forClass(SysProjectPrivilege.class);
+		DetachedCriteria dc = DetachedCriteria.forClass(TestProjectPrivilege.class);
 		
         dc.createAlias("projectRoleSet", "roles");
         dc.add(Restrictions.eq("roles.id", projectRoleId));
@@ -93,13 +93,13 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 		return ls;
 	}
 
-	private List<SysProjectPrivilege> listAllProjectPrivileges() {
-		DetachedCriteria dc = DetachedCriteria.forClass(SysProjectPrivilege.class);
+	private List<TestProjectPrivilege> listAllProjectPrivileges() {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestProjectPrivilege.class);
 
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         dc.addOrder(Order.asc("id"));
-        List<SysProjectPrivilege> ls = findAllByCriteria(dc);
+        List<TestProjectPrivilege> ls = findAllByCriteria(dc);
         
 		return ls;
 	}
@@ -110,8 +110,8 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 			return false;
 		}
 		
-		SysProjectRole orgRole = (SysProjectRole) get(SysProjectRole.class, roleId);
-		Set<SysProjectPrivilege> privilegeSet = orgRole.getProjectPrivilegeSet();
+		TestProjectRole orgRole = (TestProjectRole) get(TestProjectRole.class, roleId);
+		Set<TestProjectPrivilege> privilegeSet = orgRole.getProjectPrivilegeSet();
 		
 		for (String key: map.keySet()) {
 			List<ProjectPrivilegeVo> ls = JSON.parseObject(JSON.toJSONString(map.get(key)), List.class);
@@ -119,7 +119,7 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 			for (Object obj: ls) {
 				ProjectPrivilegeVo vo = JSON.parseObject(JSON.toJSONString(obj), ProjectPrivilegeVo.class);
 				if (vo.getSelecting() != vo.getSelected()) { // 变化了
-					SysProjectPrivilege orgPrivilege = (SysProjectPrivilege) get(SysProjectPrivilege.class, vo.getId());
+					TestProjectPrivilege orgPrivilege = (TestProjectPrivilege) get(TestProjectPrivilege.class, vo.getId());
 					
 	    			if (vo.getSelecting() && !privilegeSet.contains(orgPrivilege)) { // 勾选
 	    				privilegeSet.add(orgPrivilege);

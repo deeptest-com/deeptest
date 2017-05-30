@@ -153,18 +153,18 @@ export class TreeInternalComponent implements OnInit {
 
   public applyNewValue(e: NodeEditableEvent): void {
     if ((e.action === NodeEditableEventAction.Cancel || this.tree.isNew()) && Tree.isValueEmpty(e.value)) {
-      return this.treeService.fireNodeRemoved(this.tree);
+      return this.treeService.fireNodeRemovedRemote(this.tree);
     }
 
     if (this.tree.isNew()) {
       this.tree.value = e.value;
-      this.treeService.fireNodeCreated(this.tree);
+      this.treeService.fireNodeCreatedRemote(this.tree);
     }
 
     if (this.tree.isBeingRenamed()) {
       const oldValue = this.tree.value;
       this.tree.value = e.value;
-      this.treeService.fireNodeRenamed(oldValue, this.tree);
+      this.treeService.fireNodeRenamedRemote(oldValue, this.tree);
     }
 
     this.tree.markAsModified();

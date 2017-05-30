@@ -10,9 +10,9 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.SysCaseType;
-import com.ngtesting.platform.entity.SysOrg;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestCaseType;
+import com.ngtesting.platform.entity.TestOrg;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.AccountService;
 import com.ngtesting.platform.service.CaseTypeService;
 import com.ngtesting.platform.service.CustomFieldService;
@@ -31,8 +31,8 @@ import com.ngtesting.platform.vo.UserVo;
 public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeService {
 
 	@Override
-	public List<SysCaseType> list(Long orgId) {
-        DetachedCriteria dc = DetachedCriteria.forClass(SysCaseType.class);
+	public List<TestCaseType> list(Long orgId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestCaseType.class);
         
         dc.add(Restrictions.eq("orgId", orgId));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
@@ -52,16 +52,16 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 	}
 
 	@Override
-	public SysCaseType save(CaseTypeVo vo, Long orgId) {
+	public TestCaseType save(CaseTypeVo vo, Long orgId) {
 		if (vo == null) {
 			return null;
 		}
 		
-		SysCaseType po;
+		TestCaseType po;
 		if (vo.getId() != null) {
-			po = (SysCaseType) get(SysCaseType.class, vo.getId());
+			po = (TestCaseType) get(TestCaseType.class, vo.getId());
 		} else {
-			po = new SysCaseType();
+			po = new TestCaseType();
 		}
 		
 		BeanUtilEx.copyProperties(po, vo);
@@ -70,7 +70,7 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 		if (vo.getId() == null) {
 			po.setCode(UUID.randomUUID().toString());
 			
-			String hql = "select max(displayOrder) from SysCaseType";
+			String hql = "select max(displayOrder) from TestCaseType";
 			Integer maxOrder = (Integer) getByHQL(hql);
 	        po.setDisplayOrder(maxOrder + 10);
 		}
@@ -81,7 +81,7 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 
 	@Override
 	public boolean delete(Long id) {
-		SysCaseType po = (SysCaseType) get(SysCaseType.class, id);
+		TestCaseType po = (TestCaseType) get(TestCaseType.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
 		
@@ -90,8 +90,8 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 
 	@Override
 	public boolean setDefaultPers(Long id, Long orgId) {
-		List<SysCaseType> ls = list(orgId);
-		for (SysCaseType type : ls) {
+		List<TestCaseType> ls = list(orgId);
+		for (TestCaseType type : ls) {
 			if (type.getId() == id) {
 				type.setIsDefault(true);
 				saveOrUpdate(type);
@@ -106,9 +106,9 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 	
 	@Override
 	public boolean changeOrderPers(Long id, String act) {
-		SysCaseType type = (SysCaseType) get(SysCaseType.class, id);
+		TestCaseType type = (TestCaseType) get(TestCaseType.class, id);
 		
-        String hql = "from SysCaseType tp where tp.deleted = false and tp.disabled = false ";
+        String hql = "from TestCaseType tp where tp.deleted = false and tp.disabled = false ";
         if ("up".equals(act)) {
         	hql += "and tp.displayOrder < ? order by displayOrder desc";
         } else if ("down".equals(act)) {
@@ -117,7 +117,7 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
         	return false;
         }
         
-        SysCaseType neighbor = (SysCaseType) getFirstByHql(hql, type.getDisplayOrder());
+        TestCaseType neighbor = (TestCaseType) getFirstByHql(hql, type.getDisplayOrder());
 		
         Integer order = type.getDisplayOrder();
         type.setDisplayOrder(neighbor.getDisplayOrder());
@@ -130,7 +130,7 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 	}
     
 	@Override
-	public CaseTypeVo genVo(SysCaseType po) {
+	public CaseTypeVo genVo(TestCaseType po) {
 		if (po == null) {
 			return null;
 		}
@@ -140,10 +140,10 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 		return vo;
 	}
 	@Override
-	public List<CaseTypeVo> genVos(List<SysCaseType> pos) {
+	public List<CaseTypeVo> genVos(List<TestCaseType> pos) {
         List<CaseTypeVo> vos = new LinkedList<CaseTypeVo>();
 
-        for (SysCaseType po: pos) {
+        for (TestCaseType po: pos) {
         	CaseTypeVo vo = genVo(po);
         	vos.add(vo);
         }

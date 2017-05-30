@@ -1,24 +1,24 @@
 package com.ngtesting.platform.service;
 
-import com.ngtesting.platform.entity.SysUser;
-import com.ngtesting.platform.entity.SysVerifyCode;
+import com.ngtesting.platform.entity.TestUser;
+import com.ngtesting.platform.entity.TestVerifyCode;
 import com.ngtesting.platform.vo.UserVo;
 
 public interface AccountService extends BaseService {
 
 
-	SysUser loginPers(String mobile, String password, Boolean rememberMe);
-	SysUser logoutPers(String email);
+	TestUser loginPers(String mobile, String password, Boolean rememberMe);
+	TestUser logoutPers(String email);
 
-	SysUser registerPers(String name, String email, String phone, String password);
+	TestUser registerPers(String name, String email, String phone, String password);
 	
-	SysUser saveProfile(UserVo vo);
+	TestUser saveProfile(UserVo vo);
 	boolean changePasswordPers(Long userId, String oldPassword, String password);
-	SysVerifyCode forgotPasswordPers(Long userId);
-	SysUser resetPasswordPers(String verifyCode, String password);
+	TestVerifyCode forgotPasswordPers(Long userId);
+	TestUser resetPasswordPers(String verifyCode, String password);
 
-	SysUser getByToken(String token);
-	SysUser getByPhone(String token);
-	SysUser getByEmail(String email);
+	TestUser getByToken(String token);
+	TestUser getByPhone(String token);
+	TestUser getByEmail(String email);
 
 }

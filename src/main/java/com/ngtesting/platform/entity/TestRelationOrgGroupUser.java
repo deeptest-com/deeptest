@@ -8,13 +8,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "r_org_group_user")
-public class SysRelationOrgGroupUser extends BaseEntity {
+@Table(name = "tst_r_org_group_user")
+public class TestRelationOrgGroupUser extends BaseEntity {
 	private static final long serialVersionUID = 8667364655327450367L;
 	
-	public SysRelationOrgGroupUser() {
+	public TestRelationOrgGroupUser() {
 	}
-	public SysRelationOrgGroupUser(Long orgId, Long orgGroupId, Long userId) {
+	public TestRelationOrgGroupUser(Long orgId, Long orgGroupId, Long userId) {
 		this.orgId = orgId;
 		this.orgGroupId = orgGroupId;
 		this.userId = userId;
@@ -30,7 +30,7 @@ public class SysRelationOrgGroupUser extends BaseEntity {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_group_id", insertable = false, updatable = false)
-    private SysOrgGroup orgGroup;
+    private TestOrgGroup orgGroup;
     
     @Column(name = "user_id")
     private Long userId;
@@ -39,7 +39,7 @@ public class SysRelationOrgGroupUser extends BaseEntity {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private SysUser user;
+    private TestUser user;
 
 	public Long getUserId() {
 		return userId;
@@ -54,16 +54,16 @@ public class SysRelationOrgGroupUser extends BaseEntity {
 	public void setOrgGroupId(Long orgGroupId) {
 		this.orgGroupId = orgGroupId;
 	}
-	public SysOrgGroup getOrgGroup() {
+	public TestOrgGroup getOrgGroup() {
 		return orgGroup;
 	}
-	public void setOrgGroup(SysOrgGroup orgGroup) {
+	public void setOrgGroup(TestOrgGroup orgGroup) {
 		this.orgGroup = orgGroup;
 	}
-	public SysUser getUser() {
+	public TestUser getUser() {
 		return user;
 	}
-	public void setUser(SysUser user) {
+	public void setUser(TestUser user) {
 		this.user = user;
 	}
 	public String getOrgGroupName() {

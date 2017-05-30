@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.SysOrgRole;
-import com.ngtesting.platform.entity.SysProjectRole;
-import com.ngtesting.platform.entity.SysRole;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestOrgRole;
+import com.ngtesting.platform.entity.TestProjectRole;
+import com.ngtesting.platform.entity.TestRole;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.OrgPrivilegeService;
 import com.ngtesting.platform.service.OrgRoleService;
 import com.ngtesting.platform.service.ProjectPrivilegeService;
@@ -84,7 +84,7 @@ public class ProjectRoleAction extends BaseAction {
 			return ret;
 		}
 		
-		SysProjectRole po = (SysProjectRole) projectRoleService.get(SysProjectRole.class, orgRoleId);
+		TestProjectRole po = (TestProjectRole) projectRoleService.get(TestProjectRole.class, orgRoleId);
 		ProjectRoleVo vo = projectRoleService.genVo(po);
         
         ret.put("projectRole", vo);
@@ -103,7 +103,7 @@ public class ProjectRoleAction extends BaseAction {
 		Long orgId = userVo.getDefaultOrgId();
 		
 		ProjectRoleVo projectRoleVo = JSON.parseObject(JSON.toJSONString(json.get("projectRole")), ProjectRoleVo.class);
-		SysProjectRole po = projectRoleService.save(projectRoleVo, orgId);
+		TestProjectRole po = projectRoleService.save(projectRoleVo, orgId);
 		
 		Map<String, List<ProjectPrivilegeVo>> projectPrivileges = (Map<String, List<ProjectPrivilegeVo>>) json.get("projectPrivileges");
 		boolean success = projectPrivilegeService.saveProjectPrivileges(po.getId(), projectPrivileges);

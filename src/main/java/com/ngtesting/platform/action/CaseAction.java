@@ -55,7 +55,7 @@ public class CaseAction extends BaseAction {
 		
 		Long id = json.getLong("id");
 		String value = json.getString("value");
-		Integer type = json.getInteger("type");
+		String type = json.getString("type");
 		Long pid = json.getLong("pid");
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);

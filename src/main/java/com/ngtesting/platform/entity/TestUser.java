@@ -12,20 +12,28 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Filter;
 
 @Entity
-@Table(name = "sys_user")
-public class SysUser extends BaseEntity {
+@Table(name = "tst_user")
+public class TestUser extends BaseEntity {
 	private static final long serialVersionUID = 5110565175672074546L;
 	
 	private String email;
     private String phone;
     private String name;
     private String password;
+    private String token;
+    private String avatar;
 
     private String verifyCode;
     private Date lastLoginTime;
     
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "users")
-    private Set<SysRole> roles = new HashSet<SysRole>(0);
+    private Long defaultOrgId;
+    private Long defaultProjectId;
+    
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userSet")
+    private Set<TestRole> roleSet = new HashSet<TestRole>(0);
+    
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userSet")
+    private Set<TestOrg> orgSet = new HashSet<TestOrg>(0);
 
     public String getEmail() {
         return email;
@@ -49,6 +57,14 @@ public class SysUser extends BaseEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
 	public String getPassword() {
@@ -75,12 +91,44 @@ public class SysUser extends BaseEntity {
 		this.lastLoginTime = lastLoginTime;
 	}
 
-	public Set<SysRole> getRoles() {
-		return roles;
+	public Set<TestRole> getRoleSet() {
+		return roleSet;
 	}
 
-	public void setRoles(Set<SysRole> roles) {
-		this.roles = roles;
+	public void setRoleSet(Set<TestRole> roleSet) {
+		this.roleSet = roleSet;
+	}
+
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
+
+	public Long getDefaultOrgId() {
+		return defaultOrgId;
+	}
+
+	public void setDefaultOrgId(Long defaultOrgId) {
+		this.defaultOrgId = defaultOrgId;
+	}
+
+	public Set<TestOrg> getOrgSet() {
+		return orgSet;
+	}
+
+	public void setOrgSet(Set<TestOrg> orgSet) {
+		this.orgSet = orgSet;
+	}
+
+	public Long getDefaultProjectId() {
+		return defaultProjectId;
+	}
+
+	public void setDefaultProjectId(Long defaultProjectId) {
+		this.defaultProjectId = defaultProjectId;
 	}
 	
 }

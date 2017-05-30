@@ -42,6 +42,7 @@ export class CaseService {
     }
 
     rename(node: TreeModel) {
+      console.log('rename');
         let model = {id: node.id, value: node.value, type: node.type, pid: node.pid};
         return this._reqService.post(this._api_url + 'rename', model);
     }

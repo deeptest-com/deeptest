@@ -9,8 +9,8 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.SysUser;
-import com.ngtesting.platform.entity.SysVerifyCode;
+import com.ngtesting.platform.entity.TestUser;
+import com.ngtesting.platform.entity.TestVerifyCode;
 import com.ngtesting.platform.service.AccountService;
 import com.ngtesting.platform.vo.UserVo;
 
@@ -18,15 +18,15 @@ import com.ngtesting.platform.vo.UserVo;
 public class AccountServiceImpl extends BaseServiceImpl implements AccountService {
 
 	@Override
-	public SysUser loginPers(String email, String password, Boolean rememberMe) {
+	public TestUser loginPers(String email, String password, Boolean rememberMe) {
 		String newToken = null;
-		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
+		DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
 		dc.add(Restrictions.eq("email", email));
 		dc.add(Restrictions.eq("password", password));
 		dc.add(Restrictions.ne("deleted", true));
-		List<SysUser> ls = (List<SysUser>) findAllByCriteria(dc);
+		List<TestUser> ls = (List<TestUser>) findAllByCriteria(dc);
 
-		SysUser user = null;
+		TestUser user = null;
 		if (ls.size() > 0) {
 			user = ls.get(0);
 			newToken = UUID.randomUUID().toString();
@@ -39,20 +39,20 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 	}
 
 	@Override
-	public SysUser registerPers(String name, String email, String phone, String password) {
+	public TestUser registerPers(String name, String email, String phone, String password) {
 		String newToken = null;
-		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
+		DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
 		
 		dc.add(Restrictions.eq("email", email));
 		dc.add(Restrictions.ne("deleted", true));
 		dc.add(Restrictions.ne("disabled", true));
-		List<SysUser> ls = (List<SysUser>) findAllByCriteria(dc);
+		List<TestUser> ls = (List<TestUser>) findAllByCriteria(dc);
 
 		if (ls.size() > 0) {
 			return null;
 		}
 
-		SysUser user = new SysUser();
+		TestUser user = new TestUser();
 		newToken = UUID.randomUUID().toString();
 		user.setName(name);
 		user.setToken(newToken);
@@ -68,13 +68,13 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 	}
 
 	@Override
-	public SysVerifyCode forgotPasswordPers(Long userId) {
-		SysUser user = (SysUser) get(SysUser.class, userId);
+	public TestVerifyCode forgotPasswordPers(Long userId) {
+		TestUser user = (TestUser) get(TestUser.class, userId);
 		if (user == null) {
 			return null;
 		}
 
-		SysVerifyCode po = new SysVerifyCode();
+		TestVerifyCode po = new TestVerifyCode();
 		String code = UUID.randomUUID().toString().replaceAll("-", "");
 		Date now = new Date();
 		po.setRefId(user.getId());
@@ -87,55 +87,55 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 	}
 
 	@Override
-	public SysUser getByPhone(String phone) {
-		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
+	public TestUser getByPhone(String phone) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
 		dc.add(Restrictions.eq("phone", phone));
 		dc.add(Restrictions.ne("deleted", true));
 		dc.add(Restrictions.ne("disabled", true));
 
 		List ls = findAllByCriteria(dc);
 		if (ls.size() > 0) {
-			return (SysUser) ls.get(0);
+			return (TestUser) ls.get(0);
 		} else {
 			return null;
 		}
 	}
 	@Override
-	public SysUser getByEmail(String email) {
-		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
+	public TestUser getByEmail(String email) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
 		dc.add(Restrictions.eq("email", email));
 		dc.add(Restrictions.ne("deleted", true));
 		dc.add(Restrictions.ne("disabled", true));
 
 		List ls = findAllByCriteria(dc);
 		if (ls.size() > 0) {
-			return (SysUser) ls.get(0);
+			return (TestUser) ls.get(0);
 		} else {
 			return null;
 		}
 	}
 
 	@Override
-	public SysUser resetPasswordPers(String verifyCode, String password) {
+	public TestUser resetPasswordPers(String verifyCode, String password) {
 
 		String newToken = null;
-		DetachedCriteria dc = DetachedCriteria.forClass(SysVerifyCode.class);
+		DetachedCriteria dc = DetachedCriteria.forClass(TestVerifyCode.class);
 		dc.add(Restrictions.eq("code", verifyCode));
 		dc.add(Restrictions.ge("expireTime", new Date()));
 		dc.add(Restrictions.ne("deleted", true));
 		dc.add(Restrictions.ne("disabled", true));
 		dc.addOrder(Order.desc("id"));
-		List<SysVerifyCode> ls = (List<SysVerifyCode>) findAllByCriteria(dc);
+		List<TestVerifyCode> ls = (List<TestVerifyCode>) findAllByCriteria(dc);
 
 		if (ls.size() < 1) {
 			return null;
 		}
 		
-		SysVerifyCode code = ls.get(0);
+		TestVerifyCode code = ls.get(0);
 		code.setDeleted(true);
 		saveOrUpdate(code);
 		
-		SysUser user = (SysUser) get(SysUser.class, code.getRefId());
+		TestUser user = (TestUser) get(TestUser.class, code.getRefId());
 		if (user == null) {
 			return null;
 		}
@@ -151,15 +151,15 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 	}
 
 	@Override
-	public SysUser logoutPers(String email) {
+	public TestUser logoutPers(String email) {
 		
-		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
+		DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
 		dc.add(Restrictions.eq("email", email));
 		dc.add(Restrictions.ne("deleted", true));
 		dc.add(Restrictions.ne("disabled", true));
-		List<SysUser> ls = (List<SysUser>) findAllByCriteria(dc);
+		List<TestUser> ls = (List<TestUser>) findAllByCriteria(dc);
 
-		SysUser user = null;
+		TestUser user = null;
 		if (ls.size() > 0) {
 			user = ls.get(0);
 			user.setToken("");
@@ -170,8 +170,8 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 	
 
 	@Override
-	public SysUser getByToken(String token) {
-		DetachedCriteria dc = DetachedCriteria.forClass(SysUser.class);
+	public TestUser getByToken(String token) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
 		dc.add(Restrictions.eq("token", token));
 		
 		dc.add(Restrictions.ne("deleted", true));
@@ -179,7 +179,7 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 
 		List ls = findAllByCriteria(dc);
 		if (ls.size() > 0) {
-			return (SysUser) ls.get(0);
+			return (TestUser) ls.get(0);
 		} else {
 			return null;
 		}
@@ -187,7 +187,7 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 
 	@Override
 	public boolean changePasswordPers(Long userId, String oldPassword, String password) {
-		SysUser po = (SysUser) get(SysUser.class, userId);
+		TestUser po = (TestUser) get(TestUser.class, userId);
 		if (po == null || !po.getPassword().equals(oldPassword)) {
 			return false;
 		}
@@ -198,8 +198,8 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 	}
 	
 	@Override
-	public SysUser saveProfile(UserVo vo) {
-		SysUser po = (SysUser) get(SysUser.class, vo.getId());
+	public TestUser saveProfile(UserVo vo) {
+		TestUser po = (TestUser) get(TestUser.class, vo.getId());
 
 		String name = vo.getName();
 		String email = vo.getEmail(); 

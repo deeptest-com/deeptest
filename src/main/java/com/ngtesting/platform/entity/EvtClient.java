@@ -21,7 +21,7 @@ public class EvtClient extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
-    private SysOrg org;
+    private TestOrg org;
 
     @Column(name = "org_id")
     private Long orgId;
@@ -58,11 +58,11 @@ public class EvtClient extends BaseEntity {
         this.title = title;
     }
 
-    public SysOrg getOrg() {
+    public TestOrg getOrg() {
         return org;
     }
 
-    public void setOrg(SysOrg org) {
+    public void setOrg(TestOrg org) {
         this.org = org;
     }
 

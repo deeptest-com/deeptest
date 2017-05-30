@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.SysOrgRole;
-import com.ngtesting.platform.entity.SysRole;
+import com.ngtesting.platform.entity.TestOrgRole;
+import com.ngtesting.platform.entity.TestRole;
 import com.ngtesting.platform.service.OrgRoleService;
 import com.ngtesting.platform.service.RoleService;
 import com.ngtesting.platform.util.AuthPassport;
@@ -64,7 +64,7 @@ public class RoleAction extends BaseAction {
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		SysRole po = (SysRole) roleService.get(SysRole.class, Long.valueOf(accountId));
+		TestRole po = (TestRole) roleService.get(TestRole.class, Long.valueOf(accountId));
 		RoleVo vo = roleService.genVo(po);
         
         ret.put("data", vo);
@@ -83,7 +83,7 @@ public class RoleAction extends BaseAction {
 		Long orgId = userVo.getDefaultOrgId();
 		RoleVo vo = json.getObject("role", RoleVo.class);
 		
-		SysRole po = roleService.save(vo, orgId);
+		TestRole po = roleService.save(vo, orgId);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

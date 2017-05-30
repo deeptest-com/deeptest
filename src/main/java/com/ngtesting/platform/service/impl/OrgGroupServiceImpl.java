@@ -9,8 +9,8 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.SysOrgGroup;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestOrgGroup;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.OrgGroupService;
 import com.ngtesting.platform.service.RelationOrgGroupUserService;
 import com.ngtesting.platform.util.BeanUtilEx;
@@ -23,7 +23,7 @@ public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupServ
 
 	@Override
 	public Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
-        DetachedCriteria dc = DetachedCriteria.forClass(SysOrgGroup.class);
+        DetachedCriteria dc = DetachedCriteria.forClass(TestOrgGroup.class);
         dc.add(Restrictions.eq("orgId", orgId));
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
@@ -42,14 +42,14 @@ public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupServ
 	}
 
 	@Override
-	public SysOrgGroup save(OrgGroupVo vo, Long orgId) {
+	public TestOrgGroup save(OrgGroupVo vo, Long orgId) {
 		if (vo == null) {
 			return null;
 		}
 		
-		SysOrgGroup po = new SysOrgGroup();
+		TestOrgGroup po = new TestOrgGroup();
 		if (vo.getId() != null) {
-			po = (SysOrgGroup) get(SysOrgGroup.class, vo.getId());
+			po = (TestOrgGroup) get(TestOrgGroup.class, vo.getId());
 		}
 		
 		po.setName(vo.getName());
@@ -63,7 +63,7 @@ public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupServ
 
 	@Override
 	public boolean delete(Long id) {
-		SysOrgGroup po = (SysOrgGroup) get(SysOrgGroup.class, id);
+		TestOrgGroup po = (TestOrgGroup) get(TestOrgGroup.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
 		
@@ -71,17 +71,17 @@ public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupServ
 	}
 
 	@Override
-	public OrgGroupVo genVo(SysOrgGroup group) {
+	public OrgGroupVo genVo(TestOrgGroup group) {
 		OrgGroupVo vo = new OrgGroupVo();
 		BeanUtilEx.copyProperties(vo, group);
 		
 		return vo;
 	}
 	@Override
-	public List<OrgGroupVo> genVos(List<SysOrgGroup> pos) {
+	public List<OrgGroupVo> genVos(List<TestOrgGroup> pos) {
         List<OrgGroupVo> vos = new LinkedList<OrgGroupVo>();
 
-        for (SysOrgGroup po: pos) {
+        for (TestOrgGroup po: pos) {
         	OrgGroupVo vo = genVo(po);
         	vos.add(vo);
         }

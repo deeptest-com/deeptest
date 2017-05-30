@@ -13,7 +13,7 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import com.ngtesting.platform.bean.ApplicationScopeBean;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.util.SpringContextHolder;
 
@@ -33,9 +33,9 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
             
             String test = (String) httpSession.getAttribute("TEST");
             
-            SysUser user = null;
+            TestUser user = null;
             if (httpSession.getAttribute(Constant.HTTP_SESSION_USER_KEY) != null) {
-            	user = (SysUser) httpSession.getAttribute(Constant.HTTP_SESSION_USER_KEY);
+            	user = (TestUser) httpSession.getAttribute(Constant.HTTP_SESSION_USER_KEY);
             }
             
             if (user != null) {

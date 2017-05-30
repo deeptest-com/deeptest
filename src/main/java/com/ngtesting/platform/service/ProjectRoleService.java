@@ -2,9 +2,9 @@ package com.ngtesting.platform.service;
 
 import java.util.List;
 
-import com.ngtesting.platform.entity.SysOrgRole;
-import com.ngtesting.platform.entity.SysProjectRole;
-import com.ngtesting.platform.entity.SysRole;
+import com.ngtesting.platform.entity.TestOrgRole;
+import com.ngtesting.platform.entity.TestProjectRole;
+import com.ngtesting.platform.entity.TestRole;
 import com.ngtesting.platform.vo.OrgRoleVo;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.ProjectRoleVo;
@@ -14,10 +14,10 @@ public interface ProjectRoleService extends BaseService {
 
 	List list(Long orgId, String keywords, String disabled);
 	
-	SysProjectRole save(ProjectRoleVo vo, Long orgId);
+	TestProjectRole save(ProjectRoleVo vo, Long orgId);
 	boolean delete(Long id);
 
-	List<ProjectRoleVo> genVos(List<SysProjectRole> pos);
-	ProjectRoleVo genVo(SysProjectRole role);
+	List<ProjectRoleVo> genVos(List<TestProjectRole> pos);
+	ProjectRoleVo genVo(TestProjectRole role);
 
 }

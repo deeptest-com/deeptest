@@ -20,8 +20,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Filter;
 
 @Entity
-@Table(name = "sys_org")
-public class SysOrg extends BaseEntity {
+@Table(name = "tst_org")
+public class TestOrg extends BaseEntity {
 	private static final long serialVersionUID = -970910958057582029L;
 	
 	private String name;
@@ -32,14 +32,14 @@ public class SysOrg extends BaseEntity {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", insertable = false, updatable = false)
-    private SysUser admin;
+    private TestUser admin;
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "r_org_user", joinColumns = { 
+	@JoinTable(name = "tst_r_org_user", joinColumns = { 
 			@JoinColumn(name = "org_id", nullable = false, updatable = false) }, 
 			inverseJoinColumns = { @JoinColumn(name = "user_id", 
 					nullable = false, updatable = false) })
-    private Set<SysUser> userSet = new HashSet<SysUser>(0);
+    private Set<TestUser> userSet = new HashSet<TestUser>(0);
 
     public String getName() {
         return name;
@@ -57,11 +57,11 @@ public class SysOrg extends BaseEntity {
 		this.website = website;
 	}
 
-	public Set<SysUser> getUserSet() {
+	public Set<TestUser> getUserSet() {
 		return userSet;
 	}
 
-	public void setUserSet(Set<SysUser> userSet) {
+	public void setUserSet(Set<TestUser> userSet) {
 		this.userSet = userSet;
 	}
 
@@ -73,11 +73,11 @@ public class SysOrg extends BaseEntity {
 		this.adminId = adminId;
 	}
 
-	public SysUser getAdmin() {
+	public TestUser getAdmin() {
 		return admin;
 	}
 
-	public void setAdmin(SysUser admin) {
+	public void setAdmin(TestUser admin) {
 		this.admin = admin;
 	}
 

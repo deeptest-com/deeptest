@@ -8,8 +8,8 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.SysOrgRole;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestOrgRole;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.OrgRoleService;
 import com.ngtesting.platform.service.RoleService;
 import com.ngtesting.platform.util.BeanUtilEx;
@@ -23,7 +23,7 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 
 	@Override
 	public List list(Long orgId, String keywords, String disabled) {
-        DetachedCriteria dc = DetachedCriteria.forClass(SysOrgRole.class);
+        DetachedCriteria dc = DetachedCriteria.forClass(TestOrgRole.class);
         dc.add(Restrictions.eq("orgId", orgId));
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
@@ -42,14 +42,14 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 	}
 
 	@Override
-	public SysOrgRole save(OrgRoleVo vo, Long orgId) {
+	public TestOrgRole save(OrgRoleVo vo, Long orgId) {
 		if (vo == null) {
 			return null;
 		}
 		
-		SysOrgRole po = new SysOrgRole();
+		TestOrgRole po = new TestOrgRole();
 		if (vo.getId() != null) {
-			po = (SysOrgRole) get(SysOrgRole.class, vo.getId());
+			po = (TestOrgRole) get(TestOrgRole.class, vo.getId());
 		}
 		
 		po.setName(vo.getName());
@@ -63,7 +63,7 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 
 	@Override
 	public boolean delete(Long id) {
-		SysOrgRole po = (SysOrgRole) get(SysOrgRole.class, id);
+		TestOrgRole po = (TestOrgRole) get(TestOrgRole.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
 		
@@ -71,17 +71,17 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 	}
     
 	@Override
-	public OrgRoleVo genVo(SysOrgRole role) {
+	public OrgRoleVo genVo(TestOrgRole role) {
 		OrgRoleVo vo = new OrgRoleVo();
 		BeanUtilEx.copyProperties(vo, role);
 		
 		return vo;
 	}
 	@Override
-	public List<OrgRoleVo> genVos(List<SysOrgRole> pos) {
+	public List<OrgRoleVo> genVos(List<TestOrgRole> pos) {
         List<OrgRoleVo> vos = new LinkedList<OrgRoleVo>();
 
-        for (SysOrgRole po: pos) {
+        for (TestOrgRole po: pos) {
         	OrgRoleVo vo = genVo(po);
         	vos.add(vo);
         }

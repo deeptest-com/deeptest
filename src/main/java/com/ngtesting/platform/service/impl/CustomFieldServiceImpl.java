@@ -13,16 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
-import com.ngtesting.platform.entity.SysCustomField;
-import com.ngtesting.platform.entity.SysCustomField;
-import com.ngtesting.platform.entity.SysCustomField;
-import com.ngtesting.platform.entity.SysOrgPrivilege;
-import com.ngtesting.platform.entity.SysOrgRole;
-import com.ngtesting.platform.entity.SysCustomField.FieldApplyTo;
-import com.ngtesting.platform.entity.SysCustomField.FieldFormat;
-import com.ngtesting.platform.entity.SysCustomField.FieldType;
-import com.ngtesting.platform.entity.SysOrg;
-import com.ngtesting.platform.entity.SysUser;
+import com.ngtesting.platform.entity.TestCustomField;
+import com.ngtesting.platform.entity.TestCustomField;
+import com.ngtesting.platform.entity.TestCustomField;
+import com.ngtesting.platform.entity.TestOrgPrivilege;
+import com.ngtesting.platform.entity.TestOrgRole;
+import com.ngtesting.platform.entity.TestCustomField.FieldApplyTo;
+import com.ngtesting.platform.entity.TestCustomField.FieldFormat;
+import com.ngtesting.platform.entity.TestCustomField.FieldType;
+import com.ngtesting.platform.entity.TestOrg;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.service.AccountService;
 import com.ngtesting.platform.service.CustomFieldService;
@@ -47,8 +47,8 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 	TestProjectService projectService;
 	
 	@Override
-	public List<SysCustomField> list(Long orgId) {
-        DetachedCriteria dc = DetachedCriteria.forClass(SysCustomField.class);
+	public List<TestCustomField> list(Long orgId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestCustomField.class);
         
         dc.add(Restrictions.eq("orgId", orgId));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
@@ -61,30 +61,30 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 	}
 	@Override
 	public List<CustomFieldVo> listVos(Long orgId) {
-        List<SysCustomField> ls = list(orgId);
+        List<TestCustomField> ls = list(orgId);
         
         List<CustomFieldVo> vos = genVos(ls);
 		return vos;
 	}
 
 	@Override
-	public SysCustomField save(CustomFieldVo vo, Long orgId) {
+	public TestCustomField save(CustomFieldVo vo, Long orgId) {
 		if (vo == null) {
 			return null;
 		}
 		
-		SysCustomField po;
+		TestCustomField po;
 		if (vo.getId() != null) {
-			po = (SysCustomField) get(SysCustomField.class, vo.getId());
+			po = (TestCustomField) get(TestCustomField.class, vo.getId());
 		} else {
-			po = new SysCustomField();
+			po = new TestCustomField();
 		}
 		this.initPo(po, vo);
 		
-		po.setApplyTo(SysCustomField.FieldApplyTo.getValue(vo.getApplyTo()));
-		po.setType(SysCustomField.FieldType.getValue(vo.getType()));
+		po.setApplyTo(TestCustomField.FieldApplyTo.getValue(vo.getApplyTo()));
+		po.setType(TestCustomField.FieldType.getValue(vo.getType()));
 		if (StringUtil.isNotEmpty(vo.getFormat())) {
-			po.setFormat(SysCustomField.FieldFormat.getValue(vo.getFormat()));
+			po.setFormat(TestCustomField.FieldFormat.getValue(vo.getFormat()));
 		}
 		
 		po.setOrgId(orgId);
@@ -92,7 +92,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 		if (vo.getId() == null) {
 			po.setCode(UUID.randomUUID().toString());
 			
-			String hql = "select max(displayOrder) from SysCustomField";
+			String hql = "select max(displayOrder) from TestCustomField";
 			Integer maxOrder = (Integer) getByHQL(hql);
 	        po.setDisplayOrder(maxOrder + 10);
 		}
@@ -110,7 +110,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 
 	@Override
 	public boolean delete(Long id) {
-		SysCustomField po = (SysCustomField) get(SysCustomField.class, id);
+		TestCustomField po = (TestCustomField) get(TestCustomField.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
 		
@@ -120,7 +120,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 	@Override
 	public List<String> listApplyTo() {
 		List<String> ls = new LinkedList<String>();
-		for (FieldApplyTo item: SysCustomField.FieldApplyTo.values()) {
+		for (FieldApplyTo item: TestCustomField.FieldApplyTo.values()) {
 			ls.add(item.toString());
 		}
 		return ls;
@@ -128,7 +128,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 	@Override
 	public List<String> listType() {
 		List<String> ls = new LinkedList<String>();
-		for (FieldType item: SysCustomField.FieldType.values()) {
+		for (FieldType item: TestCustomField.FieldType.values()) {
 			ls.add(item.toString());
 		}
 		return ls;
@@ -136,7 +136,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 	@Override
 	public List<String> listFormat() {
 		List<String> ls = new LinkedList<String>();
-		for (FieldFormat item: SysCustomField.FieldFormat.values()) {
+		for (FieldFormat item: TestCustomField.FieldFormat.values()) {
 			ls.add(item.toString());
 		}
 		return ls;
@@ -144,9 +144,9 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 	
 	@Override
 	public boolean changeOrderPers(Long id, String act) {
-		SysCustomField type = (SysCustomField) get(SysCustomField.class, id);
+		TestCustomField type = (TestCustomField) get(TestCustomField.class, id);
 		
-        String hql = "from SysCustomField tp where tp.deleted = false and tp.disabled = false ";
+        String hql = "from TestCustomField tp where tp.deleted = false and tp.disabled = false ";
         if ("up".equals(act)) {
         	hql += "and tp.displayOrder < ? order by displayOrder desc";
         } else if ("down".equals(act)) {
@@ -155,7 +155,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
         	return false;
         }
         
-        SysCustomField neighbor = (SysCustomField) getDao().findFirstByHQL(hql, type.getDisplayOrder());
+        TestCustomField neighbor = (TestCustomField) getDao().findFirstByHQL(hql, type.getDisplayOrder());
 		
         Integer order = type.getDisplayOrder();
         type.setDisplayOrder(neighbor.getDisplayOrder());
@@ -175,7 +175,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
         if (fieldId == null) {
         	projectsForField = new HashSet<TestProject>();
         } else {
-        	SysCustomField field = (SysCustomField) get(SysCustomField.class, fieldId);
+        	TestCustomField field = (TestCustomField) get(TestCustomField.class, fieldId);
         	projectsForField = field.getProjectSet();
         }
         
@@ -203,7 +203,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 			return false;
 		}
 		
-		SysCustomField field = (SysCustomField) get(SysCustomField.class, fieldId);
+		TestCustomField field = (TestCustomField) get(TestCustomField.class, fieldId);
 		Set<TestProject> projectSet = field.getProjectSet();
 		
 		for (Object obj: projects) {
@@ -224,7 +224,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 	}
     
 	@Override
-	public CustomFieldVo genVo(SysCustomField po) {
+	public CustomFieldVo genVo(TestCustomField po) {
 		if (po == null) {
 			return null;
 		}
@@ -234,10 +234,10 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 		return vo;
 	}
 	@Override
-	public List<CustomFieldVo> genVos(List<SysCustomField> pos) {
+	public List<CustomFieldVo> genVos(List<TestCustomField> pos) {
         List<CustomFieldVo> vos = new LinkedList<CustomFieldVo>();
 
-        for (SysCustomField po: pos) {
+        for (TestCustomField po: pos) {
         	CustomFieldVo vo = genVo(po);
         	vos.add(vo);
         }
@@ -245,7 +245,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 	}
 	
 	@Override
-	public void initPo(SysCustomField po, CustomFieldVo vo) {
+	public void initPo(TestCustomField po, CustomFieldVo vo) {
 		po.setName(vo.getName());
 		po.setDescr(vo.getDescr());
 		po.setRows(vo.getRows());

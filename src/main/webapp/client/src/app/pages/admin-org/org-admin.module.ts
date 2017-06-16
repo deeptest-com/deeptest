@@ -33,3 +33,4 @@ import { OrgAdmin } from './org-admin.component';
   ]
 })
 export default class OrgAdminModule {}
+

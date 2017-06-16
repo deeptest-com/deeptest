@@ -35,3 +35,4 @@ import { Property } from './property.component';
   ]
 })
 export default class PropertyModule {}
+

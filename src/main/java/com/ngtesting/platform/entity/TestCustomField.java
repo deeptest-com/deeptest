@@ -67,9 +67,10 @@ public class TestCustomField extends BaseEntity {
     private Set<TestProject> projectSet = new HashSet<TestProject>(0);
     
     public static enum FieldType {
-    	number("number"),
     	string("string"),
     	text("text"),
+    	number("number"),
+    	url("url"),
     	
     	radio("radio"),
     	checkbox("checkbox"),
@@ -78,7 +79,6 @@ public class TestCustomField extends BaseEntity {
     	multi_select("multi_select"),
     	
     	date("date"),
-    	url("url"),
 
     	user("user"),
     	version("version"),

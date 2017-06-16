@@ -48,4 +48,3 @@ import {CaseTypeEdit } from './edit';
   ]
 })
 export default class CaseTypeModule {}
-

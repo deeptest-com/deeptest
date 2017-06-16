@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.tinypace</groupId>
-	<artifactId>events</artifactId>
+	<groupId>com.ngtesting</groupId>
+	<artifactId>platform</artifactId>
 	<version>0.0.2-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>platform</name>
@@ -355,7 +355,7 @@
 					<server>tomcat7</server>
 					<username>admin</username>
 					<password>P2ssw0rd</password>
-					<path>/events</path>
+					<path>/platform</path>
 					<update>true</update>
 				</configuration>
 			</plugin>

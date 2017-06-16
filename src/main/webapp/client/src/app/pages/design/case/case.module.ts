@@ -13,6 +13,8 @@ import { DirectiveModule } from '../../../directive/directive.module';
 import { SlimLoadingBarModule } from '../../../components/ng2-loading-bar';
 import { TreeModule } from '../../../components/ng2-tree';
 
+import { CustomFieldModule } from '../../../components/custom-field';
+
 import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
 import { DatetimePickerService } from '../../../service/datetime-picker';
@@ -35,7 +37,8 @@ import { CaseEdit } from './edit/edit.component';
 
     DirectiveModule,
     SlimLoadingBarModule.forRoot(),
-    TreeModule
+    TreeModule,
+    CustomFieldModule
   ],
   declarations: [
     Case,

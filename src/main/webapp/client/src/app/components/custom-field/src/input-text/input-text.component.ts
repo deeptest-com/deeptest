@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 
-import { FieldType } from '../field-type';
-import { FieldChangedEvent } from '../field-event';
-import { InputTextService } from './input-text.service';
+import { FieldType } from '../field.types';
+import { FieldChangedEvent } from '../field.events';
 
+import { InputTextService } from './input-text.service';
 
 @Component({
   selector: 'input-text',
@@ -18,10 +18,10 @@ export class InputTextComponent implements OnInit {
     constructor(public inputTextService: InputTextService) { }
 
     ngOnInit(): any {
-        this.service.events.subscribe((event: InputTextEvent) => {
-            if (event.type === InputTextEvent.change) {
-                // this.progress = event.value;
-            }
+        this.inputTextService.events.subscribe((event: FieldChangedEvent) => {
+            // if (event.type === FieldChangedEvent.change) {
+            //     // this.progress = event.value;
+            // }
         });
     }
 }

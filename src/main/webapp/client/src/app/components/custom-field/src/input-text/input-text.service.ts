@@ -1,28 +1,20 @@
 import {Injectable} from '@angular/core';
 
-import {isPresent} from './slim-loading-bar.utils';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
 
-import { FieldType, InputTextEvent } from '../field-type';
+import { FieldType } from '../field.types';
+import { FieldChangedEvent } from '../field.events';
 
 @Injectable()
 export class InputTextService {
 
-    private val: string = '';
+    private value: string = '';
 
-    private eventSource: Subject<InputTextEvent> = new Subject<InputTextEvent>();
-    public events: Observable<InputTextEvent> = this.eventSource.asObservable();
+    private eventSource: Subject<FieldChangedEvent> = new Subject<FieldChangedEvent>();
+    public events: Observable<FieldChangedEvent> = this.eventSource.asObservable();
 
     constructor() {}
-
-    set val(v:string) {
-      this.val = v;
-    }
-
-    get val():number {
-      return this.val;
-    }
 
 }
 

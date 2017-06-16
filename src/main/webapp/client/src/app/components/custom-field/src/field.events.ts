@@ -1,5 +1,3 @@
-
-
 export class FieldEvent {
   public constructor(public field: any) {
   }

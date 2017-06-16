@@ -3,6 +3,7 @@ import { Input, Component, OnInit, EventEmitter, Output, Inject, OnChanges, Simp
 import { CONSTANT } from '../../../utils/constant';
 import { Utils } from '../../../utils/utils';
 
+import { CustomFieldDefinition } from './field.definitions';
 import { CustomFieldModel } from './field.models';
 import { FieldChangedEvent } from './field.events';
 

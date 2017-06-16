@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 
-import { FieldType } from '../field.types';
+import { FieldType, CustomFieldDefinition } from '../field.definitions';
+import { CustomFieldModel } from '../field.models';
 import { FieldChangedEvent } from '../field.events';
 
 import { InputTextService } from './input-text.service';

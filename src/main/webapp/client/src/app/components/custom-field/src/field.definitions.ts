@@ -5,7 +5,7 @@ export interface CustomFieldDefinition {
   column: string;
 }
 
-export class InputTestDefinition implements CustomFieldDefinition {
+export interface InputTestDefinition extends CustomFieldDefinition {
 
 }
 

@@ -1,12 +1,13 @@
 package com.ngtesting.platform.action;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.entity.TestProject;
+import com.ngtesting.platform.service.TestProjectService;
+import com.ngtesting.platform.util.AuthPassport;
+import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
+import com.ngtesting.platform.vo.TestProjectVo;
+import com.ngtesting.platform.vo.UserVo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.TestProject;
-import com.ngtesting.platform.entity.TestProjectAccessHistory;
-import com.ngtesting.platform.service.TestProjectService;
-import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.util.Constant;
-import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
-import com.ngtesting.platform.vo.TestProjectVo;
-import com.ngtesting.platform.vo.UserVo;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -52,7 +49,7 @@ public class ProjectAction extends BaseAction {
 		List<TestProjectVo> vos = projectService.listVos(orgId, keywords, disabled);
 		
 		Long t2 = new Date().getTime();
-		log.debug("获取项目信息花了" + (t1 - t2) + "毫秒");
+		log.debug("获取项目信息花了 " + (t1 - t2) + "毫秒");
 		
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

@@ -1,4 +1,4 @@
-import { FieldType } from './field.types';
+import { FieldType } from './field.definitions';
 
 export interface CustomFieldModel {
   type: FieldType;
@@ -6,6 +6,6 @@ export interface CustomFieldModel {
   column: string;
 }
 
-export class InputTestModel implements CustomFieldModel {
+export interface InputTestModel extends CustomFieldModel {
 
 }

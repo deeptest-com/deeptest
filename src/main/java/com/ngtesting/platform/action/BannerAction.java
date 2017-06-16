@@ -1,18 +1,5 @@
 package com.ngtesting.platform.action;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.EvtBanner;
 import com.ngtesting.platform.service.BannerService;
@@ -20,6 +7,17 @@ import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.vo.BannerVo;
 import com.ngtesting.platform.vo.Page;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -41,7 +39,7 @@ public class BannerAction extends BaseAction {
 		Page page = bannerService.listByPage(eventId, currentPage, itemsPerPage);
 		List<BannerVo> vos = bannerService.genVos(page.getItems());
         
-		ret.put("totalItems", page.getTotal());
+		ret.put("totalItems", page.getTotal() + "");
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -66,7 +64,7 @@ public class BannerAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		boolean success = bannerService.remove(to.getLong("id"));
-		
+
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

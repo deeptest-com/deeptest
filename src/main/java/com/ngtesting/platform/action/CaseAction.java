@@ -39,9 +39,8 @@ public class CaseAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		Long projectId = json.getLong("projectId");
-		Long moduleId = json.getLong("moduleId");
 		
-		List<TestCase> ls = caseService.query(projectId, moduleId);
+		List<TestCase> ls = caseService.query(projectId);
 		
 		TestCaseTreeVo tree = caseService.buildTree(ls);
 		

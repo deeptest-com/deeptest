@@ -20,14 +20,11 @@ import java.util.Map;
 public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseService {
 
 	@Override
-	public List<TestCase> query(Long projectId, Long moduleId) {
+	public List<TestCase> query(Long projectId) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestCase.class);
         
         if (projectId != null) {
         	dc.add(Restrictions.eq("projectId", projectId));
-        }
-        if (moduleId != null) {
-        	dc.add(Restrictions.eq("moduleId", moduleId));
         }
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));

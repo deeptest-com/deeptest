@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface TestCaseService extends BaseService {
 
-	List<TestCase> query(Long projectId, Long moduleId);
+	List<TestCase> query(Long projectId);
 	TestCaseVo getById(Long caseId);
 
 	TestCaseTreeVo buildTree(List<TestCase> ls);

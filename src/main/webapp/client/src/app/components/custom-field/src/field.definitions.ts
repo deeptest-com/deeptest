@@ -1,11 +1,9 @@
 
-export interface CustomFieldDefinition {
-  type: FieldType;
-  value: string;
-  column: string;
+export class CustomFieldDefinition {
+  fieldType: FieldType;
 }
 
-export interface InputTestDefinition extends CustomFieldDefinition {
+export class InputTestDefinition extends CustomFieldDefinition {
 
 }
 

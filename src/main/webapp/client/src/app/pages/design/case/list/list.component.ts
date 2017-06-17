@@ -115,7 +115,7 @@ export class CaseList implements OnInit, AfterViewInit {
   }
 
   public onNodeSelected(e:NodeSelectedEvent):void {
-    this.logEvent(e, 'Selected');
+    this._state.notifyDataChanged('case.change', e.node.node);
   }
 
   public logEvent(e:NodeEvent, message:string):void {

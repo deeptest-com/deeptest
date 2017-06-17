@@ -18,7 +18,7 @@ export class CaseService {
 
     get(id: number) {
       let model = {id: id};
-      return this._reqService.post(this._api_url + 'get', id);
+      return this._reqService.post(this._api_url + 'get', model);
     }
 
     save(model: number) {

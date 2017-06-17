@@ -67,11 +67,10 @@ export class TreeComponent implements OnInit, OnChanges {
   }
 
   public ngOnInit(): void {
-      let that = this;
 
-      this.treeService.nodeRemovedRemote$.subscribe((e: NodeEvent) => {
-          this.nodeRemovedRemote.emit(e);
-      });
+    this.treeService.nodeRemovedRemote$.subscribe((e: NodeEvent) => {
+        this.nodeRemovedRemote.emit(e);
+    });
 
     this.treeService.nodeRenamedRemote$.subscribe((e: NodeEvent) => {
       this.nodeRenamedRemote.emit(e);

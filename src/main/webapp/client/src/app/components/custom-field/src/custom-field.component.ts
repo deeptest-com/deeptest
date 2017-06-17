@@ -17,8 +17,11 @@ import { CustomFieldService } from './custom-field.service';
 })
 export class CustomFieldComponent implements OnInit, OnChanges {
 
-  @Input('model')
-  public model: CustomFieldModel;
+  @Input('fieldDefine')
+  public fieldDefine: CustomFieldDefinition;
+
+  @Input('fieldModel')
+  public fieldModel: CustomFieldModel;
 
   @Output()
   public fieldChanged: EventEmitter<any> = new EventEmitter();

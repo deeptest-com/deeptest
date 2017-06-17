@@ -11,6 +11,11 @@ import { Utils } from '../../../../utils/utils';
 import {ValidatorUtils} from '../../../../validator/validator.utils';
 import { RouteService } from '../../../../service/route';
 
+import { NodeEvent } from '../../../../components/ng2-tree/src/tree.events';
+import { TreeService } from '../../../../components/ng2-tree/src/tree.service';
+
+import {FieldType, CustomFieldDefinition, CustomFieldModel, FieldChangedEvent } from '../../../../components/custom-field';
+
 import { CaseService } from '../../../../service/case';
 
 declare var jQuery;
@@ -26,8 +31,11 @@ export class CaseEdit implements OnInit, AfterViewInit {
   model: any = {};
   form: any;
 
+  public fieldDefine: CustomFieldDefinition = {fieldType: FieldType.text};
+  public fieldModel: CustomFieldModel = {value: '张三'};
+
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
-              private _caseService: CaseService) {
+              private treeService: TreeService, private _caseService: CaseService) {
 
   }
   ngOnInit() {
@@ -41,6 +49,12 @@ export class CaseEdit implements OnInit, AfterViewInit {
       that.loadData();
     }
     that.buildForm();
+
+    this._state.subscribe('case.change', (testCase) => {
+      that.id = testCase.id;
+      that.loadData();
+    });
+
   }
   ngAfterViewInit() {}
 

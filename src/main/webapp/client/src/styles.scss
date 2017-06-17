@@ -48,6 +48,10 @@ ngb-pagination {
   .form-group {
     label {
       text-align: right;
+
+      .left {
+        text-align: left;
+      }
     }
   }
 }

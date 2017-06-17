@@ -30,6 +30,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
   id: number;
   model: any = {};
   form: any;
+  tab: string = 'steps';
 
   public fieldDefine: CustomFieldDefinition = {fieldType: FieldType.text};
   public fieldModel: CustomFieldModel = {value: '张三'};
@@ -62,9 +63,8 @@ export class CaseEdit implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
       {
-        'name': ['', [Validators.required]],
         'title': ['', [Validators.required]],
-        'descr': ['', [Validators.required]]
+        'objective': ['', [Validators.required]]
       }, {}
     );
 
@@ -78,13 +78,10 @@ export class CaseEdit implements OnInit, AfterViewInit {
 
   formErrors = [];
   validateMsg = {
-    'name': {
-      'required':      '姓名不能为空'
-    },
     'title': {
       'required':      '简介不能为空'
     },
-    'descr': {
+    'objective': {
       'required':      '描述不能为空'
     }
   };
@@ -104,6 +101,10 @@ export class CaseEdit implements OnInit, AfterViewInit {
         that.model = json.data;
       }
     });
+  }
+
+  tabChange(event: any) {
+    this.tab = event.nextId;
   }
 
 }

@@ -1,4 +1,30 @@
-case-edit {
+.case-edit {
+  .tabs-container {
+    margin: 0px;
+    .tab-content {
+      padding: 0;
+    }
+  }
 
+  .tab-steps {
+    margin-top: -15px;
+
+    table {
+      tr {
+        th {
+          &.numb {
+            width: 50px;
+          }
+          &.opt {
+            width: 50%;
+          }
+          &.result {
+            width: 50%;
+          }
+        }
+      }
+
+    }
+  }
 
 }

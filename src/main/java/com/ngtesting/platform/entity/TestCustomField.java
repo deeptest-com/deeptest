@@ -1,19 +1,8 @@
 package com.ngtesting.platform.entity;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "tst_custom_field")
@@ -93,30 +82,6 @@ public class TestCustomField extends BaseEntity {
         public String toString() {
             return textVal;
         }
-        
-        public static FieldType getValue(String str) {
-        	FieldType status = null;
-        	switch(str) { 
-            	case "number": status = FieldType.number; break;
-            	case "string": status = FieldType.string; break;
-            	case "text": status = FieldType.text; break;
-            	
-            	case "radio": status = FieldType.radio; break;
-            	case "checkbox": status = FieldType.checkbox; break;
-            	case "dropdown": status = FieldType.dropdown; break;
-            	case "multi_select": status = FieldType.multi_select; break;
-            	
-            	case "date": status = FieldType.date; break;
-            	case "url": status = FieldType.url; break;
-            	
-            	case "user": status = FieldType.user; break;
-            	case "version": status = FieldType.version; break;
-            	case "steps": status = FieldType.steps; break;
-            	case "results": status = FieldType.results; break;
-            }
-        	
-        	return status;
-        }
     }
     
     public static enum FieldApplyTo {
@@ -131,16 +96,6 @@ public class TestCustomField extends BaseEntity {
         public String toString() {
             return textVal;
         }
-        
-        public static FieldApplyTo getValue(String str) {
-        	FieldApplyTo status = null;
-        	switch(str) { 
-            	case "test_case": status = FieldApplyTo.test_case; break;
-            	case "test_result": status = FieldApplyTo.test_result; break;
-            }
-        	
-        	return status;
-        }
     }
     
     public static enum FieldFormat {
@@ -154,16 +109,6 @@ public class TestCustomField extends BaseEntity {
         private String textVal;
         public String toString() {
             return textVal;
-        }
-        
-        public static FieldFormat getValue(String str) {
-        	FieldFormat status = null;
-        	switch(str) { 
-            	case "markdown": status = FieldFormat.markdown; break;
-            	case "plain_text": status = FieldFormat.plain_text; break;
-            }
-        	
-        	return status;
         }
     }
 

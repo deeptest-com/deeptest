@@ -1,21 +1,8 @@
 package com.ngtesting.platform.entity;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
-import com.ngtesting.platform.entity.TestOrgRole.OrgRoleCode;
 
 @Entity
 @Table(name = "tst_project_role")
@@ -56,18 +43,7 @@ public class TestProjectRole extends BaseEntity {
         public String toString() {
             return textVal;
         }
-        
-        public static ProjectRoleCode getValue(String str) {
-        	ProjectRoleCode status = null;
-        	switch(str) { 
-            	case "project_manager": status = ProjectRoleCode.project_manager; break;
-            	case "test_designer": status = ProjectRoleCode.test_designer; break;
-            	case "tester": status = ProjectRoleCode.tester; break;
-            	case "developer": status = ProjectRoleCode.developer; break;
-            }
-        	
-        	return status;
-        }
+
     }
     
 	public String getName() {

@@ -2,9 +2,11 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestCase;
+import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.service.TestCaseService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.vo.CustomFieldVo;
 import com.ngtesting.platform.vo.TestCaseTreeVo;
 import com.ngtesting.platform.vo.TestCaseVo;
 import com.ngtesting.platform.vo.UserVo;
@@ -26,6 +28,9 @@ import java.util.Map;
 public class CaseAction extends BaseAction {
 	@Autowired
 	TestCaseService caseService;
+
+    @Autowired
+    CustomFieldService customFieldService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "query", method = RequestMethod.POST)
@@ -51,11 +56,12 @@ public class CaseAction extends BaseAction {
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
+        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Long orgId = userVo.getDefaultOrgId();
         Long caseId = json.getLong("id");
 
-        TestCase po = (TestCase)caseService.get(TestCase.class, caseId);
-
-        TestCaseVo vo = caseService.genVo(po);
+        TestCaseVo vo = caseService.getById(caseId);
+        List<CustomFieldVo> fields = customFieldService.listByCase(orgId, caseId);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

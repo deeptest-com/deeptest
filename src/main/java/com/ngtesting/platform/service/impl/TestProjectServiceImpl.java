@@ -1,9 +1,16 @@
 package com.ngtesting.platform.service.impl;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
+import com.ngtesting.platform.dao.ProjectDao;
+import com.ngtesting.platform.entity.TestProject;
+import com.ngtesting.platform.entity.TestProject.ProjectType;
+import com.ngtesting.platform.entity.TestProjectAccessHistory;
+import com.ngtesting.platform.entity.TestUser;
+import com.ngtesting.platform.service.TestProjectService;
+import com.ngtesting.platform.util.BeanUtilEx;
+import com.ngtesting.platform.util.StringUtil;
+import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
+import com.ngtesting.platform.vo.TestProjectVo;
+import com.ngtesting.platform.vo.UserVo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.FetchMode;
@@ -15,17 +22,9 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.dao.ProjectDao;
-import com.ngtesting.platform.entity.TestUser;
-import com.ngtesting.platform.entity.TestProject;
-import com.ngtesting.platform.entity.TestProject.ProjectType;
-import com.ngtesting.platform.entity.TestProjectAccessHistory;
-import com.ngtesting.platform.service.TestProjectService;
-import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.util.StringUtil;
-import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
-import com.ngtesting.platform.vo.TestProjectVo;
-import com.ngtesting.platform.vo.UserVo;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class TestProjectServiceImpl extends BaseServiceImpl implements
@@ -151,7 +150,7 @@ public class TestProjectServiceImpl extends BaseServiceImpl implements
 		po.setParentId(vo.getParentId());
 		po.setName(vo.getName());
 		po.setDescr(vo.getDescr());
-		po.setType(ProjectType.getEnum(vo.getType()));
+		po.setType(ProjectType.valueOf(vo.getType()));
 		po.setDisabled(vo.getDisabled());
 
 		saveOrUpdate(po);

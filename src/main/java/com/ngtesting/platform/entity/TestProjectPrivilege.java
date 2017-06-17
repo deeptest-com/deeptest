@@ -1,16 +1,8 @@
 package com.ngtesting.platform.entity;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-
-import com.ngtesting.platform.entity.EvtEvent.EventStatus;
 
 @Entity
 @Table(name = "tst_project_privilege")
@@ -45,20 +37,6 @@ public class TestProjectPrivilege extends BaseEntity {
         public String toString() {
             return textVal;
         }
-        
-        public static ProjectPrivilegeCode getValue(String str) {
-        	ProjectPrivilegeCode status = null;
-        	switch(str) { 
-            	case "req": status = ProjectPrivilegeCode.req; break;
-            	case "cases": status = ProjectPrivilegeCode.cases; break;
-            	case "plan": status = ProjectPrivilegeCode.plan; break;
-            	case "round": status = ProjectPrivilegeCode.round; break;
-            	case "result": status = ProjectPrivilegeCode.result; break;
-            	case "report": status = ProjectPrivilegeCode.report; break;
-            }
-        	
-        	return status;
-        }
     }
     
     public static enum PrivilegeAction {
@@ -74,17 +52,7 @@ public class TestProjectPrivilege extends BaseEntity {
         public String toString() {
             return textVal;
         }
-        
-        public static PrivilegeAction getValue(String str) {
-        	PrivilegeAction status = null;
-        	switch(str) { 
-            	case "update": status = PrivilegeAction.update; break;
-            	case "remove": status = PrivilegeAction.remove; break;
-            	case "close": status = PrivilegeAction.close; break;
-            }
-        	
-        	return status;
-        }
+
     }
 
 	public String getName() {

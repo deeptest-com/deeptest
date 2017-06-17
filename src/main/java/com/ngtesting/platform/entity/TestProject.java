@@ -1,27 +1,11 @@
 package com.ngtesting.platform.entity;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
+
+import javax.persistence.*;
+import java.util.*;
 
 @Entity
 @Table(name = "tst_project")
@@ -70,16 +54,6 @@ public class TestProject extends BaseEntity {
         }
 
         private String textVal;
-        
-        public static ProjectType getEnum(String str) {
-        	ProjectType type = null;
-        	switch(str) { 
-            	case "group": type = ProjectType.group; break;
-            	case "project": type = ProjectType.project; break;
-            }
-        	
-        	return type;
-        }
 
         public String toString() {
             return textVal;

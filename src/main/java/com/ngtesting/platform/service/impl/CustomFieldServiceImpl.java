@@ -1,44 +1,24 @@
 package com.ngtesting.platform.service.impl;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
+import com.alibaba.fastjson.JSON;
+import com.ngtesting.platform.entity.TestCustomField;
+import com.ngtesting.platform.entity.TestCustomField.FieldApplyTo;
+import com.ngtesting.platform.entity.TestCustomField.FieldFormat;
+import com.ngtesting.platform.entity.TestCustomField.FieldType;
+import com.ngtesting.platform.entity.TestProject;
+import com.ngtesting.platform.service.CustomFieldService;
+import com.ngtesting.platform.service.TestProjectService;
+import com.ngtesting.platform.util.BeanUtilEx;
+import com.ngtesting.platform.util.StringUtil;
+import com.ngtesting.platform.vo.CustomFieldVo;
+import com.ngtesting.platform.vo.TestProjectVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSON;
-import com.ngtesting.platform.entity.TestCustomField;
-import com.ngtesting.platform.entity.TestCustomField;
-import com.ngtesting.platform.entity.TestCustomField;
-import com.ngtesting.platform.entity.TestOrgPrivilege;
-import com.ngtesting.platform.entity.TestOrgRole;
-import com.ngtesting.platform.entity.TestCustomField.FieldApplyTo;
-import com.ngtesting.platform.entity.TestCustomField.FieldFormat;
-import com.ngtesting.platform.entity.TestCustomField.FieldType;
-import com.ngtesting.platform.entity.TestOrg;
-import com.ngtesting.platform.entity.TestUser;
-import com.ngtesting.platform.entity.TestProject;
-import com.ngtesting.platform.service.AccountService;
-import com.ngtesting.platform.service.CustomFieldService;
-import com.ngtesting.platform.service.RelationOrgGroupUserService;
-import com.ngtesting.platform.service.RelationProjectRoleUserService;
-import com.ngtesting.platform.service.TestProjectService;
-import com.ngtesting.platform.service.UserService;
-import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.util.StringUtil;
-import com.ngtesting.platform.vo.CasePriorityVo;
-import com.ngtesting.platform.vo.CustomFieldVo;
-import com.ngtesting.platform.vo.CustomFieldVo;
-import com.ngtesting.platform.vo.OrgPrivilegeVo;
-import com.ngtesting.platform.vo.Page;
-import com.ngtesting.platform.vo.TestProjectVo;
-import com.ngtesting.platform.vo.UserVo;
+import java.util.*;
 
 @Service
 public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFieldService {
@@ -59,6 +39,23 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 		
 		return ls;
 	}
+
+	@Override
+	public List<CustomFieldVo> listByCase(Long orgId, Long caseId) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestCustomField.class);
+
+		dc.add(Restrictions.eq("orgId", orgId));
+		dc.add(Restrictions.eq("applyTo", FieldApplyTo.test_case));
+
+		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+
+		dc.addOrder(Order.asc("displayOrder"));
+		List ls = findAllByCriteria(dc);
+
+		return ls;
+	}
+
 	@Override
 	public List<CustomFieldVo> listVos(Long orgId) {
         List<TestCustomField> ls = list(orgId);
@@ -81,10 +78,10 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 		}
 		this.initPo(po, vo);
 		
-		po.setApplyTo(TestCustomField.FieldApplyTo.getValue(vo.getApplyTo()));
-		po.setType(TestCustomField.FieldType.getValue(vo.getType()));
+		po.setApplyTo(TestCustomField.FieldApplyTo.valueOf(vo.getApplyTo()));
+		po.setType(TestCustomField.FieldType.valueOf(vo.getType()));
 		if (StringUtil.isNotEmpty(vo.getFormat())) {
-			po.setFormat(TestCustomField.FieldFormat.getValue(vo.getFormat()));
+			po.setFormat(TestCustomField.FieldFormat.valueOf(vo.getFormat()));
 		}
 		
 		po.setOrgId(orgId);

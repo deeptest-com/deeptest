@@ -1,21 +1,20 @@
 package com.ngtesting.platform.service.impl;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.springframework.stereotype.Service;
-
 import com.ngtesting.platform.entity.TestCase;
 import com.ngtesting.platform.service.TestCaseService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.Constant.TreeNodeType;
 import com.ngtesting.platform.vo.TestCaseTreeVo;
 import com.ngtesting.platform.vo.TestCaseVo;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseService {
@@ -39,7 +38,15 @@ public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseServ
         
         return ls;
 	}
-	
+
+	@Override
+	public TestCaseVo getById(Long caseId) {
+		TestCase po = (TestCase) get(TestCase.class, caseId);
+		TestCaseVo vo = genVo(po);
+
+		return vo;
+	}
+
 	@Override
 	public TestCaseTreeVo buildTree(List<TestCase> ls) {
 		TestCaseTreeVo root = null;
@@ -89,7 +96,7 @@ public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseServ
 		
 		TestCase testCase = new TestCase();
 		testCase.setTitle(value);
-		testCase.setType(TreeNodeType.getType(type));
+		testCase.setType(TreeNodeType.valueOf(type));
 		testCase.setParentId(pid);
 		testCase.setProjectId(parent.getProjectId());
 		testCase.setUserId(userId);

@@ -1,16 +1,8 @@
 package com.ngtesting.platform.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import com.ngtesting.platform.util.Constant.TreeNodeType;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "tst_case")
@@ -30,6 +22,10 @@ public class TestCase extends BaseEntity {
 	@Transient
 	private Integer level;
 	private Integer orderInParent;
+
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "case_extend_id")
+	private TestCaseExtend caseExtend;
 	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", insertable = false, updatable = false)
@@ -44,13 +40,6 @@ public class TestCase extends BaseEntity {
 
     @Column(name = "project_id")
     private Long projectId;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "module_id", insertable = false, updatable = false)
-    private TestModule module;
-
-    @Column(name = "module_id")
-    private Long moduleId;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
@@ -85,22 +74,6 @@ public class TestCase extends BaseEntity {
 
 	public void setDescr(String descr) {
 		this.descr = descr;
-	}
-
-	public TestModule getModule() {
-		return module;
-	}
-
-	public void setModule(TestModule module) {
-		this.module = module;
-	}
-
-	public Long getModuleId() {
-		return moduleId;
-	}
-
-	public void setModuleId(Long moduleId) {
-		this.moduleId = moduleId;
 	}
 
 	public Integer getEstimate() {
@@ -189,5 +162,13 @@ public class TestCase extends BaseEntity {
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	public TestCaseExtend getCaseExtend() {
+		return caseExtend;
+	}
+
+	public void setCaseExtend(TestCaseExtend caseExtend) {
+		this.caseExtend = caseExtend;
 	}
 }

@@ -1,14 +1,8 @@
 package com.ngtesting.platform.entity;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "tst_org_privilege")
@@ -36,17 +30,6 @@ public class TestOrgPrivilege extends BaseEntity {
         private String textVal;
         public String toString() {
             return textVal;
-        }
-        
-        public static OrgPrivilegeCode getValue(String str) {
-        	OrgPrivilegeCode status = null;
-        	switch(str) { 
-            	case "org_admin": status = OrgPrivilegeCode.org_admin; break;
-            	case "site_admin": status = OrgPrivilegeCode.site_admin; break;
-            	case "project_admin": status = OrgPrivilegeCode.project_admin; break;
-            }
-        	
-        	return status;
         }
     }
 

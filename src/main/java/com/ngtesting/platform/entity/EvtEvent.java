@@ -1,15 +1,7 @@
 package com.ngtesting.platform.entity;
 
+import javax.persistence.*;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "evt_event")
@@ -83,20 +75,6 @@ public class EvtEvent extends BaseEntity {
         private String textVal;
         public String toString() {
             return textVal;
-        }
-        
-        public static EventStatus getValue(String str) {
-        	EventStatus status = null;
-        	switch(str) { 
-            	case "not_start": status = EventStatus.not_start; break;
-            	case "register": status = EventStatus.register; break;
-            	case "sign": status = EventStatus.sign; break;
-            	case "in_progress": status = EventStatus.in_progress; break;
-            	case "end": status = EventStatus.end; break;
-            	case "cancel": status = EventStatus.cancel; break;
-            }
-        	
-        	return status;
         }
     }
 

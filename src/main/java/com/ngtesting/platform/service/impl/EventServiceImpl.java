@@ -1,16 +1,5 @@
 package com.ngtesting.platform.service.impl;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.ngtesting.platform.entity.EvtEvent;
 import com.ngtesting.platform.entity.EvtEvent.EventStatus;
 import com.ngtesting.platform.service.DocumentService;
@@ -20,6 +9,16 @@ import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.DateUtils;
 import com.ngtesting.platform.vo.EventVo;
 import com.ngtesting.platform.vo.Page;
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class EventServiceImpl extends BaseServiceImpl implements EventService {
@@ -38,7 +37,7 @@ public class EventServiceImpl extends BaseServiceImpl implements EventService {
         
         if (StringUtils.isNotEmpty(statusStr)) {
         	Date now = new Date();
-    		EventStatus status = EventStatus.getValue(statusStr);
+    		EventStatus status = EventStatus.valueOf(statusStr);
     		if (status.equals(EventStatus.end)) {
     			dc.add(Restrictions.lt("endDatetime", now));
     		} else if (status.equals(EventStatus.in_progress)) {

@@ -12,7 +12,10 @@ public class TestCase extends BaseEntity {
     private String title;
 	private Integer priority;
 	private Integer estimate;
-    
+
+	@Column(name = "objective", length = 1000)
+	private String objective;
+
 	@Column(name = "descr", length = 1000)
     private String descr;
 
@@ -124,14 +127,6 @@ public class TestCase extends BaseEntity {
 		this.parentId = parentId;
 	}
 
-//	public String getPath() {
-//		return path;
-//	}
-//
-//	public void setPath(String path) {
-//		this.path = path;
-//	}
-
 	public Integer getOrderInParent() {
 		return orderInParent;
 	}
@@ -170,5 +165,13 @@ public class TestCase extends BaseEntity {
 
 	public void setCaseExtend(TestCaseExtend caseExtend) {
 		this.caseExtend = caseExtend;
+	}
+
+	public String getObjective() {
+		return objective;
+	}
+
+	public void setObjective(String objective) {
+		this.objective = objective;
 	}
 }

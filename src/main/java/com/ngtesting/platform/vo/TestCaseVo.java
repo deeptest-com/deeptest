@@ -1,6 +1,7 @@
 package com.ngtesting.platform.vo;
 
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TestCaseVo extends BaseVo {
 	private static final long serialVersionUID = -5955583523485410239L;
@@ -8,14 +9,13 @@ public class TestCaseVo extends BaseVo {
 	private String title;
 	private Integer priority;
 	private Integer estimate;
+	private String objective;
     private String descr;
 
 	private Integer path;
 	private String type;
 
-    private Long moduleId;
-    
-    LinkedList<TestCaseVo> children = new LinkedList<TestCaseVo>();
+	private Map<String, String> extend = new HashMap<String, String>();
 
 	public String getTitle() {
 		return title;
@@ -57,22 +57,6 @@ public class TestCaseVo extends BaseVo {
 		this.path = path;
 	}
 
-	public Long getModuleId() {
-		return moduleId;
-	}
-
-	public void setModuleId(Long moduleId) {
-		this.moduleId = moduleId;
-	}
-
-	public LinkedList<TestCaseVo> getChildren() {
-		return children;
-	}
-
-	public void setChildren(LinkedList<TestCaseVo> children) {
-		this.children = children;
-	}
-
 	public String getType() {
 		return type;
 	}
@@ -81,5 +65,40 @@ public class TestCaseVo extends BaseVo {
 		this.type = type;
 	}
 
+	public String getObjective() {
+		return objective;
+	}
+
+	public void setObjective(String objective) {
+		this.objective = objective;
+	}
+
+	public Map<String, String> getExtend() {
+		return extend;
+	}
+
+	public void setExtend(Map<String, String> extend) {
+		this.extend = extend;
+	}
+
+//    private Long moduleId;
+
+//    LinkedList<TestCaseVo> children = new LinkedList<TestCaseVo>();
+
+//	public Long getModuleId() {
+//		return moduleId;
+//	}
+//
+//	public void setModuleId(Long moduleId) {
+//		this.moduleId = moduleId;
+//	}
+
+//	public LinkedList<TestCaseVo> getChildren() {
+//		return children;
+//	}
+//
+//	public void setChildren(LinkedList<TestCaseVo> children) {
+//		this.children = children;
+//	}
 
 }

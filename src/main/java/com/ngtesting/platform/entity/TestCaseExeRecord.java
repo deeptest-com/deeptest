@@ -22,6 +22,8 @@ public class TestCaseExeRecord extends BaseEntity {
     private Integer level;
     private Integer orderInParent;
 
+    private String objective;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "case_extend_id")
     private TestCaseExtend caseExtend;
@@ -206,5 +208,13 @@ public class TestCaseExeRecord extends BaseEntity {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getObjective() {
+        return objective;
+    }
+
+    public void setObjective(String objective) {
+        this.objective = objective;
     }
 }

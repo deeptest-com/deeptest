@@ -8,7 +8,7 @@ import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
 import com.ngtesting.platform.vo.TestProjectVo;
 import com.ngtesting.platform.vo.UserVo;
 
-public interface TestProjectService extends BaseService {
+public interface ProjectService extends BaseService {
 
 	List<TestProjectVo> listVos(Long orgId, String keywords, String disabled);
 	List<TestProjectVo> listProjectGroups(Long orgId);

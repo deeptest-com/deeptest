@@ -2,7 +2,7 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestProject;
-import com.ngtesting.platform.service.TestProjectService;
+import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
@@ -30,7 +30,7 @@ public class ProjectAction extends BaseAction {
 	private static final Log log = LogFactory.getLog(ProjectAction.class);
 	
 	@Autowired
-	TestProjectService projectService;
+    ProjectService projectService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)

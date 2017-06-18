@@ -1,14 +1,19 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.entity.TestCase;
-import com.ngtesting.platform.service.TestCaseService;
+import com.ngtesting.platform.entity.TestCaseProp;
+import com.ngtesting.platform.service.CaseService;
+import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.Constant.TreeNodeType;
+import com.ngtesting.platform.vo.CustomFieldVo;
+import com.ngtesting.platform.vo.TestCasePropVo;
 import com.ngtesting.platform.vo.TestCaseTreeVo;
 import com.ngtesting.platform.vo.TestCaseVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -17,7 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseService {
+public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
+
+	@Autowired
+	CustomFieldService customFieldService;
 
 	@Override
 	public List<TestCase> query(Long projectId) {
@@ -82,8 +90,22 @@ public class TestCaseServiceImpl extends BaseServiceImpl implements TestCaseServ
 
 	@Override
 	public TestCaseVo genVo(TestCase po) {
-		TestCaseVo vo = new TestCaseVo();
-		BeanUtilEx.copyProperties(vo, po);
+		TestCaseVo vo = new TestCaseVo(po.getTitle(), po.getPriority(), po.getEstimate(), po.getObjective(),
+				po.getDescr(), po.getPath(), po.getType().toString());
+
+		List<TestCaseProp> props = po.getProps();
+		for (TestCaseProp propPo : props) {
+
+			TestCasePropVo propVo = new TestCasePropVo(propPo.getId(), propPo.getName(), propPo.getValue());
+
+			CustomFieldVo fieldVo = new CustomFieldVo();
+			BeanUtilEx.copyProperties(fieldVo, propPo.getField());
+
+			propVo.setField(fieldVo);
+
+			vo.getProps().add(propVo);
+		}
+
 		return vo;
 	}
 

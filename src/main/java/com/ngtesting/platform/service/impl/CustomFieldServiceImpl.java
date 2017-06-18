@@ -7,7 +7,7 @@ import com.ngtesting.platform.entity.TestCustomField.FieldFormat;
 import com.ngtesting.platform.entity.TestCustomField.FieldType;
 import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.service.CustomFieldService;
-import com.ngtesting.platform.service.TestProjectService;
+import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.CustomFieldVo;
@@ -24,7 +24,7 @@ import java.util.*;
 public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFieldService {
 
 	@Autowired
-	TestProjectService projectService;
+    ProjectService projectService;
 	
 	@Override
 	public List<TestCustomField> list(Long orgId) {
@@ -41,7 +41,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 	}
 
 	@Override
-	public List<CustomFieldVo> listByCase(Long orgId, Long caseId) {
+	public List<TestCustomField> listForCaseByOrg(Long orgId) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestCustomField.class);
 
 		dc.add(Restrictions.eq("orgId", orgId));

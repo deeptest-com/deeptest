@@ -2,11 +2,10 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestCase;
+import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.service.CustomFieldService;
-import com.ngtesting.platform.service.TestCaseService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
-import com.ngtesting.platform.vo.CustomFieldVo;
 import com.ngtesting.platform.vo.TestCaseTreeVo;
 import com.ngtesting.platform.vo.TestCaseVo;
 import com.ngtesting.platform.vo.UserVo;
@@ -27,7 +26,7 @@ import java.util.Map;
 @RequestMapping(Constant.API_PATH_CLIENT + "case/")
 public class CaseAction extends BaseAction {
 	@Autowired
-	TestCaseService caseService;
+    CaseService caseService;
 
     @Autowired
     CustomFieldService customFieldService;
@@ -60,7 +59,6 @@ public class CaseAction extends BaseAction {
         Long caseId = json.getLong("id");
 
         TestCaseVo vo = caseService.getById(caseId);
-        List<CustomFieldVo> fields = customFieldService.listByCase(orgId, caseId);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

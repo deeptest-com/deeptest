@@ -11,21 +11,19 @@ import org.springframework.stereotype.Service;
 
 import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestUser;
-import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.service.OrgService;
-import com.ngtesting.platform.service.TestProjectService;
+import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.OrgVo;
 import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
-import com.ngtesting.platform.vo.TestProjectVo;
 import com.ngtesting.platform.vo.UserVo;
 
 @Service
 public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	
 	@Autowired
-	TestProjectService projectService;
+    ProjectService projectService;
 
 	@Override
 	public List<TestOrg> list(String keywords, String disabled, Long userId) {

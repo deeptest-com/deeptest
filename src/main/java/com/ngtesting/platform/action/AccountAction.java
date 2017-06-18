@@ -1,11 +1,15 @@
 package com.ngtesting.platform.action;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.entity.TestUser;
+import com.ngtesting.platform.entity.TestVerifyCode;
+import com.ngtesting.platform.service.*;
+import com.ngtesting.platform.util.AuthPassport;
+import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.util.Constant.RespCode;
+import com.ngtesting.platform.util.PropertyConfig;
+import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
+import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,22 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.TestUser;
-import com.ngtesting.platform.entity.TestVerifyCode;
-import com.ngtesting.platform.service.AccountService;
-import com.ngtesting.platform.service.MailService;
-import com.ngtesting.platform.service.RegisterService;
-import com.ngtesting.platform.service.TestProjectService;
-import com.ngtesting.platform.service.UserService;
-import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.util.Constant;
-import com.ngtesting.platform.util.Constant.RespCode;
-import com.ngtesting.platform.util.PropertyConfig;
-import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
-import com.ngtesting.platform.vo.TestProjectVo;
-import com.ngtesting.platform.vo.UserVo;
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -39,7 +31,7 @@ public class AccountAction extends BaseAction {
 	@Autowired
 	UserService userService;
 	@Autowired
-	TestProjectService projectService;
+    ProjectService projectService;
 	
 	@Autowired
 	RegisterService registerService;

@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface CustomFieldService extends BaseService {
 	List<TestCustomField> list(Long orgId);
-	List<CustomFieldVo> listByCase(Long orgId, Long caseId);
+	List<TestCustomField> listForCaseByOrg(Long orgId);
 	
 	TestCustomField save(CustomFieldVo vo, Long orgId);
 	boolean delete(Long id);

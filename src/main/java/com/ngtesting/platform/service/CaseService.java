@@ -6,7 +6,7 @@ import com.ngtesting.platform.vo.TestCaseVo;
 
 import java.util.List;
 
-public interface TestCaseService extends BaseService {
+public interface CaseService extends BaseService {
 
 	List<TestCase> query(Long projectId);
 	TestCaseVo getById(Long caseId);

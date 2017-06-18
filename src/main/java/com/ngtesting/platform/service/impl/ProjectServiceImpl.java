@@ -5,7 +5,7 @@ import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestProject.ProjectType;
 import com.ngtesting.platform.entity.TestProjectAccessHistory;
 import com.ngtesting.platform.entity.TestUser;
-import com.ngtesting.platform.service.TestProjectService;
+import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
@@ -27,11 +27,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Service
-public class TestProjectServiceImpl extends BaseServiceImpl implements
-		TestProjectService {
+public class ProjectServiceImpl extends BaseServiceImpl implements
+		ProjectService {
 
 	private static final Log log = LogFactory
-			.getLog(TestProjectServiceImpl.class);
+			.getLog(ProjectService.class);
 
 	@Autowired
 	private ProjectDao projectDao;

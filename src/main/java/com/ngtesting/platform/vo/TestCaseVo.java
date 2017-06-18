@@ -1,7 +1,7 @@
 package com.ngtesting.platform.vo;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
 public class TestCaseVo extends BaseVo {
 	private static final long serialVersionUID = -5955583523485410239L;
@@ -12,12 +12,24 @@ public class TestCaseVo extends BaseVo {
 	private String objective;
     private String descr;
 
-	private Integer path;
+	private String path;
 	private String type;
 
-	private Map<String, String> extend = new HashMap<String, String>();
+    private List<TestCasePropVo> props = new LinkedList<>();
 
-	public String getTitle() {
+    public TestCaseVo(String title, Integer priority, Integer estimate, String objective, String descr, String path, String type) {
+        super();
+        this.title = title;
+        this.priority = priority;
+        this.estimate = estimate;
+        this.objective = objective;
+        this.descr = descr;
+        this.path = path;
+        this.type = type;
+
+    }
+
+    public String getTitle() {
 		return title;
 	}
 
@@ -49,11 +61,11 @@ public class TestCaseVo extends BaseVo {
 		this.descr = descr;
 	}
 
-	public Integer getPath() {
+	public String getPath() {
 		return path;
 	}
 
-	public void setPath(Integer path) {
+	public void setPath(String path) {
 		this.path = path;
 	}
 
@@ -73,32 +85,11 @@ public class TestCaseVo extends BaseVo {
 		this.objective = objective;
 	}
 
-	public Map<String, String> getExtend() {
-		return extend;
-	}
+    public List<TestCasePropVo> getProps() {
+        return props;
+    }
 
-	public void setExtend(Map<String, String> extend) {
-		this.extend = extend;
-	}
-
-//    private Long moduleId;
-
-//    LinkedList<TestCaseVo> children = new LinkedList<TestCaseVo>();
-
-//	public Long getModuleId() {
-//		return moduleId;
-//	}
-//
-//	public void setModuleId(Long moduleId) {
-//		this.moduleId = moduleId;
-//	}
-
-//	public LinkedList<TestCaseVo> getChildren() {
-//		return children;
-//	}
-//
-//	public void setChildren(LinkedList<TestCaseVo> children) {
-//		this.children = children;
-//	}
-
+    public void setProps(List<TestCasePropVo> props) {
+        this.props = props;
+    }
 }

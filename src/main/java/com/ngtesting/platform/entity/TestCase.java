@@ -3,6 +3,8 @@ package com.ngtesting.platform.entity;
 import com.ngtesting.platform.util.Constant.TreeNodeType;
 
 import javax.persistence.*;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Table(name = "tst_case")
@@ -25,10 +27,6 @@ public class TestCase extends BaseEntity {
 	@Transient
 	private Integer level;
 	private Integer orderInParent;
-
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "case_extend_id")
-	private TestCaseExtend caseExtend;
 	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", insertable = false, updatable = false)
@@ -50,7 +48,19 @@ public class TestCase extends BaseEntity {
 
     @Column(name = "user_id")
     private Long userId;
-    
+
+	@OneToMany(mappedBy="testCase", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+	@OrderBy("fieldId")
+	private List<TestCaseProp> props = new LinkedList<>();
+
+	public List<TestCaseProp> getProps() {
+		return props;
+	}
+
+	public void setProps(List<TestCaseProp> props) {
+		this.props = props;
+	}
+
 	public Integer getLevel() {
 		return getPath().split("/").length - 1;
 	}
@@ -157,14 +167,6 @@ public class TestCase extends BaseEntity {
 
 	public void setPath(String path) {
 		this.path = path;
-	}
-
-	public TestCaseExtend getCaseExtend() {
-		return caseExtend;
-	}
-
-	public void setCaseExtend(TestCaseExtend caseExtend) {
-		this.caseExtend = caseExtend;
 	}
 
 	public String getObjective() {

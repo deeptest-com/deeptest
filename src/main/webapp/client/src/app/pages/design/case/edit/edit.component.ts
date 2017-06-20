@@ -79,7 +79,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
     ];
 
     this.settings = {
-      mode: 'external',
+      // mode: 'external',
       add: {
         addButtonContent: '<i class="ion-plus"></i>',
         createButtonContent: '<i class="ion-checkmark"></i>',
@@ -89,6 +89,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
         editButtonContent: '<i class="ion-edit"></i>',
         saveButtonContent: '<i class="ion-checkmark"></i>',
         cancelButtonContent: '<i class="ion-close"></i>',
+        confirmSave: true
       },
       delete: {
         deleteButtonContent: '<i class="ion-trash-a"></i>',

@@ -1,4 +1,5 @@
 .case-edit {
+  margin: 5px;
   .tabs-container {
     margin: 0px;
 
@@ -40,16 +41,6 @@
         }
         th {
           font-weight: bolder;
-
-          &.numb {
-            width: 60px;
-          }
-          &.opt {
-            width: 50%;
-          }
-          &.result {
-            width: 50%;
-          }
         }
       }
 

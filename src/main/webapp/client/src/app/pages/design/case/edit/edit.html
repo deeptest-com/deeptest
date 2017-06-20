@@ -4,7 +4,7 @@
       <div class="form-group row">
         <label class="col-sm-2 col-form-label"></label>
         <div class="col-sm-10">
-          <button type="submit" class="btn btn-primary btn-xs" [disabled]="!form.valid">保存</button>
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="!form.valid">保存</button>
         </div>
 
       </div>
@@ -42,32 +42,7 @@
       <div [class.hidden]="tab != 'steps'" class="tab-steps form-group row">
         <label class="col-sm-1 col-form-label"></label>
         <div class="col-sm-11">
-              <table class="table">
-                <thead>
-                <tr>
-                  <th class="numb">#</th>
-                  <th class="opt">操作</th>
-                  <th class="result">预期结果</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                </tr>
-                <tr>
-                  <th scope="row">2</th>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                </tr>
-                <tr>
-                  <th scope="row">3</th>
-                  <td>Larry</td>
-                  <td>the Bird</td>
-                </tr>
-                </tbody>
-              </table>
+          <ng2-smart-table [settings]="settings" [source]="data" (deleteConfirm)="onDeleteConfirm($event)"></ng2-smart-table>
         </div>
       </div>
       <div [class.hidden]="tab != 'summary'" class="tab-summary">

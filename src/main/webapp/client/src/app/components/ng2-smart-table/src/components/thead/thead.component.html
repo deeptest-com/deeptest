@@ -1,0 +1,13 @@
+<tr ng2-st-thead-titles-row *ngIf="!isHideHeader"
+                            class="ng2-smart-titles"
+                            [grid]="grid"
+                            [isAllSelected]="isAllSelected"
+                            [source]="source"
+                            (sort)="sort.emit($event)"
+                            (selectAllRows)="selectAllRows.emit($event)">
+</tr>
+
+<tr ng2-st-thead-form-row *ngIf="grid.createFormShown"
+                          [grid]="grid"
+                          [createConfirm]="createConfirm">
+</tr>

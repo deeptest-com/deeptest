@@ -1,0 +1,80 @@
+:host {
+  font-size: 1rem;
+
+  /deep/ {
+    * {
+      box-sizing: border-box;
+    }
+
+    button,
+    input,
+    optgroup,
+    select,
+    textarea {
+      color: inherit;
+      font: inherit;
+      margin: 0;
+    }
+
+    table {
+      line-height: 1.5em;
+      border-collapse: collapse;
+      border-spacing: 0;
+      display: table;
+      width: 100%;
+      max-width: 100%;
+      overflow: auto;
+      word-break: normal;
+      word-break: keep-all;
+
+      tr {
+        th {
+          text-align: center;
+          font-weight: bold;
+          &.action {
+            width: 100px;
+          }
+          &.id {
+            width: 100px;
+          }
+          &.opt {
+
+          }
+          &.expect {
+
+          }
+        }
+        td {
+          &.ng2-smart-actions {
+            text-align: center;
+          }
+        }
+        section {
+          font-size: .75em;
+          font-weight: bold;
+        }
+        td,
+        th {
+          font-size: .875em;
+          margin: 0;
+          padding: 0.5em 1em;
+        }
+      }
+    }
+
+    a {
+      margin: 0 5px;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .ng2-smart-actions-title-add {
+      text-align: center !important;
+    }
+    .ng2-smart-actions {
+      width: 70px;
+    }
+  }
+}

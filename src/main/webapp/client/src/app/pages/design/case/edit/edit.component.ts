@@ -29,6 +29,8 @@ declare var jQuery;
 export class CaseEdit implements OnInit, AfterViewInit {
   id: number;
   model: any = {};
+  settings: any;
+  data: any;
   form: any;
   tab: string = 'steps';
 
@@ -56,6 +58,67 @@ export class CaseEdit implements OnInit, AfterViewInit {
       that.loadData();
     });
 
+
+    this.data = [
+      {
+        id: 1,
+        opt: 'Leanne Graham',
+        expect: 'Lorem ipsum dolor sit amet, ex dolorem officiis convenire usu.'
+      },
+      {
+        id: 2,
+        opt: 'Ervin Howell',
+        expect: `Vix iudico graecis in? Malis eirmod consectetuer duo ut?
+                Mel an aeterno vivendum accusata, qui ne amet stet definitiones.`
+      },
+      {
+        id: 3,
+        opt: 'Clementine Bauch',
+        expect: 'Mollis latine intellegebat ei usu, veri exerci intellegebat vel cu. Eu nec ferri copiosae.'
+      }
+    ];
+
+    this.settings = {
+      add: {
+        addButtonContent: '<i class="ion-ios-plus-outline"></i>',
+        createButtonContent: '<i class="ion-checkmark"></i>',
+        cancelButtonContent: '<i class="ion-close"></i>',
+      },
+      edit: {
+        editButtonContent: '<i class="ion-edit"></i>',
+        saveButtonContent: '<i class="ion-checkmark"></i>',
+        cancelButtonContent: '<i class="ion-close"></i>',
+      },
+      delete: {
+        deleteButtonContent: '<i class="ion-trash-a"></i>',
+        confirmDelete: true
+      },
+      columns: {
+        id: {
+          title: '编号',
+        },
+        opt: {
+          title: '操作',
+          editor: {
+            type: 'completer',
+            config: {
+              completer: {
+                data: this.data,
+                searchFields: 'opt',
+                titleField: 'opt',
+                descriptionField: 'opt',
+              },
+            },
+          },
+        },
+        expect: {
+          title: '期望结果',
+          editor: {
+            type: 'textarea',
+          },
+        }
+      },
+    };
   }
   ngAfterViewInit() {}
 

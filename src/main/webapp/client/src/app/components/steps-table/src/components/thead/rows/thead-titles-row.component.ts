@@ -7,21 +7,12 @@ import { Column } from "../../../lib/data-set/column";
 @Component({
   selector: '[ng2-st-thead-titles-row]',
   template: `
-    <th ng2-st-checkbox-select-all *ngIf="isMultiSelectVisible"
-                                   [grid]="grid"
-                                   [source]="source"
-                                   [isAllSelected]="isAllSelected"
-                                   (click)="selectAllRows.emit($event)">
-    </th>
-
-    <th ng2-st-add-button *ngIf="showActionColumnLeft" [grid]="grid" (create)="create.emit($event)" class="action">
-    </th>
-    
+    <th class="action-order link">排序</th>
     <th *ngFor="let column of grid.getColumns()" class="ng2-smart-th {{ column.id }}" [ngClass]="column.class"
       [style.width]="column.width" >
       <ng2-st-column-title [source]="source" [column]="column" (sort)="sort.emit($event)"></ng2-st-column-title>
     </th>
-    <th ng2-st-actions-title *ngIf="showActionColumnRight" [grid]="grid"></th>
+    <th class="action-edit link">操作</th>
   `,
 })
 export class TheadTitlesRowComponent implements OnChanges {

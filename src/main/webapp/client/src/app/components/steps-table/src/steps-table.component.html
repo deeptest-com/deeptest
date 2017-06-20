@@ -16,6 +16,8 @@
                       [deleteConfirm]="deleteConfirm"
                       [editConfirm]="editConfirm"
                       [rowClassFunction]="rowClassFunction"
+                      (up)="up.emit($event)"
+                      (down)="down.emit($event)"
                       (edit)="edit.emit($event)"
                       (delete)="delete.emit($event)"
                       (custom)="custom.emit($event)"
@@ -26,8 +28,3 @@
   </tbody>
 
 </table>
-
-<ng2-smart-table-pager *ngIf="isPagerDisplay"
-                        [source]="source"
-                        (changePage)="changePage($event)">
-</ng2-smart-table-pager>

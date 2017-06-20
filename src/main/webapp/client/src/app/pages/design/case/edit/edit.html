@@ -42,7 +42,15 @@
       <div [class.hidden]="tab != 'steps'" class="tab-steps form-group row">
         <label class="col-sm-1 col-form-label"></label>
         <div class="col-sm-11">
-          <ng2-smart-table [settings]="settings" [source]="data" (deleteConfirm)="onDeleteConfirm($event)"></ng2-smart-table>
+          <steps-table [settings]="settings" [source]="data"
+
+                       (delete)="onDelete($event)"
+
+                       (deleteConfirm)="onDeleteConfirm($event)"
+                       (editConfirm)="onEditConfirm($event)"
+
+                       (up)="onUp($event)"
+                       (down)="onDown($event)"></steps-table>
         </div>
       </div>
       <div [class.hidden]="tab != 'summary'" class="tab-summary">

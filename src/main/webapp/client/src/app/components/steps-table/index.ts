@@ -5,7 +5,7 @@ import { Cell } from './src/lib/data-set/cell';
 import { LocalDataSource } from './src/lib/data-source/local/local.data-source';
 import { ServerDataSource } from './src/lib/data-source/server/server.data-source';
 
-import {Ng2SmartTableModule} from './src/ng2-smart-table.module';
+import {StepsTableModule} from './src/steps-table.module';
 
 export {
   ViewCell,
@@ -16,5 +16,5 @@ export {
   LocalDataSource,
   ServerDataSource,
 
-  Ng2SmartTableModule
+  StepsTableModule
 };

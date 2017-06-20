@@ -7,11 +7,11 @@ import { deepExtend } from './lib/helpers';
 import { LocalDataSource } from './lib/data-source/local/local.data-source';
 
 @Component({
-  selector: 'ng2-smart-table',
-  styleUrls: ['./ng2-smart-table.component.scss'],
-  templateUrl: './ng2-smart-table.component.html',
+  selector: 'steps-table',
+  styleUrls: ['./steps-table.component.scss'],
+  templateUrl: './steps-table.component.html',
 })
-export class Ng2SmartTableComponent implements OnChanges {
+export class StepsTableComponent implements OnChanges {
 
   @Input() source: any;
   @Input() settings: Object = {};
@@ -26,6 +26,8 @@ export class Ng2SmartTableComponent implements OnChanges {
   @Output() editConfirm = new EventEmitter<any>();
   @Output() createConfirm = new EventEmitter<any>();
   @Output() rowHover: EventEmitter<any> = new EventEmitter<any>();
+  @Output() up = new EventEmitter<any>();
+  @Output() down = new EventEmitter<any>();
 
   tableClass: string;
   tableId: string;

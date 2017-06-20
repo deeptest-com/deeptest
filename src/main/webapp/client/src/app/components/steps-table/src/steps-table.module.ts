@@ -3,12 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { CellModule } from './components/cell/cell.module';
-import { FilterModule } from './components/filter/filter.module';
-import { PagerModule } from './components/pager/pager.module';
 import { TBodyModule } from './components/tbody/tbody.module';
 import { THeadModule } from './components/thead/thead.module';
 
-import { Ng2SmartTableComponent } from './ng2-smart-table.component';
+import { StepsTableComponent } from './steps-table.component';
 
 @NgModule({
   imports: [
@@ -16,17 +14,15 @@ import { Ng2SmartTableComponent } from './ng2-smart-table.component';
     FormsModule,
     ReactiveFormsModule,
     CellModule,
-    FilterModule,
-    PagerModule,
     TBodyModule,
     THeadModule,
   ],
   declarations: [
-    Ng2SmartTableComponent,
+    StepsTableComponent,
   ],
   exports: [
-    Ng2SmartTableComponent,
+    StepsTableComponent,
   ],
 })
-export class Ng2SmartTableModule {
+export class StepsTableModule {
 }

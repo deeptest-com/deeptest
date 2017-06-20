@@ -18,6 +18,8 @@ export class Ng2SmartTableTbodyComponent {
   @Input() editConfirm: EventEmitter<any>;
   @Input() rowClassFunction: Function;
 
+  @Output() up = new EventEmitter<any>();
+  @Output() down = new EventEmitter<any>();
   @Output() save = new EventEmitter<any>();
   @Output() cancel = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();

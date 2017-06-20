@@ -12,7 +12,7 @@ import { routing }       from './case.routing';
 import { DirectiveModule } from '../../../directive/directive.module';
 import { SlimLoadingBarModule } from '../../../components/ng2-loading-bar';
 import { TreeModule } from '../../../components/ng2-tree';
-import { Ng2SmartTableModule } from '../../../components/ng2-smart-table';
+import { StepsTableModule } from '../../../components/steps-table';
 import { CustomFieldModule } from '../../../components/custom-field';
 
 import { RouteService } from '../../../service/route';
@@ -38,7 +38,7 @@ import { CaseEdit } from './edit/edit.component';
     DirectiveModule,
     SlimLoadingBarModule.forRoot(),
     TreeModule,
-    Ng2SmartTableModule,
+    StepsTableModule,
     CustomFieldModule
   ],
   declarations: [

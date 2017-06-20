@@ -61,26 +61,27 @@ export class CaseEdit implements OnInit, AfterViewInit {
 
     this.data = [
       {
-        id: 1,
+        ordr: 1,
         opt: 'Leanne Graham',
         expect: 'Lorem ipsum dolor sit amet, ex dolorem officiis convenire usu.'
       },
       {
-        id: 2,
+        ordr: 2,
         opt: 'Ervin Howell',
         expect: `Vix iudico graecis in? Malis eirmod consectetuer duo ut?
                 Mel an aeterno vivendum accusata, qui ne amet stet definitiones.`
       },
       {
-        id: 3,
+        ordr: 3,
         opt: 'Clementine Bauch',
         expect: 'Mollis latine intellegebat ei usu, veri exerci intellegebat vel cu. Eu nec ferri copiosae.'
       }
     ];
 
     this.settings = {
+      mode: 'external',
       add: {
-        addButtonContent: '<i class="ion-ios-plus-outline"></i>',
+        addButtonContent: '<i class="ion-plus"></i>',
         createButtonContent: '<i class="ion-checkmark"></i>',
         cancelButtonContent: '<i class="ion-close"></i>',
       },
@@ -94,21 +95,13 @@ export class CaseEdit implements OnInit, AfterViewInit {
         confirmDelete: true
       },
       columns: {
-        id: {
-          title: '编号',
+        ordr: {
+          title: '顺序',
         },
         opt: {
           title: '操作',
           editor: {
-            type: 'completer',
-            config: {
-              completer: {
-                data: this.data,
-                searchFields: 'opt',
-                titleField: 'opt',
-                descriptionField: 'opt',
-              },
-            },
+            type: 'textarea'
           },
         },
         expect: {
@@ -168,6 +161,25 @@ export class CaseEdit implements OnInit, AfterViewInit {
 
   tabChange(event: any) {
     this.tab = event.nextId;
+  }
+
+  onUp(event: any) {
+    console.log('onUp', event);
+  }
+
+  onDown(event: any) {
+    console.log('onDown', event);
+  }
+
+  onDelete(event: any) {
+    console.log('onDelete', event);
+  }
+  onDeleteConfirm(event: any) {
+    console.log('onDeleteConfirm', event);
+  }
+
+  onEditConfirm(event: any) {
+    console.log('onEditConfirm', event);
   }
 
 }

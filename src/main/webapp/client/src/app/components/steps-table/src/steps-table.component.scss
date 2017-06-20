@@ -31,11 +31,14 @@
         th {
           text-align: center;
           font-weight: bold;
-          &.action {
-            width: 100px;
+          &.action-order {
+            width: 60px;
           }
-          &.id {
-            width: 100px;
+          &.action-edit {
+            width: 90px;
+          }
+          &.order {
+            width: 40px;
           }
           &.opt {
 
@@ -73,8 +76,6 @@
     .ng2-smart-actions-title-add {
       text-align: center !important;
     }
-    .ng2-smart-actions {
-      width: 70px;
-    }
   }
 }
+

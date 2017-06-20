@@ -172,11 +172,10 @@ export class CaseEdit implements OnInit, AfterViewInit {
     console.log('onDown', event);
   }
 
-  onDelete(event: any) {
-    console.log('onDelete', event);
-  }
   onDeleteConfirm(event: any) {
     console.log('onDeleteConfirm', event);
+
+    event.confirm.resolve();
   }
 
   onEditConfirm(event: any) {

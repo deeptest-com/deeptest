@@ -12,7 +12,7 @@ import { Column } from "../../../lib/data-set/column";
       [style.width]="column.width" >
       <ng2-st-column-title [source]="source" [column]="column" (sort)="sort.emit($event)"></ng2-st-column-title>
     </th>
-    <th class="action-edit link">操作</th>
+    <th class="action- link">操作</th>
   `,
 })
 export class TheadTitlesRowComponent implements OnChanges {

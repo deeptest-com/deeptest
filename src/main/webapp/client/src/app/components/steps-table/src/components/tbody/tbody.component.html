@@ -1,16 +1,7 @@
 <tr *ngFor="let row of grid.getRows()" (click)="userSelectRow.emit(row)" (mouseover)="rowHover.emit(row)" class="ng2-smart-row" [className]="rowClassFunction(row)" [ngClass]="{selected: row.isSelected}">
 
   <td class="ng2-smart-actions">
-    <ng2-st-tbody-change-order [grid]="grid"
-                               [row]="row"
-                               [source]="source"
-                               (up)="up.emit(row)"
-                               (down)="down.emit(row)"
-    ></ng2-st-tbody-change-order>
-  </td>
-
-  <td *ngFor="let cell of row.cells">
-    <ng2-smart-table-cell [cell]="cell"
+    <ng2-smart-table-cell [cell]="row.cells[0]"
                           [grid]="grid"
                           [row]="row"
                           [isNew]="false"
@@ -19,6 +10,32 @@
                           [inputClass]="editInputClass"
                           [isInEditing]="row.isInEditing">
     </ng2-smart-table-cell>
+
+    <ng2-st-tbody-change-order [grid]="grid"
+                               [row]="row"
+                               [source]="source"
+                               (up)="up.emit(row)"
+                               (down)="down.emit(row)"
+    ></ng2-st-tbody-change-order>
+  </td>
+
+  <td>
+    <div class="my-cols">
+      <ng-container *ngFor="let cell of row.cells">
+        <ng-container *ngIf="cell.column.id != 'ordr'">
+          <ng2-smart-table-cell class="my-col"
+                                [cell]="cell"
+                                [grid]="grid"
+                                [row]="row"
+                                [isNew]="false"
+                                [mode]="mode"
+                                [editConfirm]="editConfirm"
+                                [inputClass]="editInputClass"
+                                [isInEditing]="row.isInEditing">
+          </ng2-smart-table-cell>
+        </ng-container>
+      </ng-container>
+    </div>
   </td>
 
   <td *ngIf="!row.isInEditing && showActionColumnLeft" class="ng2-smart-actions">

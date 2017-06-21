@@ -31,25 +31,20 @@
         th {
           text-align: center;
           font-weight: bold;
-          &.action-order {
-            width: 60px;
-          }
-          &.action-edit {
-            width: 90px;
-          }
-          &.order {
-            width: 40px;
-          }
-          &.opt {
-
-          }
-          &.expect {
-
-          }
         }
         td {
           &.ng2-smart-actions {
+            width: 100px;
             text-align: center;
+          }
+          .my-cols {
+            display: flex;
+            .my-ordr {
+              width: 50px;
+            }
+            .my-col {
+              flex: 1;
+            }
           }
         }
         section {

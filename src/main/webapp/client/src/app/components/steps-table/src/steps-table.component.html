@@ -1,16 +1,5 @@
 <table [id]="tableId" [ngClass]="tableClass">
 
-  <thead ng2-st-thead *ngIf="!isHideHeader || !isHideSubHeader"
-                      [grid]="grid"
-                      [isAllSelected]="isAllSelected"
-                      [source]="source"
-                      [createConfirm]="createConfirm"
-                      (create)="create.emit($event)"
-                      (selectAllRows)="onSelectAllRows($event)"
-                      (sort)="sort($event)"
-                      (filter)="filter($event)">
-  </thead>
-
   <tbody ng2-st-tbody [grid]="grid"
                       [source]="source"
                       [deleteConfirm]="deleteConfirm"

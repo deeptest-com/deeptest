@@ -22,6 +22,7 @@ export class Ng2SmartTableTbodyComponent {
   @Output() down = new EventEmitter<any>();
   @Output() save = new EventEmitter<any>();
   @Output() cancel = new EventEmitter<any>();
+  @Output() create = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
   @Output() custom = new EventEmitter<any>();

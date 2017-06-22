@@ -182,5 +182,9 @@ export class CaseEdit implements OnInit, AfterViewInit {
     event.confirm.resolve();
   }
 
+  onCreate(event: any) {
+    console.log('onCreate', event);
+  }
+
 }
 

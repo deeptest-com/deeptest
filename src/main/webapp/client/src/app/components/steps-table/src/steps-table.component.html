@@ -1,4 +1,4 @@
-<table [id]="tableId" [ngClass]="tableClass">
+<table [id]="tableId">
 
   <tbody ng2-st-tbody [grid]="grid"
                       [source]="source"
@@ -7,6 +7,7 @@
                       [rowClassFunction]="rowClassFunction"
                       (up)="up.emit($event)"
                       (down)="down.emit($event)"
+                      (create)="create.emit($event)"
                       (edit)="edit.emit($event)"
                       (delete)="delete.emit($event)"
                       (custom)="custom.emit($event)"

@@ -9,7 +9,7 @@ import { DataSource } from '../../../lib/data-source/data-source';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <a href="#" *ngIf="isActionAdd" class="ng2-smart-action ng2-smart-action-edit-edit"
-       [innerHTML]="addRowButtonContent" (click)="onAdd($event)"></a>
+       [innerHTML]="addRowButtonContent" (click)="onCreate($event)"></a>
     
     <a href="#" *ngIf="isActionEdit" class="ng2-smart-action ng2-smart-action-edit-edit"
         [innerHTML]="editRowButtonContent" (click)="onEdit($event)"></a>
@@ -23,10 +23,11 @@ export class TbodyAddEditDeleteComponent implements OnChanges {
   @Input() grid: Grid;
   @Input() row: Row;
   @Input() source: DataSource;
+  @Input() createConfirm: EventEmitter<any>;
   @Input() deleteConfirm: EventEmitter<any>;
   @Input() editConfirm: EventEmitter<any>;
 
-  @Output() add = new EventEmitter<any>();
+  @Output() create = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
   @Output() editRowSelect = new EventEmitter<any>();
@@ -38,32 +39,17 @@ export class TbodyAddEditDeleteComponent implements OnChanges {
   editRowButtonContent: string;
   deleteRowButtonContent: string;
 
-  onAdd(event: any) {
+  onCreate(event: any) {
     event.preventDefault();
     event.stopPropagation();
 
-    this.editRowSelect.emit(this.row);
+    this.grid.create(this.grid.getNewRow(), this.createConfirm);
 
-    if (this.grid.getSetting('mode') === 'external') {
-      this.add.emit({
-        source: this.source,
-      });
-    } else {
-      this.grid.edit(this.row);
-    }
+    this.create.emit({
+      source: this.source,
+    });
+
   }
-
-  // onAdd(event: any) {
-  //   event.preventDefault();
-  //   event.stopPropagation();
-  //   if (this.grid.getSetting('mode') === 'external') {
-  //     this.create.emit({
-  //       source: this.source,
-  //     });
-  //   } else {
-  //     this.grid.createFormShown = true;
-  //   }
-  // }
 
   onEdit(event: any) {
     event.preventDefault();

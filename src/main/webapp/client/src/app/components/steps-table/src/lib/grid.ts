@@ -100,27 +100,19 @@ export class Grid {
     const deferred = new Deferred();
     deferred.promise.then((newData) => {
       newData = newData ? newData : row.getNewData();
-      if (deferred.resolve.skipAdd) {
-        this.createFormShown = false;
-      } else {
-        this.source.prepend(newData).then(() => {
-          this.createFormShown = false;
-          this.dataSet.createNewRow();
-        });
-      }
+
+      this.source.prepend(newData).then(() => {
+        console.log(this.dataSet.getRows());
+
+        this.dataSet.createNewRow();
+
+        console.log(this.dataSet.getRows());
+      });
     }).catch((err) => {
       // doing nothing
     });
 
-    if (this.getSetting('add.confirmCreate')) {
-      confirmEmitter.emit({
-        newData: row.getNewData(),
-        source: this.source,
-        confirm: deferred,
-      });
-    } else {
-      deferred.resolve();
-    }
+    deferred.resolve();
   }
 
   save(row: Row, confirmEmitter: EventEmitter<any>) {

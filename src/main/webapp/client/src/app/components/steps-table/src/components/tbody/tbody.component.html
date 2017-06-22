@@ -44,6 +44,7 @@
     <ng2-st-tbody-add-edit-delete [grid]="grid"
                                   [deleteConfirm]="deleteConfirm"
                                   [editConfirm]="editConfirm"
+                                  (create)="create.emit(row)"
                                   (edit)="edit.emit(row)"
                                   (delete)="delete.emit(row)"
                                   (editRowSelect)="editRowSelect.emit($event)"

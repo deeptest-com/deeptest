@@ -8,10 +8,11 @@
                           [mode]="mode"
                           [editConfirm]="editConfirm"
                           [inputClass]="editInputClass"
-                          [isInEditing]="row.isInEditing">
+                          [isInEditing]="false">
     </ng2-smart-table-cell>
 
-    <ng2-st-tbody-change-order [grid]="grid"
+    <ng2-st-tbody-change-order *ngIf="!row.isInEditing"
+                               [grid]="grid"
                                [row]="row"
                                [source]="source"
                                (up)="up.emit(row)"

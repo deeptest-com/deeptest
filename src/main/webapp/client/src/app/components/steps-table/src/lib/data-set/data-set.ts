@@ -119,6 +119,8 @@ export class DataSet {
   }
 
   createNewRow(curr?: Row) {
+    console.log(curr);
+
     this.newRow = new Row(-1, {}, this);
     this.newRow.isInEditing = true;
 

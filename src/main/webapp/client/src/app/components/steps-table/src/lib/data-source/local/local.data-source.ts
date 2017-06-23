@@ -31,7 +31,6 @@ export class LocalDataSource extends DataSource {
     this.reset(true);
 
     this.data.unshift(element);
-    console.log('prepend2', this.data);
     return super.prepend(element);
   }
 

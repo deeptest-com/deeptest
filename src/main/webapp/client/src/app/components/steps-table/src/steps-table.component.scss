@@ -1,5 +1,4 @@
 :host {
-  font-size: 1rem;
 
   /deep/ {
     * {
@@ -17,7 +16,6 @@
     }
 
     table {
-      line-height: 1.5em;
       border-collapse: collapse;
       border-spacing: 0;
       display: table;
@@ -34,6 +32,7 @@
           font-weight: bold;
         }
         td {
+          line-height: 22px !important;
           &.ng2-smart-actions {
             width: 100px;
             text-align: center;
@@ -53,9 +52,7 @@
           font-size: .75em;
           font-weight: bold;
         }
-        td,
-        th {
-          font-size: .875em;
+        td, th {
           margin: 0;
           padding: 0.5em 1em;
         }

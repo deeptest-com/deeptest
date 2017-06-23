@@ -41,6 +41,7 @@ export abstract class DataSource {
   }
 
   prepend(element: any): Promise<any> {
+
     this.emitOnAdded(element);
     this.emitOnChanged('prepend');
     return Promise.resolve();

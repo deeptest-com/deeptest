@@ -95,18 +95,15 @@ export class Grid {
     row.isInEditing = true;
   }
 
-  create(row: Row, confirmEmitter: EventEmitter<any>) {
+  create(row: Row, confirmEmitter: EventEmitter<any>, curr?: Row) {
 
     const deferred = new Deferred();
     deferred.promise.then((newData) => {
       newData = newData ? newData : row.getNewData();
 
       this.source.prepend(newData).then(() => {
-        console.log(this.dataSet.getRows());
 
-        this.dataSet.createNewRow();
-
-        console.log(this.dataSet.getRows());
+        this.dataSet.createNewRow(curr);
       });
     }).catch((err) => {
       // doing nothing

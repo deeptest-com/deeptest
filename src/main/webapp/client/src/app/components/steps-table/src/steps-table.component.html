@@ -1,20 +1,22 @@
-<table [id]="tableId">
+<div class="steps-table">
+  <table [id]="tableId">
 
-  <tbody ng2-st-tbody [grid]="grid"
-                      [source]="source"
-                      [deleteConfirm]="deleteConfirm"
-                      [editConfirm]="editConfirm"
-                      [rowClassFunction]="rowClassFunction"
-                      (up)="up.emit($event)"
-                      (down)="down.emit($event)"
-                      (create)="create.emit($event)"
-                      (edit)="edit.emit($event)"
-                      (delete)="delete.emit($event)"
-                      (custom)="custom.emit($event)"
-                      (userSelectRow)="onUserSelectRow($event)"
-                      (editRowSelect)="editRowSelect($event)"
-                      (multipleSelectRow)="multipleSelectRow($event)"
-                      (rowHover)="onRowHover($event)">
-  </tbody>
+    <tbody ng2-st-tbody [grid]="grid"
+                        [source]="source"
+                        [deleteConfirm]="deleteConfirm"
+                        [editConfirm]="editConfirm"
+                        [rowClassFunction]="rowClassFunction"
+                        (up)="up.emit($event)"
+                        (down)="down.emit($event)"
+                        (create)="create.emit($event)"
+                        (edit)="edit.emit($event)"
+                        (delete)="delete.emit($event)"
+                        (custom)="custom.emit($event)"
+                        (userSelectRow)="onUserSelectRow($event)"
+                        (editRowSelect)="editRowSelect($event)"
+                        (multipleSelectRow)="multipleSelectRow($event)"
+                        (rowHover)="onRowHover($event)">
+    </tbody>
 
-</table>
+  </table>
+</div>

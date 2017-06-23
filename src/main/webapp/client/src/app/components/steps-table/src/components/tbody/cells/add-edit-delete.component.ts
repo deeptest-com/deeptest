@@ -43,7 +43,7 @@ export class TbodyAddEditDeleteComponent implements OnChanges {
     event.preventDefault();
     event.stopPropagation();
 
-    this.grid.create(this.grid.getNewRow(), this.createConfirm);
+    this.grid.create(this.grid.getNewRow(), this.createConfirm, this.row);
 
     this.create.emit({
       source: this.source,

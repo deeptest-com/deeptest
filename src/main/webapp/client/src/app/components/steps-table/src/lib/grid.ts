@@ -102,7 +102,6 @@ export class Grid {
       newData = newData ? newData : row.getNewData();
 
       this.source.prepend(newData).then(() => {
-
         this.dataSet.createNewRow(curr);
       });
     }).catch((err) => {

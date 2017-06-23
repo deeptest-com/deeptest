@@ -64,7 +64,13 @@ export class LocalDataSource extends DataSource {
   }
 
   find(element: any): Promise<any> {
-    const found = this.data.find(el => el === element);
+    console.log(element, this.data);
+
+    let found = this.data.find(el => el === element);
+    if (!found && !element.ordr) { // 新对象
+      found = element;
+    }
+
     if (found) {
       return Promise.resolve(found);
     }

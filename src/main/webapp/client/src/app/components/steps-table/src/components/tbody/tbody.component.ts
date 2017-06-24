@@ -20,7 +20,7 @@ export class Ng2SmartTableTbodyComponent {
   @Input() downConfirm: EventEmitter<any>;
 
   @Input() createConfirm: EventEmitter<any>;
-  @Input() editConfirm: EventEmitter<any>;
+  @Input() saveConfirm: EventEmitter<any>;
   @Input() deleteConfirm: EventEmitter<any>;
 
   ngOnChanges() {

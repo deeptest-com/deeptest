@@ -61,17 +61,20 @@ export class CaseEdit implements OnInit, AfterViewInit {
 
     this.data = [
       {
+        id: 1,
         ordr: 1,
         opt: 'Leanne Graham',
         expect: 'Lorem ipsum dolor sit amet, ex dolorem officiis convenire usu.'
       },
       {
+        id: 2,
         ordr: 2,
         opt: 'Ervin Howell',
         expect: `Vix iudico graecis in? Malis eirmod consectetuer duo ut?
                 Mel an aeterno vivendum accusata, qui ne amet stet definitiones.`
       },
       {
+        id: 3,
         ordr: 3,
         opt: 'Clementine Bauch',
         expect: 'Mollis latine intellegebat ei usu, veri exerci intellegebat vel cu. Eu nec ferri copiosae.'
@@ -162,8 +165,8 @@ export class CaseEdit implements OnInit, AfterViewInit {
     console.log('onCreateConfirm', event);
     event.confirm.resolve();
   }
-  onEditConfirm(event: any) {
-    console.log('onEditConfirm', event);
+  onSaveConfirm(event: any) {
+    console.log('onSaveConfirm', event);
     event.confirm.resolve();
   }
   onDeleteConfirm(event: any) {

@@ -29,7 +29,7 @@ export class TbodyAddEditDeleteComponent implements OnChanges {
 
   @Input() createConfirm: EventEmitter<any>;
   @Input() deleteConfirm: EventEmitter<any>;
-  @Input() editConfirm: EventEmitter<any>;
+  @Input() saveConfirm: EventEmitter<any>;
 
   onCreate(event: any) {
     event.preventDefault();

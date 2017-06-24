@@ -22,7 +22,7 @@ export class StepsTableComponent implements OnChanges {
   @Output() downConfirm = new EventEmitter<any>();
 
   @Output() createConfirm = new EventEmitter<any>();
-  @Output() editConfirm = new EventEmitter<any>();
+  @Output() saveConfirm = new EventEmitter<any>();
   @Output() deleteConfirm = new EventEmitter<any>();
 
   grid: Grid;

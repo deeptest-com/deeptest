@@ -4,7 +4,6 @@
     <ng2-smart-table-cell [cell]="row.cells[0]"
                           [grid]="grid"
                           [row]="row"
-                          [mode]="mode"
                           [isInEditing]="false">
     </ng2-smart-table-cell> <!-- 序号 -->
 
@@ -14,19 +13,18 @@
                                [source]="source"
 
                                [upConfirm]="upConfirm"
-                               [downConfirm]="downConfirm"
-    ></ng2-st-tbody-change-order> <!-- 排序按钮 -->
+                               [downConfirm]="downConfirm">
+    </ng2-st-tbody-change-order> <!-- 排序按钮 -->
   </td>
 
   <td>
     <div class="my-cols">
       <ng-container *ngFor="let cell of row.cells">
         <ng-container *ngIf="cell.column.id != 'ordr'">
-          <ng2-smart-table-cell class="my-col"
-                                [cell]="cell"
-                                [grid]="grid"
-                                [row]="row"
-                                [isInEditing]="row.isInEditing">
+          <ng2-smart-table-cell class="my-col" [cell]="cell"
+                                               [grid]="grid"
+                                               [row]="row"
+                                               [isInEditing]="row.isInEditing">
           </ng2-smart-table-cell>
         </ng-container>
       </ng-container>
@@ -39,14 +37,16 @@
                                   [source]="source"
 
                                   [createConfirm]="createConfirm"
-                                  [editConfirm]="editConfirm"
-                                  [deleteConfirm]="deleteConfirm"
-                                  >
+                                  [saveConfirm]="saveConfirm"
+                                  [deleteConfirm]="deleteConfirm">
     </ng2-st-tbody-add-edit-delete> <!-- 操作按钮 -->
   </td>
 
-  <td *ngIf="row.isInEditing"  class="ng2-smart-actions">
-    <ng2-st-tbody-create-cancel [grid]="grid" [row]="row" [editConfirm]="editConfirm">
+  <td *ngIf="row.isInEditing" class="ng2-smart-actions">
+    <ng2-st-tbody-create-cancel [grid]="grid"
+                                [row]="row"
+                                [saveConfirm]="saveConfirm"
+                                [deleteConfirm]="deleteConfirm">
     </ng2-st-tbody-create-cancel>  <!-- 保存、取消按钮 -->
   </td>
 

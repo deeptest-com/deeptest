@@ -18,13 +18,14 @@ export class TbodyCreateCancelComponent implements OnChanges {
 
   @Input() grid: Grid;
   @Input() row: Row;
-  @Input() editConfirm: EventEmitter<any>;
+  @Input() saveConfirm: EventEmitter<any>;
+  @Input() deleteConfirm: EventEmitter<any>;
 
   onSave(event: any) {
     event.preventDefault();
     event.stopPropagation();
 
-    this.grid.save(this.row, this.editConfirm);
+    this.grid.save(this.row, this.saveConfirm);
   }
 
   onCancelEdit(event: any) {
@@ -32,7 +33,7 @@ export class TbodyCreateCancelComponent implements OnChanges {
     event.stopPropagation();
 
     if (this.row.isNew) {
-      this.grid.delete(this.row, this.editConfirm);
+      this.grid.delete(this.row, this.deleteConfirm);
     } else {
       this.row.isInEditing = false;
     }

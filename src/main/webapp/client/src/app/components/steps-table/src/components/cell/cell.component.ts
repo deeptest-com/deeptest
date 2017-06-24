@@ -8,7 +8,7 @@ import { Row } from '../../lib/data-set/row';
   selector: 'ng2-smart-table-cell',
   template: `
     <table-cell-view-mode *ngIf="!isInEditing" [cell]="cell"></table-cell-view-mode>
-    <table-cell-edit-mode *ngIf="isInEditing" [cell]="cell" (edited)="onEdited($event)">
+    <table-cell-edit-mode *ngIf="isInEditing" [cell]="cell">
     </table-cell-edit-mode>
   `,
 })
@@ -16,16 +16,9 @@ export class CellComponent {
 
   @Input() grid: Grid;
   @Input() row: Row;
-  @Input() editConfirm: EventEmitter<any>;
-  @Input() createConfirm: EventEmitter<any>;
+
   @Input() isNew: boolean;
   @Input() cell: Cell;
-  @Input() mode: string = 'inline';
   @Input() isInEditing: boolean = false;
 
-  @Output() edited = new EventEmitter<any>();
-
-  onEdited(event: any) {
-    this.grid.save(this.row, this.editConfirm);
-  }
 }

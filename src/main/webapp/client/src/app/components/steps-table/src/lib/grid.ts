@@ -47,11 +47,24 @@ export class Grid {
   setSource(source: DataSource) {
     this.source = this.prepareSource(source);
 
-    this.source.onChanged().subscribe((changes) => this.processDataChange(changes));
+    this.source.onCreated().subscribe((data) => {
+      console.log('source.onCreated');
+    });
+    this.source.onRemoved().subscribe((data) => {
+      console.log('source.onRemoved');
+    });
 
     this.source.onUpdated().subscribe((data) => {
+      console.log('source.onUpdated');
+
       const changedRow = this.dataSet.findRowByData(data);
       changedRow.setData(data);
+    });
+
+    this.source.onChanged().subscribe((changes) => {
+      console.log('source.onChanged');
+
+      this.processDataChange(changes);
     });
   }
 
@@ -188,98 +201,21 @@ export class Grid {
   processDataChange(changes: any) {
     if (this.shouldProcessChange(changes)) {
       this.dataSet.setData(changes['elements']);
-      if (this.getSetting('selectMode') !== 'multi') {
-        const row = this.determineRowToSelect(changes);
-
-        if (row) {
-          this.onSelectRowSource.next(row);
-        }
-      }
     }
   }
 
   shouldProcessChange(changes: any): boolean {
-    if (['filter', 'sort', 'page', 'remove', 'refresh', 'load', 'paging'].indexOf(changes['action']) !== -1) {
-      return true;
-    } else if (['prepend', 'append'].indexOf(changes['action']) !== -1 && !this.getSetting('pager.display')) {
+    if (['create', 'remove', 'refresh', 'load'].indexOf(changes['action']) !== -1) {
       return true;
     }
 
     return false;
   }
 
-  // TODO: move to selectable? Separate directive
-  determineRowToSelect(changes: any): Row {
-
-    if (['load', 'page', 'filter', 'sort', 'refresh'].indexOf(changes['action']) !== -1) {
-      return this.dataSet.select();
-    }
-    if (changes['action'] === 'remove') {
-      if (changes['elements'].length === 0) {
-        // we have to store which one to select as the data will be reloaded
-        this.dataSet.willSelectLastRow();
-      } else {
-        return this.dataSet.selectPreviousRow();
-      }
-    }
-    if (changes['action'] === 'append') {
-      // we have to store which one to select as the data will be reloaded
-      this.dataSet.willSelectLastRow();
-    }
-    if (changes['action'] === 'add') {
-      return this.dataSet.selectFirstRow();
-    }
-    if (changes['action'] === 'update') {
-      return this.dataSet.selectFirstRow();
-    }
-    if (changes['action'] === 'prepend') {
-      // we have to store which one to select as the data will be reloaded
-      this.dataSet.willSelectFirstRow();
-    }
-    return null;
-  }
-
   prepareSource(source: any): DataSource {
-    const initialSource: any = this.getInitialSort();
-    if (initialSource && initialSource['field'] && initialSource['direction']) {
-      source.setSort([initialSource], false);
-    }
-    if (this.getSetting('pager.display') === true) {
-      source.setPaging(1, this.getSetting('pager.perPage'), false);
-    }
 
     source.refresh();
     return source;
-  }
-
-  getInitialSort() {
-    const sortConf: any = {};
-    this.getColumns().forEach((column: Column) => {
-      if (column.isSortable && column.defaultSortDirection) {
-        sortConf['field'] = column.id;
-        sortConf['direction'] = column.defaultSortDirection;
-        sortConf['compare'] = column.getCompareFunction();
-      }
-    });
-    return sortConf;
-  }
-
-  getSelectedRows(): Array<any> {
-    return this.dataSet.getRows()
-      .filter(r => r.isSelected);
-  }
-
-  selectAllRows(status: any) {
-    this.dataSet.getRows()
-      .forEach(r => r.isSelected = status);
-  }
-
-  getFirstRow(): Row {
-    return this.dataSet.getFirstRow();
-  }
-
-  getLastRow(): Row {
-    return this.dataSet.getLastRow();
   }
 
 }

@@ -10,10 +10,6 @@ export abstract class DataSource {
 
   abstract getAll(): Promise<any>;
   abstract getElements(): Promise<any>;
-  abstract getSort(): any;
-  abstract getFilter(): any;
-  abstract getPaging(): any;
-  abstract count(): number;
 
   refresh() {
     this.emitOnChanged('refresh');
@@ -24,20 +20,18 @@ export abstract class DataSource {
     return Promise.resolve();
   }
 
-  onChanged(): Observable<any> {
-    return this.onChangedSource.asObservable();
-  }
-
   onCreated(): Observable<any> {
     return this.onCreatedSource.asObservable();
   }
-
   onUpdated(): Observable<any> {
     return this.onUpdatedSource.asObservable();
   }
-
   onRemoved(): Observable<any> {
     return this.onRemovedSource.asObservable();
+  }
+
+  onChanged(): Observable<any> {
+    return this.onChangedSource.asObservable();
   }
 
   create(element: any): Promise<any> {
@@ -63,55 +57,20 @@ export abstract class DataSource {
     return Promise.resolve();
   }
 
-  setSort(conf: Array<any>, doEmit?: boolean) {
-    if (doEmit) {
-      this.emitOnChanged('sort');
-    }
+  protected emitOnCreated(element: any) {
+    this.onCreatedSource.next(element);
   }
-
-  setFilter(conf: Array<any>, andOperator?: boolean, doEmit?: boolean) {
-    if (doEmit) {
-      this.emitOnChanged('filter');
-    }
-  }
-
-  addFilter(fieldConf: {}, andOperator?: boolean, doEmit?: boolean) {
-    if (doEmit) {
-      this.emitOnChanged('filter');
-    }
-  }
-
-  setPaging(page: number, perPage: number, doEmit?: boolean) {
-    if (doEmit) {
-      this.emitOnChanged('paging');
-    }
-  }
-
-  setPage(page: number, doEmit?: boolean) {
-    if (doEmit) {
-      this.emitOnChanged('page');
-    }
-  }
-
   protected emitOnRemoved(element: any) {
     this.onRemovedSource.next(element);
   }
-
   protected emitOnUpdated(element: any) {
     this.onUpdatedSource.next(element);
-  }
-
-  protected emitOnCreated(element: any) {
-    this.onCreatedSource.next(element);
   }
 
   protected emitOnChanged(action: string) {
     this.getElements().then((elements) => this.onChangedSource.next({
       action: action,
-      elements: elements,
-      paging: this.getPaging(),
-      filter: this.getFilter(),
-      sort: this.getSort(),
+      elements: elements
     }));
   }
 }

@@ -31,14 +31,14 @@ export class TbodyChangeOrderComponent implements OnChanges {
     event.preventDefault();
     event.stopPropagation();
 
-    // this.grid.up(this.grid.getNewRow(), this.upConfirm, this.row);
+    this.grid.up(this.row, this.upConfirm);
   }
 
   onDown(event: any) {
     event.preventDefault();
     event.stopPropagation();
 
-    // this.grid.down(this.grid.getNewRow(), this.downConfirm, this.row);
+    this.grid.down(this.row, this.downConfirm);
   }
 
   ngOnChanges(){

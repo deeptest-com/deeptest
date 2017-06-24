@@ -75,8 +75,7 @@ export class Grid {
     row.isInEditing = true;
   }
 
-  up(row: Row, confirmEmitter: EventEmitter<any>, curr?: Row) {
-    console.log(row, curr);
+  up(curr: Row, confirmEmitter: EventEmitter<any>) {
 
     const deferred = new Deferred();
     deferred.promise.then((newData) => {
@@ -88,14 +87,13 @@ export class Grid {
     }).catch((err) => {});
 
     confirmEmitter.emit({
-      newData: row.getNewData(),
+      data: curr.getData(),
       source: this.source,
       confirm: deferred
     });
 
   }
-  down(row: Row, confirmEmitter: EventEmitter<any>, curr?: Row) {
-    console.log(row, curr);
+  down(curr: Row, confirmEmitter: EventEmitter<any>) {
 
     const deferred = new Deferred();
     deferred.promise.then((newData) => {
@@ -107,7 +105,7 @@ export class Grid {
     }).catch((err) => {});
 
     confirmEmitter.emit({
-      newData: row.getNewData(),
+      data: curr.getData(),
       source: this.source,
       confirm: deferred
     });

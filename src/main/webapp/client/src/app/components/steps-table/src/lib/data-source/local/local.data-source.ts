@@ -27,24 +27,12 @@ export class LocalDataSource extends DataSource {
     return super.load(data);
   }
 
-  prepend(element: any): Promise<any> {
+  create(element: any): Promise<any> {
+    console.log('-----------', element);
     this.reset(true);
 
     this.data.unshift(element);
-    return super.prepend(element);
-  }
-
-  append(element: any): Promise<any> {
-    this.reset(true);
-
-    this.data.push(element);
-    return super.append(element);
-  }
-
-  add(element: any): Promise<any> {
-    this.data.push(element);
-
-    return super.add(element);
+    return super.create(element);
   }
 
   remove(element: any): Promise<any> {

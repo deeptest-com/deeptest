@@ -14,43 +14,16 @@ export class Ng2SmartTableTbodyComponent {
 
   @Input() grid: Grid;
   @Input() source: DataSource;
-  @Input() deleteConfirm: EventEmitter<any>;
-  @Input() editConfirm: EventEmitter<any>;
   @Input() rowClassFunction: Function;
 
-  @Output() up = new EventEmitter<any>();
-  @Output() down = new EventEmitter<any>();
-  @Output() save = new EventEmitter<any>();
-  @Output() cancel = new EventEmitter<any>();
-  @Output() create = new EventEmitter<any>();
-  @Output() edit = new EventEmitter<any>();
-  @Output() delete = new EventEmitter<any>();
-  @Output() custom = new EventEmitter<any>();
-  @Output() edited = new EventEmitter<any>();
-  @Output() userSelectRow = new EventEmitter<any>();
-  @Output() editRowSelect = new EventEmitter<any>();
-  @Output() multipleSelectRow = new EventEmitter<any>();
-  @Output() rowHover = new EventEmitter<any>();
+  @Input() upConfirm: EventEmitter<any>;
+  @Input() downConfirm: EventEmitter<any>;
 
-  isMultiSelectVisible: boolean;
-  showActionColumnLeft: boolean;
-  showActionColumnRight: boolean;
-  mode: string;
-  editInputClass: string;
-  isActionAdd: boolean;
-  isActionEdit: boolean;
-  isActionDelete: boolean;
-  noDataMessage: boolean;
+  @Input() createConfirm: EventEmitter<any>;
+  @Input() editConfirm: EventEmitter<any>;
+  @Input() deleteConfirm: EventEmitter<any>;
 
   ngOnChanges() {
-    this.isMultiSelectVisible = this.grid.isMultiSelectVisible()
-    this.showActionColumnLeft = this.grid.showActionColumn('left');
-    this.mode = this.grid.getSetting('mode');
-    this.editInputClass = this.grid.getSetting('edit.inputClass');
-    this.showActionColumnRight = this.grid.showActionColumn('right');
-    this.isActionAdd = this.grid.getSetting('actions.add');
-    this.isActionEdit = this.grid.getSetting('actions.edit');
-    this.isActionDelete = this.grid.getSetting('actions.delete');
-    this.noDataMessage = this.grid.getSetting('noDataMessage');
+
   }
 }

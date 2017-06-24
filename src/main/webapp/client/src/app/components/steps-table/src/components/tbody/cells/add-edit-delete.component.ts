@@ -8,14 +8,17 @@ import { DataSource } from '../../../lib/data-source/data-source';
   selector: 'ng2-st-tbody-add-edit-delete',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <a href="#" *ngIf="isActionAdd" class="ng2-smart-action ng2-smart-action-edit-edit"
-       [innerHTML]="addRowButtonContent" (click)="onCreate($event)"></a>
+    <a href="#" class="ng2-smart-action ng2-smart-action-edit-edit" (click)="onCreate($event)">
+      <i class="ion-plus"></i>
+    </a>
     
-    <a href="#" *ngIf="isActionEdit" class="ng2-smart-action ng2-smart-action-edit-edit"
-        [innerHTML]="editRowButtonContent" (click)="onEdit($event)"></a>
+    <a href="#" class="ng2-smart-action ng2-smart-action-edit-edit" (click)="onEdit($event)">
+      <i class="ion-edit"></i>
+    </a>
     
-    <a href="#" *ngIf="isActionDelete" class="ng2-smart-action ng2-smart-action-delete-delete"
-        [innerHTML]="deleteRowButtonContent" (click)="onDelete($event)"></a>
+    <a href="#" class="ng2-smart-action ng2-smart-action-delete-delete" (click)="onDelete($event)">
+      <i class="ion-trash-a"></i>
+    </a>
   `,
 })
 export class TbodyAddEditDeleteComponent implements OnChanges {
@@ -23,70 +26,33 @@ export class TbodyAddEditDeleteComponent implements OnChanges {
   @Input() grid: Grid;
   @Input() row: Row;
   @Input() source: DataSource;
+
   @Input() createConfirm: EventEmitter<any>;
   @Input() deleteConfirm: EventEmitter<any>;
   @Input() editConfirm: EventEmitter<any>;
-
-  @Output() create = new EventEmitter<any>();
-  @Output() edit = new EventEmitter<any>();
-  @Output() delete = new EventEmitter<any>();
-  @Output() editRowSelect = new EventEmitter<any>();
-
-  isActionAdd: boolean;
-  isActionEdit: boolean;
-  isActionDelete: boolean;
-  addRowButtonContent: string;
-  editRowButtonContent: string;
-  deleteRowButtonContent: string;
 
   onCreate(event: any) {
     event.preventDefault();
     event.stopPropagation();
 
     this.grid.create(this.grid.getNewRow(), this.createConfirm, this.row);
-
-    this.create.emit({
-      source: this.source,
-    });
-
   }
 
   onEdit(event: any) {
     event.preventDefault();
     event.stopPropagation();
 
-    this.editRowSelect.emit(this.row);
-
-    if (this.grid.getSetting('mode') === 'external') {
-      this.edit.emit({
-        data: this.row.getData(),
-        source: this.source,
-      });
-    } else {
-      this.grid.edit(this.row);
-    }
+    this.grid.edit(this.row);
   }
 
   onDelete(event: any) {
     event.preventDefault();
     event.stopPropagation();
 
-    if (this.grid.getSetting('mode') === 'external') {
-      this.delete.emit({
-        data: this.row.getData(),
-        source: this.source,
-      });
-    } else {
-      this.grid.delete(this.row, this.deleteConfirm);
-    }
+    this.grid.delete(this.row, this.deleteConfirm);
   }
 
   ngOnChanges(){
-    this.isActionAdd = this.grid.getSetting('actions.add');
-    this.isActionEdit = this.grid.getSetting('actions.edit');
-    this.isActionDelete = this.grid.getSetting('actions.delete');
-    this.addRowButtonContent = this.grid.getSetting('add.addButtonContent');
-    this.editRowButtonContent = this.grid.getSetting('edit.editButtonContent');
-    this.deleteRowButtonContent = this.grid.getSetting('delete.deleteButtonContent');
+
   }
 }

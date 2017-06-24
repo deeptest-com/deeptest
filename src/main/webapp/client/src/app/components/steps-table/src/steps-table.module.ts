@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { CellModule } from './components/cell/cell.module';
 import { TBodyModule } from './components/tbody/tbody.module';
-import { THeadModule } from './components/thead/thead.module';
 
 import { StepsTableComponent } from './steps-table.component';
 
@@ -14,8 +13,7 @@ import { StepsTableComponent } from './steps-table.component';
     FormsModule,
     ReactiveFormsModule,
     CellModule,
-    TBodyModule,
-    THeadModule,
+    TBodyModule
   ],
   declarations: [
     StepsTableComponent,

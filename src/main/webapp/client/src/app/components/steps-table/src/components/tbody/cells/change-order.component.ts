@@ -23,31 +23,22 @@ export class TbodyChangeOrderComponent implements OnChanges {
   @Input() grid: Grid;
   @Input() row: Row;
   @Input() source: DataSource;
-  @Output() editRowSelect = new EventEmitter<any>();
 
-  @Output() up = new EventEmitter<any>();
-  @Output() down = new EventEmitter<any>();
+  @Input() upConfirm: EventEmitter<any>;
+  @Input() downConfirm: EventEmitter<any>;
 
   onUp(event: any) {
     event.preventDefault();
     event.stopPropagation();
 
-    this.up.emit({
-      data: this.row.getData(),
-      source: this.source,
-    });
-
+    this.grid.up(this.grid.getNewRow(), this.upConfirm, this.row);
   }
 
   onDown(event: any) {
     event.preventDefault();
     event.stopPropagation();
 
-    this.up.emit({
-      data: this.row.getData(),
-      source: this.source,
-    });
-
+    this.grid.down(this.grid.getNewRow(), this.downConfirm, this.row);
   }
 
   ngOnChanges(){

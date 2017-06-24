@@ -79,22 +79,6 @@ export class CaseEdit implements OnInit, AfterViewInit {
     ];
 
     this.settings = {
-      // mode: 'external',
-      add: {
-        addButtonContent: '<i class="ion-plus"></i>',
-        createButtonContent: '<i class="ion-checkmark"></i>',
-        cancelButtonContent: '<i class="ion-close"></i>',
-      },
-      edit: {
-        editButtonContent: '<i class="ion-edit"></i>',
-        saveButtonContent: '<i class="ion-checkmark"></i>',
-        cancelButtonContent: '<i class="ion-close"></i>',
-        confirmSave: true
-      },
-      delete: {
-        deleteButtonContent: '<i class="ion-trash-a"></i>',
-        confirmDelete: true
-      },
       columns: {
         ordr: {
           title: '顺序',
@@ -164,26 +148,27 @@ export class CaseEdit implements OnInit, AfterViewInit {
     this.tab = event.nextId;
   }
 
-  onUp(event: any) {
-    console.log('onUp', event);
-  }
-
-  onDown(event: any) {
-    console.log('onDown', event);
-  }
-
-  onDeleteConfirm(event: any) {
-    console.log('onDeleteConfirm', event);
+  onUpConfirm(event: any) {
+    console.log('onUpConfirm', event);
     event.confirm.resolve();
   }
 
+  onDownConfirm(event: any) {
+    console.log('onDownConfirm', event);
+    event.confirm.resolve();
+  }
+
+  onCreateConfirm(event: any) {
+    console.log('onCreateConfirm', event);
+    event.confirm.resolve();
+  }
   onEditConfirm(event: any) {
     console.log('onEditConfirm', event);
     event.confirm.resolve();
   }
-
-  onCreate(event: any) {
-    console.log('onCreate', event);
+  onDeleteConfirm(event: any) {
+    console.log('onDeleteConfirm', event);
+    event.confirm.resolve();
   }
 
 }

@@ -6,10 +6,12 @@ import { Row } from '../../../lib/data-set/row';
 @Component({
   selector: 'ng2-st-tbody-create-cancel',
   template: `
-    <a href="#" class="ng2-smart-action ng2-smart-action-edit-save"
-        [innerHTML]="saveButtonContent" (click)="onSave($event)"></a>
-    <a href="#" class="ng2-smart-action ng2-smart-action-edit-cancel"
-        [innerHTML]="cancelButtonContent" (click)="onCancelEdit($event)"></a>
+    <a href="#" class="ng2-smart-action ng2-smart-action-edit-save" (click)="onSave($event)">
+      <i class="ion-checkmark"></i>
+    </a>
+    <a href="#" class="ng2-smart-action ng2-smart-action-edit-cancel" (click)="onCancelEdit($event)">
+      <i class="ion-close"></i>
+    </a>
   `,
 })
 export class TbodyCreateCancelComponent implements OnChanges {
@@ -17,9 +19,6 @@ export class TbodyCreateCancelComponent implements OnChanges {
   @Input() grid: Grid;
   @Input() row: Row;
   @Input() editConfirm: EventEmitter<any>;
-
-  cancelButtonContent: string;
-  saveButtonContent: string;
 
   onSave(event: any) {
     event.preventDefault();
@@ -36,7 +35,6 @@ export class TbodyCreateCancelComponent implements OnChanges {
   }
 
   ngOnChanges() {
-    this.saveButtonContent = this.grid.getSetting('edit.saveButtonContent');
-    this.cancelButtonContent = this.grid.getSetting('edit.cancelButtonContent')
+
   }
 }

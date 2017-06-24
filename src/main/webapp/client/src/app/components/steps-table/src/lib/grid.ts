@@ -23,18 +23,6 @@ export class Grid {
     this.setSource(source);
   }
 
-  showActionColumn(position: string): boolean {
-    return this.isCurrentActionsPosition(position) && this.isActionsVisible();
-  }
-
-  isCurrentActionsPosition(position: string): boolean {
-    return position == this.getSetting('actions.position');
-  }
-
-  isActionsVisible(): boolean {
-    return this.getSetting('actions.add') || this.getSetting('actions.edit') || this.getSetting('actions.delete') || this.getSetting('actions.custom').length;
-  }
-
   isMultiSelectVisible(): boolean {
     return this.getSetting('selectMode') === 'multi';
   }
@@ -95,20 +83,65 @@ export class Grid {
     row.isInEditing = true;
   }
 
+  up(row: Row, confirmEmitter: EventEmitter<any>, curr?: Row) {
+    console.log(row, curr);
+
+    const deferred = new Deferred();
+    deferred.promise.then((newData) => {
+      // newData = newData ? newData : row.getNewData();
+      //
+      // this.source.create(newData).then(() => {
+      //   this.dataSet.createNewRow(curr);
+      // });
+    }).catch((err) => {});
+
+    confirmEmitter.emit({
+      newData: row.getNewData(),
+      source: this.source,
+      confirm: deferred
+    });
+
+  }
+  down(row: Row, confirmEmitter: EventEmitter<any>, curr?: Row) {
+    console.log(row, curr);
+
+    const deferred = new Deferred();
+    deferred.promise.then((newData) => {
+      // newData = newData ? newData : row.getNewData();
+      //
+      // this.source.create(newData).then(() => {
+      //   this.dataSet.createNewRow(curr);
+      // });
+    }).catch((err) => {});
+
+    confirmEmitter.emit({
+      newData: row.getNewData(),
+      source: this.source,
+      confirm: deferred
+    });
+
+  }
+
   create(row: Row, confirmEmitter: EventEmitter<any>, curr?: Row) {
+    console.log(row, curr);
 
     const deferred = new Deferred();
     deferred.promise.then((newData) => {
       newData = newData ? newData : row.getNewData();
 
-      this.source.prepend(newData).then(() => {
+      this.source.create(newData).then(() => {
         this.dataSet.createNewRow(curr);
       });
     }).catch((err) => {
       // doing nothing
     });
 
-    deferred.resolve();
+    confirmEmitter.emit({
+      newData: row.getNewData(),
+      source: this.source,
+      confirm: deferred,
+    });
+
   }
 
   save(row: Row, confirmEmitter: EventEmitter<any>) {
@@ -127,16 +160,12 @@ export class Grid {
       // doing nothing
     });
 
-    if (this.getSetting('edit.confirmSave')) {
-      confirmEmitter.emit({
-        data: row.getData(),
-        newData: row.getNewData(),
-        source: this.source,
-        confirm: deferred,
-      });
-    } else {
-      deferred.resolve();
-    }
+    confirmEmitter.emit({
+      data: row.getData(),
+      newData: row.getNewData(),
+      source: this.source,
+      confirm: deferred,
+    });
   }
 
   delete(row: Row, confirmEmitter: EventEmitter<any>) {
@@ -148,15 +177,12 @@ export class Grid {
       // doing nothing
     });
 
-    if (this.getSetting('delete.confirmDelete')) {
-      confirmEmitter.emit({
-        data: row.getData(),
-        source: this.source,
-        confirm: deferred,
-      });
-    } else {
-      deferred.resolve();
-    }
+    confirmEmitter.emit({
+      data: row.getData(),
+      source: this.source,
+      confirm: deferred,
+    });
+
   }
 
   processDataChange(changes: any) {

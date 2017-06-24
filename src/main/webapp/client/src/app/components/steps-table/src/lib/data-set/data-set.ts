@@ -119,13 +119,13 @@ export class DataSet {
   }
 
   createNewRow(curr?: Row) {
-    console.log(curr);
-
     this.newRow = new Row(-1, {}, this);
     this.newRow.isInEditing = true;
 
-    let index = curr? curr.index: this.rows.length - 1;
+    // added
+    console.log('===', this.data);
 
+    let index = curr? curr.index: this.rows.length - 1;
     this.rows.splice(index + 1, 0, this.newRow);
   }
 

@@ -1,4 +1,4 @@
-<tr *ngFor="let row of grid.getRows()" (click)="userSelectRow.emit(row)" (mouseover)="rowHover.emit(row)" class="ng2-smart-row" [className]="rowClassFunction(row)" [ngClass]="{selected: row.isSelected}">
+<tr *ngFor="let row of grid.getRows()">
 
   <td class="ng2-smart-actions">
     <ng2-smart-table-cell [cell]="row.cells[0]"
@@ -6,8 +6,6 @@
                           [row]="row"
                           [isNew]="false"
                           [mode]="mode"
-                          [editConfirm]="editConfirm"
-                          [inputClass]="editInputClass"
                           [isInEditing]="false">
     </ng2-smart-table-cell>
 
@@ -15,8 +13,9 @@
                                [grid]="grid"
                                [row]="row"
                                [source]="source"
-                               (up)="up.emit(row)"
-                               (down)="down.emit(row)"
+
+                               [upConfirm]="upConfirm"
+                               [downConfirm]="downConfirm"
     ></ng2-st-tbody-change-order>
   </td>
 
@@ -29,9 +28,6 @@
                                 [grid]="grid"
                                 [row]="row"
                                 [isNew]="false"
-                                [mode]="mode"
-                                [editConfirm]="editConfirm"
-                                [inputClass]="editInputClass"
                                 [isInEditing]="row.isInEditing">
           </ng2-smart-table-cell>
         </ng-container>
@@ -39,28 +35,25 @@
     </div>
   </td>
 
-  <td *ngIf="!row.isInEditing && showActionColumnLeft" class="ng2-smart-actions">
-    <ng2-st-tbody-custom [grid]="grid" (custom)="custom.emit($event)" [row]="row" [source]="source"></ng2-st-tbody-custom>
-
+  <td *ngIf="!row.isInEditing" class="ng2-smart-actions">
     <ng2-st-tbody-add-edit-delete [grid]="grid"
-                                  [deleteConfirm]="deleteConfirm"
-                                  [editConfirm]="editConfirm"
-                                  (create)="create.emit(row)"
-                                  (edit)="edit.emit(row)"
-                                  (delete)="delete.emit(row)"
-                                  (editRowSelect)="editRowSelect.emit($event)"
                                   [row]="row"
-                                  [source]="source">
+                                  [source]="source"
+
+                                  [createConfirm]="createConfirm"
+                                  [editConfirm]="editConfirm"
+                                  [deleteConfirm]="deleteConfirm"
+                                  >
     </ng2-st-tbody-add-edit-delete>
   </td>
-  <td *ngIf="row.isInEditing && showActionColumnLeft"  class="ng2-smart-actions">
+  <td *ngIf="row.isInEditing"  class="ng2-smart-actions">
     <ng2-st-tbody-create-cancel [grid]="grid" [row]="row" [editConfirm]="editConfirm"></ng2-st-tbody-create-cancel>
   </td>
 
 </tr>
 
 <tr *ngIf="grid.getRows().length == 0">
-  <td [attr.colspan]="grid.getColumns().length + (isActionAdd || isActionEdit || isActionDelete)">
-    {{ noDataMessage }}
+  <td [attr.colspan]="4">
+    暂无数据
   </td>
 </tr>

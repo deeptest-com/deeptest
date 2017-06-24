@@ -26,12 +26,11 @@ export class LocalDataSource extends DataSource {
     return super.load(data);
   }
 
-  create(element: any): Promise<any> {
-    console.log('-----------', element);
+  create(element: any, curr: any): Promise<any> {
+    let index = this.data.indexOf(curr);
+    this.data.splice(index + 1, 0, element)
 
-    this.data.unshift(element);
-
-    return super.create(element);
+    return super.create(element, curr);
   }
 
   remove(element: any): Promise<any> {
@@ -40,22 +39,22 @@ export class LocalDataSource extends DataSource {
     return super.remove(element);
   }
 
-  update(element: any, values: any): Promise<any> {
+  save(element: any, values: any): Promise<any> {
     return new Promise((resolve, reject) => {
       this.find(element).then((found) => {
         found = deepExtend(found, values);
-        super.update(found, values).then(resolve).catch(reject);
+        super.save(found, values).then(resolve).catch(reject);
       }).catch(reject);
     });
   }
 
   find(element: any): Promise<any> {
-    console.log(element, this.data);
+    console.log('find', element, this.data);
 
     let found = this.data.find(el => el === element);
-    if (!found && !element.ordr) { // 新对象
-      found = element;
-    }
+    // if (!found && !element.ordr) { // 新对象
+    //   found = element;
+    // }
 
     if (found) {
       return Promise.resolve(found);

@@ -3,10 +3,11 @@ import { Observable } from 'rxjs/Observable';
 
 export abstract class DataSource {
 
-  protected onChangedSource = new Subject<any>();
   protected onCreatedSource = new Subject<any>();
-  protected onUpdatedSource = new Subject<any>();
+  protected onSavedSource = new Subject<any>();
   protected onRemovedSource = new Subject<any>();
+
+  protected onChangedSource = new Subject<any>();
 
   abstract getAll(): Promise<any>;
   abstract getElements(): Promise<any>;
@@ -23,8 +24,8 @@ export abstract class DataSource {
   onCreated(): Observable<any> {
     return this.onCreatedSource.asObservable();
   }
-  onUpdated(): Observable<any> {
-    return this.onUpdatedSource.asObservable();
+  onSaved(): Observable<any> {
+    return this.onSavedSource.asObservable();
   }
   onRemoved(): Observable<any> {
     return this.onRemovedSource.asObservable();
@@ -34,7 +35,7 @@ export abstract class DataSource {
     return this.onChangedSource.asObservable();
   }
 
-  create(element: any): Promise<any> {
+  create(element: any, curr: any): Promise<any> {
     this.emitOnCreated(element);
     this.emitOnChanged('create');
     return Promise.resolve();
@@ -46,9 +47,9 @@ export abstract class DataSource {
     return Promise.resolve();
   }
 
-  update(element: any, values: any): Promise<any> {
-    this.emitOnUpdated(element);
-    this.emitOnChanged('update');
+  save(element: any, values: any): Promise<any> {
+    this.emitOnSaved(element);
+    this.emitOnChanged('save');
     return Promise.resolve();
   }
 
@@ -63,8 +64,8 @@ export abstract class DataSource {
   protected emitOnRemoved(element: any) {
     this.onRemovedSource.next(element);
   }
-  protected emitOnUpdated(element: any) {
-    this.onUpdatedSource.next(element);
+  protected emitOnSaved(element: any) {
+    this.onSavedSource.next(element);
   }
 
   protected emitOnChanged(action: string) {

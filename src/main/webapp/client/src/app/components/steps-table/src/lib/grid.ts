@@ -10,21 +10,13 @@ import { DataSource } from './data-source/data-source';
 
 export class Grid {
 
-  createFormShown: boolean = false;
-
   source: DataSource;
   settings: any;
   dataSet: DataSet;
 
-  onSelectRowSource = new Subject<any>();
-
   constructor(source: DataSource, settings: any) {
     this.setSettings(settings);
     this.setSource(source);
-  }
-
-  isMultiSelectVisible(): boolean {
-    return this.getSetting('selectMode') === 'multi';
   }
 
   getNewRow(): Row {
@@ -53,9 +45,8 @@ export class Grid {
     this.source.onRemoved().subscribe((data) => {
       console.log('source.onRemoved');
     });
-
-    this.source.onUpdated().subscribe((data) => {
-      console.log('source.onUpdated');
+    this.source.onSaved().subscribe((data) => {
+      console.log('source.onSaved');
 
       const changedRow = this.dataSet.findRowByData(data);
       changedRow.setData(data);
@@ -78,18 +69,6 @@ export class Grid {
 
   getRows(): Array<Row> {
     return this.dataSet.getRows();
-  }
-
-  selectRow(row: Row) {
-    this.dataSet.selectRow(row);
-  }
-
-  multipleSelectRow(row: Row) {
-    this.dataSet.multipleSelectRow(row);
-  }
-
-  onSelectRow(): Observable<any> {
-    return this.onSelectRowSource.asObservable();
   }
 
   edit(row: Row) {
@@ -136,14 +115,12 @@ export class Grid {
   }
 
   create(row: Row, confirmEmitter: EventEmitter<any>, curr?: Row) {
-    console.log(row, curr);
-
     const deferred = new Deferred();
     deferred.promise.then((newData) => {
       newData = newData ? newData : row.getNewData();
 
-      this.source.create(newData).then(() => {
-        this.dataSet.createNewRow(curr);
+      this.source.create(newData, curr.getData()).then(() => {
+        this.dataSet.findRowByData(newData).isInEditing = true;
       });
     }).catch((err) => {
       // doing nothing
@@ -158,17 +135,13 @@ export class Grid {
   }
 
   save(row: Row, confirmEmitter: EventEmitter<any>) {
-
     const deferred = new Deferred();
     deferred.promise.then((newData) => {
       newData = newData ? newData : row.getNewData();
-      if (deferred.resolve.skipEdit) {
+
+      this.source.save(row.getData(), newData).then(() => {
         row.isInEditing = false;
-      } else {
-        this.source.update(row.getData(), newData).then(() => {
-          row.isInEditing = false;
-        });
-      }
+      });
     }).catch((err) => {
       // doing nothing
     });
@@ -205,7 +178,7 @@ export class Grid {
   }
 
   shouldProcessChange(changes: any): boolean {
-    if (['create', 'remove', 'refresh', 'load'].indexOf(changes['action']) !== -1) {
+    if (['create', 'remove', 'refresh', 'load', 'save'].indexOf(changes['action']) !== -1) {
       return true;
     }
 

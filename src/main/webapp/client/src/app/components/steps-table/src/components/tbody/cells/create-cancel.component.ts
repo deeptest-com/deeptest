@@ -31,7 +31,11 @@ export class TbodyCreateCancelComponent implements OnChanges {
     event.preventDefault();
     event.stopPropagation();
 
-    this.row.isInEditing = false;
+    if (this.row.isNew) {
+      this.grid.delete(this.row, this.editConfirm);
+    } else {
+      this.row.isInEditing = false;
+    }
   }
 
   ngOnChanges() {

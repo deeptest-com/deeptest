@@ -4,7 +4,7 @@ import { DataSet } from './data-set';
 
 export class Row {
 
-  isSelected: boolean = false;
+  isNew: boolean = false;
   isInEditing: boolean = false;
   cells: Array<Cell> = [];
 
@@ -25,8 +25,8 @@ export class Row {
     return this.data;
   }
 
-  getIsSelected(): boolean {
-    return this.isSelected;
+  getIsNew(): boolean {
+    return this.isNew;
   }
 
   getNewData(): any {

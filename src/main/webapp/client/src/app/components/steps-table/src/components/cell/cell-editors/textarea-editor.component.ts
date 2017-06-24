@@ -11,10 +11,7 @@ import { DefaultEditor } from './default-editor';
               [(ngModel)]="cell.newValue"
               [name]="cell.getId()"
               [disabled]="!cell.isEditable()"
-              [placeholder]="cell.getTitle()"
-              (click)="onClick.emit($event)"
-              (keydown.enter)="onEdited.emit($event)"
-              (keydown.esc)="onStopEditing.emit()">
+              [placeholder]="cell.getTitle()">
     </textarea>
     `,
 })

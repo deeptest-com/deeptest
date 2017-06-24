@@ -4,10 +4,9 @@
     <ng2-smart-table-cell [cell]="row.cells[0]"
                           [grid]="grid"
                           [row]="row"
-                          [isNew]="false"
                           [mode]="mode"
                           [isInEditing]="false">
-    </ng2-smart-table-cell>
+    </ng2-smart-table-cell> <!-- 序号 -->
 
     <ng2-st-tbody-change-order *ngIf="!row.isInEditing"
                                [grid]="grid"
@@ -16,7 +15,7 @@
 
                                [upConfirm]="upConfirm"
                                [downConfirm]="downConfirm"
-    ></ng2-st-tbody-change-order>
+    ></ng2-st-tbody-change-order> <!-- 排序按钮 -->
   </td>
 
   <td>
@@ -27,7 +26,6 @@
                                 [cell]="cell"
                                 [grid]="grid"
                                 [row]="row"
-                                [isNew]="false"
                                 [isInEditing]="row.isInEditing">
           </ng2-smart-table-cell>
         </ng-container>
@@ -44,10 +42,12 @@
                                   [editConfirm]="editConfirm"
                                   [deleteConfirm]="deleteConfirm"
                                   >
-    </ng2-st-tbody-add-edit-delete>
+    </ng2-st-tbody-add-edit-delete> <!-- 操作按钮 -->
   </td>
+
   <td *ngIf="row.isInEditing"  class="ng2-smart-actions">
-    <ng2-st-tbody-create-cancel [grid]="grid" [row]="row" [editConfirm]="editConfirm"></ng2-st-tbody-create-cancel>
+    <ng2-st-tbody-create-cancel [grid]="grid" [row]="row" [editConfirm]="editConfirm">
+    </ng2-st-tbody-create-cancel>  <!-- 保存、取消按钮 -->
   </td>
 
 </tr>

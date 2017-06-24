@@ -5,7 +5,7 @@ export abstract class DataSource {
 
   protected onCreatedSource = new Subject<any>();
   protected onSavedSource = new Subject<any>();
-  protected onRemovedSource = new Subject<any>();
+  protected onDeletedSource = new Subject<any>();
 
   protected onChangedSource = new Subject<any>();
 
@@ -27,8 +27,8 @@ export abstract class DataSource {
   onSaved(): Observable<any> {
     return this.onSavedSource.asObservable();
   }
-  onRemoved(): Observable<any> {
-    return this.onRemovedSource.asObservable();
+  onDeleted(): Observable<any> {
+    return this.onDeletedSource.asObservable();
   }
 
   onChanged(): Observable<any> {
@@ -41,9 +41,9 @@ export abstract class DataSource {
     return Promise.resolve();
   }
 
-  remove(element: any): Promise<any> {
-    this.emitOnRemoved(element);
-    this.emitOnChanged('remove');
+  delete(element: any): Promise<any> {
+    this.emitOnDeleted(element);
+    this.emitOnChanged('delete');
     return Promise.resolve();
   }
 
@@ -61,8 +61,8 @@ export abstract class DataSource {
   protected emitOnCreated(element: any) {
     this.onCreatedSource.next(element);
   }
-  protected emitOnRemoved(element: any) {
-    this.onRemovedSource.next(element);
+  protected emitOnDeleted(element: any) {
+    this.onDeletedSource.next(element);
   }
   protected emitOnSaved(element: any) {
     this.onSavedSource.next(element);

@@ -28,18 +28,35 @@ export class LocalDataSource extends DataSource {
 
   create(element: any, curr: any): Promise<any> {
     let index = this.data.indexOf(curr);
-    this.data.splice(index + 1, 0, element)
+    element.ordr = curr.ordr;
+    this.data.splice(index + 1, 0, element);
+
+    this.data.forEach(function(elem, indx, arr) {
+      if (indx > index) {
+        elem.ordr += 1;
+      }
+    });
 
     return super.create(element, curr);
   }
 
-  remove(element: any): Promise<any> {
+  delete(element: any): Promise<any> {
+    let index = this.data.indexOf(element);
+
     this.data = this.data.filter(el => el !== element);
 
-    return super.remove(element);
+    this.data.forEach(function(elem, indx, arr) {
+      if (indx >= index) {
+        elem.ordr -= 1;
+      }
+    });
+
+    return super.delete(element);
   }
 
   save(element: any, values: any): Promise<any> {
+    console.log(element, values);
+
     return new Promise((resolve, reject) => {
       this.find(element).then((found) => {
         found = deepExtend(found, values);
@@ -49,13 +66,7 @@ export class LocalDataSource extends DataSource {
   }
 
   find(element: any): Promise<any> {
-    console.log('find', element, this.data);
-
     let found = this.data.find(el => el === element);
-    // if (!found && !element.ordr) { // 新对象
-    //   found = element;
-    // }
-
     if (found) {
       return Promise.resolve(found);
     }

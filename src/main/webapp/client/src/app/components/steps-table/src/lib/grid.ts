@@ -42,8 +42,8 @@ export class Grid {
     this.source.onCreated().subscribe((data) => {
       console.log('source.onCreated');
     });
-    this.source.onRemoved().subscribe((data) => {
-      console.log('source.onRemoved');
+    this.source.onDeleted().subscribe((data) => {
+      console.log('source.onDeleted');
     });
     this.source.onSaved().subscribe((data) => {
       console.log('source.onSaved');
@@ -118,9 +118,10 @@ export class Grid {
     const deferred = new Deferred();
     deferred.promise.then((newData) => {
       newData = newData ? newData : row.getNewData();
-
       this.source.create(newData, curr.getData()).then(() => {
-        this.dataSet.findRowByData(newData).isInEditing = true;
+        let newRow = this.dataSet.findRowByData(newData);
+        newRow.isInEditing = true;
+        newRow.isNew = true;
       });
     }).catch((err) => {
       // doing nothing
@@ -155,10 +156,9 @@ export class Grid {
   }
 
   delete(row: Row, confirmEmitter: EventEmitter<any>) {
-
     const deferred = new Deferred();
     deferred.promise.then(() => {
-      this.source.remove(row.getData());
+      this.source.delete(row.getData());
     }).catch((err) => {
       // doing nothing
     });
@@ -178,7 +178,7 @@ export class Grid {
   }
 
   shouldProcessChange(changes: any): boolean {
-    if (['create', 'remove', 'refresh', 'load', 'save'].indexOf(changes['action']) !== -1) {
+    if (['create', 'delete', 'save', 'refresh', 'load'].indexOf(changes['action']) !== -1) {
       return true;
     }
 

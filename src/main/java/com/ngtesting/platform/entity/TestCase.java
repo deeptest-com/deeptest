@@ -50,6 +50,10 @@ public class TestCase extends BaseEntity {
     private Long userId;
 
 	@OneToMany(mappedBy="testCase", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+	@OrderBy("ordr")
+	private List<TestCaseStep> steps = new LinkedList<>();
+
+	@OneToMany(mappedBy="testCase", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 	@OrderBy("fieldId")
 	private List<TestCaseProp> props = new LinkedList<>();
 
@@ -175,5 +179,13 @@ public class TestCase extends BaseEntity {
 
 	public void setObjective(String objective) {
 		this.objective = objective;
+	}
+
+	public List<TestCaseStep> getSteps() {
+		return steps;
+	}
+
+	public void setSteps(List<TestCaseStep> steps) {
+		this.steps = steps;
 	}
 }

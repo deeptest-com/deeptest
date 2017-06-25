@@ -42,7 +42,7 @@
       <div [class.hidden]="tab != 'steps'" class="tab-steps form-group row">
         <label class="col-sm-1 col-form-label"></label>
         <div class="col-sm-11">
-          <steps-table [settings]="settings" [source]="data"
+          <steps-table [settings]="settings" [source]="model.steps"
 
                        (upConfirm)="onUpConfirm($event)"
                        (downConfirm)="onDownConfirm($event)"

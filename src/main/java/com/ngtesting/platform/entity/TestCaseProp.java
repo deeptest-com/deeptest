@@ -4,11 +4,9 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "tst_case_prop")
-public class TestCaseProp {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	protected Long id;
+public class TestCaseProp extends BaseEntity {
 
+	private static final long serialVersionUID = -6655450841375690187L;
 	private String name;
     private String value;
 

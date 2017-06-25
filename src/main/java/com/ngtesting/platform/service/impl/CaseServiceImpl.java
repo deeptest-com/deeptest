@@ -2,14 +2,12 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.entity.TestCase;
 import com.ngtesting.platform.entity.TestCaseProp;
+import com.ngtesting.platform.entity.TestCaseStep;
 import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.Constant.TreeNodeType;
-import com.ngtesting.platform.vo.CustomFieldVo;
-import com.ngtesting.platform.vo.TestCasePropVo;
-import com.ngtesting.platform.vo.TestCaseTreeVo;
-import com.ngtesting.platform.vo.TestCaseVo;
+import com.ngtesting.platform.vo.*;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -92,6 +90,14 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	public TestCaseVo genVo(TestCase po) {
 		TestCaseVo vo = new TestCaseVo(po.getTitle(), po.getPriority(), po.getEstimate(), po.getObjective(),
 				po.getDescr(), po.getPath(), po.getType().toString());
+
+		List<TestCaseStep> steps = po.getSteps();
+		for (TestCaseStep step : steps) {
+
+			TestCaseStepVo stepVo = new TestCaseStepVo(step.getId(), step.getOpt(), step.getExpect(), step.getOrdr());
+
+			vo.getSteps().add(stepVo);
+		}
 
 		List<TestCaseProp> props = po.getProps();
 		for (TestCaseProp propPo : props) {

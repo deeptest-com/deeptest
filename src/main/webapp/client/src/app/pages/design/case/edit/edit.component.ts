@@ -28,7 +28,7 @@ declare var jQuery;
 })
 export class CaseEdit implements OnInit, AfterViewInit {
   id: number;
-  model: any = {};
+  model: any;
   settings: any;
   data: any;
   form: any;

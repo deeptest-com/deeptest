@@ -26,16 +26,19 @@
       word-break: keep-all;
 
       tr {
-        border-bottom: 1px solid gainsboro;
         th {
           text-align: center;
           font-weight: bold;
         }
         td {
+          vertical-align: middle;
           line-height: 22px !important;
           &.ng2-smart-actions {
             width: 100px;
-            text-align: center;
+            text-align: center !important;
+          }
+          &.pointer {
+            cursor: pointer;
           }
           .my-cols {
             display: flex;
@@ -45,6 +48,9 @@
             .my-col {
               flex: 1;
               margin: 0 3px 0 0;
+              .pre {
+                white-space: pre-line;
+              }
             }
           }
         }

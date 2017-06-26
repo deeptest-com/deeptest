@@ -7,7 +7,7 @@ import { Cell } from '../../../lib/data-set/cell';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div>
-        <div>{{ cell.getValue() }}</div>
+        <div class="pre">{{ cell.getValue() }}</div>
     </div>
     `,
 })

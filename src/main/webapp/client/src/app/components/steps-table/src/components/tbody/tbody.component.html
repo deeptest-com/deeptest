@@ -17,7 +17,7 @@
     </ng2-st-tbody-change-order> <!-- 排序按钮 -->
   </td>
 
-  <td>
+  <td (click)="onEdit(row)" class="pointer">
     <div class="my-cols">
       <ng-container *ngFor="let cell of row.cells">
         <ng-container *ngIf="cell.column.id != 'ordr'">
@@ -37,7 +37,6 @@
                                   [source]="source"
 
                                   [createConfirm]="createConfirm"
-                                  [saveConfirm]="saveConfirm"
                                   [deleteConfirm]="deleteConfirm">
     </ng2-st-tbody-add-edit-delete> <!-- 操作按钮 -->
   </td>

@@ -26,4 +26,12 @@ export class Ng2SmartTableTbodyComponent {
   ngOnChanges() {
 
   }
+
+  onEdit(row: any) {
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.grid.edit(row);
+  }
 }

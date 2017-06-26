@@ -2,12 +2,17 @@ package com.ngtesting.platform.vo;
 
 public class TestCaseStepVo extends BaseVo {
 
+    private static final long serialVersionUID = -4163163556800840532L;
+
     private String opt;
     private String expect;
 
     private Integer ordr;
 
     private Long testCaseId;
+
+    public TestCaseStepVo() {
+    }
 
     public TestCaseStepVo(Long id, String opt, String expect, Integer ordr) {
         this.id = id;
@@ -47,4 +52,38 @@ public class TestCaseStepVo extends BaseVo {
     public void setTestCaseId(Long testCaseId) {
         this.testCaseId = testCaseId;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+
 }

@@ -26,6 +26,42 @@ export class LocalDataSource extends DataSource {
     return super.load(data);
   }
 
+  up(currElem: any): Promise<any> {
+
+    let index = this.data.indexOf(currElem);
+    let preIndex = index - 1;
+    let preElem = this.data[preIndex];
+    let currOrder = currElem.ordr;
+
+    // 交换ordr
+    currElem.ordr = preElem.ordr;
+    preElem.ordr = currOrder;
+
+    console.log(currElem.ordr);
+
+    // 交换位置
+    this.data.splice(index, 1);
+    this.data.splice(preIndex, 0, currElem);
+
+    return super.up(currElem);
+  }
+  down(currElem: any): Promise<any> {
+    let index = this.data.indexOf(currElem);
+    let nextIndex = index + 1;
+    let nextElem = this.data[nextIndex];
+    let currOrder = currElem.ordr;
+
+    // 交换ordr
+    currElem.ordr = nextElem.ordr;
+    nextElem.ordr = currOrder;
+
+    // 交换位置
+    this.data.splice(nextIndex, 1);
+    this.data.splice(index, 0, nextElem);
+
+    return super.up(currElem);
+  }
+
   create(element: any, curr: any): Promise<any> {
     let index = this.data.indexOf(curr);
     element.ordr = curr.ordr;

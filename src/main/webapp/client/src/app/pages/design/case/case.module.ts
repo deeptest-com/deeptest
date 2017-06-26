@@ -19,6 +19,7 @@ import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
 import { DatetimePickerService } from '../../../service/datetime-picker';
 import { CaseService } from '../../../service/case';
+import { CaseStepService } from '../../../service/case-step';
 
 import { Case } from './case.component';
 import { CaseList } from './list/list.component';
@@ -51,6 +52,7 @@ import { CaseEdit } from './edit/edit.component';
     RequestService,
     DatetimePickerService,
     CaseService,
+    CaseStepService
   ]
 })
 export default class CaseModule {}

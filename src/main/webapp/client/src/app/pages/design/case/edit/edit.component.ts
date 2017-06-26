@@ -11,12 +11,12 @@ import { Utils } from '../../../../utils/utils';
 import {ValidatorUtils} from '../../../../validator/validator.utils';
 import { RouteService } from '../../../../service/route';
 
-import { NodeEvent } from '../../../../components/ng2-tree/src/tree.events';
 import { TreeService } from '../../../../components/ng2-tree/src/tree.service';
 
 import {FieldType, CustomFieldDefinition, CustomFieldModel, FieldChangedEvent } from '../../../../components/custom-field';
 
 import { CaseService } from '../../../../service/case';
+import { CaseStepService } from '../../../../service/case-step';
 
 declare var jQuery;
 
@@ -38,7 +38,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
   public fieldModel: CustomFieldModel = {value: '张三'};
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
-              private treeService: TreeService, private _caseService: CaseService) {
+              private _caseService: CaseService, private _caseStepService: CaseStepService) {
 
   }
   ngOnInit() {
@@ -130,12 +130,16 @@ export class CaseEdit implements OnInit, AfterViewInit {
 
   onUpConfirm(event: any) {
     console.log('onUpConfirm', event);
-    event.confirm.resolve();
+    this._caseStepService.up(event.data).subscribe((json:any) => {
+      event.confirm.resolve();
+    });
   }
 
   onDownConfirm(event: any) {
     console.log('onDownConfirm', event);
-    event.confirm.resolve();
+    this._caseStepService.down(event.data).subscribe((json:any) => {
+      event.confirm.resolve();
+    });
   }
 
   onCreateConfirm(event: any) {
@@ -144,11 +148,15 @@ export class CaseEdit implements OnInit, AfterViewInit {
   }
   onSaveConfirm(event: any) {
     console.log('onSaveConfirm', event);
-    event.confirm.resolve();
+    this._caseStepService.save(event.data).subscribe((json:any) => {
+      event.confirm.resolve();
+    });
   }
   onDeleteConfirm(event: any) {
     console.log('onDeleteConfirm', event);
-    event.confirm.resolve();
+    this._caseStepService.delete(event.data).subscribe((json:any) => {
+      event.confirm.resolve();
+    });
   }
 
 }

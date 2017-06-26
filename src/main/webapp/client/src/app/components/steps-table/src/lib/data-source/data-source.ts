@@ -35,6 +35,17 @@ export abstract class DataSource {
     return this.onChangedSource.asObservable();
   }
 
+  up(element: any): Promise<any> {
+    this.emitOnDeleted(element);
+    this.emitOnChanged('up');
+    return Promise.resolve();
+  }
+  down(element: any): Promise<any> {
+    this.emitOnDeleted(element);
+    this.emitOnChanged('down');
+    return Promise.resolve();
+  }
+
   create(element: any, curr: any): Promise<any> {
     this.emitOnCreated(element);
     this.emitOnChanged('create');

@@ -76,14 +76,9 @@ export class Grid {
   }
 
   up(curr: Row, confirmEmitter: EventEmitter<any>) {
-
     const deferred = new Deferred();
-    deferred.promise.then((newData) => {
-      // newData = newData ? newData : row.getNewData();
-      //
-      // this.source.create(newData).then(() => {
-      //   this.dataSet.createNewRow(curr);
-      // });
+    deferred.promise.then(() => {
+      this.source.up(curr.getData());
     }).catch((err) => {});
 
     confirmEmitter.emit({
@@ -97,11 +92,7 @@ export class Grid {
 
     const deferred = new Deferred();
     deferred.promise.then((newData) => {
-      // newData = newData ? newData : row.getNewData();
-      //
-      // this.source.create(newData).then(() => {
-      //   this.dataSet.createNewRow(curr);
-      // });
+      this.source.down(curr.getData());
     }).catch((err) => {});
 
     confirmEmitter.emit({
@@ -176,7 +167,7 @@ export class Grid {
   }
 
   shouldProcessChange(changes: any): boolean {
-    if (['create', 'delete', 'save', 'refresh', 'load'].indexOf(changes['action']) !== -1) {
+    if (['up', 'down', 'create', 'delete', 'save', 'refresh', 'load'].indexOf(changes['action']) !== -1) {
       return true;
     }
 

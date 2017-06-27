@@ -3,7 +3,7 @@
 
 <html>
   <head>
-    <title>EVENTS</title>
+    <title>ngtesting.com</title>
   </head>
   <body>
   index.jsp

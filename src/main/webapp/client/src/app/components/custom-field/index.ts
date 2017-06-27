@@ -1,5 +1,4 @@
-import {FieldType, CustomFieldDefinition, InputTestDefinition } from './src/field.definitions';
-import { CustomFieldModel, InputTestModel } from './src/field.models';
+import {FieldType, Prop, Field, InputField } from './src/field.prop';
 import { FieldEvent, FieldChangedEvent } from './src/field.events';
 
 import { CustomFieldComponent } from './src/custom-field.component';
@@ -11,12 +10,7 @@ import { InputTextService } from './src/input-text/input-text.service';
 import {CustomFieldModule} from "./src/custom-field.module";
 
 export {
-  FieldType,
-  CustomFieldDefinition,
-  InputTestDefinition,
-
-  CustomFieldModel,
-  InputTestModel,
+  FieldType, Prop, Field, InputField,
 
   FieldEvent,
   FieldChangedEvent,
@@ -29,3 +23,4 @@ export {
 
   CustomFieldModule
 };
+

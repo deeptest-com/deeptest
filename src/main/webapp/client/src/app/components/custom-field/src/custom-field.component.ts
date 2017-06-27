@@ -3,8 +3,7 @@ import { Input, Component, OnInit, EventEmitter, Output, Inject, OnChanges, Simp
 import { CONSTANT } from '../../../utils/constant';
 import { Utils } from '../../../utils/utils';
 
-import { CustomFieldDefinition } from './field.definitions';
-import { CustomFieldModel } from './field.models';
+import { Prop } from './field.prop';
 import { FieldChangedEvent } from './field.events';
 
 import { CustomFieldService } from './custom-field.service';
@@ -17,11 +16,8 @@ import { CustomFieldService } from './custom-field.service';
 })
 export class CustomFieldComponent implements OnInit, OnChanges {
 
-  @Input('fieldDefine')
-  public fieldDefine: CustomFieldDefinition;
-
-  @Input('fieldModel')
-  public fieldModel: CustomFieldModel;
+  @Input()
+  public prop: Prop;
 
   @Output()
   public fieldChanged: EventEmitter<any> = new EventEmitter();

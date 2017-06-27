@@ -10,10 +10,11 @@ export var CONSTANT:any = {
 
   TOKEN: undefined,
   ORG_ID: undefined,
-  PROJECT_ID: undefined,
+  PROJECT_ID: 2,
 
   PROFILE: undefined,
   RECENT_PROJECT: undefined,
+  CUSTOM_FIELD_FOR_PROJECT: undefined,
 
   TOKEN_KEY: 'com.ngtesting.token',
   TOKEN_EXPIRE: 'com.ngtesting.expire',

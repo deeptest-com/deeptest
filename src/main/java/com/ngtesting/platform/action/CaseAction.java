@@ -6,6 +6,7 @@ import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.vo.CustomFieldVo;
 import com.ngtesting.platform.vo.TestCaseTreeVo;
 import com.ngtesting.platform.vo.TestCaseVo;
 import com.ngtesting.platform.vo.UserVo;
@@ -27,9 +28,8 @@ import java.util.Map;
 public class CaseAction extends BaseAction {
 	@Autowired
     CaseService caseService;
-
-    @Autowired
-    CustomFieldService customFieldService;
+	@Autowired
+	CustomFieldService customFieldService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "query", method = RequestMethod.POST)
@@ -42,8 +42,11 @@ public class CaseAction extends BaseAction {
 		List<TestCase> ls = caseService.query(projectId);
 		
 		TestCaseTreeVo tree = caseService.buildTree(ls);
-		
+
+		Map<Long, CustomFieldVo> customFieldMap = customFieldService.listForCaseByProject(projectId);
+
         ret.put("data", tree);
+		ret.put("customFields", customFieldMap);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

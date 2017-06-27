@@ -16,7 +16,7 @@
       </thead>
       <tbody>
       <tr *ngFor="let item of models; let i = index;">
-        <td>{{ item.name }}</td>
+        <td>{{ item.label }}</td>
         <td>{{ item.code }}</td>
         <td>{{ item.applyTo | fieldApplyTo}}</td>
         <td>{{ item.type | fieldType }}</td>

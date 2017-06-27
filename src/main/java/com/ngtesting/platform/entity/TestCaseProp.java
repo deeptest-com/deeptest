@@ -7,8 +7,10 @@ import javax.persistence.*;
 public class TestCaseProp extends BaseEntity {
 
 	private static final long serialVersionUID = -6655450841375690187L;
-	private String name;
+	private String code;
+	private String label;
     private String value;
+	private Integer ordr;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "test_case_id", insertable = false, updatable = false)
@@ -32,12 +34,20 @@ public class TestCaseProp extends BaseEntity {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getCode() {
+		return code;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
 	}
 
 	public String getValue() {
@@ -78,5 +88,13 @@ public class TestCaseProp extends BaseEntity {
 
 	public void setFieldId(Long fieldId) {
 		this.fieldId = fieldId;
+	}
+
+	public Integer getOrdr() {
+		return ordr;
+	}
+
+	public void setOrdr(Integer ordr) {
+		this.ordr = ordr;
 	}
 }

@@ -5,10 +5,12 @@ import com.ngtesting.platform.vo.CustomFieldVo;
 import com.ngtesting.platform.vo.TestProjectVo;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CustomFieldService extends BaseService {
 	List<TestCustomField> list(Long orgId);
 	List<TestCustomField> listForCaseByOrg(Long orgId);
+    Map<Long, CustomFieldVo> listForCaseByProject(Long projectId);
 	
 	TestCustomField save(CustomFieldVo vo, Long orgId);
 	boolean delete(Long id);

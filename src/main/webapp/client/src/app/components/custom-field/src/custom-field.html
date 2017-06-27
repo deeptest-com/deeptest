@@ -1,3 +1,64 @@
-<div class="custom-field">
-  {{prop.name}} - {{prop.value}} - {{prop.field.name}}
+<div [formGroup]="form" class="custom-field">
+
+  <ng-container [ngSwitch]="fields[prop.fieldId].type">
+    <ng-container *ngSwitchCase="'string'">
+      <input type="text" class="form-control" name="{{prop.code}}" formControlName="{{prop.code}}"
+             [(ngModel)]="prop.value" #{{prop.code}}>
+    </ng-container>
+    <ng-container *ngSwitchCase="'number'">
+      <input type="text" class="form-control" name="{{prop.code}}" formControlName="{{prop.code}}"
+             [(ngModel)]="prop.value" #{{prop.code}}>
+    </ng-container>
+    <ng-container *ngSwitchCase="'url'">
+      <input type="text" class="form-control" name="{{prop.code}}" formControlName="{{prop.code}}"
+             [(ngModel)]="prop.value" #{{prop.code}}>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'text'">
+      <ng-container *ngIf="fields[prop.fieldId].format=='plain_text'">
+        <textarea type="text" class="form-control" name="{{prop.code}}" formControlName="{{prop.code}}"
+                  [(ngModel)]="prop.value" #{{prop.code}}>
+        </textarea>
+      </ng-container>
+      <ng-container *ngIf="fields[prop.fieldId].format=='markdown'">
+
+      </ng-container>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'radio'">
+      <input type="radio" class="form-check-input" name="{{prop.code}}" formControlName="{{prop.code}}"
+             [(ngModel)]="prop.value" #isRequired>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'checkbox'">
+      <input type="checkbox" class="form-check-input" name="{{prop.code}}" formControlName="{{prop.code}}"
+             [(ngModel)]="prop.value" #isRequired>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'dropdown'">
+      <select [(ngModel)]="prop.value" formControlName="applyTo" name="{{prop.code}}" class="form-control form-control-sm">
+        <option value=""></option>
+      </select>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'multi_select'">
+      <select multiple [(ngModel)]="prop.value" formControlName="{{prop.code}}" name="{{prop.code}}"
+              class="form-control form-control-sm">
+        <option value=""></option>
+      </select>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'date'">
+    </ng-container>
+    <ng-container *ngSwitchCase="'user'">
+    </ng-container>
+    <ng-container *ngSwitchCase="'version'">
+    </ng-container>
+    <ng-container *ngSwitchCase="'step'">
+    </ng-container>
+    <ng-container *ngSwitchCase="'result'">
+    </ng-container>
+
+  </ng-container>
+
 </div>

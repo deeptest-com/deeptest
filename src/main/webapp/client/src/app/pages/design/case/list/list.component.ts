@@ -12,6 +12,7 @@ import {
 } from "../../../../components/ng2-tree";
 
 import {GlobalState} from "../../../../global.state";
+import {CONSTANT} from "../../../../utils/constant";
 import {Utils} from "../../../../utils/utils";
 import {RouteService} from "../../../../service/route";
 import {SlimLoadingBarService} from "../../../../components/ng2-loading-bar";
@@ -70,6 +71,8 @@ export class CaseList implements OnInit, AfterViewInit {
     this.startLoading();
     that._caseService.query(that.query).subscribe((json:any) => {
       that.tree = json.data;
+      CONSTANT.CUSTOM_FIELD_FOR_PROJECT = json.customFields;
+
       that.completeLoading();
       this._state.notifyDataChanged('title.change', '测试用例');
     });

@@ -23,231 +23,258 @@ import java.util.*;
 @Service
 public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFieldService {
 
-	@Autowired
+    @Autowired
     ProjectService projectService;
-	
-	@Override
-	public List<TestCustomField> list(Long orgId) {
+
+    @Override
+    public List<TestCustomField> list(Long orgId) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestCustomField.class);
-        
+
         dc.add(Restrictions.eq("orgId", orgId));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-        
-        dc.addOrder(Order.asc("displayOrder"));
+
+        dc.addOrder(Order.asc("ordr"));
         List ls = findAllByCriteria(dc);
-		
-		return ls;
-	}
 
-	@Override
-	public List<TestCustomField> listForCaseByOrg(Long orgId) {
-		DetachedCriteria dc = DetachedCriteria.forClass(TestCustomField.class);
+        return ls;
+    }
 
-		dc.add(Restrictions.eq("orgId", orgId));
-		dc.add(Restrictions.eq("applyTo", FieldApplyTo.test_case));
+    @Override
+    public List<TestCustomField> listForCaseByOrg(Long orgId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestCustomField.class);
 
-		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc.add(Restrictions.eq("orgId", orgId));
+        dc.add(Restrictions.eq("applyTo", FieldApplyTo.test_case));
 
-		dc.addOrder(Order.asc("displayOrder"));
-		List ls = findAllByCriteria(dc);
+        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 
-		return ls;
-	}
+        dc.addOrder(Order.asc("ordr"));
+        List ls = findAllByCriteria(dc);
 
-	@Override
-	public List<CustomFieldVo> listVos(Long orgId) {
+        return ls;
+    }
+
+    @Override
+    public Map<Long, CustomFieldVo> listForCaseByProject(Long projectId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestCustomField.class);
+
+        dc.createAlias("projectSet", "p")
+                .add(Restrictions.eq("p.id", projectId));
+
+        dc.add(Restrictions.eq("applyTo", FieldApplyTo.test_case));
+
+        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+
+        dc.addOrder(Order.asc("ordr"));
+        List<TestCustomField> ls = findAllByCriteria(dc);
+
+        Map<Long, CustomFieldVo> map = new LinkedHashMap<Long, CustomFieldVo>();
+        for (TestCustomField field : ls) {
+            map.put(field.getId(), genVo(field));
+        }
+
+        return map;
+    }
+
+    @Override
+    public List<CustomFieldVo> listVos(Long orgId) {
         List<TestCustomField> ls = list(orgId);
-        
+
         List<CustomFieldVo> vos = genVos(ls);
-		return vos;
-	}
+        return vos;
+    }
 
-	@Override
-	public TestCustomField save(CustomFieldVo vo, Long orgId) {
-		if (vo == null) {
-			return null;
-		}
-		
-		TestCustomField po;
-		if (vo.getId() != null) {
-			po = (TestCustomField) get(TestCustomField.class, vo.getId());
-		} else {
-			po = new TestCustomField();
-		}
-		this.initPo(po, vo);
-		
-		po.setApplyTo(TestCustomField.FieldApplyTo.valueOf(vo.getApplyTo()));
-		po.setType(TestCustomField.FieldType.valueOf(vo.getType()));
-		if (StringUtil.isNotEmpty(vo.getFormat())) {
-			po.setFormat(TestCustomField.FieldFormat.valueOf(vo.getFormat()));
-		}
-		
-		po.setOrgId(orgId);
-		
-		if (vo.getId() == null) {
-			po.setCode(UUID.randomUUID().toString());
-			
-			String hql = "select max(displayOrder) from TestCustomField";
-			Integer maxOrder = (Integer) getByHQL(hql);
-	        po.setDisplayOrder(maxOrder + 10);
-		}
-		if (!po.getType().equals(FieldType.text)) {
-			po.setRows(0);
-			po.setFormat(null);
-		}
-		if (po.getIsGlobal() && po.getProjectSet().size() > 0) {
-			po.setProjectSet(new HashSet<TestProject>(0));
-		}
-		
-		saveOrUpdate(po);
-		return po;
-	}
+    @Override
+    public TestCustomField save(CustomFieldVo vo, Long orgId) {
+        if (vo == null) {
+            return null;
+        }
 
-	@Override
-	public boolean delete(Long id) {
-		TestCustomField po = (TestCustomField) get(TestCustomField.class, id);
-		po.setDeleted(true);
-		saveOrUpdate(po);
-		
-		return true;
-	}
-	
-	@Override
-	public List<String> listApplyTo() {
-		List<String> ls = new LinkedList<String>();
-		for (FieldApplyTo item: TestCustomField.FieldApplyTo.values()) {
-			ls.add(item.toString());
-		}
-		return ls;
-	}
-	@Override
-	public List<String> listType() {
-		List<String> ls = new LinkedList<String>();
-		for (FieldType item: TestCustomField.FieldType.values()) {
-			ls.add(item.toString());
-		}
-		return ls;
-	}
-	@Override
-	public List<String> listFormat() {
-		List<String> ls = new LinkedList<String>();
-		for (FieldFormat item: TestCustomField.FieldFormat.values()) {
-			ls.add(item.toString());
-		}
-		return ls;
-	}
-	
-	@Override
-	public boolean changeOrderPers(Long id, String act) {
-		TestCustomField type = (TestCustomField) get(TestCustomField.class, id);
-		
+        TestCustomField po;
+        if (vo.getId() != null) {
+            po = (TestCustomField) get(TestCustomField.class, vo.getId());
+        } else {
+            po = new TestCustomField();
+        }
+        this.initPo(po, vo);
+
+        po.setApplyTo(TestCustomField.FieldApplyTo.valueOf(vo.getApplyTo()));
+        po.setType(TestCustomField.FieldType.valueOf(vo.getType()));
+        if (StringUtil.isNotEmpty(vo.getFormat())) {
+            po.setFormat(TestCustomField.FieldFormat.valueOf(vo.getFormat()));
+        }
+
+        po.setOrgId(orgId);
+
+        if (vo.getId() == null) {
+            po.setCode(UUID.randomUUID().toString());
+
+            String hql = "select max(ordr) from TestCustomField";
+            Integer maxOrder = (Integer) getByHQL(hql);
+            po.setOrdr(maxOrder + 10);
+        }
+        if (!po.getType().equals(FieldType.text)) {
+            po.setRows(0);
+            po.setFormat(null);
+        }
+        if (po.getIsGlobal() && po.getProjectSet().size() > 0) {
+            po.setProjectSet(new HashSet<TestProject>(0));
+        }
+
+        saveOrUpdate(po);
+        return po;
+    }
+
+    @Override
+    public boolean delete(Long id) {
+        TestCustomField po = (TestCustomField) get(TestCustomField.class, id);
+        po.setDeleted(true);
+        saveOrUpdate(po);
+
+        return true;
+    }
+
+    @Override
+    public List<String> listApplyTo() {
+        List<String> ls = new LinkedList<String>();
+        for (FieldApplyTo item : TestCustomField.FieldApplyTo.values()) {
+            ls.add(item.toString());
+        }
+        return ls;
+    }
+
+    @Override
+    public List<String> listType() {
+        List<String> ls = new LinkedList<String>();
+        for (FieldType item : TestCustomField.FieldType.values()) {
+            ls.add(item.toString());
+        }
+        return ls;
+    }
+
+    @Override
+    public List<String> listFormat() {
+        List<String> ls = new LinkedList<String>();
+        for (FieldFormat item : TestCustomField.FieldFormat.values()) {
+            ls.add(item.toString());
+        }
+        return ls;
+    }
+
+    @Override
+    public boolean changeOrderPers(Long id, String act) {
+        TestCustomField type = (TestCustomField) get(TestCustomField.class, id);
+
         String hql = "from TestCustomField tp where tp.deleted = false and tp.disabled = false ";
         if ("up".equals(act)) {
-        	hql += "and tp.displayOrder < ? order by displayOrder desc";
+            hql += "and tp.ordr < ? order by ordr desc";
         } else if ("down".equals(act)) {
-        	hql += "and tp.displayOrder > ? order by displayOrder asc";
+            hql += "and tp.ordr > ? order by ordr asc";
         } else {
-        	return false;
+            return false;
         }
-        
-        TestCustomField neighbor = (TestCustomField) getDao().findFirstByHQL(hql, type.getDisplayOrder());
-		
-        Integer order = type.getDisplayOrder();
-        type.setDisplayOrder(neighbor.getDisplayOrder());
-        neighbor.setDisplayOrder(order);
-        
+
+        TestCustomField neighbor = (TestCustomField) getDao().findFirstByHQL(hql, type.getOrdr());
+
+        Integer order = type.getOrdr();
+        type.setOrdr(neighbor.getOrdr());
+        neighbor.setOrdr(order);
+
         saveOrUpdate(type);
         saveOrUpdate(neighbor);
-		
-		return true;
-	}
-	
-	@Override
-	public List<TestProjectVo> listProjectsForField(Long orgId, Long fieldId) {
-		List<TestProject> allProjects = projectService.list(orgId ,null, null);
-        
-		Set<TestProject> projectsForField;
+
+        return true;
+    }
+
+    @Override
+    public List<TestProjectVo> listProjectsForField(Long orgId, Long fieldId) {
+        List<TestProject> allProjects = projectService.list(orgId, null, null);
+
+        Set<TestProject> projectsForField;
         if (fieldId == null) {
-        	projectsForField = new HashSet<TestProject>();
+            projectsForField = new HashSet<TestProject>();
         } else {
-        	TestCustomField field = (TestCustomField) get(TestCustomField.class, fieldId);
-        	projectsForField = field.getProjectSet();
+            TestCustomField field = (TestCustomField) get(TestCustomField.class, fieldId);
+            projectsForField = field.getProjectSet();
         }
-        
+
         List<TestProjectVo> vos = new LinkedList<TestProjectVo>();
         for (TestProject po1 : allProjects) {
-        	TestProjectVo vo = projectService.genVo(po1);
-        	
-        	vo.setSelected(false);
-        	vo.setSelecting(false);
-        	for (TestProject po2 : projectsForField) {
-        		if (po1.getId() == po2.getId()) {
-            		vo.setSelected(true);
-            		vo.setSelecting(true);
-            	}
-        	}
-        	vos.add(vo);
+            TestProjectVo vo = projectService.genVo(po1);
+
+            vo.setSelected(false);
+            vo.setSelecting(false);
+            for (TestProject po2 : projectsForField) {
+                if (po1.getId() == po2.getId()) {
+                    vo.setSelected(true);
+                    vo.setSelecting(true);
+                }
+            }
+            vos.add(vo);
         }
-        
-		return vos;
-	}
-	
-	@Override
-	public boolean saveRelationsProjects(Long fieldId, List<TestProjectVo> projects) {
-		if (projects == null) {
-			return false;
-		}
-		
-		TestCustomField field = (TestCustomField) get(TestCustomField.class, fieldId);
-		Set<TestProject> projectSet = field.getProjectSet();
-		
-		for (Object obj: projects) {
-			TestProjectVo vo = JSON.parseObject(JSON.toJSONString(obj), TestProjectVo.class);
-			if (vo.getSelecting() != vo.getSelected()) { // 变化了
-				TestProject project = (TestProject) get(TestProject.class, vo.getId());
-				
-    			if (vo.getSelecting() && !projectSet.contains(project)) { // 勾选
-    				projectSet.add(project);
-    			} else if (project != null) { // 取消
-    				projectSet.remove(project);
-    			}
-			}
-		}
-		saveOrUpdate(field);
-		
-		return true;
-	}
-    
-	@Override
-	public CustomFieldVo genVo(TestCustomField po) {
-		if (po == null) {
-			return null;
-		}
-		CustomFieldVo vo = new CustomFieldVo();
-		BeanUtilEx.copyProperties(vo, po);
-		
-		return vo;
-	}
-	@Override
-	public List<CustomFieldVo> genVos(List<TestCustomField> pos) {
+
+        return vos;
+    }
+
+    @Override
+    public boolean saveRelationsProjects(Long fieldId, List<TestProjectVo> projects) {
+        if (projects == null) {
+            return false;
+        }
+
+        TestCustomField field = (TestCustomField) get(TestCustomField.class, fieldId);
+        Set<TestProject> projectSet = field.getProjectSet();
+
+        for (Object obj : projects) {
+            TestProjectVo vo = JSON.parseObject(JSON.toJSONString(obj), TestProjectVo.class);
+            if (vo.getSelecting() != vo.getSelected()) { // 变化了
+                TestProject project = (TestProject) get(TestProject.class, vo.getId());
+
+                if (vo.getSelecting() && !projectSet.contains(project)) { // 勾选
+                    projectSet.add(project);
+                } else if (project != null) { // 取消
+                    projectSet.remove(project);
+                }
+            }
+        }
+        saveOrUpdate(field);
+
+        return true;
+    }
+
+    @Override
+    public CustomFieldVo genVo(TestCustomField po) {
+        if (po == null) {
+            return null;
+        }
+        CustomFieldVo vo = new CustomFieldVo();
+        BeanUtilEx.copyProperties(vo, po);
+
+        return vo;
+    }
+
+    @Override
+    public List<CustomFieldVo> genVos(List<TestCustomField> pos) {
         List<CustomFieldVo> vos = new LinkedList<CustomFieldVo>();
 
-        for (TestCustomField po: pos) {
-        	CustomFieldVo vo = genVo(po);
-        	vos.add(vo);
+        for (TestCustomField po : pos) {
+            CustomFieldVo vo = genVo(po);
+            vos.add(vo);
         }
-		return vos;
-	}
-	
-	@Override
-	public void initPo(TestCustomField po, CustomFieldVo vo) {
-		po.setName(vo.getName());
-		po.setDescr(vo.getDescr());
-		po.setRows(vo.getRows());
-		po.setIsGlobal(vo.getIsGlobal());
-		po.setIsRequired(vo.getIsRequired());
-	}
+        return vos;
+    }
+
+    @Override
+    public void initPo(TestCustomField po, CustomFieldVo vo) {
+        po.setCode(vo.getCode());
+        po.setLabel(vo.getLabel());
+        po.setDescr(vo.getDescr());
+        po.setRows(vo.getRows());
+        po.setIsGlobal(vo.getIsGlobal());
+        po.setIsRequired(vo.getIsRequired());
+    }
 
 }

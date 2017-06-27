@@ -61,8 +61,8 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
     let that = this;
     this.form = this.fb.group(
       {
-        'name': ['', [Validators.required]],
-        'code': ['', []],
+        'code': ['', [Validators.required]],
+        'label': ['', [Validators.required]],
         'applyTo': ['', [Validators.required]],
         type: ['', [Validators.required]],
         rows:  ['', [Validators.pattern('^[1-9]$'), CustomValidator.validate('required_if_other_is', 'required_rows', 'rows', 'type', 'text')]],
@@ -83,8 +83,11 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
 
   formErrors = [];
   validateMsg = {
-    'name': {
-      'required':      '姓名不能为空'
+    'code': {
+      'required':      '编码不能为空'
+    },
+    'label': {
+      'required':      '名称不能为空'
     },
     'applyTo': {
       'required':      '应用对象不能为空'

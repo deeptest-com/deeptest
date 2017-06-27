@@ -1,38 +1,24 @@
 package com.ngtesting.platform.vo;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.ngtesting.platform.entity.TestCustomField;
-import com.ngtesting.platform.entity.TestProject;
 
 public class CustomFieldVo extends BaseVo {
 	private static final long serialVersionUID = -2071266644244632484L;
-	
-	private String name;
-    private String label;
+
     private String code;
+    private String label;
+
     private String descr;
     private String applyTo;
     private String type;
 
-    private String configs;
     private Integer rows = 3;
     private Boolean isRequired;
     private String format = TestCustomField.FieldFormat.plain_text.toString();
-    private Boolean isMulti;
     private Boolean isGlobal = true;
     private Boolean isBuildIn = false;
     
-    private Integer displayOrder;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
+    private Integer ordr;
 
 	public String getLabel() {
 		return label;
@@ -64,22 +50,6 @@ public class CustomFieldVo extends BaseVo {
 
 	public void setType(String type) {
 		this.type = type;
-	}
-
-	public String getConfigs() {
-		return configs;
-	}
-
-	public void setConfigs(String configs) {
-		this.configs = configs;
-	}
-
-	public Boolean getIsMulti() {
-		return isMulti;
-	}
-
-	public void setIsMulti(Boolean isMulti) {
-		this.isMulti = isMulti;
 	}
 
 	public Boolean getIsGlobal() {
@@ -130,12 +100,35 @@ public class CustomFieldVo extends BaseVo {
 		this.format = format;
 	}
 
-	public Integer getDisplayOrder() {
-		return displayOrder;
+	public Boolean getRequired() {
+		return isRequired;
 	}
 
-	public void setDisplayOrder(Integer displayOrder) {
-		this.displayOrder = displayOrder;
+	public void setRequired(Boolean required) {
+		isRequired = required;
 	}
 
+	public Boolean getGlobal() {
+		return isGlobal;
+	}
+
+	public void setGlobal(Boolean global) {
+		isGlobal = global;
+	}
+
+	public Boolean getBuildIn() {
+		return isBuildIn;
+	}
+
+	public void setBuildIn(Boolean buildIn) {
+		isBuildIn = buildIn;
+	}
+
+	public Integer getOrdr() {
+		return ordr;
+	}
+
+	public void setOrdr(Integer ordr) {
+		this.ordr = ordr;
+	}
 }

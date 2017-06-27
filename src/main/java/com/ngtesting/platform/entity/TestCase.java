@@ -54,7 +54,7 @@ public class TestCase extends BaseEntity {
 	private List<TestCaseStep> steps = new LinkedList<>();
 
 	@OneToMany(mappedBy="testCase", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-	@OrderBy("fieldId")
+	@OrderBy("ordr")
 	private List<TestCaseProp> props = new LinkedList<>();
 
 	public List<TestCaseProp> getProps() {

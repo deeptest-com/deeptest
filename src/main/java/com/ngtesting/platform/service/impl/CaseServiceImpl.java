@@ -5,9 +5,11 @@ import com.ngtesting.platform.entity.TestCaseProp;
 import com.ngtesting.platform.entity.TestCaseStep;
 import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.service.CustomFieldService;
-import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.Constant.TreeNodeType;
-import com.ngtesting.platform.vo.*;
+import com.ngtesting.platform.vo.TestCasePropVo;
+import com.ngtesting.platform.vo.TestCaseStepVo;
+import com.ngtesting.platform.vo.TestCaseTreeVo;
+import com.ngtesting.platform.vo.TestCaseVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -102,12 +104,12 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 		List<TestCaseProp> props = po.getProps();
 		for (TestCaseProp propPo : props) {
 
-			TestCasePropVo propVo = new TestCasePropVo(propPo.getId(), propPo.getName(), propPo.getValue());
+			TestCasePropVo propVo = new TestCasePropVo(propPo.getId(), propPo.getCode(),
+                    propPo.getLabel(), propPo.getValue(), propPo.getFieldId());
 
-			CustomFieldVo fieldVo = new CustomFieldVo();
-			BeanUtilEx.copyProperties(fieldVo, propPo.getField());
-
-			propVo.setField(fieldVo);
+//			CustomFieldVo fieldVo = new CustomFieldVo();
+//			BeanUtilEx.copyProperties(fieldVo, propPo.getField());
+//			propVo.setField(fieldVo);
 
 			vo.getProps().add(propVo);
 		}

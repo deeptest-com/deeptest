@@ -1,6 +1,6 @@
 import {Component, ViewEncapsulation, NgModule, Pipe, OnInit, AfterViewInit} from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgUploaderModule } from 'ngx-uploader';
 
@@ -30,12 +30,16 @@ export class CaseEdit implements OnInit, AfterViewInit {
   form: any;
   tab: string = 'steps';
 
+  fields: any;
+
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
               private _caseService: CaseService, private _caseStepService: CaseStepService) {
 
   }
   ngOnInit() {
     let that = this;
+
+    this.fields = CONSTANT.CUSTOM_FIELD_FOR_PROJECT;
 
     that._route.params.forEach((params: Params) => {
       that.id = +params['id'];
@@ -78,7 +82,8 @@ export class CaseEdit implements OnInit, AfterViewInit {
     this.form = this.fb.group(
       {
         'title': ['', [Validators.required]],
-        'objective': ['', [Validators.required]]
+        'objective': ['', [Validators.required]],
+        'pre_condition': ['', []]
       }, {}
     );
 

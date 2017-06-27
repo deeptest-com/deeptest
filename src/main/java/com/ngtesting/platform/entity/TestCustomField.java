@@ -12,16 +12,18 @@ public class TestCustomField extends BaseEntity {
 	public TestCustomField() {
 		
 	}
-	public void setValues(String name, String descr, Integer rows, Boolean isGlobal, Boolean isRequired) {
-		this.name = name;
+	public void TestCustomField(String code, String label, String descr, Integer rows, Boolean isGlobal, Boolean isRequired) {
+		this.code = code;
+        this.label = label;
+
 		this.descr = descr;
 		this.rows = rows;
 		this.isGlobal = isGlobal;
 		this.isRequired = isRequired;
 	}
-	
-	private String name;
+
     private String code;
+    private String label;
     private String descr;
     
     @Enumerated(EnumType.STRING)
@@ -33,13 +35,12 @@ public class TestCustomField extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private FieldFormat format;
 
-    private String configs;
     private Integer rows;
     private Boolean isGlobal;
     private Boolean isRequired;
     private Boolean isBuildIn;
     
-    private Integer displayOrder;
+    private Integer ordr;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
@@ -71,8 +72,8 @@ public class TestCustomField extends BaseEntity {
 
     	user("user"),
     	version("version"),
-    	steps("steps"),
-    	results("results");
+    	step("step"),
+    	result("result");
 
         private FieldType(String textVal) {
             this.textVal = textVal;
@@ -112,15 +113,15 @@ public class TestCustomField extends BaseEntity {
         }
     }
 
-	public String getName() {
-		return name;
-	}
+    public String getLabel() {
+        return label;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setLabel(String label) {
+        this.label = label;
+    }
 
-	public String getCode() {
+    public String getCode() {
 		return code;
 	}
 
@@ -134,14 +135,6 @@ public class TestCustomField extends BaseEntity {
 
 	public void setDescr(String descr) {
 		this.descr = descr;
-	}
-
-	public String getConfigs() {
-		return configs;
-	}
-
-	public void setConfigs(String configs) {
-		this.configs = configs;
 	}
 
 	public Boolean getIsGlobal() {
@@ -208,14 +201,6 @@ public class TestCustomField extends BaseEntity {
 		this.isRequired = isRequired;
 	}
 
-	public Integer getDisplayOrder() {
-		return displayOrder;
-	}
-
-	public void setDisplayOrder(Integer displayOrder) {
-		this.displayOrder = displayOrder;
-	}
-
 	public TestOrg getOrg() {
 		return org;
 	}
@@ -231,5 +216,36 @@ public class TestCustomField extends BaseEntity {
 	public void setOrgId(Long orgId) {
 		this.orgId = orgId;
 	}
-	
+
+	public Boolean getGlobal() {
+		return isGlobal;
+	}
+
+	public void setGlobal(Boolean global) {
+		isGlobal = global;
+	}
+
+	public Boolean getRequired() {
+		return isRequired;
+	}
+
+	public void setRequired(Boolean required) {
+		isRequired = required;
+	}
+
+	public Boolean getBuildIn() {
+		return isBuildIn;
+	}
+
+	public void setBuildIn(Boolean buildIn) {
+		isBuildIn = buildIn;
+	}
+
+	public Integer getOrdr() {
+		return ordr;
+	}
+
+	public void setOrdr(Integer ordr) {
+		this.ordr = ordr;
+	}
 }

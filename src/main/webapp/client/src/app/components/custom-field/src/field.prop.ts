@@ -1,13 +1,13 @@
 
 export class Prop {
-  name: string;
+  code: string;
+  labe: string;
   value: string;
 
-  field: Field;
+  fieldId: number;
 }
 
 export class Field {
-  name: string;
   label: string;
   code: string;
   descr: string;

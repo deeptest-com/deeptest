@@ -18,8 +18,8 @@
       </div>
 
       <div class="form-group row">
-        <label class="col-sm-1 col-form-label"></label>
-        <div class="col-sm-11">
+        <label class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
 
           <div class="tabs-container">
             <div class="tabs">
@@ -40,8 +40,8 @@
       </div>
 
       <div [class.hidden]="tab != 'steps'" class="tab-steps form-group row">
-        <label class="col-sm-1 col-form-label"></label>
-        <div class="col-sm-11">
+        <label class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
           <steps-table [settings]="settings" [source]="model.steps"
 
                        (upConfirm)="onUpConfirm($event)"

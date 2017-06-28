@@ -113,6 +113,7 @@ export class CaseList implements OnInit, AfterViewInit {
     that.logEvent(e, 'NodeCreatedEvent');
     this.startLoading();
     that._caseService.create(e.node.node).subscribe((json:any) => {
+      e.node.node.id = json.data.id;
       that.completeLoading();
     });
   }

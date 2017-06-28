@@ -119,11 +119,11 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	}
 
 	@Override
-	public TestCase create(Long id, String value, String type, Long pid, Long userId) {
+	public TestCase create(Long id, String title, String type, Long pid, Long userId) {
 		TestCase parent = (TestCase) get(TestCase.class, pid);
 		
 		TestCase testCase = new TestCase();
-		testCase.setTitle(value);
+		testCase.setTitle(title);
 		testCase.setType(TreeNodeType.valueOf(type));
 		testCase.setParentId(pid);
 		testCase.setProjectId(parent.getProjectId());
@@ -154,6 +154,13 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	@Override
 	public TestCase save(JSONObject json) {
 		TestCase testCase = (TestCase) get(TestCase.class, json.getLong("id"));
+
+//		long i = 0;
+//		while (i < 10000) {
+//			create(i, "性能测试", "leaf", Long.valueOf(2), Long.valueOf(-1));
+//			i++;
+//		}
+
 		return testCase;
 	}
 

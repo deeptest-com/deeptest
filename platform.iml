@@ -138,5 +138,6 @@
     <orderEntry type="library" name="Maven: net.oauth.core:oauth:20090617" level="project" />
     <orderEntry type="library" name="Maven: net.oauth.core:oauth-httpclient4:20090913" level="project" />
     <orderEntry type="library" name="Maven: net.oauth.core:oauth-consumer:20090617" level="project" />
+    <orderEntry type="library" name="Maven: p6spy:p6spy:3.0.0" level="project" />
   </component>
 </module>

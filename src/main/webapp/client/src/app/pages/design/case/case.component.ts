@@ -10,7 +10,7 @@ import { Utils } from '../../../utils/utils';
 })
 export class Case {
 
-  contentHeight = Utils.getContainerHeight(105);
+  contentHeight = Utils.getContainerHeight(110);
 
   constructor() {
   }

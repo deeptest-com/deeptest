@@ -5,6 +5,7 @@ public class TestCasePropVo extends BaseVo {
     private String code;
     private String label;
     private String value;
+    private String oldValue;
 
     private Long fieldId;
     private CustomFieldVo field;
@@ -15,8 +16,17 @@ public class TestCasePropVo extends BaseVo {
         this.code = code;
         this.label = label;
         this.value = value;
+        this.oldValue = value;
 
         this.fieldId = fieldId;
+    }
+
+    public String getOldValue() {
+        return oldValue;
+    }
+
+    public void setOldValue(String oldValue) {
+        this.oldValue = oldValue;
     }
 
     public String getCode() {

@@ -122,6 +122,10 @@ export class CaseEdit implements OnInit, AfterViewInit {
     });
   }
 
+  reset() {
+    this.loadData();
+  }
+
   tabChange(event: any) {
     this.tab = event.nextId;
   }

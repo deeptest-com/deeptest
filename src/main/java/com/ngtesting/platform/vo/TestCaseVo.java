@@ -18,8 +18,10 @@ public class TestCaseVo extends BaseVo {
     private List<TestCasePropVo> props = new LinkedList<>();
 	private List<TestCaseStepVo> steps = new LinkedList<>();
 
-    public TestCaseVo(String title, Integer priority, Integer estimate, String objective, String descr, String path, String type) {
+    public TestCaseVo(Long id, String title, Integer priority, Integer estimate, String objective, String descr, String path, String type) {
         super();
+
+		this.id = id;
         this.title = title;
         this.priority = priority;
         this.estimate = estimate;

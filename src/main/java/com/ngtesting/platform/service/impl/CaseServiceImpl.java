@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestCase;
 import com.ngtesting.platform.entity.TestCaseProp;
 import com.ngtesting.platform.entity.TestCaseStep;
@@ -90,7 +91,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
 	@Override
 	public TestCaseVo genVo(TestCase po) {
-		TestCaseVo vo = new TestCaseVo(po.getTitle(), po.getPriority(), po.getEstimate(), po.getObjective(),
+		TestCaseVo vo = new TestCaseVo(po.getId(), po.getTitle(), po.getPriority(), po.getEstimate(), po.getObjective(),
 				po.getDescr(), po.getPath(), po.getType().toString());
 
 		List<TestCaseStep> steps = po.getSteps();
@@ -148,6 +149,12 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 		
 		
 		return null;
+	}
+
+	@Override
+	public TestCase save(JSONObject json) {
+		TestCase testCase = (TestCase) get(TestCase.class, json.getLong("id"));
+		return testCase;
 	}
 
 	@Override

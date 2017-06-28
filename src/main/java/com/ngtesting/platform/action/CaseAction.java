@@ -145,4 +145,18 @@ public class CaseAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "save", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		TestCase po = caseService.save(json);
+		TestCaseVo caseVo = caseService.genVo(po);
+
+		ret.put("data", caseVo);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
 }

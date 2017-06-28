@@ -14,10 +14,10 @@ import { Utils } from '../../../utils/utils';
 @Component({
   selector: 'tree',
   template: `
-    <div>
+    <div class="tree-toolbar-container">
       <tree-toolbar [tree]="tree" [options]="options"></tree-toolbar>
     </div>
-     <div>
+     <div class="tree-internal-container y-scrollable">
       <tree-internal [tree]="tree" [options]="options" [class.filter]="options.keywords"></tree-internal>
     </div>
    `,

@@ -27,11 +27,12 @@ export const routes: Routes = [
       { path: 'dashboard', loadChildren: './dashboard/dashboard.module#DashboardModule' },
 
       { path: 'project', loadChildren: './project/project/project.module' },
-      { path: 'case', loadChildren: './design/case/case.module' },
+      { path: 'design', loadChildren: './design/design.module' },
+      { path: 'implement', loadChildren: './implement/implement.module' },
+      { path: 'analysis', loadChildren: './analysis/analysis.module' },
 
       { path: 'org-admin', loadChildren: './admin-org/org-admin.module' },
       { path: 'sys-admin', loadChildren: './admin-sys/sys-admin.module' }
-
     ]
   }
 ];

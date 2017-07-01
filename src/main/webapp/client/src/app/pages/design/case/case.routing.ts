@@ -10,7 +10,8 @@ const routes: Routes = [
     path: '',
     component: Case,
     children: [
-      
+      { path: 'list', component: CaseList },
+      { path: 'edit/:id', component: CaseEdit },
     ]
   }
 ];

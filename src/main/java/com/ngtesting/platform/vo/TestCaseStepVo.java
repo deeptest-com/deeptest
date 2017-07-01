@@ -14,11 +14,12 @@ public class TestCaseStepVo extends BaseVo {
     public TestCaseStepVo() {
     }
 
-    public TestCaseStepVo(Long id, String opt, String expect, Integer ordr) {
+    public TestCaseStepVo(Long id, String opt, String expect, Integer ordr, Long testCaseId) {
         this.id = id;
         this.opt = opt;
         this.expect = expect;
         this.ordr = ordr;
+        this.testCaseId = testCaseId;
     }
 
     public String getOpt() {

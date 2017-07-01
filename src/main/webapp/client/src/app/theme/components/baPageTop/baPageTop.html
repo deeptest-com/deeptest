@@ -32,20 +32,20 @@
     </div>
 
     <div ngbDropdown class="btn-group">
-      <button class="btn btn-default" ngbDropdownToggle>测试设计</button>
-      <div class="dropdown-menu">
+      <button [routerLink]="['/pages/design/case']" class="btn btn-default">测试设计</button>
+<!--      <div class="dropdown-menu">
         <button class="dropdown-item">
           <a [routerLink]="['/pages/case']">测试用例</a>
         </button>
         <button class="dropdown-item">
           <a [routerLink]="['/pages/dashboard']">用例集合</a>
         </button>
-      </div>
+      </div>-->
     </div>
 
     <div ngbDropdown class="btn-group">
-      <button class="btn btn-default" ngbDropdownToggle>测试执行</button>
-      <div class="dropdown-menu">
+      <button [routerLink]="['/pages/implement/run']" class="btn btn-default" ngbDropdownToggle>测试执行</button>
+<!--      <div class="dropdown-menu">
         <button class="dropdown-item">
           <a [routerLink]="['/pages/dashboard']">测试计划</a>
         </button>
@@ -55,11 +55,12 @@
         <button class="dropdown-item">
           <a [routerLink]="['/pages/dashboard']">测试执行</a>
         </button>
-      </div>
+      </div>-->
     </div>
 
     <div ngbDropdown class="btn-group">
-      <button class="btn btn-default" ngbDropdownToggle>测试分析</button>
+      <button [routerLink]="['/pages/analysis/report']" class="btn btn-default" ngbDropdownToggle>测试分析</button>
+<!--      <button class="btn btn-default" ngbDropdownToggle></button>
       <div class="dropdown-menu">
         <button class="dropdown-item">
           <a [routerLink]="['/pages/dashboard']">测试摘要</a>
@@ -70,7 +71,7 @@
         <button class="dropdown-item">
           <a [routerLink]="['/pages/dashboard']">分析图表</a>
         </button>
-      </div>
+      </div>-->
     </div>
 
     <div ngbDropdown class="btn-group">

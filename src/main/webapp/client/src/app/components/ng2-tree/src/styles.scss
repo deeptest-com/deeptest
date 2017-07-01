@@ -181,6 +181,8 @@ tree-internal div.rootless {
 .tree-toolbar-container {
   position: absolute;
   top: 0px;
+  z-index: 99999;
+  background-color: #F0F3F4;
 }
 .tree-internal-container {
   padding-top: 40px;

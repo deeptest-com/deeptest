@@ -97,7 +97,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 		List<TestCaseStep> steps = po.getSteps();
 		for (TestCaseStep step : steps) {
 
-			TestCaseStepVo stepVo = new TestCaseStepVo(step.getId(), step.getOpt(), step.getExpect(), step.getOrdr());
+			TestCaseStepVo stepVo = new TestCaseStepVo(
+					step.getId(), step.getOpt(), step.getExpect(), step.getOrdr(), step.getTestCaseId());
 
 			vo.getSteps().add(stepVo);
 		}

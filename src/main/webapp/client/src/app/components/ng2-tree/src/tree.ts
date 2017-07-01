@@ -9,9 +9,11 @@ import {RenamableNode} from "./type/renamable.node";
 import { NodeMenuItemAction} from './menu/menu.events';
 
 export class Tree {
-    private id: number;
-    private pid: number;
+  private id: number;
+  private pid: number;
   private _children: Tree[];
+
+  public isDragging: boolean = false;
 
   public constructor(public node: TreeModel, public parent: Tree = null, isBranch: boolean = false) {
     this._children = isBranch ? [] : null;

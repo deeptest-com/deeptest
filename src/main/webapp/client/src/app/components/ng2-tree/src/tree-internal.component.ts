@@ -32,7 +32,10 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
             <div class="node-value" 
               *ngIf="!shouldShowInputForTreeValue()" 
               [class.node-selected]="isSelected" 
-              (click)="onNodeSelected($event)">{{tree.value}}
+              (click)="onNodeSelected($event)">
+              
+              <span>{{tree.value}}</span>
+              <span *ngIf="tree.isRoot() && tree.isDragging" class="tips">按住Shift键复制</span>
             </div>
     
             <input type="text" class="node-value" 

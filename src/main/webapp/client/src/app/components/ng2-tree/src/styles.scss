@@ -72,6 +72,14 @@ tree-internal li {
   list-style: none;
 }
 
+tree-internal .value-container {
+  .tips {
+    display: inline-block;
+    padding-left: 6px;
+    color: #e85656;
+  }
+}
+
 tree-internal .value-container.over-drop-target-before,
 tree-internal .value-container.over-drop-target-inner,
 tree-internal .value-container.over-drop-target-after {

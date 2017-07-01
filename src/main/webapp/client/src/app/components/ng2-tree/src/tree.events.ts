@@ -6,6 +6,12 @@ export class NodeEvent {
   }
 }
 
+export class NodeDraggingEvent {
+  public constructor(public act: string) {
+
+  }
+}
+
 export class NodeSelectedEvent extends NodeEvent {
   public constructor(node: Tree) {
     super(node);

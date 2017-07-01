@@ -5,7 +5,7 @@ import { TreeModel } from './type/tree.model';
 import { TreeSettings } from './type/tree.settings';
 import { TreeOptions } from './type/tree.options';
 
-import { NodeEvent } from './tree.events';
+import { NodeEvent, NodeDraggingEvent } from './tree.events';
 import { Tree } from './tree';
 
 import { CONSTANT } from '../../../utils/constant';
@@ -67,6 +67,14 @@ export class TreeComponent implements OnInit, OnChanges {
   }
 
   public ngOnInit(): void {
+
+    this.treeService.nodeDraging$.subscribe((e: NodeDraggingEvent) => {
+      if (e.act === 'start') {
+        this.tree.isDragging = true;
+      } else {
+        this.tree.isDragging = false;
+      }
+    });
 
     this.treeService.nodeRemovedRemote$.subscribe((e: NodeEvent) => {
         this.nodeRemovedRemote.emit(e);

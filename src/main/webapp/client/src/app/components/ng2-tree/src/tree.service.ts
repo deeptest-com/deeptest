@@ -1,4 +1,5 @@
 import {
+  NodeDraggingEvent,
 
   NodeRemovedEvent,
   NodeRemovedRemoteEvent,
@@ -24,6 +25,8 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
 
 @Injectable()
 export class TreeService {
+  public nodeDraging$: Subject<NodeDraggingEvent> = new Subject<NodeDraggingEvent>();
+
   public nodeMoved$: Subject<NodeMovedEvent> = new Subject<NodeMovedEvent>();
   public nodeMovedRemote$: Subject<NodeMovedRemoteEvent> = new Subject<NodeMovedRemoteEvent>();
 
@@ -80,6 +83,10 @@ export class TreeService {
 
   public unselectStream(tree: Tree): Observable<any> {
     return this.nodeSelected$.filter((e: NodeSelectedEvent) => tree !== e.node);
+  }
+
+  public fireNodeDragging(start: string): void {
+    this.nodeDraging$.next(new NodeDraggingEvent(start));
   }
 
   public fireNodeRemoved(tree: Tree): void {

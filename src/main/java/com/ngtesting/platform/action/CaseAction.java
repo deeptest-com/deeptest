@@ -102,7 +102,7 @@ public class CaseAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
 		TestCase po = caseService.move(id, pid, prePid, userVo.getId());
-		TestCaseVo caseVo = caseService.genVo(po);
+		TestCaseVo caseVo = po == null? null: caseService.genVo(po);
         
         ret.put("data", caseVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

@@ -47,6 +47,8 @@
               margin: 0 3px 0 0;
               .pre {
                 white-space: pre-line;
+                word-wrap: break-word;
+                word-break: normal;
               }
             }
           }

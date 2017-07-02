@@ -132,9 +132,9 @@ public class SuiteAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
 		TestSuite po = suiteService.delete(id, userVo.getId());
-		TestSuiteVo caseVo = suiteService.genVo(po);
-        
-        ret.put("data", caseVo);
+//		TestSuiteVo caseVo = suiteService.genVo(po);
+//
+//        ret.put("data", caseVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -146,9 +146,9 @@ public class SuiteAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		TestSuite po = suiteService.save(json);
-		TestSuiteVo caseVo = suiteService.genVo(po);
-
-		ret.put("data", caseVo);
+//		TestSuiteVo caseVo = suiteService.genVo(po);
+//
+//		ret.put("data", caseVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

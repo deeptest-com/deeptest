@@ -38,43 +38,41 @@ export class NodeMenuComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
       let that = this;
 
-    console.log('isLeaf', this.isLeaf);
-
-    if (this.isLeaf) {
+    // if (this.isLeaf) {
+    //   this.availableMenuItems = [
+    //     {
+    //       name: '新建' + that.options.nodeName,
+    //       action: NodeMenuItemAction.NewTag,
+    //       cssClass: 'new-tag'
+    //     },
+    //     {
+    //       name: '新建' + that.options.folderName,
+    //       action: NodeMenuItemAction.NewFolder,
+    //       cssClass: 'new-folder'
+    //     },
+    //     {
+    //       name: '编辑',
+    //       action: NodeMenuItemAction.Rename,
+    //       cssClass: 'rename'
+    //     },
+    //     {
+    //       name: '删除',
+    //       action: NodeMenuItemAction.Remove,
+    //       cssClass: 'remove'
+    //     }
+    //   ];
+    // } else {
       this.availableMenuItems = [
-        {
-          name: '新建' + that.options.nodeName,
-          action: NodeMenuItemAction.NewTag,
-          cssClass: 'new-tag'
-        },
-        {
-          name: '新建' + that.options.folderName,
-          action: NodeMenuItemAction.NewFolder,
-          cssClass: 'new-folder'
-        },
-        {
-          name: '编辑',
-          action: NodeMenuItemAction.Rename,
-          cssClass: 'rename'
-        },
-        {
-          name: '删除',
-          action: NodeMenuItemAction.Remove,
-          cssClass: 'remove'
-        }
-      ];
-    } else {
-      this.availableMenuItems = [
-        {
-          name: '新建' + that.options.nodeName + ' - 平级',
-          action: NodeMenuItemAction.NewTag,
-          cssClass: 'new-tag'
-        },
-        {
-          name: '新建' + that.options.nodeName + ' - 内部',
-          action: NodeMenuItemAction.NewTagInner,
-          cssClass: 'new-tag'
-        },
+        // {
+        //   name: '新建' + that.options.nodeName + ' - 平级',
+        //   action: NodeMenuItemAction.NewTag,
+        //   cssClass: 'new-tag'
+        // },
+        // {
+        //   name: '新建' + that.options.nodeName + ' - 内部',
+        //   action: NodeMenuItemAction.NewTagInner,
+        //   cssClass: 'new-tag'
+        // },
         {
           name: '新建' + that.options.folderName + ' - 平级',
           action: NodeMenuItemAction.NewFolder,
@@ -96,7 +94,7 @@ export class NodeMenuComponent implements OnInit, OnDestroy {
           cssClass: 'remove'
         }
       ];
-    }
+    // }
 
     this.disposersForGlobalListeners.push(this.renderer.listenGlobal('document', 'keyup', this.closeMenu.bind(this)));
     this.disposersForGlobalListeners.push(this.renderer.listenGlobal('document', 'click', this.closeMenu.bind(this)));

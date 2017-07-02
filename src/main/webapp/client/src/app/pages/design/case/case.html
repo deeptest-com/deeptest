@@ -1,13 +1,21 @@
 <div class="case">
   <div class="row main" resize>
-    <div class="list left" [style.height]="contentHeight">
+
+    <div class="suite left" [style.height]="contentHeight">
+      <case-suite></case-suite>
+    </div>
+
+    <div class="handle1" [style.height]="contentHeight"></div>
+
+    <div class="list center" [style.height]="contentHeight">
       <case-list></case-list>
     </div>
 
-    <div class="handle" [style.height]="contentHeight"></div>
+    <div class="handle2" [style.height]="contentHeight"></div>
 
     <div class="detail right y-scrollable" [style.height]="contentHeight">
       <case-edit></case-edit>
     </div>
+
   </div>
 </div>

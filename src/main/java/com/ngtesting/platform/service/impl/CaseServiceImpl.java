@@ -6,10 +6,8 @@ import com.ngtesting.platform.entity.TestCaseProp;
 import com.ngtesting.platform.entity.TestCaseStep;
 import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.service.CustomFieldService;
-import com.ngtesting.platform.util.Constant.TreeNodeType;
 import com.ngtesting.platform.vo.TestCasePropVo;
 import com.ngtesting.platform.vo.TestCaseStepVo;
-import com.ngtesting.platform.vo.TestCaseTreeVo;
 import com.ngtesting.platform.vo.TestCaseVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -17,10 +15,8 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
@@ -29,16 +25,16 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	CustomFieldService customFieldService;
 
 	@Override
-	public List<TestCase> query(Long projectId) {
+	public List<TestCase> query(Long suiteId) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestCase.class);
         
-        if (projectId != null) {
-        	dc.add(Restrictions.eq("projectId", projectId));
+        if (suiteId != null) {
+        	dc.add(Restrictions.eq("suiteId", suiteId));
         }
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-        dc.addOrder(Order.asc("path"));
+        dc.addOrder(Order.asc("ordr"));
         dc.addOrder(Order.asc("id"));
         List<TestCase> ls = findAllByCriteria(dc);
         
@@ -51,31 +47,6 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 		TestCaseVo vo = genVo(po);
 
 		return vo;
-	}
-
-	@Override
-	public TestCaseTreeVo buildTree(List<TestCase> ls) {
-		TestCaseTreeVo root = null;
-
-		Map<Long, TestCaseTreeVo> nodeMap = new HashMap<Long, TestCaseTreeVo>();
-        for (TestCase po : ls) {
-        	Long id = po.getId();
-        	String title = po.getTitle();
-        	TreeNodeType type = po.getType();
-        	Long pid = po.getParentId();
-        	
-        	TestCaseTreeVo newNode = new TestCaseTreeVo(id, title, type.toString(), pid);
-        	nodeMap.put(id, newNode);
-        	
-        	if (type.equals(TreeNodeType.root)) {
-        		root = newNode;
-        		continue;
-        	}
-        	
-        	nodeMap.get(pid).getChildren().add(newNode);
-        }
-		
-        return root;
 	}
 
 	@Override
@@ -92,7 +63,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	@Override
 	public TestCaseVo genVo(TestCase po) {
 		TestCaseVo vo = new TestCaseVo(po.getId(), po.getTitle(), po.getPriority(), po.getEstimate(), po.getObjective(),
-				po.getDescr(), po.getPath(), po.getType().toString());
+				po.getDescr());
 
 		List<TestCaseStep> steps = po.getSteps();
 		for (TestCaseStep step : steps) {
@@ -125,14 +96,11 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 		
 		TestCase testCase = new TestCase();
 		testCase.setTitle(title);
-		testCase.setType(TreeNodeType.valueOf(type));
-		testCase.setParentId(pid);
+		testCase.setSuiteId(pid);
 		testCase.setProjectId(parent.getProjectId());
 		testCase.setUserId(userId);
 		
-		testCase.setPath(parent.getPath() + parent.getId() + "/");
-		
-		testCase.setOrderInParent(getChildMaxOrderNumb(parent) + 1);
+		testCase.setOrdr(getChildMaxOrderNumb(parent) + 1);
 		
 		saveOrUpdate(testCase);
 		

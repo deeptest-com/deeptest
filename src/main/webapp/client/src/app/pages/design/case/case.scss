@@ -6,25 +6,46 @@
     touch-callout: none;
     user-select: none;
 
-    .list {
+    .suite {
       position: absolute;
       left: 0;
       top: 0;
       bottom: 0;
       right: 3px;
-      width: 30%;
+      width: 15%;
     }
+
+    .list {
+      position: absolute;
+      left: 15%;
+      top: 0;
+      bottom: 0;
+      right: 3px;
+      width: 45%;
+    }
+
     .detail {
       position: absolute;
       right: 0;
       top: 0;
       bottom: 0;
-      width: 70%;
+      width: 40%;
     }
-    .handle {
+
+    .handle1 {
       position:absolute;
       top:0;
-      left: 30%;
+      left: 15%;
+      width: 3px;
+      cursor: col-resize;
+      background-color: #eeeeee;
+      z-index: 99;
+    }
+
+    .handle2 {
+      position:absolute;
+      top:0;
+      right: 40%;
       width: 3px;
       cursor: col-resize;
       background-color: #eeeeee;

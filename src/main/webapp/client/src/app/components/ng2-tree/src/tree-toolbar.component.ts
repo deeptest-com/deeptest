@@ -14,8 +14,8 @@ import { TreeService } from './tree.service';
   <div class="tree-toolbar">
     <form class="form-inline">
       <label (click)="tree.expandOrNot(options)" class="link no-underline mr-xs-2">
-        <span *ngIf="!options.isExpanded">展开全部</span>
-        <span *ngIf="options.isExpanded">收缩全部</span>
+        <span *ngIf="!options.isExpanded">展开</span>
+        <span *ngIf="options.isExpanded">收缩</span>
       </label>
       <input [value]="keywords" [formControl]="keywordsControl" name="keywords" type="search" class="form-control form-control-sm" placeholder="过滤">
     </form>

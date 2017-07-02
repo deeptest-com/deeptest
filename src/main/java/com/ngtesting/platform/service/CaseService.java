@@ -2,18 +2,14 @@ package com.ngtesting.platform.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestCase;
-import com.ngtesting.platform.vo.TestCaseTreeVo;
 import com.ngtesting.platform.vo.TestCaseVo;
 
 import java.util.List;
 
 public interface CaseService extends BaseService {
 
-	List<TestCase> query(Long projectId);
+	List<TestCase> query(Long sutieId);
 	TestCaseVo getById(Long caseId);
-
-
-	TestCaseTreeVo buildTree(List<TestCase> ls);
 
 	List<TestCaseVo> genVos(List<TestCase> pos);
 

@@ -1,21 +1,19 @@
 package com.ngtesting.platform.vo;
 
-import java.util.LinkedList;
-import java.util.List;
+public class TestSuiteVo extends BaseVo {
 
-public class TestCaseVo extends BaseVo {
-	private static final long serialVersionUID = -5955583523485410239L;
-	
+	private static final long serialVersionUID = 7077320758714477534L;
+
 	private String title;
 	private Integer priority;
 	private Integer estimate;
 	private String objective;
     private String descr;
 
-    private List<TestCasePropVo> props = new LinkedList<>();
-	private List<TestCaseStepVo> steps = new LinkedList<>();
+	private String path;
+	private String type;
 
-    public TestCaseVo(Long id, String title, Integer priority, Integer estimate, String objective, String descr) {
+    public TestSuiteVo(Long id, String title, Integer priority, Integer estimate, String objective, String descr, String path, String type) {
         super();
 
 		this.id = id;
@@ -24,6 +22,8 @@ public class TestCaseVo extends BaseVo {
         this.estimate = estimate;
         this.objective = objective;
         this.descr = descr;
+        this.path = path;
+        this.type = type;
 
     }
 
@@ -59,6 +59,22 @@ public class TestCaseVo extends BaseVo {
 		this.descr = descr;
 	}
 
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	public String getObjective() {
 		return objective;
 	}
@@ -67,19 +83,4 @@ public class TestCaseVo extends BaseVo {
 		this.objective = objective;
 	}
 
-    public List<TestCasePropVo> getProps() {
-        return props;
-    }
-
-    public void setProps(List<TestCasePropVo> props) {
-        this.props = props;
-    }
-
-	public List<TestCaseStepVo> getSteps() {
-		return steps;
-	}
-
-	public void setSteps(List<TestCaseStepVo> steps) {
-		this.steps = steps;
-	}
 }

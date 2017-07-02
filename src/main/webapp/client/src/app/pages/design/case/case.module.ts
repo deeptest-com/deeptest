@@ -18,10 +18,13 @@ import { CustomFieldModule } from '../../../components/custom-field';
 import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
 import { DatetimePickerService } from '../../../service/datetime-picker';
+
+import { SuiteService } from '../../../service/suite';
 import { CaseService } from '../../../service/case';
 import { CaseStepService } from '../../../service/case-step';
 
 import { Case } from './case.component';
+import { CaseSuite } from './suite/suite.component';
 import { CaseList } from './list/list.component';
 import { CaseEdit } from './edit/edit.component';
 
@@ -44,6 +47,7 @@ import { CaseEdit } from './edit/edit.component';
   ],
   declarations: [
     Case,
+    CaseSuite,
     CaseList,
     CaseEdit
   ],
@@ -51,6 +55,7 @@ import { CaseEdit } from './edit/edit.component';
     RouteService,
     RequestService,
     DatetimePickerService,
+    SuiteService,
     CaseService,
     CaseStepService
   ]

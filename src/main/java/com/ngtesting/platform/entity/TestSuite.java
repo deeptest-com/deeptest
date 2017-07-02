@@ -1,12 +1,12 @@
 package com.ngtesting.platform.entity;
 
+import com.ngtesting.platform.util.Constant.TreeNodeType;
+
 import javax.persistence.*;
-import java.util.LinkedList;
-import java.util.List;
 
 @Entity
-@Table(name = "tst_case")
-public class TestCase extends BaseEntity {
+@Table(name = "tst_suite")
+public class TestSuite extends BaseEntity {
 	private static final long serialVersionUID = -7253288259861070288L;
 
     private String title;
@@ -18,14 +18,20 @@ public class TestCase extends BaseEntity {
 
 	@Column(name = "descr", length = 1000)
     private String descr;
-	private Integer ordr;
+
+	@Enumerated(EnumType.STRING)
+	private TreeNodeType type;
+	private String path;
+	@Transient
+	private Integer level;
+	private Integer orderInParent;
 	
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "suite_id", insertable = false, updatable = false)
-    private TestSuite suite;
+    @JoinColumn(name = "parent_id", insertable = false, updatable = false)
+    private TestSuite parent;
 
-    @Column(name = "suite_id")
-    private Long suiteId;
+    @Column(name = "parent_id")
+    private Long parentId;
 	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
@@ -41,20 +47,8 @@ public class TestCase extends BaseEntity {
     @Column(name = "user_id")
     private Long userId;
 
-	@OneToMany(mappedBy="testCase", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-	@OrderBy("ordr")
-	private List<TestCaseStep> steps = new LinkedList<>();
-
-	@OneToMany(mappedBy="testCase", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-	@OrderBy("ordr")
-	private List<TestCaseProp> props = new LinkedList<>();
-
-	public List<TestCaseProp> getProps() {
-		return props;
-	}
-
-	public void setProps(List<TestCaseProp> props) {
-		this.props = props;
+	public Integer getLevel() {
+		return getPath().split("/").length - 1;
 	}
 
 	public String getTitle() {
@@ -89,6 +83,14 @@ public class TestCase extends BaseEntity {
 		this.estimate = estimate;
 	}
 
+	public TreeNodeType getType() {
+		return type;
+	}
+
+	public void setType(TreeNodeType type) {
+		this.type = type;
+	}
+
 	public TestProject getProject() {
 		return project;
 	}
@@ -103,6 +105,30 @@ public class TestCase extends BaseEntity {
 
 	public void setProjectId(Long projectId) {
 		this.projectId = projectId;
+	}
+
+	public TestSuite getParent() {
+		return parent;
+	}
+
+	public void setParent(TestSuite parent) {
+		this.parent = parent;
+	}
+
+	public Long getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(Long parentId) {
+		this.parentId = parentId;
+	}
+
+	public Integer getOrderInParent() {
+		return orderInParent;
+	}
+
+	public void setOrderInParent(Integer orderInParent) {
+		this.orderInParent = orderInParent;
 	}
 
 	public TestUser getUser() {
@@ -121,6 +147,14 @@ public class TestCase extends BaseEntity {
 		this.userId = userId;
 	}
 
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
 	public String getObjective() {
 		return objective;
 	}
@@ -129,35 +163,4 @@ public class TestCase extends BaseEntity {
 		this.objective = objective;
 	}
 
-	public List<TestCaseStep> getSteps() {
-		return steps;
-	}
-
-	public void setSteps(List<TestCaseStep> steps) {
-		this.steps = steps;
-	}
-
-	public Integer getOrdr() {
-		return ordr;
-	}
-
-	public void setOrdr(Integer ordr) {
-		this.ordr = ordr;
-	}
-
-	public TestSuite getSuite() {
-		return suite;
-	}
-
-	public void setSuite(TestSuite suite) {
-		this.suite = suite;
-	}
-
-	public Long getSuiteId() {
-		return suiteId;
-	}
-
-	public void setSuiteId(Long suiteId) {
-		this.suiteId = suiteId;
-	}
 }

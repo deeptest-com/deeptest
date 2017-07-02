@@ -1,13 +1,12 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.TestCase;
-import com.ngtesting.platform.service.CaseService;
-import com.ngtesting.platform.service.CustomFieldService;
+import com.ngtesting.platform.entity.TestSuite;
+import com.ngtesting.platform.service.SuiteService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
-import com.ngtesting.platform.vo.CustomFieldVo;
-import com.ngtesting.platform.vo.TestCaseVo;
+import com.ngtesting.platform.vo.TestSuiteTreeVo;
+import com.ngtesting.platform.vo.TestSuiteVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,12 +22,10 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "case/")
-public class CaseAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_CLIENT + "suite/")
+public class SuiteAction extends BaseAction {
 	@Autowired
-    CaseService caseService;
-	@Autowired
-	CustomFieldService customFieldService;
+	SuiteService suiteService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "query", method = RequestMethod.POST)
@@ -37,16 +34,12 @@ public class CaseAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		Long projectId = json.getLong("projectId");
-		Long suiteId = json.getLong("suiteId");
 		
-		List<TestCase> ls = caseService.query(suiteId);
+		List<TestSuite> ls = suiteService.query(projectId);
+		
+		TestSuiteTreeVo tree = suiteService.buildTree(ls);
 
-		List<TestCaseVo> vos = caseService.genVos(ls);
-
-		Map<Long, CustomFieldVo> customFieldMap = customFieldService.listForCaseByProject(projectId);
-
-        ret.put("data", vos);
-		ret.put("customFields", customFieldMap);
+        ret.put("data", tree);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -59,9 +52,9 @@ public class CaseAction extends BaseAction {
 
         UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
         Long orgId = userVo.getDefaultOrgId();
-        Long caseId = json.getLong("id");
+        Long suiteId = json.getLong("id");
 
-        TestCaseVo vo = caseService.getById(caseId);
+        TestSuiteVo vo = suiteService.getById(suiteId);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -81,8 +74,8 @@ public class CaseAction extends BaseAction {
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		TestCase po = caseService.create(id, value, type, pid, userVo.getId());
-		TestCaseVo caseVo = caseService.genVo(po);
+		TestSuite po = suiteService.create(id, value, type, pid, userVo.getId());
+		TestSuiteVo caseVo = suiteService.genVo(po);
         
         ret.put("data", caseVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -101,10 +94,10 @@ public class CaseAction extends BaseAction {
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		TestCase po = caseService.move(id, pid, prePid, userVo.getId());
-		TestCaseVo caseVo = po == null? null: caseService.genVo(po);
+		TestSuite po = suiteService.move(id, pid, prePid, userVo.getId());
+		TestSuiteVo suiteVo = po == null? null: suiteService.genVo(po);
         
-        ret.put("data", caseVo);
+        ret.put("data", suiteVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -120,8 +113,8 @@ public class CaseAction extends BaseAction {
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		TestCase po = caseService.rename(id, value, userVo.getId());
-		TestCaseVo caseVo = caseService.genVo(po);
+		TestSuite po = suiteService.rename(id, value, userVo.getId());
+		TestSuiteVo caseVo = suiteService.genVo(po);
         
         ret.put("data", caseVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -138,8 +131,8 @@ public class CaseAction extends BaseAction {
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		TestCase po = caseService.delete(id, userVo.getId());
-		TestCaseVo caseVo = caseService.genVo(po);
+		TestSuite po = suiteService.delete(id, userVo.getId());
+		TestSuiteVo caseVo = suiteService.genVo(po);
         
         ret.put("data", caseVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -152,8 +145,8 @@ public class CaseAction extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TestCase po = caseService.save(json);
-		TestCaseVo caseVo = caseService.genVo(po);
+		TestSuite po = suiteService.save(json);
+		TestSuiteVo caseVo = suiteService.genVo(po);
 
 		ret.put("data", caseVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

@@ -8,14 +8,15 @@ import {RequestService} from "./request";
 import {TreeModel} from "../components/ng2-tree";
 
 @Injectable()
-export class CaseService {
+export class SuiteService {
   constructor(private _reqService: RequestService) {
   }
 
-  _api_url = 'case/';
+  _api_url = 'suite/';
 
-  query(suiteId: number) {
-    return this._reqService.post(this._api_url + 'query', {projectId: CONSTANT.PROJECT_ID, suiteId: suiteId});
+  query(query: TreeModel) {
+    _.merge(query, {projectId: CONSTANT.PROJECT_ID});
+    return this._reqService.post(this._api_url + 'query', query);
   }
 
   get(id: number) {

@@ -12,8 +12,10 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
 
   private container:any;
   private left:any;
+  private center:any;
   private right:any;
-  private handle:any;
+  private handle1:any;
+  private handle2:any;
   private disX:number;
 
   private isResizing: boolean;
@@ -34,15 +36,18 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
     this.container = jQuery(this.elem);
 
     let left = this.elem.querySelector('.left');
+    let center = this.elem.querySelector('.center');
     let right = this.elem.querySelector('.right');
-    let handle = this.elem.querySelector('.handle');
+    let handle1 = this.elem.querySelector('.handle1');
+    let handle2 = this.elem.querySelector('.handle2');
 
     this.left = jQuery(left);
+    this.center = jQuery(center);
     this.right = jQuery(right);
-    this.handle = jQuery(handle);
+    this.handle1 = jQuery(handle1);
+    this.handle2 = jQuery(handle2);
 
-    this.disposersForDragListeners.push(
-      this.renderer.listen(handle, 'mousedown', this.onmousedown.bind(this)));
+    this.disposersForDragListeners.push(this.renderer.listen(handle1, 'mousedown', this.onmousedown.bind(this)));
   }
 
   public ngOnDestroy():void {
@@ -67,7 +72,7 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
     let rightWidth = this.container.width() - (e.clientX - this.container.offset().left);
     this.left.css('right', rightWidth);
     this.left.css('width', e.clientX);
-    this.handle.css('left', e.clientX);
+    this.handle1.css('left', e.clientX);
     this.right.css('width', rightWidth);
   }
 

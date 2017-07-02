@@ -200,7 +200,7 @@ tree-internal div.rootless {
 .tree-toolbar {
   display: flex;
   margin-bottom: 6px;
-  padding: 5px 10px 5px 10px;
+  padding: 5px 5px 5px 5px;
   border-bottom: 1px solid #eeeeee !important;
   label {
     flex: 1;
@@ -209,6 +209,7 @@ tree-internal div.rootless {
   }
   .form-control {
     vertical-align: baseline;
+    width: 150px;
   }
 }
 

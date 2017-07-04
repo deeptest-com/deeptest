@@ -1,4 +1,4 @@
-import {Directive, ElementRef, Inject, Renderer, OnDestroy, OnInit, AfterViewInit} from "@angular/core";
+import {Directive, ElementRef, Inject, Renderer2, OnDestroy, OnInit, AfterViewInit} from "@angular/core";
 
 import * as _ from 'lodash';
 declare var jQuery;
@@ -14,6 +14,7 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
   private left:any;
   private center:any;
   private right:any;
+  private handleId:any;
   private handle1:any;
   private handle2:any;
   private disX:number;
@@ -24,7 +25,7 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
   private disposersForDragListeners:Function[] = [];
 
   public constructor(@Inject(ElementRef) public element:ElementRef,
-                     @Inject(Renderer) private renderer:Renderer) {
+                     @Inject(Renderer2) private renderer:Renderer2) {
     this.elem = element.nativeElement;
   }
 
@@ -47,7 +48,7 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
     this.handle1 = jQuery(handle1);
     this.handle2 = jQuery(handle2);
 
-    this.disposersForDragListeners.push(this.renderer.listen(handle1, 'mousedown', this.onmousedown.bind(this)));
+    this.disposersForDragListeners.push(this.renderer.listen(this.elem, 'mousedown', this.onmousedown.bind(this)));
   }
 
   public ngOnDestroy():void {
@@ -55,6 +56,10 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
   }
 
   private onmousedown(e):any {
+    console.log('---', e.target);
+
+    this.handleId = e.target.id;
+
     this.isResizing = true;
     this.lastDownX = e.clientX;
 
@@ -69,16 +74,37 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
       return;
     }
 
-    let rightWidth = this.container.width() - (e.clientX - this.container.offset().left);
-    this.left.css('right', rightWidth);
-    this.left.css('width', e.clientX);
-    this.handle1.css('left', e.clientX);
-    this.right.css('width', rightWidth);
+    let containerWidth = this.container.width();
+    if (this.handleId === 'handle1') {
+
+      let rightOrigWidth = parseInt(this.right.css('width'));
+      let centerWidth = containerWidth - e.clientX - rightOrigWidth;
+
+      this.handle1.css('left', e.clientX);
+
+      this.left.css('width', e.clientX);
+      this.center.css('left', e.clientX);
+      this.center.css('width', centerWidth);
+    } else if (this.handleId === 'handle2') {
+
+      let leftOrigWidth = parseInt(this.left.css('width'));
+      let rightWidth = containerWidth - e.clientX;
+      let centerWidth = e.clientX - leftOrigWidth;
+
+      this.handle2.css('left', e.clientX);
+
+      this.right.css('left', e.centerWidth);
+      this.right.css('width', rightWidth);
+      this.center.css('width', centerWidth);
+    }
   }
 
   private onmouseup(e):any {
-    this.isResizing = false;
+    this.handleId = undefined;
+
+      this.isResizing = false;
     _.forEach(this.disposersForDragListeners, (dispose: Function, index: number) => {
+      console.log(dispose);
         if (index > 0) {
           dispose();
         }

@@ -5,7 +5,7 @@
 
   .page-top {
     background-color: $sidebar;
-    position: fixed;
+    position: absolute;
     z-index: 904;
     box-shadow: 2px 0 3px rgba(0, 0, 0, 0.5);
     height: 66px;
@@ -45,7 +45,7 @@
 
   .user-profile {
     float: right;
-    min-width: 230px;
+    min-width: 160px;
     margin-top: 10px;
   }
 
@@ -141,7 +141,7 @@
     transition: all 0.5s ease;
     white-space: nowrap;
     overflow: hidden;
-    width: 162px;
+    /*width: 162px;*/
     float: left;
     margin: 20px 0 0 30px;
 
@@ -204,7 +204,7 @@
 .menu {
   position: relative;
   margin: 20px 0 0 30px;
-  width: 700px;
+/*  width: 700px;*/
   float: left;
   .dropdown {
     button.btn{

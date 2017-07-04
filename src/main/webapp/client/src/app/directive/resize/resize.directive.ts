@@ -3,6 +3,8 @@ import {Directive, ElementRef, Inject, Renderer2, OnDestroy, OnInit, AfterViewIn
 import * as _ from 'lodash';
 declare var jQuery;
 
+import {UserService} from '../../service/user';
+
 @Directive({
   selector: '[resize]'
 })
@@ -24,8 +26,8 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
 
   private disposersForDragListeners:Function[] = [];
 
-  public constructor(@Inject(ElementRef) public element:ElementRef,
-                     @Inject(Renderer2) private renderer:Renderer2) {
+  public constructor(@Inject(ElementRef) public element:ElementRef, @Inject(Renderer2) private renderer:Renderer2,
+                     private userService: UserService) {
     this.elem = element.nativeElement;
   }
 
@@ -56,8 +58,6 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
   }
 
   private onmousedown(e):any {
-    console.log('---', e.target);
-
     this.handleId = e.target.id;
 
     this.isResizing = true;
@@ -102,9 +102,12 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
   private onmouseup(e):any {
     this.handleId = undefined;
 
-      this.isResizing = false;
+    this.userService.setSize(parseInt(this.left.css('width')), parseInt(this.right.css('width'))).subscribe((json:any) => {
+      console.log(json.code);
+    });
+
+    this.isResizing = false;
     _.forEach(this.disposersForDragListeners, (dispose: Function, index: number) => {
-      console.log(dispose);
         if (index > 0) {
           dispose();
         }

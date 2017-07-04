@@ -1,15 +1,12 @@
 package com.ngtesting.platform.entity;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Filter;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "tst_user")
@@ -28,6 +25,9 @@ public class TestUser extends BaseEntity {
     
     private Long defaultOrgId;
     private Long defaultProjectId;
+
+	private Integer caseBoardLeftSize;
+	private Integer caseBoardRightSize;
     
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userSet")
     private Set<TestRole> roleSet = new HashSet<TestRole>(0);
@@ -35,7 +35,23 @@ public class TestUser extends BaseEntity {
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userSet")
     private Set<TestOrg> orgSet = new HashSet<TestOrg>(0);
 
-    public String getEmail() {
+	public Integer getCaseBoardLeftSize() {
+		return caseBoardLeftSize;
+	}
+
+	public void setCaseBoardLeftSize(Integer caseBoardLeftSize) {
+		this.caseBoardLeftSize = caseBoardLeftSize;
+	}
+
+	public Integer getCaseBoardRightSize() {
+		return caseBoardRightSize;
+	}
+
+	public void setCaseBoardRightSize(Integer caseBoardRightSize) {
+		this.caseBoardRightSize = caseBoardRightSize;
+	}
+
+	public String getEmail() {
         return email;
     }
 

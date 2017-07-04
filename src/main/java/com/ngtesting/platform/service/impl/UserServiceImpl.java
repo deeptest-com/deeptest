@@ -1,14 +1,5 @@
 package com.ngtesting.platform.service.impl;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.AccountService;
@@ -19,6 +10,14 @@ import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.UserVo;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class UserServiceImpl extends BaseServiceImpl implements UserService {
@@ -106,6 +105,14 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		po.setDeleted(true);
 		saveOrUpdate(po);
 		
+		return true;
+	}
+
+	public boolean setSizePers(Long userId, Integer left, Integer right) {
+        TestUser po = (TestUser) get(TestUser.class, userId);
+        po.setCaseBoardLeftSize(left);
+        po.setCaseBoardRightSize(right);
+        saveOrUpdate(po);
 		return true;
 	}
     

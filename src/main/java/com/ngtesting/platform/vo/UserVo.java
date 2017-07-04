@@ -15,7 +15,26 @@ public class UserVo extends BaseVo {
     
     private Boolean selected;
     private Boolean selecting;
-    
+
+	private Integer caseBoardLeftSize;
+	private Integer caseBoardRightSize;
+
+	public Integer getCaseBoardLeftSize() {
+		return caseBoardLeftSize;
+	}
+
+	public void setCaseBoardLeftSize(Integer caseBoardLeftSize) {
+		this.caseBoardLeftSize = caseBoardLeftSize;
+	}
+
+	public Integer getCaseBoardRightSize() {
+		return caseBoardRightSize;
+	}
+
+	public void setCaseBoardRightSize(Integer caseBoardRightSize) {
+		this.caseBoardRightSize = caseBoardRightSize;
+	}
+
 	public String getEmail() {
 		return email;
 	}

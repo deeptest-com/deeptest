@@ -53,12 +53,12 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
     this.disposersForDragListeners.push(this.renderer.listen(this.elem, 'mousedown', this.onmousedown.bind(this)));
   }
 
-  public ngOnDestroy():void {
-    this.disposersForDragListeners.forEach(dispose => dispose());
-  }
-
   private onmousedown(e):any {
     this.handleId = e.target.id;
+
+    if (this.handleId != 'handle1' && this.handleId != 'handle2') {
+      return;
+    }
 
     this.isResizing = true;
     this.lastDownX = e.clientX;
@@ -112,5 +112,9 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
           dispose();
         }
     });
+  }
+
+  public ngOnDestroy():void {
+    this.disposersForDragListeners.forEach(dispose => dispose());
   }
 }

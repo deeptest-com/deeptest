@@ -11,23 +11,23 @@ import { Utils } from '../../../../utils/utils';
 import {ValidatorUtils} from '../../../../validator/validator.utils';
 import { RouteService } from '../../../../service/route';
 
-import { RunService } from '../../../../service/run';
+import { PlanService } from '../../../../service/plan';
 
 declare var jQuery;
 
 @Component({
-  selector: 'run-edit',
+  selector: 'plan-edit',
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./edit.scss'],
   templateUrl: './edit.html'
 })
-export class RunEdit implements OnInit, AfterViewInit {
+export class PlanEdit implements OnInit, AfterViewInit {
   id: number;
   model: any;
   form: any;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
-              private _runService: RunService) {
+              private _planService: PlanService) {
 
   }
   ngOnInit() {
@@ -74,7 +74,7 @@ export class RunEdit implements OnInit, AfterViewInit {
 
   loadData() {
     let that = this;
-    that._runService.get(that.id).subscribe((json:any) => {
+    that._planService.get(that.id).subscribe((json:any) => {
       that.model = json.data;
     });
   }
@@ -82,7 +82,7 @@ export class RunEdit implements OnInit, AfterViewInit {
   save() {
     let that = this;
 
-    that._runService.save(that.model).subscribe((json:any) => {
+    that._planService.save(that.model).subscribe((json:any) => {
       if (json.code == 1) {
         that.model = json.data;
       }

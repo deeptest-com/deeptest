@@ -2,16 +2,18 @@ package com.ngtesting.platform.entity;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Table(name = "tst_run")
-public class TestRun extends BaseEntity {
+public class TestPlan extends BaseEntity {
 
     private String name;
 	private Integer estimate;
 
     @Enumerated(EnumType.STRING)
-    private RunStatus status;
+    private PlanStatus status;
 
     @Column(insertable = true, updatable = false)
     protected Date startTime = new Date();
@@ -22,8 +24,6 @@ public class TestRun extends BaseEntity {
 	@Column(name = "descr", length = 1000)
     private String descr;
 
-    private Integer ordr;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
     private TestProject project;
@@ -31,19 +31,16 @@ public class TestRun extends BaseEntity {
     @Column(name = "project_id")
     private Long projectId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plan_id", insertable = false, updatable = false)
-    private TestPlan plan;
+    @OneToMany(mappedBy="plan", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    @OrderBy("ordr")
+    private List<TestRun> runs = new LinkedList<>();
 
-    @Column(name = "plan_id")
-    private Long planId;
-
-    public static enum RunStatus {
+    public static enum PlanStatus {
         not_start("not_start"),
         in_progress("in_progress"),
         end("end");
 
-        RunStatus(String val) {
+        PlanStatus(String val) {
             this.val = val;
         }
 
@@ -53,28 +50,12 @@ public class TestRun extends BaseEntity {
         }
     }
 
-    public Integer getOrdr() {
-        return ordr;
+    public List<TestRun> getRuns() {
+        return runs;
     }
 
-    public void setOrdr(Integer ordr) {
-        this.ordr = ordr;
-    }
-
-    public TestPlan getPlan() {
-        return plan;
-    }
-
-    public void setPlan(TestPlan plan) {
-        this.plan = plan;
-    }
-
-    public Long getPlanId() {
-        return planId;
-    }
-
-    public void setPlanId(Long planId) {
-        this.planId = planId;
+    public void setRuns(List<TestRun> runs) {
+        this.runs = runs;
     }
 
     public String getName() {
@@ -93,11 +74,11 @@ public class TestRun extends BaseEntity {
         this.estimate = estimate;
     }
 
-    public RunStatus getStatus() {
+    public PlanStatus getStatus() {
         return status;
     }
 
-    public void setStatus(RunStatus status) {
+    public void setStatus(PlanStatus status) {
         this.status = status;
     }
 

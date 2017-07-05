@@ -6,20 +6,20 @@ import {Utils} from "../../../../utils/utils";
 import {RouteService} from "../../../../service/route";
 import {SlimLoadingBarService} from "../../../../components/ng2-loading-bar";
 import {TreeService} from "../../../../components/ng2-tree/src/tree.service";
-import {CaseService} from "../../../../service/case";
+import {PlanService} from "../../../../service/plan";
 
 @Component({
-  selector: 'run-list',
+  selector: 'plan-list',
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./list.scss'],
   templateUrl: './list.html'
 })
-export class RunList implements OnInit, AfterViewInit {
+export class PlanList implements OnInit, AfterViewInit {
   models:any[];
   query:any = {keywords: '', status: ''};
 
   constructor(private _routeService:RouteService, private _state:GlobalState,
-              private _caseService:CaseService) {
+              private _planService:PlanService) {
   }
 
   ngOnInit() {
@@ -34,7 +34,7 @@ export class RunList implements OnInit, AfterViewInit {
   create():void {
     let that = this;
 
-    that._routeService.navTo("/pages/implement/run/edit/null");
+    that._routeService.navTo("/pages/implement/plan/edit/null");
   }
 
   delete(eventId:string):void {
@@ -43,7 +43,7 @@ export class RunList implements OnInit, AfterViewInit {
 
   loadData() {
     let that = this;
-    that._caseService.query(that.query).subscribe((json:any) => {
+    that._planService.query(that.query).subscribe((json:any) => {
       that.models = json.data;
     });
   }

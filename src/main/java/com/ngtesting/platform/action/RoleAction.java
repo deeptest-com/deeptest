@@ -1,11 +1,13 @@
 package com.ngtesting.platform.action;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.entity.TestRole;
+import com.ngtesting.platform.service.RoleService;
+import com.ngtesting.platform.util.AuthPassport;
+import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.vo.Page;
+import com.ngtesting.platform.vo.RoleVo;
+import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,17 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.TestOrgRole;
-import com.ngtesting.platform.entity.TestRole;
-import com.ngtesting.platform.service.OrgRoleService;
-import com.ngtesting.platform.service.RoleService;
-import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.util.Constant;
-import com.ngtesting.platform.vo.OrgRoleVo;
-import com.ngtesting.platform.vo.Page;
-import com.ngtesting.platform.vo.RoleVo;
-import com.ngtesting.platform.vo.UserVo;
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Controller

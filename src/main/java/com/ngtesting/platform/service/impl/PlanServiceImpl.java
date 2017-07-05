@@ -17,16 +17,16 @@ import java.util.List;
 public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
 
 	@Override
-	public List<TestPlan> query(Long suiteId) {
+	public List<TestPlan> query(Long projectId) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestPlan.class);
         
-        if (suiteId != null) {
-        	dc.add(Restrictions.eq("suiteId", suiteId));
+        if (projectId != null) {
+        	dc.add(Restrictions.eq("projectId", projectId));
         }
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-        dc.addOrder(Order.asc("ordr"));
+        dc.addOrder(Order.desc("createTime"));
         dc.addOrder(Order.asc("id"));
         List<TestPlan> ls = findAllByCriteria(dc);
         

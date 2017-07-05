@@ -1,13 +1,11 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.TestCase;
-import com.ngtesting.platform.service.CaseService;
-import com.ngtesting.platform.service.CustomFieldService;
+import com.ngtesting.platform.entity.TestPlan;
+import com.ngtesting.platform.service.PlanService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
-import com.ngtesting.platform.vo.CustomFieldVo;
-import com.ngtesting.platform.vo.TestCaseVo;
+import com.ngtesting.platform.vo.TestPlanVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,12 +21,10 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "case/")
+@RequestMapping(Constant.API_PATH_CLIENT + "plan/")
 public class PlanAction extends BaseAction {
 	@Autowired
-    CaseService caseService;
-	@Autowired
-	CustomFieldService customFieldService;
+	PlanService planService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "query", method = RequestMethod.POST)
@@ -37,16 +33,12 @@ public class PlanAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		Long projectId = json.getLong("projectId");
-		Long suiteId = json.getLong("suiteId");
 		
-		List<TestCase> ls = caseService.query(suiteId);
+		List<TestPlan> ls = planService.query(projectId);
 
-		List<TestCaseVo> vos = caseService.genVos(ls);
-
-		Map<Long, CustomFieldVo> customFieldMap = customFieldService.listForCaseByProject(projectId);
+		List<TestPlanVo> vos = planService.genVos(ls);
 
         ret.put("data", vos);
-		ret.put("customFields", customFieldMap);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -58,10 +50,9 @@ public class PlanAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-        Long orgId = userVo.getDefaultOrgId();
-        Long caseId = json.getLong("id");
+        Long id = json.getLong("id");
 
-        TestCaseVo vo = caseService.getById(caseId);
+        TestPlanVo vo = planService.getById(id);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -69,65 +60,19 @@ public class PlanAction extends BaseAction {
     }
 
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "create", method = RequestMethod.POST)
+	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> create(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		Long id = json.getLong("id");
-		String value = json.getString("value");
-		String type = json.getString("type");
-		Long pid = json.getLong("pid");
-		
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
-		TestCase po = caseService.create(id, value, type, pid, userVo.getId());
-		TestCaseVo caseVo = caseService.genVo(po);
-        
-        ret.put("data", caseVo);
+
+		TestPlan po = planService.save(json);
+		TestPlanVo caseVo = planService.genVo(po);
+
+		ret.put("data", caseVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-	
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "move", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> move(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		Long id = json.getLong("id");
-		Long pid = json.getLong("pid");
-		Long prePid = json.getLong("prePid");
-		
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
-		TestCase po = caseService.move(id, pid, prePid, userVo.getId());
-		TestCaseVo caseVo = po == null? null: caseService.genVo(po);
-        
-        ret.put("data", caseVo);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-	
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "rename", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> rename(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		Long id = json.getLong("id");
-		String value = json.getString("value");
-		
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
-		TestCase po = caseService.rename(id, value, userVo.getId());
-		TestCaseVo caseVo = caseService.genVo(po);
-        
-        ret.put("data", caseVo);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-	
+
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
@@ -138,25 +83,12 @@ public class PlanAction extends BaseAction {
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		TestCase po = caseService.delete(id, userVo.getId());
-		TestCaseVo caseVo = caseService.genVo(po);
+		TestPlan po = planService.delete(id, userVo.getId());
+		TestPlanVo caseVo = planService.genVo(po);
         
         ret.put("data", caseVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
 
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-		TestCase po = caseService.save(json);
-		TestCaseVo caseVo = caseService.genVo(po);
-
-		ret.put("data", caseVo);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
 }

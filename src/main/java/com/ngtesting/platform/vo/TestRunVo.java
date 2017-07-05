@@ -3,16 +3,16 @@ package com.ngtesting.platform.vo;
 import java.util.Date;
 
 public class TestRunVo extends BaseVo {
-	private static final long serialVersionUID = 661579804812975910L;
 
+    private static final long serialVersionUID = 3655131645148750323L;
     private String name;
     private Integer estimate;
 
     private String status;
 
-    protected Date startTime = new Date();
+    protected Date startTime;
 
-    protected Date endTime = new Date();
+    protected Date endTime;
 
     private String descr;
 

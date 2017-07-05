@@ -5,12 +5,13 @@ import org.apache.commons.beanutils.ConvertUtils;
 
 public class BeanUtilEx extends BeanUtils {
 
-
 	static {
-	      ConvertUtils.register(new DateConverter(null), java.util.Date.class);
+
 	}
 
 	public static void copyProperties(Object target, Object source) {
+        ConvertUtils.register(new DateConverter(null), java.util.Date.class);
+
 		if (source == null) {
 			return;
 		}

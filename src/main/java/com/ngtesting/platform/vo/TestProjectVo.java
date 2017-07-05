@@ -2,7 +2,8 @@ package com.ngtesting.platform.vo;
 
 
 public class TestProjectVo extends BaseVo {
-	private static final long serialVersionUID = -9069520320732281911L;
+	private static final long serialVersionUID = 8069068510875783820L;
+
 	private String name;
     private String descr;
     private Long orgId;

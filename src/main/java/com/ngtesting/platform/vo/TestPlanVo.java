@@ -13,9 +13,9 @@ public class TestPlanVo extends BaseVo {
 
     private String status;
 
-    protected Date startTime = new Date();
+    protected Date startTime;
 
-    protected Date endTime = new Date();
+    protected Date endTime;
 
     private String descr;
 

@@ -19,6 +19,7 @@ export var CONSTANT:any = {
   TOKEN_KEY: 'com.ngtesting.token',
   TOKEN_EXPIRE: 'com.ngtesting.expire',
 
+  ExeStatus: {'not_start': '未开始', 'in_progress': '执行中', 'end': '已结束'},
   EntityDisabled: {'false': '启用', 'true': '归档', '': '所有'},
 
   ScreenSize: {h: 0, w: 0},

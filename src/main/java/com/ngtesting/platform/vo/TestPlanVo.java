@@ -1,9 +1,12 @@
 package com.ngtesting.platform.vo;
 
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
-public class TestRunVo extends BaseVo {
-	private static final long serialVersionUID = 661579804812975910L;
+public class TestPlanVo extends BaseVo {
+
+    private static final long serialVersionUID = -209226082263881616L;
 
     private String name;
     private Integer estimate;
@@ -16,18 +19,16 @@ public class TestRunVo extends BaseVo {
 
     private String descr;
 
-    private Integer ordr;
-
     private Long projectId;
 
-    private Long planId;
+    private List<TestRunVo> runs = new LinkedList<>();
 
-    public Long getPlanId() {
-        return planId;
+    public List<TestRunVo> getRuns() {
+        return runs;
     }
 
-    public void setPlanId(Long planId) {
-        this.planId = planId;
+    public void setRuns(List<TestRunVo> runs) {
+        this.runs = runs;
     }
 
     public String getName() {

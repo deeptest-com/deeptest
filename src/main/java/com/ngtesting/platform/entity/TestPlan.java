@@ -9,6 +9,8 @@ import java.util.List;
 @Table(name = "tst_run")
 public class TestPlan extends BaseEntity {
 
+    private static final long serialVersionUID = -2388027442087410471L;
+
     private String name;
 	private Integer estimate;
 

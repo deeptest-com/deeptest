@@ -3,7 +3,7 @@ import { CommonModule }  from '@angular/common';
 import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
-  NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
+  NgbTabsetModule, NgbButtonsModule, NgbCollapseModule, NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgUploaderModule } from 'ngx-uploader';
 
 import { NgaModule } from '../../../theme/nga.module';
@@ -17,6 +17,7 @@ import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
 import { DatetimePickerService } from '../../../service/datetime-picker';
 import { PlanService } from '../../../service/plan';
+import { RunService } from '../../../service/run';
 
 import { Plan } from './plan.component';
 import { PlanList } from './list/list.component';
@@ -30,7 +31,7 @@ import { PlanEdit } from './edit/edit.component';
     routing,
 
     NgbModalModule, NgbPaginationModule, NgbDropdownModule,
-    NgbTabsetModule, NgbButtonsModule, NgbCollapseModule,
+    NgbTabsetModule, NgbButtonsModule, NgbCollapseModule, NgbDatepickerModule,
     NgUploaderModule,
 
     DirectiveModule,
@@ -46,7 +47,7 @@ import { PlanEdit } from './edit/edit.component';
     RouteService,
     RequestService,
     DatetimePickerService,
-    PlanService
+    PlanService, RunService
   ]
 })
 export default class PlanModule {}

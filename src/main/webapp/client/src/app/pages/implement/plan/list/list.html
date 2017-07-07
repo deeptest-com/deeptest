@@ -2,7 +2,7 @@
   <div class="row">
     <div class="list-toolbar col-xl-12">
       <div class="title">
-        公司列表
+        测试计划
       </div>
 
       <div class="filter">
@@ -40,7 +40,8 @@
         <td>{{ item.name }}</td>
         <td>{{statusMap[''+item.status]}}</td>
         <td>
-          <span [routerLink]="['/pages/org-admin/org/edit', item.id]" class="link no-underline">编辑</span>
+          <span [routerLink]="['/pages/implement/plan/edit', item.id]" class="link no-underline">编辑</span>
+          <span [routerLink]="['/pages/implement/plan/exe', item.id]" class="link no-underline">执行</span>
         </td>
       </tr>
       </tbody>

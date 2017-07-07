@@ -64,10 +64,16 @@ main {
   .form-group {
     label {
       text-align: right;
-      max-width: 100px;
 
       .left {
         text-align: left;
+      }
+    }
+  }
+  &.small-label {
+    .form-group {
+      label {
+        max-width: 100px;
       }
     }
   }

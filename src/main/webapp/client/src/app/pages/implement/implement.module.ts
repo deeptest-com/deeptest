@@ -8,6 +8,8 @@ import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgUploaderModule } from 'ngx-uploader';
 
+import { I18n, CustomDatepickerI18n } from '../../service/datepicker-I18n';
+
 import { Implement } from './implement.component';
 
 @NgModule({
@@ -25,7 +27,7 @@ import { Implement } from './implement.component';
     Implement
   ],
   providers: [
-
+    I18n, CustomDatepickerI18n
   ]
 })
 export default class ImplementModule {}

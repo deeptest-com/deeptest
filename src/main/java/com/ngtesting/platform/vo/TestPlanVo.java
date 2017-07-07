@@ -21,14 +21,14 @@ public class TestPlanVo extends BaseVo {
 
     private Long projectId;
 
-    private List<TestRunVo> runs = new LinkedList<>();
+    private List<TestRunVo> runVos = new LinkedList<>();
 
-    public List<TestRunVo> getRuns() {
-        return runs;
+    public List<TestRunVo> getRunVos() {
+        return runVos;
     }
 
-    public void setRuns(List<TestRunVo> runs) {
-        this.runs = runs;
+    public void setRunVos(List<TestRunVo> runVos) {
+        this.runVos = runVos;
     }
 
     public String getName() {

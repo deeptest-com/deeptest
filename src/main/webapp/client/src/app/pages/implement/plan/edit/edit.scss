@@ -1,3 +1,17 @@
-.edit {
+.plan-edit {
+  .test-sets {
+    margin-bottom: 30px;
+    th {
+      background-color: rgba(0,0,0,.1);
+      text-align: center;
+
+      &.id {
+        width: 50px;
+      }
+      &.opt {
+        width: 250px;
+      }
+    }
+  }
 
 }

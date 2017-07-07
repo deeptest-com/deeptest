@@ -84,9 +84,7 @@ public class PlanAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
 		TestPlan po = planService.delete(id, userVo.getId());
-		TestPlanVo caseVo = planService.genVo(po);
-        
-        ret.put("data", caseVo);
+
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

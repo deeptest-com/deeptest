@@ -2,12 +2,16 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestPlan;
+import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.PlanService;
+import com.ngtesting.platform.service.RunService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.TestPlanVo;
+import com.ngtesting.platform.vo.TestRunVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -15,6 +19,9 @@ import java.util.List;
 
 @Service
 public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
+
+    @Autowired
+    RunService runService;
 
 	@Override
 	public List<TestPlan> query(Long projectId) {
@@ -56,6 +63,11 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
 	public TestPlanVo genVo(TestPlan po) {
 		TestPlanVo vo = new TestPlanVo();
 		BeanUtilEx.copyProperties(vo, po);
+
+        for (TestRun run : po.getRuns()) {
+            TestRunVo runVo = runService.genVo(run);
+            vo.getRunVos().add(runVo);
+        }
 
 		return vo;
 	}

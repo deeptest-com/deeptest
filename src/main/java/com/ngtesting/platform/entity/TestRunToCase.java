@@ -20,6 +20,33 @@ public class TestRunToCase extends BaseEntity {
     @Column(name = "case_id")
     private Long caseId;
 
+    @Enumerated(EnumType.STRING)
+    private CaseStatusInRun status = CaseStatusInRun.untest;
+
+    public static enum CaseStatusInRun {
+        untest("untest"),
+        pass("pass"),
+        fail("fail"),
+        block("block");
+
+        CaseStatusInRun(String val) {
+            this.val = val;
+        }
+
+        private String val;
+        public String toString() {
+            return val;
+        }
+    }
+
+    public CaseStatusInRun getStatus() {
+        return status;
+    }
+
+    public void setStatus(CaseStatusInRun status) {
+        this.status = status;
+    }
+
     public TestRun getRun() {
         return run;
     }

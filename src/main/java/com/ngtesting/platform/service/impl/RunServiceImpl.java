@@ -57,6 +57,18 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 		TestRunVo vo = new TestRunVo();
 		BeanUtilEx.copyProperties(vo, po);
 
+		String hql = "select cs.status, count(cs.id) from TestRunToCase cs where cs.runId = ? group by cs.status";
+
+		List counts = getListByHQL(hql, po.getId());
+		for (Object obj : counts) {
+			Object[] arr = (Object[])obj;
+			String status = arr[0].toString();
+			Integer count = Integer.valueOf(arr[1].toString());
+
+			vo.getCountMap().put(status, Integer.valueOf(count));
+			vo.getCountMap().put("total", vo.getCountMap().get("total") + count);
+		}
+
 		return vo;
 	}
 

@@ -91,13 +91,20 @@
             <tr>
               <th class="id">编号</th>
               <th>标题</th>
+              <th>执行情况</th>
               <th class="opt">操作</th>
             </tr>
             </thead>
             <tbody>
             <tr *ngFor="let item of model.runVos" class="pointer">
               <td>1</td>
-              <td>是的范德萨</td>
+              <td>{{item.name}}</td>
+              <td>
+                总数：{{item.countMap['total']}}，
+                通过：{{item.countMap['pass']}}，
+                失败： {{item.countMap['fail']}}，
+                未执行：{{item.countMap['untest']}}
+              </td>
               <td>
                 <span (click)="editSet(item)" class="link no-underline">选择用例</span>
                 <span (click)="configEnvi(item)" class="link no-underline">配置环境</span>

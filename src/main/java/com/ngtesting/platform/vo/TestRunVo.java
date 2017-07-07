@@ -1,6 +1,8 @@
 package com.ngtesting.platform.vo;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TestRunVo extends BaseVo {
 
@@ -21,6 +23,29 @@ public class TestRunVo extends BaseVo {
     private Long projectId;
 
     private Long planId;
+
+    private Map<String, Integer> countMap = new HashMap<String, Integer>(){{
+        put("total", 0);
+        put("pass", 0);
+        put("fail", 0);
+        put("untest", 0);
+    }};
+
+    public Map<String, Integer> getCountMap() {
+        return countMap;
+    }
+
+    public void setCountMap(Map<String, Integer> countMap) {
+        this.countMap = countMap;
+    }
+
+    public Integer getOrdr() {
+        return ordr;
+    }
+
+    public void setOrdr(Integer ordr) {
+        this.ordr = ordr;
+    }
 
     public Long getPlanId() {
         return planId;

@@ -126,7 +126,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
   }
   editEnvi(testSet: any): void {
     this.compiler.clearCacheFor(EnvironmentConfigComponent);
-    const modalRef = this.modalService.open(EnvironmentConfigComponent, {windowClass: 'environment-config'});
+    const modalRef = this.modalService.open(EnvironmentConfigComponent, {windowClass: 'pop-selection'});
     modalRef.componentInstance.testSet = testSet;
   }
 

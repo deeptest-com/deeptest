@@ -270,12 +270,19 @@ ul.al-share {
 .pop-selection {
   .modal-dialog {
     max-width: 90%;
-    height: 90%;
+    height: calc(100% - 60px);
 
     .modal-content {
       height: 100%;
       > :first-child {
-        height: calc(100% - 100px)
+        height: 100%;
+        .modal-content-inner {
+          height: 100%;
+          .modal-body {
+            padding: 5px 15px 15px 15px;
+            height: calc(100% - 37px);
+          }
+        }
       }
     }
   }

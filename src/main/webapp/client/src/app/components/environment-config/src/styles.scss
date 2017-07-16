@@ -1,22 +1,5 @@
 .environment-config-inner {
-  height: 100%;
   .modal-body{
-    height: 100%;
-    .cols{
-      display: flex;
-      border: 1px solid #ddd;
-      height: 100%;
 
-      .modules {
-        width: 200px;
-        background: #ebebeb;
-      }
-      .list {
-        flex: 1;
-      }
-      .filter {
-        width: 200px;
-      }
-    }
   }
 }

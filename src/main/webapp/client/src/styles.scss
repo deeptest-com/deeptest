@@ -267,3 +267,16 @@ ul.al-share {
   }
 }
 
+.pop-selection {
+  .modal-dialog {
+    max-width: 90%;
+    height: 90%;
+
+    .modal-content {
+      height: 100%;
+      > :first-child {
+        height: calc(100% - 100px)
+      }
+    }
+  }
+}

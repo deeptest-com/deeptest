@@ -116,7 +116,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
   editSet(testSet: any): void {
 
     this.compiler.clearCacheFor(CaseSelectionComponent);
-    const modalRef = this.modalService.open(CaseSelectionComponent, {windowClass: 'case-selection'});
+    const modalRef = this.modalService.open(CaseSelectionComponent, {windowClass: 'pop-selection'});
     modalRef.result.then((result) => {
       console.log('result', result);
     }, (reason) => {

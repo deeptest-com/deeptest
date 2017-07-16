@@ -1,8 +1,8 @@
-import {Component, ViewEncapsulation, NgModule, Pipe, OnInit, AfterViewInit, ViewChild} from '@angular/core';
+import {Component, ViewEncapsulation, NgModule, Pipe, Compiler, OnInit, AfterViewInit, ViewChild} from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 
-import {NgbDatepickerI18n, NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDatepickerI18n, NgbDateStruct, NgbModal, NgbModalRef, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import {I18n, CustomDatepickerI18n} from '../../../../service/datepicker-I18n';
 
 import {GlobalState} from '../../../../global.state';
@@ -15,6 +15,8 @@ import { RouteService } from '../../../../service/route';
 import { PlanService } from '../../../../service/plan';
 import { RunService } from '../../../../service/run';
 
+import { CaseSelectionComponent } from '../../../../components/case-selection'
+import { EnvironmentConfigComponent } from '../../../../components/environment-config'
 import { PopDialogComponent } from '../../../../components/pop-dialog'
 
 declare var jQuery;
@@ -31,15 +33,17 @@ export class PlanEdit implements OnInit, AfterViewInit {
   model: any = {};
   form: any;
 
+  @ViewChild('modalSelectCase') modalSelectCase: CaseSelectionComponent;
+
   @ViewChild('modalDelete') modalDelete: PopDialogComponent;
-  @ViewChild('modalSelectCase') modalSelectCase: PopDialogComponent;
   @ViewChild('modalConfigEnvi') modalConfigEnvi: PopDialogComponent;
   @ViewChild('modalRemoveSet') modalRemoveSet: PopDialogComponent;
   testSet: any;
   modalTitle: string;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
-              private _i18n: I18n, private _planService: PlanService, private _runService: RunService) {
+              private _i18n: I18n, private modalService: NgbModal, private compiler: Compiler,
+              private _planService: PlanService, private _runService: RunService) {
 
   }
   ngOnInit() {
@@ -109,6 +113,22 @@ export class PlanEdit implements OnInit, AfterViewInit {
     this.loadData();
   }
 
+  editSet(testSet: any): void {
+    this.compiler.clearCacheFor(CaseSelectionComponent);
+    const modalRef = this.modalService.open(CaseSelectionComponent);
+    modalRef.result.then((result) => {
+      console.log('result', result);
+    }, (reason) => {
+      console.log('reason', reason);
+    });
+    modalRef.componentInstance.testSet = testSet;
+  }
+  editEnvi(testSet: any): void {
+    this.compiler.clearCacheFor(EnvironmentConfigComponent);
+    const modalRef = this.modalService.open(EnvironmentConfigComponent);
+    modalRef.componentInstance.testSet = testSet;
+  }
+
   delete(): void {
     this.modalTitle = "确认删除";
     this.modalDelete.showModal();
@@ -123,40 +143,6 @@ export class PlanEdit implements OnInit, AfterViewInit {
         this.formErrors = ['删除失败'];
       }
     });
-  }
-
-  editSet(testSet: any): void {
-    this.modalTitle = "请选择用例";
-    this.testSet = testSet;
-    this.modalSelectCase.showModal();
-  }
-  editSetConfirm() {
-    // this._runService.delete(this.testSet.id).subscribe((json:any) => {
-    //   if (json.code == 1) {
-    //     this.formErrors = ['删除成功'];
-    this.modalSelectCase.closeModal();
-    this.loadData();
-    //   } else {
-    //     this.formErrors = ['删除失败'];
-    //   }
-    // });
-  }
-
-  configEnvi(testSet: any): void {
-    this.modalTitle = "请设置环境";
-    this.testSet = testSet;
-    this.modalConfigEnvi.showModal();
-  }
-  configEnviConfirm() {
-    // this._runService.delete(this.testSet.id).subscribe((json:any) => {
-    //   if (json.code == 1) {
-    //     this.formErrors = ['删除成功'];
-    this.modalConfigEnvi.closeModal();
-    this.loadData();
-    //   } else {
-    //     this.formErrors = ['删除失败'];
-    //   }
-    // });
   }
 
   removeSet(testSet: any): void {

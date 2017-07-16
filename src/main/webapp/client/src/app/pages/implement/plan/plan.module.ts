@@ -12,6 +12,8 @@ import { routing }       from './plan.routing';
 import { PipeModule } from '../../../pipe/pipe.module';
 import { DirectiveModule } from '../../../directive/directive.module';
 import { PopDialogModule } from '../../../components/pop-dialog';
+import { CaseSelectionModule, CaseSelectionComponent } from '../../../components/case-selection';
+import { EnvironmentConfigModule, EnvironmentConfigComponent } from '../../../components/environment-config';
 
 import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
@@ -35,8 +37,11 @@ import { PlanEdit } from './edit/edit.component';
     NgUploaderModule,
 
     DirectiveModule,
+    PipeModule,
     PopDialogModule,
-    PipeModule
+
+    CaseSelectionModule,
+    EnvironmentConfigModule
   ],
   declarations: [
     Plan,
@@ -48,6 +53,10 @@ import { PlanEdit } from './edit/edit.component';
     RequestService,
     DatetimePickerService,
     PlanService, RunService
+  ],
+  entryComponents: [
+    CaseSelectionComponent,
+    EnvironmentConfigComponent
   ]
 })
 export default class PlanModule {}

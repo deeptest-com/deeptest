@@ -1,0 +1,9 @@
+.environment-config {
+    &.modal {
+      top: calc(40% - 100px);
+    }
+
+    .modal-footer {
+      border: none;
+    }
+}

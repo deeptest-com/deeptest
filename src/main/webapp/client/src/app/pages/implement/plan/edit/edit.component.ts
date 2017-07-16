@@ -114,8 +114,9 @@ export class PlanEdit implements OnInit, AfterViewInit {
   }
 
   editSet(testSet: any): void {
+
     this.compiler.clearCacheFor(CaseSelectionComponent);
-    const modalRef = this.modalService.open(CaseSelectionComponent);
+    const modalRef = this.modalService.open(CaseSelectionComponent, {windowClass: 'case-selection'});
     modalRef.result.then((result) => {
       console.log('result', result);
     }, (reason) => {
@@ -125,7 +126,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
   }
   editEnvi(testSet: any): void {
     this.compiler.clearCacheFor(EnvironmentConfigComponent);
-    const modalRef = this.modalService.open(EnvironmentConfigComponent);
+    const modalRef = this.modalService.open(EnvironmentConfigComponent, {windowClass: 'environment-config'});
     modalRef.componentInstance.testSet = testSet;
   }
 

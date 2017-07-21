@@ -1,4 +1,5 @@
 .case-selection-inner {
+  font-size: 14px;
   .modal-body{
     .cols{
       display: flex;
@@ -6,14 +7,43 @@
       height: 100%;
       .modules {
         position: relative;
-        width: 200px;
+        width: 250px;
         background: #ebebeb;
+        border-right: 1px solid #ddd;
       }
       .list {
         flex: 1;
+        border-right: 1px solid #ddd;
+
+        .content {
+          padding: 0 5px 5px 5px;
+        }
       }
       .filter {
-        width: 200px;
+        width: 250px;
+        .tree-toolbar {
+          padding-left: 10px;
+        }
+        .content {
+          padding: 5px;
+          .card {
+            margin-bottom: 0px;
+            box-shadow: none;
+            .card-header {
+              background-color: #f7f7f9;
+              height: 35px;
+              line-height: 35px;
+              padding: 8px;
+              font-size: 14px;
+              a:focus, a:hover {
+                color: #1b867b;
+              }
+            }
+            .card-block {
+              padding: 5px;
+            }
+          }
+        }
       }
     }
   }

@@ -21,6 +21,7 @@ import { DatetimePickerService } from '../../../service/datetime-picker';
 import { PlanService } from '../../../service/plan';
 import { RunService } from '../../../service/run';
 import { SuiteService } from '../../../service/suite';
+import { CaseService } from '../../../service/case';
 
 import { Plan } from './plan.component';
 import { PlanList } from './list/list.component';
@@ -53,7 +54,7 @@ import { PlanEdit } from './edit/edit.component';
     RouteService,
     RequestService,
     DatetimePickerService,
-    PlanService, RunService, SuiteService
+    PlanService, RunService, SuiteService, CaseService
   ],
   entryComponents: [
     CaseSelectionComponent,

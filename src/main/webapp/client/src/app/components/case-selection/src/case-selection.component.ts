@@ -1,12 +1,13 @@
 import {Component, Input, OnInit} from "@angular/core";
-
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 import {TreeModel, TreeOptions} from "../../ng2-tree";
 
-import {CaseSelectionService} from "./case-selection.service";
 import {TreeService} from "../../ng2-tree/src/tree.service";
 import {SuiteService} from "../../../service/suite";
+import {CaseService} from "../../../service/case";
+
+import {CaseSelectionService} from "./case-selection.service";
 
 @Component({
   selector: 'case-selection',
@@ -20,7 +21,7 @@ export class CaseSelectionComponent implements OnInit {
   @Input() height: string = '1px';
   @Input() show: boolean = true;
 
-  query: any = {keywords: '', status: ''};
+  queryModel: any = {type: 'functional', priority: '0', estimate: '', createBy: '', createOn: '', updateBy: '', updateOn: '' };
 
   public options: TreeOptions = {
     usage: 'selection',
@@ -29,9 +30,10 @@ export class CaseSelectionComponent implements OnInit {
     folderName: '模块'
   }
   public tree: TreeModel;
+  public cases: string[];
 
   constructor(public activeModal: NgbActiveModal, private _treeService: TreeService,
-              public _sutieService: SuiteService, public _caseService: CaseSelectionService,) {
+              public _sutieService: SuiteService, public _caseService: CaseService,) {
   }
 
   ngOnInit(): any {
@@ -40,10 +42,14 @@ export class CaseSelectionComponent implements OnInit {
 
   loadData() {
     let that = this;
-    that._sutieService.query(that.query).subscribe((json: any) => {
+    that._sutieService.query(that.queryModel).subscribe((json: any) => {
       that.tree = json.data;
       // CONSTANT.CUSTOM_FIELD_FOR_PROJECT = json.customFields;
       // this._state.notifyDataChanged('title.change', '测试用例');
+    });
+
+    that._caseService.query(3).subscribe((json:any) => {
+      that.cases = json.data;
     });
   }
 
@@ -55,8 +61,11 @@ export class CaseSelectionComponent implements OnInit {
     this.activeModal.dismiss('cancel');
   }
 
-  onNodeSelected(event: any) {
+  onModuleSelected(event: any) {
     console.log('onNodeSelected', event);
+  }
+  onCaseSelected(item: any) {
+    console.log('onCaseSelected', item);
   }
 
 }

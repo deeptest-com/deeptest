@@ -12,11 +12,6 @@
       <div class="modules">
         <tree [tree]="tree"
               [options]="options"
-              (nodeRemovedRemote)="onNodeRemovedRemote($event)"
-              (nodeRenamedRemote)="onNodeRenamedRemote($event)"
-              (nodeMovedRemote)="onNodeMovedRemote($event)"
-              (nodeCreatedRemote)="onNodeCreatedRemote($event)"
-
               (nodeSelected)="onNodeSelected($event)"></tree>
       </div>
       <div class="list">

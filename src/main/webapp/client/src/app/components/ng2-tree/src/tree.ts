@@ -14,6 +14,7 @@ export class Tree {
   private _children: Tree[];
 
   public isDragging: boolean = false;
+  public isSelected: boolean;
 
   public constructor(public node: TreeModel, public parent: Tree = null, isBranch: boolean = false) {
     this._children = isBranch ? [] : null;
@@ -387,5 +388,13 @@ export class Tree {
     const renamableValue: RenamableNode = _.merge({}, value as RenamableNode);
     renamableValue.setName(newValue);
     return renamableValue;
+  }
+
+  public static selectAll() {
+    console.log('selectAll');
+  }
+
+  public static unselectAll() {
+    console.log('unselectAll');
   }
 }

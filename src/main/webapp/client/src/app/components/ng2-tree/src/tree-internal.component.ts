@@ -28,7 +28,11 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
         (contextmenu)="showMenu($event)" 
         [nodeDraggable]="element"
         [tree]="tree">
-            <div class="folding" (click)="tree.switchFoldingType()" [ngClass]="tree.foldingType.cssClass"></div>
+            <div *ngIf="options.usage == 'design'" class="folding" (click)="tree.switchFoldingType()" [ngClass]="tree.foldingType.cssClass"></div>
+            <div *ngIf="options.usage == 'selection'" class="folding" (click)="onNodeSelected($event)">
+              <input type="checkbox" name="select" [(ngModel)]="tree.isSelected" >
+            </div>
+                
             <div class="node-value" 
               *ngIf="!shouldShowInputForTreeValue()" 
               [class.node-selected]="isSelected" 
@@ -44,7 +48,7 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
                (valueChanged)="applyNewValue($event)"/>
       </div>
 
-      <node-menu *ngIf="isMenuVisible" (menuItemSelected)="onMenuItemSelected($event)"
+      <node-menu *ngIf="options.usage == 'design' && isMenuVisible" (menuItemSelected)="onMenuItemSelected($event)"
             [isLeaf]="tree.isLeaf()" [options]="options"></node-menu>
 
       <ng-template [ngIf]="tree.isNodeExpanded()">
@@ -101,6 +105,8 @@ export class TreeInternalComponent implements OnInit {
       this.isSelected = true;
       this.treeService.fireNodeSelected(this.tree);
     }
+
+    this.tree.isSelected = !this.tree.isSelected;
   }
 
   public showMenu(e: MouseEvent): void {

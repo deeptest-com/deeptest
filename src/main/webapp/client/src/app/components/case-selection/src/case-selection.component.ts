@@ -54,4 +54,9 @@ export class CaseSelectionComponent implements OnInit {
   dismiss(): any {
     this.activeModal.dismiss('cancel');
   }
+
+  onNodeSelected(event: any) {
+    console.log('onNodeSelected', event);
+  }
+
 }

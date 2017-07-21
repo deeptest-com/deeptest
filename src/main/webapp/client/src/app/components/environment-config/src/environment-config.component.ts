@@ -23,11 +23,11 @@ export class EnvironmentConfigComponent implements OnInit {
 
     }
 
-  dismiss(): any {
-    this.activeModal.dismiss('Cross click');
+  save(): any {
+    this.activeModal.close('save');
   }
 
-  close(): any {
-    this.activeModal.close('Close click');
+  dismiss(): any {
+    this.activeModal.dismiss('cancel');
   }
 }

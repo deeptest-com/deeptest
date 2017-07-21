@@ -190,6 +190,7 @@ tree-internal div.rootless {
   position: absolute;
   top: 0px;
   z-index: 99999;
+  width: 100%;
   background-color: #F0F3F4;
 }
 .tree-internal-container {
@@ -199,7 +200,6 @@ tree-internal div.rootless {
 
 .tree-toolbar {
   display: flex;
-  margin-bottom: 6px;
   padding: 5px 5px 5px 5px;
   border-bottom: 1px solid #eeeeee !important;
   label {

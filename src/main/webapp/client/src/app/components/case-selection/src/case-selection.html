@@ -1,14 +1,23 @@
 <div class="case-selection-inner modal-content-inner">
   <div class="modal-header">
-      <h4 class="modal-title">请选择用例</h4>
-      <button type="button" class="close" aria-label="Close" (click)="dismiss()">
-        <span aria-hidden="true">&times;</span>
-      </button>
+    <h4 class="modal-title">请选择用例</h4>
+
+    <button type="button" class="btn btn-primary confirm-btn" (click)="save()">确认</button>
+    &nbsp;&nbsp;
+    <button type="button" class="btn btn-secondary" (click)="dismiss()">取消</button>
+
   </div>
   <div class="modal-body">
     <div class="cols">
       <div class="modules">
+        <tree [tree]="tree"
+              [options]="options"
+              (nodeRemovedRemote)="onNodeRemovedRemote($event)"
+              (nodeRenamedRemote)="onNodeRenamedRemote($event)"
+              (nodeMovedRemote)="onNodeMovedRemote($event)"
+              (nodeCreatedRemote)="onNodeCreatedRemote($event)"
 
+              (nodeSelected)="onNodeSelected($event)"></tree>
       </div>
       <div class="list">
 

@@ -28,7 +28,8 @@ import {SuiteService} from "../../../../service/suite";
 export class CaseSuite implements OnInit, AfterViewInit {
   query:any = {keywords: '', status: ''};
 
-  public options:TreeOptions = {
+  public options: TreeOptions = {
+    usage: 'design',
     isExpanded: false,
     nodeName: '用例',
     folderName: '模块'

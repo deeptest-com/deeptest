@@ -24,7 +24,7 @@ declare var jQuery;
 @Component({
   selector: 'plan-edit',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['./edit.scss'],
+  styleUrls: ['./edit.scss', '../../../../components/ng2-tree/src/styles.scss'],
   templateUrl: './edit.html',
   providers: [I18n, {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n}]
 })
@@ -114,7 +114,6 @@ export class PlanEdit implements OnInit, AfterViewInit {
   }
 
   editSet(testSet: any): void {
-
     this.compiler.clearCacheFor(CaseSelectionComponent);
     const modalRef = this.modalService.open(CaseSelectionComponent, {windowClass: 'pop-selection'});
     modalRef.result.then((result) => {
@@ -127,6 +126,11 @@ export class PlanEdit implements OnInit, AfterViewInit {
   editEnvi(testSet: any): void {
     this.compiler.clearCacheFor(EnvironmentConfigComponent);
     const modalRef = this.modalService.open(EnvironmentConfigComponent, {windowClass: 'pop-selection'});
+    modalRef.result.then((result) => {
+      console.log('result', result);
+    }, (reason) => {
+      console.log('reason', reason);
+    });
     modalRef.componentInstance.testSet = testSet;
   }
 

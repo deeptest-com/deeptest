@@ -33,8 +33,11 @@
               background-color: #f7f7f9;
               height: 35px;
               line-height: 35px;
-              padding: 8px;
+              padding: 0px 8px;
               font-size: 14px;
+              a {
+                display: block;
+              }
               a:focus, a:hover {
                 color: #1b867b;
               }

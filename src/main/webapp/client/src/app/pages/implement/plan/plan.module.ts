@@ -3,7 +3,7 @@ import { CommonModule }  from '@angular/common';
 import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
-  NgbTabsetModule, NgbButtonsModule, NgbCollapseModule, NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
+  NgbTabsetModule, NgbButtonsModule, NgbCollapseModule, NgbDatepickerModule, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { NgUploaderModule } from 'ngx-uploader';
 
 import { NgaModule } from '../../../theme/nga.module';
@@ -18,6 +18,7 @@ import { EnvironmentConfigModule, EnvironmentConfigComponent } from '../../../co
 import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
 import { DatetimePickerService } from '../../../service/datetime-picker';
+import { MyDateParserFormatter } from '../../../service/my-date-parser-formatter';
 import { PlanService } from '../../../service/plan';
 import { RunService } from '../../../service/run';
 import { SuiteService } from '../../../service/suite';
@@ -54,7 +55,11 @@ import { PlanEdit } from './edit/edit.component';
     RouteService,
     RequestService,
     DatetimePickerService,
-    PlanService, RunService, SuiteService, CaseService
+    PlanService, RunService, SuiteService, CaseService,
+    {
+      provide: NgbDateParserFormatter,
+      useFactory: () => { return new MyDateParserFormatter("y-MM-dd") }
+    }
   ],
   entryComponents: [
     CaseSelectionComponent,

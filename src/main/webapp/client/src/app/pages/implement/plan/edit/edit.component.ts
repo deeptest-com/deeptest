@@ -2,7 +2,8 @@ import {Component, ViewEncapsulation, NgModule, Pipe, Compiler, OnInit, AfterVie
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 
-import {NgbDatepickerI18n, NgbDateStruct, NgbModal, NgbModalRef, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDatepickerI18n, NgbDateParserFormatter, NgbDateStruct, NgbModal, NgbModalRef, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
+
 import {I18n, CustomDatepickerI18n} from '../../../../service/datepicker-I18n';
 
 import {GlobalState} from '../../../../global.state';
@@ -42,7 +43,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
   modalTitle: string;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
-              private _i18n: I18n, private modalService: NgbModal, private compiler: Compiler,
+              private _i18n: I18n, private modalService: NgbModal, private compiler: Compiler, private ngbDateParserFormatter: NgbDateParserFormatter,
               private _planService: PlanService, private _runService: RunService) {
 
   }
@@ -96,6 +97,9 @@ export class PlanEdit implements OnInit, AfterViewInit {
     let that = this;
     that._planService.get(that.id).subscribe((json:any) => {
       that.model = json.data;
+
+      this.model.startTime = this.ngbDateParserFormatter.parse(that.model.startTime);
+      this.model.endTime = this.ngbDateParserFormatter.parse(that.model.endTime);
     });
   }
 

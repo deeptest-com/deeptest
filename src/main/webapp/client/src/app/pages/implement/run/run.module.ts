@@ -19,8 +19,7 @@ import { DatetimePickerService } from '../../../service/datetime-picker';
 import { RunService } from '../../../service/run';
 
 import { Run } from './run.component';
-import { RunList } from './list/list.component';
-import { RunEdit } from './edit/edit.component';
+import { Execution } from './execution/execution.component';
 
 @NgModule({
   imports: [
@@ -39,8 +38,7 @@ import { RunEdit } from './edit/edit.component';
   ],
   declarations: [
     Run,
-    RunList,
-    RunEdit
+    Execution
   ],
   providers: [
     RouteService,

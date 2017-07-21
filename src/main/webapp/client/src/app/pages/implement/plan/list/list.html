@@ -40,8 +40,8 @@
         <td>{{ item.name }}</td>
         <td>{{statusMap[''+item.status]}}</td>
         <td>
+          <span [routerLink]="['/pages/implement/plan/view', item.id]" class="link no-underline">查看</span>
           <span [routerLink]="['/pages/implement/plan/edit', item.id]" class="link no-underline">编辑</span>
-          <span [routerLink]="['/pages/implement/plan/exe', item.id]" class="link no-underline">执行</span>
         </td>
       </tr>
       </tbody>

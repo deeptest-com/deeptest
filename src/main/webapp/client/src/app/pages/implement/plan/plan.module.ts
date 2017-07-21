@@ -26,6 +26,7 @@ import { CaseService } from '../../../service/case';
 
 import { Plan } from './plan.component';
 import { PlanList } from './list/list.component';
+import { PlanView } from './view/view.component';
 import { PlanEdit } from './edit/edit.component';
 
 @NgModule({
@@ -49,6 +50,7 @@ import { PlanEdit } from './edit/edit.component';
   declarations: [
     Plan,
     PlanList,
+    PlanView,
     PlanEdit
   ],
   providers: [

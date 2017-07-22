@@ -1,19 +1,19 @@
 <div class="case">
   <div class="row main" resize>
 
-    <div class="suite left" [style.height]="contentHeight">
+    <div class="suite resize-left" [style.height]="contentHeight">
       <case-suite></case-suite>
     </div>
 
-    <div id="handle1" class="handle1" [style.height]="contentHeight"></div>
+    <div class="resize-handle1" [style.height]="contentHeight"></div>
 
-    <div class="list center" [style.height]="contentHeight">
+    <div class="list resize-center" [style.height]="contentHeight">
       <case-list></case-list>
     </div>
 
-    <div id="handle2" class="handle2" [style.height]="contentHeight"></div>
+    <div class="resize-handle2" [style.height]="contentHeight"></div>
 
-    <div class="detail right y-scrollable" [style.height]="contentHeight">
+    <div class="detail resize-right y-scrollable" [style.height]="contentHeight">
       <case-edit></case-edit>
     </div>
 

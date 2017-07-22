@@ -38,11 +38,11 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
   ngAfterViewInit() {
     this.container = jQuery(this.elem);
 
-    let left = this.elem.querySelector('.left');
-    let center = this.elem.querySelector('.center');
-    let right = this.elem.querySelector('.right');
-    let handle1 = this.elem.querySelector('.handle1');
-    let handle2 = this.elem.querySelector('.handle2');
+    let left = this.elem.querySelector('.resize-left');
+    let center = this.elem.querySelector('.resize-center');
+    let right = this.elem.querySelector('.resize-right');
+    let handle1 = this.elem.querySelector('.resize-handle1');
+    let handle2 = this.elem.querySelector('.resize-handle2');
 
     this.left = jQuery(left);
     this.center = jQuery(center);

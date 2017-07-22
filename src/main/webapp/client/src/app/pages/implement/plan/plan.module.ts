@@ -14,6 +14,7 @@ import { DirectiveModule } from '../../../directive/directive.module';
 import { PopDialogModule } from '../../../components/pop-dialog';
 import { CaseSelectionModule, CaseSelectionComponent } from '../../../components/case-selection';
 import { EnvironmentConfigModule, EnvironmentConfigComponent } from '../../../components/environment-config';
+import { ExecutionReportModule } from '../../../components/execution-report';
 
 import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
@@ -45,7 +46,8 @@ import { PlanEdit } from './edit/edit.component';
     PopDialogModule,
 
     CaseSelectionModule,
-    EnvironmentConfigModule
+    EnvironmentConfigModule,
+    ExecutionReportModule
   ],
   declarations: [
     Plan,

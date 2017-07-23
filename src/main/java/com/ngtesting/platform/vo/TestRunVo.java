@@ -28,6 +28,7 @@ public class TestRunVo extends BaseVo {
         put("total", 0);
         put("pass", 0);
         put("fail", 0);
+        put("block", 0);
         put("untest", 0);
     }};
 

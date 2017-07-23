@@ -1,0 +1,10 @@
+<div class="execution-bar">
+  <span [style.width]="data.pass / data.total * 100 + '%'" class="pass bar"
+        ngbTooltip="通过：{{data.pass}}">{{data.pass}}</span>
+  <span [style.width]="data.fail / data.total * 100 + '%'" class="fail bar"
+        ngbTooltip="失败：{{data.fail}}">{{data.fail}}</span>
+  <span [style.width]="data.block / data.total * 100 + '%'" class="block bar"
+        ngbTooltip="阻塞：{{data.block}}">{{data.block}}</span>
+  <span [style.width]="data.untest / data.total * 100 + '%'" class="untest bar"
+        ngbTooltip="未执行：{{data.untest}}">{{data.untest}}</span>
+</div>

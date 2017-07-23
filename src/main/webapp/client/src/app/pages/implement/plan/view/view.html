@@ -33,7 +33,7 @@
             {{model.estimate}}
           </label>
         </div>
-        <div class="form-group row">
+        <div class="row">
           <label class="col-sm-2 col-form-label"><span>开始时间</span></label>
           <label class="col-sm-4 col-form-label">
             {{model.startTime}}
@@ -44,18 +44,18 @@
             {{model.endTime}}
           </label>
         </div>
-        <div class="form-group row">
-          <label class="col-sm-2 col-form-label"><span>简介</span></label>
-          <label class="col-sm-10 col-form-label">{{model.descr}}</label>
-        </div>
-
-        <div class="form-group row">
+        <div class="row">
           <label class="col-sm-2 col-form-label"><span>状态</span></label>
           <label class="col-sm-10 col-form-label">
             <span *ngIf="!model.disabled">启用</span>
             <span *ngIf="model.disabled">已禁用</span>
           </label>
         </div>
+        <div class="row">
+          <label class="col-sm-2 col-form-label"><span>简介</span></label>
+          <label class="col-sm-10 col-form-label">{{model.descr}}</label>
+        </div>
+
       </div>
     </div>
 
@@ -79,21 +79,18 @@
       <table class="table">
         <thead>
         <tr>
-          <th class="id">编号</th>
+          <th style="width: 50px;" class="id">编号</th>
           <th>标题</th>
-          <th>执行情况</th>
-          <th class="opt">操作</th>
+          <th style="width: 300px;">执行情况</th>
+          <th style="width: 150px;" class="opt">操作</th>
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let item of model.runVos" class="pointer">
+        <tr *ngFor="let item of model.runVos">
           <td>1</td>
-          <td>{{item.name}}</td>
+          <td [routerLink]="['/pages/implement/run/execution', item.id]" class="pointer">{{item.name}}</td>
           <td>
-            总数: {{item.countMap['total']}} &nbsp;
-            通过: {{item.countMap['pass']}} &nbsp;
-            失败: {{item.countMap['fail']}} &nbsp;
-            未执行: {{item.countMap['untest']}}
+            <execution-bar [data]="item.countMap"></execution-bar>
           </td>
           <td>
             <span [routerLink]="['/pages/implement/run/execution', item.id]" class="link no-underline">执行</span>

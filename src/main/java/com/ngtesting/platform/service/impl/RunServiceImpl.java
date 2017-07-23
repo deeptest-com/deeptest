@@ -65,7 +65,7 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 			String status = arr[0].toString();
 			Integer count = Integer.valueOf(arr[1].toString());
 
-			vo.getCountMap().put(status, Integer.valueOf(count));
+			vo.getCountMap().put(status, count);
 			vo.getCountMap().put("total", vo.getCountMap().get("total") + count);
 		}
 

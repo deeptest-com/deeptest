@@ -88,7 +88,6 @@ main {
 }
 
 .tabs-container {
-  margin: 15px;
   display: flex;
   .tabs{
     flex: 1;
@@ -115,6 +114,35 @@ main {
     .btn {
       height: 34px;
     }
+  }
+}
+.tabs-container.light {
+  margin: 0px;
+
+  .tabs {
+    .nav-tabs {
+      background-color: #f7f7f7;
+      border-bottom: 1px solid #ddd;
+      .nav-item {
+        .nav-link {
+          color: #209e91;
+          border: 1px solid transparent;
+          &:hover {
+            border-color: #ddd #ddd #fff;
+            background-color: transparent;
+          }
+          &.active {
+            color: #464a4c;
+            background-color: #fff;
+            border-color: #ddd #ddd #fff;
+          }
+        }
+      }
+    }
+  }
+
+  .tab-content {
+    padding: 0;
   }
 }
 

@@ -32,4 +32,4 @@ import { SysAdmin } from './sys-admin.component';
 
   ]
 })
-export default class AdminModule {}
+export class AdminModule {}

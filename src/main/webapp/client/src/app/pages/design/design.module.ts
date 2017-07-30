@@ -28,6 +28,6 @@ import { Design } from './design.component';
 
   ]
 })
-export default class DesignModule {}
+export class DesignModule {}
 
 

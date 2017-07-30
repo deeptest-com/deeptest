@@ -26,15 +26,16 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', loadChildren: './dashboard/dashboard.module#DashboardModule' },
 
-      { path: 'project', loadChildren: './project/project/project.module' },
-      { path: 'design', loadChildren: './design/design.module' },
-      { path: 'implement', loadChildren: './implement/implement.module' },
-      { path: 'analysis', loadChildren: './analysis/analysis.module' },
+      { path: 'project', loadChildren: './project/project/project.module#ProjectModule' },
+      { path: 'design', loadChildren: './design/design.module#DesignModule' },
+      { path: 'implement', loadChildren: './implement/implement.module#ImplementModule' },
+      { path: 'analysis', loadChildren: './analysis/analysis.module#AnalysisModule' },
 
-      { path: 'org-admin', loadChildren: './admin-org/org-admin.module' },
-      { path: 'sys-admin', loadChildren: './admin-sys/sys-admin.module' }
+      { path: 'org-admin', loadChildren: './admin-org/org-admin.module#OrgAdminModule' },
+      { path: 'sys-admin', loadChildren: './admin-sys/sys-admin.module#AdminModule' }
     ]
   }
 ];
 
 export const routing: ModuleWithProviders = RouterModule.forChild(routes);
+

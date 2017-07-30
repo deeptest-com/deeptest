@@ -60,5 +60,5 @@ import { CaseEdit } from './edit/edit.component';
     CaseStepService
   ]
 })
-export default class CaseModule {}
+export class CaseModule {}
 

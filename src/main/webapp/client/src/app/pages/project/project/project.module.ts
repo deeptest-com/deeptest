@@ -55,5 +55,5 @@ import { ProjectView } from './view/view.component';
     ProjectService,
   ]
 })
-export default class ProjectModule {}
+export class ProjectModule {}
 

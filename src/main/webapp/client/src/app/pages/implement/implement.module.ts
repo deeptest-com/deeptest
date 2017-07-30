@@ -30,6 +30,6 @@ import { Implement } from './implement.component';
     I18n, CustomDatepickerI18n
   ]
 })
-export default class ImplementModule {}
+export class ImplementModule {}
 
 

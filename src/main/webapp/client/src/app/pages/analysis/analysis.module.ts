@@ -28,6 +28,6 @@ import { Analysis } from './analysis.component';
 
   ]
 })
-export default class AnalysisModule {}
+export class AnalysisModule {}
 
 

@@ -32,11 +32,11 @@
     </tr>
     <tr>
       <th colspan="2">开始时间</th>
-      <td colspan="6">{{suite.startTime | date:'MM/dd hh:m:ss'}}</td>
+      <td colspan="6">{{suite.startTime | date:'y-MM-dd HH:mm:ss'}}</td>
     </tr>
     <!--         <tr>
                 <th colspan="2">结束时间</th>
-                <td colspan="6">{{suite.endTime | date:'MM/dd hh:m:ss'}}</td>
+                <td colspan="6">{{suite.endTime | date:'y-MM-dd HH:mm:ss'}}</td>
             </tr> -->
     <tr>
       <th colspan="2">持续时间</th>
@@ -62,8 +62,8 @@
       <td>{{j + 1}}</td>
       <td>{{case.name}}</td>
       <td class="{{case.status}}">{{case.status}}</td>
-      <td>{{case.startTime | date:'MM/dd hh:m:ss'}}</td>
-      <!-- <td>{{case.endTime | date:'MM/dd h:m:ss'}}</td> -->
+      <td>{{case.startTime | date:'y-MM-dd HH:mm:ss'}}</td>
+      <!-- <td>{{case.endTime | date:'y-MM-dd HH:mm:ss'}}</td> -->
       <td>{{case.duration / 1000}}</td>
       <td>
         <span class="link" (click)="pop(content, case, 'checkpoint')">检查点({{case.checkPoints.length}})</span>

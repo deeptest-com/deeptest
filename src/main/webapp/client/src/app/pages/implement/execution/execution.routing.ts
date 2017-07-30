@@ -1,17 +1,16 @@
 import { Routes, RouterModule }  from '@angular/router';
 
-import { Design } from './design.component';
+import { Execution } from './execution.component';
 
 // noinspection TypeScriptValidateTypes
 const routes: Routes = [
   {
     path: '',
-    component: Design,
+    component: Execution,
     children: [
-      { path: 'case', loadChildren: './case/case.module' }
+
     ]
   }
 ];
 
 export const routing = RouterModule.forChild(routes);
-

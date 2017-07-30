@@ -17,12 +17,12 @@ import { CaseStepService } from '../../../../service/case-step';
 declare var jQuery;
 
 @Component({
-  selector: 'case-edit',
+  selector: 'execution-result',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['./edit.scss'],
-  templateUrl: './edit.html'
+  styleUrls: ['./result.scss'],
+  templateUrl: './result.html'
 })
-export class CaseEdit implements OnInit, AfterViewInit {
+export class ExecutionResult implements OnInit, AfterViewInit {
   id: number;
   model: any;
   settings: any;

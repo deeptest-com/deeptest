@@ -4,14 +4,14 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 import { BrowserModule } from '@angular/platform-browser';
 import { NgUploaderModule } from 'ngx-uploader';
 
-import {GlobalState} from '../../../../global.state';
+import {GlobalState} from '../../../global.state';
 
-import { CONSTANT } from '../../../../utils/constant';
-import { Utils } from '../../../../utils/utils';
-import {ValidatorUtils} from '../../../../validator/validator.utils';
-import { RouteService } from '../../../../service/route';
+import { CONSTANT } from '../../../utils/constant';
+import { Utils } from '../../../utils/utils';
+import {ValidatorUtils} from '../../../validator/validator.utils';
+import { RouteService } from '../../../service/route';
 
-import { RunService } from '../../../../service/run';
+import { RunService } from '../../../service/run';
 
 declare var jQuery;
 

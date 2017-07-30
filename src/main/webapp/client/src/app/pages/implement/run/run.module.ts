@@ -19,7 +19,6 @@ import { DatetimePickerService } from '../../../service/datetime-picker';
 import { RunService } from '../../../service/run';
 
 import { Run } from './run.component';
-import { Execution } from './execution/execution.component';
 
 @NgModule({
   imports: [
@@ -37,8 +36,7 @@ import { Execution } from './execution/execution.component';
     PipeModule
   ],
   declarations: [
-    Run,
-    Execution
+    Run
   ],
   providers: [
     RouteService,

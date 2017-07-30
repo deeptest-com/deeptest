@@ -36,12 +36,12 @@
         <div class="row">
           <label class="col-sm-2 col-form-label"><span>开始时间</span></label>
           <label class="col-sm-4 col-form-label">
-            {{model.startTime}}
+            {{model.startTime | date:'y-MM-dd HH:mm:ss'}}
           </label>
 
           <label class="col-sm-2 col-form-label"><span>结束时间</span></label>
           <label class="col-sm-4 col-form-label">
-            {{model.endTime}}
+            {{model.endTime | date:'y-MM-dd HH:mm:ss'}}
           </label>
         </div>
         <div class="row">
@@ -89,13 +89,13 @@
         <tbody>
         <tr *ngFor="let item of model.runVos">
           <td>1</td>
-          <td [routerLink]="['/pages/implement/run/execution', item.id]" class="pointer">{{item.name}}</td>
+          <td class="pointer">{{item.name}}</td>
           <td>
             <execution-bar [data]="item.countMap"></execution-bar>
           </td>
           <td></td>
           <td>
-            <span [routerLink]="['/pages/implement/run/execution', item.id]" class="link no-underline">执行</span>
+            <span [routerLink]="['/pages/implement/execution', item.id]" class="link no-underline">执行{{item.id}}</span>
           </td>
         </tr>
         </tbody>

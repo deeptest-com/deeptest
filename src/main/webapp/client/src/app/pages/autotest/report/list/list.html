@@ -41,8 +41,8 @@
       <td>{{ i + 1 }}</td>
       <td>{{ item.name }}</td>
       <td class="{{item.status}}">{{ item.status }}</td>
-      <td>{{ item.startTime | date:'MM/dd hh:m:ss' }}</td>
-      <th>{{ item.endTime | date:'MM/dd hh:m:ss' }}</th>
+      <td>{{ item.startTime | date:'y-MM-dd HH:mm:ss' }}</td>
+      <th>{{ item.endTime | date:'y-MM-dd HH:mm:ss' }}</th>
       <td>
         <span [routerLink]="['/pages/report', item.id]" class="link">查看</span>
       </td>

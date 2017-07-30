@@ -1,0 +1,51 @@
+.execution {
+  padding: 3px 0;
+
+  .main {
+    position: relative;
+    touch-callout: none;
+    user-select: none;
+
+    .suite {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 15%;
+    }
+
+    .list {
+      position: absolute;
+      left: 15%;
+      top: 0;
+      width: 40%;
+    }
+
+    .result {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 45%;
+    }
+
+    .handle1 {
+      position:absolute;
+      top:0;
+      left: 15%;
+      width: 3px;
+      cursor: col-resize;
+      background-color: #eeeeee;
+      z-index: 99;
+    }
+
+    .handle2 {
+      position:absolute;
+      top:0;
+      right: 45%;
+      width: 3px;
+      cursor: col-resize;
+      background-color: #eeeeee;
+      z-index: 99;
+    }
+  }
+}
+

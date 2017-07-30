@@ -31,7 +31,7 @@ export class ExecutionResult implements OnInit, AfterViewInit {
   settings: any;
   data: any;
   form: any;
-  tab: string = 'steps';
+  tab: string = 'info';
 
   fields: any;
 

@@ -2,10 +2,10 @@
   <div *ngIf="model" class="row">
     <form [formGroup]="form" (ngSubmit)="save()" class="my-validate-form small-label">
       <div class="form-group row">
-        <label class="col-sm-2 col-form-label"></label>
-        <div class="col-sm-10">
-          <button (click)="save()" type="button" class="btn btn-primary btn-sm" [disabled]="!form.valid">保存</button>
-          <button (click)="reset()" type="button" class="btn btn-default btn-sm" [disabled]="!form.valid">重置</button>
+        <div class="col-sm-12">
+          <button (click)="save()" type="button" class="btn btn-info btn-sm" [disabled]="!form.valid">通过</button>
+          <button (click)="reset()" type="button" class="btn btn-danger btn-sm" [disabled]="!form.valid">失败</button>
+          <button (click)="reset()" type="button" class="btn btn-warning btn-sm" [disabled]="!form.valid">阻塞</button>
 
           <button [routerLink]="['/pages/implement/plan/view/', planId]" type="button"
                   class="button-right btn btn-secondary btn-with-icon btn-sm back">
@@ -15,26 +15,27 @@
       </div>
 
       <div class="form-group row">
-        <label class="col-sm-2 col-form-label">标题</label>
-        <div class="col-sm-10">
-          <input type="text" class="form-control" name="title" formControlName="title"
-                 [(ngModel)]="model.title" #title>
+        <div class="col-sm-12">
+          {{model.title}}
         </div>
       </div>
 
       <div class="form-group row">
-        <label class="col-sm-2 col-form-label"></label>
-        <div class="col-sm-10">
+        <div class="col-sm-12">
 
           <div class="tabs-container light">
             <div class="tabs">
               <ngb-tabset  (tabChange)="tabChange($event)">
-                <ngb-tab id="steps">
-                  <ng-template ngbTabTitle>测试步骤</ng-template>
+                <ngb-tab id="info">
+                  <ng-template ngbTabTitle>信息</ng-template>
                   <ng-template ngbTabContent></ng-template>
                 </ngb-tab>
-                <ngb-tab id="summary">
-                  <ng-template ngbTabTitle>用例信息</ng-template>
+                <ngb-tab id="history">
+                  <ng-template ngbTabTitle>历史</ng-template>
+                  <ng-template ngbTabContent></ng-template>
+                </ngb-tab>
+                <ngb-tab id="result">
+                  <ng-template ngbTabTitle>结果</ng-template>
                   <ng-template ngbTabContent></ng-template>
                 </ngb-tab>
               </ngb-tabset>
@@ -44,36 +45,58 @@
         </div>
       </div>
 
-      <div [class.hidden]="tab != 'steps'" class="tab-steps form-group row">
+      <div [class.hidden]="tab != 'info'">
+        <div class="form-group row">
+          <div class="col-sm-12">
+            {{model.objective}}
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-12 property">
+          <table class="io">
+            <tbody>
+              <tr>
+                <td style="width: 25%">
+                  <div class="label">类型</div>
+                  <div class="value">功能</div>
+                </td>
+                <td style="width: 25%">
+                  <div class="label">优先级</div>
+                  <div class="value">高</div>
+                </td>
+                <td style="width: 25%">
+                  <div class="label">耗时</div>
+                  <div class="value">10分钟</div>
+                </td>
+                <td style="width: 25%">
+                  <div class="label">状态</div>
+                  <div class="value">未执行</div>
+                </td>
+              </tr>
+            <tr>
+            </tr>
+            </tbody>
+          </table>
+          </div>
+      </div>
 
-        <div class="col-sm-12">
-          <steps-table [settings]="settings" [source]="model.steps"
+        <div class="tab-steps form-group row">
+          <div class="col-sm-12">
+            <steps-table [settings]="settings" [source]="model.steps"
 
-                       (upConfirm)="onUpConfirm($event)"
-                       (downConfirm)="onDownConfirm($event)"
+                         (upConfirm)="onUpConfirm($event)"
+                         (downConfirm)="onDownConfirm($event)"
 
-                       (createConfirm)="onCreateConfirm($event)"
-                       (saveConfirm)="onSaveConfirm($event)"
-                       (deleteConfirm)="onDeleteConfirm($event)"
-          ></steps-table>
+                         (createConfirm)="onCreateConfirm($event)"
+                         (saveConfirm)="onSaveConfirm($event)"
+                         (deleteConfirm)="onDeleteConfirm($event)"
+            ></steps-table>
+          </div>
         </div>
       </div>
 
-      <div [class.hidden]="tab != 'summary'" class="tab-summary">
-        <div class="form-group row">
-          <label class="col-sm-2 col-form-label"><span>测试目的</span></label>
-          <div class="col-sm-10">
-              <textarea type="text" class="form-control" name="objective" formControlName="objective"
-                      [(ngModel)]="model.objective" #objective></textarea>
-          </div>
-        </div>
-
-        <div *ngFor="let prop of model.props; let i = index;" class="form-group row">
-          <label class="col-sm-2 col-form-label"><span>{{prop.label}}</span></label>
-          <div class="col-sm-10">
-            <custom-field [form]="form" [prop]="prop" [fields]="fields"></custom-field>
-          </div>
-        </div>
+      <div [class.hidden]="tab != 'history'" class="tab-summary">
+        历史
       </div>
 
       <div class="form-group row">
@@ -86,6 +109,7 @@
           </div>
         </div>
       </div>
+
     </form>
   </div>
 

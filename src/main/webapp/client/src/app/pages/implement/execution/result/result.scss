@@ -5,4 +5,29 @@
     max-width: 60px;
   }
 
+  .property {
+    table {
+      border: solid 1px #d7d7d7;
+      padding: 2px;
+      border-radius: 2px;
+
+      width: 100%;
+      border-collapse: separate;
+
+      td {
+        text-align: center;
+        padding: 3px;
+        vertical-align: top;
+        .label {
+          margin-bottom: 5px;
+          font-weight: bold;
+          color: #303030;
+        }
+        .value {
+
+        }
+
+      }
+    }
+  }
 }

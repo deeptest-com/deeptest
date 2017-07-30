@@ -2,7 +2,9 @@
   <div *ngIf="data">
     <div class="row">
       <div class="col-sm-12">
-        <button (click)="create()" type="button" class="btn btn-primary btn-sm">新建</button>
+        <button (click)="save()" type="button" class="btn btn-info btn-sm">全部通过</button>
+        <button (click)="reset()" type="button" class="btn btn-danger btn-sm">全部失败</button>
+        <button (click)="reset()" type="button" class="btn btn-warning btn-sm">全部阻塞</button>
       </div>
     </div>
 

@@ -155,6 +155,12 @@ tree-internal .tree .folding {
 }
 .value-container .node-value {
   flex: 1;
+  .highlight {
+    color: #A52A2A;
+  }
+  .exe-status {
+    font-size: 11px;
+  }
 }
 
 tree-internal .tree .folding.node-collapsed:before {

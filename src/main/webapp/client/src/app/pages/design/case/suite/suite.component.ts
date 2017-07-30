@@ -108,7 +108,7 @@ export class CaseSuite implements OnInit, AfterViewInit {
   }
 
   public onNodeSelected(e:NodeSelectedEvent):void {
-    this._state.notifyDataChanged('suite.change', e.node.node);
+    this._state.notifyDataChanged('design.suite.change', e.node.node.id);
   }
 
   public logEvent(e:NodeEvent, message:string):void {

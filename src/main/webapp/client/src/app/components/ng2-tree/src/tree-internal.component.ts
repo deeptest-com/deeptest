@@ -28,7 +28,7 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
         (contextmenu)="showMenu($event)" 
         [nodeDraggable]="element"
         [tree]="tree">
-            <div *ngIf="options.usage == 'design'" class="folding" (click)="tree.switchFoldingType()" [ngClass]="tree.foldingType.cssClass"></div>
+            <div *ngIf="options.usage == 'design' || options.usage == 'exe'" class="folding" (click)="tree.switchFoldingType()" [ngClass]="tree.foldingType.cssClass"></div>
             <div *ngIf="options.usage == 'selection'" class="folding" (click)="onNodeSelected($event)">
               <input type="checkbox" name="select" [(ngModel)]="tree.isSelected" >
             </div>
@@ -38,7 +38,12 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
               [class.node-selected]="isSelected" 
               (click)="onNodeSelected($event)">
               
-              <span>{{tree.value}}</span>
+              <span [ngClass]="{highlight: isHighlight()}">{{tree.value}}</span>
+              
+              <span *ngIf="options.usage == 'exe'" class="exe-status">
+                10/100
+              </span>
+              
               <span *ngIf="tree.isRoot() && tree.isDragging" class="tips">按住Shift键复制</span>
             </div>
     
@@ -46,6 +51,7 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
                *ngIf="shouldShowInputForTreeValue()"
                [nodeEditable]="tree.value"
                (valueChanged)="applyNewValue($event)"/>
+            
       </div>
 
       <node-menu *ngIf="options.usage == 'design' && isMenuVisible" (menuItemSelected)="onMenuItemSelected($event)"
@@ -82,7 +88,7 @@ export class TreeInternalComponent implements OnInit {
 
   public ngOnInit(): void {
 
-    this.settings = this.settings || { rootIsVisible: true };
+    this.settings = this.settings || {rootIsVisible: true};
 
     this.nodeMenuService.hideMenuStream(this.element)
       .subscribe(() => this.isMenuVisible = false);
@@ -94,6 +100,10 @@ export class TreeInternalComponent implements OnInit {
       .subscribe((e: NodeDraggableEvent) => {
         this.moveNode(e);
       });
+
+    if (this.options.isExpanded) {
+      this.tree.expandOrNot(this.options, true);
+    }
   }
 
   private moveNode(e: NodeDraggableEvent): void {
@@ -191,5 +201,10 @@ export class TreeInternalComponent implements OnInit {
     return !!this.options.keywords
       && this.tree.isLeaf()
       && this.tree.value.toLowerCase().indexOf(this.options.keywords.toLowerCase()) == -1;
+  }
+
+  public isHighlight(): boolean {
+    return this.options.keywords
+      && this.tree.value.toLowerCase().indexOf(this.options.keywords.toLowerCase()) > -1;
   }
 }

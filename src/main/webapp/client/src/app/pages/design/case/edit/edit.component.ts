@@ -43,9 +43,13 @@ export class CaseEdit implements OnInit, AfterViewInit {
 
     that.buildForm();
 
-    this._state.subscribe('case.change', (testCase) => {
-      that.id = testCase.id;
-      that.loadData();
+    this._state.subscribe('case.change', (testCase: any) => {
+      if (testCase) {
+        that.id = testCase.id;
+        that.loadData();
+      } else {
+        that.model = {};
+      }
     });
 
     this.settings = {

@@ -243,6 +243,8 @@ export class Tree {
   public expandOrNot(options: TreeOptions, next?: boolean): void {
     if (!next) {
       options.isExpanded = !options.isExpanded;
+    } else {
+      options.isExpanded = next;
     }
 
     if (this.isLeaf()) {

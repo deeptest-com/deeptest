@@ -34,8 +34,8 @@ export class ExecutionList implements OnInit, AfterViewInit {
               private _treeService:TreeService, private _caseService:CaseService,
               private slimLoadingBarService:SlimLoadingBarService) {
 
-    this._state.subscribe('suite.change', (testSuite: any) => {
-      this.suiteId = testSuite.id;
+    this._state.subscribe('exe.suite.change', (suiteId: number) => {
+      this.suiteId = suiteId;
       this.loadData();
     });
 
@@ -57,6 +57,9 @@ export class ExecutionList implements OnInit, AfterViewInit {
     let that = this;
     that._caseService.query(this.suiteId).subscribe((json:any) => {
       that.data = json.data;
+
+      this._state.notifyDataChanged('case.change', this.data[0]);
+
       CONSTANT.CUSTOM_FIELD_FOR_PROJECT = json.customFields;
 
       this._state.notifyDataChanged('title.change', '测试用例');
@@ -64,7 +67,7 @@ export class ExecutionList implements OnInit, AfterViewInit {
   }
 
   public select(testCase: any):void {
-    this._state.notifyDataChanged('case.change', testCase);
+    this._state.notifyDataChanged('case.change', testCase.id);
   }
 
 }

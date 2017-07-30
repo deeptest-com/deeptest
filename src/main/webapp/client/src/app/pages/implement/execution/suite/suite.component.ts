@@ -29,8 +29,8 @@ export class ExecutionSuite implements OnInit, AfterViewInit {
   query:any = {keywords: '', status: ''};
 
   public options: TreeOptions = {
-    usage: 'design',
-    isExpanded: false,
+    usage: 'exe',
+    isExpanded: true,
     nodeName: '用例',
     folderName: '模块'
   }
@@ -48,11 +48,6 @@ export class ExecutionSuite implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
 
-  }
-
-  delete(eventId:string):void {
-    let that = this;
-    console.log('eventId=' + eventId);
   }
 
   loadData() {
@@ -108,7 +103,7 @@ export class ExecutionSuite implements OnInit, AfterViewInit {
   }
 
   public onNodeSelected(e:NodeSelectedEvent):void {
-    this._state.notifyDataChanged('suite.change', e.node.node);
+    this._state.notifyDataChanged('exe.suite.change', e.node.node.id);
   }
 
   public logEvent(e:NodeEvent, message:string):void {

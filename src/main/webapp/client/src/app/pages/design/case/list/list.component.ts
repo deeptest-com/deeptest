@@ -34,8 +34,8 @@ export class CaseList implements OnInit, AfterViewInit {
               private _treeService:TreeService, private _caseService:CaseService,
               private slimLoadingBarService:SlimLoadingBarService) {
 
-    this._state.subscribe('suite.change', (testSuite: any) => {
-      this.suiteId = testSuite.id;
+    this._state.subscribe('design.suite.change', (suiteId: number) => {
+      this.suiteId = suiteId;
       this.loadData();
     });
 
@@ -48,7 +48,9 @@ export class CaseList implements OnInit, AfterViewInit {
   ngAfterViewInit() {
 
   }
-
+  create():void {
+    this._state.notifyDataChanged('case.change', undefined);
+  }
   delete(suiteId:string):void {
 
   }
@@ -57,10 +59,12 @@ export class CaseList implements OnInit, AfterViewInit {
     let that = this;
     that._caseService.query(this.suiteId).subscribe((json:any) => {
       that.data = json.data;
+      this._state.notifyDataChanged('case.change', null);
       CONSTANT.CUSTOM_FIELD_FOR_PROJECT = json.customFields;
 
       this._state.notifyDataChanged('title.change', '测试用例');
     });
+
   }
 
   public select(testCase: any):void {

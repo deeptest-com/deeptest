@@ -29,6 +29,7 @@ export class CaseList implements OnInit, AfterViewInit {
   query:any = {keywords: '', status: ''};
   suiteId: number;
   data: any[];
+  selected: any;
 
   constructor(private _routeService:RouteService, private _state:GlobalState,
               private _treeService:TreeService, private _caseService:CaseService,
@@ -68,6 +69,7 @@ export class CaseList implements OnInit, AfterViewInit {
   }
 
   public select(testCase: any):void {
+    this.selected = testCase;
     this._state.notifyDataChanged('case.change', testCase);
   }
 

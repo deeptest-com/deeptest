@@ -16,6 +16,9 @@ body {
     margin: 0;
   }
 }
+tr.selected {
+  color: #209e91;
+}
 .pointer {
   cursor: pointer;
 }
@@ -319,4 +322,8 @@ ul.al-share {
 .no-content {
   padding: 20px;
   margin: 0 auto;
+}
+
+.button-right {
+  float: right;
 }

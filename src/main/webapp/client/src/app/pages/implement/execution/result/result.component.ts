@@ -23,6 +23,9 @@ declare var jQuery;
   templateUrl: './result.html'
 })
 export class ExecutionResult implements OnInit, AfterViewInit {
+  planId: number;
+  runId: number;
+
   id: number;
   model: any;
   settings: any;
@@ -38,6 +41,11 @@ export class ExecutionResult implements OnInit, AfterViewInit {
   }
   ngOnInit() {
     let that = this;
+
+    that._route.params.forEach((params: Params) => {
+      that.planId = +params['planId'];
+      that.runId = +params['runId'];
+    });
 
     this.fields = CONSTANT.CUSTOM_FIELD_FOR_PROJECT;
 

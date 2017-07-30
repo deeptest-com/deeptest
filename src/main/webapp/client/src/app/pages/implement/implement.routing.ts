@@ -10,7 +10,7 @@ const routes: Routes = [
     children: [
       { path: 'plan', loadChildren: './plan/plan.module' },
       { path: 'run', loadChildren: './run/run.module' },
-      { path: 'execution/:id', loadChildren: './execution/execution.module' }
+      { path: 'plan/:planId/execution/:runId', loadChildren: './execution/execution.module' }
     ]
   }
 ];

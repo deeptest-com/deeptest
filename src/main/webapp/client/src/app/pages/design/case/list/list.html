@@ -16,11 +16,11 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let item of data" (click)="select(item)" class="pointer">
-          <td>{{item.id}}</td>
-          <td>{{item.title}}</td>
-          <td>{{item.priority}}</td>
-        </tr>
+          <tr *ngFor="let item of data" (click)="select(item)" [class.selected]="item.id == selected.id" class="pointer">
+            <td>{{item.id}}</td>
+            <td>{{item.title}}</td>
+            <td>{{item.priority}}</td>
+          </tr>
         </tbody>
       </table>
     </div>

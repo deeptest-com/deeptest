@@ -22,7 +22,9 @@ declare var jQuery;
   templateUrl: './execution.html'
 })
 export class Execution implements OnInit, AfterViewInit {
-  id: number;
+  planId: number;
+  runId: number;
+
   model: any;
   form: any;
 
@@ -33,65 +35,9 @@ export class Execution implements OnInit, AfterViewInit {
   ngOnInit() {
     let that = this;
 
-    that._route.params.forEach((params: Params) => {
-      that.id = +params['id'];
-    });
 
-    if (that.id) {
-      // that.loadData();
-    }
-    that.buildForm();
   }
   ngAfterViewInit() {}
-
-  buildForm(): void {
-    let that = this;
-    this.form = this.fb.group(
-      {
-        'title': ['', [Validators.required]],
-        'objective': ['', [Validators.required]],
-        'pre_condition': ['', []]
-      }, {}
-    );
-
-    this.form.valueChanges.subscribe(data => this.onValueChanged(data));
-    this.onValueChanged();
-  }
-  onValueChanged(data?: any) {
-    let that = this;
-    that.formErrors = ValidatorUtils.genMsg(that.form, that.validateMsg, []);
-  }
-
-  formErrors = [];
-  validateMsg = {
-    'title': {
-      'required':      '简介不能为空'
-    },
-    'objective': {
-      'required':      '描述不能为空'
-    }
-  };
-
-  loadData() {
-    let that = this;
-    that._runService.get(that.id).subscribe((json:any) => {
-      that.model = json.data;
-    });
-  }
-
-  save() {
-    let that = this;
-
-    that._runService.save(that.model).subscribe((json:any) => {
-      if (json.code == 1) {
-        that.model = json.data;
-      }
-    });
-  }
-
-  reset() {
-    this.loadData();
-  }
 
 
 }

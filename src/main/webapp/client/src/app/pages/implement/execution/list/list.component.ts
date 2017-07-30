@@ -29,6 +29,7 @@ export class ExecutionList implements OnInit, AfterViewInit {
   query:any = {keywords: '', status: ''};
   suiteId: number;
   data: any[];
+  selected: any = {};
 
   constructor(private _routeService:RouteService, private _state:GlobalState,
               private _treeService:TreeService, private _caseService:CaseService,
@@ -58,6 +59,7 @@ export class ExecutionList implements OnInit, AfterViewInit {
     that._caseService.query(this.suiteId).subscribe((json:any) => {
       that.data = json.data;
 
+      this.selected = this.data[0];
       this._state.notifyDataChanged('case.change', this.data[0]);
 
       CONSTANT.CUSTOM_FIELD_FOR_PROJECT = json.customFields;
@@ -67,7 +69,8 @@ export class ExecutionList implements OnInit, AfterViewInit {
   }
 
   public select(testCase: any):void {
-    this._state.notifyDataChanged('case.change', testCase.id);
+    this.selected = testCase;
+    this._state.notifyDataChanged('case.change', testCase);
   }
 
 }

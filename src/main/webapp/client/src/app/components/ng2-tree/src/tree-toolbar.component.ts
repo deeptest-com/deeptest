@@ -12,7 +12,7 @@ import { TreeService } from './tree.service';
   selector: 'tree-toolbar',
   template: `
   <div class="tree-toolbar">
-    <form *ngIf="options.usage == 'design'" class="form-inline">
+    <form *ngIf="options.usage == 'design' || options.usage == 'exe'" class="form-inline">
       <label (click)="tree.expandOrNot(options)" class="link no-underline mr-xs-2">
         <span *ngIf="!options.isExpanded">全部展开</span>
         <span *ngIf="options.isExpanded">全部收缩</span>

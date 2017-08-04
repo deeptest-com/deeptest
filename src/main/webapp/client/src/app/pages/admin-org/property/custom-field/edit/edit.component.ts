@@ -27,7 +27,7 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
   id: number;
   tab: string = 'info';
 
-  model: any;
+  model: any = {};
   applyToList: string[];
   typeList: string[];
   formatList: string[];

@@ -254,7 +254,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
         dc.addOrder(Order.desc("ordr"));
         List<TestCustomField> ls = findAllByCriteria(dc);
         if (ls.size() < 20) {
-            return String.format("%02d", ls.size() + 1);
+            return "prop" + String.format("%02d", ls.size() + 1);
         } else {
             return null;
         }

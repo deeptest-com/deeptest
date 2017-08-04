@@ -47,5 +47,5 @@ import { GroupEdit } from './edit';
     GroupService,
   ]
 })
-export default class GroupModule {}
+export class GroupModule {}
 

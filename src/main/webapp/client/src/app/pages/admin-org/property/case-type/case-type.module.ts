@@ -47,4 +47,4 @@ import {CaseTypeEdit } from './edit';
     CaseTypeService
   ]
 })
-export default class CaseTypeModule {}
+export class CaseTypeModule {}

@@ -30,7 +30,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
   form: any;
   tab: string = 'steps';
 
-  fields: any;
+  fields: any[] = [];
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
               private _caseService: CaseService, private _caseStepService: CaseStepService) {
@@ -39,11 +39,12 @@ export class CaseEdit implements OnInit, AfterViewInit {
   ngOnInit() {
     let that = this;
 
-    this.fields = CONSTANT.CUSTOM_FIELD_FOR_PROJECT;
-
     that.buildForm();
 
     this._state.subscribe('case.change', (testCase: any) => {
+      this.fields = CONSTANT.CUSTOM_FIELD_FOR_PROJECT;
+      console.log('===', this.fields);
+
       if (testCase) {
         that.id = testCase.id;
         that.loadData();

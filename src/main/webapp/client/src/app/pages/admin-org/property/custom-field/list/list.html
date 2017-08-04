@@ -7,8 +7,10 @@
         <th>名称</th>
         <th>编码</th>
         <th>应用对象</th>
+        <th>字段列</th>
         <th>字段类型</th>
         <th>字段格式</th>
+        <th>是否內置</th>
         <th>是否全局</th>
         <th>是否必填</th>
         <th>操作</th>
@@ -19,11 +21,13 @@
         <td>{{ item.label }}</td>
         <td>{{ item.code }}</td>
         <td>{{ item.applyTo | fieldApplyTo}}</td>
+        <td>{{ item.column }}</td>
         <td>{{ item.type | fieldType }}</td>
         <td>
           {{ item.format | fieldFormat }}
           <span *ngIf="item.type == 'text'">({{item.rows}})</span>
         </td>
+        <td>{{item.isBuildIn | trueOrFalse}}</td>
         <td>{{item.isGlobal | trueOrFalse}}</td>
         <td>{{item.isRequired | trueOrFalse}}</td>
         <td>

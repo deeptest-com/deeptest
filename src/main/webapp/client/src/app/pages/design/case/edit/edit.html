@@ -63,10 +63,10 @@
           </div>
         </div>
 
-        <div *ngFor="let prop of model.props; let i = index;" class="form-group row">
-          <label class="col-sm-2 col-form-label"><span>{{prop.label}}</span></label>
+        <div *ngFor="let field of fields; let i = index;" class="form-group row">
+          <label class="col-sm-2 col-form-label"><span>{{field.label}}</span></label>
           <div class="col-sm-10">
-            <custom-field [form]="form" [prop]="prop" [fields]="fields"></custom-field>
+            <custom-field [form]="form" [model]="model" [field]="field"></custom-field>
           </div>
         </div>
       </div>

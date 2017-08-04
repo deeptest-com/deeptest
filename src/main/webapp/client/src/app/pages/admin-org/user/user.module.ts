@@ -51,5 +51,5 @@ import { UserEdit } from './edit';
     RoleService
   ]
 })
-export default class UserModule {}
+export class UserModule {}
 

@@ -27,4 +27,4 @@ import { ForgotPassword } from './forgot-password.component';
     AccountService
   ]
 })
-export default class RegisterModule {}
+export class ForgotPasswordModule {}

@@ -8,10 +8,10 @@ const routes: Routes = [
     path: '',
     component: Property,
     children: [
-      { path: 'custom-field', loadChildren: './custom-field/custom-field.module' },
-      { path: 'case-type', loadChildren: './case-type/case-type.module' },
-      { path: 'case-priority', loadChildren: './case-priority/case-priority.module' },
-      { path: 'case-exe-status', loadChildren: './case-exe-status/case-exe-status.module' }
+      { path: 'custom-field', loadChildren: './custom-field/custom-field.module#CustomFieldModule' },
+      { path: 'case-type', loadChildren: './case-type/case-type.module#CaseTypeModule' },
+      { path: 'case-priority', loadChildren: './case-priority/case-priority.module#CasePriorityModule' },
+      { path: 'case-exe-status', loadChildren: './case-exe-status/case-exe-status.module#CaseExeStatusModule' }
     ]
   }
 ];

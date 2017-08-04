@@ -7,6 +7,7 @@ public class CustomFieldVo extends BaseVo {
 
     private String code;
     private String label;
+	private String column;
 
     private String descr;
     private String applyTo;
@@ -19,6 +20,14 @@ public class CustomFieldVo extends BaseVo {
     private Boolean isBuildIn = false;
     
     private Integer ordr;
+
+	public String getColumn() {
+		return column;
+	}
+
+	public void setColumn(String column) {
+		this.column = column;
+	}
 
 	public String getLabel() {
 		return label;

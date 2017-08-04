@@ -47,5 +47,5 @@ import { OrgRoleEdit } from './edit';
     OrgRoleService,
   ]
 })
-export default class RoleModule {}
+export class OrgRoleModule {}
 

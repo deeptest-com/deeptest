@@ -62,5 +62,5 @@ import { ExecutionResult } from './result/result.component';
     CaseStepService
   ]
 })
-export default class ExecutionModule {}
+export class ExecutionModule {}
 

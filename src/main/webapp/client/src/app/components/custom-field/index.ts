@@ -1,4 +1,4 @@
-import {FieldType, Prop, Field, InputField } from './src/field.prop';
+import {FieldType, Field, InputField } from './src/field.prop';
 import { FieldEvent, FieldChangedEvent } from './src/field.events';
 
 import { CustomFieldComponent } from './src/custom-field.component';
@@ -7,7 +7,7 @@ import { CustomFieldService } from './src/custom-field.service';
 import {CustomFieldModule} from "./src/custom-field.module";
 
 export {
-  FieldType, Prop, Field,
+  FieldType, Field,
 
   FieldEvent,
   FieldChangedEvent,

@@ -45,4 +45,4 @@ import { Run } from './run.component';
     RunService
   ]
 })
-export default class RunModule {}
+export class RunModule {}

@@ -72,4 +72,4 @@ import { PlanEdit } from './edit/edit.component';
     EnvironmentConfigComponent
   ]
 })
-export default class PlanModule {}
+export class PlanModule {}

@@ -47,5 +47,5 @@ import {CaseExeStatusEdit } from './edit';
     CaseExeStatusService
   ]
 })
-export default class CaseExeStatusModule {}
+export class CaseExeStatusModule {}
 

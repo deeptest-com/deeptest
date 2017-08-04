@@ -2,11 +2,10 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestCase;
-import com.ngtesting.platform.entity.TestCaseProp;
 import com.ngtesting.platform.entity.TestCaseStep;
 import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.service.CustomFieldService;
-import com.ngtesting.platform.vo.TestCasePropVo;
+import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.TestCaseStepVo;
 import com.ngtesting.platform.vo.TestCaseVo;
 import org.hibernate.criterion.DetachedCriteria;
@@ -62,8 +61,11 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
 	@Override
 	public TestCaseVo genVo(TestCase po) {
-		TestCaseVo vo = new TestCaseVo(po.getId(), po.getTitle(), po.getPriority(), po.getEstimate(), po.getObjective(),
-				po.getDescr());
+		TestCaseVo vo = new TestCaseVo();
+
+		BeanUtilEx.copyProperties(vo, po);
+
+        vo.setSteps(new LinkedList<TestCaseStepVo>());
 
 		List<TestCaseStep> steps = po.getSteps();
 		for (TestCaseStep step : steps) {
@@ -74,18 +76,18 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 			vo.getSteps().add(stepVo);
 		}
 
-		List<TestCaseProp> props = po.getProps();
-		for (TestCaseProp propPo : props) {
-
-			TestCasePropVo propVo = new TestCasePropVo(propPo.getId(), propPo.getCode(),
-                    propPo.getLabel(), propPo.getValue(), propPo.getFieldId());
-
-//			CustomFieldVo fieldVo = new CustomFieldVo();
-//			BeanUtilEx.copyProperties(fieldVo, propPo.getField());
-//			propVo.setField(fieldVo);
-
-			vo.getProps().add(propVo);
-		}
+//		List<TestCaseProp> props = po.getProps();
+//		for (TestCaseProp propPo : props) {
+//
+//			TestCasePropVo propVo = new TestCasePropVo(propPo.getId(), propPo.getCode(),
+//                    propPo.getLabel(), propPo.getValue(), propPo.getFieldId());
+//
+////			CustomFieldVo fieldVo = new CustomFieldVo();
+////			BeanUtilEx.copyProperties(fieldVo, propPo.getField());
+////			propVo.setField(fieldVo);
+//
+//			vo.getProps().add(propVo);
+//		}
 
 		return vo;
 	}

@@ -60,8 +60,12 @@ export class CaseList implements OnInit, AfterViewInit {
     let that = this;
     that._caseService.query(this.suiteId).subscribe((json:any) => {
       that.data = json.data;
-      this._state.notifyDataChanged('case.change', null);
+
       CONSTANT.CUSTOM_FIELD_FOR_PROJECT = json.customFields;
+
+      if (that.data.length > 0) {
+        this._state.notifyDataChanged('case.change', that.data[0]);
+      }
 
       this._state.notifyDataChanged('title.change', '测试用例');
     });

@@ -47,5 +47,5 @@ import {CasePriorityEdit } from './edit';
     CasePriorityService
   ]
 })
-export default class CasePriorityModule {}
+export class CasePriorityModule {}
 

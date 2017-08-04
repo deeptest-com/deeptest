@@ -47,5 +47,5 @@ import { CustomFieldEdit } from './edit';
     CustomFieldService
   ]
 })
-export default class CustomFieldModule {}
+export class CustomFieldModule {}
 

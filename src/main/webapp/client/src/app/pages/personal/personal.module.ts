@@ -52,4 +52,4 @@ import { ProfileEdit } from './profile/profile-edit';
     CompanyService
   ]
 })
-export default class EventModule {}
+export class PersonalModule {}

@@ -47,5 +47,5 @@ import { ProjectRoleEdit } from './edit';
     ProjectRoleService,
   ]
 })
-export default class RoleModule {}
+export class ProjectRoleModule {}
 

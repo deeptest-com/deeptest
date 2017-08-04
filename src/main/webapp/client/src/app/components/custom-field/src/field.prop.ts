@@ -1,12 +1,4 @@
 
-export class Prop {
-  code: string;
-  labe: string;
-  value: string;
-
-  fieldId: number;
-}
-
 export class Field {
   label: string;
   code: string;

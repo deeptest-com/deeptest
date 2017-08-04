@@ -27,4 +27,4 @@ import { Register } from './register.component';
     AccountService
   ]
 })
-export default class RegisterModule {}
+export class RegisterModule {}

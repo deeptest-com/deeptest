@@ -8,12 +8,12 @@ const routes: Routes = [
     path: '',
     component: OrgAdmin,
     children: [
-      { path: 'org', loadChildren: './org/org.module' },
-      { path: 'user', loadChildren: './user/user.module'  },
-      { path: 'group', loadChildren: './group/group.module' },
-      { path: 'org-role', loadChildren: './org-role/org-role.module' },
-      { path: 'project-role', loadChildren: './project-role/project-role.module' },
-      { path: 'property', loadChildren: './property/property.module' }
+      { path: 'org', loadChildren: './org/org.module#OrgModule' },
+      { path: 'user', loadChildren: './user/user.module#UserModule'  },
+      { path: 'group', loadChildren: './group/group.module#GroupModule' },
+      { path: 'org-role', loadChildren: './org-role/org-role.module#OrgRoleModule' },
+      { path: 'project-role', loadChildren: './project-role/project-role.module#ProjectRoleModule' },
+      { path: 'property', loadChildren: './property/property.module#PropertyModule' }
     ]
   }
 ];

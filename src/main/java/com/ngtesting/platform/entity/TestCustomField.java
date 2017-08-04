@@ -25,6 +25,7 @@ public class TestCustomField extends BaseEntity {
     private String code;
     private String label;
     private String descr;
+	private String column;
     
     @Enumerated(EnumType.STRING)
     private FieldApplyTo applyTo;
@@ -49,7 +50,15 @@ public class TestCustomField extends BaseEntity {
     @Column(name = "org_id")
     private Long orgId;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	public String getColumn() {
+		return column;
+	}
+
+	public void setColumn(String column) {
+		this.column = column;
+	}
+
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "tst_r_custom_field_project", joinColumns = { 
 			@JoinColumn(name = "custom_field_id", nullable = false, updatable = false) }, 
 			inverseJoinColumns = { @JoinColumn(name = "project_id", 

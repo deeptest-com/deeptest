@@ -1,48 +1,48 @@
 <div [formGroup]="form" class="custom-field">
 
-  <ng-container [ngSwitch]="fields[prop.fieldId].type">
+  <ng-container [ngSwitch]="field.type">
     <ng-container *ngSwitchCase="'string'">
-      <input type="text" class="form-control" name="{{prop.code}}" formControlName="{{prop.code}}"
-             [(ngModel)]="prop.value" #{{prop.code}}>
+      <input type="text" class="form-control" name="{{field.column}}" formControlName="{{field.column}}"
+             [(ngModel)]="model[field.column]" #{{field.column}}>
     </ng-container>
     <ng-container *ngSwitchCase="'number'">
-      <input type="text" class="form-control" name="{{prop.code}}" formControlName="{{prop.code}}"
-             [(ngModel)]="prop.value" #{{prop.code}}>
+      <input type="text" class="form-control" name="{{field.column}}" formControlName="{{field.column}}"
+             [(ngModel)]="model[field.column]" #{{field.column}}>
     </ng-container>
     <ng-container *ngSwitchCase="'url'">
-      <input type="text" class="form-control" name="{{prop.code}}" formControlName="{{prop.code}}"
-             [(ngModel)]="prop.value" #{{prop.code}}>
+      <input type="text" class="form-control" name="{{field.column}}" formControlName="{{field.column}}"
+             [(ngModel)]="model[field.column]" #{{field.column}}>
     </ng-container>
 
     <ng-container *ngSwitchCase="'text'">
-      <ng-container *ngIf="fields[prop.fieldId].format=='plain_text'">
-        <textarea type="text" class="form-control" name="{{prop.code}}" formControlName="{{prop.code}}"
-                  [(ngModel)]="prop.value" #{{prop.code}}>
+      <ng-container *ngIf="field.format=='plain_text'">
+        <textarea type="text" class="form-control" name="{{field.column}}" formControlName="{{field.column}}"
+                  [(ngModel)]="model[field.column]" #{{field.column}}>
         </textarea>
       </ng-container>
-      <ng-container *ngIf="fields[prop.fieldId].format=='markdown'">
+      <ng-container *ngIf="field.format=='markdown'">
 
       </ng-container>
     </ng-container>
 
     <ng-container *ngSwitchCase="'radio'">
-      <input type="radio" class="form-check-input" name="{{prop.code}}" formControlName="{{prop.code}}"
-             [(ngModel)]="prop.value" #isRequired>
+      <input type="radio" class="form-check-input" name="{{field.column}}" formControlName="{{field.column}}"
+             [(ngModel)]="model[field.column]" #isRequired>
     </ng-container>
 
     <ng-container *ngSwitchCase="'checkbox'">
-      <input type="checkbox" class="form-check-input" name="{{prop.code}}" formControlName="{{prop.code}}"
-             [(ngModel)]="prop.value" #isRequired>
+      <input type="checkbox" class="form-check-input" name="{{field.column}}" formControlName="{{field.column}}"
+             [(ngModel)]="model[field.column]" #isRequired>
     </ng-container>
 
     <ng-container *ngSwitchCase="'dropdown'">
-      <select [(ngModel)]="prop.value" formControlName="applyTo" name="{{prop.code}}" class="form-control form-control-sm">
+      <select [(ngModel)]="model[field.column]" formControlName="applyTo" name="{{field.column}}" class="form-control form-control-sm">
         <option value=""></option>
       </select>
     </ng-container>
 
     <ng-container *ngSwitchCase="'multi_select'">
-      <select multiple [(ngModel)]="prop.value" formControlName="{{prop.code}}" name="{{prop.code}}"
+      <select multiple [(ngModel)]="model[field.column]" formControlName="{{field.column}}" name="{{field.column}}"
               class="form-control form-control-sm">
         <option value=""></option>
       </select>

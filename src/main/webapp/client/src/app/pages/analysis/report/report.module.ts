@@ -55,5 +55,5 @@ import { ReportEdit } from './edit/edit.component';
     CaseStepService
   ]
 })
-export default class ReportModule {}
+export class ReportModule {}
 

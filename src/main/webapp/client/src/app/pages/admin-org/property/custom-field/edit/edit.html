@@ -1,6 +1,6 @@
 <div class="custom-field-edit container-fluid">
 
-  <form [formGroup]="form" class="my-validate-form">
+  <form *ngIf="model" [formGroup]="form" class="my-validate-form">
     <div class="form-group row">
       <label class="col-sm-2 col-form-label"><span>名称</span></label>
       <div class="col-sm-10">
@@ -33,6 +33,15 @@
         {{model.applyTo | fieldApplyTo}}
         <input type="hidden" class="form-control" name="applyTo" formControlName="applyTo"
                [(ngModel)]="model.applyTo" #applyTo>
+      </label>
+    </div>
+
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label"><span>列</span></label>
+      <label class="col-sm-10 col-form-label left">
+        {{model.column}}
+        <input type="hidden" class="form-control" name="column" formControlName="column"
+               [(ngModel)]="model.column" #column>
       </label>
     </div>
 
@@ -172,8 +181,11 @@
 
   </form>
 
+  <div *ngIf="!model">
+    自定制字段超过了20个
+  </div>
 </div>
 
 <pop-dialog #modalWrapper (confirm)="delete()" [title]="'提示'">
-  确认删除名为"{{model.name}}"的用户?
+  确认删除名为"{{model?.name}}"的用户?
 </pop-dialog>

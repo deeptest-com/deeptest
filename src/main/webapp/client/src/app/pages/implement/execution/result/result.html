@@ -3,9 +3,9 @@
     <form [formGroup]="form" (ngSubmit)="save()" class="my-validate-form small-label">
       <div class="form-group row">
         <div class="col-sm-12">
-          <button (click)="save()" type="button" class="btn btn-info btn-sm" [disabled]="!form.valid">通过</button>
-          <button (click)="reset()" type="button" class="btn btn-danger btn-sm" [disabled]="!form.valid">失败</button>
-          <button (click)="reset()" type="button" class="btn btn-warning btn-sm" [disabled]="!form.valid">阻塞</button>
+          <button (click)="save()" type="button" class="btn btn-info btn-sm">通过</button>
+          <button (click)="reset()" type="button" class="btn btn-danger btn-sm">失败</button>
+          <button (click)="reset()" type="button" class="btn btn-warning btn-sm">阻塞</button>
 
           <button [routerLink]="['/pages/implement/plan/view/', planId]" type="button"
                   class="button-right btn btn-secondary btn-with-icon btn-sm back">
@@ -17,6 +17,7 @@
       <div class="form-group row">
         <div class="col-sm-12">
           {{model.title}}
+          <a href="#" class="smart-edit" (click)="onEdit($event)"><i class="ion-edit"></i></a>
         </div>
       </div>
 
@@ -58,19 +59,19 @@
               <tr>
                 <td style="width: 25%">
                   <div class="label">类型</div>
-                  <div class="value">功能</div>
+                  <div class="value">功能<a href="#" class="smart-edit" (click)="onEdit($event)"><i class="ion-edit"></i></a></div>
                 </td>
                 <td style="width: 25%">
                   <div class="label">优先级</div>
-                  <div class="value">高</div>
+                  <div class="value">高<a href="#" class="smart-edit" (click)="onEdit($event)"><i class="ion-edit"></i></a></div>
                 </td>
                 <td style="width: 25%">
                   <div class="label">耗时</div>
-                  <div class="value">10分钟</div>
+                  <div class="value">10分钟<a href="#" class="smart-edit" (click)="onEdit($event)"><i class="ion-edit"></i></a></div>
                 </td>
                 <td style="width: 25%">
                   <div class="label">状态</div>
-                  <div class="value">未执行</div>
+                  <div class="value">未执行<a href="#" class="smart-edit" (click)="onEdit($event)"><i class="ion-edit"></i></a></div>
                 </td>
               </tr>
             <tr>

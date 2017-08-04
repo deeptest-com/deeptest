@@ -57,7 +57,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     }
 
     @Override
-    public Map<Long, CustomFieldVo> listForCaseByProject(Long projectId) {
+    public List<CustomFieldVo> listForCaseByProject(Long projectId) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestCustomField.class);
 
         dc.createAlias("projectSet", "p")
@@ -71,12 +71,9 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
         dc.addOrder(Order.asc("ordr"));
         List<TestCustomField> ls = findAllByCriteria(dc);
 
-        Map<Long, CustomFieldVo> map = new LinkedHashMap<Long, CustomFieldVo>();
-        for (TestCustomField field : ls) {
-            map.put(field.getId(), genVo(field));
-        }
+        List<CustomFieldVo> vos = genVos(ls);
 
-        return map;
+        return vos;
     }
 
     @Override
@@ -243,6 +240,25 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
         saveOrUpdate(field);
 
         return true;
+    }
+
+    @Override
+    public String getLastUnusedColumn(Long orgId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestCustomField.class);
+
+        dc.add(Restrictions.eq("orgId", orgId));
+
+        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+
+        dc.addOrder(Order.desc("ordr"));
+        List<TestCustomField> ls = findAllByCriteria(dc);
+        if (ls.size() < 20) {
+            return String.format("%02d", ls.size() + 1);
+        } else {
+            return null;
+        }
+
     }
 
     @Override

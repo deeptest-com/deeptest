@@ -28,4 +28,4 @@ import { Login } from './login.component';
     AccountService
   ]
 })
-export default class LoginModule {}
+export class LoginModule {}

@@ -53,5 +53,5 @@ import {OrgEdit } from './edit';
     RoleService
   ]
 })
-export default class OrgModule {}
+export class OrgModule {}
 

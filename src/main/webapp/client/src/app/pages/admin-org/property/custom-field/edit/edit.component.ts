@@ -27,7 +27,7 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
   id: number;
   tab: string = 'info';
 
-  model: any = {isGlobal: true, rows: 3};
+  model: any;
   applyToList: string[];
   typeList: string[];
   formatList: string[];
@@ -64,6 +64,7 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
         'code': ['', [Validators.required]],
         'label': ['', [Validators.required]],
         'applyTo': ['', [Validators.required]],
+        column: ['', [Validators.required]],
         type: ['', [Validators.required]],
         rows:  ['', [Validators.pattern('^[1-9]$'), CustomValidator.validate('required_if_other_is', 'required_rows', 'rows', 'type', 'text')]],
         format: ['', [CustomValidator.validate('required_if_other_is', 'required_format', 'format', 'type', 'text')]],

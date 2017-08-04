@@ -43,10 +43,10 @@ public class CaseAction extends BaseAction {
 
 		List<TestCaseVo> vos = caseService.genVos(ls);
 
-		Map<Long, CustomFieldVo> customFieldMap = customFieldService.listForCaseByProject(projectId);
+		List<CustomFieldVo> customFieldList = customFieldService.listForCaseByProject(projectId);
 
         ret.put("data", vos);
-		ret.put("customFields", customFieldMap);
+		ret.put("customFields", customFieldList);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

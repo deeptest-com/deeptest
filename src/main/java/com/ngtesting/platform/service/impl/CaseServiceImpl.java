@@ -136,6 +136,77 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	}
 
 	@Override
+	public TestCase saveField(JSONObject json) {
+		Long id = json.getLong("id");
+		String prop = json.getString("prop");
+		String value = json.getString("value");
+
+		TestCase testCase = (TestCase) get(TestCase.class, id);
+
+		if ("title".equals(prop)) {
+			testCase.setTitle(value);
+		} else if ("objective".equals(prop)) {
+            testCase.setObjective(value);
+        } else if ("prop01".equals(prop)) {
+            testCase.setProp01(value);
+        } else if ("prop02".equals(prop)) {
+            testCase.setProp02(value);
+        } else if ("prop03".equals(prop)) {
+            testCase.setProp03(value);
+        } else if ("prop04".equals(prop)) {
+            testCase.setProp04(value);
+        } else if ("prop05".equals(prop)) {
+            testCase.setProp05(value);
+        } else if ("prop06".equals(prop)) {
+            testCase.setProp06(value);
+        } else if ("prop07".equals(prop)) {
+            testCase.setProp07(value);
+        } else if ("prop08".equals(prop)) {
+            testCase.setProp08(value);
+        } else if ("prop09".equals(prop)) {
+            testCase.setProp09(value);
+        } else if ("prop10".equals(prop)) {
+            testCase.setProp10(value);
+        } else if ("prop11".equals(prop)) {
+            testCase.setProp11(value);
+        } else if ("prop12".equals(prop)) {
+            testCase.setProp12(value);
+        } else if ("prop13".equals(prop)) {
+            testCase.setProp13(value);
+        } else if ("prop14".equals(prop)) {
+            testCase.setProp14(value);
+        } else if ("prop15".equals(prop)) {
+            testCase.setProp15(value);
+        } else if ("prop16".equals(prop)) {
+            testCase.setProp16(value);
+        } else if ("prop17".equals(prop)) {
+            testCase.setProp17(value);
+        } else if ("prop18".equals(prop)) {
+            testCase.setProp18(value);
+        } else if ("prop19".equals(prop)) {
+            testCase.setProp19(value);
+        } else if ("prop20".equals(prop)) {
+            testCase.setProp20(value);
+        }
+		saveOrUpdate(testCase);
+
+		return testCase;
+	}
+
+	@Override
+	public TestCase saveCustomizedField(JSONObject json) {
+		Long id = json.getLong("id");
+		String prop = json.getString("prop");
+		String value = json.getString("value");
+
+		TestCase testCase = (TestCase) get(TestCase.class, id);
+        // TODO:
+		saveOrUpdate(testCase);
+
+		return testCase;
+	}
+
+	@Override
 	public TestCase delete(Long vo, Long clientId) {
 		// TODO Auto-generated method stub
 		return null;

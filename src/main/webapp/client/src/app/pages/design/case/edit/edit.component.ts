@@ -43,7 +43,6 @@ export class CaseEdit implements OnInit, AfterViewInit {
 
     this._state.subscribe('case.change', (testCase: any) => {
       this.fields = CONSTANT.CUSTOM_FIELD_FOR_PROJECT;
-      console.log('===', this.fields);
 
       if (testCase) {
         that.id = testCase.id;

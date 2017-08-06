@@ -21,4 +21,6 @@ public interface CaseService extends BaseService {
 	TestCase rename(Long id, String value, Long userId);
 	TestCase save(JSONObject json);
 
+    TestCase saveField(JSONObject json);
+	TestCase saveCustomizedField(JSONObject json);
 }

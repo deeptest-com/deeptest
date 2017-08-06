@@ -4,9 +4,6 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 import { CONSTANT } from '../../../utils/constant';
 import { Utils } from '../../../utils/utils';
 
-import { Field } from './field.prop';
-import { FieldChangedEvent } from './field.events';
-
 import { CustomFieldService } from './custom-field.service';
 
 @Component({
@@ -34,7 +31,7 @@ export class CustomFieldComponent implements OnInit, OnChanges {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    // this.fields = CONSTANT.CUSTOM_FIELD_FOR_PROJECT;
+
   }
 
   public ngOnInit(): void {

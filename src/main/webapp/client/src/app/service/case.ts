@@ -53,6 +53,11 @@ export class CaseService {
     let model = {id: node.id};
     return this._reqService.post(this._api_url + 'delete', model);
   }
+
+  saveField (id: number, field: any) {
+    let model = _.merge(field, {id: id});
+    return this._reqService.post(this._api_url + 'saveField', model);
+  }
 }
 
 

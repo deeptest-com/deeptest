@@ -1,0 +1,18 @@
+.field-show {
+  .form-inline {
+    height: 35px;
+    input {
+      flex: 1;
+    }
+
+    .label {
+      font-weight: bolder;
+    }
+
+    .smart-edit {
+      display: inline-block;
+      padding: 0 5px;
+    }
+  }
+
+}

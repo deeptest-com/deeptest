@@ -52,6 +52,8 @@ export class ExecutionResult implements OnInit, AfterViewInit {
     that.buildForm();
 
     this._state.subscribe('case.change', (testCase: any) => {
+      this.fields = CONSTANT.CUSTOM_FIELD_FOR_PROJECT;
+
       if (testCase) {
         that.id = testCase.id;
         that.loadData();
@@ -117,18 +119,26 @@ export class ExecutionResult implements OnInit, AfterViewInit {
     });
   }
 
-  save() {
-    let that = this;
+  pass() {
+    console.log(this.model);
 
-    that._caseService.save(that.model).subscribe((json:any) => {
-      if (json.code == 1) {
-        that.model = json.data;
-      }
-    });
+    // this._caseService.save(that.model).subscribe((json:any) => {
+    //   if (json.code == 1) {
+    //     this.model = json.data;
+    //   }
+    // });
   }
 
   reset() {
     this.loadData();
+  }
+
+  saveField (field: any) {
+    this._caseService.saveField(this.model.id, field).subscribe((json:any) => {
+      if (json.code == 1) {
+        this.model = json.data;
+      }
+    });
   }
 
   tabChange(event: any) {

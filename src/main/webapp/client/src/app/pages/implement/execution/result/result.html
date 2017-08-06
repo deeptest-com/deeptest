@@ -3,9 +3,9 @@
     <form [formGroup]="form" (ngSubmit)="save()" class="my-validate-form small-label">
       <div class="form-group row">
         <div class="col-sm-12">
-          <button (click)="save()" type="button" class="btn btn-info btn-sm">通过</button>
-          <button (click)="reset()" type="button" class="btn btn-danger btn-sm">失败</button>
-          <button (click)="reset()" type="button" class="btn btn-warning btn-sm">阻塞</button>
+          <button (click)="pass()" type="button" class="btn btn-info btn-sm">通过</button>
+          <button (click)="fail()" type="button" class="btn btn-danger btn-sm">失败</button>
+          <button (click)="block()" type="button" class="btn btn-warning btn-sm">阻塞</button>
 
           <button [routerLink]="['/pages/implement/plan/view/', planId]" type="button"
                   class="button-right btn btn-secondary btn-with-icon btn-sm back">
@@ -16,8 +16,7 @@
 
       <div class="form-group row">
         <div class="col-sm-12">
-          {{model.title}}
-          <a href="#" class="smart-edit" (click)="onEdit($event)"><i class="ion-edit"></i></a>
+          <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'title'" [type]="'string'" [form]="form"></field-show>
         </div>
       </div>
 
@@ -47,12 +46,8 @@
       </div>
 
       <div [class.hidden]="tab != 'info'">
-        <div class="form-group row">
-          <div class="col-sm-12">
-            {{model.objective}}
-          </div>
-        </div>
-        <div class="form-group row">
+
+        <div class="row">
           <div class="col-sm-12 property">
           <table class="io">
             <tbody>
@@ -79,6 +74,20 @@
             </tbody>
           </table>
           </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <field-show (onSave)="saveField($event)" [(model)]="model"
+                      [label]="'目标'" [prop]="'objective'" [type]="'string'" [form]="form"></field-show>
+        </div>
+      </div>
+
+      <div *ngFor="let field of fields;" class="row">
+        <div class="col-sm-12">
+          <field-show (onSave)="saveField($event)" [(model)]="model"
+                      [label]="field.label" [prop]="field.column" [type]="'string'" [form]="form"></field-show>
+        </div>
       </div>
 
         <div class="tab-steps form-group row">

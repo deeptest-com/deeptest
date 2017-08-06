@@ -14,6 +14,7 @@ import { SlimLoadingBarModule } from '../../../components/ng2-loading-bar';
 import { TreeModule } from '../../../components/ng2-tree';
 import { StepsTableModule } from '../../../components/steps-table';
 import { CustomFieldModule } from '../../../components/custom-field';
+import { FieldShowModule } from '../../../components/field-show';
 
 import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
@@ -44,7 +45,8 @@ import { ExecutionResult } from './result/result.component';
     SlimLoadingBarModule.forRoot(),
     TreeModule,
     StepsTableModule,
-    CustomFieldModule
+    CustomFieldModule,
+    FieldShowModule
   ],
   declarations: [
     Execution,

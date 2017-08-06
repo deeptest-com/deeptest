@@ -62,52 +62,9 @@ export class ExecutionSuite implements OnInit, AfterViewInit {
     });
   }
 
-  public onNodeRemovedRemote(e:NodeRemovedRemoteEvent):void {
-    let that = this;
-    this.logEvent(e, 'NodeRemovedRemoteEvent');
-
-    this.startLoading();
-    that._sutieService.delete(e.node.node).subscribe((json:any) => {
-      this._treeService.fireNodeRemoved(e.node);
-      that.completeLoading();
-    });
-  }
-
-  public onNodeMovedRemote(e:NodeMovedRemoteEvent):void {
-    let that = this;
-    this.logEvent(e, 'NodeMovedRemoteEvent');
-    this.startLoading();
-    that._sutieService.move(e.node.node, e.srcTree.node, e.options).subscribe((json:any) => {
-      this._treeService.fireNodeMoved(e.node, e.srcTree, e.options);
-      that.completeLoading();
-    });
-  }
-
-  public onNodeRenamedRemote(e:NodeRenamedEvent):void {
-    let that = this;
-    this.logEvent(e, 'NodeRenamedEvent');
-    this.startLoading();
-    that._sutieService.rename(e.node.node).subscribe((json:any) => {
-      that.completeLoading();
-    });
-  }
-
-  public onNodeCreatedRemote(e:NodeCreatedEvent):void {
-    let that = this;
-    that.logEvent(e, 'NodeCreatedEvent');
-    this.startLoading();
-    that._sutieService.create(e.node.node).subscribe((json:any) => {
-      e.node.node.id = json.data.id;
-      that.completeLoading();
-    });
-  }
-
   public onNodeSelected(e:NodeSelectedEvent):void {
-    this._state.notifyDataChanged('exe.suite.change', e.node.node.id);
-  }
-
-  public logEvent(e:NodeEvent, message:string):void {
-    console.log(e, message);
+    console.log('===', e);
+    this._state.notifyDataChanged('exe.suite.change', {id: e.node.node.id, tm: new Date().getTime()});
   }
 
   startLoading() {

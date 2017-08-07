@@ -31,6 +31,10 @@ import { PlanList } from './list/list.component';
 import { PlanView } from './view/view.component';
 import { PlanEdit } from './edit/edit.component';
 
+export function myDateParserFormatterFactory() {
+  return new MyDateParserFormatter("y-MM-dd");
+}
+
 @NgModule({
   imports: [
     CommonModule,
@@ -64,7 +68,7 @@ import { PlanEdit } from './edit/edit.component';
     PlanService, RunService, SuiteService, CaseService,
     {
       provide: NgbDateParserFormatter,
-      useFactory: () => { return new MyDateParserFormatter("y-MM-dd") }
+      useFactory: myDateParserFormatterFactory
     }
   ],
   entryComponents: [

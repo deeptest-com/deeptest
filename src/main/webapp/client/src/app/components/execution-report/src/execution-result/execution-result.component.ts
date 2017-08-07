@@ -18,15 +18,16 @@ export class ExecutionResultComponent implements OnInit {
       title: {
         show: false
       },
+      legend: {
+        show: false
+      },
       padding: 0,
       color: ['#749f83', '#c23531', '#ca8622', '#c4ccd3'],
       tooltip: {
         trigger: 'item',
         formatter: "{a} <br/>{b} : {c} ({d}%)"
       },
-      legend: {
-        show: false
-      },
+
       series: [
         {
           name: '访问来源',

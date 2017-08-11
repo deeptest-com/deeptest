@@ -10,7 +10,7 @@
       <div class="dropdown-menu">
         <button class="dropdown-item">当前项目</button>
         <button class="dropdown-item">
-          <a *ngIf="projects && projects[0]" [routerLink]="['/pages/project/view/', projects[0].projectId]">{{projects[0].projectName}}</a>
+          <a *ngIf="projects && projects[0]" [routerLink]="['/pages/project', projects[0].projectId, 'view']">{{projects[0].projectName}}</a>
           <a *ngIf="!projects || projects.length == 0">无</a>
         </button>
 

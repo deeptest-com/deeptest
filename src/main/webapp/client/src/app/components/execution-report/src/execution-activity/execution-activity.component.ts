@@ -34,7 +34,7 @@ export class ExecutionActivityComponent implements OnInit {
       legend: {
         right: '0%',
         width: '15%',
-        data:['通过','失败','阻塞','未执行']
+        data:['通过','失败','阻塞']
       },
       color: ['#749f83', '#c23531', '#ca8622', '#c4ccd3'],
 
@@ -54,27 +54,27 @@ export class ExecutionActivityComponent implements OnInit {
         {
           name:'通过',
           type:'bar',
-          stack: '广告',
+          stack: '过程',
           data:[120, 132, 101, 134, 90, 230, 210]
         },
         {
           name:'失败',
           type:'bar',
-          stack: '广告',
-          data:[220, 182, 191, 234, 290, 330, 310]
+          stack: '过程',
+          data:[20, 12, 11, 24, 9, 3, 10]
         },
         {
           name:'阻塞',
           type:'bar',
-          stack: '广告',
-          data:[150, 232, 201, 154, 190, 330, 410]
+          stack: '过程',
+          data:[5, 6, 3, 0, 7, 0, 3]
         },
-        {
+/*        {
           name:'未执行',
           type:'bar',
-          stack: '广告',
+          stack: '过程',
           data:[150, 232, 201, 154, 190, 40, 20]
-        }
+        }*/
 
       ]
     };

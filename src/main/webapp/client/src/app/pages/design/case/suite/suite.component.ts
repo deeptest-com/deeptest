@@ -1,4 +1,5 @@
 import {Component, ViewEncapsulation, OnInit, AfterViewInit} from "@angular/core";
+import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import {
   NodeEvent,
@@ -36,9 +37,10 @@ export class CaseSuite implements OnInit, AfterViewInit {
   }
   public tree:TreeModel;
 
-  constructor(private _routeService:RouteService, private _state:GlobalState,
+  constructor(private _routeService:RouteService, private _route: ActivatedRoute, private _state:GlobalState,
               private _treeService:TreeService, private _sutieService: SuiteService,
               private slimLoadingBarService:SlimLoadingBarService) {
+
   }
 
   ngOnInit() {
@@ -51,14 +53,13 @@ export class CaseSuite implements OnInit, AfterViewInit {
   }
 
   delete(eventId:string):void {
-    let that = this;
-    console.log('eventId=' + eventId);
+
   }
 
   loadData() {
     let that = this;
     this.startLoading();
-    that._sutieService.query(that.query).subscribe((json:any) => {
+    that._sutieService.query(CONSTANT.CURRENT_PROJECT.id, that.query).subscribe((json:any) => {
       that.tree = json.data;
       CONSTANT.CUSTOM_FIELD_FOR_PROJECT = json.customFields;
 

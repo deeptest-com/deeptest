@@ -8,9 +8,9 @@ const routes: Routes = [
     path: '',
     component: Implement,
     children: [
-      { path: 'plan', loadChildren: './plan/plan.module#PlanModule' },
-      { path: 'run', loadChildren: './run/run.module#RunModule' },
-      { path: 'plan/:planId/execution/:runId', loadChildren: './execution/execution.module#ExecutionModule' }
+      { path: ':projectId/plan', loadChildren: './plan/plan.module#PlanModule' },
+      { path: ':projectId/run', loadChildren: './run/run.module#RunModule' },
+      { path: ':projectId/execution', loadChildren: './execution/execution.module#ExecutionModule' }
     ]
   }
 ];

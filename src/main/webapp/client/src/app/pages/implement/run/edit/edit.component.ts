@@ -23,22 +23,19 @@ import { PopDialogComponent } from '../../../../components/pop-dialog'
 declare var jQuery;
 
 @Component({
-  selector: 'plan-edit',
+  selector: 'run-edit',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['./edit.scss', '../../../../components/ng2-tree/src/styles.scss'],
+  styleUrls: ['./edit.scss'],
   templateUrl: './edit.html',
   providers: [I18n, {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n}]
 })
-export class PlanEdit implements OnInit, AfterViewInit {
-  planId: number;
+export class RunEdit implements OnInit, AfterViewInit {
+  id: number;
   model: any = {};
   form: any;
 
   @ViewChild('modalSelectCase') modalSelectCase: CaseSelectionComponent;
-
   @ViewChild('modalDelete') modalDelete: PopDialogComponent;
-  @ViewChild('modalConfigEnvi') modalConfigEnvi: PopDialogComponent;
-  @ViewChild('modalRemoveSet') modalRemoveSet: PopDialogComponent;
   testSet: any;
   modalTitle: string;
 
@@ -51,10 +48,10 @@ export class PlanEdit implements OnInit, AfterViewInit {
     let that = this;
 
     that._route.params.forEach((params: Params) => {
-      that.planId = +params['planId'];
+      that.id = +params['id'];
     });
 
-    if (this.planId) {
+    if (that.id) {
       that.loadData();
     }
     that.buildForm();
@@ -95,47 +92,26 @@ export class PlanEdit implements OnInit, AfterViewInit {
 
   loadData() {
     let that = this;
-    that._planService.get(this.planId).subscribe((json:any) => {
-      that.model = json.data;
-
-      this.model.startTime = this.ngbDateParserFormatter.parse(that.model.startTime);
-      this.model.endTime = this.ngbDateParserFormatter.parse(that.model.endTime);
-    });
+    // that._planService.get(that.id).subscribe((json:any) => {
+    //   that.model = json.data;
+    //
+    //   this.model.startTime = this.ngbDateParserFormatter.parse(that.model.startTime);
+    //   this.model.endTime = this.ngbDateParserFormatter.parse(that.model.endTime);
+    // });
   }
 
   save() {
     let that = this;
 
-    that._planService.save(that.model).subscribe((json:any) => {
-      if (json.code == 1) {
-        that.model = json.data;
-      }
-    });
+    // that._planService.save(that.model).subscribe((json:any) => {
+    //   if (json.code == 1) {
+    //     that.model = json.data;
+    //   }
+    // });
   }
 
   reset() {
     this.loadData();
-  }
-
-  editSet(testSet: any): void {
-    this.compiler.clearCacheFor(CaseSelectionComponent);
-    const modalRef = this.modalService.open(CaseSelectionComponent, {windowClass: 'pop-selection'});
-    modalRef.result.then((result) => {
-      console.log('result', result);
-    }, (reason) => {
-      console.log('reason', reason);
-    });
-    modalRef.componentInstance.testSet = testSet;
-  }
-  editEnvi(testSet: any): void {
-    this.compiler.clearCacheFor(EnvironmentConfigComponent);
-    const modalRef = this.modalService.open(EnvironmentConfigComponent, {windowClass: 'pop-selection'});
-    modalRef.result.then((result) => {
-      console.log('result', result);
-    }, (reason) => {
-      console.log('reason', reason);
-    });
-    modalRef.componentInstance.testSet = testSet;
   }
 
   delete(): void {
@@ -148,22 +124,6 @@ export class PlanEdit implements OnInit, AfterViewInit {
         this.formErrors = ['删除成功'];
         this.modalDelete.closeModal();
         this._routeService.navTo("/pages/implement/plan/list");
-      } else {
-        this.formErrors = ['删除失败'];
-      }
-    });
-  }
-
-  removeSet(testSet: any): void {
-    this.modalTitle = "确认删除";
-    this.testSet = testSet;
-    this.modalRemoveSet.showModal();
-  }
-  removeSetConfirm() {
-    this._runService.delete(this.testSet.id).subscribe((json:any) => {
-      if (json.code == 1) {
-        this.formErrors = ['删除成功'];
-        this.modalRemoveSet.closeModal();
       } else {
         this.formErrors = ['删除失败'];
       }

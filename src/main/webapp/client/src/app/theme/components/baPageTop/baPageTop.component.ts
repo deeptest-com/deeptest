@@ -17,7 +17,7 @@ import { AccountService } from '../../../service/account';
 })
 export class BaPageTop {
   public profile:any = CONSTANT.PROFILE;
-  projects: any[] = CONSTANT.RECENT_PROJECT;
+  projects: any[] = CONSTANT.RECENT_PROJECTS;
 
   public isScrolled:boolean = false;
   public isMenuCollapsed:boolean = false;
@@ -56,5 +56,21 @@ export class BaPageTop {
 
   public scrolledChanged(isScrolled) {
     this.isScrolled = isScrolled;
+  }
+
+  gotoModule(module: string) {
+    console.log('CONSTANT.CURRENT_PROJECT', CONSTANT.CURRENT_PROJECT);
+
+    let url = '';
+    if (module == 'design') {
+      url = '/pages/design/' + CONSTANT.CURRENT_PROJECT.id +'/case';
+    } else if(module == 'implement') {
+      url = '/pages/implement/' + CONSTANT.CURRENT_PROJECT.id + '/plan/list';
+    } else if (module == 'analysis') {
+      url = '/pages/analysis/' + CONSTANT.CURRENT_PROJECT.id + '/report/list';
+    }
+
+    this._routeService.navTo(url);
+
   }
 }

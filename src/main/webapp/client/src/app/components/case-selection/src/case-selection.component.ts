@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from "@angular/core";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
+import {CONSTANT} from "../../../utils/constant";
 import {TreeModel, TreeOptions} from "../../ng2-tree";
 
 import {TreeService} from "../../ng2-tree/src/tree.service";
@@ -42,7 +43,7 @@ export class CaseSelectionComponent implements OnInit {
 
   loadData() {
     let that = this;
-    that._sutieService.query(that.queryModel).subscribe((json: any) => {
+    that._sutieService.query(CONSTANT.CURRENT_PROJECT.id, that.queryModel).subscribe((json: any) => {
       that.tree = json.data;
       // CONSTANT.CUSTOM_FIELD_FOR_PROJECT = json.customFields;
       // this._state.notifyDataChanged('title.change', '测试用例');

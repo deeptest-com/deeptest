@@ -14,8 +14,8 @@ export class SuiteService {
 
   _api_url = 'suite/';
 
-  query(query: TreeModel) {
-    _.merge(query, {projectId: CONSTANT.PROJECT_ID});
+  query(projectId: number, query: any) {
+    _.merge(query, {projectId: projectId});
     return this._reqService.post(this._api_url + 'query', query);
   }
 

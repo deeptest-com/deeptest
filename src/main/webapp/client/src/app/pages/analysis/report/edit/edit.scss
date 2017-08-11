@@ -1,38 +1,3 @@
-.case-edit {
-  margin: 5px;
-  .tabs-container {
-    margin: 0px;
-
-    .tabs {
-      .nav-tabs {
-        background-color: #f7f7f7;
-        border-bottom: 1px solid #ddd;
-        .nav-item {
-          .nav-link {
-            color: #209e91;
-            border: 1px solid transparent;
-            &:hover {
-              border-color: #ddd #ddd #fff;
-              background-color: transparent;
-            }
-            &.active {
-              color: #464a4c;
-              background-color: #fff;
-              border-color: #ddd #ddd #fff;
-            }
-          }
-        }
-      }
-    }
-
-    .tab-content {
-      padding: 0;
-    }
-  }
-
-  .no-content {
-    padding: 20px;
-    margin: 0 auto;
-  }
+.report-edit {
 
 }

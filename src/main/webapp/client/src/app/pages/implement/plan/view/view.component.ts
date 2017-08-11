@@ -30,7 +30,7 @@ declare var jQuery;
   providers: [I18n, {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n}]
 })
 export class PlanView implements OnInit, AfterViewInit {
-  id: number;
+  planId: number;
   model: any = {};
   form: any;
 
@@ -46,10 +46,10 @@ export class PlanView implements OnInit, AfterViewInit {
     let that = this;
 
     that._route.params.forEach((params: Params) => {
-      that.id = +params['id'];
+      that.planId = +params['planId'];
     });
 
-    if (that.id) {
+    if (that.planId) {
       that.loadData();
     }
   }
@@ -57,7 +57,7 @@ export class PlanView implements OnInit, AfterViewInit {
 
   loadData() {
     let that = this;
-    that._planService.get(that.id).subscribe((json:any) => {
+    that._planService.get(that.planId).subscribe((json:any) => {
       that.model = json.data;
     });
   }

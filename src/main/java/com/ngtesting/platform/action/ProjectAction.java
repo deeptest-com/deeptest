@@ -127,6 +127,11 @@ public class ProjectAction extends BaseAction {
 		
 		List<TestProjectAccessHistoryVo> recentProjects 
 			= projectService.listRecentProjectVo(userVo.getDefaultOrgId(), userVo.getId());
+
+		for (TestProjectAccessHistoryVo his : recentProjects) {
+			TestProject prj = (TestProject)projectService.get(TestProject.class, his.getProjectId());
+			his.setProjectName(prj.getName());
+		}
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		ret.put("project", vo);

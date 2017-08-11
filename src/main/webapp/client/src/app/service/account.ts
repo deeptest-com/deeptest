@@ -155,7 +155,8 @@ export class AccountService {
   }
 
   changeRecentProject(recentProjects: any[]) {
-    CONSTANT.RECENT_PROJECT = recentProjects;
+    CONSTANT.CURRENT_PROJECT = {id: recentProjects[0].projectId, name: recentProjects[0].projectName};
+    CONSTANT.RECENT_PROJECTS = recentProjects;
     this._state.notifyDataChanged('recent.projects.change', recentProjects);
   }
 }

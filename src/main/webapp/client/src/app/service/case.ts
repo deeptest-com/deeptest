@@ -15,7 +15,7 @@ export class CaseService {
   _api_url = 'case/';
 
   query(suiteId: number) {
-    return this._reqService.post(this._api_url + 'query', {projectId: CONSTANT.PROJECT_ID, suiteId: suiteId});
+    return this._reqService.post(this._api_url + 'query', {suiteId: suiteId});
   }
 
   get(id: number) {

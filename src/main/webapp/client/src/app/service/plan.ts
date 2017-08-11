@@ -14,8 +14,9 @@ export class PlanService {
 
   _api_url = 'plan/';
 
-  query(suiteId: number) {
-    return this._reqService.post(this._api_url + 'query', {projectId: CONSTANT.PROJECT_ID});
+  query(projectId: number, query: any) {
+    _.merge(query, {projectId: projectId});
+    return this._reqService.post(this._api_url + 'query', query);
   }
 
   get(id: number) {

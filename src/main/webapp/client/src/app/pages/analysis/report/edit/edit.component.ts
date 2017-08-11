@@ -23,7 +23,7 @@ declare var jQuery;
   templateUrl: './edit.html'
 })
 export class ReportEdit implements OnInit, AfterViewInit {
-  id: number;
+  reportId: number;
   model: any;
   form: any;
 
@@ -35,16 +35,16 @@ export class ReportEdit implements OnInit, AfterViewInit {
     let that = this;
 
     that._route.params.forEach((params: Params) => {
-      that.id = +params['id'];
+      that.reportId = +params['reportId'];
     });
 
-    if (that.id) {
+    if (that.reportId) {
       that.loadData();
     }
     that.buildForm();
 
     this._state.subscribe('case.change', (testCase) => {
-      that.id = testCase.id;
+      that.reportId = testCase.id;
       that.loadData();
     });
   }
@@ -80,9 +80,9 @@ export class ReportEdit implements OnInit, AfterViewInit {
 
   loadData() {
     let that = this;
-    that._caseService.get(that.id).subscribe((json:any) => {
-      that.model = json.data;
-    });
+    // that._caseService.get(that.reportId).subscribe((json:any) => {
+    //   that.model = json.data;
+    // });
   }
 
   save() {

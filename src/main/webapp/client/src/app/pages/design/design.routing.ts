@@ -8,7 +8,7 @@ const routes: Routes = [
     path: '',
     component: Design,
     children: [
-      { path: 'case', loadChildren: './case/case.module#CaseModule' }
+      { path: ':projectId/case', loadChildren: './case/case.module#CaseModule' }
     ]
   }
 ];

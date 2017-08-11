@@ -37,7 +37,7 @@ export class ReportList implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    let that = this;
+
   }
 
   create():void {
@@ -52,16 +52,14 @@ export class ReportList implements OnInit, AfterViewInit {
     that.loadData();
   }
 
-  delete(eventId:string):void {
-    let that = this;
-    console.log('eventId=' + eventId);
+  delete(id: string):void {
   }
 
   loadData() {
     let that = this;
-    that._caseService.query(that.query).subscribe((json:any) => {
-      that.models = json.data;
-    });
+    // that._caseService.query(that.query).subscribe((json:any) => {
+    //   that.models = json.data;
+    // });
   }
 
 }

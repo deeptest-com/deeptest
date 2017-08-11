@@ -1,4 +1,37 @@
-export var CONSTANT:any = {
+export interface CURRENT_PROJECT_INTERFACE {
+  id: number,
+  name: string
+}
+
+export interface CONSTANT_INTERFACE {
+  _SERVICE_URL_DEV: string,
+  _SERVICE_URL_PRODUCTION: string,
+
+  SERVICE_URL: string,
+  API_URL: string,
+
+  API_PATH: string,
+  UPLOAD_URI: string,
+
+  TOKEN: string,
+  ORG_ID: string,
+
+  PROFILE: string,
+  CURRENT_PROJECT: CURRENT_PROJECT_INTERFACE,
+  RECENT_PROJECTS: any[],
+  CUSTOM_FIELD_FOR_PROJECT: any,
+
+  TOKEN_KEY: string,
+  TOKEN_EXPIRE: string,
+
+  ExeStatus: any,
+  EntityDisabled: any,
+
+  ScreenSize: any,
+  DebounceTime: number
+}
+
+export var CONSTANT: CONSTANT_INTERFACE = {
   _SERVICE_URL_DEV: 'http://localhost:8080/platform/',
   _SERVICE_URL_PRODUCTION: 'http://172.16.90.66:8080/platform/',
 
@@ -12,7 +45,7 @@ export var CONSTANT:any = {
   ORG_ID: undefined,
 
   PROFILE: undefined,
-  CURRENT_PROJECT: {},
+  CURRENT_PROJECT: {id: null, name: null},
   RECENT_PROJECTS: undefined,
   CUSTOM_FIELD_FOR_PROJECT: undefined,
 

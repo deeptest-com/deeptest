@@ -27,7 +27,6 @@ import {SuiteService} from "../../../../service/suite";
   templateUrl: './suite.html'
 })
 export class ExecutionSuite implements OnInit, AfterViewInit {
-  projectId: number;
   query:any = {keywords: '', status: ''};
 
   public options: TreeOptions = {
@@ -42,10 +41,6 @@ export class ExecutionSuite implements OnInit, AfterViewInit {
               private _treeService:TreeService, private _sutieService: SuiteService,
               private slimLoadingBarService:SlimLoadingBarService) {
 
-    this._route.params.forEach((params: Params) => {
-      this.projectId = +params['projectId'];
-      console.log('projectId=', this.projectId);
-    });
   }
 
   ngOnInit() {
@@ -60,7 +55,7 @@ export class ExecutionSuite implements OnInit, AfterViewInit {
   loadData() {
     let that = this;
     this.startLoading();
-    that._sutieService.query(this.projectId, that.query).subscribe((json:any) => {
+    that._sutieService.query(CONSTANT.CURRENT_PROJECT.id, that.query).subscribe((json:any) => {
       that.tree = json.data;
       CONSTANT.CUSTOM_FIELD_FOR_PROJECT = json.customFields;
 
@@ -78,7 +73,7 @@ export class ExecutionSuite implements OnInit, AfterViewInit {
     this.slimLoadingBarService.start(() => {
       console.log('Loading complete');
     });
-  } 
+  }
 
   completeLoading() {
     let that = this;

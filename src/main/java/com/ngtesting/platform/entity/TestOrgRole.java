@@ -21,20 +21,20 @@ public class TestOrgRole extends BaseEntity {
 
     @Column(name = "org_id")
     private Long orgId;
-    
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "tst_r_org_role_user", joinColumns = { 
-			@JoinColumn(name = "org_role_id", nullable = false, updatable = false) }, 
-			inverseJoinColumns = { @JoinColumn(name = "user_id", 
+	@JoinTable(name = "tst_r_org_role_user", joinColumns = {
+			@JoinColumn(name = "org_role_id", nullable = false, updatable = false) },
+			inverseJoinColumns = { @JoinColumn(name = "user_id",
 					nullable = false, updatable = false) })
-    private Set<TestUser> userSet = new HashSet<TestUser>(0);
+    private Set<TestUser> userSet = new HashSet<>(0);
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "tst_r_org_role_privilege", joinColumns = { 
 			@JoinColumn(name = "org_role_id", nullable = false, updatable = false) }, 
 			inverseJoinColumns = { @JoinColumn(name = "org_privilege_id", 
 					nullable = false, updatable = false) })
-    private Set<TestOrgPrivilege> orgPrivilegeSet = new HashSet<TestOrgPrivilege>(0);
+    private Set<TestOrgPrivilege> orgPrivilegeSet = new HashSet<>(0);
     
     public static enum OrgRoleCode {
         org_admin("org_admin"),

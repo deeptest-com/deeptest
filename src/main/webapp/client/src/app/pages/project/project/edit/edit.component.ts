@@ -29,6 +29,8 @@ export class ProjectEdit implements OnInit, AfterViewInit {
   groups: any[] = [];
   form: FormGroup;
 
+  tab: string = 'info';
+
   @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
@@ -126,6 +128,10 @@ export class ProjectEdit implements OnInit, AfterViewInit {
 
   showModal(): void {
     this.modalWrapper.showModal();
+  }
+
+  tabChange(event: any) {
+    this.tab = event.nextId;
   }
 
 }

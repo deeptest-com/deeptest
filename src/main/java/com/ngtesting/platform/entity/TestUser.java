@@ -35,6 +35,17 @@ public class TestUser extends BaseEntity {
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userSet")
     private Set<TestOrg> orgSet = new HashSet<TestOrg>(0);
 
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userSet")
+	private Set<TestOrgRole> orgRoleSet = new HashSet<>(0);
+
+	public Set<TestOrgRole> getOrgRoleSet() {
+		return orgRoleSet;
+	}
+
+	public void setOrgRoleSet(Set<TestOrgRole> orgRoleSet) {
+		this.orgRoleSet = orgRoleSet;
+	}
+
 	public Integer getCaseBoardLeftSize() {
 		return caseBoardLeftSize;
 	}

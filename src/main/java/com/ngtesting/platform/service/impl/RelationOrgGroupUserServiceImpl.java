@@ -1,21 +1,18 @@
 package com.ngtesting.platform.service.impl;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.springframework.stereotype.Service;
-
 import com.alibaba.fastjson.JSON;
 import com.ngtesting.platform.entity.TestOrgGroup;
 import com.ngtesting.platform.entity.TestRelationOrgGroupUser;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.RelationOrgGroupUserService;
-import com.ngtesting.platform.util.StringUtil;
-import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Service;
+
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements RelationOrgGroupUserService {
@@ -27,12 +24,12 @@ public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements 
         
         List<TestRelationOrgGroupUser> relations;
         if (userId == null) {
-        	relations = new LinkedList<TestRelationOrgGroupUser>();
+        	relations = new LinkedList<>();
         } else {
         	relations = listRelations(orgId, null, userId);
         }
         
-        List<RelationOrgGroupUserVo> vos = new LinkedList<RelationOrgGroupUserVo>();
+        List<RelationOrgGroupUserVo> vos = new LinkedList<>();
         for (TestOrgGroup orgGroup : allOrgGroups) {
         	RelationOrgGroupUserVo vo = genVo(orgId, orgGroup.getId(), userId);
         	
@@ -57,12 +54,12 @@ public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements 
         
         List<TestRelationOrgGroupUser> relations;
         if (orgGroupId == null) {
-        	relations = new LinkedList<TestRelationOrgGroupUser>();
+        	relations = new LinkedList<>();
         } else {
         	relations = listRelations(orgId, orgGroupId, null);
         }
         
-        List<RelationOrgGroupUserVo> vos = new LinkedList<RelationOrgGroupUserVo>();
+        List<RelationOrgGroupUserVo> vos = new LinkedList<>();
         for (TestUser user : allUsers) {
         	RelationOrgGroupUserVo vo = genVo(orgId, orgGroupId, user.getId());
         	

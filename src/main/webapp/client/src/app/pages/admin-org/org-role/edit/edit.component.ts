@@ -27,7 +27,9 @@ export class OrgRoleEdit implements OnInit, AfterViewInit {
   id: number;
   tab: string = 'info';
   orgRole: any = {disabled: false};
-  orgPrivileges: any[] = [];
+  orgRolePrivileges: any[] = [];
+  orgRoleUsers: any[] = [];
+
   form: any;
   @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;
 
@@ -51,10 +53,15 @@ export class OrgRoleEdit implements OnInit, AfterViewInit {
     let that = this;
     that.orgRoleService.get(that.id).subscribe((json:any) => {
       that.orgRole = json.orgRole;
-      that.orgPrivileges = json.orgPrivileges;
+      that.orgRolePrivileges = json.orgRolePrivileges;
+      that.orgRoleUsers = json.orgRoleUsers;
 
-      _.forEach(that.orgPrivileges, (privilege: any, index: number) => {
+      _.forEach(that.orgRolePrivileges, (privilege: any, index: number) => {
         this.form.addControl('privilege-' + privilege.id, new FormControl('', []))
+      });
+
+      _.forEach(that.orgRoleUsers, (user: any, index: number) => {
+        this.form.addControl('user-' + user.id, new FormControl('', []))
       });
     });
   }
@@ -62,7 +69,7 @@ export class OrgRoleEdit implements OnInit, AfterViewInit {
   save() {
     let that = this;
 
-    that.orgRoleService.save(that.orgRole, that.orgPrivileges).subscribe((json:any) => {
+    that.orgRoleService.save(that.orgRole, that.orgRolePrivileges, that.orgRoleUsers).subscribe((json:any) => {
       if (json.code == 1) {
 
         that.formErrors = ['保存成功'];
@@ -90,7 +97,7 @@ export class OrgRoleEdit implements OnInit, AfterViewInit {
 
   select(key: string) {
     let val = key ==='all'? true: false;
-    for (let user of this.orgPrivileges) {
+    for (let user of this.orgRolePrivileges) {
       user.selecting = val;
     }
   }

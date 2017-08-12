@@ -1,11 +1,14 @@
 package com.ngtesting.platform.action;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.entity.TestOrgRole;
+import com.ngtesting.platform.service.OrgRolePrivilegeService;
+import com.ngtesting.platform.service.OrgRoleService;
+import com.ngtesting.platform.service.OrgRoleUserService;
+import com.ngtesting.platform.util.AuthPassport;
+import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,24 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.TestOrgRole;
-import com.ngtesting.platform.entity.TestRole;
-import com.ngtesting.platform.entity.TestUser;
-import com.ngtesting.platform.service.OrgPrivilegeService;
-import com.ngtesting.platform.service.OrgRoleService;
-import com.ngtesting.platform.service.RoleService;
-import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.util.Constant;
-import com.ngtesting.platform.util.Constant.RespCode;
-import com.ngtesting.platform.vo.OrgGroupVo;
-import com.ngtesting.platform.vo.OrgPrivilegeVo;
-import com.ngtesting.platform.vo.OrgRoleVo;
-import com.ngtesting.platform.vo.Page;
-import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
-import com.ngtesting.platform.vo.RoleVo;
-import com.ngtesting.platform.vo.UserVo;
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -39,7 +28,9 @@ public class OrgRoleAction extends BaseAction {
 	@Autowired
 	OrgRoleService orgRoleService;
 	@Autowired
-	OrgPrivilegeService orgPrivilegeService;
+    OrgRolePrivilegeService orgRolePrivilegeService;
+    @Autowired
+    OrgRoleUserService orgRoleUserService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
@@ -71,10 +62,13 @@ public class OrgRoleAction extends BaseAction {
 		Long orgId = userVo.getDefaultOrgId();
 		Long orgRoleId = req.getLong("id");
 		
-		List<OrgPrivilegeVo> orgPrivileges = orgPrivilegeService.listPrivilegesByOrg(orgId, orgRoleId);
+		List<OrgPrivilegeVo> orgRolePrivileges = orgRolePrivilegeService.listPrivilegesByOrgRole(orgId, orgRoleId);
+        List<UserVo> orgRoleUsers = orgRoleUserService.listUserByOrgRole(orgRoleId);
+
 		if (orgRoleId == null) {
 			ret.put("orgRole", new OrgGroupVo());
-	        ret.put("orgPrivileges", orgPrivileges);
+	        ret.put("orgRolePrivileges", orgRolePrivileges);
+			ret.put("orgRoleUsers", orgRoleUsers);
 			ret.put("code", Constant.RespCode.SUCCESS.getCode());
 			return ret;
 		}
@@ -83,7 +77,8 @@ public class OrgRoleAction extends BaseAction {
 		OrgRoleVo vo = orgRoleService.genVo(po);
         
         ret.put("orgRole", vo);
-        ret.put("orgPrivileges", orgPrivileges);
+        ret.put("orgRolePrivileges", orgRolePrivileges);
+        ret.put("orgRoleUsers", orgRoleUsers);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -101,7 +96,10 @@ public class OrgRoleAction extends BaseAction {
 		TestOrgRole po = orgRoleService.save(orgRoleVo, orgId);
 		
 		List<OrgPrivilegeVo> orgPrivileges = (List<OrgPrivilegeVo>) json.get("orgPrivileges");
-		boolean success = orgPrivilegeService.saveOrgPrivileges(po.getId(), orgPrivileges);
+		boolean success = orgRolePrivilegeService.saveOrgRolePrivileges(po.getId(), orgPrivileges);
+
+        List<UserVo> orgRoleUsers = (List<UserVo>) json.get("orgRoleUsers");
+        success = orgRoleUserService.saveOrgRoleUsers(po.getId(), orgRoleUsers);
 		
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

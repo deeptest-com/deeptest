@@ -21,7 +21,7 @@ public class TestOrgGroup extends BaseEntity {
 
     @Column(name = "org_id")
     private Long orgId;
-    
+
 	public String getName() {
 		return name;
 	}

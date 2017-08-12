@@ -1,17 +1,8 @@
 package com.ngtesting.platform.entity;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "tst_role")
@@ -20,11 +11,11 @@ public class TestRole extends BaseEntity {
 
     private String name;
     private String descr;
-    
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "tst_r_role_user", joinColumns = { 
-			@JoinColumn(name = "role_id", nullable = false, updatable = false) }, 
-			inverseJoinColumns = { @JoinColumn(name = "user_id", 
+	@JoinTable(name = "tst_r_role_user", joinColumns = {
+			@JoinColumn(name = "role_id", nullable = false, updatable = false) },
+			inverseJoinColumns = { @JoinColumn(name = "user_id",
 					nullable = false, updatable = false) })
     private Set<TestUser> userSet = new HashSet<TestUser>(0);
     

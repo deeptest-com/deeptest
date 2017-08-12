@@ -1,42 +1,30 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.ngtesting.platform.entity.TestOrgPrivilege;
+import com.ngtesting.platform.entity.TestOrgRole;
+import com.ngtesting.platform.service.OrgRolePrivilegeService;
+import com.ngtesting.platform.vo.OrgPrivilegeVo;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Service;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.alibaba.fastjson.JSON;
-import com.ngtesting.platform.entity.TestOrgGroup;
-import com.ngtesting.platform.entity.TestOrgPrivilege;
-import com.ngtesting.platform.entity.TestOrgRole;
-import com.ngtesting.platform.entity.TestRelationOrgGroupUser;
-import com.ngtesting.platform.entity.TestUser;
-import com.ngtesting.platform.service.OrgGroupService;
-import com.ngtesting.platform.service.OrgPrivilegeService;
-import com.ngtesting.platform.service.RelationOrgGroupUserService;
-import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.util.StringUtil;
-import com.ngtesting.platform.vo.OrgGroupVo;
-import com.ngtesting.platform.vo.OrgPrivilegeVo;
-import com.ngtesting.platform.vo.Page;
-import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
-
 @Service
-public class OrgPrivilegeServiceImpl extends BaseServiceImpl implements OrgPrivilegeService {
+public class OrgRolePrivilegeServiceImpl extends BaseServiceImpl implements OrgRolePrivilegeService {
 
 	@Override
-	public List<OrgPrivilegeVo> listPrivilegesByOrg(Long orgId, Long orgRoleId) {
+	public List<OrgPrivilegeVo> listPrivilegesByOrgRole(Long orgId, Long orgRoleId) {
 		
         List<TestOrgPrivilege> allPrivileges = listAllOrgPrivileges();
         
         List<TestOrgPrivilege> orgRolePrivileges;
         if (orgRoleId == null) {
-        	orgRolePrivileges = new LinkedList<TestOrgPrivilege>();
+        	orgRolePrivileges = new LinkedList<>();
         } else {
         	orgRolePrivileges = listOrgRolePrivileges(orgId, orgRoleId);
         }
@@ -93,7 +81,7 @@ public class OrgPrivilegeServiceImpl extends BaseServiceImpl implements OrgPrivi
 	}
 
 	@Override
-	public boolean saveOrgPrivileges(Long roleId, List<OrgPrivilegeVo> orgPrivileges) {
+	public boolean saveOrgRolePrivileges(Long roleId, List<OrgPrivilegeVo> orgPrivileges) {
 		if (orgPrivileges == null) {
 			return false;
 		}

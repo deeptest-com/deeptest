@@ -19,6 +19,14 @@ public class UserVo extends BaseVo {
 	private Integer caseBoardLeftSize;
 	private Integer caseBoardRightSize;
 
+	public UserVo() {
+
+	}
+	public UserVo(Long id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
 	public Integer getCaseBoardLeftSize() {
 		return caseBoardLeftSize;
 	}

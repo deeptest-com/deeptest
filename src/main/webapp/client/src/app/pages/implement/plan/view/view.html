@@ -14,7 +14,7 @@
               <span>计划详情</span>
             </div>
             <div class="buttons">
-              <button [routerLink]="['/pages/implement/plan/list']" type="button"
+              <button (click)="returnTo()" type="button"
                       class="btn btn-secondary btn-with-icon btn-sm back">
                 <i class="ion-backspace"></i>返回
               </button>
@@ -95,7 +95,7 @@
           </td>
           <td></td>
           <td>
-            <span [routerLink]="['/pages/implement/plan/', model.id, 'execution', item.id]" class="link no-underline">执行</span>
+            <span (click)="exe(model.id, item.id)" class="link no-underline">执行</span>
           </td>
         </tr>
         </tbody>

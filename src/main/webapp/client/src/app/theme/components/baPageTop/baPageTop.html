@@ -14,10 +14,13 @@
           <a *ngIf="!projects || projects.length == 0">无</a>
         </button>
 
-        <button class="dropdown-item">最近查看</button>
-        <button class="dropdown-item" *ngFor="let item of projects; let i = index" class="dropdown-item">
-          <a *ngIf="i > 0" [routerLink]="['/pages/project', item.projectId, 'view']">{{item.projectName}}</a>
-        </button>
+        <button class="dropdown-item next">最近查看</button>
+        <ng-container *ngFor="let item of projects; let i = index">
+          <button *ngIf="i > 0" class="dropdown-item" class="dropdown-item">
+            <a [routerLink]="['/pages/project', item.projectId, 'view']">{{item.projectName}}</a>
+          </button>
+        </ng-container>
+
         <button *ngIf="!projects || projects.length < 2" class="dropdown-item">
           无
         </button>

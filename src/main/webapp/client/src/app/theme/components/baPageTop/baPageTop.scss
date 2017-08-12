@@ -214,6 +214,10 @@
     .dropdown-menu {
       .dropdown-item {
         line-height: 1.2;
+        &.next {
+          margin-top: 6px;
+        }
+
       }
     }
 

@@ -151,11 +151,11 @@ main {
 
 .list-toolbar {
   display: flex;
-  margin: 15px 0 15px 0;
+  margin: 0 0 15px 0;
   padding: 0;
   line-height: 30px;
   .title {
-    width: 150px;
+    width: 300px;
     font-size: 20px;
   }
   .filter {
@@ -178,7 +178,7 @@ main {
 
 .edit-toolbar {
   display: flex;
-  margin: 15px 0 15px 0;
+  margin: 0px;
 
   .title {
     flex: 1;

@@ -176,5 +176,11 @@ export class ExecutionResult implements OnInit, AfterViewInit {
     });
   }
 
+  returnTo() {
+    let url: string = '/pages/implement/' + CONSTANT.CURRENT_PROJECT.id + '/plan/' + this.planId + '/view';
+    console.log(url);
+    this._routeService.navTo(url);
+  }
+
 }
 

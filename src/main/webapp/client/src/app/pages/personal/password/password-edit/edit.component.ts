@@ -73,7 +73,7 @@ export class PasswordEdit implements OnInit, AfterViewInit {
       }, {validator: EqualPasswordsValidator.validate('password', 'rePassword')}
     );
 
-    this.form.valueChanges.subscribe(data => this.onValueChanged(data));
+    this.form.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(data => this.onValueChanged(data));
     this.onValueChanged();
   }
   onValueChanged(data?: any) {

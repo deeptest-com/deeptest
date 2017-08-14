@@ -2,9 +2,11 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestProject;
+import com.ngtesting.platform.service.ProjectRoleService;
 import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.vo.ProjectRoleVo;
 import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
 import com.ngtesting.platform.vo.TestProjectVo;
 import com.ngtesting.platform.vo.UserVo;
@@ -31,6 +33,8 @@ public class ProjectAction extends BaseAction {
 	
 	@Autowired
     ProjectService projectService;
+    @Autowired
+    ProjectRoleService projectRoleService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
@@ -75,8 +79,10 @@ public class ProjectAction extends BaseAction {
 		}
 		
 		List<TestProjectVo> groups = projectService.listProjectGroups(orgId);
+        List<ProjectRoleVo> projectRoles = projectRoleService.list(orgId, null, null);
         
         ret.put("groups", groups);
+        ret.put("projectRoles", projectRoles);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

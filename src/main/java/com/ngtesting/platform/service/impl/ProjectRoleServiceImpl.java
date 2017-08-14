@@ -1,19 +1,17 @@
 package com.ngtesting.platform.service.impl;
 
-import java.util.LinkedList;
-import java.util.List;
-
+import com.ngtesting.platform.entity.TestProjectRole;
+import com.ngtesting.platform.service.ProjectRoleService;
+import com.ngtesting.platform.util.BeanUtilEx;
+import com.ngtesting.platform.util.StringUtil;
+import com.ngtesting.platform.vo.ProjectRoleVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.TestProjectRole;
-import com.ngtesting.platform.service.ProjectRoleService;
-import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.util.StringUtil;
-import com.ngtesting.platform.vo.Page;
-import com.ngtesting.platform.vo.ProjectRoleVo;
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRoleService {
@@ -34,8 +32,10 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
         
         dc.addOrder(Order.asc("id"));
         List ls = findAllByCriteria(dc);
+
+		List<ProjectRoleVo> vos = this.genVos(ls);
 		
-		return ls;
+		return vos;
 	}
 
 	@Override

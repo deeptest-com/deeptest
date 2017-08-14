@@ -1,6 +1,8 @@
 import {Component, ViewEncapsulation} from '@angular/core';
 import {FormGroup, AbstractControl, FormBuilder, Validators} from '@angular/forms';
 
+import { CONSTANT } from '../../../utils/constant';
+
 import {ValidatorUtils, EmailValidator} from '../../../validator';
 
 import { RouteService } from '../../../service/route';
@@ -24,7 +26,7 @@ export class Login {
       'rememberMe': []
     });
 
-    this.form.valueChanges.subscribe(data => this.onValueChanged(data));
+    this.form.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(data => this.onValueChanged(data));
     this.onValueChanged();
   }
 

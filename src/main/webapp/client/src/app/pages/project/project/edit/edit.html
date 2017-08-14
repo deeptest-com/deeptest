@@ -33,9 +33,8 @@
 
   <div class="tab-bottom-space"></div>
 
-  <div class="row">
-    <form [formGroup]="form" (ngSubmit)="save()" class="my-validate-form">
-      <div [class.hidden]="tab != 'info'">
+  <div [class.hidden]="tab != 'info'" class="row">
+    <form [formGroup]="formInfo" (ngSubmit)="save()" class="my-validate-form">
         <div class="form-group row">
           <label class="col-sm-2 col-form-label"><span>名称</span></label>
           <div class="col-sm-10">
@@ -78,7 +77,7 @@
         <div class="form-group row">
           <label class="col-sm-2 col-form-label"></label>
           <div class="col-sm-10">
-            <button type="submit" class="btn btn-primary" [disabled]="!form.valid">保存</button>
+            <button type="button" class="btn btn-primary" [disabled]="!formInfo.valid">保存</button>
             &nbsp;
             <button [routerLink]="['/pages/project/list']" type="button" class="btn btn-default">取消</button>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -96,14 +95,70 @@
             </div>
           </div>
         </div>
-      </div>
-
-      <div [class.hidden]="tab != 'members'">
-
-      </div>
-
     </form>
   </div>
+
+  <div [class.hidden]="tab != 'members'">
+    <div class="row">
+      <form [formGroup]="formAdd" class="my-validate-form form-add">
+
+        <div class="form-group row">
+          <label class="col-2 col-form-label"><span>用户名/邮箱</span></label>
+          <div class="col-10">
+            <search-select></search-select>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-2 col-form-label"><span>项目角色</span></label>
+          <div class="col-10">
+            <select [(ngModel)]="user.roleId" formControlName="userRole" class="form-control" name="userRole">
+              <option *ngFor="let entry of projectRoles" value="{{entry.id}}">
+                <span>{{entry.name}}</span>
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-2 col-form-label"></label>
+          <div class="col-10">
+            <button (click)="add()" [disabled]="!formAdd.valid" type="button" class="btn btn-primary">添加</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <div class="row table-container">
+      <table class="table table-bordered table-striped">
+        <thead class="thead-inverse">
+        <tr>
+          <th style="width: 200px">名称</th>
+          <th>网站</th>
+          <th style="width: 150px">状态</th>
+          <th style="width: 150px">当前活动</th>
+          <th style="width: 150px">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let item of userRoles">
+          <td>{{ item.userName }}</td>
+          <th>{{ item.roleName }}</th>
+          <td>
+            <select [(ngModel)]="user.role" formControlName="userRole" class="form-control form-control-sm" name="userRole">
+              <option>项目经理</option>
+              <option *ngFor="let entry of projectRoles" value="{{entry.id}}">
+                <span>{{entry.name}}</span>
+              </option>
+            </select>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 </div>
 
 <pop-dialog #modalWrapper (confirm)="delete()" [title]="'提示'">

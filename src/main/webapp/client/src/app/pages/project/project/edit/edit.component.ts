@@ -13,6 +13,7 @@ import { RouteService } from '../../../../service/route';
 import { PopDialogComponent } from '../../../../components/pop-dialog'
 
 import { ProjectService } from '../../../../service/project';
+import { UserService } from '../../../../service/user';
 
 declare var jQuery;
 
@@ -27,14 +28,20 @@ export class ProjectEdit implements OnInit, AfterViewInit {
   id: number;
   model: any = {};
   groups: any[] = [];
-  form: FormGroup;
+  projectRoles: any[] = [];
+  user: any = {roleId: 2};
+  userSearchResult: any[];
+  fromEnter: boolean = false;
+  userRoles: any[] = [];
+  formInfo: FormGroup;
+  formAdd: FormGroup;
 
   tab: string = 'info';
 
   @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
-              private fb: FormBuilder, private _projectService: ProjectService) {
+              private fb: FormBuilder, private _projectService: ProjectService, private _userService: UserService) {
     let that = this;
 
     this._route.params.subscribe(params => {
@@ -58,7 +65,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
     if (that.type === 'project') {
       parentValidate = [Validators.required];
     }
-    this.form = this.fb.group(
+    this.formInfo = this.fb.group(
       {
         'name': ['', [Validators.required]],
         'descr': ['', []],
@@ -67,12 +74,37 @@ export class ProjectEdit implements OnInit, AfterViewInit {
       }, {}
     );
 
-    this.form.valueChanges.subscribe(data => this.onValueChanged(data));
+    this.formInfo.valueChanges.debounceTime(500).subscribe(data => this.onValueChanged(data));
     this.onValueChanged();
+
+    this.formAdd = this.fb.group(
+      {
+        'userName': ['', [Validators.required]],
+        'userRole': ['', [Validators.required]]
+      }, {}
+    );
+    this.formAdd.controls['userName'].valueChanges.debounceTime(500).subscribe(data => this.onUsernameChanged(data));
+
   }
   onValueChanged(data?: any) {
     let that = this;
-    that.formErrors = ValidatorUtils.genMsg(that.form, that.validateMsg, []);
+    that.formErrors = ValidatorUtils.genMsg(that.formInfo, that.validateMsg, []);
+  }
+  onUsernameChanged(kewwords?: string) {
+    if (!kewwords || this.fromEnter) {
+      this.userSearchResult = null;
+      this.fromEnter = false;
+      return;
+    }
+
+    this._userService.search(this.model.orgId, kewwords).subscribe((json:any) => {
+      if (json.data.length == 0) {
+        this.userSearchResult = null;
+      } else {
+        this.userSearchResult = json.data;
+      }
+
+    });
   }
 
   formErrors = [];
@@ -89,6 +121,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
     let that = this;
 
     that._projectService.get(that.id).subscribe((json:any) => {
+      that.projectRoles = json.projectRoles;
       that.groups = json.groups;
       that.model = !!json.data? json.data: {type: that.type, disabled: false};
     });
@@ -132,6 +165,34 @@ export class ProjectEdit implements OnInit, AfterViewInit {
 
   tabChange(event: any) {
     this.tab = event.nextId;
+  }
+
+  selectUser(user: any) {
+    this.userSearchResult = null;
+    this.user = user;
+    if (!this.user.roleId) {
+      this.user.roleId = 2;
+    }
+  }
+  onEnter(e) {
+    console.log('enter', this.userSearchResult);
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!this.userSearchResult) {
+      return;
+    }
+
+    this.user = this.userSearchResult[0];
+    if (!this.user.roleId) {
+      this.user.roleId = 2;
+    }
+    this.userSearchResult = null;
+    this.fromEnter = true;
+  }
+
+  add() {
+    console.log('add');
   }
 
 }

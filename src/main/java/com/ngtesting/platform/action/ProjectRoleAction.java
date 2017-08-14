@@ -1,11 +1,15 @@
 package com.ngtesting.platform.action;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.entity.TestProjectRole;
+import com.ngtesting.platform.service.ProjectPrivilegeService;
+import com.ngtesting.platform.service.ProjectRoleService;
+import com.ngtesting.platform.util.AuthPassport;
+import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.vo.ProjectPrivilegeVo;
+import com.ngtesting.platform.vo.ProjectRoleVo;
+import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,29 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.TestOrgRole;
-import com.ngtesting.platform.entity.TestProjectRole;
-import com.ngtesting.platform.entity.TestRole;
-import com.ngtesting.platform.entity.TestUser;
-import com.ngtesting.platform.service.OrgPrivilegeService;
-import com.ngtesting.platform.service.OrgRoleService;
-import com.ngtesting.platform.service.ProjectPrivilegeService;
-import com.ngtesting.platform.service.ProjectRoleService;
-import com.ngtesting.platform.service.RoleService;
-import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.util.Constant;
-import com.ngtesting.platform.util.Constant.RespCode;
-import com.ngtesting.platform.vo.OrgGroupVo;
-import com.ngtesting.platform.vo.OrgPrivilegeVo;
-import com.ngtesting.platform.vo.OrgRoleVo;
-import com.ngtesting.platform.vo.Page;
-import com.ngtesting.platform.vo.ProjectPrivilegeVo;
-import com.ngtesting.platform.vo.ProjectRoleVo;
-import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
-import com.ngtesting.platform.vo.RoleVo;
-import com.ngtesting.platform.vo.UserVo;
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -58,8 +43,7 @@ public class ProjectRoleAction extends BaseAction {
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
 		
-		List ls = projectRoleService.list(orgId, keywords, disabled);
-		List<ProjectRoleVo> vos = projectRoleService.genVos(ls);
+		List<ProjectRoleVo> vos = projectRoleService.list(orgId, keywords, disabled);
         
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -74,17 +58,17 @@ public class ProjectRoleAction extends BaseAction {
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long orgId = userVo.getDefaultOrgId();
-		Long orgRoleId = req.getLong("id");
+		Long roleId = req.getLong("id");
 		
-		Map<String, List<ProjectPrivilegeVo>> orgPrivileges = projectPrivilegeService.listPrivilegesByOrg(orgId, orgRoleId);
-		if (orgRoleId == null) {
-			ret.put("projectRole", new OrgGroupVo());
+		Map<String, List<ProjectPrivilegeVo>> orgPrivileges = projectPrivilegeService.listPrivilegesByOrg(orgId, roleId);
+		if (roleId == null) {
+			ret.put("projectRole", new ProjectRoleVo());
 	        ret.put("projectPrivileges", orgPrivileges);
 			ret.put("code", Constant.RespCode.SUCCESS.getCode());
 			return ret;
 		}
 		
-		TestProjectRole po = (TestProjectRole) projectRoleService.get(TestProjectRole.class, orgRoleId);
+		TestProjectRole po = (TestProjectRole) projectRoleService.get(TestProjectRole.class, roleId);
 		ProjectRoleVo vo = projectRoleService.genVo(po);
         
         ret.put("projectRole", vo);

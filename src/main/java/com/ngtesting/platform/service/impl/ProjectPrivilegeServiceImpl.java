@@ -1,35 +1,16 @@
 package com.ngtesting.platform.service.impl;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.alibaba.fastjson.JSON;
 import com.ngtesting.platform.entity.TestProjectPrivilege;
 import com.ngtesting.platform.entity.TestProjectRole;
-import com.ngtesting.platform.entity.TestProjectPrivilege;
-import com.ngtesting.platform.entity.TestRelationOrgGroupUser;
-import com.ngtesting.platform.entity.TestUser;
-import com.ngtesting.platform.service.OrgGroupService;
-import com.ngtesting.platform.service.OrgPrivilegeService;
 import com.ngtesting.platform.service.ProjectPrivilegeService;
-import com.ngtesting.platform.service.RelationOrgGroupUserService;
-import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.util.StringUtil;
-import com.ngtesting.platform.vo.OrgGroupVo;
-import com.ngtesting.platform.vo.OrgPrivilegeVo;
-import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.ProjectPrivilegeVo;
-import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements ProjectPrivilegeService {

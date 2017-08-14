@@ -3,7 +3,6 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.AccountService;
-import com.ngtesting.platform.service.RelationOrgGroupUserService;
 import com.ngtesting.platform.service.RelationProjectRoleUserService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.BeanUtilEx;
@@ -26,8 +25,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	AccountService accountService;
 	@Autowired
 	RelationProjectRoleUserService relationProjectRoleUserService;
-	@Autowired
-	RelationOrgGroupUserService relationOrgGroupUserService;
 
 	@Override
 	public Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {

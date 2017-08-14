@@ -17,5 +17,6 @@ public interface UserService extends BaseService {
 	List<UserVo> genVos(List<TestUser> pos);
 	UserVo genVo(TestUser user);
 
+
 }
 

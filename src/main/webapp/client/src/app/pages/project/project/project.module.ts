@@ -13,6 +13,7 @@ import { DirectiveModule } from '../../../directive/directive.module';
 import { TableTreeModule } from '../../../components/table-tree';
 import { PopDialogModule } from '../../../components/pop-dialog';
 import { ExecutionReportModule } from '../../../components/execution-report';
+import { SearchSelectModule } from '../../../components/search-select';
 
 import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
@@ -20,6 +21,7 @@ import { DatetimePickerService } from '../../../service/datetime-picker';
 
 import { routing }       from './project.routing';
 import { ProjectService } from '../../../service/project';
+import { UserService } from '../../../service/user';
 
 import { Project } from './project.component';
 import { ProjectList } from './list/list.component';
@@ -42,6 +44,7 @@ import { ProjectView } from './view/view.component';
     TableTreeModule,
     PopDialogModule,
     ExecutionReportModule,
+    SearchSelectModule,
     AppTranslationModule
   ],
   declarations: [
@@ -55,6 +58,7 @@ import { ProjectView } from './view/view.component';
     RequestService,
     DatetimePickerService,
     ProjectService,
+    UserService
   ]
 })
 export class ProjectModule {}

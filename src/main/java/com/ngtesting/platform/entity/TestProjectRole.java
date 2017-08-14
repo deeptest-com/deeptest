@@ -9,8 +9,8 @@ import java.util.Set;
 public class TestProjectRole extends BaseEntity {
 	private static final long serialVersionUID = -3556080851163371948L;
 	
-	@Enumerated(EnumType.STRING)
-    private ProjectRoleCode code;
+//	@Enumerated(EnumType.STRING)
+    private String code;
 	
 	private String name;
     private String descr;
@@ -29,22 +29,22 @@ public class TestProjectRole extends BaseEntity {
 					nullable = false, updatable = false) })
     private Set<TestProjectPrivilege> projectPrivilegeSet = new HashSet<TestProjectPrivilege>(0);
     
-    public static enum ProjectRoleCode {
-    	project_manager("project_manager"),
-        test_designer("test_designer"),
-        tester("tester"),
-        developer("developer");
-
-        private ProjectRoleCode(String textVal) {
-            this.textVal = textVal;
-        }
-
-        private String textVal;
-        public String toString() {
-            return textVal;
-        }
-
-    }
+//    public static enum ProjectRoleCode {
+//		test_leader("test_leader"),
+//        test_designer("test_designer"),
+//        tester("tester"),
+//		readonly("readonly");
+//
+//        private ProjectRoleCode(String textVal) {
+//            this.textVal = textVal;
+//        }
+//
+//        private String textVal;
+//        public String toString() {
+//            return textVal;
+//        }
+//
+//    }
     
 	public String getName() {
 		return name;
@@ -76,5 +76,13 @@ public class TestProjectRole extends BaseEntity {
 	}
 	public void setOrgId(Long orgId) {
 		this.orgId = orgId;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 }

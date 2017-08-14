@@ -23,7 +23,7 @@ export var CONSTANT: CONSTANT_INTERFACE = {
   EntityDisabled: {'false': '启用', 'true': '归档', '': '所有'},
 
   ScreenSize: {h: 0, w: 0},
-  DebounceTime: 800
+  DebounceTime: 500
 };
 
 export interface CURRENT_PROJECT_INTERFACE {

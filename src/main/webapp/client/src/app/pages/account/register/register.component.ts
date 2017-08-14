@@ -32,7 +32,7 @@ export class Register {
       {
         validator: EqualPasswordsValidator.validate('passwordsEqual', 'password', 'repeatPassword')
       });
-    this.form.valueChanges.subscribe(data => this.onValueChanged(data));
+    this.form.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(data => this.onValueChanged(data));
     this.onValueChanged();
   }
 

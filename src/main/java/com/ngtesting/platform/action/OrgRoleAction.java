@@ -66,7 +66,7 @@ public class OrgRoleAction extends BaseAction {
         List<UserVo> orgRoleUsers = orgRoleUserService.listUserByOrgRole(orgRoleId);
 
 		if (orgRoleId == null) {
-			ret.put("orgRole", new OrgGroupVo());
+			ret.put("orgRole", new OrgRoleVo());
 	        ret.put("orgRolePrivileges", orgRolePrivileges);
 			ret.put("orgRoleUsers", orgRoleUsers);
 			ret.put("code", Constant.RespCode.SUCCESS.getCode());

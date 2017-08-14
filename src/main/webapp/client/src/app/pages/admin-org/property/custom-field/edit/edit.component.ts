@@ -74,7 +74,7 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
       }, {}
     );
 
-    this.form.valueChanges.subscribe(data => this.onValueChanged(data));
+    this.form.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(data => this.onValueChanged(data));
     this.onValueChanged();
   }
   onValueChanged(data?: any) {

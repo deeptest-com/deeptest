@@ -1,6 +1,8 @@
 import { Input, Component, OnInit, ElementRef, Inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
+import { CONSTANT } from '../../../utils/constant';
+
 import {TreeSettings} from "./type/tree.settings";
 import {TreeOptions} from "./type/tree.options";
 import { Tree } from './tree';
@@ -46,7 +48,7 @@ export class TreeToolbarComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.keywordsControl.valueChanges.debounceTime(800).subscribe(values => this.onChange(values));
+    this.keywordsControl.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.onChange(values));
   }
 
   onChange(values) {

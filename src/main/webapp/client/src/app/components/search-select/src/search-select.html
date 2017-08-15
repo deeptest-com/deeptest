@@ -2,9 +2,9 @@
   <form [formGroup]="formSelection" class="my-validate-form form-add">
 
   <ul class="select-choices">
-    <li class="select-search-choice">
-      <span class="ion-close" tabindex="-1"></span>
-      <span>燃灯</span>
+    <li *ngFor="let item of selectedModels" class="select-search-choice">
+      <span (click)="remove(item)" class="ion-close pointer" tabindex="-1"></span>
+      <span>{{item.name}}</span>
     </li>
 
     <li class="select-search-field">
@@ -15,19 +15,18 @@
     </li>
   </ul>
 
-  <div [class.hidden]="!models" class="select-drop">
+  <div [class.hidden]="!searchResult" class="select-drop">
     <div class="select-results">
-      <div *ngFor="let item of models" class="select-result active"
-           (mouseenter)="onMouseEnter($event, item)" (keyup.enter)="onKeyEnter($event, item)" (click)="onSelectItem($event, item)">
-        <div class="image">
-          <span class="ion-person"></span>
+        <div *ngFor="let item of searchResult" class="select-result" [class.active]="selectedModel?.id == item.id"
+             (mouseenter)="onMouseEnter($event, item)" (click)="onSelectItem($event, item)">
+          <div class="image">
+            <span class="ion-person"></span>
+          </div>
+          <div class="name">
+            <div>{{item.name}}</div>
+            <div>{{item.email}}</div>
+          </div>
         </div>
-        <div class="name">
-          <div>{{item.name}}</div>
-          <div>{{item.email}}</div>
-        </div>
-      </div>
-
     </div>
 
   </div>

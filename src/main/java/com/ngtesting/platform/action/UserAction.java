@@ -1,6 +1,7 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.RelationOrgGroupUserService;
@@ -165,9 +166,10 @@ public class UserAction extends BaseAction {
 
 		Long orgId = json.getLong("orgId");
 		String keywords = json.getString("keywords");
+        JSONArray exceptIds = json.getJSONArray("exceptIds");
 
-		Page page = userService.listByPage(orgId, keywords, "false", 0, 15);
-		List<UserVo> vos = userService.genVos(page.getItems());
+		List ls = userService.search(orgId, keywords, exceptIds);
+		List<UserVo> vos = userService.genVos(ls);
 
 		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

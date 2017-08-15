@@ -87,7 +87,9 @@
 
         .select-result {
           display: flex;
+          margin: 1px;
           padding: 5px;
+          cursor: pointer;
           .image {
             margin-right: 5px;
             height: 34px;

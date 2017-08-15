@@ -26,17 +26,21 @@ declare var jQuery;
 export class ProjectEdit implements OnInit, AfterViewInit {
   type: string;
   id: number;
-  model: any = {};
-  groups: any[] = [];
-  projectRoles: any[] = [];
-  user: any = {roleId: 2};
-  userSearchResult: any[];
-  fromEnter: boolean = false;
-  userRoles: any[] = [];
+
   formInfo: FormGroup;
   formAdd: FormGroup;
 
   tab: string = 'info';
+
+  groups: any[] = [];
+  projectRoles: any[] = [];
+
+  userRoles: any[] = [];
+  userSearchResult: any[];
+  selectedModels: any[] = [];
+
+  modelAdd: any = {roleId: 2};
+  model: any = {};
 
   @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;
 
@@ -79,7 +83,6 @@ export class ProjectEdit implements OnInit, AfterViewInit {
 
     this.formAdd = this.fb.group(
       {
-        'userIds': ['', [Validators.required]],
         'userRole': ['', [Validators.required]]
       }, {}
     );
@@ -152,57 +155,30 @@ export class ProjectEdit implements OnInit, AfterViewInit {
 
   selectUser(user: any) {
     this.userSearchResult = null;
-    this.user = user;
-    if (!this.user.roleId) {
-      this.user.roleId = 2;
+    this.modelAdd = user;
+    if (!this.modelAdd.roleId) {
+      this.modelAdd.roleId = 2;
     }
-  }
-  onEnter(e) {
-    console.log('enter', this.userSearchResult);
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!this.userSearchResult) {
-      return;
-    }
-
-    this.user = this.userSearchResult[0];
-    if (!this.user.roleId) {
-      this.user.roleId = 2;
-    }
-    this.userSearchResult = null;
-    this.fromEnter = true;
   }
 
   add() {
-    console.log('add');
+    console.log('add', this.selectedModels);
   }
 
   changeSearch(kewwords):void {
     console.log('changeSearch', kewwords);
 
-    if (!kewwords || this.fromEnter) {
-      this.userSearchResult = null;
-      this.fromEnter = false;
-      return;
-    }
+    let ids = [];
+    this.selectedModels.forEach(item => {ids.push(item.id)})
 
-    this._userService.search(this.model.orgId, kewwords).subscribe((json:any) => {
+    this._userService.search(this.model.orgId, kewwords, ids).subscribe((json:any) => {
       if (json.data.length == 0) {
         this.userSearchResult = null;
       } else {
         this.userSearchResult = json.data;
       }
-
+      console.log(this.userSearchResult);
     });
-  }
-
-  enterItem(item):void {
-    console.log('enterItem', item);
-  }
-
-  selectItem(item):void {
-    console.log('selectItem', item);
   }
 
 }

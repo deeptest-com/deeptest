@@ -8,20 +8,21 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 })
 export class SearchSelectComponent implements OnInit {
 
-  @Input() models: any[];
+  @Input() searchResult: any[];
+  @Input() selectedModels: any[];
 
-  @Output() itemSelect = new EventEmitter<any>();
-  @Output() itemEnter = new EventEmitter<any>();
   @Output() searchChange = new EventEmitter<any>();
 
   keywords: string;
+
   selectedModel: any;
+
   formSelection: FormGroup;
 
   constructor(private fb: FormBuilder) {
     this.formSelection = this.fb.group(
       {
-        'searchInput': ['', [Validators.required]]
+        'searchInput': ['', []]
       }, {}
     );
     this.formSelection.controls['searchInput'].valueChanges.debounceTime(500).subscribe(data => this.onSearchChanged(data));
@@ -31,24 +32,37 @@ export class SearchSelectComponent implements OnInit {
 
   }
 
-  public onSelectItem($event, item):void {
-    console.log('onSelectItem', item);
-
-    this.itemSelect.emit(item);
-  }
-  public onKeyEnter($event):void {
-    console.log('onKeyEnter', this.selectedModel );
-
-    this.itemEnter.emit(this.selectedModel );
-  }
-
   public onMouseEnter($event, item):void {
     console.log('onMouseEnter', item);
+
+    $event.preventDefault();
+    $event.stopPropagation();
+
     this.selectedModel = item;
   }
 
+  public onSelectItem($event, item):void {
+    console.log('onSelectItem', item);
+
+    this.keywords = '';
+    this.searchResult = [];
+
+    this.selectedModels.push(item);
+  }
+
   onSearchChanged(kewwords?: string) {
+    if (!kewwords) {
+      this.searchResult = null;
+      return;
+    }
+
     this.searchChange.emit(kewwords);
+  }
+
+  remove(item: any) {
+    console.log(item);
+
+    this.selectedModels = this.selectedModels.filter(obj => obj.id !== item.id);
   }
 
 }

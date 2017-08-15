@@ -1,5 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.AccountService;
@@ -15,6 +17,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,6 +51,37 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
 		
 		return page;
+	}
+
+	@Override
+	public List search(Long orgId, String keywords, JSONArray exceptIds) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
+
+		dc.createAlias("orgSet", "companies");
+		dc.add(Restrictions.eq("companies.id", orgId));
+
+		List<Long> ids = new ArrayList();
+		for (Object json : exceptIds.toArray()) {
+            ids.add(Long.valueOf(json.toString()));
+        }
+
+		if (exceptIds.size() > 0) {
+            dc.add(Restrictions.not(Restrictions.in("id", ids)));
+        }
+
+		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+
+		if (StringUtil.isNotEmpty(keywords)) {
+			dc.add(Restrictions.or(Restrictions.like("name", "%" + keywords + "%"),
+					Restrictions.like("email", "%" + keywords + "%"),
+					Restrictions.like("phone", "%" + keywords + "%") ));
+		}
+
+		dc.addOrder(Order.asc("id"));
+		Page page = findPage(dc, 0, 20);
+
+		return page.getItems();
 	}
 
 	@Override

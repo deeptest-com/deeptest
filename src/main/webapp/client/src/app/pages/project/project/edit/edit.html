@@ -105,7 +105,12 @@
         <div class="form-group row">
           <label class="col-2 col-form-label"><span>用户名/邮箱</span></label>
           <div class="col-10">
-            <search-select></search-select>
+            <search-select [models]="userSearchResult"
+                           (searchChange)="changeSearch($event)" (itemEnter)="enterItem($event)" (itemSelect)="selectItem($event)">
+            </search-select>
+
+            <input type="hidden" class="form-control" name="userIds" formControlName="userIds"
+                   [(ngModel)]="model.userIds" #userIds>
           </div>
         </div>
 

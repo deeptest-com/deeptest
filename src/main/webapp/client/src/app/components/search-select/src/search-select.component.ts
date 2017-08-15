@@ -1,4 +1,5 @@
-import {Component, Input, OnInit} from "@angular/core";
+import {Component, Input, OnInit, Output, EventEmitter} from "@angular/core";
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'search-select',
@@ -7,14 +8,47 @@ import {Component, Input, OnInit} from "@angular/core";
 })
 export class SearchSelectComponent implements OnInit {
 
-  @Input() data: any;
+  @Input() models: any[];
 
-  constructor() {
+  @Output() itemSelect = new EventEmitter<any>();
+  @Output() itemEnter = new EventEmitter<any>();
+  @Output() searchChange = new EventEmitter<any>();
 
+  keywords: string;
+  selectedModel: any;
+  formSelection: FormGroup;
+
+  constructor(private fb: FormBuilder) {
+    this.formSelection = this.fb.group(
+      {
+        'searchInput': ['', [Validators.required]]
+      }, {}
+    );
+    this.formSelection.controls['searchInput'].valueChanges.debounceTime(500).subscribe(data => this.onSearchChanged(data));
   }
 
   ngOnInit(): any {
 
+  }
+
+  public onSelectItem($event, item):void {
+    console.log('onSelectItem', item);
+
+    this.itemSelect.emit(item);
+  }
+  public onKeyEnter($event):void {
+    console.log('onKeyEnter', this.selectedModel );
+
+    this.itemEnter.emit(this.selectedModel );
+  }
+
+  public onMouseEnter($event, item):void {
+    console.log('onMouseEnter', item);
+    this.selectedModel = item;
+  }
+
+  onSearchChanged(kewwords?: string) {
+    this.searchChange.emit(kewwords);
   }
 
 }

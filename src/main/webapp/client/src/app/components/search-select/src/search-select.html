@@ -1,4 +1,6 @@
 <div class="search-select">
+  <form [formGroup]="formSelection" class="my-validate-form form-add">
+
   <ul class="select-choices">
     <li class="select-search-choice">
       <span class="ion-close" tabindex="-1"></span>
@@ -7,35 +9,27 @@
 
     <li class="select-search-field">
       <label class="select-offscreen"></label>
-      <input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-             class="select-input">
+      <input class="form-control" name="searchInput" formControlName="searchInput" [(ngModel)]="keywords" #searchInput
+             type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+             placeholder="输入关键字搜索" class="select-input">
     </li>
   </ul>
 
-  <div class="select-drop">
+  <div [class.hidden]="!models" class="select-drop">
     <div class="select-results">
-      <div class="select-result active">
+      <div *ngFor="let item of models" class="select-result active"
+           (mouseenter)="onMouseEnter($event, item)" (keyup.enter)="onKeyEnter($event, item)" (click)="onSelectItem($event, item)">
         <div class="image">
           <span class="ion-person"></span>
         </div>
         <div class="name">
-          <div>燃灯</div>
-          <div>462826@qq.com</div>
-        </div>
-      </div>
-
-      <div class="select-result">
-        <div class="image">
-          <span class="ion-person-stalker"></span>
-        </div>
-        <div class="name">
-          <div>燃灯</div>
-          <div>462826@qq.com</div>
+          <div>{{item.name}}</div>
+          <div>{{item.email}}</div>
         </div>
       </div>
 
     </div>
 
   </div>
-
+  </form>
 </div>

@@ -79,32 +79,15 @@ export class ProjectEdit implements OnInit, AfterViewInit {
 
     this.formAdd = this.fb.group(
       {
-        'userName': ['', [Validators.required]],
+        'userIds': ['', [Validators.required]],
         'userRole': ['', [Validators.required]]
       }, {}
     );
-    this.formAdd.controls['userName'].valueChanges.debounceTime(500).subscribe(data => this.onUsernameChanged(data));
 
   }
   onValueChanged(data?: any) {
     let that = this;
     that.formErrors = ValidatorUtils.genMsg(that.formInfo, that.validateMsg, []);
-  }
-  onUsernameChanged(kewwords?: string) {
-    if (!kewwords || this.fromEnter) {
-      this.userSearchResult = null;
-      this.fromEnter = false;
-      return;
-    }
-
-    this._userService.search(this.model.orgId, kewwords).subscribe((json:any) => {
-      if (json.data.length == 0) {
-        this.userSearchResult = null;
-      } else {
-        this.userSearchResult = json.data;
-      }
-
-    });
   }
 
   formErrors = [];
@@ -193,6 +176,33 @@ export class ProjectEdit implements OnInit, AfterViewInit {
 
   add() {
     console.log('add');
+  }
+
+  changeSearch(kewwords):void {
+    console.log('changeSearch', kewwords);
+
+    if (!kewwords || this.fromEnter) {
+      this.userSearchResult = null;
+      this.fromEnter = false;
+      return;
+    }
+
+    this._userService.search(this.model.orgId, kewwords).subscribe((json:any) => {
+      if (json.data.length == 0) {
+        this.userSearchResult = null;
+      } else {
+        this.userSearchResult = json.data;
+      }
+
+    });
+  }
+
+  enterItem(item):void {
+    console.log('enterItem', item);
+  }
+
+  selectItem(item):void {
+    console.log('selectItem', item);
   }
 
 }

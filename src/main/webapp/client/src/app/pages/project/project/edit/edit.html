@@ -144,7 +144,7 @@
         <tbody>
         <tr *ngFor="let item of userInRoles">
           <td>{{ item.userName }}</td>
-          <td>
+          <td class="role">
             <select [ngModel]="item.projectRoleId" class="form-control form-control-sm">
               <option *ngFor="let entry of projectRoles" value="{{entry.id}}">
                 <span>{{entry.name}}</span>

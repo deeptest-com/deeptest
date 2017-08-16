@@ -13,8 +13,13 @@
     th.role {
       width: 300px;
     }
-    select {
-      width: 100px;
+    td.role {
+      margin: 0 auto;
+      padding: 3px 20px;
+      text-align: center;
+      select {
+        width: 100px;
+      }
     }
   }
 }

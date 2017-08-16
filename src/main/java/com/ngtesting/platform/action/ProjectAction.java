@@ -2,14 +2,13 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestProject;
+import com.ngtesting.platform.entity.TestRelationProjectRoleUser;
 import com.ngtesting.platform.service.ProjectRoleService;
 import com.ngtesting.platform.service.ProjectService;
+import com.ngtesting.platform.service.RelationProjectRoleUserService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
-import com.ngtesting.platform.vo.ProjectRoleVo;
-import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
-import com.ngtesting.platform.vo.TestProjectVo;
-import com.ngtesting.platform.vo.UserVo;
+import com.ngtesting.platform.vo.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +34,8 @@ public class ProjectAction extends BaseAction {
     ProjectService projectService;
     @Autowired
     ProjectRoleService projectRoleService;
+	@Autowired
+	RelationProjectRoleUserService relationProjectRoleUserService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
@@ -80,9 +81,14 @@ public class ProjectAction extends BaseAction {
 		
 		List<TestProjectVo> groups = projectService.listProjectGroups(orgId);
         List<ProjectRoleVo> projectRoles = projectRoleService.list(orgId, null, null);
+
+		List<TestRelationProjectRoleUser> userInRolesPos = relationProjectRoleUserService.listByProject(projectId);
+        List<RelationProjectRoleUserVo> userInRoles = relationProjectRoleUserService.genVos(userInRolesPos);
         
         ret.put("groups", groups);
         ret.put("projectRoles", projectRoles);
+		ret.put("userInRoles", userInRoles);
+
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -102,6 +108,23 @@ public class ProjectAction extends BaseAction {
 		TestProjectVo projectVo = projectService.genVo(po);
         
         ret.put("data", projectVo);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "saveMembers", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> saveMembers(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long orgId = userVo.getDefaultOrgId();
+
+        List<TestRelationProjectRoleUser> pos = relationProjectRoleUserService.batchSavePers(json);
+        List<RelationProjectRoleUserVo> userInRoles = relationProjectRoleUserService.genVos(pos);
+
+		ret.put("userInRoles", userInRoles);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

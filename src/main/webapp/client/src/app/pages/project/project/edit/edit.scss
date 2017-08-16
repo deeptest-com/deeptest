@@ -10,5 +10,11 @@
   }
   .table-container {
     margin-top: 20px;
+    th.role {
+      width: 300px;
+    }
+    select {
+      width: 100px;
+    }
   }
 }

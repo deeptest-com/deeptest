@@ -35,11 +35,11 @@ export class ProjectEdit implements OnInit, AfterViewInit {
   groups: any[] = [];
   projectRoles: any[] = [];
 
-  userRoles: any[] = [];
+  userInRoles: any[] = [];
   userSearchResult: any[];
-  selectedModels: any[] = [];
 
-  modelAdd: any = {roleId: 2};
+  selectedModels: any[] = [];
+  modelAdd: any = {roleId: 1};
   model: any = {};
 
   @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;
@@ -109,6 +109,8 @@ export class ProjectEdit implements OnInit, AfterViewInit {
     that._projectService.get(that.id).subscribe((json:any) => {
       that.projectRoles = json.projectRoles;
       that.groups = json.groups;
+      that.userInRoles = json.userInRoles;
+
       that.model = !!json.data? json.data: {type: that.type, disabled: false};
     });
   }
@@ -162,11 +164,20 @@ export class ProjectEdit implements OnInit, AfterViewInit {
   }
 
   add() {
-    console.log('add', this.selectedModels);
+    this.modelAdd.projectId = this.id;
+
+    let userIds:number[] = [];
+    this.selectedModels.forEach(item => {userIds.push(item.id)})
+
+    this._projectService.saveMembers(this.modelAdd, userIds).subscribe((json:any) => {
+      if (json.code == 1) {
+        this.modelAdd = {roleId: 1};
+        this.userInRoles = json.userInRoles;
+      }
+    });
   }
 
   changeSearch(kewwords):void {
-    console.log('changeSearch', kewwords);
 
     let ids = [];
     this.selectedModels.forEach(item => {ids.push(item.id)})
@@ -177,7 +188,6 @@ export class ProjectEdit implements OnInit, AfterViewInit {
       } else {
         this.userSearchResult = json.data;
       }
-      console.log(this.userSearchResult);
     });
   }
 

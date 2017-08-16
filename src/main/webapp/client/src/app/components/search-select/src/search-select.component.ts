@@ -9,7 +9,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 export class SearchSelectComponent implements OnInit {
 
   @Input() searchResult: any[];
-  @Input() selectedModels: any[];
+  @Input() @Output() selectedModels: any[];
 
   @Output() searchChange = new EventEmitter<any>();
 
@@ -33,8 +33,6 @@ export class SearchSelectComponent implements OnInit {
   }
 
   public onMouseEnter($event, item):void {
-    console.log('onMouseEnter', item);
-
     $event.preventDefault();
     $event.stopPropagation();
 
@@ -42,8 +40,6 @@ export class SearchSelectComponent implements OnInit {
   }
 
   public onSelectItem($event, item):void {
-    console.log('onSelectItem', item);
-
     this.keywords = '';
     this.searchResult = [];
 
@@ -60,9 +56,11 @@ export class SearchSelectComponent implements OnInit {
   }
 
   remove(item: any) {
-    console.log(item);
 
-    this.selectedModels = this.selectedModels.filter(obj => obj.id !== item.id);
+    var index = this.selectedModels.indexOf(item, 0);
+    if (index > -1) {
+      this.selectedModels.splice(index, 1);
+    }
   }
 
 }

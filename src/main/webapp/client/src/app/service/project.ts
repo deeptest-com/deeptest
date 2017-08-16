@@ -23,6 +23,10 @@ export class ProjectService {
   save(model:any) {
     return this._reqService.post(this._api_url + 'save', {model: model});
   }
+  saveMembers(model:any, userIds: number[]) {
+    _.merge(model, {userIds: userIds});
+    return this._reqService.post(this._api_url + 'saveMembers', model);
+  }
 
   delete(id:number) {
     let model = {id: id};

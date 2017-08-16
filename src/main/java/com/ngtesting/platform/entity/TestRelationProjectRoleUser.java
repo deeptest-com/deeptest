@@ -11,6 +11,12 @@ import javax.persistence.Table;
 @Table(name = "tst_r_project_role_user")
 public class TestRelationProjectRoleUser extends BaseEntity {
 	private static final long serialVersionUID = 5513768856000982338L;
+
+    private String projectRoleName;
+    private String userName;
+
+	@Column(name = "project_id")
+	private Long projectId;
 	
     @Column(name = "project_role_id")
     private Long projectRoleId;
@@ -25,6 +31,41 @@ public class TestRelationProjectRoleUser extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private TestUser user;
+
+    public TestRelationProjectRoleUser() {
+
+    }
+    public TestRelationProjectRoleUser(Long projectId, Long userId, Long projectRoleId, String projectRoleName, String userName) {
+        this.projectId = projectId;
+        this.userId = userId;
+        this.projectRoleId = projectRoleId;
+        this.projectRoleName = projectRoleName;
+        this.userName = userName;
+    }
+
+    public String getProjectRoleName() {
+        return projectRoleName;
+    }
+
+    public void setProjectRoleName(String projectRoleName) {
+        this.projectRoleName = projectRoleName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public Long getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
+	}
 
 	public Long getUserId() {
 		return userId;

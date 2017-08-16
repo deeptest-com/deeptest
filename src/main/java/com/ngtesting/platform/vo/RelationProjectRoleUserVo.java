@@ -4,6 +4,7 @@ package com.ngtesting.platform.vo;
 public class RelationProjectRoleUserVo extends BaseVo {
 	private static final long serialVersionUID = -2782548788965037290L;
 
+    private Long projectId;
     private Long projectRoleId;
     
     private String projectRoleName;
@@ -15,7 +16,27 @@ public class RelationProjectRoleUserVo extends BaseVo {
     private Boolean selected;
     private Boolean selecting;
 
-	public Long getProjectRoleId() {
+    public RelationProjectRoleUserVo() {
+
+    }
+
+    public RelationProjectRoleUserVo(Long projectId, Long userId, Long projectRoleId, String projectRoleName, String userName) {
+        this.projectId = projectId;
+        this.userId = userId;
+        this.projectRoleId = projectRoleId;
+        this.projectRoleName = projectRoleName;
+        this.userName = userName;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public Long getProjectRoleId() {
 		return projectRoleId;
 	}
 

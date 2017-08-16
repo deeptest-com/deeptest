@@ -132,7 +132,7 @@ public class RelationProjectRoleEntityServiceImpl extends BaseServiceImpl implem
 
         TestProjectRole projectRole = (TestProjectRole)get(TestProjectRole.class, projectRoleId);
 
-        TestRelationProjectRoleEntity po = getByProjectAndEntityId(projectId, entityId);
+        TestRelationProjectRoleEntity po = (TestRelationProjectRoleEntity)get(TestRelationProjectRoleEntity.class, entityId);
         po.setProjectRoleId(projectRoleId);
         po.setProjectRoleName(projectRole.getName());
 

@@ -13,10 +13,9 @@ export class SearchSelectComponent implements OnInit {
 
   @Output() searchChange = new EventEmitter<any>();
 
-  keywords: string;
+  @Input() @Output() keywords: string;
 
   selectedModel: any;
-
   formSelection: FormGroup;
 
   constructor(private fb: FormBuilder) {
@@ -25,7 +24,7 @@ export class SearchSelectComponent implements OnInit {
         'searchInput': ['', []]
       }, {}
     );
-    this.formSelection.controls['searchInput'].valueChanges.debounceTime(500).subscribe(data => this.onSearchChanged(data));
+    this.formSelection.controls['searchInput'].valueChanges.debounceTime(500).subscribe(data => this.onSearchChanged());
   }
 
   ngOnInit(): any {
@@ -46,13 +45,12 @@ export class SearchSelectComponent implements OnInit {
     this.selectedModels.push(item);
   }
 
-  onSearchChanged(kewwords?: string) {
-    if (!kewwords) {
+  onSearchChanged() {
+    if (!this.keywords) {
       this.searchResult = null;
       return;
     }
-
-    this.searchChange.emit(kewwords);
+    this.searchChange.emit(this.keywords);
   }
 
   remove(item: any) {
@@ -61,6 +59,13 @@ export class SearchSelectComponent implements OnInit {
     if (index > -1) {
       this.selectedModels.splice(index, 1);
     }
+  }
+
+  cancel($event):void {
+    $event.preventDefault();
+    $event.stopPropagation();
+    this.keywords = '';
+    this.searchResult = [];
   }
 
 }

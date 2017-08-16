@@ -41,6 +41,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
   selectedModels: any[] = [];
   modelAdd: any = {roleId: 1};
   model: any = {};
+  keywords: string;
 
   @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;
 
@@ -155,7 +156,10 @@ export class ProjectEdit implements OnInit, AfterViewInit {
     this.tab = event.nextId;
   }
 
-  add() {
+  add($event) {
+    $event.preventDefault();
+    $event.stopPropagation();
+
     this.modelAdd.projectId = this.id;
 
     let entityTypeAndIds:string[] = [];
@@ -163,6 +167,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
 
     this._projectService.saveMembers(this.modelAdd, entityTypeAndIds).subscribe((json:any) => {
       if (json.code == 1) {
+        this.keywords = '';
         this.modelAdd = {roleId: 1};
         this.selectedModels = [];
         this.entityInRoles = json.entityInRoles;
@@ -170,11 +175,11 @@ export class ProjectEdit implements OnInit, AfterViewInit {
     });
   }
 
-  changeSearch(kewwords):void {
+  changeSearch(keywords):void {
     let ids = [];
-    this.selectedModels.forEach(item => {ids.push(item.type + '-' + item.id)})
+    this.selectedModels.forEach(item => {ids.push(item.id)})
 
-    this._userAndGroupService.search(this.model.orgId, kewwords, ids).subscribe((json:any) => {
+    this._userAndGroupService.search(this.model.orgId, keywords, ids).subscribe((json:any) => {
       if (json.data.length == 0) {
         this.entitySearchResult = null;
       } else {
@@ -184,16 +189,20 @@ export class ProjectEdit implements OnInit, AfterViewInit {
   }
 
   changeRole(roleId: number, entityId: number) {
-    console.log('entityId', entityId);
-
     this._projectService.changeRole(this.model.id, roleId, entityId).subscribe((json:any) => {
-      if (json.data.length == 0) {
-        this.entitySearchResult = null;
-      } else {
-        this.entitySearchResult = json.data;
+      if (json.code == 1) {
+        this.entityInRoles = json.entityInRoles;
       }
     });
   }
+
+  // cancel($event):void {
+  //   $event.preventDefault();
+  //   $event.stopPropagation();
+  //
+  //   this.keywords = null;
+  //   this.entitySearchResult = null;
+  // }
 
 }
 

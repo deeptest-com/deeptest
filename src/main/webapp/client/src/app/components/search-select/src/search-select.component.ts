@@ -40,7 +40,7 @@ export class SearchSelectComponent implements OnInit {
 
   public onSelectItem($event, item):void {
     this.keywords = '';
-    this.searchResult = [];
+    this.searchResult = null;
 
     this.selectedModels.push(item);
   }
@@ -64,8 +64,9 @@ export class SearchSelectComponent implements OnInit {
   cancel($event):void {
     $event.preventDefault();
     $event.stopPropagation();
+
+    this.searchResult = null;
     this.keywords = '';
-    this.searchResult = [];
   }
 
 }

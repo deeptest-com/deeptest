@@ -112,10 +112,15 @@
 
     .close {
       position: absolute;
-      top: 5px;
-      right: 5px;
+      top: 0px;
+      right: 0px;
       z-index: 9999;
+      width: 25px;
+      height: 25px;
       font-size: 15px;
+      line-height: 25px;
+      text-align: center;
+      background-color: transparent;
     }
   }
 

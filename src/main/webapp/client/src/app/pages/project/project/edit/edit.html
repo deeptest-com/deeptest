@@ -105,7 +105,7 @@
         <div class="form-group row">
           <label class="col-2 col-form-label"><span>用户名/邮箱</span></label>
           <div class="col-10">
-            <search-select [searchResult]="userSearchResult" [(selectedModels)]="selectedModels"
+            <search-select [searchResult]="entitySearchResult" [(selectedModels)]="selectedModels"
                            (searchChange)="changeSearch($event)">
             </search-select>
           </div>
@@ -114,7 +114,7 @@
         <div class="form-group row">
           <label class="col-2 col-form-label"><span>项目角色</span></label>
           <div class="col-10">
-            <select [(ngModel)]="modelAdd.roleId" formControlName="userRole" class="form-control" name="userRole">
+            <select [(ngModel)]="modelAdd.roleId" formControlName="projectRole" class="form-control" name="projectRole">
               <option *ngFor="let entry of projectRoles" value="{{entry.id}}">
                 <span>{{entry.name}}</span>
               </option>
@@ -125,7 +125,6 @@
         <div class="form-group row">
           <label class="col-2 col-form-label"></label>
           <div class="col-10">
-            {{selectedModels.length}}
             <button (click)="add()" [disabled]="!selectedModels.length > 0" type="button" class="btn btn-primary">添加</button>
           </div>
         </div>
@@ -142,10 +141,10 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let item of userInRoles">
-          <td>{{ item.userName }}</td>
+        <tr *ngFor="let item of entityInRoles">
+          <td>{{ item.entityName }}</td>
           <td class="role">
-            <select [ngModel]="item.projectRoleId" class="form-control form-control-sm">
+            <select (change)="changeRole($event.target.value, item.id)" [ngModel]="item.projectRoleId" class="form-control form-control-sm">
               <option *ngFor="let entry of projectRoles" value="{{entry.id}}">
                 <span>{{entry.name}}</span>
               </option>

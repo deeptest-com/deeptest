@@ -19,6 +19,8 @@ public class UserVo extends BaseVo {
 	private Integer caseBoardLeftSize;
 	private Integer caseBoardRightSize;
 
+	private String type = "user";
+
 	public UserVo() {
 
 	}
@@ -104,4 +106,11 @@ public class UserVo extends BaseVo {
 		this.defaultProjectId = defaultProjectId;
 	}
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 }

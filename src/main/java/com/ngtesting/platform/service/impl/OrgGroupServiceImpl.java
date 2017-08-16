@@ -1,22 +1,20 @@
 package com.ngtesting.platform.service.impl;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.alibaba.fastjson.JSONArray;
 import com.ngtesting.platform.entity.TestOrgGroup;
-import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.OrgGroupService;
-import com.ngtesting.platform.service.RelationOrgGroupUserService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.OrgGroupVo;
 import com.ngtesting.platform.vo.Page;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupService {
@@ -39,6 +37,34 @@ public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupServ
         Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
 		
 		return page;
+	}
+
+	@Override
+	public List search(Long orgId, String keywords, JSONArray exceptIds) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestOrgGroup.class);
+
+		dc.add(Restrictions.eq("orgId", orgId));
+
+		List<Long> ids = new ArrayList();
+		for (Object json : exceptIds.toArray()) {
+			ids.add(Long.valueOf(json.toString()));
+		}
+
+		if (exceptIds.size() > 0) {
+			dc.add(Restrictions.not(Restrictions.in("id", ids)));
+		}
+
+		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+
+		if (StringUtil.isNotEmpty(keywords)) {
+			dc.add(Restrictions.like("name", "%" + keywords + "%"));
+		}
+
+		dc.addOrder(Order.asc("id"));
+		Page page = findPage(dc, 0, 20);
+
+		return page.getItems();
 	}
 
 	@Override

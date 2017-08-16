@@ -13,7 +13,7 @@ import { RouteService } from '../../../../service/route';
 import { PopDialogComponent } from '../../../../components/pop-dialog'
 
 import { ProjectService } from '../../../../service/project';
-import { UserService } from '../../../../service/user';
+import { UserAndGroupService } from '../../../../service/userAndGroup';
 
 declare var jQuery;
 
@@ -35,8 +35,8 @@ export class ProjectEdit implements OnInit, AfterViewInit {
   groups: any[] = [];
   projectRoles: any[] = [];
 
-  userInRoles: any[] = [];
-  userSearchResult: any[];
+  entityInRoles: any[] = [];
+  entitySearchResult: any[];
 
   selectedModels: any[] = [];
   modelAdd: any = {roleId: 1};
@@ -45,7 +45,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
   @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
-              private fb: FormBuilder, private _projectService: ProjectService, private _userService: UserService) {
+              private fb: FormBuilder, private _projectService: ProjectService, private _userAndGroupService: UserAndGroupService) {
     let that = this;
 
     this._route.params.subscribe(params => {
@@ -83,7 +83,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
 
     this.formAdd = this.fb.group(
       {
-        'userRole': ['', [Validators.required]]
+        'projectRole': ['', [Validators.required]]
       }, {}
     );
 
@@ -109,7 +109,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
     that._projectService.get(that.id).subscribe((json:any) => {
       that.projectRoles = json.projectRoles;
       that.groups = json.groups;
-      that.userInRoles = json.userInRoles;
+      that.entityInRoles = json.entityInRoles;
 
       that.model = !!json.data? json.data: {type: that.type, disabled: false};
     });
@@ -155,38 +155,42 @@ export class ProjectEdit implements OnInit, AfterViewInit {
     this.tab = event.nextId;
   }
 
-  selectUser(user: any) {
-    this.userSearchResult = null;
-    this.modelAdd = user;
-    if (!this.modelAdd.roleId) {
-      this.modelAdd.roleId = 2;
-    }
-  }
-
   add() {
     this.modelAdd.projectId = this.id;
 
-    let userIds:number[] = [];
-    this.selectedModels.forEach(item => {userIds.push(item.id)})
+    let entityTypeAndIds:string[] = [];
+    this.selectedModels.forEach(item => {entityTypeAndIds.push(item.type + ',' + item.id)})
 
-    this._projectService.saveMembers(this.modelAdd, userIds).subscribe((json:any) => {
+    this._projectService.saveMembers(this.modelAdd, entityTypeAndIds).subscribe((json:any) => {
       if (json.code == 1) {
         this.modelAdd = {roleId: 1};
-        this.userInRoles = json.userInRoles;
+        this.selectedModels = [];
+        this.entityInRoles = json.entityInRoles;
       }
     });
   }
 
   changeSearch(kewwords):void {
-
     let ids = [];
-    this.selectedModels.forEach(item => {ids.push(item.id)})
+    this.selectedModels.forEach(item => {ids.push(item.type + '-' + item.id)})
 
-    this._userService.search(this.model.orgId, kewwords, ids).subscribe((json:any) => {
+    this._userAndGroupService.search(this.model.orgId, kewwords, ids).subscribe((json:any) => {
       if (json.data.length == 0) {
-        this.userSearchResult = null;
+        this.entitySearchResult = null;
       } else {
-        this.userSearchResult = json.data;
+        this.entitySearchResult = json.data;
+      }
+    });
+  }
+
+  changeRole(roleId: number, entityId: number) {
+    console.log('entityId', entityId);
+
+    this._projectService.changeRole(this.model.id, roleId, entityId).subscribe((json:any) => {
+      if (json.data.length == 0) {
+        this.entitySearchResult = null;
+      } else {
+        this.entitySearchResult = json.data;
       }
     });
   }

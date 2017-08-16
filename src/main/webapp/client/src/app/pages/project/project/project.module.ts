@@ -22,6 +22,7 @@ import { DatetimePickerService } from '../../../service/datetime-picker';
 import { routing }       from './project.routing';
 import { ProjectService } from '../../../service/project';
 import { UserService } from '../../../service/user';
+import { UserAndGroupService } from '../../../service/userAndGroup';
 
 import { Project } from './project.component';
 import { ProjectList } from './list/list.component';
@@ -58,7 +59,8 @@ import { ProjectView } from './view/view.component';
     RequestService,
     DatetimePickerService,
     ProjectService,
-    UserService
+    UserService,
+    UserAndGroupService
   ]
 })
 export class ProjectModule {}

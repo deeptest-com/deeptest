@@ -7,27 +7,12 @@ import java.util.UUID;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ngtesting.platform.entity.TestCaseExeStatus;
-import com.ngtesting.platform.entity.TestCaseExeStatus;
-import com.ngtesting.platform.entity.TestCustomField;
-import com.ngtesting.platform.entity.TestOrg;
-import com.ngtesting.platform.entity.TestUser;
-import com.ngtesting.platform.service.AccountService;
 import com.ngtesting.platform.service.CaseExeStatusService;
-import com.ngtesting.platform.service.CustomFieldService;
-import com.ngtesting.platform.service.RelationOrgGroupUserService;
-import com.ngtesting.platform.service.RelationProjectRoleUserService;
-import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.CaseExeStatusVo;
-import com.ngtesting.platform.vo.CaseTypeVo;
-import com.ngtesting.platform.vo.CustomFieldVo;
-import com.ngtesting.platform.vo.Page;
-import com.ngtesting.platform.vo.UserVo;
 
 @Service
 public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExeStatusService {

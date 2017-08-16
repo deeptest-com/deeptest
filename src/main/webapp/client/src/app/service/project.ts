@@ -23,9 +23,12 @@ export class ProjectService {
   save(model:any) {
     return this._reqService.post(this._api_url + 'save', {model: model});
   }
-  saveMembers(model:any, userIds: number[]) {
-    _.merge(model, {userIds: userIds});
+  saveMembers(model:any, entityTypeAndIds: string[]) {
+    _.merge(model, {entityTypeAndIds: entityTypeAndIds});
     return this._reqService.post(this._api_url + 'saveMembers', model);
+  }
+  changeRole(projectId: number, roleId: number, entityId: number) {
+    return this._reqService.post(this._api_url + 'changeRole', {projectId: projectId, roleId: roleId, entityId: entityId});
   }
 
   delete(id:number) {

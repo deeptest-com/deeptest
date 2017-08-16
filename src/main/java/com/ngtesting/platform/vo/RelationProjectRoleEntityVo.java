@@ -1,7 +1,7 @@
 package com.ngtesting.platform.vo;
 
 
-public class RelationProjectRoleUserVo extends BaseVo {
+public class RelationProjectRoleEntityVo extends BaseVo {
 	private static final long serialVersionUID = -2782548788965037290L;
 
     private Long projectId;
@@ -9,26 +9,40 @@ public class RelationProjectRoleUserVo extends BaseVo {
     
     private String projectRoleName;
 
-    private Long userId;
+    private Long entityId;
 
-    private String userName;
+    private String entityName;
     
     private Boolean selected;
     private Boolean selecting;
 
-    public RelationProjectRoleUserVo() {
+	private String type;
+
+    public RelationProjectRoleEntityVo() {
 
     }
 
-    public RelationProjectRoleUserVo(Long projectId, Long userId, Long projectRoleId, String projectRoleName, String userName) {
+    public RelationProjectRoleEntityVo(Long id, Long projectId, Long entityId, Long projectRoleId,
+                                       String projectRoleName, String entityName, String type) {
+        this.id = id;
         this.projectId = projectId;
-        this.userId = userId;
+        this.entityId = entityId;
         this.projectRoleId = projectRoleId;
         this.projectRoleName = projectRoleName;
-        this.userName = userName;
+        this.entityName = entityName;
+        this.type = type;
     }
 
-    public Long getProjectId() {
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public Long getProjectId() {
         return projectId;
     }
 
@@ -52,20 +66,20 @@ public class RelationProjectRoleUserVo extends BaseVo {
 		this.projectRoleName = projectRoleName;
 	}
 
-	public Long getUserId() {
-		return userId;
+	public Long getEntityId() {
+		return entityId;
 	}
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setEntityId(Long entityId) {
+		this.entityId = entityId;
 	}
 
-	public String getUserName() {
-		return userName;
+	public String getEntityName() {
+		return entityName;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setEntityName(String entityName) {
+		this.entityName = entityName;
 	}
 
 	public Boolean getSelected() {

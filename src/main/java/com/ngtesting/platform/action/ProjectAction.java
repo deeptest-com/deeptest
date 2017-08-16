@@ -2,10 +2,10 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestProject;
-import com.ngtesting.platform.entity.TestRelationProjectRoleUser;
+import com.ngtesting.platform.entity.TestRelationProjectRoleEntity;
 import com.ngtesting.platform.service.ProjectRoleService;
 import com.ngtesting.platform.service.ProjectService;
-import com.ngtesting.platform.service.RelationProjectRoleUserService;
+import com.ngtesting.platform.service.RelationProjectRoleEntityService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.vo.*;
@@ -19,10 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Controller
@@ -34,8 +31,9 @@ public class ProjectAction extends BaseAction {
     ProjectService projectService;
     @Autowired
     ProjectRoleService projectRoleService;
-	@Autowired
-	RelationProjectRoleUserService relationProjectRoleUserService;
+
+    @Autowired
+    RelationProjectRoleEntityService relationProjectRoleEntityService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
@@ -82,12 +80,12 @@ public class ProjectAction extends BaseAction {
 		List<TestProjectVo> groups = projectService.listProjectGroups(orgId);
         List<ProjectRoleVo> projectRoles = projectRoleService.list(orgId, null, null);
 
-		List<TestRelationProjectRoleUser> userInRolesPos = relationProjectRoleUserService.listByProject(projectId);
-        List<RelationProjectRoleUserVo> userInRoles = relationProjectRoleUserService.genVos(userInRolesPos);
+		List<TestRelationProjectRoleEntity> entityInRolesPos = relationProjectRoleEntityService.listByProject(projectId);
+        List<RelationProjectRoleEntityVo> entityInRoles = relationProjectRoleEntityService.genVos(entityInRolesPos);
         
         ret.put("groups", groups);
         ret.put("projectRoles", projectRoles);
-		ret.put("userInRoles", userInRoles);
+		ret.put("entityInRoles", entityInRoles);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -121,10 +119,27 @@ public class ProjectAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long orgId = userVo.getDefaultOrgId();
 
-        List<TestRelationProjectRoleUser> pos = relationProjectRoleUserService.batchSavePers(json);
-        List<RelationProjectRoleUserVo> userInRoles = relationProjectRoleUserService.genVos(pos);
+        List<TestRelationProjectRoleEntity> pos = relationProjectRoleEntityService.batchSavePers(json);
+        List<RelationProjectRoleEntityVo> entityInRoles = relationProjectRoleEntityService.genVos(pos);
 
-		ret.put("userInRoles", userInRoles);
+		ret.put("entityInRoles", entityInRoles);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "changeRole", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> changeRole(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long orgId = userVo.getDefaultOrgId();
+
+		List<TestRelationProjectRoleEntity> pos = relationProjectRoleEntityService.changeRolePers(json);
+		List<RelationProjectRoleEntityVo> entityInRoles = relationProjectRoleEntityService.genVos(pos);
+
+		ret.put("entityInRoles", entityInRoles);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

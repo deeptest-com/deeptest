@@ -11,6 +11,16 @@ public class OrgGroupVo extends BaseVo {
     private Boolean selecting;
     private Boolean selected;
 
+	private String type = "group";
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	public String getName() {
 		return name;
 	}

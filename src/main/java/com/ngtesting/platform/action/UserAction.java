@@ -1,7 +1,6 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.RelationOrgGroupUserService;
@@ -152,26 +151,6 @@ public class UserAction extends BaseAction {
 
 		boolean success = userService.setSizePers(userVo.getId(), left, right);
 
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "search", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
-		Long orgId = json.getLong("orgId");
-		String keywords = json.getString("keywords");
-        JSONArray exceptIds = json.getJSONArray("exceptIds");
-
-		List ls = userService.search(orgId, keywords, exceptIds);
-		List<UserVo> vos = userService.genVos(ls);
-
-		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

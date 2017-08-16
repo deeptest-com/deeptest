@@ -1,11 +1,10 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.AccountService;
-import com.ngtesting.platform.service.RelationProjectRoleUserService;
+import com.ngtesting.platform.service.RelationProjectRoleEntityService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
@@ -27,7 +26,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	@Autowired
 	AccountService accountService;
 	@Autowired
-	RelationProjectRoleUserService relationProjectRoleUserService;
+    RelationProjectRoleEntityService relationProjectRoleUserService;
 
 	@Override
 	public Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {

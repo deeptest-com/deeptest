@@ -13,7 +13,7 @@ export class SearchSelectComponent implements OnInit {
 
   @Output() searchChange = new EventEmitter<any>();
 
-  @Input() @Output() keywords: string;
+  @Input() @Output() searchModel: any;
 
   selectedModel: any;
   formSelection: FormGroup;
@@ -39,18 +39,18 @@ export class SearchSelectComponent implements OnInit {
   }
 
   public onSelectItem($event, item):void {
-    this.keywords = '';
+    this.searchModel = {};
     this.searchResult = null;
 
     this.selectedModels.push(item);
   }
 
   onSearchChanged() {
-    if (!this.keywords) {
+    if (!this.searchModel.keywords) {
       this.searchResult = null;
       return;
     }
-    this.searchChange.emit(this.keywords);
+    this.searchChange.emit(this.searchModel);
   }
 
   remove(item: any) {
@@ -66,7 +66,7 @@ export class SearchSelectComponent implements OnInit {
     $event.stopPropagation();
 
     this.searchResult = null;
-    this.keywords = '';
+    this.searchModel = {};
   }
 
 }

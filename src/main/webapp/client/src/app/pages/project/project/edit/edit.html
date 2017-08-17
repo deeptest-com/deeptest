@@ -105,7 +105,7 @@
         <div class="form-group row">
           <label class="col-2 col-form-label"><span>用户名/邮箱{{keywords}}</span></label>
           <div class="col-10">
-            <search-select [(keywords)]="keywords" [searchResult]="entitySearchResult" [(selectedModels)]="selectedModels"
+            <search-select [(searchModel)]="searchModel" [searchResult]="entitySearchResult" [(selectedModels)]="selectedModels"
                            (searchChange)="changeSearch($event)">
             </search-select>
           </div>

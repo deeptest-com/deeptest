@@ -136,13 +136,18 @@
       <table class="table table-bordered table-striped">
         <thead class="thead-inverse">
         <tr>
-          <th>用户名</th>
+          <th>名称</th>
+          <th>类型</th>
           <th class="role">项目角色</th>
         </tr>
         </thead>
         <tbody>
         <tr *ngFor="let item of entityInRoles">
           <td>{{ item.entityName }}</td>
+          <td>
+            <span *ngIf="item.type=='user'">用户</span>
+            <span *ngIf="item.type=='group'">用户组</span>
+          </td>
           <td class="role">
             <select (change)="changeRole($event.target.value, item.id)" [ngModel]="item.projectRoleId" class="form-control form-control-sm">
               <option *ngFor="let entry of projectRoles" value="{{entry.id}}">

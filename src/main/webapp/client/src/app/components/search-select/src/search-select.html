@@ -23,9 +23,12 @@
             <span *ngIf="item.type=='user'" class="ion-person"></span>
             <span *ngIf="item.type=='group'" class="ion-person-stalker"></span>
           </div>
-          <div class="name">
+          <div *ngIf="item.type=='user'" class="user-name">
             <div>{{item.name}}</div>
             <div>{{item.email}}</div>
+          </div>
+          <div *ngIf="item.type=='group'" class="group-name">
+            <div>{{item.name}}</div>
           </div>
         </div>
       </div>

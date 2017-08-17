@@ -98,9 +98,14 @@
           line-height: 34px;
           text-align: center;
         }
-        .name {
+        .user-name {
           flex: 1;
           line-height: 17px;
+          font-size: 13px;
+        }
+        .group-name {
+          flex: 1;
+          line-height: 34px;
           font-size: 13px;
         }
         &.active {

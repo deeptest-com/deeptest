@@ -23,6 +23,7 @@ public class RelationProjectRoleEntityServiceImpl extends BaseServiceImpl implem
 		DetachedCriteria dc = DetachedCriteria.forClass(TestRelationProjectRoleEntity.class);
 		dc.add(Restrictions.eq("projectId", projectId));
 
+        dc.addOrder(Order.asc("type"));
 		dc.addOrder(Order.asc("id"));
 		List<TestRelationProjectRoleEntity> ls = findAllByCriteria(dc);
 

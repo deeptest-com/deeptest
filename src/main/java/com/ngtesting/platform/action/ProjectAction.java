@@ -74,6 +74,11 @@ public class ProjectAction extends BaseAction {
 		if (projectId != null) {
 			TestProject project = projectService.getDetail(projectId);
 			TestProjectVo vo = projectService.genVo(project);
+
+			if (TestProject.ProjectType.group.equals(project.getType())) {
+				vo.setLastestProjectGroup(projectService.isLastestProjectGroup(orgId, projectId));
+			}
+
 			ret.put("data", vo);
 		}
 		

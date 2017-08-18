@@ -1,15 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.ngtesting.platform.entity.TestOrg;
+import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.OrgService;
 import com.ngtesting.platform.service.ProjectService;
@@ -18,6 +10,14 @@ import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.OrgVo;
 import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
 import com.ngtesting.platform.vo.UserVo;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
@@ -89,6 +89,14 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		if (user.getDefaultOrgId() == null) {
 			user.setDefaultOrgId(po.getId());
 			saveOrUpdate(user);
+		}
+
+		if (isNew) {
+			TestProject prjGroup = new TestProject();
+			prjGroup.setOrgId(po.getId());
+			prjGroup.setName("默认项目组");
+			prjGroup.setType(TestProject.ProjectType.group);
+			saveOrUpdate(prjGroup);
 		}
 		
 		return po;

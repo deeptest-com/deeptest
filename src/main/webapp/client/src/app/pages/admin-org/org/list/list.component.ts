@@ -55,16 +55,6 @@ export class OrgList implements OnInit, AfterViewInit {
     that.loadData();
   }
 
-  setDefault(item: any):void {
-    this.orgService.setDefault(item.id, this.queryModel).subscribe((json:any) => {
-      if (json.code == 1) {
-
-        this.models = json.data;
-        this.accountService.changeRecentProject(json.recentProjects);
-      }
-    });
-  }
-
   edit($event: any):void {
     let that = this;
 

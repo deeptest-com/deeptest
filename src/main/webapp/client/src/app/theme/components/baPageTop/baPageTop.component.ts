@@ -25,7 +25,6 @@ export class BaPageTop {
 
   public isScrolled:boolean = false;
   public isMenuCollapsed:boolean = false;
-  isOrgsShow:boolean = false;
 
   constructor(private _router:Router, private _state:GlobalState, private _routeService: RouteService,
               private orgService: OrgService, private accountService: AccountService) {
@@ -71,7 +70,11 @@ export class BaPageTop {
     this.orgService.setDefault(item.id, {disabled: false}).subscribe((json:any) => {
       if (json.code == 1) {
         this.orgId = item.id;
-        this.accountService.changeRecentProject(json.recentProjects);
+
+        this.accountService.changeMyOrgs(null, null);
+        this.accountService.changeRecentProjects(json.recentProjects);
+
+        this._routeService.navTo('/pages/project/list');
       }
     });
   }

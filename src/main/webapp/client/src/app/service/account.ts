@@ -98,7 +98,7 @@ export class AccountService {
       return this._reqService.post(that._getProfile, {}).map(json => {
         that.changeProfile(json.profile);
         that.changeMyOrgs(json.myOrgs, json.profile.defaultOrgId);
-        that.changeRecentProject(json.recentProjects);
+        that.changeRecentProjects(json.recentProjects);
 
         return json;
       });
@@ -155,12 +155,17 @@ export class AccountService {
   }
 
   changeMyOrgs(orgs: any[], currOrgId: number) {
-    CONSTANT.ALL_ORGS = orgs;
-    CONSTANT.CURR_ORG_ID = currOrgId;
+    if (orgs) {
+      CONSTANT.ALL_ORGS = orgs;
+    }
+    if (currOrgId) {
+      CONSTANT.CURR_ORG_ID = currOrgId;
+    }
+
     this._state.notifyDataChanged('my.orgs.change', {orgs: orgs, currOrgId: currOrgId});
   }
 
-  changeRecentProject(recentProjects: any[]) {
+  changeRecentProjects(recentProjects: any[]) {
     CONSTANT.RECENT_PROJECTS = recentProjects;
 
     if (recentProjects.length > 0) {

@@ -3,8 +3,7 @@
   <div class="row">
     <div class="edit-toolbar col-xl-12">
       <div class="title">
-        <span *ngIf="!model?.id">新建项目</span>
-        <span *ngIf="model?.id">编辑项目</span>
+        <span *ngIf="!model?.id">新建项目</span><span *ngIf="model?.id">编辑项目</span><span *ngIf="model.type=='group'">组</span>
       </div>
       <div class="buttons">
         <button [routerLink]="['/pages/project/list']" type="button" class="btn btn-primary btn-with-icon btn-sm back">
@@ -77,11 +76,12 @@
         <div class="form-group row">
           <label class="col-sm-2 col-form-label"></label>
           <div class="col-sm-10">
-            <button type="button" class="btn btn-primary" [disabled]="!formInfo.valid">保存</button>
+            <button (click)="save()" type="button" class="btn btn-primary" [disabled]="!formInfo.valid">保存</button>
             &nbsp;
             <button [routerLink]="['/pages/project/list']" type="button" class="btn btn-default">取消</button>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <button (click)="showModal()" *ngIf="model.id" type="button" class="btn btn-danger">删除</button>
+            <button (click)="showModal()" *ngIf="model.id && !model.lastestProjectGroup" type="button" class="btn btn-danger">删除</button>
+            <span *ngIf="model.lastestProjectGroup">最后一个项目组不可删除</span>
           </div>
         </div>
 

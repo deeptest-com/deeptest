@@ -1,12 +1,12 @@
 package com.ngtesting.platform.service;
 
-import java.util.List;
-
 import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestProjectAccessHistory;
 import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
 import com.ngtesting.platform.vo.TestProjectVo;
 import com.ngtesting.platform.vo.UserVo;
+
+import java.util.List;
 
 public interface ProjectService extends BaseService {
 
@@ -22,16 +22,17 @@ public interface ProjectService extends BaseService {
 	
 	List<TestProjectAccessHistory> listRecentProject(Long orgId, Long userId);
 	List<TestProjectAccessHistoryVo> listRecentProjectVo(Long orgId, Long userId);
-	
+
+	TestProjectVo viewPers(UserVo userVo, Long projectId);
+	List<TestProject> list(Long orgId, String keywords, String disabled);
+	boolean isLastestProjectGroup(Long orgId, Long projectGroupId);
+
 	TestProjectVo genVo(TestProject po);
 	List<TestProjectVo> genVos(List<TestProject> pos, String keywords, String disabled);
 	List<TestProjectVo> genGroupVos(List<TestProject> pos);
 	List<TestProjectVo> genVos(List<TestProject> pos);
 	TestProjectAccessHistoryVo genHistoryVo(TestProjectAccessHistory po);
-	List<TestProjectAccessHistoryVo> genHistoryVos(
-			List<TestProjectAccessHistory> pos);
-	TestProjectVo viewPers(UserVo userVo, Long projectId);
-	List<TestProject> list(Long orgId, String keywords, String disabled);
+	List<TestProjectAccessHistoryVo> genHistoryVos(List<TestProjectAccessHistory> pos);
 	
 //	void removeCache(Long orgId);
 	

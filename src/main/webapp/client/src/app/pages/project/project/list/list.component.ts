@@ -31,35 +31,32 @@ export class ProjectList implements OnInit, AfterViewInit {
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
               private _projectService:ProjectService) {
 
-    this._state.subscribe('recent.projects.change', (data) => {
-      console.log('recent.projects.change', data);
-      this.loadData();
-    });
-  }
-
-  ngOnInit() {
-    let that = this;
-
-    that.queryForm = that.fb.group(
+    this.queryForm = this.fb.group(
       {
         'disabled': ['', []],
         'keywords': ['', []]
       }, {}
     );
+    this.queryForm.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.queryChange(values));
 
-    that.loadData();
+    this._state.subscribe('my.orgs.change', (data: any) => {
+      console.log(11);
+      this.loadData();
+    });
+  }
+
+  ngOnInit() {
+    this.loadData();
   }
 
   ngAfterViewInit() {
-    let that = this;
 
-    this.queryForm.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.queryChange(values));
   }
 
   create(type: string):void {
     let that = this;
 
-    that._routeService.navTo('/pages/project/edit/' + type + '/null');
+    that._routeService.navTo('/pages/project/null/edit/' + type);
   }
 
   queryChange(values:any):void {

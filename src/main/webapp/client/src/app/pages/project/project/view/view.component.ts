@@ -48,8 +48,7 @@ export class ProjectView implements OnInit, AfterViewInit {
     let that = this;
 
     that._projectService.view(that.id).subscribe((json:any) => {
-
-      that.accountService.changeRecentProject(json.recentProjects);
+      that.accountService.changeRecentProjects(json.recentProjects);
     });
   }
 

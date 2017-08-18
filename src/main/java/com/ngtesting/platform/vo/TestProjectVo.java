@@ -1,6 +1,8 @@
 package com.ngtesting.platform.vo;
 
 
+import javax.persistence.Transient;
+
 public class TestProjectVo extends BaseVo {
 	private static final long serialVersionUID = 8069068510875783820L;
 
@@ -12,10 +14,21 @@ public class TestProjectVo extends BaseVo {
     private String type;
     private Integer order;
     private Integer childrenNumb;
+
+	@Transient
+	private Boolean isLastestProjectGroup;
     
     private Boolean selected = false;
     private Boolean selecting = false;
-    
+
+	public Boolean getLastestProjectGroup() {
+		return isLastestProjectGroup;
+	}
+
+	public void setLastestProjectGroup(Boolean lastestProjectGroup) {
+		isLastestProjectGroup = lastestProjectGroup;
+	}
+
 	public String getName() {
 		return name;
 	}

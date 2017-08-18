@@ -292,6 +292,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		if (po.getParentId() == null) {
 			vo.setParentId(null);
 		}
+
 		return vo;
 	}
 	
@@ -356,6 +357,15 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 			history = new TestProjectAccessHistory(orgId, userId, projectId, projectName);
 		}
 		return history;
+	}
+
+	@Override
+	public boolean isLastestProjectGroup(Long orgId, Long projectGroupId) {
+		String hql = "select count(prj.id) from TestProject prj where prj.id != ?"
+				+ " and orgId=? and type=? and prj.deleted != true and prj.deleted != true";
+
+		long count = (Long) getByHQL(hql, orgId, projectGroupId, ProjectType.group);
+		return count == 0;
 	}
 
 }

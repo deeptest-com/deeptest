@@ -99,9 +99,9 @@ export class ProjectEdit implements OnInit, AfterViewInit {
     'name': {
       'required':      '姓名不能为空'
     },
-    'parentId': {
-      'required':      '项目组不能为空'
-    }
+    // 'parentId': {
+    //   'required':      '项目组不能为空'
+    // }
   };
 
   loadData() {
@@ -112,7 +112,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
       that.groups = json.groups;
       that.entityInRoles = json.entityInRoles;
 
-      that.model = !!json.data? json.data: {type: that.type, disabled: false};
+      that.model = !!json.data? json.data: {type: that.type, disabled: false, parentId: that.groups[0].id};
     });
   }
 

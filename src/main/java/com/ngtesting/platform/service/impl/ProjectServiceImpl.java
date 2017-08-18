@@ -323,7 +323,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		TestUser user = (TestUser) get(TestUser.class, userVo.getId());
 		TestProject project = getDetail(projectId);
 		
-		TestProjectAccessHistory history = getHistory(userVo.getDefaultOrgId(), userVo.getId(), projectId, project.getName());
+		TestProjectAccessHistory history = getHistory(project.getOrgId(), userVo.getId(), projectId, project.getName());
 		history.setLastAccessTime(new Date());
 		saveOrUpdate(history);
 		

@@ -138,8 +138,7 @@ public class AccountAction extends BaseAction {
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		List<TestProjectAccessHistoryVo> recentProjects 
-			= projectService.listRecentProjectVo(userVo.getDefaultOrgId(), userVo.getId());
+		List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(userVo.getDefaultOrgId(), userVo.getId());
         List<OrgVo> orgs = orgService.listVo(null, "false", userVo.getId());
 
 		ret.put("profile", userVo);

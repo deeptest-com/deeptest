@@ -9,10 +9,10 @@
       </button>
       <div class="dropdown-menu">
         <button (click)="changeOrg(item)" *ngFor="let item of myOrgs" class="dropdown-item">
-          <a [routerLink]="">
+          <span class="link">
             <span [class.transparent]="item?.id!=orgId" class="ion-checkmark"></span>
             &nbsp;{{item.name}}
-          </a>
+          </span>
         </button>
       </div>
     </div>

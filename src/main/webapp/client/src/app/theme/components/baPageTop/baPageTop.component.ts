@@ -84,8 +84,6 @@ export class BaPageTop {
   }
 
   gotoModule(module: string) {
-    console.log('CONSTANT.CURRENT_PROJECT', CONSTANT.CURRENT_PROJECT);
-
     let url = '';
     if (module == 'design') {
       url = '/pages/design/' + CONSTANT.CURRENT_PROJECT.id +'/case';
@@ -96,6 +94,11 @@ export class BaPageTop {
     }
 
     this._routeService.navTo(url);
+  }
 
+  logout() {
+    this.accountService.logout();
+
+    this._routeService.navTo('/pages/login');
   }
 }

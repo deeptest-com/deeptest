@@ -12,16 +12,18 @@ $text-color: #ffffff;
 }
 
 .auth-block {
-  width: 540px;
+  width: 600px;
   margin: 0 auto;
   border-radius: 5px;
-  @include bg-translucent-dark(0.55);
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+  background: #fff;
   color: #fff;
-  padding: 32px;
+  padding: 50px 50px 30px;
   h1 {
     font-weight: $font-light;
     margin-bottom: 28px;
     text-align: center;
+    color: #666;
   }
   p {
     font-size: 16px;
@@ -38,7 +40,7 @@ $text-color: #ffffff;
 
   .control-label {
     padding-top: 11px;
-    color: $text-color;
+    color: #666;
   }
 
   .form-group {

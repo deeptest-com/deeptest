@@ -96,10 +96,11 @@ export class AccountService {
       CONSTANT.TOKEN = JSON.parse(token);
 
       return this._reqService.post(that._getProfile, {}).map(json => {
-        that.changeProfile(json.profile);
-        that.changeMyOrgs(json.myOrgs, json.profile.defaultOrgId);
-        that.changeRecentProjects(json.recentProjects);
-
+        if (json.code == 1) {
+          that.changeProfile(json.profile);
+          that.changeMyOrgs(json.myOrgs, json.profile.defaultOrgId);
+          that.changeRecentProjects(json.recentProjects);
+        }
         return json;
       });
     } else  {
@@ -109,11 +110,10 @@ export class AccountService {
 
   logout() {
     this._reqService.post(this._logout, {}).subscribe((json:any) => {
-      if (json.code == 1) {
+      // if (json.code == 1) {
         Cookie.delete(CONSTANT.TOKEN_KEY);
-
         this.routeService.navTo('/login');
-      }
+      // }
     });
   }
 

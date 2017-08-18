@@ -8,15 +8,15 @@ import { ModuleWithProviders } from '@angular/core';
 export const routes: Routes = [
   {
     path: 'login',
-    loadChildren: './account/login/login.module'
+    loadChildren: './account/login/login.module#LoginModule'
   },
   {
     path: 'register',
-    loadChildren: './account/register/register.module'
+    loadChildren: './account/register/register.module#RegisterModule'
   },
   {
     path: 'forgot-password',
-    loadChildren: './account/forgot-password/forgot-password.module'
+    loadChildren: './account/forgot-password/forgot-password.module#ForgotPasswordModule'
   },
 
   {

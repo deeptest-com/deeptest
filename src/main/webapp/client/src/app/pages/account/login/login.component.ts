@@ -22,7 +22,7 @@ export class Login {
   constructor(fb:FormBuilder, private accountService: AccountService, private routeService: RouteService) {
     this.form = fb.group({
       'email': ['', [Validators.required, EmailValidator.validate()]],
-      'password': ['', [Validators.required, Validators.minLength(6)]],
+      'password': ['', [Validators.minLength(6)]],
       'rememberMe': []
     });
 

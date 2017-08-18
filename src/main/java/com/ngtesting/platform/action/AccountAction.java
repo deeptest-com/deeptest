@@ -199,8 +199,6 @@ public class AccountAction extends BaseAction {
 		
 		if (user != null) {
 			request.getSession().removeAttribute(Constant.HTTP_SESSION_USER_KEY);
-			
-			ret.put("token", user.getToken());
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());

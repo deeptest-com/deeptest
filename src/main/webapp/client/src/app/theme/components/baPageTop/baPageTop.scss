@@ -206,6 +206,7 @@
     }
     .dropdown-menu {
       .dropdown-item {
+        cursor: pointer;
         line-height: 1.2;
         &.next {
           margin-top: 6px;

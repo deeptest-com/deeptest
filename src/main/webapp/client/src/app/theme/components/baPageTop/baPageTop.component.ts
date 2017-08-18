@@ -20,6 +20,7 @@ export class BaPageTop {
   public profile:any = CONSTANT.PROFILE;
   project: any = CONSTANT.CURRENT_PROJECT;
   projects: any[] = CONSTANT.RECENT_PROJECTS;
+  orgId: any = CONSTANT.ORG_ID;
   myOrgs: any[] = CONSTANT.MY_ORGS;
 
   public isScrolled:boolean = false;
@@ -35,10 +36,13 @@ export class BaPageTop {
         this.isMenuCollapsed = isCollapsed;
       });
 
-      this._state.subscribe('my.orgs.change', (myOrgs) => {
-        console.log('my.orgs.change', myOrgs);
-        if (myOrgs) {
-          this.myOrgs = myOrgs;
+      this._state.subscribe('my.orgs.change', (data: any) => {
+        console.log('my.orgs.change', data);
+        if (data.currOrgId) {
+          this.orgId = data.currOrgId;
+        }
+        if (data.orgs) {
+          this.myOrgs = data.orgs;
         }
       });
 
@@ -66,10 +70,9 @@ export class BaPageTop {
   }
 
   public changeOrg(item: any) {
-    console.log(item);
-
     this.orgService.setDefault(item.id, {disabled: false}).subscribe((json:any) => {
       if (json.code == 1) {
+        this.orgId = item.id;
         this.accountService.changeRecentProject(json.recentProjects);
       }
     });

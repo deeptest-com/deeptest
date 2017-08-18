@@ -43,10 +43,11 @@ export interface CONSTANT_INTERFACE {
   UPLOAD_URI: string,
 
   TOKEN: string,
-  ORG_ID: number,
 
   PROFILE: string,
   MY_ORGS: any[],
+  ORG_ID: number,
+
   CURRENT_PROJECT: CURRENT_PROJECT_INTERFACE,
   RECENT_PROJECTS: any[],
   CUSTOM_FIELD_FOR_PROJECT: any,

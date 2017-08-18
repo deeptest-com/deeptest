@@ -98,6 +98,7 @@ export class AccountService {
       return this._reqService.post(that._getProfile, {}).map(json => {
         that.changeProfile(json.profile);
         that.changeRecentProject(json.recentProjects);
+        that.changeMyOrgs(json.myOrgs);
 
         return json;
       });
@@ -155,8 +156,19 @@ export class AccountService {
   }
 
   changeRecentProject(recentProjects: any[]) {
-    CONSTANT.CURRENT_PROJECT = {id: recentProjects[0].projectId, name: recentProjects[0].projectName};
     CONSTANT.RECENT_PROJECTS = recentProjects;
+    if (recentProjects.length > 0) {
+      CONSTANT.CURRENT_PROJECT = {id: recentProjects[0].projectId, name: recentProjects[0].projectName};
+    } else {
+      CONSTANT.CURRENT_PROJECT = {id: null, name: ''};
+    }
+
     this._state.notifyDataChanged('recent.projects.change', recentProjects);
   }
+
+  changeMyOrgs(orgs: any[]) {
+    CONSTANT.MY_ORGS = orgs;
+    this._state.notifyDataChanged('my.orgs.change', orgs);
+  }
+
 }

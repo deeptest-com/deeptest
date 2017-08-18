@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import {Injectable} from "@angular/core";
 
 import {RequestService} from "./request";
+import {CONSTANT} from "../utils/constant";
 
 @Injectable()
 export class OrgService {
@@ -28,6 +29,7 @@ export class OrgService {
   }
 
   setDefault(id: number, queryModel: any) {
+    CONSTANT.ORG_ID = id;
     let model = {id: id, keywords: queryModel.keywords, disabled: queryModel.disabled};
     return this._reqService.post(this._api_url + 'setDefault', model);
   }

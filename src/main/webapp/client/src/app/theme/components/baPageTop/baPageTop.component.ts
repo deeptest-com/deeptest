@@ -8,6 +8,7 @@ import {GlobalState} from '../../../global.state';
 import { CONSTANT } from '../../../utils/constant';
 import { Utils } from '../../../utils/utils';
 import { RouteService } from '../../../service/route';
+import {OrgService} from "../../../service/org";
 import { AccountService } from '../../../service/account';
 
 @Component({
@@ -17,25 +18,41 @@ import { AccountService } from '../../../service/account';
 })
 export class BaPageTop {
   public profile:any = CONSTANT.PROFILE;
+  project: any = CONSTANT.CURRENT_PROJECT;
   projects: any[] = CONSTANT.RECENT_PROJECTS;
+  myOrgs: any[] = CONSTANT.MY_ORGS;
 
   public isScrolled:boolean = false;
   public isMenuCollapsed:boolean = false;
+  isOrgsShow:boolean = false;
 
-  constructor(private _router:Router, private _state:GlobalState, private _routeService: RouteService, private accountService: AccountService) {
+  constructor(private _router:Router, private _state:GlobalState, private _routeService: RouteService,
+              private orgService: OrgService, private accountService: AccountService) {
     let that = this;
 
     if (!CONSTANT.PROFILE) {
+      this._state.subscribe('menu.isCollapsed', (isCollapsed) => {
+        this.isMenuCollapsed = isCollapsed;
+      });
+
+      this._state.subscribe('my.orgs.change', (myOrgs) => {
+        console.log('my.orgs.change', myOrgs);
+        if (myOrgs) {
+          this.myOrgs = myOrgs;
+        }
+      });
+
       this._state.subscribe('recent.projects.change', (projects) => {
+        console.log('recent.projects.change', projects);
         if (projects) {
           this.projects = projects;
-          console.log('recent.projects.change', this.projects);
+          this.project = CONSTANT.CURRENT_PROJECT;
         }
       });
 
       that._state.subscribe('profile.refresh', (profile) => {
+        console.log('profile.refresh', profile);
         that.profile = profile;
-        console.log('profile.refresh', that.profile);
       });
 
       this.accountService.loadProfileRemote().subscribe((data: any) => {
@@ -48,10 +65,14 @@ export class BaPageTop {
     });
   }
 
-  public toggleMenu() {
-    this.isMenuCollapsed = !this.isMenuCollapsed;
-    this._state.notifyDataChanged('menu.isCollapsed', this.isMenuCollapsed);
-    return false;
+  public changeOrg(item: any) {
+    console.log(item);
+
+    this.orgService.setDefault(item.id, {disabled: false}).subscribe((json:any) => {
+      if (json.code == 1) {
+        this.accountService.changeRecentProject(json.recentProjects);
+      }
+    });
   }
 
   public scrolledChanged(isScrolled) {

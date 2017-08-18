@@ -30,6 +30,11 @@ export class ProjectList implements OnInit, AfterViewInit {
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
               private _projectService:ProjectService) {
+
+    this._state.subscribe('recent.projects.change', (projects) => {
+      console.log('recent.projects.change', projects);
+      this.loadData();
+    });
   }
 
   ngOnInit() {

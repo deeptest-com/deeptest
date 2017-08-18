@@ -9,6 +9,8 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { RouteService } from '../service/route';
 import { RequestService } from '../service/request';
+
+import { OrgService } from '../service/org';
 import { AccountService } from '../service/account';
 
 import {
@@ -102,7 +104,8 @@ const NGA_SERVICES = [
 
   RouteService,
   RequestService,
-  AccountService
+  AccountService,
+  OrgService
 ];
 
 const NGA_VALIDATORS = [

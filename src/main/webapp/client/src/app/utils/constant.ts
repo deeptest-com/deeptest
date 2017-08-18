@@ -12,6 +12,7 @@ export var CONSTANT: CONSTANT_INTERFACE = {
   ORG_ID: undefined,
 
   PROFILE: undefined,
+  MY_ORGS: undefined,
   CURRENT_PROJECT: {id: null, name: null},
   RECENT_PROJECTS: undefined,
   CUSTOM_FIELD_FOR_PROJECT: undefined,
@@ -42,9 +43,10 @@ export interface CONSTANT_INTERFACE {
   UPLOAD_URI: string,
 
   TOKEN: string,
-  ORG_ID: string,
+  ORG_ID: number,
 
   PROFILE: string,
+  MY_ORGS: any[],
   CURRENT_PROJECT: CURRENT_PROJECT_INTERFACE,
   RECENT_PROJECTS: any[],
   CUSTOM_FIELD_FOR_PROJECT: any,

@@ -2,10 +2,25 @@
      [ngClass]="{scrolled: isScrolled}">
   <a routerLink="/pages/dashboard" class="al-logo clearfix"><span>ng</span>testing</a>
 
-<!-- <a href (click)="toggleMenu()" class="collapse-menu-link ion-navicon"></a>-->
+  <div class="menu change-orgs">
+    <div ngbDropdown class="btn-group">
+      <button class="btn btn-default" ngbDropdownToggle>
+        <span class="ion-navicon"></span>
+      </button>
+      <div class="dropdown-menu">
+        <button (click)="changeOrg(item)" *ngFor="let item of myOrgs" class="dropdown-item" class="dropdown-item">
+          <span class="link">{{item.name}}</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <div class="menu">
-    <div ngbDropdown class="btn-group">
+
+    <div *ngIf="projects?.length == 0" ngbDropdown class="btn-group">
+      <button [routerLink]="['/pages/project/list']" class="btn btn-default">测试项目</button>
+    </div>
+    <div *ngIf="projects?.length > 0" ngbDropdown class="btn-group">
       <button class="btn btn-default" ngbDropdownToggle>测试项目</button>
       <div class="dropdown-menu">
         <button class="dropdown-item">当前项目</button>
@@ -34,15 +49,15 @@
       </div>
     </div>
 
-    <div ngbDropdown class="btn-group">
+    <div *ngIf="project.id" ngbDropdown class="btn-group">
       <button (click)="gotoModule('design')" class="btn btn-default">测试设计</button>
     </div>
 
-    <div ngbDropdown class="btn-group">
+    <div *ngIf="project.id" ngbDropdown class="btn-group">
       <button (click)="gotoModule('implement')" class="btn btn-default" ngbDropdownToggle>测试实现</button>
     </div>
 
-    <div ngbDropdown class="btn-group">
+    <div *ngIf="project.id" ngbDropdown class="btn-group">
       <button (click)="gotoModule('analysis')" class="btn btn-default" ngbDropdownToggle>测试分析</button>
     </div>
 

@@ -8,6 +8,7 @@ import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.util.Constant.RespCode;
 import com.ngtesting.platform.util.PropertyConfig;
+import com.ngtesting.platform.vo.OrgVo;
 import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class AccountAction extends BaseAction {
 	
 	@Autowired
 	MailService mailService;
+
+    @Autowired
+    OrgService orgService;
 	
 	@AuthPassport(validate=false)
 	@RequestMapping(value = "login", method = RequestMethod.POST)
@@ -136,9 +140,11 @@ public class AccountAction extends BaseAction {
 		
 		List<TestProjectAccessHistoryVo> recentProjects 
 			= projectService.listRecentProjectVo(userVo.getDefaultOrgId(), userVo.getId());
+        List<OrgVo> orgs = orgService.listVo(null, "false", userVo.getId());
 
 		ret.put("profile", userVo);
 		ret.put("recentProjects", recentProjects);
+        ret.put("myOrgs", orgs);
 		
 		ret.put("code", RespCode.SUCCESS.getCode());
 

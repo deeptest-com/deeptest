@@ -9,12 +9,16 @@ export var CONSTANT: CONSTANT_INTERFACE = {
   UPLOAD_URI: 'uploadSingle',
 
   TOKEN: undefined,
-  ORG_ID: undefined,
+
 
   PROFILE: undefined,
-  MY_ORGS: undefined,
-  CURRENT_PROJECT: {id: null, name: null},
+
+  ALL_ORGS: undefined,
+  CURR_ORG_ID: undefined,
+
   RECENT_PROJECTS: undefined,
+  CURRENT_PROJECT: {id: null, name: null},
+
   CUSTOM_FIELD_FOR_PROJECT: undefined,
 
   TOKEN_KEY: 'com.ngtesting.token',
@@ -45,11 +49,13 @@ export interface CONSTANT_INTERFACE {
   TOKEN: string,
 
   PROFILE: string,
-  MY_ORGS: any[],
-  ORG_ID: number,
 
-  CURRENT_PROJECT: CURRENT_PROJECT_INTERFACE,
+  ALL_ORGS: any[],
+  CURR_ORG_ID: number,
+
   RECENT_PROJECTS: any[],
+  CURRENT_PROJECT: CURRENT_PROJECT_INTERFACE,
+
   CUSTOM_FIELD_FOR_PROJECT: any,
 
   TOKEN_KEY: string,

@@ -8,7 +8,7 @@
         <span class="ion-navicon"></span>
       </button>
       <div class="dropdown-menu">
-        <button (click)="changeOrg(item)" *ngFor="let item of myOrgs" class="dropdown-item">
+        <button (click)="changeOrg(item)" *ngFor="let item of orgs" class="dropdown-item">
           <span class="link">
             <span [class.transparent]="item?.id!=orgId" class="ion-checkmark"></span>
             &nbsp;{{item.name}}

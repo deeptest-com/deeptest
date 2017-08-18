@@ -20,8 +20,8 @@ export class BaPageTop {
   public profile:any = CONSTANT.PROFILE;
   project: any = CONSTANT.CURRENT_PROJECT;
   projects: any[] = CONSTANT.RECENT_PROJECTS;
-  orgId: any = CONSTANT.ORG_ID;
-  myOrgs: any[] = CONSTANT.MY_ORGS;
+  orgId: any = CONSTANT.CURR_ORG_ID;
+  orgs: any[] = CONSTANT.ALL_ORGS;
 
   public isScrolled:boolean = false;
   public isMenuCollapsed:boolean = false;
@@ -32,25 +32,23 @@ export class BaPageTop {
     let that = this;
 
     if (!CONSTANT.PROFILE) {
-      this._state.subscribe('menu.isCollapsed', (isCollapsed) => {
-        this.isMenuCollapsed = isCollapsed;
-      });
-
       this._state.subscribe('my.orgs.change', (data: any) => {
         console.log('my.orgs.change', data);
         if (data.currOrgId) {
           this.orgId = data.currOrgId;
         }
         if (data.orgs) {
-          this.myOrgs = data.orgs;
+          this.orgs = data.orgs;
         }
       });
 
-      this._state.subscribe('recent.projects.change', (projects) => {
-        console.log('recent.projects.change', projects);
-        if (projects) {
-          this.projects = projects;
-          this.project = CONSTANT.CURRENT_PROJECT;
+      this._state.subscribe('recent.projects.change', (data) => {
+        console.log('recent.projects.change', data);
+        if (data.recentProjects) {
+          this.projects = data.recentProjects;
+        }
+        if (data.currProject) {
+          this.project = data.currProject;
         }
       });
 

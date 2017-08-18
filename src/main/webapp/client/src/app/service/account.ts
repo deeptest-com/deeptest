@@ -97,13 +97,12 @@ export class AccountService {
 
       return this._reqService.post(that._getProfile, {}).map(json => {
         that.changeProfile(json.profile);
-        that.changeRecentProject(json.recentProjects);
         that.changeMyOrgs(json.myOrgs, json.profile.defaultOrgId);
+        that.changeRecentProject(json.recentProjects);
 
         return json;
       });
     } else  {
-      //noinspection TypeScriptUnresolvedFunction
       return Observable.of(false);
     }
   }
@@ -155,21 +154,23 @@ export class AccountService {
     this._state.notifyDataChanged('profile.refresh', profile);
   }
 
+  changeMyOrgs(orgs: any[], currOrgId: number) {
+    CONSTANT.ALL_ORGS = orgs;
+    CONSTANT.CURR_ORG_ID = currOrgId;
+    this._state.notifyDataChanged('my.orgs.change', {orgs: orgs, currOrgId: currOrgId});
+  }
+
   changeRecentProject(recentProjects: any[]) {
     CONSTANT.RECENT_PROJECTS = recentProjects;
+
     if (recentProjects.length > 0) {
       CONSTANT.CURRENT_PROJECT = {id: recentProjects[0].projectId, name: recentProjects[0].projectName};
     } else {
       CONSTANT.CURRENT_PROJECT = {id: null, name: ''};
     }
 
-    this._state.notifyDataChanged('recent.projects.change', recentProjects);
-  }
-
-  changeMyOrgs(orgs: any[], currOrgId: number) {
-    CONSTANT.MY_ORGS = orgs;
-    CONSTANT.ORG_ID = currOrgId;
-    this._state.notifyDataChanged('my.orgs.change', {orgs: orgs, currOrgId: currOrgId});
+    this._state.notifyDataChanged('recent.projects.change',
+      {recentProjects: CONSTANT.RECENT_PROJECTS, currProject: CONSTANT.CURRENT_PROJECT});
   }
 
 }

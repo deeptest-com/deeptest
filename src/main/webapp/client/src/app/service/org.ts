@@ -29,7 +29,7 @@ export class OrgService {
   }
 
   setDefault(id: number, queryModel: any) {
-    CONSTANT.ORG_ID = id;
+    CONSTANT.CURR_ORG_ID = id;
     let model = {id: id, keywords: queryModel.keywords, disabled: queryModel.disabled};
     return this._reqService.post(this._api_url + 'setDefault', model);
   }

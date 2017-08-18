@@ -31,15 +31,12 @@ export class Login {
   }
 
   onValueChanged(data?: any) {
-    let that = this;
-    if (!that.form) { return; }
+    if (!this.form) { return; }
 
-    that.formErrors = ValidatorUtils.genMsg(that.form, that.validateMsg, []);
+    this.formErrors = ValidatorUtils.genMsg(this.form, this.validateMsg, []);
   }
 
-  public onSubmit(values:Object):void {
-    let that = this;
-
+  public onSubmit(values: Object):void {
     this.accountService.login(this.model).subscribe((errors: any) => {
       this.formErrors = [errors];
     });

@@ -208,18 +208,25 @@ ba-card {
 ul.al-share {
   li {
     i.socicon {
-      &.socicon-qq {
-        background-image: url(./assets/img/app/third-part/qq.png);
+      &.socicon-img {
+        padding: 0px;
+        width: 36px;
+        height: 36px;
+        background-size: cover;
+        &.socicon-qq {
+          background-image: url(./assets/img/app/third-part/qq.png);
+        }
+        &.socicon-wechat {
+          background-image: url(./assets/img/app/third-part/wechat.png);
+        }
+        &.socicon-weibo {
+          background-image: url(./assets/img/app/third-part/weibo.png);
+        }
+        &.socicon-baidu {
+          background-image: url(./assets/img/app/third-part/baidu.png);
+        }
       }
-      &.socicon-wechat {
-        background-image: url(./assets/img/app/third-part/wechat.png);
-      }
-      &.socicon-weibo {
-        background-image: url(./assets/img/app/third-part/weibo.png);
-      }
-      &.socicon-baidu {
-        background-image: url(./assets/img/app/third-part/baidu.png);
-      }
+
     }
   }
 }

@@ -30,7 +30,7 @@ export class BaPageTop {
               private orgService: OrgService, private accountService: AccountService) {
     let that = this;
 
-    if (!CONSTANT.PROFILE) {
+    // if (!CONSTANT.PROFILE) {
       this._state.subscribe('my.orgs.change', (data: any) => {
         console.log('my.orgs.change', data);
         if (data.currOrgId) {
@@ -56,10 +56,13 @@ export class BaPageTop {
         that.profile = profile;
       });
 
-      this.accountService.loadProfileRemote().subscribe((data: any) => {
-        console.log('data', data);
+      this.accountService.loadProfileRemote().subscribe((result: any) => {
+        console.log('result', result);
+        if (!result) {
+          this._routeService.navTo('/login');
+        }
       });
-    }
+    // }
 
     this._state.subscribe('menu.isCollapsed', (isCollapsed) => {
       this.isMenuCollapsed = isCollapsed;

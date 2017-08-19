@@ -69,17 +69,17 @@ export class AccountService {
     });
   }
 
-  resetPassword(model:number) {
-    let that = this;
+  resetPassword(vcode: string, model:number) {
+    _.merge(model, {vcode: vcode});
     return this._reqService.post(this._resetPassword, model).map((json:any) => {
       let errors = undefined;
       if (json.code == 1) {
-        that.saveTokenLocal(json.token, 1);
+        this.saveTokenLocal(json.token, 1);
 
         // that.changeProfile(json.profile);
         // that.changeRecentProject(json.recentProjects);
 
-        that.routeService.navTo('/pages/dashboard');
+        this.routeService.navTo('/pages/dashboard');
       } else {
         errors = json.data;
       }
@@ -100,8 +100,11 @@ export class AccountService {
           that.changeProfile(json.profile);
           that.changeMyOrgs(json.myOrgs, json.profile.defaultOrgId);
           that.changeRecentProjects(json.recentProjects);
+
+          return Observable.of(true);
+        } else {
+          return Observable.of(false);
         }
-        return json;
       });
     } else  {
       return Observable.of(false);
@@ -112,6 +115,7 @@ export class AccountService {
     this._reqService.post(this._logout, {}).subscribe((json:any) => {
       // if (json.code == 1) {
         Cookie.delete(CONSTANT.TOKEN_KEY);
+        // CONSTANT.PROFILE = null;
         this.routeService.navTo('/login');
       // }
     });

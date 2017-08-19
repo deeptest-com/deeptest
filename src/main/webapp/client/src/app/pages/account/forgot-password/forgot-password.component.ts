@@ -37,8 +37,12 @@ export class ForgotPassword implements OnInit, AfterViewInit {
   }
 
   onSubmit():void {
-    this.accountService.resetPassword(this.model).subscribe((errors: any) => {
-      this.formErrors = [errors];
+    this.accountService.forgotPassword(this.model.email).subscribe((json: any) => {
+      if (json.code == 1) {
+        this.formErrors = ['操作成功，请访问您的邮箱设置新密码！'];
+      }  else {
+        this.formErrors = [json.msg];
+      }
     });
   }
 

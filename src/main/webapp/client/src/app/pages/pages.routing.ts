@@ -19,7 +19,7 @@ export const routes: Routes = [
     loadChildren: './account/forgot-password/forgot-password.module#ForgotPasswordModule'
   },
   {
-    path: 'reset-password',
+    path: 'reset-password/:vcode',
     loadChildren: './account/reset-password/reset-password.module#ResetPasswordModule'
   },
   {

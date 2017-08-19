@@ -157,10 +157,11 @@ public class AccountAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		String email = json.getString("email");
-		TestUser user = (TestUser) accountService.getByEmail(email);
+		TestUser user = accountService.getByEmail(email);
 		if (user == null) {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());
 			ret.put("msg", "用户不存在");
+			return ret;
 		}
 		
 		TestVerifyCode verifyCode = accountService.forgotPasswordPers(user.getId());
@@ -169,8 +170,8 @@ public class AccountAction extends BaseAction {
 			map.put("name", user.getName());
 			map.put("vcode", verifyCode.getCode());
 			// map.put("url", Constant.WEB_ROOT + "admin-path");
-			map.put("url", PropertyConfig.getConfig("admin.url.forgot.password"));
-			mailService.sendTemplateMail("[聆客]忘记密码", "forgot-password.ftl", user.getEmail(), map);
+			map.put("url", PropertyConfig.getConfig("url.reset.password") + verifyCode.getCode());
+			mailService.sendTemplateMail("[ngtesting]忘记密码", "forgot-password.ftl", user.getEmail(), map);
 			
 			ret.put("data", verifyCode);
 			ret.put("code", RespCode.SUCCESS.getCode());

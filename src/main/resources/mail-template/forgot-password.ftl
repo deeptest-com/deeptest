@@ -15,7 +15,7 @@
  	</div>
  	<br />
  	<div>
- 		请点击<a href="${url}?vcode=${vcode}">${url}</a>, 重置您的密码。
+ 		请点击 <a href="${url}?vcode=${vcode}">${url}</a>, 重置您的密码。
  	</div>
  </body>
  </html>

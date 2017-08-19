@@ -1,18 +1,17 @@
 package com.ngtesting.platform.service.impl;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
+import com.ngtesting.platform.entity.TestUser;
+import com.ngtesting.platform.entity.TestVerifyCode;
+import com.ngtesting.platform.service.AccountService;
+import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.TestUser;
-import com.ngtesting.platform.entity.TestVerifyCode;
-import com.ngtesting.platform.service.AccountService;
-import com.ngtesting.platform.vo.UserVo;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class AccountServiceImpl extends BaseServiceImpl implements AccountService {
@@ -80,7 +79,7 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 		po.setRefId(user.getId());
 		po.setCode(code);
 		po.setCreateTime(now);
-		po.setExpireTime(new Date(now.getTime() + 60 * 60 * 1000));
+		po.setExpireTime(new Date(now.getTime() + 10 * 60 * 1000));
 		saveOrUpdate(po);
 
 		return po;

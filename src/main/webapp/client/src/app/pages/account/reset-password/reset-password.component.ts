@@ -30,6 +30,7 @@ export class ResetPassword implements OnInit, AfterViewInit {
   form: any;
   vcode: string;
   checkPass: boolean = true;
+  msg: string;
   public errors: string;
 
   constructor(private _routeService: RouteService, private _route: ActivatedRoute,
@@ -46,9 +47,10 @@ export class ResetPassword implements OnInit, AfterViewInit {
     if (this.vcode) {
       this.accountService.checkResetPassword(this.vcode).subscribe((json: any) => {
         if (json.code == 1) {
-          // this.checkPass = true;
+          this.checkPass = true;
         }  else {
-          // this.checkPass = false;
+          this.checkPass = false;
+          this.msg = json.msg;
         }
       });
     }

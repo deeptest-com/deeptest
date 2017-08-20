@@ -85,6 +85,8 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 		return po;
 	}
 
+
+
 	@Override
 	public TestUser getByPhone(String phone) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
@@ -111,6 +113,23 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 			return (TestUser) ls.get(0);
 		} else {
 			return null;
+		}
+	}
+
+	@Override
+	public boolean checkResetPassword(String verifyCode) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestVerifyCode.class);
+		dc.add(Restrictions.eq("code", verifyCode));
+		dc.add(Restrictions.ge("expireTime", new Date()));
+		dc.add(Restrictions.ne("deleted", true));
+		dc.add(Restrictions.ne("disabled", true));
+		dc.addOrder(Order.desc("id"));
+		List<TestVerifyCode> ls = (List<TestVerifyCode>) findAllByCriteria(dc);
+
+		if (ls.size() < 1) {
+			return false;
+		} else {
+			return true;
 		}
 	}
 

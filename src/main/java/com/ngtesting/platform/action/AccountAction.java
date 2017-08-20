@@ -101,7 +101,26 @@ public class AccountAction extends BaseAction {
 
 		return ret;
 	}
-	
+
+    @AuthPassport(validate=false)
+    @RequestMapping(value = "checkResetPassword", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> checkResetPassword(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        String verifyCode = json.getString("vcode");
+
+        boolean success = accountService.checkResetPassword(verifyCode);
+
+        if (success) {
+            ret.put("code", RespCode.SUCCESS.getCode());
+        } else {
+            ret.put("code", RespCode.BIZ_FAIL.getCode());
+            ret.put("msg", "重置密码链接已超时失效");
+        }
+
+        return ret;
+    }
 
 	@AuthPassport(validate=false)
 	@RequestMapping(value = "resetPassword", method = RequestMethod.POST)
@@ -125,7 +144,7 @@ public class AccountAction extends BaseAction {
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());
-			ret.put("data", "重置密码失败");
+			ret.put("msg", "重置密码失败");
 		}
 
 		return ret;

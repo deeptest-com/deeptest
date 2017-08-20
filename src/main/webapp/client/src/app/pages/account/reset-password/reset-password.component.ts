@@ -15,6 +15,7 @@ import {EqualPasswordsValidator} from '../../../validator';
 import { RouteService } from '../../../service/route';
 
 import { AccountService } from '../../../service/account';
+import {TrueOrFalsePipe} from "../../../pipe/field-property";
 
 declare var jQuery;
 
@@ -28,6 +29,7 @@ export class ResetPassword implements OnInit, AfterViewInit {
   model: any = {};
   form: any;
   vcode: string;
+  checkPass: boolean = true;
   public errors: string;
 
   constructor(private _routeService: RouteService, private _route: ActivatedRoute,
@@ -40,6 +42,16 @@ export class ResetPassword implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.buildForm();
+
+    if (this.vcode) {
+      this.accountService.checkResetPassword(this.vcode).subscribe((json: any) => {
+        if (json.code == 1) {
+          // this.checkPass = true;
+        }  else {
+          // this.checkPass = false;
+        }
+      });
+    }
   }
 
   ngAfterViewInit() {

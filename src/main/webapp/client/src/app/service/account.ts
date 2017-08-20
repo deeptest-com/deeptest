@@ -23,6 +23,7 @@ export class AccountService {
   _changePassword = 'account/changePassword';
 
   _forgotPassword = 'account/forgotPassword';
+  _checkResetPassword = 'account/checkResetPassword';
   _resetPassword = 'account/resetPassword';
 
   _getProfile = 'account/getProfile';
@@ -85,6 +86,10 @@ export class AccountService {
       }
       return errors;
     });
+  }
+
+  checkResetPassword(vcode: string) {
+    return this._reqService.post(this._checkResetPassword, {vcode: vcode});
   }
 
   loadProfileRemote(): Observable<any> {

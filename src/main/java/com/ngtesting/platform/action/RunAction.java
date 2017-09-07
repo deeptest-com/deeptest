@@ -1,10 +1,14 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.entity.TestCaseInRun;
 import com.ngtesting.platform.entity.TestRun;
+import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.service.RunService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.vo.CustomFieldVo;
+import com.ngtesting.platform.vo.TestCaseInRunVo;
 import com.ngtesting.platform.vo.TestRunVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,20 +29,26 @@ import java.util.Map;
 public class RunAction extends BaseAction {
 	@Autowired
 	RunService runService;
-	
+
+    @Autowired
+    CustomFieldService customFieldService;
+
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "query", method = RequestMethod.POST)
+	@RequestMapping(value = "loadCase", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> loadCase(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		Long planId = json.getLong("planId");
-		
-		List<TestRun> ls = runService.query(planId);
 
-		List<TestRunVo> vos = runService.genVos(ls);
+        Long projectId = json.getLong("projectId");
+		Long runId = json.getLong("runId");
 
-        ret.put("data", vos);
+		List<TestCaseInRun> ls = runService.lodaCase(runId);
+		List<TestCaseInRunVo> vos = runService.genCaseVos(ls);
+
+        List<CustomFieldVo> customFieldList = customFieldService.listForCaseByProject(projectId);
+
+		ret.put("data", vos);
+        ret.put("customFields", customFieldList);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

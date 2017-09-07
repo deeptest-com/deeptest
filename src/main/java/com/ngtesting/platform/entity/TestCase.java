@@ -9,8 +9,10 @@ import java.util.List;
 public class TestCase extends BaseEntity {
 	private static final long serialVersionUID = -7253288259861070288L;
 
-    private String title;
+    private String name;
 	private Integer priority;
+    @Enumerated(EnumType.STRING)
+    private CaseType type;
 	private Integer estimate;
 
 	@Column(name = "objective", length = 1000)
@@ -19,6 +21,9 @@ public class TestCase extends BaseEntity {
 	@Column(name = "descr", length = 1000)
     private String descr;
 	private Integer ordr;
+
+    @Column(name = "pId")
+    private Long pId;
 
 	private String prop01;
     private String prop02;
@@ -43,13 +48,30 @@ public class TestCase extends BaseEntity {
     private String prop18;
     private String prop19;
     private String prop20;
-	
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "suite_id", insertable = false, updatable = false)
-    private TestSuite suite;
 
-    @Column(name = "suite_id")
-    private Long suiteId;
+    public static enum CaseType {
+        functional("functional"),
+        performance("performance"),
+        security("security");
+
+        CaseType(String val) {
+            this.val = val;
+        }
+
+        private String val;
+        public String toString() {
+            return val;
+        }
+    }
+
+    public CaseType getType() {
+        return type;
+    }
+
+    public void setType(CaseType type) {
+        type = type;
+    }
+
 	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
@@ -241,14 +263,6 @@ public class TestCase extends BaseEntity {
 //		this.props = props;
 //	}
 
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
 	public Integer getPriority() {
 		return priority;
 	}
@@ -329,19 +343,21 @@ public class TestCase extends BaseEntity {
 		this.ordr = ordr;
 	}
 
-	public TestSuite getSuite() {
-		return suite;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setSuite(TestSuite suite) {
-		this.suite = suite;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Long getSuiteId() {
-		return suiteId;
-	}
+    public Long getpId() {
+        return pId;
+    }
 
-	public void setSuiteId(Long suiteId) {
-		this.suiteId = suiteId;
-	}
+    public void setpId(Long pId) {
+        this.pId = pId;
+    }
+
+
 }

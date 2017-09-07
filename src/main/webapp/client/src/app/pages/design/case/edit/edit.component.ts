@@ -23,6 +23,7 @@ declare var jQuery;
   templateUrl: './edit.html'
 })
 export class CaseEdit implements OnInit, AfterViewInit {
+  projectId: number;
   id: number;
   model: any;
   settings: any;
@@ -37,18 +38,20 @@ export class CaseEdit implements OnInit, AfterViewInit {
 
   }
   ngOnInit() {
-    let that = this;
+    this._route.params.forEach((params: Params) => {
+      this.projectId = +params['projectId'];
+    });
 
-    that.buildForm();
+    this.buildForm();
 
     this._state.subscribe('case.change', (testCase: any) => {
       this.fields = CONSTANT.CUSTOM_FIELD_FOR_PROJECT;
 
       if (testCase) {
-        that.id = testCase.id;
-        that.loadData();
+        this.id = testCase.id;
+        this.loadData();
       } else {
-        that.model = {};
+        this.model = {};
       }
     });
 
@@ -75,10 +78,9 @@ export class CaseEdit implements OnInit, AfterViewInit {
   ngAfterViewInit() {}
 
   buildForm(): void {
-    let that = this;
     this.form = this.fb.group(
       {
-        'title': ['', [Validators.required]],
+        'name': ['', [Validators.required]],
         'objective': ['', [Validators.required]],
         'pre_condition': ['', []]
       }, {}
@@ -94,7 +96,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
 
   formErrors = [];
   validateMsg = {
-    'title': {
+    'name': {
       'required':      '简介不能为空'
     },
     'objective': {
@@ -110,11 +112,9 @@ export class CaseEdit implements OnInit, AfterViewInit {
   }
 
   save() {
-    let that = this;
-
-    that._caseService.save(that.model).subscribe((json:any) => {
+    this._caseService.save(this.projectId, this.model).subscribe((json:any) => {
       if (json.code == 1) {
-        that.model = json.data;
+        this.model = json.data;
       }
     });
   }

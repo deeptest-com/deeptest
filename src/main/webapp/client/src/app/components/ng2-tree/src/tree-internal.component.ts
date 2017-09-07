@@ -44,7 +44,7 @@ import { NodeDraggableEvent } from './draggable/draggable.events';
                 10/100
               </span>
               
-              <span *ngIf="tree.isRoot() && tree.isDragging" class="tips">按住Shift键复制</span>
+              <span *ngIf="tree.isRoot() && tree.isDragging" class="tips">按Shift复制</span>
             </div>
     
             <input type="text" class="node-value" 

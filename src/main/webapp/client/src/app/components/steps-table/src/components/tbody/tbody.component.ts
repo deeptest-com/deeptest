@@ -34,4 +34,12 @@ export class Ng2SmartTableTbodyComponent {
 
     this.grid.edit(row);
   }
+
+  onHoverRow($event, row):void {
+    row.hover = true;
+  }
+  onOutRow($event, row):void {
+    row.hover = false;
+  }
+
 }

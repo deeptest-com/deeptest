@@ -37,11 +37,10 @@ public class CaseAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		Long projectId = json.getLong("projectId");
-		Long suiteId = json.getLong("suiteId");
 		
-		List<TestCase> ls = caseService.query(suiteId);
+		List<TestCase> ls = caseService.query(projectId);
 
-		List<TestCaseVo> vos = caseService.genVos(ls);
+		List<TestCaseVo> vos = caseService.genVos(ls, false);
 
 		List<CustomFieldVo> customFieldList = customFieldService.listForCaseByProject(projectId);
 
@@ -88,6 +87,38 @@ public class CaseAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "save", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+		TestCase po = caseService.save(json, userVo.getId());
+		TestCaseVo caseVo = caseService.genVo(po, false);
+
+		ret.put("data", caseVo);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "delete", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		Long id = json.getLong("id");
+
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+		TestCase po = caseService.delete(id, userVo.getId());
+
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "move", method = RequestMethod.POST)
@@ -95,13 +126,9 @@ public class CaseAction extends BaseAction {
 	public Map<String, Object> move(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		Long id = json.getLong("id");
-		Long pid = json.getLong("pid");
-		Long prePid = json.getLong("prePid");
-		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		TestCase po = caseService.move(id, pid, prePid, userVo.getId());
+		TestCase po = caseService.movePers(json, userVo.getId());
 		TestCaseVo caseVo = po == null? null: caseService.genVo(po);
         
         ret.put("data", caseVo);
@@ -115,47 +142,12 @@ public class CaseAction extends BaseAction {
 	public Map<String, Object> rename(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		Long id = json.getLong("id");
-		String value = json.getString("value");
-		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		
-		TestCase po = caseService.rename(id, value, userVo.getId());
+		TestCase po = caseService.rename(json, userVo.getId());
 		TestCaseVo caseVo = caseService.genVo(po);
         
         ret.put("data", caseVo);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-	
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		Long id = json.getLong("id");
-		
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
-		TestCase po = caseService.delete(id, userVo.getId());
-		TestCaseVo caseVo = caseService.genVo(po);
-        
-        ret.put("data", caseVo);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-
-		TestCase po = caseService.save(json);
-		TestCaseVo caseVo = caseService.genVo(po);
-
-		ret.put("data", caseVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

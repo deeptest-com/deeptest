@@ -11,7 +11,7 @@ import { routing }       from './execution.routing';
 
 import { DirectiveModule } from '../../../directive/directive.module';
 import { SlimLoadingBarModule } from '../../../components/ng2-loading-bar';
-import { TreeModule } from '../../../components/ng2-tree';
+import { ZtreeModule } from '../../../components/ztree';
 import { StepsTableModule } from '../../../components/steps-table';
 import { CustomFieldModule } from '../../../components/custom-field';
 import { FieldShowModule } from '../../../components/field-show';
@@ -27,7 +27,6 @@ import { CaseStepService } from '../../../service/case-step';
 
 import { Execution } from './execution.component';
 import { ExecutionSuite } from './suite/suite.component';
-import { ExecutionList } from './list/list.component';
 import { ExecutionResult } from './result/result.component';
 
 @NgModule({
@@ -43,7 +42,7 @@ import { ExecutionResult } from './result/result.component';
 
     DirectiveModule,
     SlimLoadingBarModule.forRoot(),
-    TreeModule,
+    ZtreeModule,
     StepsTableModule,
     CustomFieldModule,
     FieldShowModule
@@ -51,7 +50,6 @@ import { ExecutionResult } from './result/result.component';
   declarations: [
     Execution,
     ExecutionSuite,
-    ExecutionList,
     ExecutionResult
   ],
   providers: [

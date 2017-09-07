@@ -10,37 +10,20 @@
       position: absolute;
       left: 0;
       top: 0;
-      width: 15%;
-    }
-
-    .list {
-      position: absolute;
-      left: 15%;
-      top: 0;
-      width: 40%;
+      width: 30%;
     }
 
     .result {
       position: absolute;
       right: 0;
       top: 0;
-      width: 45%;
+      width: 70%;
     }
 
-    .handle1 {
+    .handle {
       position:absolute;
       top:0;
-      left: 15%;
-      width: 3px;
-      cursor: col-resize;
-      background-color: #eeeeee;
-      z-index: 99;
-    }
-
-    .handle2 {
-      position:absolute;
-      top:0;
-      right: 45%;
+      left: 30%;
       width: 3px;
       cursor: col-resize;
       background-color: #eeeeee;

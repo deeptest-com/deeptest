@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestCase;
 import com.ngtesting.platform.entity.TestCaseStep;
@@ -24,17 +25,19 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	CustomFieldService customFieldService;
 
 	@Override
-	public List<TestCase> query(Long suiteId) {
+	public List<TestCase> query(Long projectId) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestCase.class);
-        
-        if (suiteId != null) {
-        	dc.add(Restrictions.eq("suiteId", suiteId));
+
+        if (projectId != null) {
+        	dc.add(Restrictions.eq("projectId", projectId));
         }
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+
+		dc.addOrder(Order.asc("pId"));
         dc.addOrder(Order.asc("ordr"));
-        dc.addOrder(Order.asc("id"));
+
         List<TestCase> ls = findAllByCriteria(dc);
         
         return ls;
@@ -49,60 +52,16 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	}
 
 	@Override
-	public List<TestCaseVo> genVos(List<TestCase> pos) {
-        List<TestCaseVo> vos = new LinkedList<TestCaseVo>();
-
-        for (TestCase po: pos) {
-        	TestCaseVo vo = genVo(po);
-        	vos.add(vo);
-        }
-		return vos;
-	}
-
-	@Override
-	public TestCaseVo genVo(TestCase po) {
-		TestCaseVo vo = new TestCaseVo();
-
-		BeanUtilEx.copyProperties(vo, po);
-
-        vo.setSteps(new LinkedList<TestCaseStepVo>());
-
-		List<TestCaseStep> steps = po.getSteps();
-		for (TestCaseStep step : steps) {
-
-			TestCaseStepVo stepVo = new TestCaseStepVo(
-					step.getId(), step.getOpt(), step.getExpect(), step.getOrdr(), step.getTestCaseId());
-
-			vo.getSteps().add(stepVo);
-		}
-
-//		List<TestCaseProp> props = po.getProps();
-//		for (TestCaseProp propPo : props) {
-//
-//			TestCasePropVo propVo = new TestCasePropVo(propPo.getId(), propPo.getCode(),
-//                    propPo.getLabel(), propPo.getValue(), propPo.getFieldId());
-//
-////			CustomFieldVo fieldVo = new CustomFieldVo();
-////			BeanUtilEx.copyProperties(fieldVo, propPo.getField());
-////			propVo.setField(fieldVo);
-//
-//			vo.getProps().add(propVo);
-//		}
-
-		return vo;
-	}
-
-	@Override
 	public TestCase create(Long id, String title, String type, Long pid, Long userId) {
 		TestCase parent = (TestCase) get(TestCase.class, pid);
 		
 		TestCase testCase = new TestCase();
-		testCase.setTitle(title);
-		testCase.setSuiteId(pid);
+		testCase.setName(title);
+		testCase.setpId(pid);
 		testCase.setProjectId(parent.getProjectId());
 		testCase.setUserId(userId);
 		
-		testCase.setOrdr(getChildMaxOrderNumb(parent) + 1);
+		testCase.setOrdr(getChildMaxOrderNumb(parent.getId()) + 1);
 		
 		saveOrUpdate(testCase);
 		
@@ -110,28 +69,63 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	}
 
 	@Override
-	public TestCase rename(Long id, String value, Long id2) {
-		// TODO Auto-generated method stub
-		return null;
+	public TestCase rename(JSONObject json, Long userId) {
+        TestCase testCase = JSON.parseObject(JSON.toJSONString(json), TestCase.class);
+        testCase.setUserId(userId);
+
+        if (testCase.getOrdr() == null) {
+            testCase.setOrdr(getChildMaxOrderNumb(testCase.getpId()));
+        }
+
+        saveOrUpdate(testCase);
+        return testCase;
 	}
 	
 	@Override
-	public TestCase move(Long id, Long pid, Long prePid, Long id2) {
-		
-		
-		return null;
+	public TestCase movePers(JSONObject json, Long userId) {
+        Long srcId = json.getLong("srcId");
+        Long targetId = json.getLong("targetId");
+        String moveType = json.getString("moveType");
+        Boolean isCopy = json.getBoolean("isCopy");
+
+        TestCase src = (TestCase) get(TestCase.class, srcId);;
+        TestCase target = (TestCase) get(TestCase.class, targetId);
+
+        TestCase srcCase;
+        if (isCopy) {
+            srcCase = new TestCase();
+            BeanUtilEx.copyProperties(srcCase, src);
+            srcCase.setId(null);
+        } else {
+            srcCase = src;
+        }
+
+        if ("inner".equals(moveType)) {
+            srcCase.setpId(target.getId());
+        } else if ("prev".equals(moveType)) {
+            String hql = "update TestCase c set c.ordr = c.ordr+1 where c.ordr >= ?";
+            getDao().queryHql(hql, target.getOrdr());
+            srcCase.setOrdr(target.getOrdr());
+        } else if ("next".equals(moveType)) {
+            String hql = "update TestCase c set c.ordr = c.ordr+1 where c.ordr > ?";
+            getDao().queryHql(hql, target.getOrdr());
+            srcCase.setOrdr(target.getOrdr() + 1);
+        }
+
+        saveOrUpdate(srcCase);
+		return srcCase;
 	}
 
 	@Override
-	public TestCase save(JSONObject json) {
-		TestCase testCase = (TestCase) get(TestCase.class, json.getLong("id"));
+	public TestCase save(JSONObject json, Long userId) {
+        TestCase testCase = JSON.parseObject(JSON.toJSONString(json), TestCase.class);
+        testCase.setUserId(userId);
 
-//		long i = 0;
-//		while (i < 10000) {
-//			create(i, "性能测试", "leaf", Long.valueOf(2), Long.valueOf(-1));
-//			i++;
-//		}
+        if (testCase.getOrdr() == null) {
+            testCase.setOrdr(getChildMaxOrderNumb(testCase.getpId()));
+        }
 
+        saveOrUpdate(testCase);
 		return testCase;
 	}
 
@@ -144,7 +138,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 		TestCase testCase = (TestCase) get(TestCase.class, id);
 
 		if ("title".equals(prop)) {
-			testCase.setTitle(value);
+			testCase.setName(value);
 		} else if ("objective".equals(prop)) {
             testCase.setObjective(value);
         } else if ("prop01".equals(prop)) {
@@ -207,21 +201,86 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	}
 
 	@Override
-	public TestCase delete(Long vo, Long clientId) {
-		// TODO Auto-generated method stub
-		return null;
+	public TestCase delete(Long id, Long userId) {
+        TestCase testCase = (TestCase) get(TestCase.class, id);
+        testCase.setDeleted(true);
+        testCase.setUserId(userId);
+        saveOrUpdate(testCase);
+
+        return testCase;
 	}
 	
-	private Integer getChildMaxOrderNumb(TestCase parent) {
-		String hql = "select max(orderInParent) from TestCase where parentId = " + parent.getId();
+	private Integer getChildMaxOrderNumb(Long parentId) {
+		String hql = "select max(ordr) from TestCase where pId = " + parentId;
 		Integer maxOrder = (Integer) getByHQL(hql);
 		
 		if (maxOrder == null) {
 			maxOrder = 0;
 		}
         
-		return maxOrder;
+		return maxOrder + 1;
 	}
+
+    @Override
+    public List<TestCaseVo> genVos(List<TestCase> pos) {
+        List<TestCaseVo> vos = new LinkedList<TestCaseVo>();
+
+        for (TestCase po: pos) {
+            TestCaseVo vo = genVo(po);
+            vos.add(vo);
+        }
+        return vos;
+    }
+    @Override
+    public List<TestCaseVo> genVos(List<TestCase> pos, boolean withSteps) {
+        List<TestCaseVo> vos = new LinkedList<TestCaseVo>();
+
+        for (TestCase po: pos) {
+            TestCaseVo vo = genVo(po, withSteps);
+            vos.add(vo);
+        }
+        return vos;
+    }
+
+    @Override
+    public TestCaseVo genVo(TestCase po) {
+	    return genVo(po, true);
+    }
+
+    @Override
+    public TestCaseVo genVo(TestCase po, boolean withSteps) {
+        TestCaseVo vo = new TestCaseVo();
+
+        BeanUtilEx.copyProperties(vo, po);
+
+        vo.setSteps(new LinkedList<TestCaseStepVo>());
+
+        if (withSteps) {
+            List<TestCaseStep> steps = po.getSteps();
+            for (TestCaseStep step : steps) {
+
+                TestCaseStepVo stepVo = new TestCaseStepVo(
+                        step.getId(), step.getOpt(), step.getExpect(), step.getOrdr(), step.getTestCaseId());
+
+                vo.getSteps().add(stepVo);
+            }
+        }
+
+//		List<TestCaseProp> props = po.getProps();
+//		for (TestCaseProp propPo : props) {
+//
+//			TestCasePropVo propVo = new TestCasePropVo(propPo.getId(), propPo.getCode(),
+//                    propPo.getLabel(), propPo.getValue(), propPo.getFieldId());
+//
+////			CustomFieldVo fieldVo = new CustomFieldVo();
+////			BeanUtilEx.copyProperties(fieldVo, propPo.getField());
+////			propVo.setField(fieldVo);
+//
+//			vo.getProps().add(propVo);
+//		}
+
+        return vo;
+    }
 
 }
 

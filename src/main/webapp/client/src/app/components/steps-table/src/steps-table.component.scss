@@ -33,9 +33,15 @@
         td {
           vertical-align: middle;
           line-height: 22px !important;
+          text-align: center !important;
+          &.ng2-smart-seq-act {
+            width: 50px;
+          }
+          &.ng2-smart-seq-numb {
+            width: 50px;
+          }
           &.ng2-smart-actions {
-            width: 70px;
-            text-align: center !important;
+            width: 100px;
           }
           .my-cols {
             display: flex;
@@ -45,6 +51,7 @@
             .my-col {
               flex: 1;
               margin: 0 3px 0 0;
+              text-align: left;
               .pre {
                 white-space: pre-line;
                 word-wrap: break-word;

@@ -8,19 +8,22 @@ import java.util.List;
 
 public interface CaseService extends BaseService {
 
-	List<TestCase> query(Long sutieId);
+	List<TestCase> query(Long projectId);
 	TestCaseVo getById(Long caseId);
 
-	List<TestCaseVo> genVos(List<TestCase> pos);
-
-	TestCaseVo genVo(TestCase po);
-	
+    TestCase rename(JSONObject json, Long userId);
 	TestCase delete(Long vo, Long userId);
-	TestCase move(Long id, Long pid, Long prePid, Long userId);
+	TestCase movePers(JSONObject json, Long userId);
+
 	TestCase create(Long id, String value, String type, Long pid, Long userId);
-	TestCase rename(Long id, String value, Long userId);
-	TestCase save(JSONObject json);
+	TestCase save(JSONObject json, Long userId);
 
     TestCase saveField(JSONObject json);
 	TestCase saveCustomizedField(JSONObject json);
+
+    List<TestCaseVo> genVos(List<TestCase> pos);
+    List<TestCaseVo> genVos(List<TestCase> pos, boolean withSteps);
+
+    TestCaseVo genVo(TestCase po);
+    TestCaseVo genVo(TestCase po, boolean withSteps);
 }

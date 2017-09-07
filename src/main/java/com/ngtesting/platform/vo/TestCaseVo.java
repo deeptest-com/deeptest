@@ -6,11 +6,14 @@ import java.util.List;
 public class TestCaseVo extends BaseVo {
 	private static final long serialVersionUID = -5955583523485410239L;
 	
-	private String title;
+	private String name;
 	private Integer priority;
 	private Integer estimate;
+    private String type;
 	private String objective;
     private String descr;
+    private Integer ordr;
+	private Long pId;
 
 	private String prop01;
 	private String prop02;
@@ -43,16 +46,49 @@ public class TestCaseVo extends BaseVo {
         super();
     }
 
-    public TestCaseVo(Long id, String title, Integer priority, Integer estimate, String objective, String descr) {
+    public TestCaseVo(Long id, Long pId, String name, Integer priority, Integer estimate, String objective, String descr) {
         super();
 
 		this.id = id;
-        this.title = title;
+		this.pId = pId;
+        this.name = name;
         this.priority = priority;
         this.estimate = estimate;
         this.objective = objective;
         this.descr = descr;
     }
+
+    public Integer getOrdr() {
+        return ordr;
+    }
+
+    public void setOrdr(Integer ordr) {
+        this.ordr = ordr;
+    }
+
+    public String getType() {
+        return this.type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Long getpId() {
+		return pId;
+	}
+
+	public void setpId(Long pId) {
+		this.pId = pId;
+	}
 
 	public String getProp01() {
 		return prop01;
@@ -212,14 +248,6 @@ public class TestCaseVo extends BaseVo {
 
 	public void setProp20(String prop20) {
 		this.prop20 = prop20;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
 	}
 
 	public Integer getPriority() {

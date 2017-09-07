@@ -14,8 +14,8 @@ export class RunService {
 
   _api_url = 'run/';
 
-  query(planId: number) {
-    return this._reqService.post(this._api_url + 'query', {projectId: CONSTANT.CURRENT_PROJECT.id, planId: planId});
+  loadCase(projectId: number, runId: number) {
+    return this._reqService.post(this._api_url + 'loadCase', {projectId: projectId, runId: runId});
   }
 
   get(id: number) {

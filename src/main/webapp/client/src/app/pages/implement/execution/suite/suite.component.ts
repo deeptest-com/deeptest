@@ -17,56 +17,59 @@ import {CONSTANT} from "../../../../utils/constant";
 import {Utils} from "../../../../utils/utils";
 import {RouteService} from "../../../../service/route";
 import {SlimLoadingBarService} from "../../../../components/ng2-loading-bar";
-import {TreeService} from "../../../../components/ng2-tree/src/tree.service";
-import {SuiteService} from "../../../../service/suite";
+import {RunService} from "../../../../service/run";
 
 @Component({
   selector: 'execution-suite',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['./suite.scss', '../../../../components/ng2-tree/src/styles.scss'],
+  styleUrls: ['./suite.scss',
+    '../../../../../vendor/ztree/css/zTreeStyle/zTreeStyle.css',
+    '../../../../components/ztree/src/styles.scss'],
   templateUrl: './suite.html'
 })
 export class ExecutionSuite implements OnInit, AfterViewInit {
-  query:any = {keywords: '', status: ''};
-
-  public options: TreeOptions = {
-    usage: 'exe',
-    isExpanded: true,
-    nodeName: '用例',
-    folderName: '模块'
-  }
-  public tree:TreeModel;
+  runId: number;
+  projectId: number;
+  public treeModel: any;
+  public treeSettings: any = {};
 
   constructor(private _routeService:RouteService, private _route: ActivatedRoute, private _state:GlobalState,
-              private _treeService:TreeService, private _sutieService: SuiteService,
+              private _runService: RunService,
               private slimLoadingBarService:SlimLoadingBarService) {
 
   }
 
   ngOnInit() {
-    let that = this;
-    that.loadData();
+    this._route.params.forEach((params: Params) => {
+      this.projectId = +params['projectId'];
+      this.runId = +params['runId'];
+    });
   }
 
   ngAfterViewInit() {
 
   }
 
-  loadData() {
-    let that = this;
+  loadData(deferred?: any) {
     this.startLoading();
-    that._sutieService.query(CONSTANT.CURRENT_PROJECT.id, that.query).subscribe((json:any) => {
-      that.tree = json.data;
+
+    this._runService.loadCase(this.projectId, this.runId).subscribe((json:any) => {
+      this.treeModel = json.data;
       CONSTANT.CUSTOM_FIELD_FOR_PROJECT = json.customFields;
 
-      that.completeLoading();
-      this._state.notifyDataChanged('title.change', '测试用例');
+      deferred.resolve(this.treeModel);
+
+      this.completeLoading();
     });
   }
 
   public onNodeSelected(e:NodeSelectedEvent):void {
     console.log('===', e);
     this._state.notifyDataChanged('exe.suite.change', {id: e.node.node.id, tm: new Date().getTime()});
+  }
+
+  reSearchEvent(event: any) {
+    this.loadData(event.deferred);
   }
 
   startLoading() {

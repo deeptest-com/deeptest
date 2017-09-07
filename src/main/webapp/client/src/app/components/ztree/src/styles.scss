@@ -1,0 +1,143 @@
+span.tmpzTreeMove_arrow {
+  background-image: none !important;
+  margin-top: 0px !important;
+  &:before {
+    font-family: "Ionicons";
+    //height:12px !important;
+    //line-height: 12px;
+    //font-size: 12px !important;
+    content: "\f109";
+  }
+}
+
+.ztree-toolbar {
+  display: flex;
+  padding: 5px 5px 5px 5px;
+  border-bottom: 1px solid #eeeeee !important;
+  line-height: 25px;
+  font-size: 14px;
+  background-color: #F0F3F4;
+  label {
+    flex: 1;
+    line-height: 27px;
+    font-size: 13px;
+  }
+  .form-control {
+    vertical-align: baseline;
+    width: 120px;
+  }
+}
+
+.ztree {
+  * {
+    font-size: 14px !important;
+    line-height: 24px !important;
+
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  a {
+    margin-left: -3px;
+    padding: 0 3px 0 0px !important;
+    height: 26px !important;
+    border: 1px solid transparent;
+    &.tmpTargetNode_inner {
+      padding: 0 3px 0 0px !important;
+      height: 26px !important;
+      background: #f5f5f5 !important;
+      border: 1px solid #ccc !important;
+      color: #333;
+    }
+
+    &.curSelectedNode{
+      padding: 0 3px 0 0px !important;
+      background-color: #f8faff !important;
+      border: 1px solid #dae2ea !important;
+      color: #209e91;
+    }
+    &:hover {
+      padding: 0 3px 0 0px !important;
+      height: 26px !important;
+      border: 1px solid #dae2ea;
+      background: #f8faff;
+      border-radius: 3px;
+    }
+
+    .node_name {
+      margin-left: 8px;
+    }
+
+    input.rename {
+      height: 22px;
+      font-size: 18px;
+    }
+  }
+
+  .button {
+    display: inline-block;
+    width: 25px;
+    height: 24px !important;
+    line-height: 24px !important;
+    padding: 0 5px;
+    font-weight: bold;
+    color: #757575;
+    text-align: center;
+    cursor: pointer;
+
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    &.ico_open,&.ico_close,&.ico_docu,&.add,&.edit,&.remove {
+      background-image: none;
+    }
+
+    &.switch {
+      margin: 4px 0 !important;
+      height: 20px !important;
+
+      &.center_docu, &.bottom_docu {
+        margin: 0 !important;
+        height: 26px !important;
+      }
+
+      &.center_docu {
+        background-position: -56px -14px;
+      }
+      &.bottom_docu {
+        background-position: -56px -32px;
+      }
+    }
+
+    &.ico_open:before {
+      font-family: FontAwesome;
+      content: "\f115";
+    }
+    &.ico_close:before {
+      font-family: FontAwesome;
+      content: "\f114";
+    }
+    &.ico_docu:before {
+      font-family: FontAwesome;
+      content: "\f016";
+    }
+
+    &.add,&.edit,&.remove {
+      width: 17px;
+      font-family: "Ionicons";
+      padding: 0 0 0 5px;
+    }
+    &.add:before {
+      content: "\F218";
+    }
+    &.edit:before {
+      content: "\F2BF";
+    }
+    &.remove:before {
+      content: "\F252";
+    }
+
+  }
+
+}

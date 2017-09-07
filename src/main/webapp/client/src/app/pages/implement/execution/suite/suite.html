@@ -1,7 +1,6 @@
 <div class="execution-suite">
   <ng2-slim-loading-bar></ng2-slim-loading-bar>
-  <tree [tree]="tree"
-        [options]="options"
 
-        (nodeSelected)="onNodeSelected($event)"></tree>
+  <ztree [treeSettings]="treeSettings" (reSearchEvent)="reSearchEvent($event)"></ztree>
+
 </div>

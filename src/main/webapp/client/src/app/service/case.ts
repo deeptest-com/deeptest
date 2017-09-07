@@ -14,8 +14,8 @@ export class CaseService {
 
   _api_url = 'case/';
 
-  query(suiteId: number) {
-    return this._reqService.post(this._api_url + 'query', {suiteId: suiteId});
+  query(projectId: number) {
+    return this._reqService.post(this._api_url + 'query', {projectId: projectId});
   }
 
   get(id: number) {
@@ -23,35 +23,29 @@ export class CaseService {
     return this._reqService.post(this._api_url + 'get', model);
   }
 
-  save(model: number) {
+  rename(projectId: number, model: any) {
+    _.merge(model, {projectId: projectId})
+    return this._reqService.post(this._api_url + 'save', model);
+  }
+
+  delete(id: any) {
+    let model = {id: id};
+    return this._reqService.post(this._api_url + 'delete', model);
+  }
+
+  move(data: any) {
+    let model = {srcId: data.FAILURE_STRING_INSIDE};
+    return this._reqService.post(this._api_url + 'move', data);
+  }
+
+  save(projectId: number, model: any) {
+    _.merge(model, {projectId: projectId})
     return this._reqService.post(this._api_url + 'save', model);
   }
 
   create(node: TreeModel) {
     let model = {id: node.id, value: node.value, type: node.type, pid: node.pid};
     return this._reqService.post(this._api_url + 'create', model);
-  }
-
-  move(target: TreeModel, src: TreeModel, options: any) {
-    let model;
-    if (options.mode === 'inner') {
-      model = {id: src.id, newPid: target.id, prePid: src.pid};
-    } else {
-      model = {id: src.id, newPid: target.pid, prePid: src.pid};
-    }
-    _.merge(model, options);
-    return this._reqService.post(this._api_url + 'move', model);
-  }
-
-  rename(node: TreeModel) {
-    console.log('rename');
-    let model = {id: node.id, value: node.value, type: node.type, pid: node.pid};
-    return this._reqService.post(this._api_url + 'rename', model);
-  }
-
-  delete(node: TreeModel) {
-    let model = {id: node.id};
-    return this._reqService.post(this._api_url + 'delete', model);
   }
 
   saveField (id: number, field: any) {

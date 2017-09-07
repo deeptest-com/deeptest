@@ -1,11 +1,13 @@
 <div class="case-suite">
   <ng2-slim-loading-bar></ng2-slim-loading-bar>
-  <tree [tree]="tree"
-        [options]="options"
-        (nodeRemovedRemote)="onNodeRemovedRemote($event)"
-        (nodeRenamedRemote)="onNodeRenamedRemote($event)"
-        (nodeMovedRemote)="onNodeMovedRemote($event)"
-        (nodeCreatedRemote)="onNodeCreatedRemote($event)"
 
-        (nodeSelected)="onNodeSelected($event)"></tree>
+  <ztree [treeSettings]="treeSettings"
+         (reSearchEvent)="reSearch($event)"
+         (renameEvent)="rename($event)"
+         (removeEvent)="remove($event)"
+         (moveEvent)="move($event)"
+
+         (dropEvent)="drop($event)"
+  ></ztree>
+
 </div>

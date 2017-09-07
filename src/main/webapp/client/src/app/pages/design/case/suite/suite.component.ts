@@ -12,108 +12,84 @@ import {
   TreeOptions
 } from "../../../../components/ng2-tree";
 
+
 import {GlobalState} from "../../../../global.state";
 import {CONSTANT} from "../../../../utils/constant";
 import {Utils} from "../../../../utils/utils";
 import {RouteService} from "../../../../service/route";
 import {SlimLoadingBarService} from "../../../../components/ng2-loading-bar";
-import {TreeService} from "../../../../components/ng2-tree/src/tree.service";
-import {SuiteService} from "../../../../service/suite";
+import {CaseService} from "../../../../service/case";
+
+declare var jQuery;
 
 @Component({
   selector: 'case-suite',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['./suite.scss', '../../../../components/ng2-tree/src/styles.scss'],
+  styleUrls: ['./suite.scss',
+    '../../../../../vendor/ztree/css/zTreeStyle/zTreeStyle.css',
+    '../../../../components/ztree/src/styles.scss'],
   templateUrl: './suite.html'
 })
 export class CaseSuite implements OnInit, AfterViewInit {
-  query:any = {keywords: '', status: ''};
 
-  public options: TreeOptions = {
-    usage: 'design',
-    isExpanded: false,
-    nodeName: '用例',
-    folderName: '模块'
-  }
-  public tree:TreeModel;
+  projectId: number;
+  public treeModel: any;
+  public treeSettings: any = {};
 
   constructor(private _routeService:RouteService, private _route: ActivatedRoute, private _state:GlobalState,
-              private _treeService:TreeService, private _sutieService: SuiteService,
+              private _caseService:CaseService,
               private slimLoadingBarService:SlimLoadingBarService) {
+
 
   }
 
   ngOnInit() {
-    let that = this;
-    that.loadData();
+    this._route.params.forEach((params: Params) => {
+      this.projectId = +params['projectId'];
+    });
   }
 
   ngAfterViewInit() {
 
   }
 
-  delete(eventId:string):void {
+  delete(id:string):void {
 
   }
 
-  loadData() {
-    let that = this;
+  loadData(deferred?: any) {
     this.startLoading();
-    that._sutieService.query(CONSTANT.CURRENT_PROJECT.id, that.query).subscribe((json:any) => {
-      that.tree = json.data;
+
+    this._caseService.query(this.projectId).subscribe((json:any) => {
+      this.treeModel = json.data;
       CONSTANT.CUSTOM_FIELD_FOR_PROJECT = json.customFields;
 
-      that.completeLoading();
-      this._state.notifyDataChanged('title.change', '测试用例');
+      deferred.resolve(this.treeModel);
+
+      this.completeLoading();
+    });
+
+  }
+
+  reSearch(event: any) {
+    this.loadData(event.deferred);
+  }
+  rename(event: any) {
+    let testCase = event.data;
+    this._caseService.rename(this.projectId, testCase).subscribe((json:any) => {
+      event.deferred.resolve(json.data);
     });
   }
-
-  public onNodeRemovedRemote(e:NodeRemovedRemoteEvent):void {
-    let that = this;
-    this.logEvent(e, 'NodeRemovedRemoteEvent');
-
-    this.startLoading();
-    that._sutieService.delete(e.node.node).subscribe((json:any) => {
-      this._treeService.fireNodeRemoved(e.node);
-      that.completeLoading();
+  remove(event: any) {
+    let testCase = event.data;
+    this._caseService.delete(testCase.id).subscribe((json:any) => {
+      event.deferred.resolve(json.data);
     });
   }
-
-  public onNodeMovedRemote(e:NodeMovedRemoteEvent):void {
-    let that = this;
-    this.logEvent(e, 'NodeMovedRemoteEvent');
-    this.startLoading();
-    that._sutieService.move(e.node.node, e.srcTree.node, e.options).subscribe((json:any) => {
-      this._treeService.fireNodeMoved(e.node, e.srcTree, e.options);
-      that.completeLoading();
+  move(event: any) {
+    this._caseService.move(event.data).subscribe((json:any) => {
+      event.deferred.resolve(json.data);
     });
-  }
-
-  public onNodeRenamedRemote(e:NodeRenamedEvent):void {
-    let that = this;
-    this.logEvent(e, 'NodeRenamedEvent');
-    this.startLoading();
-    that._sutieService.rename(e.node.node).subscribe((json:any) => {
-      that.completeLoading();
-    });
-  }
-
-  public onNodeCreatedRemote(e:NodeCreatedEvent):void {
-    let that = this;
-    that.logEvent(e, 'NodeCreatedEvent');
-    this.startLoading();
-    that._sutieService.create(e.node.node).subscribe((json:any) => {
-      e.node.node.id = json.data.id;
-      that.completeLoading();
-    });
-  }
-
-  public onNodeSelected(e:NodeSelectedEvent):void {
-    this._state.notifyDataChanged('design.suite.change', e.node.node.id);
-  }
-
-  public logEvent(e:NodeEvent, message:string):void {
-    console.log(e, message);
   }
 
   startLoading() {

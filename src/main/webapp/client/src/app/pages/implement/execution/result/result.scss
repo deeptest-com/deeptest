@@ -4,6 +4,11 @@
   .my-validate-form .form-group label {
     max-width: 60px;
   }
+  .result-button {
+    button {
+      margin-right: 8px;
+    }
+  }
 
   .property {
     table {
@@ -23,7 +28,9 @@
           color: #303030;
         }
         .value {
+          .smart-edit {
 
+          }
         }
 
       }

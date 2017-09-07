@@ -11,7 +11,7 @@ import { routing }       from './case.routing';
 
 import { DirectiveModule } from '../../../directive/directive.module';
 import { SlimLoadingBarModule } from '../../../components/ng2-loading-bar';
-import { TreeModule } from '../../../components/ng2-tree';
+import { ZtreeModule } from '../../../components/ztree';
 import { StepsTableModule } from '../../../components/steps-table';
 import { CustomFieldModule } from '../../../components/custom-field';
 
@@ -25,7 +25,6 @@ import { CaseStepService } from '../../../service/case-step';
 
 import { Case } from './case.component';
 import { CaseSuite } from './suite/suite.component';
-import { CaseList } from './list/list.component';
 import { CaseEdit } from './edit/edit.component';
 
 @NgModule({
@@ -41,14 +40,13 @@ import { CaseEdit } from './edit/edit.component';
 
     DirectiveModule,
     SlimLoadingBarModule.forRoot(),
-    TreeModule,
+    ZtreeModule,
     StepsTableModule,
     CustomFieldModule
   ],
   declarations: [
     Case,
     CaseSuite,
-    CaseList,
     CaseEdit
   ],
   providers: [

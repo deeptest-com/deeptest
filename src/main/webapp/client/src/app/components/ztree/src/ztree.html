@@ -1,0 +1,15 @@
+<div class="ztree-container">
+
+  <div class="ztree-toolbar">
+    <form class="form-inline">
+      <label (click)="expandOrNot()" class="link no-underline mr-xs-2">
+        <span *ngIf="!isExpanded">全部展开</span>
+        <span *ngIf="isExpanded">全部收缩</span>
+      </label>
+      <input [formControl]="keywordsControl" [value]="keywords" name="keywords" type="search" class="form-control form-control-sm" placeholder="过滤">
+    </form>
+  </div>
+
+  <ul id="tree" class="ztree"></ul>
+
+</div>

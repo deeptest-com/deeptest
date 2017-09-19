@@ -1,5 +1,7 @@
 package com.ngtesting.platform.entity;
 
+import org.hibernate.annotations.Where;
+
 import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -88,6 +90,7 @@ public class TestCase extends BaseEntity {
     private Long userId;
 
 	@OneToMany(mappedBy="testCase", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    @Where(clause="!deleted")
 	@OrderBy("ordr")
 	private List<TestCaseStep> steps = new LinkedList<>();
 

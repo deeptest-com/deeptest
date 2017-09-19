@@ -8,8 +8,10 @@ public interface CaseStepService extends BaseService {
 
 	TestCaseStep save(JSONObject vo, Long userId);
 	TestCaseStep changeOrder(JSONObject vo, String direction, Long userId);
+	void createSampleStep(Long caseId);
 	boolean delete(Long stepId, Long userId);
 
 	TestCaseStepVo genVo(TestCaseStep step);
+
 
 }

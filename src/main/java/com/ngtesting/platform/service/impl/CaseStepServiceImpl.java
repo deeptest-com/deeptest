@@ -24,8 +24,17 @@ public class CaseStepServiceImpl extends BaseServiceImpl implements CaseStepServ
     }
 
     @Override
-    public boolean delete(Long stepId, Long userId) {
+    public void createSampleStep(Long caseId) {
+        TestCaseStep step = new TestCaseStep(caseId, "步骤", "期待结果", 1);
+        step.setTestCaseId(caseId);
+        saveOrUpdate(step);
+    }
 
+    @Override
+    public boolean delete(Long stepId, Long userId) {
+        TestCaseStep step = (TestCaseStep) get(TestCaseStep.class, stepId);
+        step.setDeleted(true);
+        saveOrUpdate(step);
         return true;
     }
 

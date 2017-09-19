@@ -132,6 +132,8 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
       console.log('success to rename', data);
       treeNode.id = data.id;
       treeNode.ordr = data.ordr;
+
+      this._state.notifyDataChanged('case.change', treeNode);
     }).catch((err) => {console.log('err', err);});
 
     this.renameEvent.emit({

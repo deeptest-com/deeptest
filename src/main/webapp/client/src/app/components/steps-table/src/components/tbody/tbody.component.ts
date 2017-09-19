@@ -27,6 +27,13 @@ export class Ng2SmartTableTbodyComponent {
 
   }
 
+  onCreate(event: any) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.grid.create(this.grid.getNewRow(), this.createConfirm, null);
+  }
+
   onEdit(row: any) {
 
     event.preventDefault();

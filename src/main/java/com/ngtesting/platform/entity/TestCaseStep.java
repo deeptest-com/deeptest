@@ -20,6 +20,18 @@ public class TestCaseStep extends BaseEntity {
 	@Column(name = "test_case_id")
 	private Long testCaseId;
 
+
+	public TestCaseStep() {
+		super();
+	}
+	public TestCaseStep(Long caseId, String opt, String expect, Integer ordr) {
+		super();
+		this.testCaseId = caseId;
+		this.opt = opt;
+		this.expect = expect;
+		this.ordr = ordr;
+	}
+
 	public String getOpt() {
 		return opt;
 	}

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestCase;
 import com.ngtesting.platform.entity.TestCaseStep;
 import com.ngtesting.platform.service.CaseService;
+import com.ngtesting.platform.service.CaseStepService;
 import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.TestCaseStepVo;
@@ -23,6 +24,9 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
 	@Autowired
 	CustomFieldService customFieldService;
+
+    @Autowired
+    CaseStepService caseStepService;
 
 	@Override
 	public List<TestCase> query(Long projectId) {
@@ -119,13 +123,23 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	@Override
 	public TestCase save(JSONObject json, Long userId) {
         TestCase testCase = JSON.parseObject(JSON.toJSONString(json), TestCase.class);
+
+        boolean isNew = false;
+        if (testCase.getId() <= 0) {
+            testCase.setId(null);
+            isNew = true;
+        }
         testCase.setUserId(userId);
 
         if (testCase.getOrdr() == null) {
             testCase.setOrdr(getChildMaxOrderNumb(testCase.getpId()));
         }
-
         saveOrUpdate(testCase);
+
+        if (isNew) {
+            caseStepService.createSampleStep(testCase.getId());
+        }
+
 		return testCase;
 	}
 
@@ -258,7 +272,6 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         if (withSteps) {
             List<TestCaseStep> steps = po.getSteps();
             for (TestCaseStep step : steps) {
-
                 TestCaseStepVo stepVo = new TestCaseStepVo(
                         step.getId(), step.getOpt(), step.getExpect(), step.getOrdr(), step.getTestCaseId());
 

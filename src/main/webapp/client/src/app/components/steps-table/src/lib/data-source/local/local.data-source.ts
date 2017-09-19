@@ -63,7 +63,11 @@ export class LocalDataSource extends DataSource {
   }
 
   create(element: any, curr: any): Promise<any> {
+    console.log('=1=', curr);
+
     let index = this.data.indexOf(curr);
+
+
     element.ordr = curr.ordr;
     this.data.splice(index + 1, 0, element);
 

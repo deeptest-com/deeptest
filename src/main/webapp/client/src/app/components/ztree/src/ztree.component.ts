@@ -159,7 +159,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onMove = (event, treeId, treeNodes, targetNode, moveType,isCopy) => {
+  onMove = (event, treeId, treeNodes, targetNode, moveType, isCopy) => {
     const deferred = new Deferred();
     deferred.promise.then((data) => {
       console.log('success to move', data);

@@ -45,6 +45,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
     this.buildForm();
 
     this._state.subscribe('case.change', (testCase: any) => {
+
       this.fields = CONSTANT.CUSTOM_FIELD_FOR_PROJECT;
 
       if (testCase) {

@@ -150,7 +150,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
   onRemove = (e, treeId, treeNode) => {
     const deferred = new Deferred();
     deferred.promise.then((data) => {
-      console.log('success to remove', data);
+      console.log('success to remove', treeNode);
     }).catch((err) => {console.log('err', err);});
 
     this.removeEvent.emit({
@@ -163,6 +163,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
     const deferred = new Deferred();
     deferred.promise.then((data) => {
       console.log('success to move', data);
+      this._state.notifyDataChanged('case.change', data);
     }).catch((err) => {console.log('err', err);});
 
     this.moveEvent.emit({

@@ -35,7 +35,7 @@ export class CustomFieldComponent implements OnInit, OnChanges {
   }
 
   public ngOnInit(): void {
-    let control: FormControl = new FormControl(this.field.column, Validators.required);
+    let control: FormControl = new FormControl(this.field.column);
     this.form.addControl(this.field.column, control);
   }
 }

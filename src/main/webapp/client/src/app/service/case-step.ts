@@ -1,6 +1,8 @@
 import {Injectable} from "@angular/core";
 import {RequestService} from "./request";
 
+import * as _ from 'lodash';
+
 @Injectable()
 export class CaseStepService {
   constructor(private _reqService: RequestService) {
@@ -16,7 +18,8 @@ export class CaseStepService {
     return this._reqService.post(this._api_url + 'down', caseStep);
   }
 
-  save(caseStep: any) {
+  save(testCaseId:number, caseStep: any) {
+    _.merge(caseStep, {testCaseId:testCaseId});
     return this._reqService.post(this._api_url + 'save', caseStep);
   }
 

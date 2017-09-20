@@ -86,6 +86,16 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
 
   public ngOnInit(): void {
     this.keywordsControl.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.onChange(values));
+
+    this._state.subscribe('case.save', (testCase: any) => {
+      console.log(testCase);
+      if (testCase) {
+        var node = this.ztree.getNodeByParam("id", testCase.id, null);
+
+        node.name = testCase.name;
+        this.ztree.updateNode(node);
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -103,8 +113,6 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
   }
 
   onClick = (event, treeId, treeNode) => {
-    console.log(treeId, treeNode);
-
     this._state.notifyDataChanged('case.change', treeNode);
   }
 
@@ -117,7 +125,8 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
 
     var btn = jQuery("#addBtn_"+treeNode.tId);
     if (btn) btn.bind("click", () => {
-      let newNode = this.ztree.addNodes(treeNode, {id: -1 * this.newCount++, pId:treeNode.id, name:"新用例"});
+      let newNode = this.ztree.addNodes(treeNode, {id: -1 * this.newCount++, pId:treeNode.id, name:"新用例",
+        type: "functional", priority: 2, estimate: undefined});
       this.ztree.editName(newNode[0]);
       return false;
     });
@@ -133,7 +142,8 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
       treeNode.id = data.id;
       treeNode.ordr = data.ordr;
 
-      this._state.notifyDataChanged('case.change', treeNode);
+      treeNode.tm = new Date().getTime();
+      this._state.notifyDataChanged('case.change', _.clone(treeNode));
     }).catch((err) => {console.log('err', err);});
 
     this.renameEvent.emit({
@@ -145,12 +155,13 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
   beforeRemove = (treeId, treeNode) => {
     this.className = (this.className === "dark" ? "":"dark");
     this.ztree.selectNode(treeNode);
-    return confirm('确认删除"' + treeNode.name + '吗？');
+    return confirm('确认删除名为"' + treeNode.name + '"的用例吗？');
   }
   onRemove = (e, treeId, treeNode) => {
     const deferred = new Deferred();
     deferred.promise.then((data) => {
       console.log('success to remove', treeNode);
+      this._state.notifyDataChanged('case.change', null);
     }).catch((err) => {console.log('err', err);});
 
     this.removeEvent.emit({

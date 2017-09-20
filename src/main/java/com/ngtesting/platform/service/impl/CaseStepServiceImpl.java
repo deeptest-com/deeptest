@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestCaseStep;
 import com.ngtesting.platform.service.CaseStepService;
@@ -11,10 +12,21 @@ import org.springframework.stereotype.Service;
 public class CaseStepServiceImpl extends BaseServiceImpl implements CaseStepService {
 
     @Override
-    public TestCaseStep save(JSONObject vo, Long userId) {
-//		TestCaseStep step = (TestCaseStep) get(TestCaseStep.class, vo.getId());
+    public TestCaseStep save(JSONObject json, Long userId) {
+        TestCaseStepVo vo = JSON.parseObject(JSON.toJSONString(json), TestCaseStepVo.class);
 
-        return null;
+		TestCaseStep po = new TestCaseStep();
+
+        if (vo.getId() != null) {
+            po = (TestCaseStep)get(TestCaseStep.class, vo.getId());
+            BeanUtilEx.copyProperties(po, vo);
+        } else {
+            BeanUtilEx.copyProperties(po, vo);
+            po.setId(null);
+        }
+        saveOrUpdate(po);
+
+        return po;
     }
 
     @Override

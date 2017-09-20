@@ -63,12 +63,17 @@ export class LocalDataSource extends DataSource {
   }
 
   create(element: any, curr: any): Promise<any> {
-    console.log('=1=', curr);
+    let index = 0;
+    if (!curr && this.data.length > 0) {
+      curr = this.data[this.data.length - 1];
+      index = this.data.indexOf(curr);
+    } else if(!curr && this.data.length == 0) {
+      index = 0;
+    } else {
+      index = this.data.indexOf(curr);
+    }
 
-    let index = this.data.indexOf(curr);
-
-
-    element.ordr = curr.ordr;
+    element.ordr = curr?curr.ordr:1;
     this.data.splice(index + 1, 0, element);
 
     this.data.forEach(function(elem, indx, arr) {
@@ -76,7 +81,6 @@ export class LocalDataSource extends DataSource {
         elem.ordr += 1;
       }
     });
-
     return super.create(element, curr);
   }
 

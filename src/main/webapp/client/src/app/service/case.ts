@@ -39,8 +39,10 @@ export class CaseService {
   }
 
   save(projectId: number, model: any) {
-    _.merge(model, {projectId: projectId})
-    return this._reqService.post(this._api_url + 'save', model);
+    let data = _.clone(model);
+    data.steps = null;
+    _.merge(data, {projectId: projectId})
+    return this._reqService.post(this._api_url + 'save', data);
   }
 
   create(node: TreeModel) {

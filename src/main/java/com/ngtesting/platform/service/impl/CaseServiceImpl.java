@@ -56,11 +56,11 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	}
 
 	@Override
-	public TestCase create(Long id, String title, String type, Long pid, Long userId) {
+	public TestCase create(Long id, String name, String type, Long pid, Long userId) {
 		TestCase parent = (TestCase) get(TestCase.class, pid);
 		
 		TestCase testCase = new TestCase();
-		testCase.setName(title);
+		testCase.setName(name);
 		testCase.setpId(pid);
 		testCase.setProjectId(parent.getProjectId());
 		testCase.setUserId(userId);
@@ -122,28 +122,25 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
 	@Override
 	public TestCase save(JSONObject json, Long userId) {
-        TestCase testCase = JSON.parseObject(JSON.toJSONString(json), TestCase.class);
+        TestCaseVo testCaseVo = JSON.parseObject(JSON.toJSONString(json), TestCaseVo.class);
 
-        boolean isNew = false;
-        if (testCase.getId() <= 0) {
-            testCase.setId(null);
-            isNew = true;
-        }
-        testCase.setUserId(userId);
-
-        if (testCase.getOrdr() == null) {
-            testCase.setOrdr(getChildMaxOrderNumb(testCase.getpId()));
-        }
-        saveOrUpdate(testCase);
-
-        if (isNew) {
-            caseStepService.createSampleStep(testCase.getId());
+        TestCase testCasePo = new TestCase();
+        if (testCaseVo.getId() > 0) {
+            testCasePo = (TestCase)get(TestCase.class, testCaseVo.getId());
+            copyProperties(testCasePo, testCaseVo);
+        } else {
+            copyProperties(testCasePo, testCaseVo);
+            testCasePo.setId(null);
+            testCasePo.setOrdr(getChildMaxOrderNumb(testCasePo.getpId()));
         }
 
-		return testCase;
+        testCasePo.setUserId(userId);
+        saveOrUpdate(testCasePo);
+
+		return testCasePo;
 	}
 
-	@Override
+    @Override
 	public TestCase saveField(JSONObject json) {
 		Long id = json.getLong("id");
 		String prop = json.getString("prop");
@@ -266,6 +263,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         TestCaseVo vo = new TestCaseVo();
 
         BeanUtilEx.copyProperties(vo, po);
+        vo.setEstimate(po.getEstimate());
 
         vo.setSteps(new LinkedList<TestCaseStepVo>());
 
@@ -293,6 +291,46 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 //		}
 
         return vo;
+    }
+
+    @Override
+    public void copyProperties(TestCase testCasePo, TestCaseVo testCaseVo) {
+        testCasePo.setId(testCaseVo.getId());
+        testCasePo.setName(testCaseVo.getName());
+        testCasePo.setPriority(testCaseVo.getPriority());
+        testCasePo.setType(TestCase.CaseType.valueOf(testCaseVo.getType()));
+        testCasePo.setEstimate(testCaseVo.getEstimate());
+
+        testCasePo.setObjective(testCaseVo.getObjective());
+
+        testCasePo.setDescr(testCaseVo.getDescr());
+        testCasePo.setOrdr(testCaseVo.getOrdr());
+
+        testCasePo.setpId(testCaseVo.getpId());
+
+        testCasePo.setProp01(testCaseVo.getProp01());
+        testCasePo.setProp02(testCaseVo.getProp02());
+        testCasePo.setProp03(testCaseVo.getProp03());
+        testCasePo.setProp04(testCaseVo.getProp04());
+        testCasePo.setProp05(testCaseVo.getProp05());
+
+        testCasePo.setProp06(testCaseVo.getProp06());
+        testCasePo.setProp07(testCaseVo.getProp07());
+        testCasePo.setProp08(testCaseVo.getProp08());
+        testCasePo.setProp09(testCaseVo.getProp09());
+        testCasePo.setProp10(testCaseVo.getProp10());
+
+        testCasePo.setProp11(testCaseVo.getProp11());
+        testCasePo.setProp12(testCaseVo.getProp12());
+        testCasePo.setProp13(testCaseVo.getProp13());
+        testCasePo.setProp14(testCaseVo.getProp14());
+        testCasePo.setProp15(testCaseVo.getProp15());
+
+        testCasePo.setProp16(testCaseVo.getProp16());
+        testCasePo.setProp17(testCaseVo.getProp17());
+        testCasePo.setProp18(testCaseVo.getProp18());
+        testCasePo.setProp19(testCaseVo.getProp19());
+        testCasePo.setProp20(testCaseVo.getProp20());
     }
 
 }

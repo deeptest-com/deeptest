@@ -103,13 +103,12 @@ export class Grid {
 
   }
 
-  create(row: Row, confirmEmitter: EventEmitter<any>, curr: Row) {
-
+  create(row: Row, confirmEmitter: EventEmitter<any>, curr?: Row) {
     const deferred = new Deferred();
     deferred.promise.then((newData) => {
       newData = newData ? newData : row.getNewData();
 
-      this.source.create(newData, curr.getData()).then(() => {
+      this.source.create(newData, curr?curr.getData(): null).then(() => {
         let newRow = this.dataSet.findRowByData(newData);
 
         newRow.isInEditing = true;

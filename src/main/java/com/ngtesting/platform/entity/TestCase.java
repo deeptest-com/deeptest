@@ -54,7 +54,8 @@ public class TestCase extends BaseEntity {
     public static enum CaseType {
         functional("functional"),
         performance("performance"),
-        security("security");
+        security("security"),
+        others("others");
 
         CaseType(String val) {
             this.val = val;
@@ -65,15 +66,6 @@ public class TestCase extends BaseEntity {
             return val;
         }
     }
-
-    public CaseType getType() {
-        return type;
-    }
-
-    public void setType(CaseType type) {
-        type = type;
-    }
-
 	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
@@ -97,6 +89,14 @@ public class TestCase extends BaseEntity {
 //	@OneToMany(mappedBy="testCase", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 //	@OrderBy("ordr")
 //	private List<TestCaseProp> props = new LinkedList<>();
+
+    public CaseType getType() {
+        return type;
+    }
+
+    public void setType(CaseType type) {
+        this.type = type;
+    }
 
     public String getProp01() {
         return prop01;

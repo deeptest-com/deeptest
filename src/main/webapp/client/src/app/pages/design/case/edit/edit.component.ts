@@ -45,14 +45,13 @@ export class CaseEdit implements OnInit, AfterViewInit {
     this.buildForm();
 
     this._state.subscribe('case.change', (testCase: any) => {
-
       this.fields = CONSTANT.CUSTOM_FIELD_FOR_PROJECT;
 
       if (testCase) {
         this.id = testCase.id;
         this.loadData();
       } else {
-        this.model = {};
+        this.model = null;
       }
     });
 
@@ -82,7 +81,10 @@ export class CaseEdit implements OnInit, AfterViewInit {
     this.form = this.fb.group(
       {
         'name': ['', [Validators.required]],
-        'objective': ['', [Validators.required]],
+        'type': ['', [Validators.required]],
+        'priority': ['', [Validators.required]],
+        'estimate': ['', []],
+        'objective': ['', []],
         'pre_condition': ['', []]
       }, {}
     );
@@ -98,10 +100,13 @@ export class CaseEdit implements OnInit, AfterViewInit {
   formErrors = [];
   validateMsg = {
     'name': {
-      'required':      '简介不能为空'
+      'required':      '标题不能为空'
     },
-    'objective': {
-      'required':      '描述不能为空'
+    'type': {
+      'required':      '类别不能为空'
+    },
+    'priority': {
+      'required':      '优先级不能为空'
     }
   };
 
@@ -116,6 +121,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
     this._caseService.save(this.projectId, this.model).subscribe((json:any) => {
       if (json.code == 1) {
         this.model = json.data;
+        this._state.notifyDataChanged('case.save', this.model);
       }
     });
   }
@@ -148,7 +154,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
   }
   onSaveConfirm(event: any) {
     console.log('onSaveConfirm', event);
-    this._caseStepService.save(event.data).subscribe((json:any) => {
+    this._caseStepService.save(this.id, event.newData).subscribe((json:any) => {
       event.confirm.resolve();
     });
   }

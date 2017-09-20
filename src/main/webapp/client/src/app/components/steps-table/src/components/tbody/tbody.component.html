@@ -53,3 +53,11 @@
   </td>
 
 </tr>
+
+<tr *ngIf="grid.getRows().length == 0">
+  <td [attr.colspan]="4">
+    <a href="#" class="" (click)="onCreate($event)">
+      添加
+    </a>
+  </td>
+</tr>

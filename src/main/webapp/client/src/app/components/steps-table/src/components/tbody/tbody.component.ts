@@ -31,7 +31,7 @@ export class Ng2SmartTableTbodyComponent {
     event.preventDefault();
     event.stopPropagation();
 
-    this.grid.create(this.grid.getNewRow(), this.createConfirm, null);
+    this.grid.create(this.grid.getNewRow(), this.createConfirm);
   }
 
   onEdit(row: any) {

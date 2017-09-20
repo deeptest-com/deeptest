@@ -97,7 +97,7 @@ public class CaseAction extends BaseAction {
         UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		TestCase po = caseService.save(json, userVo.getId());
-		TestCaseVo caseVo = caseService.genVo(po, false);
+		TestCaseVo caseVo = caseService.genVo(po, true);
 
 		ret.put("data", caseVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

@@ -2,24 +2,24 @@
   <div *ngIf="model" class="row">
     <form [formGroup]="form" (ngSubmit)="save()" class="my-validate-form small-label">
       <div class="form-group row">
-        <label class="col-sm-2 col-form-label"></label>
-        <div class="col-sm-10">
+        <label class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
           <button (click)="save()" type="button" class="btn btn-primary btn-sm" [disabled]="!form.valid">保存</button>
           <button (click)="reset()" type="button" class="btn btn-default btn-sm" [disabled]="!form.valid">重置</button>
         </div>
       </div>
 
       <div class="form-group row">
-        <label class="col-sm-2 col-form-label">标题</label>
-        <div class="col-sm-10">
+        <label class="col-sm-3 col-form-label">标题</label>
+        <div class="col-sm-9">
           <input type="text" class="form-control" name="name" formControlName="name"
                  [(ngModel)]="model.name" #name>
         </div>
       </div>
 
       <div class="form-group row">
-        <label class="col-sm-2 col-form-label"></label>
-        <div class="col-sm-10">
+        <label class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
 
           <div class="tabs-container light">
             <div class="tabs">
@@ -56,24 +56,53 @@
 
       <div [class.hidden]="tab != 'summary'" class="tab-summary">
         <div class="form-group row">
-          <label class="col-sm-2 col-form-label"><span>测试目的</span></label>
-          <div class="col-sm-10">
+          <label class="col-sm-3 col-form-label"><span>测试类型</span></label>
+          <div class="col-sm-9">
+            <select [(ngModel)]="model.type" formControlName="type" class="form-control" name="type">
+              <option value="functional">功能</option>
+              <option value="performance">性能</option>
+              <option value="security">安全</option>
+              <option value="other">其他</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label"><span>优先级</span></label>
+          <div class="col-sm-9">
+            <select [(ngModel)]="model.priority" formControlName="priority" class="form-control" name="priority">
+              <option value="1">高</option>
+              <option value="2">中</option>
+              <option value="3">低</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label"><span>耗时(分钟)</span></label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" name="estimate" formControlName="estimate"
+                   [(ngModel)]="model.estimate" #estimate>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label"><span>测试目的</span></label>
+          <div class="col-sm-9">
               <textarea type="text" class="form-control" name="objective" formControlName="objective"
                       [(ngModel)]="model.objective" #objective></textarea>
           </div>
         </div>
 
         <div *ngFor="let field of fields; let i = index;" class="form-group row">
-          <label class="col-sm-2 col-form-label"><span>{{field.label}}</span></label>
-          <div class="col-sm-10">
+          <label class="col-sm-3 col-form-label"><span>{{field.label}}</span></label>
+          <div class="col-sm-9">
             <custom-field [form]="form" [model]="model" [field]="field"></custom-field>
           </div>
         </div>
       </div>
 
       <div class="form-group row">
-        <label class="col-sm-2 col-form-label"></label>
-        <div class="col-sm-10">
+        <label class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
           <div class="validate-errors">
             <div class="validate-error" *ngFor="let msg of formErrors">
               <div>{{ msg }}</div>

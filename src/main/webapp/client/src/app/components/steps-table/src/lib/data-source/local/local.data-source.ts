@@ -37,8 +37,6 @@ export class LocalDataSource extends DataSource {
     currElem.ordr = preElem.ordr;
     preElem.ordr = currOrder;
 
-    console.log(currElem.ordr);
-
     // 交换位置
     this.data.splice(index, 1);
     this.data.splice(preIndex, 0, currElem);

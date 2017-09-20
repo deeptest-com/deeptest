@@ -1,4 +1,4 @@
-<tr *ngFor="let row of grid.getRows()"
+<tr *ngFor="let row of grid.getRows(); let i = index;"
     (mouseenter)="onHoverRow($event, row)" (mouseleave)="onOutRow($event, row)">
 
   <td class="ng2-smart-seq-act">
@@ -8,7 +8,10 @@
                                [source]="source"
 
                                [upConfirm]="upConfirm"
-                               [downConfirm]="downConfirm">
+                               [downConfirm]="downConfirm"
+
+                               [isFirst]="i == 0"
+                               [isLast]="i == grid.getRows().length - 1">
     </ng2-st-tbody-change-order> <!-- 排序按钮 -->
   </td>
 

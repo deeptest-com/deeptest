@@ -32,7 +32,7 @@ public class CaseStepAction extends BaseAction {
 
         UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        TestCaseStep po = caseStepService.changeOrder(json, "up", userVo.getId());
+        TestCaseStep po = caseStepService.changeOrderPers(json, "up", userVo.getId());
         TestCaseStepVo stepVo = caseStepService.genVo(po);
 
         ret.put("data", stepVo);
@@ -48,7 +48,7 @@ public class CaseStepAction extends BaseAction {
 
         UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        TestCaseStep po = caseStepService.changeOrder(json, "down", userVo.getId());
+        TestCaseStep po = caseStepService.changeOrderPers(json, "down", userVo.getId());
         TestCaseStepVo stepVo = caseStepService.genVo(po);
 
         ret.put("data", stepVo);

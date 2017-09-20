@@ -136,14 +136,14 @@ export class CaseEdit implements OnInit, AfterViewInit {
 
   onUpConfirm(event: any) {
     console.log('onUpConfirm', event);
-    this._caseStepService.up(event.data).subscribe((json:any) => {
+    this._caseStepService.up({caseId: this.id, id: event.data.id, ordr: event.data.ordr}).subscribe((json:any) => {
       event.confirm.resolve();
     });
   }
 
   onDownConfirm(event: any) {
     console.log('onDownConfirm', event);
-    this._caseStepService.down(event.data).subscribe((json:any) => {
+    this._caseStepService.down({caseId: this.id, id: event.data.id, ordr: event.data.ordr}).subscribe((json:any) => {
       event.confirm.resolve();
     });
   }

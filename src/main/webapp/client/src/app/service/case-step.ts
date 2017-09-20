@@ -10,12 +10,12 @@ export class CaseStepService {
 
   _api_url = 'case_step/';
 
-  up(caseStep: any) {
-    return this._reqService.post(this._api_url + 'up', caseStep);
+  up(json: any) {
+    return this._reqService.post(this._api_url + 'up', json);
   }
 
-  down(caseStep: any) {
-    return this._reqService.post(this._api_url + 'down', caseStep);
+  down(json: any) {
+    return this._reqService.post(this._api_url + 'down', json);
   }
 
   save(testCaseId:number, caseStep: any) {

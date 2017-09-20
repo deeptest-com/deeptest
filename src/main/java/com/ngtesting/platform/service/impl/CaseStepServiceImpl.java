@@ -30,9 +30,26 @@ public class CaseStepServiceImpl extends BaseServiceImpl implements CaseStepServ
     }
 
     @Override
-    public TestCaseStep changeOrder(JSONObject vo, String direction, Long userId) {
+    public TestCaseStep changeOrderPers(JSONObject vo, String direction, Long userId) {
+        TestCaseStep po = (TestCaseStep)get(TestCaseStep.class, vo.getLong("id"));
+        String hql = "from TestCaseStep st where st.deleted = false and st.disabled = false "
+                + " and testCaseId = ?";
+        if ("up".equals(direction)) {
+            hql += " and st.ordr < ? order by ordr desc";
+        } else if ("down".equals(direction)) {
+            hql += " and st.ordr > ? order by ordr asc";
+        }
+        TestCaseStep neighbor = (TestCaseStep) getDao().findFirstByHQL(hql, vo.getLong("caseId"), vo.getInteger("ordr"));
+        TestCaseStep step = (TestCaseStep) get(TestCaseStep.class, vo.getLong("id"));
 
-        return null;
+        Integer order = step.getOrdr();
+        step.setOrdr(neighbor.getOrdr());
+        neighbor.setOrdr(order);
+
+        saveOrUpdate(step);
+        saveOrUpdate(neighbor);
+
+        return po;
     }
 
     @Override

@@ -89,7 +89,6 @@ export class Grid {
 
   }
   down(curr: Row, confirmEmitter: EventEmitter<any>) {
-
     const deferred = new Deferred();
     deferred.promise.then((newData) => {
       this.source.down(curr.getData());

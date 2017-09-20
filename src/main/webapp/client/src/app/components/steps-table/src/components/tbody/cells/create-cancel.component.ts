@@ -3,6 +3,8 @@ import { Component, Input, EventEmitter, OnChanges } from '@angular/core';
 import { Grid } from '../../../lib/grid';
 import { Row } from '../../../lib/data-set/row';
 
+import * as _ from 'lodash';
+
 @Component({
   selector: 'ng2-st-tbody-create-cancel',
   template: `
@@ -24,6 +26,11 @@ export class TbodyCreateCancelComponent implements OnChanges {
   onSave(event: any) {
     event.preventDefault();
     event.stopPropagation();
+
+    if (!_.trim(this.row.getNewData().opt)) {
+      confirm('操作步骤不能为空!');
+      return false;
+    }
 
     this.grid.save(this.row, this.saveConfirm);
   }

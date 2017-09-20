@@ -153,11 +153,13 @@ export class Grid {
       // doing nothing
     });
 
-    confirmEmitter.emit({
-      data: row.getData(),
-      source: this.source,
-      confirm: deferred,
-    });
+    if(!!confirmEmitter) {
+      confirmEmitter.emit({
+        data: row.getData(),
+        source: this.source,
+        confirm: deferred,
+      });
+    }
 
   }
 

@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PlanService extends BaseService {
 
-	List<TestPlan> query(Long sutieId);
+	List<TestPlan> query(JSONObject json);
 	TestPlanVo getById(Long caseId);
 	TestPlan save(JSONObject json);
 	TestPlan delete(Long vo, Long userId);

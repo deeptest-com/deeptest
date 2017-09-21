@@ -10,6 +10,7 @@ import com.ngtesting.platform.service.RunService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.TestPlanVo;
 import com.ngtesting.platform.vo.TestRunVo;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -30,11 +31,21 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
     RunService runService;
 
     @Override
-    public List<TestPlan> query(Long projectId) {
+    public List<TestPlan> query(JSONObject json) {
+        Long projectId = json.getLong("projectId");
+        String status = json.getString("status");
+        String keywords = json.getString("keywords");
+
         DetachedCriteria dc = DetachedCriteria.forClass(TestPlan.class);
 
         if (projectId != null) {
             dc.add(Restrictions.eq("projectId", projectId));
+        }
+        if (StringUtils.isNotEmpty(status)) {
+            dc.add(Restrictions.eq("status", TestPlan.PlanStatus.valueOf(status)));
+        }
+        if (StringUtils.isNotEmpty(keywords)) {
+            dc.add(Restrictions.like("name", "%" + keywords + "%"));
         }
 
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));

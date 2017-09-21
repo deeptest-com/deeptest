@@ -24,7 +24,7 @@
                  [(ngModel)]="model.name" #name>
         </div>
 
-        <label class="col-sm-1 col-form-label"><span>耗时</span></label>
+        <label class="col-sm-1 col-form-label"><span>耗时(小时)</span></label>
         <div class="col-sm-5">
           <input type="text" class="form-control" name="estimate" formControlName="estimate"
                  [(ngModel)]="model.estimate" #estimate>
@@ -61,7 +61,7 @@
         </div>
       </div>
 
-      <div class="form-group row">
+<!--      <div class="form-group row">
         <div class="offset-sm-1 col-sm-11">
           <div class="form-check">
             <label class="form-check-label">
@@ -71,7 +71,7 @@
             </label>
           </div>
         </div>
-      </div>
+      </div>-->
 
       <div class="test-sets form-group row">
         <label class="col-sm-1 col-form-label">
@@ -115,7 +115,7 @@
       <div class="offset-sm-1  col-sm-11">
         <button (click)="save()" type="button" class="btn btn-primary" [disabled]="!form.valid">保存</button>
         &nbsp;
-        <button [routerLink]="['/pages/org-admin/org/list']" type="button" class="btn btn-default">取消</button>
+        <button [routerLink]="['/pages/implement/'+projectId+'/plan/list']" type="button" class="btn btn-default">取消</button>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <button (click)="delete()" *ngIf="model.id" type="button" class="btn btn-danger">删除</button>
       </div>

@@ -18,25 +18,23 @@ export class PlanList implements OnInit, AfterViewInit {
   models: any;
 
   queryForm: FormGroup;
-  queryModel:any = {keywords: '', disabled: 'false'};
+  queryModel:any = {keywords: '', status: ''};
   statusMap: Array<any> = CONSTANT.ExeStatus;
 
   constructor(private _routeService:RouteService, private _route: ActivatedRoute,
               private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
               private _planService:PlanService) {
 
-  }
-
-  ngOnInit() {
-    this.loadData();
-
     this.queryForm = this.fb.group(
       {
-        'disabled': ['', []],
+        'status': ['', []],
         'keywords': ['', []]
       }, {}
     );
+    this.queryForm.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.queryChange(values));
+  }
 
+  ngOnInit() {
     this.loadData();
   }
 
@@ -58,6 +56,10 @@ export class PlanList implements OnInit, AfterViewInit {
     this._planService.query(CONSTANT.CURRENT_PROJECT.id, this.queryModel).subscribe((json:any) => {
       this.models = json.data;
     });
+  }
+
+  queryChange(values:any):void {
+    this.loadData();
   }
 
 }

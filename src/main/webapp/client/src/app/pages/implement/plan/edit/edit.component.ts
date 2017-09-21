@@ -70,7 +70,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
       {
         'name': ['', [Validators.required]],
         'descr': ['', []],
-        'estimate': ['', []],
+        'estimate': ['', [Validators.pattern(/^(?!0+(?:\.0+)?$)(?:[1-9]\d*|0)(?:\.\d{1,2})?$/)]],
         'startTime': ['', []],
         'endTime': ['', []],
         'disabled': ['', []]
@@ -93,6 +93,9 @@ export class PlanEdit implements OnInit, AfterViewInit {
     },
     'objective': {
       'required':      '测试目的不能为空'
+    },
+    'estimate': {
+      'pattern':      '耗时必须是最多含2位小数的数字'
     },
     dateCompare: '结束时间必须大于或等于开始时间'
   };

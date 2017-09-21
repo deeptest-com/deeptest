@@ -32,9 +32,7 @@ public class PlanAction extends BaseAction {
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		Long projectId = json.getLong("projectId");
-		
-		List<TestPlan> ls = planService.query(projectId);
+		List<TestPlan> ls = planService.query(json);
 
 		List<TestPlanVo> vos = planService.genVos(ls);
 

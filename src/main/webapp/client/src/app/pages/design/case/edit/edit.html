@@ -1,5 +1,6 @@
 <div class="case-edit">
-  <div *ngIf="model" class="row">
+  <div *ngIf="isModule" class="row module-tips">请选择用例</div>
+  <div *ngIf="model && !isModule" class="row">
     <form [formGroup]="form" (ngSubmit)="save()" class="my-validate-form small-label">
       <div class="form-group row">
         <label class="col-sm-3 col-form-label"></label>

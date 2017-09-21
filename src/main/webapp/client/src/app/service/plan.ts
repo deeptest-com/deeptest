@@ -3,6 +3,7 @@ import * as _ from "lodash";
 import {Injectable} from "@angular/core";
 
 import {CONSTANT} from "../utils/constant";
+import {Utils} from "../utils/utils";
 import {RequestService} from "./request";
 
 import {TreeModel} from "../components/ng2-tree";
@@ -24,8 +25,13 @@ export class PlanService {
     return this._reqService.post(this._api_url + 'get', model);
   }
 
-  save(model: number) {
-    return this._reqService.post(this._api_url + 'save', model);
+  save(model: any) {
+    let data = _.clone(model);
+
+    data.runVos = null;
+    data.startTime = !!data.startTime?Utils.dateStructToDate(data.startTime):null;
+    data.endTime = !!data.endTime?Utils.dateStructToDate(data.endTime):null;
+    return this._reqService.post(this._api_url + 'save', data);
   }
 
   delete(id: number) {

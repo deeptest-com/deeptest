@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.Dict;
 import com.ngtesting.platform.entity.TestPlan;
@@ -79,8 +80,21 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
 
     @Override
     public TestPlan save(JSONObject json) {
-        TestPlan testCase = (TestPlan) get(TestPlan.class, json.getLong("id"));
-        return testCase;
+        Long id = json.getLong("id");
+
+        TestPlan po;
+        TestPlanVo vo = JSON.parseObject(JSON.toJSONString(json), TestPlanVo.class);
+
+        if (id != null) {
+            po = (TestPlan)get(TestPlan.class, id);
+        } else {
+            po = new TestPlan();
+        }
+        BeanUtilEx.copyProperties(po, vo);
+
+        saveOrUpdate(po);
+
+        return po;
     }
 
     @Override

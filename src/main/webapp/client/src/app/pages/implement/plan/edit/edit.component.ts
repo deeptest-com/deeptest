@@ -10,7 +10,7 @@ import {GlobalState} from '../../../../global.state';
 
 import { CONSTANT } from '../../../../utils/constant';
 import { Utils } from '../../../../utils/utils';
-import {ValidatorUtils} from '../../../../validator/validator.utils';
+import {ValidatorUtils, CustomValidator} from '../../../../validator';
 import { RouteService } from '../../../../service/route';
 
 import { PlanService } from '../../../../service/plan';
@@ -30,9 +30,11 @@ declare var jQuery;
   providers: [I18n, {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n}]
 })
 export class PlanEdit implements OnInit, AfterViewInit {
+  projectId: number;
   planId: number;
+  startDate: any;
   model: any = {};
-  form: any;
+  form: FormGroup;
 
   @ViewChild('modalSelectCase') modalSelectCase: CaseSelectionComponent;
 
@@ -46,51 +48,53 @@ export class PlanEdit implements OnInit, AfterViewInit {
               private _i18n: I18n, private modalService: NgbModal, private compiler: Compiler, private ngbDateParserFormatter: NgbDateParserFormatter,
               private _planService: PlanService, private _runService: RunService) {
 
+    this.projectId = CONSTANT.CURRENT_PROJECT.id;
   }
   ngOnInit() {
-    let that = this;
-
-    that._route.params.forEach((params: Params) => {
-      that.planId = +params['planId'];
+    this._route.params.forEach((params: Params) => {
+      this.planId = +params['planId'];
     });
 
     if (this.planId) {
-      that.loadData();
+      this.loadData();
     }
-    that.buildForm();
+    this.buildForm();
+
+    var now = new Date();
+    this.startDate = { day: now.getDate(), month: now.getMonth() + 1, year: now.getFullYear()};
   }
   ngAfterViewInit() {}
 
   buildForm(): void {
-    let that = this;
     this.form = this.fb.group(
       {
         'name': ['', [Validators.required]],
         'descr': ['', []],
-        'status': ['', [Validators.required]],
         'estimate': ['', []],
         'startTime': ['', []],
         'endTime': ['', []],
         'disabled': ['', []]
-      }, {}
+      }, {
+        validator: CustomValidator.compareDate('dateCompare', 'startTime', 'endTime')
+      }
     );
 
     this.form.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(data => this.onValueChanged(data));
     this.onValueChanged();
   }
   onValueChanged(data?: any) {
-    let that = this;
-    that.formErrors = ValidatorUtils.genMsg(that.form, that.validateMsg, []);
+    this.formErrors = ValidatorUtils.genMsg(this.form, this.validateMsg, ['dateCompare']);
   }
 
   formErrors = [];
   validateMsg = {
-    'title': {
-      'required':      '简介不能为空'
+    'name': {
+      'required':      '名称不能为空'
     },
     'objective': {
-      'required':      '描述不能为空'
-    }
+      'required':      '测试目的不能为空'
+    },
+    dateCompare: '结束时间必须大于或等于开始时间'
   };
 
   loadData() {
@@ -104,11 +108,11 @@ export class PlanEdit implements OnInit, AfterViewInit {
   }
 
   save() {
-    let that = this;
-
-    that._planService.save(that.model).subscribe((json:any) => {
+    this._planService.save(this.model).subscribe((json:any) => {
       if (json.code == 1) {
-        that.model = json.data;
+        this._routeService.navTo("/pages/implement/" + CONSTANT.CURRENT_PROJECT.id + "/plan/list");
+      } else {
+        this.formErrors = [json.msg];
       }
     });
   }
@@ -168,6 +172,10 @@ export class PlanEdit implements OnInit, AfterViewInit {
         this.formErrors = ['删除失败'];
       }
     });
+  }
+
+  endTimeChanged() {
+    console.log('===', this.model);
   }
 
 }

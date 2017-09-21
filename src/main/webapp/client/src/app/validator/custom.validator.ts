@@ -1,5 +1,7 @@
 import {FormGroup, AbstractControl, ValidatorFn} from "@angular/forms";
 
+import {Utils} from "../utils/utils";
+
 export var CustomValidator:any = {
   validate: function (...params: string[]):ValidatorFn {
     return (c:FormGroup):{[key:string]:any} => {
@@ -39,5 +41,43 @@ export var CustomValidator:any = {
       }
     }
     return true;
+  },
+
+  compareDate: function (resultKey:string, startTime:string, endTime:string): ValidatorFn {
+    return (c:FormGroup) => {
+      let fail = false;
+
+      let start = c.controls[startTime];
+      let end = c.controls[endTime];
+
+      if (!start.value || !end.value) {
+        start.setErrors(null);
+        end.setErrors(null);
+        return null;
+      }
+
+      let startDate = Utils.dateStructToDate(start.value);
+      let endDate = Utils.dateStructToDate(end.value);
+
+      let pass = startDate <= endDate;
+
+      if (!pass) {
+        console.log('compareDate fail');
+
+        start.setErrors({});
+        end.setErrors({});
+
+        return {
+            resultKey: {
+              valid: false
+            }
+          };
+      } else {
+        start.setErrors(null);
+        end.setErrors(null);
+
+        return null;
+      }
+    }
   }
 };

@@ -47,7 +47,7 @@ export class PlanList implements OnInit, AfterViewInit {
   create():void {
     let that = this;
 
-    that._routeService.navTo("/pages/implement/plan/edit/null");
+    that._routeService.navTo("/pages/implement/" + CONSTANT.CURRENT_PROJECT.id + "/plan/null/edit");
   }
 
   delete(eventId:string):void {

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { CONSTANT } from '../../../utils/constant';
 import { Utils } from '../../../utils/utils';
 
@@ -10,7 +10,7 @@ import { Utils } from '../../../utils/utils';
 })
 export class Plan {
 
-  constructor() {
+  constructor(private _route: ActivatedRoute) {
 
   }
 

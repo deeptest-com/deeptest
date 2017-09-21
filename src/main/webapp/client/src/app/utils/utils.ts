@@ -1,5 +1,7 @@
 import {Injectable} from '@angular/core';
 
+import { NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
+
 import {CONSTANT} from '../utils/constant';
 
 declare var unescape;
@@ -43,6 +45,12 @@ export var Utils: any = {
         if(new RegExp("("+ k +")").test(fmt))
       fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
       return fmt;
+  },
+  dateStructToDate: function(struct: NgbDateStruct) {
+    let date = new Date();
+    date.setFullYear(struct.year, struct.month - 1, struct.day);
+
+    return date;
   },
 
   dateDivide: function(model: any, dateKey: any, timeKey: any, datetimeKey: string) {

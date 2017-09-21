@@ -17,10 +17,8 @@ public class TestPlan extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PlanStatus status;
 
-    @Column(insertable = true, updatable = false)
     protected Date startTime = new Date();
 
-    @Column(insertable = true, updatable = false)
     protected Date endTime = new Date();
     
 	@Column(name = "descr", length = 1000)

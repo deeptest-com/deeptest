@@ -66,9 +66,9 @@ public class PlanAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		TestPlan po = planService.save(json);
-		TestPlanVo caseVo = planService.genVo(po);
-
-		ret.put("data", caseVo);
+//		TestPlanVo vo = planService.genVo(po);
+//
+//		ret.put("data", vo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

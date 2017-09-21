@@ -34,7 +34,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
   ztree: any;
   keywordsControl = new FormControl();
   keywords: string = '';
-  isExpanded: boolean = false;
+  isExpanded: boolean = true;
 
   log: any;
   newCount: number = 0;
@@ -171,6 +171,10 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
   }
 
   onMove = (event, treeId, treeNodes, targetNode, moveType, isCopy) => {
+    if(!targetNode) {
+      return;
+    }
+
     const deferred = new Deferred();
     deferred.promise.then((data) => {
       console.log('success to move', data);

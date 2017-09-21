@@ -6,7 +6,7 @@
         <span *ngIf="model?.id">编辑计划</span>
       </div>
       <div class="buttons">
-        <button [routerLink]="['/pages/implement/plan/list']" type="button"
+        <button [routerLink]="['/pages/implement/'+projectId+'/plan/list']" type="button"
                 class="btn btn-secondary btn-with-icon btn-sm back">
           <i class="ion-backspace"></i>返回
         </button>
@@ -34,8 +34,8 @@
         <label class="col-sm-1 col-form-label"><span>开始时间</span></label>
         <div class="col-sm-5">
           <div class="input-group">
-            <input class="form-control" placeholder="yyyy-mm-dd"
-                   name="startTime" formControlName="startTime" [(ngModel)]="model.startTime" ngbDatepicker #startTime="ngbDatepicker">
+            <input class="form-control" placeholder="yyyy-mm-dd" name="startTime" formControlName="startTime" #startTime="ngbDatepicker"
+                   [(ngModel)]="model.startTime" ngbDatepicker [minDate]="startDate">
             <div class="input-group-addon" (click)="startTime.toggle()" >
               <i class="ion-calendar"></i>
             </div>
@@ -45,8 +45,8 @@
         <label class="col-sm-1 col-form-label"><span>结束时间</span></label>
         <div class="col-sm-5">
           <div class="input-group">
-            <input class="form-control" placeholder="yyyy-mm-dd"
-                   name="endTime" formControlName="endTime" [(ngModel)]="model.endTimeStruct" ngbDatepicker #endTime="ngbDatepicker">
+            <input class="form-control" placeholder="yyyy-mm-dd" name="endTime" formControlName="endTime"
+                   [(ngModel)]="model.endTime" ngbDatepicker [minDate]="startDate" #endTime="ngbDatepicker">
             <div class="input-group-addon" (click)="endTime.toggle()" >
               <i class="ion-calendar"></i>
             </div>

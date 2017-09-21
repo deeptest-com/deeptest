@@ -26,6 +26,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
   projectId: number;
   id: number;
   model: any;
+  isModule: true;
   settings: any;
   data: any;
   form: any;
@@ -45,6 +46,11 @@ export class CaseEdit implements OnInit, AfterViewInit {
     this.buildForm();
 
     this._state.subscribe('case.change', (testCase: any) => {
+      this.isModule = testCase.isParent;
+      if (this.isModule) {
+        this.model = null;
+      }
+
       this.fields = CONSTANT.CUSTOM_FIELD_FOR_PROJECT;
 
       if (testCase) {

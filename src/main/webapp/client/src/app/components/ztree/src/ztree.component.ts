@@ -34,6 +34,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
   keywordsControl = new FormControl();
   keywords: string = '';
   isExpanded: boolean = true;
+  isDragging: boolean = false;
 
   log: any;
   newCount: number = 0;
@@ -82,10 +83,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
         beforeRemove: this.beforeRemove,
         onRemove: this.onRemove,
         onRename: this.onRename,
-        // beforeDrag: this.beforeDrag,
-        // beforeDrop: this.beforeDrop,
-        // beforeDragOpen: this.beforeDragOpen,
-        // onDrag: this.onDrag,
+        onDrag: this.onDrag,
         onDrop: this.onMove,
         onExpand: this.onExpand
       }
@@ -179,8 +177,12 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
       deferred: deferred,
     });
   }
+  onDrag = (event, treeId, treeNodes) => {
+    this.isDragging = true;
+  }
 
   onMove = (event, treeId, treeNodes, targetNode, moveType, isCopy) => {
+    this.isDragging = false;
     if(!targetNode) {
       return;
     }

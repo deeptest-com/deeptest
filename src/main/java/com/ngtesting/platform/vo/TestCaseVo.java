@@ -5,7 +5,7 @@ import java.util.List;
 
 public class TestCaseVo extends BaseVo {
 	private static final long serialVersionUID = -5955583523485410239L;
-	
+
 	private String name;
 	private Integer priority;
 	private Integer estimate;
@@ -14,6 +14,7 @@ public class TestCaseVo extends BaseVo {
     private String descr;
     private Integer ordr;
 	private Long pId;
+	private Long projectId;
 
 	private String prop01;
 	private String prop02;
@@ -58,7 +59,15 @@ public class TestCaseVo extends BaseVo {
         this.descr = descr;
     }
 
-    public Integer getOrdr() {
+	public Long getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
+	}
+
+	public Integer getOrdr() {
         return ordr;
     }
 

@@ -1,8 +1,9 @@
 <div class="case-suite">
   <ng2-slim-loading-bar></ng2-slim-loading-bar>
 
-  <ztree [treeSettings]="treeSettings"
-         (reSearchEvent)="reSearch($event)"
+  <ztree
+        [treeModel]="treeModel"
+        [treeSettings]="treeSettings"
          (renameEvent)="rename($event)"
          (removeEvent)="remove($event)"
          (moveEvent)="move($event)"

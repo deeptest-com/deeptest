@@ -23,14 +23,13 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
 
   @Input()
   public treeSettings: any;
-
   public settings: any;
 
-  @Output() reSearchEvent: EventEmitter<any> = new EventEmitter<any>();
   @Output() renameEvent: EventEmitter<any> = new EventEmitter<any>();
   @Output() removeEvent: EventEmitter<any> = new EventEmitter<any>();
   @Output() moveEvent: EventEmitter<any> = new EventEmitter<any>();
 
+  _treeModel: any;
   ztree: any;
   keywordsControl = new FormControl();
   keywords: string = '';
@@ -41,6 +40,17 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
   className: string = "dark";
   curDragNodes: any[] = [];
   autoExpandNode: any;
+
+  @Input() set treeModel(model: any) {
+    if(!model) {
+      return;
+    }
+
+    this._treeModel = model;
+    this.ztree = jQuery.fn.zTree.init($('#tree'), this.settings, this._treeModel);
+    // this.ztree.reAsyncChildNodes(null, '');
+    this.ztree.expandNode(this.ztree.getNodes()[0], true, true, true);
+  }
 
   public constructor(private _state:GlobalState, @Inject(ZtreeService) private ztreeService: ZtreeService) {
 
@@ -85,7 +95,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
   }
 
   public ngOnInit(): void {
-    this.keywordsControl.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.onChange(values));
+    this.keywordsControl.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.onKeywordsChange(values));
 
     this._state.subscribe('case.save', (testCase: any) => {
       console.log(testCase);
@@ -99,7 +109,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.onChange('');
+
   }
 
   expandOrNot() {
@@ -187,87 +197,6 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // dropPrev = (treeId, nodes, targetNode) => {
-  //   var pNode = targetNode.getParentNode();
-  //   if (pNode && pNode.dropInner === false) {
-  //     return false;
-  //   } else {
-  //     for (var i=0,l=this.curDragNodes.length; i<l; i++) {
-  //       var curPNode = this.curDragNodes[i].getParentNode();
-  //       if (curPNode && curPNode !== targetNode.getParentNode() && curPNode.childOuter === false) {
-  //         return false;
-  //       }
-  //     }
-  //   }
-  //   return true;
-  // }
-  //
-  // dropInner = (treeId, nodes, targetNode) => {
-  //   if (targetNode && targetNode.dropInner === false) {
-  //     return false;
-  //   } else {
-  //     for (var i=0,l=this.curDragNodes.length; i<l; i++) {
-  //       if (!targetNode && this.curDragNodes[i].dropRoot === false) {
-  //         return false;
-  //       } else if (this.curDragNodes[i].parentTId && this.curDragNodes[i].getParentNode() !== targetNode && this.curDragNodes[i].getParentNode().childOuter === false) {
-  //         return false;
-  //       }
-  //     }
-  //   }
-  //   return true;
-  // }
-  //
-  // dropNext = (treeId, nodes, targetNode) => {
-  //   var pNode = targetNode.getParentNode();
-  //   if (pNode && pNode.dropInner === false) {
-  //     return false;
-  //   } else {
-  //     for (var i=0,l=this.curDragNodes.length; i<l; i++) {
-  //       var curPNode = this.curDragNodes[i].getParentNode();
-  //       if (curPNode && curPNode !== targetNode.getParentNode() && curPNode.childOuter === false) {
-  //         return false;
-  //       }
-  //     }
-  //   }
-  //   return true;
-  // }
-
-  // beforeDrag = (treeId, treeNodes) => {
-  //   this.className = (this.className === "dark" ? "":"dark");
-  //   this.showLog("[ "+this.getTime()+" beforeDrag ]&nbsp;&nbsp;&nbsp;&nbsp; drag: " + treeNodes.length + " nodes." );
-  //   for (var i=0,l=treeNodes.length; i<l; i++) {
-  //     if (treeNodes[i].drag === false) {
-  //       this.curDragNodes = null;
-  //       console.log('=1=', this.curDragNodes);
-  //       return false;
-  //     } else if (treeNodes[i].parentTId && treeNodes[i].getParentNode().childDrag === false) {
-  //       this.curDragNodes = null;
-  //       console.log('=2=', this.curDragNodes);
-  //       return false;
-  //     }
-  //   }
-  //   this.curDragNodes = treeNodes;
-  //   console.log('=3=', this.curDragNodes);
-  //   return true;
-  // }
-  //
-  // beforeDragOpen = (treeId, treeNode) => {
-  //   this.autoExpandNode = treeNode;
-  //   return true;
-  // }
-  //
-  // beforeDrop = (treeId, treeNodes, targetNode, moveType, isCopy) => {
-  //   this.className = (this.className === "dark" ? "":"dark");
-  //   this.showLog("[ "+this.getTime()+" beforeDrop ]&nbsp;&nbsp;&nbsp;&nbsp; moveType:" + moveType);
-  //   this.showLog("target: " + (targetNode ? targetNode.name : "root") + "  -- is "+ (isCopy==null? "cancel" : isCopy ? "copy" : "move"));
-  //   return true;
-  // }
-  //
-  // onDrag = (event, treeId, treeNodes) => {
-  //   this.className = (this.className === "dark" ? "":"dark");
-  //   this.showLog("[ "+this.getTime()+" onDrag ]&nbsp;&nbsp;&nbsp;&nbsp; drag: " + treeNodes.length + " nodes." );
-  // }
-
   onExpand = (event, treeId, treeNode) => {
     if (treeNode === this.autoExpandNode) {
       this.className = (this.className === "dark" ? "":"dark");
@@ -287,29 +216,15 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
     return (h+":"+m+":"+s+ " " +ms);
   }
 
-  onChange(values) {
+  onKeywordsChange(values) {
     this.keywords = values;
+    let nodes = this.ztree.getNodesByParam("isHidden", true);
+    this.ztree.showNodes(nodes);
 
-    const deferred = new Deferred();
-    deferred.promise.then((data) => {
-      this.ztree = jQuery.fn.zTree.init($('#tree'), this.settings, data);
-
-      this.ztree.expandNode(this.ztree.getNodes()[0], true, true, true);
-
-      let nodes = this.ztree.getNodesByParam("isHidden", true);
-      this.ztree.showNodes(nodes);
-
-      nodes = this.ztree.getNodesByFilter((node) => {
-        return this.keywords || node.name.indexOf(this.keywords) < 0;
-      });
-      this.ztree.hideNodes(nodes);
-
-    }).catch((err) => {console.log('err', err);});
-
-    this.reSearchEvent.emit({
-      keywords: this.keywords,
-      deferred: deferred,
+    nodes = this.ztree.getNodesByFilter((node) => {
+      return this.keywords && !node.isParent && node.name.indexOf(this.keywords) < 0;
     });
+    this.ztree.hideNodes(nodes);
   }
 
 }

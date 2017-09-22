@@ -66,14 +66,14 @@ public class TestCase extends BaseEntity {
             return val;
         }
     }
-	
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
     private TestProject project;
 
     @Column(name = "project_id")
     private Long projectId;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private TestUser user;
@@ -81,14 +81,10 @@ public class TestCase extends BaseEntity {
     @Column(name = "user_id")
     private Long userId;
 
-	@OneToMany(mappedBy="testCase", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+	@OneToMany(mappedBy="testCase", fetch=FetchType.LAZY)
     @Where(clause="!deleted")
 	@OrderBy("ordr")
 	private List<TestCaseStep> steps = new LinkedList<>();
-
-//	@OneToMany(mappedBy="testCase", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-//	@OrderBy("ordr")
-//	private List<TestCaseProp> props = new LinkedList<>();
 
     public CaseType getType() {
         return type;

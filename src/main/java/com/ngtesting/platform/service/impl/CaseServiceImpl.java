@@ -35,7 +35,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         if (projectId != null) {
         	dc.add(Restrictions.eq("projectId", projectId));
         }
-        
+
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 
@@ -43,7 +43,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         dc.addOrder(Order.asc("ordr"));
 
         List<TestCase> ls = findAllByCriteria(dc);
-        
+
         return ls;
 	}
 
@@ -58,17 +58,17 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	@Override
 	public TestCase create(Long id, String name, String type, Long pid, Long userId) {
 		TestCase parent = (TestCase) get(TestCase.class, pid);
-		
+
 		TestCase testCase = new TestCase();
 		testCase.setName(name);
 		testCase.setpId(pid);
 		testCase.setProjectId(parent.getProjectId());
 		testCase.setUserId(userId);
-		
+
 		testCase.setOrdr(getChildMaxOrderNumb(parent.getId()) + 1);
-		
+
 		saveOrUpdate(testCase);
-		
+
 		return testCase;
 	}
 
@@ -84,7 +84,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         saveOrUpdate(testCase);
         return testCase;
 	}
-	
+
 	@Override
 	public TestCase movePers(JSONObject json, Long userId) {
         Long srcId = json.getLong("srcId");
@@ -99,6 +99,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         if (isCopy) {
             srcCase = new TestCase();
             BeanUtilEx.copyProperties(srcCase, src);
+            srcCase.setSteps(new LinkedList());
             srcCase.setId(null);
         } else {
             srcCase = src;
@@ -109,14 +110,25 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         } else if ("prev".equals(moveType)) {
             String hql = "update TestCase c set c.ordr = c.ordr+1 where c.ordr >= ?";
             getDao().queryHql(hql, target.getOrdr());
+
+            srcCase.setpId(target.getpId());
             srcCase.setOrdr(target.getOrdr());
         } else if ("next".equals(moveType)) {
             String hql = "update TestCase c set c.ordr = c.ordr+1 where c.ordr > ?";
             getDao().queryHql(hql, target.getOrdr());
+
+            srcCase.setpId(target.getpId());
             srcCase.setOrdr(target.getOrdr() + 1);
         }
 
         saveOrUpdate(srcCase);
+        if (isCopy) {
+            for (TestCaseStep step : src.getSteps()) {
+                TestCaseStep step1 = new TestCaseStep(srcCase.getId(), step.getOpt(), step.getExpect(), step.getOrdr());
+                saveOrUpdate(step1);
+                srcCase.getSteps().add(step1);
+            }
+        }
 		return srcCase;
 	}
 
@@ -220,15 +232,15 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
         return testCase;
 	}
-	
+
 	private Integer getChildMaxOrderNumb(Long parentId) {
 		String hql = "select max(ordr) from TestCase where pId = " + parentId;
 		Integer maxOrder = (Integer) getByHQL(hql);
-		
+
 		if (maxOrder == null) {
 			maxOrder = 0;
 		}
-        
+
 		return maxOrder + 1;
 	}
 
@@ -307,6 +319,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         testCasePo.setOrdr(testCaseVo.getOrdr());
 
         testCasePo.setpId(testCaseVo.getpId());
+        testCasePo.setProjectId(testCaseVo.getProjectId());
 
         testCasePo.setProp01(testCaseVo.getProp01());
         testCasePo.setProp02(testCaseVo.getProp02());

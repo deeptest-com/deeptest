@@ -4,7 +4,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CONSTANT} from "../../../utils/constant";
 import {TreeModel, TreeOptions} from "../../ng2-tree";
 
-import {TreeService} from "../../ng2-tree/src/tree.service";
+import {ZtreeService} from "../../ztree/src/ztree.service";
 import {SuiteService} from "../../../service/suite";
 import {CaseService} from "../../../service/case";
 
@@ -16,6 +16,9 @@ import {CaseSelectionService} from "./case-selection.service";
   styleUrls: ['./styles.scss']
 })
 export class CaseSelectionComponent implements OnInit {
+
+  @Input() treeModel: any;
+  @Input() treeSettings: any = {};
 
   @Input() progress: string = '0';
   @Input() color: string = '#209e91';
@@ -33,7 +36,7 @@ export class CaseSelectionComponent implements OnInit {
   public tree: TreeModel;
   public cases: string[];
 
-  constructor(public activeModal: NgbActiveModal, private _treeService: TreeService,
+  constructor(public activeModal: NgbActiveModal, private _treeService: ZtreeService,
               public _sutieService: SuiteService, public _caseService: CaseService,) {
   }
 

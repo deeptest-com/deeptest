@@ -1,18 +1,6 @@
 import {Component, ViewEncapsulation, OnInit, AfterViewInit} from "@angular/core";
 import { Router, ActivatedRoute, Params } from '@angular/router';
 
-import {
-  NodeEvent,
-  NodeMovedRemoteEvent,
-  NodeRemovedRemoteEvent,
-  NodeCreatedEvent,
-  NodeRenamedEvent,
-  NodeSelectedEvent,
-  TreeModel,
-  TreeOptions
-} from "../../../../components/ng2-tree";
-
-
 import {GlobalState} from "../../../../global.state";
 import {CONSTANT} from "../../../../utils/constant";
 import {Utils} from "../../../../utils/utils";
@@ -40,13 +28,14 @@ export class CaseSuite implements OnInit, AfterViewInit {
               private _caseService:CaseService,
               private slimLoadingBarService:SlimLoadingBarService) {
 
-
   }
 
   ngOnInit() {
     this._route.params.forEach((params: Params) => {
       this.projectId = +params['projectId'];
     });
+
+    this.loadData();
   }
 
   ngAfterViewInit() {
@@ -57,23 +46,18 @@ export class CaseSuite implements OnInit, AfterViewInit {
 
   }
 
-  loadData(deferred?: any) {
+  loadData() {
     this.startLoading();
 
     this._caseService.query(this.projectId).subscribe((json:any) => {
       this.treeModel = json.data;
       CONSTANT.CUSTOM_FIELD_FOR_PROJECT = json.customFields;
 
-      deferred.resolve(this.treeModel);
-
       this.completeLoading();
     });
 
   }
 
-  reSearch(event: any) {
-    this.loadData(event.deferred);
-  }
   rename(event: any) {
     let testCase = event.data;
     this._caseService.rename(this.projectId, testCase).subscribe((json:any) => {

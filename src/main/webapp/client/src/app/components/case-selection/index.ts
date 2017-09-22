@@ -2,7 +2,7 @@ import { NgModule, ModuleWithProviders } from "@angular/core";
 import { CommonModule }  from '@angular/common';
 import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import { TreeModule } from '../ng2-tree';
+import { ZtreeModule } from '../../components/ztree';
 
 import { SuiteService } from '../../service/suite';
 import { CaseService } from '../../service/case';
@@ -17,7 +17,7 @@ export * from './src/case-selection.service';
     declarations: [CaseSelectionComponent],
     exports: [CaseSelectionComponent],
     providers: [CaseSelectionService],
-    imports: [CommonModule, FormsModule, TreeModule]
+    imports: [CommonModule, FormsModule, ZtreeModule]
 })
 export class CaseSelectionModule {
     static forRoot(): ModuleWithProviders {

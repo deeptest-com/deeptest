@@ -10,44 +10,10 @@
   <div class="modal-body">
     <div class="cols">
       <div class="modules">
-        <tree [tree]="tree"
-              [options]="options"
-              (nodeSelected)="onModuleSelected($event)"></tree>
-      </div>
-      <div class="list">
-        <div class="tree-toolbar">
-          <form class="form-inline">
-            <span (click)="tree.selectAll()" class="link no-underline">
-              全选
-            </span>
-                  <span (click)="tree.unselectAll()" class="link no-underline">
-              全不选
-            </span>
-          </form>
-        </div>
-
-        <div class="content">
-          <table *ngIf="cases" class="table table-hover">
-            <thead>
-            <tr>
-              <th class="id">选择</th>
-              <th class="id">编号</th>
-              <th>标题</th>
-              <th class="priority">优先级</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr *ngFor="let item of cases" (click)="onCaseSelected(item)" class="pointer">
-              <td>
-                <input type="checkbox" name="select" [(ngModel)]="item.isSelected" >
-              </td>
-              <td>{{item.id}}</td>
-              <td>{{item.title}}</td>
-              <td>{{item.priority}}</td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
+        <ztree
+          [treeModel]="treeModel"
+          [treeSettings]="treeSettings">
+        </ztree>
       </div>
 
       <div class="filter">

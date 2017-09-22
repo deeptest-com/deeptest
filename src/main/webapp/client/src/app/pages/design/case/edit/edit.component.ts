@@ -46,8 +46,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
     this.buildForm();
 
     this._state.subscribe('case.change', (testCase: any) => {
-      this.isModule = testCase.isParent;
-      if (this.isModule) {
+      if (!testCase || testCase.isParent) {
         this.model = null;
       }
 

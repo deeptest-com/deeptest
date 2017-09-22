@@ -17,11 +17,14 @@ public interface CaseService extends BaseService {
 
 	TestCase create(Long id, String value, String type, Long pid, Long userId);
 	TestCase save(JSONObject json, Long userId);
+	void cloneStepsAndChildrenPers(TestCase testcase, TestCase src);
 
     TestCase saveField(JSONObject json);
 	TestCase saveCustomizedField(JSONObject json);
 
-    List<TestCaseVo> genVos(List<TestCase> pos);
+	List<TestCase> getChildren(Long caseId);
+
+	List<TestCaseVo> genVos(List<TestCase> pos);
     List<TestCaseVo> genVos(List<TestCase> pos, boolean withSteps);
 
     TestCaseVo genVo(TestCase po);

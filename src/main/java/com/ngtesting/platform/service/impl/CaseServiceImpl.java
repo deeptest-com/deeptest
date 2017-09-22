@@ -95,41 +95,37 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         TestCase src = (TestCase) get(TestCase.class, srcId);;
         TestCase target = (TestCase) get(TestCase.class, targetId);
 
-        TestCase srcCase;
+        TestCase testCase;
         if (isCopy) {
-            srcCase = new TestCase();
-            BeanUtilEx.copyProperties(srcCase, src);
-            srcCase.setSteps(new LinkedList());
-            srcCase.setId(null);
+            testCase = new TestCase();
+            BeanUtilEx.copyProperties(testCase, src);
+            testCase.setSteps(new LinkedList());
+            testCase.setId(null);
         } else {
-            srcCase = src;
+            testCase = src;
         }
 
         if ("inner".equals(moveType)) {
-            srcCase.setpId(target.getId());
+            testCase.setpId(target.getId());
         } else if ("prev".equals(moveType)) {
             String hql = "update TestCase c set c.ordr = c.ordr+1 where c.ordr >= ?";
             getDao().queryHql(hql, target.getOrdr());
 
-            srcCase.setpId(target.getpId());
-            srcCase.setOrdr(target.getOrdr());
+            testCase.setpId(target.getpId());
+            testCase.setOrdr(target.getOrdr());
         } else if ("next".equals(moveType)) {
             String hql = "update TestCase c set c.ordr = c.ordr+1 where c.ordr > ?";
             getDao().queryHql(hql, target.getOrdr());
 
-            srcCase.setpId(target.getpId());
-            srcCase.setOrdr(target.getOrdr() + 1);
+            testCase.setpId(target.getpId());
+            testCase.setOrdr(target.getOrdr() + 1);
         }
 
-        saveOrUpdate(srcCase);
+        saveOrUpdate(testCase);
         if (isCopy) {
-            for (TestCaseStep step : src.getSteps()) {
-                TestCaseStep step1 = new TestCaseStep(srcCase.getId(), step.getOpt(), step.getExpect(), step.getOrdr());
-                saveOrUpdate(step1);
-                srcCase.getSteps().add(step1);
-            }
+            cloneStepsAndChildrenPers(testCase, src);
         }
-		return srcCase;
+		return testCase;
 	}
 
 	@Override
@@ -232,6 +228,42 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
         return testCase;
 	}
+
+    @Override
+    public void cloneStepsAndChildrenPers(TestCase testCase, TestCase src) {
+        for (TestCaseStep step : src.getSteps()) {
+            TestCaseStep step1 = new TestCaseStep(testCase.getId(), step.getOpt(), step.getExpect(), step.getOrdr());
+            saveOrUpdate(step1);
+            testCase.getSteps().add(step1);
+        }
+
+        List<TestCase> children = getChildren(src.getId());
+        for(TestCase child : children) {
+            TestCase clonedChild = new TestCase();
+            BeanUtilEx.copyProperties(clonedChild, child);
+            clonedChild.setSteps(new LinkedList());
+            clonedChild.setId(null);
+            clonedChild.setpId(testCase.getId());
+
+            saveOrUpdate(clonedChild);
+            cloneStepsAndChildrenPers(clonedChild, child);
+        }
+    }
+
+    @Override
+    public List<TestCase> getChildren(Long caseId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestCase.class);
+        dc.add(Restrictions.eq("pId", caseId));
+
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+
+        dc.addOrder(Order.asc("pId"));
+        dc.addOrder(Order.asc("ordr"));
+
+        List<TestCase> children = findAllByCriteria(dc);
+        return children;
+    }
 
 	private Integer getChildMaxOrderNumb(Long parentId) {
 		String hql = "select max(ordr) from TestCase where pId = " + parentId;

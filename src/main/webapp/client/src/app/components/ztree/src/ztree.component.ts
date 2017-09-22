@@ -190,6 +190,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
     const deferred = new Deferred();
     deferred.promise.then((data) => {
       console.log('success to move', data);
+      treeNodes[0].id = data.id;
       this._state.notifyDataChanged('case.change', data);
     }).catch((err) => {console.log('err', err);});
 

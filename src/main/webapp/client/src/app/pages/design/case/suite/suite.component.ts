@@ -71,7 +71,7 @@ export class CaseSuite implements OnInit, AfterViewInit {
     });
   }
   move(event: any) {
-    this._caseService.move(event.data).subscribe((json:any) => {
+    this._caseService.move(this.projectId, event.data).subscribe((json:any) => {
       event.deferred.resolve(json.data);
     });
   }

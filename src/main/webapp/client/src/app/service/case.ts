@@ -33,8 +33,9 @@ export class CaseService {
     return this._reqService.post(this._api_url + 'delete', model);
   }
 
-  move(data: any) {
-    let model = {srcId: data.FAILURE_STRING_INSIDE};
+  move(projectId: number, data: any) {
+    _.merge(data, {projectId: projectId});
+
     return this._reqService.post(this._api_url + 'move', data);
   }
 

@@ -7,7 +7,7 @@
         <span *ngIf="isExpanded">全部收缩</span>
       </label>
       <input [formControl]="keywordsControl" [value]="keywords" name="keywords" type="search" class="form-control form-control-sm" placeholder="过滤">
-      <span *ngIf="isDragging" class="tips">按Ctrl键释放复制</span>
+      <span *ngIf="isDragging" [class.highlight]="isToCopy" class="tips">按Ctrl键释放复制</span>
     </form>
   </div>
 

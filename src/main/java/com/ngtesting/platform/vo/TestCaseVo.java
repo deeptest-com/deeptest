@@ -40,7 +40,7 @@ public class TestCaseVo extends BaseVo {
 	private String prop19;
 	private String prop20;
 
-//    private List<TestCasePropVo> props = new LinkedList<>();
+    private List<TestCaseVo> children = new LinkedList<>();
 	private List<TestCaseStepVo> steps = new LinkedList<>();
 
     public TestCaseVo() {
@@ -59,7 +59,15 @@ public class TestCaseVo extends BaseVo {
         this.descr = descr;
     }
 
-	public Long getProjectId() {
+    public List<TestCaseVo> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<TestCaseVo> children) {
+        this.children = children;
+    }
+
+    public Long getProjectId() {
 		return projectId;
 	}
 

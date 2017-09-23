@@ -27,7 +27,9 @@ span.tmpzTreeMove_arrow {
   }
   .tips {
     margin-left: 8px;
-    color: #e85656;
+    &.highlight {
+      color: #e85656;
+    }
   }
 }
 

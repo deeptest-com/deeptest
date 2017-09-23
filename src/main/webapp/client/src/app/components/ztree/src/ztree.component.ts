@@ -1,4 +1,4 @@
-import { Input, Component, OnInit, AfterViewInit, EventEmitter, Output, Inject, OnChanges, SimpleChanges } from '@angular/core';
+import { Input, Component, OnInit, OnDestroy, AfterViewInit, Renderer2, EventEmitter, Output, Inject, OnChanges, SimpleChanges } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import * as _ from 'lodash';
 
@@ -19,7 +19,7 @@ declare var jQuery;
     '../../../../vendor/ztree/css/zTreeStyle/zTreeStyle.css'],
   providers: [ZtreeService]
 })
-export class ZtreeComponent implements OnInit, AfterViewInit {
+export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input()
   public treeSettings: any;
@@ -29,12 +29,15 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
   @Output() removeEvent: EventEmitter<any> = new EventEmitter<any>();
   @Output() moveEvent: EventEmitter<any> = new EventEmitter<any>();
 
+  private disposersForDragListeners:Function[] = [];
+
   _treeModel: any;
   ztree: any;
   keywordsControl = new FormControl();
   keywords: string = '';
   isExpanded: boolean = true;
   isDragging: boolean = false;
+  isToCopy: boolean = false;
 
   log: any;
   newCount: number = 0;
@@ -53,7 +56,8 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
     this.ztree.expandNode(this.ztree.getNodes()[0], true, true, true);
   }
 
-  public constructor(private _state:GlobalState, @Inject(ZtreeService) private ztreeService: ZtreeService) {
+  public constructor(private _state:GlobalState, @Inject(Renderer2) private renderer:Renderer2,
+                     @Inject(ZtreeService) private ztreeService: ZtreeService) {
 
     this.settings = {
       view: {
@@ -84,7 +88,9 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
         onRemove: this.onRemove,
         onRename: this.onRename,
         onDrag: this.onDrag,
-        onDrop: this.onMove,
+        // onDragMove: this.onDragMove,
+        beforeDrop: this.beforeDrop,
+        onDrop: this.onDrop,
         onExpand: this.onExpand
       }
     };
@@ -107,7 +113,17 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-
+    this.disposersForDragListeners.push(this.renderer.listen('document', 'keyup', this.copyKeyup.bind(this)));
+    this.disposersForDragListeners.push(this.renderer.listen('document', 'keydown', this.copyKeyDown.bind(this)));
+  }
+  copyKeyup(e):any {
+    this.isToCopy = false;
+  }
+  copyKeyDown(e):any {
+    this.isToCopy = true;
+  }
+  public ngOnDestroy():void {
+    this.disposersForDragListeners.forEach(dispose => dispose());
   }
 
   expandOrNot() {
@@ -121,6 +137,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
   }
 
   onClick = (event, treeId, treeNode) => {
+    console.log('treeNode', treeNode);
     this._state.notifyDataChanged('case.change', treeNode);
   }
 
@@ -181,8 +198,24 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
     this.isDragging = true;
   }
 
-  onMove = (event, treeId, treeNodes, targetNode, moveType, isCopy) => {
+  // onDragMove = (event, treeId, treeNodes) => {
+  //   console.log('===', event.ctrlKey);
+  //   if (event.ctrlKey) {
+  //     this.isToCopy = true;
+  //   } else {
+  //     this.isToCopy = false;
+  //   }
+  // }
+
+  beforeDrop = (treeId, treeNodes, targetNode, moveType, isCopy) => {
     this.isDragging = false;
+    if (targetNode.level == 0 && moveType != 'inner') {
+      return false;
+    } else {
+      return true;
+    }
+  }
+  onDrop = (event, treeId, treeNodes, targetNode, moveType, isCopy) => {
     if(!targetNode) {
       return;
     }
@@ -190,13 +223,33 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
     const deferred = new Deferred();
     deferred.promise.then((data) => {
       console.log('success to move', data);
-      treeNodes[0].id = data.id;
       this._state.notifyDataChanged('case.change', data);
+
+      if (isCopy) {
+        let parentNode;
+        if (moveType == 'inner') {
+          parentNode = targetNode;
+        } else {
+          parentNode = targetNode.getParentNode();
+        }
+        console.log('parentNode', parentNode);
+        let copyiedNode = this.ztree.getNodesByParam("id", treeNodes[0].id, parentNode)[0];
+        console.log('copyiedNode', copyiedNode);
+
+        copyiedNode.id = data.id;
+        copyiedNode.pId = data.pId;
+
+        if (treeNodes[0].isParent) {
+          // 更新新节点的属性
+          this.updateCopiedNodes(copyiedNode, data);
+        }
+      }
+
     }).catch((err) => {console.log('err', err);});
 
     this.moveEvent.emit({
       data: {srcId: treeNodes[0].id, targetId: targetNode.id, moveType: moveType, isCopy: isCopy},
-      deferred: deferred,
+      deferred: deferred
     });
   }
 
@@ -228,6 +281,17 @@ export class ZtreeComponent implements OnInit, AfterViewInit {
       return this.keywords && !node.isParent && node.name.indexOf(this.keywords) < 0;
     });
     this.ztree.hideNodes(nodes);
+  }
+
+  updateCopiedNodes(node: any, data: any) {
+    console.log('===',  node.id, data.id);
+
+    node.id = data.id;
+    node.pId = data.pId;
+
+    for(let i=0; i<node.children.length; i++) {
+      this.updateCopiedNodes(node.children[i], data.children[i]);
+    }
   }
 
 }

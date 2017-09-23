@@ -13,11 +13,14 @@ public interface CaseService extends BaseService {
 
     TestCase rename(JSONObject json, Long userId);
 	TestCase delete(Long vo, Long userId);
-	TestCase movePers(JSONObject json, Long userId);
+	TestCaseVo movePers(JSONObject json, Long userId);
 
 	TestCase create(Long id, String value, String type, Long pid, Long userId);
+
+	void loadNodeTree(TestCaseVo vo, TestCase po);
+
 	TestCase save(JSONObject json, Long userId);
-	void cloneStepsAndChildrenPers(TestCase testcase, TestCase src);
+	boolean cloneStepsAndChildrenPers(TestCase testcase, TestCase src);
 
     TestCase saveField(JSONObject json);
 	TestCase saveCustomizedField(JSONObject json);

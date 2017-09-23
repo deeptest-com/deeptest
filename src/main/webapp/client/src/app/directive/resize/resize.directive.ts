@@ -1,4 +1,4 @@
-import {Directive, ElementRef, Inject, Renderer, OnDestroy, OnInit, AfterViewInit} from "@angular/core";
+import {Directive, ElementRef, Inject, Renderer2, OnDestroy, OnInit, AfterViewInit} from "@angular/core";
 
 import * as _ from 'lodash';
 declare var jQuery;
@@ -22,7 +22,7 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
   private disposersForDragListeners:Function[] = [];
 
   public constructor(@Inject(ElementRef) public element:ElementRef,
-                     @Inject(Renderer) private renderer:Renderer) {
+                     @Inject(Renderer2) private renderer:Renderer2) {
     this.elem = element.nativeElement;
   }
 

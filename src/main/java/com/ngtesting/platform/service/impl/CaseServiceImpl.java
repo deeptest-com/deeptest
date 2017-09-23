@@ -86,7 +86,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	}
 
 	@Override
-	public TestCase movePers(JSONObject json, Long userId) {
+	public TestCaseVo movePers(JSONObject json, Long userId) {
         Long srcId = json.getLong("srcId");
         Long targetId = json.getLong("targetId");
         String moveType = json.getString("moveType");
@@ -122,13 +122,35 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         }
 
         saveOrUpdate(testCase);
+        boolean isParent = false;
         if (isCopy) {
-            cloneStepsAndChildrenPers(testCase, src);
+            isParent = cloneStepsAndChildrenPers(testCase, src);
         }
-		return testCase;
+
+        TestCaseVo caseVo = new TestCaseVo();
+        if (isCopy && isParent) {
+            loadNodeTree(caseVo, testCase);
+        } else {
+            caseVo = genVo(testCase);
+        }
+        return caseVo;
 	}
 
-	@Override
+    @Override
+    public void loadNodeTree(TestCaseVo vo, TestCase po) {
+        BeanUtilEx.copyProperties(vo, po);
+        vo.setEstimate(po.getEstimate());
+
+        List<TestCase> children = getChildren(po.getId());
+        for (TestCase childPo : children) {
+            TestCaseVo childVo = new TestCaseVo();
+            vo.getChildren().add(childVo);
+
+            loadNodeTree(childVo, childPo);
+        }
+    }
+
+    @Override
 	public TestCase save(JSONObject json, Long userId) {
         TestCaseVo testCaseVo = JSON.parseObject(JSON.toJSONString(json), TestCaseVo.class);
 
@@ -230,7 +252,9 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	}
 
     @Override
-    public void cloneStepsAndChildrenPers(TestCase testCase, TestCase src) {
+    public boolean cloneStepsAndChildrenPers(TestCase testCase, TestCase src) {
+	    boolean isParent = false;
+
         for (TestCaseStep step : src.getSteps()) {
             TestCaseStep step1 = new TestCaseStep(testCase.getId(), step.getOpt(), step.getExpect(), step.getOrdr());
             saveOrUpdate(step1);
@@ -248,6 +272,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             saveOrUpdate(clonedChild);
             cloneStepsAndChildrenPers(clonedChild, child);
         }
+
+        return children.size() > 0;
     }
 
     @Override

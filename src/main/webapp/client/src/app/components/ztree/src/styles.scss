@@ -14,7 +14,8 @@ span.tmpzTreeMove_arrow {
   display: flex;
   padding: 5px 5px 5px 5px;
   border-bottom: 1px solid #eeeeee !important;
-  line-height: 25px;
+  line-height: 28px;
+  height: 38px;
   font-size: 14px;
   background-color: #F0F3F4;
   label {
@@ -143,6 +144,11 @@ span.tmpzTreeMove_arrow {
       content: "\F252";
     }
 
+  }
+
+  span.button.chk {
+    height: 13px !important;
+    margin: -3px 3px 0 0 !important;
   }
 
 }

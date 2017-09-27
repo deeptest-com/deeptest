@@ -17,7 +17,7 @@ export * from './src/case-selection.service';
     declarations: [CaseSelectionComponent],
     exports: [CaseSelectionComponent],
     providers: [CaseSelectionService],
-    imports: [CommonModule, FormsModule, ZtreeModule]
+    imports: [CommonModule, FormsModule, ReactiveFormsModule, ZtreeModule]
 })
 export class CaseSelectionModule {
     static forRoot(): ModuleWithProviders {

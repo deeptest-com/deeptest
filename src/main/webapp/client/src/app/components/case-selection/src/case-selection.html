@@ -17,111 +17,100 @@
       </div>
 
       <div class="filter">
-        <div class="tree-toolbar">
-          请选择过滤器
+        <div class="ztree-toolbar">
+          <span>请选择过滤器</span>
+          <span (click)="reset()" class="link">复位</span>
         </div>
         <div class="content">
-          <div id="accordion" role="tablist" aria-multiselectable="true">
-            <div class="card">
-              <div class="card-header" role="tab" id="headingType">
-                <div class="mb-0">
-                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseType" aria-expanded="true" aria-controls="collapseOne">
-                    类型
-                  </a>
+          <form [formGroup]="form">
+            <div id="accordion" role="tablist" aria-multiselectable="true">
+              <div class="card">
+                <div class="card-header" role="tab" id="headingType">
+                  <div class="mb-0">
+                    <a data-toggle="collapse" data-parent="#accordion1" href="#collapseType" aria-expanded="true" aria-controls="collapseOne">
+                      特性
+                    </a>
+                  </div>
                 </div>
-              </div>
+                <div id="collapseType" class="collapse show" role="tabpanel" aria-labelledby="headingType">
+                  <div class="card-block">
 
-              <div id="collapseType" class="collapse" role="tabpanel" aria-labelledby="headingType">
-                <div class="card-block">
-                   raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                    <div class="form-group row">
+                      <label class="col-3 col-form-label">类型</label>
+                      <div class="col-9">
+                        <input formControlName="type" [(ngModel)]="queryModel.type" name="type" #type class="form-control form-control-sm" type="text">
+                      </div>
+                    </div>
+
+                    <div class="form-group row">
+                      <label class="col-3 col-form-label">优先级</label>
+                      <div class="col-9">
+                        <input formControlName="priority" [(ngModel)]="queryModel.priority" name="priority" #priority class="form-control form-control-sm" type="text">
+                      </div>
+                    </div>
+
+                    <div class="form-group row">
+                      <label class="col-3 col-form-label">耗时</label>
+                      <div class="col-9">
+                        <input formControlName="estimate" [(ngModel)]="queryModel.estimate" name="estimate" #priority class="form-control form-control-sm" type="text">
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header" role="tab" id="headingCreate">
+                  <div class="mb-0">
+                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion4" href="#collapseCreate" aria-expanded="true" aria-controls="collapseCreate">
+                      时间
+                    </a>
+                  </div>
+                </div>
+                <div id="collapseCreate" class="collapse" role="tabpanel" aria-labelledby="headingCreate">
+                  <div class="card-block">
+                    <div class="form-group row">
+                      <label class="col-3 col-form-label">创建</label>
+                      <div class="col-9">
+                        <input formControlName="createTime" [(ngModel)]="queryModel.createTime" name="createTime" #priority class="form-control form-control-sm" type="text">
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-3 col-form-label">更新</label>
+                      <div class="col-9">
+                        <input formControlName="updateTime" [(ngModel)]="queryModel.updateTime" name="updateTime" #priority class="form-control form-control-sm" type="text">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header" role="tab" id="headingUpdate">
+                  <div class="mb-0">
+                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion5" href="#collapseUpdate" aria-expanded="true" aria-controls="collapseUpdate">
+                      用户
+                    </a>
+                  </div>
+                </div>
+                <div id="collapseUpdate" class="collapse" role="tabpanel" aria-labelledby="headingUpdate">
+                  <div class="card-block">
+                    <div class="form-group row">
+                      <label class="col-3 col-form-label">创建</label>
+                      <div class="col-9">
+                        <input formControlName="createUser" [(ngModel)]="queryModel.createUser" name="createUser" #priority class="form-control form-control-sm" type="text">
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-3 col-form-label">更新</label>
+                      <div class="col-9">
+                        <input formControlName="updateUser" [(ngModel)]="queryModel.updateUser" name="updateUser" #priority class="form-control form-control-sm" type="text">
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="card">
-              <div class="card-header" role="tab" id="headingPriority">
-                <div class="mb-0">
-                  <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapsePriority" aria-expanded="false" aria-controls="collapseTwo">
-                    优先级
-                  </a>
-                </div>
-              </div>
-              <div id="collapsePriority" class="collapse" role="tabpanel" aria-labelledby="headingPriority">
-                <div class="card-block">
-                  raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-                </div>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-header" role="tab" id="headingEstimate">
-                <div class="mb-0">
-                  <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseEstimate" aria-expanded="false" aria-controls="collapseThree">
-                    耗时
-                  </a>
-                </div>
-              </div>
-              <div id="collapseEstimate" class="collapse" role="tabpanel" aria-labelledby="headingEstimate">
-                <div class="card-block">
-                  raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-                </div>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-header" role="tab" id="headingCreateBy">
-                <div class="mb-0">
-                  <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseCreateBy" aria-expanded="false" aria-controls="collapseThree">
-                    创建人
-                  </a>
-                </div>
-              </div>
-              <div id="collapseCreateBy" class="collapse" role="tabpanel" aria-labelledby="headingCreateBy">
-                <div class="card-block">
-                  raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-                </div>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-header" role="tab" id="headingCreateOn">
-                <div class="mb-0">
-                  <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseCreateOn" aria-expanded="false" aria-controls="collapseThree">
-                    创建时间
-                  </a>
-                </div>
-              </div>
-              <div id="collapseCreateOn" class="collapse" role="tabpanel" aria-labelledby="headingCreateOn">
-                <div class="card-block">
-                  raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-                </div>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-header" role="tab" id="headingUpdateBy">
-                <div class="mb-0">
-                  <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseUpdateBy" aria-expanded="false" aria-controls="collapseThree">
-                    更新人
-                  </a>
-                </div>
-              </div>
-              <div id="collapseUpdateBy" class="collapse" role="tabpanel" aria-labelledby="headingUpdateBy">
-                <div class="card-block">
-                  raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-                </div>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-header" role="tab" id="headingUpdateOn">
-                <div class="mb-0">
-                  <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseUpdateOn" aria-expanded="false" aria-controls="collapseThree">
-                    更新时间
-                  </a>
-                </div>
-              </div>
-              <div id="collapseUpdateOn" class="collapse" role="tabpanel" aria-labelledby="headingUpdateOn">
-                <div class="card-block">
-                  raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-                </div>
-              </div>
-            </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>

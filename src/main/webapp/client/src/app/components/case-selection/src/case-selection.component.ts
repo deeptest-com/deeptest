@@ -1,4 +1,5 @@
 import {Component, Input, OnInit} from "@angular/core";
+import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 import {CONSTANT} from "../../../utils/constant";
@@ -24,15 +25,18 @@ export class CaseSelectionComponent implements OnInit {
   @Input() height: string = '1px';
   @Input() show: boolean = true;
 
+  form: FormGroup;
   queryModel: any = {type: 'functional', priority: '0', estimate: '', createBy: '', createOn: '', updateBy: '', updateOn: '' };
 
   public cases: string[];
 
-  constructor(public activeModal: NgbActiveModal, private _treeService: ZtreeService,
+  constructor(public activeModal: NgbActiveModal, private fb: FormBuilder, private _treeService: ZtreeService,
               public _sutieService: SuiteService, public _caseService: CaseService,) {
   }
 
   ngOnInit(): any {
+    this.buildForm();
+
     this.loadData();
   }
 
@@ -46,6 +50,10 @@ export class CaseSelectionComponent implements OnInit {
     this.activeModal.close('save');
   }
 
+  reset() {
+    console.log('reset');
+  }
+
   dismiss(): any {
     this.activeModal.dismiss('cancel');
   }
@@ -55,6 +63,30 @@ export class CaseSelectionComponent implements OnInit {
   }
   onCaseSelected(item: any) {
     console.log('onCaseSelected', item);
+  }
+
+  buildForm(): void {
+    this.form = this.fb.group(
+      {
+        'type': ['', []],
+        'priority': ['', []],
+        'estimate': ['', []],
+        'createTime': ['', []],
+        'updateTime': ['', []],
+        'createUser': ['', []],
+        'updateUser': ['', []]
+      }, {}
+    );
+
+    this.form.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(data => this.query(data));
+  }
+  formErrors = [];
+  validateMsg = {
+
+  };
+
+  query(data?: any) {
+
   }
 
 }

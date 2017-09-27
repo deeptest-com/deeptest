@@ -52,10 +52,15 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     _.merge(this.settings, this.treeSettings);
     this.isExpanded = this.settings.isExpanded;
 
-    if (this.settings.usage != 'edit') {
+    if (this.settings.usage == 'selection') {
       this.settings.view.addHoverDom = null;
       this.settings.view.removeHoverDom = null;
       this.settings.edit.enable = false;
+
+      this.settings.check = {
+        enable: true,
+        chkboxType: {"Y": "ps", "N": "ps"}
+      }
     }
 
     this._treeModel = model;

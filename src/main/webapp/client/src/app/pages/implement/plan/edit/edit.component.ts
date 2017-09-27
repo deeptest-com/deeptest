@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation, NgModule, Pipe, Compiler, OnInit, AfterViewInit, ViewChild} from '@angular/core';
+import {Component, ViewEncapsulation, NgModule, Pipe, Input, Compiler, OnInit, AfterViewInit, ViewChild} from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 
@@ -15,6 +15,7 @@ import { RouteService } from '../../../../service/route';
 
 import { PlanService } from '../../../../service/plan';
 import { RunService } from '../../../../service/run';
+import { CaseService } from '../../../../service/case';
 
 import { CaseSelectionComponent } from '../../../../components/case-selection'
 import { EnvironmentConfigComponent } from '../../../../components/environment-config'
@@ -25,11 +26,15 @@ declare var jQuery;
 @Component({
   selector: 'plan-edit',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['./edit.scss', '../../../../components/ng2-tree/src/styles.scss'],
+  styleUrls: ['./edit.scss',
+    '../../../../../vendor/ztree/css/zTreeStyle/zTreeStyle.css',
+    '../../../../components/ztree/src/styles.scss'],
   templateUrl: './edit.html',
   providers: [I18n, {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n}]
 })
 export class PlanEdit implements OnInit, AfterViewInit {
+  treeSettings: any = {isExpanded: false, usage: 'selection'};
+
   projectId: number;
   planId: number;
   startDate: any;
@@ -43,10 +48,11 @@ export class PlanEdit implements OnInit, AfterViewInit {
   @ViewChild('modalRemoveSet') modalRemoveSet: PopDialogComponent;
   testSet: any;
   modalTitle: string;
+  caseSelectionModal: any;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
               private _i18n: I18n, private modalService: NgbModal, private compiler: Compiler, private ngbDateParserFormatter: NgbDateParserFormatter,
-              private _planService: PlanService, private _runService: RunService) {
+              private _planService: PlanService, private _runService: RunService, private _caseService: CaseService) {
 
     this.projectId = CONSTANT.CURRENT_PROJECT.id;
   }
@@ -126,13 +132,18 @@ export class PlanEdit implements OnInit, AfterViewInit {
 
   editSet(testSet: any): void {
     this.compiler.clearCacheFor(CaseSelectionComponent);
-    const modalRef = this.modalService.open(CaseSelectionComponent, {windowClass: 'pop-selection'});
-    modalRef.result.then((result) => {
+    this.caseSelectionModal = this.modalService.open(CaseSelectionComponent, {windowClass: 'pop-selection'});
+    this.caseSelectionModal.componentInstance.treeSettings = this.treeSettings;
+
+    this._caseService.query(CONSTANT.CURRENT_PROJECT.id).subscribe((json:any) => {
+      this.caseSelectionModal.componentInstance.treeModel = json.data;
+    });
+
+    this.caseSelectionModal.result.then((result) => {
       console.log('result', result);
     }, (reason) => {
       console.log('reason', reason);
     });
-    modalRef.componentInstance.testSet = testSet;
   }
   editEnvi(testSet: any): void {
     this.compiler.clearCacheFor(EnvironmentConfigComponent);

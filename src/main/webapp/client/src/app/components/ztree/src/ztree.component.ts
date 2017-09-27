@@ -22,8 +22,8 @@ declare var jQuery;
 export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input()
-  public treeSettings: any;
-  public settings: any;
+  treeSettings: any;
+  settings: any;
 
   @Output() renameEvent: EventEmitter<any> = new EventEmitter<any>();
   @Output() removeEvent: EventEmitter<any> = new EventEmitter<any>();
@@ -35,14 +35,13 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   ztree: any;
   keywordsControl = new FormControl();
   keywords: string = '';
-  isExpanded: boolean = true;
+  isExpanded: boolean = false;
   isDragging: boolean = false;
   isToCopy: boolean = false;
 
   log: any;
   newCount: number = 0;
   className: string = "dark";
-  curDragNodes: any[] = [];
   autoExpandNode: any;
 
   @Input() set treeModel(model: any) {
@@ -50,16 +49,27 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    _.merge(this.settings, this.treeSettings);
+    this.isExpanded = this.settings.isExpanded;
+
+    if (this.settings.usage != 'edit') {
+      this.settings.view.addHoverDom = null;
+      this.settings.view.removeHoverDom = null;
+      this.settings.edit.enable = false;
+    }
+
     this._treeModel = model;
     this.ztree = jQuery.fn.zTree.init($('#tree'), this.settings, this._treeModel);
-    // this.ztree.reAsyncChildNodes(null, '');
-    this.ztree.expandNode(this.ztree.getNodes()[0], true, true, true);
+    this.ztree.expandNode(this.ztree.getNodes()[0], this.isExpanded, true, true);
   }
 
   public constructor(private _state:GlobalState, @Inject(Renderer2) private renderer:Renderer2,
                      @Inject(ZtreeService) private ztreeService: ZtreeService) {
 
     this.settings = {
+      usage: null,
+      isExpanded: null,
+
       view: {
         addHoverDom: this.addHoverDom,
         removeHoverDom: this.removeHoverDom,
@@ -71,10 +81,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
         showRemoveBtn: true,
         showRenameBtn: true,
         drag: {
-          autoExpandTrigger: true,
-          // prev: this.dropPrev,
-          // inner: this.dropInner,
-          // next: this.dropNext
+          autoExpandTrigger: true
         }
       },
       data: {
@@ -88,21 +95,17 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
         onRemove: this.onRemove,
         onRename: this.onRename,
         onDrag: this.onDrag,
-        // onDragMove: this.onDragMove,
         beforeDrop: this.beforeDrop,
         onDrop: this.onDrop,
         onExpand: this.onExpand
       }
     };
-
-     _.merge(this.settings, this.treeSettings)
   }
 
   public ngOnInit(): void {
     this.keywordsControl.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.onKeywordsChange(values));
 
     this._state.subscribe('case.save', (testCase: any) => {
-      console.log(testCase);
       if (testCase) {
         var node = this.ztree.getNodeByParam("id", testCase.id, null);
 
@@ -197,15 +200,6 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   onDrag = (event, treeId, treeNodes) => {
     this.isDragging = true;
   }
-
-  // onDragMove = (event, treeId, treeNodes) => {
-  //   console.log('===', event.ctrlKey);
-  //   if (event.ctrlKey) {
-  //     this.isToCopy = true;
-  //   } else {
-  //     this.isToCopy = false;
-  //   }
-  // }
 
   beforeDrop = (treeId, treeNodes, targetNode, moveType, isCopy) => {
     this.isDragging = false;

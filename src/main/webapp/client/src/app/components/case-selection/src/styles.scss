@@ -9,7 +9,7 @@
         position: relative;
         flex: 1;
         border-right: 1px solid #ddd;
-
+        overflow: auto;
         .content {
           padding: 0 5px 5px 5px;
         }

@@ -13,6 +13,10 @@ export class UserService {
     _.merge(query, {page: page, pageSize: pageSize});
     return this._reqService.post(this._api_url + 'list', query);
   }
+  getUsers(projectId: number) {
+    let model = {projectId: projectId};
+    return this._reqService.post(this._api_url + 'getUsers', model);
+  }
 
   get(id: number) {
     let model = {id: id};

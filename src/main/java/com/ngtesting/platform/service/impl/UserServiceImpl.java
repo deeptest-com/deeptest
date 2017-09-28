@@ -2,13 +2,17 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.ngtesting.platform.entity.TestOrg;
+import com.ngtesting.platform.entity.TestRelationProjectRoleEntity;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.AccountService;
+import com.ngtesting.platform.service.RelationOrgGroupUserService;
 import com.ngtesting.platform.service.RelationProjectRoleEntityService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.Page;
+import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
+import com.ngtesting.platform.vo.RelationProjectRoleEntityVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -16,9 +20,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class UserServiceImpl extends BaseServiceImpl implements UserService {
@@ -27,6 +29,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	AccountService accountService;
 	@Autowired
     RelationProjectRoleEntityService relationProjectRoleUserService;
+    @Autowired
+    RelationOrgGroupUserService relationOrgGroupUserService;
 
 	@Override
 	public Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
@@ -53,7 +57,61 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public List search(Long orgId, String keywords, JSONArray exceptIds) {
+	public List<RelationProjectRoleEntityVo> getProjectUsers(Long orgId, Long projectId) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestRelationProjectRoleEntity.class);
+
+		dc.add(Restrictions.eq("projectId", projectId));
+
+		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+
+		dc.addOrder(Order.asc("id"));
+		List<TestRelationProjectRoleEntity> ls = findAllByCriteria(dc);
+
+        List<RelationProjectRoleEntityVo> vos = new LinkedList();
+
+        List<Long> userIds = new LinkedList<>();
+        for(TestRelationProjectRoleEntity r : ls) {
+            if (r.getType().equals(TestRelationProjectRoleEntity.EntityType.user)) {
+                RelationProjectRoleEntityVo vo = new RelationProjectRoleEntityVo();
+                BeanUtilEx.copyProperties(vo, r);
+                vos.add(vo);
+
+                userIds.add(r.getEntityId());
+            }
+        }
+
+		for(TestRelationProjectRoleEntity r : ls) {
+		    if (r.getType().equals(TestRelationProjectRoleEntity.EntityType.group)) {
+                Long groupId = r.getEntityId();
+                List<RelationOrgGroupUserVo> rUsers  = relationOrgGroupUserService.listRelationsByGroup(orgId, groupId);
+
+                for(RelationOrgGroupUserVo ru : rUsers) {
+                    if (userIds.contains(ru.getUserId())) {
+                        continue;
+                    }
+                    RelationProjectRoleEntityVo vo = new RelationProjectRoleEntityVo();
+                    vo.setProjectId(r.getProjectId());
+                    vo.setProjectRoleId(r.getProjectRoleId());
+                    vo.setProjectRoleName(r.getProjectRoleName());
+                    vo.setEntityId(ru.getUserId());
+                    vo.setEntityName(ru.getUserName());
+                    vos.add(vo);
+                }
+            }
+        }
+
+        Collections.sort(vos, new Comparator<RelationProjectRoleEntityVo>(){
+            public int compare(RelationProjectRoleEntityVo o1, RelationProjectRoleEntityVo o2) {
+                return o1.getEntityName().compareTo(o2.getEntityName());
+            }
+        });
+
+		return vos;
+	}
+
+	@Override
+	public List<TestUser> search(Long orgId, String keywords, JSONArray exceptIds) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
 
 		dc.createAlias("orgSet", "companies");

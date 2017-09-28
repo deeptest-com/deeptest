@@ -10,6 +10,7 @@ import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.util.Constant.RespCode;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
+import com.ngtesting.platform.vo.RelationProjectRoleEntityVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -51,6 +52,24 @@ public class UserAction extends BaseAction {
         
 		ret.put("collectionSize", pageDate.getTotal());
         ret.put("data", vos);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "getUsers", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> getUsers(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long orgId = userVo.getDefaultOrgId();
+
+		String projectId = json.getString("projectId");
+
+		List <RelationProjectRoleEntityVo> vos = userService.getProjectUsers(orgId, Long.valueOf(projectId));
+
+		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

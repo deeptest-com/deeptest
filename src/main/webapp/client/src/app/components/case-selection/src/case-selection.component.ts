@@ -19,6 +19,8 @@ export class CaseSelectionComponent implements OnInit {
 
   @Input() treeModel: any;
   @Input() treeSettings: any = {};
+  @Input() users: any[] = [];
+  selectedUsers: any[] = [];
 
   @Input() progress: string = '0';
   @Input() color: string = '#209e91';
@@ -26,9 +28,13 @@ export class CaseSelectionComponent implements OnInit {
   @Input() show: boolean = true;
 
   form: FormGroup;
-  queryModel: any = {};
+  queryModel: any = {type: {}, priority: {}};
 
   public cases: string[];
+
+  private value:any = ['Athens'];
+  private _disabledV:string = '0';
+  private disabled:boolean = false;
 
   constructor(public activeModal: NgbActiveModal, private fb: FormBuilder, private _treeService: ZtreeService,
               public _sutieService: SuiteService, public _caseService: CaseService,) {
@@ -90,7 +96,37 @@ export class CaseSelectionComponent implements OnInit {
   }
 
   resetFilters() {
-    this.queryModel = {};
+    this.queryModel = {type: {}, priority: {}};
+  }
+
+  private get disabledV():string {
+    return this._disabledV;
+  }
+
+  private set disabledV(value:string) {
+    this._disabledV = value;
+    this.disabled = this._disabledV === '1';
+  }
+
+  public selected(value:any):void {
+    this.selectedUsers.push(value);
+    console.log(this.selectedUsers);
+  }
+
+  public removed(value:any):void {
+    this.selectedUsers.splice(this.selectedUsers.indexOf(value), 1);
+    console.log(this.selectedUsers);
+  }
+
+  public refreshValue(value:any):void {
+    this.value = value;
+  }
+
+  public itemsToString(value:Array<any> = []):string {
+    return value
+      .map((item:any) => {
+        return item.text;
+      }).join(',');
   }
 
 }

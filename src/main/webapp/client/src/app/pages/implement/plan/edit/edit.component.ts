@@ -16,6 +16,7 @@ import { RouteService } from '../../../../service/route';
 import { PlanService } from '../../../../service/plan';
 import { RunService } from '../../../../service/run';
 import { CaseService } from '../../../../service/case';
+import { UserService } from '../../../../service/user';
 
 import { CaseSelectionComponent } from '../../../../components/case-selection'
 import { EnvironmentConfigComponent } from '../../../../components/environment-config'
@@ -52,7 +53,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
               private _i18n: I18n, private modalService: NgbModal, private compiler: Compiler, private ngbDateParserFormatter: NgbDateParserFormatter,
-              private _planService: PlanService, private _runService: RunService, private _caseService: CaseService) {
+              private _planService: PlanService, private _runService: RunService, private _caseService: CaseService, private _userService: UserService) {
 
     this.projectId = CONSTANT.CURRENT_PROJECT.id;
   }
@@ -137,6 +138,9 @@ export class PlanEdit implements OnInit, AfterViewInit {
 
     this._caseService.query(CONSTANT.CURRENT_PROJECT.id).subscribe((json:any) => {
       this.caseSelectionModal.componentInstance.treeModel = json.data;
+    });
+    this._userService.getUsers(CONSTANT.CURRENT_PROJECT.id).subscribe((json:any) => {
+      this.caseSelectionModal.componentInstance.users = json.data;
     });
 
     this.caseSelectionModal.result.then((result) => {

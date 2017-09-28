@@ -25,6 +25,7 @@ import { PlanService } from '../../../service/plan';
 import { RunService } from '../../../service/run';
 import { SuiteService } from '../../../service/suite';
 import { CaseService } from '../../../service/case';
+import { UserService } from '../../../service/user';
 
 import { Plan } from './plan.component';
 import { PlanList } from './list/list.component';
@@ -65,7 +66,7 @@ export function myDateParserFormatterFactory() {
     RouteService,
     RequestService,
     DatetimePickerService,
-    PlanService, RunService, SuiteService, CaseService,
+    PlanService, RunService, SuiteService, CaseService, UserService,
     {
       provide: NgbDateParserFormatter,
       useFactory: myDateParserFormatterFactory

@@ -15,7 +15,7 @@
         }
       }
       .filter {
-        width: 300px;
+        width: 350px;
         .tree-toolbar {
           padding-left: 10px;
         }
@@ -40,11 +40,24 @@
             .card-block {
               padding: 5px;
               .form-group {
-                margin-top: 10px;
-                margin-bottom: 0;
+                margin-bottom: 3px;
                 label {
-                  text-align: right;
-                  max-width: 70px;
+                  margin-bottom: 0;
+                }
+                .form-check {
+                  margin: 0;
+                  label {
+                    text-align: right;
+                    max-width: 70px;
+                    &.form-check-label {
+                      min-width: 40px;
+                      margin-right: 8px;
+                      text-align: left;
+                      .form-check-input {
+                        margin-right: 3px;
+                      }
+                    }
+                  }
                 }
               }
             }

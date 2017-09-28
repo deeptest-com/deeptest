@@ -20,7 +20,6 @@ export class CaseSelectionComponent implements OnInit {
   @Input() treeModel: any;
   @Input() treeSettings: any = {};
   @Input() users: any[] = [];
-  selectedUsers: any[] = [];
 
   @Input() progress: string = '0';
   @Input() color: string = '#209e91';
@@ -28,7 +27,8 @@ export class CaseSelectionComponent implements OnInit {
   @Input() show: boolean = true;
 
   form: FormGroup;
-  queryModel: any = {type: {}, priority: {}};
+  _queryModel: any = {type: {}, priority: {}, createUsers: [], updateUsers: []};
+  queryModel: any;
 
   public cases: string[];
 
@@ -38,6 +38,7 @@ export class CaseSelectionComponent implements OnInit {
 
   constructor(public activeModal: NgbActiveModal, private fb: FormBuilder, private _treeService: ZtreeService,
               public _sutieService: SuiteService, public _caseService: CaseService,) {
+    this.queryModel = this._queryModel;
   }
 
   ngOnInit(): any {
@@ -53,7 +54,8 @@ export class CaseSelectionComponent implements OnInit {
   }
 
   save(): any {
-    this.activeModal.close('save');
+    console.log('queryModel', this.queryModel);
+    // this.activeModal.close('save');
   }
 
   reset() {
@@ -96,7 +98,7 @@ export class CaseSelectionComponent implements OnInit {
   }
 
   resetFilters() {
-    this.queryModel = {type: {}, priority: {}};
+    this.queryModel = this._queryModel;
   }
 
   private get disabledV():string {
@@ -108,14 +110,13 @@ export class CaseSelectionComponent implements OnInit {
     this.disabled = this._disabledV === '1';
   }
 
-  public selected(value:any):void {
-    this.selectedUsers.push(value);
-    console.log(this.selectedUsers);
+  public selected(item:any, type: string):void {
+    this.queryModel[type+'Users'].push(item);
   }
 
-  public removed(value:any):void {
-    this.selectedUsers.splice(this.selectedUsers.indexOf(value), 1);
-    console.log(this.selectedUsers);
+  public removed(item:any, type: string):void {
+    this.queryModel[type+'Users'].splice(this.queryModel[type+'Users'].indexOf(item), 1);
+    console.log(this.queryModel.users);
   }
 
   public refreshValue(value:any):void {

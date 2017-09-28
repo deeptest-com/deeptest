@@ -28,6 +28,8 @@ export class SelectComponent implements OnInit, ControlValueAccessor {
   @Input() public childrenField:string = 'children';
   @Input() public multiple:boolean = false;
 
+  selectedUsers: any[] = [];
+
   @Input()
   public set items(value:Array<any>) {
     if (!value) {
@@ -352,6 +354,7 @@ export class SelectComponent implements OnInit, ControlValueAccessor {
       this.element.nativeElement.querySelector('.ui-select-container').focus();
     }
   }
+
 }
 
 export class Behavior {
@@ -449,6 +452,7 @@ export class GenericBehavior extends Behavior implements OptionsBehavior {
       super.ensureHighlightVisible();
     }
   }
+
 }
 
 export class ChildrenBehavior extends Behavior implements OptionsBehavior {
@@ -528,4 +532,5 @@ export class ChildrenBehavior extends Behavior implements OptionsBehavior {
       super.ensureHighlightVisible(optionsMap);
     }
   }
+
 }

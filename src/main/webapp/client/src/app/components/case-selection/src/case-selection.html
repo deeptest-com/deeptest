@@ -105,14 +105,14 @@
                 </div>
               </div>
               <div class="card">
-                <div class="card-header" role="tab" id="headingCreate">
+                <div class="card-header" role="tab" id="headingTime">
                   <div class="mb-0">
-                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion4" href="#collapseCreate" aria-expanded="true" aria-controls="collapseCreate">
+                    <a data-toggle="collapse" data-parent="#accordion4" href="#collapseTime" aria-expanded="true" aria-controls="collapseTime">
                       时间
                     </a>
                   </div>
                 </div>
-                <div id="collapseCreate" class="collapse" role="tabpanel" aria-labelledby="headingCreate">
+                <div id="collapseTime" class="collapse show" role="tabpanel" aria-labelledby="headingCreate">
                   <div class="card-block">
                     <div class="form-group row">
                       <label class="col-3 col-form-label">创建于</label>
@@ -142,14 +142,14 @@
                 </div>
               </div>
               <div class="card">
-                <div class="card-header" role="tab" id="headingUpdate">
+                <div class="card-header" role="tab" id="headingUser">
                   <div class="mb-0">
-                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion5" href="#collapseUpdate" aria-expanded="true" aria-controls="collapseUpdate">
+                    <a data-toggle="collapse" data-parent="#accordion5" href="#collapseUser" aria-expanded="true" aria-controls="collapseUser">
                       用户
                     </a>
                   </div>
                 </div>
-                <div id="collapseUpdate" class="collapse" role="tabpanel" aria-labelledby="headingUpdate">
+                <div id="collapseUser" class="collapse show" role="tabpanel" aria-labelledby="headingUpdate">
                   <div class="card-block">
                     <div class="form-group row">
                       <label class="col-3 col-form-label">创建人</label>
@@ -160,8 +160,8 @@
                                     [textField]="'entityName'"
                                     [disabled]="disabled"
                                     (data)="refreshValue($event)"
-                                    (selected)="selected($event)"
-                                    (removed)="removed($event)"
+                                    (selected)="selected($event, 'create')"
+                                    (removed)="removed($event, 'create')"
                                     placeholder="请选择"></ng-select>
                       </div>
                     </div>
@@ -174,8 +174,8 @@
                                     [textField]="'entityName'"
                                     [disabled]="disabled"
                                     (data)="refreshValue($event)"
-                                    (selected)="selected($event)"
-                                    (removed)="removed($event)"
+                                    (selected)="selected($event, 'update')"
+                                    (removed)="removed($event, 'update')"
                                     placeholder="请选择"></ng-select>
                       </div>
                     </div>

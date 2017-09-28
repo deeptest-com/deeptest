@@ -2,12 +2,17 @@
 
   <div class="ztree-toolbar">
     <form class="form-inline">
-      <label (click)="expandOrNot()" class="link no-underline mr-xs-2">
-        <span *ngIf="!isExpanded">全部展开</span>
-        <span *ngIf="isExpanded">全部收缩</span>
+      <label class="link no-underline mr-xs-2">
+        <span *ngIf="!isExpanded" (click)="expandOrNot()">全部展开</span>
+        <span *ngIf="isExpanded" (click)="expandOrNot()">全部收缩</span>
+        &nbsp;&nbsp;
+        <span *ngIf="checkCount" (click)="reset()">取消所有</span>
+        <span *ngIf="!checkCount" (click)="selectAll()">选择所有</span>
       </label>
       <input [formControl]="keywordsControl" [value]="keywords" name="keywords" type="search" class="form-control form-control-sm" placeholder="过滤">
       <span *ngIf="isDragging" [class.highlight]="isToCopy" class="tips">按Ctrl键释放复制</span>
+      &nbsp;&nbsp;
+      <span *ngIf="checkCount">已选{{checkCount}}个</span>
     </form>
   </div>
 

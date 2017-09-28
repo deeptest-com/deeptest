@@ -33,6 +33,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   _treeModel: any;
   ztree: any;
+  checkCount: number;
   keywordsControl = new FormControl();
   keywords: string = '';
   isExpanded: boolean = false;
@@ -102,6 +103,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
         onDrag: this.onDrag,
         beforeDrop: this.beforeDrop,
         onDrop: this.onDrop,
+        onCheck: this.onCheck,
         onExpand: this.onExpand
       }
     };
@@ -255,13 +257,20 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   onExpand = (event, treeId, treeNode) => {
     if (treeNode === this.autoExpandNode) {
       this.className = (this.className === "dark" ? "":"dark");
-      this.showLog("[ "+this.getTime()+" onExpand ]&nbsp;&nbsp;&nbsp;&nbsp;" + treeNode.name);
     }
   }
-
-  showLog = (str) => {
-    console.log(str);
+  onCheck = () => {
+    this.checkCount = this.ztree.getCheckedNodes(true).length;
   }
+  selectAll = () => {
+    this.ztree.checkAllNodes(true);
+    this.onCheck();
+  }
+  reset = () => {
+    this.ztree.checkAllNodes(false);
+    this.onCheck();
+  }
+
   getTime = () => {
     var now= new Date(),
       h=now.getHours(),

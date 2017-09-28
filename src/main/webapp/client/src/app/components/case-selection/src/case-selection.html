@@ -18,8 +18,8 @@
 
       <div class="filter">
         <div class="ztree-toolbar">
-          <span>请选择过滤器</span>
-          <span (click)="reset()" class="link">复位</span>
+          <span>过滤器</span>
+          <span (click)="resetFilters()" class="link">全部复位</span>
         </div>
         <div class="content">
           <form [formGroup]="form">
@@ -38,21 +38,37 @@
                     <div class="form-group row">
                       <label class="col-3 col-form-label">类型</label>
                       <div class="col-9">
-                        <input formControlName="type" [(ngModel)]="queryModel.type" name="type" #type class="form-control form-control-sm" type="text">
+                        <select [(ngModel)]="queryModel.type" formControlName="type" class="form-control form-control-sm" name="type">
+                          <option value="functional">功能</option>
+                          <option value="performance">性能</option>
+                          <option value="security">安全</option>
+                          <option value="other">其他</option>
+                        </select>
                       </div>
                     </div>
 
                     <div class="form-group row">
                       <label class="col-3 col-form-label">优先级</label>
                       <div class="col-9">
-                        <input formControlName="priority" [(ngModel)]="queryModel.priority" name="priority" #priority class="form-control form-control-sm" type="text">
+                        <select [(ngModel)]="queryModel.priority" formControlName="priority" class="form-control form-control-sm" name="priority">
+                          <option value=""></option>
+                          <option value="1">高</option>
+                          <option value="2">中</option>
+                          <option value="3">低</option>
+                        </select>
                       </div>
                     </div>
 
                     <div class="form-group row">
                       <label class="col-3 col-form-label">耗时</label>
                       <div class="col-9">
-                        <input formControlName="estimate" [(ngModel)]="queryModel.estimate" name="estimate" #priority class="form-control form-control-sm" type="text">
+                        <select [(ngModel)]="queryModel.estimate" formControlName="estimate" class="form-control form-control-sm" name="estimate">
+                          <option value=""></option>
+                          <option value="0-15">少于15分钟</option>
+                          <option value="15-20">15-30分钟</option>
+                          <option value="30-60">30-60分钟</option>
+                          <option value="60-600">大于1小时</option>
+                        </select>
                       </div>
                     </div>
 
@@ -70,15 +86,27 @@
                 <div id="collapseCreate" class="collapse" role="tabpanel" aria-labelledby="headingCreate">
                   <div class="card-block">
                     <div class="form-group row">
-                      <label class="col-3 col-form-label">创建</label>
+                      <label class="col-3 col-form-label">创建于</label>
                       <div class="col-9">
-                        <input formControlName="createTime" [(ngModel)]="queryModel.createTime" name="createTime" #priority class="form-control form-control-sm" type="text">
+                        <select [(ngModel)]="queryModel.createTime" formControlName="createTime" class="form-control form-control-sm" name="createTime">
+                          <option value=""></option>
+                          <option value="1day">1天内</option>
+                          <option value="3day">3天内</option>
+                          <option value="1week">1周内</option>
+                          <option value="1month">1月内</option>
+                        </select>
                       </div>
                     </div>
                     <div class="form-group row">
-                      <label class="col-3 col-form-label">更新</label>
+                      <label class="col-3 col-form-label">更新于</label>
                       <div class="col-9">
-                        <input formControlName="updateTime" [(ngModel)]="queryModel.updateTime" name="updateTime" #priority class="form-control form-control-sm" type="text">
+                        <select [(ngModel)]="queryModel.updateTime" formControlName="updateTime" class="form-control form-control-sm" name="updateTime">
+                          <option value=""></option>
+                          <option value="1day">1天内</option>
+                          <option value="3day">3天内</option>
+                          <option value="1week">1周内</option>
+                          <option value="1month">1月内</option>
+                        </select>
                       </div>
                     </div>
                   </div>
@@ -97,13 +125,19 @@
                     <div class="form-group row">
                       <label class="col-3 col-form-label">创建</label>
                       <div class="col-9">
-                        <input formControlName="createUser" [(ngModel)]="queryModel.createUser" name="createUser" #priority class="form-control form-control-sm" type="text">
+                        <select [(ngModel)]="queryModel.createUser" formControlName="createUser" class="form-control form-control-sm" name="createUser">
+                          <option value=""></option>
+                          <option value="-1">张三</option>
+                        </select>
                       </div>
                     </div>
                     <div class="form-group row">
                       <label class="col-3 col-form-label">更新</label>
                       <div class="col-9">
-                        <input formControlName="updateUser" [(ngModel)]="queryModel.updateUser" name="updateUser" #priority class="form-control form-control-sm" type="text">
+                        <select [(ngModel)]="queryModel.updateUser" formControlName="updateUser" class="form-control form-control-sm" name="updateUser">
+                          <option value=""></option>
+                          <option value="-1">张三</option>
+                        </select>
                       </div>
                     </div>
                   </div>

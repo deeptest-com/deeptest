@@ -260,7 +260,13 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   onCheck = () => {
-    this.checkCount = this.ztree.getCheckedNodes(true).length;
+    let i = 0;
+    this.ztree.getCheckedNodes(true).forEach((value, index, array) => {
+      if(!value.isParent) {
+        i++;
+      }
+    });
+    this.checkCount = i;
   }
   selectAll = () => {
     this.ztree.checkAllNodes(true);

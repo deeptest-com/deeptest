@@ -26,7 +26,7 @@ export class CaseSelectionComponent implements OnInit {
   @Input() show: boolean = true;
 
   form: FormGroup;
-  queryModel: any = {type: 'functional', priority: '0', estimate: '', createBy: '', createOn: '', updateBy: '', updateOn: '' };
+  queryModel: any = {};
 
   public cases: string[];
 
@@ -87,6 +87,10 @@ export class CaseSelectionComponent implements OnInit {
 
   query(data?: any) {
 
+  }
+
+  resetFilters() {
+    this.queryModel = {};
   }
 
 }

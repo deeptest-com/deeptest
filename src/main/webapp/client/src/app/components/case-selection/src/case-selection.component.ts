@@ -57,7 +57,6 @@ export class CaseSelectionComponent implements OnInit {
   }
 
   save(): any {
-    console.log('queryModel', this.queryModel);
     // this.activeModal.close('save');
   }
 

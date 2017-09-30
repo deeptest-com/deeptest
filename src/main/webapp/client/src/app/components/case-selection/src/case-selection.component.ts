@@ -115,9 +115,6 @@ export class CaseSelectionComponent implements OnInit {
     let updateByFilter: string[] = this.queryModel.updateUsers;
 
     nodes = ztree.getNodesByFilter((node) => {
-      console.log('===', createTimeFilter);
-      console.log('===', new Date().getTime() - node.createTime);
-
       return !node.isParent && (
           ( typeFilter.length > 0 && _.indexOf(typeFilter, node.type) < 0 )
           || ( priorityFilter.length > 0 && _.indexOf(priorityFilter, node.priority) < 0 )

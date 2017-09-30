@@ -156,12 +156,11 @@
                       <div class="col-9">
                         <ng-select  [multiple]="true"
                                     [items]="users"
+                                    [(active)]="createUsers"
                                     [idField]="'entityId'"
                                     [textField]="'entityName'"
                                     [disabled]="disabled"
-                                    (data)="refreshValue($event)"
-                                    (selected)="selected($event, 'create')"
-                                    (removed)="removed($event, 'create')"
+                                    (data)="refreshCreateBy($event)"
                                     placeholder="请选择"></ng-select>
                       </div>
                     </div>
@@ -170,12 +169,11 @@
                       <div class="col-9">
                         <ng-select  [multiple]="true"
                                     [items]="users"
+                                    [(active)]="updateUsers"
                                     [idField]="'entityId'"
                                     [textField]="'entityName'"
                                     [disabled]="disabled"
-                                    (data)="refreshValue($event)"
-                                    (selected)="selected($event, 'update')"
-                                    (removed)="removed($event, 'update')"
+                                    (data)="refreshUpdateBy($event)"
                                     placeholder="请选择"></ng-select>
                       </div>
                     </div>

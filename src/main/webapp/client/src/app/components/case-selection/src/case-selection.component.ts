@@ -29,20 +29,19 @@ export class CaseSelectionComponent implements OnInit {
   @Input() show: boolean = true;
 
   form: FormGroup;
+  createUsers: any[] = [];
+  updateUsers: any[] = [];
   _queryModel: any = {type: {}, priority: {}, createUsers: [], updateUsers: []};
   queryModel: any;
 
   public cases: string[];
-
-  private value:any = ['Athens'];
   private _disabledV:string = '0';
   private disabled:boolean = false;
 
   constructor(public activeModal: NgbActiveModal, private fb: FormBuilder, private _treeService: ZtreeService,
               public _sutieService: SuiteService, public _caseService: CaseService,) {
-    this.queryModel = this._queryModel;
 
-
+    this.queryModel = _.cloneDeep(this._queryModel);
   }
 
   ngOnInit(): any {
@@ -111,8 +110,12 @@ export class CaseSelectionComponent implements OnInit {
     let createTimeFilter: number = this.queryModel.createTime * 24 * 60 * 60 * 1000;
     let updateTimeFilter: number = this.queryModel.updateTime * 24 * 60 * 60 * 1000;
 
-    let createByFilter: string[] = this.queryModel.createUsers;
-    let updateByFilter: string[] = this.queryModel.updateUsers;
+    let createByFilter: string[] = this.queryModel.createUsers.map(function (item,index,input) {
+      return item.id;
+    });
+    let updateByFilter: string[] = this.queryModel.updateUsers.map(function (item,index,input) {
+      return item.id;
+    });
 
     nodes = ztree.getNodesByFilter((node) => {
       return !node.isParent && (
@@ -131,7 +134,10 @@ export class CaseSelectionComponent implements OnInit {
   }
 
   resetFilters() {
-    this.queryModel = this._queryModel;
+    this.queryModel = _.cloneDeep(this._queryModel);
+    this.createUsers = [];
+    this.updateUsers = [];
+    this.query();
   }
 
   private get disabledV():string {
@@ -143,18 +149,13 @@ export class CaseSelectionComponent implements OnInit {
     this.disabled = this._disabledV === '1';
   }
 
-  public selected(item:any, type: string):void {
-    this.queryModel[type+'Users'].push(item.id);
+  public refreshCreateBy(value:any):void {
+    this.queryModel.createUsers = value;
     this.query();
   }
-
-  public removed(item:any, type: string):void {
-    this.queryModel[type+'Users'].splice(this.queryModel[type+'Users'].indexOf(item.id), 1);
+  public refreshUpdateBy(value:any):void {
+    this.queryModel.updateUsers = value;
     this.query();
-  }
-
-  public refreshValue(value:any):void {
-    this.value = value;
   }
 
   public itemsToString(value:Array<any> = []):string {

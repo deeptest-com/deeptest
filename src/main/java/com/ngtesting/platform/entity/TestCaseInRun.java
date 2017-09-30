@@ -10,7 +10,8 @@ public class TestCaseInRun extends BaseEntity {
 
     private static final long serialVersionUID = -2393416384079250976L;
     private String name;
-    private Integer priority;
+    @Enumerated(EnumType.STRING)
+    private TestCase.CasePriority priority;
     @Enumerated(EnumType.STRING)
     private TestCase.CaseType type;
     private Integer estimate;
@@ -49,21 +50,6 @@ public class TestCaseInRun extends BaseEntity {
     private String prop19;
     private String prop20;
 
-    public static enum CaseType {
-        functional("functional"),
-        performance("performance"),
-        security("security");
-
-        CaseType(String val) {
-            this.val = val;
-        }
-
-        private String val;
-        public String toString() {
-            return val;
-        }
-    }
-
     public Long getpId() {
         return pId;
     }
@@ -92,6 +78,20 @@ public class TestCaseInRun extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private CaseStatusInRun status = CaseStatusInRun.untest;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "create_by_id", insertable = false, updatable = false)
+    private TestUser createBy;
+
+    @Column(name = "create_by_id")
+    private Long createById;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "update_by_id", insertable = false, updatable = false)
+    private TestUser updateBy;
+
+    @Column(name = "update_by_id")
+    private Long updateById;
 
     public static enum CaseStatusInRun {
         untest("untest"),
@@ -165,11 +165,11 @@ public class TestCaseInRun extends BaseEntity {
         this.name = name;
     }
 
-    public Integer getPriority() {
+    public TestCase.CasePriority getPriority() {
         return priority;
     }
 
-    public void setPriority(Integer priority) {
+    public void setPriority(TestCase.CasePriority priority) {
         this.priority = priority;
     }
 
@@ -371,5 +371,37 @@ public class TestCaseInRun extends BaseEntity {
 
     public void setProp20(String prop20) {
         this.prop20 = prop20;
+    }
+
+    public TestUser getCreateBy() {
+        return createBy;
+    }
+
+    public void setCreateBy(TestUser createBy) {
+        this.createBy = createBy;
+    }
+
+    public Long getCreateById() {
+        return createById;
+    }
+
+    public void setCreateById(Long createById) {
+        this.createById = createById;
+    }
+
+    public TestUser getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(TestUser updateBy) {
+        this.updateBy = updateBy;
+    }
+
+    public Long getUpdateById() {
+        return updateById;
+    }
+
+    public void setUpdateById(Long updateById) {
+        this.updateById = updateById;
     }
 }

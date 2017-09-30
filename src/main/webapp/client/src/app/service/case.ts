@@ -46,11 +46,6 @@ export class CaseService {
     return this._reqService.post(this._api_url + 'save', data);
   }
 
-  create(node: TreeModel) {
-    let model = {id: node.id, value: node.value, type: node.type, pid: node.pid};
-    return this._reqService.post(this._api_url + 'create', model);
-  }
-
   saveField (id: number, field: any) {
     let model = _.merge(field, {id: id});
     return this._reqService.post(this._api_url + 'saveField', model);

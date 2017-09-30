@@ -1,27 +1,16 @@
 package com.ngtesting.platform.vo;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
-import com.ngtesting.platform.entity.TestOrg;
-import com.ngtesting.platform.entity.TestProject;
-
 public class CasePriorityVo extends BaseVo {
 	private static final long serialVersionUID = -2071266644244632484L;
-	
+
 	private String code;
 	private String name;
 	private String descr;
-    private Integer priority;
+    private String priority;
     private Boolean isDefault;
     private Integer displayOrder;
     private Long orgId;
-    
+
 	public String getCode() {
 		return code;
 	}
@@ -34,10 +23,10 @@ public class CasePriorityVo extends BaseVo {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Integer getPriority() {
+	public String getPriority() {
 		return priority;
 	}
-	public void setPriority(Integer priority) {
+	public void setPriority(String priority) {
 		this.priority = priority;
 	}
 	public Boolean getIsDefault() {

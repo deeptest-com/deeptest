@@ -12,7 +12,8 @@ public class TestCase extends BaseEntity {
 	private static final long serialVersionUID = -7253288259861070288L;
 
     private String name;
-	private Integer priority;
+    @Enumerated(EnumType.STRING)
+	private CasePriority priority;
     @Enumerated(EnumType.STRING)
     private CaseType type;
 	private Integer estimate;
@@ -51,6 +52,35 @@ public class TestCase extends BaseEntity {
     private String prop19;
     private String prop20;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "create_by_id", insertable = false, updatable = false)
+    private TestUser createBy;
+
+    @Column(name = "create_by_id")
+    private Long createById;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "update_by_id", insertable = false, updatable = false)
+    private TestUser updateBy;
+
+    @Column(name = "update_by_id")
+    private Long updateById;
+
+    public static enum CasePriority {
+        high("high"),
+        middle("middle"),
+        low("low");
+
+        CasePriority(String val) {
+            this.val = val;
+        }
+
+        private String val;
+        public String toString() {
+            return val;
+        }
+    }
+
     public static enum CaseType {
         functional("functional"),
         performance("performance"),
@@ -73,13 +103,6 @@ public class TestCase extends BaseEntity {
 
     @Column(name = "project_id")
     private Long projectId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private TestUser user;
-
-    @Column(name = "user_id")
-    private Long userId;
 
 	@OneToMany(mappedBy="testCase", fetch=FetchType.LAZY)
     @Where(clause="!deleted")
@@ -262,11 +285,10 @@ public class TestCase extends BaseEntity {
 //		this.props = props;
 //	}
 
-	public Integer getPriority() {
+	public CasePriority getPriority() {
 		return priority;
 	}
-
-	public void setPriority(Integer priority) {
+	public void setPriority(CasePriority priority) {
 		this.priority = priority;
 	}
 
@@ -302,23 +324,23 @@ public class TestCase extends BaseEntity {
 		this.projectId = projectId;
 	}
 
-	public TestUser getUser() {
-		return user;
-	}
+    public TestUser getCreateBy() {
+        return createBy;
+    }
 
-	public void setUser(TestUser user) {
-		this.user = user;
-	}
+    public void setCreateBy(TestUser createBy) {
+        this.createBy = createBy;
+    }
 
-	public Long getUserId() {
-		return userId;
-	}
+    public Long getCreateById() {
+        return createById;
+    }
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
+    public void setCreateById(Long createById) {
+        this.createById = createById;
+    }
 
-	public String getObjective() {
+    public String getObjective() {
 		return objective;
 	}
 
@@ -358,5 +380,19 @@ public class TestCase extends BaseEntity {
         this.pId = pId;
     }
 
+    public TestUser getUpdateBy() {
+        return updateBy;
+    }
 
+    public void setUpdateBy(TestUser updateBy) {
+        this.updateBy = updateBy;
+    }
+
+    public Long getUpdateById() {
+        return updateById;
+    }
+
+    public void setUpdateById(Long updateById) {
+        this.updateById = updateById;
+    }
 }

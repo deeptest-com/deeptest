@@ -1,5 +1,6 @@
 package com.ngtesting.platform.vo;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ public class TestCaseVo extends BaseVo {
 	private static final long serialVersionUID = -5955583523485410239L;
 
 	private String name;
-	private Integer priority;
+	private String priority;
 	private Integer estimate;
     private String type;
 	private String objective;
@@ -15,6 +16,9 @@ public class TestCaseVo extends BaseVo {
     private Integer ordr;
 	private Long pId;
 	private Long projectId;
+
+	private Long createById;
+	private Long updateById;
 
 	private String prop01;
 	private String prop02;
@@ -47,7 +51,8 @@ public class TestCaseVo extends BaseVo {
         super();
     }
 
-    public TestCaseVo(Long id, Long pId, String name, Integer priority, Integer estimate, String objective, String descr) {
+    public TestCaseVo(Long id, Long pId, String name, String priority, Integer estimate, String objective, String descr,
+                      Long createById, Long updateById, Date createTime, Date updateTime) {
         super();
 
 		this.id = id;
@@ -57,6 +62,27 @@ public class TestCaseVo extends BaseVo {
         this.estimate = estimate;
         this.objective = objective;
         this.descr = descr;
+
+        this.createById = createById;
+        this.updateById = updateById;
+        this.createTime = createTime;
+        this.updateTime = updateTime;
+    }
+
+    public Long getCreateById() {
+        return createById;
+    }
+
+    public void setCreateById(Long createById) {
+        this.createById = createById;
+    }
+
+    public Long getUpdateById() {
+        return updateById;
+    }
+
+    public void setUpdateById(Long updateById) {
+        this.updateById = updateById;
     }
 
     public List<TestCaseVo> getChildren() {
@@ -267,11 +293,11 @@ public class TestCaseVo extends BaseVo {
 		this.prop20 = prop20;
 	}
 
-	public Integer getPriority() {
+	public String getPriority() {
 		return priority;
 	}
 
-	public void setPriority(Integer priority) {
+	public void setPriority(String priority) {
 		this.priority = priority;
 	}
 

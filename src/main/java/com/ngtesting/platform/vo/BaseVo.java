@@ -1,6 +1,7 @@
 package com.ngtesting.platform.vo;
 
 import java.io.Serializable;
+import java.util.Date;
 
 
 public abstract class BaseVo implements Serializable {
@@ -8,7 +9,26 @@ public abstract class BaseVo implements Serializable {
     protected Boolean deleted = false;
     protected Boolean disabled = false;
     protected Integer version;
-    
+
+	protected Date createTime;
+	protected Date updateTime;
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -34,5 +54,5 @@ public abstract class BaseVo implements Serializable {
 	public void setVersion(Integer version) {
 		this.version = version;
 	}
-    
+
 }

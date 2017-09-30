@@ -16,6 +16,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -63,7 +64,11 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 		testCase.setName(name);
 		testCase.setpId(pid);
 		testCase.setProjectId(parent.getProjectId());
-		testCase.setUserId(userId);
+
+		testCase.setCreateById(userId);
+        testCase.setCreateTime(new Date());
+        testCase.setUpdateById(userId);
+        testCase.setUpdateTime(new Date());
 
 		testCase.setOrdr(getChildMaxOrderNumb(parent.getId()) + 1);
 
@@ -75,7 +80,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	@Override
 	public TestCase rename(JSONObject json, Long userId) {
         TestCase testCase = JSON.parseObject(JSON.toJSONString(json), TestCase.class);
-        testCase.setUserId(userId);
+        testCase.setUpdateById(userId);
+        testCase.setUpdateTime(new Date());
 
         if (testCase.getOrdr() == null) {
             testCase.setOrdr(getChildMaxOrderNumb(testCase.getpId()));
@@ -158,13 +164,19 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         if (testCaseVo.getId() > 0) {
             testCasePo = (TestCase)get(TestCase.class, testCaseVo.getId());
             copyProperties(testCasePo, testCaseVo);
+
+            testCasePo.setUpdateById(userId);
+            testCasePo.setUpdateTime(new Date());
         } else {
             copyProperties(testCasePo, testCaseVo);
             testCasePo.setId(null);
             testCasePo.setOrdr(getChildMaxOrderNumb(testCasePo.getpId()));
+
+            testCasePo.setCreateById(userId);
+            testCasePo.setCreateTime(new Date());
         }
 
-        testCasePo.setUserId(userId);
+
         saveOrUpdate(testCasePo);
 
 		return testCasePo;
@@ -245,7 +257,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	public TestCase delete(Long id, Long userId) {
         TestCase testCase = (TestCase) get(TestCase.class, id);
         testCase.setDeleted(true);
-        testCase.setUserId(userId);
+        testCase.setUpdateById(userId);
+        testCase.setUpdateTime(new Date());
         saveOrUpdate(testCase);
 
         return testCase;
@@ -367,7 +380,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     public void copyProperties(TestCase testCasePo, TestCaseVo testCaseVo) {
         testCasePo.setId(testCaseVo.getId());
         testCasePo.setName(testCaseVo.getName());
-        testCasePo.setPriority(testCaseVo.getPriority());
+        testCasePo.setPriority(TestCase.CasePriority.valueOf(testCaseVo.getPriority()));
         testCasePo.setType(TestCase.CaseType.valueOf(testCaseVo.getType()));
         testCasePo.setEstimate(testCaseVo.getEstimate());
 

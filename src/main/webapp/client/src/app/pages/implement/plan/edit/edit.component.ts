@@ -34,7 +34,7 @@ declare var jQuery;
   providers: [I18n, {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n}]
 })
 export class PlanEdit implements OnInit, AfterViewInit {
-  treeSettings: any = {isExpanded: false, usage: 'selection'};
+  treeSettings: any = {usage: 'selection', isExpanded: true, sonSign: false};
 
   projectId: number;
   planId: number;
@@ -50,6 +50,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
   testSet: any;
   modalTitle: string;
   caseSelectionModal: any;
+  envSelectionModal: any;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
               private _i18n: I18n, private modalService: NgbModal, private compiler: Compiler, private ngbDateParserFormatter: NgbDateParserFormatter,
@@ -131,7 +132,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
     this.loadData();
   }
 
-  editSet(testSet: any): void {
+  editRun(run: any, index: number): void {
     this.compiler.clearCacheFor(CaseSelectionComponent);
     this.caseSelectionModal = this.modalService.open(CaseSelectionComponent, {windowClass: 'pop-selection'});
     this.caseSelectionModal.componentInstance.treeSettings = this.treeSettings;
@@ -144,20 +145,28 @@ export class PlanEdit implements OnInit, AfterViewInit {
     });
 
     this.caseSelectionModal.result.then((result) => {
-      console.log('result', result);
+      let id = run? run.id: undefined;
+      this.saveRun(id, result.data, index);
     }, (reason) => {
       console.log('reason', reason);
     });
   }
+  saveRun(runId: any, cases: any[], index: number): void {
+    this._runService.save(this.planId, runId, cases).subscribe((json:any) => {
+      console.log(json);
+      this.model.runVos[index]= json.data;
+    });
+  }
+
   editEnvi(testSet: any): void {
     this.compiler.clearCacheFor(EnvironmentConfigComponent);
-    const modalRef = this.modalService.open(EnvironmentConfigComponent, {windowClass: 'pop-selection'});
-    modalRef.result.then((result) => {
+    this.envSelectionModal = this.modalService.open(EnvironmentConfigComponent, {windowClass: 'pop-selection'});
+    this.envSelectionModal.result.then((result) => {
       console.log('result', result);
     }, (reason) => {
       console.log('reason', reason);
     });
-    modalRef.componentInstance.testSet = testSet;
+    this.envSelectionModal.componentInstance.testSet = testSet;
   }
 
   delete(): void {

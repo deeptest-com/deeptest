@@ -37,6 +37,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   keywordsControl = new FormControl();
   keywords: string = '';
   isExpanded: boolean = false;
+  sonSign: boolean = false;
   isDragging: boolean = false;
   isToCopy: boolean = false;
 
@@ -52,6 +53,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     _.merge(this.settings, this.treeSettings);
     this.isExpanded = this.settings.isExpanded;
+    this.sonSign = this.settings.sonSign;
 
     if (this.settings.usage == 'selection') {
       this.settings.view.addHoverDom = null;
@@ -66,7 +68,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this._treeModel = model;
     this.ztree = jQuery.fn.zTree.init($('#tree'), this.settings, this._treeModel);
-    this.ztree.expandNode(this.ztree.getNodes()[0], this.isExpanded, true, true);
+    this.ztree.expandNode(this.ztree.getNodes()[0], this.isExpanded, this.sonSign, true);
   }
 
   public constructor(private _state:GlobalState, @Inject(Renderer2) private renderer:Renderer2,
@@ -137,13 +139,17 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   expandOrNot() {
-    if (!this.isExpanded) {
+    if (!(this.isExpanded && this.sonSign)) {
+      this.isExpanded = true;
+      this.sonSign = true;
+
       this.ztree.expandAll(true);
     } else {
+      this.isExpanded = false;
+      this.sonSign = false;
+
       this.ztree.expandAll(false);
     }
-
-    this.isExpanded = !this.isExpanded;
   }
 
   onClick = (event, treeId, treeNode) => {
@@ -298,8 +304,6 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   updateCopiedNodes(node: any, data: any) {
-    console.log('===',  node.id, data.id);
-
     node.id = data.id;
     node.pId = data.pId;
 

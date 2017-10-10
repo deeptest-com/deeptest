@@ -109,9 +109,9 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 
 	@Override
 	public TestRun save(JSONObject json) {
-		TestRun testCase = (TestRun) get(TestRun.class, json.getLong("id"));
+		TestRun run = (TestRun) get(TestRun.class, json.getLong("runId"));
 
-		return testCase;
+		return run;
 	}
 
 	@Override
@@ -119,15 +119,15 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 
 		return null;
 	}
-	
+
 	private Integer getChildMaxOrderNumb(TestRun parent) {
 		String hql = "select max(ordr) from TestRun where parentId = " + parent.getId();
 		Integer maxOrder = (Integer) getByHQL(hql);
-		
+
 		if (maxOrder == null) {
 			maxOrder = 0;
 		}
-        
+
 		return maxOrder;
 	}
 

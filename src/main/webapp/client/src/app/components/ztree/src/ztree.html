@@ -3,8 +3,8 @@
   <div class="ztree-toolbar">
     <form class="form-inline">
       <label class="link no-underline mr-xs-2">
-        <span *ngIf="!isExpanded" (click)="expandOrNot()">全部展开</span>
-        <span *ngIf="isExpanded" (click)="expandOrNot()">全部收缩</span>
+        <span *ngIf="!(isExpanded && sonSign)" (click)="expandOrNot()">全部展开</span>
+        <span *ngIf="isExpanded && sonSign" (click)="expandOrNot()">全部收缩</span>
         &nbsp;&nbsp;
         <span *ngIf="checkCount" (click)="reset()">取消所有</span>
         <span *ngIf="!checkCount" (click)="selectAll()">选择所有</span>

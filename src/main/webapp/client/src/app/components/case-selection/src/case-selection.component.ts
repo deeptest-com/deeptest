@@ -57,7 +57,8 @@ export class CaseSelectionComponent implements OnInit {
   }
 
   save(): any {
-    // this.activeModal.close('save');
+    let ztree = $.fn.zTree.getZTreeObj("tree");
+    this.activeModal.close({act: 'save', data: ztree.getCheckedNodes(true)});
   }
 
   reset() {
@@ -65,7 +66,7 @@ export class CaseSelectionComponent implements OnInit {
   }
 
   dismiss(): any {
-    this.activeModal.dismiss('cancel');
+    this.activeModal.dismiss({act: 'cancel'});
   }
 
   onModuleSelected(event: any) {

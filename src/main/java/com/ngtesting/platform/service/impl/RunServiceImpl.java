@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestCaseInRun;
 import com.ngtesting.platform.entity.TestCaseStepInRun;
@@ -107,9 +108,38 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 		return vo;
 	}
 
+    @Override
+    public TestRun save(JSONObject json) {
+        Long planId = json.getLong("planId");
+        Long runId = json.getLong("id");
+        String runName = json.getString("name");
+
+        TestRun run;
+        if (runId != null) {
+            run = (TestRun) get(TestRun.class, runId);
+        } else {
+            run = new TestRun();
+            run.setPlanId(planId);
+        }
+        run.setName(runName);
+        saveOrUpdate(run);
+
+        return run;
+    }
+
 	@Override
-	public TestRun save(JSONObject json) {
-		TestRun run = (TestRun) get(TestRun.class, json.getLong("runId"));
+	public TestRun saveCases(JSONObject json) {
+		Long planId = json.getLong("planId");
+		Long runId = json.getLong("runId");
+		JSONArray cases = json.getJSONArray("cases");
+
+        TestRun run;
+        if (runId != null) {
+            run = (TestRun) get(TestRun.class, runId);
+        } else {
+            run = new TestRun();
+            run.setPlanId(planId);
+        }
 
 		return run;
 	}

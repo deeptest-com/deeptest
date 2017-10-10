@@ -23,11 +23,15 @@ export class RunService {
     return this._reqService.post(this._api_url + 'get', model);
   }
 
-  save(planId: number, runId: number, cases: any[]) {
+  saveRun(planId: number, run: any) {
+    return this._reqService.post(this._api_url + 'save', {planId: planId, id: run.id, name: run.name});
+  }
+
+  saveRunCases(planId: number, runId: number, cases: any[]) {
     let ids: number[] = cases.map(function (item,index,input) {
       return item.id;
     });
-    return this._reqService.post(this._api_url + 'save', {planId: planId, runId: runId, cases: ids});
+    return this._reqService.post(this._api_url + 'saveCases', {planId: planId, runId: runId, cases: ids});
   }
 
   delete(node: TreeModel) {

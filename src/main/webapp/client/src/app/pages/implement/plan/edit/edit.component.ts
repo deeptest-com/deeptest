@@ -40,8 +40,11 @@ export class PlanEdit implements OnInit, AfterViewInit {
   planId: number;
   startDate: any;
   model: any = {};
+  run: any = {};
+  runIndex: number;
   form: FormGroup;
 
+  @ViewChild('modalEditRun') modalEditRun: PopDialogComponent;
   @ViewChild('modalSelectCase') modalSelectCase: CaseSelectionComponent;
 
   @ViewChild('modalDelete') modalDelete: PopDialogComponent;
@@ -132,7 +135,24 @@ export class PlanEdit implements OnInit, AfterViewInit {
     this.loadData();
   }
 
-  editRun(run: any, index: number): void {
+  createRun() {
+    this.run = {};
+    this.runIndex = this.model.runVos.length;
+    this.modalEditRun.showModal();
+  }
+  editRun(run: any, index: number) {
+    this.run = run;
+    this.runIndex = index;
+    this.modalEditRun.showModal();
+  }
+  saveRun() {
+    this._runService.saveRun(this.planId, this.run).subscribe((json:any) => {
+      this.model.runVos[this.runIndex]= json.data;
+      this.modalEditRun.closeModal();
+    });
+  }
+
+  editRunCases(run: any, index: number) {
     this.compiler.clearCacheFor(CaseSelectionComponent);
     this.caseSelectionModal = this.modalService.open(CaseSelectionComponent, {windowClass: 'pop-selection'});
     this.caseSelectionModal.componentInstance.treeSettings = this.treeSettings;
@@ -146,13 +166,13 @@ export class PlanEdit implements OnInit, AfterViewInit {
 
     this.caseSelectionModal.result.then((result) => {
       let id = run? run.id: undefined;
-      this.saveRun(id, result.data, index);
+      this.saveRunCases(id, result.data, index);
     }, (reason) => {
       console.log('reason', reason);
     });
   }
-  saveRun(runId: any, cases: any[], index: number): void {
-    this._runService.save(this.planId, runId, cases).subscribe((json:any) => {
+  saveRunCases(runId: any, cases: any[], index: number): void {
+    this._runService.saveRunCases(this.planId, runId, cases).subscribe((json:any) => {
       console.log(json);
       this.model.runVos[index]= json.data;
     });

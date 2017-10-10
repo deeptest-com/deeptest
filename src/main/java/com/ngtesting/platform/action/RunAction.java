@@ -75,9 +75,9 @@ public class RunAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
+
 		Long id = json.getLong("id");
-		
+
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		TestRun po = runService.delete(id, userVo.getId());
@@ -93,6 +93,20 @@ public class RunAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		TestRun po = runService.save(json);
+		TestRunVo caseVo = runService.genVo(po);
+
+		ret.put("data", caseVo);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "saveCases", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> saveCases(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		TestRun po = runService.saveCases(json);
 		TestRunVo caseVo = runService.genVo(po);
 
 		ret.put("data", caseVo);

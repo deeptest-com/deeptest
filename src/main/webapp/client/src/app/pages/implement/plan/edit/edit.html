@@ -86,20 +86,21 @@
               <th>标题</th>
               <th style="width: 300px;">执行情况</th>
               <th style="width: 250px;" class="opt">
-                <span (click)="editRun({id: 1}, model.runVos.length)" class="link no-underline">新建测试集</span>
+                <span (click)="createRun()" class="link no-underline">新建</span>
               </th>
             </tr>
             </thead>
             <tbody>
             <tr *ngFor="let item of model.runVos; let i = index;">
-              <td>1</td>
+              <td>{{i+1}}</td>
               <td [routerLink]="['/pages/implement/run/execution', item.id]" class="pointer">{{item.name}}</td>
               <td>
                 <execution-bar [data]="item.countMap"></execution-bar>
               </td>
               <td class="center">
-                <span (click)="editRun(item, i)" class="link no-underline">选择用例</span>
-                <span (click)="editEnvi(item, i)" class="link no-underline">配置环境</span>
+                <span (click)="editRun(item)" class="link no-underline">编辑</span>
+                <span (click)="editRunCases(item, i)" class="link no-underline">用例</span>
+                <span (click)="editEnvi(item, i)" class="link no-underline">环境</span>
                 <span (click)="removeSet(item, i)" class="link no-underline">移除</span>
               </td>
             </tr>
@@ -133,6 +134,12 @@
   </form>
 
 </div>
+
+<pop-dialog #modalEditRun (confirm)="saveRun()" [title]="'测试集'">
+  <div>
+    <input class="form-control" name="runName" [(ngModel)]="run.name">
+  </div>
+</pop-dialog>
 
 <pop-dialog #modalDelete (confirm)="deleteConfirm()" [title]="modalTitle">
   确认删除名为"{{model.name}}"的测试计划？

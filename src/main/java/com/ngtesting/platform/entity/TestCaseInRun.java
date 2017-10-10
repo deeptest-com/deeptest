@@ -7,13 +7,16 @@ import java.util.List;
 @Entity
 @Table(name = "tst_case_in_run")
 public class TestCaseInRun extends BaseEntity {
-
     private static final long serialVersionUID = -2393416384079250976L;
+
     private String name;
+
     @Enumerated(EnumType.STRING)
     private TestCase.CasePriority priority;
+
     @Enumerated(EnumType.STRING)
     private TestCase.CaseType type;
+
     private Integer estimate;
 
     @Column(name = "objective", length = 1000)
@@ -21,6 +24,7 @@ public class TestCaseInRun extends BaseEntity {
 
     @Column(name = "descr", length = 1000)
     private String descr;
+
     private Integer ordr;
 
     @Column(name = "pId")
@@ -31,39 +35,21 @@ public class TestCaseInRun extends BaseEntity {
     private String prop03;
     private String prop04;
     private String prop05;
-
     private String prop06;
     private String prop07;
     private String prop08;
     private String prop09;
     private String prop10;
-
     private String prop11;
     private String prop12;
     private String prop13;
     private String prop14;
     private String prop15;
-
     private String prop16;
     private String prop17;
     private String prop18;
     private String prop19;
     private String prop20;
-
-    public Long getpId() {
-        return pId;
-    }
-
-    public void setpId(Long pId) {
-        this.pId = pId;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "run_id", insertable = false, updatable = false)
-    private TestRun run;
-
-    @Column(name = "run_id")
-    private Long runId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_id", insertable = false, updatable = false)
@@ -72,9 +58,12 @@ public class TestCaseInRun extends BaseEntity {
     @Column(name = "case_id")
     private Long caseId;
 
-    @OneToMany(mappedBy="testCaseInRun", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-    @OrderBy("ordr")
-    private List<TestCaseStepInRun> steps = new LinkedList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "run_id", insertable = false, updatable = false)
+    private TestRun run;
+
+    @Column(name = "run_id")
+    private Long runId;
 
     @Enumerated(EnumType.STRING)
     private CaseStatusInRun status = CaseStatusInRun.untest;
@@ -86,12 +75,9 @@ public class TestCaseInRun extends BaseEntity {
     @Column(name = "create_by_id")
     private Long createById;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "update_by_id", insertable = false, updatable = false)
-    private TestUser updateBy;
-
-    @Column(name = "update_by_id")
-    private Long updateById;
+    @OneToMany(mappedBy="testCaseInRun", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    @OrderBy("ordr")
+    private List<TestCaseStepInRun> steps = new LinkedList<>();
 
     public static enum CaseStatusInRun {
         untest("untest"),
@@ -107,6 +93,14 @@ public class TestCaseInRun extends BaseEntity {
         public String toString() {
             return val;
         }
+    }
+
+    public Long getpId() {
+        return pId;
+    }
+
+    public void setpId(Long pId) {
+        this.pId = pId;
     }
 
     public List<TestCaseStepInRun> getSteps() {
@@ -389,19 +383,4 @@ public class TestCaseInRun extends BaseEntity {
         this.createById = createById;
     }
 
-    public TestUser getUpdateBy() {
-        return updateBy;
-    }
-
-    public void setUpdateBy(TestUser updateBy) {
-        this.updateBy = updateBy;
-    }
-
-    public Long getUpdateById() {
-        return updateById;
-    }
-
-    public void setUpdateById(Long updateById) {
-        this.updateById = updateById;
-    }
 }

@@ -12,10 +12,13 @@ public class TestCase extends BaseEntity {
 	private static final long serialVersionUID = -7253288259861070288L;
 
     private String name;
+
     @Enumerated(EnumType.STRING)
 	private CasePriority priority;
+
     @Enumerated(EnumType.STRING)
     private CaseType type;
+
 	private Integer estimate;
 
 	@Column(name = "objective", length = 1000)
@@ -53,6 +56,13 @@ public class TestCase extends BaseEntity {
     private String prop20;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id", insertable = false, updatable = false)
+    private TestProject project;
+
+    @Column(name = "project_id")
+    private Long projectId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "create_by_id", insertable = false, updatable = false)
     private TestUser createBy;
 
@@ -65,6 +75,11 @@ public class TestCase extends BaseEntity {
 
     @Column(name = "update_by_id")
     private Long updateById;
+
+    @OneToMany(mappedBy="testCase", fetch=FetchType.LAZY)
+    @Where(clause="!deleted")
+    @OrderBy("ordr")
+    private List<TestCaseStep> steps = new LinkedList<>();
 
     public static enum CasePriority {
         high("high"),
@@ -96,18 +111,6 @@ public class TestCase extends BaseEntity {
             return val;
         }
     }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", insertable = false, updatable = false)
-    private TestProject project;
-
-    @Column(name = "project_id")
-    private Long projectId;
-
-	@OneToMany(mappedBy="testCase", fetch=FetchType.LAZY)
-    @Where(clause="!deleted")
-	@OrderBy("ordr")
-	private List<TestCaseStep> steps = new LinkedList<>();
 
     public CaseType getType() {
         return type;
@@ -276,14 +279,6 @@ public class TestCase extends BaseEntity {
     public void setProp20(String prop20) {
         this.prop20 = prop20;
     }
-
-//    public List<TestCaseProp> getProps() {
-//		return props;
-//	}
-//
-//	public void setProps(List<TestCaseProp> props) {
-//		this.props = props;
-//	}
 
 	public CasePriority getPriority() {
 		return priority;

@@ -2,8 +2,9 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.entity.TestCase;
 import com.ngtesting.platform.entity.TestCaseInRun;
-import com.ngtesting.platform.entity.TestCaseStepInRun;
+import com.ngtesting.platform.entity.TestCaseStep;
 import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.RunService;
 import com.ngtesting.platform.util.BeanUtilEx;
@@ -40,13 +41,69 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 		return ls;
 	}
 
-	@Override
-	public TestRunVo getById(Long id) {
-		TestRun po = (TestRun) get(TestRun.class, id);
-		TestRunVo vo = genVo(po);
+    @Override
+    public TestRunVo getById(Long id) {
+        TestRun po = (TestRun) get(TestRun.class, id);
+        TestRunVo vo = genVo(po);
 
-		return vo;
-	}
+        return vo;
+    }
+
+    @Override
+    public TestRun save(JSONObject json) {
+        Long planId = json.getLong("planId");
+        Long runId = json.getLong("id");
+        String runName = json.getString("name");
+
+        TestRun run;
+        if (runId != null) {
+            run = (TestRun) get(TestRun.class, runId);
+        } else {
+            run = new TestRun();
+            run.setPlanId(planId);
+        }
+        run.setName(runName);
+        saveOrUpdate(run);
+
+        return run;
+    }
+
+    @Override
+    public TestRun saveCases(JSONObject json) {
+        Long planId = json.getLong("planId");
+        Long runId = json.getLong("runId");
+        JSONArray data = json.getJSONArray("cases");
+
+        TestRun run;
+        if (runId != null) {
+            run = (TestRun) get(TestRun.class, runId);
+        } else {
+            run = new TestRun();
+            run.setPlanId(planId);
+        }
+
+        for (TestCaseInRun item : run.getTestcases()) {
+            getDao().delete(item);
+        }
+
+        run.setTestcases(new LinkedList<TestCaseInRun>());
+        saveOrUpdate(run);
+        for (Object obj : data) {
+            Long id = Long.valueOf(obj.toString());
+
+            TestCaseInRun caseInRun = new TestCaseInRun(runId, id);
+            run.getTestcases().add(caseInRun);
+        }
+        saveOrUpdate(run);
+
+        return run;
+    }
+
+    @Override
+    public TestRun delete(Long vo, Long clientId) {
+
+        return null;
+    }
 
 	@Override
 	public List<TestRunVo> genVos(List<TestRun> pos) {
@@ -94,60 +151,19 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 	public TestCaseInRunVo genCaseVo(TestCaseInRun po) {
 		TestCaseInRunVo vo = new TestCaseInRunVo();
 
-		BeanUtilEx.copyProperties(vo, po);
+        TestCase testcase = po.getTestCase();
+		BeanUtilEx.copyProperties(vo, testcase);
 
 		vo.setSteps(new LinkedList<TestCaseStepVo>());
 
-		List<TestCaseStepInRun> steps = po.getSteps();
-		for (TestCaseStepInRun step : steps) {
+		List<TestCaseStep> steps = testcase.getSteps();
+		for (TestCaseStep step : steps) {
 			TestCaseStepVo stepVo = new TestCaseStepVo(
-					step.getId(), step.getOpt(), step.getExpect(), step.getOrdr(), step.getTestCaseInRunId());
+					step.getId(), step.getOpt(), step.getExpect(), step.getOrdr(), step.getTestCaseId());
 
 			vo.getSteps().add(stepVo);
 		}
 		return vo;
-	}
-
-    @Override
-    public TestRun save(JSONObject json) {
-        Long planId = json.getLong("planId");
-        Long runId = json.getLong("id");
-        String runName = json.getString("name");
-
-        TestRun run;
-        if (runId != null) {
-            run = (TestRun) get(TestRun.class, runId);
-        } else {
-            run = new TestRun();
-            run.setPlanId(planId);
-        }
-        run.setName(runName);
-        saveOrUpdate(run);
-
-        return run;
-    }
-
-	@Override
-	public TestRun saveCases(JSONObject json) {
-		Long planId = json.getLong("planId");
-		Long runId = json.getLong("runId");
-		JSONArray cases = json.getJSONArray("cases");
-
-        TestRun run;
-        if (runId != null) {
-            run = (TestRun) get(TestRun.class, runId);
-        } else {
-            run = new TestRun();
-            run.setPlanId(planId);
-        }
-
-		return run;
-	}
-
-	@Override
-	public TestRun delete(Long vo, Long clientId) {
-
-		return null;
 	}
 
 	private Integer getChildMaxOrderNumb(TestRun parent) {

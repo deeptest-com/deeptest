@@ -2,6 +2,8 @@ package com.ngtesting.platform.entity;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Table(name = "tst_run")
@@ -18,7 +20,7 @@ public class TestRun extends BaseEntity {
 
     @Column(insertable = true, updatable = false)
     protected Date endTime = new Date();
-    
+
 	@Column(name = "descr", length = 1000)
     private String descr;
 
@@ -38,6 +40,9 @@ public class TestRun extends BaseEntity {
     @Column(name = "plan_id")
     private Long planId;
 
+    @OneToMany(mappedBy="run", cascade={CascadeType.ALL}, fetch=FetchType.LAZY)
+    private List<TestCaseInRun> testcases = new LinkedList<>();
+
     public static enum RunStatus {
         not_start("not_start"),
         in_progress("in_progress"),
@@ -51,6 +56,14 @@ public class TestRun extends BaseEntity {
         public String toString() {
             return val;
         }
+    }
+
+    public List<TestCaseInRun> getTestcases() {
+        return testcases;
+    }
+
+    public void setTestcases(List<TestCaseInRun> testcases) {
+        this.testcases = testcases;
     }
 
     public Integer getOrdr() {

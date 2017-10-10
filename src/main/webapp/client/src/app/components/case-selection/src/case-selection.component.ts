@@ -98,7 +98,9 @@ export class CaseSelectionComponent implements OnInit {
 
   query(data?: any) {
     let ztree = jQuery.fn.zTree.getZTreeObj('tree');
-    console.log(this.queryModel, this.treeModel, this.queryModel);
+    if (!ztree) {
+      return;
+    }
 
     let nodes = ztree.getNodesByParam("isHidden", true);
     ztree.showNodes(nodes);

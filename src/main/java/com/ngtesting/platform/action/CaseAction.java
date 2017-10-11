@@ -39,12 +39,28 @@ public class CaseAction extends BaseAction {
 		Long projectId = json.getLong("projectId");
 
 		List<TestCase> ls = caseService.query(projectId);
-		List<TestCaseVo> vos = caseService.genVos(ls, false);
+        List<TestCaseVo> vos = caseService.genVos(ls, false);
 
-		List<CustomFieldVo> customFieldList = customFieldService.listForCaseByProject(projectId);
+        List<CustomFieldVo> customFieldList = customFieldService.listForCaseByProject(projectId);
 
         ret.put("data", vos);
 		ret.put("customFields", customFieldList);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "queryForSelection", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> queryForSelection(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		Long projectId = json.getLong("projectId");
+		Long runId = json.getLong("runId");
+
+        List<TestCaseVo> vos = caseService.queryForSelection(projectId, runId);
+
+		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

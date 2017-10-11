@@ -18,6 +18,10 @@ export class CaseService {
     return this._reqService.post(this._api_url + 'query', {projectId: projectId});
   }
 
+  queryForSelection(projectId: number, runId: number) {
+    return this._reqService.post(this._api_url + 'queryForSelection', {projectId: projectId, runId: runId});
+  }
+
   get(id: number) {
     let model = {id: id};
     return this._reqService.post(this._api_url + 'get', model);

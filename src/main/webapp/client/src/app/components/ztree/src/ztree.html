@@ -12,7 +12,7 @@
       <input [formControl]="keywordsControl" [value]="keywords" name="keywords" type="search" class="form-control form-control-sm" placeholder="过滤">
       <span *ngIf="isDragging" [class.highlight]="isToCopy" class="tips">按Ctrl键释放复制</span>
       &nbsp;&nbsp;
-      <span *ngIf="checkCount">已选{{checkCount}}个</span>
+      <span *ngIf="checkCount">已选{{checkCount}}个用例</span>
     </form>
   </div>
 

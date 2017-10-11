@@ -20,6 +20,8 @@ public class TestCaseVo extends BaseVo {
 	private Long createById;
 	private Long updateById;
 
+    private Boolean checked;
+
 	private String prop01;
 	private String prop02;
 	private String prop03;
@@ -67,6 +69,14 @@ public class TestCaseVo extends BaseVo {
         this.updateById = updateById;
         this.createTime = createTime;
         this.updateTime = updateTime;
+    }
+
+    public Boolean getChecked() {
+        return checked;
+    }
+
+    public void setChecked(Boolean checked) {
+        this.checked = checked;
     }
 
     public Long getCreateById() {

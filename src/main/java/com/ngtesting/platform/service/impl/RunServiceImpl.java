@@ -121,6 +121,10 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 		TestRunVo vo = new TestRunVo();
 		BeanUtilEx.copyProperties(vo, po);
 
+//        for (TestCaseInRun testcase : po.getTestcases()) {
+//            vo.getCaseIds().add(testcase.getCaseId());
+//        }
+
 		String hql = "select cs.status, count(cs.id) from TestCaseInRun cs where cs.runId = ? group by cs.status";
 
 		List counts = getListByHQL(hql, po.getId());

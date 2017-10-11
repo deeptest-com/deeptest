@@ -1,8 +1,6 @@
 package com.ngtesting.platform.vo;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class TestRunVo extends BaseVo {
 
@@ -31,6 +29,15 @@ public class TestRunVo extends BaseVo {
         put("block", 0);
         put("untest", 0);
     }};
+
+    //    private List<Long> caseIds = new LinkedList<>();
+//    public List<Long> getCaseIds() {
+//        return caseIds;
+//    }
+//
+//    public void setCaseIds(List<Long> caseIds) {
+//        this.caseIds = caseIds;
+//    }
 
     public Map<String, Integer> getCountMap() {
         return countMap;

@@ -145,7 +145,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.ztree.expandAll(true);
     } else {
-      this.isExpanded = false;
+      this.isExpanded = true;
       this.sonSign = false;
 
       this.ztree.expandAll(false);
@@ -304,6 +304,8 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   updateCopiedNodes(node: any, data: any) {
+    console.log('===',  node.id, data.id);
+
     node.id = data.id;
     node.pId = data.pId;
 

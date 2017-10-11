@@ -22,7 +22,7 @@ export class CaseSuite implements OnInit, AfterViewInit {
 
   projectId: number;
   public treeModel: any;
-  public treeSettings: any = {usage: 'edit', isExpanded: true, sonSign: false};
+  public treeSettings: any = {usage: 'edit', isExpanded: false, sonSign: false};
 
   constructor(private _routeService:RouteService, private _route: ActivatedRoute, private _state:GlobalState,
               private _caseService:CaseService,

@@ -9,6 +9,8 @@ import java.util.List;
 public interface CaseService extends BaseService {
 
 	List<TestCase> query(Long projectId);
+	List<TestCaseVo> queryForSelection(Long projectId, Long runId);
+
 	TestCaseVo getById(Long caseId);
 
     TestCase rename(JSONObject json, Long userId);
@@ -30,8 +32,13 @@ public interface CaseService extends BaseService {
 	List<TestCaseVo> genVos(List<TestCase> pos);
     List<TestCaseVo> genVos(List<TestCase> pos, boolean withSteps);
 
-    TestCaseVo genVo(TestCase po);
-    TestCaseVo genVo(TestCase po, boolean withSteps);
+	List<TestCaseVo> genVos(List<TestCase> pos, List<Long> selectIds, boolean withSteps);
+
+	TestCaseVo genVo(TestCase po);
+
+	TestCaseVo genVo(TestCase po, List<Long> selectIds, boolean withSteps);
+
+	TestCaseVo genVo(TestCase po, boolean withSteps);
 
 	void copyProperties(TestCase testCasePo, TestCaseVo testCaseVo);
 }

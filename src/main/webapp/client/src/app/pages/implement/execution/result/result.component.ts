@@ -141,10 +141,11 @@ export class ExecutionResult implements OnInit, AfterViewInit {
     this.loadData();
   }
 
-  saveField (field: any) {
-    this._caseService.saveField(this.model.id, field).subscribe((json:any) => {
+  saveField (event: any) {
+    this._caseService.saveField(this.model.id, event.data).subscribe((json:any) => {
       if (json.code == 1) {
         this.model = json.data;
+        event.deferred.resolve();
       }
     });
   }

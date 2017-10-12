@@ -2,7 +2,7 @@ import { Input, Component, OnInit, EventEmitter, Output, Inject, OnChanges, Simp
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 
 import { CONSTANT } from '../../../utils/constant';
-import { Utils } from '../../../utils/utils';
+import { Utils, Deferred } from '../../../utils/utils';
 
 import { FieldShowService } from './field-show.service';
 
@@ -55,9 +55,13 @@ export class FieldShowComponent implements OnInit {
     event.preventDefault();
     event.stopPropagation();
 
-    this.status = 'view';
+    const deferred = new Deferred();
+    deferred.promise.then((data) => {
+      this.status = 'view';
+    }).catch((err) => {console.log('err', err);});
+
     if (this.model[this.prop] != this.temp) {
-      this.onSave.emit({prop: this.prop, value: this.model[this.prop]});
+      this.onSave.emit({deferred: deferred, data: {prop: this.prop, value: this.model[this.prop]}});
     }
   }
   cancel(event: any) {

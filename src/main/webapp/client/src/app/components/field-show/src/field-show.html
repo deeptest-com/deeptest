@@ -12,6 +12,7 @@
         <field-show-label [label]="label"></field-show-label>
 
         <input type="text" class="form-control" name="{{prop}}" formControlName="{{prop}}"
+               (keydown.enter)="save($event)"
                [(ngModel)]="model[prop]" #{{prop}}>
 
         <a href="#" class="smart-edit" (click)="save($event)"><i class="ion-checkmark"></i></a>
@@ -29,7 +30,7 @@
         <field-show-label [label]="label"></field-show-label>
 
         <input type="text" class="form-control" name="{{prop}}" formControlName="{{prop}}"
-               [(ngModel)]="model[prop]" #{{prop}}>
+               (keyup.enter)="save($event)" [(ngModel)]="model[prop]" #{{prop}}>
 
         <a href="#" class="smart-edit" (click)="save($event)"><i class="ion-checkmark"></i></a>
         <a href="#" class="smart-edit" (click)="cancel($event)"><i class="ion-close"></i></a>

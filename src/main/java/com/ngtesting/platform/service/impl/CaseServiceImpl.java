@@ -68,7 +68,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     @Override
 	public TestCaseVo getById(Long caseId) {
 		TestCase po = (TestCase) get(TestCase.class, caseId);
-		TestCaseVo vo = genVo(po);
+		TestCaseVo vo = genVo(po, true);
 
 		return vo;
 	}

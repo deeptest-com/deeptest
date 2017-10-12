@@ -155,7 +155,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onClick = (event, treeId, treeNode) => {
-    this._state.notifyDataChanged('case.change', treeNode);
+    this._state.notifyDataChanged('case.' + this.settings.usage, treeNode);
   }
 
   addHoverDom = (treeId, treeNode) => {
@@ -185,7 +185,8 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
       treeNode.ordr = data.ordr;
 
       treeNode.tm = new Date().getTime();
-      this._state.notifyDataChanged('case.change', _.clone(treeNode));
+
+      this._state.notifyDataChanged('case.' + this.settings.usage, _.clone(treeNode));
     }).catch((err) => {console.log('err', err);});
 
     this.renameEvent.emit({

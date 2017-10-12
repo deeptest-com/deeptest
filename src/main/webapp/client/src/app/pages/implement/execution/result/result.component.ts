@@ -53,7 +53,7 @@ export class ExecutionResult implements OnInit, AfterViewInit {
 
     that.buildForm();
 
-    this._state.subscribe('case.change', (testCase: any) => {
+    this._state.subscribe('case.exe', (testCase: any) => {
       if (!testCase || testCase.isParent) {
         this.model = null;
         return;
@@ -173,7 +173,7 @@ export class ExecutionResult implements OnInit, AfterViewInit {
   }
   onSaveConfirm(event: any) {
     console.log('onSaveConfirm', event);
-    this._caseStepService.save(this.id, event.data).subscribe((json:any) => {
+    this._caseStepService.save(this.id, event.newData).subscribe((json:any) => {
       event.confirm.resolve();
     });
   }

@@ -67,6 +67,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
         vo.setEntityId(po.getId());
         vo.setId(testcase.getId());
 
+        vo.setSteps(new LinkedList<TestCaseStepVo>());
         if (withSteps) {
             List<TestCaseStep> steps = testcase.getSteps();
             for (TestCaseStep step : steps) {

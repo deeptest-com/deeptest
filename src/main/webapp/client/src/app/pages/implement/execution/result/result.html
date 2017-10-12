@@ -1,12 +1,19 @@
 <div class="execution-result">
+
+  <div *ngIf="!model" class="row module-tips">请选择用例</div>
+
   <div *ngIf="model" class="row">
-    <form [formGroup]="form" (ngSubmit)="save()" class="my-validate-form small-label">
+    <form [formGroup]="form" (ngSubmit)="save()" class="my-validate-form">
       <div class="form-group row">
         <div class="result-button col-sm-12">
-          <button (click)="pass()" type="button" class="btn btn-primary btn-sm">通过 & 下一个</button>
           <button (click)="pass()" type="button" class="btn btn-primary btn-sm">通过</button>
           <button (click)="fail()" type="button" class="btn btn-danger btn-sm">失败</button>
           <button (click)="block()" type="button" class="btn btn-warning btn-sm">阻塞</button>
+
+          <label class="col-form-label form-check-label">
+            <input [(ngModel)]="next" formControlName="next" name="next"
+                   class="form-check-input form-control-lg" type="checkbox" value="true">同时转到下一个
+          </label>
 
           <button (click)="returnTo()" type="button"
                   class="button-right btn btn-secondary btn-with-icon btn-sm back">
@@ -55,7 +62,7 @@
               <tr>
                 <td style="width: 25%">
                   <div class="label">类型</div>
-                  <div class="value">功能<a href="#" class="smart-edit" (click)="onEdit($event)"><i class="ion-edit"></i></a></div>
+                  <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'type'" [type]="'number'" [form]="form"></field-show>
                 </td>
                 <td style="width: 25%">
                   <div class="label">优先级</div>
@@ -69,7 +76,7 @@
                 </td>
                 <td style="width: 25%">
                   <div class="label">状态</div>
-                  <div class="value">未执行<a href="#" class="smart-edit" (click)="onEdit($event)"><i class="ion-edit"></i></a></div>
+                  <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'status'" [type]="'number'" [form]="form"></field-show>
                 </td>
               </tr>
             <tr>

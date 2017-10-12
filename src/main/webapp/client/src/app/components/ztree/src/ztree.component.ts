@@ -68,6 +68,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this._treeModel = model;
+    console.log('this._treeModel', this._treeModel);
     this.ztree = jQuery.fn.zTree.init($('#tree'), this.settings, this._treeModel);
     this.ztree.expandNode(this.ztree.getNodes()[0], this.isExpanded, this.sonSign, true);
   }

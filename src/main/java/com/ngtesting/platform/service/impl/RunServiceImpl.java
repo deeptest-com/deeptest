@@ -91,8 +91,9 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
         saveOrUpdate(run);
         for (Object obj : data) {
             Long id = Long.valueOf(obj.toString());
+            TestCase testcase = (TestCase) get(TestCase.class, id);
 
-            TestCaseInRun caseInRun = new TestCaseInRun(runId, id);
+            TestCaseInRun caseInRun = new TestCaseInRun(runId, id, testcase.getOrdr(), testcase.getpId());
             run.getTestcases().add(caseInRun);
         }
         saveOrUpdate(run);
@@ -127,8 +128,8 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
                 +               "left join tst_case tc on tcin.case_id = tc.id "
                 +               "where tcin.run_id  = " + po.getId() + " order by tc.ordr) cs1 "
                 +     "where cs1.tcid not in "
-                +          "(select tc.p_id from tst_case_in_run tcin left join tst_case tc on tcin.case_id = tc.id "
-                +               "where tcin.run_id  = " + po.getId() + ") "
+                +          "(select distinct tc.p_id from tst_case_in_run tcin left join tst_case tc on tcin.case_id = tc.id "
+                +               "where tcin.run_id  = " + po.getId() + " and tc.p_id is not NULL) "
                 +     "group by cs1.`status`";
 
 		List<Map> counts = findListBySql(sql);

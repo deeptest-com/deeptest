@@ -7,6 +7,12 @@ import javax.persistence.*;
 public class TestCaseInRun extends BaseEntity {
     private static final long serialVersionUID = -2393416384079250976L;
 
+    @Enumerated(EnumType.STRING)
+    private CaseStatusInRun status = CaseStatusInRun.untest;
+
+    private Integer ordr;
+    private Long pId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_id", insertable = false, updatable = false)
     private TestCase testCase;
@@ -21,9 +27,6 @@ public class TestCaseInRun extends BaseEntity {
     @Column(name = "run_id")
     private Long runId;
 
-    @Enumerated(EnumType.STRING)
-    private CaseStatusInRun status = CaseStatusInRun.untest;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "create_by_id", insertable = false, updatable = false)
     private TestUser createBy;
@@ -34,10 +37,12 @@ public class TestCaseInRun extends BaseEntity {
     public TestCaseInRun() {
         super();
     }
-    public TestCaseInRun(Long runId, Long caseId) {
+    public TestCaseInRun(Long runId, Long caseId, Integer ordr, Long pid) {
         super();
         this.runId = runId;
         this.caseId = caseId;
+        this.ordr = ordr;
+        this.pId = pid;
     }
 
     public static enum CaseStatusInRun {
@@ -54,6 +59,22 @@ public class TestCaseInRun extends BaseEntity {
         public String toString() {
             return val;
         }
+    }
+
+    public Long getpId() {
+        return pId;
+    }
+
+    public void setpId(Long pId) {
+        this.pId = pId;
+    }
+
+    public Integer getOrdr() {
+        return ordr;
+    }
+
+    public void setOrdr(Integer ordr) {
+        this.ordr = ordr;
     }
 
     public CaseStatusInRun getStatus() {

@@ -13,6 +13,7 @@ import { RouteService } from '../../../../service/route';
 
 import { CaseService } from '../../../../service/case';
 import { CaseStepService } from '../../../../service/case-step';
+import { CaseInRunService } from '../../../../service/case-in-run';
 
 declare var jQuery;
 
@@ -34,9 +35,10 @@ export class ExecutionResult implements OnInit, AfterViewInit {
   tab: string = 'info';
 
   fields: any;
+  next: boolean = false;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
-              private _caseService: CaseService, private _caseStepService: CaseStepService) {
+              private _caseService: CaseService, private _caseStepService: CaseStepService, private _caseInRunService: CaseInRunService) {
 
   }
   ngOnInit() {
@@ -52,16 +54,15 @@ export class ExecutionResult implements OnInit, AfterViewInit {
     that.buildForm();
 
     this._state.subscribe('case.change', (testCase: any) => {
-      console.log('===', testCase);
       if (!testCase || testCase.isParent) {
         this.model = null;
         return;
       }
 
       this.fields = CONSTANT.CUSTOM_FIELD_FOR_PROJECT;
-
       if (testCase) {
-        that.id = testCase.id;
+        that.id = testCase.entityId;
+
         that.loadData();
       } else {
         that.model = undefined;
@@ -96,7 +97,8 @@ export class ExecutionResult implements OnInit, AfterViewInit {
       {
         'title': ['', [Validators.required]],
         'objective': ['', [Validators.required]],
-        'pre_condition': ['', []]
+        'pre_condition': ['', []],
+        'next':  ['', []]
       }, {}
     );
 
@@ -120,7 +122,7 @@ export class ExecutionResult implements OnInit, AfterViewInit {
 
   loadData() {
     let that = this;
-    that._caseService.get(that.id).subscribe((json:any) => {
+    that._caseInRunService.get(that.id).subscribe((json:any) => {
       that.model = json.data;
     });
   }

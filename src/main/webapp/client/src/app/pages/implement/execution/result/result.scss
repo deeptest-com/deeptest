@@ -1,8 +1,11 @@
 .execution-result {
   margin: 5px;
 
-  .my-validate-form .form-group label {
-    max-width: 60px;
+  .my-validate-form .form-group label.form-check-label {
+    font-size: 14px;
+    input {
+      margin-right: 5px;
+    }
   }
   .result-button {
     button {

@@ -15,8 +15,12 @@ public class TestCaseInRunVo extends BaseVo {
     private String descr;
 	private Long pId;
 
+    private Long entityId; // 真正是实体Id
+
 	private Long createById;
 	private Long updateById;
+
+    private String status;
 
 	private String prop01;
 	private String prop02;
@@ -42,17 +46,17 @@ public class TestCaseInRunVo extends BaseVo {
 	private String prop19;
 	private String prop20;
 
-//    private List<TestCasePropVo> props = new LinkedList<>();
 	private List<TestCaseStepVo> steps = new LinkedList<>();
 
     public TestCaseInRunVo() {
         super();
     }
 
-    public TestCaseInRunVo(Long id, Long pId, String name, String priority, Integer estimate, String objective, String descr,
+    public TestCaseInRunVo(Long entityId, Long id, Long pId, String name, String priority, Integer estimate, String objective, String descr,
                            Long createById, Long updateById, Date createTime, Date updateTime) {
         super();
 
+        this.entityId = entityId;
 		this.id = id;
 		this.pId = pId;
         this.name = name;
@@ -67,7 +71,23 @@ public class TestCaseInRunVo extends BaseVo {
         this.updateTime = updateTime;
     }
 
-	public Long getCreateById() {
+    public Long getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Long getCreateById() {
 		return createById;
 	}
 

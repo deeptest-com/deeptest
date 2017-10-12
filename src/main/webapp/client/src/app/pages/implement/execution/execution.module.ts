@@ -24,6 +24,7 @@ import { RunService } from '../../../service/run';
 import { SuiteService } from '../../../service/suite';
 import { CaseService } from '../../../service/case';
 import { CaseStepService } from '../../../service/case-step';
+import { CaseInRunService } from '../../../service/case-in-run';
 
 import { Execution } from './execution.component';
 import { ExecutionSuite } from './suite/suite.component';
@@ -59,7 +60,8 @@ import { ExecutionResult } from './result/result.component';
     RunService,
     SuiteService,
     CaseService,
-    CaseStepService
+    CaseStepService,
+    CaseInRunService
   ]
 })
 export class ExecutionModule {}

@@ -41,4 +41,5 @@ public interface CaseService extends BaseService {
 	TestCaseVo genVo(TestCase po, boolean withSteps);
 
 	void copyProperties(TestCase testCasePo, TestCaseVo testCaseVo);
+
 }

@@ -19,7 +19,7 @@ export class CaseStepService {
   }
 
   save(testCaseId:number, caseStep: any) {
-    _.merge(caseStep, {testCaseId:testCaseId});
+    _.merge(caseStep, {testCaseId: testCaseId});
     return this._reqService.post(this._api_url + 'save', caseStep);
   }
 

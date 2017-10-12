@@ -173,7 +173,7 @@ export class ExecutionResult implements OnInit, AfterViewInit {
   }
   onSaveConfirm(event: any) {
     console.log('onSaveConfirm', event);
-    this._caseStepService.save(this.id, event.newData).subscribe((json:any) => {
+    this._caseStepService.save(this.model.id, event.newData).subscribe((json:any) => {
       event.confirm.resolve();
     });
   }

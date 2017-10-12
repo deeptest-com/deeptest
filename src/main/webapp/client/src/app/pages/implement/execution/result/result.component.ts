@@ -52,6 +52,12 @@ export class ExecutionResult implements OnInit, AfterViewInit {
     that.buildForm();
 
     this._state.subscribe('case.change', (testCase: any) => {
+      console.log('===', testCase);
+      if (!testCase || testCase.isParent) {
+        this.model = null;
+        return;
+      }
+
       this.fields = CONSTANT.CUSTOM_FIELD_FOR_PROJECT;
 
       if (testCase) {

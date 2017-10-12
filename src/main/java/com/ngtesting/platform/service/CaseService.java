@@ -13,7 +13,7 @@ public interface CaseService extends BaseService {
 
 	TestCaseVo getById(Long caseId);
 
-    TestCase rename(JSONObject json, Long userId);
+    TestCase renamePers(JSONObject json, Long userId);
 	TestCase delete(Long vo, Long userId);
 	TestCaseVo movePers(JSONObject json, Long userId);
 

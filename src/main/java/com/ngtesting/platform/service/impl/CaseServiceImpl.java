@@ -95,17 +95,30 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	}
 
 	@Override
-	public TestCase rename(JSONObject json, Long userId) {
-        TestCase testCase = JSON.parseObject(JSON.toJSONString(json), TestCase.class);
-        testCase.setUpdateById(userId);
-        testCase.setUpdateTime(new Date());
+	public TestCase renamePers(JSONObject json, Long userId) {
+	    Long id = json.getLong("id");
+        String name = json.getString("name");
+        Long projectId = json.getLong("projectId");
 
-        if (testCase.getOrdr() == null) {
-            testCase.setOrdr(getChildMaxOrderNumb(testCase.getpId()));
+        TestCase testCasePo = new TestCase();
+        if (id != null && id > 0) {
+            testCasePo = (TestCase)get(TestCase.class, id);
+
+            testCasePo.setUpdateById(userId);
+            testCasePo.setUpdateTime(new Date());
+        } else {
+            testCasePo.setId(null);
+            testCasePo.setOrdr(getChildMaxOrderNumb(testCasePo.getpId()));
+
+            testCasePo.setCreateById(userId);
+            testCasePo.setCreateTime(new Date());
         }
+        testCasePo.setName(name);
+        testCasePo.setProjectId(projectId);
 
-        saveOrUpdate(testCase);
-        return testCase;
+        saveOrUpdate(testCasePo);
+
+        return testCasePo;
 	}
 
 	@Override

@@ -28,8 +28,7 @@ export class CaseService {
   }
 
   rename(projectId: number, model: any) {
-    _.merge(model, {projectId: projectId})
-    return this._reqService.post(this._api_url + 'save', model);
+    return this._reqService.post(this._api_url + 'rename', {projectId: projectId, id: model.id, name: model.name});
   }
 
   delete(id: any) {

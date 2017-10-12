@@ -48,6 +48,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
     this._state.subscribe('case.change', (testCase: any) => {
       if (!testCase || testCase.isParent) {
         this.model = null;
+        return;
       }
 
       this.fields = CONSTANT.CUSTOM_FIELD_FOR_PROJECT;

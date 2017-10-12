@@ -55,11 +55,12 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isExpanded = this.settings.isExpanded;
     this.sonSign = this.settings.sonSign;
 
-    if (this.settings.usage == 'selection') {
+    if (this.settings.usage == 'selection' || this.settings.usage == 'exe') {
       this.settings.view.addHoverDom = null;
       this.settings.view.removeHoverDom = null;
       this.settings.edit.enable = false;
-
+    }
+    if (this.settings.usage == 'selection') {
       this.settings.check = {
         enable: true,
         chkboxType: {"Y": "ps", "N": "ps"}
@@ -153,7 +154,6 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onClick = (event, treeId, treeNode) => {
-    console.log('treeNode', treeNode);
     this._state.notifyDataChanged('case.change', treeNode);
   }
 

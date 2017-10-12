@@ -95,7 +95,7 @@
               <td>{{i+1}}</td>
               <td [routerLink]="['/pages/implement/run/execution', item.id]" class="pointer">{{item.name}}</td>
               <td>
-                <execution-bar [data]="item.countMap"></execution-bar>
+                <execution-bar [data]="item"></execution-bar>
               </td>
               <td class="center">
                 <span (click)="editRun(item)" class="link no-underline">编辑</span>

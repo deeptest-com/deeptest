@@ -29,15 +29,21 @@ public class TestRunVo extends BaseVo {
         put("block", 0);
         put("untest", 0);
     }};
+    private Map<String, Integer> widthMap = new HashMap<String, Integer>(){{
+        put("total", 0);
+        put("pass", 0);
+        put("fail", 0);
+        put("block", 0);
+        put("untest", 0);
+    }};
 
-    //    private List<Long> caseIds = new LinkedList<>();
-//    public List<Long> getCaseIds() {
-//        return caseIds;
-//    }
-//
-//    public void setCaseIds(List<Long> caseIds) {
-//        this.caseIds = caseIds;
-//    }
+    public Map<String, Integer> getWidthMap() {
+        return widthMap;
+    }
+
+    public void setWidthMap(Map<String, Integer> widthMap) {
+        this.widthMap = widthMap;
+    }
 
     public Map<String, Integer> getCountMap() {
         return countMap;

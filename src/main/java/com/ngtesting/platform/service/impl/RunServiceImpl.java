@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class RunServiceImpl extends BaseServiceImpl implements RunService {
@@ -121,21 +122,48 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 		TestRunVo vo = new TestRunVo();
 		BeanUtilEx.copyProperties(vo, po);
 
-//        for (TestCaseInRun testcase : po.getTestcases()) {
-//            vo.getCaseIds().add(testcase.getCaseId());
-//        }
+		String sql = "select cs1.`status` status, count(cs1.tcinid) count from "
+                +          "(select tcin.id tcinid, tcin.`status`, tc.id tcid from tst_case_in_run tcin "
+                +               "left join tst_case tc on tcin.case_id = tc.id "
+                +               "where tcin.run_id  = " + po.getId() + " order by tc.ordr) cs1 "
+                +     "where cs1.tcid not in "
+                +          "(select tc.p_id from tst_case_in_run tcin left join tst_case tc on tcin.case_id = tc.id "
+                +               "where tcin.run_id  = " + po.getId() + ") "
+                +     "group by cs1.`status`";
 
-		String hql = "select cs.status, count(cs.id) from TestCaseInRun cs where cs.runId = ? group by cs.status";
-
-		List counts = getListByHQL(hql, po.getId());
-		for (Object obj : counts) {
-			Object[] arr = (Object[])obj;
-			String status = arr[0].toString();
-			Integer count = Integer.valueOf(arr[1].toString());
+		List<Map> counts = findListBySql(sql);
+		for (Map obj : counts) {
+			String status = obj.get("status").toString();
+			Integer count = Integer.valueOf(obj.get("count").toString());
 
 			vo.getCountMap().put(status, count);
 			vo.getCountMap().put("total", vo.getCountMap().get("total") + count);
 		}
+
+        String maxStatus = "";
+        int maxWidth = 0;
+		int sum = 0;
+		Integer total = vo.getCountMap().get("total");
+
+        Integer barWidth = 240;
+        for (String status : vo.getCountMap().keySet()) {
+		    if ("total".equals(status)) {
+		        continue;
+            }
+
+            if (total != 0) {
+                int width = vo.getCountMap().get(status) * barWidth / total;
+                vo.getWidthMap().put(status, width);
+
+                sum += width;
+                if (maxWidth < width) {
+                    maxStatus = status;
+                }
+            }
+        }
+        if (total != 0) {
+            vo.getWidthMap().put(maxStatus, vo.getWidthMap().get(maxStatus) + (barWidth - sum));
+        }
 
 		return vo;
 	}

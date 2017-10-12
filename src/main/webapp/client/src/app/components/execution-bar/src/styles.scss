@@ -6,9 +6,9 @@
     display: block;
     float: left;
     height: 19px;
-    min-width: 20px;
     line-height: 19px;
     text-align: center;
+    cursor: pointer;
     &.pass {
       background-color: #749f83;
     }

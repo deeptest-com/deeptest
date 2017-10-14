@@ -33,16 +33,19 @@ public class AccountAction extends BaseAction {
 	UserService userService;
 	@Autowired
     ProjectService projectService;
-	
+
 	@Autowired
 	RegisterService registerService;
-	
+
 	@Autowired
 	MailService mailService;
 
     @Autowired
     OrgService orgService;
-	
+
+	@Autowired
+	CasePropertyService casePropertyService;
+
 	@AuthPassport(validate=false)
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	@ResponseBody
@@ -52,14 +55,14 @@ public class AccountAction extends BaseAction {
 		String email = json.getString("email");
 		String password = json.getString("password");
 		boolean rememberMe = json.getBoolean("rememberMe") != null? json.getBoolean("rememberMe"): false;
-		
+
 		TestUser user = accountService.loginPers(email, password, rememberMe);
-			
+
 		if (user != null) {
-			UserVo userVo = userService.genVo(user);	
+			UserVo userVo = userService.genVo(user);
 			request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
-			
-//			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), user.getDefaultProjectId());		
+
+//			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), user.getDefaultProjectId());
 //			ret.put("profile", userVo);
 //			ret.put("recentProjects", recentProjects);
 			ret.put("token", user.getToken());
@@ -71,7 +74,7 @@ public class AccountAction extends BaseAction {
 
 		return ret;
 	}
-	
+
 	@AuthPassport(validate=false)
 	@RequestMapping(value = "register", method = RequestMethod.POST)
 	@ResponseBody
@@ -86,10 +89,10 @@ public class AccountAction extends BaseAction {
 		TestUser user = accountService.registerPers(name, email, phone, password);
 
 		if (user != null) {
-			UserVo userVo = userService.genVo(user);	
+			UserVo userVo = userService.genVo(user);
 			request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
-			
-//			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), user.getDefaultProjectId());		
+
+//			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), user.getDefaultProjectId());
 //			ret.put("profile", userVo);
 //			ret.put("recentProjects", recentProjects);
 			ret.put("token", user.getToken());
@@ -132,11 +135,11 @@ public class AccountAction extends BaseAction {
 		String password = json.getString("password");
 
 		TestUser user = accountService.resetPasswordPers(verifyCode, password);
-		
+
 		if (user != null) {
-			UserVo userVo = userService.genVo(user);	
+			UserVo userVo = userService.genVo(user);
 			request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
-			
+
 //			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), userVo.getDefaultProjectId());
 //			ret.put("profile", userVo);
 //			ret.put("recentProjects", recentProjects);
@@ -149,21 +152,24 @@ public class AccountAction extends BaseAction {
 
 		return ret;
 	}
-	
+
 	@RequestMapping(value = "getProfile", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> getProfile(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
+		Long orgId = userVo.getDefaultOrgId();
+
 		List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(userVo.getDefaultOrgId(), userVo.getId());
         List<OrgVo> orgs = orgService.listVo(null, "false", userVo.getId());
+		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
 
 		ret.put("profile", userVo);
 		ret.put("recentProjects", recentProjects);
         ret.put("myOrgs", orgs);
-		
+		ret.put("casePropertyMap", casePropertyMap);
+
 		ret.put("code", RespCode.SUCCESS.getCode());
 
 		return ret;
@@ -182,7 +188,7 @@ public class AccountAction extends BaseAction {
 			ret.put("msg", "用户不存在");
 			return ret;
 		}
-		
+
 		TestVerifyCode verifyCode = accountService.forgotPasswordPers(user.getId());
 		if (verifyCode != null) {
 			Map<String, String> map = new HashMap<String, String>();
@@ -191,7 +197,7 @@ public class AccountAction extends BaseAction {
 			// map.put("url", Constant.WEB_ROOT + "admin-path");
 			map.put("url", PropertyConfig.getConfig("url.reset.password") + verifyCode.getCode());
 			mailService.sendTemplateMail("[ngtesting]忘记密码", "forgot-password.ftl", user.getEmail(), map);
-			
+
 			ret.put("data", verifyCode);
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {
@@ -201,14 +207,14 @@ public class AccountAction extends BaseAction {
 
 		return ret;
 	}
-	
-	
+
+
 	@AuthPassport(validate=true)
 	@RequestMapping(value = "logout", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> logout(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
+
 		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		if (vo == null) {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());
@@ -216,7 +222,7 @@ public class AccountAction extends BaseAction {
 			return ret;
 		}
 		TestUser user = accountService.logoutPers(vo.getEmail());
-		
+
 		if (user != null) {
 			request.getSession().removeAttribute(Constant.HTTP_SESSION_USER_KEY);
 			ret.put("code", RespCode.SUCCESS.getCode());
@@ -232,30 +238,30 @@ public class AccountAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> saveProfile(HttpServletRequest request, @RequestBody UserVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
+
 		TestUser user = (TestUser) accountService.saveProfile(vo);
 		vo = userService.genVo(user);
 		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, vo);
-		
+
 		ret.put("data", vo);
 		ret.put("code", RespCode.SUCCESS.getCode());
 		return ret;
 	}
-	
+
 	@RequestMapping(value = "changePassword", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> changePassword(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
+
 		UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		String oldPassword = json.getString("oldPassword");
 		String password = json.getString("password");
-		
+
 		boolean success = accountService.changePasswordPers(vo.getId(), oldPassword, password);
 		int code = success?RespCode.SUCCESS.getCode(): RespCode.BIZ_FAIL.getCode();
-		
+
 		ret.put("code", code);
 		return ret;
 	}
-		
+
 }

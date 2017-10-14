@@ -1,56 +1,35 @@
 <div [formGroup]="form" class="field-show">
-
-  <ng-container [ngSwitch]="type">
-
-    <ng-container *ngSwitchCase="'string'">
       <div *ngIf="status == 'view'" class="form-inline">
         <field-show-label [label]="label"></field-show-label>
-        <span>{{model[prop]}}</span>
-        <a href="#" class="smart-edit" (click)="edit($event)"><i class="ion-edit"></i></a>
+        <field-show-value [model]="model" [prop]="prop"></field-show-value>
+        <a *ngIf="!readonly" href="#" class="smart-edit" (click)="edit($event)"><i class="ion-edit"></i></a>
       </div>
-      <div *ngIf="status == 'edit'" class="form-inline">
+      <div *ngIf="!readonly && status == 'edit'" class="form-inline">
         <field-show-label [label]="label"></field-show-label>
+        <ng-container [ngSwitch]="type">
 
-        <input type="text" class="form-control" name="{{prop}}" formControlName="{{prop}}"
-               (keydown.enter)="save($event)"
-               [(ngModel)]="model[prop]" #{{prop}}>
+           <span *ngSwitchCase="'string'">
+              <input type="text" class="form-control" name="{{prop}}" formControlName="{{prop}}"
+                     (keydown.enter)="save($event)"
+                     [(ngModel)]="model[prop]" #{{prop}}>
+          </span>
+
+          <span *ngSwitchCase="'number'">
+              <input type="text" class="form-control" name="{{prop}}" formControlName="{{prop}}"
+                     (keyup.enter)="save($event)" [(ngModel)]="model[prop]" #{{prop}}>
+          </span>
+
+          <span *ngSwitchCase="'dropdown'">
+              <select [(ngModel)]="model[prop]" formControlName="{{prop}}" name="{{prop}}"
+                      class="form-control form-control-sm">
+                <option *ngFor="let entry of (casePropertyMap[optionsKey] | mapToArray)" value="{{entry.key}}">{{entry.value}}</option>
+              </select>
+          </span>
+        </ng-container>
 
         <a href="#" class="smart-edit" (click)="save($event)"><i class="ion-checkmark"></i></a>
         <a href="#" class="smart-edit" (click)="cancel($event)"><i class="ion-close"></i></a>
       </div>
-    </ng-container>
-
-    <ng-container *ngSwitchCase="'number'">
-      <div *ngIf="status == 'view'" class="form-inline">
-        <field-show-label [label]="label"></field-show-label>
-        <span>{{model[prop]}}</span>
-        <a href="#" class="smart-edit" (click)="edit($event)"><i class="ion-edit"></i></a>
-      </div>
-      <div *ngIf="status == 'edit'" class="form-inline">
-        <field-show-label [label]="label"></field-show-label>
-
-        <input type="text" class="form-control" name="{{prop}}" formControlName="{{prop}}"
-               (keyup.enter)="save($event)" [(ngModel)]="model[prop]" #{{prop}}>
-
-        <a href="#" class="smart-edit" (click)="save($event)"><i class="ion-checkmark"></i></a>
-        <a href="#" class="smart-edit" (click)="cancel($event)"><i class="ion-close"></i></a>
-      </div>
-    </ng-container>
-
-    <ng-container *ngSwitchCase="'dropdown'">
-      <div *ngIf="status == 'view'" class="form-inline">
-        <field-show-label [label]="label"></field-show-label>
-        <span>{{model[prop]}}</span>
-        <a href="#" class="smart-edit" (click)="edit($event)"><i class="ion-edit"></i></a>
-      </div>
-      <div *ngIf="status == 'edit'" class="form-inline">
-        <field-show-label [label]="label"></field-show-label>
-
-        <select [(ngModel)]="model[field.column]" formControlName="applyTo" name="{{field.column}}" class="form-control form-control-sm">
-          <option value=""></option>
-        </select>
-      </div>
-    </ng-container>
 
     <!--    <ng-container *ngSwitchCase="'url'">
           <input type="text" class="form-control" name="{{field.column}}" formControlName="{{field.column}}"
@@ -95,7 +74,5 @@
         </ng-container>
         <ng-container *ngSwitchCase="'result'">
         </ng-container>-->
-
-  </ng-container>
 
 </div>

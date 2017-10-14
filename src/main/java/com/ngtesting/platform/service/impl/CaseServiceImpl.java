@@ -224,6 +224,12 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 			testCase.setName(value);
 		} else if ("objective".equals(prop)) {
             testCase.setObjective(value);
+        } else if ("priority".equals(prop)) {
+            testCase.setPriority(value);
+        } else if ("estimate".equals(prop)) {
+            testCase.setEstimate(Integer.valueOf(value));
+        } else if ("type".equals(prop)) {
+            testCase.setType(value);
         } else if ("prop01".equals(prop)) {
             testCase.setProp01(value);
         } else if ("prop02".equals(prop)) {
@@ -398,8 +404,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     public void copyProperties(TestCase testCasePo, TestCaseVo testCaseVo) {
         testCasePo.setId(testCaseVo.getId());
         testCasePo.setName(testCaseVo.getName());
-        testCasePo.setPriority(TestCase.CasePriority.valueOf(testCaseVo.getPriority()));
-        testCasePo.setType(TestCase.CaseType.valueOf(testCaseVo.getType()));
+        testCasePo.setPriority(testCaseVo.getPriority());
+        testCasePo.setType(testCaseVo.getType());
         testCasePo.setEstimate(testCaseVo.getEstimate());
 
         testCasePo.setObjective(testCaseVo.getObjective());

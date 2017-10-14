@@ -10,7 +10,6 @@ export var CONSTANT: CONSTANT_INTERFACE = {
 
   TOKEN: undefined,
 
-
   PROFILE: undefined,
 
   ALL_ORGS: undefined,
@@ -20,6 +19,7 @@ export var CONSTANT: CONSTANT_INTERFACE = {
   CURRENT_PROJECT: {id: null, name: null},
 
   CUSTOM_FIELD_FOR_PROJECT: undefined,
+  CASE_PROPERTY_MAP: undefined,
 
   TOKEN_KEY: 'com.ngtesting.token',
   TOKEN_EXPIRE: 'com.ngtesting.expire',
@@ -57,6 +57,7 @@ export interface CONSTANT_INTERFACE {
   CURRENT_PROJECT: CURRENT_PROJECT_INTERFACE,
 
   CUSTOM_FIELD_FOR_PROJECT: any,
+  CASE_PROPERTY_MAP: any,
 
   TOKEN_KEY: string,
   TOKEN_EXPIRE: string,

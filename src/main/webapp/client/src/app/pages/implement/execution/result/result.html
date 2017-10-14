@@ -62,21 +62,25 @@
               <tr>
                 <td style="width: 25%">
                   <div class="label">类型</div>
-                  <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'type'" [type]="'number'" [form]="form"></field-show>
+                  <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'type'" [type]="'dropdown'" optionsKey="type"
+                              [form]="form"></field-show>
                 </td>
                 <td style="width: 25%">
                   <div class="label">优先级</div>
-                  <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'priority'" [type]="'number'" [form]="form"></field-show>
+                  <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'priority'" [type]="'dropdown'" optionsKey="priority"
+                              [form]="form"></field-show>
                 </td>
                 <td style="width: 25%">
                   <div class="label">耗时(分钟)</div>
                   <div class="value">
-                    <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'estimate'" [type]="'number'" [form]="form"></field-show>
+                    <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'estimate'" [type]="'number'"
+                                [form]="form"></field-show>
                   </div>
                 </td>
                 <td style="width: 25%">
                   <div class="label">状态</div>
-                  <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'status'" [type]="'number'" [form]="form"></field-show>
+                  <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'status'" [type]="'string'" optionsKey="status"
+                              [readonly]="true" [form]="form"></field-show>
                 </td>
               </tr>
             <tr>
@@ -103,7 +107,6 @@
         <div class="tab-steps form-group row">
           <div class="col-sm-12">
             <steps-table [settings]="settings" [source]="model.steps"
-
                          (upConfirm)="onUpConfirm($event)"
                          (downConfirm)="onDownConfirm($event)"
 

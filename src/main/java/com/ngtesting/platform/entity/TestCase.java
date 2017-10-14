@@ -13,11 +13,11 @@ public class TestCase extends BaseEntity {
 
     private String name;
 
-    @Enumerated(EnumType.STRING)
-	private CasePriority priority;
+//    @Enumerated(EnumType.STRING)
+	private String priority;
 
-    @Enumerated(EnumType.STRING)
-    private CaseType type;
+//    @Enumerated(EnumType.STRING)
+    private String type;
 
 	private Integer estimate;
 
@@ -81,42 +81,42 @@ public class TestCase extends BaseEntity {
     @OrderBy("ordr")
     private List<TestCaseStep> steps = new LinkedList<>();
 
-    public static enum CasePriority {
-        high("high"),
-        middle("middle"),
-        low("low");
+//    public static enum CasePriority {
+//        high("high"),
+//        middle("middle"),
+//        low("low");
+//
+//        CasePriority(String val) {
+//            this.val = val;
+//        }
+//
+//        private String val;
+//        public String toString() {
+//            return val;
+//        }
+//    }
 
-        CasePriority(String val) {
-            this.val = val;
-        }
+//    public static enum CaseType {
+//        functional("functional"),
+//        performance("performance"),
+//        security("security"),
+//        others("others");
+//
+//        CaseType(String val) {
+//            this.val = val;
+//        }
+//
+//        private String val;
+//        public String toString() {
+//            return val;
+//        }
+//    }
 
-        private String val;
-        public String toString() {
-            return val;
-        }
-    }
-
-    public static enum CaseType {
-        functional("functional"),
-        performance("performance"),
-        security("security"),
-        others("others");
-
-        CaseType(String val) {
-            this.val = val;
-        }
-
-        private String val;
-        public String toString() {
-            return val;
-        }
-    }
-
-    public CaseType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(CaseType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -280,10 +280,10 @@ public class TestCase extends BaseEntity {
         this.prop20 = prop20;
     }
 
-	public CasePriority getPriority() {
+	public String getPriority() {
 		return priority;
 	}
-	public void setPriority(CasePriority priority) {
+	public void setPriority(String priority) {
 		this.priority = priority;
 	}
 

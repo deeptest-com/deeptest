@@ -11,9 +11,9 @@ export class FieldTypePipe implements PipeTransform {
               'steps': '测试步骤', 'results': '测试结果'
              };
 
-    transform(s: string) : string {
-        return this.map[s];
-    }
+  transform(s: string) : string {
+      return this.map[s];
+  }
 }
 
 @Pipe({name: 'fieldApplyTo'})
@@ -58,4 +58,3 @@ export class DisableOrNotPipe implements PipeTransform {
     return this.map['' + disabled];
   }
 }
-

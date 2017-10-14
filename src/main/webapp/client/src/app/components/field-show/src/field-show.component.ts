@@ -1,4 +1,4 @@
-import { Input, Component, OnInit, EventEmitter, Output, Inject, OnChanges, SimpleChanges } from '@angular/core';
+import { Input, Component, OnInit, AfterViewInit, EventEmitter, Output, Inject, OnChanges, SimpleChanges } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 
 import { CONSTANT } from '../../../utils/constant';
@@ -21,9 +21,11 @@ export class FieldShowComponent implements OnInit {
   @Input()
   public type: string;
   @Input()
-  public list: any[];
+  public optionsKey: string;
   @Input()
   public label: string;
+  @Input()
+  public readonly: boolean;
 
   @Output() onSave = new EventEmitter<any>();
 
@@ -32,10 +34,10 @@ export class FieldShowComponent implements OnInit {
 
   public status: string = 'view';
   public temp: string;
+  public casePropertyMap: any;
 
   public constructor(@Inject(FieldShowService) private fieldShowService: FieldShowService) {
-
-
+    this.casePropertyMap = CONSTANT.CASE_PROPERTY_MAP;
   }
 
   public ngOnInit(): void {
@@ -51,22 +53,28 @@ export class FieldShowComponent implements OnInit {
     this.temp = this.model[this.prop];
   }
 
-  save(event: any) {
-    event.preventDefault();
-    event.stopPropagation();
+  save(event?: any) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
 
-    const deferred = new Deferred();
+    let deferred = new Deferred();
     deferred.promise.then((data) => {
       this.status = 'view';
     }).catch((err) => {console.log('err', err);});
 
     if (this.model[this.prop] != this.temp) {
       this.onSave.emit({deferred: deferred, data: {prop: this.prop, value: this.model[this.prop]}});
+    } else {
+      this.cancel(event);
     }
   }
   cancel(event: any) {
-    event.preventDefault();
-    event.stopPropagation();
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
 
     this.status = 'view';
     this.model[this.prop] = this.temp;

@@ -7,8 +7,8 @@ import javax.persistence.*;
 public class TestCaseInRun extends BaseEntity {
     private static final long serialVersionUID = -2393416384079250976L;
 
-    @Enumerated(EnumType.STRING)
-    private CaseStatusInRun status = CaseStatusInRun.untest;
+//    @Enumerated(EnumType.STRING)
+    private String status = "untest";
 
     private Integer ordr;
     private Long pId;
@@ -45,21 +45,21 @@ public class TestCaseInRun extends BaseEntity {
         this.pId = pid;
     }
 
-    public static enum CaseStatusInRun {
-        untest("untest"),
-        pass("pass"),
-        fail("fail"),
-        block("block");
-
-        CaseStatusInRun(String val) {
-            this.val = val;
-        }
-
-        private String val;
-        public String toString() {
-            return val;
-        }
-    }
+//    public static enum CaseStatusInRun {
+//        untest("untest"),
+//        pass("pass"),
+//        fail("fail"),
+//        block("block");
+//
+//        CaseStatusInRun(String val) {
+//            this.val = val;
+//        }
+//
+//        private String val;
+//        public String toString() {
+//            return val;
+//        }
+//    }
 
     public Long getpId() {
         return pId;
@@ -77,11 +77,11 @@ public class TestCaseInRun extends BaseEntity {
         this.ordr = ordr;
     }
 
-    public CaseStatusInRun getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(CaseStatusInRun status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

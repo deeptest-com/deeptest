@@ -105,6 +105,7 @@ export class AccountService {
           that.changeProfile(json.profile);
           that.changeMyOrgs(json.myOrgs, json.profile.defaultOrgId);
           that.changeRecentProjects(json.recentProjects);
+          that.changeCasePropertyMap(json.casePropertyMap);
 
           return Observable.of(true);
         } else {
@@ -185,6 +186,10 @@ export class AccountService {
 
     this._state.notifyDataChanged('recent.projects.change',
       {recentProjects: CONSTANT.RECENT_PROJECTS, currProject: CONSTANT.CURRENT_PROJECT});
+  }
+
+  changeCasePropertyMap(casePropertyMap: any) {
+    CONSTANT.CASE_PROPERTY_MAP = casePropertyMap;
   }
 
 }

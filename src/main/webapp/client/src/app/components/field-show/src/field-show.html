@@ -1,13 +1,13 @@
 <div [formGroup]="form" class="field-show">
-      <div *ngIf="status == 'view'" class="form-inline">
-        <field-show-label [label]="label"></field-show-label>
-        <field-show-value [model]="model" [prop]="prop"></field-show-value>
-        <a *ngIf="!readonly" href="#" class="smart-edit" (click)="edit($event)"><i class="ion-edit"></i></a>
-      </div>
-      <div *ngIf="!readonly && status == 'edit'" class="form-inline">
-        <field-show-label [label]="label"></field-show-label>
-        <ng-container [ngSwitch]="type">
-
+  <div *ngIf="status == 'view'" class="form-inline">
+    <field-show-label [label]="label"></field-show-label>
+    <field-show-value [model]="model" [prop]="prop"></field-show-value>
+    <a *ngIf="!readonly" href="#" class="smart-edit" (click)="edit($event)"><i class="ion-edit"></i></a>
+  </div>
+  <div *ngIf="!readonly && status == 'edit'" class="form-inline edit-mode">
+    <field-show-label [label]="label"></field-show-label>
+    <ng-container [ngSwitch]="type">
+          <span class="field-input-container">
            <span *ngSwitchCase="'string'">
               <input type="text" class="form-control" name="{{prop}}" formControlName="{{prop}}"
                      (keydown.enter)="save($event)"
@@ -25,54 +25,56 @@
                 <option *ngFor="let entry of (casePropertyMap[optionsKey] | mapToArray)" value="{{entry.key}}">{{entry.value}}</option>
               </select>
           </span>
-        </ng-container>
 
-        <a href="#" class="smart-edit" (click)="save($event)"><i class="ion-checkmark"></i></a>
-        <a href="#" class="smart-edit" (click)="cancel($event)"><i class="ion-close"></i></a>
-      </div>
+          <span *ngSwitchCase="'text'">
+            <ng-container *ngIf="format=='plain_text'">
+              <textarea type="text" class="form-control" name="{{prop}}" formControlName="{{prop}}"
+                        [(ngModel)]="model[prop]" rows="{{rows}}" #{{prop}}>
+              </textarea>
+            </ng-container>
+            <ng-container *ngIf="format=='markdown'">
+              MARKDOWN
+            </ng-container>
+          </span>
 
-    <!--    <ng-container *ngSwitchCase="'url'">
-          <input type="text" class="form-control" name="{{field.column}}" formControlName="{{field.column}}"
-                 [(ngModel)]="model[field.column]" #{{field.column}}>
-        </ng-container>
+          <a href="#" class="smart-edit" (click)="save($event)"><i class="ion-checkmark"></i></a>
+          <a href="#" class="smart-edit" (click)="cancel($event)"><i class="ion-close"></i></a>
 
-        <ng-container *ngSwitchCase="'text'">
-          <ng-container *ngIf="field.format=='plain_text'">
-            <textarea type="text" class="form-control" name="{{field.column}}" formControlName="{{field.column}}"
-                      [(ngModel)]="model[field.column]" #{{field.column}}>
-            </textarea>
-          </ng-container>
-          <ng-container *ngIf="field.format=='markdown'">
+        </span>
+    </ng-container>
+  </div>
 
-          </ng-container>
-        </ng-container>
+  <!--    <ng-container *ngSwitchCase="'url'">
+        <input type="text" class="form-control" name="{{field.column}}" formControlName="{{field.column}}"
+               [(ngModel)]="model[field.column]" #{{field.column}}>
+      </ng-container>
 
-        <ng-container *ngSwitchCase="'radio'">
-          <input type="radio" class="form-check-input" name="{{field.column}}" formControlName="{{field.column}}"
-                 [(ngModel)]="model[field.column]" #isRequired>
-        </ng-container>
+      <ng-container *ngSwitchCase="'radio'">
+        <input type="radio" class="form-check-input" name="{{field.column}}" formControlName="{{field.column}}"
+               [(ngModel)]="model[field.column]" #isRequired>
+      </ng-container>
 
-        <ng-container *ngSwitchCase="'checkbox'">
-          <input type="checkbox" class="form-check-input" name="{{field.column}}" formControlName="{{field.column}}"
-                 [(ngModel)]="model[field.column]" #isRequired>
-        </ng-container>
+      <ng-container *ngSwitchCase="'checkbox'">
+        <input type="checkbox" class="form-check-input" name="{{field.column}}" formControlName="{{field.column}}"
+               [(ngModel)]="model[field.column]" #isRequired>
+      </ng-container>
 
-        <ng-container *ngSwitchCase="'multi_select'">
-          <select multiple [(ngModel)]="model[field.column]" formControlName="{{field.column}}" name="{{field.column}}"
-                  class="form-control form-control-sm">
-            <option value=""></option>
-          </select>
-        </ng-container>
+      <ng-container *ngSwitchCase="'multi_select'">
+        <select multiple [(ngModel)]="model[field.column]" formControlName="{{field.column}}" name="{{field.column}}"
+                class="form-control form-control-sm">
+          <option value=""></option>
+        </select>
+      </ng-container>
 
-        <ng-container *ngSwitchCase="'date'">
-        </ng-container>
-        <ng-container *ngSwitchCase="'user'">
-        </ng-container>
-        <ng-container *ngSwitchCase="'version'">
-        </ng-container>
-        <ng-container *ngSwitchCase="'step'">
-        </ng-container>
-        <ng-container *ngSwitchCase="'result'">
-        </ng-container>-->
+      <ng-container *ngSwitchCase="'date'">
+      </ng-container>
+      <ng-container *ngSwitchCase="'user'">
+      </ng-container>
+      <ng-container *ngSwitchCase="'version'">
+      </ng-container>
+      <ng-container *ngSwitchCase="'step'">
+      </ng-container>
+      <ng-container *ngSwitchCase="'result'">
+      </ng-container>-->
 
 </div>

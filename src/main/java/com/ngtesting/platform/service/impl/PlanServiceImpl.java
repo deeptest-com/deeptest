@@ -2,7 +2,6 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.Dict;
 import com.ngtesting.platform.entity.TestPlan;
 import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.PlanService;
@@ -123,53 +122,6 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
         }
 
         return maxOrder;
-    }
-
-    @Override
-    public void dictPers() {
-        List<String> fileList = new ArrayList<String>();
-        traverseFolder("/Users/aaron/work/Testing/词库", fileList);
-
-        int count = 0;
-        for (String filePath : fileList) {
-            if (count++ > 3) {
-                return;
-            }
-            String catrgory = filePath.substring(0, filePath.lastIndexOf("/"));
-
-            FileReader reader = null;
-            try {
-                reader = new FileReader(filePath);
-                BufferedReader br = new BufferedReader(reader);
-                String str = null;
-
-                while ((str = br.readLine()) != null) {
-                    String[] arr = str.split(":");
-                    if (arr.length == 0) {
-                        continue;
-                    }
-
-                    Dict dict = new Dict(catrgory, arr[0]);
-                    saveOrUpdate(dict);
-
-                    int i = 0;
-                    for (String s : arr) {
-                        if (i++ == 0) {
-                            continue;
-                        }
-                        Dict dict2 = new Dict(catrgory, s, dict.getId());
-                        saveOrUpdate(dict2);
-                    }
-                }
-
-                br.close();
-                reader.close();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
     }
 
     public List traverseFolder(String path, List<String> fileList) {

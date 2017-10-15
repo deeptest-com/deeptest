@@ -9,14 +9,10 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
 import com.ngtesting.platform.entity.TestOrgRole;
-import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.OrgRoleService;
-import com.ngtesting.platform.service.RoleService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.OrgRoleVo;
-import com.ngtesting.platform.vo.Page;
-import com.ngtesting.platform.vo.RoleVo;
 
 @Service
 public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleService {
@@ -25,19 +21,19 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 	public List list(Long orgId, String keywords, String disabled) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestOrgRole.class);
         dc.add(Restrictions.eq("orgId", orgId));
-        
+
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-        
+
         if (StringUtil.isNotEmpty(keywords)) {
         	dc.add(Restrictions.like("name", "%" + keywords + "%"));
         }
         if (StringUtil.isNotEmpty(disabled)) {
         	dc.add(Restrictions.eq("disabled", Boolean.valueOf(disabled)));
         }
-        
+
         dc.addOrder(Order.asc("id"));
         List ls = findAllByCriteria(dc);
-		
+
 		return ls;
 	}
 
@@ -46,17 +42,17 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 		if (vo == null) {
 			return null;
 		}
-		
+
 		TestOrgRole po = new TestOrgRole();
 		if (vo.getId() != null) {
 			po = (TestOrgRole) get(TestOrgRole.class, vo.getId());
 		}
-		
+
 		po.setName(vo.getName());
 		po.setDescr(vo.getDescr());
 		po.setOrgId(orgId);
 		po.setDisabled(vo.getDisabled());
-		
+
 		saveOrUpdate(po);
 		return po;
 	}
@@ -66,15 +62,15 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 		TestOrgRole po = (TestOrgRole) get(TestOrgRole.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
-		
+
 		return true;
 	}
-    
+
 	@Override
 	public OrgRoleVo genVo(TestOrgRole role) {
 		OrgRoleVo vo = new OrgRoleVo();
 		BeanUtilEx.copyProperties(vo, role);
-		
+
 		return vo;
 	}
 	@Override

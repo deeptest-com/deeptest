@@ -1,17 +1,23 @@
 .field-show {
   .form-inline {
-    height: 35px;
     input {
       flex: 1;
     }
-
-    .label {
-      font-weight: bolder;
+    span {
+      line-height: 20px;
     }
 
     .smart-edit {
       display: inline-block;
       padding: 0 5px;
+    }
+
+    .field-input-container {
+      flex: 1;
+      z-index: 99;
+      input, textarea {
+        width: 80%;
+      }
     }
   }
 

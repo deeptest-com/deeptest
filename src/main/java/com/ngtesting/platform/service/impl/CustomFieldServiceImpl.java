@@ -111,10 +111,10 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
             Integer maxOrder = (Integer) getByHQL(hql);
             po.setOrdr(maxOrder + 10);
         }
-//        if (!po.getType().equals(FieldType.text)) {
-//            po.setRows(0);
-//            po.setFormat(null);
-//        }
+        if (!po.getType().equals(FieldType.text)) {
+            po.setRows(0);
+            po.setFormat(null);
+        }
         if (po.getGlobal() && po.getProjectSet().size() > 0) {
             po.setProjectSet(new HashSet<TestProject>(0));
         }
@@ -202,13 +202,26 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 
             vo.setSelected(false);
             vo.setSelecting(false);
-            for (TestProject po2 : projectsForField) {
-                if (po1.getId() == po2.getId()) {
+            for (TestProject item : projectsForField) {
+                if (po1.getId() == item.getId()) {
                     vo.setSelected(true);
                     vo.setSelecting(true);
                 }
             }
             vos.add(vo);
+
+            for (TestProject child : po1.getChildren()) {
+                TestProjectVo childVo = projectService.genVo(child);
+
+                for (TestProject item : projectsForField) {
+                    if (child.getId() == item.getId()) {
+                        childVo.setSelected(true);
+                        childVo.setSelecting(true);
+                    }
+                }
+
+                vos.add(childVo);
+            }
         }
 
         return vos;

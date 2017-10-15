@@ -2,17 +2,17 @@ package com.ngtesting.platform.service;
 
 import java.util.List;
 
-import com.ngtesting.platform.entity.EvtThread;
+import com.ngtesting.platform.entity.TestThread;
 
 
 
 public interface ChatService extends BaseService {
 
-	List<EvtThread> listByEvent(Long eventId);
+	List<TestThread> listByEvent(Long eventId);
 
-	EvtThread save(Long eventId, Long parentId, Long clientId, String content);
+	TestThread save(Long eventId, Long parentId, Long clientId, String content);
 
-	List<EvtThread> enter(Long eventId, Long clientId);
+	List<TestThread> enter(Long eventId, Long clientId);
 
 
 }

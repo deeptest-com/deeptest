@@ -35,9 +35,6 @@ public class AccountAction extends BaseAction {
     ProjectService projectService;
 
 	@Autowired
-	RegisterService registerService;
-
-	@Autowired
 	MailService mailService;
 
     @Autowired

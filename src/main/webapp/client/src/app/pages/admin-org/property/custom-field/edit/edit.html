@@ -47,7 +47,7 @@
       </label>
     </div>
 
-<!--    <div *ngIf="model.type == 'text'" class="form-group row">
+ <div *ngIf="model.type == 'text'" class="form-group row">
       <label class="col-sm-2 col-form-label"><span>行数</span></label>
       <div *ngIf="!model.buildIn" class="col-sm-10">
         <input type="text" class="form-control" name="rows" formControlName="rows"
@@ -73,7 +73,7 @@
         <input type="hidden" class="form-control" name="format" formControlName="format"
                [(ngModel)]="model.format" #format>
       </label>
-    </div>-->
+    </div>
 
     <div class="form-group row">
       <label class="col-sm-2 col-form-label"><span>描述</span></label>
@@ -119,10 +119,10 @@
               </div>
             </div>
             <div>
-              <div *ngFor="let item of relations" class="checkbox-list-item">
+              <div *ngFor="let item of relations" class="checkbox-list-item" [class.group]="item.type == 'group'">
                 <label>
                   <span class="checkbox-name">{{item.name}}<span></span></span>
-                  <input type="checkbox" class="form-check-input"
+                  <input *ngIf="item.type == 'project'" type="checkbox" class="form-check-input"
                          [(ngModel)]="item.selecting" formControlName="{{'project-' + item.id}}">
                 </label>
               </div>

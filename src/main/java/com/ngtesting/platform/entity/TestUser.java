@@ -12,7 +12,7 @@ import java.util.Set;
 @Table(name = "tst_user")
 public class TestUser extends BaseEntity {
 	private static final long serialVersionUID = 5110565175672074546L;
-	
+
 	private String email;
     private String phone;
     private String name;
@@ -22,16 +22,16 @@ public class TestUser extends BaseEntity {
 
     private String verifyCode;
     private Date lastLoginTime;
-    
+
     private Long defaultOrgId;
     private Long defaultProjectId;
 
 	private Integer caseBoardLeftSize;
 	private Integer caseBoardRightSize;
-    
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userSet")
-    private Set<TestRole> roleSet = new HashSet<TestRole>(0);
-    
+    private Set<SysRole> roleSet = new HashSet<SysRole>(0);
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userSet")
     private Set<TestOrg> orgSet = new HashSet<TestOrg>(0);
 
@@ -118,11 +118,11 @@ public class TestUser extends BaseEntity {
 		this.lastLoginTime = lastLoginTime;
 	}
 
-	public Set<TestRole> getRoleSet() {
+	public Set<SysRole> getRoleSet() {
 		return roleSet;
 	}
 
-	public void setRoleSet(Set<TestRole> roleSet) {
+	public void setRoleSet(Set<SysRole> roleSet) {
 		this.roleSet = roleSet;
 	}
 
@@ -157,5 +157,5 @@ public class TestUser extends BaseEntity {
 	public void setDefaultProjectId(Long defaultProjectId) {
 		this.defaultProjectId = defaultProjectId;
 	}
-	
+
 }

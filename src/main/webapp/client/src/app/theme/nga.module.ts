@@ -22,20 +22,10 @@ import {
 } from './theme.configProvider';
 
 import {
-  BaAmChart,
   BaBackTop,
   BaCard,
-  BaChartistChart,
-  BaCheckbox,
-  BaContentTop,
-  BaFullCalendar,
-  BaMenuItem,
-  BaMenu,
   BaMsgCenter,
-  BaMultiCheckbox,
   BaPageTop,
-  BaPictureUploader,
-  BaSidebar,
   BaFileUploader
 } from './components';
 
@@ -66,20 +56,10 @@ import {
 } from './validators';
 
 const NGA_COMPONENTS = [
-  BaAmChart,
   BaBackTop,
   BaCard,
-  BaChartistChart,
-  BaCheckbox,
-  BaContentTop,
-  BaFullCalendar,
-  BaMenuItem,
-  BaMenu,
   BaMsgCenter,
-  BaMultiCheckbox,
   BaPageTop,
-  BaPictureUploader,
-  BaSidebar,
   BaFileUploader
 ];
 

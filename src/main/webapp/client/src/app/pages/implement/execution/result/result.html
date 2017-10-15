@@ -91,17 +91,18 @@
           </div>
       </div>
 
-      <div class="row">
+      <div class="row field-show-container">
         <div class="col-sm-12">
           <field-show (onSave)="saveField($event)" [(model)]="model"
                       [label]="'目标'" [prop]="'objective'" [type]="'string'"></field-show>
         </div>
       </div>
 
-      <div *ngFor="let field of fields;" class="row">
+      <div *ngFor="let field of fields;" class="row field-show-container">
         <div class="col-sm-12">
           <field-show (onSave)="saveField($event)" [(model)]="model"
-                      [label]="field.label" [prop]="field.column" [type]="'string'" [required]="field.isRequired"></field-show>
+                      [label]="field.label" [prop]="field.myColumn" [type]="field.type"
+                      [format]="field.format" [rows]="field.rows" [required]="field.isRequired"></field-show>
         </div>
       </div>
 

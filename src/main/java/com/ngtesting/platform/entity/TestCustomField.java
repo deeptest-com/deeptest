@@ -60,9 +60,9 @@ public class TestCustomField extends BaseEntity {
     public static enum FieldType {
     	string("string"),
     	number("number"),
-        dropdown("dropdown");
+        dropdown("dropdown"),
+        text("text");
 
-//      text("text"),
 //    	url("url"),
 //
 //    	radio("radio"),

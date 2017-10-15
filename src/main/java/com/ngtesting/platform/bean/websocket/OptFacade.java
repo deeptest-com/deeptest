@@ -1,23 +1,22 @@
 package com.ngtesting.platform.bean.websocket;
 
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
-
+import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.util.Constant.RespCode;
+import com.ngtesting.platform.websocket.SystemWebSocketHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.util.Constant;
-import com.ngtesting.platform.util.Constant.RespCode;
-import com.ngtesting.platform.websocket.SystemWebSocketHandler;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 @Service
 public class OptFacade {
     Log logger = LogFactory.getLog(OptFacade.class);
-    
+
     @Autowired
     OptNews optNews;
     @Autowired

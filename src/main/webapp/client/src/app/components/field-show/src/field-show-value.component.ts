@@ -6,8 +6,8 @@ import { Utils } from '../../../utils/utils';
 @Component({
   selector: 'field-show-value',
   template: `
-    <span *ngIf="casePropertyMap[prop]">{{casePropertyMap[prop][model[prop]]}}</span>
-    <span *ngIf="!casePropertyMap[prop]">{{model[prop]}}</span>
+    <pre style="margin:0;" *ngIf="casePropertyMap[prop]">{{casePropertyMap[prop][model[prop]]}}</pre>
+    <pre style="margin:0;" *ngIf="!casePropertyMap[prop]">{{model[prop]}}</pre>
   `,
 })
 export class FieldShowValueComponent {

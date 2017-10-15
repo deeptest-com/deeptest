@@ -27,7 +27,6 @@ export class CustomFieldComponent implements OnInit, OnChanges {
 
   public constructor(@Inject(CustomFieldService) private customFieldService: CustomFieldService) {
 
-
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
@@ -35,7 +34,7 @@ export class CustomFieldComponent implements OnInit, OnChanges {
   }
 
   public ngOnInit(): void {
-    let control: FormControl = new FormControl(this.field.column);
-    this.form.addControl(this.field.column, control);
+    let control: FormControl = new FormControl(this.field.myColumn);
+    this.form.addControl(this.field.myColumn, control);
   }
 }

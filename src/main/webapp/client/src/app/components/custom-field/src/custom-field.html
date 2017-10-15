@@ -9,31 +9,6 @@
       <input type="text" class="form-control" name="{{field.column}}" formControlName="{{field.column}}"
              [(ngModel)]="model[field.column]" #{{field.column}}>
     </ng-container>
-    <ng-container *ngSwitchCase="'url'">
-      <input type="text" class="form-control" name="{{field.column}}" formControlName="{{field.column}}"
-             [(ngModel)]="model[field.column]" #{{field.column}}>
-    </ng-container>
-
-    <ng-container *ngSwitchCase="'text'">
-      <ng-container *ngIf="field.format=='plain_text'">
-        <textarea type="text" class="form-control" name="{{field.column}}" formControlName="{{field.column}}"
-                  [(ngModel)]="model[field.column]" #{{field.column}}>
-        </textarea>
-      </ng-container>
-      <ng-container *ngIf="field.format=='markdown'">
-
-      </ng-container>
-    </ng-container>
-
-    <ng-container *ngSwitchCase="'radio'">
-      <input type="radio" class="form-check-input" name="{{field.column}}" formControlName="{{field.column}}"
-             [(ngModel)]="model[field.column]" #isRequired>
-    </ng-container>
-
-    <ng-container *ngSwitchCase="'checkbox'">
-      <input type="checkbox" class="form-check-input" name="{{field.column}}" formControlName="{{field.column}}"
-             [(ngModel)]="model[field.column]" #isRequired>
-    </ng-container>
 
     <ng-container *ngSwitchCase="'dropdown'">
       <select [(ngModel)]="model[field.column]" formControlName="applyTo" name="{{field.column}}" class="form-control form-control-sm">
@@ -41,8 +16,34 @@
       </select>
     </ng-container>
 
+    <ng-container *ngSwitchCase="'text'">
+      <ng-container *ngIf="field.format=='plain_text'">
+        <textarea type="text" class="form-control" name="{{field.myColumn}}" formControlName="{{field.myColumn}}"
+                  [(ngModel)]="model[field.myColumn]" #{{field.myColumn}}>
+        </textarea>
+      </ng-container>
+      <ng-container *ngIf="field.format=='markdown'">
+
+      </ng-container>
+    </ng-container>
+
+<!--    <ng-container *ngSwitchCase="'url'">
+      <input type="text" class="form-control" name="{{field.myColumn}}" formControlName="{{field.myColumn}}"
+             [(ngModel)]="model[field.myColumn]" #{{field.myColumn}}>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'radio'">
+      <input type="radio" class="form-check-input" name="{{field.myColumn}}" formControlName="{{field.myColumn}}"
+             [(ngModel)]="model[field.myColumn]" #isRequired>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'checkbox'">
+      <input type="checkbox" class="form-check-input" name="{{field.myColumn}}" formControlName="{{field.myColumn}}"
+             [(ngModel)]="model[field.myColumn]" #isRequired>
+    </ng-container>
+
     <ng-container *ngSwitchCase="'multi_select'">
-      <select multiple [(ngModel)]="model[field.column]" formControlName="{{field.column}}" name="{{field.column}}"
+      <select multiple [(ngModel)]="model[field.myColumn]" formControlName="{{field.myColumn}}" name="{{field.myColumn}}"
               class="form-control form-control-sm">
         <option value=""></option>
       </select>
@@ -57,7 +58,7 @@
     <ng-container *ngSwitchCase="'step'">
     </ng-container>
     <ng-container *ngSwitchCase="'result'">
-    </ng-container>
+    </ng-container>-->
 
   </ng-container>
 

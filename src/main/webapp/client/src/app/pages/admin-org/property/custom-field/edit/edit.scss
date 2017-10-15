@@ -8,6 +8,14 @@
   .field-edit-groups {
 
   }
+
+  .checkbox-list-item {
+    &.group {
+      margin-top: 15px;
+      margin-left: -20px;
+      font-weight: bolder;
+    }
+  }
 }
 
 

@@ -2,6 +2,7 @@ import {Component, ViewEncapsulation, NgModule, Pipe, OnInit, AfterViewInit} fro
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import {ToastyService, ToastyConfig, ToastOptions, ToastData} from 'ng2-toasty';
 import { NgUploaderModule } from 'ngx-uploader';
 
 import {GlobalState} from '../../../../global.state';
@@ -35,6 +36,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
   fields: any[] = [];
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
+              private toastyService:ToastyService, private toastyConfig: ToastyConfig,
               private _caseService: CaseService, private _caseStepService: CaseStepService) {
 
   }
@@ -128,6 +130,12 @@ export class CaseEdit implements OnInit, AfterViewInit {
       if (json.code == 1) {
         this.model = json.data;
         this._state.notifyDataChanged('case.save', this.model);
+
+        var toastOptions:ToastOptions = {
+          title: "保存成功",
+          timeout: 2000
+        };
+        this.toastyService.default(toastOptions);
       }
     });
   }

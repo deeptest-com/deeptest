@@ -26,9 +26,9 @@
           {{ item.format | fieldFormat }}
           <span *ngIf="item.type == 'text'">({{item.rows}})</span>
         </td>
-        <td>{{item.isBuildIn | trueOrFalse}}</td>
-        <td>{{item.isGlobal | trueOrFalse}}</td>
-        <td>{{item.isRequired | trueOrFalse}}</td>
+        <td>{{item.buildIn | trueOrFalse}}</td>
+        <td>{{item.global | trueOrFalse}}</td>
+        <td>{{item.required | trueOrFalse}}</td>
         <td>
           <span *ngIf="i == 0" class="ionic-icon link placeholder"></span>
           <span (click)="up(item)" *ngIf="i > 0" class="ion-arrow-up-a ionic-icon link"></span>

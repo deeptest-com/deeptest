@@ -60,18 +60,23 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     public List<CustomFieldVo> listForCaseByProject(Long projectId) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestCustomField.class);
 
-        dc.createAlias("projectSet", "p")
-                .add(Restrictions.eq("p.id", projectId));
-
+        dc.createAlias("projectSet", "p").add(Restrictions.eq("p.id", projectId));
         dc.add(Restrictions.eq("applyTo", FieldApplyTo.test_case));
-
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-
         dc.addOrder(Order.asc("ordr"));
-        List<TestCustomField> ls = findAllByCriteria(dc);
+        List<TestCustomField> ls1 = findAllByCriteria(dc);
 
-        List<CustomFieldVo> vos = genVos(ls);
+        DetachedCriteria dc2 = DetachedCriteria.forClass(TestCustomField.class);
+        dc2.add(Restrictions.eq("global", true));
+        dc2.add(Restrictions.eq("applyTo", FieldApplyTo.test_case));
+        dc2.add(Restrictions.eq("disabled", Boolean.FALSE));
+        dc2.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc2.addOrder(Order.asc("ordr"));
+        List<TestCustomField> ls2 = findAllByCriteria(dc2);
+
+        ls2.addAll(ls1);
+        List<CustomFieldVo> vos = genVos(ls2);
 
         return vos;
     }

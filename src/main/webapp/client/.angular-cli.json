@@ -27,6 +27,8 @@
         "../node_modules/leaflet/dist/leaflet.css",
         "../node_modules/chartist/dist/chartist.css",
         "../node_modules/fullcalendar/dist/fullcalendar.css",
+        "../node_modules/ng2-toasty/style.css",
+
         "app/theme/theme.scss",
         "styles.scss"
       ],

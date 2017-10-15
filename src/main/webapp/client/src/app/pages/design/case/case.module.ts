@@ -1,6 +1,7 @@
 import { NgModule }      from '@angular/core';
 import { CommonModule }  from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import {ToastyModule} from 'ng2-toasty';
 
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
@@ -39,6 +40,7 @@ import { CaseEdit } from './edit/edit.component';
     NgUploaderModule,
 
     DirectiveModule,
+    ToastyModule,
     SlimLoadingBarModule.forRoot(),
     ZtreeModule,
     StepsTableModule,

@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
+import {ToastyModule} from 'ng2-toasty';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 /*
@@ -44,6 +45,8 @@ export type StoreType = {
     RouterModule,
     FormsModule,
     ReactiveFormsModule,
+    // ToastyModule.forRoot(),
+
     NgaModule.forRoot(),
     NgbModule.forRoot(),
     PagesModule,

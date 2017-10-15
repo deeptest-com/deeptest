@@ -2,8 +2,10 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.service.CaseInRunService;
+import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.vo.CustomFieldVo;
 import com.ngtesting.platform.vo.TestCaseInRunVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +27,23 @@ public class CaseInRunAction extends BaseAction {
 	@Autowired
 	CaseInRunService caseInRunService;
 
+    @Autowired
+    CustomFieldService customFieldService;
+
     @AuthPassport(validate = true)
     @RequestMapping(value = "query", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
+        Long projectId = json.getLong("projectId");
         Long runId = json.getLong("runId");
 
         List<TestCaseInRunVo> vos = caseInRunService.query(runId);
+        List<CustomFieldVo> customFieldList = customFieldService.listForCaseByProject(projectId);
 
         ret.put("data", vos);
+        ret.put("customFields", customFieldList);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

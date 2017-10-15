@@ -11,21 +11,21 @@
     <div class="form-group row">
       <label class="col-sm-2 col-form-label"><span>编码</span></label>
       <label class="col-sm-10 col-form-label left">
-        {{model.column}}
-        <input type="hidden" class="form-control" name="column" formControlName="column"
-               [(ngModel)]="model.column" #column>
+        {{model.myColumn}} - {{model.code}}
+        <input type="hidden" class="form-control" name="myColumn" formControlName="myColumn"
+               [(ngModel)]="model.myColumn" #myColumn>
       </label>
     </div>
 
     <div class="form-group row">
       <label class="col-sm-2 col-form-label"><span>应用对象</span></label>
-      <div *ngIf="!model.isBuildIn" class="col-sm-10">
+      <div *ngIf="!model.buildIn" class="col-sm-10">
         <select [(ngModel)]="model.applyTo" formControlName="applyTo" name="applyTo" class="form-control form-control-sm">
           <option value=""></option>
           <option *ngFor="let item of applyToList" value="{{item}}">{{item | fieldApplyTo}}</option>
         </select>
       </div>
-      <label *ngIf="model.isBuildIn" class="col-sm-10 col-form-label left">
+      <label *ngIf="model.buildIn" class="col-sm-10 col-form-label left">
         {{model.applyTo | fieldApplyTo}}
         <input type="hidden" class="form-control" name="applyTo" formControlName="applyTo"
                [(ngModel)]="model.applyTo" #applyTo>
@@ -34,13 +34,13 @@
 
     <div class="form-group row">
       <label class="col-sm-2 col-form-label"><span>类型</span></label>
-      <div *ngIf="!model.isBuildIn" class="col-sm-10">
+      <div *ngIf="!model.buildIn" class="col-sm-10">
         <select [(ngModel)]="model.type" formControlName="type" name="type" class="form-control form-control-sm">
           <option value=""></option>
           <option *ngFor="let item of typeList" value="{{item}}">{{item | fieldType}}</option>
         </select>
       </div>
-      <label *ngIf="model.isBuildIn" class="col-sm-10 col-form-label left">
+      <label *ngIf="model.buildIn" class="col-sm-10 col-form-label left">
         {{model.type | fieldType}}
         <input type="hidden" class="form-control" name="type" formControlName="type"
                [(ngModel)]="model.type" #type>
@@ -49,11 +49,11 @@
 
     <div *ngIf="model.type == 'text'" class="form-group row">
       <label class="col-sm-2 col-form-label"><span>行数</span></label>
-      <div *ngIf="!model.isBuildIn" class="col-sm-10">
+      <div *ngIf="!model.buildIn" class="col-sm-10">
         <input type="text" class="form-control" name="rows" formControlName="rows"
                [(ngModel)]="model.rows" #rows>
       </div>
-      <label *ngIf="model.isBuildIn" class="col-sm-10 col-form-label left">
+      <label *ngIf="model.buildIn" class="col-sm-10 col-form-label left">
         {{model.rows }}
         <input type="hidden" class="form-control" name="rows" formControlName="rows"
                [(ngModel)]="model.rows" #rows>
@@ -62,13 +62,13 @@
 
     <div *ngIf="model.type == 'text'" class="form-group row">
       <label class="col-sm-2 col-form-label"><span>格式</span></label>
-      <div *ngIf="!model.isBuildIn" class="col-sm-10">
+      <div *ngIf="!model.buildIn" class="col-sm-10">
         <select [(ngModel)]="model.format" formControlName="format" name="format" class="form-control form-control-sm">
           <option value=""></option>
           <option *ngFor="let item of formatList" value="{{item}}">{{item | fieldFormat}}</option>
         </select>
       </div>
-      <label *ngIf="model.isBuildIn" class="col-sm-10 col-form-label left">
+      <label *ngIf="model.buildIn" class="col-sm-10 col-form-label left">
         {{model.format | fieldFormat}}
         <input type="hidden" class="form-control" name="format" formControlName="format"
                [(ngModel)]="model.format" #format>
@@ -88,7 +88,7 @@
         <div class="form-check">
           <label class="form-check-label">
             <input type="checkbox" class="form-check-input" name="isRequired" formControlName="isRequired"
-                   [(ngModel)]="model.isRequired" #isRequired>
+                   [(ngModel)]="model.required" #isRequired>
             &nbsp;&nbsp;是否必填
           </label>
         </div>
@@ -99,15 +99,15 @@
       <div class="offset-sm-2 col-sm-10">
         <div class="form-check">
           <label class="form-check-label">
-            <input type="checkbox" class="form-check-input" name="isGlobal" formControlName="isGlobal"
-                   [(ngModel)]="model.isGlobal" #isGlobal>
+            <input type="checkbox" class="form-check-input" name="global" formControlName="global"
+                   [(ngModel)]="model.global" #global>
             &nbsp;&nbsp;是否全局
           </label>
         </div>
       </div>
     </div>
 
-    <div [class.hidden]="model.isGlobal" class="form-group row">
+    <div [class.hidden]="model.global" class="form-group row">
       <label class="col-sm-2">项目</label>
       <div class="col-sm-10">
         <div class="checkbox-list">
@@ -174,5 +174,5 @@
 </div>
 
 <pop-dialog #modalWrapper (confirm)="delete()" [title]="'提示'">
-  确认删除名为"{{model?.name}}"的用户?
+  确认删除名为"{{model?.name}}"的自定义字段?
 </pop-dialog>

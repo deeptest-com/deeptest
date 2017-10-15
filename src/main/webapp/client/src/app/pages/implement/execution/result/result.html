@@ -24,7 +24,7 @@
 
       <div class="form-group row">
         <div class="col-sm-12">
-          <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'name'" [type]="'string'" [form]="form"></field-show>
+          <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'name'" [type]="'string'" [required]="true"></field-show>
         </div>
       </div>
 
@@ -61,26 +61,27 @@
             <tbody>
               <tr>
                 <td style="width: 25%">
+                  <div class="label">状态</div>
+                  <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'status'" [type]="'string'" optionsKey="status"
+                              [required]="true" [readonly]="true"></field-show>
+                </td>
+
+                <td style="width: 25%">
                   <div class="label">类型</div>
                   <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'type'" [type]="'dropdown'" optionsKey="type"
-                              [form]="form"></field-show>
+                              [required]="true"></field-show>
                 </td>
                 <td style="width: 25%">
                   <div class="label">优先级</div>
                   <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'priority'" [type]="'dropdown'" optionsKey="priority"
-                              [form]="form"></field-show>
+                              [required]="true"></field-show>
                 </td>
                 <td style="width: 25%">
                   <div class="label">耗时(分钟)</div>
                   <div class="value">
                     <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'estimate'" [type]="'number'"
-                                [form]="form"></field-show>
+                                [required]="true"></field-show>
                   </div>
-                </td>
-                <td style="width: 25%">
-                  <div class="label">状态</div>
-                  <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'status'" [type]="'string'" optionsKey="status"
-                              [readonly]="true" [form]="form"></field-show>
                 </td>
               </tr>
             <tr>
@@ -93,14 +94,14 @@
       <div class="row">
         <div class="col-sm-12">
           <field-show (onSave)="saveField($event)" [(model)]="model"
-                      [label]="'目标'" [prop]="'objective'" [type]="'string'" [form]="form"></field-show>
+                      [label]="'目标'" [prop]="'objective'" [type]="'string'"></field-show>
         </div>
       </div>
 
       <div *ngFor="let field of fields;" class="row">
         <div class="col-sm-12">
           <field-show (onSave)="saveField($event)" [(model)]="model"
-                      [label]="field.label" [prop]="field.column" [type]="'string'" [form]="form"></field-show>
+                      [label]="field.label" [prop]="field.column" [type]="'string'" [required]="field.isRequired"></field-show>
         </div>
       </div>
 

@@ -46,8 +46,10 @@ export class ExecutionSuite implements OnInit, AfterViewInit {
   loadData() {
     this.startLoading();
 
-    this._caseInRunService.query(this.runId).subscribe((json:any) => {
+    this._caseInRunService.query(this.projectId, this.runId).subscribe((json:any) => {
       this.treeModel = json.data;
+
+      CONSTANT.CUSTOM_FIELD_FOR_PROJECT = json.customFields;
       this.completeLoading();
     });
 

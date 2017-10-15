@@ -58,18 +58,16 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
   }
 
   buildForm(): void {
-    let that = this;
     this.form = this.fb.group(
       {
-        'code': ['', [Validators.required]],
-        'label': ['', [Validators.required]],
-        'applyTo': ['', [Validators.required]],
-        column: ['', [Validators.required]],
+        label: ['', [Validators.required]],
+        applyTo: ['', [Validators.required]],
+        myColumn: ['', [Validators.required]],
         type: ['', [Validators.required]],
         rows:  ['', [Validators.pattern('^[1-9]$'), CustomValidator.validate('required_if_other_is', 'required_rows', 'rows', 'type', 'text')]],
         format: ['', [CustomValidator.validate('required_if_other_is', 'required_format', 'format', 'type', 'text')]],
         descr: ['', []],
-        isGlobal: ['', []],
+        global: ['', []],
         isRequired: ['', []]
       }, {}
     );
@@ -141,7 +139,8 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
     that.customFieldService.delete(that.model.id).subscribe((json:any) => {
       if (json.code == 1) {
         that.formErrors = ['删除成功'];
-        that._routeService.navTo("/pages/org-admin/field/list");
+        this.modalWrapper.closeModal();
+        that._routeService.navTo("/pages/org-admin/property/custom-field/list");
       } else {
         that.formErrors = ['删除失败'];
       }

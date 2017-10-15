@@ -25,22 +25,23 @@ export class FieldShowComponent implements OnInit {
   @Input()
   public label: string;
   @Input()
+  public required: boolean;
+  @Input()
   public readonly: boolean;
 
   @Output() onSave = new EventEmitter<any>();
-
-  @Input()
   public form: any;
 
   public status: string = 'view';
   public temp: string;
   public casePropertyMap: any;
 
-  public constructor(@Inject(FieldShowService) private fieldShowService: FieldShowService) {
+  public constructor(@Inject(FieldShowService) private fieldShowService: FieldShowService, private fb: FormBuilder) {
     this.casePropertyMap = CONSTANT.CASE_PROPERTY_MAP;
   }
 
   public ngOnInit(): void {
+    this.form = this.fb.group({});
     let control: FormControl = new FormControl(this.prop, Validators.required);
     this.form.addControl(this.prop, control);
   }

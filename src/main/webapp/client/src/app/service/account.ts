@@ -180,6 +180,7 @@ export class AccountService {
 
     if (recentProjects.length > 0) {
       CONSTANT.CURRENT_PROJECT = {id: recentProjects[0].projectId, name: recentProjects[0].projectName};
+      console.log('CONSTANT.CURRENT_PROJECT:', CONSTANT.CURRENT_PROJECT);
     } else {
       CONSTANT.CURRENT_PROJECT = {id: null, name: ''};
     }

@@ -14,8 +14,8 @@ export class CaseInRunService {
 
   _api_url = 'caseInRun/';
 
-  query(runId: number) {
-    return this._reqService.post(this._api_url + 'query', {runId: runId});
+  query(projectId:number , runId: number) {
+    return this._reqService.post(this._api_url + 'query', {projectId: projectId, runId: runId});
   }
 
   get(id: number) {
@@ -23,5 +23,3 @@ export class CaseInRunService {
     return this._reqService.post(this._api_url + 'get', model);
   }
 }
-
-

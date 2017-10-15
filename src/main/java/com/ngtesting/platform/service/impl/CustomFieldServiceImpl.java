@@ -107,8 +107,6 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
         po.setOrgId(orgId);
 
         if (vo.getId() == null) {
-            po.setCode(UUID.randomUUID().toString());
-
             String hql = "select max(ordr) from TestCustomField";
             Integer maxOrder = (Integer) getByHQL(hql);
             po.setOrdr(maxOrder + 10);
@@ -117,7 +115,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
             po.setRows(0);
             po.setFormat(null);
         }
-        if (po.getIsGlobal() && po.getProjectSet().size() > 0) {
+        if (po.getGlobal() && po.getProjectSet().size() > 0) {
             po.setProjectSet(new HashSet<TestProject>(0));
         }
 
@@ -286,11 +284,12 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     @Override
     public void initPo(TestCustomField po, CustomFieldVo vo) {
         po.setCode(vo.getCode());
+        po.setMyColumn(vo.getMyColumn());
         po.setLabel(vo.getLabel());
         po.setDescr(vo.getDescr());
         po.setRows(vo.getRows());
-        po.setIsGlobal(vo.getIsGlobal());
-        po.setIsRequired(vo.getIsRequired());
+        po.setGlobal(vo.getGlobal());
+        po.setRequired(vo.getRequired());
     }
 
 }

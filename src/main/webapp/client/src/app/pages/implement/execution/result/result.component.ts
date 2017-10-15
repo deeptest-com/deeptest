@@ -39,7 +39,7 @@ export class ExecutionResult implements OnInit, AfterViewInit {
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
               private _caseService: CaseService, private _caseStepService: CaseStepService, private _caseInRunService: CaseInRunService) {
-
+    this.buildForm();
   }
   ngOnInit() {
     let that = this;
@@ -49,10 +49,6 @@ export class ExecutionResult implements OnInit, AfterViewInit {
       that.runId = +params['runId'];
     });
 
-    this.fields = CONSTANT.CUSTOM_FIELD_FOR_PROJECT;
-
-    that.buildForm();
-
     this._state.subscribe('case.exe', (testCase: any) => {
       if (!testCase || testCase.isParent) {
         this.model = null;
@@ -60,6 +56,7 @@ export class ExecutionResult implements OnInit, AfterViewInit {
       }
 
       this.fields = CONSTANT.CUSTOM_FIELD_FOR_PROJECT;
+
       if (testCase) {
         that.id = testCase.entityId;
 

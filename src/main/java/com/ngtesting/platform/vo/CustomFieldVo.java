@@ -7,29 +7,54 @@ public class CustomFieldVo extends BaseVo {
 
     private String code;
     private String label;
-	private String column;
+    private String myColumn;
 
     private String descr;
     private String applyTo;
     private String type;
 
     private Integer rows = 3;
-    private Boolean isRequired;
+
     private String format = TestCustomField.FieldFormat.plain_text.toString();
-    private Boolean isGlobal = true;
-    private Boolean isBuildIn = false;
-    
+    private Boolean required;
+    private Boolean global = true;
+    private Boolean buildIn = false;
+
     private Integer ordr;
 
-	public String getColumn() {
-		return column;
-	}
+    public Boolean getRequired() {
+        return required;
+    }
 
-	public void setColumn(String column) {
-		this.column = column;
-	}
+    public void setRequired(Boolean required) {
+        this.required = required;
+    }
 
-	public String getLabel() {
+    public Boolean getGlobal() {
+        return global;
+    }
+
+    public void setGlobal(Boolean global) {
+        this.global = global;
+    }
+
+    public Boolean getBuildIn() {
+        return buildIn;
+    }
+
+    public void setBuildIn(Boolean buildIn) {
+        this.buildIn = buildIn;
+    }
+
+    public String getMyColumn() {
+        return myColumn;
+    }
+
+    public void setMyColumn(String myColumn) {
+        this.myColumn = myColumn;
+    }
+
+    public String getLabel() {
 		return label;
 	}
 
@@ -61,23 +86,7 @@ public class CustomFieldVo extends BaseVo {
 		this.type = type;
 	}
 
-	public Boolean getIsGlobal() {
-		return isGlobal;
-	}
-
-	public void setIsGlobal(Boolean isGlobal) {
-		this.isGlobal = isGlobal;
-	}
-
-	public Boolean getIsBuildIn() {
-		return isBuildIn;
-	}
-
-	public void setIsBuildIn(Boolean isBuildIn) {
-		this.isBuildIn = isBuildIn;
-	}
-
-	public String getApplyTo() {
+    public String getApplyTo() {
 		return applyTo;
 	}
 
@@ -93,44 +102,12 @@ public class CustomFieldVo extends BaseVo {
 		this.rows = rows;
 	}
 
-	public Boolean getIsRequired() {
-		return isRequired;
-	}
-
-	public void setIsRequired(Boolean isRequired) {
-		this.isRequired = isRequired;
-	}
-
 	public String getFormat() {
 		return format;
 	}
 
 	public void setFormat(String format) {
 		this.format = format;
-	}
-
-	public Boolean getRequired() {
-		return isRequired;
-	}
-
-	public void setRequired(Boolean required) {
-		isRequired = required;
-	}
-
-	public Boolean getGlobal() {
-		return isGlobal;
-	}
-
-	public void setGlobal(Boolean global) {
-		isGlobal = global;
-	}
-
-	public Boolean getBuildIn() {
-		return isBuildIn;
-	}
-
-	public void setBuildIn(Boolean buildIn) {
-		isBuildIn = buildIn;
 	}
 
 	public Integer getOrdr() {
@@ -140,4 +117,6 @@ public class CustomFieldVo extends BaseVo {
 	public void setOrdr(Integer ordr) {
 		this.ordr = ordr;
 	}
+
+
 }

@@ -8,41 +8,41 @@ import java.util.Set;
 @Table(name = "tst_custom_field")
 public class TestCustomField extends BaseEntity {
 	private static final long serialVersionUID = -1940351858441687302L;
-	
+
 	public TestCustomField() {
-		
+
 	}
-	public void TestCustomField(String code, String label, String descr, Integer rows, Boolean isGlobal, Boolean isRequired) {
+	public void TestCustomField(String code, String label, String descr, Integer rows, Boolean global, Boolean required) {
 		this.code = code;
         this.label = label;
 
 		this.descr = descr;
 		this.rows = rows;
-		this.isGlobal = isGlobal;
-		this.isRequired = isRequired;
+		this.global = global;
+		this.required = required;
 	}
 
     private String code;
     private String label;
     private String descr;
-	private String column;
-    
+	private String myColumn;
+
     @Enumerated(EnumType.STRING)
     private FieldApplyTo applyTo;
-    
+
     @Enumerated(EnumType.STRING)
     private FieldType type;
-    
+
     @Enumerated(EnumType.STRING)
     private FieldFormat format;
 
     private Integer rows;
-    private Boolean isGlobal;
-    private Boolean isRequired;
-    private Boolean isBuildIn;
-    
+    private Boolean global;
+    private Boolean required;
+    private Boolean buildIn;
+
     private Integer ordr;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
     private TestOrg org;
@@ -50,33 +50,25 @@ public class TestCustomField extends BaseEntity {
     @Column(name = "org_id")
     private Long orgId;
 
-	public String getColumn() {
-		return column;
-	}
-
-	public void setColumn(String column) {
-		this.column = column;
-	}
-
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "tst_r_custom_field_project", joinColumns = { 
-			@JoinColumn(name = "custom_field_id", nullable = false, updatable = false) }, 
-			inverseJoinColumns = { @JoinColumn(name = "project_id", 
+	@JoinTable(name = "tst_r_custom_field_project", joinColumns = {
+			@JoinColumn(name = "custom_field_id", nullable = false, updatable = false) },
+			inverseJoinColumns = { @JoinColumn(name = "project_id",
 					nullable = false, updatable = false) })
     private Set<TestProject> projectSet = new HashSet<TestProject>(0);
-    
+
     public static enum FieldType {
     	string("string"),
     	text("text"),
     	number("number"),
     	url("url"),
-    	
+
     	radio("radio"),
     	checkbox("checkbox"),
-    	
+
     	dropdown("dropdown"),
     	multi_select("multi_select"),
-    	
+
     	date("date"),
 
     	user("user"),
@@ -93,7 +85,7 @@ public class TestCustomField extends BaseEntity {
             return textVal;
         }
     }
-    
+
     public static enum FieldApplyTo {
     	test_case("test_case"),
         test_result("test_result");
@@ -107,7 +99,7 @@ public class TestCustomField extends BaseEntity {
             return textVal;
         }
     }
-    
+
     public static enum FieldFormat {
     	markdown("markdown"),
         plain_text("plain_text");
@@ -120,6 +112,14 @@ public class TestCustomField extends BaseEntity {
         public String toString() {
             return textVal;
         }
+    }
+
+    public String getMyColumn() {
+        return myColumn;
+    }
+
+    public void setMyColumn(String myColumn) {
+        this.myColumn = myColumn;
     }
 
     public String getLabel() {
@@ -146,23 +146,28 @@ public class TestCustomField extends BaseEntity {
 		this.descr = descr;
 	}
 
-	public Boolean getIsGlobal() {
-		return isGlobal;
-	}
+    public Boolean getGlobal() {
+        return this.global;
+    }
+    public void setGlobal(Boolean global) {
+        this.global = global;
+    }
 
-	public void setIsGlobal(Boolean isGlobal) {
-		this.isGlobal = isGlobal;
-	}
+    public Boolean getRequired() {
+        return this.required;
+    }
+    public void setRequired(Boolean required) {
+        this.required = required;
+    }
 
-	public Boolean getIsBuildIn() {
-		return isBuildIn;
-	}
+    public Boolean getBuildIn() {
+        return this.buildIn;
+    }
+    public void setBuildIn(Boolean buildIn) {
+        this.buildIn = buildIn;
+    }
 
-	public void setIsBuildIn(Boolean isBuildIn) {
-		this.isBuildIn = isBuildIn;
-	}
-
-	public Set<TestProject> getProjectSet() {
+    public Set<TestProject> getProjectSet() {
 		return projectSet;
 	}
 
@@ -202,14 +207,6 @@ public class TestCustomField extends BaseEntity {
 		this.rows = rows;
 	}
 
-	public Boolean getIsRequired() {
-		return isRequired;
-	}
-
-	public void setIsRequired(Boolean isRequired) {
-		this.isRequired = isRequired;
-	}
-
 	public TestOrg getOrg() {
 		return org;
 	}
@@ -224,30 +221,6 @@ public class TestCustomField extends BaseEntity {
 
 	public void setOrgId(Long orgId) {
 		this.orgId = orgId;
-	}
-
-	public Boolean getGlobal() {
-		return isGlobal;
-	}
-
-	public void setGlobal(Boolean global) {
-		isGlobal = global;
-	}
-
-	public Boolean getRequired() {
-		return isRequired;
-	}
-
-	public void setRequired(Boolean required) {
-		isRequired = required;
-	}
-
-	public Boolean getBuildIn() {
-		return isBuildIn;
-	}
-
-	public void setBuildIn(Boolean buildIn) {
-		isBuildIn = buildIn;
 	}
 
 	public Integer getOrdr() {

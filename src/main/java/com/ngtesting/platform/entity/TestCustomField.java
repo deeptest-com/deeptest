@@ -59,22 +59,24 @@ public class TestCustomField extends BaseEntity {
 
     public static enum FieldType {
     	string("string"),
-    	text("text"),
     	number("number"),
-    	url("url"),
+        dropdown("dropdown");
 
-    	radio("radio"),
-    	checkbox("checkbox"),
-
-    	dropdown("dropdown"),
-    	multi_select("multi_select"),
-
-    	date("date"),
-
-    	user("user"),
-    	version("version"),
-    	step("step"),
-    	result("result");
+//      text("text"),
+//    	url("url"),
+//
+//    	radio("radio"),
+//    	checkbox("checkbox"),
+//
+//
+//    	multi_select("multi_select"),
+//
+//    	date("date"),
+//
+//    	user("user"),
+//    	version("version"),
+//    	step("step"),
+//    	result("result");
 
         private FieldType(String textVal) {
             this.textVal = textVal;

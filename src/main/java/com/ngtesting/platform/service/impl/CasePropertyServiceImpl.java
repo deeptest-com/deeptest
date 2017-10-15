@@ -9,7 +9,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +21,7 @@ public class CasePropertyServiceImpl extends BaseServiceImpl implements CaseProp
 		Map<String,String> typeMap = getTypeMap(orgId);
 		Map<String,String> exeStatusMap = getExeStatusMap(orgId);
 
-		Map map = new HashMap();
+		Map map = new LinkedHashMap();
 		map.put("priority", priorityMap);
 		map.put("type", typeMap);
 		map.put("status", exeStatusMap);
@@ -40,7 +40,7 @@ public class CasePropertyServiceImpl extends BaseServiceImpl implements CaseProp
 		dc.addOrder(Order.asc("displayOrder"));
 		List<TestCasePriority> ls = findAllByCriteria(dc);
 
-		Map<String,String> map = new HashMap();
+		Map<String,String> map = new LinkedHashMap();
 		for (TestCasePriority item : ls) {
 			map.put(item.getCode(), item.getName());
 		}
@@ -59,7 +59,7 @@ public class CasePropertyServiceImpl extends BaseServiceImpl implements CaseProp
 		dc.addOrder(Order.asc("displayOrder"));
 		List<TestCaseType> ls = findAllByCriteria(dc);
 
-		Map<String,String> map = new HashMap();
+		Map<String,String> map = new LinkedHashMap();
 		for (TestCaseType item : ls) {
 			map.put(item.getCode(), item.getName());
 		}
@@ -78,7 +78,7 @@ public class CasePropertyServiceImpl extends BaseServiceImpl implements CaseProp
 		dc.addOrder(Order.asc("displayOrder"));
 		List<TestCaseExeStatus> ls = findAllByCriteria(dc);
 
-		Map<String,String> map = new HashMap();
+		Map<String,String> map = new LinkedHashMap();
 		for (TestCaseExeStatus item : ls) {
 			map.put(item.getCode(), item.getName());
 		}

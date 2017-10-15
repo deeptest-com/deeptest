@@ -111,10 +111,10 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
             Integer maxOrder = (Integer) getByHQL(hql);
             po.setOrdr(maxOrder + 10);
         }
-        if (!po.getType().equals(FieldType.text)) {
-            po.setRows(0);
-            po.setFormat(null);
-        }
+//        if (!po.getType().equals(FieldType.text)) {
+//            po.setRows(0);
+//            po.setFormat(null);
+//        }
         if (po.getGlobal() && po.getProjectSet().size() > 0) {
             po.setProjectSet(new HashSet<TestProject>(0));
         }
@@ -126,8 +126,8 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     @Override
     public boolean delete(Long id) {
         TestCustomField po = (TestCustomField) get(TestCustomField.class, id);
-        po.setDeleted(true);
-        saveOrUpdate(po);
+        po.getProjectSet().clear();
+        getDao().delete(po);
 
         return true;
     }
@@ -242,21 +242,20 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 
     @Override
     public String getLastUnusedColumn(Long orgId) {
-        DetachedCriteria dc = DetachedCriteria.forClass(TestCustomField.class);
+        String hql = "select cf.myColumn from TestCustomField cf where cf.deleted = false and cf.disabled = false " +
+                "and cf.orgId = ? order by cf.myColumn asc";
 
-        dc.add(Restrictions.eq("orgId", orgId));
-
-        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-
-        dc.addOrder(Order.desc("ordr"));
-        List<TestCustomField> ls = findAllByCriteria(dc);
-        if (ls.size() < 20) {
-            return "prop" + String.format("%02d", ls.size() + 1);
-        } else {
-            return null;
+        String ret = null;
+        List<String> ls = getDao().getListByHQL(hql, orgId);
+        for (int i = 1; i <= 20; i++) {
+            String prop = "prop" + String.format("%02d", i);
+            if (!ls.contains(prop)) {
+                ret = prop;
+                break;
+            }
         }
 
+        return ret;
     }
 
     @Override

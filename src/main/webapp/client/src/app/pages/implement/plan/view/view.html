@@ -95,7 +95,7 @@
           </td>
           <td></td>
           <td>
-            <span (click)="exe(model.id, item.id)" class="link no-underline">执行</span>
+            <span *ngIf="item.countMap.total > 0" (click)="exe(model.id, item.id)" class="link no-underline">执行</span>
           </td>
         </tr>
         </tbody>

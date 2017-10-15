@@ -85,6 +85,7 @@ export class CasePriorityEdit implements OnInit, AfterViewInit {
 
     that.casePriorityService.save(that.model).subscribe((json:any) => {
       if (json.code == 1) {
+        CONSTANT.CASE_PROPERTY_MAP = json.casePropertyMap;
 
         that.formErrors = ['保存成功'];
         that._routeService.navTo("/pages/org-admin/property/case-priority/list");

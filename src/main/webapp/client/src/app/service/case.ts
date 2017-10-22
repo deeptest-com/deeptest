@@ -53,6 +53,5 @@ export class CaseService {
     let model = _.merge(field, {id: id});
     return this._reqService.post(this._api_url + 'saveField', model);
   }
+
 }
-
-

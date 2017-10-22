@@ -65,4 +65,24 @@ public class CaseInRunAction extends BaseAction {
         return ret;
     }
 
+    @AuthPassport(validate = true)
+    @RequestMapping(value = "setResult", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> setResult(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Long orgId = userVo.getDefaultOrgId();
+
+        Long caseInRunId = json.getLong("id");
+        String status = json.getString("status");
+        Long nextId = json.getLong("nextId");
+
+        TestCaseInRunVo vo = caseInRunService.setResultPers(caseInRunId, status, nextId);
+
+        ret.put("data", vo);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
 }

@@ -29,7 +29,7 @@
           <span *ngSwitchCase="'text'">
             <ng-container *ngIf="format=='plain_text'">
               <textarea type="text" class="form-control" name="{{prop}}" formControlName="{{prop}}"
-                        [(ngModel)]="model[prop]" rows="{{rows}}" #{{prop}}>
+                        [(ngModel)]="model[prop]" rows="2" #{{prop}}>
               </textarea>
             </ng-container>
             <ng-container *ngIf="format=='markdown'">

@@ -22,4 +22,10 @@ export class CaseInRunService {
     let model = {id: id};
     return this._reqService.post(this._api_url + 'get', model);
   }
+
+  setResult(modelId: any, nextId: number, status: string) {
+    let data = {id: modelId, nextId: nextId, status: status};
+    return this._reqService.post(this._api_url + 'setResult', data);
+  }
+
 }

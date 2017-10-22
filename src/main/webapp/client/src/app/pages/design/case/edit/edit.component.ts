@@ -31,7 +31,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
   settings: any;
   data: any;
   form: any;
-  tab: string = 'steps';
+  tab: string = 'content';
 
   fields: any[] = [];
 
@@ -47,7 +47,9 @@ export class CaseEdit implements OnInit, AfterViewInit {
 
     this.buildForm();
 
-    this._state.subscribe('case.edit', (testCase: any) => {
+    this._state.subscribe('case.edit', (data: any) => {
+      let testCase = data.node;
+
       if (!testCase || testCase.isParent) {
         this.model = null;
         return;
@@ -129,7 +131,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
     this._caseService.save(this.projectId, this.model).subscribe((json:any) => {
       if (json.code == 1) {
         this.model = json.data;
-        this._state.notifyDataChanged('case.save', this.model);
+        this._state.notifyDataChanged('case.save', {node: this.model, random: Math.random()});
 
         var toastOptions:ToastOptions = {
           title: "保存成功",
@@ -146,6 +148,10 @@ export class CaseEdit implements OnInit, AfterViewInit {
 
   tabChange(event: any) {
     this.tab = event.nextId;
+  }
+  changeContentType(tp: string) {
+    this.model.contentType = tp;
+    console.log(tp);
   }
 
   onUpConfirm(event: any) {

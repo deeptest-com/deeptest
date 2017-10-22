@@ -68,7 +68,6 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this._treeModel = model;
-    console.log('this._treeModel', this._treeModel);
     this.ztree = jQuery.fn.zTree.init($('#tree'), this.settings, this._treeModel);
     this.ztree.expandNode(this.ztree.getNodes()[0], this.isExpanded, this.sonSign, true);
   }
@@ -83,7 +82,8 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
       view: {
         addHoverDom: this.addHoverDom,
         removeHoverDom: this.removeHoverDom,
-        selectedMulti: false
+        selectedMulti: false,
+        fontCss: this.setFontCss
       },
       edit: {
         enable: true,
@@ -116,11 +116,14 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   public ngOnInit(): void {
     this.keywordsControl.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.onKeywordsChange(values));
 
-    this._state.subscribe('case.save', (testCase: any) => {
+    this._state.subscribe('case.save', (data: any) => {
+      let testCase = data.node;
+
       if (testCase) {
         var node = this.ztree.getNodeByParam("id", testCase.id, null);
 
         node.name = testCase.name;
+        node.status = testCase.status;
         this.ztree.updateNode(node);
       }
     });
@@ -154,8 +157,21 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  setFontCss (treeId, treeNode) {
+    console.log('treeNode.status', treeNode.status);
+
+    let css:any = {};
+    if (treeNode.status == 'pass') {
+      css.color = '#209e91';
+    } else if (treeNode.status == 'fail') {
+      css.color = '#e85656';
+    } else if (treeNode.status == 'block') {
+      css.color = '#dfb81c';
+    }
+    return css;
+  }
   onClick = (event, treeId, treeNode) => {
-    this._state.notifyDataChanged('case.' + this.settings.usage, treeNode);
+    this._state.notifyDataChanged('case.' + this.settings.usage, {node: treeNode, random: Math.random()});
   }
 
   addHoverDom = (treeId, treeNode) => {
@@ -186,7 +202,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
 
       treeNode.tm = new Date().getTime();
 
-      this._state.notifyDataChanged('case.' + this.settings.usage, _.clone(treeNode));
+      this._state.notifyDataChanged('case.' + this.settings.usage, {node: _.clone(treeNode), random: Math.random()});
     }).catch((err) => {console.log('err', err);});
 
     this.renameEvent.emit({
@@ -204,7 +220,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     const deferred = new Deferred();
     deferred.promise.then((data) => {
       console.log('success to remove', treeNode);
-      this._state.notifyDataChanged('case.change', null);
+      this._state.notifyDataChanged('case.change', {node: null, random: Math.random()});
     }).catch((err) => {console.log('err', err);});
 
     this.removeEvent.emit({
@@ -232,7 +248,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     const deferred = new Deferred();
     deferred.promise.then((data) => {
       console.log('success to move', data);
-      this._state.notifyDataChanged('case.change', data);
+      this._state.notifyDataChanged('case.change', {node: data, random: Math.random()});
 
       if (isCopy) {
         let parentNode;

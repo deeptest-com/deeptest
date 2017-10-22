@@ -220,7 +220,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
 		TestCase testCase = (TestCase) get(TestCase.class, id);
 
-		if ("title".equals(prop)) {
+		if ("name".equals(prop)) {
 			testCase.setName(value);
 		} else if ("objective".equals(prop)) {
             testCase.setObjective(value);

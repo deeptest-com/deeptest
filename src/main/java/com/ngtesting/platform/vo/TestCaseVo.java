@@ -22,6 +22,9 @@ public class TestCaseVo extends BaseVo {
 
     private Boolean checked;
 
+	private String contentType;
+	private String content;
+
 	private String prop01;
 	private String prop02;
 	private String prop03;
@@ -71,7 +74,23 @@ public class TestCaseVo extends BaseVo {
         this.updateTime = updateTime;
     }
 
-    public Boolean getChecked() {
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public Boolean getChecked() {
         return checked;
     }
 

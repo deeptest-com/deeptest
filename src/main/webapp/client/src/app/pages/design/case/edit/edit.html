@@ -20,12 +20,11 @@
 
       <div class="form-group row">
         <label class="col-sm-3 col-form-label"></label>
-        <div class="col-sm-9">
-
+        <div class="col-sm-7">
           <div class="tabs-container light">
             <div class="tabs">
               <ngb-tabset  (tabChange)="tabChange($event)">
-                <ngb-tab id="steps">
+                <ngb-tab id="content">
                   <ng-template ngbTabTitle>测试步骤</ng-template>
                   <ng-template ngbTabContent></ng-template>
                 </ngb-tab>
@@ -36,13 +35,27 @@
               </ngb-tabset>
             </div>
           </div>
-
+        </div>
+        <div class="contentType col-sm-2">
+          <div [class.hidden]="tab != 'content'">
+            <span *ngIf="model.contentType=='richText'" (click)="changeContentType('steps')" class="link">
+              <i class="ion-ios-grid-view"></i>
+              表格
+            </span>
+            <span *ngIf="model.contentType=='steps'" (click)="changeContentType('richText')" class="link">
+              <i class="ion-document-text"></i>
+              富文本
+            </span>
+          </div>
         </div>
       </div>
 
-      <div [class.hidden]="tab != 'steps'" class="tab-steps form-group row">
+      <div [class.hidden]="tab != 'content'" class="tab-steps form-group row">
+        <div *ngIf="'richText'==model.contentType" class="col-sm-12">
+          contentType
+        </div>
 
-        <div class="col-sm-12">
+        <div *ngIf="'steps'==model.contentType" class="col-sm-12">
           <steps-table [settings]="settings" [source]="model.steps"
 
                        (upConfirm)="onUpConfirm($event)"

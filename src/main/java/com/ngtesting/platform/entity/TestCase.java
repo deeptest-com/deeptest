@@ -13,13 +13,19 @@ public class TestCase extends BaseEntity {
 
     private String name;
 
-//    @Enumerated(EnumType.STRING)
+    // high, middle, low
 	private String priority;
 
-//    @Enumerated(EnumType.STRING)
+    // functional, performance, security, others
     private String type;
 
 	private Integer estimate;
+
+	// steps, richText
+    private String contentType = "steps";
+
+    @Column(name = "content", length = 5000)
+    private String content;
 
 	@Column(name = "objective", length = 1000)
 	private String objective;
@@ -81,36 +87,21 @@ public class TestCase extends BaseEntity {
     @OrderBy("ordr")
     private List<TestCaseStep> steps = new LinkedList<>();
 
-//    public static enum CasePriority {
-//        high("high"),
-//        middle("middle"),
-//        low("low");
-//
-//        CasePriority(String val) {
-//            this.val = val;
-//        }
-//
-//        private String val;
-//        public String toString() {
-//            return val;
-//        }
-//    }
+    public String getContentType() {
+        return contentType;
+    }
 
-//    public static enum CaseType {
-//        functional("functional"),
-//        performance("performance"),
-//        security("security"),
-//        others("others");
-//
-//        CaseType(String val) {
-//            this.val = val;
-//        }
-//
-//        private String val;
-//        public String toString() {
-//            return val;
-//        }
-//    }
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
 
     public String getType() {
         return type;

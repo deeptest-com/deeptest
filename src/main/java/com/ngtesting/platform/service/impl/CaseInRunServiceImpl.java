@@ -46,6 +46,19 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
     }
 
     @Override
+    public TestCaseInRunVo setResultPers(Long caseInRunId, String status, Long nextId) {
+        TestCaseInRun po = (TestCaseInRun) get(TestCaseInRun.class, caseInRunId);
+        po.setStatus(status);
+        saveOrUpdate(po);
+
+        if (nextId != null) {
+            return getById(nextId);
+        } else {
+            return genVo(po, true);
+        }
+    }
+
+    @Override
     public List<TestCaseInRunVo> genVos(List<TestCaseInRun> pos) {
         List<TestCaseInRunVo> vos = new LinkedList<>();
 

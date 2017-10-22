@@ -14,6 +14,7 @@ import { RouteService } from '../../../../service/route';
 import { CaseService } from '../../../../service/case';
 import { CaseStepService } from '../../../../service/case-step';
 import { CaseInRunService } from '../../../../service/case-in-run';
+import { ZtreeService } from '../../../../components/ztree';
 
 declare var jQuery;
 
@@ -35,10 +36,11 @@ export class ExecutionResult implements OnInit, AfterViewInit {
   tab: string = 'info';
 
   fields: any;
-  next: boolean = false;
+  next: boolean = true;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
-              private _caseService: CaseService, private _caseStepService: CaseStepService, private _caseInRunService: CaseInRunService) {
+              private _caseService: CaseService, private _caseStepService: CaseStepService, private _caseInRunService: CaseInRunService,
+              private _ztreeService: ZtreeService) {
     this.buildForm();
   }
   ngOnInit() {
@@ -49,7 +51,8 @@ export class ExecutionResult implements OnInit, AfterViewInit {
       that.runId = +params['runId'];
     });
 
-    this._state.subscribe('case.exe', (testCase: any) => {
+    this._state.subscribe('case.exe', (data: any) => {
+      let testCase = data.node;
       if (!testCase || testCase.isParent) {
         this.model = null;
         return;
@@ -124,14 +127,21 @@ export class ExecutionResult implements OnInit, AfterViewInit {
     });
   }
 
-  pass() {
-    console.log(this.model);
+  setResult(status: string) {
+    let next;
+    if (this.next) {
+      next = this._ztreeService.getNextNode(this.model.id);
+    }
 
-    // this._caseService.save(that.model).subscribe((json:any) => {
-    //   if (json.code == 1) {
-    //     this.model = json.data;
-    //   }
-    // });
+    this._caseInRunService.setResult(this.model.entityId, next?next.entityId:null, status).subscribe((json:any) => {
+      if (json.code == 1) {
+        this.model.status = status;
+        this._ztreeService.selectNode(next);
+
+        this._state.notifyDataChanged('case.save', {node: this.model, random: Math.random()});
+        this.model = json.data;
+      }
+    });
   }
 
   reset() {
@@ -141,7 +151,8 @@ export class ExecutionResult implements OnInit, AfterViewInit {
   saveField (event: any) {
     this._caseService.saveField(this.model.id, event.data).subscribe((json:any) => {
       if (json.code == 1) {
-        // this.model = json.data;
+        this.model = json.data;
+        this._state.notifyDataChanged('case.save', {node: this.model, random: Math.random()});
         event.deferred.resolve();
       }
     });

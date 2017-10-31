@@ -22,9 +22,10 @@ export class TinyMCEComponent implements OnDestroy, AfterViewInit {
 
   ngAfterViewInit() {
     tinymce.init({
+      document_base_url: '/assets/vendor/tinymce',
       target: this.host.nativeElement,
       plugins: ['link', 'table'],
-      skin_url: 'assets/vendor/tinymce/skins/lightgray',
+      skin_url: 'skins/lightgray',
       language : "zh_CN",
       language_url : "assets/vendor/tinymce/langs/zh_CN.js",
       setup: editor => {

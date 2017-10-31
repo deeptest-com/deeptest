@@ -108,14 +108,20 @@
 
         <div class="tab-steps form-group row">
           <div class="col-sm-12">
-            <steps-table [settings]="settings" [source]="model.steps"
-                         (upConfirm)="onUpConfirm($event)"
-                         (downConfirm)="onDownConfirm($event)"
+            <div *ngIf="'steps'==model.contentType">
+              <steps-table [settings]="settings" [source]="model.steps"
+                           (upConfirm)="onUpConfirm($event)"
+                           (downConfirm)="onDownConfirm($event)"
 
-                         (createConfirm)="onCreateConfirm($event)"
-                         (saveConfirm)="onSaveConfirm($event)"
-                         (deleteConfirm)="onDeleteConfirm($event)"
-            ></steps-table>
+                           (createConfirm)="onCreateConfirm($event)"
+                           (saveConfirm)="onSaveConfirm($event)"
+                           (deleteConfirm)="onDeleteConfirm($event)"
+              ></steps-table>
+            </div>
+            <div *ngIf="'rich_text'==model.contentType">
+              <field-show (onSave)="saveField($event)" [(model)]="model"
+                          [label]="'操作'" [prop]="'content'" [type]="'text'" [format]="model.contentType"></field-show>
+            </div>
           </div>
         </div>
       </div>

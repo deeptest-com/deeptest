@@ -1,8 +1,15 @@
 <div [formGroup]="form" class="field-show">
   <div *ngIf="status == 'view'" class="form-inline">
-    <field-show-label [label]="label"></field-show-label>
-    <field-show-value [model]="model" [prop]="prop"></field-show-value>
-    <a *ngIf="!readonly" href="#" class="smart-edit" (click)="edit($event)"><i class="ion-edit"></i></a>
+    <span *ngIf="type=='text' && format=='rich_text'">
+      <field-show-label [label]="label"></field-show-label>
+      <a *ngIf="!readonly" href="#" class="smart-edit" (click)="edit($event, true)"><i class="ion-edit"></i></a>
+      <field-show-value [model]="model" [prop]="prop" [valType]="type" [valFormat]="format"></field-show-value>
+    </span>
+    <span *ngIf="type!='text' || format!='rich_text'">
+      <field-show-label [label]="label"></field-show-label>
+      <field-show-value [model]="model" [prop]="prop" [valType]="type" [valFormat]="format"></field-show-value>
+      <a *ngIf="!readonly" href="#" class="smart-edit" (click)="edit($event)"><i class="ion-edit"></i></a>
+    </span>
   </div>
   <div *ngIf="!readonly && status == 'edit'" class="form-inline edit-mode">
     <field-show-label [label]="label"></field-show-label>
@@ -32,7 +39,7 @@
                         [(ngModel)]="model[prop]" rows="2" #{{prop}}>
               </textarea>
             </ng-container>
-            <ng-container *ngIf="format=='markdown'">
+            <ng-container *ngIf="format=='rich_text'">
               MARKDOWN
             </ng-container>
           </span>
@@ -78,3 +85,9 @@
       </ng-container>-->
 
 </div>
+
+<pop-dialog #richTextEdit (confirm)="saveRichText()" [title]="'编辑'+label">
+  <div>
+    <ngx-tiny-mce [content]="model[prop]" [modelId]="model.id" (editorKeyup)="onEditorKeyup($event)"></ngx-tiny-mce>
+  </div>
+</pop-dialog>

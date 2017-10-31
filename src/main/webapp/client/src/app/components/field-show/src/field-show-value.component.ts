@@ -5,15 +5,15 @@ import { Utils } from '../../../utils/utils';
 
 @Component({
   selector: 'field-show-value',
-  template: `
-    <pre style="margin:0;" *ngIf="casePropertyMap[prop]">{{casePropertyMap[prop][model[prop]]}}</pre>
-    <pre style="margin:0;" *ngIf="!casePropertyMap[prop]">{{model[prop]}}</pre>
-  `,
+  styleUrls: ['./value.scss'],
+  templateUrl: './field-show-value.html',
 })
 export class FieldShowValueComponent {
 
   @Input() model: any = {};
   @Input() prop: string;
+  @Input() valType: string;
+  @Input() valFormat: string;
 
   public casePropertyMap: any = {};
 

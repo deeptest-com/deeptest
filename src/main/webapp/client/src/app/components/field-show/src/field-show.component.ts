@@ -1,10 +1,14 @@
-import { Input, Component, OnInit, AfterViewInit, EventEmitter, Output, Inject, OnChanges, SimpleChanges } from '@angular/core';
+import { Input, Component, OnInit, AfterViewInit, EventEmitter, Output, Inject, Compiler, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+
+import {NgbModal, NgbModalRef, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 
 import { CONSTANT } from '../../../utils/constant';
 import { Utils, Deferred } from '../../../utils/utils';
 
 import { FieldShowService } from './field-show.service';
+import { PopDialogComponent } from '../../pop-dialog';
+import { TinyMCEComponentPopup } from '../../tiny-mce';
 
 @Component({
   selector: 'field-show',
@@ -40,7 +44,12 @@ export class FieldShowComponent implements OnInit {
   public temp: string;
   public casePropertyMap: any;
 
-  public constructor(@Inject(FieldShowService) private fieldShowService: FieldShowService, private fb: FormBuilder) {
+  public richTextEditModal: any;
+
+  @ViewChild('richTextEdit') richTextEdit: PopDialogComponent;
+
+  public constructor(@Inject(FieldShowService) private fieldShowService: FieldShowService, private fb: FormBuilder,
+                     private compiler: Compiler, private modalService: NgbModal) {
     this.casePropertyMap = CONSTANT.CASE_PROPERTY_MAP;
   }
 
@@ -50,12 +59,28 @@ export class FieldShowComponent implements OnInit {
     this.form.addControl(this.prop, control);
   }
 
-  edit(event: any) {
+  edit(event: any, isRichText?: boolean) {
     event.preventDefault();
     event.stopPropagation();
 
-    this.status = 'edit';
-    this.temp = this.model[this.prop];
+    if (isRichText) {
+      this.compiler.clearCacheFor(TinyMCEComponentPopup);
+      this.richTextEditModal = this.modalService.open(TinyMCEComponentPopup, {windowClass: 'pop-selection'});
+      this.richTextEditModal.componentInstance.content = this.model[this.prop];
+      this.richTextEditModal.componentInstance.modelId = this.model['id'];
+      this.richTextEditModal.componentInstance.editorKeyup = this.onEditorKeyup;
+
+      this.richTextEditModal.result.then((result) => {
+        this.model[this.prop] = result.data;
+        this.save();
+      }, (reason) => {
+        console.log('reason', reason);
+      });
+
+    } else {
+      this.status = 'edit';
+      this.temp = this.model[this.prop];
+    }
   }
 
   save(event?: any) {
@@ -83,6 +108,10 @@ export class FieldShowComponent implements OnInit {
 
     this.status = 'view';
     this.model[this.prop] = this.temp;
+  }
+
+  onEditorKeyup() {
+    console.log('onEditorKeyup');
   }
 
 }

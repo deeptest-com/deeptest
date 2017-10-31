@@ -10,18 +10,19 @@ declare var tinymce: any;
 
 @Component({
   selector: 'ngx-tiny-mce',
-  template: '<textarea [(ngModel)]="content" id="mceEditor"></textarea>',
+  templateUrl: './tiny-mce.html',
+  styleUrls: ['./tiny-mce.scss']
 })
 export class TinyMCEComponent implements OnDestroy, AfterViewInit, OnChanges {
   @Output() editorKeyup = new EventEmitter<any>();
 
   @Input() content: any;
   @Input() modelId: any;
+  @Input() height: string;
 
   constructor(private host: ElementRef) { }
 
   ngAfterViewInit() {
-    console.log('=ngOnChanges=', tinymce.get("mceEditor"));
     if (!$('textarea#mceEditor')) {
       return;
     }
@@ -38,21 +39,18 @@ export class TinyMCEComponent implements OnDestroy, AfterViewInit, OnChanges {
           this.editorKeyup.emit(editor.getContent());
         });
       },
-      height: '320',
+      height: this.height
     });
   }
 
   ngOnChanges() {
-    console.log('=ngOnChanges=', tinymce.get("mceEditor"));
-
     let editor = tinymce.get("mceEditor");
     if (editor) {editor.setContent(this.content);}
   }
 
   ngOnDestroy() {
-    let editor = tinymce.get("mceEditor");
-    if (editor) {
-      tinymce.remove(editor);
+    if (tinymce.get("mceEditor")) {
+      tinymce.get("mceEditor").remove();
     }
   }
 

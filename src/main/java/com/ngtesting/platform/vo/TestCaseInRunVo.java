@@ -1,6 +1,5 @@
 package com.ngtesting.platform.vo;
 
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,6 +20,9 @@ public class TestCaseInRunVo extends BaseVo {
 	private Long updateById;
 
     private String status;
+
+	private String contentType;
+	private String content;
 
 	private String prop01;
 	private String prop02;
@@ -52,26 +54,42 @@ public class TestCaseInRunVo extends BaseVo {
         super();
     }
 
-    public TestCaseInRunVo(Long entityId, Long id, Long pId, String name, String priority, Integer estimate, String objective, String descr,
-                           Long createById, Long updateById, Date createTime, Date updateTime) {
-        super();
+//    public TestCaseInRunVo(Long entityId, Long id, Long pId, String name, String priority, Integer estimate, String objective, String descr,
+//                           Long createById, Long updateById, Date createTime, Date updateTime) {
+//        super();
+//
+//        this.entityId = entityId;
+//		this.id = id;
+//		this.pId = pId;
+//        this.name = name;
+//        this.priority = priority;
+//        this.estimate = estimate;
+//        this.objective = objective;
+//        this.descr = descr;
+//
+//        this.createById = createById;
+//        this.updateById = updateById;
+//        this.createTime = createTime;
+//        this.updateTime = updateTime;
+//    }
 
-        this.entityId = entityId;
-		this.id = id;
-		this.pId = pId;
-        this.name = name;
-        this.priority = priority;
-        this.estimate = estimate;
-        this.objective = objective;
-        this.descr = descr;
+	public String getContentType() {
+		return contentType;
+	}
 
-        this.createById = createById;
-        this.updateById = updateById;
-        this.createTime = createTime;
-        this.updateTime = updateTime;
-    }
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
 
-    public Long getEntityId() {
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public Long getEntityId() {
         return entityId;
     }
 

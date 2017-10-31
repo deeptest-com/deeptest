@@ -52,7 +52,8 @@
 
       <div [class.hidden]="tab != 'content'" class="tab-steps form-group row">
         <div *ngIf="'richText'==model.contentType" class="col-sm-12">
-          <ngx-tiny-mce (editorKeyup)="onEditorKeyup($event)"></ngx-tiny-mce>
+          {{model.content}}
+          <ngx-tiny-mce [content]="model.content" [modelId]="model.id" (editorKeyup)="onEditorKeyup($event)"></ngx-tiny-mce>
         </div>
 
         <div *ngIf="'steps'==model.contentType" class="col-sm-12">

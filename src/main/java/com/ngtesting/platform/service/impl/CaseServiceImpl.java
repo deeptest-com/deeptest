@@ -408,6 +408,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         testCasePo.setType(testCaseVo.getType());
         testCasePo.setEstimate(testCaseVo.getEstimate());
 
+        testCasePo.setContentType(testCaseVo.getContentType());
+        testCasePo.setContent(testCaseVo.getContent());
         testCasePo.setObjective(testCaseVo.getObjective());
 
         testCasePo.setDescr(testCaseVo.getDescr());

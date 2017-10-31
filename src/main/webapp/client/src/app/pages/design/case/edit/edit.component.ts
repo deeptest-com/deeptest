@@ -1,7 +1,7 @@
 import {Component, ViewEncapsulation, NgModule, Pipe, OnInit, AfterViewInit} from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
+
 import {ToastyService, ToastyConfig, ToastOptions, ToastData} from 'ng2-toasty';
 import { NgUploaderModule } from 'ngx-uploader';
 
@@ -138,7 +138,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
           title: "保存成功",
           timeout: 2000
         };
-        this.toastyService.default(toastOptions);
+        this.toastyService.success(toastOptions);
       }
     });
   }
@@ -152,7 +152,6 @@ export class CaseEdit implements OnInit, AfterViewInit {
   }
   changeContentType(tp: string) {
     this.model.contentType = tp;
-    console.log(tp);
   }
 
   onUpConfirm(event: any) {
@@ -187,7 +186,6 @@ export class CaseEdit implements OnInit, AfterViewInit {
   }
 
   onEditorKeyup(event: any) {
-    console.log('onEditorKeyup', event);
     this.model.content = event;
   }
 

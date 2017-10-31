@@ -10,7 +10,7 @@ declare var tinymce: any;
   templateUrl: './tiny-mce-popup.html',
   styleUrls: ['./tiny-mce-popup.scss']
 })
-export class TinyMCEComponentPopup {
+export class TinyMCEComponentPopup implements OnDestroy, AfterViewInit, OnChanges {
   @Input() title: string;
   @Output() confirm = new EventEmitter<any>();
 
@@ -27,6 +27,18 @@ export class TinyMCEComponentPopup {
   dismiss(): any {
     this.removeTinymce();
     this.activeModal.dismiss({act: 'cancel'});
+  }
+
+  ngOnChanges() {
+    let editor = tinymce.get("mceEditor");
+    if (editor) {editor.setContent(this.content);}
+  }
+
+  ngAfterViewInit() {
+
+  }
+  ngOnDestroy() {
+    this.removeTinymce();
   }
 
   onEditorKeyup(event: any) {

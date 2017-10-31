@@ -85,9 +85,3 @@
       </ng-container>-->
 
 </div>
-
-<pop-dialog #richTextEdit (confirm)="saveRichText()" [title]="'编辑'+label">
-  <div>
-    <ngx-tiny-mce [content]="model[prop]" [modelId]="model.id" (editorKeyup)="onEditorKeyup($event)"></ngx-tiny-mce>
-  </div>
-</pop-dialog>

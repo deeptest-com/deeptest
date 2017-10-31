@@ -46,8 +46,6 @@ export class FieldShowComponent implements OnInit {
 
   public richTextEditModal: any;
 
-  @ViewChild('richTextEdit') richTextEdit: PopDialogComponent;
-
   public constructor(@Inject(FieldShowService) private fieldShowService: FieldShowService, private fb: FormBuilder,
                      private compiler: Compiler, private modalService: NgbModal) {
     this.casePropertyMap = CONSTANT.CASE_PROPERTY_MAP;
@@ -65,6 +63,7 @@ export class FieldShowComponent implements OnInit {
 
     if (isRichText) {
       this.compiler.clearCacheFor(TinyMCEComponentPopup);
+
       this.richTextEditModal = this.modalService.open(TinyMCEComponentPopup, {windowClass: 'pop-selection'});
       this.richTextEditModal.componentInstance.content = this.model[this.prop];
       this.richTextEditModal.componentInstance.modelId = this.model['id'];

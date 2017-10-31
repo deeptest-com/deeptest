@@ -28,7 +28,7 @@ declare var jQuery;
   selector: 'plan-edit',
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./edit.scss',
-    '../../../../../vendor/ztree/css/zTreeStyle/zTreeStyle.css',
+    '../../../../../assets/vendor/ztree/css/zTreeStyle/zTreeStyle.css',
     '../../../../components/ztree/src/styles.scss'],
   templateUrl: './edit.html',
   providers: [I18n, {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n}]

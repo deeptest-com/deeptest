@@ -34,6 +34,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
   tab: string = 'content';
 
   fields: any[] = [];
+  public umeditorSettings: any = {};
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
               private toastyService:ToastyService, private toastyConfig: ToastyConfig,
@@ -183,6 +184,11 @@ export class CaseEdit implements OnInit, AfterViewInit {
     this._caseStepService.delete(event.data).subscribe((json:any) => {
       event.confirm.resolve();
     });
+  }
+
+  onEditorKeyup(event: any) {
+    console.log('onEditorKeyup', event);
+    this.model.content = event;
   }
 
 }

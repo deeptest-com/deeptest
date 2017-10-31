@@ -40,8 +40,8 @@
         "../node_modules/bootstrap/dist/js/bootstrap.js",
 
         "../node_modules/echarts/dist/echarts.min.js",
-        "./vendor/ztree/js/jquery.ztree.all.js",
-        "./vendor/ztree/js/jquery.ztree.exhide.js"
+        "./assets/vendor/ztree/js/jquery.ztree.all.js",
+        "./assets/vendor/ztree/js/jquery.ztree.exhide.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {

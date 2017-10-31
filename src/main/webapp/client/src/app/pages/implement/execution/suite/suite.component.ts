@@ -14,7 +14,7 @@ import { CaseInRunService } from '../../../../service/case-in-run';
   selector: 'execution-suite',
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./suite.scss',
-    '../../../../../vendor/ztree/css/zTreeStyle/zTreeStyle.css',
+    '../../../../../assets/vendor/ztree/css/zTreeStyle/zTreeStyle.css',
     '../../../../components/ztree/src/styles.scss'],
   templateUrl: './suite.html'
 })

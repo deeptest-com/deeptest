@@ -2,8 +2,8 @@ import { NgModule, ModuleWithProviders } from "@angular/core";
 import { CommonModule }  from '@angular/common';
 import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import { ZtreeModule } from '../../components/ztree';
-import { SelectModule } from '../../components/ng2-select';
+import { ZtreeModule } from '../ztree';
+import { SelectModule } from '../ng2-select';
 
 import { SuiteService } from '../../service/suite';
 import { CaseService } from '../../service/case';

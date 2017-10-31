@@ -16,7 +16,7 @@ declare var jQuery;
   selector: 'ztree',
   templateUrl: './ztree.html',
   styleUrls: ['./styles.scss',
-    '../../../../vendor/ztree/css/zTreeStyle/zTreeStyle.css'],
+    '../../../../assets/vendor/ztree/css/zTreeStyle/zTreeStyle.css'],
   providers: [ZtreeService]
 })
 export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {

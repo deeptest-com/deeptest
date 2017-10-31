@@ -15,6 +15,7 @@ import { SlimLoadingBarModule } from '../../../components/ng2-loading-bar';
 import { ZtreeModule } from '../../../components/ztree';
 import { StepsTableModule } from '../../../components/steps-table';
 import { CustomFieldModule } from '../../../components/custom-field';
+import { TinyMCEModule } from '../../../components/tiny-mce';
 
 import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
@@ -44,7 +45,8 @@ import { CaseEdit } from './edit/edit.component';
     SlimLoadingBarModule.forRoot(),
     ZtreeModule,
     StepsTableModule,
-    CustomFieldModule
+    CustomFieldModule,
+    TinyMCEModule
   ],
   declarations: [
     Case,

@@ -17,12 +17,14 @@ export class TinyMCEComponent implements OnDestroy, AfterViewInit, OnChanges {
 
   @Input() content: any;
   @Input() modelId: any;
-  editor: any;
 
   constructor(private host: ElementRef) { }
 
   ngAfterViewInit() {
-    console.log('=ngAfterViewInit=', this.content);
+    console.log('=ngOnChanges=', tinymce.get("mceEditor"));
+    if (!$('textarea#mceEditor')) {
+      return;
+    }
 
     tinymce.init({
       document_base_url: '/assets/vendor/tinymce',
@@ -33,7 +35,6 @@ export class TinyMCEComponent implements OnDestroy, AfterViewInit, OnChanges {
       language_url : "assets/vendor/tinymce/langs/zh_CN.js",
       setup: editor => {
         editor.on('keyup', () => {
-          this.editor = editor;
           this.editorKeyup.emit(editor.getContent());
         });
       },
@@ -42,12 +43,17 @@ export class TinyMCEComponent implements OnDestroy, AfterViewInit, OnChanges {
   }
 
   ngOnChanges() {
+    console.log('=ngOnChanges=', tinymce.get("mceEditor"));
+
     let editor = tinymce.get("mceEditor");
     if (editor) {editor.setContent(this.content);}
   }
 
   ngOnDestroy() {
-    tinymce.remove(this.editor);
+    let editor = tinymce.get("mceEditor");
+    if (editor) {
+      tinymce.remove(editor);
+    }
   }
 
 }

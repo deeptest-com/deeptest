@@ -51,12 +51,11 @@
       </div>
 
       <div [class.hidden]="tab != 'content'" class="tab-steps form-group row">
-        <div *ngIf="'richText'==model.contentType" class="col-sm-12">
-          {{model.content}}
+        <div [class.hidden]="'richText'!=model.contentType" class="col-sm-12">
           <ngx-tiny-mce [content]="model.content" [modelId]="model.id" (editorKeyup)="onEditorKeyup($event)"></ngx-tiny-mce>
         </div>
 
-        <div *ngIf="'steps'==model.contentType" class="col-sm-12">
+        <div [class.hidden]="'steps'!=model.contentType" class="col-sm-12">
           <steps-table [settings]="settings" [source]="model.steps"
 
                        (upConfirm)="onUpConfirm($event)"

@@ -20,7 +20,7 @@ declare var jQuery;
   styleUrls: ['./edit.scss'],
   templateUrl: './edit.html'
 })
-export class ProfileEdit implements OnInit, AfterViewInit {
+export class SettingsEdit implements OnInit, AfterViewInit {
   modelId: number;
   model: any = {};
   form: any;

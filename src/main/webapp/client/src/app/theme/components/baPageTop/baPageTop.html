@@ -88,8 +88,16 @@
         <img src="{{ ( 'aaron' | baProfilePicture ) }}">
       </a>
       <ul class="dropdown-menu top-dropdown-menu profile-dropdown" aria-labelledby="user-profile-dd">
-        <li class="dropdown-item"><a href><i class="fa fa-user"></i>个人信息</a></li>
-        <li class="dropdown-item"><a href><i class="fa fa-cog"></i>设置</a></li>
+        <li class="dropdown-item">
+          <a [routerLink]="['/pages/personal/profile']" href>
+            <i class="fa fa-user"></i>个人信息
+          </a>
+        </li>
+        <li class="dropdown-item">
+          <a [routerLink]="['/pages/personal/settings']" href>
+            <i class="fa fa-cog"></i>设置
+          </a>
+        </li>
         <li (click)="logout()" class="dropdown-item"><a href="javascript:void(0);" class="signout"><i class="fa fa-power-off"></i>登出</a></li>
       </ul>
     </div>

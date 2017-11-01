@@ -35,7 +35,10 @@ export const routes: Routes = [
       /*{ path: 'analysis', loadChildren: './analysis/analysis.module#AnalysisModule' },*/
 
       { path: 'org-admin', loadChildren: './admin-org/org-admin.module#OrgAdminModule' },
-      { path: 'sys-admin', loadChildren: './admin-sys/sys-admin.module#AdminModule' }
+      { path: 'sys-admin', loadChildren: './admin-sys/sys-admin.module#AdminModule' },
+
+      { path: 'personal', loadChildren: './personal/personal.module#PersonalModule' },
+
     ]
   }
 ];

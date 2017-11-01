@@ -7,7 +7,6 @@ import { routing }       from './personal.routing';
 
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
-import { BrowserModule } from '@angular/platform-browser';
 import { NgUploaderModule } from 'ngx-uploader';
 
 import { RouteService } from '../../service/route';
@@ -26,6 +25,9 @@ import { PasswordEdit } from './password/password-edit';
 import { Profile } from './profile';
 import { ProfileEdit } from './profile/profile-edit';
 
+import { Settings } from './settings';
+import { SettingsEdit } from './settings/settings-edit';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -35,14 +37,16 @@ import { ProfileEdit } from './profile/profile-edit';
 
     NgbModalModule, NgbPaginationModule, NgbDropdownModule,
     NgbTabsetModule, NgbButtonsModule, NgbCollapseModule,
-    BrowserModule, NgUploaderModule,
+    NgUploaderModule,
   ],
   declarations: [
     Personal,
     Password,
     PasswordEdit,
     Profile,
-    ProfileEdit
+    ProfileEdit,
+    Settings,
+    SettingsEdit
   ],
   providers: [
     RouteService,

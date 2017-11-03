@@ -7,7 +7,7 @@ import { UploadOutput, UploadInput, UploadFile, humanizeBytes, UploaderOptions }
   templateUrl: './baPictureUploader.html',
   providers: []
 })
-export class BaPictureUploader {
+export class BaPictureUploaderComponent {
 
   @Input() defaultPicture:string = '';
   @Input() picture:string = '';

@@ -3,22 +3,23 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 import { NgUploaderModule } from 'ngx-uploader';
-import { NgUploaderService } from 'ngx-uploader';
 import {PipeModule} from '../../pipe/pipe.module';
 
-export * from './baPictureUploader.component';
+import { BaPictureUploaderComponent } from './src/baPictureUploader.component';
+
+export * from './src/baPictureUploader.component';
 
 @NgModule({
   imports: [CommonModule, RouterModule, PipeModule, NgUploaderModule],
-  declarations: [BaPictureUploader],
-  exports: [BaPictureUploader],
+  declarations: [BaPictureUploaderComponent],
+  exports: [BaPictureUploaderComponent],
   providers: []
 })
-export class BaPictureUploader {
+export class BaPictureUploaderModule {
   static forRoot(): ModuleWithProviders {
     return {
-      ngModule: BaPictureUploader,
-      providers: [NgUploaderService]
+      ngModule: BaPictureUploaderModule,
+      providers: []
     };
   }
 }

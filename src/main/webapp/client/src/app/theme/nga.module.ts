@@ -58,8 +58,7 @@ const NGA_COMPONENTS = [
   BaBackTop,
   BaCard,
   BaMsgCenter,
-  BaPageTop,
-  BaFileUploader
+  BaPageTop
 ];
 
 const NGA_DIRECTIVES = [

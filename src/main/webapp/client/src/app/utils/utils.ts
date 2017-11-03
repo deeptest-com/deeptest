@@ -67,7 +67,7 @@ export var Utils: any = {
 
   imgUrl:function(url: string, external: boolean){
     if (!url) {
-        return 'assets/img/none.png';
+      url = 'img/none.png';
     }
 
     if (!external)  {
@@ -82,7 +82,7 @@ export var Utils: any = {
 
   thumbUrl:function(url: string, external: boolean){
     if (!url) {
-      return 'assets/img/none.png';
+      url = 'img/none.png';
     }
 
     url = url.replace('.', '-thumb.');

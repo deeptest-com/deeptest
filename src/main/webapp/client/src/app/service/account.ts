@@ -27,7 +27,9 @@ export class AccountService {
   _resetPassword = 'account/resetPassword';
 
   _getProfile = 'account/getProfile';
+  _getInfo = 'account/getInfo';
   _saveProfile = 'account/saveProfile';
+  _saveInfo = 'account/saveInfo';
   _suggestions = 'suggestions/:id';
 
   _collections = 'collections/:id';
@@ -134,10 +136,17 @@ export class AccountService {
   getProfile() {
     return this._reqService.post(this._getProfile, {});
   }
+  getInfo() {
+    return this._reqService.post(this._getInfo, {});
+  }
 
   saveProfile(profile:any) {
     return this._reqService.post(this._saveProfile, profile);
   }
+  saveInfo(profile:any) {
+    return this._reqService.post(this._saveInfo, profile);
+  }
+
   changePassword(model:any) {
     return this._reqService.post(this._changePassword, model);
   }

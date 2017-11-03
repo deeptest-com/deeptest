@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.entity.TestVerifyCode;
 import com.ngtesting.platform.service.AccountService;
@@ -84,7 +85,6 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 
 		return po;
 	}
-
 
 
 	@Override
@@ -214,14 +214,14 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 		saveOrUpdate(po);
 		return true;
 	}
-	
+
 	@Override
 	public TestUser saveProfile(UserVo vo) {
 		TestUser po = (TestUser) get(TestUser.class, vo.getId());
 
 		String name = vo.getName();
-		String email = vo.getEmail(); 
-		String phone = vo.getPhone(); 
+		String email = vo.getEmail();
+		String phone = vo.getPhone();
 		String avatar = vo.getAvatar();
 		po.setPhone(phone);
 		po.setName(name);
@@ -230,5 +230,25 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 		saveOrUpdate(po);
 		return po;
 	}
+
+    @Override
+    public TestUser saveInfo(JSONObject json) {
+        Long id = json.getLong("id");
+        String prop = json.getString("prop");
+        String value = json.getString("value");
+
+        TestUser po = (TestUser) get(TestUser.class, id);
+        if ("name".equals(prop)) {
+            po.setName(value);
+        } else if ("email".equals(prop)) {
+            po.setEmail(value);
+        } else if ("phone".equals(prop)) {
+            po.setPhone(value);
+        }
+
+        saveOrUpdate(po);
+        return po;
+    }
+
 
 }

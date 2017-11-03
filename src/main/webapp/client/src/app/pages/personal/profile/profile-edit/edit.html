@@ -7,43 +7,30 @@
       <div class="card-body">
         <div class="form-group row">
           <div class="col-sm-12">
-            <ba-picture-uploader>
-              <div class="picture-group">
-                <div class="picture-wrapper">
-                  <img src="assets/img/app/profile/Nasta.png">
-                </div>
-                <i class="ion-ios-close-outline"></i>
-                <a class="change-picture" href="">Change profile Picture</a>
-                <input hidden="true" ngfileselect="" type="file">
-              </div>
+            <ba-picture-uploader [uploaderOptions]="uploaderOptions"
+                                   [picture]="model.avatar" [defaultPicture]="'upload/sample/user/avatar.png'">
             </ba-picture-uploader>
           </div>
         </div>
         <div class="form-group row">
           <label class="col-sm-1 col-form-label">姓名</label>
           <div class="col-sm-11 col-form-label">
-            陈琦
-            <span *ngIf="!readonly" href="#" class="link" (click)="edit($event)">
-              <i class="ion-edit"></i>
-            </span>
+            <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'name'" [type]="'string'"
+                        [required]="true"></field-show>
           </div>
         </div>
         <div class="form-group row">
           <label class="col-sm-1 col-form-label">邮箱</label>
           <div class="col-sm-11 col-form-label">
-            462826@qq.com
-            <span *ngIf="!readonly" href="#" class="link" (click)="edit($event)">
-              <i class="ion-edit"></i>
-            </span>
+            <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'email'" [type]="'string'"
+                        [required]="true"></field-show>
           </div>
         </div>
         <div class="form-group row">
           <label class="col-sm-1 col-form-label">手机</label>
           <div class="col-sm-11 col-form-label">
-            18626203266
-            <span *ngIf="!readonly" href="#" class="link" (click)="edit($event)">
-              <i class="ion-edit"></i>
-            </span>
+            <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'phone'" [type]="'string'"
+                        [required]="true"></field-show>
           </div>
         </div>
         <div class="form-group row">

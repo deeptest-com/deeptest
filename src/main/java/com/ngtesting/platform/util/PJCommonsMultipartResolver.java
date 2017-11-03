@@ -1,22 +1,16 @@
 package com.ngtesting.platform.util;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUpload;
-import org.apache.commons.fileupload.FileUploadBase;
-import org.apache.commons.fileupload.FileUploadException;
+import com.ngtesting.platform.servlet.PJProgressListener;
+import org.apache.commons.fileupload.*;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
-import com.ngtesting.platform.servlet.PJProgressListener;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.List;
 
 public class PJCommonsMultipartResolver extends CommonsMultipartResolver {
     private HttpServletRequest request;
@@ -37,7 +31,6 @@ public class PJCommonsMultipartResolver extends CommonsMultipartResolver {
         this.request = request;// 获取到request,要用到session
         return super.resolveMultipart(request);
     }
-
 
     @Override
     public MultipartParsingResult parseRequest(HttpServletRequest request) throws MultipartException {

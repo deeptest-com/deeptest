@@ -19,7 +19,7 @@ import { TinyMCEComponentPopup } from '../../tiny-mce';
 export class FieldShowComponent implements OnInit {
 
   @Input()
-  public model: any;
+  public model: any = {};
   @Input()
   public prop: string;
   @Input()
@@ -35,14 +35,14 @@ export class FieldShowComponent implements OnInit {
   @Input()
   public required: boolean;
   @Input()
-  public readonly: boolean;
+  public readonly: boolean = false;
 
   @Output() onSave = new EventEmitter<any>();
   public form: any;
 
   public status: string = 'view';
   public temp: string;
-  public casePropertyMap: any;
+  public casePropertyMap: any = {};
 
   public richTextEditModal: any;
 

@@ -171,6 +171,25 @@ public class AccountAction extends BaseAction {
 
 		return ret;
 	}
+	@RequestMapping(value = "getInfo", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> getInfo(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long orgId = userVo.getDefaultOrgId();
+
+		List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(userVo.getDefaultOrgId(), userVo.getId());
+		List<OrgVo> orgs = orgService.listVo(null, "false", userVo.getId());
+
+		ret.put("profile", userVo);
+		ret.put("recentProjects", recentProjects);
+		ret.put("orgs", orgs);
+
+		ret.put("code", RespCode.SUCCESS.getCode());
+
+		return ret;
+	}
 
 	@AuthPassport(validate=false)
 	@RequestMapping(value = "forgotPassword", method = RequestMethod.POST)
@@ -244,6 +263,22 @@ public class AccountAction extends BaseAction {
 		ret.put("code", RespCode.SUCCESS.getCode());
 		return ret;
 	}
+    @RequestMapping(value = "saveInfo", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> saveInfo(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        json.put("id", vo.getId());
+
+        TestUser user = (TestUser) accountService.saveInfo(json);
+        vo = userService.genVo(user);
+        request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, vo);
+
+        ret.put("data", vo);
+        ret.put("code", RespCode.SUCCESS.getCode());
+        return ret;
+    }
 
 	@RequestMapping(value = "changePassword", method = RequestMethod.POST)
 	@ResponseBody

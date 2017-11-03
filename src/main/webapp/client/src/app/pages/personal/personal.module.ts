@@ -7,7 +7,8 @@ import { routing }       from './personal.routing';
 
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgUploaderModule } from '../../components/baPictureUploader';
+import { FieldShowModule } from '../../components/field-show';
+import {PipeModule} from '../../pipe/pipe.module';
 
 import { RouteService } from '../../service/route';
 import { RequestService } from '../../service/request';
@@ -37,7 +38,7 @@ import { SettingsEdit } from './settings/settings-edit';
 
     NgbModalModule, NgbPaginationModule, NgbDropdownModule,
     NgbTabsetModule, NgbButtonsModule, NgbCollapseModule,
-    NgUploaderModule
+    FieldShowModule, PipeModule
   ],
   declarations: [
     Personal,

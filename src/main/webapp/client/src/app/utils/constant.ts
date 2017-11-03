@@ -6,7 +6,7 @@ export var CONSTANT: CONSTANT_INTERFACE = {
   API_URL: undefined,
 
   API_PATH: 'api/client/v1/',
-  UPLOAD_URI: 'uploadSingle',
+  UPLOAD_URI: 'api/client/v1/uploadSingle',
 
   TOKEN: undefined,
 

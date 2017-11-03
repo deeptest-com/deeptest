@@ -2,10 +2,10 @@ import { NgModule, ModuleWithProviders }      from '@angular/core';
 import { CommonModule }  from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { NgUploaderModule } from 'ngx-uploader';
 import { AppTranslationModule } from '../app.translation.module';
 
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import {PipeModule} from '../pipe/pipe.module';
 
 import { RouteService } from '../service/route';
 import { RequestService } from '../service/request';
@@ -25,8 +25,7 @@ import {
   BaBackTop,
   BaCard,
   BaMsgCenter,
-  BaPageTop,
-  BaFileUploader
+  BaPageTop
 } from './components';
 
 import { BaCardBlur } from './components/baCard/baCardBlur.directive';
@@ -105,8 +104,8 @@ const NGA_VALIDATORS = [
     FormsModule,
     ReactiveFormsModule,
     AppTranslationModule,
-    NgUploaderModule,
-    NgbDropdownModule
+    NgbDropdownModule,
+    PipeModule
   ],
   exports: [
     ...NGA_PIPES,

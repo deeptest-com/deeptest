@@ -1,19 +1,23 @@
 import {Component, ViewChild, Input, Output, EventEmitter, ElementRef, Renderer} from '@angular/core';
-import { NgUploaderService } from 'ngx-uploader';
+import { UploadOutput, UploadInput, UploadFile, humanizeBytes, UploaderOptions } from 'ngx-uploader';
 
 @Component({
   selector: 'ba-picture-uploader',
   styleUrls: ['./baPictureUploader.scss'],
   templateUrl: './baPictureUploader.html',
-  providers: [NgUploaderService]
+  providers: []
 })
 export class BaPictureUploader {
 
   @Input() defaultPicture:string = '';
   @Input() picture:string = '';
 
-  @Input() uploaderOptions:any = {};
-  @Input() canDelete:boolean = true;
+  options: UploaderOptions;
+  formData: FormData;
+  files: UploadFile[];
+  uploadInput: EventEmitter<UploadInput>;
+  humanizeBytes: Function;
+  dragOver: boolean;
 
   onUpload:EventEmitter<any> = new EventEmitter();
   onUploadCompleted:EventEmitter<any> = new EventEmitter();
@@ -22,69 +26,66 @@ export class BaPictureUploader {
 
   public uploadInProgress:boolean = false;
 
-  constructor(private renderer:Renderer, protected _uploader:NgUploaderService) {
+  constructor(private renderer:Renderer) {
+    this.files = []; // local uploading files array
+    this.uploadInput = new EventEmitter<UploadInput>(); // input events, we use this to emit data to ngx-uploader
+    this.humanizeBytes = humanizeBytes;
   }
 
   public ngOnInit():void {
-    if (this._canUploadOnServer()) {
-      setTimeout(() => {
-        this._uploader.setOptions(this.uploaderOptions);
-      });
 
-      this._uploader._emitter.subscribe((data) => {
-        this._onUpload(data);
-      });
-    } else {
-      console.warn('Please specify url parameter to be able to upload the file on the back-end');
+  }
+
+  onUploadOutput(output: UploadOutput): void {
+    if (output.type === 'allAddedToQueue') { // when all files added in queue
+      // uncomment this if you want to auto upload files when added
+      // const event: UploadInput = {
+      //   type: 'uploadAll',
+      //   url: '/upload',
+      //   method: 'POST',
+      //   data: { foo: 'bar' }
+      // };
+      // this.uploadInput.emit(event);
+
+    } else if (output.type === 'addedToQueue'  && typeof output.file !== 'undefined') { // add file to array when added
+      this.files.push(output.file);
+    } else if (output.type === 'uploading' && typeof output.file !== 'undefined') {
+      // update current data in files array for uploading file
+      const index = this.files.findIndex(file => typeof output.file !== 'undefined' && file.id === output.file.id);
+      this.files[index] = output.file;
+    } else if (output.type === 'removed') {
+      // remove file from array when removed
+      this.files = this.files.filter((file: UploadFile) => file !== output.file);
+    } else if (output.type === 'dragOver') {
+      this.dragOver = true;
+    } else if (output.type === 'dragOut') {
+      this.dragOver = false;
+    } else if (output.type === 'drop') {
+      this.dragOver = false;
     }
   }
 
-  public onFiles():void {
-    let files = this._fileUpload.nativeElement.files;
+  startUpload(): void {
+    const event: UploadInput = {
+      type: 'uploadAll',
+      url: 'http://ngx-uploader.com/upload',
+      method: 'POST',
+      data: { foo: 'bar' }
+    };
 
-    if (files.length) {
-      const file = files[0];
-      this._changePicture(file);
-
-      if (this._canUploadOnServer()) {
-        this.uploadInProgress = true;
-        this._uploader.addFilesToQueue(files);
-      }
-    }
+    this.uploadInput.emit(event);
   }
 
-  public bringFileSelector():boolean {
-    this.renderer.invokeElementMethod(this._fileUpload.nativeElement, 'click');
-    return false;
+  cancelUpload(id: string): void {
+    this.uploadInput.emit({ type: 'cancel', id: id });
   }
 
-  public removePicture():boolean {
-    this.picture = '';
-    return false;
+  removeFile(id: string): void {
+    this.uploadInput.emit({ type: 'remove', id: id });
   }
 
-  protected _changePicture(file:File):void {
-    const reader = new FileReader();
-    reader.addEventListener('load', (event:Event) => {
-      this.picture = (<any> event.target).result;
-    }, false);
-    reader.readAsDataURL(file);
+  removeAllFiles(): void {
+    this.uploadInput.emit({ type: 'removeAll' });
   }
 
-  protected _onUpload(data):void {
-    if (data['done'] || data['abort'] || data['error']) {
-      this._onUploadCompleted(data);
-    } else {
-      this.onUpload.emit(data);
-    }
-  }
-
-  protected _onUploadCompleted(data):void {
-    this.uploadInProgress = false;
-    this.onUploadCompleted.emit(data);
-  }
-
-  protected _canUploadOnServer():boolean {
-    return !!this.uploaderOptions['url'];
-  }
 }

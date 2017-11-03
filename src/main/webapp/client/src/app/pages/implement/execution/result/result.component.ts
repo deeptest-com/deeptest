@@ -151,7 +151,7 @@ export class ExecutionResult implements OnInit, AfterViewInit {
   saveField (event: any) {
     this._caseService.saveField(this.model.id, event.data).subscribe((json:any) => {
       if (json.code == 1) {
-        this.model = json.data;
+        // this.model = json.data;
         this._state.notifyDataChanged('case.save', {node: this.model, random: Math.random()});
         event.deferred.resolve();
       }

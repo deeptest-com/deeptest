@@ -2,7 +2,6 @@ import {Component, ViewEncapsulation, NgModule, Pipe, OnInit, AfterViewInit} fro
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgUploaderModule } from 'ngx-uploader';
 
 import {GlobalState} from '../../../global.state';
 

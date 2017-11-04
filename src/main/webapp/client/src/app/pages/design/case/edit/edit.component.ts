@@ -3,7 +3,6 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 
 import {ToastyService, ToastyConfig, ToastOptions, ToastData} from 'ng2-toasty';
-import { NgUploaderModule } from 'ngx-uploader';
 
 import {GlobalState} from '../../../../global.state';
 

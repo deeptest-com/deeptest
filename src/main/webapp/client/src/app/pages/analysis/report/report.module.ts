@@ -4,7 +4,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgUploaderModule } from 'ngx-uploader';
 
 import { NgaModule } from '../../../theme/nga.module';
 import { routing }       from './report.routing';
@@ -34,7 +33,6 @@ import { ReportEdit } from './edit/edit.component';
 
     NgbModalModule, NgbPaginationModule, NgbDropdownModule,
     NgbTabsetModule, NgbButtonsModule, NgbCollapseModule,
-    NgUploaderModule,
 
     DirectiveModule,
     SlimLoadingBarModule.forRoot(),

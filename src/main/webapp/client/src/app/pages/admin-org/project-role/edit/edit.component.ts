@@ -6,7 +6,6 @@ import { NgModule, Pipe, OnInit, AfterViewInit }      from '@angular/core';
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgUploaderModule } from 'ngx-uploader';
 
 import {GlobalState} from '../../../../global.state';
 

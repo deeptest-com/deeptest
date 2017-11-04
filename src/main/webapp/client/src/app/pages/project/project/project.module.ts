@@ -5,7 +5,6 @@ import { NgaModule } from '../../../theme/nga.module';
 
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgUploaderModule } from 'ngx-uploader';
 
 import { AppTranslationModule } from '../../../app.translation.module';
 import { PipeModule } from '../../../pipe/pipe.module';
@@ -38,7 +37,6 @@ import { ProjectView } from './view/view.component';
 
     NgbModalModule, NgbPaginationModule, NgbDropdownModule,
     NgbTabsetModule, NgbButtonsModule, NgbCollapseModule,
-    NgUploaderModule,
 
     PipeModule,
     DirectiveModule,

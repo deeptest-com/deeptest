@@ -7,6 +7,8 @@ import { routing }       from './personal.routing';
 
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
+
+import { PictureUploaderModule } from '../../components/picture-uploader';
 import { FieldShowModule } from '../../components/field-show';
 import {PipeModule} from '../../pipe/pipe.module';
 
@@ -16,7 +18,6 @@ import { DatetimePickerService } from '../../service/datetime-picker';
 
 import { AccountService } from '../../service/account';
 import { CompanyService } from '../../service/company';
-
 
 import { Personal } from './personal.component';
 
@@ -38,7 +39,7 @@ import { SettingsEdit } from './settings/settings-edit';
 
     NgbModalModule, NgbPaginationModule, NgbDropdownModule,
     NgbTabsetModule, NgbButtonsModule, NgbCollapseModule,
-    FieldShowModule, PipeModule
+    PictureUploaderModule, FieldShowModule, PipeModule
   ],
   declarations: [
     Personal,

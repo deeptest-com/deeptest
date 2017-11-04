@@ -7,7 +7,6 @@ import { routing }       from './case-type.routing';
 
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgUploaderModule } from 'ngx-uploader';
 
 import { PipeModule } from '../../../../pipe/pipe.module';
 import { DirectiveModule } from '../../../../directive/directive.module';
@@ -31,7 +30,6 @@ import {CaseTypeEdit } from './edit';
 
     NgbModalModule, NgbPaginationModule, NgbDropdownModule,
     NgbTabsetModule, NgbButtonsModule, NgbCollapseModule,
-    NgUploaderModule,
 
     PipeModule, DirectiveModule, PopDialogModule
   ],

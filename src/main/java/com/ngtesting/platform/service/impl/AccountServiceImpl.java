@@ -244,7 +244,9 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
             po.setEmail(value);
         } else if ("phone".equals(prop)) {
             po.setPhone(value);
-        }
+        } else if ("avatar".equals(prop)) {
+			po.setAvatar(value);
+		}
 
         saveOrUpdate(po);
         return po;

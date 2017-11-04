@@ -45,9 +45,8 @@ export class ProfileEdit implements OnInit, AfterViewInit {
   saveField(event: any):void {
     this.accountService.saveInfo(event.data).subscribe((json:any) => {
       if (json.code == 1) {
-        this.accountService.changeProfile(json.data);
-
         this.model = json.data;
+        this.accountService.changeProfile(this.model);
 
         event.deferred.resolve();
       }
@@ -60,6 +59,19 @@ export class ProfileEdit implements OnInit, AfterViewInit {
       this.orgs = CONSTANT.ALL_ORGS;
       this.recentProjects =  CONSTANT.RECENT_PROJECTS;
     }
+  }
+
+  uploadedEvent(event: any) {
+    console.log('uploadedEvent', event);
+
+    this.accountService.saveInfo({prop: 'avatar', value: event.data}).subscribe((json:any) => {
+      if (json.code == 1) {
+        this.model = json.data;
+        this.accountService.changeProfile(this.model);
+
+        event.deferred.resolve();
+      }
+    });
   }
 
 }

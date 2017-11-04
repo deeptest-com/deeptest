@@ -16,9 +16,6 @@ export var Utils: any = {
     }
     CONSTANT.API_URL = CONSTANT.SERVICE_URL + CONSTANT.API_PATH;
   },
-  getUploadUrl: function() {
-    return CONSTANT.API_URL.replace('admin', 'client') + CONSTANT.UPLOAD_URI;
-  },
 
   strToDate: function(str: string) {
     return new Date(str);

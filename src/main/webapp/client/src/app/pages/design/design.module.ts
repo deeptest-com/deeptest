@@ -6,7 +6,6 @@ import { NgaModule } from '../../theme/nga.module';
 import { routing }       from './design.routing';
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgUploaderModule } from 'ngx-uploader';
 
 import { Design } from './design.component';
 
@@ -18,8 +17,7 @@ import { Design } from './design.component';
     routing,
 
     NgbModalModule, NgbPaginationModule, NgbDropdownModule,
-    NgbTabsetModule, NgbButtonsModule, NgbCollapseModule,
-    NgUploaderModule
+    NgbTabsetModule, NgbButtonsModule, NgbCollapseModule
   ],
   declarations: [
     Design

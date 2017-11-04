@@ -5,7 +5,6 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgUploaderModule } from 'ngx-uploader';
 
 import { CONSTANT } from '../../../utils/constant';
 import { Utils } from '../../../utils/utils';

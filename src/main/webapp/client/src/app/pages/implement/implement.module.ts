@@ -6,7 +6,6 @@ import { NgaModule } from '../../theme/nga.module';
 import { routing }       from './implement.routing';
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgUploaderModule } from 'ngx-uploader';
 
 import { I18n, CustomDatepickerI18n } from '../../service/datepicker-I18n';
 
@@ -20,8 +19,7 @@ import { Implement } from './implement.component';
     routing,
 
     NgbModalModule, NgbPaginationModule, NgbDropdownModule,
-    NgbTabsetModule, NgbButtonsModule, NgbCollapseModule,
-    NgUploaderModule
+    NgbTabsetModule, NgbButtonsModule, NgbCollapseModule
   ],
   declarations: [
     Implement

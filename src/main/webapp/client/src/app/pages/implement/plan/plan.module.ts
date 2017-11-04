@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule, NgbDatepickerModule, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
-import { NgUploaderModule } from 'ngx-uploader';
 
 import { NgaModule } from '../../../theme/nga.module';
 import { routing }       from './plan.routing';
@@ -45,7 +44,6 @@ export function myDateParserFormatterFactory() {
 
     NgbModalModule, NgbPaginationModule, NgbDropdownModule,
     NgbTabsetModule, NgbButtonsModule, NgbCollapseModule, NgbDatepickerModule,
-    NgUploaderModule,
 
     DirectiveModule,
     PipeModule,

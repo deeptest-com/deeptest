@@ -1,0 +1,38 @@
+<div class="form-group">
+    <div class="row file-upload">
+      <div class="col-sm-2">
+        <div class="image">
+          <img class="middle" [src]="picture | imgPath">
+        </div>
+      </div>
+      <div class="col-sm-10">
+        <div ng2FileDrop
+             [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
+             (fileOver)="fileOver($event)"
+             [uploader]="uploader"
+             class="well my-drop-zone">
+          拖动到此处上传
+        </div>
+
+        <div class="upload-row">
+          <div class="upload-input-wrapper">
+            <span class="upload-input-container">
+                <input id="upload-input" name="upload" type="file" ng2FileSelect [uploader]="uploader"
+                       [accept]="allowedMimeType.toString()" />
+            </span>
+            <span class="upload-button-container">
+                <button (click)='selectFile()' type="button" class="btn btn-secondary">选择头像...</button>
+            </span>
+          </div>
+
+          <div class="progress-wrapper" *ngIf="uploader.isUploading">
+            <div class="progress-bar" role="progressbar"
+                 [ngStyle]="{ 'width': uploader.progress + '%' }"></div>
+          </div>
+          <div class="upload-file-name" *ngIf="!uploader.isUploading && uploadedFile">
+            {{uploadedFile.origName}} 上传成功
+          </div>
+        </div>
+      </div>
+    </div>
+</div>

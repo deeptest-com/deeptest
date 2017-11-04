@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgUploaderModule } from 'ngx-uploader';
 
 import { NgaModule } from '../../../theme/nga.module';
 import { routing }       from './run.routing';
@@ -29,7 +28,6 @@ import { Run } from './run.component';
 
     NgbModalModule, NgbPaginationModule, NgbDropdownModule,
     NgbTabsetModule, NgbButtonsModule, NgbCollapseModule,
-    NgUploaderModule,
 
     DirectiveModule,
     PopDialogModule,

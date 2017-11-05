@@ -24,9 +24,11 @@ import { PasswordEditPopupComponent } from '../../password';
 export class ProfileEdit implements OnInit, AfterViewInit {
   model: any = {};
   recentProjects: any[] = [];
-  orgs: any[] = [];
+  currProject: any = {};
 
-  uploaderOptions: any = {url: CONSTANT.UPLOAD_URI};
+  orgs: any[] = [];
+  currOrgId: number;
+
   public passwordPopop: any;
 
   constructor(private _routeService: RouteService, private _state:GlobalState, private _route: ActivatedRoute,
@@ -36,7 +38,16 @@ export class ProfileEdit implements OnInit, AfterViewInit {
       console.log('profile.refresh', profile);
       this.model = profile;
     });
-
+    this._state.subscribe('recent.projects.change', (data) => {
+      console.log('recent.projects.change', data);
+      this.recentProjects = data.recentProjects;
+      this.currProject = data.currProject;
+    });
+    this._state.subscribe('my.orgs.change', (data) => {
+      console.log('recent.projects.change', data);
+      this.orgs = data.orgs;
+      this.currOrgId = data.currOrgId;
+    });
   }
 
   ngOnInit() {
@@ -60,8 +71,14 @@ export class ProfileEdit implements OnInit, AfterViewInit {
   loadData() {
     if(CONSTANT.PROFILE) {
       this.model = CONSTANT.PROFILE;
+
       this.orgs = CONSTANT.ALL_ORGS;
+      this.currOrgId = CONSTANT.CURR_ORG_ID;
+
       this.recentProjects =  CONSTANT.RECENT_PROJECTS;
+      this.currProject = CONSTANT.CURRENT_PROJECT;
+
+      console.log(this.orgs, this.recentProjects);
     }
   }
 

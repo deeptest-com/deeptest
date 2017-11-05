@@ -6,7 +6,7 @@ import 'tinymce';
 declare var tinymce: any;
 
 @Component({
-  selector: 'ngx-tiny-mce-popup',
+  selector: 'tiny-mce-popup',
   templateUrl: './tiny-mce-popup.html',
   styleUrls: ['./tiny-mce-popup.scss']
 })

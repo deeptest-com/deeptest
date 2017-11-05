@@ -52,8 +52,8 @@
 
       <div [class.hidden]="tab != 'content'" class="tab-steps form-group row">
         <div [class.hidden]="'rich_text'!=model.contentType" class="col-sm-12">
-          <ngx-tiny-mce [content]="model.content" [modelId]="model.id" [height]="'300px'"
-                        (editorKeyup)="onEditorKeyup($event)"></ngx-tiny-mce>
+          <tiny-mce [content]="model.content" [modelId]="model.id" [height]="'300px'"
+                        (editorKeyup)="onEditorKeyup($event)"></tiny-mce>
         </div>
 
         <div [class.hidden]="'steps'!=model.contentType" class="col-sm-12">

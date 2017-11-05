@@ -1,4 +1,4 @@
-import { Component,ViewEncapsulation, Pipe, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component,ViewEncapsulation, Pipe, OnInit, AfterViewInit, ViewChild, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 
@@ -14,17 +14,18 @@ import {AccountService} from './../../../../service/account';
 declare var jQuery;
 
 @Component({
-  selector: 'company-edit-property',
+  selector: 'password-edit',
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./edit.scss'],
 
   templateUrl: './edit.html'
 })
-export class PasswordEdit implements OnInit, AfterViewInit {
+export class PasswordEditComponent implements OnInit, AfterViewInit {
   model: any = {};
   form: any;
-  tabModel: string = 'property';
-  needCreate:boolean = false;
+
+  @Output() saveEmitter = new EventEmitter<any>();
+  @Output() dismissEmitter = new EventEmitter<any>();
 
   constructor(private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
               private accountService: AccountService) {
@@ -33,10 +34,8 @@ export class PasswordEdit implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    let that = this;
-
-    that.buildForm();
-    that.loadData();
+    this.buildForm();
+    this.loadData();
   }
 
   ngAfterViewInit() {
@@ -51,26 +50,27 @@ export class PasswordEdit implements OnInit, AfterViewInit {
         if (json.code == 1) {
           that.loadData();
           that.formErrors = ['修改密码成功'];
+          this.saveEmitter.emit({});
         } else {
           that.formErrors = ['修改密码失败'];
         }
-
     });
+  }
+  cancel(): any {
+    this.dismissEmitter.emit({});
   }
 
   loadData() {
-   let that = this;
 
   }
 
   buildForm(): void {
-    let that = this;
     this.form = this.fb.group(
       {
         'oldPassword': ['', [Validators.required]],
         'password': ['', [Validators.required, Validators.pattern(/^[0-9a-zA-Z]{6,10}$/)]],
         'rePassword': ['', [Validators.required, Validators.pattern(/^[0-9a-zA-Z]{6,10}$/)]]
-      }, {validator: EqualPasswordsValidator.validate('password', 'rePassword')}
+      }, {validator: EqualPasswordsValidator.validate('passwordsEqual', 'password', 'rePassword')}
     );
 
     this.form.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(data => this.onValueChanged(data));

@@ -5,8 +5,6 @@ import {Injectable} from "@angular/core";
 import {CONSTANT} from "../utils/constant";
 import {RequestService} from "./request";
 
-import {TreeModel} from "../components/ng2-tree";
-
 @Injectable()
 export class SuiteService {
   constructor(private _reqService: RequestService) {
@@ -28,12 +26,12 @@ export class SuiteService {
     return this._reqService.post(this._api_url + 'save', model);
   }
 
-  create(node: TreeModel) {
+  create(node: any) {
     let model = {id: node.id, value: node.value, type: node.type, pid: node.pid};
     return this._reqService.post(this._api_url + 'create', model);
   }
 
-  move(target: TreeModel, src: TreeModel, options: any) {
+  move(target: any, src: any, options: any) {
     let model;
     if (options.mode === 'inner') {
       model = {id: src.id, newPid: target.id, prePid: src.pid};
@@ -44,13 +42,13 @@ export class SuiteService {
     return this._reqService.post(this._api_url + 'move', model);
   }
 
-  rename(node: TreeModel) {
+  rename(node: any) {
     console.log('rename');
     let model = {id: node.id, value: node.value, type: node.type, pid: node.pid};
     return this._reqService.post(this._api_url + 'rename', model);
   }
 
-  delete(node: TreeModel) {
+  delete(node: any) {
     let model = {id: node.id};
     return this._reqService.post(this._api_url + 'delete', model);
   }

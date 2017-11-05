@@ -6,8 +6,6 @@ import {CONSTANT} from "../utils/constant";
 import {Utils} from "../utils/utils";
 import {RequestService} from "./request";
 
-import {TreeModel} from "../components/ng2-tree";
-
 @Injectable()
 export class PlanService {
   constructor(private _reqService: RequestService) {

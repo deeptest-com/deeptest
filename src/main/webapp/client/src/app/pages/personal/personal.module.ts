@@ -21,8 +21,7 @@ import { CompanyService } from '../../service/company';
 
 import { Personal } from './personal.component';
 
-import { Password } from './password';
-import { PasswordEdit } from './password/password-edit';
+import { PasswordEditComponent, PasswordEditPopupComponent } from './password';
 
 import { Profile } from './profile';
 import { ProfileEdit } from './profile/profile-edit';
@@ -43,8 +42,8 @@ import { SettingsEdit } from './settings/settings-edit';
   ],
   declarations: [
     Personal,
-    Password,
-    PasswordEdit,
+    PasswordEditComponent,
+    PasswordEditPopupComponent,
     Profile,
     ProfileEdit,
     Settings,
@@ -56,6 +55,9 @@ import { SettingsEdit } from './settings/settings-edit';
     DatetimePickerService,
     AccountService,
     CompanyService
+  ],
+  entryComponents: [
+    PasswordEditPopupComponent
   ]
 })
 export class PersonalModule {}

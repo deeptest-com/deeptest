@@ -10,7 +10,6 @@ import { routing }       from './report.routing';
 
 import { DirectiveModule } from '../../../directive/directive.module';
 import { SlimLoadingBarModule } from '../../../components/ng2-loading-bar';
-import { TreeModule } from '../../../components/ng2-tree';
 import { StepsTableModule } from '../../../components/steps-table';
 import { CustomFieldModule } from '../../../components/custom-field';
 
@@ -36,7 +35,6 @@ import { ReportEdit } from './edit/edit.component';
 
     DirectiveModule,
     SlimLoadingBarModule.forRoot(),
-    TreeModule,
     StepsTableModule,
     CustomFieldModule
   ],

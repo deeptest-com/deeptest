@@ -1,16 +1,5 @@
 import {Component, ViewEncapsulation, OnInit, AfterViewInit} from "@angular/core";
 
-import {
-  NodeEvent,
-  NodeMovedRemoteEvent,
-  NodeRemovedRemoteEvent,
-  NodeCreatedEvent,
-  NodeRenamedEvent,
-  NodeSelectedEvent,
-  TreeModel,
-  TreeOptions
-} from "../../../../components/ng2-tree";
-
 import {GlobalState} from "../../../../global.state";
 import {CONSTANT} from "../../../../utils/constant";
 import {Utils} from "../../../../utils/utils";

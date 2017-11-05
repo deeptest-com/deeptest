@@ -7,8 +7,8 @@
       </button>
     </div>
     <div class="modal-body">
-      <ngx-tiny-mce [content]="content" [modelId]="modelId" [height]="'350px'"
-                  (editorKeyup)="onEditorKeyup($event)"></ngx-tiny-mce>
+      <tiny-mce [content]="content" [modelId]="modelId" [height]="'350px'"
+                  (editorKeyup)="onEditorKeyup($event)"></tiny-mce>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-primary confirm-btn" (click)="save()">确认</button>

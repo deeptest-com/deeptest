@@ -5,8 +5,6 @@ import {Injectable} from "@angular/core";
 import {CONSTANT} from "../utils/constant";
 import {RequestService} from "./request";
 
-import {TreeModel} from "../components/ng2-tree";
-
 @Injectable()
 export class RunService {
   constructor(private _reqService: RequestService) {
@@ -34,7 +32,7 @@ export class RunService {
     return this._reqService.post(this._api_url + 'saveCases', {planId: planId, runId: runId, cases: ids});
   }
 
-  delete(node: TreeModel) {
+  delete(node: any) {
     let model = {id: node.id};
     return this._reqService.post(this._api_url + 'delete', model);
   }

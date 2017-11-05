@@ -9,7 +9,7 @@ import 'tinymce/plugins/link';
 declare var tinymce: any;
 
 @Component({
-  selector: 'ngx-tiny-mce',
+  selector: 'tiny-mce',
   templateUrl: './tiny-mce.html',
   styleUrls: ['./tiny-mce.scss']
 })

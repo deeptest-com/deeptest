@@ -7,7 +7,6 @@ import { CONSTANT } from '../../../utils/constant';
 import { Utils, Deferred } from '../../../utils/utils';
 
 import { FieldShowService } from './field-show.service';
-import { PopDialogComponent } from '../../pop-dialog';
 import { TinyMCEComponentPopup } from '../../tiny-mce';
 
 @Component({

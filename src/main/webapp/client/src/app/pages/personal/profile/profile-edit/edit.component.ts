@@ -1,6 +1,7 @@
 import { Component,ViewEncapsulation, Pipe, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, Params } from '@angular/router';
+import {NgbModal, NgbModalRef, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 
 import {GlobalState} from '../../../../global.state';
 import {EmailValidator} from '../../../../validator';
@@ -13,6 +14,8 @@ import { RouteService } from '../../../../service/route';
 
 import {AccountService} from './../../../../service/account';
 
+import { PasswordEditPopupComponent } from '../../password';
+
 @Component({
   selector: 'profile-edit-property',
   styleUrls: ['./edit.scss'],
@@ -24,9 +27,10 @@ export class ProfileEdit implements OnInit, AfterViewInit {
   orgs: any[] = [];
 
   uploaderOptions: any = {url: CONSTANT.UPLOAD_URI};
+  public passwordPopop: any;
 
   constructor(private _routeService: RouteService, private _state:GlobalState, private _route: ActivatedRoute,
-              private accountService: AccountService) {
+      private modalService: NgbModal, private accountService: AccountService) {
 
     this._state.subscribe('profile.refresh', (profile) => {
       console.log('profile.refresh', profile);
@@ -71,6 +75,16 @@ export class ProfileEdit implements OnInit, AfterViewInit {
 
         event.deferred.resolve();
       }
+    });
+  }
+
+  editPassword(event: any) {
+    console.log('===');
+    this.passwordPopop = this.modalService.open(PasswordEditPopupComponent, {windowClass: ''});
+    this.passwordPopop.result.then((result) => {
+
+    }, (reason) => {
+      console.log('reason', reason);
     });
   }
 

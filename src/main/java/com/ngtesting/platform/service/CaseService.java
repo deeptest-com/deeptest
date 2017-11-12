@@ -17,7 +17,7 @@ public interface CaseService extends BaseService {
 	TestCase delete(Long vo, Long userId);
 	TestCaseVo movePers(JSONObject json, Long userId);
 
-	TestCase create(Long id, String value, String type, Long pid, Long userId);
+	void createRoot(Long projectId, Long userId);
 
 	void loadNodeTree(TestCaseVo vo, TestCase po);
 

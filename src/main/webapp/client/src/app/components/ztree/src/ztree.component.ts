@@ -90,6 +90,8 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
         editNameSelectAll: true,
         showRemoveBtn: true,
         showRenameBtn: true,
+        renameTitle: "编辑",
+        removeTitle: "删除",
         drag: {
           autoExpandTrigger: true
         }
@@ -178,7 +180,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     var sObj = $("#" + treeNode.tId + "_span");
     if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0) return;
     var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
-      + "' title='add node' onfocus='this.blur();'></span>";
+      + "' title='添加' onfocus='this.blur();'></span>";
     sObj.after(addStr);
 
     var btn = jQuery("#addBtn_"+treeNode.tId);
@@ -194,6 +196,8 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onRename = (e, treeId, treeNode, isCancel) => {
+    console.log('==', treeId, treeNode);
+
     const deferred = new Deferred();
     deferred.promise.then((data) => {
       console.log('success to rename', data);

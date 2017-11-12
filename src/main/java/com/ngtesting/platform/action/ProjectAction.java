@@ -46,13 +46,8 @@ public class ProjectAction extends BaseAction {
 		
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
-		
-		Long t1 = new Date().getTime();
 
 		List<TestProjectVo> vos = projectService.listVos(orgId, keywords, disabled);
-		
-		Long t2 = new Date().getTime();
-		log.debug("获取项目信息花了 " + (t1 - t2) + "毫秒");
 		
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -104,10 +99,11 @@ public class ProjectAction extends BaseAction {
 		
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long orgId = userVo.getDefaultOrgId();
+		Long userId = userVo.getId();
 		
 		TestProjectVo vo = json.getObject("model", TestProjectVo.class);
 		
-		TestProject po = projectService.save(vo, orgId);
+		TestProject po = projectService.save(vo, orgId, userId);
 		TestProjectVo projectVo = projectService.genVo(po);
         
         ret.put("data", projectVo);

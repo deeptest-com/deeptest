@@ -74,30 +74,10 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	}
 
 	@Override
-	public TestCase create(Long id, String name, String type, Long pid, Long userId) {
-		TestCase parent = (TestCase) get(TestCase.class, pid);
-
-		TestCase testCase = new TestCase();
-		testCase.setName(name);
-		testCase.setpId(pid);
-		testCase.setProjectId(parent.getProjectId());
-
-		testCase.setCreateById(userId);
-        testCase.setCreateTime(new Date());
-        testCase.setUpdateById(userId);
-        testCase.setUpdateTime(new Date());
-
-		testCase.setOrdr(getChildMaxOrderNumb(parent.getId()) + 1);
-
-		saveOrUpdate(testCase);
-
-		return testCase;
-	}
-
-	@Override
 	public TestCase renamePers(JSONObject json, Long userId) {
 	    Long id = json.getLong("id");
         String name = json.getString("name");
+        Long pId = json.getLong("pId");
         Long projectId = json.getLong("projectId");
 
         TestCase testCasePo = new TestCase();
@@ -108,12 +88,15 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             testCasePo.setUpdateTime(new Date());
         } else {
             testCasePo.setId(null);
+            testCasePo.setpId(pId);
+            testCasePo.setContent("");
             testCasePo.setOrdr(getChildMaxOrderNumb(testCasePo.getpId()));
 
             testCasePo.setCreateById(userId);
             testCasePo.setCreateTime(new Date());
         }
         testCasePo.setName(name);
+
         testCasePo.setProjectId(projectId);
 
         saveOrUpdate(testCasePo);
@@ -184,6 +167,35 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
             loadNodeTree(childVo, childPo);
         }
+    }
+
+    @Override
+    public void createRoot(Long projectId, Long userId) {
+        TestCase root = new TestCase();
+        root.setName("测试用例");
+        root.setType(null);
+        root.setpId(null);
+        root.setProjectId(projectId);
+
+        root.setCreateById(userId);
+        root.setCreateTime(new Date());
+
+        root.setOrdr(0);
+
+        saveOrUpdate(root);
+
+        TestCase module = new TestCase();
+        module.setName("特性1");
+        module.setType("functional");
+        module.setpId(root.getId());
+        module.setProjectId(projectId);
+
+        module.setCreateById(userId);
+        module.setCreateTime(new Date());
+
+        module.setOrdr(0);
+
+        saveOrUpdate(module);
     }
 
     @Override

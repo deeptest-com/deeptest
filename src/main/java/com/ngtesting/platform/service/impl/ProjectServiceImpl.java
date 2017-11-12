@@ -5,6 +5,7 @@ import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestProject.ProjectType;
 import com.ngtesting.platform.entity.TestProjectAccessHistory;
 import com.ngtesting.platform.entity.TestUser;
+import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
@@ -35,6 +36,8 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 
 	@Autowired
 	private ProjectDao projectDao;
+    @Autowired
+    private CaseService caseService;
 
 	@Override
 	// @Cacheable(value="orgProjects",key="#orgId.toString().concat('_').concat(#disabled)")
@@ -132,17 +135,17 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 	}
 
 	@Override
-	public TestProject save(TestProjectVo vo, Long orgId) {
+	public TestProject save(TestProjectVo vo, Long orgId, Long userId) {
 		if (vo == null) {
 			return null;
 		}
 
 		boolean isNew = vo.getId() == null;
 		TestProject po = new TestProject();
-		if (!isNew) {
-			po = (TestProject) get(TestProject.class, vo.getId());
+		if (isNew) {
+            po.setOrgId(orgId);
 		} else {
-			po.setOrgId(orgId);
+            po = (TestProject) get(TestProject.class, vo.getId());
 		}
 		
 		boolean disableChanged = vo.getDisabled() != po.getDisabled();
@@ -154,6 +157,10 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		po.setDisabled(vo.getDisabled());
 
 		saveOrUpdate(po);
+
+        if(isNew && ProjectType.project.equals(ProjectType.valueOf(vo.getType()))) {
+            caseService.createRoot(po.getId(), userId);
+        }
 		
 		if (!disableChanged) {
 			return po;

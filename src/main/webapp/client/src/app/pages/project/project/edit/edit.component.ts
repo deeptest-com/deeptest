@@ -112,12 +112,14 @@ export class ProjectEdit implements OnInit, AfterViewInit {
       that.groups = json.groups;
       that.entityInRoles = json.entityInRoles;
 
-      that.model = !!json.data? json.data: {type: that.type, disabled: false, parentId: that.groups[0].id};
+      that.model = json.data? json.data: {type: that.type, disabled: false};
     });
   }
 
   save() {
     let that = this;
+
+    console.log('===', that.model);
 
     that._projectService.save(that.model).subscribe((json:any) => {
       if (json.code == 1) {

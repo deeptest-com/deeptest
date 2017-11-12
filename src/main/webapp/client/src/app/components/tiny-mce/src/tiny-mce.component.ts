@@ -24,7 +24,6 @@ export class TinyMCEComponent implements OnDestroy, AfterViewInit, OnChanges {
 
   ngAfterViewInit() {
     let that = this;
-    console.log("tinymce ngAfterViewInit");
     if (!$('textarea#mceEditor')) {
       return;
     }
@@ -59,8 +58,8 @@ export class TinyMCEComponent implements OnDestroy, AfterViewInit, OnChanges {
   }
 
   updateContent() {
+    this.content = this.content?this.content:'';
     let editor = tinymce.get("mceEditor");
-    console.log("tinymce ngOnChanges", editor, this.content);
     if (editor) {editor.setContent(this.content);}
   }
 

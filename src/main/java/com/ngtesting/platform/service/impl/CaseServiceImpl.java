@@ -187,6 +187,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         TestCase module = new TestCase();
         module.setName("特性1");
         module.setType("functional");
+        module.setPriority("middle");
         module.setpId(root.getId());
         module.setProjectId(projectId);
 

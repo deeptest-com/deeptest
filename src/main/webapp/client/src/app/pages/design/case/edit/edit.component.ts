@@ -25,7 +25,7 @@ declare var jQuery;
 export class CaseEdit implements OnInit, AfterViewInit {
   projectId: number;
   id: number;
-  model: any;
+  model: any = {};
   isModule: true;
   settings: any;
   data: any;
@@ -51,7 +51,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
       let testCase = data.node;
 
       if (!testCase || testCase.isParent) {
-        this.model = null;
+        this.model = {};
         return;
       }
 
@@ -149,8 +149,12 @@ export class CaseEdit implements OnInit, AfterViewInit {
   tabChange(event: any) {
     this.tab = event.nextId;
   }
-  changeContentType(tp: string) {
-    this.model.contentType = tp;
+  changeContentType(contentType: string) {
+    this._caseService.changeContentType(contentType, this.model.id).subscribe((json:any) => {
+      if (json.code == 1) {
+        this.model.contentType = contentType;
+      }
+    });
   }
 
   onUpConfirm(event: any) {

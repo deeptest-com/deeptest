@@ -458,5 +458,14 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         testCasePo.setProp20(testCaseVo.getProp20());
     }
 
+    @Override
+    public TestCase changeContentTypePers(Long id, String contentType) {
+        TestCase testCase = (TestCase)get(TestCase.class, id);
+        testCase.setContentType(contentType);
+        saveOrUpdate(testCase);
+
+        return testCase;
+    }
+
 }
 

@@ -15,10 +15,16 @@ declare var tinymce: any;
 })
 export class TinyMCEComponent implements OnDestroy, AfterViewInit, OnChanges {
   @Output() editorKeyup = new EventEmitter<any>();
-
-  @Input() content: any;
-  @Input() modelId: any;
   @Input() height: string;
+  @Input() modelId: string;
+  contentModel: string;
+  @Input() set content(cont: string) {
+    if (!cont) {
+      this.contentModel = '';
+    } else {
+      this.contentModel = cont;
+    }
+  }
 
   constructor(private host: ElementRef) { }
 
@@ -52,15 +58,15 @@ export class TinyMCEComponent implements OnDestroy, AfterViewInit, OnChanges {
 
   ngOnDestroy() {
     console.log("tinymce ngOnDestroy");
-    if (tinymce.get("mceEditor")) {
+    if ($('textarea#mceEditor') && tinymce.get("mceEditor")) {
       tinymce.get("mceEditor").remove();
     }
   }
 
   updateContent() {
-    this.content = this.content?this.content:'';
+    this.contentModel = this.contentModel?this.contentModel:'';
     let editor = tinymce.get("mceEditor");
-    if (editor) {editor.setContent(this.content);}
+    if (editor) {editor.setContent(this.contentModel);}
   }
 
 }

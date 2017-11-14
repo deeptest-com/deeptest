@@ -55,7 +55,6 @@ export class CaseSuite implements OnInit, AfterViewInit {
 
       this.completeLoading();
     });
-
   }
 
   rename(event: any) {

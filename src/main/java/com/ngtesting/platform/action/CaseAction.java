@@ -157,4 +157,20 @@ public class CaseAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "changeContentType", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> changeContentType(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		Long id = json.getLong("id");
+        String contentType = json.getString("contentType");
+
+		TestCase po = caseService.changeContentTypePers(id, contentType);
+
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
 }

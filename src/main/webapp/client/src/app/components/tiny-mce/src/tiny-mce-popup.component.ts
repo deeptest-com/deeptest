@@ -15,7 +15,6 @@ export class TinyMCEComponentPopup implements OnDestroy, AfterViewInit, OnChange
   @Output() confirm = new EventEmitter<any>();
 
   @Input() content: any;
-  @Input() modelId: any;
   @Input() height: number;
 
   constructor(private host: ElementRef, public activeModal: NgbActiveModal) {}

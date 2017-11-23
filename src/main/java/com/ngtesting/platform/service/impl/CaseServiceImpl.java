@@ -89,6 +89,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         } else {
             testCasePo.setId(null);
             testCasePo.setpId(pId);
+            testCasePo.setType("functional");
+            testCasePo.setPriority("middle");
             testCasePo.setContent("");
             testCasePo.setOrdr(getChildMaxOrderNumb(testCasePo.getpId()));
 
@@ -185,7 +187,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         saveOrUpdate(root);
 
         TestCase module = new TestCase();
-        module.setName("特性1");
+        module.setName("新特性");
         module.setType("functional");
         module.setPriority("middle");
         module.setpId(root.getId());

@@ -16,4 +16,5 @@ public interface PlanService extends BaseService {
 	List<TestPlanVo> genVos(List<TestPlan> pos);
 	TestPlanVo genVo(TestPlan po);
 
+    TestPlan updatePo(TestPlanVo vo);
 }

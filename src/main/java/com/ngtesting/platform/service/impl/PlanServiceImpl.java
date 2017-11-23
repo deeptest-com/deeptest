@@ -6,7 +6,6 @@ import com.ngtesting.platform.entity.TestPlan;
 import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.PlanService;
 import com.ngtesting.platform.service.RunService;
-import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.TestPlanVo;
 import com.ngtesting.platform.vo.TestRunVo;
 import org.apache.commons.lang.StringUtils;
@@ -73,19 +72,6 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
     }
 
     @Override
-    public TestPlanVo genVo(TestPlan po) {
-        TestPlanVo vo = new TestPlanVo();
-        BeanUtilEx.copyProperties(vo, po);
-
-        for (TestRun run : po.getRuns()) {
-            TestRunVo runVo = runService.genVo(run);
-            vo.getRunVos().add(runVo);
-        }
-
-        return vo;
-    }
-
-    @Override
     public TestPlan save(JSONObject json) {
         Long id = json.getLong("id");
 
@@ -110,9 +96,11 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
     }
 
     @Override
-    public TestPlan delete(Long vo, Long clientId) {
-        // TODO Auto-generated method stub
-        return null;
+    public TestPlan delete(Long id, Long clientId) {
+        TestPlan po = (TestPlan)get(TestPlan.class, id);
+        po.setDeleted(true);
+        saveOrUpdate(po);
+        return po;
     }
 
     private Integer getChildMaxOrderNumb(TestPlan parent) {
@@ -150,6 +138,40 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
         }
 
         return fileList;
+    }
+
+    @Override
+    public TestPlanVo genVo(TestPlan po) {
+        TestPlanVo vo = new TestPlanVo();
+
+        vo.setId(po.getId());
+        vo.setName(po.getName());
+        vo.setEstimate(po.getEstimate());
+        vo.setStartTime(po.getStartTime());
+        vo.setEndTime(po.getEndTime());
+        vo.setDescr(po.getDescr());
+        vo.setProjectId(po.getProjectId());
+
+        for (TestRun run : po.getRuns()) {
+            TestRunVo runVo = runService.genVo(run);
+            vo.getRunVos().add(runVo);
+        }
+
+        return vo;
+    }
+
+    @Override
+    public TestPlan updatePo(TestPlanVo vo) {
+        TestPlan po = new TestPlan();
+        po.setName(vo.getName());
+        po.setName(vo.getName());
+        po.setEstimate(vo.getEstimate());
+        po.setStartTime(vo.getStartTime());
+        po.setEndTime(vo.getEndTime());
+        po.setDescr(vo.getDescr());
+        po.setProjectId(vo.getProjectId());
+
+        return po;
     }
 
 }

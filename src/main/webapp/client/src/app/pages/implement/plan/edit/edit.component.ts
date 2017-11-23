@@ -152,6 +152,8 @@ export class PlanEdit implements OnInit, AfterViewInit {
       this._planService.save(CONSTANT.CURRENT_PROJECT.id, this.model).subscribe((json:any) => {
         if (json.code == 1) {
           this.planId = json.data.id;
+          this.model = json.data;
+
           this._saveRun();
         } else {
           this.formErrors = [json.msg];
@@ -214,7 +216,9 @@ export class PlanEdit implements OnInit, AfterViewInit {
       if (json.code == 1) {
         this.formErrors = ['删除成功'];
         this.modalDelete.closeModal();
-        this._routeService.navTo("/pages/implement/plan/list");
+
+        let url: string = '/pages/implement/' + CONSTANT.CURRENT_PROJECT.id + '/plan/list';
+        this._routeService.navTo(url);
       } else {
         this.formErrors = ['删除失败'];
       }

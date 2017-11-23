@@ -32,7 +32,6 @@ export class Execution implements OnInit, AfterViewInit {
 
   }
   ngOnInit() {
-    let that = this;
 
 
   }

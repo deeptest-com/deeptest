@@ -16,10 +16,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -100,7 +97,12 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
         } else {
             po = new TestPlan();
         }
-        BeanUtilEx.copyProperties(po, vo);
+        po.setName(vo.getName());
+        po.setEstimate(vo.getEstimate());
+        po.setStartTime(vo.getStartTime());
+        po.setEndTime(vo.getEndTime());
+        po.setDescr(vo.getDescr());
+        po.setProjectId(vo.getProjectId());
 
         saveOrUpdate(po);
 

@@ -39,7 +39,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
   projectId: number;
   planId: number;
   startDate: any;
-  model: any = {};
+  model: any = {runVos: []};
   run: any = {};
   runIndex: number;
   form: FormGroup;
@@ -59,7 +59,9 @@ export class PlanEdit implements OnInit, AfterViewInit {
               private _i18n: I18n, private modalService: NgbModal, private compiler: Compiler, private ngbDateParserFormatter: NgbDateParserFormatter,
               private _planService: PlanService, private _runService: RunService, private _caseService: CaseService, private _userService: UserService) {
 
-    this.projectId = CONSTANT.CURRENT_PROJECT.id;
+    this._route.params.forEach((params: Params) => {
+      this.projectId = +params['projectId'];
+    });
   }
   ngOnInit() {
     this._route.params.forEach((params: Params) => {
@@ -122,7 +124,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
   }
 
   save() {
-    this._planService.save(this.model).subscribe((json:any) => {
+    this._planService.save(CONSTANT.CURRENT_PROJECT.id, this.model).subscribe((json:any) => {
       if (json.code == 1) {
         this._routeService.navTo("/pages/implement/" + CONSTANT.CURRENT_PROJECT.id + "/plan/list");
       } else {
@@ -146,6 +148,20 @@ export class PlanEdit implements OnInit, AfterViewInit {
     this.modalEditRun.showModal();
   }
   saveRun() {
+    if (!this.model.id) {
+      this._planService.save(CONSTANT.CURRENT_PROJECT.id, this.model).subscribe((json:any) => {
+        if (json.code == 1) {
+          this.planId = json.data.id;
+          this._saveRun();
+        } else {
+          this.formErrors = [json.msg];
+        }
+      });
+    } else {
+      this._saveRun();
+    }
+  }
+  _saveRun() {
     this._runService.saveRun(this.planId, this.run).subscribe((json:any) => {
       this.model.runVos[this.runIndex]= json.data;
       this.modalEditRun.closeModal();

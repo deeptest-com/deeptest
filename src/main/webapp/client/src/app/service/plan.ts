@@ -23,8 +23,9 @@ export class PlanService {
     return this._reqService.post(this._api_url + 'get', model);
   }
 
-  save(model: any) {
+  save(projectId: number, model: any) {
     let data = _.clone(model);
+    data.projectId = projectId;
 
     data.runVos = null;
     data.startTime = !!data.startTime?Utils.dateStructToDate(data.startTime):null;

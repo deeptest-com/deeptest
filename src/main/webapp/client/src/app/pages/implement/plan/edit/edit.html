@@ -86,7 +86,7 @@
               <th>标题</th>
               <th style="width: 300px;">执行情况</th>
               <th style="width: 250px;" class="opt">
-                <span (click)="createRun()" class="link no-underline">新建</span>
+                <span (click)="createRun()" *ngIf="form.valid" class="link no-underline">新建</span>
               </th>
             </tr>
             </thead>

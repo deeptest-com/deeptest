@@ -1,5 +1,7 @@
 package com.ngtesting.platform.entity;
 
+import org.hibernate.annotations.Where;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.LinkedList;
@@ -32,7 +34,8 @@ public class TestPlan extends BaseEntity {
     private Long projectId;
 
     @OneToMany(mappedBy="plan", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-    @OrderBy("ordr")
+    @OrderBy("id")
+    @Where(clause="!deleted")
     private List<TestRun> runs = new LinkedList<>();
 
     public static enum PlanStatus {

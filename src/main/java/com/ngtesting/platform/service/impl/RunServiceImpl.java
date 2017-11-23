@@ -102,9 +102,11 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
     }
 
     @Override
-    public TestRun delete(Long vo, Long clientId) {
-
-        return null;
+    public TestRun delete(Long id, Long clientId) {
+        TestRun run = (TestRun) get(TestRun.class, id);
+        run.setDeleted(true);
+        saveOrUpdate(run);
+        return run;
     }
 
 	@Override

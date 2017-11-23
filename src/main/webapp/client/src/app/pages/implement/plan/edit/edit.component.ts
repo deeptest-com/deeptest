@@ -231,6 +231,11 @@ export class PlanEdit implements OnInit, AfterViewInit {
       if (json.code == 1) {
         this.formErrors = ['删除成功'];
         this.modalRemoveSet.closeModal();
+
+        this.model.runVos = this.model.runVos.filter((item:any) => {
+          return item.id != this.testSet.id;
+          });
+
       } else {
         this.formErrors = ['删除失败'];
       }

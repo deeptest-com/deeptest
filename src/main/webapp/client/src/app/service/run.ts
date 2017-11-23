@@ -32,8 +32,8 @@ export class RunService {
     return this._reqService.post(this._api_url + 'saveCases', {planId: planId, runId: runId, cases: ids});
   }
 
-  delete(node: any) {
-    let model = {id: node.id};
+  delete(id: any) {
+    let model = {id: id};
     return this._reqService.post(this._api_url + 'delete', model);
   }
 }

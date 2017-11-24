@@ -56,11 +56,11 @@ export class FieldShowComponent implements OnInit {
     this.form.addControl(this.prop, control);
   }
 
-  edit(event: any, isRichText?: boolean) {
+  edit(event: any, format?: string) {
     event.preventDefault();
     event.stopPropagation();
 
-    if (isRichText) {
+    if (format == 'richText') {
       this.compiler.clearCacheFor(TinyMCEComponentPopup);
 
       this.richTextEditModal = this.modalService.open(TinyMCEComponentPopup, {windowClass: 'pop-selection'});
@@ -75,6 +75,8 @@ export class FieldShowComponent implements OnInit {
         console.log('reason', reason);
       });
 
+    } else if (format == 'planText') {
+      // TODO: show textarea
     } else {
       this.status = 'edit';
       this.temp = this.model[this.prop];

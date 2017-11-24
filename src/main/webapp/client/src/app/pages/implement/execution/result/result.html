@@ -1,6 +1,19 @@
 <div class="execution-result">
 
-  <div *ngIf="!model" class="row module-tips">请选择用例</div>
+  <div *ngIf="!model" class="row module-tips">
+    <form [formGroup]="form" class="my-validate-form">
+      <div class="form-group row">
+        <div class="result-button col-sm-12">
+          <span>请选择用例</span>
+
+          <button (click)="returnTo()" type="button"
+                  class="button-right btn btn-secondary btn-with-icon btn-sm back">
+            <i class="ion-backspace"></i>返回
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
 
   <div *ngIf="model" class="row">
     <form [formGroup]="form" (ngSubmit)="save()" class="my-validate-form">
@@ -118,7 +131,7 @@
                            (deleteConfirm)="onDeleteConfirm($event)"
               ></steps-table>
             </div>
-            <div *ngIf="'rich_text'==model.contentType">
+            <div *ngIf="'richText'==model.contentType">
               <field-show (onSave)="saveField($event)" [(model)]="model"
                           [label]="'操作'" [prop]="'content'" [type]="'text'" [format]="model.contentType"></field-show>
             </div>
@@ -143,19 +156,5 @@
 
     </form>
   </div>
-
-  <form [formGroup]="form" *ngIf="!model" class="row">
-    <div class="my-validate-form small-label">
-      <div class="form-group row">
-        <label class="col-sm-2 col-form-label"></label>
-        <div class="col-sm-10">
-          <button (click)="returnTo()" type="button"
-                  class="button-right btn btn-secondary btn-with-icon btn-sm back">
-            <i class="ion-backspace"></i>返回
-          </button>
-        </div>
-      </div>
-    </div>
-  </form>
 
 </div>

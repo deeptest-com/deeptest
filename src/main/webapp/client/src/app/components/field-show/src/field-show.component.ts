@@ -60,7 +60,7 @@ export class FieldShowComponent implements OnInit {
     event.preventDefault();
     event.stopPropagation();
 
-    if (format == 'richText') {
+    if (format == 'richText') { // show tinymce in popoup
       this.compiler.clearCacheFor(TinyMCEComponentPopup);
 
       this.richTextEditModal = this.modalService.open(TinyMCEComponentPopup, {windowClass: 'pop-selection'});
@@ -75,8 +75,8 @@ export class FieldShowComponent implements OnInit {
         console.log('reason', reason);
       });
 
-    } else if (format == 'planText') {
-      // TODO: show textarea
+    } else if (format == 'planText') { // show textarea in popoup
+
     } else {
       this.status = 'edit';
       this.temp = this.model[this.prop];

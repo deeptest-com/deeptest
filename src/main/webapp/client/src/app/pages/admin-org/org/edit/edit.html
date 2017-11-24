@@ -2,8 +2,8 @@
   <div class="row">
     <div class="edit-toolbar col-xl-12">
       <div class="title">
-        <span *ngIf="!model?.id">新建公司</span>
-        <span *ngIf="model?.id">编辑公司</span>
+        <span *ngIf="!model?.id">新建组织</span>
+        <span *ngIf="model?.id">编辑组织</span>
       </div>
       <div class="buttons">
         <button [routerLink]="['/pages/org-admin/org/list']" type="button"
@@ -72,5 +72,5 @@
 </div>
 
 <pop-dialog #modalWrapper (confirm)="delete()" [title]="'提示'">
-  确认删除名为"{{model.name}}"的公司?
+  确认删除名为"{{model.name}}"的组织?
 </pop-dialog>

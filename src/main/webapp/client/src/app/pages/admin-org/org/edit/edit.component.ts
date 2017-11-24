@@ -118,7 +118,7 @@ export class OrgEdit implements OnInit, AfterViewInit {
 
   showModal(): void {
     if (this.model.defaultOrg) {
-      this.formErrors = ['无法删除当前活动的公司'];
+      this.formErrors = ['无法删除当前活动的组织'];
     } else {
       this.modalWrapper.showModal();
     }

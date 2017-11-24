@@ -1,0 +1,2 @@
+delete from `tst_case_in_run`;
+delete from `tst_run`;

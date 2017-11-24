@@ -19,7 +19,9 @@ export class SlidebarItem {
     this.itemHover.emit($event);
   }
   public onSelectItem($event, item):void {
-    this.itemSelect.emit({ event: $event, item: item });
+    if (item.link) {
+      this.itemSelect.emit({ event: $event, item: item });
+    }
   }
 
 }

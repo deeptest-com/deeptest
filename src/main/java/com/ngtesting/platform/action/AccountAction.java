@@ -165,7 +165,7 @@ public class AccountAction extends BaseAction {
 		ret.put("profile", userVo);
 		ret.put("recentProjects", recentProjects);
         ret.put("myOrgs", orgs);
-		ret.put("casePropertyMap", casePropertyMap);
+		ret.put("casePropertyMap", casePropertyMap); int i = 0;
 
 		ret.put("code", RespCode.SUCCESS.getCode());
 

@@ -116,8 +116,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	public List<TestUser> search(Long orgId, String keywords, JSONArray exceptIds) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
 
-		dc.createAlias("orgSet", "companies");
-		dc.add(Restrictions.eq("companies.id", orgId));
+		dc.createAlias("orgSet", "orgs");
+		dc.add(Restrictions.eq("orgs.id", orgId));
 
 		List<Long> ids = new ArrayList();
 		for (Object json : exceptIds.toArray()) {

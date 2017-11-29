@@ -8,9 +8,7 @@ import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.util.Constant.RespCode;
 import com.ngtesting.platform.util.PropertyConfig;
-import com.ngtesting.platform.vo.OrgVo;
-import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
-import com.ngtesting.platform.vo.UserVo;
+import com.ngtesting.platform.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,6 +40,13 @@ public class AccountAction extends BaseAction {
 
 	@Autowired
 	CasePropertyService casePropertyService;
+
+    @Autowired
+    SysPrivilegeService sysPrivilegeService;
+	@Autowired
+    OrgRolePrivilegeService orgRolePrivilegeService;
+    @Autowired
+    ProjectPrivilegeService projectPrivilegeService;
 
 	@AuthPassport(validate=false)
 	@RequestMapping(value = "login", method = RequestMethod.POST)
@@ -162,10 +167,19 @@ public class AccountAction extends BaseAction {
         List<OrgVo> orgs = orgService.listVo(null, "false", userVo.getId());
 		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
 
+		userVo.setOrgs(orgs);
+		userVo.setRecentProjects(recentProjects);
+		userVo.setCasePropertyMap(casePropertyMap);
+
+        Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userVo.getId());
+        Map<String, Map<String, Boolean>> orgRolePrivileges = orgRolePrivilegeService.listByUser(userVo.getId());
+        Map<String, Map<String, Boolean>> projectPrivileges = projectPrivilegeService.listByUser(userVo.getId());
+
+        userVo.setSysPrivilege(sysPrivileges);
+        userVo.setOrgPrivilege(orgRolePrivileges);
+        userVo.setProjectPrivilege(projectPrivileges);
+
 		ret.put("profile", userVo);
-		ret.put("recentProjects", recentProjects);
-        ret.put("myOrgs", orgs);
-		ret.put("casePropertyMap", casePropertyMap); int i = 0;
 
 		ret.put("code", RespCode.SUCCESS.getCode());
 

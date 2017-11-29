@@ -115,5 +115,10 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 		
 		return true;
 	}
-	
+
+	@Override
+	public Map<String, Map<String, Boolean>> listByUser(Long userId) {
+		return null;
+	}
+
 }

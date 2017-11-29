@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -105,5 +106,10 @@ public class OrgRolePrivilegeServiceImpl extends BaseServiceImpl implements OrgR
 		
 		return true;
 	}
-	
+
+	@Override
+	public Map<String, Map<String, Boolean>> listByUser(Long userId) {
+		return null;
+	}
+
 }

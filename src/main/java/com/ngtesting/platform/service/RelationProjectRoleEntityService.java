@@ -20,4 +20,5 @@ public interface RelationProjectRoleEntityService extends BaseService {
     RelationProjectRoleEntityVo genVo(TestRelationProjectRoleEntity po);
     List<RelationProjectRoleEntityVo> genVos(List<TestRelationProjectRoleEntity> po);
 
+    String getEntityName(TestRelationProjectRoleEntity po);
 }

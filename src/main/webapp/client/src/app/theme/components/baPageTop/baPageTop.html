@@ -69,7 +69,7 @@
         组织管理
       </button>
     </div>
-    <div ngbDropdown class="btn-group">
+    <div *ngIf="profile?.sysPrivilege.sys_admin" ngbDropdown class="btn-group">
       <button [routerLink]="['/pages/sys-admin']" class="btn btn-default">
         系统管理
       </button>

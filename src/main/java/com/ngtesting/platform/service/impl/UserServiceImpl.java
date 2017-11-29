@@ -31,6 +31,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     RelationProjectRoleEntityService relationProjectRoleUserService;
     @Autowired
     RelationOrgGroupUserService relationOrgGroupUserService;
+	@Autowired
+	RelationProjectRoleEntityService relationProjectRoleEntityService;
 
 	@Override
 	public Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
@@ -93,7 +95,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
                     RelationProjectRoleEntityVo vo = new RelationProjectRoleEntityVo();
                     vo.setProjectId(r.getProjectId());
                     vo.setProjectRoleId(r.getProjectRoleId());
-                    vo.setProjectRoleName(r.getProjectRoleName());
+                    vo.setProjectRoleName(relationProjectRoleEntityService.getEntityName(r));
                     vo.setEntityId(ru.getUserId());
                     vo.setEntityName(ru.getUserName());
                     vos.add(vo);

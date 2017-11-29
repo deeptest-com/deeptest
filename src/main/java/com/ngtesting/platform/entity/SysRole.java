@@ -17,7 +17,14 @@ public class SysRole extends BaseEntity {
 			@JoinColumn(name = "role_id", nullable = false, updatable = false) },
 			inverseJoinColumns = { @JoinColumn(name = "user_id",
 					nullable = false, updatable = false) })
-    private Set<TestUser> userSet = new HashSet<TestUser>(0);
+    private Set<TestUser> userSet = new HashSet(0);
+
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinTable(name = "sys_r_role_privilege", joinColumns = {
+			@JoinColumn(name = "role_id", nullable = false, updatable = false) },
+			inverseJoinColumns = { @JoinColumn(name = "privilege_id",
+					nullable = false, updatable = false) })
+	private Set<SysPrivilege> sysPrivilegeSet = new HashSet(0);
 
 	public String getName() {
 		return name;

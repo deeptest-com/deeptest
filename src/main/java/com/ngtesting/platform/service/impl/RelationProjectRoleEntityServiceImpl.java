@@ -102,7 +102,6 @@ public class RelationProjectRoleEntityServiceImpl extends BaseServiceImpl implem
                 po.setProjectRoleId(projectRoleId);
 
                 TestProjectRole projectRole = (TestProjectRole)get(TestProjectRole.class, projectRoleId);
-                po.setProjectRoleName(projectRole.getName());
                 saveOrUpdate(po);
             } else if (!relationEntityAndRoleId.contains(key)) { // 不存在
                 TestProjectRole projectRole = (TestProjectRole)get(TestProjectRole.class, projectRoleId);
@@ -117,7 +116,7 @@ public class RelationProjectRoleEntityServiceImpl extends BaseServiceImpl implem
                 }
 
                 TestRelationProjectRoleEntity po = new TestRelationProjectRoleEntity(
-                        projectId, entityId, projectRoleId, projectRole.getName(), name, entityType);
+                        projectId, entityId, projectRoleId, entityType);
                 saveOrUpdate(po);
             }
         }
@@ -135,7 +134,6 @@ public class RelationProjectRoleEntityServiceImpl extends BaseServiceImpl implem
 
         TestRelationProjectRoleEntity po = (TestRelationProjectRoleEntity)get(TestRelationProjectRoleEntity.class, entityId);
         po.setProjectRoleId(projectRoleId);
-        po.setProjectRoleName(projectRole.getName());
 
         saveOrUpdate(po);
 
@@ -144,8 +142,10 @@ public class RelationProjectRoleEntityServiceImpl extends BaseServiceImpl implem
 
     @Override
     public RelationProjectRoleEntityVo genVo(TestRelationProjectRoleEntity po) {
+
+
         return new RelationProjectRoleEntityVo(po.getId(), po.getProjectId(), po.getEntityId(), po.getProjectRoleId(),
-                po.getProjectRoleName(), po.getEntityName(), po.getType().toString());
+                po.getProjectRole().getName(), getEntityName(po), po.getType().toString());
     }
 
     @Override
@@ -156,6 +156,19 @@ public class RelationProjectRoleEntityServiceImpl extends BaseServiceImpl implem
             vos.add(vo);
         }
         return vos;
+    }
+
+    @Override
+    public String getEntityName(TestRelationProjectRoleEntity po) {
+        String name;
+        if (TestRelationProjectRoleEntity.EntityType.group.equals(po.getType())) {
+            TestOrgGroup group = (TestOrgGroup)get(TestOrgGroup.class, po.getEntityId());
+            name = group.getName();
+        } else {
+            TestUser user = (TestUser)get(TestUser.class, po.getEntityId());
+            name = user.getName();
+        }
+        return name;
     }
 
 }

@@ -105,9 +105,9 @@ export class AccountService {
       return this._reqService.post(that._getProfile, {}).map(json => {
         if (json.code == 1) {
           that.changeProfile(json.profile);
-          that.changeMyOrgs(json.myOrgs, json.profile.defaultOrgId);
-          that.changeRecentProjects(json.recentProjects);
-          that.changeCasePropertyMap(json.casePropertyMap);
+          that.changeMyOrgs(json.profile.orgs, json.profile.defaultOrgId);
+          that.changeRecentProjects(json.profile.recentProjects);
+          that.changeCasePropertyMap(json.profile.casePropertyMap);
 
           return Observable.of(true);
         } else {

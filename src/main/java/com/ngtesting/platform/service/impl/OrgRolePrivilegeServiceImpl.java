@@ -108,7 +108,7 @@ public class OrgRolePrivilegeServiceImpl extends BaseServiceImpl implements OrgR
 	}
 
 	@Override
-	public Map<String, Map<String, Boolean>> listByUser(Long userId) {
+	public Map<Long, Map<String, Boolean>> listByUser(Long userId) {
 		return null;
 	}
 

@@ -17,26 +17,26 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 
 	@Override
 	public Map<String, List<ProjectPrivilegeVo>> listPrivilegesByOrg(Long orgId, Long projectRoleId) {
-		
+
         List<TestProjectPrivilege> allPrivileges = listAllProjectPrivileges();
-        
+
         List<TestProjectPrivilege> projectRolePrivileges;
         if (projectRoleId == null) {
-        	projectRolePrivileges = new LinkedList<TestProjectPrivilege>();
+        	projectRolePrivileges = new LinkedList();
         } else {
         	projectRolePrivileges = listProjectRolePrivileges(orgId, projectRoleId);
         }
-        
+
         Map<String, List<ProjectPrivilegeVo>> map = new LinkedHashMap<String, List<ProjectPrivilegeVo>>();
         for (TestProjectPrivilege po1 : allPrivileges) {
         	String key = po1.getName();
         	if (!map.containsKey(key)) {
-        		List<ProjectPrivilegeVo> vos = new LinkedList<ProjectPrivilegeVo>();
+        		List<ProjectPrivilegeVo> vos = new LinkedList();
         		map.put(key, vos);
         	}
-        	
+
         	ProjectPrivilegeVo vo = genVo(orgId, po1);
-        	
+
         	vo.setSelected(false);
         	vo.setSelecting(false);
         	for (TestProjectPrivilege po2 : projectRolePrivileges) {
@@ -47,30 +47,30 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
         	}
         	map.get(key).add(vo);
         }
-        
+
 		return map;
 	}
 
 	private ProjectPrivilegeVo genVo(Long orgId, TestProjectPrivilege po1) {
-		ProjectPrivilegeVo vo = new ProjectPrivilegeVo(po1.getId(), po1.getCode().toString(), po1.getAction().toString(), 
+		ProjectPrivilegeVo vo = new ProjectPrivilegeVo(po1.getId(), po1.getCode().toString(), po1.getAction().toString(),
 				po1.getName(), po1.getDescr(), orgId);
-		
+
 		return vo;
 	}
 
 	private List<TestProjectPrivilege> listProjectRolePrivileges(Long orgId, Long projectRoleId) {
-		
+
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProjectPrivilege.class);
-		
+
         dc.createAlias("projectRoleSet", "roles");
         dc.add(Restrictions.eq("roles.id", projectRoleId));
-        
+
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-        
+
         dc.addOrder(Order.asc("id"));
         List ls = findAllByCriteria(dc);
-		
+
 		return ls;
 	}
 
@@ -81,7 +81,7 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         dc.addOrder(Order.asc("id"));
         List<TestProjectPrivilege> ls = findAllByCriteria(dc);
-        
+
 		return ls;
 	}
 
@@ -90,18 +90,18 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 		if (map == null) {
 			return false;
 		}
-		
+
 		TestProjectRole orgRole = (TestProjectRole) get(TestProjectRole.class, roleId);
 		Set<TestProjectPrivilege> privilegeSet = orgRole.getProjectPrivilegeSet();
-		
+
 		for (String key: map.keySet()) {
 			List<ProjectPrivilegeVo> ls = JSON.parseObject(JSON.toJSONString(map.get(key)), List.class);
-			
+
 			for (Object obj: ls) {
 				ProjectPrivilegeVo vo = JSON.parseObject(JSON.toJSONString(obj), ProjectPrivilegeVo.class);
 				if (vo.getSelecting() != vo.getSelected()) { // 变化了
 					TestProjectPrivilege orgPrivilege = (TestProjectPrivilege) get(TestProjectPrivilege.class, vo.getId());
-					
+
 	    			if (vo.getSelecting() && !privilegeSet.contains(orgPrivilege)) { // 勾选
 	    				privilegeSet.add(orgPrivilege);
 	    			} else if (orgPrivilege != null) { // 取消
@@ -110,15 +110,39 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 				}
 			}
 		}
-		
+
 		saveOrUpdate(orgRole);
-		
+
 		return true;
 	}
 
 	@Override
-	public Map<String, Map<String, Boolean>> listByUser(Long userId) {
-		return null;
+	public Map<Long, Map<String, Boolean>> listByUser(Long userId) {
+		String hql = "select entiy.projectId, priv.code, priv.action from TestProjectPrivilege priv" +
+				" join priv.projectRoleSet roles, " +
+				"  TestRelationProjectRoleEntity entiy " +
+
+				" where entiy.entityId = ?" +
+				" and entiy.projectRoleId = roles.id" +
+				" and entiy.type = 'user'" +
+
+				" and priv.deleted != true and priv.disabled!= true " +
+				" order by priv.id asc";
+
+		List<Object[]> ls = getDao().getListByHQL(hql, userId);
+
+		Map<Long, Map<String, Boolean>> map = new HashMap();
+		for (Object[] raw: ls) {
+		    System.out.println(raw.getClass());
+		    Long projectId = Long.valueOf(raw[0].toString());
+			if (!map.containsKey(projectId)) {
+                map.put(projectId, new HashMap());
+			}
+
+			map.get(projectId).put(raw[1].toString() + "-" + raw[2].toString(), true);
+		}
+
+		return map;
 	}
 
 }

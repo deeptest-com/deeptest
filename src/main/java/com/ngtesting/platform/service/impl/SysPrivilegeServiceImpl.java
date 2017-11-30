@@ -22,7 +22,7 @@ public class SysPrivilegeServiceImpl extends BaseServiceImpl implements SysPrivi
                 " join roles.userSet users " +
                 " where users.id = ?" +
                 " and priv.deleted != true and priv.disabled!= true " +
-                " order by users.id asc";
+                " order by priv.id asc";
 
         List<SysPrivilege> ls = getDao().getListByHQL(hql, userId);
 

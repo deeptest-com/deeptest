@@ -21,7 +21,6 @@ export class OrgAdmin {
 
   constructor(private _state: GlobalState) {
     this._state.subscribe('org.ready', (orgReady) => {
-
       if (!orgReady) {
         this.menuItems = [
           {link:'/pages/org-admin/org/edit/null', title: '新建组织', selected: true}

@@ -2,6 +2,8 @@ import {Component, ViewEncapsulation, Input, Output, EventEmitter} from '@angula
 import {Router, Routes, NavigationEnd} from '@angular/router';
 import {Subscription} from 'rxjs/Rx';
 
+import { CONSTANT } from '../../../utils/constant';
+import {GlobalState} from "../../../global.state";
 import { RouteService } from '../../../service/route';
 
 declare var jQuery;
@@ -11,6 +13,7 @@ declare var jQuery;
   templateUrl: './slidebar-menu.html'
 })
 export class SlidebarMenu {
+  isOrgAdmin: boolean;
 
   @Input()
   public menuItems: any;
@@ -21,8 +24,19 @@ export class SlidebarMenu {
   public hoverElemTop:number;
   public outOfArea:number = -200;
 
-  constructor(private _router:Router, private _routeService: RouteService) {
+  constructor(private _router:Router, private _state: GlobalState, private _routeService: RouteService) {
     this.currLink = _router.url;
+
+    this._state.subscribe('profile.refresh', (profile) => {
+      console.log('profile.refresh in SlidebarMenu', profile);
+
+      this.isOrgAdmin = CONSTANT.PROFILE.orgPrivilege['org-'+CONSTANT.PROFILE.defaultOrgId];
+    });
+    this._state.subscribe('my.orgs.change', (data) => {
+      console.log('my.orgs.change in SlidebarMenu', data);
+
+      this.isOrgAdmin = CONSTANT.PROFILE.orgPrivilege['org-'+CONSTANT.CURR_ORG_ID];
+    });
   }
 
   public hoverItem($event):void {

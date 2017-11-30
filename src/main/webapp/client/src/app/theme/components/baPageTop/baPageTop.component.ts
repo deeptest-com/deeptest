@@ -15,7 +15,7 @@ import {AccountService} from "../../../service/account";
   styleUrls: ['./baPageTop.scss']
 })
 export class BaPageTop {
-  public profile: any = CONSTANT.PROFILE;
+  profile: any = CONSTANT.PROFILE;
   project: any = CONSTANT.CURRENT_PROJECT;
   projects: any[] = CONSTANT.RECENT_PROJECTS;
   orgId: any = CONSTANT.CURR_ORG_ID;
@@ -69,10 +69,10 @@ export class BaPageTop {
       if (json.code == 1) {
         this.orgId = item.id;
 
-        this.accountService.changeMyOrgs(null, null);
+        this.accountService.changeMyOrgs(null, this.orgId);
         this.accountService.changeRecentProjects(json.recentProjects);
 
-        this._routeService.navTo('/pages/project/list');
+        // this._routeService.navTo('/pages/project/list');
       }
     });
   }

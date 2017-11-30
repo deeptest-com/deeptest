@@ -172,8 +172,8 @@ public class AccountAction extends BaseAction {
 		userVo.setCasePropertyMap(casePropertyMap);
 
         Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userVo.getId());
-        Map<Long, Map<String, Boolean>> orgRolePrivileges = orgRolePrivilegeService.listByUser(userVo.getId());
-        Map<Long, Map<String, Boolean>> projectPrivileges = projectPrivilegeService.listByUser(userVo.getId());
+        Map<String, Map<String, Boolean>> orgRolePrivileges = orgRolePrivilegeService.listByUser(userVo.getId());
+        Map<String, Map<String, Boolean>> projectPrivileges = projectPrivilegeService.listByUser(userVo.getId());
 
         userVo.setSysPrivilege(sysPrivileges);
         userVo.setOrgPrivilege(orgRolePrivileges);

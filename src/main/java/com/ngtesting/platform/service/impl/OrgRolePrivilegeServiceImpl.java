@@ -105,7 +105,7 @@ public class OrgRolePrivilegeServiceImpl extends BaseServiceImpl implements OrgR
 	}
 
 	@Override
-	public Map<Long, Map<String, Boolean>> listByUser(Long userId) {
+	public Map<String, Map<String, Boolean>> listByUser(Long userId) {
 		String hql = "select roles.orgId, priv.code from TestOrgPrivilege priv" +
 				" join priv.orgRoleSet roles " +
 				" join roles.userSet users " +
@@ -117,15 +117,15 @@ public class OrgRolePrivilegeServiceImpl extends BaseServiceImpl implements OrgR
 
 		List<Object[]> ls = getDao().getListByHQL(hql, userId);
 
-		Map<Long, Map<String, Boolean>> map = new HashMap();
+		Map<String, Map<String, Boolean>> map = new HashMap();
 		for (Object[] raw: ls) {
 			System.out.println(raw.getClass());
 			Long orgId = Long.valueOf(raw[0].toString());
 			if (!map.containsKey(orgId)) {
-				map.put(orgId, new HashMap());
+				map.put("org-" + orgId, new HashMap());
 			}
 
-			map.get(orgId).put(raw[1].toString(), true);
+			map.get("org-" + orgId).put(raw[1].toString(), true);
 		}
 
 		return map;

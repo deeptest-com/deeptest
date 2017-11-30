@@ -48,7 +48,7 @@ export interface CONSTANT_INTERFACE {
 
   TOKEN: string,
 
-  PROFILE: string,
+  PROFILE: any,
 
   ALL_ORGS: any[],
   CURR_ORG_ID: number,

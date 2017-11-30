@@ -29,8 +29,8 @@ public class UserVo extends BaseVo {
 	Map<String, Map<String,String>> casePropertyMap;
 
 	Map<String,Boolean> sysPrivilege;
-	Map<Long, Map<String,Boolean>> orgPrivilege;
-	Map<Long, Map<String,Boolean>> projectPrivilege;
+	Map<String, Map<String,Boolean>> orgPrivilege;
+	Map<String, Map<String,Boolean>> projectPrivilege;
 
 	public UserVo() {
 
@@ -72,18 +72,18 @@ public class UserVo extends BaseVo {
 		this.sysPrivilege = sysPrivilege;
 	}
 
-	public Map<Long, Map<String, Boolean>> getOrgPrivilege() {
+	public Map<String, Map<String, Boolean>> getOrgPrivilege() {
 		return orgPrivilege;
 	}
-	public void setOrgPrivilege(Map<Long, Map<String, Boolean>> orgPrivilege) {
+	public void setOrgPrivilege(Map<String, Map<String, Boolean>> orgPrivilege) {
 		this.orgPrivilege = orgPrivilege;
 	}
 
-	public Map<Long, Map<String, Boolean>> getProjectPrivilege() {
+	public Map<String, Map<String, Boolean>> getProjectPrivilege() {
 		return projectPrivilege;
 	}
 
-	public void setProjectPrivilege(Map<Long, Map<String, Boolean>> projectPrivilege) {
+	public void setProjectPrivilege(Map<String, Map<String, Boolean>> projectPrivilege) {
 		this.projectPrivilege = projectPrivilege;
 	}
 

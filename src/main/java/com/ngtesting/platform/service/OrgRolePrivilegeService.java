@@ -11,6 +11,6 @@ public interface OrgRolePrivilegeService extends BaseService {
 
 	boolean saveOrgRolePrivileges(Long roleId, List<OrgPrivilegeVo> orgPrivileges);
 
-	Map<Long, Map<String, Boolean>> listByUser(Long userId);
+	Map<String, Map<String, Boolean>> listByUser(Long userId);
 
 }

@@ -8,13 +8,13 @@ import java.util.Set;
 @Table(name = "tst_org_role")
 public class TestOrgRole extends BaseEntity {
 	private static final long serialVersionUID = -3556080851163371948L;
-	
+
 	@Enumerated(EnumType.STRING)
     private OrgRoleCode code;
-	
+
 	private String name;
     private String descr;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
     private TestOrg org;
@@ -28,28 +28,27 @@ public class TestOrgRole extends BaseEntity {
 			inverseJoinColumns = { @JoinColumn(name = "user_id",
 					nullable = false, updatable = false) })
     private Set<TestUser> userSet = new HashSet<>(0);
-    
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "tst_r_org_role_privilege", joinColumns = { 
-			@JoinColumn(name = "org_role_id", nullable = false, updatable = false) }, 
-			inverseJoinColumns = { @JoinColumn(name = "org_privilege_id", 
+	@JoinTable(name = "tst_r_org_role_privilege", joinColumns = {
+			@JoinColumn(name = "org_role_id", nullable = false, updatable = false) },
+			inverseJoinColumns = { @JoinColumn(name = "org_privilege_id",
 					nullable = false, updatable = false) })
     private Set<TestOrgPrivilege> orgPrivilegeSet = new HashSet<>(0);
-    
+
     public static enum OrgRoleCode {
-        org_admin("org_admin"),
-        project_admin("project_admin");
+        org_admin("org_admin", "组织管理员"),
+        project_admin("project_admin", "项目管理员");
 
-        private OrgRoleCode(String textVal) {
-            this.textVal = textVal;
+        private OrgRoleCode(String code, String name) {
+            this.code = code;
+            this.name = name;
         }
 
-        private String textVal;
-        public String toString() {
-            return textVal;
-        }
+        public String code;
+        public String name;
     }
-    
+
 	public String getName() {
 		return name;
 	}
@@ -86,5 +85,13 @@ public class TestOrgRole extends BaseEntity {
 	}
 	public void setUserSet(Set<TestUser> userSet) {
 		this.userSet = userSet;
+	}
+
+	public OrgRoleCode getCode() {
+		return code;
+	}
+
+	public void setCode(OrgRoleCode code) {
+		this.code = code;
 	}
 }

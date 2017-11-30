@@ -1,18 +1,18 @@
 package com.ngtesting.platform.service.impl;
 
-import java.util.LinkedList;
-import java.util.List;
-
+import com.ngtesting.platform.entity.TestOrgRole;
+import com.ngtesting.platform.entity.TestUser;
+import com.ngtesting.platform.service.OrgRoleService;
+import com.ngtesting.platform.util.BeanUtilEx;
+import com.ngtesting.platform.util.StringUtil;
+import com.ngtesting.platform.vo.OrgRoleVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.TestOrgRole;
-import com.ngtesting.platform.service.OrgRoleService;
-import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.util.StringUtil;
-import com.ngtesting.platform.vo.OrgRoleVo;
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleService {
@@ -64,6 +64,35 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 		saveOrUpdate(po);
 
 		return true;
+	}
+
+	@Override
+	public void initOrgRolePers(Long orgId) {
+		for (TestOrgRole.OrgRoleCode e : TestOrgRole.OrgRoleCode.values()) {
+            TestOrgRole po = new TestOrgRole();
+
+            po.setName(e.name);
+            po.setCode(e);
+            po.setDescr("");
+            po.setOrgId(orgId);
+
+            saveOrUpdate(po);
+		}
+	}
+
+	@Override
+	public void addUserToOrgRolePers(TestUser user, Long orgId, TestOrgRole.OrgRoleCode code) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestOrgRole.class);
+		dc.add(Restrictions.eq("orgId", orgId));
+		dc.add(Restrictions.eq("code", code));
+		dc.add(Restrictions.ne("deleted", true));
+		dc.add(Restrictions.ne("disabled", true));
+
+		dc.addOrder(Order.asc("id"));
+		List<TestOrgRole> ls = findAllByCriteria(dc);
+		TestOrgRole role = ls.get(0);
+		role.getUserSet().add(user);
+		saveOrUpdate(role);
 	}
 
 	@Override

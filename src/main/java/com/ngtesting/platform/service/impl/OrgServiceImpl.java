@@ -1,8 +1,10 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.entity.TestOrg;
+import com.ngtesting.platform.entity.TestOrgRole;
 import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestUser;
+import com.ngtesting.platform.service.OrgRoleService;
 import com.ngtesting.platform.service.OrgService;
 import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.util.BeanUtilEx;
@@ -21,31 +23,33 @@ import java.util.List;
 
 @Service
 public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
-	
+
 	@Autowired
     ProjectService projectService;
+    @Autowired
+    OrgRoleService rgRoleService;
 
 	@Override
 	public List<TestOrg> list(String keywords, String disabled, Long userId) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestOrg.class);
         dc.createAlias("userSet", "users");
         dc.add(Restrictions.eq("users.id", userId));
-        
+
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-        
+
         if (StringUtil.isNotEmpty(keywords)) {
 			dc.add(Restrictions.like("name", "%" + keywords + "%"));
 		}
         if (StringUtil.isNotEmpty(disabled)) {
 			dc.add(Restrictions.eq("disabled", Boolean.valueOf(disabled)));
 		}
-        
+
         dc.addOrder(Order.asc("id"));
         List<TestOrg> ls = findAllByCriteria(dc);
 
 		return ls;
 	}
-	
+
 	@Override
 	public List<OrgVo> listVo(String keywords, String disabled, Long id) {
 		List ls = list(keywords, disabled, id);
@@ -70,7 +74,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		}
 
 		TestUser user = (TestUser)get(TestUser.class, userId);
-		
+
 		boolean isNew = vo.getId() == null;
 		TestOrg po = new TestOrg();
 		if (!isNew) {
@@ -79,13 +83,18 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 			po.setAdminId(userId);
 			po.getUserSet().add(user);
 		}
-		
+
 		po.setName(vo.getName());
 		po.setWebsite(vo.getWebsite());
 		po.setDisabled(vo.getDisabled());
 
 		saveOrUpdate(po);
-		
+
+        if (isNew) {
+            rgRoleService.initOrgRolePers(po.getId());
+            rgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
+        }
+
 		if (user.getDefaultOrgId() == null) {
 			user.setDefaultOrgId(po.getId());
 			saveOrUpdate(user);
@@ -98,7 +107,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 			prjGroup.setType(TestProject.ProjectType.group);
 			saveOrUpdate(prjGroup);
 		}
-		
+
 		return po;
 	}
 
@@ -114,7 +123,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 
 		return true;
 	}
-	
+
 	@Override
 	public Boolean delete(Long id) {
 		if (id == null) {
@@ -127,40 +136,40 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 
 		return true;
 	}
-	
+
 	@Override
 	public List<TestProjectAccessHistoryVo> setDefaultPers(Long orgId, UserVo userVo) {
 		TestUser user = (TestUser) get(TestUser.class, userVo.getId());
-		
+
 		user.setDefaultOrgId(orgId);
-		
+
 		List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(orgId, userVo.getId());
 		if (recentProjects.size() > 0) {
 			user.setDefaultProjectId(recentProjects.get(0).getId());
 		}
-		
+
 		saveOrUpdate(user);
-		
+
 		userVo.setDefaultOrgId(user.getDefaultOrgId());
 		userVo.setDefaultProjectId(user.getDefaultProjectId());
-		
+
 		return recentProjects;
 	}
 
 	@Override
 	public List<OrgVo> genVos(List<TestOrg> pos, Long userId) {
 		TestUser user = (TestUser)get(TestUser.class, userId);
-		
+
 		List<OrgVo> voList = new LinkedList<OrgVo>();
 		for (TestOrg po : pos) {
 			OrgVo vo = genVo(po);
 			if (po.getId() == user.getDefaultOrgId()) {
 				vo.setDefaultOrg(true);
 			}
-			
+
 			voList.add(vo);
 		}
-		
+
 		return voList;
 	}
 

@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "evt_document")
+@Table(name = "tst_document")
 public class TestDocument extends BaseEntity {
 	private static final long serialVersionUID = 2390019554025797778L;
 	private String title;

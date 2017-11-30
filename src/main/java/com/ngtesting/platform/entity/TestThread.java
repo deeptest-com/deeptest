@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "evt_thread")
+@Table(name = "tst_thread")
 public class TestThread extends BaseEntity {
 	private static final long serialVersionUID = 5786241404855669174L;
 

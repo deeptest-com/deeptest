@@ -38,6 +38,7 @@ public class TestOrgRole extends BaseEntity {
 
     public static enum OrgRoleCode {
         org_admin("org_admin", "组织管理员"),
+        site_admin("site_admin", "站点管理员"),
         project_admin("project_admin", "项目管理员");
 
         private OrgRoleCode(String code, String name) {

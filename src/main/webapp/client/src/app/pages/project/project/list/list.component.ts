@@ -39,8 +39,7 @@ export class ProjectList implements OnInit, AfterViewInit {
     );
     this.queryForm.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.queryChange(values));
 
-    this._state.subscribe('my.orgs.change', (data: any) => {
-      console.log(11);
+    this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, (data: any) => {
       this.loadData();
     });
   }

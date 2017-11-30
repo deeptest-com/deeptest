@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service;
 
+import com.ngtesting.platform.entity.TestOrgPrivilege;
 import com.ngtesting.platform.entity.TestOrgRole;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.vo.OrgRoleVo;
@@ -17,7 +18,9 @@ public interface OrgRoleService extends BaseService {
 
 	void initOrgRolePers(Long orgId);
 
-	void addUserToOrgRolePers(TestUser user, Long orgId, TestOrgRole.OrgRoleCode code);
+    List<TestOrgPrivilege> getDefaultPrivByRoleCode(TestOrgRole.OrgRoleCode e);
+
+    void addUserToOrgRolePers(TestUser user, Long orgId, TestOrgRole.OrgRoleCode code);
 
 	OrgRoleVo genVo(TestOrgRole role);
 

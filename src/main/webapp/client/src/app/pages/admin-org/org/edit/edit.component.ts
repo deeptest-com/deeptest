@@ -90,8 +90,7 @@ export class OrgEdit implements OnInit, AfterViewInit {
 
     that.orgService.save(that.model).subscribe((json:any) => {
       if (json.code == 1) {
-
-        this._state.notifyDataChanged('my.orgs.change', {orgs: json.myOrgs, currOrgId: null});
+        this._state.notifyDataChanged(CONSTANT.STATE_CHANGE_ORGS, {orgs: json.myOrgs, currOrgId: null});
 
         that.formErrors = ['保存成功'];
         that._routeService.navTo("/pages/org-admin/org/list");

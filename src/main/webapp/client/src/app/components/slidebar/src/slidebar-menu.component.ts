@@ -27,15 +27,15 @@ export class SlidebarMenu {
   constructor(private _router:Router, private _state: GlobalState, private _routeService: RouteService) {
     this.currLink = _router.url;
 
-    this._state.subscribe('profile.refresh', (profile) => {
-      console.log('profile.refresh in SlidebarMenu', profile);
+    this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, (profile) => {
+      console.log(CONSTANT.STATE_CHANGE_PROFILE, profile);
 
-      this.isOrgAdmin = CONSTANT.PROFILE.orgPrivilege['org-'+CONSTANT.PROFILE.defaultOrgId];
+      this.isOrgAdmin = CONSTANT.PROFILE.orgPrivilege.org_admin;
     });
-    this._state.subscribe('my.orgs.change', (data) => {
-      console.log('my.orgs.change in SlidebarMenu', data);
+    this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, (data) => {
+      console.log(CONSTANT.STATE_CHANGE_ORGS, data);
 
-      this.isOrgAdmin = CONSTANT.PROFILE.orgPrivilege['org-'+CONSTANT.CURR_ORG_ID];
+      this.isOrgAdmin = CONSTANT.PROFILE.orgPrivilege.org_admin;
     });
   }
 

@@ -27,13 +27,13 @@ export class BaPageTop {
   constructor(private _router: Router, private _state: GlobalState, private _routeService: RouteService,
               private orgService: OrgService, private accountService: AccountService) {
 
-    this._state.subscribe('profile.refresh', (profile) => {
-      console.log('profile.refresh', profile);
+    this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, (profile) => {
+      console.log(CONSTANT.STATE_CHANGE_PROFILE, profile);
       this.profile = profile;
     });
 
-    this._state.subscribe('my.orgs.change', (data: any) => {
-      console.log('my.orgs.change', data);
+    this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, (data: any) => {
+      console.log(CONSTANT.STATE_CHANGE_ORGS, data);
       if (data.currOrgId) {
         this.orgId = data.currOrgId;
       }
@@ -42,8 +42,8 @@ export class BaPageTop {
       }
     });
 
-    this._state.subscribe('recent.projects.change', (data) => {
-      console.log('recent.projects.change', data);
+    this._state.subscribe(CONSTANT.STATE_CHANGE_PROJECTS, (data) => {
+      console.log(CONSTANT.STATE_CHANGE_PROJECTS, data);
       if (data.recentProjects) {
         this.projects = data.recentProjects;
       }
@@ -69,10 +69,11 @@ export class BaPageTop {
       if (json.code == 1) {
         this.orgId = item.id;
 
+        CONSTANT.PROFILE.orgPrivilege = json.orgPrivilege;
+        CONSTANT.PROFILE.projectPrivilege = json.projectPrivilege;
+
         this.accountService.changeMyOrgs(null, this.orgId);
         this.accountService.changeRecentProjects(json.recentProjects);
-
-        // this._routeService.navTo('/pages/project/list');
       }
     });
   }

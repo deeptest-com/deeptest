@@ -161,7 +161,8 @@ public class AccountAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		Long orgId = userVo.getDefaultOrgId();
+        Long orgId = userVo.getDefaultOrgId();
+		Long projectId = userVo.getDefaultProjectId();
 
 		List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(userVo.getDefaultOrgId(), userVo.getId());
         List<OrgVo> orgs = orgService.listVo(null, "false", userVo.getId());
@@ -172,8 +173,8 @@ public class AccountAction extends BaseAction {
 		userVo.setCasePropertyMap(casePropertyMap);
 
         Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userVo.getId());
-        Map<String, Map<String, Boolean>> orgRolePrivileges = orgRolePrivilegeService.listByUser(userVo.getId());
-        Map<String, Map<String, Boolean>> projectPrivileges = projectPrivilegeService.listByUser(userVo.getId());
+        Map<String, Boolean> orgRolePrivileges = orgRolePrivilegeService.listByUser(userVo.getId(), orgId);
+        Map<String, Boolean> projectPrivileges = projectPrivilegeService.listByUser(userVo.getId(), projectId);
 
         userVo.setSysPrivilege(sysPrivileges);
         userVo.setOrgPrivilege(orgRolePrivileges);

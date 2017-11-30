@@ -27,26 +27,30 @@ export class ProfileEdit implements OnInit, AfterViewInit {
   currProject: any = {};
 
   orgs: any[] = [];
-  currOrgId: number;
+  orgId: number;
 
   public passwordPopop: any;
 
   constructor(private _routeService: RouteService, private _state:GlobalState, private _route: ActivatedRoute,
       private modalService: NgbModal, private accountService: AccountService) {
 
-    this._state.subscribe('profile.refresh', (profile) => {
-      console.log('profile.refresh', profile);
+    this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, (profile) => {
+      console.log(CONSTANT.STATE_CHANGE_PROFILE, profile);
       this.model = profile;
     });
-    this._state.subscribe('recent.projects.change', (data) => {
-      console.log('recent.projects.change', data);
+    this._state.subscribe(CONSTANT.STATE_CHANGE_PROJECTS, (data) => {
+      console.log(CONSTANT.STATE_CHANGE_PROJECTS, data);
       this.recentProjects = data.recentProjects;
       this.currProject = data.currProject;
     });
-    this._state.subscribe('my.orgs.change', (data) => {
-      console.log('recent.projects.change', data);
-      this.orgs = data.orgs;
-      this.currOrgId = data.currOrgId;
+    this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, (data) => {
+      console.log(CONSTANT.STATE_CHANGE_ORGS, data);
+      if (data.currOrgId) {
+        this.orgId = data.currOrgId;
+      }
+      if (data.orgs) {
+        this.orgs = data.orgs;
+      }
     });
   }
 
@@ -73,7 +77,7 @@ export class ProfileEdit implements OnInit, AfterViewInit {
       this.model = CONSTANT.PROFILE;
 
       this.orgs = CONSTANT.ALL_ORGS;
-      this.currOrgId = CONSTANT.CURR_ORG_ID;
+      this.orgId = CONSTANT.CURR_ORG_ID;
 
       this.recentProjects =  CONSTANT.RECENT_PROJECTS;
       this.currProject = CONSTANT.CURRENT_PROJECT;

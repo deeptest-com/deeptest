@@ -51,7 +51,7 @@
         <div class="form-group row">
           <label class="col-sm-2 col-form-label">组织</label>
           <div class="col-sm-10 col-form-label">
-            <p *ngFor="let org of orgs" [class.current]="org.id == currOrgId">
+            <p *ngFor="let org of orgs" [class.current]="org.id == orgId">
               <span>{{org.name}}</span>
               <span *ngIf="org.id == currOrgId">（当前）</span>
             </p>

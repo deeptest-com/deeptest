@@ -117,7 +117,7 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 	}
 
 	@Override
-	public Map<String, Map<String, Boolean>> listByUser(Long userId) {
+	public Map<String, Boolean> listByUser(Long userId, Long prjId) {
 		String hql = "select entiy.projectId, priv.code, priv.action from TestProjectPrivilege priv" +
 				" join priv.projectRoleSet roles, " +
 				"  TestRelationProjectRoleEntity entiy " +
@@ -142,7 +142,7 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 			map.get("prj" + projectId).put(raw[1].toString() + "-" + raw[2].toString(), true);
 		}
 
-		return map;
+		return null;
 	}
 
 }

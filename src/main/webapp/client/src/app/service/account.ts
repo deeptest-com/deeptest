@@ -170,7 +170,7 @@ export class AccountService {
 
   changeProfile(profile: any) {
     CONSTANT.PROFILE = profile;
-    this._state.notifyDataChanged('profile.refresh', profile);
+    this._state.notifyDataChanged(CONSTANT.STATE_CHANGE_PROFILE, profile);
   }
 
   changeMyOrgs(orgs: any[], currOrgId: number) {
@@ -181,7 +181,7 @@ export class AccountService {
       CONSTANT.CURR_ORG_ID = currOrgId;
     }
 
-    this._state.notifyDataChanged('my.orgs.change', {orgs: orgs, currOrgId: currOrgId});
+    this._state.notifyDataChanged(CONSTANT.STATE_CHANGE_ORGS, {orgs: orgs, currOrgId: currOrgId});
   }
 
   changeRecentProjects(recentProjects: any[]) {
@@ -194,7 +194,7 @@ export class AccountService {
       CONSTANT.CURRENT_PROJECT = {id: null, name: ''};
     }
 
-    this._state.notifyDataChanged('recent.projects.change',
+    this._state.notifyDataChanged(CONSTANT.STATE_CHANGE_PROJECTS,
       {recentProjects: CONSTANT.RECENT_PROJECTS, currProject: CONSTANT.CURRENT_PROJECT});
   }
 

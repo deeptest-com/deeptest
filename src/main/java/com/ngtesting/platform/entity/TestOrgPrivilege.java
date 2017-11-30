@@ -8,29 +8,28 @@ import java.util.Set;
 @Table(name = "tst_org_privilege")
 public class TestOrgPrivilege extends BaseEntity {
 	private static final long serialVersionUID = -5510206858644860272L;
-	
+
 	@Enumerated(EnumType.STRING)
     private OrgPrivilegeCode code;
 
     private String name;
     private String descr;
-    
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "orgPrivilegeSet")
     private Set<TestOrgRole> orgRoleSet = new HashSet<TestOrgRole>(0);
-    
+
     public static enum OrgPrivilegeCode {
-    	org_admin("org_admin"),
-    	site_admin("site_admin"),
-    	project_admin("project_admin");
+        org_admin("org_admin", "组织管理员"),
+        site_admin("site_admin", "站点管理员"),
+        project_admin("project_admin", "项目管理员");
 
-        private OrgPrivilegeCode(String textVal) {
-            this.textVal = textVal;
+        private OrgPrivilegeCode(String code, String name) {
+            this.code = code;
+            this.name = name;
         }
 
-        private String textVal;
-        public String toString() {
-            return textVal;
-        }
+        public String code;
+        public String name;
     }
 
 	public String getName() {
@@ -56,5 +55,12 @@ public class TestOrgPrivilege extends BaseEntity {
 	public void setOrgRoleSet(Set<TestOrgRole> orgRoleSet) {
 		this.orgRoleSet = orgRoleSet;
 	}
-    
+
+	public OrgPrivilegeCode getCode() {
+		return code;
+	}
+
+	public void setCode(OrgPrivilegeCode code) {
+		this.code = code;
+	}
 }

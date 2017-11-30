@@ -28,7 +28,11 @@ export var CONSTANT: CONSTANT_INTERFACE = {
   EntityDisabled: {'false': '启用', 'true': '归档', '': '所有'},
 
   ScreenSize: {h: 0, w: 0},
-  DebounceTime: 500
+  DebounceTime: 500,
+
+  STATE_CHANGE_PROFILE: 'profile.refresh',
+  STATE_CHANGE_ORGS: 'my.orgs.change',
+  STATE_CHANGE_PROJECTS: 'recent.projects.change'
 };
 
 export interface CURRENT_PROJECT_INTERFACE {
@@ -66,6 +70,11 @@ export interface CONSTANT_INTERFACE {
   EntityDisabled: any,
 
   ScreenSize: any,
-  DebounceTime: number
+  DebounceTime: number,
+
+  STATE_CHANGE_PROFILE: string,
+  STATE_CHANGE_ORGS: string,
+  STATE_CHANGE_PROJECTS: string
+
 }
 

@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.entity.TestOrgPrivilege;
 import com.ngtesting.platform.entity.TestOrgRole;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.OrgRoleService;
@@ -75,12 +76,27 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
             po.setCode(e);
             po.setDescr("");
             po.setOrgId(orgId);
+            po.getOrgPrivilegeSet().addAll(getDefaultPrivByRoleCode(e));
 
             saveOrUpdate(po);
 		}
 	}
 
-	@Override
+    @Override
+    public List<TestOrgPrivilege> getDefaultPrivByRoleCode(TestOrgRole.OrgRoleCode e) {
+        TestOrgPrivilege.OrgPrivilegeCode code = TestOrgPrivilege.OrgPrivilegeCode.valueOf(e.code);
+        DetachedCriteria dc = DetachedCriteria.forClass(TestOrgPrivilege.class);
+        dc.add(Restrictions.eq("code", code));
+        dc.add(Restrictions.ne("deleted", true));
+        dc.add(Restrictions.ne("disabled", true));
+
+        dc.addOrder(Order.asc("id"));
+        List<TestOrgPrivilege> ls = findAllByCriteria(dc);
+
+	    return ls;
+    }
+
+    @Override
 	public void addUserToOrgRolePers(TestUser user, Long orgId, TestOrgRole.OrgRoleCode code) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestOrgRole.class);
 		dc.add(Restrictions.eq("orgId", orgId));

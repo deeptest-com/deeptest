@@ -94,10 +94,9 @@ public class AccountAction extends BaseAction {
 		TestUser user = accountService.registerPers(name, email, phone, password);
 
 		if (user != null) {
+            TestOrg po = orgService.createDefaultPers(user);
 			UserVo userVo = userService.genVo(user);
 			request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
-
-            TestOrg po = orgService.createDefault(user);
 
 			ret.put("token", user.getToken());
 			ret.put("code", RespCode.SUCCESS.getCode());

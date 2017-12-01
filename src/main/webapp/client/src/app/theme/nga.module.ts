@@ -50,7 +50,6 @@ import {
 } from './services';
 
 import {
-  EmailValidator,
   EqualPasswordsValidator
 } from './validators';
 
@@ -87,7 +86,6 @@ const NGA_SERVICES = [
 ];
 
 const NGA_VALIDATORS = [
-  EmailValidator,
   EqualPasswordsValidator
 ];
 

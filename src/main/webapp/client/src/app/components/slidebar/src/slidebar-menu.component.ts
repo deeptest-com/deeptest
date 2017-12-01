@@ -27,6 +27,10 @@ export class SlidebarMenu {
   constructor(private _router:Router, private _state: GlobalState, private _routeService: RouteService) {
     this.currLink = _router.url;
 
+    if (CONSTANT.PROFILE) {
+      this.isOrgAdmin = CONSTANT.PROFILE.orgPrivilege.org_admin;
+    }
+
     this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, (profile) => {
       console.log(CONSTANT.STATE_CHANGE_PROFILE, profile);
 

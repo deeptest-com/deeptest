@@ -68,7 +68,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	}
 
     @Override
-    public TestOrg createDefault(TestUser user) {
+    public TestOrg createDefaultPers(TestUser user) {
 
         TestOrg po = new TestOrg();
 

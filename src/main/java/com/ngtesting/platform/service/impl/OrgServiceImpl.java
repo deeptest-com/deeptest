@@ -67,6 +67,34 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		return po;
 	}
 
+    @Override
+    public TestOrg createDefault(TestUser user) {
+
+        TestOrg po = new TestOrg();
+
+        po.setAdminId(user.getId());
+        po.getUserSet().add(user);
+
+        po.setName("我的组织");
+        po.setWebsite("");
+
+        saveOrUpdate(po);
+
+        user.setDefaultOrgId(po.getId());
+        saveOrUpdate(user);
+
+        rgRoleService.initOrgRolePers(po.getId());
+        rgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
+
+        TestProject prjGroup = new TestProject();
+        prjGroup.setOrgId(po.getId());
+        prjGroup.setName("默认项目组");
+        prjGroup.setType(TestProject.ProjectType.group);
+        saveOrUpdate(prjGroup);
+
+        return po;
+    }
+
 	@Override
 	public TestOrg save(OrgVo vo, Long userId) {
 		if (vo == null) {

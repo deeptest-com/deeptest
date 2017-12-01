@@ -1,6 +1,7 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.entity.TestVerifyCode;
 import com.ngtesting.platform.service.*;
@@ -8,7 +9,9 @@ import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.util.Constant.RespCode;
 import com.ngtesting.platform.util.PropertyConfig;
-import com.ngtesting.platform.vo.*;
+import com.ngtesting.platform.vo.OrgVo;
+import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
+import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -94,9 +97,8 @@ public class AccountAction extends BaseAction {
 			UserVo userVo = userService.genVo(user);
 			request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
 
-//			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), user.getDefaultProjectId());
-//			ret.put("profile", userVo);
-//			ret.put("recentProjects", recentProjects);
+            TestOrg po = orgService.createDefault(user);
+
 			ret.put("token", user.getToken());
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {

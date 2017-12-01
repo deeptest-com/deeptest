@@ -1,6 +1,7 @@
 package com.ngtesting.platform.service;
 
 import com.ngtesting.platform.entity.TestOrg;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.vo.OrgVo;
 import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
 import com.ngtesting.platform.vo.UserVo;
@@ -23,7 +24,9 @@ public interface OrgService extends BaseService {
 
 	OrgVo genVo(TestOrg po);
 
-	TestOrg save(OrgVo vo, Long userId);
+    TestOrg createDefault(TestUser user);
+
+    TestOrg save(OrgVo vo, Long userId);
 
 	List<TestProjectAccessHistoryVo> setDefaultPers(Long orgId, UserVo user);
 

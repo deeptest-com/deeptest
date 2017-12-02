@@ -173,13 +173,14 @@ export class AccountService {
     this._state.notifyDataChanged(CONSTANT.STATE_CHANGE_PROFILE, profile);
   }
 
-  changeMyOrgs(orgs: any[], currOrgId: number) {
+  changeMyOrgs(orgs: any[], currOrgId: number, gotoDefault: boolean = false) {
     if (orgs) {
       CONSTANT.ALL_ORGS = orgs;
     }
     if (currOrgId) {
       CONSTANT.CURR_ORG_ID = currOrgId;
     }
+    if (gotoDefault) {this.routeService.navTo("/pages/project/list");}
 
     this._state.notifyDataChanged(CONSTANT.STATE_CHANGE_ORGS, {orgs: orgs, currOrgId: currOrgId});
   }

@@ -4,7 +4,6 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 import {NgbModal, NgbModalRef, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 
 import {GlobalState} from '../../../../global.state';
-import {EmailValidator} from '../../../../validator';
 
 import { CONSTANT } from '../../../../utils/constant';
 import { Utils } from '../../../../utils/utils';

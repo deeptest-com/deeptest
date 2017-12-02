@@ -119,8 +119,6 @@ export class ProjectEdit implements OnInit, AfterViewInit {
   save() {
     let that = this;
 
-    console.log('===', that.model);
-
     that._projectService.save(that.model).subscribe((json:any) => {
       if (json.code == 1) {
         that.model = json.data;

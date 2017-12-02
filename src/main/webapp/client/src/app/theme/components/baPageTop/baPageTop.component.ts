@@ -72,7 +72,7 @@ export class BaPageTop {
         CONSTANT.PROFILE.orgPrivilege = json.orgPrivilege;
         CONSTANT.PROFILE.projectPrivilege = json.projectPrivilege;
 
-        this.accountService.changeMyOrgs(null, this.orgId);
+        this.accountService.changeMyOrgs(null, this.orgId, true);
         this.accountService.changeRecentProjects(json.recentProjects);
       }
     });

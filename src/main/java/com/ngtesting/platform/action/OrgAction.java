@@ -128,7 +128,7 @@ public class OrgAction extends BaseAction {
 		Map<String, Boolean> orgRolePrivileges = orgRolePrivilegeService.listByUser(userVo.getId(),
 				userVo.getDefaultOrgId());
 		Map<String, Boolean> projectPrivileges = projectPrivilegeService.listByUser(userVo.getId(),
-				userVo.getDefaultProjectId());
+                recentProjects.size()>0?recentProjects.get(0).getProjectId():null);
         
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		ret.put("data", vos);

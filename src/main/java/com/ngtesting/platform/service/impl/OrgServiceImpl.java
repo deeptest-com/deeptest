@@ -2,7 +2,6 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestOrgRole;
-import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.OrgGroupService;
 import com.ngtesting.platform.service.OrgRoleService;
@@ -90,11 +89,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
         orgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
         orgGroupService.createDefaultPers(po);
 
-        TestProject prjGroup = new TestProject();
-        prjGroup.setOrgId(po.getId());
-        prjGroup.setName("默认项目组");
-        prjGroup.setType(TestProject.ProjectType.group);
-        saveOrUpdate(prjGroup);
+        projectService.createDefault(po.getId());
 
         return po;
     }
@@ -135,11 +130,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		}
 
 		if (isNew) {
-			TestProject prjGroup = new TestProject();
-			prjGroup.setOrgId(po.getId());
-			prjGroup.setName("默认项目组");
-			prjGroup.setType(TestProject.ProjectType.group);
-			saveOrUpdate(prjGroup);
+            projectService.createDefault(po.getId());
 		}
 
 		return po;
@@ -178,14 +169,10 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		user.setDefaultOrgId(orgId);
 
 		List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(orgId, userVo.getId());
-		if (recentProjects.size() > 0) {
-			user.setDefaultProjectId(recentProjects.get(0).getId());
-		}
 
 		saveOrUpdate(user);
 
 		userVo.setDefaultOrgId(user.getDefaultOrgId());
-		userVo.setDefaultProjectId(user.getDefaultProjectId());
 
 		return recentProjects;
 	}

@@ -108,8 +108,13 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 
 		dc.add(Restrictions.eq("orgId", orgId));
 		dc.add(Restrictions.eq("userId", userId));
-		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-		dc.add(Restrictions.eq("disabled", false));
+		dc.add(Restrictions.ne("deleted", true));
+		dc.add(Restrictions.ne("disabled", true));
+
+        dc.createAlias("project", "project");
+        dc.add(Restrictions.ne("project.deleted", true));
+		dc.add(Restrictions.ne("project.disabled", true));
+
 		dc.addOrder(Order.desc("lastAccessTime"));
 		 
 		List<TestProjectAccessHistory> pos = findPage(dc, 0, 4).getItems();
@@ -122,6 +127,22 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		List<TestProjectAccessHistoryVo> vos = genHistoryVos(pos);
 
 		return vos;
+	}
+
+	@Override
+	public void createDefault(Long orgId) {
+		TestProject prjGroup = new TestProject();
+		prjGroup.setOrgId(orgId);
+		prjGroup.setName("默认项目组");
+		prjGroup.setType(TestProject.ProjectType.group);
+		saveOrUpdate(prjGroup);
+
+		TestProject prj = new TestProject();
+		prj.setOrgId(orgId);
+		prj.setName("默认项目");
+		prj.setType(ProjectType.project);
+		prj.setParentId(prjGroup.getId());
+		saveOrUpdate(prj);
 	}
 
 	@Override
@@ -223,21 +244,21 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		return true;
 	}
 	
-	@Override
-	public List<TestProjectAccessHistoryVo> setDefaultPers(Long orgId, Long projectId, UserVo userVo) {
-		TestUser user = (TestUser) get(TestUser.class, userVo.getId());
-		
-		List<TestProjectAccessHistoryVo> recentProjects = listRecentProjectVo(orgId, userVo.getId());
-		if (recentProjects.size() > 0) {
-			user.setDefaultProjectId(recentProjects.get(0).getId());
-		}
-		
-		saveOrUpdate(user);
-		
-		userVo.setDefaultProjectId(user.getDefaultProjectId());
-		
-		return recentProjects;
-	}
+//	@Override
+//	public List<TestProjectAccessHistoryVo> setDefaultPers(Long orgId, Long projectId, UserVo userVo) {
+//		TestUser user = (TestUser) get(TestUser.class, userVo.getId());
+//
+//		List<TestProjectAccessHistoryVo> recentProjects = listRecentProjectVo(orgId, userVo.getId());
+//		if (recentProjects.size() > 0) {
+//			user.setDefaultProjectId(recentProjects.get(0).getId());
+//		}
+//
+//		saveOrUpdate(user);
+//
+//		userVo.setDefaultProjectId(user.getDefaultProjectId());
+//
+//		return recentProjects;
+//	}
 
 	// @Override
 	// public void removeCache(Long orgId) {
@@ -335,13 +356,13 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		history.setLastAccessTime(new Date());
 		saveOrUpdate(history);
 		
-		if (user.getDefaultProjectId() != projectId) {
-			user.setDefaultProjectId(projectId);
-			
-			saveOrUpdate(user);
-			
-			userVo.setDefaultProjectId(projectId);
-		}
+//		if (user.getDefaultProjectId() != projectId) {
+//			user.setDefaultProjectId(projectId);
+//
+//			saveOrUpdate(user);
+//
+//			userVo.setDefaultProjectId(projectId);
+//		}
 		
 		TestProjectVo vo = genVo(project);
 		return vo;

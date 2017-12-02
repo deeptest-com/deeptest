@@ -10,9 +10,6 @@ import { Utils } from '../../../../utils/utils';
 import {ValidatorUtils} from '../../../../validator/validator.utils';
 import { RouteService } from '../../../../service/route';
 import { AccountService } from '../../../../service/account';
-
-import { PopDialogComponent } from '../../../../components/pop-dialog'
-
 import { ProjectService } from '../../../../service/project';
 
 declare var jQuery;

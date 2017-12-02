@@ -18,10 +18,11 @@ public interface ProjectService extends BaseService {
 	TestProject save(TestProjectVo vo, Long orgId, Long userId);
 	Boolean delete(Long id);
 	
-	List<TestProjectAccessHistoryVo> setDefaultPers(Long orgId, Long projectId, UserVo userVo);
+//	List<TestProjectAccessHistoryVo> setDefaultPers(Long orgId, Long projectId, UserVo userVo);
 	
 	List<TestProjectAccessHistory> listRecentProject(Long orgId, Long userId);
 	List<TestProjectAccessHistoryVo> listRecentProjectVo(Long orgId, Long userId);
+	void createDefault(Long id);
 
 	TestProjectVo viewPers(UserVo userVo, Long projectId);
 	List<TestProject> list(Long orgId, String keywords, String disabled);
@@ -33,7 +34,7 @@ public interface ProjectService extends BaseService {
 	List<TestProjectVo> genVos(List<TestProject> pos);
 	TestProjectAccessHistoryVo genHistoryVo(TestProjectAccessHistory po);
 	List<TestProjectAccessHistoryVo> genHistoryVos(List<TestProjectAccessHistory> pos);
-	
+
 //	void removeCache(Long orgId);
 	
 }

@@ -17,5 +17,4 @@
   <span [routerLink]="['/pages/project', model.id, 'edit', model.type]" class="link no-underline">编辑</span>
   <span *ngIf="model.type=='project'" [routerLink]="['/pages/design', model.id, 'case']" class="link no-underline">设计</span>
   <span *ngIf="model.type=='project'" [routerLink]="['/pages/implement', model.id, 'plan', 'list']" class="link no-underline">执行</span>
-  <span *ngIf="model.type=='project'" [routerLink]="['/pages/analysis', model.id, 'report', 'list']" class="link no-underline">分析</span>
 </td>

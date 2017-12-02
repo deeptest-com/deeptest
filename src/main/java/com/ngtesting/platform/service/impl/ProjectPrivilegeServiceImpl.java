@@ -118,6 +118,10 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 
 	@Override
 	public Map<String, Boolean> listByUser(Long userId, Long prjId) {
+        Map<String, Boolean> map = new HashMap();
+	    if (prjId == null) {
+            return map;
+        }
 		String hql = "select entiy.projectId, priv.code, priv.action from TestProjectPrivilege priv" +
 				" join priv.projectRoleSet roles, " +
 				"  TestRelationProjectRoleEntity entiy " +
@@ -131,15 +135,14 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 
 		List<Object[]> ls = getDao().getListByHQL(hql, userId);
 
-		Map<String, Map<String, Boolean>> map = new HashMap();
 		for (Object[] raw: ls) {
-		    System.out.println(raw.getClass());
-		    Long projectId = Long.valueOf(raw[0].toString());
-			if (!map.containsKey(projectId)) {
-                map.put("prj" + projectId, new HashMap());
-			}
-
-			map.get("prj" + projectId).put(raw[1].toString() + "-" + raw[2].toString(), true);
+//		    System.out.println(raw.getClass());
+//		    Long projectId = Long.valueOf(raw[0].toString());
+//			if (!map.containsKey(projectId)) {
+//                map.put("prj" + projectId, new HashMap());
+//			}
+//
+//			map.get("prj" + projectId).put(raw[1].toString() + "-" + raw[2].toString(), true);
 		}
 
 		return null;

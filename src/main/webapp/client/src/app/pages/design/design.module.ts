@@ -7,6 +7,9 @@ import { routing }       from './design.routing';
 import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
   NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { ProjectService } from '../../service/project';
+import { AccountService } from '../../service/account';
+
 import { Design } from './design.component';
 
 @NgModule({
@@ -23,7 +26,7 @@ import { Design } from './design.component';
     Design
   ],
   providers: [
-
+    AccountService, ProjectService
   ]
 })
 export class DesignModule {}

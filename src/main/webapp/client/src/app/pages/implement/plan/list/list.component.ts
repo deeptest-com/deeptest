@@ -17,6 +17,7 @@ import {PlanService} from "../../../../service/plan";
 export class PlanList implements OnInit, AfterViewInit {
   models: any;
 
+  projectId: number;
   queryForm: FormGroup;
   queryModel:any = {keywords: '', status: ''};
   statusMap: Array<any> = CONSTANT.ExeStatus;
@@ -35,6 +36,10 @@ export class PlanList implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this._route.params.forEach((params: Params) => {
+      this.projectId = +params['projectId'];
+    });
+
     this.loadData();
   }
 
@@ -45,7 +50,7 @@ export class PlanList implements OnInit, AfterViewInit {
   create():void {
     let that = this;
 
-    that._routeService.navTo("/pages/implement/" + CONSTANT.CURRENT_PROJECT.id + "/plan/null/edit");
+    that._routeService.navTo("/pages/implement/" + this.projectId + "/plan/null/edit");
   }
 
   delete(eventId:string):void {
@@ -53,7 +58,8 @@ export class PlanList implements OnInit, AfterViewInit {
   }
 
   loadData() {
-    this._planService.query(CONSTANT.CURRENT_PROJECT.id, this.queryModel).subscribe((json:any) => {
+
+    this._planService.query(this.projectId, this.queryModel).subscribe((json:any) => {
       this.models = json.data;
     });
   }

@@ -92,6 +92,31 @@ public class ProjectAction extends BaseAction {
 	}
 
 	@AuthPassport(validate = true)
+	@RequestMapping(value = "view", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long id = json.getLong("id");
+
+		TestProjectVo vo = projectService.viewPers(userVo, id);
+
+		List<TestProjectAccessHistoryVo> recentProjects
+				= projectService.listRecentProjectVo(userVo.getDefaultOrgId(), userVo.getId());
+
+		for (TestProjectAccessHistoryVo his : recentProjects) {
+			TestProject prj = (TestProject)projectService.get(TestProject.class, his.getProjectId());
+			his.setProjectName(prj.getName());
+		}
+
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		ret.put("project", vo);
+		ret.put("recentProjects", recentProjects);
+		return ret;
+	}
+
+	@AuthPassport(validate = true)
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -158,29 +183,5 @@ public class ProjectAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-	
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "view", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		Long id = json.getLong("id");
-		
-		TestProjectVo vo = projectService.viewPers(userVo, id);
-		
-		List<TestProjectAccessHistoryVo> recentProjects 
-			= projectService.listRecentProjectVo(userVo.getDefaultOrgId(), userVo.getId());
 
-		for (TestProjectAccessHistoryVo his : recentProjects) {
-			TestProject prj = (TestProject)projectService.get(TestProject.class, his.getProjectId());
-			his.setProjectName(prj.getName());
-		}
-		
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		ret.put("project", vo);
-		ret.put("recentProjects", recentProjects);
-		return ret;
-	}
 }

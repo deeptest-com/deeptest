@@ -3,7 +3,7 @@ import {FormGroup, AbstractControl, FormBuilder, Validators} from '@angular/form
 
 import { CONSTANT } from '../../../utils/constant';
 
-import {ValidatorUtils, EmailValidator} from '../../../validator';
+import {ValidatorUtils} from '../../../validator';
 
 import { RouteService } from '../../../service/route';
 import { AccountService } from '../../../service/account';
@@ -21,7 +21,7 @@ export class Login {
 
   constructor(fb:FormBuilder, private accountService: AccountService, private routeService: RouteService) {
     this.form = fb.group({
-      'email': ['', [Validators.required, EmailValidator.validate()]],
+      'email': ['', [Validators.required, Validators.email]],
       'password': ['', [Validators.minLength(6)]],
       'rememberMe': []
     });

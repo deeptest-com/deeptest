@@ -26,6 +26,9 @@ export class UserService {
   save(user: any, groups: any[]) {
     return this._reqService.post(this._api_url + 'save', {user: user, relations: groups});
   }
+  invite(user: any, groups: any[]) {
+    return this._reqService.post(this._api_url + 'invite', {user: user, relations: groups});
+  }
 
   delete(id: number) {
     let model = {id: id};

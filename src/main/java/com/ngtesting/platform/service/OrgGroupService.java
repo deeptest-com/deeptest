@@ -1,6 +1,7 @@
 package com.ngtesting.platform.service;
 
 import com.alibaba.fastjson.JSONArray;
+import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestOrgGroup;
 import com.ngtesting.platform.vo.OrgGroupVo;
 import com.ngtesting.platform.vo.Page;
@@ -14,6 +15,8 @@ public interface OrgGroupService extends BaseService {
 	
 	TestOrgGroup save(OrgGroupVo vo, Long orgId);
 	boolean delete(Long id);
+
+	void createDefaultPers(TestOrg org);
 
 	List<OrgGroupVo> genVos(List<TestOrgGroup> pos);
 	OrgGroupVo genVo(TestOrgGroup user);

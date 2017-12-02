@@ -4,7 +4,7 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import { CONSTANT } from '../../../utils/constant';
 import { Utils } from '../../../utils/utils';
-import {ValidatorUtils, EmailValidator} from '../../../validator';
+import {ValidatorUtils} from '../../../validator';
 
 import { RouteService } from '../../../service/route';
 
@@ -49,7 +49,7 @@ export class ForgotPassword implements OnInit, AfterViewInit {
   buildForm(): void {
     this.form = this.fb.group(
       {
-        'email': ['', [Validators.required, EmailValidator.validate()]],
+        'email': ['', [Validators.required, Validators.email]],
       }
     );
 

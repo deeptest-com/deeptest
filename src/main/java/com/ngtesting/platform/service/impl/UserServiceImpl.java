@@ -169,18 +169,25 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		if (userVo.getAvatar() == null) {
 			po.setAvatar("upload/sample/user/avatar.png");
 		}
+        saveOrUpdate(po);
 		
 		TestOrg org = (TestOrg)get(TestOrg.class, orgId);
 		if (!contains(org.getUserSet(), userVo.getId())) {
 			org.getUserSet().add(po);
 			saveOrUpdate(org);
 		}
-		
-		saveOrUpdate(po);
+
 		return po;
 	}
-	
-	@Override
+
+    @Override
+    public TestUser invitePers(UserVo vo, Long orgId) {
+        TestUser po = save(vo, orgId);
+
+        return po;
+    }
+
+    @Override
 	public boolean disable(Long userId, Long orgId) {
 		TestUser po = (TestUser) get(TestUser.class, userId);
 		po.setDisabled(!po.getDisabled());

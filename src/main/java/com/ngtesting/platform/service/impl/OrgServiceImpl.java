@@ -4,6 +4,7 @@ import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestOrgRole;
 import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestUser;
+import com.ngtesting.platform.service.OrgGroupService;
 import com.ngtesting.platform.service.OrgRoleService;
 import com.ngtesting.platform.service.OrgService;
 import com.ngtesting.platform.service.ProjectService;
@@ -27,7 +28,9 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	@Autowired
     ProjectService projectService;
     @Autowired
-    OrgRoleService rgRoleService;
+    OrgRoleService orgRoleService;
+    @Autowired
+    OrgGroupService orgGroupService;
 
 	@Override
 	public List<TestOrg> list(String keywords, String disabled, Long userId) {
@@ -83,8 +86,9 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
         user.setDefaultOrgId(po.getId());
         saveOrUpdate(user);
 
-        rgRoleService.initOrgRolePers(po.getId());
-        rgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
+        orgRoleService.initOrgRolePers(po.getId());
+        orgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
+        orgGroupService.createDefaultPers(po);
 
         TestProject prjGroup = new TestProject();
         prjGroup.setOrgId(po.getId());
@@ -119,8 +123,10 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		saveOrUpdate(po);
 
         if (isNew) {
-            rgRoleService.initOrgRolePers(po.getId());
-            rgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
+            orgRoleService.initOrgRolePers(po.getId());
+            orgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
+
+            orgGroupService.createDefaultPers(po);
         }
 
 		if (user.getDefaultOrgId() == null) {

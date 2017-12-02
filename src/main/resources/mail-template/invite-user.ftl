@@ -15,7 +15,8 @@
  	</div>
  	<br />
  	<div>
- 		请访问 <a href="${url}/${vcode}">${url}/${vcode}</a>, 重置您的密码。
+        ${user}邀请你使用${sys}。
+ 		访问地址 <a href="${url}/${vcode}">${url}/${vcode}</a>。
  	</div>
  </body>
  </html>

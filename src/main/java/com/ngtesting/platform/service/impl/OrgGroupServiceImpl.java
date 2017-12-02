@@ -1,6 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestOrgGroup;
 import com.ngtesting.platform.service.OrgGroupService;
 import com.ngtesting.platform.util.BeanUtilEx;
@@ -94,6 +95,17 @@ public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupServ
 		saveOrUpdate(po);
 		
 		return true;
+	}
+
+	@Override
+	public void createDefaultPers(TestOrg org) {
+		String [] groups = new String[]{"测试主管","测试设计","测试执行"};
+		for(String name : groups) {
+			TestOrgGroup po = new TestOrgGroup();
+			po.setName(name);
+            po.setOrgId(org.getId());
+			saveOrUpdate(po);
+		}
 	}
 
 	@Override

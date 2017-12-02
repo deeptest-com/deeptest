@@ -18,12 +18,12 @@ import { PopDialogComponent } from '../../../../components/pop-dialog'
 declare var jQuery;
 
 @Component({
-  selector: 'user-edit',
+  selector: 'user-invite',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['./edit.scss'],
-  templateUrl: './edit.html'
+  styleUrls: ['./invite.scss'],
+  templateUrl: './invite.html'
 })
-export class UserEdit implements OnInit, AfterViewInit {
+export class UserInvite implements OnInit, AfterViewInit {
 
   id: number;
   tab: string = 'info';
@@ -38,10 +38,6 @@ export class UserEdit implements OnInit, AfterViewInit {
 
   }
   ngOnInit() {
-    this._route.params.forEach((params: Params) => {
-      this.id = +params['id'];
-    });
-
     this.loadData();
     this.buildForm();
   }
@@ -52,13 +48,10 @@ export class UserEdit implements OnInit, AfterViewInit {
   }
 
   buildForm(): void {
-    let that = this;
     this.form = this.fb.group(
       {
         'name': ['', [Validators.required]],
         'email': ['', [Validators.required, Validators.email]],
-        'phone': ['', [Validators.required, PhoneValidator.validate()]],
-        'disabled': ['', []],
         'groups': ['', []]
       }, {}
     );
@@ -79,17 +72,12 @@ export class UserEdit implements OnInit, AfterViewInit {
     'email': {
       'required':      '邮箱不能为空',
       'validate':      '邮箱格式不正确'
-    },
-    'phone': {
-      'required':      '手机不能为空',
-      'validate':      '手机格式不正确'
     }
   };
 
   loadData() {
     let that = this;
-    that.userService.get(that.id).subscribe((json:any) => {
-      that.user = json.user;
+    that.userService.get(null).subscribe((json:any) => {
       that.relations = json.relations;
 
       _.forEach(that.relations, (group: any, index: number) => {
@@ -98,10 +86,10 @@ export class UserEdit implements OnInit, AfterViewInit {
     });
   }
 
-  save() {
+  invite() {
     let that = this;
 
-    that.userService.save(that.user, that.relations).subscribe((json:any) => {
+    that.userService.invite(that.user, that.relations).subscribe((json:any) => {
       if (json.code == 1) {
 
         that.formErrors = ['保存成功'];
@@ -113,30 +101,11 @@ export class UserEdit implements OnInit, AfterViewInit {
     });
   }
 
-  delete() {
-    let that = this;
-
-    that.userService.delete(that.user.id).subscribe((json:any) => {
-      if (json.code == 1) {
-        that.formErrors = ['删除成功'];
-        that._routeService.navTo("/pages/org-admin/user/list");
-
-        this.modalWrapper.closeModal();
-      } else {
-        that.formErrors = ['删除失败'];
-      }
-    });
-  }
-
   select(key: string) {
     let val = key ==='all'? true: false;
     for (let group of this.relations) {
       group.selecting = val;
     }
-  }
-
-  showModal(): void {
-    this.modalWrapper.showModal();
   }
 
 }

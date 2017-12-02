@@ -2,8 +2,6 @@ import { Component,ViewEncapsulation, Pipe, OnInit, AfterViewInit, ViewChild } f
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 
-import {EmailValidator} from '../../../../validator';
-
 import { CONSTANT } from '../../../../utils/constant';
 import { Utils } from '../../../../utils/utils';
 import {ValidatorUtils} from '../../../../validator/validator.utils';
@@ -71,7 +69,7 @@ export class SettingsEdit implements OnInit, AfterViewInit {
       {
         'name': ['', [Validators.required, Validators.minLength(4)]],
         'phone': ['', [Validators.required, Validators.minLength(11)]],
-        'email': ['', [Validators.required, EmailValidator.validate()]]
+        'email': ['', [Validators.required, Validators.email]]
       }, {}
     );
 

@@ -128,34 +128,6 @@ public class AccountAction extends BaseAction {
         return ret;
     }
 
-	@AuthPassport(validate=false)
-	@RequestMapping(value = "resetPassword", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> resetPassword(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-		String verifyCode = json.getString("vcode");
-		String password = json.getString("password");
-
-		TestUser user = accountService.resetPasswordPers(verifyCode, password);
-
-		if (user != null) {
-			UserVo userVo = userService.genVo(user);
-			request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
-
-//			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), userVo.getDefaultProjectId());
-//			ret.put("profile", userVo);
-//			ret.put("recentProjects", recentProjects);
-			ret.put("token", user.getToken());
-			ret.put("code", RespCode.SUCCESS.getCode());
-		} else {
-			ret.put("code", RespCode.BIZ_FAIL.getCode());
-			ret.put("msg", "重置密码失败");
-		}
-
-		return ret;
-	}
-
 	@RequestMapping(value = "getProfile", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> getProfile(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -223,12 +195,14 @@ public class AccountAction extends BaseAction {
 
 		TestVerifyCode verifyCode = accountService.forgotPasswordPers(user.getId());
 		if (verifyCode != null) {
+            String sys = PropertyConfig.getConfig("sys.name");
+
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("name", user.getName());
 			map.put("vcode", verifyCode.getCode());
 			// map.put("url", Constant.WEB_ROOT + "admin-path");
-			map.put("url", PropertyConfig.getConfig("url.reset.password") + verifyCode.getCode());
-			mailService.sendTemplateMail("[ngtesting]忘记密码", "forgot-password.ftl", user.getEmail(), map);
+			map.put("url", PropertyConfig.getConfig("url.reset.password"));
+			mailService.sendTemplateMail("[\" + sys + \"]忘记密码", "forgot-password.ftl", user.getEmail(), map);
 
 			ret.put("data", verifyCode);
 			ret.put("code", RespCode.SUCCESS.getCode());
@@ -240,6 +214,33 @@ public class AccountAction extends BaseAction {
 		return ret;
 	}
 
+    @AuthPassport(validate=false)
+    @RequestMapping(value = "resetPassword", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> resetPassword(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        String verifyCode = json.getString("vcode");
+        String password = json.getString("password");
+
+        TestUser user = accountService.resetPasswordPers(verifyCode, password);
+
+        if (user != null) {
+            UserVo userVo = userService.genVo(user);
+            request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
+
+//			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), userVo.getDefaultProjectId());
+//			ret.put("profile", userVo);
+//			ret.put("recentProjects", recentProjects);
+            ret.put("token", user.getToken());
+            ret.put("code", RespCode.SUCCESS.getCode());
+        } else {
+            ret.put("code", RespCode.BIZ_FAIL.getCode());
+            ret.put("msg", "重置密码失败");
+        }
+
+        return ret;
+    }
 
 	@AuthPassport(validate=true)
 	@RequestMapping(value = "logout", method = RequestMethod.POST)

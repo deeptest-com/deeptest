@@ -22,6 +22,7 @@ import { RoleService } from '../../../service/role';
 import { User } from './user.component';
 import { UserList } from './list';
 import { UserEdit } from './edit';
+import { UserInvite } from './invite';
 
 @NgModule({
   imports: [
@@ -38,7 +39,8 @@ import { UserEdit } from './edit';
   declarations: [
     User,
     UserList,
-    UserEdit
+    UserEdit,
+    UserInvite
   ],
   providers: [
     RouteService,

@@ -3,11 +3,15 @@ package com.ngtesting.platform.action;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestUser;
+import com.ngtesting.platform.entity.TestVerifyCode;
+import com.ngtesting.platform.service.AccountService;
+import com.ngtesting.platform.service.MailService;
 import com.ngtesting.platform.service.RelationOrgGroupUserService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.util.Constant.RespCode;
+import com.ngtesting.platform.util.PropertyConfig;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
 import com.ngtesting.platform.vo.RelationProjectRoleEntityVo;
@@ -30,8 +34,12 @@ import java.util.Map;
 public class UserAction extends BaseAction {
 	@Autowired
 	UserService userService;
+    @Autowired
+    AccountService accountService;
 	@Autowired
 	RelationOrgGroupUserService orgGroupUserService;
+	@Autowired
+	MailService mailService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
@@ -124,6 +132,40 @@ public class UserAction extends BaseAction {
 		boolean success = orgGroupUserService.saveRelations(relations);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		
+		return ret;
+	}
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "invite", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> invite(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long orgId = userVo.getDefaultOrgId();
+
+		UserVo user = JSON.parseObject(JSON.toJSONString(json.get("user")), UserVo.class);
+		TestUser po = userService.invitePers(user, orgId);
+
+		if (po == null) {
+			ret.put("code", RespCode.BIZ_FAIL.getCode());
+			ret.put("msg", "邮箱已存在");
+			return ret;
+		}
+
+		List<RelationOrgGroupUserVo> relations = (List<RelationOrgGroupUserVo>) json.get("relations");
+		orgGroupUserService.saveRelations(relations);
+
+        TestVerifyCode verifyCode = accountService.forgotPasswordPers(po.getId());
+		String sys = PropertyConfig.getConfig("sys.name");
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("user", userVo.getName() + "(" + userVo.getEmail() + ")");
+		map.put("name", user.getName());
+        map.put("vcode", verifyCode.getCode());
+		map.put("sys", sys);
+        map.put("url", PropertyConfig.getConfig("url.reset.password"));
+		mailService.sendTemplateMail("来自[" + sys + "]的邀请", "invite-user.ftl", user.getEmail(), map);
+
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
 	

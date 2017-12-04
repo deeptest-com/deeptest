@@ -1,9 +1,9 @@
 package com.ngtesting.platform.service;
 
-import java.util.List;
-
 import com.ngtesting.platform.entity.TestCaseType;
 import com.ngtesting.platform.vo.CaseTypeVo;
+
+import java.util.List;
 
 public interface CaseTypeService extends BaseService {
 	List<TestCaseType> list(Long orgId);
@@ -20,4 +20,5 @@ public interface CaseTypeService extends BaseService {
 
 	boolean changeOrderPers(Long id, String act);
 
+    void createDefaultPers(Long id);
 }

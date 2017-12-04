@@ -1,18 +1,17 @@
 package com.ngtesting.platform.service.impl;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
-
+import com.ngtesting.platform.entity.TestCasePriority;
+import com.ngtesting.platform.service.CasePriorityService;
+import com.ngtesting.platform.util.BeanUtilEx;
+import com.ngtesting.platform.vo.CasePriorityVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.TestCasePriority;
-import com.ngtesting.platform.service.CasePriorityService;
-import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.vo.CasePriorityVo;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePriorityService {
@@ -115,8 +114,27 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 		
 		return true;
 	}
-	
-    
+
+	@Override
+	public void createDefaultPers(Long orgId) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestCasePriority.class);
+		dc.add(Restrictions.lt("id", Long.valueOf(0)));
+		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+
+		dc.addOrder(Order.asc("displayOrder"));
+		List<TestCasePriority> ls = findAllByCriteria(dc);
+
+		for (TestCasePriority p : ls) {
+			TestCasePriority temp = new TestCasePriority();
+			BeanUtilEx.copyProperties(temp, p);
+			temp.setId(null);
+			temp.setOrgId(orgId);
+			saveOrUpdate(temp);
+		}
+	}
+
+
 	@Override
 	public CasePriorityVo genVo(TestCasePriority po) {
 		if (po == null) {

@@ -67,6 +67,10 @@ export class PlanEdit implements OnInit, AfterViewInit {
     this.orgId = CONSTANT.CURR_ORG_ID;
     this.prjId = CONSTANT.CURR_PRJ_ID;
 
+    this._route.params.forEach((params: Params) => {
+      this.planId = +params['planId'];
+    });
+
     if (this.planId) {
       this.loadData();
     }

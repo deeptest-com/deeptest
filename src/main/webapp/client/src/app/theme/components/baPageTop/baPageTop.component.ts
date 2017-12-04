@@ -86,6 +86,7 @@ export class BaPageTop implements OnInit, AfterViewInit {
 
         this.accountService.changeMyOrgs(null, this.orgId, true);
         this.accountService.changeRecentProjects(json.recentProjects);
+        this.accountService.changeCasePropertyMap(json.casePropertyMap);
       }
     });
   }

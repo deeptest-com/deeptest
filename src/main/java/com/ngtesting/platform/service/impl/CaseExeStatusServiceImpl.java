@@ -1,18 +1,17 @@
 package com.ngtesting.platform.service.impl;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
-
+import com.ngtesting.platform.entity.TestCaseExeStatus;
+import com.ngtesting.platform.service.CaseExeStatusService;
+import com.ngtesting.platform.util.BeanUtilEx;
+import com.ngtesting.platform.vo.CaseExeStatusVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import com.ngtesting.platform.entity.TestCaseExeStatus;
-import com.ngtesting.platform.service.CaseExeStatusService;
-import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.vo.CaseExeStatusVo;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExeStatusService {
@@ -99,7 +98,26 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
 		
 		return true;
 	}
-    
+
+	@Override
+	public void createDefaultPers(Long orgId) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestCaseExeStatus.class);
+		dc.add(Restrictions.lt("id", Long.valueOf(0)));
+		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+
+		dc.addOrder(Order.asc("displayOrder"));
+		List<TestCaseExeStatus> ls = findAllByCriteria(dc);
+
+		for (TestCaseExeStatus p : ls) {
+			TestCaseExeStatus temp = new TestCaseExeStatus();
+			BeanUtilEx.copyProperties(temp, p);
+			temp.setId(null);
+			temp.setOrgId(orgId);
+			saveOrUpdate(temp);
+		}
+	}
+
 	@Override
 	public CaseExeStatusVo genVo(TestCaseExeStatus po) {
 		if (po == null) {

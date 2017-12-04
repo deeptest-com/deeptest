@@ -3,6 +3,7 @@ package com.ngtesting.platform.action;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestUser;
+import com.ngtesting.platform.service.CasePropertyService;
 import com.ngtesting.platform.service.OrgRolePrivilegeService;
 import com.ngtesting.platform.service.OrgService;
 import com.ngtesting.platform.service.ProjectPrivilegeService;
@@ -34,6 +35,8 @@ public class OrgAction extends BaseAction {
 	OrgRolePrivilegeService orgRolePrivilegeService;
 	@Autowired
 	ProjectPrivilegeService projectPrivilegeService;
+	@Autowired
+	CasePropertyService casePropertyService;
 	
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
@@ -129,12 +132,16 @@ public class OrgAction extends BaseAction {
 				userVo.getDefaultOrgId());
 		Map<String, Boolean> projectPrivileges = projectPrivilegeService.listByUser(userVo.getId(),
                 recentProjects.size()>0?recentProjects.get(0).getProjectId():null);
+
+		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
         
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		ret.put("data", vos);
 		ret.put("recentProjects", recentProjects);
 		ret.put("orgPrivilege", orgRolePrivileges);
 		ret.put("projectPrivilege", projectPrivileges);
+
+		ret.put("casePropertyMap", casePropertyMap);
 		
 		return ret;
 	}

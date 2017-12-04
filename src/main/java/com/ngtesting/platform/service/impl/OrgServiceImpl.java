@@ -3,10 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestOrgRole;
 import com.ngtesting.platform.entity.TestUser;
-import com.ngtesting.platform.service.OrgGroupService;
-import com.ngtesting.platform.service.OrgRoleService;
-import com.ngtesting.platform.service.OrgService;
-import com.ngtesting.platform.service.ProjectService;
+import com.ngtesting.platform.service.*;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.OrgVo;
@@ -30,6 +27,12 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
     OrgRoleService orgRoleService;
     @Autowired
     OrgGroupService orgGroupService;
+	@Autowired
+	CaseExeStatusService caseExeStatusService;
+	@Autowired
+	CasePriorityService casePriorityService;
+	@Autowired
+	CaseTypeService caseTypeService;
 
 	@Override
 	public List<TestOrg> list(String keywords, String disabled, Long userId) {
@@ -89,6 +92,10 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
         orgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
         orgGroupService.createDefaultPers(po);
 
+		caseExeStatusService.createDefaultPers(po.getId());
+		casePriorityService.createDefaultPers(po.getId());
+		caseTypeService.createDefaultPers(po.getId());
+
         projectService.createDefault(po.getId(), user.getId());
 
         return po;
@@ -120,17 +127,18 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
         if (isNew) {
             orgRoleService.initOrgRolePers(po.getId());
             orgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
-
             orgGroupService.createDefaultPers(po);
+
+            caseExeStatusService.createDefaultPers(po.getId());
+            casePriorityService.createDefaultPers(po.getId());
+            caseTypeService.createDefaultPers(po.getId());
+
+            projectService.createDefault(po.getId(), userId);
         }
 
 		if (user.getDefaultOrgId() == null) {
 			user.setDefaultOrgId(po.getId());
 			saveOrUpdate(user);
-		}
-
-		if (isNew) {
-            projectService.createDefault(po.getId(), userId);
 		}
 
 		return po;

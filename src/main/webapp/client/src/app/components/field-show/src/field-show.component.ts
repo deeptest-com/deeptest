@@ -47,10 +47,12 @@ export class FieldShowComponent implements OnInit {
 
   public constructor(@Inject(FieldShowService) private fieldShowService: FieldShowService, private fb: FormBuilder,
                      private compiler: Compiler, private modalService: NgbModal) {
-    this.casePropertyMap = CONSTANT.CASE_PROPERTY_MAP;
+
   }
 
   public ngOnInit(): void {
+    this.casePropertyMap = CONSTANT.CASE_PROPERTY_MAP;
+
     this.form = this.fb.group({});
     let control: FormControl = new FormControl(this.prop, Validators.required);
     this.form.addControl(this.prop, control);

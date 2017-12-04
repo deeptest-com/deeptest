@@ -41,9 +41,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
 
   }
   ngOnInit() {
-    this._route.params.forEach((params: Params) => {
-      this.projectId = +params['projectId'];
-    });
+    this.projectId = CONSTANT.CURR_PRJ_ID;
 
     this.buildForm();
 
@@ -124,6 +122,8 @@ export class CaseEdit implements OnInit, AfterViewInit {
     let that = this;
     that._caseService.get(that.id).subscribe((json:any) => {
       that.model = json.data;
+
+      console.log('=1=', that.model);
     });
   }
 

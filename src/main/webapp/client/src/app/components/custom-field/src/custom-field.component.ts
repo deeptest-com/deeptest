@@ -34,6 +34,8 @@ export class CustomFieldComponent implements OnInit, OnChanges {
   }
 
   public ngOnInit(): void {
+    console.log('=2=', this.model, this.field);
+
     let control: FormControl = new FormControl(this.field.myColumn);
     this.form.addControl(this.field.myColumn, control);
   }

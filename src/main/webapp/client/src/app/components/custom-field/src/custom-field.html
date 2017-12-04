@@ -2,16 +2,16 @@
 
   <ng-container [ngSwitch]="field.type">
     <ng-container *ngSwitchCase="'string'">
-      <input type="text" class="form-control" name="{{field.column}}" formControlName="{{field.column}}"
-             [(ngModel)]="model[field.column]" #{{field.column}}>
+      <input type="text" class="form-control" name="{{field.myColumn}}" formControlName="{{field.myColumn}}"
+             [(ngModel)]="model[field.myColumn]" #{{field.myColumn}}>
     </ng-container>
     <ng-container *ngSwitchCase="'number'">
-      <input type="text" class="form-control" name="{{field.column}}" formControlName="{{field.column}}"
-             [(ngModel)]="model[field.column]" #{{field.column}}>
+      <input type="text" class="form-control" name="{{field.myColumn}}" formControlName="{{field.myColumn}}"
+             [(ngModel)]="model[field.myColumn]" #{{field.myColumn}}>
     </ng-container>
 
     <ng-container *ngSwitchCase="'dropdown'">
-      <select [(ngModel)]="model[field.column]" formControlName="applyTo" name="{{field.column}}" class="form-control form-control-sm">
+      <select [(ngModel)]="model[field.myColumn]" formControlName="applyTo" name="{{field.myColumn}}" class="form-control form-control-sm">
         <option value=""></option>
       </select>
     </ng-container>

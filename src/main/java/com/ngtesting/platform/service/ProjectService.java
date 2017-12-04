@@ -22,7 +22,7 @@ public interface ProjectService extends BaseService {
 	
 	List<TestProjectAccessHistory> listRecentProject(Long orgId, Long userId);
 	List<TestProjectAccessHistoryVo> listRecentProjectVo(Long orgId, Long userId);
-	void createDefault(Long id);
+	void createDefault(Long id, Long userId);
 
 	TestProjectVo viewPers(UserVo userVo, Long projectId);
 	List<TestProject> list(Long orgId, String keywords, String disabled);

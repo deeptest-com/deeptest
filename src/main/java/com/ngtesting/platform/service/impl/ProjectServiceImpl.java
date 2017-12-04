@@ -130,7 +130,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 	}
 
 	@Override
-	public void createDefault(Long orgId) {
+	public void createDefault(Long orgId, Long userId) {
 		TestProject prjGroup = new TestProject();
 		prjGroup.setOrgId(orgId);
 		prjGroup.setName("默认项目组");
@@ -143,6 +143,8 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		prj.setType(ProjectType.project);
 		prj.setParentId(prjGroup.getId());
 		saveOrUpdate(prj);
+
+		caseService.createRoot(prj.getId(), userId);
 	}
 
 	@Override
@@ -243,35 +245,6 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 
 		return true;
 	}
-	
-//	@Override
-//	public List<TestProjectAccessHistoryVo> setDefaultPers(Long orgId, Long projectId, UserVo userVo) {
-//		TestUser user = (TestUser) get(TestUser.class, userVo.getId());
-//
-//		List<TestProjectAccessHistoryVo> recentProjects = listRecentProjectVo(orgId, userVo.getId());
-//		if (recentProjects.size() > 0) {
-//			user.setDefaultProjectId(recentProjects.get(0).getId());
-//		}
-//
-//		saveOrUpdate(user);
-//
-//		userVo.setDefaultProjectId(user.getDefaultProjectId());
-//
-//		return recentProjects;
-//	}
-
-	// @Override
-	// public void removeCache(Long orgId) {
-	// CacheManager manager = CacheManager.create();
-	// net.sf.ehcache.Cache cache = manager.getCache("orgProjects");
-	// String prefix = orgId + "_";
-	// if(cache.isKeyInCache(prefix + "true")){
-	// cache.remove(prefix + "true");
-	// }
-	// if(cache.isKeyInCache(prefix)){
-	// cache.remove(prefix);
-	// }
-	// }
 
 	@Override
 	public List<TestProjectVo> genVos(List<TestProject> pos) {

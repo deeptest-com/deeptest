@@ -89,7 +89,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
         orgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
         orgGroupService.createDefaultPers(po);
 
-        projectService.createDefault(po.getId());
+        projectService.createDefault(po.getId(), user.getId());
 
         return po;
     }
@@ -130,7 +130,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		}
 
 		if (isNew) {
-            projectService.createDefault(po.getId());
+            projectService.createDefault(po.getId(), userId);
 		}
 
 		return po;

@@ -1,0 +1,68 @@
+<div class="auth-main">
+  <div class="auth-block">
+    <h1>ngtesting</h1>
+    <a routerLink="/register" class="auth-link">还没有账号? 去注册!</a>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit(form.value)" class="form-horizontal my-validate-form">
+      <div class="form-group row">
+        <label for="email" class="col-sm-2 control-label">邮箱</label>
+
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="email" name="email" formControlName="email"
+                 [(ngModel)]="model.email" #email>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="password" class="col-sm-2 control-label">密码</label>
+
+        <div class="col-sm-10">
+          <input type="password" class="form-control" id="password" name="password" formControlName="password"
+                 [(ngModel)]="model.password" #password>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <div class="offset-sm-2 col-sm-10">
+          <div class="form-check">
+            <label class="form-check-label">
+              <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe" formControlName="rememberMe"
+                     [(ngModel)]="model.rememberMe" #rememberMe>
+              &nbsp;&nbsp;记住我
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <div class="offset-sm-2 col-sm-10">
+          <button [disabled]="!form.valid" type="submit" class="btn btn-primary btn-auth">登录</button>
+          <a routerLink="/forgot-password" class="forgot-pass">忘记密码?</a>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+          <div class="validate-errors">
+            <div class="validate-error" *ngFor="let msg of formErrors">
+              <div>{{ msg }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </form>
+    <!--<div class="row">
+      <label class="col-sm-2 col-form-label"></label>
+      <label class="col-sm-4 col-form-label al-share-auth-title">第三方平台登录</label>
+      <div class="col-sm-6">
+        <div class="al-share-auth">
+          <ul class="al-share clearfix">
+            <li><i class="socicon socicon-img socicon-wechat" title="微信登录"></i></li>
+            &lt;!&ndash;<li><i class="socicon socicon-facebook" title="Share on Facebook"></i></li>&ndash;&gt;
+          </ul>
+        </div>
+      </div>
+    </div>-->
+  </div>
+</div>

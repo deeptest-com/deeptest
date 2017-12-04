@@ -1,0 +1,28 @@
+.execution-bar {
+  padding: 8px;
+  font-size: 14px;
+  color: white;
+  .bar {
+    display: block;
+    float: left;
+    height: 19px;
+    line-height: 19px;
+    text-align: center;
+    cursor: pointer;
+    &.pass {
+      background-color: #749f83;
+    }
+    &.fail {
+      background-color: #c23531;
+    }
+    &.block {
+      background-color: #ca8622;
+     }
+    &.untest {
+      background-color: #c4ccd3;
+    }
+  }
+
+  .empty {color: #666666;}
+
+}

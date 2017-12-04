@@ -1,0 +1,25 @@
+.project-edit {
+  padding: 15px;
+
+  .tab-bottom-space {
+
+  }
+
+  .form-add {
+
+  }
+  .table-container {
+    margin-top: 20px;
+    th.role {
+      width: 300px;
+    }
+    td.role {
+      margin: 0 auto;
+      padding: 3px 20px;
+      text-align: center;
+      select {
+        width: 100px;
+      }
+    }
+  }
+}

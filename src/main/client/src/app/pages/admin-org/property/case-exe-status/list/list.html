@@ -1,0 +1,31 @@
+<div class="case-exe-status-list container-fluid">
+
+  <div class="row">
+    <table class="table table-hover">
+      <thead class="thead-inverse">
+      <tr>
+        <th>名称</th>
+        <th>终极状态</th>
+        <th>系统內置</th>
+        <th>操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let item of models; let i = index;">
+        <td>{{ item.name }}</td>
+        <td>{{item.isFinal | trueOrFalse}}</td>
+        <td>{{item.isBuildIn | trueOrFalse}}</td>
+        <td>
+          <span *ngIf="i == 0" class="ionic-icon link placeholder"></span>
+          <span (click)="up(item)" *ngIf="i > 0" class="ion-arrow-up-a ionic-icon link"></span>
+
+          <span (click)="down(item)" *ngIf="i < models.length - 1" class="ion-arrow-down-a ionic-icon link"></span>
+          <span *ngIf="i == models.length - 1" class="ionic-icon link placeholder"></span>
+          &nbsp;
+          <span [routerLink]="['/pages/org-admin/property/case-exe-status/edit', item.id]" class="link no-underline">编辑</span>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

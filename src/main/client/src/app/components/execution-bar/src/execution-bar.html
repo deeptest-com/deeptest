@@ -1,0 +1,15 @@
+<div class="execution-bar">
+  <span *ngIf="data.countMap.total > 0">
+    <span [style.width]="data.widthMap.pass + 'px'" class="pass bar"
+          ngbTooltip="通过：{{data.countMap.pass}}">{{data.countMap.pass}}</span>
+    <span [style.width]="data.widthMap.fail + 'px'" class="fail bar"
+          ngbTooltip="失败：{{data.countMap.fail}}">{{data.countMap.fail}}</span>
+    <span [style.width]="data.widthMap.block + 'px'" class="block bar"
+          ngbTooltip="阻塞：{{data.countMap.block}}">{{data.countMap.block}}</span>
+    <span [style.width]="data.widthMap.untest + 'px'" class="untest bar"
+          ngbTooltip="未执行：{{data.countMap.untest}}">{{data.countMap.untest}}</span>
+  </span>
+  <span *ngIf="!data.countMap.total" class="empty">
+    暂无用例
+  </span>
+</div>

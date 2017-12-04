@@ -1,0 +1,27 @@
+table-tree {
+  width: 100%;
+
+  .table.table-tree {
+    border: 1px solid gainsboro;
+    thead th {
+      border-color: #373a3c;
+    }
+    tbody tr {
+      &.highlight td {
+        color: #E64320;
+      }
+      td {
+        text-align: left;
+        border: 1px solid gainsboro;
+        &.level-span {
+          width: 30px;
+          border-right: 0px;
+          border-left: 0px;
+        }
+        .link {
+          text-decoration: none !important;
+        }
+      }
+    }
+  }
+}

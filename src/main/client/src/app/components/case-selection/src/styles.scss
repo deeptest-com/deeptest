@@ -1,0 +1,69 @@
+.case-selection-inner {
+  font-size: 14px;
+  .modal-body{
+    .cols{
+      display: flex;
+      border: 1px solid #ddd;
+      height: 100%;
+      .modules {
+        position: relative;
+        flex: 1;
+        border-right: 1px solid #ddd;
+        overflow: auto;
+        .content {
+          padding: 0 5px 5px 5px;
+        }
+      }
+      .filter {
+        width: 350px;
+        .tree-toolbar {
+          padding-left: 10px;
+        }
+        .content {
+          padding: 5px;
+          .card {
+            margin-bottom: 0px;
+            box-shadow: none;
+            .card-header {
+              background-color: #f7f7f9;
+              height: 35px;
+              line-height: 35px;
+              padding: 0px 8px;
+              font-size: 14px;
+              a {
+                display: block;
+              }
+              a:focus, a:hover {
+                color: #1b867b;
+              }
+            }
+            .card-block {
+              padding: 5px;
+              .form-group {
+                margin-bottom: 3px;
+                label {
+                  margin-bottom: 0;
+                }
+                .form-check {
+                  margin: 0;
+                  label {
+                    text-align: right;
+                    max-width: 70px;
+                    &.form-check-label {
+                      min-width: 40px;
+                      margin-right: 8px;
+                      text-align: left;
+                      .form-check-input {
+                        margin-right: 3px;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

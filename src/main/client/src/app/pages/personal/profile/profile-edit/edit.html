@@ -1,0 +1,64 @@
+<div class="profile-edit container-fluid">
+  <ba-card bacardclass="with-scroll" cardtitle="个人信息">
+    <div bacardblur="" zoom-in="" class="with-scroll">
+      <div class="card-header clearfix">
+        <h3 class="card-title" translate="">个人信息</h3>
+      </div>
+      <div class="card-body">
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label">头像</label>
+          <div class="col-sm-10">
+            <picture-uploader (uploadedEvent)="uploadedEvent($event)" [picture]="model.avatar"></picture-uploader>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label">姓名</label>
+          <div class="col-sm-10 col-form-label">
+            <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'name'" [type]="'string'"
+                        [required]="true"></field-show>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label">邮箱</label>
+          <div class="col-sm-10 col-form-label">
+            <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'email'" [type]="'string'"
+                        [required]="true"></field-show>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label">手机</label>
+          <div class="col-sm-10 col-form-label">
+            <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'phone'" [type]="'string'"
+                        [required]="true"></field-show>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label">密码</label>
+          <div class="col-sm-10 col-form-label">
+            <span (click)="editPassword($event)" class="link">修改密码</span>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label">项目</label>
+          <div class="col-sm-10 col-form-label">
+            <p *ngFor="let project of recentProjects" [class.current]="project.projectId == currProject.id">
+              <span>{{project.projectName}}</span>
+              <span *ngIf="project.projectId == currProject.id">（当前）</span>
+            </p>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label">组织</label>
+          <div class="col-sm-10 col-form-label">
+            <p *ngFor="let org of orgs" [class.current]="org.id == orgId">
+              <span>{{org.name}}</span>
+              <span *ngIf="org.id == currOrgId">（当前）</span>
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </ba-card>
+</div>

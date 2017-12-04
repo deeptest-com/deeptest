@@ -1,0 +1,110 @@
+<div class="page-top clearfix" baScrollPosition maxHeight="50" (scrollChange)="scrolledChanged($event)"
+     [ngClass]="{scrolled: isScrolled}">
+  <a routerLink="/pages/dashboard" class="al-logo clearfix"><span>ng</span>testing</a>
+
+  <div class="menu change-orgs">
+    <div ngbDropdown class="btn-group">
+      <button class="btn btn-default" ngbDropdownToggle>
+        <span class="ion-navicon"></span>
+      </button>
+      <div class="dropdown-menu">
+        <button (click)="changeOrg(item)" *ngFor="let item of orgs" class="dropdown-item">
+          <span class="link">
+            <span [class.transparent]="item?.id!=orgId" class="ion-checkmark"></span>
+            &nbsp;{{item.name}}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="menu">
+
+    <div *ngIf="projects?.length == 0" ngbDropdown class="btn-group">
+      <button [routerLink]="['/pages/org/' + orgId + '/prjs']" class="btn btn-default">测试项目</button>
+    </div>
+    <div *ngIf="projects?.length > 0" ngbDropdown class="btn-group">
+      <button class="btn btn-default" ngbDropdownToggle>测试项目</button>
+      <div class="dropdown-menu">
+        <button class="dropdown-item">当前项目</button>
+        <button class="dropdown-item">
+          <a *ngIf="projects && projects[0]"
+             [routerLink]="['/pages/org/' + orgId + '/prjs/' + projects[0].projectId + '/view']">
+            {{projects[0].projectName}}
+          </a>
+          <a *ngIf="!projects || projects.length == 0">无</a>
+        </button>
+
+        <button class="dropdown-item next">最近查看</button>
+        <ng-container *ngFor="let item of projects; let i = index">
+          <button *ngIf="i > 0" class="dropdown-item" class="dropdown-item">
+            <a [routerLink]="['/pages/org/' + orgId + '/prjs/' + item.projectId + '/view']">
+              {{item.projectName}}</a>
+          </button>
+        </ng-container>
+
+        <button *ngIf="!projects || projects.length < 2" class="dropdown-item">
+          无
+        </button>
+
+        <li class="dropdown-divider"></li>
+
+        <button class="dropdown-item">
+          <a [routerLink]="['/pages/org/' + orgId + '/prjs']">所有项目</a>
+        </button>
+
+      </div>
+    </div>
+
+    <div *ngIf="prjId" ngbDropdown class="btn-group">
+      <button (click)="gotoModule('design')" class="btn btn-default">测试设计</button>
+    </div>
+
+    <div *ngIf="prjId" ngbDropdown class="btn-group">
+      <button (click)="gotoModule('implement')" class="btn btn-default" ngbDropdownToggle>测试执行</button>
+    </div>
+
+<!--    <div *ngIf="project.id" ngbDropdown class="btn-group">
+      <button (click)="gotoModule('analysis')" class="btn btn-default" ngbDropdownToggle>测试分析</button>
+    </div>-->
+
+    <div ngbDropdown class="btn-group">
+      <button [routerLink]="['/pages/org-admin/org/list']" class="btn btn-default">
+        组织管理
+      </button>
+    </div>
+    <div *ngIf="profile?.sysPrivilege?.sys_admin" ngbDropdown class="btn-group">
+      <button [routerLink]="['/pages/sys-admin']" class="btn btn-default">
+        系统管理
+      </button>
+    </div>
+
+  </div>
+
+  <div class="search">
+    <i class="ion-ios-search-strong" ng-click="startSearch()"></i>
+    <input id="searchInput" type="text" placeholder="Search for...">
+  </div>
+
+  <div class="user-profile clearfix">
+    <div class="dropdown al-user-profile">
+      <a class="profile-toggle-link dropdown-toggle" id="user-profile-dd" data-toggle="dropdown" aria-expanded="false">
+        <img src="{{ profile?.avatar | imgPath }}">
+      </a>
+      <ul class="dropdown-menu top-dropdown-menu profile-dropdown" aria-labelledby="user-profile-dd">
+        <li class="dropdown-item">
+          <a [routerLink]="['/pages/personal/profile']" href>
+            <i class="fa fa-user"></i>个人信息
+          </a>
+        </li>
+<!--        <li class="dropdown-item">
+          <a [routerLink]="['/pages/personal/settings']" href>
+            <i class="fa fa-cog"></i>设置
+          </a>
+        </li>-->
+        <li (click)="logout()" class="dropdown-item"><a href="javascript:void(0);" class="signout"><i class="fa fa-power-off"></i>登出</a></li>
+      </ul>
+    </div>
+    <ba-msg-center></ba-msg-center>
+  </div>
+</div>

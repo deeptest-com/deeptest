@@ -1,0 +1,7 @@
+<div [ngSwitch]="getEditorType()">
+    <textarea-editor *ngSwitchCase="'textarea'" [cell]="cell">
+    </textarea-editor>
+
+    <input-editor *ngSwitchDefault [cell]="cell">
+    </input-editor>
+</div>

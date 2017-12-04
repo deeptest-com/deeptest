@@ -1,0 +1,54 @@
+<div class="org-role-list container-fluid">
+  <div class="row">
+    <div class="list-toolbar col-xl-12">
+      <div class="title">
+        角色列表
+      </div>
+
+      <div class="filter">
+        <form [formGroup]="queryForm" class="form-inline">
+          <label for="disabled">状态</label>
+          <select [(ngModel)]="queryModel.disabled" formControlName="disabled"
+                  class="form-control form-control-sm" id="disabled" name="disabled">
+            <option *ngFor="let entry of (statusMap | mapToArray)" value="{{entry.key}}">{{entry.value}}</option>
+          </select>
+          &nbsp;&nbsp;&nbsp;
+          <label for="keywords">关键字</label>
+          <input [(ngModel)]="queryModel.keywords" formControlName="keywords"
+                 type="search" class="form-control form-control-sm" placeholder="" id="keywords" name="keywords">
+        </form>
+      </div>
+
+      <div class="buttons">
+        <button (click)="create()" type="button" class="btn btn-primary btn-with-icon btn-sm">
+          <i class="ion-plus-circled"></i>新建
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- /.row -->
+  <div class="row">
+    <div class="row">
+      <table class="table table-bordered table-striped">
+        <thead class="thead-inverse">
+        <tr>
+          <th style="width: 250px">名称</th>
+          <th>描述</th>
+          <th style="width: 150px">状态</th>
+          <th style="width: 150px">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let item of models">
+          <td>{{ item.name }}</td>
+          <th>{{ item.descr }}</th>
+          <td>{{statusMap[''+item.disabled]}}</td>
+          <td>
+            <span [routerLink]="['/pages/org-admin/org-role/edit', item.id]" class="link no-underline">编辑</span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

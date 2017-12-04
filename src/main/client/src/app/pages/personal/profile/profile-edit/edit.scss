@@ -1,0 +1,19 @@
+.profile-edit {
+  ba-card {
+    .card-header {
+      margin-bottom: 15px;
+    }
+
+    .card-body {
+      label {
+        //text-align: right;
+      }
+      p {
+        margin-bottom: 6px;
+      }
+      .current {
+        font-weight: bolder;
+      }
+    }
+  }
+}

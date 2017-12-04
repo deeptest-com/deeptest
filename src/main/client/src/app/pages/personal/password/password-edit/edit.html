@@ -1,0 +1,46 @@
+<div class="password-edit container-fluid">
+
+  <div class="row">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="my-validate-form">
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">旧密码</label>
+        <div class="col-sm-10">
+          <input type="password" class="form-control" name="oldPassword" formControlName="oldPassword"
+                 [(ngModel)]="model.oldPassword" #oldPassword>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">新密码</label>
+        <div class="col-sm-10">
+          <input type="password" class="form-control" name="password" formControlName="password"
+                 [(ngModel)]="model.password" #password [class.my-invalid]="form.errors?.passwordsEqual">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">重复新密码</label>
+        <div class="col-sm-10">
+          <input type="password" class="form-control" name="rePassword" formControlName="rePassword"
+                 [(ngModel)]="model.rePassword" #rePassword [class.my-invalid]="form.errors?.passwordsEqual">
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+          <button type="submit" class="btn btn-primary" [disabled]="!form.valid">提交</button>
+          <button (click)="cancel()" type="button" class="btn btn-default">取消</button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+          <div class="validate-errors">
+            <div class="validate-error" *ngFor="let msg of formErrors">
+              <div>{{ msg }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+<table *ngIf="models" class="table table-bordered table-striped table-tree">
+  <thead class="thead-inverse">
+  <tr>
+    <th scope="row" [colSpan]="2">名称</th>
+    <th>类型</th>
+    <th>状态</th>
+    <th>操作</th>
+  </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngFor="let model of models">
+      <tr table-row [model]="model"></tr>
+    </ng-container>
+  </tbody>
+</table>
+<!--<div *ngIf="!models">
+  暂无数据
+</div>-->

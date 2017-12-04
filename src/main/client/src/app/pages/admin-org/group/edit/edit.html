@@ -1,0 +1,121 @@
+<div class="group-edit container-fluid">
+  <div class="row">
+    <div class="edit-toolbar col-xl-12">
+      <div class="title">
+        <span *ngIf="!group?.id">新建群组</span>
+        <span *ngIf="group?.id">编辑群组</span>
+      </div>
+      <div class="buttons">
+        <button [routerLink]="['/pages/org-admin/group/list']" type="button"
+                class="btn btn-secondary btn-with-icon btn-sm back">
+          <i class="ion-backspace"></i>返回
+        </button>
+      </div>
+    </div>
+  </div>
+  <hr/>
+
+  <div class="tabs-container">
+    <div class="tabs">
+      <ngb-tabset  (tabChange)="tabChange($event)">
+        <ngb-tab id="info">
+          <ng-template ngbTabTitle>基本信息</ng-template>
+          <ng-template ngbTabContent></ng-template>
+        </ngb-tab>
+        <ngb-tab id="users">
+          <ng-template ngbTabTitle>用户</ng-template>
+          <ng-template ngbTabContent></ng-template>
+        </ngb-tab>
+      </ngb-tabset>
+    </div>
+  </div>
+
+  <div class="tab-bottom-space"></div>
+
+  <form [formGroup]="form" class="my-validate-form">
+    <div [class.hidden]="tab != 'info'" class="group-edit-info">
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label"><span>名称</span></label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" name="name" formControlName="name"
+                 [(ngModel)]="group.name" #name>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label"><span>描述</span></label>
+        <div class="col-sm-10">
+          <textarea type="text" class="form-control" name="descr" formControlName="descr"
+                    [(ngModel)]="group.descr" #descr></textarea>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <div class="offset-sm-2 col-sm-10">
+          <div class="form-check">
+            <label class="form-check-label">
+              <input type="checkbox" class="form-check-input" name="disabled" formControlName="disabled"
+                     [(ngModel)]="group.disabled" #disabled>
+              &nbsp;&nbsp;禁用
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div [class.hidden]="tab != 'users'" class="group-edit-users">
+      <div class="form-group row">
+        <label class="col-sm-1"></label>
+        <div class="col-sm-10">
+          <div class="checkbox-list">
+            <div class="checkbox-list-inner">
+              <div class="toolbar">
+                <div class="toolbar-inner">
+                  <span (click)="select('all')" class="link">全选</span> |
+                  <span (click)="select('none')" class="link">全不选</span>
+                </div>
+              </div>
+              <div>
+                <div *ngFor="let item of relations" class="checkbox-list-item">
+                  <label>
+                    <span class="checkbox-name">{{item.userName}}<span></span></span>
+                    <input type="checkbox" class="form-check-input"
+                           [(ngModel)]="item.selecting" formControlName="{{'user-' + item.userId}}">
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <label class="col-sm-1"></label>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label"></label>
+      <div class="col-sm-10">
+        <button (click)="save()" type="button" class="btn btn-primary" [disabled]="!form.valid">保存</button>
+        &nbsp;
+        <button [routerLink]="['/pages/org-admin/group/list']" type="button" class="btn btn-default">取消</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button (click)="showModal()" *ngIf="group.id" type="button" class="btn btn-danger">删除</button>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label"></label>
+      <div class="col-sm-10">
+        <div class="validate-errors">
+          <div class="validate-error" *ngFor="let msg of formErrors">
+            <div>{{ msg }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+</div>
+
+<pop-dialog #modalWrapper (confirm)="delete()" [title]="'提示'">
+  确认删除名为"{{group.name}}"的群组?
+</pop-dialog>

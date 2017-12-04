@@ -1,0 +1,14 @@
+<div class="case-suite">
+  <ng2-slim-loading-bar></ng2-slim-loading-bar>
+
+  <ztree
+        [treeModel]="treeModel"
+        [treeSettings]="treeSettings"
+        (renameEvent)="rename($event)"
+        (removeEvent)="remove($event)"
+         (moveEvent)="move($event)"
+
+         (dropEvent)="drop($event)"
+  ></ztree>
+
+</div>

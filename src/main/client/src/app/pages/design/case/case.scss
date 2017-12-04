@@ -1,0 +1,33 @@
+.case {
+  padding: 3px 0;
+
+  .main {
+    position: relative;
+    touch-callout: none;
+    user-select: none;
+
+    .suite {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 30%;
+    }
+
+    .detail {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 70%;
+    }
+
+    .resize-handle {
+      position:absolute;
+      top:0;
+      left: 30%;
+      width: 3px;
+      cursor: col-resize;
+      background-color: #eeeeee;
+      z-index: 99;
+    }
+  }
+}

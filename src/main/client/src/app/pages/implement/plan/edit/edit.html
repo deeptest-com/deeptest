@@ -1,0 +1,150 @@
+<div class="plan-edit container-fluid">
+  <div class="row">
+    <div class="edit-toolbar col-xl-12">
+      <div class="title">
+        <span *ngIf="!model?.id">新建计划</span>
+        <span *ngIf="model?.id">编辑计划</span>
+      </div>
+      <div class="buttons">
+        <button [routerLink]="['/pages/org/' + orgId + '/prj/' + prjId + '/implement/plan/list']" type="button"
+                class="btn btn-secondary btn-with-icon btn-sm back">
+          <i class="ion-backspace"></i>返回
+        </button>
+      </div>
+    </div>
+  </div>
+  <hr/>
+
+  <form [formGroup]="form" class="my-validate-form">
+    <div class="org-edit">
+      <div class="form-group row">
+        <label class="col-sm-1 col-form-label"><span>名称</span></label>
+        <div class="col-sm-5">
+          <input type="text" class="form-control" name="name" formControlName="name"
+                 [(ngModel)]="model.name" #name>
+        </div>
+
+        <label class="col-sm-1 col-form-label"><span>耗时(小时)</span></label>
+        <div class="col-sm-5">
+          <input type="text" class="form-control" name="estimate" formControlName="estimate"
+                 [(ngModel)]="model.estimate" #estimate>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-1 col-form-label"><span>开始时间</span></label>
+        <div class="col-sm-5">
+          <div class="input-group">
+            <input class="form-control" placeholder="yyyy-mm-dd" name="startTime" formControlName="startTime" #startTime="ngbDatepicker"
+                   [(ngModel)]="model.startTime" ngbDatepicker [minDate]="startDate">
+            <div class="input-group-addon" (click)="startTime.toggle()" >
+              <i class="ion-calendar"></i>
+            </div>
+          </div>
+        </div>
+
+        <label class="col-sm-1 col-form-label"><span>结束时间</span></label>
+        <div class="col-sm-5">
+          <div class="input-group">
+            <input class="form-control" placeholder="yyyy-mm-dd" name="endTime" formControlName="endTime"
+                   [(ngModel)]="model.endTime" ngbDatepicker [minDate]="startDate" #endTime="ngbDatepicker">
+            <div class="input-group-addon" (click)="endTime.toggle()" >
+              <i class="ion-calendar"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-1 col-form-label"><span>简介</span></label>
+        <div class="col-sm-11">
+              <textarea type="text" class="form-control" name="descr" formControlName="descr"
+                        [(ngModel)]="model.descr" #descr></textarea>
+        </div>
+      </div>
+
+<!--      <div class="form-group row">
+        <div class="offset-sm-1 col-sm-11">
+          <div class="form-check">
+            <label class="form-check-label">
+              <input type="checkbox" class="form-check-input" name="disabled" formControlName="disabled"
+                     [(ngModel)]="model.disabled" #disabled>
+              &nbsp;&nbsp;禁用
+            </label>
+          </div>
+        </div>
+      </div>-->
+
+      <div class="test-sets form-group row">
+        <label class="col-sm-1 col-form-label">
+          <span>测试集</span>
+        </label>
+
+        <div class="col-sm-11 run-list">
+          <table class="table">
+            <thead>
+            <tr>
+              <th style="width: 50px;" class="id">编号</th>
+              <th>标题</th>
+              <th style="width: 300px;">执行情况</th>
+              <th style="width: 250px;" class="opt">
+                <span (click)="createRun()" *ngIf="form.valid" class="link no-underline">新建</span>
+              </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of model.runVos; let i = index;">
+              <td>{{i+1}}</td>
+              <td [routerLink]="['/pages/implement/run/execution', item.id]" class="pointer">{{item.name}}</td>
+              <td>
+                <execution-bar [data]="item"></execution-bar>
+              </td>
+              <td class="center">
+                <span (click)="editRun(item)" class="link no-underline">编辑</span>
+                <span (click)="editRunCases(item, i)" class="link no-underline">用例</span>
+                <!--<span (click)="editEnvi(item, i)" class="link no-underline">环境</span>-->
+                <span (click)="removeSet(item, i)" class="link no-underline">删除</span>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="form-group row">
+      <div class="offset-sm-1  col-sm-11">
+        <button (click)="save()" type="button" class="btn btn-primary" [disabled]="!form.valid">保存</button>
+        &nbsp;
+        <button [routerLink]="['/pages/implement/'+projectId+'/plan/list']" type="button" class="btn btn-default">取消</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button (click)="delete()" *ngIf="model.id" type="button" class="btn btn-danger">删除</button>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="offset-sm-1 col-sm-11">
+        <div class="validate-errors">
+          <div class="validate-error" *ngFor="let msg of formErrors">
+            <div>{{ msg }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+</div>
+
+<pop-dialog #modalEditRun (confirm)="saveRun()" [title]="'测试集'">
+  <div>
+    <input class="form-control" name="runName" [(ngModel)]="run.name">
+  </div>
+</pop-dialog>
+
+<pop-dialog #modalDelete (confirm)="deleteConfirm()" [title]="modalTitle">
+  确认删除名为"{{model.name}}"的测试计划？
+</pop-dialog>
+
+<pop-dialog #modalRemoveSet (confirm)="removeSetConfirm()" [title]="modalTitle">
+  <div *ngIf="testSet"> 确认删除名为"{{testSet.name}}"的测试集? </div>
+</pop-dialog>

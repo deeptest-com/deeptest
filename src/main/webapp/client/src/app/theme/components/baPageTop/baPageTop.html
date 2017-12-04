@@ -21,7 +21,7 @@
   <div class="menu">
 
     <div *ngIf="projects?.length == 0" ngbDropdown class="btn-group">
-      <button [routerLink]="['/pages/project/list']" class="btn btn-default">测试项目</button>
+      <button [routerLink]="['/pages/org/' + orgId + '/prjs']" class="btn btn-default">测试项目</button>
     </div>
     <div *ngIf="projects?.length > 0" ngbDropdown class="btn-group">
       <button class="btn btn-default" ngbDropdownToggle>测试项目</button>
@@ -56,11 +56,11 @@
       </div>
     </div>
 
-    <div *ngIf="project.id" ngbDropdown class="btn-group">
+    <div *ngIf="prjId" ngbDropdown class="btn-group">
       <button (click)="gotoModule('design')" class="btn btn-default">测试设计</button>
     </div>
 
-    <div *ngIf="project.id" ngbDropdown class="btn-group">
+    <div *ngIf="prjId" ngbDropdown class="btn-group">
       <button (click)="gotoModule('implement')" class="btn btn-default" ngbDropdownToggle>测试执行</button>
     </div>
 

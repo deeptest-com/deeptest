@@ -30,6 +30,9 @@ declare var jQuery;
   providers: [I18n, {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n}]
 })
 export class PlanView implements OnInit, AfterViewInit {
+  orgId: number;
+  prjId: number;
+
   planId: number;
   model: any = {};
   form: any;
@@ -43,14 +46,11 @@ export class PlanView implements OnInit, AfterViewInit {
 
   }
   ngOnInit() {
-    let that = this;
+    this.orgId = CONSTANT.CURR_ORG_ID;
+    this.prjId = CONSTANT.CURR_PRJ_ID;
 
-    that._route.params.forEach((params: Params) => {
-      that.planId = +params['planId'];
-    });
-
-    if (that.planId) {
-      that.loadData();
+    if (this.planId) {
+      this.loadData();
     }
   }
   ngAfterViewInit() {}
@@ -63,11 +63,11 @@ export class PlanView implements OnInit, AfterViewInit {
   }
 
   exe(runId: number) {
-    this._routeService.navTo('/pages/' + CONSTANT.CURR_ORG_ID + '/implement/' + CONSTANT.CURR_PRJ_ID + '/plan/' + this.planId + '/execution/' + runId);
+    this._routeService.navTo('/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID + '/implement/plan/' + this.planId + '/execution/' + runId);
   }
 
   returnTo() {
-    let url: string = '/pages/' + CONSTANT.CURR_ORG_ID + '/implement/' + CONSTANT.CURR_PRJ_ID + '/plan/list';
+    let url: string = '/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID + '/implement/plan/list';
     this._routeService.navTo(url);
   }
 

@@ -6,7 +6,7 @@
         <span *ngIf="model?.id">编辑测试集</span>
       </div>
       <div class="buttons">
-        <button [routerLink]="['/pages/implement/plan/list']" type="button"
+        <button [routerLink]="['/pages/org/' + orgId + '/prj/' + prjId + '/implement/plan/list']" type="button"
                 class="btn btn-secondary btn-with-icon btn-sm back">
           <i class="ion-backspace"></i>返回
         </button>
@@ -85,7 +85,7 @@
       <div class="offset-sm-1  col-sm-11">
         <button (click)="save()" type="button" class="btn btn-primary" [disabled]="!form.valid">保存</button>
         &nbsp;
-        <button [routerLink]="['/pages/org-admin/org/list']" type="button" class="btn btn-default">取消</button>
+        <button [routerLink]="['/pages/org/' + orgId + '/prj/' + prjId + '/implement/plan/list']" type="button" class="btn btn-default">取消</button>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <button (click)="delete()" *ngIf="model.id" type="button" class="btn btn-danger">删除</button>
       </div>

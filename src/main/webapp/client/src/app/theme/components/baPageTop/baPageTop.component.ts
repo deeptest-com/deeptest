@@ -1,4 +1,4 @@
-import {Component} from "@angular/core";
+import {Component, OnInit, AfterViewInit} from "@angular/core";
 
 import {Router} from "@angular/router";
 
@@ -14,11 +14,14 @@ import {AccountService} from "../../../service/account";
   templateUrl: './baPageTop.html',
   styleUrls: ['./baPageTop.scss']
 })
-export class BaPageTop {
+export class BaPageTop implements OnInit, AfterViewInit {
+  orgId: number;
+  prjId: number;
+
   profile: any = {};
   project: any = {};
   projects: any[] = [];
-  orgId: number;
+
   orgs: any[] = [];
 
   public isScrolled: boolean = false;
@@ -44,12 +47,14 @@ export class BaPageTop {
 
     this._state.subscribe(CONSTANT.STATE_CHANGE_PROJECTS, (data) => {
       console.log(CONSTANT.STATE_CHANGE_PROJECTS, data);
+      this.prjId = CONSTANT.CURR_PRJ_ID;
+
       if (data.recentProjects) {
         this.projects = data.recentProjects;
       }
-      if (data.currProject) {
-        this.project = data.currProject;
-      }
+      // if (data.currProject) {
+      //   this.project = data.currProject;
+      // }
     });
 
     this._state.subscribe('menu.isCollapsed', (isCollapsed) => {
@@ -63,6 +68,13 @@ export class BaPageTop {
       }
     });
   }
+
+  ngOnInit() {
+    this.orgId = CONSTANT.CURR_ORG_ID;
+    this.prjId = CONSTANT.CURR_PRJ_ID;
+
+  }
+  ngAfterViewInit() {}
 
   public changeOrg(item: any) {
     this.orgService.setDefault(item.id, {disabled: false}).subscribe((json: any) => {
@@ -85,9 +97,9 @@ export class BaPageTop {
   gotoModule(module: string) {
     let url = '';
     if (module == 'design') {
-      url = '/pages/' + CONSTANT.CURR_ORG_ID + '/design/' + CONSTANT.CURR_PRJ_ID + '/design/case';
+      url = '/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID + '/design/case';
     } else if (module == 'implement') {
-      url = '/pages/' + CONSTANT.CURR_ORG_ID + '/implement/' + CONSTANT.CURR_PRJ_ID + '/plan/list';
+      url = '/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID + '/implement/plan/list';
     }
 
     this._routeService.navTo(url);

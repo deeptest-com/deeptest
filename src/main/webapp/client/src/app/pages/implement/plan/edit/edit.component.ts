@@ -61,13 +61,11 @@ export class PlanEdit implements OnInit, AfterViewInit {
               private _i18n: I18n, private modalService: NgbModal, private compiler: Compiler, private ngbDateParserFormatter: NgbDateParserFormatter,
               private _planService: PlanService, private _runService: RunService, private _caseService: CaseService, private _userService: UserService) {
 
-    this.orgId = CONSTANT.CURR_ORG_ID;
-    this.prjId = CONSTANT.CURR_PRJ_ID;
+
   }
   ngOnInit() {
-    this._route.params.forEach((params: Params) => {
-      this.planId = +params['planId'];
-    });
+    this.orgId = CONSTANT.CURR_ORG_ID;
+    this.prjId = CONSTANT.CURR_PRJ_ID;
 
     if (this.planId) {
       this.loadData();

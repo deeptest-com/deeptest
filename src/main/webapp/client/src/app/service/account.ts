@@ -178,7 +178,7 @@ export class AccountService {
       CONSTANT.CURR_ORG_ID = currOrgId;
       console.log('change orgId ' + CONSTANT.CURR_ORG_ID);
     }
-    if (gotoDefault) {this.routeService.navTo("/pages/project/list");}
+    if (gotoDefault) {this.routeService.navTo('/pages/org/' + CONSTANT.CURR_ORG_ID + '/prjs');}
 
     this._state.notifyDataChanged(CONSTANT.STATE_CHANGE_ORGS, {orgs: orgs, currOrgId: currOrgId});
   }

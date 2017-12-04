@@ -30,6 +30,9 @@ declare var jQuery;
   providers: [I18n, {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n}]
 })
 export class RunEdit implements OnInit, AfterViewInit {
+  orgId: number;
+  prjId: number;
+
   id: number;
   model: any = {};
   form: any;
@@ -45,16 +48,13 @@ export class RunEdit implements OnInit, AfterViewInit {
 
   }
   ngOnInit() {
-    let that = this;
+    this.orgId = CONSTANT.CURR_ORG_ID;
+    this.prjId = CONSTANT.CURR_PRJ_ID;
 
-    that._route.params.forEach((params: Params) => {
-      that.id = +params['id'];
-    });
-
-    if (that.id) {
-      that.loadData();
+    if (this.id) {
+      this.loadData();
     }
-    that.buildForm();
+    this.buildForm();
   }
   ngAfterViewInit() {}
 
@@ -123,7 +123,7 @@ export class RunEdit implements OnInit, AfterViewInit {
       if (json.code == 1) {
         this.formErrors = ['删除成功'];
         this.modalDelete.closeModal();
-        this._routeService.navTo("/pages/implement/plan/list");
+        this._routeService.navTo('/pages/org/' + this.orgId + '/prj/' + this.prjId + '/implement/plan/list');
       } else {
         this.formErrors = ['删除失败'];
       }

@@ -53,15 +53,11 @@ export class ProjectList implements OnInit, AfterViewInit {
   }
 
   create(type: string):void {
-    let that = this;
-
-    that._routeService.navTo('/pages/project/null/edit/' + type);
+    this._routeService.navTo('/pages/org/' + CONSTANT.CURR_ORG_ID + '/prjs/null/edit/' + type);
   }
 
   queryChange(values:any):void {
-    let that = this;
-
-    that.loadData();
+    this.loadData();
   }
   pageChange(event:any):void {
     this.loadData();

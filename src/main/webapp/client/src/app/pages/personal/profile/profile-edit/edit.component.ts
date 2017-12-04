@@ -40,7 +40,7 @@ export class ProfileEdit implements OnInit, AfterViewInit {
     this._state.subscribe(CONSTANT.STATE_CHANGE_PROJECTS, (data) => {
       console.log(CONSTANT.STATE_CHANGE_PROJECTS, data);
       this.recentProjects = data.recentProjects;
-      this.currProject = data.currProject;
+      this.currProject = {id: CONSTANT.CURR_PRJ_ID, name: CONSTANT.CURR_PRJ_NAME};
     });
     this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, (data) => {
       console.log(CONSTANT.STATE_CHANGE_ORGS, data);
@@ -79,9 +79,7 @@ export class ProfileEdit implements OnInit, AfterViewInit {
       this.orgId = CONSTANT.CURR_ORG_ID;
 
       this.recentProjects =  CONSTANT.RECENT_PROJECTS;
-      this.currProject = CONSTANT.CURRENT_PROJECT;
-
-      console.log(this.orgs, this.recentProjects);
+      this.currProject = {id: CONSTANT.CURR_PRJ_ID, name: CONSTANT.CURR_PRJ_NAME};
     }
   }
 
@@ -99,7 +97,6 @@ export class ProfileEdit implements OnInit, AfterViewInit {
   }
 
   editPassword(event: any) {
-    console.log('===');
     this.passwordPopop = this.modalService.open(PasswordEditPopupComponent, {windowClass: ''});
     this.passwordPopop.result.then((result) => {
 

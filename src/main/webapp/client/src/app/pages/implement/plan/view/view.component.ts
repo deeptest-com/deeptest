@@ -63,11 +63,11 @@ export class PlanView implements OnInit, AfterViewInit {
   }
 
   exe(runId: number) {
-    this._routeService.navTo('/pages/implement/' + CONSTANT.CURRENT_PROJECT.id + '/plan/' + this.planId + '/execution/' + runId);
+    this._routeService.navTo('/pages/' + CONSTANT.CURR_ORG_ID + '/implement/' + CONSTANT.CURR_PRJ_ID + '/plan/' + this.planId + '/execution/' + runId);
   }
 
   returnTo() {
-    let url: string = '/pages/implement/' + CONSTANT.CURRENT_PROJECT.id + '/plan/list';
+    let url: string = '/pages/' + CONSTANT.CURR_ORG_ID + '/implement/' + CONSTANT.CURR_PRJ_ID + '/plan/list';
     this._routeService.navTo(url);
   }
 

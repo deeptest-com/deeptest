@@ -15,9 +15,12 @@ import {PlanService} from "../../../../service/plan";
   templateUrl: './list.html'
 })
 export class PlanList implements OnInit, AfterViewInit {
+  orgId: number;
+  prjId: number;
+  isInit: boolean;
+
   models: any;
 
-  projectId: number;
   queryForm: FormGroup;
   queryModel:any = {keywords: '', status: ''};
   statusMap: Array<any> = CONSTANT.ExeStatus;
@@ -32,40 +35,47 @@ export class PlanList implements OnInit, AfterViewInit {
         'keywords': ['', []]
       }, {}
     );
+
     this.queryForm.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.queryChange(values));
   }
 
   ngOnInit() {
-    this._route.params.forEach((params: Params) => {
-      this.projectId = +params['projectId'];
-    });
+    this.orgId = CONSTANT.CURR_ORG_ID;
+    this.prjId = CONSTANT.CURR_PRJ_ID;
+    console.log('PlanList ngOnInit', this.orgId, this.prjId);
 
+    console.log('=1=', this.orgId, this.prjId);
     this.loadData();
   }
 
   ngAfterViewInit() {
-    let that = this;
+
   }
 
   create():void {
     let that = this;
 
-    that._routeService.navTo("/pages/implement/" + this.projectId + "/plan/null/edit");
+    that._routeService.navTo('/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID
+        + '/implement/plan/null/edit');
   }
 
-  delete(eventId:string):void {
+  delete(projectId: string):void {
 
   }
 
   loadData() {
 
-    this._planService.query(this.projectId, this.queryModel).subscribe((json:any) => {
+    this._planService.query(CONSTANT.CURR_PRJ_ID, this.queryModel).subscribe((json:any) => {
       this.models = json.data;
+      this.isInit = true;
     });
   }
 
   queryChange(values:any):void {
-    this.loadData();
+    if (this.isInit) {
+      console.log('=2=', this.orgId, this.prjId);
+      this.loadData();
+    }
   }
 
 }

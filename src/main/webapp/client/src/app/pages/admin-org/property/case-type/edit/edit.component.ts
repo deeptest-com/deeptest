@@ -11,7 +11,7 @@ import {GlobalState} from '../../../../../global.state';
 
 import { CONSTANT } from '../../../../../utils/constant';
 import { Utils } from '../../../../../utils/utils';
-import {ValidatorUtils, EmailValidator, PhoneValidator} from '../../../../../validator';
+import {ValidatorUtils, PhoneValidator} from '../../../../../validator';
 import { RouteService } from '../../../../../service/route';
 
 import { CaseTypeService } from '../../../../../service/case-type';

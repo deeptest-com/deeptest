@@ -55,7 +55,7 @@ export class Register {
     },
     'email': {
       'required':      '邮箱不能为空',
-      'validate': '邮箱格式错误'
+      'email': '邮箱格式错误'
     },
     'phone': {
       'required':      '手机不能为空',

@@ -28,14 +28,18 @@
       <div class="dropdown-menu">
         <button class="dropdown-item">当前项目</button>
         <button class="dropdown-item">
-          <a *ngIf="projects && projects[0]" [routerLink]="['/pages/project', projects[0].projectId, 'view']">{{projects[0].projectName}}</a>
+          <a *ngIf="projects && projects[0]"
+             [routerLink]="['/pages/org/' + orgId + '/prjs/' + projects[0].projectId + '/view']">
+            {{projects[0].projectName}}
+          </a>
           <a *ngIf="!projects || projects.length == 0">无</a>
         </button>
 
         <button class="dropdown-item next">最近查看</button>
         <ng-container *ngFor="let item of projects; let i = index">
           <button *ngIf="i > 0" class="dropdown-item" class="dropdown-item">
-            <a [routerLink]="['/pages/project', item.projectId, 'view']">{{item.projectName}}</a>
+            <a [routerLink]="['/pages/org/' + orgId + '/prjs/' + item.projectId + '/view']">
+              {{item.projectName}}</a>
           </button>
         </ng-container>
 
@@ -46,7 +50,7 @@
         <li class="dropdown-divider"></li>
 
         <button class="dropdown-item">
-          <a [routerLink]="['/pages/project/list']">所有项目</a>
+          <a [routerLink]="['/pages/org/' + orgId + '/prjs']">所有项目</a>
         </button>
 
       </div>
@@ -69,7 +73,7 @@
         组织管理
       </button>
     </div>
-    <div *ngIf="profile?.sysPrivilege.sys_admin" ngbDropdown class="btn-group">
+    <div *ngIf="profile?.sysPrivilege?.sys_admin" ngbDropdown class="btn-group">
       <button [routerLink]="['/pages/sys-admin']" class="btn btn-default">
         系统管理
       </button>

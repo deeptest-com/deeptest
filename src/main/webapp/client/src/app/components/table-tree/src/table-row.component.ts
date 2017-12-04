@@ -9,6 +9,7 @@ import { CONSTANT } from '../../../utils/constant';
   templateUrl: './table-row.html'
 })
 export class TableRowComponent implements OnInit {
+  orgId: number;
   @Input()
   public model: any;
   @Input()
@@ -19,7 +20,7 @@ export class TableRowComponent implements OnInit {
   counter = Array;
 
   constructor(private _state:GlobalState, private el: ElementRef) {
-    let that = this;
+    this.orgId = CONSTANT.CURR_ORG_ID;
 
   }
 

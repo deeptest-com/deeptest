@@ -11,6 +11,9 @@ import { I18n, CustomDatepickerI18n } from '../../service/datepicker-I18n';
 
 import { Implement } from './implement.component';
 
+import { ProjectService } from '../../service/project';
+import { AccountService } from '../../service/account';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -25,7 +28,8 @@ import { Implement } from './implement.component';
     Implement
   ],
   providers: [
-    I18n, CustomDatepickerI18n
+    I18n, CustomDatepickerI18n,
+    AccountService, ProjectService
   ]
 })
 export class ImplementModule {}

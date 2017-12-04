@@ -34,9 +34,11 @@ declare var jQuery;
   providers: [I18n, {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n}]
 })
 export class PlanEdit implements OnInit, AfterViewInit {
+  orgId: number;
+  prjId: number;
+
   treeSettings: any = {usage: 'selection', isExpanded: true, sonSign: false};
 
-  projectId: number;
   planId: number;
   startDate: any;
   model: any = {runVos: []};
@@ -59,9 +61,8 @@ export class PlanEdit implements OnInit, AfterViewInit {
               private _i18n: I18n, private modalService: NgbModal, private compiler: Compiler, private ngbDateParserFormatter: NgbDateParserFormatter,
               private _planService: PlanService, private _runService: RunService, private _caseService: CaseService, private _userService: UserService) {
 
-    this._route.params.forEach((params: Params) => {
-      this.projectId = +params['projectId'];
-    });
+    this.orgId = CONSTANT.CURR_ORG_ID;
+    this.prjId = CONSTANT.CURR_PRJ_ID;
   }
   ngOnInit() {
     this._route.params.forEach((params: Params) => {
@@ -124,9 +125,9 @@ export class PlanEdit implements OnInit, AfterViewInit {
   }
 
   save() {
-    this._planService.save(CONSTANT.CURRENT_PROJECT.id, this.model).subscribe((json:any) => {
+    this._planService.save(CONSTANT.CURR_PRJ_ID, this.model).subscribe((json:any) => {
       if (json.code == 1) {
-        this._routeService.navTo("/pages/implement/" + CONSTANT.CURRENT_PROJECT.id + "/plan/list");
+        this._routeService.navTo('/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID + '/implement/plan/list');
       } else {
         this.formErrors = [json.msg];
       }
@@ -149,7 +150,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
   }
   saveRun() {
     if (!this.model.id) {
-      this._planService.save(CONSTANT.CURRENT_PROJECT.id, this.model).subscribe((json:any) => {
+      this._planService.save(CONSTANT.CURR_PRJ_ID, this.model).subscribe((json:any) => {
         if (json.code == 1) {
           this.planId = json.data.id;
           this.model = json.data;
@@ -175,10 +176,10 @@ export class PlanEdit implements OnInit, AfterViewInit {
     this.caseSelectionModal = this.modalService.open(CaseSelectionComponent, {windowClass: 'pop-selection'});
     this.caseSelectionModal.componentInstance.treeSettings = this.treeSettings;
 
-    this._caseService.queryForSelection(CONSTANT.CURRENT_PROJECT.id, run.id).subscribe((json:any) => {
+    this._caseService.queryForSelection(CONSTANT.CURR_PRJ_ID, run.id).subscribe((json:any) => {
       this.caseSelectionModal.componentInstance.treeModel = json.data;
     });
-    this._userService.getUsers(CONSTANT.CURRENT_PROJECT.id).subscribe((json:any) => {
+    this._userService.getUsers(CONSTANT.CURR_PRJ_ID).subscribe((json:any) => {
       this.caseSelectionModal.componentInstance.users = json.data;
     });
 
@@ -217,7 +218,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
         this.formErrors = ['删除成功'];
         this.modalDelete.closeModal();
 
-        let url: string = '/pages/implement/' + CONSTANT.CURRENT_PROJECT.id + '/plan/list';
+        let url: string = '/pages/' + CONSTANT.CURR_ORG_ID + '/implement/' + CONSTANT.CURR_PRJ_ID + '/plan/list';
         this._routeService.navTo(url);
       } else {
         this.formErrors = ['删除失败'];

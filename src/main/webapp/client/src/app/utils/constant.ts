@@ -8,15 +8,17 @@ export var CONSTANT: CONSTANT_INTERFACE = {
   API_PATH: 'api/client/v1/',
   UPLOAD_URI: 'api/client/v1/uploadSingle',
 
+  CURR_ORG_ID: undefined,
+  CURR_PRJ_ID: undefined,
+  CURR_PRJ_NAME: undefined,
+
   TOKEN: undefined,
 
   PROFILE: undefined,
 
   ALL_ORGS: undefined,
-  CURR_ORG_ID: undefined,
 
   RECENT_PROJECTS: undefined,
-  CURRENT_PROJECT: {id: null, name: null},
 
   CUSTOM_FIELD_FOR_PROJECT: undefined,
   CASE_PROPERTY_MAP: undefined,
@@ -35,11 +37,6 @@ export var CONSTANT: CONSTANT_INTERFACE = {
   STATE_CHANGE_PROJECTS: 'recent.projects.change'
 };
 
-export interface CURRENT_PROJECT_INTERFACE {
-  id: number,
-  name: string
-}
-
 export interface CONSTANT_INTERFACE {
   _SERVICE_URL_DEV: string,
   _SERVICE_URL_PRODUCTION: string,
@@ -50,15 +47,17 @@ export interface CONSTANT_INTERFACE {
   API_PATH: string,
   UPLOAD_URI: string,
 
+  CURR_ORG_ID: number,
+  CURR_PRJ_ID: number,
+  CURR_PRJ_NAME: string,
+
   TOKEN: string,
 
   PROFILE: any,
 
   ALL_ORGS: any[],
-  CURR_ORG_ID: number,
 
   RECENT_PROJECTS: any[],
-  CURRENT_PROJECT: CURRENT_PROJECT_INTERFACE,
 
   CUSTOM_FIELD_FOR_PROJECT: any,
   CASE_PROPERTY_MAP: any,

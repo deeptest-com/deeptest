@@ -93,7 +93,7 @@ export class SettingsEdit implements OnInit, AfterViewInit {
     },
     'email': {
       'required':      '邮件不能为空',
-      'emailValidator': '邮件格式错误'
+      'email': '邮件格式错误'
     }
   };
 

@@ -31,10 +31,7 @@ export class CaseSuite implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this._route.params.forEach((params: Params) => {
-      this.projectId = +params['projectId'];
-    });
-
+    this.projectId = CONSTANT.CURR_PRJ_ID;
     this.loadData();
   }
 

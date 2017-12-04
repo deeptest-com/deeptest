@@ -24,7 +24,7 @@ ng2-admin/
    │   │
    │   ├──app/                          * application code - our working directory
    │   │   ├──pages/
-   │   │   │   ├──pages.menu.ts         * menu pages routes
+   │   │   │   ├──org.menu.ts         * menu pages routes
    │   │   │
    │   │   ├──app.component.ts          * main application component
    │   │   │

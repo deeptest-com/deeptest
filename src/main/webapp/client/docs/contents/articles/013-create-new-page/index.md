@@ -77,7 +77,7 @@ export class NewModule {}
 ```
 <br>
 
-5) The penultimate thing we need to do is to declare a route in `src/app/pages/pages.menu.ts`.
+5) The penultimate thing we need to do is to declare a route in `src/app/pages/org.menu.ts`.
 Typically all pages are children of the `/pages` route and defined under the `children` property of the root `pages` route like this:
 
 ```javascript
@@ -138,4 +138,4 @@ const routes: Routes = [
 
 And that's it! Now your page is available by the following this url [http://localhost:4200/#/pages/new](http://localhost:4200/#/pages/new).
 Plus, your page is registered inside the sidebar menu. If you don't want to have a link 
-in the menu - just remove the `menu` declaration from the `pages.menu.ts` file.
+in the menu - just remove the `menu` declaration from the `org.menu.ts` file.

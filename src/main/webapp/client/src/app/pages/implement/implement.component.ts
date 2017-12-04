@@ -1,4 +1,5 @@
 import {Component} from "@angular/core";
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { GlobalState } from '../../global.state';
 
 @Component({
@@ -7,8 +8,9 @@ import { GlobalState } from '../../global.state';
   templateUrl: './implement.html'
 })
 export class Implement {
+  prjId: number;
 
-  constructor(private _state: GlobalState) {
+  constructor(private _route: ActivatedRoute) {
 
   }
 

@@ -78,7 +78,7 @@ export class UserEdit implements OnInit, AfterViewInit {
     },
     'email': {
       'required':      '邮箱不能为空',
-      'validate':      '邮箱格式不正确'
+      'email':      '邮箱格式错误'
     },
     'phone': {
       'required':      '手机不能为空',

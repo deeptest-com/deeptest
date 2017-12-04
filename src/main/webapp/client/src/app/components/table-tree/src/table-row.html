@@ -13,8 +13,8 @@
   <span *ngIf="model.disabled">归档</span>
 </td>
 <td class="opt">
-  <span *ngIf="model.type=='project'" [routerLink]="['/pages/project', model.id, 'view']" class="link no-underline">查看</span>
-  <span [routerLink]="['/pages/project', model.id, 'edit', model.type]" class="link no-underline">编辑</span>
-  <span *ngIf="model.type=='project'" [routerLink]="['/pages/design', model.id, 'case']" class="link no-underline">设计</span>
-  <span *ngIf="model.type=='project'" [routerLink]="['/pages/implement', model.id, 'plan', 'list']" class="link no-underline">执行</span>
+  <span *ngIf="model.type=='project'" [routerLink]="['/pages/org/' + orgId + '/prjs/' + model.id + '/view']" class="link no-underline">查看</span>
+  <span [routerLink]="['/pages/org/' + orgId + '/prjs/' +model.id+ '/edit/' + model.type]" class="link no-underline">编辑</span>
+  <span *ngIf="model.type=='project'" [routerLink]="['/pages/org/' + orgId + '/prj/' + model.id + '/design/case']" class="link no-underline">设计</span>
+  <span *ngIf="model.type=='project'" [routerLink]="['/pages/org/' + orgId + '/prj/' + model.id + '/implement/plan/list']" class="link no-underline">执行</span>
 </td>

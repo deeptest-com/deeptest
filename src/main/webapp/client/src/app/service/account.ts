@@ -44,10 +44,7 @@ export class AccountService {
         let days:number = model.rememberMe? 30: 1;
 
         that.saveTokenLocal(json.token, days);
-        // that.changeProfile(json.profile);
-        // that.changeRecentProject(json.recentProjects);
-
-        that.routeService.navTo('/pages/project/list');
+        that.routeService.navTo('/pages/org/' + json.profile.defaultOrgId + '/prjs');
       } else {
         errors = json.msg;
       }
@@ -179,6 +176,7 @@ export class AccountService {
     }
     if (currOrgId) {
       CONSTANT.CURR_ORG_ID = currOrgId;
+      console.log('change orgId ' + CONSTANT.CURR_ORG_ID);
     }
     if (gotoDefault) {this.routeService.navTo("/pages/project/list");}
 
@@ -189,14 +187,15 @@ export class AccountService {
     CONSTANT.RECENT_PROJECTS = recentProjects;
 
     if (recentProjects.length > 0) {
-      CONSTANT.CURRENT_PROJECT = {id: recentProjects[0].projectId, name: recentProjects[0].projectName};
-      console.log('CONSTANT.CURRENT_PROJECT:', CONSTANT.CURRENT_PROJECT);
+      CONSTANT.CURR_PRJ_ID = recentProjects[0].projectId;
+      CONSTANT.CURR_PRJ_NAME = recentProjects[0].projectName;
     } else {
-      CONSTANT.CURRENT_PROJECT = {id: null, name: ''};
+      CONSTANT.CURR_PRJ_ID = undefined;
+      CONSTANT.CURR_PRJ_NAME = undefined;
     }
 
     this._state.notifyDataChanged(CONSTANT.STATE_CHANGE_PROJECTS,
-      {recentProjects: CONSTANT.RECENT_PROJECTS, currProject: CONSTANT.CURRENT_PROJECT});
+      {recentProjects: CONSTANT.RECENT_PROJECTS});
   }
 
   changeCasePropertyMap(casePropertyMap: any) {

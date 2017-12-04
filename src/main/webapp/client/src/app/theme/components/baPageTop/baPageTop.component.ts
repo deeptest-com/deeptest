@@ -15,11 +15,11 @@ import {AccountService} from "../../../service/account";
   styleUrls: ['./baPageTop.scss']
 })
 export class BaPageTop {
-  profile: any = CONSTANT.PROFILE;
-  project: any = CONSTANT.CURRENT_PROJECT;
-  projects: any[] = CONSTANT.RECENT_PROJECTS;
-  orgId: any = CONSTANT.CURR_ORG_ID;
-  orgs: any[] = CONSTANT.ALL_ORGS;
+  profile: any = {};
+  project: any = {};
+  projects: any[] = [];
+  orgId: number;
+  orgs: any[] = [];
 
   public isScrolled: boolean = false;
   public isMenuCollapsed: boolean = false;
@@ -52,15 +52,15 @@ export class BaPageTop {
       }
     });
 
+    this._state.subscribe('menu.isCollapsed', (isCollapsed) => {
+      this.isMenuCollapsed = isCollapsed;
+    });
+
     this.accountService.loadProfileRemote().subscribe((result: any) => {
       console.log('result', result);
       if (!result) {
         this._routeService.navTo('/login');
       }
-    });
-
-    this._state.subscribe('menu.isCollapsed', (isCollapsed) => {
-      this.isMenuCollapsed = isCollapsed;
     });
   }
 
@@ -85,11 +85,9 @@ export class BaPageTop {
   gotoModule(module: string) {
     let url = '';
     if (module == 'design') {
-      url = '/pages/design/' + CONSTANT.CURRENT_PROJECT.id + '/case';
+      url = '/pages/' + CONSTANT.CURR_ORG_ID + '/design/' + CONSTANT.CURR_PRJ_ID + '/design/case';
     } else if (module == 'implement') {
-      url = '/pages/implement/' + CONSTANT.CURRENT_PROJECT.id + '/plan/list';
-    } else if (module == 'analysis') {
-      url = '/pages/analysis/' + CONSTANT.CURRENT_PROJECT.id + '/report/list';
+      url = '/pages/' + CONSTANT.CURR_ORG_ID + '/implement/' + CONSTANT.CURR_PRJ_ID + '/plan/list';
     }
 
     this._routeService.navTo(url);

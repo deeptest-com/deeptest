@@ -66,7 +66,7 @@ export class ForgotPassword implements OnInit, AfterViewInit {
   validateMsg = {
     'email': {
       'required': '邮箱不能为空',
-      'validate': '邮箱格式错误'
+      'email': '邮箱格式错误'
     }
   };
 

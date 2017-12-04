@@ -11,7 +11,7 @@ const routes: Routes = [
     path: '',
     component: Project,
     children: [
-      { path: 'list', component: ProjectList },
+      { path: '', component: ProjectList },
       { path: ':id/edit/:type', component: ProjectEdit },
       { path: ':id/view', component: ProjectView },
     ]

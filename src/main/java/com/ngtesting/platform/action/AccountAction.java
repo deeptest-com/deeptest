@@ -67,9 +67,7 @@ public class AccountAction extends BaseAction {
 			UserVo userVo = userService.genVo(user);
 			request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
 
-//			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), user.getDefaultProjectId());
-//			ret.put("profile", userVo);
-//			ret.put("recentProjects", recentProjects);
+			ret.put("profile", userVo);
 			ret.put("token", user.getToken());
 			ret.put("code", RespCode.SUCCESS.getCode());
 		} else {

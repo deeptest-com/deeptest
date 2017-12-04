@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ngtesting</groupId>
 	<artifactId>platform</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>platform</name>
 	<description />
@@ -360,12 +360,12 @@
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
-					<url>http://10.0.0.105:8080/manager/text</url>
-					<port>8080</port>
+					<url>http://47.97.19.195/manager/text</url>
+					<port>80</port>
 					<server>tomcat7</server>
 					<username>admin</username>
-					<password>P2ssw0rd</password>
-					<path>/platform</path>
+					<password>A2ssw0ra</password>
+					<path>/</path>
 					<update>true</update>
 				</configuration>
 			</plugin>

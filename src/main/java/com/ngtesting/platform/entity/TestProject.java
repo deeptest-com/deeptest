@@ -13,38 +13,38 @@ import java.util.*;
 public class TestProject extends BaseEntity {
 	private static final long serialVersionUID = 7813647435255173689L;
 	private String name;
-    
+
 	@Column(name = "descr", length = 1000)
     private String descr;
-	
+
 	@Enumerated(EnumType.STRING)
 	private ProjectType type;
 
 	private Integer ord;
 	private Date lastAccessTime;
-	
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", insertable = false, updatable = false)
     private TestProject parent;
 
     @Column(name = "parent_id")
     private Long parentId;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
     private TestOrg org;
 
     @Column(name = "org_id")
     private Long orgId;
-    
-    @OneToMany(mappedBy="parent", fetch = FetchType.LAZY) 
+
+    @OneToMany(mappedBy="parent", fetch = FetchType.LAZY)
     @OrderBy("id")
     @Filter(name="filter_project_deleted", condition="deleted = :isDeleted ")
     private List<TestProject> children = new LinkedList<TestProject>();
-    
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "projectSet")
     private Set<TestCustomField> customFieldSet = new HashSet<TestCustomField>(0);
-    
+
     public static enum ProjectType {
         group("group"),
         project("project");
@@ -147,5 +147,5 @@ public class TestProject extends BaseEntity {
 	public void setCustomFieldSet(Set<TestCustomField> customFieldSet) {
 		this.customFieldSet = customFieldSet;
 	}
-    
+
 }

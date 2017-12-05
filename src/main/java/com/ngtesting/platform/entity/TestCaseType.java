@@ -19,20 +19,20 @@ import javax.persistence.Table;
 @Table(name = "tst_case_type")
 public class TestCaseType extends BaseEntity {
 	private static final long serialVersionUID = 1958544577851394376L;
-	
+
 	private String code;
 	private String name;
 	private String descr;
     private Boolean isDefault;
     private Integer displayOrder;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
     private TestOrg org;
 
     @Column(name = "org_id")
     private Long orgId;
-    
+
 	public String getName() {
 		return name;
 	}
@@ -75,5 +75,5 @@ public class TestCaseType extends BaseEntity {
 	public void setDescr(String descr) {
 		this.descr = descr;
 	}
-    
+
 }

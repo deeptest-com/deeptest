@@ -22,7 +22,7 @@ public class TestPlan extends BaseEntity {
     protected Date startTime = new Date();
 
     protected Date endTime = new Date();
-    
+
 	@Column(name = "descr", length = 1000)
     private String descr;
 

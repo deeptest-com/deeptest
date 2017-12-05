@@ -12,7 +12,9 @@ public final class Constant {
     public static String WEB_ROOT = null;
 
     // 跨域白名单
-    public static final List<String> CLIENT_URL_LIST = Arrays.asList("http://localhost:4200");
+    public static final List<String> CLIENT_URL_LIST = Arrays.asList(
+            "http://localhost:4200",
+                "http://47.97.19.195");
     public static final String API_PATH_CLIENT = "api/client/v1/";
 
     public static final String API_PACKAGE_FOR_CLIENT = "com.ngtesting.platform.action";

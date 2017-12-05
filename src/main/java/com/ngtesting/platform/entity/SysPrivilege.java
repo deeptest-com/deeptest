@@ -14,10 +14,10 @@ public class SysPrivilege extends BaseEntity {
 
     private String name;
     private String descr;
-    
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "sysPrivilegeSet")
     private Set<SysRole> sysRoleSet = new HashSet<>(0);
-    
+
     public static enum SysPrivilegeCode {
     	sys_admin("sys_admin"),
     	data_backup("data_backup"),

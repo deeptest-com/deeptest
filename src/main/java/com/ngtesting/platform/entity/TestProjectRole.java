@@ -8,27 +8,27 @@ import java.util.Set;
 @Table(name = "tst_project_role")
 public class TestProjectRole extends BaseEntity {
 	private static final long serialVersionUID = -3556080851163371948L;
-	
+
 //	@Enumerated(EnumType.STRING)
     private String code;
-	
+
 	private String name;
     private String descr;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
     private TestOrg org;
 
     @Column(name = "org_id")
     private Long orgId;
-    
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "tst_r_project_role_privilege", joinColumns = { 
-			@JoinColumn(name = "project_role_id", nullable = false, updatable = false) }, 
-			inverseJoinColumns = { @JoinColumn(name = "project_privilege_id", 
+	@JoinTable(name = "tst_r_project_role_privilege", joinColumns = {
+			@JoinColumn(name = "project_role_id", nullable = false, updatable = false) },
+			inverseJoinColumns = { @JoinColumn(name = "project_privilege_id",
 					nullable = false, updatable = false) })
     private Set<TestProjectPrivilege> projectPrivilegeSet = new HashSet<TestProjectPrivilege>(0);
-    
+
 //    public static enum ProjectRoleCode {
 //		test_leader("test_leader"),
 //        test_designer("test_designer"),
@@ -45,7 +45,7 @@ public class TestProjectRole extends BaseEntity {
 //        }
 //
 //    }
-    
+
 	public String getName() {
 		return name;
 	}

@@ -11,7 +11,7 @@ import javax.persistence.Table;
 @Table(name = "tst_r_org_group_user")
 public class TestRelationOrgGroupUser extends BaseEntity {
 	private static final long serialVersionUID = 8667364655327450367L;
-	
+
 	public TestRelationOrgGroupUser() {
 	}
 	public TestRelationOrgGroupUser(Long orgId, Long orgGroupId, Long userId) {
@@ -19,24 +19,24 @@ public class TestRelationOrgGroupUser extends BaseEntity {
 		this.orgGroupId = orgGroupId;
 		this.userId = userId;
 	}
-	
+
 	@Column(name = "org_id")
     private Long orgId;
-    
+
 	private String orgGroupName;
-	
+
     @Column(name = "org_group_id")
     private Long orgGroupId;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_group_id", insertable = false, updatable = false)
     private TestOrgGroup orgGroup;
-    
+
     @Column(name = "user_id")
     private Long userId;
-    
+
     private String userName;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private TestUser user;
@@ -78,5 +78,5 @@ public class TestRelationOrgGroupUser extends BaseEntity {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	
+
 }

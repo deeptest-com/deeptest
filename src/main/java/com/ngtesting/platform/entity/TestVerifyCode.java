@@ -1,19 +1,18 @@
 package com.ngtesting.platform.entity;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.util.Date;
 
 @Entity
 @Table(name = "tst_verify_code")
 public class TestVerifyCode extends BaseEntity {
 	private static final long serialVersionUID = -7404422286952704677L;
-	
+
 	private String code;
 	private Date expireTime;
-	
+
 	@Column(name="ref_id")
 	private Long refId;
 

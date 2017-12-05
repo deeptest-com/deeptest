@@ -25,21 +25,21 @@ public class TestSuite extends BaseEntity {
 	@Transient
 	private Integer level;
 	private Integer orderInParent;
-	
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", insertable = false, updatable = false)
     private TestSuite parent;
 
     @Column(name = "parent_id")
     private Long parentId;
-	
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
     private TestProject project;
 
     @Column(name = "project_id")
     private Long projectId;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private TestUser user;

@@ -11,16 +11,16 @@ public class TestProjectPrivilege extends BaseEntity {
 
 	@Enumerated(EnumType.STRING)
     private ProjectPrivilegeCode code;
-	
+
     private String name;
     private String descr;
-    
+
     @Enumerated(EnumType.STRING)
     private PrivilegeAction action;
-    
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "projectPrivilegeSet")
     private Set<TestProjectRole> projectRoleSet = new HashSet<TestProjectRole>(0);
-    
+
     public static enum ProjectPrivilegeCode {
     	req("req"),
     	cases("cases"),
@@ -38,7 +38,7 @@ public class TestProjectPrivilege extends BaseEntity {
             return textVal;
         }
     }
-    
+
     public static enum PrivilegeAction {
         update("update"),
         remove("remove"),
@@ -94,5 +94,5 @@ public class TestProjectPrivilege extends BaseEntity {
 	public void setAction(PrivilegeAction action) {
 		this.action = action;
 	}
-    
+
 }

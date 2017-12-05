@@ -11,10 +11,10 @@ import javax.persistence.Table;
 @Table(name = "tst_org_group")
 public class TestOrgGroup extends BaseEntity {
 	private static final long serialVersionUID = -939369827579807183L;
-	
+
 	private String name;
     private String descr;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
     private TestOrg org;

@@ -21,10 +21,10 @@ import org.hibernate.annotations.Filter;
 @Table(name = "tst_project_access_history")
 public class TestProjectAccessHistory extends BaseEntity {
 	private static final long serialVersionUID = -8980336892866667072L;
-	
+
 	public TestProjectAccessHistory() {
 	}
-	
+
 	public TestProjectAccessHistory(Long orgId, Long userId, Long projectId, String projectName) {
 		this.orgId = orgId;
 		this.userId = userId;
@@ -33,7 +33,7 @@ public class TestProjectAccessHistory extends BaseEntity {
 	}
 
 	private Date lastAccessTime = new Date();
-	
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
     private TestUser org;
@@ -47,14 +47,14 @@ public class TestProjectAccessHistory extends BaseEntity {
 
     @Column(name = "user_id")
     private Long userId;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
     private TestProject project;
 
     @Column(name = "project_id")
     private Long projectId;
-    
+
     private String projectName;
 
 	public Date getLastAccessTime() {
@@ -120,5 +120,5 @@ public class TestProjectAccessHistory extends BaseEntity {
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
 	}
-    
+
 }

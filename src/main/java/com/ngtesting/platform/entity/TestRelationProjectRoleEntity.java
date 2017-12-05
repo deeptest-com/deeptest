@@ -9,10 +9,10 @@ public class TestRelationProjectRoleEntity extends BaseEntity {
 
 	@Column(name = "project_id")
 	private Long projectId;
-	
+
     @Column(name = "project_role_id")
     private Long projectRoleId;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_role_id", insertable = false, updatable = false)
     private TestProjectRole projectRole;
@@ -81,5 +81,5 @@ public class TestRelationProjectRoleEntity extends BaseEntity {
 	public void setProjectRole(TestProjectRole projectRole) {
 		this.projectRole = projectRole;
 	}
-    
+
 }

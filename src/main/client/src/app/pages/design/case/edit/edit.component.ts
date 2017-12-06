@@ -122,8 +122,6 @@ export class CaseEdit implements OnInit, AfterViewInit {
     let that = this;
     that._caseService.get(that.id).subscribe((json:any) => {
       that.model = json.data;
-
-      console.log('=1=', that.model);
     });
   }
 

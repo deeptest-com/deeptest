@@ -41,7 +41,7 @@ export class Register {
     that.formErrors = ValidatorUtils.genMsg(that.form, that.validateMsg, ['passwordsEqual']);
   }
 
-  public onSubmit(values:Object):void {
+  public onSubmit():void {
     this.accountService.register(this.model).subscribe((errors: any) => {
       this.formErrors = [errors];
     });

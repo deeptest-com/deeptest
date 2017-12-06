@@ -115,7 +115,7 @@
       <div class="offset-sm-1  col-sm-11">
         <button (click)="save()" type="button" class="btn btn-primary" [disabled]="!form.valid">保存</button>
         &nbsp;
-        <button [routerLink]="['/pages/implement/'+projectId+'/plan/list']" type="button" class="btn btn-default">取消</button>
+        <button [routerLink]="['/pages/org/' + orgId + '/prj/' + prjId + '/implement/plan/list']" type="button" class="btn btn-default">取消</button>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <button (click)="delete()" *ngIf="model.id" type="button" class="btn btn-danger">删除</button>
       </div>

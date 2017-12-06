@@ -16,7 +16,6 @@ declare var tinymce: any;
 export class TinyMCEComponent implements OnDestroy, AfterViewInit, OnChanges {
   @Output() editorKeyup = new EventEmitter<any>();
   @Input() height: string;
-  @Input() modelId: string;
   contentModel: string;
   @Input() set content(cont: string) {
     if (!cont) {

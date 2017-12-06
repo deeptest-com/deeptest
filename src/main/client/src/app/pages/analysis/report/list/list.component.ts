@@ -9,7 +9,7 @@ import {CaseService} from "../../../../service/case";
 @Component({
   selector: 'report-list',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['./list.scss', '../../../../components/ng2-tree/src/styles.scss'],
+  styleUrls: ['./list.scss'],
   templateUrl: './list.html'
 })
 export class ReportList implements OnInit, AfterViewInit {

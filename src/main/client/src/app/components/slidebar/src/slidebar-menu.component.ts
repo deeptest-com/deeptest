@@ -16,13 +16,13 @@ export class SlidebarMenu {
   isOrgAdmin: boolean;
 
   @Input()
-  public menuItems: any;
+  menuItems: any;
   currLink: string;
 
-  public showHoverElem:boolean;
-  public hoverElemHeight:number;
-  public hoverElemTop:number;
-  public outOfArea:number = -200;
+   showHoverElem:boolean;
+   hoverElemHeight:number;
+   hoverElemTop:number;
+   outOfArea:number = -200;
 
   constructor(private _router:Router, private _state: GlobalState, private _routeService: RouteService) {
     this.currLink = _router.url;

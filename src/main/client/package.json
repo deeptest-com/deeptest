@@ -82,13 +82,12 @@
     "ng2-tree": "2.0.0-alpha.5",
     "ngx-echarts": "^1.2.3",
     "normalize.css": "6.0.0",
-    "roboto-fontface": "0.7.0",
     "rxjs": "5.1.1",
     "tinymce": "^4.7.1",
     "zone.js": "0.8.5"
   },
   "devDependencies": {
-    "@angular/cli": "1.0.1",
+    "@angular/cli": "1.5.5",
     "@angular/compiler-cli": "4.1.0",
     "@types/fullcalendar": "2.7.40",
     "@types/jasmine": "2.5.38",

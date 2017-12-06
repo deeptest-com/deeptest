@@ -21,11 +21,7 @@ declare var jQuery;
   templateUrl: './execution.html'
 })
 export class Execution implements OnInit, AfterViewInit {
-  planId: number;
-  runId: number;
-
-  model: any;
-  form: any;
+  contentHeight = Utils.getContainerHeight(110);
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
               private _runService: RunService) {

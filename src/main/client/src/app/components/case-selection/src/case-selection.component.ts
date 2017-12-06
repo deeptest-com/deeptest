@@ -34,9 +34,9 @@ export class CaseSelectionComponent implements OnInit {
   _queryModel: any = {type: {}, priority: {}, createUsers: [], updateUsers: []};
   queryModel: any;
 
-  public cases: string[];
-  private _disabledV:string = '0';
-  private disabled:boolean = false;
+  cases: string[];
+  _disabledV:string = '0';
+  disabled:boolean = false;
 
   constructor(public activeModal: NgbActiveModal, private fb: FormBuilder, private _treeService: ZtreeService,
               public _sutieService: SuiteService, public _caseService: CaseService,) {

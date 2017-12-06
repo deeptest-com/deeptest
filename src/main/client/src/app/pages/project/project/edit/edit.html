@@ -103,7 +103,7 @@
       <form [formGroup]="formAdd" class="my-validate-form form-add">
 
         <div class="form-group row">
-          <label class="col-2 col-form-label"><span>用户名/邮箱{{keywords}}</span></label>
+          <label class="col-2 col-form-label"><span>用户名/邮箱</span></label>
           <div class="col-10">
             <search-select [(searchModel)]="searchModel" [searchResult]="entitySearchResult" [(selectedModels)]="selectedModels"
                            (searchChange)="changeSearch($event)">
@@ -125,7 +125,7 @@
         <div class="form-group row">
           <label class="col-2 col-form-label"></label>
           <div class="col-10">
-            <button (click)="add($event)" [disabled]="!selectedModels.length > 0" type="button" class="btn btn-primary">添加</button>
+            <button (click)="add($event)" [disabled]="selectedModels.length == 0" type="button" class="btn btn-primary">添加</button>
           </div>
         </div>
 

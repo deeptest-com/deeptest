@@ -9,25 +9,17 @@ import {GlobalState} from '../../../global.state';
 })
 export class Slidebar {
   @Input()
-  public menuItems: any;
-
-  @Input()
-  companies: any[];
-  company: any;
+  menuItems: any;
 
   constructor(private _state:GlobalState) {
 
   }
 
-  public ngOnInit():void {
+  ngOnInit():void {
 
   }
 
-  public ngAfterViewInit():void {
-
-  }
-
-  companyChange():void {
+  ngAfterViewInit():void {
 
   }
 }

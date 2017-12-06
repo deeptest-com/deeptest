@@ -358,7 +358,7 @@
 					<server>tomcat7</server>
 					<username>admin</username>
 					<password>A2ssw0ra</password>
-					<path>/</path>
+					<path>/platform</path>
 					<update>true</update>
 				</configuration>
 			</plugin>

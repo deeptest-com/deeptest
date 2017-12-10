@@ -143,18 +143,19 @@ export class PlanEdit implements OnInit, AfterViewInit {
   }
 
   editRun(run?: any, index?: number) {
+    this.compiler.clearCacheFor(RunEditComponent);
+    this.runEditModal = this.modalService.open(RunEditComponent, {windowClass: 'pop-selection'});
+
     if (!run) {
       this.run = {};
       this.runIndex = this.model.runVos.length;
     } else {
       this.run = run;
       this.runIndex = index;
-    }
 
-    this.compiler.clearCacheFor(RunEditComponent);
-    this.runEditModal = this.modalService.open(RunEditComponent, {windowClass: 'pop-selection'});
+      this.runEditModal.componentInstance.selectedModels = [{id: this.run.userId, name: this.run.userName}];
+    }
     this.runEditModal.componentInstance.model = this.run;
-    this.runEditModal.componentInstance.selectedModels = [{id: this.run.userId, name: this.run.userName}];
 
     this.runEditModal.result.then((result) => {
       this.saveRun();

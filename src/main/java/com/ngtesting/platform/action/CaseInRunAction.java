@@ -75,10 +75,11 @@ public class CaseInRunAction extends BaseAction {
         Long orgId = userVo.getDefaultOrgId();
 
         Long caseInRunId = json.getLong("id");
+        String result = json.getString("result");
         String status = json.getString("status");
         Long nextId = json.getLong("nextId");
 
-        TestCaseInRunVo vo = caseInRunService.setResultPers(caseInRunId, status, nextId);
+        TestCaseInRunVo vo = caseInRunService.setResultPers(caseInRunId, result, status, nextId);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

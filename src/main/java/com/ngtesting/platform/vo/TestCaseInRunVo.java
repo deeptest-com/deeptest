@@ -12,6 +12,7 @@ public class TestCaseInRunVo extends BaseVo {
     private String type;
 	private String objective;
     private String descr;
+	private String result;
 	private Long pId;
 
     private Long entityId; // 真正是实体Id
@@ -72,6 +73,15 @@ public class TestCaseInRunVo extends BaseVo {
 //        this.createTime = createTime;
 //        this.updateTime = updateTime;
 //    }
+
+
+	public String getResult() {
+		return result;
+	}
+
+	public void setResult(String result) {
+		this.result = result;
+	}
 
 	public String getContentType() {
 		return contentType;

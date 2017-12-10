@@ -21,8 +21,8 @@ export class CaseInRunService {
     return this._reqService.post(this._api_url + 'get', model);
   }
 
-  setResult(modelId: any, nextId: number, status: string) {
-    let data = {id: modelId, nextId: nextId, status: status};
+  setResult(modelId: any, result: string, nextId: number, status: string) {
+    let data = {id: modelId, result: result, nextId: nextId, status: status};
     return this._reqService.post(this._api_url + 'setResult', data);
   }
 

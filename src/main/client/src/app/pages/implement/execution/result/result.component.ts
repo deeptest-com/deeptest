@@ -91,12 +91,9 @@ export class ExecutionResult implements OnInit, AfterViewInit {
   ngAfterViewInit() {}
 
   buildForm(): void {
-    let that = this;
     this.form = this.fb.group(
       {
-        'title': ['', [Validators.required]],
-        'objective': ['', [Validators.required]],
-        'pre_condition': ['', []],
+        'result': ['', []],
         'next':  ['', []]
       }, {}
     );
@@ -111,12 +108,6 @@ export class ExecutionResult implements OnInit, AfterViewInit {
 
   formErrors = [];
   validateMsg = {
-    'title': {
-      'required':      '简介不能为空'
-    },
-    'objective': {
-      'required':      '描述不能为空'
-    }
   };
 
   loadData() {
@@ -132,7 +123,7 @@ export class ExecutionResult implements OnInit, AfterViewInit {
       next = this._ztreeService.getNextNode(this.model.id);
     }
 
-    this._caseInRunService.setResult(this.model.entityId, next?next.entityId:null, status).subscribe((json:any) => {
+    this._caseInRunService.setResult(this.model.entityId, this.model.result, next?next.entityId:null, status).subscribe((json:any) => {
       if (json.code == 1) {
         this.model.status = status;
         this._ztreeService.selectNode(next);
@@ -193,7 +184,7 @@ export class ExecutionResult implements OnInit, AfterViewInit {
   }
 
   returnTo() {
-    let url: string = '/pages/' + CONSTANT.CURR_ORG_ID + '/implement/' + CONSTANT.CURR_PRJ_ID + '/plan/' + this.planId + '/view';
+    let url: string = '/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID + '/implement/plan/' + this.planId + '/view';
     console.log(url);
     this._routeService.navTo(url);
   }

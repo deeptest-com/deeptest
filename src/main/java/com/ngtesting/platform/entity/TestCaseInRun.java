@@ -13,6 +13,8 @@ public class TestCaseInRun extends BaseEntity {
     private Integer ordr;
     private Long pId;
 
+    private String result;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_id", insertable = false, updatable = false)
     private TestCase testCase;
@@ -60,6 +62,15 @@ public class TestCaseInRun extends BaseEntity {
 //            return val;
 //        }
 //    }
+
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+    }
 
     public Long getpId() {
         return pId;

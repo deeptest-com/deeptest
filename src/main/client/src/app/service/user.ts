@@ -40,8 +40,8 @@ export class UserService {
     return this._reqService.post(this._api_url + 'setSize', model);
   }
 
-  search(orgId:number, keywords: string, exceptIds: string[]) {
-    let model = {orgId:orgId, keywords: keywords, exceptIds: exceptIds};
+  search(orgId:number, keywords: string) {
+    let model = {orgId:orgId, keywords: keywords};
     return this._reqService.post(this._api_url + 'search', model);
   }
 

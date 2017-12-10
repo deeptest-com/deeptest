@@ -47,14 +47,11 @@ export class BaPageTop implements OnInit, AfterViewInit {
 
     this._state.subscribe(CONSTANT.STATE_CHANGE_PROJECTS, (data) => {
       console.log(CONSTANT.STATE_CHANGE_PROJECTS, data);
-      // this.prjId = CONSTANT.CURR_PRJ_ID;
+      this.prjId = CONSTANT.CURR_PRJ_ID;
 
       if (data.recentProjects) {
         this.projects = data.recentProjects;
       }
-      // if (data.currProject) {
-      //   this.project = data.currProject;
-      // }
     });
 
     this._state.subscribe('menu.isCollapsed', (isCollapsed) => {

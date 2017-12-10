@@ -93,9 +93,9 @@ public class RunAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		TestRun po = runService.save(json);
-		TestRunVo caseVo = runService.genVo(po);
+		TestRunVo vo = runService.genVo(po);
 
-		ret.put("data", caseVo);
+		ret.put("data", vo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

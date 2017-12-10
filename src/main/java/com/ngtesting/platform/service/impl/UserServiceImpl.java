@@ -119,12 +119,12 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		dc.createAlias("orgSet", "orgs");
 		dc.add(Restrictions.eq("orgs.id", orgId));
 
-		List<Long> ids = new ArrayList();
-		for (Object json : exceptIds.toArray()) {
-            ids.add(Long.valueOf(json.toString()));
-        }
+		if (exceptIds != null && exceptIds.size() > 0) {
+			List<Long> ids = new ArrayList();
+			for (Object json : exceptIds.toArray()) {
+				ids.add(Long.valueOf(json.toString()));
+			}
 
-		if (exceptIds.size() > 0) {
             dc.add(Restrictions.not(Restrictions.in("id", ids)));
         }
 

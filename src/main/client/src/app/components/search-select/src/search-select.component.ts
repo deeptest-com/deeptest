@@ -8,14 +8,13 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 })
 export class SearchSelectComponent implements OnInit {
 
+  @Input() @Output() searchModel: any;
   @Input() searchResult: any[];
   @Input() @Output() selectedModels: any[];
+  @Input() selectSingle: false;
+  selectedModel: any;
 
   @Output() searchChange = new EventEmitter<any>();
-
-  @Input() @Output() searchModel: any;
-
-  selectedModel: any;
   formSelection: FormGroup;
 
   constructor(private fb: FormBuilder) {
@@ -42,6 +41,9 @@ export class SearchSelectComponent implements OnInit {
     this.searchModel = {};
     this.searchResult = null;
 
+    if (this.selectSingle) {
+      this.selectedModels.splice(0, 1);
+    }
     this.selectedModels.push(item);
   }
 

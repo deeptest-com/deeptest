@@ -34,6 +34,13 @@ public class TestRun extends BaseEntity {
     private Long projectId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private TestUser user;
+
+    @Column(name = "user_id")
+    private Long userId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id", insertable = false, updatable = false)
     private TestPlan plan;
 
@@ -56,6 +63,22 @@ public class TestRun extends BaseEntity {
         public String toString() {
             return val;
         }
+    }
+
+    public TestUser getUser() {
+        return user;
+    }
+
+    public void setUser(TestUser user) {
+        this.user = user;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public List<TestCaseInRun> getTestcases() {

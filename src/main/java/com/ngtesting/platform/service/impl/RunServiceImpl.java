@@ -2,10 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.TestCase;
-import com.ngtesting.platform.entity.TestCaseInRun;
-import com.ngtesting.platform.entity.TestCaseStep;
-import com.ngtesting.platform.entity.TestRun;
+import com.ngtesting.platform.entity.*;
 import com.ngtesting.platform.service.RunService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.TestCaseInRunVo;
@@ -54,6 +51,7 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
     public TestRun save(JSONObject json) {
         Long planId = json.getLong("planId");
         Long runId = json.getLong("id");
+        Long userId = json.getLong("userId");
         String runName = json.getString("name");
 
         TestRun run;
@@ -64,6 +62,7 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
             run.setPlanId(planId);
         }
         run.setName(runName);
+        run.setUserId(userId);
         saveOrUpdate(run);
 
         return run;
@@ -124,6 +123,8 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 	public TestRunVo genVo(TestRun po) {
 		TestRunVo vo = new TestRunVo();
 		BeanUtilEx.copyProperties(vo, po);
+		TestUser user = (TestUser)get(TestUser.class, po.getUserId());
+        vo.setUserName(user.getName());
 
 		String sql = "select cs1.`status` status, count(cs1.tcinid) count from "
                 +          "(select tcin.id tcinid, tcin.`status`, tc.id tcid from tst_case_in_run tcin "

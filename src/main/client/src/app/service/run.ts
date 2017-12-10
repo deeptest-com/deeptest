@@ -22,7 +22,8 @@ export class RunService {
   }
 
   saveRun(planId: number, run: any) {
-    return this._reqService.post(this._api_url + 'save', {planId: planId, id: run.id, name: run.name});
+    return this._reqService.post(this._api_url + 'save',
+      {planId: planId, id: run.id, name: run.name, userId: run.userId});
   }
 
   saveRunCases(planId: number, runId: number, cases: any[]) {

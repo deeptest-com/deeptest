@@ -22,6 +22,9 @@ public class TestRunVo extends BaseVo {
 
     private Long planId;
 
+    private Long userId;
+    private String userName;
+
     private Map<String, Integer> countMap = new HashMap<String, Integer>(){{
         put("total", 0);
         put("pass", 0);
@@ -36,6 +39,22 @@ public class TestRunVo extends BaseVo {
         put("block", 0);
         put("untest", 0);
     }};
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
     public Map<String, Integer> getWidthMap() {
         return widthMap;

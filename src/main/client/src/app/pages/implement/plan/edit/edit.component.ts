@@ -18,9 +18,10 @@ import { RunService } from '../../../../service/run';
 import { CaseService } from '../../../../service/case';
 import { UserService } from '../../../../service/user';
 
-import { CaseSelectionComponent } from '../../../../components/case-selection'
-import { EnvironmentConfigComponent } from '../../../../components/environment-config'
-import { PopDialogComponent } from '../../../../components/pop-dialog'
+import { RunEditComponent } from '../../../../components/run-edit';
+import { CaseSelectionComponent } from '../../../../components/case-selection';
+import { EnvironmentConfigComponent } from '../../../../components/environment-config';
+import { PopDialogComponent } from '../../../../components/pop-dialog';
 
 declare var jQuery;
 
@@ -46,7 +47,6 @@ export class PlanEdit implements OnInit, AfterViewInit {
   runIndex: number;
   form: FormGroup;
 
-  @ViewChild('modalEditRun') modalEditRun: PopDialogComponent;
   @ViewChild('modalSelectCase') modalSelectCase: CaseSelectionComponent;
 
   @ViewChild('modalDelete') modalDelete: PopDialogComponent;
@@ -54,6 +54,8 @@ export class PlanEdit implements OnInit, AfterViewInit {
   @ViewChild('modalRemoveSet') modalRemoveSet: PopDialogComponent;
   testSet: any;
   modalTitle: string;
+
+  runEditModal: any;
   caseSelectionModal: any;
   envSelectionModal: any;
 
@@ -140,15 +142,26 @@ export class PlanEdit implements OnInit, AfterViewInit {
     this.loadData();
   }
 
-  createRun() {
-    this.run = {};
-    this.runIndex = this.model.runVos.length;
-    this.modalEditRun.showModal();
-  }
-  editRun(run: any, index: number) {
-    this.run = run;
-    this.runIndex = index;
-    this.modalEditRun.showModal();
+  editRun(run?: any, index?: number) {
+    if (!run) {
+      this.run = {};
+      this.runIndex = this.model.runVos.length;
+    } else {
+      this.run = run;
+      this.runIndex = index;
+    }
+
+    this.compiler.clearCacheFor(RunEditComponent);
+    this.runEditModal = this.modalService.open(RunEditComponent, {windowClass: 'pop-selection'});
+    this.runEditModal.componentInstance.model = this.run;
+    this.runEditModal.componentInstance.selectedModels = [{id: this.run.userId, name: this.run.userName}];
+
+    this.runEditModal.result.then((result) => {
+      this.saveRun();
+    }, (reason) => {
+      console.log('reason', reason);
+    });
+
   }
   saveRun() {
     if (!this.model.id) {
@@ -168,8 +181,9 @@ export class PlanEdit implements OnInit, AfterViewInit {
   }
   _saveRun() {
     this._runService.saveRun(this.planId, this.run).subscribe((json:any) => {
+
       this.model.runVos[this.runIndex]= json.data;
-      this.modalEditRun.closeModal();
+      console.log('===', this.model.runVos);
     });
   }
 

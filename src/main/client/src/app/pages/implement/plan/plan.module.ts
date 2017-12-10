@@ -11,6 +11,8 @@ import { routing }       from './plan.routing';
 import { PipeModule } from '../../../pipe/pipe.module';
 import { DirectiveModule } from '../../../directive/directive.module';
 import { PopDialogModule } from '../../../components/pop-dialog';
+
+import { RunEditModule, RunEditComponent } from '../../../components/run-edit';
 import { CaseSelectionModule, CaseSelectionComponent } from '../../../components/case-selection';
 import { EnvironmentConfigModule, EnvironmentConfigComponent } from '../../../components/environment-config';
 import { ExecutionReportModule } from '../../../components/execution-report';
@@ -52,6 +54,7 @@ export function myDateParserFormatterFactory() {
     PipeModule,
     PopDialogModule,
 
+    RunEditModule,
     CaseSelectionModule,
     EnvironmentConfigModule,
     ExecutionReportModule,
@@ -75,6 +78,7 @@ export function myDateParserFormatterFactory() {
     }
   ],
   entryComponents: [
+    RunEditComponent,
     CaseSelectionComponent,
     EnvironmentConfigComponent
   ]

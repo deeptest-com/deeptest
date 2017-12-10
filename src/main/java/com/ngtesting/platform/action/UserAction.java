@@ -215,5 +215,23 @@ public class UserAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "search", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long orgId = json.getLong("orgId");
+		String keywords = json.getString("keywords");
+
+		List userPos = userService.search(orgId, keywords, null);
+		List<UserVo> userVos = userService.genVos(userPos);
+
+		ret.put("data", userVos);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
 	
 }

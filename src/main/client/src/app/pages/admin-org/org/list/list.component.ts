@@ -41,8 +41,6 @@ export class OrgList implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    let that = this;
-
     this.queryForm.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.queryChange(values));
   }
 

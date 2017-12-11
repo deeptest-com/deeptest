@@ -23,6 +23,7 @@ export class BaPageTop implements OnInit, AfterViewInit {
   projects: any[] = [];
 
   orgs: any[] = [];
+  keywords: string;
 
   public isScrolled: boolean = false;
   public isMenuCollapsed: boolean = false;
@@ -107,5 +108,16 @@ export class BaPageTop implements OnInit, AfterViewInit {
     this.accountService.logout();
 
     this._routeService.navTo('/pages/login');
+  }
+
+  onSearchKeywordChanged(e: any) {
+    console.log('0-', this._router.url);
+    if (this._router.url.indexOf('design/case') < 0) {
+      console.log('1-', this.keywords);
+      this._routeService.quickJump(this.keywords);
+    } else {
+      console.log('2-', this.keywords);
+      this._state.notifyDataChanged('case.jump', this._routeService.caseIdForJump(this.keywords));
+    }
   }
 }

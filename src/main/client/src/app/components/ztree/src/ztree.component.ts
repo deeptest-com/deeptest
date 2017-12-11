@@ -70,6 +70,10 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     this._treeModel = model;
     this.ztree = jQuery.fn.zTree.init($('#tree'), this.settings, this._treeModel);
     this.ztree.expandNode(this.ztree.getNodes()[0], this.isExpanded, this.sonSign, true);
+
+    if (this.settings.jumpTo) {
+      this.jumpTo(this.settings.jumpTo);
+    }
   }
 
   public constructor(private _state:GlobalState, @Inject(Renderer2) private renderer:Renderer2,
@@ -113,10 +117,17 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
         onExpand: this.onExpand
       }
     };
+
+
   }
 
   public ngOnInit(): void {
     this.keywordsControl.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.onKeywordsChange(values));
+
+    this._state.subscribe('case.jump', (id: number) => {
+      console.log('case.jump');
+      this.jumpTo(id);
+    });
 
     this._state.subscribe('case.save', (data: any) => {
       let testCase = data.node;
@@ -173,7 +184,10 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     return css;
   }
   onClick = (event, treeId, treeNode) => {
-    this._state.notifyDataChanged('case.' + this.settings.usage, {node: treeNode, random: Math.random()});
+    this.notifyCaseChange(treeNode);
+  }
+  notifyCaseChange = (node: any)  => {
+    this._state.notifyDataChanged('case.' + this.settings.usage, {node: node, random: Math.random()});
   }
 
   addHoverDom = (treeId, treeNode) => {
@@ -196,8 +210,6 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onRename = (e, treeId, treeNode, isCancel) => {
-    console.log('==', treeId, treeNode);
-
     const deferred = new Deferred();
     deferred.promise.then((data) => {
       console.log('success to rename', data);
@@ -334,6 +346,11 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     for(let i=0; i<node.children.length; i++) {
       this.updateCopiedNodes(node.children[i], data.children[i]);
     }
+  }
+  jumpTo(id: number) {
+    var node = this.ztree.getNodeByParam("id", id, null);
+    this.ztree.selectNode(node);
+    this.notifyCaseChange(node);
   }
 
 }

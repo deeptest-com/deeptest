@@ -1,5 +1,6 @@
 package com.ngtesting.platform.entity;
 
+import com.ngtesting.platform.util.Constant;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -36,6 +37,9 @@ public class TestCase extends BaseEntity {
 
     @Column(name = "pId")
     private Long pId;
+
+    @Transient
+    private String key;
 
 	private String prop01;
     private String prop02;
@@ -86,6 +90,10 @@ public class TestCase extends BaseEntity {
     @Where(clause="!deleted")
     @OrderBy("ordr")
     private List<TestCaseStep> steps = new LinkedList<>();
+
+    public String getKey() {
+        return Constant.KEY_TESTCASE_DESIGN + getId();
+    }
 
     public String getContentType() {
         return contentType;

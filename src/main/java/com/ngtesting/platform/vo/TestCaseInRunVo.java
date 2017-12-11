@@ -25,6 +25,8 @@ public class TestCaseInRunVo extends BaseVo {
 	private String contentType;
 	private String content;
 
+	private String key;
+
 	private String prop01;
 	private String prop02;
 	private String prop03;
@@ -74,6 +76,14 @@ public class TestCaseInRunVo extends BaseVo {
 //        this.updateTime = updateTime;
 //    }
 
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
 
 	public String getResult() {
 		return result;

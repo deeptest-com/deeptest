@@ -8,9 +8,14 @@ const routes: Routes = [
     path: '',
     component: Case,
     children: [
-
     ]
-  }
+  },
+  {
+    path: ':caseId',
+    component: Case,
+    children: [
+    ]
+  },
 ];
 
 export const routing = RouterModule.forChild(routes);

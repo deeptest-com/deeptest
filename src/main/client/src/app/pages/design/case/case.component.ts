@@ -11,6 +11,7 @@ import { Utils } from '../../../utils/utils';
 })
 export class Case {
   projectId: number;
+  key: number;
 
   contentHeight = Utils.getContainerHeight(110);
 

@@ -83,7 +83,7 @@
 
   <div class="search">
     <i class="ion-ios-search-strong" ng-click="startSearch()"></i>
-    <input id="searchInput" type="text" placeholder="搜索">
+    <input [(ngModel)]="keywords" (ngModelChange)=onSearchKeywordChanged($event) id="searchInput" type="text" placeholder="搜索">
   </div>
 
   <div class="user-profile clearfix">

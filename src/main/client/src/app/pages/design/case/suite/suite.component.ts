@@ -21,6 +21,7 @@ declare var jQuery;
 export class CaseSuite implements OnInit, AfterViewInit {
 
   projectId: number;
+  caseId: number;
   public treeModel: any;
   public treeSettings: any = {usage: 'edit', isExpanded: true, sonSign: false};
 
@@ -31,6 +32,13 @@ export class CaseSuite implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this._route.params.forEach((params: Params) => {
+      this.caseId = params['caseId'];
+    });
+    if (this.caseId) {
+      this.treeSettings.jumpTo = this.caseId;
+    }
+
     this.projectId = CONSTANT.CURR_PRJ_ID;
     this.loadData();
   }

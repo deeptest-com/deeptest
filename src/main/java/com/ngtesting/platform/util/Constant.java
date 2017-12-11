@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class Constant {
+
     // 配置项，初始化在 PropertyConfig.processProperties()
     public static String WORK_DIR;
     public static String API_BASE;
@@ -51,6 +52,9 @@ public final class Constant {
 
     public static final String WEBSCOKET_OPT_ENTER_CHAT_ROOM = "enter_chat_room";
 	public static final String WEBSCOKET_OPT_CHAT = "chat";
+
+    public static final String KEY_TESTCASE_DESIGN = "TC-";
+    public static final String KEY_TESTCASE_EXE = "TE-";
 
     public static enum TreeNodeType {
     	root("root"),

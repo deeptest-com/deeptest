@@ -1,5 +1,7 @@
 package com.ngtesting.platform.entity;
 
+import com.ngtesting.platform.util.Constant;
+
 import javax.persistence.*;
 
 @Entity
@@ -14,6 +16,8 @@ public class TestCaseInRun extends BaseEntity {
     private Long pId;
 
     private String result;
+    @Transient
+    private String key;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_id", insertable = false, updatable = false)
@@ -63,6 +67,10 @@ public class TestCaseInRun extends BaseEntity {
 //        }
 //    }
 
+
+    public String getKey() {
+        return Constant.KEY_TESTCASE_EXE + getId();
+    }
 
     public String getResult() {
         return result;

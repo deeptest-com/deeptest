@@ -24,11 +24,15 @@ export class RouteService {
   quickJump(key: string) {
     let arr: string[] = key.split('-');
     if (arr.length >1 && arr[0].toLowerCase() === 'tc') {
-      let url = '/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID
-        + '/design/case/' + arr[1];
-      this._router.navigateByUrl(url);
+      this.gotoCase(arr[1]);
     }
   }
+  gotoCase(id: string) {
+    let url = '/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID
+      + '/design/case/' + id;
+    this._router.navigateByUrl(url);
+  }
+
   caseIdForJump(key: string) {
     let arr: string[] = key.split('-');
     if (arr.length >1 && arr[0].toLowerCase() === 'tc' && !!arr[1]) {

@@ -8,6 +8,7 @@ import { Deferred, getDeepFromObject } from './helpers';
 import { CONSTANT } from '../../../utils/constant';
 import { Utils } from '../../../utils/utils';
 
+import { RouteService } from '../../../service/route';
 import { ZtreeService } from './ztree.service';
 
 declare var jQuery;
@@ -76,7 +77,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  public constructor(private _state:GlobalState, @Inject(Renderer2) private renderer:Renderer2,
+  public constructor(private _state:GlobalState, private _routeService: RouteService, @Inject(Renderer2) private renderer:Renderer2,
                      @Inject(ZtreeService) private ztreeService: ZtreeService) {
 
     this.settings = {
@@ -126,7 +127,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this._state.subscribe('case.jump', (id: number) => {
       console.log('case.jump');
-      this.jumpTo(id);
+      this.jumpTo(id+'');
     });
 
     this._state.subscribe('case.save', (data: any) => {
@@ -347,7 +348,9 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
       this.updateCopiedNodes(node.children[i], data.children[i]);
     }
   }
-  jumpTo(id: number) {
+  jumpTo(id: string) {
+    this._routeService.gotoCase(id);
+
     var node = this.ztree.getNodeByParam("id", id, null);
     this.ztree.selectNode(node);
     this.notifyCaseChange(node);

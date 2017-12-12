@@ -15,6 +15,8 @@ public class TestMsg extends BaseEntity {
     private Long entityId;
     @Enumerated(EnumType.STRING)
     private TestAlert.AlertType type;
+    @Enumerated(EnumType.STRING)
+    private TestAlert.AlertAction action;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "opt_user_id", insertable = false, updatable = false)
@@ -29,6 +31,14 @@ public class TestMsg extends BaseEntity {
 
     @Column(name = "user_id")
     private Long userId;
+
+    public TestAlert.AlertAction getAction() {
+        return action;
+    }
+
+    public void setAction(TestAlert.AlertAction action) {
+        this.action = action;
+    }
 
     public TestAlert.AlertType getType() {
         return type;

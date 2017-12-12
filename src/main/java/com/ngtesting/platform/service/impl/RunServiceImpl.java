@@ -3,6 +3,8 @@ package com.ngtesting.platform.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.*;
+import com.ngtesting.platform.service.AlertService;
+import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.service.RunService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.TestCaseInRunVo;
@@ -11,6 +13,7 @@ import com.ngtesting.platform.vo.TestRunVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -19,6 +22,12 @@ import java.util.Map;
 
 @Service
 public class RunServiceImpl extends BaseServiceImpl implements RunService {
+
+    @Autowired
+    MsgService msgService;
+
+    @Autowired
+    AlertService alertService;
 
 	@Override
 	public List<TestCaseInRun> lodaCase(Long runId) {
@@ -48,22 +57,28 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
     }
 
     @Override
-    public TestRun save(JSONObject json) {
+    public TestRun save(JSONObject json, TestUser optUser) {
         Long planId = json.getLong("planId");
         Long runId = json.getLong("id");
         Long userId = json.getLong("userId");
         String runName = json.getString("name");
 
+        TestAlert.AlertAction action;
         TestRun run;
         if (runId != null) {
             run = (TestRun) get(TestRun.class, runId);
+            action = TestAlert.AlertAction.update;
         } else {
             run = new TestRun();
             run.setPlanId(planId);
+            action = TestAlert.AlertAction.create;
         }
         run.setName(runName);
         run.setUserId(userId);
         saveOrUpdate(run);
+
+        msgService.create(run, action, optUser);
+        alertService.create(run, optUser);
 
         return run;
     }

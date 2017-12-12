@@ -3,6 +3,7 @@ package com.ngtesting.platform.action;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestCaseInRun;
 import com.ngtesting.platform.entity.TestRun;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.service.RunService;
 import com.ngtesting.platform.util.AuthPassport;
@@ -92,7 +93,10 @@ public class RunAction extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TestRun po = runService.save(json);
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TestUser user = (TestUser) runService.get(TestUser.class, userVo.getId());
+
+		TestRun po = runService.save(json, user);
 		TestRunVo vo = runService.genVo(po);
 
 		ret.put("data", vo);

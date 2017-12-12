@@ -3,6 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.entity.TestAlert;
 import com.ngtesting.platform.entity.TestMsg;
 import com.ngtesting.platform.entity.TestRun;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.TestMsgVo;
@@ -43,17 +44,15 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
 
         return vo;
     }
-
     @Override
-    public TestMsg create(TestRun run, TestAlert.AlertType type, Long optUserId) {
+    public TestMsg create(TestRun run, TestAlert.AlertAction action, TestUser optUser) {
         TestMsg msg = new TestMsg();
 
-        msg.setEntityId(run.getId());
-        msg.setType(type);
-        msg.setOptUserId(optUserId);
+        msg.setTitle("用户" + optUser.getName() + action.msg + "测试集\"" + run.getName() + "\"");
 
         msg.setDescr(run.getDescr());
         msg.setUserId(run.getUserId());
+        msg.setOptUserId(optUser.getId());
         saveOrUpdate(msg);
 
         return msg;

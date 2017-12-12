@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.entity.TestAlert;
 import com.ngtesting.platform.entity.TestRun;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.AlertService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.TestAlertVo;
@@ -44,18 +45,28 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
     }
 
     @Override
-    public TestAlert create(TestRun run, TestAlert.AlertType type, Long optUserId) {
-        TestAlert alert = new TestAlert();
+    public void create(TestRun run, TestUser optUser) {
+        if(run.getStartTime() != null) {
+            TestAlert alert1 = new TestAlert();
+            alert1.setTitle("测试集\"" + run.getName() + "\"计划在" +
+                    TestAlert.AlertType.run_start.remindDay + "天后开始");
+            alert1.setDescr(run.getDescr());
+            alert1.setUserId(run.getUserId());
+            alert1.setOptUserId(optUser.getId());
+            alert1.setStartTime(run.getStartTime());
+            saveOrUpdate(alert1);
+        }
 
-        alert.setEntityId(run.getId());
-        alert.setType(type);
-        alert.setOptUserId(optUserId);
-
-        alert.setDescr(run.getDescr());
-        alert.setUserId(run.getUserId());
-        saveOrUpdate(alert);
-
-        return alert;
+        if(run.getEndTime() != null) {
+            TestAlert alert2 = new TestAlert();
+            alert2.setTitle("测试集\"" + run.getName() + "\"计划在" +
+                    TestAlert.AlertType.run_end.remindDay + "天后完成");
+            alert2.setDescr(run.getDescr());
+            alert2.setUserId(run.getUserId());
+            alert2.setOptUserId(optUser.getId());
+            alert2.setDueTime(run.getEndTime());
+            saveOrUpdate(alert2);
+        }
     }
 
     @Override

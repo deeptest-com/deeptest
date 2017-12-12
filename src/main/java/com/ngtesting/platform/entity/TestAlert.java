@@ -13,11 +13,8 @@ public class TestAlert extends BaseEntity {
     private String descr;
     private String uri;
 
-    private Date dueTime = new Date();
-
-    private Long entityId;
-    @Enumerated(EnumType.STRING)
-    private AlertType type;
+    private Date startTime;
+    private Date dueTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "opt_user_id", insertable = false, updatable = false)
@@ -48,14 +45,30 @@ public class TestAlert extends BaseEntity {
             return code;
         }
     }
+    public enum AlertAction {
+        create("create", "创建"),
+        update("update", "更新");
 
-    public Long getEntityId() {
-        return entityId;
+        AlertAction(String code, String msg) {
+            this.code = code;
+            this.msg = msg;
+        }
+
+        public String code;
+        public String msg;
+        public String toString() {
+            return code;
+        }
     }
 
-    public void setEntityId(Long entityId) {
-        this.entityId = entityId;
+    public Date getStartTime() {
+        return startTime;
     }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
 
     public TestUser getOptUser() {
         return optUser;
@@ -71,14 +84,6 @@ public class TestAlert extends BaseEntity {
 
     public void setOptUserId(Long optUserId) {
         this.optUserId = optUserId;
-    }
-
-    public AlertType getType() {
-        return type;
-    }
-
-    public void setType(AlertType type) {
-        this.type = type;
     }
 
     public Date getDueTime() {

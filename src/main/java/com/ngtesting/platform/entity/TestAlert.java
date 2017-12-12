@@ -14,6 +14,7 @@ public class TestAlert extends BaseEntity {
     private String uri;
 
     private Date dueTime = new Date();
+
     @Enumerated(EnumType.STRING)
     private AlertType type;
 

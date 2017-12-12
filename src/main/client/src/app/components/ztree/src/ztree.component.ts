@@ -2,6 +2,7 @@ import { Input, Component, OnInit, OnDestroy, AfterViewInit, Renderer2, EventEmi
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import * as _ from 'lodash';
 
+import {ToastyService, ToastyConfig, ToastOptions, ToastData} from 'ng2-toasty';
 import {GlobalState} from "../../../global.state";
 import { Deferred, getDeepFromObject } from './helpers';
 
@@ -78,7 +79,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public constructor(private _state:GlobalState, private _routeService: RouteService, @Inject(Renderer2) private renderer:Renderer2,
-                     @Inject(ZtreeService) private ztreeService: ZtreeService) {
+                     private toastyService:ToastyService, @Inject(ZtreeService) private ztreeService: ZtreeService) {
 
     this.settings = {
       usage: null,
@@ -352,8 +353,17 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     this._routeService.gotoCase(id);
 
     var node = this.ztree.getNodeByParam("id", id, null);
-    this.ztree.selectNode(node);
-    this.notifyCaseChange(node);
+    if (node) {
+      this.ztree.selectNode(node);
+      this.notifyCaseChange(node);
+    } else {
+      var toastOptions:ToastOptions = {
+        title: "未找到用例",
+        timeout: 2000
+      };
+      this.toastyService.warning(toastOptions);
+    }
+
   }
 
 }

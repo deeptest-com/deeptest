@@ -35,8 +35,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
   fields: any[] = [];
   public umeditorSettings: any = {};
 
-  constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
-              private toastyService:ToastyService, private toastyConfig: ToastyConfig,
+  constructor(private _state:GlobalState, private fb: FormBuilder, private toastyService:ToastyService,
               private _caseService: CaseService, private _caseStepService: CaseStepService) {
 
   }

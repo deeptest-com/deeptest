@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestAlert;
+import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.AlertService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.TestAlertVo;
@@ -44,22 +44,15 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
     }
 
     @Override
-    public TestAlert save(JSONObject json) {
-        String title = json.getString("title");
-        String descr = json.getString("descr");
-        Long alertId = json.getLong("id");
-        Long userId = json.getLong("userId");
+    public TestAlert create(TestRun run, TestAlert.AlertType type, Long optUserId) {
+        TestAlert alert = new TestAlert();
 
-        TestAlert alert;
-        if (alertId != null) {
-            alert = (TestAlert) get(TestAlert.class, alertId);
-        } else {
-            alert = new TestAlert();
-            alert.setUserId(userId);
-        }
-        alert.setTitle(title);
-        alert.setDescr(descr);
-        alert.setUserId(userId);
+        alert.setEntityId(run.getId());
+        alert.setType(type);
+        alert.setOptUserId(optUserId);
+
+        alert.setDescr(run.getDescr());
+        alert.setUserId(run.getUserId());
         saveOrUpdate(alert);
 
         return alert;

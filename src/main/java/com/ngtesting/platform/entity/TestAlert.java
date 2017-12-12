@@ -15,8 +15,16 @@ public class TestAlert extends BaseEntity {
 
     private Date dueTime = new Date();
 
+    private Long entityId;
     @Enumerated(EnumType.STRING)
     private AlertType type;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "opt_user_id", insertable = false, updatable = false)
+    private TestUser optUser;
+
+    @Column(name = "opt_user_id")
+    private Long optUserId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
@@ -39,6 +47,30 @@ public class TestAlert extends BaseEntity {
         public String toString() {
             return code;
         }
+    }
+
+    public Long getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
+    }
+
+    public TestUser getOptUser() {
+        return optUser;
+    }
+
+    public void setOptUser(TestUser optUser) {
+        this.optUser = optUser;
+    }
+
+    public Long getOptUserId() {
+        return optUserId;
+    }
+
+    public void setOptUserId(Long optUserId) {
+        this.optUserId = optUserId;
     }
 
     public AlertType getType() {

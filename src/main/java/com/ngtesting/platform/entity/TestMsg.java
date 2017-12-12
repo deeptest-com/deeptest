@@ -12,12 +12,55 @@ public class TestMsg extends BaseEntity {
     private String descr;
     private String uri;
 
+    private Long entityId;
+    @Enumerated(EnumType.STRING)
+    private TestAlert.AlertType type;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "opt_user_id", insertable = false, updatable = false)
+    private TestUser optUser;
+
+    @Column(name = "opt_user_id")
+    private Long optUserId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private TestUser user;
 
     @Column(name = "user_id")
     private Long userId;
+
+    public TestAlert.AlertType getType() {
+        return type;
+    }
+
+    public void setType(TestAlert.AlertType type) {
+        this.type = type;
+    }
+
+    public TestUser getOptUser() {
+        return optUser;
+    }
+
+    public void setOptUser(TestUser optUser) {
+        this.optUser = optUser;
+    }
+
+    public Long getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
+    }
+
+    public Long getOptUserId() {
+        return optUserId;
+    }
+
+    public void setOptUserId(Long optUserId) {
+        this.optUserId = optUserId;
+    }
 
     public String getDescr() {
         return descr;

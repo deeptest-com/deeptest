@@ -1,7 +1,8 @@
 package com.ngtesting.platform.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.entity.TestAlert;
 import com.ngtesting.platform.entity.TestMsg;
+import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.TestMsgVo;
@@ -44,22 +45,15 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
     }
 
     @Override
-    public TestMsg save(JSONObject json) {
-        String title = json.getString("title");
-        String descr = json.getString("descr");
-        Long msgId = json.getLong("id");
-        Long userId = json.getLong("userId");
+    public TestMsg create(TestRun run, TestAlert.AlertType type, Long optUserId) {
+        TestMsg msg = new TestMsg();
 
-        TestMsg msg;
-        if (msgId != null) {
-            msg = (TestMsg) get(TestMsg.class, msgId);
-        } else {
-            msg = new TestMsg();
-            msg.setUserId(userId);
-        }
-        msg.setTitle(title);
-        msg.setDescr(descr);
-        msg.setUserId(userId);
+        msg.setEntityId(run.getId());
+        msg.setType(type);
+        msg.setOptUserId(optUserId);
+
+        msg.setDescr(run.getDescr());
+        msg.setUserId(run.getUserId());
         saveOrUpdate(msg);
 
         return msg;

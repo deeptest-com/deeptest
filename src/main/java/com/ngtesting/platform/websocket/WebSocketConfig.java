@@ -13,18 +13,18 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebMvc
 @EnableWebSocket
 public class WebSocketConfig extends WebMvcConfigurerAdapter implements WebSocketConfigurer {
-    String allowOriginsCommon[] = {
-    		"http://localhost:8100"
-    };
+//    String allowOriginsCommon[] = {
+//    		"http://localhost:4200"
+//    };
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(systemWebSocketHandler(), "/ws")
-        	.addInterceptors(new WebSocketHandshakeInterceptor());  
-         
+        	.addInterceptors(new WebSocketHandshakeInterceptor());
+
         registry.addHandler(systemWebSocketHandler(), "/ws/sockjs")
         	.addInterceptors(new WebSocketHandshakeInterceptor()).withSockJS();
-        System.out.println("websocket registed"); 
+        System.out.println("websocket registed");
     }
 
     @Bean

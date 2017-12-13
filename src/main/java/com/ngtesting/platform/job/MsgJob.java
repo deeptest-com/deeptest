@@ -6,7 +6,6 @@ import com.ngtesting.platform.util.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -21,7 +20,7 @@ public class MsgJob {
     @Autowired
     private MailService mailService;
 
-    @Scheduled(cron="0 0/1 * * * ?") // 1分钟测试
+//    @Scheduled(cron="0 0/1 * * * ?") // 1分钟测试
 	// @Scheduled(cron="0 0 0/1 * * ?") // 1小时
     private void remindTestPlan() {
     	String time = DateUtils.FormatDate(new Date(), "yyyy-MM-dd HH");

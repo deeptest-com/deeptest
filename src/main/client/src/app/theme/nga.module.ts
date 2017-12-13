@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { AppTranslationModule } from '../app.translation.module';
 
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+
 import {PipeModule} from '../pipe/pipe.module';
 
 import { RouteService } from '../service/route';

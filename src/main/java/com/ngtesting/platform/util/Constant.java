@@ -46,8 +46,7 @@ public final class Constant {
 
     public static final String HTTP_SESSION_USER_KEY = "http_session_user";
 
-    public static final String WEBSOCKET_CLIENT_KEY = "clientId";
-    public static final String WEBSOCKET_EVENT_KEY = "eventId";
+    public static final String WEBSOCKET_USER_KEY = "user_id";
     public static final String WEBSOCKET_TIMESNAP = "websocket_timesnap";
 
     public static final String WEBSCOKET_OPT_ENTER_CHAT_ROOM = "enter_chat_room";

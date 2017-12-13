@@ -9,12 +9,15 @@ import {RouteService} from "../../../service/route";
 import {OrgService} from "../../../service/org";
 import {AccountService} from "../../../service/account";
 
+declare var SockJS;
+
 @Component({
   selector: 'ba-page-top',
   templateUrl: './baPageTop.html',
   styleUrls: ['./baPageTop.scss']
 })
 export class BaPageTop implements OnInit, AfterViewInit {
+
   orgId: number;
   prjId: number;
 
@@ -30,6 +33,23 @@ export class BaPageTop implements OnInit, AfterViewInit {
 
   constructor(private _router: Router, private _state: GlobalState, private _routeService: RouteService,
               private orgService: OrgService, private accountService: AccountService) {
+
+    var sock = new SockJS('http://localhost:8080/ws/sockjs');
+    sock.onopen = function() {
+      console.log('open');
+      sock.send(JSON.stringify({test: 'test'}));
+    };
+
+    sock.onmessage = function(e) {
+      console.log('message', e.data);
+      // sock.close();
+    };
+
+    sock.onclose = function() {
+      console.log('close');
+    };
+
+
 
     this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, (profile) => {
       console.log(CONSTANT.STATE_CHANGE_PROFILE, profile);

@@ -1,5 +1,7 @@
 package com.ngtesting.platform.entity;
 
+import com.ngtesting.platform.util.Constant;
+
 import javax.persistence.*;
 
 @Entity
@@ -14,11 +16,11 @@ public class TestMsg extends BaseEntity {
 
     private Long entityId;
     @Enumerated(EnumType.STRING)
-    private TestAlert.AlertType type;
+    private Constant.AlertType type;
     @Enumerated(EnumType.STRING)
-    private TestAlert.AlertAction action;
+    private Constant.MsgType action;
 
-    private Boolean sent = false;
+    private Boolean read = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "opt_user_id", insertable = false, updatable = false)
@@ -34,27 +36,27 @@ public class TestMsg extends BaseEntity {
     @Column(name = "user_id")
     private Long userId;
 
-    public Boolean getSent() {
-        return sent;
+    public Boolean getRead() {
+        return read;
     }
 
-    public void setSent(Boolean sent) {
-        this.sent = sent;
+    public void setRead(Boolean read) {
+        this.read = read;
     }
 
-    public TestAlert.AlertAction getAction() {
+    public Constant.MsgType getAction() {
         return action;
     }
 
-    public void setAction(TestAlert.AlertAction action) {
+    public void setAction(Constant.MsgType action) {
         this.action = action;
     }
 
-    public TestAlert.AlertType getType() {
+    public Constant.AlertType getType() {
         return type;
     }
 
-    public void setType(TestAlert.AlertType type) {
+    public void setType(Constant.AlertType type) {
         this.type = type;
     }
 

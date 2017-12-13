@@ -1,7 +1,6 @@
 package com.ngtesting.platform.entity;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,12 +13,6 @@ public class TestRun extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private RunStatus status;
-
-    @Column(insertable = true, updatable = false)
-    protected Date startTime;
-
-    @Column(insertable = true, updatable = false)
-    protected Date endTime;
 
 	@Column(name = "descr", length = 1000)
     private String descr;
@@ -135,22 +128,6 @@ public class TestRun extends BaseEntity {
 
     public void setStatus(RunStatus status) {
         this.status = status;
-    }
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
     }
 
     public String getDescr() {

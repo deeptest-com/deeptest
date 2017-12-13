@@ -32,37 +32,6 @@ public class TestAlert extends BaseEntity {
     @Column(name = "user_id")
     private Long userId;
 
-    public enum AlertType {
-        run_start("run_start", 1),
-        run_end("run_end", 1);
-
-        AlertType(String code, Integer remindDay) {
-            this.code = code;
-            this.remindDay = remindDay;
-        }
-
-        public String code;
-        public Integer remindDay;
-        public String toString() {
-            return code;
-        }
-    }
-    public enum AlertAction {
-        create("create", "创建"),
-        update("update", "更新");
-
-        AlertAction(String code, String msg) {
-            this.code = code;
-            this.msg = msg;
-        }
-
-        public String code;
-        public String msg;
-        public String toString() {
-            return code;
-        }
-    }
-
     public Boolean getSent() {
         return sent;
     }

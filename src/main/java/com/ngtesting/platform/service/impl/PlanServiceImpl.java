@@ -2,13 +2,13 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.TestAlert;
 import com.ngtesting.platform.entity.TestHistory;
 import com.ngtesting.platform.entity.TestPlan;
 import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.PlanService;
 import com.ngtesting.platform.service.RunService;
+import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.vo.TestPlanVo;
 import com.ngtesting.platform.vo.TestRunVo;
 import com.ngtesting.platform.vo.UserVo;
@@ -85,13 +85,13 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
         TestPlan po;
         TestPlanVo vo = JSON.parseObject(JSON.toJSONString(json), TestPlanVo.class);
 
-        TestAlert.AlertAction action;
+        Constant.MsgType action;
         if (id != null) {
             po = (TestPlan)get(TestPlan.class, id);
-            action = TestAlert.AlertAction.update;
+            action = Constant.MsgType.update;
         } else {
             po = new TestPlan();
-            action = TestAlert.AlertAction.create;
+            action = Constant.MsgType.create;
         }
         po.setName(vo.getName());
         po.setEstimate(vo.getEstimate());

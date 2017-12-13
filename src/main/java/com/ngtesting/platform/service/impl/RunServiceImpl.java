@@ -8,6 +8,7 @@ import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.service.RunService;
 import com.ngtesting.platform.util.BeanUtilEx;
+import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.vo.TestCaseInRunVo;
 import com.ngtesting.platform.vo.TestCaseStepVo;
 import com.ngtesting.platform.vo.TestRunVo;
@@ -68,22 +69,21 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
         Long userId = json.getLong("userId");
         String runName = json.getString("name");
 
-        TestAlert.AlertAction action;
+        Constant.MsgType action = null;
         TestRun run;
         if (runId != null) {
             run = (TestRun) get(TestRun.class, runId);
-            action = TestAlert.AlertAction.update;
+            action = Constant.MsgType.update;
         } else {
             run = new TestRun();
             run.setPlanId(planId);
-            action = TestAlert.AlertAction.create;
+            action = Constant.MsgType.create;
         }
         run.setName(runName);
         run.setUserId(userId);
         saveOrUpdate(run);
 
         msgService.create(run, action, optUser);
-        alertService.create(run, optUser);
         historyService.create(run.getProjectId(), optUser, action.msg, TestHistory.TargetType.run,
                 run.getId(), run.getName());
 
@@ -91,7 +91,7 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
     }
 
     @Override
-    public TestRun saveCases(JSONObject json) {
+    public TestRun saveCases(JSONObject json, UserVo optUser) {
         Long planId = json.getLong("planId");
         Long runId = json.getLong("runId");
         JSONArray data = json.getJSONArray("cases");
@@ -118,6 +118,11 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
             run.getTestcases().add(caseInRun);
         }
         saveOrUpdate(run);
+
+        Constant.MsgType action = Constant.MsgType.update_case;
+        msgService.create(run, action, optUser);
+        historyService.create(run.getProjectId(), optUser, action.msg, TestHistory.TargetType.run,
+                run.getId(), run.getName());
 
         return run;
     }

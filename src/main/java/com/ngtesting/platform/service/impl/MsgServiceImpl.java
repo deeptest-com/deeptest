@@ -1,10 +1,10 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.entity.TestAlert;
 import com.ngtesting.platform.entity.TestMsg;
 import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.util.BeanUtilEx;
+import com.ngtesting.platform.util.Constant;
 import com.ngtesting.platform.vo.TestMsgVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
@@ -41,7 +41,7 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
         return vo;
     }
     @Override
-    public TestMsg create(TestRun run, TestAlert.AlertAction action, UserVo optUser) {
+    public TestMsg create(TestRun run, Constant.MsgType action, UserVo optUser) {
         TestMsg msg = new TestMsg();
 
         msg.setTitle("用户" + optUser.getName() + action.msg + "测试集\"" + run.getName() + "\"");

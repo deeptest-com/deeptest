@@ -34,12 +34,15 @@ export class BaPageTop implements OnInit, AfterViewInit {
   constructor(private _router: Router, private _state: GlobalState, private _routeService: RouteService,
               private sockService: SockService, private orgService: OrgService, private accountService: AccountService) {
 
-    this.sockService.onmessage = (e) => {
-      console.log('message 111', e.data);
-    };
-    this.sockService.open().then(() => {
-      this.sockService.send({'hello': 'world'});
+    this.sockService.onMessage((data) => {
+      console.log('111', data);
     });
+    this.sockService.onOpen((e) => {
+      this.sockService.send({
+        message: 'HELLO WORLD'
+      });
+    });
+    this.sockService.open();
 
     this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, (profile) => {
       console.log(CONSTANT.STATE_CHANGE_PROFILE, profile);

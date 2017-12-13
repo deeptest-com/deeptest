@@ -10,57 +10,68 @@ export class SockService {
   private uri: string = 'ws/sockjs';
 
   private url: string;
-  private socket: any;
-  private status: string;
-
-  private resolveConPromise: (...args: any[]) => void;
-  private timer: any;
+  private sock: any;
+  private handlers = {};
 
   constructor() {
     this.url = CONSTANT.SERVICE_URL + this.uri;
   }
 
-  public open(): Promise<{}> {
-    this.socket = new SockJS(this.url);
-    this.socket.onopen = this.onopen;
-    this.socket.onmessage = this.onmessage;
-    this.socket.onclose = this.onclose;
-    this.socket.onerror = this.onerror;
+  private _opened: boolean = false;
 
-    return new Promise((resolve, reject) => this.resolveConPromise = resolve);
-  }
-  public close() {
-    if (this.socket) {
-      this.socket.close();
+  public open(): void {
+    if (!this._opened) {
+      this.sock = new SockJS(this.url);
+      this.sock.onopen = (e) => {
+        this.callHandlers('open', e);
+      }
+      this.sock.onmessage = (e) => {
+        this.callHandlers('message', JSON.parse(e.data));
+      }
+      this.sock.onclose = (e) => {
+        this.callHandlers('close', e);
+      }
+      this._opened = true;
     }
-  };
-
-  public send(json: any) {
-    this.socket.send(JSON.stringify(json));
   }
 
-  onopen = () => {
-    this.resolveConPromise();
-
-    this.status = 'CONNECTED';
-    console.log('Connected to ' + this.url);
+  public close(): void {
+    if (this._opened) {
+      this.sock.close();
+      delete this.sock;
+      this._opened = false;
+    }
   }
 
-  onmessage = (e) => {
-    console.log('message', e.data);
-  };
-  onclose = () => {
-    this.status = 'CLOSED';
-    console.log('close');
-  };
-  onerror = () => {
-    console.log('reconnecting...');
-    this.timer = setTimeout(() => {
-      this.open();
-    }, 3000);
+  private callHandlers (type: string, ...params: any[]) {
+    if (this.handlers[type]) {
+      this.handlers[type].forEach(function(cb) {
+        cb.apply(cb, params);
+      });
+    }
+  }
 
-    this.status = 'ERROR';
-    console.log('error');
-  };
+  private addEvent (type: string, callback: Function) : void {
+    if (!this.handlers[type]) this.handlers[type] = [];
+    this.handlers[type].push(callback);
+  }
+
+  public onOpen (callback: (e: any) => any) : void {
+    this.addEvent('open', callback);
+  }
+  public onMessage (callback: (data: any) => any) : void {
+    this.addEvent('message', callback);
+  }
+  public onClose (callback: (e: any) => any) : void {
+    this.addEvent('close', callback);
+  }
+
+  public send (data: any) {
+    if (this._opened) {
+      var msg = JSON.stringify(data);
+      this.sock.send(msg);
+    }
+  }
+
 }
 

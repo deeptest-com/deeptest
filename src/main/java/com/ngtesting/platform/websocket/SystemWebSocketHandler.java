@@ -25,9 +25,8 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 
         String str = message.getPayload().toString();
 
-
             String clientId = (String) session.getAttributes().get(Constant.WEBSOCKET_USER_KEY);
-            scopeBean.sendMessageToClient(clientId, new TextMessage("{\"code\": \"hello\"}"));
+            scopeBean.sendMessageToClient(clientId, new TextMessage(str));
 
 //            JSONObject json = (JSONObject) JSONObject.parse(str);
 //            Map<String, Object> ret = optFacade.opt(json);

@@ -6,10 +6,10 @@ import {GlobalState} from "../../../global.state";
 
 import {CONSTANT} from "../../../utils/constant";
 import {RouteService} from "../../../service/route";
+import {SockService} from "../../../service/sock";
+
 import {OrgService} from "../../../service/org";
 import {AccountService} from "../../../service/account";
-
-declare var SockJS;
 
 @Component({
   selector: 'ba-page-top',
@@ -32,24 +32,14 @@ export class BaPageTop implements OnInit, AfterViewInit {
   public isMenuCollapsed: boolean = false;
 
   constructor(private _router: Router, private _state: GlobalState, private _routeService: RouteService,
-              private orgService: OrgService, private accountService: AccountService) {
+              private sockService: SockService, private orgService: OrgService, private accountService: AccountService) {
 
-    var sock = new SockJS('http://localhost:8080/ws/sockjs');
-    sock.onopen = function() {
-      console.log('open');
-      sock.send(JSON.stringify({test: 'test'}));
+    this.sockService.onmessage = (e) => {
+      console.log('message 111', e.data);
     };
-
-    sock.onmessage = function(e) {
-      console.log('message', e.data);
-      // sock.close();
-    };
-
-    sock.onclose = function() {
-      console.log('close');
-    };
-
-
+    this.sockService.open().then(() => {
+      this.sockService.send({'hello': 'world'});
+    });
 
     this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, (profile) => {
       console.log(CONSTANT.STATE_CHANGE_PROFILE, profile);

@@ -10,6 +10,7 @@ import {PipeModule} from '../pipe/pipe.module';
 
 import { RouteService } from '../service/route';
 import { RequestService } from '../service/request';
+import {SockService} from "../service/sock";
 
 import { OrgService } from '../service/org';
 import { AccountService } from '../service/account';
@@ -82,6 +83,7 @@ const NGA_SERVICES = [
 
   RouteService,
   RequestService,
+  SockService,
   AccountService,
   OrgService
 ];

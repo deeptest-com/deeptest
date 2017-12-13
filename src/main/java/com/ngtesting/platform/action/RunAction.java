@@ -94,9 +94,8 @@ public class RunAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		TestUser user = (TestUser) runService.get(TestUser.class, userVo.getId());
 
-		TestRun po = runService.save(json, user);
+		TestRun po = runService.save(json, userVo);
 		TestRunVo vo = runService.genVo(po);
 
 		ret.put("data", vo);

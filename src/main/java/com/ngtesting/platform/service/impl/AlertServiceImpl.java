@@ -2,10 +2,10 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.entity.TestAlert;
 import com.ngtesting.platform.entity.TestRun;
-import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.AlertService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.TestAlertVo;
+import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -18,18 +18,14 @@ import java.util.List;
 public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
 
     @Override
-    public List<TestAlert> list(Long userId) {
+    public List<TestAlert> list() {
         DetachedCriteria dc = DetachedCriteria.forClass(TestAlert.class);
 
-        if (userId != null) {
-            dc.add(Restrictions.eq("runId", userId));
-        }
-
+        dc.add(Restrictions.eq("sent", Boolean.FALSE));
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 
-        dc.addOrder(Order.asc("pId"));
-        dc.addOrder(Order.asc("ordr"));
+        dc.addOrder(Order.asc("createTime"));
 
         List<TestAlert> ls = findAllByCriteria(dc);
 
@@ -45,7 +41,7 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
     }
 
     @Override
-    public void create(TestRun run, TestUser optUser) {
+    public void create(TestRun run, UserVo optUser) {
         if(run.getStartTime() != null) {
             TestAlert alert1 = new TestAlert();
             alert1.setTitle("测试集\"" + run.getName() + "\"计划在" +

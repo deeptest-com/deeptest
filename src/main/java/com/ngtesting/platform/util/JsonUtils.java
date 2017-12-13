@@ -152,7 +152,7 @@ public class JsonUtils {
         Date[] dateArray = new Date[jsonArray.size()];
         for (int i = 0; i < jsonArray.size(); i++) {
             String dateString = jsonArray.getString(i);
-            Date date = DateUtils.str2Date(dateString, dataFormat);
+            Date date = DateUtils.Str2Date(dateString, dataFormat);
             dateArray[i] = date;
         }
         return dateArray;
@@ -242,5 +242,5 @@ public class JsonUtils {
         jsonConfig.registerJsonValueProcessor(Date.class, new JsonDateValueProcessor("yyyy-MM-dd"));
         return jsonConfig;
     }
-    
+
 }

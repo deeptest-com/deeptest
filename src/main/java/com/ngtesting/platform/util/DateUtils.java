@@ -117,7 +117,7 @@ public class DateUtils {
      * @param day
      * @return
      */
-    public static Date getDateBefore(Date d, int day) {
+    public static Date GetDateBefore(Date d, int day) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(d);
         cal.set(Calendar.DATE, cal.get(Calendar.DATE) - day);
@@ -131,7 +131,7 @@ public class DateUtils {
      * @param day
      * @return
      */
-    public static Date getDateAfter(Date d, int day) {
+    public static Date GetDateAfter(Date d, int day) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(d);
         cal.set(Calendar.DATE, cal.get(Calendar.DATE) + day);
@@ -145,7 +145,7 @@ public class DateUtils {
      * @param min
      * @return
      */
-    public static Date getMinBefore(Date d, int min) {
+    public static Date GetMinBefore(Date d, int min) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(d);
         cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) - min);
@@ -159,7 +159,7 @@ public class DateUtils {
      * @param min
      * @return
      */
-    public static Date getMinAfter(Date d, int min) {
+    public static Date GetMinAfter(Date d, int min) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(d);
         cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + min);
@@ -173,7 +173,7 @@ public class DateUtils {
      * @param style 格式
      * @return 返回string
      */
-    public static String formatDate(long time, String style) {
+    public static String FormatDate(long time, String style) {
         Date date = new Date(time);
         SimpleDateFormat outFormat = new SimpleDateFormat(style);
         return outFormat.format(date);
@@ -185,7 +185,7 @@ public class DateUtils {
      * @param date 日期
      * @return 返回string
      */
-    public static String formatDate(Date date) {
+    public static String FormatDate(Date date) {
         if (date == null) {
             return "";
         }
@@ -198,7 +198,7 @@ public class DateUtils {
      *
      * @return 返回string(yyyyMMdd)
      */
-    public static String getDateNoSeparator() {
+    public static String GetDateNoSeparator() {
         Date date = new Date();
         SimpleDateFormat outFormat = new SimpleDateFormat("yyyyMMdd");
         return outFormat.format(date);
@@ -210,7 +210,7 @@ public class DateUtils {
      *
      * @return 返回string(yyyyMMdd)
      */
-    public static String getSmallDateNoSeparator() {
+    public static String GetSmallDateNoSeparator() {
         Date date = new Date();
         SimpleDateFormat outFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         return outFormat.format(date);
@@ -223,7 +223,7 @@ public class DateUtils {
      * @param format 格式
      * @return 返回string
      */
-    public static String formatDate(Date date, String format) {
+    public static String FormatDate(Date date, String format) {
         if (date == null) {
             return "";
         }
@@ -237,7 +237,7 @@ public class DateUtils {
      * @param date 日期
      * @return 返回string
      */
-    public static String formatDateTime(Date date) {
+    public static String FormatDateTime(Date date) {
         SimpleDateFormat outFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return outFormat.format(date);
     }
@@ -249,7 +249,7 @@ public class DateUtils {
      * @param format 格式
      * @return 返回日期
      */
-    public static Date str2Date(String dt, String format) {
+    public static Date Str2Date(String dt, String format) {
         SimpleDateFormat df = new SimpleDateFormat(format);
         Date date = null;
         try {
@@ -266,7 +266,7 @@ public class DateUtils {
      *
      * @return 年份
      */
-    public static int getYear() {
+    public static int GetYear() {
         Calendar cld = Calendar.getInstance();
         cld.setTime(new Date());
         return cld.get(1);
@@ -277,7 +277,7 @@ public class DateUtils {
      *
      * @return 月份
      */
-    public static int getMonth() {
+    public static int GetMonth() {
         Calendar cld = Calendar.getInstance();
         cld.setTime(new Date());
         return cld.get(Calendar.MONTH) + 1;
@@ -288,7 +288,7 @@ public class DateUtils {
      *
      * @return 日期day
      */
-    public static int getDay() {
+    public static int GetDay() {
         Calendar cld = Calendar.getInstance();
         cld.setTime(new Date());
         return cld.get(Calendar.DAY_OF_MONTH);
@@ -299,7 +299,7 @@ public class DateUtils {
      *
      * @return 小时
      */
-    public static int getHour() {
+    public static int GetHour() {
         Calendar cld = Calendar.getInstance();
         cld.setTime(new Date());
         return cld.get(Calendar.HOUR_OF_DAY);
@@ -311,7 +311,7 @@ public class DateUtils {
      * @param t 时间
      * @return 年
      */
-    public static int getYear(long t) {
+    public static int GetYear(long t) {
         Calendar cld = Calendar.getInstance();
         if (t > 0L) {
             cld.setTime(new Date(t));
@@ -325,7 +325,7 @@ public class DateUtils {
      * @param t 时间
      * @return 月
      */
-    public static int getMonth(long t) {
+    public static int GetMonth(long t) {
         Calendar cld = Calendar.getInstance();
         if (t > 0L) {
             cld.setTime(new Date(t));
@@ -339,7 +339,7 @@ public class DateUtils {
      * @param t 时间
      * @return 日期day
      */
-    public static int getDay(long t) {
+    public static int GetDay(long t) {
         Calendar cld = Calendar.getInstance();
         if (t > 0L) {
             cld.setTime(new Date(t));
@@ -353,7 +353,7 @@ public class DateUtils {
      * @param t 时间
      * @return 小时
      */
-    public static int getHour(long t) {
+    public static int GetHour(long t) {
         Calendar cld = Calendar.getInstance();
         if (t > 0L) {
             cld.setTime(new Date(t));
@@ -367,7 +367,7 @@ public class DateUtils {
      * @param t 时间
      * @return 分钟
      */
-    public static int getMinute(long t) {
+    public static int GetMinute(long t) {
         Calendar cld = Calendar.getInstance();
         if (t > 0L) {
             cld.setTime(new Date(t));
@@ -381,7 +381,7 @@ public class DateUtils {
      * @param t 时间
      * @return 秒
      */
-    public static int getSecond(long t) {
+    public static int GetSecond(long t) {
         Calendar cld = Calendar.getInstance();
         if (t > 0L) {
             cld.setTime(new Date(t));
@@ -395,7 +395,7 @@ public class DateUtils {
      * @param date 日期
      * @return 年
      */
-    public static int getYear(Date date) {
+    public static int GetYear(Date date) {
         Calendar cld = Calendar.getInstance();
         cld.setTime(date);
         return cld.get(1);
@@ -407,7 +407,7 @@ public class DateUtils {
      * @param date 日期
      * @return 月
      */
-    public static int getMonth(Date date) {
+    public static int GetMonth(Date date) {
         Calendar cld = Calendar.getInstance();
         cld.setTime(date);
         return cld.get(Calendar.MONTH) + 1;
@@ -419,7 +419,7 @@ public class DateUtils {
      * @param date 日期
      * @return 日期day
      */
-    public static int getDay(Date date) {
+    public static int GetDay(Date date) {
         Calendar cld = Calendar.getInstance();
         cld.setTime(date);
         return cld.get(Calendar.DAY_OF_MONTH);
@@ -431,7 +431,7 @@ public class DateUtils {
      * @param date 日期
      * @return 小时
      */
-    public static int getHour(Date date) {
+    public static int GetHour(Date date) {
         Calendar cld = Calendar.getInstance();
         cld.setTime(date);
         return cld.get(Calendar.HOUR_OF_DAY);
@@ -443,7 +443,7 @@ public class DateUtils {
      * @param date 日期
      * @return 分钟
      */
-    public static int getMinute(Date date) {
+    public static int GetMinute(Date date) {
         Calendar cld = Calendar.getInstance();
         cld.setTime(date);
         return cld.get(Calendar.MINUTE);
@@ -455,7 +455,7 @@ public class DateUtils {
      * @param date 日期
      * @return 秒
      */
-    public static int getSecond(Date date) {
+    public static int GetSecond(Date date) {
         Calendar cld = Calendar.getInstance();
         cld.setTime(date);
         return cld.get(Calendar.MILLISECOND);
@@ -468,7 +468,7 @@ public class DateUtils {
      * @param days 天数
      * @return 日期
      */
-    public static Date addDays(Date date, int days) {
+    public static Date AddDays(Date date, int days) {
         return org.apache.commons.lang.time.DateUtils.addDays(date, days);
     }
 
@@ -479,7 +479,7 @@ public class DateUtils {
      * @param years 年数
      * @return 日期
      */
-    public static Date addYears(Date date, int years) {
+    public static Date AddYears(Date date, int years) {
         return org.apache.commons.lang.time.DateUtils.addYears(date, years);
     }
 
@@ -490,7 +490,7 @@ public class DateUtils {
      * @param months 月数
      * @return 日期
      */
-    public static Date addMonths(Date date, int months) {
+    public static Date AddMonths(Date date, int months) {
         return org.apache.commons.lang.time.DateUtils.addMonths(date, months);
     }
 
@@ -501,7 +501,7 @@ public class DateUtils {
      * @param weeks 周数
      * @return 日期
      */
-    public static Date addWeeks(Date date, int weeks) {
+    public static Date AddWeeks(Date date, int weeks) {
         return org.apache.commons.lang.time.DateUtils.addWeeks(date, weeks);
     }
 
@@ -511,7 +511,7 @@ public class DateUtils {
      * @param year 年
      * @return boolea
      */
-    public static boolean checkLeapyear(int year) {
+    public static boolean CheckLeapyear(int year) {
         boolean isLeapyear = false;
         if ((year % NUMBER_FOUR == 0) && (year % NUMBER_ONE_HUNDRED != 0)) {
             isLeapyear = true;
@@ -531,7 +531,7 @@ public class DateUtils {
      * @param year  年
      * @return boolea
      */
-    public static int getDaysOfmonth(int month, int year) {
+    public static int GetDaysOfmonth(int month, int year) {
         int dates = NUMBER_ZERO;
         if ((month < NUMBER_ZERO) || (month > Calendar.MINUTE)) {
             System.out.println("month Error");
@@ -540,10 +540,10 @@ public class DateUtils {
                 || (month == NUMBER_TEN) || (month == NUMBER_TWELVE)) {
             dates = NUMBER_THIRTY_ONE;
         }
-        if ((month == NUMBER_TWO) && (checkLeapyear(year))) {
+        if ((month == NUMBER_TWO) && (CheckLeapyear(year))) {
             dates = NUMBER_TWENTY_NINE;
         }
-        if ((month == NUMBER_TWO) && (!checkLeapyear(year))) {
+        if ((month == NUMBER_TWO) && (!CheckLeapyear(year))) {
             dates = NUMBER_TWENTY_EIGHT;
         }
         if ((month == NUMBER_FOUR) || (month == NUMBER_SIX) || (month == NUMBER_NINE) || (month == NUMBER_ELEVEN)) {
@@ -558,7 +558,7 @@ public class DateUtils {
      *
      * @return 返回日期
      */
-    public static Date getLastMonthEndDate() {
+    public static Date GetLastMonthEndDate() {
         Calendar cal = Calendar.getInstance();
         Date date = new Date();
         cal.setTime(date);
@@ -572,7 +572,7 @@ public class DateUtils {
             year = cal.get(Calendar.YEAR);
         }
         String endDate = year + "-" + month + "-" + day;
-        return str2Date(endDate, "yyyy-MM-dd");
+        return Str2Date(endDate, "yyyy-MM-dd");
     }
 
     /**
@@ -581,7 +581,7 @@ public class DateUtils {
      *
      * @return 返回日期
      */
-    public static Date getLastMonthStartDate() {
+    public static Date GetLastMonthStartDate() {
         Calendar cal = Calendar.getInstance();
         Date date = new Date();
         cal.setTime(date);
@@ -595,7 +595,7 @@ public class DateUtils {
             year = cal.get(Calendar.YEAR);
         }
         String startDate = year + "-" + month + "-" + day;
-        return str2Date(startDate, "yyyy-MM-dd");
+        return Str2Date(startDate, "yyyy-MM-dd");
     }
 
     /**
@@ -603,7 +603,7 @@ public class DateUtils {
      *
      * @return 返回日期
      */
-    public static Date getCurrentQuarterStartTime() {
+    public static Date GetCurrentQuarterStartTime() {
         SimpleDateFormat shortSdf = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat longSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Calendar c = Calendar.getInstance();
@@ -632,7 +632,7 @@ public class DateUtils {
      *
      * @return 返回日期
      */
-    public static Date getCurrentQuarterEndTime() {
+    public static Date GetCurrentQuarterEndTime() {
         SimpleDateFormat shortSdf = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat longSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Calendar c = Calendar.getInstance();
@@ -664,14 +664,14 @@ public class DateUtils {
      *
      * @return 返回日期
      */
-    public static Date getLastQuarterStartTime() {
-        Date date = getCurrentQuarterStartTime();
-        Date endDate = addDays(date, NUMBER_MINE_ONE);
-        Date startDate = addMonths(endDate, -NUMBER_THREE);
-        int year = getYear(startDate);
-        int month = getMonth(startDate) + NUMBER_ONE;
+    public static Date GetLastQuarterStartTime() {
+        Date date = GetCurrentQuarterStartTime();
+        Date endDate = AddDays(date, NUMBER_MINE_ONE);
+        Date startDate = AddMonths(endDate, -NUMBER_THREE);
+        int year = GetYear(startDate);
+        int month = GetMonth(startDate) + NUMBER_ONE;
         String nextDateString = year + "-" + (month >= NUMBER_TEN ? Integer.valueOf(month) : new StringBuilder("0").append(month).toString()) + "-01 00:00:00";
-        Date d = str2Date(nextDateString, "yyyy-MM-dd HH:mm:ss");
+        Date d = Str2Date(nextDateString, "yyyy-MM-dd HH:mm:ss");
         return d;
     }
 
@@ -680,9 +680,9 @@ public class DateUtils {
      *
      * @return 返回日期
      */
-    public static Date getLastQuarterEndTime() {
-        Date date = getCurrentQuarterStartTime();
-        Date endDate = addDays(date, NUMBER_MINE_ONE);
+    public static Date GetLastQuarterEndTime() {
+        Date date = GetCurrentQuarterStartTime();
+        Date endDate = AddDays(date, NUMBER_MINE_ONE);
         return endDate;
     }
 
@@ -691,7 +691,7 @@ public class DateUtils {
      *
      * @return 返回日期
      */
-    public static Date getLastWeekDayStartTime() {
+    public static Date GetLastWeekDayStartTime() {
         SimpleDateFormat shortSdf = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat longSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Calendar c = Calendar.getInstance();
@@ -711,7 +711,7 @@ public class DateUtils {
      *
      * @return 返回日期
      */
-    public static Date getLastWeekDayEndTime() {
+    public static Date GetLastWeekDayEndTime() {
         SimpleDateFormat shortSdf = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat longSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Calendar c = Calendar.getInstance();
@@ -732,7 +732,7 @@ public class DateUtils {
      * @param d 日期 如果日期为空，则返回当前的时间
      * @return 字符串
      */
-    public static String getWeekDay(Date d) {
+    public static String GetWeekDay(Date d) {
         Calendar calendar = Calendar.getInstance();
         if (d != null) {
             calendar.setTime(d);
@@ -767,13 +767,13 @@ public class DateUtils {
         return weekDayString;
     }
 
-    public static Long getNow() {
+    public static Long GetNow() {
         Calendar ca = Calendar.getInstance();
         ca.setTime(new Date());
         return ca.getTimeInMillis();
     }
 
-    public static Date getTomorrow(Date dt) {
+    public static Date GetTomorrow(Date dt) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(dt);
 
@@ -785,11 +785,11 @@ public class DateUtils {
         return cal.getTime();
     }
 
-    public static Date getStartTimeOfDay(Date dt) {
+    public static Date GetStartTimeOfDay(Date dt) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(dt);
 
-        Date todayEnd = DateUtils.getEndTimeOfDay(new Date());
+        Date todayEnd = DateUtils.GetEndTimeOfDay(new Date());
         if (dt.before(todayEnd)) { // 当天，取下一小时
 
         } else { // 取那一天的0点
@@ -802,7 +802,7 @@ public class DateUtils {
         return cal.getTime();
     }
 
-    public static Date getEndTimeOfDay(Date dt) { // 到第二天之前
+    public static Date GetEndTimeOfDay(Date dt) { // 到第二天之前
         Calendar cal = Calendar.getInstance();
         cal.setTime(dt);
         cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -814,11 +814,11 @@ public class DateUtils {
         return cal.getTime();
     }
 
-    public static Date getSartTimeOfMonth(Date dt) { // 第二天开始
+    public static Date GetSartTimeOfMonth(Date dt) { // 第二天开始
         Calendar cal = Calendar.getInstance();
         cal.setTime(dt);
 
-        if (DateUtils.isToday(dt)) { // 当天，取第二天
+        if (DateUtils.IsToday(dt)) { // 当天，取第二天
             cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
@@ -835,7 +835,7 @@ public class DateUtils {
         return cal.getTime();
     }
 
-    public static Date getEndTimeOfMonth(Date dt) { // 到月末
+    public static Date GetEndTimeOfMonth(Date dt) { // 到月末
         Calendar cal = Calendar.getInstance();
         cal.setTime(dt);
         cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -849,7 +849,7 @@ public class DateUtils {
         return cal.getTime();
     }
 
-    public static List<Date> getDayList(Date start, Date end) {
+    public static List<Date> GetDayList(Date start, Date end) {
         List<Date> list = new ArrayList<Date>();
 
         Calendar cal = Calendar.getInstance();
@@ -862,7 +862,7 @@ public class DateUtils {
         return list;
     }
 
-    public static List<Date> getHourList(Date start, Date end) {
+    public static List<Date> GetHourList(Date start, Date end) {
         List<Date> list = new ArrayList<Date>();
 
         Calendar cal = Calendar.getInstance();
@@ -875,18 +875,18 @@ public class DateUtils {
         return list;
     }
 
-    public static List<Date> getDayList(Date dt) {
-        Date start = DateUtils.getSartTimeOfMonth(dt);
-        Date end = DateUtils.getEndTimeOfMonth(start);
+    public static List<Date> GetDayList(Date dt) {
+        Date start = DateUtils.GetSartTimeOfMonth(dt);
+        Date end = DateUtils.GetEndTimeOfMonth(start);
 
-        return DateUtils.getDayList(start, end);
+        return DateUtils.GetDayList(start, end);
     }
 
-    public static List<Date> getHourList(Date dt) {
-        Date start = DateUtils.getStartTimeOfDay(dt);
-        Date end = DateUtils.getEndTimeOfDay(start);
+    public static List<Date> GetHourList(Date dt) {
+        Date start = DateUtils.GetStartTimeOfDay(dt);
+        Date end = DateUtils.GetEndTimeOfDay(start);
 
-        return DateUtils.getHourList(start, end);
+        return DateUtils.GetHourList(start, end);
     }
 
     public static Date timeAfterHalfHour(Date dt) {
@@ -897,7 +897,7 @@ public class DateUtils {
         return cal.getTime();
     }
 
-    public static Date timeAfterOneDay(Date dt) {
+    public static Date TimeAfterOneDay(Date dt) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(dt);
         cal.add(Calendar.DAY_OF_MONTH, 1);
@@ -905,15 +905,15 @@ public class DateUtils {
         return cal.getTime();
     }
 
-    public static boolean isToday(Date dt) {
-        return dt.getTime() < DateUtils.getEndTimeOfDay(new Date()).getTime();
+    public static boolean IsToday(Date dt) {
+        return dt.getTime() < DateUtils.GetEndTimeOfDay(new Date()).getTime();
     }
 
 	public static String DiffStr(Date dt1,  Date dt2) {
 		long day = 1000*3600*24;
 		long hour = 1000*3600;
 		long min = 1000*60;
-		
+
 		long diff = dt1.getTime() - dt2.getTime();
 		if (diff < 0) {
 			diff *= -1;
@@ -921,7 +921,7 @@ public class DateUtils {
 		long days = diff / day;
 		long hours = (diff - (days * day)) / hour;
 		long mins = (diff - (days * day) - (hours * hour)) / min;
-		
+
 		return days + "天" + hours + "小时" + mins + "分钟";
 	}
 

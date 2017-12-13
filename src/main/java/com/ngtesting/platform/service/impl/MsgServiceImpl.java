@@ -3,10 +3,10 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.entity.TestAlert;
 import com.ngtesting.platform.entity.TestMsg;
 import com.ngtesting.platform.entity.TestRun;
-import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.TestMsgVo;
+import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -19,18 +19,14 @@ import java.util.List;
 public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
 
 	@Override
-	public List<TestMsg> list(Long userId) {
+	public List<TestMsg> list() {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestMsg.class);
 
-		if (userId != null) {
-			dc.add(Restrictions.eq("runId", userId));
-		}
-
+		dc.add(Restrictions.eq("sent", Boolean.FALSE));
 		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 
-		dc.addOrder(Order.asc("pId"));
-		dc.addOrder(Order.asc("ordr"));
+		dc.addOrder(Order.asc("createTime"));
 
 		List<TestMsg> ls = findAllByCriteria(dc);
 
@@ -45,7 +41,7 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
         return vo;
     }
     @Override
-    public TestMsg create(TestRun run, TestAlert.AlertAction action, TestUser optUser) {
+    public TestMsg create(TestRun run, TestAlert.AlertAction action, UserVo optUser) {
         TestMsg msg = new TestMsg();
 
         msg.setTitle("用户" + optUser.getName() + action.msg + "测试集\"" + run.getName() + "\"");

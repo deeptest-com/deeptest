@@ -4,12 +4,14 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.*;
 import com.ngtesting.platform.service.AlertService;
+import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.service.RunService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.TestCaseInRunVo;
 import com.ngtesting.platform.vo.TestCaseStepVo;
 import com.ngtesting.platform.vo.TestRunVo;
+import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -28,6 +30,9 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 
     @Autowired
     AlertService alertService;
+
+    @Autowired
+    HistoryService historyService;
 
 	@Override
 	public List<TestCaseInRun> lodaCase(Long runId) {
@@ -57,7 +62,7 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
     }
 
     @Override
-    public TestRun save(JSONObject json, TestUser optUser) {
+    public TestRun save(JSONObject json, UserVo optUser) {
         Long planId = json.getLong("planId");
         Long runId = json.getLong("id");
         Long userId = json.getLong("userId");
@@ -79,6 +84,8 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 
         msgService.create(run, action, optUser);
         alertService.create(run, optUser);
+        historyService.create(run.getProjectId(), optUser, action.msg, TestHistory.TargetType.run,
+                run.getId(), run.getName());
 
         return run;
     }

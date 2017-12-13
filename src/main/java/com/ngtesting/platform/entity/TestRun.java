@@ -16,10 +16,10 @@ public class TestRun extends BaseEntity {
     private RunStatus status;
 
     @Column(insertable = true, updatable = false)
-    protected Date startTime = new Date();
+    protected Date startTime;
 
     @Column(insertable = true, updatable = false)
-    protected Date endTime = new Date();
+    protected Date endTime;
 
 	@Column(name = "descr", length = 1000)
     private String descr;

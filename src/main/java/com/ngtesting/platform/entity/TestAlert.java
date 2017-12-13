@@ -16,6 +16,8 @@ public class TestAlert extends BaseEntity {
     private Date startTime;
     private Date dueTime;
 
+    private Boolean sent = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "opt_user_id", insertable = false, updatable = false)
     private TestUser optUser;
@@ -59,6 +61,14 @@ public class TestAlert extends BaseEntity {
         public String toString() {
             return code;
         }
+    }
+
+    public Boolean getSent() {
+        return sent;
+    }
+
+    public void setSent(Boolean sent) {
+        this.sent = sent;
     }
 
     public Date getStartTime() {

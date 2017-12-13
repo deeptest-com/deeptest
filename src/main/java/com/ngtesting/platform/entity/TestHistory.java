@@ -3,9 +3,10 @@ package com.ngtesting.platform.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "tst_msg")
-public class TestMsg extends BaseEntity {
-    private static final long serialVersionUID = 530835958185680515L;
+@Table(name = "tst_history")
+public class TestHistory extends BaseEntity {
+
+    private static final long serialVersionUID = -6608023158199904153L;
 
     private String title;
     @Column(name = "msg", length = 10000)
@@ -14,11 +15,14 @@ public class TestMsg extends BaseEntity {
 
     private Long entityId;
     @Enumerated(EnumType.STRING)
-    private TestAlert.AlertType type;
-    @Enumerated(EnumType.STRING)
-    private TestAlert.AlertAction action;
+    private TargetType entityType;
 
-    private Boolean sent = false;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id", insertable = false, updatable = false)
+    private TestProject project;
+
+    @Column(name = "project_id")
+    private Long projectId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "opt_user_id", insertable = false, updatable = false)
@@ -34,28 +38,45 @@ public class TestMsg extends BaseEntity {
     @Column(name = "user_id")
     private Long userId;
 
-    public Boolean getSent() {
-        return sent;
+    public enum TargetType {
+        project("project", "项目"),
+        plan("plan", "计划"),
+        run("run", "测试集");
+
+        TargetType(String code, String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String code;
+        public String name;
+        public String toString() {
+            return code;
+        }
     }
 
-    public void setSent(Boolean sent) {
-        this.sent = sent;
+    public TestProject getProject() {
+        return project;
     }
 
-    public TestAlert.AlertAction getAction() {
-        return action;
+    public void setProject(TestProject project) {
+        this.project = project;
     }
 
-    public void setAction(TestAlert.AlertAction action) {
-        this.action = action;
+    public Long getProjectId() {
+        return projectId;
     }
 
-    public TestAlert.AlertType getType() {
-        return type;
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 
-    public void setType(TestAlert.AlertType type) {
-        this.type = type;
+    public TargetType getEntityType() {
+        return entityType;
+    }
+
+    public void setEntityType(TargetType entityType) {
+        this.entityType = entityType;
     }
 
     public TestUser getOptUser() {

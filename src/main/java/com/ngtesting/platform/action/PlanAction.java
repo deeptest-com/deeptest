@@ -25,13 +25,13 @@ import java.util.Map;
 public class PlanAction extends BaseAction {
 	@Autowired
 	PlanService planService;
-	
+
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "query", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
+
 		List<TestPlan> ls = planService.query(json);
 
 		List<TestPlanVo> vos = planService.genVos(ls);
@@ -63,7 +63,9 @@ public class PlanAction extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TestPlan po = planService.save(json);
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+		TestPlan po = planService.save(json, userVo);
 		TestPlanVo vo = planService.genVo(po);
 
 		ret.put("data", vo);
@@ -76,11 +78,11 @@ public class PlanAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
+
 		Long id = json.getLong("id");
-		
+
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
+
 		TestPlan po = planService.delete(id, userVo.getId());
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

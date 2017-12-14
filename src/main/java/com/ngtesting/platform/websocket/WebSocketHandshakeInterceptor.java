@@ -1,7 +1,8 @@
 package com.ngtesting.platform.websocket;
 
 import com.ngtesting.platform.bean.ApplicationScopeBean;
-import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.util.SpringContextHolder;
 import com.ngtesting.platform.vo.UserVo;
 import org.slf4j.Logger;
@@ -37,7 +38,7 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
             }
 
             if (user != null) {
-                attributes.put(Constant.WEBSOCKET_USER_KEY, user.getId().toString());
+                attributes.put(WsConstant.WS_USER_KEY, user.getId().toString());
                 attributes.put("somthing", "somthing");
                 return true;
             }

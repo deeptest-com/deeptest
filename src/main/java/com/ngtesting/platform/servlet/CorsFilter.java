@@ -11,7 +11,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.util.WebUtils;
 
 public class CorsFilter implements Filter {

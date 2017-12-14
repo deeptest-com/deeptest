@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 
 import {Injectable} from "@angular/core";
 import {CONSTANT} from '../utils/constant';
+import {WS_CONSTANT} from '../utils/ws-constant';
 
 declare var SockJS;
 

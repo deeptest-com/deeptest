@@ -8,7 +8,7 @@ import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.service.RunService;
 import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.vo.TestCaseInRunVo;
 import com.ngtesting.platform.vo.TestCaseStepVo;
 import com.ngtesting.platform.vo.TestRunVo;

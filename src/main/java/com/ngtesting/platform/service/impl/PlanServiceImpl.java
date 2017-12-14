@@ -8,7 +8,7 @@ import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.PlanService;
 import com.ngtesting.platform.service.RunService;
-import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.vo.TestPlanVo;
 import com.ngtesting.platform.vo.TestRunVo;
 import com.ngtesting.platform.vo.UserVo;

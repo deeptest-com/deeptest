@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.SysRole;
 import com.ngtesting.platform.service.SysRoleService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.RoleVo;
 import com.ngtesting.platform.vo.UserVo;

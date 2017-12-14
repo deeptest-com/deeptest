@@ -1,8 +1,10 @@
 package com.ngtesting.platform.websocket;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.bean.ApplicationScopeBean;
 import com.ngtesting.platform.bean.websocket.OptFacade;
-import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.config.WsConstant;
+import com.ngtesting.platform.service.MsgService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +20,27 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 
     @Autowired
     private ApplicationScopeBean scopeBean;
+    @Autowired
+    MsgService msgService;
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
         logger.info("hander ws message......" + message.getPayload().toString());
+        String userId = (String) session.getAttributes().get(WsConstant.WS_USER_KEY);
 
         String str = message.getPayload().toString();
+        JSONObject json = (JSONObject) JSONObject.parse(str);
+        String type = json.getString("type");
+        if (WsConstant.WS_OPEN.equals(type) && userId != null) {
+            msgService.list(Long.valueOf(userId));
 
-            String clientId = (String) session.getAttributes().get(Constant.WEBSOCKET_USER_KEY);
-            scopeBean.sendMessageToClient(clientId, new TextMessage(str));
+            scopeBean.sendMessageToClient(userId, new TextMessage(str));
+        }
 
 //            JSONObject json = (JSONObject) JSONObject.parse(str);
 //            Map<String, Object> ret = optFacade.opt(json);
 //            if (ret != null) {
-//                String clientId = (String) session.getAttributes().get(Constant.WEBSOCKET_USER_KEY);
+//                String clientId = (String) session.getAttributes().get(Constant.WS_USER_KEY);
 //                scopeBean.sendMessageToClient(clientId, new TextMessage(JSONObject.toJSONString(ret)));
 //            }
     }
@@ -40,14 +49,14 @@ public class SystemWebSocketHandler implements WebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         logger.debug("connect to the websocket success......");
 
-        String clientId = (String) session.getAttributes().get(Constant.WEBSOCKET_USER_KEY);
+        String userId = (String) session.getAttributes().get(WsConstant.WS_USER_KEY);
 
-        if (!session.getAttributes().containsKey(Constant.WEBSOCKET_TIMESNAP)) {
-            session.getAttributes().put(Constant.WEBSOCKET_TIMESNAP, new Date().getTime());
+        if (!session.getAttributes().containsKey(WsConstant.WS_TIMESNAP)) {
+            session.getAttributes().put(WsConstant.WS_TIMESNAP, new Date().getTime());
         }
 
-        if (clientId != null) { // eventId != null
-        	scopeBean.getOnlines().put(clientId, session);
+        if (userId != null) {
+        	scopeBean.getOnlines().put(userId, session);
 
 //        	if (!scopeBean.getChatroom().containsKey(eventId)) {
 //        		scopeBean.getChatroom().put(eventId, new ConcurrentSkipListSet<Long>());
@@ -65,10 +74,10 @@ public class SystemWebSocketHandler implements WebSocketHandler {
         }
 
         logger.debug("websocket connection closed when error......");
-        if (session.getAttributes().get(Constant.WEBSOCKET_USER_KEY) != null) {
-        	String clientId = (String) session.getAttributes().get(Constant.WEBSOCKET_USER_KEY);
-            if (clientId != null && scopeBean.getOnlines().get(clientId) != null) {
-                scopeBean.getOnlines().remove(clientId);
+        if (session.getAttributes().get(WsConstant.WS_USER_KEY) != null) {
+        	String userId = (String) session.getAttributes().get(WsConstant.WS_USER_KEY);
+            if (userId != null && scopeBean.getOnlines().get(userId) != null) {
+                scopeBean.getOnlines().remove(userId);
             }
         }
     }
@@ -76,7 +85,7 @@ public class SystemWebSocketHandler implements WebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
         logger.debug("websocket connection closed......");
-        String clientId = (String) session.getAttributes().get(Constant.WEBSOCKET_USER_KEY);
+        String clientId = (String) session.getAttributes().get(WsConstant.WS_USER_KEY);
         if (clientId != null && scopeBean.getOnlines().get(clientId) != null) {
         	scopeBean.getOnlines().remove(clientId);
         }

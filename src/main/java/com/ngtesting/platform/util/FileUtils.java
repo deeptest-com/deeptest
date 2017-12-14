@@ -10,6 +10,7 @@ import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 
+import com.ngtesting.platform.config.Constant;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
 

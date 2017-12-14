@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestCaseStep;
 import com.ngtesting.platform.service.CaseStepService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.vo.TestCaseStepVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;

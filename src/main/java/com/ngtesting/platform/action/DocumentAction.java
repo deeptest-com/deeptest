@@ -17,7 +17,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestDocument;
 import com.ngtesting.platform.service.DocumentService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.vo.DocumentVo;
 import com.ngtesting.platform.vo.Page;
 

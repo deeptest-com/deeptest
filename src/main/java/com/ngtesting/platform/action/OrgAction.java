@@ -8,7 +8,7 @@ import com.ngtesting.platform.service.OrgRolePrivilegeService;
 import com.ngtesting.platform.service.OrgService;
 import com.ngtesting.platform.service.ProjectPrivilegeService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.vo.OrgVo;
 import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
 import com.ngtesting.platform.vo.UserVo;
@@ -37,58 +37,58 @@ public class OrgAction extends BaseAction {
 	ProjectPrivilegeService projectPrivilegeService;
 	@Autowired
 	CasePropertyService casePropertyService;
-	
+
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
+
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
+
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
-		
+
 		List<OrgVo> vos = orgService.listVo(keywords, disabled, userVo.getId());
-        
+
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-	
+
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "get", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Long id = json.getLong("id");
-		
+
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
+
 		if (id != null) {
 			TestOrg po = (TestOrg) orgService.get(TestOrg.class, id);
 			OrgVo vo = orgService.genVo(po);
-			
+
 			TestUser user = (TestUser)orgService.get(TestUser.class, userVo.getId());
 			if (po.getId() == user.getDefaultOrgId()) {
 				vo.setDefaultOrg(true);
 			}
-			
+
 	        ret.put("data", vo);
 		}
-		
+
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-	
+
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody OrgVo vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
+
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		
+
 		TestOrg po = orgService.save(vo, userVo.getId());
 
 		List<OrgVo> vos = orgService.listVo(null, "false", userVo.getId());
@@ -97,35 +97,35 @@ public class OrgAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-	
+
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
+
 		Long id = json.getLong("id");
-		
+
 		boolean success = orgService.delete(id);
-		
+
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-	
+
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "setDefault", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
+
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long orgId = json.getLong("id");
-		
+
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
-		
+
 		List<TestProjectAccessHistoryVo> recentProjects = orgService.setDefaultPers(orgId, userVo);
-		
+
 		List<OrgVo> vos = orgService.listVo(keywords, disabled, userVo.getId());
 
 		Map<String, Boolean> orgRolePrivileges = orgRolePrivilegeService.listByUser(userVo.getId(),
@@ -134,7 +134,7 @@ public class OrgAction extends BaseAction {
                 recentProjects.size()>0?recentProjects.get(0).getProjectId():null);
 
 		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
-        
+
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		ret.put("data", vos);
 		ret.put("recentProjects", recentProjects);
@@ -142,8 +142,8 @@ public class OrgAction extends BaseAction {
 		ret.put("projectPrivilege", projectPrivileges);
 
 		ret.put("casePropertyMap", casePropertyMap);
-		
+
 		return ret;
 	}
-	
+
 }

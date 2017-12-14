@@ -2,7 +2,7 @@ package com.ngtesting.platform.vo;
 
 import java.util.List;
 
-import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.config.Constant;
 
 public class Page<T> {
 

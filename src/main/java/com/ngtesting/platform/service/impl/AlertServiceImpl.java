@@ -13,6 +13,21 @@ import java.util.List;
 public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
 
     @Override
+    public List<TestAlert> list(Long userId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestAlert.class);
+
+        dc.add(Restrictions.eq("read", Boolean.FALSE));
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+
+        dc.addOrder(Order.asc("createTime"));
+
+        List<TestAlert> ls = findAllByCriteria(dc);
+
+        return ls;
+    }
+
+    @Override
     public void scanTestPlan() {
         DetachedCriteria dc = DetachedCriteria.forClass(TestAlert.class);
 

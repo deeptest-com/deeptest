@@ -1,4 +1,4 @@
-package com.ngtesting.platform.util;
+package com.ngtesting.platform.config;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,12 +45,6 @@ public final class Constant {
     }
 
     public static final String HTTP_SESSION_USER_KEY = "http_session_user";
-
-    public static final String WEBSOCKET_USER_KEY = "user_id";
-    public static final String WEBSOCKET_TIMESNAP = "websocket_timesnap";
-
-    public static final String WEBSCOKET_OPT_ENTER_CHAT_ROOM = "enter_chat_room";
-	public static final String WEBSCOKET_OPT_CHAT = "chat";
 
     public static final String KEY_TESTCASE_DESIGN = "TC-";
     public static final String KEY_TESTCASE_EXE = "TE-";

@@ -1,8 +1,8 @@
 package com.ngtesting.platform.bean.websocket;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.util.Constant;
-import com.ngtesting.platform.util.Constant.RespCode;
+import com.ngtesting.platform.config.Constant.RespCode;
+import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.websocket.SystemWebSocketHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,9 +36,9 @@ public class OptFacade {
         String trans = json.getString("trans");
 
         try {
-            if (Constant.WEBSCOKET_OPT_ENTER_CHAT_ROOM.equals(act)) {
+            if (WsConstant.WS__OPT_ENTER_CHAT_ROOM.equals(act)) {
                 ret = optChat.enter(json);
-            } else if (Constant.WEBSCOKET_OPT_CHAT.equals(act)) {
+            } else if (WsConstant.WS_OPT_CHAT.equals(act)) {
                 ret = optChat.chat(json);
             }
         } catch (Exception e) {

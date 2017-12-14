@@ -1,6 +1,6 @@
 package com.ngtesting.platform.entity;
 
-import com.ngtesting.platform.util.Constant.TreeNodeType;
+import com.ngtesting.platform.config.Constant.TreeNodeType;
 
 import javax.persistence.*;
 

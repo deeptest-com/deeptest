@@ -4,7 +4,7 @@ import com.ngtesting.platform.entity.TestMsg;
 import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.vo.TestMsgVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
@@ -19,10 +19,10 @@ import java.util.List;
 public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
 
 	@Override
-	public List<TestMsg> list() {
+	public List<TestMsg> list(Long userId) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestMsg.class);
 
-		dc.add(Restrictions.eq("sent", Boolean.FALSE));
+		dc.add(Restrictions.eq("read", Boolean.FALSE));
 		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 

@@ -5,8 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.service.OrgGroupService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.util.Constant;
-import com.ngtesting.platform.util.Constant.RespCode;
+import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.config.Constant.RespCode;
 import com.ngtesting.platform.vo.OrgGroupVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,5 +57,5 @@ public class UserAndGroupAction extends BaseAction {
 		ret.put("code", RespCode.SUCCESS.getCode());
 		return ret;
 	}
-	
+
 }

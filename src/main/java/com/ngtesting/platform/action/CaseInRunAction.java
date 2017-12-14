@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.service.CaseInRunService;
 import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.vo.CustomFieldVo;
 import com.ngtesting.platform.vo.TestCaseInRunVo;
 import com.ngtesting.platform.vo.UserVo;

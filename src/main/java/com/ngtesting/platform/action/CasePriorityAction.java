@@ -5,7 +5,7 @@ import com.ngtesting.platform.entity.TestCasePriority;
 import com.ngtesting.platform.service.CasePriorityService;
 import com.ngtesting.platform.service.CasePropertyService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.util.Constant;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.vo.CasePriorityVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.apache.commons.logging.Log;

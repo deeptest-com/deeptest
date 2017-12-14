@@ -5,6 +5,7 @@ import {Router} from "@angular/router";
 import {GlobalState} from "../../../global.state";
 
 import {CONSTANT} from "../../../utils/constant";
+import {WS_CONSTANT} from '../../../utils/ws-constant';
 import {RouteService} from "../../../service/route";
 import {SockService} from "../../../service/sock";
 
@@ -28,18 +29,34 @@ export class BaPageTop implements OnInit, AfterViewInit {
   orgs: any[] = [];
   keywords: string;
 
+  msgs: any[] = [];
+  alerts: any[] = [];
+
   public isScrolled: boolean = false;
   public isMenuCollapsed: boolean = false;
 
   constructor(private _router: Router, private _state: GlobalState, private _routeService: RouteService,
               private sockService: SockService, private orgService: OrgService, private accountService: AccountService) {
 
-    this.sockService.onMessage((data) => {
-      console.log('111', data);
+    this.sockService.onMessage((json) => {
+
+      if (json.code != 1) {
+        console.log('ws error: ', json.code);
+        return;
+      }
+
+      if (WS_CONSTANT.WS_MSG_LASTEST === json.type) {
+        this.msgs = json.data;
+        console.log('msgs ', this.msgs);
+      } else if (WS_CONSTANT.WS_ALERT_LASTEST === json.type) {
+        this.alerts = json.data;
+        console.log('alerts ', this.alerts);
+      }
+
     });
     this.sockService.onOpen((e) => {
       this.sockService.send({
-        message: 'HELLO WORLD'
+        type: WS_CONSTANT.WS_OPEN
       });
     });
     this.sockService.open();

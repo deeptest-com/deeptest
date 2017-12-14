@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Input, Component} from '@angular/core';
 
 import {BaMsgCenterService} from './baMsgCenter.service';
 
@@ -10,12 +10,11 @@ import {BaMsgCenterService} from './baMsgCenter.service';
 })
 export class BaMsgCenter {
 
-  public notifications:Array<Object>;
-  public messages:Array<Object>;
+  @Input() alerts;
+  @Input() msgs;
 
   constructor(private _baMsgCenterService:BaMsgCenterService) {
-    this.notifications = this._baMsgCenterService.getNotifications();
-    this.messages = this._baMsgCenterService.getMessages();
+
   }
 
 }

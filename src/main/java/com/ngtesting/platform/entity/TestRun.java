@@ -12,7 +12,7 @@ public class TestRun extends BaseEntity {
 	private Integer estimate;
 
     @Enumerated(EnumType.STRING)
-    private RunStatus status;
+    private RunStatus status = RunStatus.not_start;
 
 	@Column(name = "descr", length = 1000)
     private String descr;

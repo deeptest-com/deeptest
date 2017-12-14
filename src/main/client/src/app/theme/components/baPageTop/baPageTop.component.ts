@@ -38,32 +38,11 @@ export class BaPageTop implements OnInit, AfterViewInit {
   constructor(private _router: Router, private _state: GlobalState, private _routeService: RouteService,
               private sockService: SockService, private orgService: OrgService, private accountService: AccountService) {
 
-    this.sockService.onMessage((json) => {
-
-      if (json.code != 1) {
-        console.log('ws error: ', json.code);
-        return;
-      }
-
-      if (WS_CONSTANT.WS_MSG_LASTEST === json.type) {
-        this.msgs = json.data;
-        console.log('msgs ', this.msgs);
-      } else if (WS_CONSTANT.WS_ALERT_LASTEST === json.type) {
-        this.alerts = json.data;
-        console.log('alerts ', this.alerts);
-      }
-
-    });
-    this.sockService.onOpen((e) => {
-      this.sockService.send({
-        type: WS_CONSTANT.WS_OPEN
-      });
-    });
-    this.sockService.open();
-
     this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, (profile) => {
       console.log(CONSTANT.STATE_CHANGE_PROFILE, profile);
       this.profile = profile;
+
+      this.wsConnect();
     });
 
     this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, (data: any) => {
@@ -150,4 +129,29 @@ export class BaPageTop implements OnInit, AfterViewInit {
       this._state.notifyDataChanged('case.jump', this._routeService.caseIdForJump(this.keywords));
     }
   }
+
+  wsConnect() {
+    this.sockService.onMessage((json) => {
+      console.log('json ', json);
+
+      if (json.code != 1) {
+        console.log('ws error: ', json.code);
+        return;
+      }
+
+      if (WS_CONSTANT.WS_MSG_AND_ALERT_LASTEST === json.type) {
+        this.alerts = json.alerts;
+        this.msgs = json.msgs;
+        console.log('alerts ', this.alerts);
+      }
+
+    });
+    this.sockService.onOpen((e) => {
+      this.sockService.send({
+        type: WS_CONSTANT.WS_OPEN
+      });
+    });
+    this.sockService.open();
+  }
+
 }

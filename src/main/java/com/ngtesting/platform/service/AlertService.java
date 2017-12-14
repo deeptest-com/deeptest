@@ -1,13 +1,17 @@
 package com.ngtesting.platform.service;
 
-import com.ngtesting.platform.entity.TestAlert;
+import com.ngtesting.platform.entity.TestRun;
+import com.ngtesting.platform.vo.TestAlertVo;
 
 import java.util.List;
 
 public interface AlertService extends BaseService {
 
-    List<TestAlert> list(Long userId);
+    List<TestAlertVo> list(Long userId, Boolean isRead);
 
-    void scanTestPlan();
+    List<TestRun> scanTestPlan(Long userId);
 
+    List<TestAlertVo> genVos(List<TestRun> pos);
+
+    TestAlertVo genVo(TestRun po);
 }

@@ -789,15 +789,15 @@ public class DateUtils {
         Calendar cal = Calendar.getInstance();
         cal.setTime(dt);
 
-        Date todayEnd = DateUtils.GetEndTimeOfDay(new Date());
-        if (dt.before(todayEnd)) { // 当天，取下一小时
-
-        } else { // 取那一天的0点
+//        Date todayEnd = DateUtils.GetEndTimeOfDay(new Date());
+//        if (dt.before(todayEnd)) { // 当天，取下一小时
+//
+//        } else { // 取那一天的0点
             cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
-        }
+//        }
 
         return cal.getTime();
     }

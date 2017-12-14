@@ -4,18 +4,27 @@ public class TestMsgVo extends BaseVo {
 
     private static final long serialVersionUID = -6418363700406245211L;
 
-    private String title;
+    private String name;
     private String descr;
     private String uri;
+    private String avatar;
 
     private Long userId;
 
-    public String getTitle() {
-        return title;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescr() {

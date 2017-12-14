@@ -1,10 +1,10 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.TestMsg;
 import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.vo.TestMsgVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
@@ -12,25 +12,33 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
 
 	@Override
-	public List<TestMsg> list(Long userId) {
+	public List<TestMsgVo> list(Long userId, Boolean isRead) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
 		DetachedCriteria dc = DetachedCriteria.forClass(TestMsg.class);
 
-		dc.add(Restrictions.eq("read", Boolean.FALSE));
+        dc.add(Restrictions.eq("userId", userId));
+        if (isRead != null) {
+            dc.add(Restrictions.eq("isRead", isRead));
+        }
 		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 
 		dc.addOrder(Order.asc("createTime"));
 
-		List<TestMsg> ls = findAllByCriteria(dc);
+		List<TestMsg> pos = findAllByCriteria(dc);
+		List<TestMsgVo> vos = genVos(pos);
 
-		return ls;
+		return vos;
 	}
 
     @Override
@@ -44,7 +52,7 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
     public TestMsg create(TestRun run, Constant.MsgType action, UserVo optUser) {
         TestMsg msg = new TestMsg();
 
-        msg.setTitle("用户" + optUser.getName() + action.msg + "测试集\"" + run.getName() + "\"");
+        msg.setName("用户" + optUser.getName() + action.msg + "测试集\"" + run.getName() + "\"");
 
         msg.setDescr(run.getDescr());
         msg.setUserId(run.getUserId());
@@ -69,6 +77,7 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
 	public TestMsgVo genVo(TestMsg po) {
 		TestMsgVo vo = new TestMsgVo();
 		BeanUtilEx.copyProperties(vo, po);
+        vo.setAvatar(po.getUser().getAvatar());
 
 		return vo;
 	}

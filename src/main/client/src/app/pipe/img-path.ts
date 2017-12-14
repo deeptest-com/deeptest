@@ -5,8 +5,8 @@ import {Utils} from '../utils/utils';
 
 @Pipe({name: 'imgPath'})
 export class ImgPathPipe implements PipeTransform {
-    transform(url: string, external: any) : string {
-      return Utils.imgUrl(url, external);
+    transform(url: string, external: any, defaultt: string) : string {
+      return Utils.imgUrl(url, external, defaultt);
     }
 }
 

@@ -9,8 +9,8 @@ import javax.persistence.*;
 public class TestMsg extends BaseEntity {
     private static final long serialVersionUID = 530835958185680515L;
 
-    private String title;
-    @Column(name = "msg", length = 10000)
+    private String name;
+    @Column(name = "descr", length = 10000)
     private String descr;
     private String uri;
 
@@ -20,7 +20,7 @@ public class TestMsg extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Constant.MsgType action;
 
-    private Boolean read = false;
+    private Boolean isRead = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "opt_user_id", insertable = false, updatable = false)
@@ -37,11 +37,11 @@ public class TestMsg extends BaseEntity {
     private Long userId;
 
     public Boolean getRead() {
-        return read;
+        return isRead;
     }
 
     public void setRead(Boolean read) {
-        this.read = read;
+        isRead = read;
     }
 
     public Constant.MsgType getAction() {
@@ -100,12 +100,12 @@ public class TestMsg extends BaseEntity {
         this.uri = uri;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public TestUser getUser() {

@@ -5,21 +5,30 @@ import java.util.Date;
 public class TestAlertVo extends BaseVo {
     private static final long serialVersionUID = -3772223392983975860L;
 
-    private String title;
+    private String name;
     private String descr;
     private String uri;
+    private String avatar;
 
     private Long userId;
 
     private Date dueTime;
     private String type;
 
-    public String getTitle() {
-        return title;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescr() {

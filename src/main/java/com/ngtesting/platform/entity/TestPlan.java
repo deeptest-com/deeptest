@@ -17,7 +17,7 @@ public class TestPlan extends BaseEntity {
 	private Integer estimate;
 
     @Enumerated(EnumType.STRING)
-    private PlanStatus status;
+    private PlanStatus status = PlanStatus.not_start;
 
     protected Date startTime = new Date();
 

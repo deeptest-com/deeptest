@@ -9,13 +9,14 @@ public class TestAlert extends BaseEntity {
     private static final long serialVersionUID = 4639102366457159222L;
 
     private String title;
-    @Column(name = "msg", length = 10000)
+    @Column(name = "descr", length = 10000)
     private String descr;
     private String uri;
 
     private Date startTime;
     private Date dueTime;
 
+    private Boolean isRead = false;
     private Boolean sent = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,6 +39,14 @@ public class TestAlert extends BaseEntity {
 
     public void setSent(Boolean sent) {
         this.sent = sent;
+    }
+
+    public Boolean getRead() {
+        return isRead;
+    }
+
+    public void setRead(Boolean read) {
+        isRead = read;
     }
 
     public Date getStartTime() {

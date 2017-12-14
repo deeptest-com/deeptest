@@ -62,9 +62,13 @@ export var Utils: any = {
     model[datetimeKey] = Utils.strToDate(dateStr);
   },
 
-  imgUrl:function(url: string, external: boolean){
+  imgUrl:function(url: string, external: boolean, defaultt: string){
     if (!url) {
-      url = 'img/none.png';
+      if (defaultt) {
+        url = defaultt
+      } else {
+        url = 'img/1-1.png';
+      }
     }
 
     if (!external)  {

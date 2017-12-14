@@ -11,7 +11,7 @@
 
       <div class="header clearfix">
         <strong>今天</strong>
-        <!--<a href>全部标为已读</a>-->
+        <a (click)="readAllAlerts($event)" href="javascript:void(0);">全部标为已读</a>
       </div>
       <div class="msg-list">
         <a *ngFor="let msg of alerts" href class="clearfix">
@@ -34,7 +34,7 @@
       <i class="dropdown-arr"></i>
       <div class="header clearfix">
         <strong>消息</strong>
-        <a href>全部标为已读</a>
+        <a (click)="readAllMsgs($event)" href="javascript:void(0);">全部标为已读</a>
       </div>
       <div class="msg-list">
         <a *ngFor="let msg of msgs" href class="clearfix">
@@ -46,7 +46,7 @@
           </div>
         </a>
       </div>
-      <a href>查看所有</a>
+      <a (click)="moreMsgs($event)" href="javascript:void(0);">查看所有</a>
     </div>
   </li>
 </ul>

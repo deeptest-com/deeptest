@@ -17,4 +17,14 @@ export class BaMsgCenter {
 
   }
 
+  readAllAlerts($event) {
+    console.log('readAllAlerts');
+  }
+  readAllMsgs($event) {
+    console.log('readAllMsgs');
+  }
+  moreMsgs($event) {
+    console.log('moreMsgs');
+  }
+
 }

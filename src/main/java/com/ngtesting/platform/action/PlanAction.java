@@ -1,10 +1,12 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.bean.websocket.OptFacade;
+import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.entity.TestPlan;
 import com.ngtesting.platform.service.PlanService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.vo.TestPlanVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ import java.util.Map;
 @Controller
 @RequestMapping(Constant.API_PATH_CLIENT + "plan/")
 public class PlanAction extends BaseAction {
+	@Autowired
+	private OptFacade optFacade;
+
 	@Autowired
 	PlanService planService;
 
@@ -67,6 +72,8 @@ public class PlanAction extends BaseAction {
 
 		TestPlan po = planService.save(json, userVo);
 		TestPlanVo vo = planService.genVo(po);
+
+		optFacade.opt(WsConstant.WS_TODO, userVo.getId().toString());
 
 		ret.put("data", vo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

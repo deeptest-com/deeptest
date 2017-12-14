@@ -1,12 +1,14 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.bean.websocket.OptFacade;
+import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.entity.TestCaseInRun;
 import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.service.RunService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.vo.CustomFieldVo;
 import com.ngtesting.platform.vo.TestCaseInRunVo;
 import com.ngtesting.platform.vo.TestRunVo;
@@ -27,6 +29,9 @@ import java.util.Map;
 @Controller
 @RequestMapping(Constant.API_PATH_CLIENT + "run/")
 public class RunAction extends BaseAction {
+    @Autowired
+    private OptFacade optFacade;
+
 	@Autowired
 	RunService runService;
 
@@ -69,7 +74,6 @@ public class RunAction extends BaseAction {
         return ret;
     }
 
-
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
@@ -96,6 +100,8 @@ public class RunAction extends BaseAction {
 
 		TestRun po = runService.save(json, userVo);
 		TestRunVo vo = runService.genVo(po);
+
+        optFacade.opt(WsConstant.WS_TODO, userVo.getId().toString());
 
 		ret.put("data", vo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

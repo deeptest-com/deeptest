@@ -1,6 +1,8 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.entity.TestPlan;
 import com.ngtesting.platform.entity.TestRun;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.AlertService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.DateUtils;
@@ -90,15 +92,19 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
     public TestAlertVo genVo(TestRun po) {
         TestAlertVo vo = new TestAlertVo();
         BeanUtilEx.copyProperties(vo, po);
-        vo.setAvatar(po.getUser().getAvatar());
+
+        TestUser user = (TestUser)get(TestUser.class, po.getUserId());
+        vo.setAvatar(user.getAvatar());
 
         return vo;
     }
     @Override
     public TestAlertVo genVoWithAction(TestRun po, Long startTimeOfToday, Long endTimeOfToday) {
         TestAlertVo vo = genVo(po);
-        Date planStartTime = po.getPlan().getStartTime();
-        Date planEndTime = po.getPlan().getEndTime();
+
+        TestPlan plan = (TestPlan)get(TestPlan.class, po.getPlanId());
+        Date planStartTime = plan.getStartTime();
+        Date planEndTime = plan.getEndTime();
 
         if (planEndTime != null && planEndTime.getTime() >= startTimeOfToday && planEndTime.getTime() <= endTimeOfToday) {
             vo.setName("测试集" + StringUtil.highlightDict(vo.getName()) + "完成");

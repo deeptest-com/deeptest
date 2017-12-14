@@ -1,6 +1,8 @@
 package com.ngtesting.platform.bean.websocket;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.bean.ApplicationScopeBean;
 import com.ngtesting.platform.config.Constant.RespCode;
 import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.service.AlertService;
@@ -14,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.TextMessage;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +26,9 @@ import java.util.concurrent.TimeoutException;
 @Service
 public class OptFacade {
     Log logger = LogFactory.getLog(OptFacade.class);
+
+    @Autowired
+    private ApplicationScopeBean scopeBean;
 
     @Autowired
     OptNews optNews;
@@ -41,12 +47,12 @@ public class OptFacade {
         return new SystemWebSocketHandler();
     }
 
-    public Map<String, Object> opt(JSONObject json, Long userId) {
+    public void opt(JSONObject json, String userId) {
         Map<String, Object> ret = new HashMap<>();
         String type = json.getString("type");
 
         try {
-            if (WsConstant.WS_OPEN.equals(type)) {
+            if (WsConstant.WS_OPEN.equals(type) || WsConstant.WS_TODO.equals(type)) {
                 List<TestMsgVo> msgs = msgService.list(Long.valueOf(userId), false);
                 List<TestAlertVo> alerts = alertService.list(Long.valueOf(userId), false);
 
@@ -68,11 +74,17 @@ public class OptFacade {
                 ret.put("msg", "操作出错，请稍后重试");
             }
         }
-        if(ret != null && ret.get("type") == null) {
-        	ret.put("type", type);
-        }
+
         ret.put("code", 1);
-        return ret;
+        if (ret.get("type") != null) {
+            scopeBean.sendMessageToClient(userId, new TextMessage(JSON.toJSONString(ret)));
+        }
+    }
+
+    public void opt(String act, String userId) {
+        JSONObject json = new JSONObject();
+        json.put("type", act);
+        opt(json, userId);
     }
 
 }

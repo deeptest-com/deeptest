@@ -3,6 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.TestMsg;
 import com.ngtesting.platform.entity.TestRun;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
@@ -79,7 +80,9 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
 	public TestMsgVo genVo(TestMsg po) {
 		TestMsgVo vo = new TestMsgVo();
 		BeanUtilEx.copyProperties(vo, po);
-        vo.setAvatar(po.getUser().getAvatar());
+
+        TestUser user = (TestUser)get(TestUser.class, po.getUserId());
+        vo.setAvatar(user.getAvatar());
 
 		return vo;
 	}

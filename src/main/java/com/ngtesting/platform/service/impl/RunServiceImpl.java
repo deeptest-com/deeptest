@@ -2,13 +2,14 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.bean.websocket.OptFacade;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.*;
 import com.ngtesting.platform.service.AlertService;
 import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.service.RunService;
 import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.vo.TestCaseInRunVo;
 import com.ngtesting.platform.vo.TestCaseStepVo;
 import com.ngtesting.platform.vo.TestRunVo;
@@ -25,6 +26,8 @@ import java.util.Map;
 
 @Service
 public class RunServiceImpl extends BaseServiceImpl implements RunService {
+    @Autowired
+    private OptFacade optFacade;
 
     @Autowired
     MsgService msgService;

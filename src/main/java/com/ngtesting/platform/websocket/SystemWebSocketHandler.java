@@ -1,6 +1,5 @@
 package com.ngtesting.platform.websocket;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.bean.ApplicationScopeBean;
 import com.ngtesting.platform.bean.websocket.OptFacade;
@@ -8,10 +7,12 @@ import com.ngtesting.platform.config.WsConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.socket.*;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.WebSocketMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.util.Date;
-import java.util.Map;
 
 public class SystemWebSocketHandler implements WebSocketHandler {
 
@@ -30,10 +31,7 @@ public class SystemWebSocketHandler implements WebSocketHandler {
         String str = message.getPayload().toString();
         JSONObject json = (JSONObject) JSONObject.parse(str);
 
-        Map<String, Object> ret = optFacade.opt(json, Long.valueOf(userId));
-        if (ret != null) {
-            scopeBean.sendMessageToClient(userId, new TextMessage(JSON.toJSONString(ret)));
-        }
+        optFacade.opt(json, userId);
     }
 
     @Override

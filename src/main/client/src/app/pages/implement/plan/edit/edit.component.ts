@@ -169,7 +169,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
       this._planService.save(CONSTANT.CURR_PRJ_ID, this.model).subscribe((json:any) => {
         if (json.code == 1) {
           this.planId = json.data.id;
-          this.model = json.data;
+          this.model.id = json.data.id;
 
           this._saveRun();
         } else {
@@ -184,7 +184,6 @@ export class PlanEdit implements OnInit, AfterViewInit {
     this._runService.saveRun(this.planId, this.run).subscribe((json:any) => {
 
       this.model.runVos[this.runIndex]= json.data;
-      console.log('===', this.model.runVos);
     });
   }
 

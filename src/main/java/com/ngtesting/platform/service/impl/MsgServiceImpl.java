@@ -5,6 +5,7 @@ import com.ngtesting.platform.entity.TestMsg;
 import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.util.BeanUtilEx;
+import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.TestMsgVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
@@ -52,7 +53,8 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
     public TestMsg create(TestRun run, Constant.MsgType action, UserVo optUser) {
         TestMsg msg = new TestMsg();
 
-        msg.setName("用户" + optUser.getName() + action.msg + "测试集\"" + run.getName() + "\"");
+        msg.setName("用户" + StringUtil.highlightDict(optUser.getName()) + action.msg
+                + "测试集" + StringUtil.highlightDict(run.getName()));
 
         msg.setDescr(run.getDescr());
         msg.setUserId(run.getUserId());

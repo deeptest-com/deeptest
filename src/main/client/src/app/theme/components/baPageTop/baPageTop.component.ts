@@ -132,7 +132,6 @@ export class BaPageTop implements OnInit, AfterViewInit {
 
   wsConnect() {
     this.sockService.onMessage((json) => {
-      console.log('json ', json);
 
       if (json.code != 1) {
         console.log('ws error: ', json.code);
@@ -142,7 +141,6 @@ export class BaPageTop implements OnInit, AfterViewInit {
       if (WS_CONSTANT.WS_MSG_AND_ALERT_LASTEST === json.type) {
         this.alerts = json.alerts;
         this.msgs = json.msgs;
-        console.log('alerts ', this.alerts);
       }
 
     });

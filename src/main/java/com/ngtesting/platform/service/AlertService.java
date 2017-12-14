@@ -13,5 +13,9 @@ public interface AlertService extends BaseService {
 
     List<TestAlertVo> genVos(List<TestRun> pos);
 
+    List<TestAlertVo> genVosWithAction(List<TestRun> pos);
+
     TestAlertVo genVo(TestRun po);
+
+    TestAlertVo genVoWithAction(TestRun po, Long startTimeOfToday, Long endTimeOfToday);
 }

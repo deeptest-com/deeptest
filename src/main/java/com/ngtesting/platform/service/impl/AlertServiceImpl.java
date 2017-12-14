@@ -4,6 +4,7 @@ import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.AlertService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.DateUtils;
+import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.TestAlertVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -19,8 +20,7 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
     @Override
     public List<TestAlertVo> list(Long userId, Boolean isRead) {
         List<TestRun> pos = scanTestPlan(userId);
-
-        List<TestAlertVo> vos = genVos(pos);
+        List<TestAlertVo> vos = genVosWithAction(pos);
 
         return vos;
     }
@@ -35,18 +35,18 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
         Date endTimeOfToday = DateUtils.GetEndTimeOfDay(now);
 
         dc.add(
-             Restrictions.or(
-                     // 今天开始
-                     Restrictions.and(
-                             Restrictions.isNotNull("plan.startTime"),
-                             Restrictions.ge("plan.startTime", startTimeOfToday),
-                             Restrictions.le("plan.startTime", endTimeOfToday)),
-                     // 今天结束
-                     Restrictions.and(
-                             Restrictions.isNotNull("plan.endTime"),
-                             Restrictions.ge("plan.endTime", startTimeOfToday),
-                             Restrictions.le("plan.endTime", endTimeOfToday))
-             )
+            Restrictions.or(
+                // 今天开始
+                Restrictions.and(
+                        Restrictions.isNotNull("plan.startTime"),
+                        Restrictions.ge("plan.startTime", startTimeOfToday),
+                        Restrictions.le("plan.startTime", endTimeOfToday)),
+                // 今天结束
+                Restrictions.and(
+                        Restrictions.isNotNull("plan.endTime"),
+                        Restrictions.ge("plan.endTime", startTimeOfToday),
+                        Restrictions.le("plan.endTime", endTimeOfToday))
+            )
         );
 
         dc.add(Restrictions.eq("userId", userId));
@@ -71,12 +71,40 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
         }
         return vos;
     }
+    @Override
+    public List<TestAlertVo> genVosWithAction(List<TestRun> pos) {
+        Date now = new Date();
+        Long startTimeOfToday = DateUtils.GetStartTimeOfDay(now).getTime();
+        Long endTimeOfToday = DateUtils.GetEndTimeOfDay(now).getTime();
+
+        List<TestAlertVo> vos = new LinkedList<>();
+
+        for (TestRun run: pos) {
+            TestAlertVo vo = genVoWithAction(run, startTimeOfToday, endTimeOfToday);
+            vos.add(vo);
+        }
+        return vos;
+    }
 
     @Override
     public TestAlertVo genVo(TestRun po) {
         TestAlertVo vo = new TestAlertVo();
         BeanUtilEx.copyProperties(vo, po);
         vo.setAvatar(po.getUser().getAvatar());
+
+        return vo;
+    }
+    @Override
+    public TestAlertVo genVoWithAction(TestRun po, Long startTimeOfToday, Long endTimeOfToday) {
+        TestAlertVo vo = genVo(po);
+        Date planStartTime = po.getPlan().getStartTime();
+        Date planEndTime = po.getPlan().getEndTime();
+
+        if (planEndTime != null && planEndTime.getTime() >= startTimeOfToday && planEndTime.getTime() <= endTimeOfToday) {
+            vo.setName("测试集" + StringUtil.highlightDict(vo.getName()) + "完成");
+        } else {
+            vo.setName("测试集" + StringUtil.highlightDict(vo.getName()) + "开始");
+        }
 
         return vo;
     }

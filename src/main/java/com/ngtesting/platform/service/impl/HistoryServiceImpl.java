@@ -3,6 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.entity.TestHistory;
 import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.util.BeanUtilEx;
+import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.TestHistoryVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
@@ -43,7 +44,8 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
                               TestHistory.TargetType entityType, Long entityId, String name) {
         TestHistory history = new TestHistory();
 
-        history.setTitle("用户" + optUser.getName() + action + entityType.name + "\"" + name + "\"");
+        history.setTitle("用户" + StringUtil.highlightDict(optUser.getName())
+                + action + entityType.name + StringUtil.highlightDict(name));
         history.setProjectId(projectId);
         history.setEntityId(entityId);
         history.setEntityType(entityType);

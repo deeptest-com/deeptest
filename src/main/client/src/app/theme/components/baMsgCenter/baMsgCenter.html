@@ -18,7 +18,7 @@
           <div class="img-area"><img [ngClass]="{'photo-msg-item': !msg.image}"
                                      src="{{ msg.avatar | imgPath }}"></div>
           <div class="msg-area">
-            <div>{{ msg.name }}</div>
+            <div [innerHTML]="msg.name"></div>
             <span>{{ msg.createTime | date:'y-MM-dd HH:mm:ss' }}</span>
           </div>
         </a>
@@ -41,7 +41,7 @@
           <div class="img-area"><img [ngClass]="{'photo-msg-item': !msg.image}"
                                      src="{{ msg.avatar | imgPath }}"></div>
           <div class="msg-area">
-            <div>{{ msg.name }}</div>
+            <div [innerHTML]="msg.name"></div>
             <span>{{ msg.createTime | date:'y-MM-dd HH:mm:ss' }}</span>
           </div>
         </a>

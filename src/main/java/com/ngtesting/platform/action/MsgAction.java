@@ -98,7 +98,7 @@ public class MsgAction extends BaseAction {
         UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
         Long id = json.getLong("id");
-        TestMsg msg = msgService.markRead(id, userVo.getId());
+        TestMsg msg = msgService.markReadPers(id, userVo.getId());
         TestMsgVo vo = msgService.genVo(msg);
 
         optFacade.opt(WsConstant.WS_TODO, userVo.getId().toString());

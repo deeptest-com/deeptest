@@ -18,7 +18,7 @@ public interface MsgService extends BaseService {
 	void delete(Long msgId, Long userId);
 
 	TestMsg create(TestRun run, Constant.MsgType action, UserVo optUser);
-    TestMsg markRead(Long id, Long id1);
+    TestMsg markReadPers(Long id, Long id1);
     void markAllReadPers(Long id);
 
 	List<TestMsgVo> genVos(List<TestMsg> pos);

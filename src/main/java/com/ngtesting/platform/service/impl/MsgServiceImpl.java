@@ -94,7 +94,7 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
     }
 
     @Override
-    public TestMsg markRead(Long id, Long id1) {
+    public TestMsg markReadPers(Long id, Long id1) {
         TestMsg po = (TestMsg) get(TestMsg.class, id);
         po.setRead(Boolean.TRUE);
         saveOrUpdate(po);

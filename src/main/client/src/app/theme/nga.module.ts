@@ -12,6 +12,8 @@ import { RouteService } from '../service/route';
 import { RequestService } from '../service/request';
 import {SockService} from "../service/sock";
 
+import {RunService} from '../service/run';
+import {MsgService} from '../service/msg';
 import { OrgService } from '../service/org';
 import { AccountService } from '../service/account';
 
@@ -85,7 +87,9 @@ const NGA_SERVICES = [
   RequestService,
   SockService,
   AccountService,
-  OrgService
+  OrgService,
+  RunService,
+  MsgService
 ];
 
 const NGA_VALIDATORS = [

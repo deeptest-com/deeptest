@@ -50,6 +50,12 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
 
         return vo;
     }
+
+    @Override
+    public void delete(Long msgId, Long userId) {
+
+    }
+
     @Override
     public TestMsg create(TestRun run, Constant.MsgType action, UserVo optUser) {
         TestMsg msg = new TestMsg();
@@ -65,7 +71,14 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
         return msg;
     }
 
-	@Override
+    @Override
+    public void markAllReadPers(Long userId) {
+        String hql = "update TestMsg msg set msg.isRead=true where msg.userId=? " +
+                "AND msg.isRead != true AND msg.deleted != true AND msg.disabled != true";
+        getDao().executeByHql(hql, userId);
+    }
+
+    @Override
 	public List<TestMsgVo> genVos(List<TestMsg> pos) {
         List<TestMsgVo> vos = new LinkedList<>();
 

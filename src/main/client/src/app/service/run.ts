@@ -37,6 +37,11 @@ export class RunService {
     let model = {id: id};
     return this._reqService.post(this._api_url + 'delete', model);
   }
+
+  markAllRead() {
+    return this._reqService.post(this._api_url + 'markAllRead', {});
+  }
+
 }
 
 

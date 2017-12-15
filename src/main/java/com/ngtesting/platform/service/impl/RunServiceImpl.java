@@ -138,7 +138,14 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
         return run;
     }
 
-	@Override
+    @Override
+    public void markAllReadPers(Long userId) {
+        String hql = "update TestRun run set run.isRead=true where run.userId=? " +
+                "AND run.isRead != true AND run.deleted != true AND run.disabled != true";
+        getDao().executeByHql(hql, userId);
+    }
+
+    @Override
 	public List<TestRunVo> genVos(List<TestRun> pos) {
         List<TestRunVo> vos = new LinkedList<>();
 

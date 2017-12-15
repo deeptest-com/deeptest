@@ -52,6 +52,7 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
         );
 
         dc.add(Restrictions.eq("userId", userId));
+        dc.add(Restrictions.eq("isRead", false));
 
         dc.add(Restrictions.ne("status", TestRun.RunStatus.end));
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));

@@ -19,6 +19,8 @@ public class TestRun extends BaseEntity {
 
     private Integer ordr;
 
+    private Boolean isRead;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
     private TestProject project;
@@ -56,6 +58,14 @@ public class TestRun extends BaseEntity {
         public String toString() {
             return val;
         }
+    }
+
+    public Boolean getRead() {
+        return isRead;
+    }
+
+    public void setRead(Boolean read) {
+        isRead = read;
     }
 
     public TestUser getUser() {

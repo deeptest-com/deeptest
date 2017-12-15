@@ -16,6 +16,7 @@ public interface RunService extends BaseService {
 	TestRun save(JSONObject json, UserVo optUser);
 	TestRun saveCases(JSONObject json, UserVo optUser);
 	TestRun delete(Long vo, Long userId);
+	void markAllReadPers(Long userId);
 
 	List<TestRunVo> genVos(List<TestRun> pos);
 	TestRunVo genVo(TestRun po);
@@ -23,4 +24,5 @@ public interface RunService extends BaseService {
 
 	List<TestCaseInRunVo> genCaseVos(List<TestCaseInRun> ls);
 	TestCaseInRunVo genCaseVo(TestCaseInRun po);
+
 }

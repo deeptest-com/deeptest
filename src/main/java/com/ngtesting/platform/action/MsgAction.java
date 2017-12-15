@@ -4,14 +4,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.bean.websocket.OptFacade;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.config.WsConstant;
-import com.ngtesting.platform.entity.TestCaseInRun;
-import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.CustomFieldService;
-import com.ngtesting.platform.service.RunService;
+import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.vo.CustomFieldVo;
-import com.ngtesting.platform.vo.TestCaseInRunVo;
-import com.ngtesting.platform.vo.TestRunVo;
+import com.ngtesting.platform.vo.TestMsgVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,33 +23,28 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "run/")
-public class RunAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_CLIENT + "msg/")
+public class MsgAction extends BaseAction {
     @Autowired
     private OptFacade optFacade;
 
 	@Autowired
-	RunService runService;
+	MsgService msgService;
 
     @Autowired
     CustomFieldService customFieldService;
 
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "loadCase", method = RequestMethod.POST)
+	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> loadCase(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-        Long projectId = json.getLong("projectId");
-		Long runId = json.getLong("runId");
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		List<TestCaseInRun> ls = runService.lodaCase(runId);
-		List<TestCaseInRunVo> vos = runService.genCaseVos(ls);
-
-        List<CustomFieldVo> customFieldList = customFieldService.listForCaseByProject(projectId);
+		List<TestMsgVo> vos = msgService.list(userVo.getId(), null);
 
 		ret.put("data", vos);
-        ret.put("customFields", customFieldList);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -64,10 +55,9 @@ public class RunAction extends BaseAction {
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-        Long runId = json.getLong("id");
+        Long msgId = json.getLong("id");
 
-        TestRunVo vo = runService.getById(runId);
+        TestMsgVo vo = msgService.getById(msgId);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -84,42 +74,8 @@ public class RunAction extends BaseAction {
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		TestRun po = runService.delete(id, userVo.getId());
+		msgService.delete(id, userVo.getId());
 
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
-		TestRun po = runService.save(json, userVo);
-		TestRunVo vo = runService.genVo(po);
-
-        optFacade.opt(WsConstant.WS_TODO, userVo.getId().toString());
-
-		ret.put("data", vo);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "saveCases", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> saveCases(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
-		TestRun po = runService.saveCases(json, userVo);
-		TestRunVo caseVo = runService.genVo(po);
-
-		ret.put("data", caseVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -132,8 +88,8 @@ public class RunAction extends BaseAction {
 
         UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        runService.markAllReadPers(userVo.getId());
-        optFacade.opt(WsConstant.WS_TODO, userVo.getId().toString());
+		msgService.markAllReadPers(userVo.getId());
+		optFacade.opt(WsConstant.WS_TODO, userVo.getId().toString());
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

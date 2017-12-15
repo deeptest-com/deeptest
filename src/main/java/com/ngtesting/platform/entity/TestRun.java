@@ -19,7 +19,7 @@ public class TestRun extends BaseEntity {
 
     private Integer ordr;
 
-    private Boolean isRead;
+    private Boolean isRead = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)

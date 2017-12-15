@@ -97,7 +97,7 @@ export class GroupEdit implements OnInit, AfterViewInit {
       if (json.code == 1) {
 
         that.formErrors = ['保存成功'];
-        that._routeService.navTo("/pages/org-admin/group/listByPage");
+        that._routeService.navTo("/pages/org-admin/group/list");
       } else {
         that.formErrors = ['保存失败'];
       }
@@ -110,7 +110,7 @@ export class GroupEdit implements OnInit, AfterViewInit {
     that.groupService.delete(that.group.id).subscribe((json:any) => {
       if (json.code == 1) {
         that.formErrors = ['删除成功'];
-        that._routeService.navTo("/pages/org-admin/group/listByPage");
+        that._routeService.navTo("/pages/org-admin/group/list");
 
         this.modalWrapper.closeModal();
       } else {

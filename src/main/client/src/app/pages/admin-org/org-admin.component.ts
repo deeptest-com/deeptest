@@ -9,12 +9,12 @@ import { GlobalState } from '../../global.state';
 export class OrgAdmin {
 
   menus:any[] = [
-    {link:'/pages/org-admin/org/listByPage', title: '我的组织'},
-    {link:'/pages/org-admin/user/listByPage', title: '组织用户'},
-    {link:'/pages/org-admin/group/listByPage', title: '组织群组'},
-    {link:'/pages/org-admin/org-role/listByPage', title: '组织角色'},
-    {link:'/pages/org-admin/project-role/listByPage', title: '项目角色'},
-    {link:'/pages/org-admin/property/case-type/listByPage', title: '属性设置'}
+    {link:'/pages/org-admin/org/list', title: '我的组织'},
+    {link:'/pages/org-admin/user/list', title: '组织用户'},
+    {link:'/pages/org-admin/group/list', title: '组织群组'},
+    {link:'/pages/org-admin/org-role/list', title: '组织角色'},
+    {link:'/pages/org-admin/project-role/list', title: '项目角色'},
+    {link:'/pages/org-admin/property/case-type/list', title: '属性设置'}
   ];
 
   menuItems:any[] = this.menus;

@@ -126,7 +126,7 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
       if (json.code == 1) {
 
         that.formErrors = ['保存成功'];
-        that._routeService.navTo("/pages/org-admin/property/custom-field/listByPage");
+        that._routeService.navTo("/pages/org-admin/property/custom-field/list");
       } else {
         that.formErrors = [json.msg];
       }
@@ -140,7 +140,7 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
       if (json.code == 1) {
         that.formErrors = ['删除成功'];
         this.modalWrapper.closeModal();
-        that._routeService.navTo("/pages/org-admin/property/custom-field/listByPage");
+        that._routeService.navTo("/pages/org-admin/property/custom-field/list");
       } else {
         that.formErrors = ['删除失败'];
       }

@@ -124,7 +124,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
         that.model = json.data;
 
         that.formErrors = ['保存成功'];
-        that._routeService.navTo("/pages/project/listByPage");
+        that._routeService.navTo("/pages/project/list");
       } else {
         that.formErrors = ['保存失败'];
       }
@@ -139,7 +139,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
         that.model = json.data;
 
         that.formErrors = ['删除成功'];
-        that._routeService.navTo("/pages/project/listByPage");
+        that._routeService.navTo("/pages/project/list");
 
         this.modalWrapper.closeModal();
       } else {

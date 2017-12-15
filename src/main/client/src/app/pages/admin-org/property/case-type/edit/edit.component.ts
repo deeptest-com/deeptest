@@ -88,7 +88,7 @@ export class CaseTypeEdit implements OnInit, AfterViewInit {
         CONSTANT.CASE_PROPERTY_MAP = json.casePropertyMap;
 
         that.formErrors = ['保存成功'];
-        that._routeService.navTo("/pages/org-admin/property/case-type/listByPage");
+        that._routeService.navTo("/pages/org-admin/property/case-type/list");
       } else {
         that.formErrors = [json.msg];
       }
@@ -101,7 +101,7 @@ export class CaseTypeEdit implements OnInit, AfterViewInit {
     that.caseTypeService.delete(that.model.id).subscribe((json:any) => {
       if (json.code == 1) {
         that.formErrors = ['删除成功'];
-        that._routeService.navTo("/pages/org-admin/property/case-type/listByPage");
+        that._routeService.navTo("/pages/org-admin/property/case-type/list");
       } else {
         that.formErrors = ['删除失败'];
       }

@@ -8,9 +8,9 @@ import {Component} from "@angular/core";
 export class SysAdmin {
 
   public menuItems:any[] = [
-    {link2:'/pages/sys-admin/user/listByPage', title: '系统用户'},
-    {link2:'/pages/sys-admin/group/listByPage', title: '系统群组'},
-    {link2:'/pages/sys-admin/role/listByPage', title: '系统角色'},
+    {link2:'/pages/sys-admin/user/list', title: '系统用户'},
+    {link2:'/pages/sys-admin/group/list', title: '系统群组'},
+    {link2:'/pages/sys-admin/role/list', title: '系统角色'},
 
     {link2:'/pages/sys-admin/integration', title: '第三方集成'},
     {link2:'/pages/sys-admin/settings', title: '系统配置'},

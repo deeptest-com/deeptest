@@ -2,10 +2,8 @@ import { Routes, RouterModule }  from '@angular/router';
 
 import { Personal } from './personal.component';
 
-import { Profile } from './profile';
+import { MsgList } from './msg/list';
 import { ProfileEdit } from './profile/profile-edit';
-
-import { Settings } from './settings';
 import { SettingsEdit } from './settings/settings-edit';
 
 const routes: Routes = [
@@ -13,6 +11,7 @@ const routes: Routes = [
     path: '',
     component: Personal,
     children: [
+      { path: 'msg', loadChildren: './msg/msg.module#MsgModule' },
       { path: 'profile', component: ProfileEdit },
       { path: 'settings', component: SettingsEdit }
     ]

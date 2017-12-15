@@ -93,7 +93,7 @@ export class UserInvite implements OnInit, AfterViewInit {
       if (json.code == 1) {
 
         that.formErrors = ['保存成功'];
-        that._routeService.navTo("/pages/org-admin/user/list");
+        that._routeService.navTo("/pages/org-admin/user/listByPage");
 
       } else {
         that.formErrors = [json.msg];

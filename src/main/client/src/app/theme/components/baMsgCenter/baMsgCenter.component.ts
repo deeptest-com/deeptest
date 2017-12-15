@@ -1,5 +1,7 @@
 import {Input, Component} from '@angular/core';
 
+import {CONSTANT} from "../../../utils/constant";
+import {RouteService} from "../../../service/route";
 import {BaMsgCenterService} from './baMsgCenter.service';
 
 import {RunService} from '../../../service/run';
@@ -16,7 +18,7 @@ export class BaMsgCenter {
   @Input() alerts;
   @Input() msgs;
 
-  constructor(private _baMsgCenterService:BaMsgCenterService,
+  constructor(private _routeService: RouteService, private _baMsgCenterService:BaMsgCenterService,
               private runService:RunService, private msgService:MsgService) {
 
   }
@@ -33,7 +35,8 @@ export class BaMsgCenter {
     });
   }
   moreMsgs($event) {
-    console.log('moreMsgs');
+    let url = '/pages/personal/msg/list';
+    this._routeService.navTo(url);
   }
 
 }

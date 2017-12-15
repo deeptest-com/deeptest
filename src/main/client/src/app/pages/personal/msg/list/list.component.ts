@@ -1,23 +1,25 @@
 import {Component, ViewEncapsulation, OnInit, AfterViewInit, ViewChild, ElementRef} from "@angular/core";
 import { FormBuilder, FormGroup } from '@angular/forms';
+
 import {GlobalState} from "../../../../global.state";
 
 import {CONSTANT} from "../../../../utils/constant";
 import {Utils} from "../../../../utils/utils";
 import {RouteService} from "../../../../service/route";
-import {UserService} from "../../../../service/user";
+import {MsgService} from "../../../../service/msg";
+import {AccountService} from "../../../../service/account";
 
 @Component({
-  selector: 'user-list',
+  selector: 'msg-list',
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./list.scss'],
   templateUrl: './list.html'
 })
-export class UserList implements OnInit, AfterViewInit {
+export class MsgList implements OnInit, AfterViewInit {
 
   queryForm: FormGroup;
-  queryModel:any = {keywords: '', read: 'false'};
-  statusMap: Array<any> = CONSTANT.EntityDisabled;
+  queryModel:any = {keywords: '', disabled: 'false'};
+  readMap: Array<any> = CONSTANT.EntityRead;
 
   models: any;
   collectionSize:number = 0;
@@ -25,7 +27,7 @@ export class UserList implements OnInit, AfterViewInit {
   pageSize:number = 6;
 
   constructor(private _routeService:RouteService, private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
-              private userService:UserService) {
+              private msgService: MsgService, private accountService: AccountService) {
   }
 
   ngOnInit() {
@@ -33,7 +35,7 @@ export class UserList implements OnInit, AfterViewInit {
 
     that.queryForm = that.fb.group(
       {
-        'disabled': ['', []],
+        'isRead': ['', []],
         'keywords': ['', []]
       }, {}
     );
@@ -46,10 +48,30 @@ export class UserList implements OnInit, AfterViewInit {
   }
 
   create():void {
-    this._routeService.navTo("/pages/org-admin/user/edit/null");
+    this._routeService.navTo('/pages/msg-admin/msg/edit/null');
   }
-  invite():void {
-    this._routeService.navTo("/pages/org-admin/user/invite");
+
+  markRead(item: any, index: number):void {
+    this.msgService.markRead(item.id).subscribe((json:any) => {
+      if (json.code == 1) {
+        this.models[index] = json.data;
+      }
+    });
+  }
+  delete(item: any, index: number):void {
+    this.msgService.delete(item.id).subscribe((json:any) => {
+      if (json.code == 1) {
+        this.models.splice(index, 1);
+      }
+    });
+  }
+
+  loadData() {
+    let that = this;
+
+    that.msgService.list(that.queryModel, that.page, that.pageSize).subscribe((json:any) => {
+      that.models = json.data;
+    });
   }
 
   queryChange(values:any):void {
@@ -59,21 +81,4 @@ export class UserList implements OnInit, AfterViewInit {
     this.page = event.page;
     this.loadData();
   }
-
-  edit($event: any):void {
-    console.log($event);
-  }
-  delete($event: any):void {
-    console.log($event);
-  }
-
-  loadData() {
-    let that = this;
-
-    that.userService.list(that.queryModel, that.page, that.pageSize).subscribe((json:any) => {
-      that.collectionSize = json.collectionSize;
-      that.models = json.data;
-    });
-  }
-
 }

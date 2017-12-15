@@ -107,7 +107,7 @@ export class BaPageTop implements OnInit, AfterViewInit {
     if (module == 'design') {
       url = '/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID + '/design/case';
     } else if (module == 'implement') {
-      url = '/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID + '/implement/plan/list';
+      url = '/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID + '/implement/plan/listByPage';
     }
 
     this._routeService.navTo(url);

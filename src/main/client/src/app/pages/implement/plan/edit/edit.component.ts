@@ -131,7 +131,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
   save() {
     this._planService.save(CONSTANT.CURR_PRJ_ID, this.model).subscribe((json:any) => {
       if (json.code == 1) {
-        this._routeService.navTo('/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID + '/implement/plan/list');
+        this._routeService.navTo('/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID + '/implement/plan/listByPage');
       } else {
         this.formErrors = [json.msg];
       }
@@ -234,7 +234,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
         this.formErrors = ['删除成功'];
         this.modalDelete.closeModal();
 
-        let url: string = '/pages/' + CONSTANT.CURR_ORG_ID + '/implement/' + CONSTANT.CURR_PRJ_ID + '/plan/list';
+        let url: string = '/pages/' + CONSTANT.CURR_ORG_ID + '/implement/' + CONSTANT.CURR_PRJ_ID + '/plan/listByPage';
         this._routeService.navTo(url);
       } else {
         this.formErrors = ['删除失败'];

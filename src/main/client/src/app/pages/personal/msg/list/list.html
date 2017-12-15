@@ -1,0 +1,57 @@
+<div class="org-list container-fluid">
+  <div class="row">
+    <div class="list-toolbar col-xl-12">
+      <div class="title">
+        消息列表
+      </div>
+
+      <div class="filter">
+        <form [formGroup]="queryForm" class="form-inline">
+          <label for="isRead">状态</label>
+          <select [(ngModel)]="queryModel.isRead" formControlName="isRead"
+                  class="form-control form-control-sm" id="isRead" name="isRead">
+            <option *ngFor="let entry of (readMap | mapToArray)" value="{{entry.key}}">{{entry.value}}</option>
+          </select>
+          &nbsp;&nbsp;&nbsp;
+          <label for="keywords">关键字</label>
+          <input [(ngModel)]="queryModel.keywords" formControlName="keywords"
+                 type="search" class="form-control form-control-sm" placeholder="" id="keywords" name="keywords">
+        </form>
+      </div>
+
+      <div class="buttons">
+
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <table class="table table-bordered table-striped">
+      <thead class="thead-inverse">
+      <tr>
+        <th>名称</th>
+        <th>创建时间</th>
+        <th style="width: 150px">状态</th>
+        <th style="width: 150px">操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let item of models; let i = index;">
+        <td><span [innerHTML]="item.name"></span></td>
+        <th>{{item.createTime | date:'y-MM-dd HH:mm:ss'}}</th>
+        <td>{{readMap[''+item.read]}}</td>
+        <td>
+          <span (click)="delete(item, i)" class="link no-underline">删除</span>
+          <span *ngIf="!item.isRead" (click)="markRead(item, i)" class="link no-underline">标注已读</span>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <div class="page-container">
+      <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                      [maxSize]="5"  [boundaryLinks]="true"
+                      (pageChange)="pageChange($event)">
+      </ngb-pagination>
+    </div>
+  </div>
+</div>

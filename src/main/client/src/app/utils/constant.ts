@@ -28,6 +28,7 @@ export var CONSTANT: CONSTANT_INTERFACE = {
 
   ExeStatus: {'not_start': '未开始', 'in_progress': '执行中', 'end': '已结束'},
   EntityDisabled: {'false': '启用', 'true': '归档', '': '所有'},
+  EntityRead: {'': '所有', 'false': '未读', 'true': '已读'},
 
   ScreenSize: {h: 0, w: 0},
   DebounceTime: 500,
@@ -67,6 +68,7 @@ export interface CONSTANT_INTERFACE {
 
   ExeStatus: any,
   EntityDisabled: any,
+  EntityRead: any,
 
   ScreenSize: any,
   DebounceTime: number,

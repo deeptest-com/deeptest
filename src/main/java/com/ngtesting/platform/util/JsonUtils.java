@@ -18,7 +18,7 @@ public class JsonUtils {
     /**
      * 获得list的map类型
      *
-     * @param src       list 集合
+     * @param src       listByPage 集合
      * @param entityKey 实体关键词
      * @return 返回list 集合
      */

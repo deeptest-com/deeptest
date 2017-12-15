@@ -87,7 +87,7 @@ export class CasePriorityEdit implements OnInit, AfterViewInit {
         CONSTANT.CASE_PROPERTY_MAP = json.casePropertyMap;
 
         that.formErrors = ['保存成功'];
-        that._routeService.navTo("/pages/org-admin/property/case-priority/list");
+        that._routeService.navTo("/pages/org-admin/property/case-priority/listByPage");
       } else {
         that.formErrors = [json.msg];
       }
@@ -100,7 +100,7 @@ export class CasePriorityEdit implements OnInit, AfterViewInit {
     that.casePriorityService.delete(that.model.id).subscribe((json:any) => {
       if (json.code == 1) {
         that.formErrors = ['删除成功'];
-        that._routeService.navTo("/pages/org-admin/property/case-priority/list");
+        that._routeService.navTo("/pages/org-admin/property/case-priority/listByPage");
       } else {
         that.formErrors = ['删除失败'];
       }

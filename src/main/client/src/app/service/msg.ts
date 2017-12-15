@@ -12,8 +12,9 @@ export class MsgService {
 
   _api_url = 'msg/';
 
-  list(userId: number) {
-    return this._reqService.post(this._api_url + 'list', {userId: userId});
+  list(query: any, page: number, pageSize: number) {
+    _.merge(query, {page: page, pageSize: pageSize});
+    return this._reqService.post(this._api_url + 'list', query);
   }
 
   get(id: number) {
@@ -29,7 +30,9 @@ export class MsgService {
   markAllRead() {
     return this._reqService.post(this._api_url + 'markAllRead', {});
   }
-
+  markRead(id: number) {
+    return this._reqService.post(this._api_url + 'markRead', {id: id});
+  }
 }
 
 

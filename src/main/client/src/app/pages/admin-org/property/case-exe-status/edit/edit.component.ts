@@ -94,7 +94,7 @@ export class CaseExeStatusEdit implements OnInit, AfterViewInit {
       if (json.code == 1) {
 
         that.formErrors = ['保存成功'];
-        that._routeService.navTo("/pages/org-admin/property/case-exe-status/list");
+        that._routeService.navTo("/pages/org-admin/property/case-exe-status/listByPage");
       } else {
         that.formErrors = [json.msg];
       }
@@ -107,7 +107,7 @@ export class CaseExeStatusEdit implements OnInit, AfterViewInit {
     that.caseExeStatusService.delete(that.model.id).subscribe((json:any) => {
       if (json.code == 1) {
         that.formErrors = ['删除成功'];
-        that._routeService.navTo("/pages/org-admin/property/case-exe-status/list");
+        that._routeService.navTo("/pages/org-admin/property/case-exe-status/listByPage");
       } else {
         that.formErrors = ['删除失败'];
       }

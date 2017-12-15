@@ -8,8 +8,17 @@ public class TestMsgVo extends BaseVo {
     private String descr;
     private String uri;
     private String avatar;
+    private Boolean isRead;
 
     private Long userId;
+
+    public Boolean getRead() {
+        return isRead;
+    }
+
+    public void setRead(Boolean read) {
+        isRead = read;
+    }
 
     public String getAvatar() {
         return avatar;

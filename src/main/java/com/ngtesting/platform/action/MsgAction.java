@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.bean.websocket.OptFacade;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.config.WsConstant;
+import com.ngtesting.platform.entity.TestMsg;
 import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.util.AuthPassport;
+import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.TestMsgVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +44,16 @@ public class MsgAction extends BaseAction {
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		List<TestMsgVo> vos = msgService.list(userVo.getId(), null);
+        String keywords = json.getString("keywords");
+        String isRead = json.getString("isRead");
+        int page = json.getInteger("page") == null? 0: json.getInteger("page") - 1;
+        int pageSize = json.getInteger("pageSize") == null? Constant.PAGE_SIZE: json.getInteger("pageSize");
 
-		ret.put("data", vos);
+        Page pageDate = msgService.listByPage(userVo.getId(), isRead, keywords, page, pageSize);
+        List<UserVo> vos = msgService.genVos(pageDate.getItems());
+
+        ret.put("collectionSize", pageDate.getTotal());
+        ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -79,6 +88,25 @@ public class MsgAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+
+    @AuthPassport(validate = true)
+    @RequestMapping(value = "markRead", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> markRead(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+        Long id = json.getLong("id");
+        TestMsg msg = msgService.markRead(id, userVo.getId());
+        TestMsgVo vo = msgService.genVo(msg);
+
+        optFacade.opt(WsConstant.WS_TODO, userVo.getId().toString());
+
+        ret.put("data", vo);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
 
     @AuthPassport(validate = true)
     @RequestMapping(value = "markAllRead", method = RequestMethod.POST)

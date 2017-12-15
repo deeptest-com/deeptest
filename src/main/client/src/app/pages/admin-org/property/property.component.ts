@@ -34,7 +34,7 @@ export class Property implements OnInit, OnDestroy {
 
   tabChange(event: any) {
     this.tab = event.nextId;
-    this._routeService.navTo("/pages/org-admin/property/" + this.tab + "/list");
+    this._routeService.navTo("/pages/org-admin/property/" + this.tab + "/listByPage");
   }
 
   create() {
@@ -43,7 +43,7 @@ export class Property implements OnInit, OnDestroy {
   }
   back() {
     this.status = 'list';
-    this._routeService.navTo("/pages/org-admin/property/" + this.tab + "/list");
+    this._routeService.navTo("/pages/org-admin/property/" + this.tab + "/listByPage");
   }
 
 }

@@ -7,40 +7,60 @@ import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
+import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.TestMsgVo;
 import com.ngtesting.platform.vo.UserVo;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
 
-	@Override
-	public List<TestMsgVo> list(Long userId, Boolean isRead) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-		DetachedCriteria dc = DetachedCriteria.forClass(TestMsg.class);
+    @Override
+    public List<TestMsgVo> list(Long userId, Boolean isRead) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestMsg.class);
 
         dc.add(Restrictions.eq("userId", userId));
         if (isRead != null) {
             dc.add(Restrictions.eq("isRead", isRead));
         }
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+
+        dc.addOrder(Order.desc("createTime"));
+
+        List<TestMsg> pos = findAllByCriteria(dc);
+        List<TestMsgVo> vos = genVos(pos);
+
+        return vos;
+    }
+
+	@Override
+	public Page listByPage(Long userId, String isRead,
+                           String keywords, Integer currentPage, Integer itemsPerPage) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestMsg.class);
+
+        dc.add(Restrictions.eq("userId", userId));
+        if (StringUtil.isNotEmpty(keywords)) {
+            dc.add(Restrictions.like("name", "%" + keywords + "%"));
+        }
+        if (StringUtils.isNotEmpty(isRead)) {
+            dc.add(Restrictions.eq("isRead", Boolean.valueOf(isRead)));
+        }
 		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 
-		dc.addOrder(Order.asc("createTime"));
+		dc.addOrder(Order.desc("createTime"));
 
-		List<TestMsg> pos = findAllByCriteria(dc);
-		List<TestMsgVo> vos = genVos(pos);
+        Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
 
-		return vos;
+		return page;
 	}
 
     @Override
@@ -53,7 +73,9 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
 
     @Override
     public void delete(Long msgId, Long userId) {
-
+        TestMsg po = (TestMsg) get(TestMsg.class, msgId);
+        po.setDeleted(true);
+        saveOrUpdate(po);
     }
 
     @Override
@@ -69,6 +91,14 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
         saveOrUpdate(msg);
 
         return msg;
+    }
+
+    @Override
+    public TestMsg markRead(Long id, Long id1) {
+        TestMsg po = (TestMsg) get(TestMsg.class, id);
+        po.setRead(Boolean.TRUE);
+        saveOrUpdate(po);
+        return po;
     }
 
     @Override

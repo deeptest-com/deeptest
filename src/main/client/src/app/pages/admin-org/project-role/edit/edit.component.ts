@@ -64,7 +64,7 @@ export class ProjectRoleEdit implements OnInit, AfterViewInit {
       if (json.code == 1) {
 
         that.formErrors = ['保存成功'];
-        that._routeService.navTo("/pages/org-admin/project-role/list");
+        that._routeService.navTo("/pages/org-admin/project-role/listByPage");
       } else {
         that.formErrors = ['保存失败'];
       }
@@ -77,7 +77,7 @@ export class ProjectRoleEdit implements OnInit, AfterViewInit {
     that.projectRoleService.delete(that.projectRole.id).subscribe((json:any) => {
       if (json.code == 1) {
         that.formErrors = ['删除成功'];
-        that._routeService.navTo("/pages/org-admin/project-role/list");
+        that._routeService.navTo("/pages/org-admin/project-role/listByPage");
 
         this.modalWrapper.closeModal();
       } else {

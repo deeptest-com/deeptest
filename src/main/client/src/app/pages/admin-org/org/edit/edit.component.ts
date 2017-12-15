@@ -93,7 +93,7 @@ export class OrgEdit implements OnInit, AfterViewInit {
         this._state.notifyDataChanged(CONSTANT.STATE_CHANGE_ORGS, {orgs: json.myOrgs, currOrgId: null});
 
         that.formErrors = ['保存成功'];
-        that._routeService.navTo("/pages/org-admin/org/list");
+        that._routeService.navTo("/pages/org-admin/org/listByPage");
       } else {
         that.formErrors = ['保存失败'];
       }
@@ -106,7 +106,7 @@ export class OrgEdit implements OnInit, AfterViewInit {
     that.orgService.delete(that.model.id).subscribe((json:any) => {
       if (json.code == 1) {
         that.formErrors = ['删除成功'];
-        that._routeService.navTo("/pages/org-admin/org/list");
+        that._routeService.navTo("/pages/org-admin/org/listByPage");
 
         this.modalWrapper.closeModal();
       } else {

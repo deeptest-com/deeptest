@@ -71,7 +71,7 @@ export class PlanView implements OnInit, AfterViewInit {
   }
 
   returnTo() {
-    let url: string = '/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID + '/implement/plan/list';
+    let url: string = '/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID + '/implement/plan/listByPage';
     this._routeService.navTo(url);
   }
 

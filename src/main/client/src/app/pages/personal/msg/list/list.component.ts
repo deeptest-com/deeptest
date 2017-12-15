@@ -53,16 +53,12 @@ export class MsgList implements OnInit, AfterViewInit {
 
   markRead(item: any, index: number):void {
     this.msgService.markRead(item.id).subscribe((json:any) => {
-      if (json.code == 1) {
-        this.models[index] = json.data;
-      }
+      this.loadData();
     });
   }
   delete(item: any, index: number):void {
     this.msgService.delete(item.id).subscribe((json:any) => {
-      if (json.code == 1) {
-        this.models.splice(index, 1);
-      }
+      this.loadData();
     });
   }
 
@@ -71,6 +67,7 @@ export class MsgList implements OnInit, AfterViewInit {
 
     that.msgService.list(that.queryModel, that.page, that.pageSize).subscribe((json:any) => {
       that.models = json.data;
+      that.collectionSize = json.collectionSize;
     });
   }
 

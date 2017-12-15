@@ -42,7 +42,7 @@
         <td>{{readMap[''+item.read]}}</td>
         <td>
           <span (click)="delete(item, i)" class="link no-underline">删除</span>
-          <span *ngIf="!item.isRead" (click)="markRead(item, i)" class="link no-underline">标注已读</span>
+          <span *ngIf="!item.read" (click)="markRead(item, i)" class="link no-underline">标注已读</span>
         </td>
       </tr>
       </tbody>

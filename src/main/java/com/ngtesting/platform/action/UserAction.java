@@ -155,7 +155,7 @@ public class UserAction extends BaseAction {
 		List<RelationOrgGroupUserVo> relations = (List<RelationOrgGroupUserVo>) json.get("relations");
 		orgGroupUserService.saveRelations(relations);
 
-        TestVerifyCode verifyCode = accountService.forgotPasswordPers(po.getId());
+        TestVerifyCode verifyCode = accountService.genVerifyCodePers(po.getId());
 		String sys = PropertyConfig.getConfig("sys.name");
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("user", userVo.getName() + "(" + userVo.getEmail() + ")");

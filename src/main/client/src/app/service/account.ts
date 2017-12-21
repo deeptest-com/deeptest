@@ -18,6 +18,7 @@ export class AccountService {
   }
 
   _login = 'account/login';
+  _loginWithVcode = 'account/loginWithVcode';
   _logout = 'account/logout';
   _register = 'account/register';
   _changePassword = 'account/changePassword';
@@ -51,21 +52,28 @@ export class AccountService {
       return errors;
     });
   }
-  register(model: any) {
+  loginWithVcode(vcode: string) {
     let that = this;
-    return this._reqService.post(this._register, model).map((json:any) => {
+    return this._reqService.post(this._loginWithVcode, {vcode: vcode}).map((json:any) => {
       let errors = undefined;
       if (json.code == 1) {
-        that.saveTokenLocal(json.token, 1);
+        let days:number = 1;
 
-        // that.changeProfile(json.profile);
-        // that.changeRecentProject(json.recentProjects);
-
-        that.routeService.navTo('/pages/dashboard');
+        that.saveTokenLocal(json.token, days);
+        that.routeService.navTo('/pages/org/' + json.profile.defaultOrgId + '/prjs');
       } else {
         errors = json.msg;
       }
       return errors;
+    });
+  }
+  register(model: any) {
+    let that = this;
+    return this._reqService.post(this._register, model).map((json:any) => {
+      if (json.code == 1) {
+        that.saveTokenLocal(json.token, 1);
+      }
+      return json;
     });
   }
 

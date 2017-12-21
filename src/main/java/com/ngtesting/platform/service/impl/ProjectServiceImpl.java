@@ -4,14 +4,12 @@ import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestProject.ProjectType;
 import com.ngtesting.platform.entity.TestProjectAccessHistory;
-import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
 import com.ngtesting.platform.vo.TestProjectVo;
-import com.ngtesting.platform.vo.UserVo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.FetchMode;
@@ -130,7 +128,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 	}
 
 	@Override
-	public void createDefault(Long orgId, Long userId) {
+	public void createDefaultPers(Long orgId, Long userId) {
 		TestProject prjGroup = new TestProject();
 		prjGroup.setOrgId(orgId);
 		prjGroup.setName("默认项目组");
@@ -145,6 +143,8 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		saveOrUpdate(prj);
 
 		caseService.createRoot(prj.getId(), userId);
+
+		viewPers(userId, prj.getId());
 	}
 
 	@Override
@@ -321,21 +321,12 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 	}
 
 	@Override
-	public TestProjectVo viewPers(UserVo userVo, Long projectId) {
-		TestUser user = (TestUser) get(TestUser.class, userVo.getId());
+	public TestProjectVo viewPers(Long userId, Long projectId) {
 		TestProject project = getDetail(projectId);
 		
-		TestProjectAccessHistory history = getHistory(project.getOrgId(), userVo.getId(), projectId, project.getName());
+		TestProjectAccessHistory history = getHistory(project.getOrgId(), userId, projectId, project.getName());
 		history.setLastAccessTime(new Date());
 		saveOrUpdate(history);
-		
-//		if (user.getDefaultProjectId() != projectId) {
-//			user.setDefaultProjectId(projectId);
-//
-//			saveOrUpdate(user);
-//
-//			userVo.setDefaultProjectId(projectId);
-//		}
 		
 		TestProjectVo vo = genVo(project);
 		return vo;

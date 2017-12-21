@@ -7,6 +7,10 @@ const routes: Routes = [
   {
     path: '',
     component: Login
+  },
+  {
+    path: ':vcode',
+    component: Login
   }
 ];
 

@@ -38,7 +38,7 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 		return user;
 	}
 
-	@Override
+    @Override
 	public TestUser registerPers(String name, String email, String phone, String password) {
 		String newToken = null;
 		DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
@@ -68,7 +68,7 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 	}
 
 	@Override
-	public TestVerifyCode forgotPasswordPers(Long userId) {
+	public TestVerifyCode genVerifyCodePers(Long userId) {
 		TestUser user = (TestUser) get(TestUser.class, userId);
 		if (user == null) {
 			return null;
@@ -135,7 +135,6 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 
 	@Override
 	public TestUser resetPasswordPers(String verifyCode, String password) {
-
 		String newToken = null;
 		DetachedCriteria dc = DetachedCriteria.forClass(TestVerifyCode.class);
 		dc.add(Restrictions.eq("code", verifyCode));
@@ -160,7 +159,9 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 
 		newToken = UUID.randomUUID().toString();
 		user.setToken(newToken);
-		user.setPassword(password);
+		if (password != null) {
+            user.setPassword(password);
+        }
 
 		user.setLastLoginTime(new Date());
 		saveOrUpdate(user);

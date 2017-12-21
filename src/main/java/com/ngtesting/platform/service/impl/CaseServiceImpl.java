@@ -186,19 +186,27 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
         saveOrUpdate(root);
 
-        TestCase module = new TestCase();
-        module.setName("新特性");
-        module.setType("functional");
-        module.setPriority("middle");
-        module.setpId(root.getId());
-        module.setProjectId(projectId);
+        TestCase testCase = new TestCase();
+        testCase.setName("新特性");
+        testCase.setType("functional");
+        testCase.setPriority("middle");
+        testCase.setpId(root.getId());
+        testCase.setProjectId(projectId);
+        testCase.setCreateById(userId);
+        testCase.setCreateTime(new Date());
+        testCase.setOrdr(0);
+        saveOrUpdate(testCase);
 
-        module.setCreateById(userId);
-        module.setCreateTime(new Date());
-
-        module.setOrdr(0);
-
-        saveOrUpdate(module);
+        TestCase testCase2 = new TestCase();
+        testCase2.setName("新用例");
+        testCase2.setType("functional");
+        testCase2.setPriority("middle");
+        testCase2.setpId(testCase.getId());
+        testCase2.setProjectId(projectId);
+        testCase2.setCreateById(userId);
+        testCase2.setCreateTime(new Date());
+        testCase2.setOrdr(0);
+        saveOrUpdate(testCase2);
     }
 
     @Override

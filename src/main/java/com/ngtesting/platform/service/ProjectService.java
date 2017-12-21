@@ -4,7 +4,6 @@ import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestProjectAccessHistory;
 import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
 import com.ngtesting.platform.vo.TestProjectVo;
-import com.ngtesting.platform.vo.UserVo;
 
 import java.util.List;
 
@@ -22,9 +21,9 @@ public interface ProjectService extends BaseService {
 	
 	List<TestProjectAccessHistory> listRecentProject(Long orgId, Long userId);
 	List<TestProjectAccessHistoryVo> listRecentProjectVo(Long orgId, Long userId);
-	void createDefault(Long id, Long userId);
+	void createDefaultPers(Long id, Long userId);
 
-	TestProjectVo viewPers(UserVo userVo, Long projectId);
+	TestProjectVo viewPers(Long userId, Long projectId);
 	List<TestProject> list(Long orgId, String keywords, String disabled);
 	boolean isLastestProjectGroup(Long orgId, Long projectGroupId);
 

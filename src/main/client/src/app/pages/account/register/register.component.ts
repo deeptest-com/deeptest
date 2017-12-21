@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ValidatorUtils, PhoneValidator, EqualPasswordsValidator} from '../../../validator';
 
@@ -42,8 +42,8 @@ export class Register {
   }
 
   public onSubmit():void {
-    this.accountService.register(this.model).subscribe((errors: any) => {
-      this.formErrors = [errors];
+    this.accountService.register(this.model).subscribe((json: any) => {
+      this.formErrors = [json.msg];
     });
   }
 

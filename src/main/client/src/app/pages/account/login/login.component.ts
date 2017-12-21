@@ -1,4 +1,5 @@
-import {Component, ViewEncapsulation} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import {FormGroup, AbstractControl, FormBuilder, Validators} from '@angular/forms';
 
 import { CONSTANT } from '../../../utils/constant';
@@ -14,12 +15,12 @@ import { AccountService } from '../../../service/account';
   styleUrls: ['./login.scss'],
   templateUrl: './login.html',
 })
-export class Login {
-
+export class Login implements OnInit {
+  vcode: string;
   public form:FormGroup;
   model: any = { rememberMe: true};
 
-  constructor(fb:FormBuilder, private accountService: AccountService, private routeService: RouteService) {
+  constructor(fb:FormBuilder, private _route: ActivatedRoute, private accountService: AccountService, private routeService: RouteService) {
     this.form = fb.group({
       'email': ['', [Validators.required, Validators.email]],
       'password': ['', [Validators.minLength(6)]],
@@ -28,6 +29,14 @@ export class Login {
 
     this.form.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(data => this.onValueChanged(data));
     this.onValueChanged();
+  }
+  ngOnInit() {
+    this._route.params.subscribe(params => {
+      this.vcode = params['vcode'];
+    });
+    this.accountService.loginWithVcode(this.vcode).subscribe((errors: any) => {
+      this.formErrors = [errors];
+    });
   }
 
   onValueChanged(data?: any) {

@@ -1,13 +1,13 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.config.Constant.RespCode;
 import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.entity.TestVerifyCode;
 import com.ngtesting.platform.service.*;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.config.Constant.RespCode;
 import com.ngtesting.platform.util.PropertyConfig;
 import com.ngtesting.platform.vo.OrgVo;
 import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
@@ -78,6 +78,30 @@ public class AccountAction extends BaseAction {
 		return ret;
 	}
 
+    @AuthPassport(validate=false)
+    @RequestMapping(value = "loginWithVcode", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> loginWithVcode(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        String vcode = json.getString("vcode");
+        TestUser user = accountService.resetPasswordPers(vcode, null);
+
+        if (user != null) {
+            UserVo userVo = userService.genVo(user);
+            request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
+
+            ret.put("profile", userVo);
+            ret.put("token", user.getToken());
+            ret.put("code", RespCode.SUCCESS.getCode());
+        } else {
+            ret.put("code", RespCode.BIZ_FAIL.getCode());
+            ret.put("msg", "登录失败");
+        }
+
+        return ret;
+    }
+
 	@AuthPassport(validate=false)
 	@RequestMapping(value = "register", method = RequestMethod.POST)
 	@ResponseBody
@@ -93,12 +117,18 @@ public class AccountAction extends BaseAction {
 
 		if (user != null) {
             TestOrg po = orgService.createDefaultPers(user);
-			UserVo userVo = userService.genVo(user);
-			request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
 
-			ret.put("token", user.getToken());
-			ret.put("code", RespCode.SUCCESS.getCode());
-		} else {
+            TestVerifyCode verifyCode = accountService.genVerifyCodePers(user.getId());
+            String sys = PropertyConfig.getConfig("sys.name");
+
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("name", user.getName());
+            map.put("vcode", verifyCode.getCode());
+            map.put("url", PropertyConfig.getConfig("url.login"));
+            mailService.sendTemplateMail("[\"" + sys + "\"]注册成功", "register-success.ftl", user.getEmail(), map);
+            ret.put("msg", "注册成功，请访问您的邮箱进行登录");
+            ret.put("code", RespCode.SUCCESS.getCode());
+        } else {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());
 			ret.put("msg", "邮箱已存在");
 		}
@@ -191,7 +221,7 @@ public class AccountAction extends BaseAction {
 			return ret;
 		}
 
-		TestVerifyCode verifyCode = accountService.forgotPasswordPers(user.getId());
+		TestVerifyCode verifyCode = accountService.genVerifyCodePers(user.getId());
 		if (verifyCode != null) {
             String sys = PropertyConfig.getConfig("sys.name");
 
@@ -200,7 +230,7 @@ public class AccountAction extends BaseAction {
 			map.put("vcode", verifyCode.getCode());
 			// map.put("url", Constant.WEB_ROOT + "admin-path");
 			map.put("url", PropertyConfig.getConfig("url.reset.password"));
-			mailService.sendTemplateMail("[\" + sys + \"]忘记密码", "forgot-password.ftl", user.getEmail(), map);
+			mailService.sendTemplateMail("[\"" + sys + "\"]忘记密码", "forgot-password.ftl", user.getEmail(), map);
 
 			ret.put("data", verifyCode);
 			ret.put("code", RespCode.SUCCESS.getCode());

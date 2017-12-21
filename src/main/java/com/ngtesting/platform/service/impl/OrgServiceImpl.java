@@ -96,7 +96,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		casePriorityService.createDefaultPers(po.getId());
 		caseTypeService.createDefaultPers(po.getId());
 
-        projectService.createDefault(po.getId(), user.getId());
+        projectService.createDefaultPers(po.getId(), user.getId());
 
         return po;
     }
@@ -133,7 +133,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
             casePriorityService.createDefaultPers(po.getId());
             caseTypeService.createDefaultPers(po.getId());
 
-            projectService.createDefault(po.getId(), userId);
+            projectService.createDefaultPers(po.getId(), userId);
         }
 
 		if (user.getDefaultOrgId() == null) {

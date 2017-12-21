@@ -16,13 +16,15 @@ public interface AccountService extends BaseService {
 	TestUser saveProfile(UserVo vo);
 	TestUser saveInfo(JSONObject json);
 	boolean changePasswordPers(Long userId, String oldPassword, String password);
-	TestVerifyCode forgotPasswordPers(Long userId);
+	TestVerifyCode genVerifyCodePers(Long userId);
 
 	boolean checkResetPassword(String verifyCode);
 	TestUser resetPasswordPers(String verifyCode, String password);
 
 	TestUser getByToken(String token);
-	TestUser getByPhone(String token);
+
+    TestUser getByPhone(String token);
 	TestUser getByEmail(String email);
+
 
 }

@@ -8,7 +8,7 @@ import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.entity.TestVerifyCode;
 import com.ngtesting.platform.service.*;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.util.PropertyConfig;
+import com.ngtesting.platform.config.PropertyConfig;
 import com.ngtesting.platform.vo.OrgVo;
 import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
 import com.ngtesting.platform.vo.UserVo;

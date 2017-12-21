@@ -11,7 +11,7 @@ import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.config.Constant.RespCode;
-import com.ngtesting.platform.util.PropertyConfig;
+import com.ngtesting.platform.config.PropertyConfig;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
 import com.ngtesting.platform.vo.RelationProjectRoleEntityVo;

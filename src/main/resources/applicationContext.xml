@@ -133,7 +133,7 @@
 
     <bean class="com.ngtesting.platform.util.SpringContextHolder" lazy-init="false"/>
  
-    <bean id="configBean" class="com.ngtesting.platform.util.PropertyConfig">
+    <bean id="configBean" class="com.ngtesting.platform.config.PropertyConfig">
         <property name="location" value="classpath:config.properties" />  
     </bean>
     

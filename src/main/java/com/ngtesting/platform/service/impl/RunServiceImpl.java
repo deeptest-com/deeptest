@@ -171,10 +171,12 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 		String sql = "select cs1.`status` status, count(cs1.tcinid) count from "
                 +          "(select tcin.id tcinid, tcin.`status`, tc.id tcid from tst_case_in_run tcin "
                 +               "left join tst_case tc on tcin.case_id = tc.id "
-                +               "where tcin.run_id  = " + po.getId() + " order by tc.ordr) cs1 "
+                +               "where tcin.run_id  = " + po.getId()
+                +                   " AND tcin.deleted != true AND tcin.disabled != true order by tc.ordr) cs1 "
                 +     "where cs1.tcid not in "
                 +          "(select distinct tc.p_id from tst_case_in_run tcin left join tst_case tc on tcin.case_id = tc.id "
-                +               "where tcin.run_id  = " + po.getId() + " and tc.p_id is not NULL) "
+                +               "where tcin.run_id  = " + po.getId() + " and tc.p_id is not NULL "
+                +                   " AND tcin.deleted != true AND tcin.disabled != true ) "
                 +     "group by cs1.`status`";
 
 		List<Map> counts = findListBySql(sql);

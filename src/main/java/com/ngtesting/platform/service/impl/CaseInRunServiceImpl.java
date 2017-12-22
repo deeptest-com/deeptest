@@ -3,10 +3,12 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.entity.TestCase;
 import com.ngtesting.platform.entity.TestCaseInRun;
 import com.ngtesting.platform.entity.TestCaseStep;
+import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.CaseInRunService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.TestCaseInRunVo;
 import com.ngtesting.platform.vo.TestCaseStepVo;
+import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -57,6 +59,26 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
         } else {
             return genVo(po, true);
         }
+    }
+
+    @Override
+    public TestCaseInRunVo addCaseToRunPers(Long runId, TestCase po, UserVo userVo) {
+        TestRun run = (TestRun)get(TestRun.class, runId);
+
+        TestCaseInRun caseInRun = new TestCaseInRun(runId, po.getId(), po.getOrdr(), po.getpId());
+        run.getTestcases().add(caseInRun);
+
+        saveOrUpdate(caseInRun);
+        TestCaseInRunVo vo = genVo(caseInRun, false);
+
+        return vo;
+    }
+
+    @Override
+    public void removeCasePers(Long runId, Long entityId, UserVo userVo) {
+        TestCaseInRun po = (TestCaseInRun) get(TestCaseInRun.class, entityId);
+        po.setDeleted(true);
+        saveOrUpdate(po);
     }
 
     @Override

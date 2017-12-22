@@ -25,17 +25,17 @@ export class ExecutionSuite implements OnInit, AfterViewInit {
   public treeSettings: any = {usage: 'exe', isExpanded: true, sonSign: false};
 
   constructor(private _routeService:RouteService, private _route: ActivatedRoute, private _state:GlobalState,
-              private _runService: RunService, private _caseService: CaseService, private _caseInRunService: CaseInRunService,
+              private _runService: RunService, private _caseInRunService: CaseInRunService,
               private slimLoadingBarService:SlimLoadingBarService) {
 
   }
 
   ngOnInit() {
     this._route.params.forEach((params: Params) => {
-      this.projectId = +params['projectId'];
       this.runId = +params['runId'];
     });
 
+    this.projectId = CONSTANT.CURR_PRJ_ID;
     this.loadData();
   }
 
@@ -54,18 +54,34 @@ export class ExecutionSuite implements OnInit, AfterViewInit {
     });
 
   }
-
   startLoading() {
     this.slimLoadingBarService.start(() => {
       console.log('Loading complete');
     });
   }
-
   completeLoading() {
     let that = this;
     setTimeout(function () {
       that.slimLoadingBarService.complete();
     }, 500);
+  }
+
+  rename(event: any) {
+    let testCase = event.data;
+    this._caseInRunService.rename(this.projectId, this.runId, testCase).subscribe((json:any) => {
+      event.deferred.resolve(json.data);
+    });
+  }
+  move(event: any) {
+    this._caseInRunService.move(this.projectId, this.runId, event.data).subscribe((json:any) => {
+      event.deferred.resolve(json.data);
+    });
+  }
+  remove(event: any) {
+    let testCase = event.data;
+    this._caseInRunService.delete(testCase.id, testCase.entityId).subscribe((json:any) => {
+      event.deferred.resolve(json.data);
+    });
   }
 
 }

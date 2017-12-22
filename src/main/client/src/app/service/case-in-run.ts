@@ -26,4 +26,18 @@ export class CaseInRunService {
     return this._reqService.post(this._api_url + 'setResult', data);
   }
 
+  rename(projectId: number, runId: number, model: any) {
+    _.merge(model, {projectId: projectId, runId: runId});
+    return this._reqService.post(this._api_url + 'rename', model);
+  }
+  move(projectId: number, runId: number, data: any) {
+    _.merge(data, {projectId: projectId, runId: runId});
+
+    return this._reqService.post(this._api_url + 'move', data);
+  }
+  delete(id: number, entityId: number) {
+    let model = {id: id, entityId: entityId};
+    return this._reqService.post(this._api_url + 'delete', model);
+  }
+
 }

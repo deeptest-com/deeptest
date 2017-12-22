@@ -119,25 +119,49 @@
         </div>
       </div>
 
-        <div class="tab-steps form-group row">
-          <div class="col-sm-12">
-            <div *ngIf="'steps'==model.contentType">
-              <steps-table [settings]="settings" [source]="model.steps"
-                           (upConfirm)="onUpConfirm($event)"
-                           (downConfirm)="onDownConfirm($event)"
-
-                           (createConfirm)="onCreateConfirm($event)"
-                           (saveConfirm)="onSaveConfirm($event)"
-                           (deleteConfirm)="onDeleteConfirm($event)"
-              ></steps-table>
-            </div>
-            <div *ngIf="'richText'==model.contentType">
-              <field-show (onSave)="saveField($event)" [(model)]="model"
-                          [label]="'操作'" [prop]="'content'" [type]="'text'" [format]="model.contentType"></field-show>
+      <div class="form-group row">
+        <div class="col-sm-10">
+          <div class="tabs-container light">
+            <div class="tabs">
+              <ngb-tabset>
+                <ngb-tab id="content">
+                  <ng-template ngbTabTitle>测试步骤</ng-template>
+                  <ng-template ngbTabContent></ng-template>
+                </ngb-tab>
+              </ngb-tabset>
             </div>
           </div>
         </div>
+        <div class="contentType col-sm-2">
+          <span *ngIf="model.contentType=='richText'" (click)="changeContentType('steps')" class="link">
+            <i class="ion-ios-grid-view"></i>
+            表格
+          </span>
+            <span *ngIf="model.contentType=='steps'" (click)="changeContentType('richText')" class="link">
+            <i class="ion-document-text"></i>
+            富文本
+          </span>
+        </div>
       </div>
+      <div class="tab-steps form-group row">
+        <div class="col-sm-12">
+          <div *ngIf="'steps'==model.contentType">
+            <steps-table [settings]="settings" [source]="model.steps"
+                         (upConfirm)="onUpConfirm($event)"
+                         (downConfirm)="onDownConfirm($event)"
+
+                         (createConfirm)="onCreateConfirm($event)"
+                         (saveConfirm)="onSaveConfirm($event)"
+                         (deleteConfirm)="onDeleteConfirm($event)"
+            ></steps-table>
+          </div>
+          <div *ngIf="'richText'==model.contentType">
+            <field-show (onSave)="saveField($event)" [(model)]="model"
+                        [label]="'操作'" [prop]="'content'" [type]="'text'" [format]="model.contentType"></field-show>
+          </div>
+        </div>
+      </div>
+    </div>
 
       <div [class.hidden]="tab != 'result'" class="tab-summary">
         <div class="form-group row">

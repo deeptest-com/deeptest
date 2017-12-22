@@ -57,7 +57,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isExpanded = this.settings.isExpanded;
     this.sonSign = this.settings.sonSign;
 
-    if (this.settings.usage == 'selection' || this.settings.usage == 'exe') {
+    if (this.settings.usage == 'selection') {
       this.settings.view.addHoverDom = null;
       this.settings.view.removeHoverDom = null;
       this.settings.edit.enable = false;
@@ -216,6 +216,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     deferred.promise.then((data) => {
       console.log('success to rename', data);
       treeNode.id = data.id;
+      treeNode.entityId = data.entityId;
       treeNode.ordr = data.ordr;
 
       treeNode.tm = new Date().getTime();
@@ -238,7 +239,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     const deferred = new Deferred();
     deferred.promise.then((data) => {
       console.log('success to remove', treeNode);
-      this._state.notifyDataChanged('case.change', {node: null, random: Math.random()});
+      this._state.notifyDataChanged('case.' + this.settings.usage, {node: null, random: Math.random()});
     }).catch((err) => {console.log('err', err);});
 
     this.removeEvent.emit({

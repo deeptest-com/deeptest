@@ -99,17 +99,17 @@ public class CaseAction extends BaseAction {
 	}
 
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "delete", method = RequestMethod.POST)
+	@RequestMapping(value = "rename", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> rename(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-
-		Long id = json.getLong("id");
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		TestCase po = caseService.delete(id, userVo.getId());
+		TestCase po = caseService.renamePers(json, userVo.getId());
+		TestCaseVo caseVo = caseService.genVo(po);
 
+		ret.put("data", caseVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -128,21 +128,21 @@ public class CaseAction extends BaseAction {
 		return ret;
 	}
 
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "rename", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> rename(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
+    @AuthPassport(validate = true)
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
 
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Long id = json.getLong("id");
 
-		TestCase po = caseService.renamePers(json, userVo.getId());
-		TestCaseVo caseVo = caseService.genVo(po);
+        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        ret.put("data", caseVo);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
+        TestCase po = caseService.delete(id, userVo.getId());
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
 
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "saveField", method = RequestMethod.POST)

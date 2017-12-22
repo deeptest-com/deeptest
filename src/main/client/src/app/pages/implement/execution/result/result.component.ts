@@ -51,6 +51,7 @@ export class ExecutionResult implements OnInit, AfterViewInit {
     });
 
     this._state.subscribe('case.exe', (data: any) => {
+      console.log('case.exe', data);
       let testCase = data.node;
       if (!testCase || testCase.isParent) {
         this.model = null;
@@ -150,6 +151,13 @@ export class ExecutionResult implements OnInit, AfterViewInit {
 
   tabChange(event: any) {
     this.tab = event.nextId;
+  }
+  changeContentType(contentType: string) {
+    this._caseService.changeContentType(contentType, this.model.id).subscribe((json:any) => {
+      if (json.code == 1) {
+        this.model.contentType = contentType;
+      }
+    });
   }
 
   onUpConfirm(event: any) {

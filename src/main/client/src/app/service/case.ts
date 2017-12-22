@@ -29,16 +29,14 @@ export class CaseService {
     _.merge(model, {projectId: projectId});
     return this._reqService.post(this._api_url + 'rename', model);
   }
-
-  delete(id: any) {
-    let model = {id: id};
-    return this._reqService.post(this._api_url + 'delete', model);
-  }
-
   move(projectId: number, data: any) {
     _.merge(data, {projectId: projectId});
 
     return this._reqService.post(this._api_url + 'move', data);
+  }
+  delete(id: any) {
+    let model = {id: id};
+    return this._reqService.post(this._api_url + 'delete', model);
   }
 
   save(projectId: number, model: any) {

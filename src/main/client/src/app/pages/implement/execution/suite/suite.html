@@ -3,7 +3,10 @@
 
   <ztree
     [treeModel]="treeModel"
-    [treeSettings]="treeSettings">
+    [treeSettings]="treeSettings"
+    (renameEvent)="rename($event)"
+    (removeEvent)="remove($event)"
+    (moveEvent)="move($event)" >
   </ztree>
 
 </div>

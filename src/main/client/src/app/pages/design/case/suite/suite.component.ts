@@ -47,10 +47,6 @@ export class CaseSuite implements OnInit, AfterViewInit {
 
   }
 
-  delete(id:string):void {
-
-  }
-
   loadData() {
     this.startLoading();
 
@@ -60,6 +56,17 @@ export class CaseSuite implements OnInit, AfterViewInit {
 
       this.completeLoading();
     });
+  }
+  startLoading() {
+    this.slimLoadingBarService.start(() => {
+      console.log('Loading complete');
+    });
+  }
+  completeLoading() {
+    let that = this;
+    setTimeout(function () {
+      that.slimLoadingBarService.complete();
+    }, 500);
   }
 
   rename(event: any) {
@@ -78,19 +85,6 @@ export class CaseSuite implements OnInit, AfterViewInit {
     this._caseService.move(this.projectId, event.data).subscribe((json:any) => {
       event.deferred.resolve(json.data);
     });
-  }
-
-  startLoading() {
-    this.slimLoadingBarService.start(() => {
-      console.log('Loading complete');
-    });
-  }
-
-  completeLoading() {
-    let that = this;
-    setTimeout(function () {
-      that.slimLoadingBarService.complete();
-    }, 500);
   }
 
 }

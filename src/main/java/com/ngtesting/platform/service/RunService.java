@@ -14,7 +14,10 @@ public interface RunService extends BaseService {
 	List<TestCaseInRun> lodaCase(Long runId);
 	TestRunVo getById(Long caseId);
 	TestRun save(JSONObject json, UserVo optUser);
-	TestRun saveCases(JSONObject json, UserVo optUser);
+
+    TestRun saveCases(Long planId, Long runId, Object[] ids, UserVo optUser);
+
+    TestRun saveCases(JSONObject json, UserVo optUser);
 	TestRun delete(Long vo, Long userId);
 	void markAllReadPers(Long userId);
 

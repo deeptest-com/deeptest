@@ -78,7 +78,7 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 	public boolean setDefaultPers(Long id, Long orgId) {
 		List<TestCasePriority> ls = list(orgId);
 		for (TestCasePriority type : ls) {
-			if (type.getId() == id) {
+			if (type.getId().longValue() == id.longValue()) {
 				type.setIsDefault(true);
 				saveOrUpdate(type);
 			} else if (type.getIsDefault()) {

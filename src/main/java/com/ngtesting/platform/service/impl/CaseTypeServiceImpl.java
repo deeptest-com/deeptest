@@ -78,7 +78,7 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 	public boolean setDefaultPers(Long id, Long orgId) {
 		List<TestCaseType> ls = list(orgId);
 		for (TestCaseType type : ls) {
-			if (type.getId() == id) {
+			if (type.getId().longValue() == id.longValue()) {
 				type.setIsDefault(true);
 				saveOrUpdate(type);
 			} else if (type.getIsDefault()) {

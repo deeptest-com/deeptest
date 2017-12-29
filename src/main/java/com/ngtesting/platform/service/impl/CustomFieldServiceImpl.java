@@ -208,7 +208,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
             vo.setSelected(false);
             vo.setSelecting(false);
             for (TestProject item : projectsForField) {
-                if (po1.getId() == item.getId()) {
+                if (po1.getId().longValue() == item.getId().longValue()) {
                     vo.setSelected(true);
                     vo.setSelecting(true);
                 }
@@ -219,7 +219,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
                 TestProjectVo childVo = projectService.genVo(child);
 
                 for (TestProject item : projectsForField) {
-                    if (child.getId() == item.getId()) {
+                    if (child.getId().longValue() == item.getId().longValue()) {
                         childVo.setSelected(true);
                         childVo.setSelecting(true);
                     }

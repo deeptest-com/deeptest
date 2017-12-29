@@ -1,18 +1,11 @@
 package com.ngtesting.platform.service.impl;
 
-import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.ngtesting.platform.dao.BaseDao;
+import com.ngtesting.platform.entity.BaseEntity;
+import com.ngtesting.platform.service.BaseService;
+import com.ngtesting.platform.util.DaoHelper;
+import com.ngtesting.platform.util.SpringContextHolder;
+import com.ngtesting.platform.vo.Page;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +13,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 
-import com.ngtesting.platform.dao.BaseDao;
-import com.ngtesting.platform.entity.BaseEntity;
-import com.ngtesting.platform.service.BaseService;
-import com.ngtesting.platform.util.DaoHelper;
-import com.ngtesting.platform.util.SpringContextHolder;
-import com.ngtesting.platform.vo.Page;
+import java.io.Serializable;
+import java.sql.*;
+import java.util.*;
+import java.util.Date;
 
 public class BaseServiceImpl implements BaseService {
 
@@ -268,7 +259,7 @@ public class BaseServiceImpl implements BaseService {
     public boolean contains(Set set,BaseEntity e) {
         for (Object obj: set) {
         	BaseEntity item = (BaseEntity) obj;
-        	if (item.getId() == e.getId()) {
+        	if (item.getId().longValue() == e.getId().longValue()) {
         		return true;
         	}
         }
@@ -278,7 +269,7 @@ public class BaseServiceImpl implements BaseService {
     public boolean contains(Set set, Long id) {
         for (Object obj: set) {
         	BaseEntity item = (BaseEntity) obj;
-        	if (item.getId() == id) {
+        	if (item.getId().longValue() == id.longValue()) {
         		return true;
         	}
         }

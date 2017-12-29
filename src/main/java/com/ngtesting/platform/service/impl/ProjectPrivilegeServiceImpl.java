@@ -40,7 +40,7 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
         	vo.setSelected(false);
         	vo.setSelecting(false);
         	for (TestProjectRolePriviledgeRelation po2 : projectRolePrivileges) {
-        		if (po1.getId() == po2.getProjectPrivilegeDefineId()) {
+        		if (po1.getId().longValue() == po2.getProjectPrivilegeDefineId().longValue()) {
             		vo.setSelected(true);
             		vo.setSelecting(true);
             		vo.setRelationId(po2.getId());

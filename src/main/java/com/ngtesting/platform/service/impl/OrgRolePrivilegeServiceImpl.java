@@ -34,7 +34,7 @@ public class OrgRolePrivilegeServiceImpl extends BaseServiceImpl implements OrgR
         	vo.setSelected(false);
         	vo.setSelecting(false);
         	for (TestOrgPrivilege po2 : orgRolePrivileges) {
-        		if (po1.getId() == po2.getId()) {
+        		if (po1.getId().longValue() == po2.getId().longValue()) {
             		vo.setSelected(true);
             		vo.setSelecting(true);
             	}

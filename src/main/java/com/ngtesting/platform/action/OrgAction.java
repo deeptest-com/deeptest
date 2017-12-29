@@ -70,7 +70,7 @@ public class OrgAction extends BaseAction {
 			OrgVo vo = orgService.genVo(po);
 
 			TestUser user = (TestUser)orgService.get(TestUser.class, userVo.getId());
-			if (po.getId() == user.getDefaultOrgId()) {
+			if (po.getId().longValue() == user.getDefaultOrgId().longValue()) {
 				vo.setDefaultOrg(true);
 			}
 

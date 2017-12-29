@@ -12,6 +12,7 @@ public class TestCasePriority extends BaseEntity {
 	private String descr;
     private Integer displayOrder;
     private Boolean isDefault;
+	private Boolean isBuildIn = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
@@ -19,6 +20,22 @@ public class TestCasePriority extends BaseEntity {
 
     @Column(name = "org_id")
     private Long orgId;
+
+	public Boolean getDefault() {
+		return isDefault;
+	}
+
+	public void setDefault(Boolean aDefault) {
+		isDefault = aDefault;
+	}
+
+	public Boolean getBuildIn() {
+		return isBuildIn;
+	}
+
+	public void setBuildIn(Boolean buildIn) {
+		isBuildIn = buildIn;
+	}
 
 	public String getName() {
 		return name;

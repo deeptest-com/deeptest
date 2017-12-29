@@ -57,17 +57,15 @@ public class TestCaseExeStatus extends BaseEntity {
 	public Boolean getIsFinal() {
 		return isFinal;
 	}
-
 	public void setIsFinal(Boolean isFinal) {
 		this.isFinal = isFinal;
 	}
 
-	public Boolean getIsBuildIn() {
+	public Boolean getBuildIn() {
 		return isBuildIn;
 	}
-
-	public void setIsBuildIn(Boolean isBuildIn) {
-		this.isBuildIn = isBuildIn;
+	public void setBuildIn(Boolean buildIn) {
+		isBuildIn = buildIn;
 	}
 
 	public TestOrg getOrg() {

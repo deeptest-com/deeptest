@@ -116,9 +116,9 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 	}
 
 	@Override
-	public void createDefaultPers(Long orgId) {
+	public void createDefaultBasicDataPers(Long orgId) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestCasePriority.class);
-		dc.add(Restrictions.lt("id", Long.valueOf(0)));
+		dc.add(Restrictions.eq("isBuildIn", true));
 		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 

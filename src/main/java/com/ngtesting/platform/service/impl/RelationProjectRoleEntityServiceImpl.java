@@ -1,15 +1,14 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.TestOrgGroup;
-import com.ngtesting.platform.entity.TestProjectRole;
-import com.ngtesting.platform.entity.TestRelationProjectRoleEntity;
-import com.ngtesting.platform.entity.TestUser;
+import com.ngtesting.platform.entity.*;
+import com.ngtesting.platform.service.ProjectPrivilegeService;
 import com.ngtesting.platform.service.RelationProjectRoleEntityService;
 import com.ngtesting.platform.vo.RelationProjectRoleEntityVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,7 +17,10 @@ import java.util.List;
 
 @Service
 public class RelationProjectRoleEntityServiceImpl extends BaseServiceImpl implements RelationProjectRoleEntityService {
-	@Override
+    @Autowired
+    ProjectPrivilegeService projectPrivilegeService;
+
+    @Override
 	public List<TestRelationProjectRoleEntity> listByProject(Long projectId) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestRelationProjectRoleEntity.class);
 		dc.add(Restrictions.eq("projectId", projectId));
@@ -77,7 +79,15 @@ public class RelationProjectRoleEntityServiceImpl extends BaseServiceImpl implem
         return null;
     }
 
-	@Override
+    @Override
+    public void addUserToProjectAsLeaderPers(Long userId, Long defaultRole, Long projectId) {
+        TestRelationProjectRoleEntity po = new TestRelationProjectRoleEntity(
+                projectId, userId, defaultRole,
+                TestRelationProjectRoleEntity.EntityType.user.toString());
+        saveOrUpdate(po);
+    }
+
+    @Override
 	public List<TestRelationProjectRoleEntity> batchSavePers(JSONObject json) {
         Long projectId = json.getLong("projectId");
 		Long projectRoleId = json.getLong("roleId");
@@ -101,10 +111,10 @@ public class RelationProjectRoleEntityServiceImpl extends BaseServiceImpl implem
                 TestRelationProjectRoleEntity po = getByProjectAndEntityId(projectId, entityId);
                 po.setProjectRoleId(projectRoleId);
 
-                TestProjectRole projectRole = (TestProjectRole)get(TestProjectRole.class, projectRoleId);
+                TestProjectRoleForOrg projectRole = (TestProjectRoleForOrg)get(TestProjectRoleForOrg.class, projectRoleId);
                 saveOrUpdate(po);
             } else if (!relationEntityAndRoleId.contains(key)) { // 不存在
-                TestProjectRole projectRole = (TestProjectRole)get(TestProjectRole.class, projectRoleId);
+                TestProjectRoleForOrg projectRole = (TestProjectRoleForOrg)get(TestProjectRoleForOrg.class, projectRoleId);
                 String name;
 
                 if(TestRelationProjectRoleEntity.EntityType.user.toString().equals(entityType)) {
@@ -130,7 +140,7 @@ public class RelationProjectRoleEntityServiceImpl extends BaseServiceImpl implem
         Long projectRoleId = json.getLong("roleId");
         Long entityId = json.getLong("entityId");
 
-        TestProjectRole projectRole = (TestProjectRole)get(TestProjectRole.class, projectRoleId);
+        TestProjectRoleForOrg projectRole = (TestProjectRoleForOrg)get(TestProjectRoleForOrg.class, projectRoleId);
 
         TestRelationProjectRoleEntity po = (TestRelationProjectRoleEntity)get(TestRelationProjectRoleEntity.class, entityId);
         po.setProjectRoleId(projectRoleId);
@@ -142,8 +152,6 @@ public class RelationProjectRoleEntityServiceImpl extends BaseServiceImpl implem
 
     @Override
     public RelationProjectRoleEntityVo genVo(TestRelationProjectRoleEntity po) {
-
-
         return new RelationProjectRoleEntityVo(po.getId(), po.getProjectId(), po.getEntityId(), po.getProjectRoleId(),
                 po.getProjectRole().getName(), getEntityName(po), po.getType().toString());
     }

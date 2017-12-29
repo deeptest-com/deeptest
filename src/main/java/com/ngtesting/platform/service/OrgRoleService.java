@@ -16,7 +16,7 @@ public interface OrgRoleService extends BaseService {
 
 	List<OrgRoleVo> genVos(List<TestOrgRole> pos);
 
-	void initOrgRolePers(Long orgId);
+	void initOrgRoleBasicDataPers(Long orgId);
 
     List<TestOrgPrivilege> getDefaultPrivByRoleCode(TestOrgRole.OrgRoleCode e);
 

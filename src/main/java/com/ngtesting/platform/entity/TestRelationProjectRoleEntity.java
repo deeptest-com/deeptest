@@ -15,7 +15,7 @@ public class TestRelationProjectRoleEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_role_id", insertable = false, updatable = false)
-    private TestProjectRole projectRole;
+    private TestProjectRoleForOrg projectRole;
 
     @Column(name = "entity_id")
     private Long entityId;
@@ -75,10 +75,10 @@ public class TestRelationProjectRoleEntity extends BaseEntity {
 	public void setProjectRoleId(Long projectRoleId) {
 		this.projectRoleId = projectRoleId;
 	}
-	public TestProjectRole getProjectRole() {
+	public TestProjectRoleForOrg getProjectRole() {
 		return projectRole;
 	}
-	public void setProjectRole(TestProjectRole projectRole) {
+	public void setProjectRole(TestProjectRoleForOrg projectRole) {
 		this.projectRole = projectRole;
 	}
 

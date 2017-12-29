@@ -1,19 +1,6 @@
 package com.ngtesting.platform.entity;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "tst_case_type")
@@ -25,6 +12,7 @@ public class TestCaseType extends BaseEntity {
 	private String descr;
     private Boolean isDefault;
     private Integer displayOrder;
+	private Boolean isBuildIn = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id", insertable = false, updatable = false)
@@ -32,6 +20,22 @@ public class TestCaseType extends BaseEntity {
 
     @Column(name = "org_id")
     private Long orgId;
+
+	public Boolean getDefault() {
+		return isDefault;
+	}
+
+	public void setDefault(Boolean aDefault) {
+		isDefault = aDefault;
+	}
+
+	public Boolean getBuildIn() {
+		return isBuildIn;
+	}
+
+	public void setBuildIn(Boolean buildIn) {
+		isBuildIn = buildIn;
+	}
 
 	public String getName() {
 		return name;

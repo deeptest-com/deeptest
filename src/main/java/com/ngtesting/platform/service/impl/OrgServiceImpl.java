@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestOrgRole;
+import com.ngtesting.platform.entity.TestProjectRoleForOrg;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.*;
 import com.ngtesting.platform.util.BeanUtilEx;
@@ -22,6 +23,8 @@ import java.util.List;
 public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 
 	@Autowired
+	ProjectRoleService projectRoleService;
+	@Autowired
     ProjectService projectService;
     @Autowired
     OrgRoleService orgRoleService;
@@ -33,6 +36,10 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	CasePriorityService casePriorityService;
 	@Autowired
 	CaseTypeService caseTypeService;
+	@Autowired
+	RelationProjectRoleEntityService relationProjectRoleEntityService;
+    @Autowired
+    ProjectPrivilegeService projectPrivilegeService;
 
 	@Override
 	public List<TestOrg> list(String keywords, String disabled, Long userId) {
@@ -73,7 +80,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	}
 
     @Override
-    public TestOrg createDefaultPers(TestUser user) {
+    public TestOrg createDefaultBasicDataPers(TestUser user) {
 
         TestOrg po = new TestOrg();
 
@@ -88,15 +95,17 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
         user.setDefaultOrgId(po.getId());
         saveOrUpdate(user);
 
-        orgRoleService.initOrgRolePers(po.getId());
+        orgRoleService.initOrgRoleBasicDataPers(po.getId());
         orgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
-        orgGroupService.createDefaultPers(po);
+        orgGroupService.initDefaultBasicDataPers(po);
 
-		caseExeStatusService.createDefaultPers(po.getId());
-		casePriorityService.createDefaultPers(po.getId());
-		caseTypeService.createDefaultPers(po.getId());
+		caseExeStatusService.createDefaultBasicDataPers(po.getId());
+		casePriorityService.createDefaultBasicDataPers(po.getId());
+		caseTypeService.createDefaultBasicDataPers(po.getId());
 
-        projectService.createDefaultPers(po.getId(), user.getId());
+        TestProjectRoleForOrg defaultRole = projectRoleService.createDefaultBasicDataPers(po.getId());
+        Long projectId = projectService.initDefaultBasicDataPers(po.getId(), user.getId());
+		relationProjectRoleEntityService.addUserToProjectAsLeaderPers(user.getId(), defaultRole.getId(), projectId);
 
         return po;
     }
@@ -125,15 +134,15 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		saveOrUpdate(po);
 
         if (isNew) {
-            orgRoleService.initOrgRolePers(po.getId());
+            orgRoleService.initOrgRoleBasicDataPers(po.getId());
             orgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
-            orgGroupService.createDefaultPers(po);
+            orgGroupService.initDefaultBasicDataPers(po);
 
-            caseExeStatusService.createDefaultPers(po.getId());
-            casePriorityService.createDefaultPers(po.getId());
-            caseTypeService.createDefaultPers(po.getId());
+            caseExeStatusService.createDefaultBasicDataPers(po.getId());
+            casePriorityService.createDefaultBasicDataPers(po.getId());
+            caseTypeService.createDefaultBasicDataPers(po.getId());
 
-            projectService.createDefaultPers(po.getId(), userId);
+            projectService.initDefaultBasicDataPers(po.getId(), userId);
         }
 
 		if (user.getDefaultOrgId() == null) {

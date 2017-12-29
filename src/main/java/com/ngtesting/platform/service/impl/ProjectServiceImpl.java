@@ -128,7 +128,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 	}
 
 	@Override
-	public void createDefaultPers(Long orgId, Long userId) {
+	public Long initDefaultBasicDataPers(Long orgId, Long userId) {
 		TestProject prjGroup = new TestProject();
 		prjGroup.setOrgId(orgId);
 		prjGroup.setName("默认项目组");
@@ -145,6 +145,8 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		caseService.createRoot(prj.getId(), userId);
 
 		viewPers(userId, prj.getId());
+
+		return prj.getId();
 	}
 
 	@Override

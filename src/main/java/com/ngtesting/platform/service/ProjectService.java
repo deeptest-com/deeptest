@@ -21,7 +21,7 @@ public interface ProjectService extends BaseService {
 	
 	List<TestProjectAccessHistory> listRecentProject(Long orgId, Long userId);
 	List<TestProjectAccessHistoryVo> listRecentProjectVo(Long orgId, Long userId);
-	void createDefaultPers(Long id, Long userId);
+	Long initDefaultBasicDataPers(Long id, Long userId);
 
 	TestProjectVo viewPers(Long userId, Long projectId);
 	List<TestProject> list(Long orgId, String keywords, String disabled);

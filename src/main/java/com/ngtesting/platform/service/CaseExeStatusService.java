@@ -18,5 +18,5 @@ public interface CaseExeStatusService extends BaseService {
 
 	boolean changeOrderPers(Long id, String act);
 
-    void createDefaultPers(Long id);
+    void createDefaultBasicDataPers(Long id);
 }

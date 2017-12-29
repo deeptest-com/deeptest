@@ -2,12 +2,12 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.TestProjectRole;
+import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.entity.TestProjectRoleForOrg;
 import com.ngtesting.platform.service.ProjectPrivilegeService;
 import com.ngtesting.platform.service.ProjectRoleService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.vo.ProjectPrivilegeVo;
+import com.ngtesting.platform.vo.ProjectPrivilegeDefineVo;
 import com.ngtesting.platform.vo.ProjectRoleVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +60,7 @@ public class ProjectRoleAction extends BaseAction {
 		Long orgId = userVo.getDefaultOrgId();
 		Long roleId = req.getLong("id");
 
-		Map<String, List<ProjectPrivilegeVo>> orgPrivileges = projectPrivilegeService.listPrivilegesByOrg(orgId, roleId);
+		Map<String, List<ProjectPrivilegeDefineVo>> orgPrivileges = projectPrivilegeService.listPrivilegesByOrgAndProjectRole(orgId, roleId);
 		if (roleId == null) {
 			ret.put("projectRole", new ProjectRoleVo());
 	        ret.put("projectPrivileges", orgPrivileges);
@@ -68,7 +68,7 @@ public class ProjectRoleAction extends BaseAction {
 			return ret;
 		}
 
-		TestProjectRole po = (TestProjectRole) projectRoleService.get(TestProjectRole.class, roleId);
+		TestProjectRoleForOrg po = (TestProjectRoleForOrg) projectRoleService.get(TestProjectRoleForOrg.class, roleId);
 		ProjectRoleVo vo = projectRoleService.genVo(po);
 
         ret.put("projectRole", vo);
@@ -87,9 +87,9 @@ public class ProjectRoleAction extends BaseAction {
 		Long orgId = userVo.getDefaultOrgId();
 
 		ProjectRoleVo projectRoleVo = JSON.parseObject(JSON.toJSONString(json.get("projectRole")), ProjectRoleVo.class);
-		TestProjectRole po = projectRoleService.save(projectRoleVo, orgId);
+		TestProjectRoleForOrg po = projectRoleService.save(projectRoleVo, orgId);
 
-		Map<String, List<ProjectPrivilegeVo>> projectPrivileges = (Map<String, List<ProjectPrivilegeVo>>) json.get("projectPrivileges");
+		Map<String, List<ProjectPrivilegeDefineVo>> projectPrivileges = (Map<String, List<ProjectPrivilegeDefineVo>>) json.get("projectPrivileges");
 		boolean success = projectPrivilegeService.saveProjectPrivileges(po.getId(), projectPrivileges);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

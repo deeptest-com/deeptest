@@ -68,7 +68,7 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 	}
 
 	@Override
-	public void initOrgRolePers(Long orgId) {
+	public void initOrgRoleBasicDataPers(Long orgId) {
 		for (TestOrgRole.OrgRoleCode e : TestOrgRole.OrgRoleCode.values()) {
             TestOrgRole po = new TestOrgRole();
 

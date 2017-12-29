@@ -100,9 +100,9 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
 	}
 
 	@Override
-	public void createDefaultPers(Long orgId) {
+	public void createDefaultBasicDataPers(Long orgId) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestCaseExeStatus.class);
-		dc.add(Restrictions.lt("id", Long.valueOf(0)));
+		dc.add(Restrictions.eq("isBuildIn", true));
 		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 
@@ -114,6 +114,7 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
 			BeanUtilEx.copyProperties(temp, p);
 			temp.setId(null);
 			temp.setOrgId(orgId);
+			temp.setBuildIn(false);
 			saveOrUpdate(temp);
 		}
 	}

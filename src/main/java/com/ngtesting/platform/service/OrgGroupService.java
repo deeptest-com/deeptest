@@ -16,7 +16,7 @@ public interface OrgGroupService extends BaseService {
 	TestOrgGroup save(OrgGroupVo vo, Long orgId);
 	boolean delete(Long id);
 
-	void createDefaultPers(TestOrg org);
+	void initDefaultBasicDataPers(TestOrg org);
 
 	List<OrgGroupVo> genVos(List<TestOrgGroup> pos);
 	OrgGroupVo genVo(TestOrgGroup user);

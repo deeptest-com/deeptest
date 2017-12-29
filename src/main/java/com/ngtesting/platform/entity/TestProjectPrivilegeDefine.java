@@ -1,12 +1,13 @@
 package com.ngtesting.platform.entity;
 
-import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Table;
 
 @Entity
-@Table(name = "tst_project_privilege")
-public class TestProjectPrivilege extends BaseEntity {
+@Table(name = "tst_project_privilege_define")
+public class TestProjectPrivilegeDefine extends BaseEntity {
 	private static final long serialVersionUID = -5510206858644860272L;
 
 	@Enumerated(EnumType.STRING)
@@ -17,9 +18,6 @@ public class TestProjectPrivilege extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private PrivilegeAction action;
-
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "projectPrivilegeSet")
-    private Set<TestProjectRole> projectRoleSet = new HashSet<TestProjectRole>(0);
 
     public static enum ProjectPrivilegeCode {
     	req("req"),
@@ -40,6 +38,7 @@ public class TestProjectPrivilege extends BaseEntity {
     }
 
     public static enum PrivilegeAction {
+		create("create"),
         update("update"),
         remove("remove"),
         close("close");
@@ -69,14 +68,6 @@ public class TestProjectPrivilege extends BaseEntity {
 
 	public void setDescr(String descr) {
 		this.descr = descr;
-	}
-
-	public Set<TestProjectRole> getProjectRoleSet() {
-		return projectRoleSet;
-	}
-
-	public void setProjectRoleSet(Set<TestProjectRole> projectRoleSet) {
-		this.projectRoleSet = projectRoleSet;
 	}
 
 	public ProjectPrivilegeCode getCode() {

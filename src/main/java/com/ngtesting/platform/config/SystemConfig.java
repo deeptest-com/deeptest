@@ -1,13 +1,13 @@
 package com.ngtesting.platform.config;
 
-import java.util.Properties;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+
+import java.util.Properties;
 
 @Configuration
 public class SystemConfig {
@@ -28,7 +28,7 @@ public class SystemConfig {
     public SimpleMailMessage simpleMailMessage() {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setFrom(mailUserName);
-        mailMessage.setSubject("来自《聆客会议管理系统》的邮件");
+        mailMessage.setSubject("来自ngtesting.com的邮件");
         return mailMessage;
     }
 

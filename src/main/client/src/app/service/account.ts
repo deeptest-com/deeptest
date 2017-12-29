@@ -104,7 +104,7 @@ export class AccountService {
     let token = Cookie.get(CONSTANT.TOKEN_KEY);
     console.log('token from cookie: ', token);
 
-    if (token) {
+    if (token && token != 'undefined') {
       CONSTANT.TOKEN = JSON.parse(token);
 
       return this._reqService.post(that._getProfile, {}).map(json => {

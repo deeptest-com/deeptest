@@ -116,7 +116,7 @@ public class AccountAction extends BaseAction {
 		TestUser user = accountService.registerPers(name, email, phone, password);
 
 		if (user != null) {
-            TestOrg po = orgService.createDefaultPers(user);
+            TestOrg po = orgService.createDefaultBasicDataPers(user);
 
             TestVerifyCode verifyCode = accountService.genVerifyCodePers(user.getId());
             String sys = PropertyConfig.getConfig("sys.name");

@@ -1,6 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.entity.TestProjectRole;
+import com.ngtesting.platform.entity.TestProjectRoleForOrg;
 import com.ngtesting.platform.service.ProjectRoleService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
@@ -18,7 +18,7 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 
 	@Override
 	public List list(Long orgId, String keywords, String disabled) {
-        DetachedCriteria dc = DetachedCriteria.forClass(TestProjectRole.class);
+        DetachedCriteria dc = DetachedCriteria.forClass(TestProjectRoleForOrg.class);
         dc.add(Restrictions.eq("orgId", orgId));
         
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
@@ -39,14 +39,14 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 	}
 
 	@Override
-	public TestProjectRole save(ProjectRoleVo vo, Long orgId) {
+	public TestProjectRoleForOrg save(ProjectRoleVo vo, Long orgId) {
 		if (vo == null) {
 			return null;
 		}
 		
-		TestProjectRole po = new TestProjectRole();
+		TestProjectRoleForOrg po = new TestProjectRoleForOrg();
 		if (vo.getId() != null) {
-			po = (TestProjectRole) get(TestProjectRole.class, vo.getId());
+			po = (TestProjectRoleForOrg) get(TestProjectRoleForOrg.class, vo.getId());
 		}
 		
 		po.setName(vo.getName());
@@ -60,7 +60,7 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 
 	@Override
 	public boolean delete(Long id) {
-		TestProjectRole po = (TestProjectRole) get(TestProjectRole.class, id);
+		TestProjectRoleForOrg po = (TestProjectRoleForOrg) get(TestProjectRoleForOrg.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
 		
@@ -68,17 +68,44 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 	}
     
 	@Override
-	public ProjectRoleVo genVo(TestProjectRole role) {
+	public ProjectRoleVo genVo(TestProjectRoleForOrg role) {
 		ProjectRoleVo vo = new ProjectRoleVo();
 		BeanUtilEx.copyProperties(vo, role);
 		
 		return vo;
 	}
+
 	@Override
-	public List<ProjectRoleVo> genVos(List<TestProjectRole> pos) {
+	public TestProjectRoleForOrg createDefaultBasicDataPers(Long orgId) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestProjectRoleForOrg.class);
+		dc.add(Restrictions.eq("isBuildIn", true));
+		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+
+		dc.addOrder(Order.asc("id"));
+		List<TestProjectRoleForOrg> ls = findAllByCriteria(dc);
+
+		TestProjectRoleForOrg defaultRole = null;
+		for (TestProjectRoleForOrg p : ls) {
+			TestProjectRoleForOrg temp = new TestProjectRoleForOrg();
+			BeanUtilEx.copyProperties(temp, p);
+			temp.setId(null);
+			temp.setOrgId(orgId);
+			temp.setBuildIn(false);
+			saveOrUpdate(temp);
+
+			if ("test_leader".equals(temp.getCode())) {
+				defaultRole = temp;
+			}
+		}
+		return defaultRole;
+	}
+
+	@Override
+	public List<ProjectRoleVo> genVos(List<TestProjectRoleForOrg> pos) {
         List<ProjectRoleVo> vos = new LinkedList<ProjectRoleVo>();
 
-        for (TestProjectRole po: pos) {
+        for (TestProjectRoleForOrg po: pos) {
         	ProjectRoleVo vo = genVo(po);
         	vos.add(vo);
         }

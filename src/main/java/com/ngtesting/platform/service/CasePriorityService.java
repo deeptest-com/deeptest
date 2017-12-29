@@ -20,5 +20,5 @@ public interface CasePriorityService extends BaseService {
 
 	boolean changeOrderPers(Long id, String act);
 
-    void createDefaultPers(Long id);
+    void createDefaultBasicDataPers(Long id);
 }

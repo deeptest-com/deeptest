@@ -1,6 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.entity.TestProjectRoleForOrg;
+import com.ngtesting.platform.service.ProjectRolePriviledgeRelationService;
 import com.ngtesting.platform.service.ProjectRoleService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
@@ -8,6 +9,7 @@ import com.ngtesting.platform.vo.ProjectRoleVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -15,6 +17,9 @@ import java.util.List;
 
 @Service
 public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRoleService {
+
+    @Autowired
+    private ProjectRolePriviledgeRelationService projectRolePriviledgeRelationService;
 
 	@Override
 	public List list(Long orgId, String keywords, String disabled) {
@@ -77,6 +82,7 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 
 	@Override
 	public TestProjectRoleForOrg createDefaultBasicDataPers(Long orgId) {
+
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProjectRoleForOrg.class);
 		dc.add(Restrictions.eq("isBuildIn", true));
 		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
@@ -96,6 +102,11 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 
 			if ("test_leader".equals(temp.getCode())) {
 				defaultRole = temp;
+                projectRolePriviledgeRelationService.addPriviledgeForLeaderPers(temp.getId());
+			} else if ("test_designer".equals(temp.getCode())) {
+                projectRolePriviledgeRelationService.addPriviledgeForDesignerPers(temp.getId());
+			} else if ("tester".equals(temp.getCode())) {
+                projectRolePriviledgeRelationService.addPriviledgeForTesterPers(temp.getId());
 			}
 		}
 		return defaultRole;

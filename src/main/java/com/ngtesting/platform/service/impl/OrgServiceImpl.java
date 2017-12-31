@@ -133,6 +133,8 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		saveOrUpdate(po);
 
         if (isNew) {
+            getDao().querySql("{call init_user(?)", user.getId());
+
 //            orgRoleService.initOrgRoleBasicDataPers(po.getId());
 //            orgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
 //            orgGroupService.initDefaultBasicDataPers(po);

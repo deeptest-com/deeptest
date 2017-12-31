@@ -80,7 +80,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
     @Override
     public void createDefaultBasicDataPers(TestUser user) {
 
-        getDao().querySql("{call init_user(?)", user.getId());
+        getDao().querySql("{call init_user(?)}", user.getId());
 
 //        TestOrg po = new TestOrg();
 //

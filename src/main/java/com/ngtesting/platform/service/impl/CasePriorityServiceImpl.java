@@ -115,25 +115,24 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 		return true;
 	}
 
-	@Override
-	public void createDefaultBasicDataPers(Long orgId) {
-		DetachedCriteria dc = DetachedCriteria.forClass(TestCasePriority.class);
-		dc.add(Restrictions.eq("isBuildIn", true));
-		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-
-		dc.addOrder(Order.asc("displayOrder"));
-		List<TestCasePriority> ls = findAllByCriteria(dc);
-
-		for (TestCasePriority p : ls) {
-			TestCasePriority temp = new TestCasePriority();
-			BeanUtilEx.copyProperties(temp, p);
-			temp.setId(null);
-			temp.setOrgId(orgId);
-			saveOrUpdate(temp);
-		}
-	}
-
+//	@Override
+//	public void createDefaultBasicDataPers(Long orgId) {
+//		DetachedCriteria dc = DetachedCriteria.forClass(TestCasePriority.class);
+//		dc.add(Restrictions.eq("isBuildIn", true));
+//		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+//		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+//
+//		dc.addOrder(Order.asc("displayOrder"));
+//		List<TestCasePriority> ls = findAllByCriteria(dc);
+//
+//		for (TestCasePriority p : ls) {
+//			TestCasePriority temp = new TestCasePriority();
+//			BeanUtilEx.copyProperties(temp, p);
+//			temp.setId(null);
+//			temp.setOrgId(orgId);
+//			saveOrUpdate(temp);
+//		}
+//	}
 
 	@Override
 	public CasePriorityVo genVo(TestCasePriority po) {

@@ -99,25 +99,25 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
 		return true;
 	}
 
-	@Override
-	public void createDefaultBasicDataPers(Long orgId) {
-		DetachedCriteria dc = DetachedCriteria.forClass(TestCaseExeStatus.class);
-		dc.add(Restrictions.eq("isBuildIn", true));
-		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-
-		dc.addOrder(Order.asc("displayOrder"));
-		List<TestCaseExeStatus> ls = findAllByCriteria(dc);
-
-		for (TestCaseExeStatus p : ls) {
-			TestCaseExeStatus temp = new TestCaseExeStatus();
-			BeanUtilEx.copyProperties(temp, p);
-			temp.setId(null);
-			temp.setOrgId(orgId);
-			temp.setBuildIn(false);
-			saveOrUpdate(temp);
-		}
-	}
+//	@Override
+//	public void createDefaultBasicDataPers(Long orgId) {
+//		DetachedCriteria dc = DetachedCriteria.forClass(TestCaseExeStatus.class);
+//		dc.add(Restrictions.eq("isBuildIn", true));
+//		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+//		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+//
+//		dc.addOrder(Order.asc("displayOrder"));
+//		List<TestCaseExeStatus> ls = findAllByCriteria(dc);
+//
+//		for (TestCaseExeStatus p : ls) {
+//			TestCaseExeStatus temp = new TestCaseExeStatus();
+//			BeanUtilEx.copyProperties(temp, p);
+//			temp.setId(null);
+//			temp.setOrgId(orgId);
+//			temp.setBuildIn(false);
+//			saveOrUpdate(temp);
+//		}
+//	}
 
 	@Override
 	public CaseExeStatusVo genVo(TestCaseExeStatus po) {

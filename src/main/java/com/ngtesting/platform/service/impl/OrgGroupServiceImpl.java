@@ -97,16 +97,16 @@ public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupServ
 		return true;
 	}
 
-	@Override
-	public void initDefaultBasicDataPers(TestOrg org) {
-		String [] groups = new String[]{"测试主管","测试设计","测试执行"};
-		for(String name : groups) {
-			TestOrgGroup po = new TestOrgGroup();
-			po.setName(name);
-            po.setOrgId(org.getId());
-			saveOrUpdate(po);
-		}
-	}
+//	@Override
+//	public void initDefaultBasicDataPers(TestOrg org) {
+//		String [] groups = new String[]{"测试主管","测试设计","测试执行"};
+//		for(String name : groups) {
+//			TestOrgGroup po = new TestOrgGroup();
+//			po.setName(name);
+//            po.setOrgId(org.getId());
+//			saveOrUpdate(po);
+//		}
+//	}
 
 	@Override
 	public OrgGroupVo genVo(TestOrgGroup group) {

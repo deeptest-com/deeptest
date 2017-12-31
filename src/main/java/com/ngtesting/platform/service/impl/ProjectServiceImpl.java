@@ -127,27 +127,27 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		return vos;
 	}
 
-	@Override
-	public Long initDefaultBasicDataPers(Long orgId, Long userId) {
-		TestProject prjGroup = new TestProject();
-		prjGroup.setOrgId(orgId);
-		prjGroup.setName("默认项目组");
-		prjGroup.setType(TestProject.ProjectType.group);
-		saveOrUpdate(prjGroup);
-
-		TestProject prj = new TestProject();
-		prj.setOrgId(orgId);
-		prj.setName("默认项目");
-		prj.setType(ProjectType.project);
-		prj.setParentId(prjGroup.getId());
-		saveOrUpdate(prj);
-
-		caseService.createRoot(prj.getId(), userId);
-
-		viewPers(userId, prj.getId());
-
-		return prj.getId();
-	}
+//	@Override
+//	public Long initDefaultBasicDataPers(Long orgId, Long userId) {
+//		TestProject prjGroup = new TestProject();
+//		prjGroup.setOrgId(orgId);
+//		prjGroup.setName("默认项目组");
+//		prjGroup.setType(TestProject.ProjectType.group);
+//		saveOrUpdate(prjGroup);
+//
+//		TestProject prj = new TestProject();
+//		prj.setOrgId(orgId);
+//		prj.setName("默认项目");
+//		prj.setType(ProjectType.project);
+//		prj.setParentId(prjGroup.getId());
+//		saveOrUpdate(prj);
+//
+//		caseService.createRoot(prj.getId(), userId);
+//
+//		viewPers(userId, prj.getId());
+//
+//		return prj.getId();
+//	}
 
 	@Override
 	public TestProject getDetail(Long id) {

@@ -24,7 +24,7 @@ public interface OrgService extends BaseService {
 
 	OrgVo genVo(TestOrg po);
 
-    TestOrg createDefaultBasicDataPers(TestUser user);
+	void createDefaultBasicDataPers(TestUser user);
 
     TestOrg save(OrgVo vo, Long userId);
 

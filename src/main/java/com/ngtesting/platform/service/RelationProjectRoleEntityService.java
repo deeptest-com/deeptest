@@ -13,7 +13,7 @@ public interface RelationProjectRoleEntityService extends BaseService {
 
 	TestRelationProjectRoleEntity getRelationProjectRoleEntity(Long projectRoleId);
     TestRelationProjectRoleEntity getByProjectAndEntityId(Long projectId, Long usereId);
-    void addUserToProjectAsLeaderPers(Long userId, Long roleId, Long projectId);
+//    void addUserToProjectAsLeaderPers(Long userId, Long roleId, Long projectId);
 
     List<TestRelationProjectRoleEntity> batchSavePers(JSONObject json);
     List<TestRelationProjectRoleEntity> changeRolePers(JSONObject json);

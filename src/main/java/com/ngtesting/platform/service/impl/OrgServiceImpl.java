@@ -1,8 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.entity.TestOrg;
-import com.ngtesting.platform.entity.TestOrgRole;
-import com.ngtesting.platform.entity.TestProjectRoleForOrg;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.*;
 import com.ngtesting.platform.util.BeanUtilEx;
@@ -80,34 +78,35 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	}
 
     @Override
-    public TestOrg createDefaultBasicDataPers(TestUser user) {
+    public void createDefaultBasicDataPers(TestUser user) {
 
-        TestOrg po = new TestOrg();
+        getDao().querySql("{call init_user(?)", user.getId());
 
-        po.setAdminId(user.getId());
-        po.getUserSet().add(user);
+//        TestOrg po = new TestOrg();
+//
+////      po.setAdminId(user.getId());
+//        po.getUserSet().add(user);
+//
+//        po.setName("我的组织");
+//        po.setWebsite("");
+//
+//        saveOrUpdate(po);
+//
+//        user.setDefaultOrgId(po.getId());
+//        saveOrUpdate(user);
+//
+//        orgRoleService.initOrgRoleBasicDataPers(po.getId());
+//        orgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
+//        orgGroupService.initDefaultBasicDataPers(po);
+//
+//		caseExeStatusService.createDefaultBasicDataPers(po.getId());
+//		casePriorityService.createDefaultBasicDataPers(po.getId());
+//		caseTypeService.createDefaultBasicDataPers(po.getId());
+//
+//        TestProjectRoleForOrg defaultRole = projectRoleService.createDefaultBasicDataPers(po.getId());
+//        Long projectId = projectService.initDefaultBasicDataPers(po.getId(), user.getId());
+//		relationProjectRoleEntityService.addUserToProjectAsLeaderPers(user.getId(), defaultRole.getId(), projectId);
 
-        po.setName("我的组织");
-        po.setWebsite("");
-
-        saveOrUpdate(po);
-
-        user.setDefaultOrgId(po.getId());
-        saveOrUpdate(user);
-
-        orgRoleService.initOrgRoleBasicDataPers(po.getId());
-        orgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
-        orgGroupService.initDefaultBasicDataPers(po);
-
-		caseExeStatusService.createDefaultBasicDataPers(po.getId());
-		casePriorityService.createDefaultBasicDataPers(po.getId());
-		caseTypeService.createDefaultBasicDataPers(po.getId());
-
-        TestProjectRoleForOrg defaultRole = projectRoleService.createDefaultBasicDataPers(po.getId());
-        Long projectId = projectService.initDefaultBasicDataPers(po.getId(), user.getId());
-		relationProjectRoleEntityService.addUserToProjectAsLeaderPers(user.getId(), defaultRole.getId(), projectId);
-
-        return po;
     }
 
 	@Override
@@ -123,7 +122,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		if (!isNew) {
 			po = (TestOrg) get(TestOrg.class, vo.getId());
 		} else {
-			po.setAdminId(userId);
+//			po.setAdminId(userId);
 			po.getUserSet().add(user);
 		}
 
@@ -134,15 +133,15 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		saveOrUpdate(po);
 
         if (isNew) {
-            orgRoleService.initOrgRoleBasicDataPers(po.getId());
-            orgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
-            orgGroupService.initDefaultBasicDataPers(po);
-
-            caseExeStatusService.createDefaultBasicDataPers(po.getId());
-            casePriorityService.createDefaultBasicDataPers(po.getId());
-            caseTypeService.createDefaultBasicDataPers(po.getId());
-
-            projectService.initDefaultBasicDataPers(po.getId(), userId);
+//            orgRoleService.initOrgRoleBasicDataPers(po.getId());
+//            orgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
+//            orgGroupService.initDefaultBasicDataPers(po);
+//
+//            caseExeStatusService.createDefaultBasicDataPers(po.getId());
+//            casePriorityService.createDefaultBasicDataPers(po.getId());
+//            caseTypeService.createDefaultBasicDataPers(po.getId());
+//
+//            projectService.initDefaultBasicDataPers(po.getId(), userId);
         }
 
 		if (user.getDefaultOrgId() == null) {

@@ -1,6 +1,8 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.entity.TestProjectPrivilegeDefine;
 import com.ngtesting.platform.entity.TestProjectRoleForOrg;
+import com.ngtesting.platform.service.ProjectPrivilegeService;
 import com.ngtesting.platform.service.ProjectRolePriviledgeRelationService;
 import com.ngtesting.platform.service.ProjectRoleService;
 import com.ngtesting.platform.util.BeanUtilEx;
@@ -17,7 +19,8 @@ import java.util.List;
 
 @Service
 public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRoleService {
-
+    @Autowired
+    private ProjectPrivilegeService projectPrivilegeService;
     @Autowired
     private ProjectRolePriviledgeRelationService projectRolePriviledgeRelationService;
 
@@ -80,37 +83,41 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 		return vo;
 	}
 
-	@Override
-	public TestProjectRoleForOrg createDefaultBasicDataPers(Long orgId) {
-
-		DetachedCriteria dc = DetachedCriteria.forClass(TestProjectRoleForOrg.class);
-		dc.add(Restrictions.eq("isBuildIn", true));
-		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-
-		dc.addOrder(Order.asc("id"));
-		List<TestProjectRoleForOrg> ls = findAllByCriteria(dc);
-
-		TestProjectRoleForOrg defaultRole = null;
-		for (TestProjectRoleForOrg p : ls) {
-			TestProjectRoleForOrg temp = new TestProjectRoleForOrg();
-			BeanUtilEx.copyProperties(temp, p);
-			temp.setId(null);
-			temp.setOrgId(orgId);
-			temp.setBuildIn(false);
-			saveOrUpdate(temp);
-
-			if ("test_leader".equals(temp.getCode())) {
-				defaultRole = temp;
-                projectRolePriviledgeRelationService.addPriviledgeForLeaderPers(temp.getId());
-			} else if ("test_designer".equals(temp.getCode())) {
-                projectRolePriviledgeRelationService.addPriviledgeForDesignerPers(temp.getId());
-			} else if ("tester".equals(temp.getCode())) {
-                projectRolePriviledgeRelationService.addPriviledgeForTesterPers(temp.getId());
-			}
-		}
-		return defaultRole;
-	}
+//	@Override
+//	public TestProjectRoleForOrg createDefaultBasicDataPers(Long orgId) {
+//        List<TestProjectPrivilegeDefine> allProjectPrivileges =
+//                projectPrivilegeService.listAllProjectPrivileges();
+//
+//		DetachedCriteria dc = DetachedCriteria.forClass(TestProjectRoleForOrg.class);
+//		dc.add(Restrictions.eq("isBuildIn", true));
+//		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+//		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+//
+//		dc.addOrder(Order.asc("id"));
+//		List<TestProjectRoleForOrg> ls = findAllByCriteria(dc);
+//
+//		TestProjectRoleForOrg defaultRole = null;
+//        String sql = "";
+//		for (TestProjectRoleForOrg p : ls) {
+//			TestProjectRoleForOrg temp = new TestProjectRoleForOrg();
+//			BeanUtilEx.copyProperties(temp, p);
+//			temp.setId(null);
+//			temp.setOrgId(orgId);
+//			temp.setBuildIn(false);
+//			saveOrUpdate(temp);
+//
+//			if ("test_leader".equals(temp.getCode())) {
+//				defaultRole = temp;
+//                sql += projectRolePriviledgeRelationService.addPriviledgeForLeaderPers(allProjectPrivileges, temp.getId());
+//			} else if ("test_designer".equals(temp.getCode())) {
+//                sql += projectRolePriviledgeRelationService.addPriviledgeForDesignerPers(allProjectPrivileges, temp.getId());
+//			} else if ("tester".equals(temp.getCode())) {
+//                sql += projectRolePriviledgeRelationService.addPriviledgeForTesterPers(allProjectPrivileges, temp.getId());
+//			}
+//		}
+//        getDao().querySql(sql);
+//		return defaultRole;
+//	}
 
 	@Override
 	public List<ProjectRoleVo> genVos(List<TestProjectRoleForOrg> pos) {

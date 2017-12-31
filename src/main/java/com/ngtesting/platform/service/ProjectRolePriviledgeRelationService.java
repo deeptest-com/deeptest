@@ -1,12 +1,16 @@
 package com.ngtesting.platform.service;
 
+import com.ngtesting.platform.entity.TestProjectPrivilegeDefine;
+
+import java.util.List;
+
 public interface ProjectRolePriviledgeRelationService extends BaseService {
 
-	void addPriviledgeForLeaderPers(Long projectRole);
+	String addPriviledgeForLeaderPers(List<TestProjectPrivilegeDefine> allProjectPrivileges, Long projectRole);
 
-	void addPriviledgeForDesignerPers(Long projectRole);
+	String addPriviledgeForDesignerPers(List<TestProjectPrivilegeDefine> allProjectPrivileges, Long projectRole);
 
-	void addPriviledgeForTesterPers(Long projectRole);
+	String addPriviledgeForTesterPers(List<TestProjectPrivilegeDefine> allProjectPrivileges, Long projectRole);
 
-	void addPriviledgePers(Long projectPrivilegeId, Long projectRoleId);
+	String addPriviledgePers(Long projectPrivilegeId, Long projectRoleId);
 }

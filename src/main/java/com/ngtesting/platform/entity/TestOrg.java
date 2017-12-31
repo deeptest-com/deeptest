@@ -1,23 +1,8 @@
 package com.ngtesting.platform.entity;
 
+import javax.persistence.*;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.Filter;
 
 @Entity
 @Table(name = "tst_org")
@@ -27,8 +12,8 @@ public class TestOrg extends BaseEntity {
 	private String name;
     private String website;
 
-    @Column(name = "admin_id")
-    private Long adminId;
+//    @Column(name = "admin_id")
+//    private Long adminId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", insertable = false, updatable = false)
@@ -65,13 +50,13 @@ public class TestOrg extends BaseEntity {
 		this.userSet = userSet;
 	}
 
-	public Long getAdminId() {
-		return adminId;
-	}
-
-	public void setAdminId(Long adminId) {
-		this.adminId = adminId;
-	}
+//	public Long getAdminId() {
+//		return adminId;
+//	}
+//
+//	public void setAdminId(Long adminId) {
+//		this.adminId = adminId;
+//	}
 
 	public TestUser getAdmin() {
 		return admin;

@@ -3,12 +3,11 @@ package com.ngtesting.platform.action;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.config.Constant.RespCode;
-import com.ngtesting.platform.entity.TestOrg;
+import com.ngtesting.platform.config.PropertyConfig;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.entity.TestVerifyCode;
 import com.ngtesting.platform.service.*;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.config.PropertyConfig;
 import com.ngtesting.platform.vo.OrgVo;
 import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
 import com.ngtesting.platform.vo.UserVo;
@@ -116,7 +115,7 @@ public class AccountAction extends BaseAction {
 		TestUser user = accountService.registerPers(name, email, phone, password);
 
 		if (user != null) {
-            TestOrg po = orgService.createDefaultBasicDataPers(user);
+            orgService.createDefaultBasicDataPers(user);
 
             TestVerifyCode verifyCode = accountService.genVerifyCodePers(user.getId());
             String sys = PropertyConfig.getConfig("sys.name");

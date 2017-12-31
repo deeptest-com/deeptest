@@ -79,13 +79,13 @@ public class RelationProjectRoleEntityServiceImpl extends BaseServiceImpl implem
         return null;
     }
 
-    @Override
-    public void addUserToProjectAsLeaderPers(Long userId, Long defaultRole, Long projectId) {
-        TestRelationProjectRoleEntity po = new TestRelationProjectRoleEntity(
-                projectId, userId, defaultRole,
-                TestRelationProjectRoleEntity.EntityType.user.toString());
-        saveOrUpdate(po);
-    }
+//    @Override
+//    public void addUserToProjectAsLeaderPers(Long userId, Long defaultRole, Long projectId) {
+//        TestRelationProjectRoleEntity po = new TestRelationProjectRoleEntity(
+//                projectId, userId, defaultRole,
+//                TestRelationProjectRoleEntity.EntityType.user.toString());
+//        saveOrUpdate(po);
+//    }
 
     @Override
 	public List<TestRelationProjectRoleEntity> batchSavePers(JSONObject json) {

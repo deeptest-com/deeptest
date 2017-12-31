@@ -12,7 +12,7 @@ public interface ProjectRoleService extends BaseService {
 	TestProjectRoleForOrg save(ProjectRoleVo vo, Long orgId);
 	boolean delete(Long id);
 
-	TestProjectRoleForOrg createDefaultBasicDataPers(Long orgId);
+//	TestProjectRoleForOrg createDefaultBasicDataPers(Long orgId);
 
     List<ProjectRoleVo> genVos(List<TestProjectRoleForOrg> pos);
 	ProjectRoleVo genVo(TestProjectRoleForOrg role);

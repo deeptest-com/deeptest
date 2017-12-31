@@ -67,20 +67,20 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 		return true;
 	}
 
-	@Override
-	public void initOrgRoleBasicDataPers(Long orgId) {
-		for (TestOrgRole.OrgRoleCode e : TestOrgRole.OrgRoleCode.values()) {
-            TestOrgRole po = new TestOrgRole();
-
-            po.setName(e.name);
-            po.setCode(e);
-            po.setDescr("");
-            po.setOrgId(orgId);
-            po.getOrgPrivilegeSet().addAll(getDefaultPrivByRoleCode(e));
-
-            saveOrUpdate(po);
-		}
-	}
+//	@Override
+//	public void initOrgRoleBasicDataPers(Long orgId) {
+//		for (TestOrgRole.OrgRoleCode e : TestOrgRole.OrgRoleCode.values()) {
+//            TestOrgRole po = new TestOrgRole();
+//
+//            po.setName(e.name);
+//            po.setCode(e);
+//            po.setDescr("");
+//            po.setOrgId(orgId);
+//            po.getOrgPrivilegeSet().addAll(getDefaultPrivByRoleCode(e));
+//
+//            saveOrUpdate(po);
+//		}
+//	}
 
     @Override
     public List<TestOrgPrivilege> getDefaultPrivByRoleCode(TestOrgRole.OrgRoleCode e) {
@@ -96,20 +96,20 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 	    return ls;
     }
 
-    @Override
-	public void addUserToOrgRolePers(TestUser user, Long orgId, TestOrgRole.OrgRoleCode code) {
-		DetachedCriteria dc = DetachedCriteria.forClass(TestOrgRole.class);
-		dc.add(Restrictions.eq("orgId", orgId));
-		dc.add(Restrictions.eq("code", code));
-		dc.add(Restrictions.ne("deleted", true));
-		dc.add(Restrictions.ne("disabled", true));
-
-		dc.addOrder(Order.asc("id"));
-		List<TestOrgRole> ls = findAllByCriteria(dc);
-		TestOrgRole role = ls.get(0);
-		role.getUserSet().add(user);
-		saveOrUpdate(role);
-	}
+//    @Override
+//	public void addUserToOrgRolePers(TestUser user, Long orgId, TestOrgRole.OrgRoleCode code) {
+//		DetachedCriteria dc = DetachedCriteria.forClass(TestOrgRole.class);
+//		dc.add(Restrictions.eq("orgId", orgId));
+//		dc.add(Restrictions.eq("code", code));
+//		dc.add(Restrictions.ne("deleted", true));
+//		dc.add(Restrictions.ne("disabled", true));
+//
+//		dc.addOrder(Order.asc("id"));
+//		List<TestOrgRole> ls = findAllByCriteria(dc);
+//		TestOrgRole role = ls.get(0);
+//		role.getUserSet().add(user);
+//		saveOrUpdate(role);
+//	}
 
 	@Override
 	public OrgRoleVo genVo(TestOrgRole role) {

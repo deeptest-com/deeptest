@@ -1,51 +1,51 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.entity.TestProjectPrivilegeDefine;
-import com.ngtesting.platform.entity.TestProjectRolePriviledgeRelation;
-import com.ngtesting.platform.service.ProjectPrivilegeService;
 import com.ngtesting.platform.service.ProjectRolePriviledgeRelationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class ProjectRolePriviledgeRelationServiceImpl extends BaseServiceImpl implements ProjectRolePriviledgeRelationService {
-    @Autowired
-    private ProjectPrivilegeService projectPrivilegeService;
+    static String SQL = "INSERT INTO tst_project_role_priviledge_relation " +
+                "( project_privilege_define_id,   project_role_id, create_time, deleted, disabled, is_build_in ) " +
+     "VALUES "+ "( $project_privilege_define_id$, $project_role_id$, now(),       false,   false,    false );";
 
 	@Override
-	public void addPriviledgeForLeaderPers(Long projectRoleId) {
-        List<TestProjectPrivilegeDefine> allProjectPrivileges =
-                projectPrivilegeService.listAllProjectPrivileges();
-        for (TestProjectPrivilegeDefine projectPrivilege: allProjectPrivileges) {
-            addPriviledgePers(projectPrivilege.getId(), projectRoleId);
+	public String addPriviledgeForLeaderPers(List<TestProjectPrivilegeDefine> allProjectPrivileges, Long projectRoleId) {
+        String temp = "";
+	    for (TestProjectPrivilegeDefine projectPrivilege: allProjectPrivileges) {
+            temp += addPriviledgePers(projectPrivilege.getId(), projectRoleId);
         }
+        return temp;
 	}
 	@Override
-	public void addPriviledgeForDesignerPers(Long projectRoleId) {
-        List<TestProjectPrivilegeDefine> allProjectPrivileges =
-                projectPrivilegeService.listAllProjectPrivileges();
+	public String addPriviledgeForDesignerPers(List<TestProjectPrivilegeDefine> allProjectPrivileges, Long projectRoleId) {
+        String temp = "";
         for (TestProjectPrivilegeDefine projectPrivilege: allProjectPrivileges) {
-            addPriviledgePers(projectPrivilege.getId(), projectRoleId);
+            temp += addPriviledgePers(projectPrivilege.getId(), projectRoleId);
         }
+        return temp;
 	}
 	@Override
-	public void addPriviledgeForTesterPers(Long projectRoleId) {
-        List<TestProjectPrivilegeDefine> allProjectPrivileges =
-                projectPrivilegeService.listAllProjectPrivileges();
+	public String addPriviledgeForTesterPers(List<TestProjectPrivilegeDefine> allProjectPrivileges, Long projectRoleId) {
+        String temp = "";
         for (TestProjectPrivilegeDefine projectPrivilege: allProjectPrivileges) {
             if (projectPrivilege.getCode().toString().indexOf("result") > -1) {
                 addPriviledgePers(projectPrivilege.getId(), projectRoleId);
             }
         }
+        return temp;
 	}
 
     @Override
-    public void addPriviledgePers(Long projectPrivilegeId, Long projectRoleId) {
-        TestProjectRolePriviledgeRelation po =
-                new TestProjectRolePriviledgeRelation(projectPrivilegeId, projectRoleId);
-        saveOrUpdate(po);
+    public String addPriviledgePers(Long projectPrivilegeId, Long projectRoleId) {
+	    String temp = SQL;
+        temp = temp.replace("$project_privilege_define_id$", projectPrivilegeId.toString());
+        temp = temp.replace("$project_role_id$", projectRoleId.toString());
+
+        return temp;
     }
 
 }

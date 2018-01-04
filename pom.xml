@@ -16,17 +16,27 @@
 		<profile>
 			<!-- 本地开发环境 -->
 			<id>dev</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>prod</value>
+				</property>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<properties>
 				<profiles.active>dev</profiles.active>
 				<deploy.url>http://localhost:8080/manager/text</deploy.url>
 			</properties>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 		</profile>
 		<profile>
 			<!-- 生产环境 -->
 			<id>prod</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>prod</value>
+				</property>
+			</activation>
 			<properties>
 				<profiles.active>prod</profiles.active>
 				<deploy.url>http://47.97.19.195/manager/text</deploy.url>

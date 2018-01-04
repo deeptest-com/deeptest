@@ -55,4 +55,7 @@ export class CaseService {
     return this._reqService.post(this._api_url + 'changeContentType', {id: id, contentType: contentType});
   }
 
+  reviewPass(id: number, pass: boolean, comments: string) {
+    return this._reqService.post(this._api_url + 'reviewPass', {id: id, pass: pass, comments: comments});
+  }
 }

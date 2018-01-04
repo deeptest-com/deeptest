@@ -32,8 +32,10 @@ export class CaseEdit implements OnInit, AfterViewInit {
   form: any;
   tab: string = 'content';
 
+  showComment: boolean = false;
+  comment: string = '';
+
   fields: any[] = [];
-  public umeditorSettings: any = {};
 
   constructor(private _state:GlobalState, private fb: FormBuilder, private toastyService:ToastyService,
               private _caseService: CaseService, private _caseStepService: CaseStepService) {
@@ -139,8 +141,21 @@ export class CaseEdit implements OnInit, AfterViewInit {
     });
   }
 
-  reset() {
-    this.loadData();
+  review(pass: boolean) {
+    if (pass) {
+      this.reviewRequest(this.model.id, pass, null);
+    } else {
+      this.showComment = true;
+      this.comment = '评审失败：\n';
+    }
+  }
+  reviewRequest(id: number, pass: boolean, comments: string) {
+    this._caseService.reviewPass(this.model.id, pass, comments).subscribe((json:any) => {
+      if (json.code == 1) {
+        this.model = json.data;
+        this._state.notifyDataChanged('case.save', {node: this.model, random: Math.random()});
+      }
+    });
   }
 
   tabChange(event: any) {

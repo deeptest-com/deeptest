@@ -38,6 +38,8 @@ public class TestCase extends BaseEntity {
     @Column(name = "pId")
     private Long pId;
 
+    private Boolean reviewResult;
+
     @Transient
     private String key;
 
@@ -90,6 +92,14 @@ public class TestCase extends BaseEntity {
     @Where(clause="!deleted")
     @OrderBy("ordr")
     private List<TestCaseStep> steps = new LinkedList<>();
+
+    public Boolean getReviewResult() {
+        return reviewResult;
+    }
+
+    public void setReviewResult(Boolean reviewResult) {
+        this.reviewResult = reviewResult;
+    }
 
     public String getKey() {
         return Constant.KEY_TESTCASE_DESIGN + getId();

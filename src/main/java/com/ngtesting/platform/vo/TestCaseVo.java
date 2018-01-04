@@ -25,6 +25,7 @@ public class TestCaseVo extends BaseVo {
 	private String contentType;
 	private String content;
 	private String key;
+	private Boolean reviewResult;
 
 	private String prop01;
 	private String prop02;
@@ -74,6 +75,14 @@ public class TestCaseVo extends BaseVo {
         this.createTime = createTime;
         this.updateTime = updateTime;
     }
+
+	public Boolean getReviewResult() {
+		return reviewResult;
+	}
+
+	public void setReviewResult(Boolean reviewResult) {
+		this.reviewResult = reviewResult;
+	}
 
 	public String getKey() {
 		return key;

@@ -23,10 +23,30 @@ public class CaseStepServiceImpl extends BaseServiceImpl implements CaseStepServ
         } else {
             BeanUtilEx.copyProperties(po, vo);
             po.setId(null);
+            moveOthersPers(vo.getTestCaseId(), vo.getOrdr(), "down");
         }
         saveOrUpdate(po);
 
         return po;
+    }
+
+    @Override
+    public void moveOthersPers(Long testCaseId, Integer ordr, String direction) {
+        String sql = "update tst_case_step set ";
+        if ("up".equals(direction)) {
+            sql += " ordr=ordr-1";
+        } else if ("down".equals(direction)) {
+            sql += " ordr=ordr+1";
+        }
+
+        sql += " where deleted = false and disabled = false and test_case_id = ? and ";
+        if ("up".equals(direction)) {
+            sql += " ordr > ? ";
+        } else if ("down".equals(direction)) {
+            sql += " ordr >= ? ";
+        }
+        sql += " order by ordr asc";
+        getDao().querySql(sql, testCaseId, ordr);
     }
 
     @Override
@@ -64,6 +84,9 @@ public class CaseStepServiceImpl extends BaseServiceImpl implements CaseStepServ
         TestCaseStep step = (TestCaseStep) get(TestCaseStep.class, stepId);
         step.setDeleted(true);
         saveOrUpdate(step);
+
+        moveOthersPers(step.getTestCaseId(), step.getOrdr(), "up");
+
         return true;
     }
 

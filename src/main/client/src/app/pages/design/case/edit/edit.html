@@ -135,7 +135,10 @@
             </div>
             <div>{{comment.content}}</div>
 
-            <div (click)="editComments(comment)" class="edit link"><i class="ion-edit"></i></div>
+            <div class="edit">
+              <span (click)="editComments(comment)" class="link"><i class="ion-edit"></i></span>
+              <span (click)="removeComments(comment)" class="link"><i class="ion-trash-a"></i></span>
+            </div>
           </div>
           <div *ngIf="!showComment" class="buttons">
             <button (click)="addComments()" type="button" class="btn btn-secondary btn-sm">添加</button>

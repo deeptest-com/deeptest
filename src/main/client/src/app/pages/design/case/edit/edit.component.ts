@@ -214,21 +214,18 @@ export class CaseEdit implements OnInit, AfterViewInit {
     this.modalWrapper.showModal('comment-edit');
     this.comment = comment;
   }
-  removeComments(commnentsId: number) {
-    console.log('remove');
-    this._caseCommentsService.remove(commnentsId).subscribe((json:any) => {
-      this.modalWrapper.closeModal();
-    });
-  }
-
-  saveComments(event: any) {
-    console.log('save', this.comment);
-    // this._caseCommentsService.save(this.id, '', this.comment).subscribe((json:any) => {
-    //   event.confirm.resolve();
+  removeComments(comment: number) {
+    console.log('remove', comment);
+    // this._caseCommentsService.remove(commnentsId).subscribe((json:any) => {
+    //   this.modalWrapper.closeModal();
     // });
   }
-  cancelComments(event: any) {
 
+  saveComments(comment: any) {
+    console.log('save', this.comment);
+    // this._caseCommentsService.save(this.id, '', this.comment).subscribe((json:any) => {
+    //   this.modalWrapper.closeModal();
+    // });
   }
 
 }

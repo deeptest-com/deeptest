@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation, NgModule, Pipe, OnInit, AfterViewInit} from '@angular/core';
+import {Component, ViewEncapsulation, NgModule, Pipe, OnInit, AfterViewInit, ViewChild} from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 
@@ -13,13 +13,16 @@ import { RouteService } from '../../../../service/route';
 
 import { CaseService } from '../../../../service/case';
 import { CaseStepService } from '../../../../service/case-step';
+import { CaseCommentsService } from '../../../../service/case-comments';
+
+import { CommentEditComponent } from '../../../../components/comment-edit';
 
 declare var jQuery;
 
 @Component({
   selector: 'case-edit',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['./edit.scss'],
+  styleUrls: ['./edit.scss', '../../../../components/comment-edit/src/styles.scss'],
   templateUrl: './edit.html'
 })
 export class CaseEdit implements OnInit, AfterViewInit {
@@ -32,13 +35,13 @@ export class CaseEdit implements OnInit, AfterViewInit {
   form: any;
   tab: string = 'content';
 
-  showComment: boolean = false;
-  comment: string = '';
+  @ViewChild('modalWrapper') modalWrapper: CommentEditComponent;
+  comment: any = {};
 
   fields: any[] = [];
 
   constructor(private _state:GlobalState, private fb: FormBuilder, private toastyService:ToastyService,
-              private _caseService: CaseService, private _caseStepService: CaseStepService) {
+              private _caseService: CaseService, private _caseStepService: CaseStepService, private _caseCommentsService: CaseCommentsService) {
 
   }
   ngOnInit() {
@@ -120,7 +123,6 @@ export class CaseEdit implements OnInit, AfterViewInit {
   };
 
   loadData() {
-    this.showComment = false;
     this._caseService.get(this.id).subscribe((json:any) => {
       this.model = json.data;
     });
@@ -145,8 +147,8 @@ export class CaseEdit implements OnInit, AfterViewInit {
     if (pass) {
       this.reviewRequest(this.model.id, pass, null);
     } else {
-      this.showComment = true;
-      this.comment = '评审失败：\n';
+      this.modalWrapper.showModal('comment-edit');
+      this.comment = {content: '评审失败：\n'};
     }
   }
   reviewRequest(id: number, pass: boolean, comments: string) {
@@ -202,6 +204,31 @@ export class CaseEdit implements OnInit, AfterViewInit {
 
   onEditorKeyup(event: any) {
     this.model.content = event;
+  }
+
+  addComments() {
+    this.modalWrapper.showModal('comment-edit');
+    this.comment = {};
+  }
+  editComments(comment: any) {
+    this.modalWrapper.showModal('comment-edit');
+    this.comment = comment;
+  }
+  removeComments(commnentsId: number) {
+    console.log('remove');
+    this._caseCommentsService.remove(commnentsId).subscribe((json:any) => {
+      this.modalWrapper.closeModal();
+    });
+  }
+
+  saveComments(event: any) {
+    console.log('save', this.comment);
+    // this._caseCommentsService.save(this.id, '', this.comment).subscribe((json:any) => {
+    //   event.confirm.resolve();
+    // });
+  }
+  cancelComments(event: any) {
+
   }
 
 }

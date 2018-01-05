@@ -121,7 +121,7 @@
         </ng-container>
       </div>
 
-      <div *ngIf="!showComment" class="form-group row comments">
+      <div class="form-group row comments">
         <label class="col-sm-1 col-form-label"></label>
         <div class="col-sm-11">
           <div *ngFor="let comment of model.comments; let i = index;" class="item">
@@ -134,14 +134,12 @@
               </span>
             </div>
             <div>{{comment.content}}</div>
-          </div>
-        </div>
-      </div>
 
-      <div *ngIf="showComment" class="form-group row">
-        <label class="col-sm-2 col-form-label">注释</label>
-        <div class="col-sm-10">
-          <comments [(content)]="comment"></comments>
+            <div (click)="editComments(comment)" class="edit link"><i class="ion-edit"></i></div>
+          </div>
+          <div *ngIf="!showComment" class="buttons">
+            <button (click)="addComments()" type="button" class="btn btn-secondary btn-sm">添加</button>
+          </div>
         </div>
       </div>
 
@@ -159,5 +157,7 @@
   </div>
 
 </div>
+
+<comment-edit (confirm)="saveComments()" [(model)]="comment" #modalWrapper></comment-edit>
 
 <ng2-toasty [position]="'bottom-right'"></ng2-toasty>

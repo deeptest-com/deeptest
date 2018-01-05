@@ -14,6 +14,7 @@
 
   .comments {
     .item {
+      position: relative;
       border-bottom: 1px solid #ccc;
       padding: 10px;
       font-size: 14px;
@@ -24,8 +25,8 @@
 
       .avatar {
         display: inline-block;
-        width: 17px;
-        height: 17px;
+        width: 22px;
+        height: 22px;
         img {
           max-height: 100%;
           border-radius: 50%;
@@ -35,6 +36,14 @@
         display: inline-block;
         line-height: 25px;
       }
+      .edit {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+      }
+    }
+    .buttons {
+      margin: 10px;
     }
 
   }

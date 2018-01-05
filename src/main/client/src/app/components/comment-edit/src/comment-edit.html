@@ -1,0 +1,18 @@
+<ng-template #content let-c="close" let-d="dismiss" class="comment-edit">
+  <div class="modal-header">
+    <h4 class="modal-title">编辑备注</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div>
+      <textarea [(ngModel)]="model.content" #text id="text" name="model" rows="5"></textarea>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary confirm-btn" (click)="onConfirm()">确认</button>
+    &nbsp;&nbsp;
+    <button type="button" class="btn btn-secondary" (click)="c('Close click')">取消</button>
+  </div>
+</ng-template>

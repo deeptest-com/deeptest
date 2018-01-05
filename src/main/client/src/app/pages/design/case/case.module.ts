@@ -16,7 +16,7 @@ import { ZtreeModule } from '../../../components/ztree';
 import { StepsTableModule } from '../../../components/steps-table';
 import { CustomFieldModule } from '../../../components/custom-field';
 import { TinyMCEModule } from '../../../components/tiny-mce';
-import { CommentsModule } from '../../../components/comments';
+import { CommentEditModule } from '../../../components/comment-edit';
 
 import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
@@ -25,6 +25,7 @@ import { DatetimePickerService } from '../../../service/datetime-picker';
 import { SuiteService } from '../../../service/suite';
 import { CaseService } from '../../../service/case';
 import { CaseStepService } from '../../../service/case-step';
+import { CaseCommentsService } from '../../../service/case-comments';
 
 import { Case } from './case.component';
 import { CaseSuite } from './suite/suite.component';
@@ -44,11 +45,11 @@ import { CaseEdit } from './edit/edit.component';
     DirectiveModule,
     ToastyModule,
     SlimLoadingBarModule.forRoot(),
+    CommentEditModule,
     ZtreeModule,
     StepsTableModule,
     CustomFieldModule,
-    TinyMCEModule,
-    CommentsModule
+    TinyMCEModule
   ],
   declarations: [
     Case,
@@ -61,7 +62,8 @@ import { CaseEdit } from './edit/edit.component';
     DatetimePickerService,
     SuiteService,
     CaseService,
-    CaseStepService
+    CaseStepService,
+    CaseCommentsService
   ]
 })
 export class CaseModule {}

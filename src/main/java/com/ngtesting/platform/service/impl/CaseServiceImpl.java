@@ -2,14 +2,12 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.entity.TestCase;
-import com.ngtesting.platform.entity.TestCaseInRun;
-import com.ngtesting.platform.entity.TestCaseStep;
-import com.ngtesting.platform.entity.TestRun;
+import com.ngtesting.platform.entity.*;
 import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.service.CaseStepService;
 import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.util.BeanUtilEx;
+import com.ngtesting.platform.vo.TestCaseCommentsVo;
 import com.ngtesting.platform.vo.TestCaseStepVo;
 import com.ngtesting.platform.vo.TestCaseVo;
 import org.hibernate.criterion.DetachedCriteria;
@@ -19,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -411,6 +410,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         }
 
         vo.setSteps(new LinkedList<TestCaseStepVo>());
+        vo.setComments(new LinkedList<TestCaseCommentsVo>());
 
         if (withSteps) {
             List<TestCaseStep> steps = po.getSteps();
@@ -419,6 +419,19 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
                         step.getId(), step.getOpt(), step.getExpect(), step.getOrdr(), step.getTestCaseId());
 
                 vo.getSteps().add(stepVo);
+            }
+
+            List<TestCaseComments> comments = po.getComments();
+
+            Iterator<TestCaseComments> iterator  = comments.iterator();
+            while (iterator.hasNext()) {
+                TestCaseComments comment = iterator.next();
+                TestCaseCommentsVo commentVo = new TestCaseCommentsVo(
+                        comment.getId(), comment.getSummary(), comment.getContent(),
+                        comment.getUpdateBy().getName(), comment.getUpdateBy().getAvatar(),
+                        comment.getTestCaseId(), comment.getUpdateTime());
+
+                vo.getComments().add(commentVo);
             }
         }
 

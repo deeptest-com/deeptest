@@ -9,6 +9,7 @@ import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
 import { NgaModule } from '../../../theme/nga.module';
 import { routing }       from './case.routing';
 
+import {PipeModule} from '../../../pipe/pipe.module';
 import { DirectiveModule } from '../../../directive/directive.module';
 import { SlimLoadingBarModule } from '../../../components/ng2-loading-bar';
 import { ZtreeModule } from '../../../components/ztree';
@@ -39,6 +40,7 @@ import { CaseEdit } from './edit/edit.component';
     NgbModalModule, NgbPaginationModule, NgbDropdownModule,
     NgbTabsetModule, NgbButtonsModule, NgbCollapseModule,
 
+    PipeModule,
     DirectiveModule,
     ToastyModule,
     SlimLoadingBarModule.forRoot(),

@@ -120,9 +120,9 @@ export class CaseEdit implements OnInit, AfterViewInit {
   };
 
   loadData() {
-    let that = this;
-    that._caseService.get(that.id).subscribe((json:any) => {
-      that.model = json.data;
+    this.showComment = false;
+    this._caseService.get(this.id).subscribe((json:any) => {
+      this.model = json.data;
     });
   }
 

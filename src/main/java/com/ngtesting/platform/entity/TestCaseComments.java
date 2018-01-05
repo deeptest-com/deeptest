@@ -1,15 +1,22 @@
 package com.ngtesting.platform.entity;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "tst_case_comments")
 public class TestCaseComments extends BaseEntity {
 	private static final long serialVersionUID = -5934497865835276588L;
 
+    private String summary;
 	private String content;
 
-	private Integer ordr;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "update_by_id", insertable = false, updatable = false)
+    private TestUser updateBy;
+
+    @Column(name = "update_by_id")
+    private Long updateById;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "test_case_id", insertable = false, updatable = false)
@@ -21,12 +28,36 @@ public class TestCaseComments extends BaseEntity {
 	public TestCaseComments() {
 		super();
 	}
-	public TestCaseComments(Long caseId, String content, Integer ordr) {
+	public TestCaseComments(Long caseId, String content) {
 		super();
 		this.testCaseId = caseId;
 		this.content = content;
-		this.ordr = ordr;
+        this.updateTime = new Date();
 	}
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public TestUser getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(TestUser updateBy) {
+        this.updateBy = updateBy;
+    }
+
+    public Long getUpdateById() {
+        return updateById;
+    }
+
+    public void setUpdateById(Long updateById) {
+        this.updateById = updateById;
+    }
 
     public String getContent() {
         return content;
@@ -34,14 +65,6 @@ public class TestCaseComments extends BaseEntity {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public Integer getOrdr() {
-        return ordr;
-    }
-
-    public void setOrdr(Integer ordr) {
-        this.ordr = ordr;
     }
 
     public TestCase getTestCase() {

@@ -53,6 +53,7 @@ public class TestCaseVo extends BaseVo {
 
     private List<TestCaseVo> children = new LinkedList<>();
 	private List<TestCaseStepVo> steps = new LinkedList<>();
+	private List<TestCaseCommentsVo> comments = new LinkedList<>();
 
     public TestCaseVo() {
         super();
@@ -75,6 +76,14 @@ public class TestCaseVo extends BaseVo {
         this.createTime = createTime;
         this.updateTime = updateTime;
     }
+
+	public List<TestCaseCommentsVo> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<TestCaseCommentsVo> comments) {
+		this.comments = comments;
+	}
 
 	public Boolean getReviewResult() {
 		return reviewResult;

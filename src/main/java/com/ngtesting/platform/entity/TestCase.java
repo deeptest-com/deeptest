@@ -93,6 +93,19 @@ public class TestCase extends BaseEntity {
     @OrderBy("ordr")
     private List<TestCaseStep> steps = new LinkedList<>();
 
+    @OneToMany(mappedBy="testCase", fetch=FetchType.LAZY)
+    @Where(clause="!deleted")
+    @OrderBy("updateTime DESC")
+    private List<TestCaseComments> comments = new LinkedList<>();
+
+    public List<TestCaseComments> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<TestCaseComments> comments) {
+        this.comments = comments;
+    }
+
     public Boolean getReviewResult() {
         return reviewResult;
     }

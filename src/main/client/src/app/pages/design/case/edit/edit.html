@@ -8,9 +8,9 @@
           <button (click)="save()" type="button" class="btn btn-primary btn-sm" [disabled]="!form.valid">保存</button>
           &nbsp;&nbsp;
           <button (click)="review(true)" type="button" class="btn btn-info btn-sm"
-                  [disabled]="!form.valid">审核通过</button>
+                  [disabled]="!form.valid">评审通过</button>
           <button (click)="review(false)" type="button" class="btn btn-warning btn-sm"
-                  [disabled]="!form.valid">审核失败</button>
+                  [disabled]="!form.valid">评审失败</button>
         </div>
       </div>
 
@@ -119,6 +119,23 @@
             </div>
           </div>
         </ng-container>
+      </div>
+
+      <div *ngIf="!showComment" class="form-group row comments">
+        <label class="col-sm-1 col-form-label"></label>
+        <div class="col-sm-11">
+          <div *ngFor="let comment of model.comments; let i = index;" class="item">
+            <div>
+              <span class="avatar">
+                <img src="{{ comment.userAvatar | imgPath }}" class="">
+              </span>
+              <span class="summary">
+                {{comment.userName}} {{comment.summary}} - {{comment.updateTime | date:'y-MM-dd HH:mm'}}
+              </span>
+            </div>
+            <div>{{comment.content}}</div>
+          </div>
+        </div>
       </div>
 
       <div *ngIf="showComment" class="form-group row">

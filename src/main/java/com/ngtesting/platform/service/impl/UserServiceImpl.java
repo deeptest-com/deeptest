@@ -204,14 +204,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		
 		return true;
 	}
-
-	public boolean setSizePers(Long userId, Integer left, Integer right) {
-        TestUser po = (TestUser) get(TestUser.class, userId);
-        po.setCaseBoardLeftSize(left);
-        po.setCaseBoardRightSize(right);
-        saveOrUpdate(po);
-		return true;
-	}
     
 	@Override
 	public UserVo genVo(TestUser user) {

@@ -19,8 +19,7 @@ public class UserVo extends BaseVo {
     private Boolean selected;
     private Boolean selecting;
 
-	private Integer caseBoardLeftSize;
-	private Integer caseBoardRightSize;
+	private Integer leftSize;
 
 	private String type = "user";
 
@@ -40,7 +39,15 @@ public class UserVo extends BaseVo {
 		this.name = name;
 	}
 
-	public List<OrgVo> getOrgs() {
+    public Integer getLeftSize() {
+        return leftSize;
+    }
+
+    public void setLeftSize(Integer leftSize) {
+        this.leftSize = leftSize;
+    }
+
+    public List<OrgVo> getOrgs() {
 		return orgs;
 	}
 
@@ -85,22 +92,6 @@ public class UserVo extends BaseVo {
 
 	public void setProjectPrivilege(Map<String, Boolean> projectPrivilege) {
 		this.projectPrivilege = projectPrivilege;
-	}
-
-	public Integer getCaseBoardLeftSize() {
-		return caseBoardLeftSize;
-	}
-
-	public void setCaseBoardLeftSize(Integer caseBoardLeftSize) {
-		this.caseBoardLeftSize = caseBoardLeftSize;
-	}
-
-	public Integer getCaseBoardRightSize() {
-		return caseBoardRightSize;
-	}
-
-	public void setCaseBoardRightSize(Integer caseBoardRightSize) {
-		this.caseBoardRightSize = caseBoardRightSize;
 	}
 
 	public String getEmail() {

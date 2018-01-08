@@ -35,11 +35,6 @@ export class UserService {
     return this._reqService.post(this._api_url + 'delete', model);
   }
 
-  setSize(left: number, right: number) {
-    let model = {left: left, right: right};
-    return this._reqService.post(this._api_url + 'setSize', model);
-  }
-
   search(orgId:number, keywords: string) {
     let model = {orgId:orgId, keywords: keywords};
     return this._reqService.post(this._api_url + 'search', model);

@@ -253,5 +253,12 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
         return po;
     }
 
+    @Override
+	public TestUser setLeftSizePers(Long userId, Integer left) {
+		TestUser po = (TestUser) get(TestUser.class, userId);
+		po.setLeftSize(left);
+		saveOrUpdate(po);
+		return po;
+	}
 
 }

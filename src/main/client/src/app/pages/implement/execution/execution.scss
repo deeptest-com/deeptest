@@ -3,27 +3,21 @@
 
   .main {
     position: relative;
+    display: flex;
     touch-callout: none;
     user-select: none;
 
     .suite {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 30%;
+      width: 300px;
     }
 
     .result {
-      position: absolute;
-      right: 0;
-      top: 0;
-      width: 70%;
+      flex: 1;
     }
 
-    .handle {
+    .resize-handle {
       position:absolute;
       top:0;
-      left: 30%;
       width: 3px;
       cursor: col-resize;
       background-color: #eeeeee;

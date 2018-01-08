@@ -31,6 +31,7 @@ export class AccountService {
   _getInfo = 'account/getInfo';
   _saveProfile = 'account/saveProfile';
   _saveInfo = 'account/saveInfo';
+  _setLeftSize = 'account/setLeftSize';
   _suggestions = 'suggestions/:id';
 
   _collections = 'collections/:id';
@@ -208,6 +209,11 @@ export class AccountService {
 
   changeCasePropertyMap(casePropertyMap: any) {
     CONSTANT.CASE_PROPERTY_MAP = casePropertyMap;
+  }
+
+  setLeftSize(left: any) {
+    let model = {left: left};
+    return this._reqService.post(this._setLeftSize, model);
   }
 
 }

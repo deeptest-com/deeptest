@@ -340,4 +340,23 @@ public class AccountAction extends BaseAction {
 		return ret;
 	}
 
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "setLeftSize", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> setLeftSize(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+		Integer left = json.getInteger("left");
+
+        TestUser user = accountService.setLeftSizePers(userVo.getId(), left);
+        userVo = userService.genVo(user);
+        request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
+
+        ret.put("data", userVo);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
 }

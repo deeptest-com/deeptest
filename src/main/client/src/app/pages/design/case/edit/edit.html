@@ -122,8 +122,7 @@
       </div>
 
       <div class="form-group row comments">
-        <label class="col-sm-1 col-form-label"></label>
-        <div class="col-sm-11">
+        <div class="col-sm-12">
           <div *ngFor="let comment of model.comments; let i = index;" class="item">
             <div>
               <span class="avatar">
@@ -141,7 +140,9 @@
             </div>
           </div>
           <div class="buttons">
-            <button (click)="addComments()" type="button" class="btn btn-secondary btn-sm">添加</button>
+            <button (click)="addComments()" type="button" class="btn btn-secondary btn-with-icon btn-sm">
+              <i class="ion-ios-chatbubble-outline"></i>备注
+            </button>
           </div>
         </div>
       </div>

@@ -26,8 +26,7 @@ public class TestUser extends BaseEntity {
     private Long defaultOrgId;
 //    private Long defaultProjectId;
 
-	private Integer caseBoardLeftSize;
-	private Integer caseBoardRightSize;
+	private Integer leftSize;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userSet")
     private Set<SysRole> roleSet = new HashSet<SysRole>(0);
@@ -46,20 +45,12 @@ public class TestUser extends BaseEntity {
 		this.orgRoleSet = orgRoleSet;
 	}
 
-	public Integer getCaseBoardLeftSize() {
-		return caseBoardLeftSize;
+	public Integer getLeftSize() {
+		return leftSize;
 	}
 
-	public void setCaseBoardLeftSize(Integer caseBoardLeftSize) {
-		this.caseBoardLeftSize = caseBoardLeftSize;
-	}
-
-	public Integer getCaseBoardRightSize() {
-		return caseBoardRightSize;
-	}
-
-	public void setCaseBoardRightSize(Integer caseBoardRightSize) {
-		this.caseBoardRightSize = caseBoardRightSize;
+	public void setLeftSize(Integer leftSize) {
+		this.leftSize = leftSize;
 	}
 
 	public String getEmail() {

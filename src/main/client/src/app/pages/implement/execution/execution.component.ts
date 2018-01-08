@@ -10,8 +10,6 @@ import { Utils } from '../../../utils/utils';
 import {ValidatorUtils} from '../../../validator/validator.utils';
 import { RouteService } from '../../../service/route';
 
-import { RunService } from '../../../service/run';
-
 declare var jQuery;
 
 @Component({
@@ -22,11 +20,20 @@ declare var jQuery;
 })
 export class Execution implements OnInit, AfterViewInit {
   contentHeight = Utils.getContainerHeight(110);
+  leftWidth: number;
 
-  constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
-              private _runService: RunService) {
+  constructor(private _state: GlobalState, private _route: ActivatedRoute) {
+    this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, (profile) => {
+      console.log(CONSTANT.STATE_CHANGE_PROFILE + ' in Case', profile);
+      this.leftWidth = CONSTANT.PROFILE.leftSize;
+    });
+
+    if (CONSTANT.PROFILE) {
+      this.leftWidth = CONSTANT.PROFILE.leftSize;
+    }
 
   }
+
   ngOnInit() {
 
 

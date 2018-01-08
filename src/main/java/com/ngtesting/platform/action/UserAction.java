@@ -200,23 +200,6 @@ public class UserAction extends BaseAction {
 	}
 
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "setSize", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> setSize(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
-		Integer left = json.getInteger("left");
-		Integer right = json.getInteger("right");
-
-		boolean success = userService.setSizePers(userVo.getId(), left, right);
-
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
-	@AuthPassport(validate = true)
 	@RequestMapping(value = "search", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {

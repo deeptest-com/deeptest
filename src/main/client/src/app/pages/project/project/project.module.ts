@@ -10,7 +10,7 @@ import { AppTranslationModule } from '../../../app.translation.module';
 import { PipeModule } from '../../../pipe/pipe.module';
 import { DirectiveModule } from '../../../directive/directive.module';
 import { TableTreeModule } from '../../../components/table-tree';
-import { CommentEditModule } from '../../../components/comment-edit';
+import { PopDialogModule } from '../../../components/pop-dialog';
 import { ExecutionReportModule } from '../../../components/execution-report';
 import { SearchSelectModule } from '../../../components/search-select';
 
@@ -41,7 +41,7 @@ import { ProjectView } from './view/view.component';
     PipeModule,
     DirectiveModule,
     TableTreeModule,
-    CommentEditModule,
+    PopDialogModule,
     ExecutionReportModule,
     SearchSelectModule,
     AppTranslationModule

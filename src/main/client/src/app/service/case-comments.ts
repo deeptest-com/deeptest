@@ -10,11 +10,12 @@ export class CaseCommentsService {
 
   _api_url = 'case_comments/';
 
-  save(caseId:number, summary: string, content: string) {
-    return this._reqService.post(this._api_url + 'save', {caseId: caseId, summary: summary, content: content});
+  save(caseId:number, comment: string) {
+    _.merge(comment, {testCaseId: caseId});
+    return this._reqService.post(this._api_url + 'save', comment);
   }
-  remove(commentsId:number) {
-    return this._reqService.post(this._api_url + 'remove', {commentsId: commentsId});
+  remove(id:number) {
+    return this._reqService.post(this._api_url + 'delete', {id: id});
   }
 
 }

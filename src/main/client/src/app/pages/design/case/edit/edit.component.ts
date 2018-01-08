@@ -148,7 +148,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
       this.reviewRequest(this.model.id, pass, null);
     } else {
       this.modalWrapper.showModal('comment-edit');
-      this.comment = {content: '评审失败：\n'};
+      this.comment = {summary: '评审失败'};
     }
   }
   reviewRequest(id: number, pass: boolean, comments: string) {
@@ -208,24 +208,30 @@ export class CaseEdit implements OnInit, AfterViewInit {
 
   addComments() {
     this.modalWrapper.showModal('comment-edit');
-    this.comment = {};
+    this.comment = {summary: '添加备注'};
   }
   editComments(comment: any) {
     this.modalWrapper.showModal('comment-edit');
     this.comment = comment;
+    if (this.comment.summary === '添加备注') {
+      this.comment.summary = '修改备注';
+    }
   }
-  removeComments(comment: number) {
-    console.log('remove', comment);
-    // this._caseCommentsService.remove(commnentsId).subscribe((json:any) => {
-    //   this.modalWrapper.closeModal();
-    // });
+  removeComments(id: number, indx: number) {
+    console.log('remove', id);
+    this._caseCommentsService.remove(id).subscribe((json:any) => {
+      this.model.comments.splice(indx, 1);
+    });
   }
 
-  saveComments(comment: any) {
-    console.log('save', this.comment);
-    // this._caseCommentsService.save(this.id, '', this.comment).subscribe((json:any) => {
-    //   this.modalWrapper.closeModal();
-    // });
+  saveComments() {
+    this._caseCommentsService.save(this.id, this.comment).subscribe((json:any) => {
+      if (this.comment.id != json.data.id) {
+        this.model.comments[this.model.comments.length] = json.data;
+      }
+      this.comment = json.data;
+      this.modalWrapper.closeModal();
+    });
   }
 
 }

@@ -14,7 +14,7 @@
         <a (click)="readAllAlerts($event)" href="javascript:void(0);">全部标为已读</a>
       </div>
       <div class="msg-list">
-        <a *ngFor="let msg of alerts" href class="clearfix">
+        <a *ngFor="let msg of alerts" href="javascript:void(0)" class="clearfix">
           <div class="img-area"><img [ngClass]="{'photo-msg-item': !msg.image}"
                                      src="{{ msg.avatar | imgPath }}"></div>
           <div class="msg-area">
@@ -37,7 +37,7 @@
         <a (click)="readAllMsgs($event)" href="javascript:void(0);">全部标为已读</a>
       </div>
       <div class="msg-list">
-        <a *ngFor="let msg of msgs" href class="clearfix">
+        <a *ngFor="let msg of msgs" href="javascript:void(0)" class="clearfix">
           <div class="img-area"><img [ngClass]="{'photo-msg-item': !msg.image}"
                                      src="{{ msg.avatar | imgPath }}"></div>
           <div class="msg-area">

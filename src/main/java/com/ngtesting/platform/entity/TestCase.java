@@ -95,7 +95,7 @@ public class TestCase extends BaseEntity {
 
     @OneToMany(mappedBy="testCase", fetch=FetchType.LAZY)
     @Where(clause="!deleted")
-    @OrderBy("updateTime DESC")
+    @OrderBy("changeTime ASC")
     private List<TestCaseComments> comments = new LinkedList<>();
 
     public List<TestCaseComments> getComments() {

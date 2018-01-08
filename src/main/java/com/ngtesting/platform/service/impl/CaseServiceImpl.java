@@ -3,6 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.*;
+import com.ngtesting.platform.service.CaseCommentsService;
 import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.service.CaseStepService;
 import com.ngtesting.platform.service.CustomFieldService;
@@ -29,6 +30,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
     @Autowired
     CaseStepService caseStepService;
+    @Autowired
+    CaseCommentsService caseCommentsService;
 
 	@Override
 	public List<TestCase> query(Long projectId) {
@@ -426,11 +429,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             Iterator<TestCaseComments> iterator  = comments.iterator();
             while (iterator.hasNext()) {
                 TestCaseComments comment = iterator.next();
-                TestCaseCommentsVo commentVo = new TestCaseCommentsVo(
-                        comment.getId(), comment.getSummary(), comment.getContent(),
-                        comment.getUpdateBy().getName(), comment.getUpdateBy().getAvatar(),
-                        comment.getTestCaseId(), comment.getUpdateTime());
-
+                TestCaseCommentsVo commentVo = caseCommentsService.genVo(comment);
                 vo.getComments().add(commentVo);
             }
         }

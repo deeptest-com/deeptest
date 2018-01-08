@@ -10,19 +10,17 @@ public class TestCaseCommentsVo extends BaseVo {
     private String userName;
     private String userAvatar;
     private Long testCaseId;
+    private Date changeTime;
 
     public TestCaseCommentsVo() {
     }
 
-    public TestCaseCommentsVo(Long id, String summary, String content, String userName, String userAvatar,
-                              Long testCaseId, Date updateTime) {
-        this.id = id;
-        this.summary = summary;
-        this.userName = userName;
-        this.userAvatar = userAvatar;
-        this.content = content;
-        this.testCaseId = testCaseId;
-        this.updateTime = updateTime;
+    public Date getChangeTime() {
+        return changeTime;
+    }
+
+    public void setChangeTime(Date changeTime) {
+        this.changeTime = changeTime;
     }
 
     public String getContent() {

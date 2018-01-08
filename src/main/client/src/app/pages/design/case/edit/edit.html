@@ -129,7 +129,7 @@
                 <img src="{{ comment.userAvatar | imgPath }}" class="">
               </span>
               <span class="summary">
-                {{comment.userName}} {{comment.summary}} - {{comment.updateTime | date:'y-MM-dd HH:mm'}}
+                {{comment.userName}} {{comment.summary}} - {{comment.changeTime | timePassed}}
               </span>
             </div>
             <div>{{comment.content}}</div>

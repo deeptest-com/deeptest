@@ -11,6 +11,8 @@ public class TestCaseComments extends BaseEntity {
     private String summary;
 	private String content;
 
+    private Date changeTime = new Date();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "update_by_id", insertable = false, updatable = false)
     private TestUser updateBy;
@@ -28,12 +30,14 @@ public class TestCaseComments extends BaseEntity {
 	public TestCaseComments() {
 		super();
 	}
-	public TestCaseComments(Long caseId, String content) {
-		super();
-		this.testCaseId = caseId;
-		this.content = content;
-        this.updateTime = new Date();
-	}
+
+    public Date getChangeTime() {
+        return changeTime;
+    }
+
+    public void setChangeTime(Date changeTime) {
+        this.changeTime = changeTime;
+    }
 
     public String getSummary() {
         return summary;

@@ -30,7 +30,7 @@ public class CaseCommentsServiceImpl extends BaseServiceImpl implements CaseComm
         po.setContent(vo.getContent());
         po.setTestCaseId(vo.getTestCaseId());
         po.setUpdateById(userVo.getId());
-        po.setUpdateTime(new Date());
+        po.setChangeTime(new Date());
         saveOrUpdate(po);
 
         return genVo(po);
@@ -49,6 +49,9 @@ public class CaseCommentsServiceImpl extends BaseServiceImpl implements CaseComm
     public TestCaseCommentsVo genVo(TestCaseComments po) {
         TestCaseCommentsVo vo = new TestCaseCommentsVo();
         BeanUtilEx.copyProperties(vo, po);
+        if (vo.getUpdateTime() == null) {
+            vo.setUpdateTime(vo.getCreateTime());
+        }
 
         TestUser user = po.getUpdateBy() != null?po.getUpdateBy(): (TestUser)get(TestUser.class, po.getId());
         vo.setUserName(user.getName());

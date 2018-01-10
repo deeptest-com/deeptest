@@ -114,14 +114,16 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 	}
 
 	@Override
-	public Map<String, Boolean> listByUser(Long userId, Long prjId, Long orgId) {
+	public Map<String, Boolean> listByUserPers(Long userId, Long prjId, Long orgId) {
         Map<String, Boolean> map = new HashMap();
 	    if (prjId == null) {
             return map;
         }
-		getDao().querySql("{call get_project_privilege_for_user(?,?,?)}", userId, prjId, orgId);
-
-		return null;
+		List<Object[]> ls = getDao().getListBySQL("{call get_project_privilege_for_user(?,?,?)}", userId, prjId, orgId);
+		for (Object[] arr : ls) {
+			map.put(arr[0].toString() + "-" + arr[1].toString(), true);
+		}
+		return map;
 	}
 
 	private ProjectPrivilegeDefineVo genVo(Long orgId, TestProjectPrivilegeDefine po1) {

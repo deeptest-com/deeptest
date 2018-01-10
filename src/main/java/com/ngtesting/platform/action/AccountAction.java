@@ -173,7 +173,7 @@ public class AccountAction extends BaseAction {
 
         Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userVo.getId());
         Map<String, Boolean> orgRolePrivileges = orgRolePrivilegeService.listByUser(userVo.getId(), orgId);
-        Map<String, Boolean> projectPrivileges = projectPrivilegeService.listByUser(userVo.getId(),
+        Map<String, Boolean> projectPrivileges = projectPrivilegeService.listByUserPers(userVo.getId(),
                 recentProjects.size()>0?recentProjects.get(0).getProjectId():null, orgId);
 
         userVo.setSysPrivilege(sysPrivileges);

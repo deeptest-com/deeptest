@@ -173,4 +173,21 @@ public class CaseAction extends BaseAction {
 		return ret;
 	}
 
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "reviewPass", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> reviewPass(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		Long id = json.getLong("id");
+		Boolean pass = json.getBoolean("pass");
+
+		TestCase po = caseService.reviewPassPers(id, pass);
+        TestCaseVo caseVo = caseService.genVo(po);
+
+        ret.put("data", caseVo);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
 }

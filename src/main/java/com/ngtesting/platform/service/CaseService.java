@@ -43,4 +43,6 @@ public interface CaseService extends BaseService {
 	void copyProperties(TestCase testCasePo, TestCaseVo testCaseVo);
 
     TestCase changeContentTypePers(Long id, String contentType);
+
+    TestCase reviewPassPers(Long id, Boolean pass);
 }

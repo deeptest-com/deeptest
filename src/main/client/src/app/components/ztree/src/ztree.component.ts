@@ -139,6 +139,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
 
         node.name = testCase.name;
         node.status = testCase.status;
+        node.reviewResult = testCase.reviewResult;
         this.ztree.updateNode(node);
       }
     });
@@ -174,11 +175,13 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setFontCss (treeId, treeNode) {
     console.log('treeNode.status', treeNode.status);
+    console.log('treeNode.reviewResult', treeNode.reviewResult);
 
     let css:any = {};
-    if (treeNode.status == 'pass') {
+    css.color = '#333333';
+    if (treeNode.status == 'pass' || treeNode.reviewResult) {
       css.color = '#209e91';
-    } else if (treeNode.status == 'fail') {
+    } else if (treeNode.status == 'fail' || treeNode.reviewResult == false) {
       css.color = '#e85656';
     } else if (treeNode.status == 'block') {
       css.color = '#dfb81c';

@@ -79,34 +79,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 
     @Override
     public void createDefaultBasicDataPers(TestUser user) {
-
         getDao().querySql("{call init_user(?)}", user.getId());
-
-//        TestOrg po = new TestOrg();
-//
-////      po.setAdminId(user.getId());
-//        po.getUserSet().add(user);
-//
-//        po.setName("我的组织");
-//        po.setWebsite("");
-//
-//        saveOrUpdate(po);
-//
-//        user.setDefaultOrgId(po.getId());
-//        saveOrUpdate(user);
-//
-//        orgRoleService.initOrgRoleBasicDataPers(po.getId());
-//        orgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
-//        orgGroupService.initDefaultBasicDataPers(po);
-//
-//		caseExeStatusService.createDefaultBasicDataPers(po.getId());
-//		casePriorityService.createDefaultBasicDataPers(po.getId());
-//		caseTypeService.createDefaultBasicDataPers(po.getId());
-//
-//        TestProjectRoleForOrg defaultRole = projectRoleService.createDefaultBasicDataPers(po.getId());
-//        Long projectId = projectService.initDefaultBasicDataPers(po.getId(), user.getId());
-//		relationProjectRoleEntityService.addUserToProjectAsLeaderPers(user.getId(), defaultRole.getId(), projectId);
-
     }
 
 	@Override
@@ -202,7 +175,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		List<OrgVo> voList = new LinkedList<OrgVo>();
 		for (TestOrg po : pos) {
 			OrgVo vo = genVo(po);
-			if (po.getId() == user.getDefaultOrgId()) {
+			if (po.getId().longValue() == user.getDefaultOrgId().longValue()) {
 				vo.setDefaultOrg(true);
 			}
 

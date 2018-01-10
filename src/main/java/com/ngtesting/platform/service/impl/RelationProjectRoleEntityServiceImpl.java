@@ -152,8 +152,13 @@ public class RelationProjectRoleEntityServiceImpl extends BaseServiceImpl implem
 
     @Override
     public RelationProjectRoleEntityVo genVo(TestRelationProjectRoleEntity po) {
+        TestProjectRoleForOrg role = po.getProjectRole();
+        if (role == null) {
+            role = (TestProjectRoleForOrg) get(TestProjectRoleForOrg.class, po.getProjectRoleId());
+        }
+
         return new RelationProjectRoleEntityVo(po.getId(), po.getProjectId(), po.getEntityId(), po.getProjectRoleId(),
-                po.getProjectRole().getName(), getEntityName(po), po.getType().toString());
+                role.getName(), getEntityName(po), po.getType().toString());
     }
 
     @Override

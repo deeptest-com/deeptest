@@ -66,7 +66,8 @@ public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements 
         	vo.setSelected(false);
         	vo.setSelecting(false);
         	for (TestRelationOrgGroupUser po : relations) {
-        		if (po.getUserId() == user.getId() && po.getOrgGroupId() == orgGroupId) {
+        		if (po.getUserId().longValue() == user.getId().longValue()
+						&& po.getOrgGroupId().longValue() == orgGroupId.longValue()) {
             		vo.setSelected(true);
             		vo.setSelecting(true);
             	}

@@ -114,33 +114,12 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 	}
 
 	@Override
-	public Map<String, Boolean> listByUser(Long userId, Long prjId) {
+	public Map<String, Boolean> listByUser(Long userId, Long prjId, Long orgId) {
         Map<String, Boolean> map = new HashMap();
 	    if (prjId == null) {
             return map;
         }
-//		String hql = "select entiy.projectId, priv.code, priv.action from TestProjectPrivilegeDefine priv" +
-//				" join priv.projectRoleSet roles, " +
-//				"  TestRelationProjectRoleEntity entiy " +
-//
-//				" where entiy.entityId = ?" +
-//				" and entiy.projectRoleId = roles.id" +
-//				" and entiy.type = 'user'" +
-//
-//				" and priv.deleted != true and priv.disabled!= true " +
-//				" order by priv.id asc";
-//
-//		List<Object[]> ls = getDao().getListByHQL(hql, userId);
-//
-//		for (Object[] raw: ls) {
-//		    System.out.println(raw.getClass());
-//		    Long projectId = Long.valueOf(raw[0].toString());
-//			if (!map.containsKey(projectId)) {
-//                map.put("prj" + projectId, new HashMap());
-//			}
-//
-//			map.get("prj" + projectId).put(raw[1].toString() + "-" + raw[2].toString(), true);
-//		}
+		getDao().querySql("{call get_project_privilege_for_user(?,?,?)}", userId, prjId, orgId);
 
 		return null;
 	}

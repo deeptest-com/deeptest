@@ -100,7 +100,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             testCasePo.setCreateTime(new Date());
         }
         testCasePo.setName(name);
-
+        testCasePo.setReviewResult(null);
         testCasePo.setProjectId(projectId);
 
         saveOrUpdate(testCasePo);
@@ -231,7 +231,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             testCasePo.setCreateTime(new Date());
         }
 
-
+        testCasePo.setReviewResult(null);
         saveOrUpdate(testCasePo);
 
 		return testCasePo;
@@ -298,6 +298,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         } else if ("prop20".equals(prop)) {
             testCase.setProp20(value);
         }
+        testCase.setReviewResult(null);
 		saveOrUpdate(testCase);
 
 		return testCase;
@@ -484,6 +485,16 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     public TestCase changeContentTypePers(Long id, String contentType) {
         TestCase testCase = (TestCase)get(TestCase.class, id);
         testCase.setContentType(contentType);
+        testCase.setReviewResult(null);
+        saveOrUpdate(testCase);
+
+        return testCase;
+    }
+
+    @Override
+    public TestCase reviewPassPers(Long id, Boolean pass) {
+        TestCase testCase = (TestCase)get(TestCase.class, id);
+        testCase.setReviewResult(pass);
         saveOrUpdate(testCase);
 
         return testCase;

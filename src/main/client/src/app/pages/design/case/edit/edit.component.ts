@@ -148,7 +148,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
       this.reviewRequest(this.model.id, pass, null);
     } else {
       this.modalWrapper.showModal('comment-edit');
-      this.comment = {summary: '评审失败'};
+      this.comment = {summary: '评审失败', act: 'reviewFail'};
     }
   }
   reviewRequest(id: number, pass: boolean, comments: string) {
@@ -226,11 +226,17 @@ export class CaseEdit implements OnInit, AfterViewInit {
 
   saveComments() {
     this._caseCommentsService.save(this.id, this.comment).subscribe((json:any) => {
-      if (this.comment.id != json.data.id) {
-        this.model.comments[this.model.comments.length] = json.data;
+      if (json.code == 1) {
+        if (this.comment.act == 'reviewFail') {
+          this.reviewRequest(this.model.id, false, null);
+        }
+
+        if (this.comment.id != json.data.id) {
+          this.model.comments[this.model.comments.length] = json.data;
+        }
+        this.comment = json.data;
+        this.modalWrapper.closeModal();
       }
-      this.comment = json.data;
-      this.modalWrapper.closeModal();
     });
   }
 

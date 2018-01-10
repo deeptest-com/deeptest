@@ -24,7 +24,7 @@ export class Execution implements OnInit, AfterViewInit {
 
   constructor(private _state: GlobalState, private _route: ActivatedRoute) {
     this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, (profile) => {
-      console.log(CONSTANT.STATE_CHANGE_PROFILE + ' in Case', profile);
+      console.log(CONSTANT.STATE_CHANGE_PROFILE + ' in Exe', profile);
       this.leftWidth = CONSTANT.PROFILE.leftSize;
     });
 

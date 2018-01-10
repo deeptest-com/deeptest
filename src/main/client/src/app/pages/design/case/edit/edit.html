@@ -5,9 +5,9 @@
       <div class="form-group row">
         <label class="col-sm-3 col-form-label"></label>
         <div class="col-sm-9">
-          <button (click)="save()" type="button" class="btn btn-primary btn-sm" [disabled]="!form.valid">保存</button>
+          <button (click)="save()" type="button" class="btn btn-info btn-sm" [disabled]="!form.valid">保存</button>
           &nbsp;&nbsp;
-          <button (click)="review(true)" type="button" class="btn btn-info btn-sm"
+          <button (click)="review(true)" type="button" class="btn btn-primary btn-sm"
                   [disabled]="!form.valid">评审通过</button>
           <button (click)="review(false)" type="button" class="btn btn-warning btn-sm"
                   [disabled]="!form.valid">评审失败</button>

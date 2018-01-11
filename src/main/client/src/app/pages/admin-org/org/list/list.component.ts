@@ -69,13 +69,6 @@ export class OrgList implements OnInit, AfterViewInit {
 
     that.orgService.list(that.queryModel).subscribe((json:any) => {
       that.models = json.data;
-
-      if (that.models.length == 0 && !that.queryModel.keywords && !that.queryModel.disabled) {
-        this._state.notifyDataChanged('org.ready', false);
-        this._routeService.navTo('/pages/org-admin/org/edit/null');
-      } else {
-        this._state.notifyDataChanged('org.ready', true);
-      }
     });
   }
 }

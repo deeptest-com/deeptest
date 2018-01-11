@@ -49,7 +49,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
 
     this.buildForm();
 
-    this._state.subscribe('case.edit', (data: any) => {
+    this._state.subscribe(CONSTANT.EVENT_CASE_EDIT, (data: any) => {
       let testCase = data.node;
 
       if (!testCase || testCase.isParent) {
@@ -132,7 +132,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
     this._caseService.save(this.projectId, this.model).subscribe((json:any) => {
       if (json.code == 1) {
         this.model = json.data;
-        this._state.notifyDataChanged('case.save', {node: this.model, random: Math.random()});
+        this._state.notifyDataChanged(CONSTANT.EVENT_CASE_UPDATE, {node: this.model, random: Math.random()});
 
         var toastOptions:ToastOptions = {
           title: "保存成功",
@@ -155,7 +155,7 @@ export class CaseEdit implements OnInit, AfterViewInit {
     this._caseService.reviewPass(this.model.id, pass, comments).subscribe((json:any) => {
       if (json.code == 1) {
         this.model = json.data;
-        this._state.notifyDataChanged('case.save', {node: this.model, random: Math.random()});
+        this._state.notifyDataChanged(CONSTANT.EVENT_CASE_UPDATE, {node: this.model, random: Math.random()});
       }
     });
   }

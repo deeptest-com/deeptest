@@ -24,15 +24,7 @@ export class OrgAdmin {
   menuItems:any[] = this.menus;
 
   constructor(private _state: GlobalState, private _routeService:RouteService, private accountService: AccountService) {
-    this._state.subscribe('org.ready', (orgReady) => {
-      if (!orgReady) {
-        this.menuItems = [
-          {link:'/pages/org-admin/org/edit/null', title: '新建组织', selected: true}
-        ];
-      } else {
-        this.menuItems = this.menus;
-      }
-    });
+
   }
 
   ngOnInit() {

@@ -50,8 +50,8 @@ export class ExecutionResult implements OnInit, AfterViewInit {
       that.runId = +params['runId'];
     });
 
-    this._state.subscribe('case.exe', (data: any) => {
-      console.log('case.exe', data);
+    this._state.subscribe(CONSTANT.EVENT_CASE_EXE, (data: any) => {
+      console.log(CONSTANT.EVENT_CASE_EXE, data);
       let testCase = data.node;
       if (!testCase || testCase.isParent) {
         this.model = null;
@@ -129,7 +129,7 @@ export class ExecutionResult implements OnInit, AfterViewInit {
         this.model.status = status;
         this._ztreeService.selectNode(next);
 
-        this._state.notifyDataChanged('case.save', {node: this.model, random: Math.random()});
+        this._state.notifyDataChanged(CONSTANT.EVENT_CASE_UPDATE, {node: this.model, random: Math.random()});
         this.model = json.data;
       }
     });
@@ -143,7 +143,7 @@ export class ExecutionResult implements OnInit, AfterViewInit {
     this._caseService.saveField(this.model.id, event.data).subscribe((json:any) => {
       if (json.code == 1) {
         // this.model = json.data;
-        this._state.notifyDataChanged('case.save', {node: this.model, random: Math.random()});
+        this._state.notifyDataChanged(CONSTANT.EVENT_CASE_UPDATE, {node: this.model, random: Math.random()});
         event.deferred.resolve();
       }
     });

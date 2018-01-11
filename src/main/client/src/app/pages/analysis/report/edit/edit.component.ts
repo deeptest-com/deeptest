@@ -42,7 +42,7 @@ export class ReportEdit implements OnInit, AfterViewInit {
     }
     that.buildForm();
 
-    this._state.subscribe('case.change', (data) => {
+    this._state.subscribe(CONSTANT.EVENT_CASE_CHANGE, (data) => {
       let testCase = data.node;
       that.reportId = testCase.id;
       that.loadData();

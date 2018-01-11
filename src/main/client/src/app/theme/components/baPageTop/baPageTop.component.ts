@@ -119,7 +119,7 @@ export class BaPageTop implements OnInit, AfterViewInit {
       this._routeService.quickJump(this.keywords);
     } else {
       console.log('2-', this.keywords);
-      this._state.notifyDataChanged('case.jump', this._routeService.caseIdForJump(this.keywords));
+      this._state.notifyDataChanged(CONSTANT.EVENT_CASE_JUMP, this._routeService.caseIdForJump(this.keywords));
     }
   }
 

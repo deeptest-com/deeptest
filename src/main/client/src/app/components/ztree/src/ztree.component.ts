@@ -126,12 +126,12 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   public ngOnInit(): void {
     this.keywordsControl.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.onKeywordsChange(values));
 
-    this._state.subscribe('case.jump', (id: number) => {
-      console.log('case.jump');
+    this._state.subscribe(CONSTANT.EVENT_CASE_JUMP, (id: number) => {
+      console.log(CONSTANT.EVENT_CASE_JUMP);
       this.jumpTo(id+'');
     });
 
-    this._state.subscribe('case.save', (data: any) => {
+    this._state.subscribe(CONSTANT.EVENT_CASE_UPDATE, (data: any) => {
       let testCase = data.node;
 
       if (testCase) {
@@ -270,7 +270,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     const deferred = new Deferred();
     deferred.promise.then((data) => {
       console.log('success to move', data);
-      this._state.notifyDataChanged('case.change', {node: data, random: Math.random()});
+      this._state.notifyDataChanged(CONSTANT.EVENT_CASE_CHANGE, {node: data, random: Math.random()});
 
       if (isCopy) {
         let parentNode;

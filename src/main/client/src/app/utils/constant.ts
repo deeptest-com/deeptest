@@ -35,7 +35,14 @@ export var CONSTANT: CONSTANT_INTERFACE = {
 
   STATE_CHANGE_PROFILE: 'profile.refresh',
   STATE_CHANGE_ORGS: 'my.orgs.change',
-  STATE_CHANGE_PROJECTS: 'recent.projects.change'
+  STATE_CHANGE_PROJECTS: 'recent.projects.change',
+
+  EVENT_CASE_EDIT: 'case.edit',
+  EVENT_CASE_UPDATE: 'case.update',
+  EVENT_CASE_CHANGE: 'case.change',
+  EVENT_CASE_EXE: 'case.exe',
+  EVENT_CASE_JUMP: 'case.jump'
+
 };
 
 export interface CONSTANT_INTERFACE {
@@ -75,7 +82,13 @@ export interface CONSTANT_INTERFACE {
 
   STATE_CHANGE_PROFILE: string,
   STATE_CHANGE_ORGS: string,
-  STATE_CHANGE_PROJECTS: string
+  STATE_CHANGE_PROJECTS: string,
+
+  EVENT_CASE_EDIT: string,
+  EVENT_CASE_UPDATE: string,
+  EVENT_CASE_CHANGE: string,
+  EVENT_CASE_EXE: string,
+  EVENT_CASE_JUMP: string
 
 }
 

@@ -89,6 +89,22 @@ public class RunAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "close", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> close(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		Long id = json.getLong("id");
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+		TestRun po = runService.closePers(id, userVo.getId());
+        TestRunVo vo = runService.genVo(po);
+
+        ret.put("data", vo);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
 
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "save", method = RequestMethod.POST)

@@ -144,6 +144,14 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
     }
 
     @Override
+    public TestRun closePers(Long id, Long userId) {
+        TestRun run = (TestRun) get(TestRun.class, id);
+        run.setStatus(TestRun.RunStatus.end);
+        saveOrUpdate(run);
+        return run;
+    }
+
+    @Override
     public void markAllReadPers(Long userId) {
         String hql = "update TestRun run set run.isRead=true where run.userId=? " +
                 "AND run.isRead != true AND run.deleted != true AND run.disabled != true";

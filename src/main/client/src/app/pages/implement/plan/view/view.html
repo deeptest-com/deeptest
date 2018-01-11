@@ -83,7 +83,7 @@
           <th>标题</th>
           <th>经办人</th>
           <th style="width: 350px;">执行情况</th>
-          <th style="width: 50px;"></th>
+          <th style="width: 60px;">状态</th>
           <th style="width: 150px;" class="opt">操作</th>
         </tr>
         </thead>
@@ -95,9 +95,12 @@
           <td>
             <execution-bar [data]="item"></execution-bar>
           </td>
-          <td></td>
+          <td>{{item.status | runStatus}}</td>
           <td>
-            <span *ngIf="item.countMap.total > 0" (click)="exe(item.id)" class="link no-underline">执行</span>
+            <span *ngIf="item.status != 'end' && item.countMap.total > 0" (click)="exe(item.id)" class="link no-underline">执行</span>
+            <span *ngIf="item.status != 'end'" (click)="close(item.id, i)" class="link no-underline">关闭</span>
+
+            <span (click)="delete(item.id, i)" class="link no-underline">删除</span>
           </td>
         </tr>
         </tbody>

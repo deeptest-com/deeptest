@@ -18,7 +18,8 @@ public interface RunService extends BaseService {
     TestRun saveCases(Long planId, Long runId, Object[] ids, UserVo optUser);
 
     TestRun saveCases(JSONObject json, UserVo optUser);
-	TestRun delete(Long vo, Long userId);
+	TestRun delete(Long id, Long userId);
+	TestRun closePers(Long id, Long userId);
 	void markAllReadPers(Long userId);
 
 	List<TestRunVo> genVos(List<TestRun> pos);
@@ -27,5 +28,4 @@ public interface RunService extends BaseService {
 
 	List<TestCaseInRunVo> genCaseVos(List<TestCaseInRun> ls);
 	TestCaseInRunVo genCaseVo(TestCaseInRun po);
-
 }

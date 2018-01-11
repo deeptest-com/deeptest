@@ -20,7 +20,7 @@
       </div>
 
       <div class="buttons">
-        <button (click)="create()" type="button" class="btn btn-primary btn-with-icon btn-sm">
+        <button privilege [privs]="'plan-create'" (click)="create()" type="button" class="btn btn-primary btn-with-icon btn-sm">
           <i class="ion-plus-circled"></i>新建
         </button>
       </div>
@@ -41,7 +41,7 @@
         <td>{{statusMap[''+item.status]}}</td>
         <td>
           <span [routerLink]="['/pages/org/' + orgId + '/prj/' + prjId + '/implement/plan/' + item.id + '/view']" class="link no-underline">查看</span>
-          <span [routerLink]="['/pages/org/' + orgId + '/prj/' + prjId + '/implement/plan/' + item.id + '/edit']" class="link no-underline">编辑</span>
+          <span privilege [privs]="'plan-update'" [routerLink]="['/pages/org/' + orgId + '/prj/' + prjId + '/implement/plan/' + item.id + '/edit']" class="link no-underline">编辑</span>
         </td>
       </tr>
       </tbody>

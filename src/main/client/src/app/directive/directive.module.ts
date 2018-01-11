@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { UserService } from '../service/user';
 
 import { ResizeDirective } from './resize/resize.directive';
+import { PrivilegeDirective } from './privilege/privilege.directive';
 
 @NgModule({
   imports: [CommonModule],
-  declarations: [ResizeDirective],
-  exports: [ResizeDirective],
+  declarations: [ResizeDirective, PrivilegeDirective],
+  exports: [ResizeDirective, PrivilegeDirective],
   providers: [UserService]
 })
 export class DirectiveModule {

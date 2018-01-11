@@ -25,8 +25,7 @@ export class PlanList implements OnInit, AfterViewInit {
   queryModel:any = {keywords: '', status: ''};
   statusMap: Array<any> = CONSTANT.ExeStatus;
 
-  constructor(private _routeService:RouteService, private _route: ActivatedRoute,
-              private _state:GlobalState, private fb: FormBuilder, private el: ElementRef,
+  constructor(private _routeService:RouteService, private fb: FormBuilder, private el: ElementRef,
               private _planService:PlanService) {
 
     this.queryForm = this.fb.group(
@@ -37,15 +36,13 @@ export class PlanList implements OnInit, AfterViewInit {
     );
 
     this.queryForm.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.queryChange(values));
+
   }
 
   ngOnInit() {
     this.orgId = CONSTANT.CURR_ORG_ID;
     this.prjId = CONSTANT.CURR_PRJ_ID;
-    console.log('PlanList ngOnInit', this.orgId, this.prjId);
-
-    console.log('=1=', this.orgId, this.prjId);
-    this.loadData();
+    // console.log('PlanList ngOnInit', this.orgId, this.prjId);
   }
 
   ngAfterViewInit() {
@@ -64,18 +61,13 @@ export class PlanList implements OnInit, AfterViewInit {
   }
 
   loadData() {
-
     this._planService.query(CONSTANT.CURR_PRJ_ID, this.queryModel).subscribe((json:any) => {
       this.models = json.data;
-      this.isInit = true;
     });
   }
 
   queryChange(values:any):void {
-    if (this.isInit) {
-      console.log('=2=', this.orgId, this.prjId);
       this.loadData();
-    }
   }
 
 }

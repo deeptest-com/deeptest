@@ -119,7 +119,7 @@
         &nbsp;
         <button [routerLink]="['/pages/org/' + orgId + '/prj/' + prjId + '/implement/plan/list']" type="button" class="btn btn-default">取消</button>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <button (click)="delete()" *ngIf="model.id" type="button" class="btn btn-danger">删除</button>
+        <button privilege [privs]="'plan-remove'" (click)="delete()" *ngIf="model.id" type="button" class="btn btn-danger">删除</button>
       </div>
     </div>
 

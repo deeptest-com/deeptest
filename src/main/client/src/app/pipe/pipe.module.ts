@@ -1,4 +1,5 @@
 import { NgModule }      from '@angular/core';
+
 import { ImgPathPipe, ThumbPathPipe } from './img-path';
 import { MapToArrayPipe } from './map-to-array';
 import { TimePassedPipe } from './date';

@@ -67,13 +67,6 @@ export class BaPageTop implements OnInit, AfterViewInit {
     this._state.subscribe('menu.isCollapsed', (isCollapsed) => {
       this.isMenuCollapsed = isCollapsed;
     });
-
-    this.accountService.loadProfileRemote().subscribe((result: any) => {
-      console.log('result', result);
-      if (!result) {
-        this._routeService.navTo('/login');
-      }
-    });
   }
 
   ngOnInit() {

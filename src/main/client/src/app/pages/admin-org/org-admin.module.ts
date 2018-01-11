@@ -11,6 +11,9 @@ import { SlidebarModule } from '../../components/slidebar';
 
 import { OrgAdmin } from './org-admin.component';
 
+import {RouteService} from "../../service/route";
+import {AccountService} from "../../service/account";
+
 @NgModule({
   imports: [
     CommonModule,
@@ -27,7 +30,7 @@ import { OrgAdmin } from './org-admin.component';
     OrgAdmin
   ],
   providers: [
-
+    RouteService, AccountService
   ]
 })
 export class OrgAdminModule {}

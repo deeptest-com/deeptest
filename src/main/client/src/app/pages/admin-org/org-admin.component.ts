@@ -1,6 +1,10 @@
 import {Component} from "@angular/core";
 import { GlobalState } from '../../global.state';
 
+import { CONSTANT } from '../../utils/constant';
+import {RouteService} from "../../service/route";
+import {AccountService} from "../../service/account";
+
 @Component({
   selector: 'org-admin',
   styleUrls: ['./org-admin.scss'],
@@ -19,7 +23,7 @@ export class OrgAdmin {
 
   menuItems:any[] = this.menus;
 
-  constructor(private _state: GlobalState) {
+  constructor(private _state: GlobalState, private _routeService:RouteService, private accountService: AccountService) {
     this._state.subscribe('org.ready', (orgReady) => {
       if (!orgReady) {
         this.menuItems = [
@@ -32,6 +36,13 @@ export class OrgAdmin {
   }
 
   ngOnInit() {
+    if (!CONSTANT.PROFILE) {
+      this.accountService.loadProfileRemote().subscribe((result: any) => {
+        if (!result) {
+          this._routeService.navTo('/login');
+        }
+      });
+    }
   }
 
 }

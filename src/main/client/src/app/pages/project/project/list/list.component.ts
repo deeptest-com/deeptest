@@ -40,12 +40,12 @@ export class ProjectList implements OnInit, AfterViewInit {
     this.queryForm.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.queryChange(values));
 
     this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, (data: any) => {
+      console.log('=STATE_CHANGE_ORGS=');
       this.loadData();
     });
   }
 
   ngOnInit() {
-    this.loadData();
   }
 
   ngAfterViewInit() {
@@ -57,25 +57,13 @@ export class ProjectList implements OnInit, AfterViewInit {
   }
 
   queryChange(values:any):void {
+    console.log('=queryChange=');
     this.loadData();
   }
-  pageChange(event:any):void {
-    this.loadData();
-  }
-
-  edit($event: any):void {
-    let that = this;
-  }
-  delete($event: any):void {
-    let that = this;
-
-  }
-
   loadData() {
-    let that = this;
-
-    that._projectService.list(that.queryModel).subscribe((json:any) => {
-      that.models = json.data;
+    console.log('=loadData=');
+    this._projectService.list(this.queryModel).subscribe((json:any) => {
+      this.models = json.data;
     });
   }
 

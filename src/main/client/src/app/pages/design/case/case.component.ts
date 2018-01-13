@@ -30,14 +30,14 @@ export class Case implements OnInit, AfterViewInit, OnDestroy {
       this.canEdit = this.privilegeService.hasPrivilege('cases-update');
     });
 
-    if (CONSTANT.PROFILE) {
-      this.leftWidth = CONSTANT.PROFILE.leftSize;
-    }
-
   }
 
   ngOnInit() {
-
+    if (CONSTANT.PROFILE) {
+      alert(1);
+      this.leftWidth = CONSTANT.PROFILE.leftSize;
+      this.canEdit = this.privilegeService.hasPrivilege('cases-update');
+    }
   }
 
   ngAfterViewInit() {

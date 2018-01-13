@@ -9,7 +9,7 @@ public class BaseAction {
 //			json.put("orgId", userVo.getDefaultOrgId());
 //		}
 //		if (json.getLong("projectId") == null) {
-//			json.put("projectId", userVo.getDefaultProjectId());
+//			json.put("projectId", userVo.getDefaultPrjId());
 //		}
 //
 //		return userVo;

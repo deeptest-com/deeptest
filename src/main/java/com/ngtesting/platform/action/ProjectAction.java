@@ -100,7 +100,7 @@ public class ProjectAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long id = json.getLong("id");
 
-		TestProjectVo vo = projectService.viewPers(userVo.getId(), id);
+		TestProjectVo vo = projectService.viewPers(id, userVo);
 
 		List<TestProjectAccessHistoryVo> recentProjects
 				= projectService.listRecentProjectVo(userVo.getDefaultOrgId(), userVo.getId());

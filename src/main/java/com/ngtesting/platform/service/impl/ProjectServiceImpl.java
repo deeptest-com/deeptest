@@ -10,6 +10,7 @@ import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
 import com.ngtesting.platform.vo.TestProjectVo;
+import com.ngtesting.platform.vo.UserVo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.FetchMode;
@@ -323,13 +324,15 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 	}
 
 	@Override
-	public TestProjectVo viewPers(Long userId, Long projectId) {
+	public TestProjectVo viewPers(Long projectId, UserVo userVo) {
 		TestProject project = getDetail(projectId);
 		
-		TestProjectAccessHistory history = getHistory(project.getOrgId(), userId, projectId, project.getName());
+		TestProjectAccessHistory history = getHistory(project.getOrgId(), userVo.getId(), projectId, project.getName());
 		history.setLastAccessTime(new Date());
 		saveOrUpdate(history);
-		
+
+		userVo.setDefaultPrjId(projectId);
+        userVo.setDefaultPrjName(project.getName());
 		TestProjectVo vo = genVo(project);
 		return vo;
 	}

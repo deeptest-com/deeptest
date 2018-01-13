@@ -162,6 +162,17 @@ public class AccountAction extends BaseAction {
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
         Long orgId = userVo.getDefaultOrgId();
+        Long prjId = userVo.getDefaultPrjId();
+
+		Long orgIdNew = json.getLong("orgId");
+		Long prjIdNew = json.getLong("prjId");
+
+        if (orgIdNew != null && orgIdNew.longValue() != orgId.longValue()) {
+			orgService.setDefaultPers(orgId, userVo);
+		}
+		if (prjIdNew != null && prjIdNew.longValue() != prjId.longValue()) {
+			projectService.viewPers(prjIdNew, userVo);
+		}
 
 		List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(userVo.getDefaultOrgId(), userVo.getId());
         List<OrgVo> orgs = orgService.listVo(null, "false", userVo.getId());
@@ -174,7 +185,7 @@ public class AccountAction extends BaseAction {
         Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userVo.getId());
         Map<String, Boolean> orgRolePrivileges = orgRolePrivilegeService.listByUser(userVo.getId(), orgId);
         Map<String, Boolean> projectPrivileges = projectPrivilegeService.listByUserPers(userVo.getId(),
-                recentProjects.size()>0?recentProjects.get(0).getProjectId():null, orgId);
+                userVo.getDefaultPrjId(), orgId);
 
         userVo.setSysPrivilege(sysPrivileges);
         userVo.setOrgPrivilege(orgRolePrivileges);
@@ -256,7 +267,7 @@ public class AccountAction extends BaseAction {
             UserVo userVo = userService.genVo(user);
             request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
 
-//			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), userVo.getDefaultProjectId());
+//			List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(user.getDefaultOrgId(), userVo.getDefaultPrjId());
 //			ret.put("profile", userVo);
 //			ret.put("recentProjects", recentProjects);
             ret.put("token", user.getToken());

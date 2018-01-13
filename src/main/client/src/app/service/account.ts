@@ -100,7 +100,7 @@ export class AccountService {
     return this._reqService.post(this._checkResetPassword, {vcode: vcode});
   }
 
-  loadProfileRemote(): Observable<any> {
+  loadProfileRemote(context = {}): Observable<any> {
     let that = this;
     let token = Cookie.get(CONSTANT.TOKEN_KEY);
     console.log('token from cookie: ', token);
@@ -108,8 +108,12 @@ export class AccountService {
     if (token && token != 'undefined') {
       CONSTANT.TOKEN = JSON.parse(token);
 
-      return this._reqService.post(that._getProfile, {}).map(json => {
+      return this._reqService.post(that._getProfile, context).map(json => {
         if (json.code == 1) {
+          CONSTANT.CURR_ORG_ID = json.profile.defaultOrgId;
+          CONSTANT.CURR_PRJ_ID = json.profile.defaultPrjId;
+          CONSTANT.CURR_PRJ_NAME = json.profile.defaultPrjName;
+
           setTimeout( () => {
             that.changeProfile(json.profile);
             that.changeMyOrgs(json.profile.orgs, json.profile.defaultOrgId);
@@ -187,29 +191,15 @@ export class AccountService {
     if (orgs) {
       CONSTANT.ALL_ORGS = orgs;
     }
-    if (currOrgId) {
-      CONSTANT.CURR_ORG_ID = currOrgId;
-      console.log('change orgId ' + CONSTANT.CURR_ORG_ID);
-    }
-    if (gotoDefault) {this._routeService.navTo('/pages/org/' + CONSTANT.CURR_ORG_ID + '/prjs');}
 
     this._state.notifyDataChanged(CONSTANT.STATE_CHANGE_ORGS, {orgs: orgs, currOrgId: currOrgId});
+    if (gotoDefault) {this._routeService.navTo('/pages/org/' + CONSTANT.CURR_ORG_ID + '/prjs');}
   }
 
   changeRecentProjects(recentProjects: any[]) {
-
     CONSTANT.RECENT_PROJECTS = recentProjects;
 
-    if (recentProjects.length > 0) {
-      CONSTANT.CURR_PRJ_ID = recentProjects[0].projectId;
-      CONSTANT.CURR_PRJ_NAME = recentProjects[0].projectName;
-    } else {
-      CONSTANT.CURR_PRJ_ID = undefined;
-      CONSTANT.CURR_PRJ_NAME = undefined;
-    }
-
-    this._state.notifyDataChanged(CONSTANT.STATE_CHANGE_PROJECTS,
-      {recentProjects: CONSTANT.RECENT_PROJECTS});
+    this._state.notifyDataChanged(CONSTANT.STATE_CHANGE_PROJECTS, {recentProjects: CONSTANT.RECENT_PROJECTS});
   }
 
   changeCasePropertyMap(casePropertyMap: any) {

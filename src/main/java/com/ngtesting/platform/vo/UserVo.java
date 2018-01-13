@@ -14,7 +14,8 @@ public class UserVo extends BaseVo {
 
     private String token;
     private Long defaultOrgId;
-//    private Long defaultProjectId;
+    private Long defaultPrjId;
+	private String defaultPrjName;
 
     private Boolean selected;
     private Boolean selecting;
@@ -39,7 +40,15 @@ public class UserVo extends BaseVo {
 		this.name = name;
 	}
 
-    public Integer getLeftSize() {
+	public String getDefaultPrjName() {
+		return defaultPrjName;
+	}
+
+	public void setDefaultPrjName(String defaultPrjName) {
+		this.defaultPrjName = defaultPrjName;
+	}
+
+	public Integer getLeftSize() {
         return leftSize;
     }
 
@@ -148,12 +157,12 @@ public class UserVo extends BaseVo {
 	public void setDefaultOrgId(Long defaultOrgId) {
 		this.defaultOrgId = defaultOrgId;
 	}
-//	public Long getDefaultProjectId() {
-//		return defaultProjectId;
-//	}
-//	public void setDefaultProjectId(Long defaultProjectId) {
-//		this.defaultProjectId = defaultProjectId;
-//	}
+	public Long getDefaultPrjId() {
+		return defaultPrjId;
+	}
+	public void setDefaultPrjId(Long defaultPrjId) {
+		this.defaultPrjId = defaultPrjId;
+	}
 
 	public String getType() {
 		return type;

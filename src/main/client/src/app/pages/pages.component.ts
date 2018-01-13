@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { Routes } from '@angular/router';
+import { Routes,ActivatedRoute } from '@angular/router';
+import {Location} from '@angular/common';
 
 import { BaMenuService } from '../theme';
 import { PAGES_MENU } from './pages.menu';
@@ -31,6 +32,7 @@ import { PAGES_MENU } from './pages.menu';
 export class Pages {
 
   constructor(private _menuService: BaMenuService) {
+
   }
 
   ngOnInit() {

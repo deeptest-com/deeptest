@@ -76,10 +76,13 @@ export class BaPageTop implements OnInit, AfterViewInit, OnDestroy {
   }
   ngAfterViewInit() {}
 
-  public changeOrg(item: any) {
-    this.orgService.setDefault(item.id, {disabled: false}).subscribe((json: any) => {
+  public changeOrg(org: any) {
+    this.orgService.setDefault(org.id, {disabled: false}).subscribe((json: any) => {
       if (json.code == 1) {
-        this.orgId = item.id;
+        this.orgId = json.defaultOrgId;
+        CONSTANT.CURR_ORG_ID = json.defaultOrgId;
+        CONSTANT.CURR_PRJ_ID = json.defaultPrjId;
+        CONSTANT.CURR_PRJ_NAME = json.defaultPrjName;
 
         CONSTANT.PROFILE.orgPrivilege = json.orgPrivilege;
         CONSTANT.PROFILE.projectPrivilege = json.projectPrivilege;

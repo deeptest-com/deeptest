@@ -14,14 +14,14 @@ export class Org {
   orgId: number;
 
   constructor(private _route: ActivatedRoute) {
-    this._route.params.subscribe(params => {
-      this.orgId = params['orgId'];
-    });
-    console.log('==Current Org', this.orgId);
-
-    if (CONSTANT.CURR_ORG_ID != this.orgId) {
-      CONSTANT.CURR_ORG_ID = this.orgId;
-    }
+    // this._route.params.subscribe(params => {
+    //   this.orgId = params['orgId'];
+    // });
+    // console.log('==Current Org', this.orgId);
+    //
+    // if (CONSTANT.CURR_ORG_ID != this.orgId) {
+    //   CONSTANT.CURR_ORG_ID = this.orgId;
+    // }
   }
   ngOnInit() {
 

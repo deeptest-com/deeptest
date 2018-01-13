@@ -26,7 +26,7 @@ export class Prj {
     this._route.params.subscribe(params => {
       this.prjId = params['prjId'];
     });
-    console.log('==Current Prj', this.prjId);
+    console.log('==Current Prj', this.prjId, CONSTANT.CURR_PRJ_ID);
 
     if (CONSTANT.CURR_PRJ_ID != this.prjId) {
       CONSTANT.CURR_PRJ_ID = this.prjId;

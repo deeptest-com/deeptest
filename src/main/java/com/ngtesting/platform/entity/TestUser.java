@@ -24,7 +24,7 @@ public class TestUser extends BaseEntity {
     private Date lastLoginTime;
 
     private Long defaultOrgId;
-//    private Long defaultProjectId;
+//    private Long defaultPrjId;
 
 	private Integer leftSize;
 
@@ -141,12 +141,11 @@ public class TestUser extends BaseEntity {
 		this.orgSet = orgSet;
 	}
 
-//	public Long getDefaultProjectId() {
-//		return defaultProjectId;
+//	public Long getDefaultPrjId() {
+//		return defaultPrjId;
 //	}
 //
-//	public void setDefaultProjectId(Long defaultProjectId) {
-//		this.defaultProjectId = defaultProjectId;
+//	public void setDefaultPrjId(Long defaultPrjId) {
+//		this.defaultPrjId = defaultPrjId;
 //	}
-
 }

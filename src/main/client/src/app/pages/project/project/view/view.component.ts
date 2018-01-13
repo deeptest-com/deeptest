@@ -43,6 +43,7 @@ export class ProjectView implements OnInit, AfterViewInit {
 
   loadData() {
     this._projectService.view(this.id).subscribe((json:any) => {
+      CONSTANT.PROFILE.projectPrivilege = json.projectPrivilege;
       this.accountService.changeRecentProjects(json.recentProjects);
     });
   }

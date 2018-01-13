@@ -1,13 +1,14 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestRelationProjectRoleEntity;
+import com.ngtesting.platform.service.ProjectPrivilegeService;
 import com.ngtesting.platform.service.ProjectRoleService;
 import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.service.RelationProjectRoleEntityService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.vo.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -31,6 +34,8 @@ public class ProjectAction extends BaseAction {
     ProjectService projectService;
     @Autowired
     ProjectRoleService projectRoleService;
+	@Autowired
+	ProjectPrivilegeService projectPrivilegeService;
 
     @Autowired
     RelationProjectRoleEntityService relationProjectRoleEntityService;
@@ -101,6 +106,8 @@ public class ProjectAction extends BaseAction {
 		Long id = json.getLong("id");
 
 		TestProjectVo vo = projectService.viewPers(id, userVo);
+		Map<String, Boolean> projectPrivileges = projectPrivilegeService.listByUserPers(userVo.getId(),
+				id, vo.getOrgId());
 
 		List<TestProjectAccessHistoryVo> recentProjects
 				= projectService.listRecentProjectVo(userVo.getDefaultOrgId(), userVo.getId());
@@ -113,6 +120,7 @@ public class ProjectAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		ret.put("project", vo);
 		ret.put("recentProjects", recentProjects);
+		ret.put("projectPrivilege", projectPrivileges);
 		return ret;
 	}
 

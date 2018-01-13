@@ -9,6 +9,7 @@ export const routes: Routes = [
   {
     path: ':orgId',
     component: Org,
+
     children: [
       { path: 'prjs', loadChildren: '../../project/project/project.module#ProjectModule' },
       { path: 'prj', loadChildren: './prj/prj.module#PrjModule' }

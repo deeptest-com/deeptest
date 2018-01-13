@@ -1,0 +1,44 @@
+.case-view {
+  margin: 5px;
+
+  .module-tips {
+    padding: 20px;
+    text-align: center;
+  }
+
+  .comments {
+    .item {
+      position: relative;
+      border-bottom: 1px solid #ccc;
+      padding: 10px;
+      font-size: 14px;
+
+      &:hover {
+        background: #f8faff;
+      }
+
+      .avatar {
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        img {
+          max-height: 100%;
+          border-radius: 50%;
+        }
+      }
+      .summary {
+        display: inline-block;
+        line-height: 25px;
+      }
+      .edit {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+      }
+    }
+    .buttons {
+      margin: 10px;
+    }
+
+  }
+}

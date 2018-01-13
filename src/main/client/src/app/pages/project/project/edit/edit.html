@@ -6,7 +6,7 @@
         <span *ngIf="!model?.id">新建项目</span><span *ngIf="model?.id">编辑项目</span><span *ngIf="model.type=='group'">组</span>
       </div>
       <div class="buttons">
-        <button [routerLink]="['/pages/project/list']" type="button" class="btn btn-primary btn-with-icon btn-sm back">
+        <button [routerLink]="['/pages/org/' + orgId + '/prjs']" type="button" class="btn btn-primary btn-with-icon btn-sm back">
           <i class="ion-backspace"></i>返回
         </button>
       </div>

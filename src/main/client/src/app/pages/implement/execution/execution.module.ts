@@ -26,6 +26,7 @@ import { SuiteService } from '../../../service/suite';
 import { CaseService } from '../../../service/case';
 import { CaseStepService } from '../../../service/case-step';
 import { CaseInRunService } from '../../../service/case-in-run';
+import { PrivilegeService } from '../../../service/privilege';
 
 import { Execution } from './execution.component';
 import { ExecutionSuite } from './suite/suite.component';
@@ -63,7 +64,8 @@ import { ExecutionResult } from './result/result.component';
     SuiteService,
     CaseService,
     CaseStepService,
-    CaseInRunService
+    CaseInRunService,
+    PrivilegeService
   ]
 })
 export class ExecutionModule {}

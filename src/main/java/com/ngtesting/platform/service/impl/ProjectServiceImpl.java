@@ -347,6 +347,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		List<TestProjectAccessHistory> pos = findAllByCriteria(dc);
 		if (pos.size() > 0) {
 			history = pos.get(0);
+			history.setProjectName(projectName);
 		} else {
 			history = new TestProjectAccessHistory(orgId, userId, projectId, projectName);
 		}

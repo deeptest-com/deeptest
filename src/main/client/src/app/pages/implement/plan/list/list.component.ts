@@ -35,18 +35,18 @@ export class PlanList implements OnInit, AfterViewInit {
       }, {}
     );
 
-    this.queryForm.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.queryChange(values));
 
   }
 
   ngOnInit() {
     this.orgId = CONSTANT.CURR_ORG_ID;
     this.prjId = CONSTANT.CURR_PRJ_ID;
-    // console.log('PlanList ngOnInit', this.orgId, this.prjId);
+
+    this.loadData();
   }
 
   ngAfterViewInit() {
-
+    this.queryForm.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.queryChange(values));
   }
 
   create():void {

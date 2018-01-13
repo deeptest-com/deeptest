@@ -10,6 +10,7 @@ import { CONSTANT } from '../../../utils/constant';
 import { Utils } from '../../../utils/utils';
 
 import { RouteService } from '../../../service/route';
+import { PrivilegeService } from '../../../service/privilege';
 import { ZtreeService } from './ztree.service';
 
 declare var jQuery;
@@ -22,6 +23,7 @@ declare var jQuery;
   providers: [ZtreeService]
 })
 export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
+  eventCode:string = 'ZtreeComponent';
 
   @Input()
   treeSettings: any;
@@ -79,7 +81,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public constructor(private _state:GlobalState, private _routeService: RouteService, @Inject(Renderer2) private renderer:Renderer2,
-                     private toastyService:ToastyService, @Inject(ZtreeService) private ztreeService: ZtreeService) {
+                     private privilegeService:PrivilegeService, private toastyService:ToastyService, @Inject(ZtreeService) private ztreeService: ZtreeService) {
 
     this.settings = {
       usage: null,
@@ -93,9 +95,11 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       edit: {
         enable: true,
+
+        showRemoveBtn: this.privilegeService.hasPrivilege('cases-remove'),
+        showRenameBtn: this.privilegeService.hasPrivilege('cases-update'),
+
         editNameSelectAll: true,
-        showRemoveBtn: true,
-        showRenameBtn: true,
         renameTitle: "编辑",
         removeTitle: "删除",
         drag: {
@@ -126,12 +130,12 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   public ngOnInit(): void {
     this.keywordsControl.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(values => this.onKeywordsChange(values));
 
-    this._state.subscribe(CONSTANT.EVENT_CASE_JUMP, (id: number) => {
+    this._state.subscribe(CONSTANT.EVENT_CASE_JUMP, this.eventCode, (id: number) => {
       console.log(CONSTANT.EVENT_CASE_JUMP);
       this.jumpTo(id+'');
     });
 
-    this._state.subscribe(CONSTANT.EVENT_CASE_UPDATE, (data: any) => {
+    this._state.subscribe(CONSTANT.EVENT_CASE_UPDATE, this.eventCode, (data: any) => {
       let testCase = data.node;
 
       if (testCase) {
@@ -174,9 +178,6 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setFontCss (treeId, treeNode) {
-    console.log('treeNode.status', treeNode.status);
-    console.log('treeNode.reviewResult', treeNode.reviewResult);
-
     let css:any = {};
     css.color = '#333333';
     if (treeNode.status == 'pass' || treeNode.reviewResult) {
@@ -196,6 +197,8 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   addHoverDom = (treeId, treeNode) => {
+    if (!this.privilegeService.hasPrivilege('cases-create')) {return false;}
+
     var sObj = $("#" + treeNode.tId + "_span");
     if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0) return;
     var addStr = "<span class='button add' id='addBtn_" + treeNode.tId

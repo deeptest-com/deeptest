@@ -1,4 +1,5 @@
 import { Component, ViewContainerRef } from '@angular/core';
+import { ActivatedRoute, Params } from '@angular/router';
 import * as $ from 'jquery';
 
 import { GlobalState } from './global.state';
@@ -24,10 +25,12 @@ import {Utils} from './utils/utils';
   `
 })
 export class App {
+  eventCode: string = 'App';
 
   isMenuCollapsed: boolean = false;
 
   constructor(private _state: GlobalState,
+              private _activatedRoute: ActivatedRoute,
               private _imageLoader: BaImageLoaderService,
               private _spinner: BaThemeSpinner,
               private viewContainerRef: ViewContainerRef,
@@ -37,7 +40,7 @@ export class App {
 
     this._loadImages();
 
-    this._state.subscribe('menu.isCollapsed', (isCollapsed) => {
+    this._state.subscribe('menu.isCollapsed', this.eventCode, (isCollapsed) => {
       this.isMenuCollapsed = isCollapsed;
     });
 

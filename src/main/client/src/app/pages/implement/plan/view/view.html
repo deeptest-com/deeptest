@@ -68,9 +68,6 @@
       </div>
       <div class="filter"></div>
       <div class="buttons">
-<!--        <button (click)="create()" type="button" class="btn btn-primary btn-with-icon btn-sm">
-          <i class="ion-plus-circled"></i>新建
-        </button>-->
       </div>
     </div>
   </div>
@@ -83,7 +80,7 @@
           <th>标题</th>
           <th>经办人</th>
           <th style="width: 350px;">执行情况</th>
-          <th style="width: 60px;">状态</th>
+          <th style="width: 100px;">状态</th>
           <th style="width: 150px;" class="opt">操作</th>
         </tr>
         </thead>
@@ -97,10 +94,8 @@
           </td>
           <td>{{item.status | runStatus}}</td>
           <td>
-            <span *ngIf="item.status != 'end' && item.countMap.total > 0" (click)="exe(item.id)" class="link no-underline">执行</span>
-            <span *ngIf="item.status != 'end'" (click)="close(item.id, i)" class="link no-underline">关闭</span>
-
-            <span (click)="delete(item.id, i)" class="link no-underline">删除</span>
+            <span privilege [privs]="'run-exe'" *ngIf="item.status != 'end' && item.countMap.total > 0" (click)="exe(item.id)" class="link no-underline">执行</span>
+            <span privilege [privs]="'run-exe'" *ngIf="item.status != 'end'" (click)="close(item.id, i)" class="link no-underline">关闭</span>
           </td>
         </tr>
         </tbody>

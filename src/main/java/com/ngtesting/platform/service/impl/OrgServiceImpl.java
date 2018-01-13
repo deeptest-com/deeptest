@@ -94,9 +94,6 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		TestOrg po = new TestOrg();
 		if (!isNew) {
 			po = (TestOrg) get(TestOrg.class, vo.getId());
-		} else {
-//			po.setAdminId(userId);
-			po.getUserSet().add(user);
 		}
 
 		po.setName(vo.getName());
@@ -106,17 +103,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		saveOrUpdate(po);
 
         if (isNew) {
-            getDao().querySql("{call init_user(?)", user.getId());
-
-//            orgRoleService.initOrgRoleBasicDataPers(po.getId());
-//            orgRoleService.addUserToOrgRolePers(user, po.getId(), TestOrgRole.OrgRoleCode.org_admin);
-//            orgGroupService.initDefaultBasicDataPers(po);
-//
-//            caseExeStatusService.createDefaultBasicDataPers(po.getId());
-//            casePriorityService.createDefaultBasicDataPers(po.getId());
-//            caseTypeService.createDefaultBasicDataPers(po.getId());
-//
-//            projectService.initDefaultBasicDataPers(po.getId(), userId);
+            getDao().querySql("{call init_org(?,?)}", po.getId(), user.getId());
         }
 
 		if (user.getDefaultOrgId() == null) {

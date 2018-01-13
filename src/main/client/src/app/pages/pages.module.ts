@@ -9,10 +9,14 @@ import { NgaModule } from '../theme/nga.module';
 import { AppTranslationModule } from '../app.translation.module';
 
 import { Pages } from './pages.component';
+import { PagesResolve } from './pages.resolve';
 
 @NgModule({
   imports: [CommonModule, AppTranslationModule, NgaModule, routing],
-  declarations: [Pages]
+  declarations: [Pages],
+  providers: [
+    PagesResolve
+  ]
 })
 export class PagesModule {
 

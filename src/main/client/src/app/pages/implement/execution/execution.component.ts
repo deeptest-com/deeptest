@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation, NgModule, Pipe, OnInit, AfterViewInit} from '@angular/core';
+import {Component, ViewEncapsulation, NgModule, Pipe, OnInit, AfterViewInit, OnDestroy} from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -18,12 +18,14 @@ declare var jQuery;
   styleUrls: ['./execution.scss'],
   templateUrl: './execution.html'
 })
-export class Execution implements OnInit, AfterViewInit {
+export class Execution implements OnInit, AfterViewInit, OnDestroy {
+  eventCode:string = 'Execution';
+
   contentHeight = Utils.getContainerHeight(110);
   leftWidth: number;
 
   constructor(private _state: GlobalState, private _route: ActivatedRoute) {
-    this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, (profile) => {
+    this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode, (profile) => {
       console.log(CONSTANT.STATE_CHANGE_PROFILE + ' in Exe', profile);
       this.leftWidth = CONSTANT.PROFILE.leftSize;
     });
@@ -40,6 +42,9 @@ export class Execution implements OnInit, AfterViewInit {
   }
   ngAfterViewInit() {}
 
+  ngOnDestroy(): void {
+    this._state.unsubscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode);
+  };
 
 }
 

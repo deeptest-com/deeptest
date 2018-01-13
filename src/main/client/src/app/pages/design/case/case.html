@@ -8,7 +8,8 @@
     <div class="resize-handle" [style.left]="leftWidth+'px'" [style.height]="contentHeight"></div>
 
     <div class="detail resize-right y-scrollable" [style.height]="contentHeight">
-      <case-edit></case-edit>
+      <case-view *ngIf="!canEdit"></case-view>
+      <case-edit *ngIf="canEdit"></case-edit>
     </div>
 
   </div>

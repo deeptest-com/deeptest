@@ -26,10 +26,12 @@ import { SuiteService } from '../../../service/suite';
 import { CaseService } from '../../../service/case';
 import { CaseStepService } from '../../../service/case-step';
 import { CaseCommentsService } from '../../../service/case-comments';
+import { PrivilegeService } from '../../../service/privilege';
 
 import { Case } from './case.component';
 import { CaseSuite } from './suite/suite.component';
 import { CaseEdit } from './edit/edit.component';
+import { CaseView } from './view/view.component';
 
 @NgModule({
   imports: [
@@ -54,7 +56,8 @@ import { CaseEdit } from './edit/edit.component';
   declarations: [
     Case,
     CaseSuite,
-    CaseEdit
+    CaseEdit,
+    CaseView
   ],
   providers: [
     RouteService,
@@ -63,7 +66,8 @@ import { CaseEdit } from './edit/edit.component';
     SuiteService,
     CaseService,
     CaseStepService,
-    CaseCommentsService
+    CaseCommentsService,
+    PrivilegeService
   ]
 })
 export class CaseModule {}

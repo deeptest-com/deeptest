@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation, Input, Output, EventEmitter} from '@angular/core';
+import {Component, ViewEncapsulation, Input, Output, EventEmitter, OnInit, OnDestroy} from '@angular/core';
 import {Router, Routes, NavigationEnd} from '@angular/router';
 import {Subscription} from 'rxjs/Rx';
 
@@ -12,7 +12,9 @@ declare var jQuery;
   selector: 'slidebar-menu',
   templateUrl: './slidebar-menu.html'
 })
-export class SlidebarMenu {
+export class SlidebarMenu implements OnInit, OnDestroy {
+  eventCode:string = 'SlidebarMenu';
+
   isOrgAdmin: boolean;
 
   @Input()
@@ -30,13 +32,15 @@ export class SlidebarMenu {
     if (CONSTANT.PROFILE) {
       this.isOrgAdmin = CONSTANT.PROFILE.orgPrivilege.org_admin;
     }
+  }
 
-    this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, (profile) => {
+  ngOnInit() {
+    this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode, (profile) => {
       console.log(CONSTANT.STATE_CHANGE_PROFILE, profile);
 
       this.isOrgAdmin = CONSTANT.PROFILE.orgPrivilege.org_admin;
     });
-    this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, (data) => {
+    this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, this.eventCode, (data) => {
       console.log(CONSTANT.STATE_CHANGE_ORGS, data);
 
       this.isOrgAdmin = CONSTANT.PROFILE.orgPrivilege.org_admin;
@@ -54,4 +58,9 @@ export class SlidebarMenu {
     this.currLink = $event.item.link;
     this._routeService.navTo($event.item.link);
   }
+
+  ngOnDestroy(): void {
+    this._state.unsubscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode);
+    this._state.unsubscribe(CONSTANT.STATE_CHANGE_ORGS, this.eventCode);
+  };
 }

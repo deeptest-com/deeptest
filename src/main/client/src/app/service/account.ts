@@ -14,7 +14,7 @@ import {RequestService} from "./request";
 
 @Injectable()
 export class AccountService {
-  constructor(private _state:GlobalState, private _reqService:RequestService, private routeService: RouteService) {
+  constructor(private _state:GlobalState, private _reqService:RequestService, private _routeService: RouteService) {
   }
 
   _login = 'account/login';
@@ -46,7 +46,7 @@ export class AccountService {
         let days:number = model.rememberMe? 30: 1;
 
         that.saveTokenLocal(json.token, days);
-        that.routeService.navTo('/pages/org/' + json.profile.defaultOrgId + '/prjs');
+        that._routeService.navTo('/pages/org/' + json.profile.defaultOrgId + '/prjs');
       } else {
         errors = json.msg;
       }
@@ -61,7 +61,7 @@ export class AccountService {
         let days:number = 1;
 
         that.saveTokenLocal(json.token, days);
-        that.routeService.navTo('/pages/org/' + json.profile.defaultOrgId + '/prjs');
+        that._routeService.navTo('/pages/org/' + json.profile.defaultOrgId + '/prjs');
       } else {
         errors = json.msg;
       }
@@ -88,7 +88,7 @@ export class AccountService {
         // that.changeProfile(json.profile);
         // that.changeRecentProject(json.recentProjects);
 
-        this.routeService.navTo('/pages/dashboard');
+        this._routeService.navTo('/pages/dashboard');
       } else {
         errors = json.data;
       }
@@ -110,17 +110,22 @@ export class AccountService {
 
       return this._reqService.post(that._getProfile, {}).map(json => {
         if (json.code == 1) {
-          that.changeProfile(json.profile);
-          that.changeMyOrgs(json.profile.orgs, json.profile.defaultOrgId);
-          that.changeRecentProjects(json.profile.recentProjects);
-          that.changeCasePropertyMap(json.profile.casePropertyMap);
+          setTimeout( () => {
+            that.changeProfile(json.profile);
+            console.log('*************************');
+            that.changeMyOrgs(json.profile.orgs, json.profile.defaultOrgId);
+            that.changeRecentProjects(json.profile.recentProjects);
+            that.changeCasePropertyMap(json.profile.casePropertyMap);
+          }, 50);
 
           return Observable.of(true);
         } else {
+          this._routeService.navTo('/login');
           return Observable.of(false);
         }
       });
     } else  {
+      this._routeService.navTo('/login');
       return Observable.of(false);
     }
   }
@@ -130,7 +135,7 @@ export class AccountService {
       // if (json.code == 1) {
         Cookie.delete(CONSTANT.TOKEN_KEY);
         // CONSTANT.PROFILE = null;
-        this.routeService.navTo('/login');
+        this._routeService.navTo('/login');
       // }
     });
   }
@@ -187,12 +192,13 @@ export class AccountService {
       CONSTANT.CURR_ORG_ID = currOrgId;
       console.log('change orgId ' + CONSTANT.CURR_ORG_ID);
     }
-    if (gotoDefault) {this.routeService.navTo('/pages/org/' + CONSTANT.CURR_ORG_ID + '/prjs');}
+    if (gotoDefault) {this._routeService.navTo('/pages/org/' + CONSTANT.CURR_ORG_ID + '/prjs');}
 
     this._state.notifyDataChanged(CONSTANT.STATE_CHANGE_ORGS, {orgs: orgs, currOrgId: currOrgId});
   }
 
   changeRecentProjects(recentProjects: any[]) {
+
     CONSTANT.RECENT_PROJECTS = recentProjects;
 
     if (recentProjects.length > 0) {

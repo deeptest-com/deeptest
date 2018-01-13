@@ -37,7 +37,7 @@
 
       <div class="form-group row">
         <div class="col-sm-12">
-          <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'name'" [type]="'string'" [required]="true"></field-show>
+          <field-show [readonly]="!canEdit" (onSave)="saveField($event)" [(model)]="model" [prop]="'name'" [type]="'string'" [required]="true"></field-show>
         </div>
       </div>
 
@@ -82,18 +82,18 @@
                 <td style="width: 25%">
                   <div class="label">类型</div>
                   <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'type'" [type]="'dropdown'" optionsKey="type"
-                              [required]="true"></field-show>
+                              [required]="true" [readonly]="!canEdit"></field-show>
                 </td>
                 <td style="width: 25%">
                   <div class="label">优先级</div>
                   <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'priority'" [type]="'dropdown'" optionsKey="priority"
-                              [required]="true"></field-show>
+                              [required]="true" [readonly]="!canEdit"></field-show>
                 </td>
                 <td style="width: 25%">
                   <div class="label">耗时(分钟)</div>
                   <div class="value">
                     <field-show (onSave)="saveField($event)" [(model)]="model" [prop]="'estimate'" [type]="'number'"
-                                [required]="true"></field-show>
+                                [required]="true" [readonly]="!canEdit"></field-show>
                   </div>
                 </td>
               </tr>
@@ -106,14 +106,14 @@
 
       <div class="row field-show-container">
         <div class="col-sm-12">
-          <field-show (onSave)="saveField($event)" [(model)]="model"
+          <field-show (onSave)="saveField($event)" [(model)]="model" [readonly]="!canEdit"
                       [label]="'目标'" [prop]="'objective'" [type]="'string'"></field-show>
         </div>
       </div>
 
       <div *ngFor="let field of fields;" class="row field-show-container">
         <div class="col-sm-12">
-          <field-show (onSave)="saveField($event)" [(model)]="model"
+          <field-show (onSave)="saveField($event)" [(model)]="model" [readonly]="!canEdit"
                       [label]="field.label" [prop]="field.myColumn" [type]="field.type"
                       [format]="field.format" [rows]="field.rows" [required]="field.isRequired"></field-show>
         </div>
@@ -156,7 +156,7 @@
             ></steps-table>
           </div>
           <div *ngIf="'richText'==model.contentType">
-            <field-show (onSave)="saveField($event)" [(model)]="model"
+            <field-show (onSave)="saveField($event)" [(model)]="model" [readonly]="!canEdit"
                         [label]="'操作'" [prop]="'content'" [type]="'text'" [format]="model.contentType"></field-show>
           </div>
         </div>
@@ -168,7 +168,7 @@
           <label class="col-sm-1 col-form-label"><span>实际<br/>结果</span></label>
           <div class="col-sm-11">
               <textarea type="text" class="form-control" name="result" formControlName="result"
-                        [(ngModel)]="model.result" #result></textarea>
+                        privilege [privs]="'run-exe'" [(ngModel)]="model.result" #result></textarea>
           </div>
         </div>
       </div>

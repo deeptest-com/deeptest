@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation, NgModule, Pipe, OnInit, AfterViewInit, OnDestroy,ViewChild} from '@angular/core';
+import {Component, ViewEncapsulation, NgModule, Pipe, OnInit, AfterViewInit, OnDestroy, ViewChild} from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 
@@ -20,13 +20,13 @@ import { CommentEditComponent } from '../../../../components/comment-edit';
 declare var jQuery;
 
 @Component({
-  selector: 'case-edit',
+  selector: 'case-view',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['./edit.scss', '../../../../components/comment-edit/src/styles.scss'],
-  templateUrl: './edit.html'
+  styleUrls: ['./view.scss', '../../../../components/comment-edit/src/styles.scss'],
+  templateUrl: './view.html'
 })
-export class CaseEdit implements OnInit, AfterViewInit, OnDestroy {
-  eventCode: string = 'CaseEdit';
+export class CaseView implements OnInit, AfterViewInit, OnDestroy {
+  eventCode:string = 'CaseView';
 
   projectId: number;
   id: number;
@@ -41,16 +41,15 @@ export class CaseEdit implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('modalWrapper') modalWrapper: CommentEditComponent;
   comment: any = {};
 
+  casePropertyMap: any;
   fields: any[] = [];
 
   constructor(private _state:GlobalState, private fb: FormBuilder, private toastyService:ToastyService,
               private _caseService: CaseService, private _caseStepService: CaseStepService, private _caseCommentsService: CaseCommentsService) {
-
+    this.casePropertyMap = CONSTANT.CASE_PROPERTY_MAP;
   }
   ngOnInit() {
     this.projectId = CONSTANT.CURR_PRJ_ID;
-
-    this.buildForm();
 
     this._state.subscribe(CONSTANT.EVENT_CASE_EDIT, this.eventCode, (data: any) => {
       let testCase = data.node;
@@ -71,7 +70,7 @@ export class CaseEdit implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.settings = {
-      canEdit: true,
+      canEdit: false,
       columns: {
         ordr: {
           title: '顺序',
@@ -93,74 +92,9 @@ export class CaseEdit implements OnInit, AfterViewInit, OnDestroy {
   }
   ngAfterViewInit() {}
 
-  buildForm(): void {
-    this.form = this.fb.group(
-      {
-        'name': ['', [Validators.required]],
-        'type': ['', [Validators.required]],
-        'priority': ['', [Validators.required]],
-        'estimate': ['', []],
-        'objective': ['', []],
-        'pre_condition': ['', []]
-      }, {}
-    );
-
-    this.form.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(data => this.onValueChanged(data));
-    this.onValueChanged();
-  }
-  onValueChanged(data?: any) {
-    let that = this;
-    that.formErrors = ValidatorUtils.genMsg(that.form, that.validateMsg, []);
-  }
-
-  formErrors = [];
-  validateMsg = {
-    'name': {
-      'required':      '标题不能为空'
-    },
-    'type': {
-      'required':      '类别不能为空'
-    },
-    'priority': {
-      'required':      '优先级不能为空'
-    }
-  };
-
   loadData() {
     this._caseService.get(this.id).subscribe((json:any) => {
       this.model = json.data;
-    });
-  }
-
-  save() {
-    this._caseService.save(this.projectId, this.model).subscribe((json:any) => {
-      if (json.code == 1) {
-        this.model = json.data;
-        this._state.notifyDataChanged(CONSTANT.EVENT_CASE_UPDATE, {node: this.model, random: Math.random()});
-
-        var toastOptions:ToastOptions = {
-          title: "保存成功",
-          timeout: 2000
-        };
-        this.toastyService.success(toastOptions);
-      }
-    });
-  }
-
-  review(pass: boolean) {
-    if (pass) {
-      this.reviewRequest(this.model.id, pass, null);
-    } else {
-      this.modalWrapper.showModal('comment-edit');
-      this.comment = {summary: '评审失败', act: 'reviewFail'};
-    }
-  }
-  reviewRequest(id: number, pass: boolean, comments: string) {
-    this._caseService.reviewPass(this.model.id, pass, comments).subscribe((json:any) => {
-      if (json.code == 1) {
-        this.model = json.data;
-        this._state.notifyDataChanged(CONSTANT.EVENT_CASE_UPDATE, {node: this.model, random: Math.random()});
-      }
     });
   }
 
@@ -173,41 +107,6 @@ export class CaseEdit implements OnInit, AfterViewInit, OnDestroy {
         this.model.contentType = contentType;
       }
     });
-  }
-
-  onUpConfirm(event: any) {
-    console.log('onUpConfirm', event);
-    this._caseStepService.up({caseId: this.id, id: event.data.id, ordr: event.data.ordr}).subscribe((json:any) => {
-      event.confirm.resolve();
-    });
-  }
-
-  onDownConfirm(event: any) {
-    console.log('onDownConfirm', event);
-    this._caseStepService.down({caseId: this.id, id: event.data.id, ordr: event.data.ordr}).subscribe((json:any) => {
-      event.confirm.resolve();
-    });
-  }
-
-  onCreateConfirm(event: any) {
-    console.log('onCreateConfirm', event);
-    event.confirm.resolve();
-  }
-  onSaveConfirm(event: any) {
-    console.log('onSaveConfirm', event);
-    this._caseStepService.save(this.id, event.newData).subscribe((json:any) => {
-      event.confirm.resolve();
-    });
-  }
-  onDeleteConfirm(event: any) {
-    console.log('onDeleteConfirm', event);
-    this._caseStepService.delete(event.data).subscribe((json:any) => {
-      event.confirm.resolve();
-    });
-  }
-
-  onEditorKeyup(event: any) {
-    this.model.content = event;
   }
 
   addComments() {
@@ -231,10 +130,6 @@ export class CaseEdit implements OnInit, AfterViewInit, OnDestroy {
   saveComments() {
     this._caseCommentsService.save(this.id, this.comment).subscribe((json:any) => {
       if (json.code == 1) {
-        if (this.comment.act == 'reviewFail') {
-          this.reviewRequest(this.model.id, false, null);
-        }
-
         if (this.comment.id != json.data.id) {
           this.model.comments[this.model.comments.length] = json.data;
         }
@@ -247,6 +142,5 @@ export class CaseEdit implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this._state.unsubscribe(CONSTANT.EVENT_CASE_EDIT, this.eventCode);
   };
-
 }
 

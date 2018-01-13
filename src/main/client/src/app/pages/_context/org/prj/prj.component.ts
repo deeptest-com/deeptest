@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
-import { Router, ActivatedRoute, Params } from '@angular/router';
-import { Routes } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 import { CONSTANT } from '../../../../utils/constant';
-import {RouteService} from "../../../../service/route";
 
 import { AccountService } from '../../../../service/account';
 import { ProjectService } from '../../../../service/project';
@@ -28,7 +26,7 @@ export class Prj {
     this._route.params.subscribe(params => {
       this.prjId = params['prjId'];
     });
-    console.log('===Prj', this.prjId);
+    console.log('==Current Prj', this.prjId);
 
     if (CONSTANT.CURR_PRJ_ID != this.prjId) {
       CONSTANT.CURR_PRJ_ID = this.prjId;

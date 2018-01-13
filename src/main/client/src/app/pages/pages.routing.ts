@@ -5,6 +5,8 @@ import { ModuleWithProviders } from '@angular/core';
 
 // export function loadChildren(path) { return System.import(path); };
 
+import { PagesResolve } from './pages.resolve';
+
 export const routes: Routes = [
   {
     path: 'login',
@@ -25,11 +27,13 @@ export const routes: Routes = [
   {
     path: 'pages',
     component: Pages,
+    resolve: {
+      data: PagesResolve
+    },
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', loadChildren: './dashboard/dashboard.module#DashboardModule' },
       { path: 'personal', loadChildren: './personal/personal.module#PersonalModule' },
-
 
       { path: 'org-admin', loadChildren: './admin-org/org-admin.module#OrgAdminModule' },
       { path: 'sys-admin', loadChildren: './admin-sys/sys-admin.module#AdminModule' },

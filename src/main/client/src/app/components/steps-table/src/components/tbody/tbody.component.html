@@ -1,4 +1,4 @@
-<tr>
+<tr *ngIf="grid.settings.canEdit">
   <td [attr.colspan]="4" style="border-top: 0px;">
     <a href="#" class="" (click)="onCreate($event)">
       添加
@@ -9,7 +9,7 @@
 <tr *ngFor="let row of grid.getRows(); let i = index;"
     (mouseenter)="onHoverRow($event, row)" (mouseleave)="onOutRow($event, row)">
 
-  <td class="ng2-smart-seq-act">
+  <td *ngIf="grid.settings.canEdit" class="ng2-smart-seq-act">
     <ng2-st-tbody-change-order *ngIf="!row.isInEditing && row.hover"
                                [grid]="grid"
                                [row]="row"
@@ -45,7 +45,7 @@
     </div>
   </td>
 
-  <td *ngIf="!row.isInEditing" class="ng2-smart-actions">
+  <td *ngIf="grid.settings.canEdit && !row.isInEditing" class="ng2-smart-actions">
     <ng2-st-tbody-add-edit-delete *ngIf="row.hover" [grid]="grid"
                                   [row]="row"
                                   [source]="source"
@@ -55,7 +55,7 @@
     </ng2-st-tbody-add-edit-delete> <!-- 操作按钮 -->
   </td>
 
-  <td *ngIf="row.isInEditing" class="ng2-smart-actions">
+  <td *ngIf="grid.settings.canEdit && row.isInEditing" class="ng2-smart-actions">
     <ng2-st-tbody-create-cancel [grid]="grid"
                                 [row]="row"
                                 [saveConfirm]="saveConfirm"

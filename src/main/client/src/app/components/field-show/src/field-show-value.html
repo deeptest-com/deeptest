@@ -1,4 +1,6 @@
 <ng-container class="field-show-value">
+
+  <!-- 非自定义字段 -->
   <ng-container style="margin:0;" *ngIf="casePropertyMap && casePropertyMap[prop]">
     <span *ngIf="valType!='text'">{{casePropertyMap[prop][model[prop]]}}</span>
 
@@ -7,6 +9,8 @@
     <span *ngIf="valType=='text' && valFormat=='rich_text'"
           [innerHTML]="casePropertyMap[prop][model[prop]]"></span>
   </ng-container>
+
+  <!-- 自定义字段 -->
   <ng-container style="margin:0;" *ngIf="!casePropertyMap || !casePropertyMap[prop]">
     <span *ngIf="valType!='text'">{{model[prop]}}</span>
 

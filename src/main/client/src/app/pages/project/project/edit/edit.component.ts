@@ -24,6 +24,7 @@ declare var jQuery;
   templateUrl: './edit.html'
 })
 export class ProjectEdit implements OnInit, AfterViewInit {
+  orgId: number;
   type: string;
   id: number;
 
@@ -48,6 +49,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
               private fb: FormBuilder, private _projectService: ProjectService, private _userAndGroupService: UserAndGroupService) {
     let that = this;
+    this.orgId = CONSTANT.CURR_ORG_ID;
 
     this._route.params.subscribe(params => {
       that.type = params['type'];
@@ -124,7 +126,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
         that.model = json.data;
 
         that.formErrors = ['保存成功'];
-        that._routeService.navTo("/pages/project/list");
+        that._routeService.navTo('/pages/org/' + CONSTANT.CURR_ORG_ID + '/prjs');
       } else {
         that.formErrors = ['保存失败'];
       }
@@ -139,7 +141,7 @@ export class ProjectEdit implements OnInit, AfterViewInit {
         that.model = json.data;
 
         that.formErrors = ['删除成功'];
-        that._routeService.navTo("/pages/project/list");
+        that._routeService.navTo('/pages/org/' + CONSTANT.CURR_ORG_ID + '/prjs');
 
         this.modalWrapper.closeModal();
       } else {

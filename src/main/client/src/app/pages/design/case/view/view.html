@@ -1,0 +1,135 @@
+<div class="case-view">
+  <div [class.hidden]="model.id" class="row module-tips">请选择用例</div>
+  <div [class.hidden]="!model.id">
+      <div class="form-group row">
+
+      </div>
+
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label" style="user-select: text;">TC-{{model.id}}</label>
+        <div class="col-sm-10">
+          {{model.name}}
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+          <div class="tabs-container light">
+            <div class="tabs">
+              <ngb-tabset  (tabChange)="tabChange($event)">
+                <ngb-tab id="content">
+                  <ng-template ngbTabTitle>测试步骤</ng-template>
+                  <ng-template ngbTabContent></ng-template>
+                </ngb-tab>
+                <ngb-tab id="summary">
+                  <ng-template ngbTabTitle>用例信息</ng-template>
+                  <ng-template ngbTabContent></ng-template>
+                </ngb-tab>
+              </ngb-tabset>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="canEdit" class="contentType col-sm-2">
+          <div [class.hidden]="tab != 'content'">
+            <span *ngIf="model.contentType=='richText'" (click)="changeContentType('steps')" class="link">
+              <i class="ion-ios-grid-view"></i>
+              表格
+            </span>
+            <span *ngIf="model.contentType=='steps'" (click)="changeContentType('richText')" class="link">
+              <i class="ion-document-text"></i>
+              富文本
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div [class.hidden]="tab != 'content'" class="tab-steps form-group row">
+        <div [class.hidden]="'richText'!=model.contentType" class="col-sm-12">
+          <pre style="display: inline;"
+               [innerHTML]="model.content"></pre>
+        </div>
+
+        <div [class.hidden]="'steps'!=model.contentType" class="col-sm-12">
+          <steps-table [settings]="settings" [source]="model.steps"></steps-table>
+        </div>
+      </div>
+
+      <div [class.hidden]="tab != 'summary'" class="tab-summary">
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label"><span>测试类型</span></label>
+          <div class="col-sm-9">
+            {{casePropertyMap['type'][model.type]}}
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label"><span>优先级</span></label>
+          <div class="col-sm-9">
+            {{casePropertyMap['priority'][model.priority]}}
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label"><span>耗时(分钟)</span></label>
+          <div class="col-sm-9">
+            {{model.estimate}}
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label"><span>测试目的</span></label>
+          <div class="col-sm-9">
+            {{model.objective}}
+          </div>
+        </div>
+
+        <ng-container *ngIf="model.id">
+          <div *ngFor="let field of fields; let i = index;" class="form-group row">
+            <label class="col-sm-3 col-form-label"><span>{{field.label}}</span></label>
+            <div class="col-sm-9">
+              {{model[field]}}
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="form-group row comments">
+        <div class="col-sm-12">
+          <div *ngFor="let comment of model.comments; let i = index;" class="item">
+            <div>
+              <span class="avatar">
+                <img src="{{ comment.userAvatar | imgPath }}" class="">
+              </span>
+              <span class="summary">
+                {{comment.userName}} {{comment.summary}} - {{comment.changeTime | timePassed}}
+              </span>
+            </div>
+            <div>{{comment.content}}</div>
+
+            <div class="edit">
+              <span (click)="editComments(comment)" class="link"><i class="ion-edit"></i></span>
+              <span (click)="removeComments(comment.id, i)" class="link"><i class="ion-trash-a"></i></span>
+            </div>
+          </div>
+          <div class="buttons">
+            <button (click)="addComments()" type="button" class="btn btn-secondary btn-with-icon btn-sm">
+              <i class="ion-ios-chatbubble-outline"></i>备注
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
+          <div class="validate-errors">
+            <div class="validate-error" *ngFor="let msg of formErrors">
+              <div>{{ msg }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+
+</div>
+
+<comment-edit (confirm)="saveComments()" [(model)]="comment" #modalWrapper></comment-edit>

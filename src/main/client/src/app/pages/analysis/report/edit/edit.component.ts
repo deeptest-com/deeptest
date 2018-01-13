@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation, NgModule, Pipe, OnInit, AfterViewInit} from '@angular/core';
+import {Component, ViewEncapsulation, NgModule, Pipe, OnInit, AfterViewInit, OnDestroy} from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -21,7 +21,9 @@ declare var jQuery;
   styleUrls: ['./edit.scss'],
   templateUrl: './edit.html'
 })
-export class ReportEdit implements OnInit, AfterViewInit {
+export class ReportEdit implements OnInit, AfterViewInit, OnDestroy {
+  eventCode:string = 'ReportEdit';
+
   reportId: number;
   model: any;
   form: any;
@@ -42,7 +44,7 @@ export class ReportEdit implements OnInit, AfterViewInit {
     }
     that.buildForm();
 
-    this._state.subscribe(CONSTANT.EVENT_CASE_CHANGE, (data) => {
+    this._state.subscribe(CONSTANT.EVENT_CASE_CHANGE, this.eventCode, (data) => {
       let testCase = data.node;
       that.reportId = testCase.id;
       that.loadData();
@@ -98,6 +100,10 @@ export class ReportEdit implements OnInit, AfterViewInit {
   reset() {
     this.loadData();
   }
+
+  ngOnDestroy(): void {
+
+  };
 
 }
 

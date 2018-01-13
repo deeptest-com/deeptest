@@ -1,4 +1,4 @@
-import { Component,ViewEncapsulation, Pipe, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component,ViewEncapsulation, Pipe, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import {NgbModal, NgbModalRef, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
@@ -20,7 +20,9 @@ import { PasswordEditPopupComponent } from '../../password';
   styleUrls: ['./edit.scss'],
   templateUrl: './edit.html'
 })
-export class ProfileEdit implements OnInit, AfterViewInit {
+export class ProfileEdit implements OnInit, AfterViewInit, OnDestroy {
+  eventCode: string = 'ProfileEdit';
+
   model: any = {};
   recentProjects: any[] = [];
   currProject: any = {};
@@ -33,16 +35,16 @@ export class ProfileEdit implements OnInit, AfterViewInit {
   constructor(private _routeService: RouteService, private _state:GlobalState, private _route: ActivatedRoute,
       private modalService: NgbModal, private accountService: AccountService) {
 
-    this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, (profile) => {
+    this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode, (profile) => {
       console.log(CONSTANT.STATE_CHANGE_PROFILE, profile);
       this.model = profile;
     });
-    this._state.subscribe(CONSTANT.STATE_CHANGE_PROJECTS, (data) => {
+    this._state.subscribe(CONSTANT.STATE_CHANGE_PROJECTS, this.eventCode, (data) => {
       console.log(CONSTANT.STATE_CHANGE_PROJECTS, data);
       this.recentProjects = data.recentProjects;
       this.currProject = {id: CONSTANT.CURR_PRJ_ID, name: CONSTANT.CURR_PRJ_NAME};
     });
-    this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, (data) => {
+    this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, this.eventCode, (data) => {
       console.log(CONSTANT.STATE_CHANGE_ORGS, data);
       if (data.currOrgId) {
         this.orgId = data.currOrgId;
@@ -105,4 +107,9 @@ export class ProfileEdit implements OnInit, AfterViewInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this._state.unsubscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode);
+    this._state.unsubscribe(CONSTANT.STATE_CHANGE_PROJECTS, this.eventCode);
+    this._state.unsubscribe(CONSTANT.STATE_CHANGE_ORGS, this.eventCode);
+  };
 }

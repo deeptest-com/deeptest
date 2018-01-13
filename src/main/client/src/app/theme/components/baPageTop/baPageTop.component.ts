@@ -1,4 +1,4 @@
-import {Component, OnInit, AfterViewInit} from "@angular/core";
+import {Component, OnInit, AfterViewInit, OnDestroy} from "@angular/core";
 
 import {Router} from "@angular/router";
 
@@ -17,7 +17,8 @@ import {AccountService} from "../../../service/account";
   templateUrl: './baPageTop.html',
   styleUrls: ['./baPageTop.scss']
 })
-export class BaPageTop implements OnInit, AfterViewInit {
+export class BaPageTop implements OnInit, AfterViewInit, OnDestroy {
+  eventCode: string = 'BaPageTop';
 
   orgId: number;
   prjId: number;
@@ -38,15 +39,14 @@ export class BaPageTop implements OnInit, AfterViewInit {
   constructor(private _router: Router, private _state: GlobalState, private _routeService: RouteService,
               private sockService: SockService, private orgService: OrgService, private accountService: AccountService) {
 
-    this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, (profile) => {
+    this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode, (profile) => {
       console.log(CONSTANT.STATE_CHANGE_PROFILE, profile);
       this.profile = profile;
 
       this.wsConnect();
     });
 
-    this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, (data: any) => {
-      console.log(CONSTANT.STATE_CHANGE_ORGS, data);
+    this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, this.eventCode, (data: any) => {
       if (data.currOrgId) {
         this.orgId = data.currOrgId;
       }
@@ -55,7 +55,7 @@ export class BaPageTop implements OnInit, AfterViewInit {
       }
     });
 
-    this._state.subscribe(CONSTANT.STATE_CHANGE_PROJECTS, (data) => {
+    this._state.subscribe(CONSTANT.STATE_CHANGE_PROJECTS, this.eventCode, (data) => {
       console.log(CONSTANT.STATE_CHANGE_PROJECTS, data);
       this.prjId = CONSTANT.CURR_PRJ_ID;
 
@@ -64,7 +64,7 @@ export class BaPageTop implements OnInit, AfterViewInit {
       }
     });
 
-    this._state.subscribe('menu.isCollapsed', (isCollapsed) => {
+    this._state.subscribe('menu.isCollapsed', this.eventCode, (isCollapsed) => {
       this.isMenuCollapsed = isCollapsed;
     });
   }
@@ -144,5 +144,10 @@ export class BaPageTop implements OnInit, AfterViewInit {
     });
     this.sockService.open();
   }
+
+  ngOnDestroy(): void {
+    this._state.unsubscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode);
+    this._state.unsubscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode);
+  };
 
 }

@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation, NgModule, Pipe, OnInit, AfterViewInit} from '@angular/core';
+import {Component, ViewEncapsulation, NgModule, Pipe, OnInit, AfterViewInit, OnDestroy} from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -14,6 +14,7 @@ import { CaseService } from '../../../../service/case';
 import { CaseStepService } from '../../../../service/case-step';
 import { CaseInRunService } from '../../../../service/case-in-run';
 import { ZtreeService } from '../../../../components/ztree';
+import { PrivilegeService } from '../../../../service/privilege';
 
 declare var jQuery;
 
@@ -23,7 +24,9 @@ declare var jQuery;
   styleUrls: ['./result.scss'],
   templateUrl: './result.html'
 })
-export class ExecutionResult implements OnInit, AfterViewInit {
+export class ExecutionResult implements OnInit, AfterViewInit, OnDestroy {
+  eventCode:string = 'ExecutionResult';
+
   planId: number;
   runId: number;
 
@@ -36,10 +39,14 @@ export class ExecutionResult implements OnInit, AfterViewInit {
 
   fields: any;
   next: boolean = true;
+  canEdit: boolean;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
               private _caseService: CaseService, private _caseStepService: CaseStepService, private _caseInRunService: CaseInRunService,
-              private _ztreeService: ZtreeService) {
+              private _ztreeService: ZtreeService, private privilegeService:PrivilegeService) {
+    this.canEdit = this.privilegeService.hasPrivilege('cases-update');
+    console.log('this.canEdit', this.canEdit);
+
     this.buildForm();
   }
   ngOnInit() {
@@ -50,7 +57,7 @@ export class ExecutionResult implements OnInit, AfterViewInit {
       that.runId = +params['runId'];
     });
 
-    this._state.subscribe(CONSTANT.EVENT_CASE_EXE, (data: any) => {
+    this._state.subscribe(CONSTANT.EVENT_CASE_EXE, this.eventCode, (data: any) => {
       console.log(CONSTANT.EVENT_CASE_EXE, data);
       let testCase = data.node;
       if (!testCase || testCase.isParent) {
@@ -196,6 +203,10 @@ export class ExecutionResult implements OnInit, AfterViewInit {
     console.log(url);
     this._routeService.navTo(url);
   }
+
+  ngOnDestroy(): void {
+    this._state.unsubscribe(CONSTANT.EVENT_CASE_EXE, this.eventCode);
+  };
 
 }
 

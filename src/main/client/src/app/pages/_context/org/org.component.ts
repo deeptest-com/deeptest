@@ -1,12 +1,6 @@
 import { Component } from '@angular/core';
-import { Router, ActivatedRoute, Params } from '@angular/router';
-import { Routes } from '@angular/router';
-
+import { ActivatedRoute } from '@angular/router';
 import { CONSTANT } from '../../../utils/constant';
-import {RouteService} from "../../../service/route";
-
-import { AccountService } from '../../../service/account';
-import { ProjectService } from '../../../service/project';
 
 @Component({
   selector: 'org',
@@ -19,25 +13,17 @@ import { ProjectService } from '../../../service/project';
 export class Org {
   orgId: number;
 
-  constructor(private _route: ActivatedRoute, private _routeService: RouteService, private _projectService: ProjectService,
-              private accountService: AccountService) {
-
-  }
-
-  ngOnInit() {
+  constructor(private _route: ActivatedRoute) {
     this._route.params.subscribe(params => {
       this.orgId = params['orgId'];
     });
-    console.log('===Org', this.orgId);
+    console.log('==Current Org', this.orgId);
 
     if (CONSTANT.CURR_ORG_ID != this.orgId) {
       CONSTANT.CURR_ORG_ID = this.orgId;
-
-      this.accountService.loadProfileRemote().subscribe((result: any) => {
-        if (!result) {
-          this._routeService.navTo('/login');
-        }
-      });
     }
+  }
+  ngOnInit() {
+
   }
 }

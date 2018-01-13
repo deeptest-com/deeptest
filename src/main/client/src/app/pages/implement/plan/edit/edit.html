@@ -87,7 +87,7 @@
               <th>经办人</th>
               <th style="width: 300px;">执行情况</th>
               <th style="width: 250px;" class="opt">
-                <span (click)="editRun()" *ngIf="form.valid" class="link no-underline">新建</span>
+                <span privilege [privs]="'run-create'" (click)="editRun()" *ngIf="form.valid" class="link no-underline">新建</span>
               </th>
             </tr>
             </thead>
@@ -100,10 +100,10 @@
                 <execution-bar [data]="item"></execution-bar>
               </td>
               <td class="center">
-                <span (click)="editRun(item, i)" class="link no-underline">编辑</span>
-                <span (click)="editRunCases(item, i)" class="link no-underline">用例</span>
+                <span privilege [privs]="'run-update'" (click)="editRun(item, i)" class="link no-underline">编辑</span>
+                <span privilege [privs]="'run-update'" (click)="editRunCases(item, i)" class="link no-underline">用例</span>
                 <!--<span (click)="editEnvi(item, i)" class="link no-underline">环境</span>-->
-                <span (click)="removeSet(item, i)" class="link no-underline">删除</span>
+                <span privilege [privs]="'run-remove'" (click)="removeSet(item, i)" class="link no-underline">删除</span>
               </td>
             </tr>
             </tbody>

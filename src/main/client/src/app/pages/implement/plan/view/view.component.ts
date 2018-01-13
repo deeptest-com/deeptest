@@ -76,13 +76,6 @@ export class PlanView implements OnInit, AfterViewInit {
       }
     });
   }
-  delete(runId: number, index: number) {
-    this._runService.delete(runId).subscribe((json:any) => {
-      if (json.code == 1) {
-        this.model.runVos.splice(index, 1);
-      }
-    });
-  }
 
   returnTo() {
     let url: string = '/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID + '/implement/plan/list';

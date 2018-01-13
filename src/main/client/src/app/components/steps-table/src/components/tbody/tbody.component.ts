@@ -1,4 +1,4 @@
-import {Component, Input, Output, EventEmitter, } from '@angular/core';
+import {Component, Input, Output, OnInit, EventEmitter, } from '@angular/core';
 
 import { Grid } from '../../lib/grid';
 import { Row } from '../../lib/data-set/row';
@@ -10,7 +10,7 @@ import {Column} from "../../lib/data-set/column";
   styleUrls: ['./tbody.component.scss'],
   templateUrl: './tbody.component.html',
 })
-export class Ng2SmartTableTbodyComponent {
+export class Ng2SmartTableTbodyComponent implements OnInit {
 
   @Input() grid: Grid;
   @Input() source: DataSource;
@@ -23,6 +23,9 @@ export class Ng2SmartTableTbodyComponent {
   @Input() saveConfirm: EventEmitter<any>;
   @Input() deleteConfirm: EventEmitter<any>;
 
+  ngOnInit() {
+    console.log('------', this.grid);
+  }
   ngOnChanges() {
 
   }
@@ -35,9 +38,12 @@ export class Ng2SmartTableTbodyComponent {
   }
 
   onEdit(row: any) {
-
     event.preventDefault();
     event.stopPropagation();
+
+    if (!this.grid.settings.canEdit) {
+      return;
+    }
 
     this.grid.edit(row);
   }

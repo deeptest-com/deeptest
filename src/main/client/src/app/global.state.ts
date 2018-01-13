@@ -7,7 +7,7 @@ export class GlobalState {
   private _data = new Subject<Object>();
   private _dataStream$ = this._data.asObservable();
 
-  private _subscriptions: Map<string, Array<Function>> = new Map<string, Array<Function>>();
+  private _subscriptions: Map<string, Map<string, Function>> = new Map<string, Map<string, Function>>();
 
   constructor() {
     this._dataStream$.subscribe((data) => this._onEvent(data));
@@ -23,21 +23,38 @@ export class GlobalState {
         event: event,
         data: this._data[event]
       });
+
+      // console.log('===notifyDataChanged', this._data);
     }
   }
 
-  subscribe(event: string, callback: Function) {
-    let subscribers = this._subscriptions.get(event) || [];
-    subscribers.push(callback);
+  subscribe(event: string, code: string, callback: Function) {
+    let subscribers: Map<string, Function> = this._subscriptions.get(event)
+      || new Map<string, Function>();
 
+    subscribers.set(code, callback);
     this._subscriptions.set(event, subscribers);
+
+    // console.log('===subscribe', this._subscriptions);
+  }
+  unsubscribe(event: string, code: string) {
+    let subscribers: Map<string, Function> = this._subscriptions.get(event)
+      || new Map<string, Function>();
+
+    subscribers.delete(code);
   }
 
   _onEvent(data: any) {
-    let subscribers = this._subscriptions.get(data['event']) || [];
+    // console.log('***_onEvent', data['event'], data['data']);
 
-    subscribers.forEach((callback) => {
-      callback.call(null, data['data']);
+    let subscribers: Map<string, Function> = this._subscriptions.get(data['event'])
+      || new Map<string, Function>();
+    // console.log('===_onEvent', subscribers.keys());
+
+    subscribers.forEach((value: Function, key: string) => {
+      // console.log('---_onEvent', key);
+
+      value.call(null, data['data']);
     });
   }
 }

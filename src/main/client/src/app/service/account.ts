@@ -112,7 +112,6 @@ export class AccountService {
         if (json.code == 1) {
           setTimeout( () => {
             that.changeProfile(json.profile);
-            console.log('*************************');
             that.changeMyOrgs(json.profile.orgs, json.profile.defaultOrgId);
             that.changeRecentProjects(json.profile.recentProjects);
             that.changeCasePropertyMap(json.profile.casePropertyMap);

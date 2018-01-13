@@ -40,9 +40,7 @@ export class ProjectList implements OnInit, AfterViewInit, OnDestroy {
       }, {}
     );
 
-    console.log('===000 constructor');
     this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, this.eventCode, (data: any) => {
-      console.log('===111 STATE_CHANGE_ORGS');
       if(this.isInit) {
         this.loadData();
       }
@@ -50,8 +48,7 @@ export class ProjectList implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.isInit = false
-    console.log('===222 ngOnInit');
+    this.isInit = false;
     this.loadData();
   }
 

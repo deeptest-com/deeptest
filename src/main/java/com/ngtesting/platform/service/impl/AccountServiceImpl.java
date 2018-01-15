@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.entity.TestVerifyCode;
 import com.ngtesting.platform.service.AccountService;
-import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -214,22 +213,6 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 		po.setPassword(password);
 		saveOrUpdate(po);
 		return true;
-	}
-
-	@Override
-	public TestUser saveProfile(UserVo vo) {
-		TestUser po = (TestUser) get(TestUser.class, vo.getId());
-
-		String name = vo.getName();
-		String email = vo.getEmail();
-		String phone = vo.getPhone();
-		String avatar = vo.getAvatar();
-		po.setPhone(phone);
-		po.setName(name);
-		po.setEmail(email);
-		po.setAvatar(avatar);
-		saveOrUpdate(po);
-		return po;
 	}
 
     @Override

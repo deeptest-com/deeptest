@@ -1,25 +1,24 @@
 package com.ngtesting.platform.servlet;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.alibaba.fastjson.JSON;
+import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.config.Constant.RespCode;
+import com.ngtesting.platform.entity.TestUser;
+import com.ngtesting.platform.service.AccountService;
+import com.ngtesting.platform.service.UserService;
+import com.ngtesting.platform.util.AuthPassport;
+import com.ngtesting.platform.util.SpringContextHolder;
+import com.ngtesting.platform.util.WebUtils;
+import com.ngtesting.platform.vo.UserVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.alibaba.fastjson.JSON;
-import com.ngtesting.platform.entity.TestUser;
-import com.ngtesting.platform.service.AccountService;
-import com.ngtesting.platform.service.UserService;
-import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.config.Constant.RespCode;
-import com.ngtesting.platform.util.SpringContextHolder;
-import com.ngtesting.platform.util.WebUtils;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SystemInterceptor implements HandlerInterceptor {
 
@@ -59,10 +58,11 @@ public class SystemInterceptor implements HandlerInterceptor {
 					// 登录验证
 					AccountService accountService = SpringContextHolder.getBean(AccountService.class);
 					UserService userService = SpringContextHolder.getBean(UserService.class);
-					TestUser user = accountService.getByToken(token.trim());
 
-					if (user != null) {
-						request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userService.genVo(user));
+					TestUser user = accountService.getByToken(token.trim());
+                    UserVo userVo = userService.genVo(user);
+                    if (user != null) {
+						request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
 						return true;
 					}
 				}

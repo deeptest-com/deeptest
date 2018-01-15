@@ -16,9 +16,11 @@ export var CONSTANT: CONSTANT_INTERFACE = {
 
   PROFILE: undefined,
 
-  ALL_ORGS: undefined,
-
+  SYS_PRIVILEGES: undefined,
+  MY_ORGS: undefined,
+  ORG_PRIVILEGES: undefined,
   RECENT_PROJECTS: undefined,
+  PRJ_PRIVILEGES: undefined,
 
   CUSTOM_FIELD_FOR_PROJECT: undefined,
   CASE_PROPERTY_MAP: undefined,
@@ -32,10 +34,6 @@ export var CONSTANT: CONSTANT_INTERFACE = {
 
   ScreenSize: {h: 0, w: 0},
   DebounceTime: 500,
-
-  STATE_CHANGE_PROFILE: 'profile.refresh',
-  STATE_CHANGE_ORGS: 'my.orgs.change',
-  STATE_CHANGE_PROJECTS: 'recent.projects.change',
 
   EVENT_CASE_EDIT: 'case.edit',
   EVENT_CASE_UPDATE: 'case.update',
@@ -62,13 +60,15 @@ export interface CONSTANT_INTERFACE {
   TOKEN: string,
 
   PROFILE: any,
+  SYS_PRIVILEGES: any,
 
-  ALL_ORGS: any[],
-
+  MY_ORGS: any[],
+  ORG_PRIVILEGES: any,
   RECENT_PROJECTS: any[],
 
   CUSTOM_FIELD_FOR_PROJECT: any,
   CASE_PROPERTY_MAP: any,
+  PRJ_PRIVILEGES: any,
 
   TOKEN_KEY: string,
   TOKEN_EXPIRE: string,
@@ -79,10 +79,6 @@ export interface CONSTANT_INTERFACE {
 
   ScreenSize: any,
   DebounceTime: number,
-
-  STATE_CHANGE_PROFILE: string,
-  STATE_CHANGE_ORGS: string,
-  STATE_CHANGE_PROJECTS: string,
 
   EVENT_CASE_EDIT: string,
   EVENT_CASE_UPDATE: string,

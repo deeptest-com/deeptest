@@ -24,19 +24,12 @@ export class Case implements OnInit, AfterViewInit, OnDestroy {
   canEdit: boolean;
 
   constructor(private _state: GlobalState, private _route: ActivatedRoute, private privilegeService:PrivilegeService) {
-    this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode, (profile) => {
-      console.log(CONSTANT.STATE_CHANGE_PROFILE + ' in Case', profile);
-      this.leftWidth = CONSTANT.PROFILE.leftSize;
-      this.canEdit = this.privilegeService.hasPrivilege('cases-update');
-    });
 
   }
 
   ngOnInit() {
-    if (CONSTANT.PROFILE) {
       this.leftWidth = CONSTANT.PROFILE.leftSize;
       this.canEdit = this.privilegeService.hasPrivilege('cases-update');
-    }
   }
 
   ngAfterViewInit() {
@@ -44,7 +37,6 @@ export class Case implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._state.unsubscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode);
   };
 
 }

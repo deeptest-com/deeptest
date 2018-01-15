@@ -35,24 +35,6 @@ export class ProfileEdit implements OnInit, AfterViewInit, OnDestroy {
   constructor(private _routeService: RouteService, private _state:GlobalState, private _route: ActivatedRoute,
       private modalService: NgbModal, private accountService: AccountService) {
 
-    this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode, (profile) => {
-      console.log(CONSTANT.STATE_CHANGE_PROFILE, profile);
-      this.model = profile;
-    });
-    this._state.subscribe(CONSTANT.STATE_CHANGE_PROJECTS, this.eventCode, (data) => {
-      console.log(CONSTANT.STATE_CHANGE_PROJECTS, data);
-      this.recentProjects = data.recentProjects;
-      this.currProject = {id: CONSTANT.CURR_PRJ_ID, name: CONSTANT.CURR_PRJ_NAME};
-    });
-    this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, this.eventCode, (data) => {
-      console.log(CONSTANT.STATE_CHANGE_ORGS, data);
-      if (data.currOrgId) {
-        this.orgId = data.currOrgId;
-      }
-      if (data.orgs) {
-        this.orgs = data.orgs;
-      }
-    });
   }
 
   ngOnInit() {
@@ -66,8 +48,6 @@ export class ProfileEdit implements OnInit, AfterViewInit, OnDestroy {
     this.accountService.saveInfo(event.data).subscribe((json:any) => {
       if (json.code == 1) {
         this.model = json.data;
-        this.accountService.changeProfile(this.model);
-
         event.deferred.resolve();
       }
     });
@@ -77,7 +57,7 @@ export class ProfileEdit implements OnInit, AfterViewInit, OnDestroy {
     if(CONSTANT.PROFILE) {
       this.model = CONSTANT.PROFILE;
 
-      this.orgs = CONSTANT.ALL_ORGS;
+      this.orgs = CONSTANT.MY_ORGS;
       this.orgId = CONSTANT.CURR_ORG_ID;
 
       this.recentProjects =  CONSTANT.RECENT_PROJECTS;
@@ -91,7 +71,6 @@ export class ProfileEdit implements OnInit, AfterViewInit, OnDestroy {
     this.accountService.saveInfo({prop: 'avatar', value: event.data}).subscribe((json:any) => {
       if (json.code == 1) {
         this.model = json.data;
-        this.accountService.changeProfile(this.model);
 
         event.deferred.resolve();
       }
@@ -108,8 +87,6 @@ export class ProfileEdit implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._state.unsubscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode);
-    this._state.unsubscribe(CONSTANT.STATE_CHANGE_PROJECTS, this.eventCode);
-    this._state.unsubscribe(CONSTANT.STATE_CHANGE_ORGS, this.eventCode);
+
   };
 }

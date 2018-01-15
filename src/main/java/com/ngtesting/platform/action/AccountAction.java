@@ -27,28 +27,29 @@ import java.util.Map;
 @Controller
 @RequestMapping(Constant.API_PATH_CLIENT + "account/")
 public class AccountAction extends BaseAction {
+    @Autowired
+    PushSettingsService pushSettingsService;
+
 	@Autowired
 	AccountService accountService;
 	@Autowired
 	UserService userService;
 	@Autowired
-    ProjectService projectService;
-
-	@Autowired
 	MailService mailService;
 
     @Autowired
-    OrgService orgService;
-
-	@Autowired
-	CasePropertyService casePropertyService;
-
-    @Autowired
     SysPrivilegeService sysPrivilegeService;
-	@Autowired
+    @Autowired
     OrgRolePrivilegeService orgRolePrivilegeService;
     @Autowired
     ProjectPrivilegeService projectPrivilegeService;
+    @Autowired
+    CasePropertyService casePropertyService;
+
+    @Autowired
+    OrgService orgService;
+    @Autowired
+    ProjectService projectService;
 
 	@AuthPassport(validate=false)
 	@RequestMapping(value = "login", method = RequestMethod.POST)
@@ -174,24 +175,30 @@ public class AccountAction extends BaseAction {
 			projectService.viewPers(prjIdNew, userVo);
 		}
 
-		List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(userVo.getDefaultOrgId(), userVo.getId());
-        List<OrgVo> orgs = orgService.listVo(null, "false", userVo.getId());
-		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
+        Long userId = userVo.getId();
 
-		userVo.setOrgs(orgs);
-		userVo.setRecentProjects(recentProjects);
-		userVo.setCasePropertyMap(casePropertyMap);
+        ret.put("profile", userVo);
 
-        Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userVo.getId());
-        Map<String, Boolean> orgRolePrivileges = orgRolePrivilegeService.listByUser(userVo.getId(), orgId);
-        Map<String, Boolean> projectPrivileges = projectPrivilegeService.listByUserPers(userVo.getId(),
-                userVo.getDefaultPrjId(), orgId);
+        Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userId);
+        ret.put("sysPrivileges", sysPrivileges);
 
-        userVo.setSysPrivilege(sysPrivileges);
-        userVo.setOrgPrivilege(orgRolePrivileges);
-        userVo.setProjectPrivilege(projectPrivileges);
+        List<OrgVo> orgs = orgService.listVo(null, "false", userId);
+        ret.put("myOrgs", orgs);
 
-		ret.put("profile", userVo);
+        Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(userVo.getId(), orgId);
+        ret.put("orgPrivileges", orgPrivileges);
+
+        Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
+        ret.put("casePropertyMap", casePropertyMap);
+
+        List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(orgId, userId);
+        ret.put("recentProjects", recentProjects);
+        if (recentProjects.size() > 0) {
+            userVo.setDefaultPrjId(recentProjects.get(0).getProjectId());
+        }
+
+        Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUserPers(userId, prjId, orgId);
+        ret.put("prjPrivileges", prjPrivileges);
 
 		ret.put("code", RespCode.SUCCESS.getCode());
 
@@ -305,32 +312,21 @@ public class AccountAction extends BaseAction {
 		return ret;
 	}
 
-	@RequestMapping(value = "saveProfile", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> saveProfile(HttpServletRequest request, @RequestBody UserVo vo) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-		TestUser user = (TestUser) accountService.saveProfile(vo);
-		vo = userService.genVo(user);
-		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, vo);
-
-		ret.put("data", vo);
-		ret.put("code", RespCode.SUCCESS.getCode());
-		return ret;
-	}
     @RequestMapping(value = "saveInfo", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> saveInfo(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        UserVo vo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-        json.put("id", vo.getId());
+        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        json.put("id", userVo.getId());
 
-        TestUser user = (TestUser) accountService.saveInfo(json);
-        vo = userService.genVo(user);
-        request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, vo);
+        TestUser user = accountService.saveInfo(json);
+        userVo = userService.genVo(user);
+        request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
 
-        ret.put("data", vo);
+        pushSettingsService.pushUserSettings(userVo);
+
+        ret.put("data", userVo);
         ret.put("code", RespCode.SUCCESS.getCode());
         return ret;
     }

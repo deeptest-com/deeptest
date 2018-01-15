@@ -12,9 +12,6 @@ public class TestOrg extends BaseEntity {
 	private String name;
     private String website;
 
-//    @Column(name = "admin_id")
-//    private Long adminId;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", insertable = false, updatable = false)
     private TestUser admin;
@@ -49,14 +46,6 @@ public class TestOrg extends BaseEntity {
 	public void setUserSet(Set<TestUser> userSet) {
 		this.userSet = userSet;
 	}
-
-//	public Long getAdminId() {
-//		return adminId;
-//	}
-//
-//	public void setAdminId(Long adminId) {
-//		this.adminId = adminId;
-//	}
 
 	public TestUser getAdmin() {
 		return admin;

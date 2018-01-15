@@ -135,8 +135,8 @@
             <div>{{comment.content}}</div>
 
             <div class="edit">
-              <span (click)="editComments(comment)" class="link"><i class="ion-edit"></i></span>
-              <span (click)="removeComments(comment.id, i)" class="link"><i class="ion-trash-a"></i></span>
+              <span *ngIf="comment.userId==user.id" (click)="editComments(comment)" class="link"><i class="ion-edit"></i></span>
+              <span *ngIf="comment.userId==user.id" (click)="removeComments(comment.id, i)" class="link"><i class="ion-trash-a"></i></span>
             </div>
           </div>
           <div class="buttons">

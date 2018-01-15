@@ -7,12 +7,21 @@ public class TestCaseCommentsVo extends BaseVo {
 
     private String summary;
     private String content;
+    private Long userId;
     private String userName;
     private String userAvatar;
     private Long testCaseId;
     private Date changeTime;
 
     public TestCaseCommentsVo() {
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public Date getChangeTime() {

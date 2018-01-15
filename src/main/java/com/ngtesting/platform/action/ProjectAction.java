@@ -4,12 +4,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestRelationProjectRoleEntity;
-import com.ngtesting.platform.service.ProjectPrivilegeService;
 import com.ngtesting.platform.service.ProjectRoleService;
 import com.ngtesting.platform.service.ProjectService;
+import com.ngtesting.platform.service.PushSettingsService;
 import com.ngtesting.platform.service.RelationProjectRoleEntityService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.vo.*;
+import com.ngtesting.platform.vo.ProjectRoleVo;
+import com.ngtesting.platform.vo.RelationProjectRoleEntityVo;
+import com.ngtesting.platform.vo.TestProjectVo;
+import com.ngtesting.platform.vo.UserVo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +37,8 @@ public class ProjectAction extends BaseAction {
     ProjectService projectService;
     @Autowired
     ProjectRoleService projectRoleService;
-	@Autowired
-	ProjectPrivilegeService projectPrivilegeService;
+    @Autowired
+    PushSettingsService pushSettingsService;
 
     @Autowired
     RelationProjectRoleEntityService relationProjectRoleEntityService;
@@ -106,21 +109,12 @@ public class ProjectAction extends BaseAction {
 		Long id = json.getLong("id");
 
 		TestProjectVo vo = projectService.viewPers(id, userVo);
-		Map<String, Boolean> projectPrivileges = projectPrivilegeService.listByUserPers(userVo.getId(),
-				id, vo.getOrgId());
 
-		List<TestProjectAccessHistoryVo> recentProjects
-				= projectService.listRecentProjectVo(userVo.getDefaultOrgId(), userVo.getId());
-
-		for (TestProjectAccessHistoryVo his : recentProjects) {
-			TestProject prj = (TestProject)projectService.get(TestProject.class, his.getProjectId());
-			his.setProjectName(prj.getName());
-		}
+        pushSettingsService.pushRecentProjects(userVo);
+        pushSettingsService.pushPrjSettings(userVo);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		ret.put("project", vo);
-		ret.put("recentProjects", recentProjects);
-		ret.put("projectPrivilege", projectPrivileges);
+        ret.put("project", vo);
 		return ret;
 	}
 
@@ -136,10 +130,10 @@ public class ProjectAction extends BaseAction {
 
 		TestProjectVo vo = json.getObject("model", TestProjectVo.class);
 
-		TestProject po = projectService.save(vo, orgId, userId);
-		TestProjectVo projectVo = projectService.genVo(po);
+        TestProject po = projectService.save(vo, orgId, userId);
+        projectService.updateNameInHisotyPers(po.getId(), userId);
+        pushSettingsService.pushRecentProjects(userVo);
 
-        ret.put("data", projectVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

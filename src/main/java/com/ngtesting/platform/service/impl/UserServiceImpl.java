@@ -2,7 +2,6 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.ngtesting.platform.entity.TestOrg;
-import com.ngtesting.platform.entity.TestRelationProjectRoleEntity;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.AccountService;
 import com.ngtesting.platform.service.RelationOrgGroupUserService;
@@ -11,8 +10,6 @@ import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.Page;
-import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
-import com.ngtesting.platform.vo.RelationProjectRoleEntityVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -27,6 +24,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	
 	@Autowired
 	AccountService accountService;
+    @Autowired
+    AccountService projectService;
 	@Autowired
     RelationProjectRoleEntityService relationProjectRoleUserService;
     @Autowired
@@ -59,57 +58,20 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<RelationProjectRoleEntityVo> getProjectUsers(Long orgId, Long projectId) {
-		DetachedCriteria dc = DetachedCriteria.forClass(TestRelationProjectRoleEntity.class);
+	public List<Map> getProjectUsers(Long orgId, Long projectId) {
 
-		dc.add(Restrictions.eq("projectId", projectId));
+		List<Map> users = new LinkedList<>();
 
-		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+        List<Object[]> ls = getDao().getListBySQL("{call get_project_users(?)}", projectId);
+        for (Object[] arr : ls) {
+            Map<String, Object> map = new HashMap();
+            map.put("id", arr[0].toString());
+            map.put("name", arr[1].toString());
 
-		dc.addOrder(Order.asc("id"));
-		List<TestRelationProjectRoleEntity> ls = findAllByCriteria(dc);
-
-        List<RelationProjectRoleEntityVo> vos = new LinkedList();
-
-        List<Long> userIds = new LinkedList<>();
-        for(TestRelationProjectRoleEntity r : ls) {
-            if (r.getType().equals(TestRelationProjectRoleEntity.EntityType.user)) {
-                RelationProjectRoleEntityVo vo = new RelationProjectRoleEntityVo();
-                BeanUtilEx.copyProperties(vo, r);
-                vos.add(vo);
-
-                userIds.add(r.getEntityId());
-            }
+            users.add(map);
         }
 
-		for(TestRelationProjectRoleEntity r : ls) {
-		    if (r.getType().equals(TestRelationProjectRoleEntity.EntityType.group)) {
-                Long groupId = r.getEntityId();
-                List<RelationOrgGroupUserVo> rUsers  = relationOrgGroupUserService.listRelationsByGroup(orgId, groupId);
-
-                for(RelationOrgGroupUserVo ru : rUsers) {
-                    if (userIds.contains(ru.getUserId())) {
-                        continue;
-                    }
-                    RelationProjectRoleEntityVo vo = new RelationProjectRoleEntityVo();
-                    vo.setProjectId(r.getProjectId());
-                    vo.setProjectRoleId(r.getProjectRoleId());
-                    vo.setProjectRoleName(relationProjectRoleEntityService.getEntityName(r));
-                    vo.setEntityId(ru.getUserId());
-                    vo.setEntityName(ru.getUserName());
-                    vos.add(vo);
-                }
-            }
-        }
-
-        Collections.sort(vos, new Comparator<RelationProjectRoleEntityVo>(){
-            public int compare(RelationProjectRoleEntityVo o1, RelationProjectRoleEntityVo o2) {
-                return o1.getEntityName().compareTo(o2.getEntityName());
-            }
-        });
-
-		return vos;
+		return users;
 	}
 
 	@Override
@@ -172,7 +134,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         saveOrUpdate(po);
 		
 		TestOrg org = (TestOrg)get(TestOrg.class, orgId);
-		if (!contains(org.getUserSet(), userVo.getId())) {
+		if (!contains(org.getUserSet(), po.getId())) {
 			org.getUserSet().add(po);
 			saveOrUpdate(org);
 		}
@@ -204,7 +166,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		
 		return true;
 	}
-    
+
 	@Override
 	public UserVo genVo(TestUser user) {
 		if (user == null) {
@@ -212,7 +174,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		}
 		UserVo vo = new UserVo();
 		BeanUtilEx.copyProperties(vo, user);
-		
+
 		return vo;
 	}
 	@Override

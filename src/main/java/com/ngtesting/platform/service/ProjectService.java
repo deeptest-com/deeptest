@@ -26,7 +26,10 @@ public interface ProjectService extends BaseService {
 
 	TestProjectVo viewPers(Long projectId, UserVo userVo);
 	List<TestProject> list(Long orgId, String keywords, String disabled);
-	boolean isLastestProjectGroup(Long orgId, Long projectGroupId);
+
+    void updateNameInHisotyPers(Long projectId, Long userId);
+
+    boolean isLastestProjectGroup(Long orgId, Long projectGroupId);
 
 	TestProjectVo genVo(TestProject po);
 	List<TestProjectVo> genVos(List<TestProject> pos, String keywords, String disabled);

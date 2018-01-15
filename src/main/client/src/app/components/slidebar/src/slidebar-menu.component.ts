@@ -30,21 +30,12 @@ export class SlidebarMenu implements OnInit, OnDestroy {
     this.currLink = _router.url;
 
     if (CONSTANT.PROFILE) {
-      this.isOrgAdmin = CONSTANT.PROFILE.orgPrivilege.org_admin;
+      this.isOrgAdmin = CONSTANT.ORG_PRIVILEGES.org_admin;
     }
   }
 
   ngOnInit() {
-    this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode, (profile) => {
-      console.log(CONSTANT.STATE_CHANGE_PROFILE, profile);
 
-      this.isOrgAdmin = CONSTANT.PROFILE.orgPrivilege.org_admin;
-    });
-    this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, this.eventCode, (data) => {
-      console.log(CONSTANT.STATE_CHANGE_ORGS, data);
-
-      this.isOrgAdmin = CONSTANT.PROFILE.orgPrivilege.org_admin;
-    });
   }
 
   public hoverItem($event):void {
@@ -60,7 +51,5 @@ export class SlidebarMenu implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._state.unsubscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode);
-    this._state.unsubscribe(CONSTANT.STATE_CHANGE_ORGS, this.eventCode);
   };
 }

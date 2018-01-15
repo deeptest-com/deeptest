@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import {Injectable} from "@angular/core";
 import {CONSTANT} from '../utils/constant';
 import {WS_CONSTANT} from '../utils/ws-constant';
-
+import {GlobalState} from '../global.state';
 declare var SockJS;
 
 @Injectable()
@@ -14,7 +14,7 @@ export class SockService {
   private sock: any;
   private handlers = {};
 
-  constructor() {
+  constructor(private _state:GlobalState) {
     this.url = CONSTANT.SERVICE_URL + this.uri;
   }
 
@@ -72,6 +72,24 @@ export class SockService {
       var msg = JSON.stringify(data);
       this.sock.send(msg);
     }
+  }
+
+  wsConnect() {
+    this.onMessage((json) => {
+
+      if (json.code != 1) {
+        console.log('ws error: ', json.code);
+        return;
+      }
+
+      this._state.notifyDataChanged(json.type, json);
+    });
+    this.onOpen((e) => {
+      this.send({
+        type: WS_CONSTANT.WS_OPEN
+      });
+    });
+    this.open();
   }
 
 }

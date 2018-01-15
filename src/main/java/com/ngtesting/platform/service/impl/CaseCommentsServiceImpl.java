@@ -29,7 +29,7 @@ public class CaseCommentsServiceImpl extends BaseServiceImpl implements CaseComm
         po.setSummary(vo.getSummary());
         po.setContent(vo.getContent());
         po.setTestCaseId(vo.getTestCaseId());
-        po.setUpdateById(userVo.getId());
+        po.setUserId(userVo.getId());
         po.setChangeTime(new Date());
         saveOrUpdate(po);
 
@@ -53,7 +53,8 @@ public class CaseCommentsServiceImpl extends BaseServiceImpl implements CaseComm
             vo.setUpdateTime(vo.getCreateTime());
         }
 
-        TestUser user = po.getUpdateBy() != null?po.getUpdateBy(): (TestUser)get(TestUser.class, po.getId());
+        TestUser user = po.getUser() != null?po.getUser(): (TestUser)get(TestUser.class, po.getId());
+
         vo.setUserName(user.getName());
         vo.setUserAvatar(user.getAvatar());
         return vo;

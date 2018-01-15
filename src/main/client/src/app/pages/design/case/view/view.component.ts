@@ -43,6 +43,7 @@ export class CaseView implements OnInit, AfterViewInit, OnDestroy {
 
   casePropertyMap: any;
   fields: any[] = [];
+  user: any;
 
   constructor(private _state:GlobalState, private fb: FormBuilder, private toastyService:ToastyService,
               private _caseService: CaseService, private _caseStepService: CaseStepService, private _caseCommentsService: CaseCommentsService) {
@@ -50,6 +51,7 @@ export class CaseView implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnInit() {
     this.projectId = CONSTANT.CURR_PRJ_ID;
+    this.user = CONSTANT.PROFILE;
 
     this._state.subscribe(CONSTANT.EVENT_CASE_EDIT, this.eventCode, (data: any) => {
       let testCase = data.node;

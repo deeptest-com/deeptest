@@ -20,12 +20,12 @@ public class TestProjectPrivilegeDefine extends BaseEntity {
     private PrivilegeAction action;
 
     public static enum ProjectPrivilegeCode {
-    	req("req"),
+//    	req("req"),
+		plan("plan"),
     	cases("cases"),
-    	plan("plan"),
-    	round("round"),
-    	result("result"),
-    	report("report");
+		run("run");
+//    	result("result"),
+//    	report("report");
 
         private ProjectPrivilegeCode(String textVal) {
             this.textVal = textVal;
@@ -41,7 +41,8 @@ public class TestProjectPrivilegeDefine extends BaseEntity {
 		create("create"),
         update("update"),
         remove("remove"),
-        close("close");
+        close("close"),
+		exe("exe");
 
         private PrivilegeAction(String textVal) {
             this.textVal = textVal;

@@ -157,8 +157,8 @@
                         <ng-select  [multiple]="true"
                                     [items]="users"
                                     [(active)]="createUsers"
-                                    [idField]="'entityId'"
-                                    [textField]="'entityName'"
+                                    [idField]="'id'"
+                                    [textField]="'name'"
                                     [disabled]="disabled"
                                     (data)="refreshCreateBy($event)"
                                     placeholder="请选择"></ng-select>
@@ -170,8 +170,8 @@
                         <ng-select  [multiple]="true"
                                     [items]="users"
                                     [(active)]="updateUsers"
-                                    [idField]="'entityId'"
-                                    [textField]="'entityName'"
+                                    [idField]="'id'"
+                                    [textField]="'name'"
                                     [disabled]="disabled"
                                     (data)="refreshUpdateBy($event)"
                                     placeholder="请选择"></ng-select>

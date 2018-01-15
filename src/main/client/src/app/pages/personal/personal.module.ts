@@ -26,9 +26,6 @@ import { PasswordEditComponent, PasswordEditPopupComponent } from './password';
 import { Profile } from './profile';
 import { ProfileEdit } from './profile/profile-edit';
 
-import { Settings } from './settings';
-import { SettingsEdit } from './settings/settings-edit';
-
 @NgModule({
   imports: [
     CommonModule,
@@ -45,9 +42,7 @@ import { SettingsEdit } from './settings/settings-edit';
     PasswordEditComponent,
     PasswordEditPopupComponent,
     Profile,
-    ProfileEdit,
-    Settings,
-    SettingsEdit
+    ProfileEdit
   ],
   providers: [
     RouteService,

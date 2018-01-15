@@ -40,9 +40,9 @@ export class App {
 
     this._loadImages();
 
-    this._state.subscribe('menu.isCollapsed', this.eventCode, (isCollapsed) => {
-      this.isMenuCollapsed = isCollapsed;
-    });
+    // this._state.subscribe('menu.isCollapsed', this.eventCode, (isCollapsed) => {
+    //   this.isMenuCollapsed = isCollapsed;
+    // });
 
     Utils.config();
 

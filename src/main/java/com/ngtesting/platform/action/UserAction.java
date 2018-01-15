@@ -2,6 +2,9 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.config.Constant.RespCode;
+import com.ngtesting.platform.config.PropertyConfig;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.entity.TestVerifyCode;
 import com.ngtesting.platform.service.AccountService;
@@ -9,12 +12,8 @@ import com.ngtesting.platform.service.MailService;
 import com.ngtesting.platform.service.RelationOrgGroupUserService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.config.Constant.RespCode;
-import com.ngtesting.platform.config.PropertyConfig;
 import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
-import com.ngtesting.platform.vo.RelationProjectRoleEntityVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -75,7 +74,7 @@ public class UserAction extends BaseAction {
 
 		String projectId = json.getString("projectId");
 
-		List <RelationProjectRoleEntityVo> vos = userService.getProjectUsers(orgId, Long.valueOf(projectId));
+		List <Map> vos = userService.getProjectUsers(orgId, Long.valueOf(projectId));
 
 		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

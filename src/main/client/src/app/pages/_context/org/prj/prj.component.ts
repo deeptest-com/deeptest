@@ -33,7 +33,6 @@ export class Prj {
 
       this._projectService.view(CONSTANT.CURR_PRJ_ID).subscribe((json: any) => {
         CONSTANT.PROFILE.projectPrivilege = json.projectPrivilege;
-        this.accountService.changeRecentProjects(json.recentProjects);
       });
     }
   }

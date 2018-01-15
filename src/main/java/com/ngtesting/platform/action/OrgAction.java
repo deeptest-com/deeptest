@@ -1,16 +1,13 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestUser;
-import com.ngtesting.platform.service.CasePropertyService;
-import com.ngtesting.platform.service.OrgRolePrivilegeService;
 import com.ngtesting.platform.service.OrgService;
-import com.ngtesting.platform.service.ProjectPrivilegeService;
+import com.ngtesting.platform.service.PushSettingsService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.vo.OrgVo;
-import com.ngtesting.platform.vo.TestProjectAccessHistoryVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,11 +29,7 @@ public class OrgAction extends BaseAction {
 	OrgService orgService;
 
 	@Autowired
-	OrgRolePrivilegeService orgRolePrivilegeService;
-	@Autowired
-	ProjectPrivilegeService projectPrivilegeService;
-	@Autowired
-	CasePropertyService casePropertyService;
+	PushSettingsService pushSettingsService;
 
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
@@ -89,9 +82,10 @@ public class OrgAction extends BaseAction {
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		TestOrg po = orgService.save(vo, userVo.getId());
-
+		orgService.save(vo, userVo.getId());
 		List<OrgVo> vos = orgService.listVo(null, "false", userVo.getId());
+
+        pushSettingsService.pushMyOrgs(userVo);
 
 		ret.put("myOrgs", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -121,30 +115,11 @@ public class OrgAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long orgId = json.getLong("id");
 
-		String keywords = json.getString("keywords");
-		String disabled = json.getString("disabled");
+		orgService.setDefaultPers(orgId, userVo);
 
-		List<TestProjectAccessHistoryVo> recentProjects = orgService.setDefaultPers(orgId, userVo);
-
-		List<OrgVo> vos = orgService.listVo(keywords, disabled, userVo.getId());
-
-		Map<String, Boolean> orgRolePrivileges = orgRolePrivilegeService.listByUser(userVo.getId(),
-				userVo.getDefaultOrgId());
-		Map<String, Boolean> projectPrivileges = projectPrivilegeService.listByUserPers(userVo.getId(),
-				userVo.getDefaultPrjId(), orgId);
-
-		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
+		pushSettingsService.pushRecentProjects(userVo);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		ret.put("defaultOrgId", userVo.getDefaultOrgId());
-		ret.put("defaultPrjId", userVo.getDefaultPrjId());
-
-		ret.put("data", vos);
-		ret.put("recentProjects", recentProjects);
-		ret.put("orgPrivilege", orgRolePrivileges);
-		ret.put("projectPrivilege", projectPrivileges);
-
-		ret.put("casePropertyMap", casePropertyMap);
 
 		return ret;
 	}

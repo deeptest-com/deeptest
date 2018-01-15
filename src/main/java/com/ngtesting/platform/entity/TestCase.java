@@ -14,7 +14,7 @@ public class TestCase extends BaseEntity {
 
     private String name;
 
-    // high, middle, low
+    // high, medium, low
 	private String priority;
 
     // functional, performance, security, others

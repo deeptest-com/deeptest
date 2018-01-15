@@ -21,6 +21,7 @@ declare var jQuery;
   templateUrl: './view.html'
 })
 export class ProjectView implements OnInit, AfterViewInit {
+  orgId: number;
   type: string;
   id: number;
   model: any = {};
@@ -31,6 +32,8 @@ export class ProjectView implements OnInit, AfterViewInit {
   }
   ngOnInit() {
     let that = this;
+
+    this.orgId = CONSTANT.CURR_ORG_ID;
 
     this._route.params.subscribe(params => {
       that.id = +params['id'];
@@ -46,8 +49,7 @@ export class ProjectView implements OnInit, AfterViewInit {
       CONSTANT.CURR_PRJ_ID = this.id;
 
       this._projectService.view(this.id).subscribe((json:any) => {
-        CONSTANT.PROFILE.projectPrivilege = json.projectPrivilege;
-        this.accountService.changeRecentProjects(json.recentProjects);
+
       });
     }
   }

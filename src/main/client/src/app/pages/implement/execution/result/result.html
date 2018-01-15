@@ -1,6 +1,6 @@
 <div class="execution-result">
 
-  <div *ngIf="!model" class="row module-tips">
+  <div *ngIf="!model" class="row">
     <form [formGroup]="form" class="my-validate-form">
       <div class="form-group row">
         <div class="result-button col-sm-12">
@@ -19,11 +19,11 @@
     <form [formGroup]="form" (ngSubmit)="save()" class="my-validate-form">
       <div class="form-group row">
         <div class="result-button col-sm-12">
-          <button (click)="setResult('pass')" type="button" class="btn btn-primary btn-sm">通过</button>
-          <button (click)="setResult('fail')" type="button" class="btn btn-danger btn-sm">失败</button>
-          <button (click)="setResult('block')" type="button" class="btn btn-warning btn-sm">阻塞</button>
+          <button *ngIf="canExe" (click)="setResult('pass')" type="button" class="btn btn-primary btn-sm">通过</button>
+          <button *ngIf="canExe" (click)="setResult('fail')" type="button" class="btn btn-danger btn-sm">失败</button>
+          <button *ngIf="canExe" (click)="setResult('block')" type="button" class="btn btn-warning btn-sm">阻塞</button>
 
-          <label class="col-form-label form-check-label">
+          <label *ngIf="canExe" class="col-form-label form-check-label">
             <input [(ngModel)]="next" formControlName="next" name="next"
                    class="form-check-input form-control-lg" type="checkbox" value="true">同时转到下一个
           </label>
@@ -55,10 +55,10 @@
                   <ng-template ngbTabTitle>结果</ng-template>
                   <ng-template ngbTabContent></ng-template>
                 </ngb-tab>
-                <ngb-tab id="history">
+                <!--<ngb-tab id="history">
                   <ng-template ngbTabTitle>历史</ng-template>
                   <ng-template ngbTabContent></ng-template>
-                </ngb-tab>
+                </ngb-tab>-->
               </ngb-tabset>
             </div>
           </div>
@@ -132,7 +132,7 @@
             </div>
           </div>
         </div>
-        <div class="contentType col-sm-2">
+        <div *ngIf="canEdit" class="contentType col-sm-2">
           <span *ngIf="model.contentType=='richText'" (click)="changeContentType('steps')" class="link">
             <i class="ion-ios-grid-view"></i>
             表格
@@ -166,10 +166,13 @@
       <div [class.hidden]="tab != 'result'" class="tab-summary">
         <div class="form-group row">
           <label class="col-sm-1 col-form-label"><span>实际<br/>结果</span></label>
-          <div class="col-sm-11">
+          <div *ngIf="canExe" class="col-sm-11">
               <textarea type="text" class="form-control" name="result" formControlName="result"
-                        privilege [privs]="'run-exe'" [(ngModel)]="model.result" #result></textarea>
+                        [(ngModel)]="model.result" #result></textarea>
           </div>
+          <label *ngIf="!canExe" class="col-sm-11 col-form-label">
+              {{model.result}}
+          </label>
         </div>
       </div>
 

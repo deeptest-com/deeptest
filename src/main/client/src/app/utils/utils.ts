@@ -146,8 +146,9 @@ export var Utils: any = {
 
   getOrgAndPrjId: function (url: string) {
     let orgId, prjId;
+
     // #/pages/org/139/prj/179/implement/plan/list
-    if (url.indexOf('org/') > -1) {
+    if (url.indexOf('pages/org/') > -1) {
       let str = url.split('org/')[1];
       orgId = str.split('/')[0];
       if (str.indexOf('prj/') > -1) {
@@ -157,7 +158,6 @@ export var Utils: any = {
     let ret = {orgId: orgId, prjId: prjId};
     console.log('url params: ', ret);
     return ret;
-
   }
 
 };

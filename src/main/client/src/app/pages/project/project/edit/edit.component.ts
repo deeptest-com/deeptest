@@ -123,8 +123,6 @@ export class ProjectEdit implements OnInit, AfterViewInit {
 
     that._projectService.save(that.model).subscribe((json:any) => {
       if (json.code == 1) {
-        that.model = json.data;
-
         that.formErrors = ['保存成功'];
         that._routeService.navTo('/pages/org/' + CONSTANT.CURR_ORG_ID + '/prjs');
       } else {

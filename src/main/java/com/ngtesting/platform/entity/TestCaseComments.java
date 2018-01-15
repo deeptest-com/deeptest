@@ -14,11 +14,11 @@ public class TestCaseComments extends BaseEntity {
     private Date changeTime = new Date();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "update_by_id", insertable = false, updatable = false)
-    private TestUser updateBy;
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private TestUser user;
 
-    @Column(name = "update_by_id")
-    private Long updateById;
+    @Column(name = "user_id")
+    private Long userId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "test_case_id", insertable = false, updatable = false)
@@ -47,20 +47,20 @@ public class TestCaseComments extends BaseEntity {
         this.summary = summary;
     }
 
-    public TestUser getUpdateBy() {
-        return updateBy;
+    public TestUser getUser() {
+        return user;
     }
 
-    public void setUpdateBy(TestUser updateBy) {
-        this.updateBy = updateBy;
+    public void setUser(TestUser user) {
+        this.user = user;
     }
 
-    public Long getUpdateById() {
-        return updateById;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUpdateById(Long updateById) {
-        this.updateById = updateById;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getContent() {

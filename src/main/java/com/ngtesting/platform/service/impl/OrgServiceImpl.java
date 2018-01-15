@@ -141,7 +141,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	}
 
 	@Override
-	public List<TestProjectAccessHistoryVo> setDefaultPers(Long orgId, UserVo userVo) {
+	public void setDefaultPers(Long orgId, UserVo userVo) {
 		TestUser user = (TestUser) get(TestUser.class, userVo.getId());
 
 		user.setDefaultOrgId(orgId);
@@ -152,8 +152,6 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 
 		userVo.setDefaultOrgId(user.getDefaultOrgId());
 		userVo.setDefaultPrjId(recentProjects.get(0).getProjectId());
-
-		return recentProjects;
 	}
 
 	@Override

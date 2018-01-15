@@ -3,7 +3,6 @@ package com.ngtesting.platform.service;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.entity.TestVerifyCode;
-import com.ngtesting.platform.vo.UserVo;
 
 public interface AccountService extends BaseService {
 
@@ -12,8 +11,7 @@ public interface AccountService extends BaseService {
 	TestUser logoutPers(String email);
 
 	TestUser registerPers(String name, String email, String phone, String password);
-	
-	TestUser saveProfile(UserVo vo);
+
 	TestUser saveInfo(JSONObject json);
 	boolean changePasswordPers(Long userId, String oldPassword, String password);
 	TestVerifyCode genVerifyCodePers(Long userId);

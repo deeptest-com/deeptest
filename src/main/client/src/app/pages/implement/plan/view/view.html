@@ -94,7 +94,9 @@
           </td>
           <td>{{item.status | runStatus}}</td>
           <td>
-            <span privilege [privs]="'run-exe'" *ngIf="item.status != 'end' && item.countMap.total > 0" (click)="exe(item.id)" class="link no-underline">执行</span>
+            <span privilege [privs]="'!run-exe'" *ngIf="item.status != 'end' && item.countMap.total > 0" (click)="exeOrView(item.id)" class="link no-underline">查看</span>
+
+            <span privilege [privs]="'run-exe'" *ngIf="item.status != 'end' && item.countMap.total > 0" (click)="exeOrView(item.id)" class="link no-underline">执行</span>
             <span privilege [privs]="'run-exe'" *ngIf="item.status != 'end'" (click)="close(item.id, i)" class="link no-underline">关闭</span>
           </td>
         </tr>

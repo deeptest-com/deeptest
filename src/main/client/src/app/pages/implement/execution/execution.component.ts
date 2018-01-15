@@ -25,25 +25,14 @@ export class Execution implements OnInit, AfterViewInit, OnDestroy {
   leftWidth: number;
 
   constructor(private _state: GlobalState, private _route: ActivatedRoute) {
-    this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode, (profile) => {
-      console.log(CONSTANT.STATE_CHANGE_PROFILE + ' in Exe', profile);
-      this.leftWidth = CONSTANT.PROFILE.leftSize;
-    });
-
-    if (CONSTANT.PROFILE) {
-      this.leftWidth = CONSTANT.PROFILE.leftSize;
-    }
-
   }
 
   ngOnInit() {
-
-
+    this.leftWidth = CONSTANT.PROFILE.leftSize;
   }
   ngAfterViewInit() {}
 
   ngOnDestroy(): void {
-    this._state.unsubscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode);
   };
 
 }

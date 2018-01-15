@@ -3,6 +3,7 @@ import {Directive, ElementRef, Inject, Renderer2, OnDestroy, OnInit, AfterViewIn
 import * as _ from 'lodash';
 declare var jQuery;
 
+import { CONSTANT } from '../../utils/constant';
 import { AccountService } from '../../service/account';
 
 @Directive({
@@ -84,8 +85,9 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
       }
     });
 
-    this.accountService.setLeftSize(this.left.css('width').replace('px', '')).subscribe((json:any) => {
-      this.accountService.changeProfile(json.data);
+    let left = this.left.css('width').replace('px', '');
+    this.accountService.setLeftSize(left).subscribe((json:any) => {
+      CONSTANT.PROFILE.leftSize = left;
     });
   }
 }

@@ -114,12 +114,14 @@ export class AccountService {
           CONSTANT.CURR_PRJ_ID = json.profile.defaultPrjId;
           CONSTANT.CURR_PRJ_NAME = json.profile.defaultPrjName;
 
-          setTimeout( () => {
-            that.changeProfile(json.profile);
-            that.changeMyOrgs(json.profile.orgs, json.profile.defaultOrgId);
-            that.changeRecentProjects(json.profile.recentProjects);
-            that.changeCasePropertyMap(json.profile.casePropertyMap);
-          }, 50);
+          CONSTANT.PROFILE = json.profile;
+          CONSTANT.SYS_PRIVILEGES = json.sysPrivileges;
+          CONSTANT.MY_ORGS = json.myOrgs;
+          CONSTANT.ORG_PRIVILEGES = json.orgPrivileges;
+          CONSTANT.CASE_PROPERTY_MAP = json.casePropertyMap;
+
+          CONSTANT.RECENT_PROJECTS = json.recentProjects;
+          CONSTANT.PRJ_PRIVILEGES = json.prjPrivileges;
 
           return Observable.of(true);
         } else {
@@ -147,16 +149,6 @@ export class AccountService {
     return this._reqService.post(this._forgotPassword, {email: email});
   }
 
-  getProfile() {
-    return this._reqService.post(this._getProfile, {});
-  }
-  getInfo() {
-    return this._reqService.post(this._getInfo, {});
-  }
-
-  saveProfile(profile:any) {
-    return this._reqService.post(this._saveProfile, profile);
-  }
   saveInfo(profile:any) {
     return this._reqService.post(this._saveInfo, profile);
   }
@@ -180,30 +172,6 @@ export class AccountService {
     }
 
     Cookie.set(CONSTANT.TOKEN_KEY, JSON.stringify(token), expireDays);
-  }
-
-  changeProfile(profile: any) {
-    CONSTANT.PROFILE = profile;
-    this._state.notifyDataChanged(CONSTANT.STATE_CHANGE_PROFILE, profile);
-  }
-
-  changeMyOrgs(orgs: any[], currOrgId: number, gotoDefault: boolean = false) {
-    if (orgs) {
-      CONSTANT.ALL_ORGS = orgs;
-    }
-
-    this._state.notifyDataChanged(CONSTANT.STATE_CHANGE_ORGS, {orgs: orgs, currOrgId: currOrgId});
-    if (gotoDefault) {this._routeService.navTo('/pages/org/' + CONSTANT.CURR_ORG_ID + '/prjs');}
-  }
-
-  changeRecentProjects(recentProjects: any[]) {
-    CONSTANT.RECENT_PROJECTS = recentProjects;
-
-    this._state.notifyDataChanged(CONSTANT.STATE_CHANGE_PROJECTS, {recentProjects: CONSTANT.RECENT_PROJECTS});
-  }
-
-  changeCasePropertyMap(casePropertyMap: any) {
-    CONSTANT.CASE_PROPERTY_MAP = casePropertyMap;
   }
 
   setLeftSize(left: any) {

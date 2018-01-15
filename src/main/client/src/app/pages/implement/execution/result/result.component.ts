@@ -39,13 +39,16 @@ export class ExecutionResult implements OnInit, AfterViewInit, OnDestroy {
 
   fields: any;
   next: boolean = true;
+
   canEdit: boolean;
+  canExe: boolean;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
               private _caseService: CaseService, private _caseStepService: CaseStepService, private _caseInRunService: CaseInRunService,
               private _ztreeService: ZtreeService, private privilegeService:PrivilegeService) {
+
     this.canEdit = this.privilegeService.hasPrivilege('cases-update');
-    console.log('this.canEdit', this.canEdit);
+    this.canExe = this.privilegeService.hasPrivilege('run-exe');
 
     this.buildForm();
   }

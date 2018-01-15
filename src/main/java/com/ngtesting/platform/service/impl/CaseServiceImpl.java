@@ -92,7 +92,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             testCasePo.setId(null);
             testCasePo.setpId(pId);
             testCasePo.setType("functional");
-            testCasePo.setPriority("middle");
+            testCasePo.setPriority("medium");
             testCasePo.setContent("");
             testCasePo.setOrdr(getChildMaxOrderNumb(testCasePo.getpId()));
 
@@ -191,7 +191,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         TestCase testCase = new TestCase();
         testCase.setName("新特性");
         testCase.setType("functional");
-        testCase.setPriority("middle");
+        testCase.setPriority("medium");
         testCase.setpId(root.getId());
         testCase.setProjectId(projectId);
         testCase.setCreateById(userId);
@@ -202,7 +202,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         TestCase testCase2 = new TestCase();
         testCase2.setName("新用例");
         testCase2.setType("functional");
-        testCase2.setPriority("middle");
+        testCase2.setPriority("medium");
         testCase2.setpId(testCase.getId());
         testCase2.setProjectId(projectId);
         testCase2.setCreateById(userId);

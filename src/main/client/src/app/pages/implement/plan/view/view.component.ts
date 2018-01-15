@@ -9,16 +9,10 @@ import {I18n, CustomDatepickerI18n} from '../../../../service/datepicker-I18n';
 import {GlobalState} from '../../../../global.state';
 
 import { CONSTANT } from '../../../../utils/constant';
-import { Utils } from '../../../../utils/utils';
-import {ValidatorUtils} from '../../../../validator/validator.utils';
 import { RouteService } from '../../../../service/route';
 
 import { PlanService } from '../../../../service/plan';
 import { RunService } from '../../../../service/run';
-
-import { CaseSelectionComponent } from '../../../../components/case-selection'
-import { EnvironmentConfigComponent } from '../../../../components/environment-config'
-import { PopDialogComponent } from '../../../../components/pop-dialog'
 
 declare var jQuery;
 
@@ -66,7 +60,7 @@ export class PlanView implements OnInit, AfterViewInit {
     });
   }
 
-  exe(runId: number) {
+  exeOrView(runId: number) {
     this._routeService.navTo('/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID + '/implement/plan/' + this.planId + '/execution/' + runId);
   }
   close(runId: number, index: number) {

@@ -11,8 +11,19 @@ export class PrivilegeService {
 
     let arr = privs.split(',');
     for (let i = 0; i < arr.length; i++) {
-      if (!CONSTANT.PROFILE.projectPrivilege[arr[i]]) {
+      let not = false;
+      let priv = arr[i];
+      if (priv.startsWith('!')) { // 非运算
+        priv.replace('!', '');
+        not = true;
+      }
+
+      if (!CONSTANT.PRJ_PRIVILEGES[arr[i]]) {
         ret = false;
+      }
+
+      if (not) {
+        ret = !ret;
       }
     }
 

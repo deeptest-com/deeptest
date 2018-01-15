@@ -4,6 +4,7 @@ import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestProject.ProjectType;
 import com.ngtesting.platform.entity.TestProjectAccessHistory;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.util.BeanUtilEx;
@@ -128,28 +129,6 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		return vos;
 	}
 
-//	@Override
-//	public Long initDefaultBasicDataPers(Long orgId, Long userId) {
-//		TestProject prjGroup = new TestProject();
-//		prjGroup.setOrgId(orgId);
-//		prjGroup.setName("默认项目组");
-//		prjGroup.setType(TestProject.ProjectType.group);
-//		saveOrUpdate(prjGroup);
-//
-//		TestProject prj = new TestProject();
-//		prj.setOrgId(orgId);
-//		prj.setName("默认项目");
-//		prj.setType(ProjectType.project);
-//		prj.setParentId(prjGroup.getId());
-//		saveOrUpdate(prj);
-//
-//		caseService.createRoot(prj.getId(), userId);
-//
-//		viewPers(userId, prj.getId());
-//
-//		return prj.getId();
-//	}
-
 	@Override
 	public TestProject getDetail(Long id) {
 		if (id == null) {
@@ -249,56 +228,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		return true;
 	}
 
-	@Override
-	public List<TestProjectVo> genVos(List<TestProject> pos) {
-		return this.genVos(pos, null, null);
-	}
-	@Override
-	public List<TestProjectVo> genVos(List<TestProject> pos, String keywords, String disabled) {
-		List<TestProjectVo> voList = new LinkedList<TestProjectVo>();
-		for (TestProject po : pos) {
-			TestProjectVo vo = genVo(po);
-			voList.add(vo);
-			
-			List<TestProjectVo> voList2 = new LinkedList<TestProjectVo>();
-			List<TestProject> children = po.getChildren();
-			for (TestProject child : children) {
-				if ( (StringUtil.IsEmpty(keywords) || child.getName().toLowerCase().indexOf(keywords.toLowerCase()) > -1) 
-						&& ( StringUtil.IsEmpty(disabled) || child.getDisabled() == Boolean.valueOf(disabled)) ) {
-					TestProjectVo childVo = genVo(child);
-					voList2.add(childVo);
-				}
-			}
-			vo.setChildrenNumb(voList2.size());
-			voList.addAll(voList2);
-		}
-		
-		return voList;
-	}
-	@Override
-	public List<TestProjectVo> genGroupVos(List<TestProject> pos) {
-		List<TestProjectVo> voList = new LinkedList<TestProjectVo>();
-		for (TestProject po : pos) {
-				TestProjectVo vo = genVo(po);
-				voList.add(vo);
-		}
-		
-		return voList;
-	}
 
-	@Override
-	public TestProjectVo genVo(TestProject po) {
-		if (po == null) {
-			return null;
-		}
-		TestProjectVo vo = new TestProjectVo();
-		BeanUtilEx.copyProperties(vo, po);
-		if (po.getParentId() == null) {
-			vo.setParentId(null);
-		}
-
-		return vo;
-	}
 	
 	@Override
 	public List<TestProjectAccessHistoryVo> genHistoryVos(List<TestProjectAccessHistory> pos) {
@@ -331,11 +261,23 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		history.setLastAccessTime(new Date());
 		saveOrUpdate(history);
 
+        TestUser userPo = (TestUser)get(TestUser.class, userVo.getId());
+        userPo.setDefaultPrjId(projectId);
+        saveOrUpdate(userPo);
+
 		userVo.setDefaultPrjId(projectId);
         userVo.setDefaultPrjName(project.getName());
 		TestProjectVo vo = genVo(project);
 		return vo;
 	}
+    @Override
+    public void updateNameInHisotyPers(Long projectId, Long userId) {
+        TestProject project = getDetail(projectId);
+
+        TestProjectAccessHistory history = getHistory(project.getOrgId(), userId, projectId, project.getName());
+        history.setProjectName(project.getName());
+        saveOrUpdate(history);
+    }
 
 	private TestProjectAccessHistory getHistory(Long orgId, Long userId, Long projectId, String projectName) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProjectAccessHistory.class);
@@ -365,5 +307,56 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		long count = (Long) getByHQL(hql, orgId, projectGroupId, ProjectType.group);
 		return count == 0;
 	}
+
+    @Override
+    public List<TestProjectVo> genVos(List<TestProject> pos) {
+        return this.genVos(pos, null, null);
+    }
+    @Override
+    public List<TestProjectVo> genVos(List<TestProject> pos, String keywords, String disabled) {
+        List<TestProjectVo> voList = new LinkedList<TestProjectVo>();
+        for (TestProject po : pos) {
+            TestProjectVo vo = genVo(po);
+            voList.add(vo);
+
+            List<TestProjectVo> voList2 = new LinkedList<TestProjectVo>();
+            List<TestProject> children = po.getChildren();
+            for (TestProject child : children) {
+                if ( (StringUtil.IsEmpty(keywords) || child.getName().toLowerCase().indexOf(keywords.toLowerCase()) > -1)
+                        && ( StringUtil.IsEmpty(disabled) || child.getDisabled() == Boolean.valueOf(disabled)) ) {
+                    TestProjectVo childVo = genVo(child);
+                    voList2.add(childVo);
+                }
+            }
+            vo.setChildrenNumb(voList2.size());
+            voList.addAll(voList2);
+        }
+
+        return voList;
+    }
+    @Override
+    public List<TestProjectVo> genGroupVos(List<TestProject> pos) {
+        List<TestProjectVo> voList = new LinkedList<TestProjectVo>();
+        for (TestProject po : pos) {
+            TestProjectVo vo = genVo(po);
+            voList.add(vo);
+        }
+
+        return voList;
+    }
+
+    @Override
+    public TestProjectVo genVo(TestProject po) {
+        if (po == null) {
+            return null;
+        }
+        TestProjectVo vo = new TestProjectVo();
+        BeanUtilEx.copyProperties(vo, po);
+        if (po.getParentId() == null) {
+            vo.setParentId(null);
+        }
+
+        return vo;
+    }
 
 }

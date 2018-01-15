@@ -20,14 +20,7 @@ export class PrivilegeDirective implements OnInit, OnDestroy {
   }
 
   public ngOnInit():void {
-    if (!CONSTANT.PROFILE || !CONSTANT.PROFILE.projectPrivilege) {
-      this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode, (profile) => {
-        console.log(CONSTANT.STATE_CHANGE_PROFILE + ' in PrivilegeDirective', profile);
-        this.update();
-      });
-    } else {
       this.update();
-    }
   }
 
   update():void {
@@ -38,6 +31,6 @@ export class PrivilegeDirective implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._state.unsubscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode);
+
   };
 }

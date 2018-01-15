@@ -6,6 +6,7 @@ import 'rxjs/add/operator/map';
 import {GlobalState} from "../../../../global.state";
 
 import {CONSTANT} from "../../../../utils/constant";
+import {WS_CONSTANT} from "../../../../utils/ws-constant";
 import {Utils} from "../../../../utils/utils";
 import {RouteService} from "../../../../service/route";
 import {ProjectService} from "../../../../service/project";
@@ -24,7 +25,7 @@ export class ProjectList implements OnInit, AfterViewInit, OnDestroy {
   queryForm: FormGroup;
   queryModel:any = {keywords: '', disabled: 'false'};
 
-  models: any;
+  projects: any;
   maxLevel: number;
   statusMap: Array<any> = CONSTANT.EntityDisabled;
 
@@ -40,10 +41,10 @@ export class ProjectList implements OnInit, AfterViewInit, OnDestroy {
       }, {}
     );
 
-    this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, this.eventCode, (data: any) => {
-      if(this.isInit) {
-        this.loadData();
-      }
+    this._state.subscribe(WS_CONSTANT.WS_RECENT_PROJECTS, this.eventCode, (json) => {
+      console.log(WS_CONSTANT.WS_RECENT_PROJECTS + ' in ' + this.eventCode, json);
+
+      this.loadData();
     });
   }
 
@@ -65,11 +66,11 @@ export class ProjectList implements OnInit, AfterViewInit, OnDestroy {
   }
   loadData() {
     this._projectService.list(this.queryModel).subscribe((json:any) => {
-      this.models = json.data;
+      this.projects = json.data;
       this.isInit = true;
     });
   }
   ngOnDestroy(): void {
-    this._state.unsubscribe(CONSTANT.STATE_CHANGE_ORGS, this.eventCode);
+    this._state.unsubscribe(WS_CONSTANT.WS_RECENT_PROJECTS, this.eventCode);
   };
 }

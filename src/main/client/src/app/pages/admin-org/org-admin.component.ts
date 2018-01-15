@@ -28,11 +28,7 @@ export class OrgAdmin {
   }
 
   ngOnInit() {
-    if (!CONSTANT.PROFILE) {
-      this.accountService.loadProfileRemote().subscribe((result: any) => {
 
-      });
-    }
   }
 
 }

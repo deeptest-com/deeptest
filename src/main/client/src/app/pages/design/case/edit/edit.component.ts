@@ -42,6 +42,7 @@ export class CaseEdit implements OnInit, AfterViewInit, OnDestroy {
   comment: any = {};
 
   fields: any[] = [];
+  user: any;
 
   constructor(private _state:GlobalState, private fb: FormBuilder, private toastyService:ToastyService,
               private _caseService: CaseService, private _caseStepService: CaseStepService, private _caseCommentsService: CaseCommentsService) {
@@ -49,6 +50,7 @@ export class CaseEdit implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnInit() {
     this.projectId = CONSTANT.CURR_PRJ_ID;
+    this.user = CONSTANT.PROFILE;
 
     this.buildForm();
 

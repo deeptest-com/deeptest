@@ -24,9 +24,9 @@ public class TestUser extends BaseEntity {
     private Date lastLoginTime;
 
     private Long defaultOrgId;
-//    private Long defaultPrjId;
+    private Long defaultPrjId;
 
-	private Integer leftSize;
+	private Integer leftSize = 300;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userSet")
     private Set<SysRole> roleSet = new HashSet<SysRole>(0);
@@ -141,11 +141,10 @@ public class TestUser extends BaseEntity {
 		this.orgSet = orgSet;
 	}
 
-//	public Long getDefaultPrjId() {
-//		return defaultPrjId;
-//	}
-//
-//	public void setDefaultPrjId(Long defaultPrjId) {
-//		this.defaultPrjId = defaultPrjId;
-//	}
+	public Long getDefaultPrjId() {
+		return defaultPrjId;
+	}
+	public void setDefaultPrjId(Long defaultPrjId) {
+		this.defaultPrjId = defaultPrjId;
+	}
 }

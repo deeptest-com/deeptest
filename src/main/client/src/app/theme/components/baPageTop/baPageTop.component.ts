@@ -5,9 +5,9 @@ import {Router} from "@angular/router";
 import {GlobalState} from "../../../global.state";
 
 import {CONSTANT} from "../../../utils/constant";
-import {WS_CONSTANT} from '../../../utils/ws-constant';
+import {WS_CONSTANT} from "../../../utils/ws-constant";
+
 import {RouteService} from "../../../service/route";
-import {SockService} from "../../../service/sock";
 
 import {OrgService} from "../../../service/org";
 import {AccountService} from "../../../service/account";
@@ -37,35 +37,34 @@ export class BaPageTop implements OnInit, AfterViewInit, OnDestroy {
   public isMenuCollapsed: boolean = false;
 
   constructor(private _router: Router, private _state: GlobalState, private _routeService: RouteService,
-              private sockService: SockService, private orgService: OrgService, private accountService: AccountService) {
+              private orgService: OrgService, private accountService: AccountService) {
 
-    this._state.subscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode, (profile) => {
-      console.log(CONSTANT.STATE_CHANGE_PROFILE, profile);
-      this.profile = profile;
-
-      this.wsConnect();
+    this._state.subscribe(WS_CONSTANT.WS_MSG_AND_ALERT_LASTEST, this.eventCode, (json) => {
+      console.log(WS_CONSTANT.WS_MSG_AND_ALERT_LASTEST + ' in ' + this.eventCode, json);
+      this.alerts = json.alerts;
+      this.msgs = json.msgs;
     });
 
-    this._state.subscribe(CONSTANT.STATE_CHANGE_ORGS, this.eventCode, (data: any) => {
-      if (data.currOrgId) {
-        this.orgId = data.currOrgId;
-      }
-      if (data.orgs) {
-        this.orgs = data.orgs;
-      }
+    this._state.subscribe(WS_CONSTANT.WS_USER_SETTINGS, this.eventCode, (json) => {
+      console.log(WS_CONSTANT.WS_USER_SETTINGS + ' in ' + this.eventCode, json);
+
+      this.profile = json.profile;
     });
 
-    this._state.subscribe(CONSTANT.STATE_CHANGE_PROJECTS, this.eventCode, (data) => {
-      console.log(CONSTANT.STATE_CHANGE_PROJECTS, data);
-      this.prjId = CONSTANT.CURR_PRJ_ID;
+    this._state.subscribe(WS_CONSTANT.WS_MY_ORGS, this.eventCode, (json: any) => {
+      console.log(WS_CONSTANT.WS_MY_ORGS + ' in ' + this.eventCode, json);
 
-      if (data.recentProjects) {
-        this.projects = data.recentProjects;
-      }
+      this.orgs = json.myOrgs;
     });
 
-    this._state.subscribe('menu.isCollapsed', this.eventCode, (isCollapsed) => {
-      this.isMenuCollapsed = isCollapsed;
+    this._state.subscribe(WS_CONSTANT.WS_RECENT_PROJECTS, this.eventCode, (json) => {
+      console.log(WS_CONSTANT.WS_RECENT_PROJECTS + ' in ' + this.eventCode, json);
+
+      this.orgId = json.defaultOrgId;
+      this.prjId = json.defaultPrjId;
+
+      this.projects = json.recentProjects;
+
     });
   }
 
@@ -73,24 +72,15 @@ export class BaPageTop implements OnInit, AfterViewInit, OnDestroy {
     this.orgId = CONSTANT.CURR_ORG_ID;
     this.prjId = CONSTANT.CURR_PRJ_ID;
 
+    this.profile = CONSTANT.PROFILE;
+    this.orgs = CONSTANT.MY_ORGS;
+    this.projects = CONSTANT.RECENT_PROJECTS;
   }
   ngAfterViewInit() {}
 
   public changeOrg(org: any) {
     this.orgService.setDefault(org.id, {disabled: false}).subscribe((json: any) => {
-      if (json.code == 1) {
-        this.orgId = json.defaultOrgId;
-        CONSTANT.CURR_ORG_ID = json.defaultOrgId;
-        CONSTANT.CURR_PRJ_ID = json.defaultPrjId;
-        CONSTANT.CURR_PRJ_NAME = json.defaultPrjName;
-
-        CONSTANT.PROFILE.orgPrivilege = json.orgPrivilege;
-        CONSTANT.PROFILE.projectPrivilege = json.projectPrivilege;
-
-        this.accountService.changeMyOrgs(null, this.orgId, true);
-        this.accountService.changeRecentProjects(json.recentProjects);
-        this.accountService.changeCasePropertyMap(json.casePropertyMap);
-      }
+      this._routeService.navTo('/pages/org/' + org.id + '/prjs');
     });
   }
 
@@ -126,31 +116,11 @@ export class BaPageTop implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  wsConnect() {
-    this.sockService.onMessage((json) => {
-
-      if (json.code != 1) {
-        console.log('ws error: ', json.code);
-        return;
-      }
-
-      if (WS_CONSTANT.WS_MSG_AND_ALERT_LASTEST === json.type) {
-        this.alerts = json.alerts;
-        this.msgs = json.msgs;
-      }
-
-    });
-    this.sockService.onOpen((e) => {
-      this.sockService.send({
-        type: WS_CONSTANT.WS_OPEN
-      });
-    });
-    this.sockService.open();
-  }
-
   ngOnDestroy(): void {
-    this._state.unsubscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode);
-    this._state.unsubscribe(CONSTANT.STATE_CHANGE_PROFILE, this.eventCode);
+    this._state.unsubscribe(WS_CONSTANT.WS_MSG_AND_ALERT_LASTEST, this.eventCode);
+    this._state.unsubscribe(WS_CONSTANT.WS_USER_SETTINGS, this.eventCode);
+    this._state.unsubscribe(WS_CONSTANT.WS_MY_ORGS, this.eventCode);
+    this._state.unsubscribe(WS_CONSTANT.WS_RECENT_PROJECTS, this.eventCode);
   };
 
 }

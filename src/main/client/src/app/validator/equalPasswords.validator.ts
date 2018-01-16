@@ -11,7 +11,7 @@ export var EqualPasswordsValidator:any = {
       let pass = c.controls && c.controls[firstField].value == c.controls[secondField].value;
 
       if (!pass) {
-        console.log('passwordsEqual fail');
+        // console.log('passwordsEqual fail');
         fail = true;
         result[resultKey] = {
           valid: false

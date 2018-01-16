@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 declare var jQuery;
 
 import { CONSTANT } from '../../utils/constant';
-import { AccountService } from '../../service/account';
+import { UserService } from '../../service/user';
 
 @Directive({
   selector: '[resize]'
@@ -25,7 +25,7 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
   private disposersForDragListeners:Function[] = [];
 
   public constructor(@Inject(ElementRef) public element:ElementRef, @Inject(Renderer2) private renderer:Renderer2,
-                     private accountService: AccountService) {
+                     private userService: UserService) {
     this.elem = element.nativeElement;
   }
 
@@ -86,7 +86,7 @@ export class ResizeDirective implements OnDestroy, OnInit, AfterViewInit, OnDest
     });
 
     let left = this.left.css('width').replace('px', '');
-    this.accountService.setLeftSize(left).subscribe((json:any) => {
+    this.userService.setLeftSize(left).subscribe((json:any) => {
       CONSTANT.PROFILE.leftSize = left;
     });
   }

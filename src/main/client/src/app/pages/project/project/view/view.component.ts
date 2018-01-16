@@ -37,6 +37,7 @@ export class ProjectView implements OnInit, AfterViewInit {
 
     this._route.params.subscribe(params => {
       that.id = +params['id'];
+      console.log('=======', that.id);
       that.loadData();
     });
   }
@@ -45,13 +46,10 @@ export class ProjectView implements OnInit, AfterViewInit {
   }
 
   loadData() {
-    if (CONSTANT.CURR_PRJ_ID != this.id) {
       CONSTANT.CURR_PRJ_ID = this.id;
-
       this._projectService.view(this.id).subscribe((json:any) => {
 
       });
-    }
   }
 
 }

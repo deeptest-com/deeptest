@@ -64,7 +64,7 @@
               </div>
               <div>
                 <div *ngFor="let item of relations" class="checkbox-list-item">
-                  <label>
+                  <label *ngIf="item.orgGroupName!='所有人'">
                     <span class="checkbox-name">{{item.orgGroupName}}<span></span></span>
                     <input type="checkbox" class="form-check-input"
                            [(ngModel)]="item.selecting" formControlName="{{'group-' + item.orgGroupId}}">

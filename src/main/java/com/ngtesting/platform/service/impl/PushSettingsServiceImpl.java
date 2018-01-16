@@ -97,7 +97,7 @@ public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSett
         ret.put("recentProjects", recentProjects);
 
         ret.put("defaultOrgId", orgId);
-        ret.put("defaultPrjId", userId);
+        ret.put("defaultPrjId", userVo.getDefaultPrjId());
 
         sendMsg(userVo.getId(), ret);
     }

@@ -6,12 +6,10 @@ import {NgbModal, NgbModalRef, ModalDismissReasons} from '@ng-bootstrap/ng-boots
 import {GlobalState} from '../../../../global.state';
 
 import { CONSTANT } from '../../../../utils/constant';
-import { Utils } from '../../../../utils/utils';
-import {ValidatorUtils} from '../../../../validator/validator.utils';
 
 import { RouteService } from '../../../../service/route';
 
-import {AccountService} from './../../../../service/account';
+import {UserService} from './../../../../service/user';
 
 import { PasswordEditPopupComponent } from '../../password';
 
@@ -33,7 +31,7 @@ export class ProfileEdit implements OnInit, AfterViewInit, OnDestroy {
   public passwordPopop: any;
 
   constructor(private _routeService: RouteService, private _state:GlobalState, private _route: ActivatedRoute,
-      private modalService: NgbModal, private accountService: AccountService) {
+      private modalService: NgbModal, private userService: UserService) {
 
   }
 
@@ -45,7 +43,7 @@ export class ProfileEdit implements OnInit, AfterViewInit, OnDestroy {
   }
 
   saveField(event: any):void {
-    this.accountService.saveInfo(event.data).subscribe((json:any) => {
+    this.userService.saveInfo(event.data).subscribe((json:any) => {
       if (json.code == 1) {
         this.model = json.data;
         event.deferred.resolve();
@@ -68,7 +66,7 @@ export class ProfileEdit implements OnInit, AfterViewInit, OnDestroy {
   uploadedEvent(event: any) {
     console.log('uploadedEvent', event);
 
-    this.accountService.saveInfo({prop: 'avatar', value: event.data}).subscribe((json:any) => {
+    this.userService.saveInfo({prop: 'avatar', value: event.data}).subscribe((json:any) => {
       if (json.code == 1) {
         this.model = json.data;
 

@@ -7,14 +7,9 @@ import com.ngtesting.platform.config.Constant.RespCode;
 import com.ngtesting.platform.config.PropertyConfig;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.entity.TestVerifyCode;
-import com.ngtesting.platform.service.AccountService;
-import com.ngtesting.platform.service.MailService;
-import com.ngtesting.platform.service.RelationOrgGroupUserService;
-import com.ngtesting.platform.service.UserService;
+import com.ngtesting.platform.service.*;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.vo.Page;
-import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
-import com.ngtesting.platform.vo.UserVo;
+import com.ngtesting.platform.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,6 +34,21 @@ public class UserAction extends BaseAction {
 	RelationOrgGroupUserService orgGroupUserService;
 	@Autowired
 	MailService mailService;
+	@Autowired
+	PushSettingsService pushSettingsService;
+
+    @Autowired
+    OrgService orgService;
+    @Autowired
+    ProjectService projectService;
+    @Autowired
+    SysPrivilegeService sysPrivilegeService;
+    @Autowired
+    OrgRolePrivilegeService orgRolePrivilegeService;
+    @Autowired
+    ProjectPrivilegeService projectPrivilegeService;
+    @Autowired
+    CasePropertyService casePropertyService;
 
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "list", method = RequestMethod.POST)
@@ -128,11 +138,12 @@ public class UserAction extends BaseAction {
 		}
 
 		List<RelationOrgGroupUserVo> relations = (List<RelationOrgGroupUserVo>) json.get("relations");
-		boolean success = orgGroupUserService.saveRelations(relations);
+		orgGroupUserService.saveRelations(relations);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;
 	}
+
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "invite", method = RequestMethod.POST)
 	@ResponseBody
@@ -154,14 +165,14 @@ public class UserAction extends BaseAction {
 		List<RelationOrgGroupUserVo> relations = (List<RelationOrgGroupUserVo>) json.get("relations");
 		orgGroupUserService.saveRelations(relations);
 
-        TestVerifyCode verifyCode = accountService.genVerifyCodePers(po.getId());
+		TestVerifyCode verifyCode = accountService.genVerifyCodePers(po.getId());
 		String sys = PropertyConfig.getConfig("sys.name");
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("user", userVo.getName() + "(" + userVo.getEmail() + ")");
 		map.put("name", user.getName());
-        map.put("vcode", verifyCode.getCode());
+		map.put("vcode", verifyCode.getCode());
 		map.put("sys", sys);
-        map.put("url", PropertyConfig.getConfig("url.reset.password"));
+		map.put("url", PropertyConfig.getConfig("url.reset.password"));
 		mailService.sendTemplateMail("来自[" + sys + "]的邀请", "invite-user.ftl", user.getEmail(), map);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -213,6 +224,95 @@ public class UserAction extends BaseAction {
 
 		ret.put("data", userVos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@RequestMapping(value = "saveInfo", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> saveInfo(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		json.put("id", userVo.getId());
+
+		TestUser user = accountService.saveInfo(json);
+		userVo = userService.genVo(user);
+		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
+
+		pushSettingsService.pushUserSettings(userVo);
+
+		ret.put("data", userVo);
+		ret.put("code", RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "setLeftSize", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> setLeftSize(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+		Integer left = json.getInteger("left");
+
+		TestUser user = accountService.setLeftSizePers(userVo.getId(), left);
+		userVo = userService.genVo(user);
+		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
+
+		ret.put("data", userVo);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@RequestMapping(value = "getProfile", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> getProfile(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long orgId = userVo.getDefaultOrgId();
+		Long prjId = userVo.getDefaultPrjId();
+
+		Long orgIdNew = json.getLong("orgId");
+		Long prjIdNew = json.getLong("prjId");
+
+		if (orgIdNew != null && orgIdNew.longValue() != orgId.longValue()) { // org不能为空
+			orgService.setDefaultPers(orgId, userVo);
+		}
+		if (prjIdNew != null && (prjId == null || prjIdNew.longValue() != prjId.longValue())) { // prj可能为空
+			projectService.viewPers(prjIdNew, userVo);
+		}
+
+		Long userId = userVo.getId();
+
+		ret.put("profile", userVo);
+
+		Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userId);
+		ret.put("sysPrivileges", sysPrivileges);
+
+		List<OrgVo> orgs = orgService.listVo(null, "false", userId);
+		ret.put("myOrgs", orgs);
+
+		Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(userVo.getId(), orgId);
+		ret.put("orgPrivileges", orgPrivileges);
+
+		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
+		ret.put("casePropertyMap", casePropertyMap);
+
+		List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(orgId, userId);
+		ret.put("recentProjects", recentProjects);
+		if (recentProjects.size() > 0) {
+			userVo.setDefaultPrjId(recentProjects.get(0).getProjectId());
+		}
+
+		if (prjId != null) {
+			Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUserPers(userId, prjId, orgId);
+			ret.put("prjPrivileges", prjPrivileges);
+		}
+
+		ret.put("code", RespCode.SUCCESS.getCode());
+
 		return ret;
 	}
 

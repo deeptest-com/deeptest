@@ -60,11 +60,9 @@ export class ResetPassword implements OnInit, AfterViewInit {
   }
 
   onSubmit():void {
-    this.accountService.resetPassword(this.vcode, this.model).subscribe((json: any) => {
-      if (json.code == 1) {
-        this.formErrors = ['您已成功设置新密码！'];
-      }  else {
-        this.formErrors = [json.msg];
+    this.accountService.resetPassword(this.vcode, this.model).subscribe((error: any) => {
+      if (error) {
+        this.formErrors = [error];
       }
     });
   }

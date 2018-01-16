@@ -57,7 +57,6 @@ export class ReportList implements OnInit, AfterViewInit {
     this.loadData();
   }
   pageChange($event:any){
-    this.pageNumb = $event;
     this.loadData();
   }
 

@@ -66,6 +66,13 @@ export class BaPageTop implements OnInit, AfterViewInit, OnDestroy {
       this.projects = json.recentProjects;
 
     });
+
+    this._state.subscribe(WS_CONSTANT.WS_PRJ_SETTINGS, this.eventCode, (json) => {
+      console.log(WS_CONSTANT.WS_PRJ_SETTINGS + ' in ' + this.eventCode, json);
+
+      CONSTANT.PRJ_PRIVILEGES = json.prjPrivileges;
+    });
+
   }
 
   ngOnInit() {

@@ -56,7 +56,6 @@ export class UserList implements OnInit, AfterViewInit {
     this.loadData();
   }
   pageChange(event:any):void {
-    this.page = event.page;
     this.loadData();
   }
 

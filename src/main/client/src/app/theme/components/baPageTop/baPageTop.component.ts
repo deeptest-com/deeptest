@@ -34,10 +34,10 @@ export class BaPageTop implements OnInit, AfterViewInit, OnDestroy {
   alerts: any[] = [];
 
   public isScrolled: boolean = false;
-  public isMenuCollapsed: boolean = false;
 
   constructor(private _router: Router, private _state: GlobalState, private _routeService: RouteService,
               private orgService: OrgService, private accountService: AccountService) {
+    console.log('==== BaPageTop constructor ');
 
     this._state.subscribe(WS_CONSTANT.WS_MSG_AND_ALERT_LASTEST, this.eventCode, (json) => {
       console.log(WS_CONSTANT.WS_MSG_AND_ALERT_LASTEST + ' in ' + this.eventCode, json);
@@ -82,6 +82,8 @@ export class BaPageTop implements OnInit, AfterViewInit, OnDestroy {
     this.profile = CONSTANT.PROFILE;
     this.orgs = CONSTANT.MY_ORGS;
     this.projects = CONSTANT.RECENT_PROJECTS;
+
+    console.log('==== BaPageTop ngOnInit ', this.orgId, this.prjId, this.profile);
   }
   ngAfterViewInit() {}
 

@@ -16,7 +16,7 @@ export class PagesResolve implements Resolve<any> {
     let context = Utils.getOrgAndPrjId(this.location.path());
 
     return this.userService.loadProfileRemote(context).toPromise().then(result => {
-
+      console.log('PagesResolve resolve');
       this._sockService.wsConnect();
 
       return result;

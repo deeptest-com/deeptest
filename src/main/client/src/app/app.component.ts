@@ -18,7 +18,7 @@ import {Utils} from './utils/utils';
   selector: 'app',
   styleUrls: ['./app.component.scss'],
   template: `
-    <main [class.menu-collapsed]="isMenuCollapsed" baThemeRun>
+    <main baThemeRun>
       <div class="additional-bg"></div>
       <router-outlet></router-outlet>
     </main>
@@ -26,8 +26,6 @@ import {Utils} from './utils/utils';
 })
 export class App {
   eventCode: string = 'App';
-
-  isMenuCollapsed: boolean = false;
 
   constructor(private _state: GlobalState,
               private _activatedRoute: ActivatedRoute,
@@ -39,10 +37,6 @@ export class App {
     themeConfig.config();
 
     this._loadImages();
-
-    // this._state.subscribe('menu.isCollapsed', this.eventCode, (isCollapsed) => {
-    //   this.isMenuCollapsed = isCollapsed;
-    // });
 
     Utils.config();
 

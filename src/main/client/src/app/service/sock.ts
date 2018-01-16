@@ -21,7 +21,11 @@ export class SockService {
   private _opened: boolean = false;
 
   public open(): void {
-    if (!this._opened) {
+
+    this.close();
+    console.log('wsConnect open', this._opened, this.url);
+
+    // if (!this._opened) {
       this.sock = new SockJS(this.url);
       this.sock.onopen = (e) => {
         this.callHandlers('open', e);
@@ -33,7 +37,7 @@ export class SockService {
         this.callHandlers('close', e);
       }
       this._opened = true;
-    }
+    // }
   }
 
   public close(): void {
@@ -75,6 +79,8 @@ export class SockService {
   }
 
   wsConnect() {
+    this.handlers = {};
+
     this.onMessage((json) => {
 
       if (json.code != 1) {
@@ -85,10 +91,13 @@ export class SockService {
       this._state.notifyDataChanged(json.type, json);
     });
     this.onOpen((e) => {
+      console.log('wsConnect onOpen');
+
       this.send({
         type: WS_CONSTANT.WS_OPEN
       });
     });
+
     this.open();
   }
 

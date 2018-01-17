@@ -35,6 +35,8 @@ export var CONSTANT: CONSTANT_INTERFACE = {
   ScreenSize: {h: 0, w: 0},
   DebounceTime: 500,
 
+  EVENT_LOADING_COMPLETE: 'loading.complete',
+
   EVENT_CASE_EDIT: 'case.edit',
   EVENT_CASE_UPDATE: 'case.update',
   EVENT_CASE_CHANGE: 'case.change',
@@ -79,6 +81,8 @@ export interface CONSTANT_INTERFACE {
 
   ScreenSize: any,
   DebounceTime: number,
+
+  EVENT_LOADING_COMPLETE: string,
 
   EVENT_CASE_EDIT: string,
   EVENT_CASE_UPDATE: string,

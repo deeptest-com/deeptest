@@ -18,7 +18,6 @@ export class UserService {
   _getProfile = this._api_url + 'getProfile';
   _saveInfo = this._api_url + 'saveInfo';
   _setLeftSize = this._api_url + 'setLeftSize';
-  _suggestions = this._api_url + 'suggestions/:id';
 
   list(query: any, page: number, pageSize: number) {
     _.merge(query, {page: page, pageSize: pageSize});

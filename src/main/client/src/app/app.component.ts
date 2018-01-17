@@ -41,12 +41,17 @@ export class App {
     Utils.config();
 
     CONSTANT.ScreenSize = Utils.getScreenSize();
+
+    this._state.subscribe(CONSTANT.EVENT_LOADING_COMPLETE, this.eventCode, (json) => {
+      console.log(CONSTANT.EVENT_LOADING_COMPLETE + ' in ' + this.eventCode, json);
+      this._spinner.hide();
+    });
   }
 
   public ngAfterViewInit(): void {
     // hide spinner once all loaders are completed
     BaThemePreloader.load().then((values) => {
-      this._spinner.hide();
+      // this._spinner.hide();
     });
   }
 

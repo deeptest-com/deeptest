@@ -149,23 +149,6 @@ export class CaseEdit implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  review(pass: boolean) {
-    if (pass) {
-      this.reviewRequest(this.model.id, pass, null);
-    } else {
-      this.modalWrapper.showModal('comment-edit');
-      this.comment = {summary: '评审失败', act: 'reviewFail'};
-    }
-  }
-  reviewRequest(id: number, pass: boolean, comments: string) {
-    this._caseService.reviewPass(this.model.id, pass, comments).subscribe((json:any) => {
-      if (json.code == 1) {
-        this.model = json.data;
-        this._state.notifyDataChanged(CONSTANT.EVENT_CASE_UPDATE, {node: this.model, random: Math.random()});
-      }
-    });
-  }
-
   tabChange(event: any) {
     this.tab = event.nextId;
   }
@@ -224,24 +207,40 @@ export class CaseEdit implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   removeComments(id: number, indx: number) {
-    console.log('remove', id);
     this._caseCommentsService.remove(id).subscribe((json:any) => {
       this.model.comments.splice(indx, 1);
     });
   }
 
-  saveComments() {
+  review(pass: boolean) {
+    if (!pass) {
+      this.modalWrapper.showModal('comment-edit');
+      this.comment = {pass:pass, summary: '评审失败'};
+    } else {
+      this.comment = {pass:pass, summary: '评审通过'};
+      this.saveComments(true);
+    }
+  }
+  saveComments(pass:boolean) {
     this._caseCommentsService.save(this.id, this.comment).subscribe((json:any) => {
       if (json.code == 1) {
-        if (this.comment.act == 'reviewFail') {
-          this.reviewRequest(this.model.id, false, null);
-        }
+        if (this.comment.pass != undefined) {this.reviewRequest(this.model.id, this.comment.pass);}
 
         if (this.comment.id != json.data.id) {
           this.model.comments[this.model.comments.length] = json.data;
         }
         this.comment = json.data;
-        this.modalWrapper.closeModal();
+        if (!pass) {
+          this.modalWrapper.closeModal();
+        }
+      }
+    });
+  }
+  reviewRequest(id: number, pass: boolean) {
+    this._caseService.reviewPass(id, pass).subscribe((json:any) => {
+      if (json.code == 1) {
+        this.model.reviewResult = pass;
+        this._state.notifyDataChanged(CONSTANT.EVENT_CASE_UPDATE, {node: this.model, random: Math.random()});
       }
     });
   }

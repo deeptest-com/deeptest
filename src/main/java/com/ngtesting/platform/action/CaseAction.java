@@ -185,7 +185,7 @@ public class CaseAction extends BaseAction {
 		TestCase po = caseService.reviewPassPers(id, pass);
         TestCaseVo caseVo = caseService.genVo(po);
 
-        ret.put("data", caseVo);
+        ret.put("reviewResult", caseVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

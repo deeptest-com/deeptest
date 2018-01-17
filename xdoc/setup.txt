@@ -2,4 +2,3 @@ npm run build:prod
 scp -r dist/* root@47.97.19.195:/home/aaron/dev/server/apache-tomcat-8.5.23/webapps/ROOT
 
 mvn -Denv=prod clean package tomcat7:deploy
-main

@@ -224,7 +224,9 @@ export class CaseEdit implements OnInit, AfterViewInit, OnDestroy {
   saveComments(pass:boolean) {
     this._caseCommentsService.save(this.id, this.comment).subscribe((json:any) => {
       if (json.code == 1) {
-        if (this.comment.pass != undefined) {this.reviewRequest(this.model.id, this.comment.pass);}
+        if (this.comment.pass != undefined) { // 添加注释，非评审
+          this.reviewRequest(this.model.id, this.comment.pass);
+        }
 
         if (this.comment.id != json.data.id) {
           this.model.comments[this.model.comments.length] = json.data;

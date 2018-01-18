@@ -37,7 +37,6 @@ export class ProjectView implements OnInit, AfterViewInit {
 
     this._route.params.subscribe(params => {
       that.id = +params['id'];
-      console.log('=======', that.id);
       that.loadData();
     });
   }

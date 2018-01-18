@@ -37,8 +37,6 @@ export class ProjectService {
   }
 
   view(projectId: number) {
-    console.log('===111', projectId);
-
     let model = {id: projectId};
     return this._reqService.post(this._api_url + 'view', model);
   }

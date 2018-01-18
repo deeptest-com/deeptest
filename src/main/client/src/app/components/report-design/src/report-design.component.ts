@@ -1,14 +1,14 @@
 import {Component, Input, OnInit} from "@angular/core";
 
 @Component({
-  selector: 'execution-report',
-  templateUrl: './execution-report.html',
+  selector: 'report-design',
+  templateUrl: './report-design.html',
   styleUrls: ['./styles.scss']
 })
-export class ExecutionReportComponent implements OnInit {
+export class ReportDesignComponent implements OnInit {
 
   @Input() data: any;
-  tab: string = 'exe-result';
+  tab: string = 'design-result';
 
   constructor() {
   }
@@ -18,7 +18,6 @@ export class ExecutionReportComponent implements OnInit {
   }
 
   tabChange(event: any) {
-    console.log('===', event.nextId);
     this.tab = event.nextId;
   }
 

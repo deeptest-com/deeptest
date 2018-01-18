@@ -1,12 +1,11 @@
 import {Injectable} from '@angular/core';
 
 @Injectable()
-export class ExecutionReportService {
+export class ReportDesignService {
 
     constructor() {
 
     }
-
 
 }
 

@@ -5,24 +5,24 @@ import { NgbTabsetModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AngularEchartsModule } from 'ngx-echarts';
 
-import { ExecutionReportComponent } from './src/execution-report.component';
+import { ReportExecutionComponent } from './src/report-execution.component';
 import { ExecutionResultComponent } from './src/execution-result/execution-result.component';
 import { ExecutionActivityComponent } from './src/execution-activity/execution-activity.component';
 import { ExecutionProgressComponent } from './src/execution-progress/execution-progress.component';
 
-export * from './src/execution-report.component';
+export * from './src/report-execution.component';
 export * from './src/execution-result/execution-result.component';
 
 @NgModule({
-    declarations: [ExecutionReportComponent, ExecutionResultComponent, ExecutionActivityComponent, ExecutionProgressComponent],
-    exports: [ExecutionReportComponent, ExecutionResultComponent, ExecutionActivityComponent, ExecutionProgressComponent],
+    declarations: [ReportExecutionComponent, ExecutionResultComponent, ExecutionActivityComponent, ExecutionProgressComponent],
+    exports: [ReportExecutionComponent, ExecutionResultComponent, ExecutionActivityComponent, ExecutionProgressComponent],
     providers: [],
     imports: [CommonModule, NgbTabsetModule, AngularEchartsModule]
 })
-export class ExecutionReportModule {
+export class ReportExecutionModule {
     static forRoot(): ModuleWithProviders {
         return {
-            ngModule: ExecutionReportModule,
+            ngModule: ReportExecutionModule,
             providers: []
         };
     }

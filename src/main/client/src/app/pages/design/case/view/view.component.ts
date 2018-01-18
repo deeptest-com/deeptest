@@ -22,7 +22,7 @@ declare var jQuery;
 @Component({
   selector: 'case-view',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['./view.scss', '../../../../components/comment-edit/src/styles.scss'],
+  styleUrls: ['./view.scss'],
   templateUrl: './view.html'
 })
 export class CaseView implements OnInit, AfterViewInit, OnDestroy {

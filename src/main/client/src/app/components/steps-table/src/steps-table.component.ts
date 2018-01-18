@@ -31,7 +31,6 @@ export class StepsTableComponent implements OnChanges {
   };
 
   ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
-
     if (this.grid) {
 
       if (changes['settings']) {

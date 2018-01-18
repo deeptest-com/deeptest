@@ -40,6 +40,7 @@ export class ExecutionResult implements OnInit, AfterViewInit, OnDestroy {
   fields: any;
   next: boolean = true;
 
+  user: any;
   canEdit: boolean;
   canExe: boolean;
 
@@ -47,17 +48,17 @@ export class ExecutionResult implements OnInit, AfterViewInit, OnDestroy {
               private _caseService: CaseService, private _caseStepService: CaseStepService, private _caseInRunService: CaseInRunService,
               private _ztreeService: ZtreeService, private privilegeService:PrivilegeService) {
 
-    this.canEdit = this.privilegeService.hasPrivilege('cases-update');
-    this.canExe = this.privilegeService.hasPrivilege('run-exe');
-
     this.buildForm();
   }
   ngOnInit() {
-    let that = this;
+    this.user = CONSTANT.PROFILE;
 
-    that._route.params.forEach((params: Params) => {
-      that.planId = +params['planId'];
-      that.runId = +params['runId'];
+    this.canEdit = this.privilegeService.hasPrivilege('cases-update');
+    this.canExe = this.privilegeService.hasPrivilege('run-exe');
+
+    this._route.params.forEach((params: Params) => {
+      this.planId = +params['planId'];
+      this.runId = +params['runId'];
     });
 
     this._state.subscribe(CONSTANT.EVENT_CASE_EXE, this.eventCode, (data: any) => {
@@ -71,15 +72,16 @@ export class ExecutionResult implements OnInit, AfterViewInit, OnDestroy {
       this.fields = CONSTANT.CUSTOM_FIELD_FOR_PROJECT;
 
       if (testCase) {
-        that.id = testCase.entityId;
+        this.id = testCase.entityId;
 
-        that.loadData();
+        this.loadData();
       } else {
-        that.model = undefined;
+        this.model = undefined;
       }
     });
 
     this.settings = {
+      canEdit: this.canEdit,
       columns: {
         ordr: {
           title: '顺序',

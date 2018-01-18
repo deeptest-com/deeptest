@@ -1,0 +1,15 @@
+.comment-edit {
+  &.modal {
+    top: calc(40% - 100px);
+
+    textarea {
+      width: 100%;
+      padding: 5px;
+      line-height: 20px;
+    }
+  }
+
+  .modal-footer {
+    border: none;
+  }
+}

@@ -16,7 +16,7 @@ import { ZtreeModule } from '../../../components/ztree';
 import { StepsTableModule } from '../../../components/steps-table';
 import { CustomFieldModule } from '../../../components/custom-field';
 import { TinyMCEModule } from '../../../components/tiny-mce';
-import { CommentEditModule } from '../../../components/comment-edit';
+import { CaseCommentsModule } from '../../../components/case-comments';
 
 import { RouteService } from '../../../service/route';
 import { RequestService } from '../../../service/request';
@@ -47,7 +47,7 @@ import { CaseView } from './view/view.component';
     DirectiveModule,
     ToastyModule,
     SlimLoadingBarModule.forRoot(),
-    CommentEditModule,
+    CaseCommentsModule,
     ZtreeModule,
     StepsTableModule,
     CustomFieldModule,

@@ -36,6 +36,8 @@ export var CONSTANT: CONSTANT_INTERFACE = {
   DebounceTime: 500,
 
   EVENT_LOADING_COMPLETE: 'loading.complete',
+  EVENT_COMMENTS_EDIT: 'comments.edit',
+  EVENT_COMMENTS_SAVE: 'comments.save',
 
   EVENT_CASE_EDIT: 'case.edit',
   EVENT_CASE_UPDATE: 'case.update',
@@ -83,6 +85,8 @@ export interface CONSTANT_INTERFACE {
   DebounceTime: number,
 
   EVENT_LOADING_COMPLETE: string,
+  EVENT_COMMENTS_EDIT: string,
+  EVENT_COMMENTS_SAVE: string,
 
   EVENT_CASE_EDIT: string,
   EVENT_CASE_UPDATE: string,

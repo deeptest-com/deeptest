@@ -52,30 +52,19 @@ public class TestCaseInRunVo extends BaseVo {
 	private String prop20;
 
 	private List<TestCaseStepVo> steps = new LinkedList<>();
+	private List<TestCaseCommentsVo> comments = new LinkedList<>();
 
-    public TestCaseInRunVo() {
+	public List<TestCaseCommentsVo> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<TestCaseCommentsVo> comments) {
+		this.comments = comments;
+	}
+
+	public TestCaseInRunVo() {
         super();
     }
-
-//    public TestCaseInRunVo(Long entityId, Long id, Long pId, String name, String priority, Integer estimate, String objective, String descr,
-//                           Long createById, Long updateById, Date createTime, Date updateTime) {
-//        super();
-//
-//        this.entityId = entityId;
-//		this.id = id;
-//		this.pId = pId;
-//        this.name = name;
-//        this.priority = priority;
-//        this.estimate = estimate;
-//        this.objective = objective;
-//        this.descr = descr;
-//
-//        this.createById = createById;
-//        this.updateById = updateById;
-//        this.createTime = createTime;
-//        this.updateTime = updateTime;
-//    }
-
 
 	public String getKey() {
 		return key;

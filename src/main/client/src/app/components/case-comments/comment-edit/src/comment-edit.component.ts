@@ -2,7 +2,7 @@ import { Input, Output, EventEmitter, Component, ViewChild, OnInit, AfterViewIni
 
 import {NgbModal, NgbModalRef, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 
-import {GlobalState} from '../../../global.state';
+import {GlobalState} from '../../../../global.state';
 
 @Component({
   selector: 'comment-edit',

@@ -1,24 +1,27 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.entity.TestCase;
-import com.ngtesting.platform.entity.TestCaseInRun;
-import com.ngtesting.platform.entity.TestCaseStep;
-import com.ngtesting.platform.entity.TestRun;
+import com.ngtesting.platform.entity.*;
+import com.ngtesting.platform.service.CaseCommentsService;
 import com.ngtesting.platform.service.CaseInRunService;
 import com.ngtesting.platform.util.BeanUtilEx;
+import com.ngtesting.platform.vo.TestCaseCommentsVo;
 import com.ngtesting.platform.vo.TestCaseInRunVo;
 import com.ngtesting.platform.vo.TestCaseStepVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 @Service
 public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunService {
+    @Autowired
+    CaseCommentsService caseCommentsService;
 
     @Override
     public List<TestCaseInRunVo> query(Long runId) {
@@ -104,6 +107,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
         vo.setId(testcase.getId());
 
         vo.setSteps(new LinkedList<TestCaseStepVo>());
+        vo.setComments(new LinkedList<TestCaseCommentsVo>());
         if (withSteps) {
             List<TestCaseStep> steps = testcase.getSteps();
             for (TestCaseStep step : steps) {
@@ -112,8 +116,17 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
 
                 vo.getSteps().add(stepVo);
             }
+
+            List<TestCaseComments> comments = testcase.getComments();
+            Iterator<TestCaseComments> iterator  = comments.iterator();
+            while (iterator.hasNext()) {
+                TestCaseComments comment = iterator.next();
+                TestCaseCommentsVo commentVo = caseCommentsService.genVo(comment);
+                vo.getComments().add(commentVo);
+            }
         } else {
             vo.setSteps(null);
+            vo.setComments(null);
         }
 
         return vo;

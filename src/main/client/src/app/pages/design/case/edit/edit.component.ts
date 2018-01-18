@@ -7,22 +7,19 @@ import {ToastyService, ToastyConfig, ToastOptions, ToastData} from 'ng2-toasty';
 import {GlobalState} from '../../../../global.state';
 
 import { CONSTANT } from '../../../../utils/constant';
-import { Utils } from '../../../../utils/utils';
 import {ValidatorUtils} from '../../../../validator/validator.utils';
-import { RouteService } from '../../../../service/route';
 
 import { CaseService } from '../../../../service/case';
 import { CaseStepService } from '../../../../service/case-step';
-import { CaseCommentsService } from '../../../../service/case-comments';
 
-import { CommentEditComponent } from '../../../../components/comment-edit';
+import { PrivilegeService } from '../../../../service/privilege';
 
 declare var jQuery;
 
 @Component({
   selector: 'case-edit',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['./edit.scss', '../../../../components/comment-edit/src/styles.scss'],
+  styleUrls: ['./edit.scss', '../../../../components/case-comments/comment-edit/src/styles.scss'],
   templateUrl: './edit.html'
 })
 export class CaseEdit implements OnInit, AfterViewInit, OnDestroy {
@@ -38,17 +35,19 @@ export class CaseEdit implements OnInit, AfterViewInit, OnDestroy {
   form: any;
   tab: string = 'content';
 
-  @ViewChild('modalWrapper') modalWrapper: CommentEditComponent;
-  comment: any = {};
-
   fields: any[] = [];
   user: any;
 
+  canEdit: boolean;
+
   constructor(private _state:GlobalState, private fb: FormBuilder, private toastyService:ToastyService,
-              private _caseService: CaseService, private _caseStepService: CaseStepService, private _caseCommentsService: CaseCommentsService) {
+              private _caseService: CaseService, private _caseStepService: CaseStepService,
+              private privilegeService:PrivilegeService) {
 
   }
   ngOnInit() {
+    this.canEdit = this.privilegeService.hasPrivilege('cases-update');
+
     this.projectId = CONSTANT.CURR_PRJ_ID;
     this.user = CONSTANT.PROFILE;
 
@@ -73,7 +72,7 @@ export class CaseEdit implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.settings = {
-      canEdit: true,
+      canEdit: this.canEdit,
       columns: {
         ordr: {
           title: '顺序',
@@ -195,56 +194,12 @@ export class CaseEdit implements OnInit, AfterViewInit, OnDestroy {
     this.model.content = event;
   }
 
-  addComments() {
-    this.modalWrapper.showModal('comment-edit');
-    this.comment = {summary: '添加备注'};
-  }
-  editComments(comment: any) {
-    this.modalWrapper.showModal('comment-edit');
-    this.comment = comment;
-    if (this.comment.summary === '添加备注') {
-      this.comment.summary = '修改备注';
-    }
-  }
-  removeComments(id: number, indx: number) {
-    this._caseCommentsService.remove(id).subscribe((json:any) => {
-      this.model.comments.splice(indx, 1);
-    });
-  }
-
   review(pass: boolean) {
     if (!pass) {
-      this.modalWrapper.showModal('comment-edit');
-      this.comment = {pass:pass, summary: '评审失败'};
+      this._state.notifyDataChanged(CONSTANT.EVENT_COMMENTS_EDIT, {pass:pass, summary: '评审失败'});
     } else {
-      this.comment = {pass:pass, summary: '评审通过'};
-      this.saveComments(true);
+      this._state.notifyDataChanged(CONSTANT.EVENT_COMMENTS_SAVE, {pass:pass, summary: '评审通过'});
     }
-  }
-  saveComments(pass:boolean) {
-    this._caseCommentsService.save(this.id, this.comment).subscribe((json:any) => {
-      if (json.code == 1) {
-        if (this.comment.pass != undefined) { // 添加注释，非评审
-          this.reviewRequest(this.model.id, this.comment.pass);
-        }
-
-        if (this.comment.id != json.data.id) {
-          this.model.comments[this.model.comments.length] = json.data;
-        }
-        this.comment = json.data;
-        if (!pass) {
-          this.modalWrapper.closeModal();
-        }
-      }
-    });
-  }
-  reviewRequest(id: number, pass: boolean) {
-    this._caseService.reviewPass(id, pass).subscribe((json:any) => {
-      if (json.code == 1) {
-        this.model.reviewResult = pass;
-        this._state.notifyDataChanged(CONSTANT.EVENT_CASE_UPDATE, {node: this.model, random: Math.random()});
-      }
-    });
   }
 
   ngOnDestroy(): void {

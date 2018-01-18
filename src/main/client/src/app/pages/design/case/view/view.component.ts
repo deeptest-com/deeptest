@@ -1,28 +1,19 @@
 import {Component, ViewEncapsulation, NgModule, Pipe, OnInit, AfterViewInit, OnDestroy, ViewChild} from '@angular/core';
-import { Router, ActivatedRoute, Params } from '@angular/router';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-
-import {ToastyService, ToastyConfig, ToastOptions, ToastData} from 'ng2-toasty';
 
 import {GlobalState} from '../../../../global.state';
 
 import { CONSTANT } from '../../../../utils/constant';
-import { Utils } from '../../../../utils/utils';
-import {ValidatorUtils} from '../../../../validator/validator.utils';
-import { RouteService } from '../../../../service/route';
 
 import { CaseService } from '../../../../service/case';
 import { CaseStepService } from '../../../../service/case-step';
 import { CaseCommentsService } from '../../../../service/case-comments';
-
-import { CommentEditComponent } from '../../../../components/comment-edit';
 
 declare var jQuery;
 
 @Component({
   selector: 'case-view',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['./view.scss'],
+  styleUrls: ['./view.scss', '../../../../components/case-comments/comment-edit/src/styles.scss'],
   templateUrl: './view.html'
 })
 export class CaseView implements OnInit, AfterViewInit, OnDestroy {
@@ -38,14 +29,11 @@ export class CaseView implements OnInit, AfterViewInit, OnDestroy {
   form: any;
   tab: string = 'content';
 
-  @ViewChild('modalWrapper') modalWrapper: CommentEditComponent;
-  comment: any = {};
-
   casePropertyMap: any;
   fields: any[] = [];
   user: any;
 
-  constructor(private _state:GlobalState, private fb: FormBuilder, private toastyService:ToastyService,
+  constructor(private _state:GlobalState,
               private _caseService: CaseService, private _caseStepService: CaseStepService, private _caseCommentsService: CaseCommentsService) {
     this.casePropertyMap = CONSTANT.CASE_PROPERTY_MAP;
   }
@@ -107,36 +95,6 @@ export class CaseView implements OnInit, AfterViewInit, OnDestroy {
     this._caseService.changeContentType(contentType, this.model.id).subscribe((json:any) => {
       if (json.code == 1) {
         this.model.contentType = contentType;
-      }
-    });
-  }
-
-  addComments() {
-    this.modalWrapper.showModal('comment-edit');
-    this.comment = {summary: '添加备注'};
-  }
-  editComments(comment: any) {
-    this.modalWrapper.showModal('comment-edit');
-    this.comment = comment;
-    if (this.comment.summary === '添加备注') {
-      this.comment.summary = '修改备注';
-    }
-  }
-  removeComments(id: number, indx: number) {
-    console.log('remove', id);
-    this._caseCommentsService.remove(id).subscribe((json:any) => {
-      this.model.comments.splice(indx, 1);
-    });
-  }
-
-  saveComments() {
-    this._caseCommentsService.save(this.id, this.comment).subscribe((json:any) => {
-      if (json.code == 1) {
-        if (this.comment.id != json.data.id) {
-          this.model.comments[this.model.comments.length] = json.data;
-        }
-        this.comment = json.data;
-        this.modalWrapper.closeModal();
       }
     });
   }

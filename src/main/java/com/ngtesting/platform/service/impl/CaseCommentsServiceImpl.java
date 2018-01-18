@@ -53,7 +53,7 @@ public class CaseCommentsServiceImpl extends BaseServiceImpl implements CaseComm
             vo.setUpdateTime(vo.getCreateTime());
         }
 
-        TestUser user = (TestUser)get(TestUser.class, po.getId());
+        TestUser user = (TestUser)get(TestUser.class, po.getUserId());
 
         vo.setUserName(user.getName());
         vo.setUserAvatar(user.getAvatar());

@@ -19,8 +19,6 @@ export class TimePassedPipe implements PipeTransform {
     let _hour = diffValue / hour;
     let _min = diffValue / minute;
 
-    console.log('===', timestamp, now);
-
     if (_day > 7) {
       result = new DatePipe(local).transform(timestamp, format);
     } else if (_day >= 1) {

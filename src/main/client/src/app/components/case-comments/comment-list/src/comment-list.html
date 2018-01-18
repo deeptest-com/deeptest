@@ -1,0 +1,27 @@
+<div class="row comments">
+  <div class="col-sm-12">
+    <div *ngFor="let comment of model.comments; let i = index;" class="item">
+      <div>
+        <span class="avatar">
+          <img src="{{ comment.userAvatar | imgPath }}" class="">
+        </span>
+        <span class="summary">
+          {{comment.userName}} {{comment.summary}} - {{comment.changeTime | timePassed}}
+        </span>
+      </div>
+      <div>{{comment.content}}</div>
+
+      <div class="edit">
+        <span *ngIf="comment.userId==userId" (click)="editComments(comment)" class="link"><i class="ion-edit"></i></span>
+        <span *ngIf="comment.userId==userId" (click)="removeComments(comment.id, i)" class="link"><i class="ion-trash-a"></i></span>
+      </div>
+    </div>
+    <div class="buttons">
+      <button (click)="addComments()" type="button" class="btn btn-secondary btn-with-icon btn-sm">
+        <i class="ion-ios-chatbubble-outline"></i>备注
+      </button>
+    </div>
+  </div>
+</div>
+
+<comment-edit (confirm)="saveComments(false)" [(model)]="comment" #modalWrapper></comment-edit>

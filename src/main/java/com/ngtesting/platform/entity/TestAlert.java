@@ -8,23 +8,27 @@ import java.util.Date;
 public class TestAlert extends BaseEntity {
     private static final long serialVersionUID = 4639102366457159222L;
 
-    private String title;
+    private Long entityId;
+    private String entityName;
+
     @Column(name = "descr", length = 10000)
     private String descr;
     private String uri;
+    private String type;
+    private String status;
 
     private Date startTime;
-    private Date dueTime;
+    private Date endTime;
 
     private Boolean isRead = false;
-    private Boolean sent = false;
+    private Boolean isSent = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "opt_user_id", insertable = false, updatable = false)
-    private TestUser optUser;
+    @JoinColumn(name = "assignee_id", insertable = false, updatable = false)
+    private TestUser assignee;
 
-    @Column(name = "opt_user_id")
-    private Long optUserId;
+    @Column(name = "assignee_id")
+    private Long assigneeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
@@ -33,53 +37,28 @@ public class TestAlert extends BaseEntity {
     @Column(name = "user_id")
     private Long userId;
 
-    public Boolean getSent() {
-        return sent;
+    public String getStatus() {
+        return status;
     }
 
-    public void setSent(Boolean sent) {
-        this.sent = sent;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public Boolean getRead() {
-        return isRead;
+    public Long getEntityId() {
+        return entityId;
     }
 
-    public void setRead(Boolean read) {
-        isRead = read;
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
     }
 
-    public Date getStartTime() {
-        return startTime;
+    public String getEntityName() {
+        return entityName;
     }
 
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-
-    public TestUser getOptUser() {
-        return optUser;
-    }
-
-    public void setOptUser(TestUser optUser) {
-        this.optUser = optUser;
-    }
-
-    public Long getOptUserId() {
-        return optUserId;
-    }
-
-    public void setOptUserId(Long optUserId) {
-        this.optUserId = optUserId;
-    }
-
-    public Date getDueTime() {
-        return dueTime;
-    }
-
-    public void setDueTime(Date dueTime) {
-        this.dueTime = dueTime;
+    public void setEntityName(String entityName) {
+        this.entityName = entityName;
     }
 
     public String getDescr() {
@@ -98,13 +77,61 @@ public class TestAlert extends BaseEntity {
         this.uri = uri;
     }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    public Boolean getRead() {
+        return isRead;
+    }
+
+    public void setRead(Boolean read) {
+        isRead = read;
+    }
+
+    public Boolean getSent() {
+        return isSent;
+    }
+
+    public void setSent(Boolean sent) {
+        isSent = sent;
+    }
+
+    public TestUser getAssignee() {
+        return assignee;
+    }
+
+    public void setAssignee(TestUser assignee) {
+        this.assignee = assignee;
+    }
+
+    public Long getAssigneeId() {
+        return assigneeId;
+    }
+
+    public void setAssigneeId(Long assigneeId) {
+        this.assigneeId = assigneeId;
+    }
 
     public TestUser getUser() {
         return user;
@@ -121,5 +148,4 @@ public class TestAlert extends BaseEntity {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
-
 }

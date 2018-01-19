@@ -42,8 +42,8 @@ export class RunService {
     return this._reqService.post(this._api_url + 'close', model);
   }
 
-  markAllRead() {
-    return this._reqService.post(this._api_url + 'markAllRead', {});
+  markAllRead(ids: number[]) {
+    return this._reqService.post(this._api_url + 'markAllRead', {ids: ids});
   }
 
 }

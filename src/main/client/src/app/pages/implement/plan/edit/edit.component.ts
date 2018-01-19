@@ -234,8 +234,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
         this.formErrors = ['删除成功'];
         this.modalDelete.closeModal();
 
-        let url: string = '/pages/' + CONSTANT.CURR_ORG_ID + '/implement/' + CONSTANT.CURR_PRJ_ID + '/plan/list';
-        this._routeService.navTo(url);
+        this._routeService.navTo('/pages/org/' + CONSTANT.CURR_ORG_ID + '/prj/' + CONSTANT.CURR_PRJ_ID + '/implement/plan/list');
       } else {
         this.formErrors = ['删除失败'];
       }

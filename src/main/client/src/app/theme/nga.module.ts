@@ -12,7 +12,7 @@ import { RouteService } from '../service/route';
 import { RequestService } from '../service/request';
 import {SockService} from "../service/sock";
 
-import {RunService} from '../service/run';
+import {AlertService} from '../service/alert';
 import {MsgService} from '../service/msg';
 import { OrgService } from '../service/org';
 import { AccountService } from '../service/account';
@@ -88,7 +88,7 @@ const NGA_SERVICES = [
   SockService,
   AccountService,
   OrgService,
-  RunService,
+  AlertService,
   MsgService
 ];
 

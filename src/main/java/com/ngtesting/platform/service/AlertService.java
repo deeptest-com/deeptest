@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service;
 
+import com.ngtesting.platform.entity.TestAlert;
 import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.vo.TestAlertVo;
 
@@ -9,13 +10,15 @@ public interface AlertService extends BaseService {
 
     List<TestAlertVo> list(Long userId, Boolean isRead);
 
-    List<TestRun> scanTestPlan(Long userId);
+    List<TestAlert> scanTestAlert(Long userId);
 
-    List<TestAlertVo> genVos(List<TestRun> pos);
+    TestAlert saveAlert(TestRun run);
 
-    List<TestAlertVo> genVosWithAction(List<TestRun> pos);
+    TestAlert getByRun(Long id);
 
-    TestAlertVo genVo(TestRun po);
+    void markAllReadPers(String ids);
 
-    TestAlertVo genVoWithAction(TestRun po, Long startTimeOfToday, Long endTimeOfToday);
+    List<TestAlertVo> genVos(List<TestAlert> pos);
+
+    TestAlertVo genVo(TestAlert po);
 }

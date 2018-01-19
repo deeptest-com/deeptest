@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.entity.TestAlert;
 import com.ngtesting.platform.entity.TestPlan;
 import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.entity.TestUser;
@@ -21,16 +22,15 @@ import java.util.List;
 public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
     @Override
     public List<TestAlertVo> list(Long userId, Boolean isRead) {
-        List<TestRun> pos = scanTestPlan(userId);
-        List<TestAlertVo> vos = genVosWithAction(pos);
+        List<TestAlert> pos = scanTestAlert(userId);
+        List<TestAlertVo> vos = genVos(pos);
 
         return vos;
     }
 
     @Override
-    public List<TestRun> scanTestPlan(Long userId) {
-        DetachedCriteria dc = DetachedCriteria.forClass(TestRun.class);
-        dc.createAlias("plan", "plan");
+    public List<TestAlert> scanTestAlert(Long userId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestAlert.class);
 
         Date now = new Date();
         Date startTimeOfToday = DateUtils.GetStartTimeOfDay(now);
@@ -40,80 +40,126 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
             Restrictions.or(
                 // 今天开始
                 Restrictions.and(
-                        Restrictions.isNotNull("plan.startTime"),
-                        Restrictions.ge("plan.startTime", startTimeOfToday),
-                        Restrictions.le("plan.startTime", endTimeOfToday)),
+                        Restrictions.isNotNull("startTime"),
+                        Restrictions.ge("startTime", startTimeOfToday),
+                        Restrictions.le("startTime", endTimeOfToday)),
                 // 今天结束
                 Restrictions.and(
-                        Restrictions.isNotNull("plan.endTime"),
-                        Restrictions.ge("plan.endTime", startTimeOfToday),
-                        Restrictions.le("plan.endTime", endTimeOfToday))
+                        Restrictions.isNotNull("endTime"),
+                        Restrictions.ge("endTime", startTimeOfToday),
+                        Restrictions.le("endTime", endTimeOfToday))
             )
         );
 
         dc.add(Restrictions.eq("userId", userId));
-        dc.add(Restrictions.eq("isRead", false));
+//        dc.add(Restrictions.eq("isRead", false));
 
-        dc.add(Restrictions.ne("status", TestRun.RunStatus.end));
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 
-        dc.addOrder(Order.asc("plan.startTime"));
+        dc.addOrder(Order.asc("startTime"));
 
-        List<TestRun> pos = findAllByCriteria(dc);
+        List<TestAlert> pos = findAllByCriteria(dc);
         return pos;
     }
 
     @Override
-    public List<TestAlertVo> genVos(List<TestRun> pos) {
+    public List<TestAlertVo> genVos(List<TestAlert> pos) {
         List<TestAlertVo> vos = new LinkedList<>();
 
-        for (TestRun run: pos) {
+        for (TestAlert run: pos) {
             TestAlertVo vo = genVo(run);
             vos.add(vo);
         }
         return vos;
     }
+
     @Override
-    public List<TestAlertVo> genVosWithAction(List<TestRun> pos) {
+    public TestAlertVo genVo(TestAlert po) {
+        TestAlertVo vo = new TestAlertVo();
+        BeanUtilEx.copyProperties(vo, po);
+        vo.setName(po.getEntityName());
+
+        TestUser user = (TestUser)get(TestUser.class, po.getUserId());
+        TestUser assignee = (TestUser)get(TestUser.class, po.getAssigneeId());
+        vo.setUserName(user.getName());
+        vo.setUserAvatar(user.getAvatar());
+
+        vo.setAssigneeName(assignee.getName());
+        vo.setAssigneeAvatar(assignee.getAvatar());
+
         Date now = new Date();
         Long startTimeOfToday = DateUtils.GetStartTimeOfDay(now).getTime();
         Long endTimeOfToday = DateUtils.GetEndTimeOfDay(now).getTime();
 
-        List<TestAlertVo> vos = new LinkedList<>();
+        Date startTime = po.getStartTime();
+        Date endTime = po.getEndTime();
 
-        for (TestRun run: pos) {
-            TestAlertVo vo = genVoWithAction(run, startTimeOfToday, endTimeOfToday);
-            vos.add(vo);
-        }
-        return vos;
-    }
-
-    @Override
-    public TestAlertVo genVo(TestRun po) {
-        TestAlertVo vo = new TestAlertVo();
-        BeanUtilEx.copyProperties(vo, po);
-
-        TestUser user = (TestUser)get(TestUser.class, po.getUserId());
-        vo.setAvatar(user.getAvatar());
-
-        return vo;
-    }
-    @Override
-    public TestAlertVo genVoWithAction(TestRun po, Long startTimeOfToday, Long endTimeOfToday) {
-        TestAlertVo vo = genVo(po);
-
-        TestPlan plan = (TestPlan)get(TestPlan.class, po.getPlanId());
-        Date planStartTime = plan.getStartTime();
-        Date planEndTime = plan.getEndTime();
-
-        if (planEndTime != null && planEndTime.getTime() >= startTimeOfToday && planEndTime.getTime() <= endTimeOfToday) {
-            vo.setName("测试集" + StringUtil.highlightDict(vo.getName()) + "完成");
+        if (endTime != null && endTime.getTime() >= startTimeOfToday && endTime.getTime() <= endTimeOfToday) {
+            vo.setTitle("测试集" + StringUtil.highlightDict(vo.getName()) + "完成");
         } else {
-            vo.setName("测试集" + StringUtil.highlightDict(vo.getName()) + "开始");
+            vo.setTitle("测试集" + StringUtil.highlightDict(vo.getName()) + "开始");
         }
 
         return vo;
+    }
+    @Override
+    public TestAlert saveAlert(TestRun run) {
+        TestAlert po = getByRun(run.getId());;
+        if (po == null) {
+            po = new TestAlert();
+        }
+
+        po.setType("run");
+        po.setDescr(run.getDescr());
+        po.setEntityId(run.getId());
+        po.setEntityName(run.getName());
+        po.setStatus(run.getStatus().toString());
+        po.setRead(false);
+        po.setAssigneeId(run.getAssigneeId());
+        po.setUserId(run.getUserId());
+
+        TestPlan plan = run.getPlan();
+        if (plan == null || plan.getId() == null) {
+            plan= (TestPlan)get(TestPlan.class, run.getPlanId());
+        }
+        po.setStartTime(plan.getStartTime());
+        po.setEndTime(plan.getEndTime());
+
+        saveOrUpdate(po);
+        return po;
+    }
+
+    @Override
+    public void markAllReadPers(String idStr) {
+        String hql = "update TestAlert alert set alert.isRead=true where alert.id IN (?) " +
+                "AND alert.isRead != true AND alert.deleted != true AND alert.disabled != true";
+
+        List<Long> ids = new LinkedList();
+        for (String str : idStr.split(",")) {
+            ids.add(Long.valueOf(str));
+        }
+        getDao().executeByHql(hql, ids.toArray());
+    }
+
+    @Override
+    public TestAlert getByRun(Long id) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestAlert.class);
+
+        dc.add(Restrictions.eq("type", "run"));
+        dc.add(Restrictions.eq("entityId", id));
+
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+
+        dc.addOrder(Order.asc("id"));
+
+        List<TestAlert> pos = findAllByCriteria(dc);
+        if (pos.size() > 0) {
+            return pos.get(0);
+        } else {
+            return null;
+        }
     }
 
 }

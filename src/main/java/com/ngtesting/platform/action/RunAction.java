@@ -140,19 +140,4 @@ public class RunAction extends BaseAction {
 		return ret;
 	}
 
-    @AuthPassport(validate = true)
-    @RequestMapping(value = "markAllRead", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> markAllRead(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-
-        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
-        runService.markAllReadPers(userVo.getId());
-        optFacade.opt(WsConstant.WS_TODO, userVo.getId().toString());
-
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
 }

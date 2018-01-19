@@ -4,7 +4,7 @@ import {CONSTANT} from "../../../utils/constant";
 import {RouteService} from "../../../service/route";
 import {BaMsgCenterService} from './baMsgCenter.service';
 
-import {RunService} from '../../../service/run';
+import {AlertService} from '../../../service/alert';
 import {MsgService} from '../../../service/msg';
 
 @Component({
@@ -15,17 +15,30 @@ import {MsgService} from '../../../service/msg';
 })
 export class BaMsgCenter {
 
-  @Input() alerts;
+  noReads: number;
+  _alerts: any[];
+  @Input() set alerts(vals: any[]) {
+    this._alerts = vals;
+    this.noReads = 0;
+
+    this._alerts.map((item:any) => {
+      if (!item.read) {this.noReads += 1};
+    });
+  };
   @Input() msgs;
 
   constructor(private _routeService: RouteService, private _baMsgCenterService:BaMsgCenterService,
-              private runService:RunService, private msgService:MsgService) {
+              private alertService:AlertService, private msgService:MsgService) {
 
   }
 
   readAllAlerts($event) {
-    console.log('readAllAlerts');
-    this.runService.markAllRead().subscribe((json:any) => {
+    let ids: string = '';
+    this._alerts.map((item:any) => {
+      if (ids != '') {ids += ','}
+      ids += item.id;
+    });
+    this.alertService.markAllRead(ids).subscribe((json:any) => {
 
     });
   }

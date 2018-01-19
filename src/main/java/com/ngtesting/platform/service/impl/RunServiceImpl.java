@@ -66,10 +66,10 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
     }
 
     @Override
-    public TestRun save(JSONObject json, UserVo optUser) {
+    public TestRun save(JSONObject json, UserVo user) {
         Long planId = json.getLong("planId");
         Long runId = json.getLong("id");
-        Long userId = json.getLong("userId");
+        Long assigneeId = json.getLong("userId");
         String runName = json.getString("name");
 
         Constant.MsgType action = null;
@@ -83,12 +83,16 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
             action = Constant.MsgType.create;
         }
         run.setName(runName);
-        run.setUserId(userId);
+        run.setUserId(user.getId());
+        run.setAssigneeId(assigneeId);
+
         saveOrUpdate(run);
 
-        msgService.create(run, action, optUser);
-        historyService.create(run.getProjectId(), optUser, action.msg, TestHistory.TargetType.run,
+        alertService.saveAlert(run);
+        msgService.create(run, action, user);
+        historyService.create(run.getProjectId(), user, action.msg, TestHistory.TargetType.run,
                 run.getId(), run.getName());
+
 
         return run;
     }
@@ -149,13 +153,6 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
         run.setStatus(TestRun.RunStatus.end);
         saveOrUpdate(run);
         return run;
-    }
-
-    @Override
-    public void markAllReadPers(Long userId) {
-        String hql = "update TestRun run set run.isRead=true where run.userId=? " +
-                "AND run.isRead != true AND run.deleted != true AND run.disabled != true";
-        getDao().executeByHql(hql, userId);
     }
 
     @Override

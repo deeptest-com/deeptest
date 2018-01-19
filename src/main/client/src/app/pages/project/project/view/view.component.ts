@@ -37,8 +37,9 @@ export class ProjectView implements OnInit, AfterViewInit {
 
     this._route.params.subscribe(params => {
       this.id = +params['id'];
+      this.loadData();
     });
-    this.loadData();
+
   }
   ngAfterViewInit() {
 
@@ -46,11 +47,11 @@ export class ProjectView implements OnInit, AfterViewInit {
 
   loadData() {
       CONSTANT.CURR_PRJ_ID = this.id;
-      // this._projectService.view(this.id).subscribe((json:any) => {
-      //   this.project = json.project;
-      //   this.plans = json.plans;
-      //   this.histories = json.histories;
-      // });
+      this._projectService.view(this.id).subscribe((json:any) => {
+        this.project = json.project;
+        this.plans = json.plans;
+        this.histories = json.histories;
+      });
   }
 
 }

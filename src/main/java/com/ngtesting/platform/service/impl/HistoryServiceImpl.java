@@ -56,14 +56,15 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
     }
 
 	@Override
-	public Map<Date, List<TestHistoryVo>> genVosByDate(List<TestHistory> historyPos) {
-		Map<Date, List<TestHistoryVo>> map = new LinkedHashMap();
+	public Map<String, List<TestHistoryVo>> genVosByDate(List<TestHistory> historyPos) {
+		Map<String, List<TestHistoryVo>> map = new LinkedHashMap();
 		for(TestHistory his: historyPos) {
-            Date createDate = DateUtils.GetBeginTimeOfDay(his.getCreateTime());
+            Date createDate = his.getCreateTime();
+            String date = DateUtils.FormatDate(createDate, "yyyy-MM-dd");
             if (!map.containsKey(createDate)) {
-                map.put(createDate, new LinkedList());
+                map.put(date, new LinkedList());
             }
-            map.get(createDate).add(genVo(his));
+            map.get(date).add(genVo(his));
 		}
 		return map;
 	}

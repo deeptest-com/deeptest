@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,19 +109,19 @@ public class ProjectAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long id = json.getLong("id");
 
-//		TestProjectVo vo = projectService.viewPers(id, userVo);
+		TestProjectVo vo = projectService.viewPers(id, userVo);
 
         List<TestPlan> planPos = planService.list(id);
         List<TestPlanVo> planVos = planService.genVos(planPos);
 
         List<TestHistory> historyPos = historyService.list(id);
-        Map<Date, List<TestHistoryVo>> historyVos = historyService.genVosByDate(historyPos);
+        Map<String, List<TestHistoryVo>> historyVos = historyService.genVosByDate(historyPos);
 
         pushSettingsService.pushRecentProjects(userVo);
         pushSettingsService.pushPrjSettings(userVo);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-//        ret.put("project", vo);
+        ret.put("project", vo);
         ret.put("plans", planVos);
         ret.put("histories", historyVos);
 

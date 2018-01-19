@@ -66,23 +66,14 @@
       项目活动
     </div>
     <div class="list">
-
-      <div *ngFor="let item of histories; let i = index;" class="item">
+      <div *ngFor="let item of (histories | mapToArray); let i = index;" class="item">
         <div class="date">
-          {{histories[item]}}
+          {{item.key}}
         </div>
         <div class="descr">
-          <div class="descr-item">
-            <span>Aaron Chen 新增 项目</span>&nbsp;
-            <span class="type project">自动化测试</span>
-          </div>
-          <div class="descr-item">
-            <span>Aaron Chen 修改 测试计划A</span>&nbsp;
-            <span class="type plan">计划</span>
-          </div>
-          <div class="descr-item">
-            <span>Aaron Chen 修改测试集 版本201710</span>&nbsp;
-            <span class="type run">测试集</span>
+          <div *ngFor="let his of item.value; let j = index;" class="descr-item">
+            <span class="action-html" [innerHTML]="his.title"></span>
+            <span>{{his.createTime | date:'y-MM-dd HH:mm:ss'}}</span>
           </div>
         </div>
       </div>

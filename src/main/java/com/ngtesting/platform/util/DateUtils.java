@@ -925,10 +925,10 @@ public class DateUtils {
     public static Date GetBeginTimeOfDay(Date dt) {
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(dt);
-        calendar.set(Calendar.HOUR,0);
-        calendar.set(Calendar.MINUTE,0);
-        calendar.set(Calendar.SECOND,0);
-        calendar.set(Calendar.MILLISECOND,0);
+        calendar.set(Calendar.HOUR,1);
+        calendar.set(Calendar.MINUTE,1);
+        calendar.set(Calendar.SECOND,1);
+        calendar.set(Calendar.MILLISECOND,1);
 
         return calendar.getTime();
     }

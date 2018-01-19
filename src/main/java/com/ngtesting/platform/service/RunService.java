@@ -21,7 +21,9 @@ public interface RunService extends BaseService {
 	TestRun delete(Long id, Long userId);
 	TestRun closePers(Long id, Long userId);
 
-	List<TestRunVo> genVos(List<TestRun> pos);
+    void closePlanIfAllRunClosedPers(Long planId);
+
+    List<TestRunVo> genVos(List<TestRun> pos);
 	TestRunVo genVo(TestRun po);
 
 	List<TestCaseInRunVo> genCaseVos(List<TestCaseInRun> ls);

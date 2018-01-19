@@ -2,8 +2,8 @@ import {Pipe, PipeTransform} from '@angular/core';
 
 import {CONSTANT} from '../utils/constant';
 
-@Pipe({name: 'runStatus'})
-export class RunStatusPipe implements PipeTransform {
+@Pipe({name: 'exeStatus'})
+export class ExeStatusPipe implements PipeTransform {
     transform(str: string) : string {
         var status: string;
 

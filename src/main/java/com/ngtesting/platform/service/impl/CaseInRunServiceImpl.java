@@ -57,6 +57,17 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
         po.setStatus(status);
         saveOrUpdate(po);
 
+        TestRun run = po.getRun();
+        TestPlan plan = run.getPlan();
+        if (run.getStatus().equals(TestRun.RunStatus.not_start)) {
+            run.setStatus(TestRun.RunStatus.in_progress);
+            saveOrUpdate(run);
+        }
+        if (plan.getStatus().equals(TestPlan.PlanStatus.not_start)) {
+            plan.setStatus(TestPlan.PlanStatus.in_progress);
+            saveOrUpdate(plan);
+        }
+
         if (nextId != null) {
             return getById(nextId);
         } else {

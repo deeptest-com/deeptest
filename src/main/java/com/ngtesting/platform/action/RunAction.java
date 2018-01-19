@@ -99,6 +99,7 @@ public class RunAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		TestRun po = runService.closePers(id, userVo.getId());
+		runService.closePlanIfAllRunClosedPers(po.getPlanId());
         TestRunVo vo = runService.genVo(po);
 
         ret.put("data", vo);

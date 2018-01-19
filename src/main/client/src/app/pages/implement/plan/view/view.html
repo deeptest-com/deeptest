@@ -15,7 +15,7 @@
             </div>
             <div class="buttons">
               <button (click)="returnTo()" type="button"
-                      class="btn btn-secondary btn-with-icon btn-sm back">
+                      class="btn btn-primary btn-with-icon btn-sm back">
                 <i class="ion-backspace"></i>返回
               </button>
             </div>
@@ -92,9 +92,10 @@
           <td>
             <execution-bar [data]="item"></execution-bar>
           </td>
-          <td>{{item.status | runStatus}}</td>
+          <td>{{item.status | exeStatus}}</td>
           <td>
-            <span privilege [privs]="'!run-exe'" *ngIf="item.status != 'end' && item.countMap.total > 0" (click)="exeOrView(item.id)" class="link no-underline">查看</span>
+            <span privilege [privs]="'!run-exe'" *ngIf="item.countMap.total > 0" (click)="exeOrView(item.id)" class="link no-underline">查看</span>
+            <span privilege [privs]="'run-exe'" *ngIf="item.status == 'end' && item.countMap.total > 0" (click)="exeOrView(item.id)" class="link no-underline">查看</span>
 
             <span privilege [privs]="'run-exe'" *ngIf="item.status != 'end' && item.countMap.total > 0" (click)="exeOrView(item.id)" class="link no-underline">执行</span>
             <span privilege [privs]="'run-exe'" *ngIf="item.status != 'end'" (click)="close(item.id, i)" class="link no-underline">关闭</span>

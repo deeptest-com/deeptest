@@ -152,7 +152,12 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
         TestRun run = (TestRun) get(TestRun.class, id);
         run.setStatus(TestRun.RunStatus.end);
         saveOrUpdate(run);
+
         return run;
+    }
+    @Override
+    public void closePlanIfAllRunClosedPers(Long planId) {
+        getDao().querySql("{call close_plan_if_all_run_closed(?)}", planId);
     }
 
     @Override

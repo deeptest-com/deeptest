@@ -31,6 +31,8 @@
       <thead class="thead-inverse">
       <tr>
         <th style="width: 200px">名称</th>
+        <th style="width: 150px">计划开始时间</th>
+        <th style="width: 150px">计划结束时间</th>
         <th style="width: 150px">状态</th>
         <th style="width: 150px">操作</th>
       </tr>
@@ -38,7 +40,9 @@
       <tbody>
       <tr *ngFor="let item of models">
         <td>{{ item.name }}</td>
-        <td>{{statusMap[''+item.status]}}</td>
+        <td>{{ item.startTime | date:'y-MM-dd HH:mm:ss' }}</td>
+        <td>{{ item.endTime | date:'y-MM-dd HH:mm:ss' }}</td>
+        <td>{{ item.status | exeStatus}}</td>
         <td>
           <span [routerLink]="['/pages/org/' + orgId + '/prj/' + prjId + '/implement/plan/' + item.id + '/view']" class="link no-underline">查看</span>
           <span privilege [privs]="'plan-update'" [routerLink]="['/pages/org/' + orgId + '/prj/' + prjId + '/implement/plan/' + item.id + '/edit']" class="link no-underline">编辑</span>

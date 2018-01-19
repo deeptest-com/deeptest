@@ -164,6 +164,7 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
         vo.setEndTime(po.getEndTime());
         vo.setDescr(po.getDescr());
         vo.setProjectId(po.getProjectId());
+        vo.setStatus(po.getStatus().toString());
 
         for (TestRun run : po.getRuns()) {
             TestRunVo runVo = runService.genVo(run);

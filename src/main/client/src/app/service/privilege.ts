@@ -10,6 +10,7 @@ export class PrivilegeService {
     let ret = true;
 
     let arr = privs.split(',');
+    // console.log('arr', arr);
     for (let i = 0; i < arr.length; i++) {
       let not = false;
       let priv = arr[i];
@@ -20,10 +21,15 @@ export class PrivilegeService {
 
       if (!CONSTANT.PRJ_PRIVILEGES[arr[i]]) {
         ret = false;
+        break;
       }
 
       if (not) {
         ret = !ret;
+      }
+
+      if (!ret) {
+        break;
       }
     }
 

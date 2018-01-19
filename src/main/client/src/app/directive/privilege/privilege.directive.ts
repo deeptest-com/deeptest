@@ -25,6 +25,7 @@ export class PrivilegeDirective implements OnInit, OnDestroy {
 
   update():void {
     let ret = this._privilegeService.hasPrivilege(this.privs);
+
     if (!ret) {
       this.renderer.setElementStyle(this.elem, 'display', 'none');
     }

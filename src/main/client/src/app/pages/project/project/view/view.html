@@ -73,7 +73,7 @@
         <div class="descr">
           <div *ngFor="let his of item.value; let j = index;" class="descr-item">
             <span class="action-html" [innerHTML]="his.title"></span>
-            <span>{{his.createTime | date:'y-MM-dd HH:mm:ss'}}</span>
+            <span>{{his.createTime | date:'HH:mm:ss'}}</span>
           </div>
         </div>
       </div>

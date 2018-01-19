@@ -61,7 +61,7 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
 		for(TestHistory his: historyPos) {
             Date createDate = his.getCreateTime();
             String date = DateUtils.FormatDate(createDate, "yyyy-MM-dd");
-            if (!map.containsKey(createDate)) {
+            if (!map.containsKey(date)) {
                 map.put(date, new LinkedList());
             }
             map.get(date).add(genVo(his));

@@ -3,6 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.entity.TestHistory;
 import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.util.BeanUtilEx;
+import com.ngtesting.platform.util.DateUtils;
 import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.TestHistoryVo;
 import com.ngtesting.platform.vo.UserVo;
@@ -11,8 +12,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class HistoryServiceImpl extends BaseServiceImpl implements HistoryService {
@@ -25,7 +25,7 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
 		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 
-		dc.addOrder(Order.asc("createTime"));
+		dc.addOrder(Order.desc("createTime"));
 
 		List<TestHistory> ls = findAllByCriteria(dc);
 
@@ -54,6 +54,19 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
 
         return history;
     }
+
+	@Override
+	public Map<Date, List<TestHistoryVo>> genVosByDate(List<TestHistory> historyPos) {
+		Map<Date, List<TestHistoryVo>> map = new LinkedHashMap();
+		for(TestHistory his: historyPos) {
+            Date createDate = DateUtils.GetBeginTimeOfDay(his.getCreateTime());
+            if (!map.containsKey(createDate)) {
+                map.put(createDate, new LinkedList());
+            }
+            map.get(createDate).add(genVo(his));
+		}
+		return map;
+	}
 
 	@Override
 	public List<TestHistoryVo> genVos(List<TestHistory> pos) {

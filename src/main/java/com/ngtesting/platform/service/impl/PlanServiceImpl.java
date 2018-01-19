@@ -116,6 +116,21 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
         return po;
     }
 
+    @Override
+    public List<TestPlan> list(Long projectId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestPlan.class);
+
+        dc.add(Restrictions.eq("projectId", projectId));
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+
+        dc.addOrder(Order.asc("createTime"));
+
+        List<TestPlan> ls = findAllByCriteria(dc);
+
+        return ls;
+    }
+
     private Integer getChildMaxOrderNumb(TestPlan parent) {
         String hql = "select max(ordr) from TestPlan where parentId = " + parent.getId();
         Integer maxOrder = (Integer) getByHQL(hql);

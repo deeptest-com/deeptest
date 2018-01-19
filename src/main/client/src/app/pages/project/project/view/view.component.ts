@@ -22,23 +22,23 @@ declare var jQuery;
 })
 export class ProjectView implements OnInit, AfterViewInit {
   orgId: number;
-  type: string;
   id: number;
-  model: any = {};
+
+  project: any = {};
+  plans: any[] = [];
+  histories: any = {};
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
               private _projectService: ProjectService, private accountService: AccountService) {
 
   }
   ngOnInit() {
-    let that = this;
-
     this.orgId = CONSTANT.CURR_ORG_ID;
 
     this._route.params.subscribe(params => {
-      that.id = +params['id'];
-      that.loadData();
+      this.id = +params['id'];
     });
+    this.loadData();
   }
   ngAfterViewInit() {
 
@@ -46,9 +46,11 @@ export class ProjectView implements OnInit, AfterViewInit {
 
   loadData() {
       CONSTANT.CURR_PRJ_ID = this.id;
-      this._projectService.view(this.id).subscribe((json:any) => {
-
-      });
+      // this._projectService.view(this.id).subscribe((json:any) => {
+      //   this.project = json.project;
+      //   this.plans = json.plans;
+      //   this.histories = json.histories;
+      // });
   }
 
 }

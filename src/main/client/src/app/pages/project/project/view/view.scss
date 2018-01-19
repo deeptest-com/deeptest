@@ -74,13 +74,13 @@
               text-decoration: none;
               border-radius: 2px;
 
+              &.project {
+                background: #FF9900;
+              }
               &.plan {
                 background: #e5ad35;
               }
               &.run {
-                background: #e5ad35;
-              }
-              &.milestone {
                 background: #bfbf21;
               }
             }

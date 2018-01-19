@@ -2,17 +2,13 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.entity.TestHistory;
+import com.ngtesting.platform.entity.TestPlan;
 import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestRelationProjectRoleEntity;
-import com.ngtesting.platform.service.ProjectRoleService;
-import com.ngtesting.platform.service.ProjectService;
-import com.ngtesting.platform.service.PushSettingsService;
-import com.ngtesting.platform.service.RelationProjectRoleEntityService;
+import com.ngtesting.platform.service.*;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.vo.ProjectRoleVo;
-import com.ngtesting.platform.vo.RelationProjectRoleEntityVo;
-import com.ngtesting.platform.vo.TestProjectVo;
-import com.ngtesting.platform.vo.UserVo;
+import com.ngtesting.platform.vo.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +32,11 @@ public class ProjectAction extends BaseAction {
 
 	@Autowired
     ProjectService projectService;
+	@Autowired
+	PlanService planService;
+	@Autowired
+	HistoryService historyService;
+
     @Autowired
     ProjectRoleService projectRoleService;
     @Autowired
@@ -108,13 +110,22 @@ public class ProjectAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long id = json.getLong("id");
 
-		TestProjectVo vo = projectService.viewPers(id, userVo);
+//		TestProjectVo vo = projectService.viewPers(id, userVo);
+
+        List<TestPlan> planPos = planService.list(id);
+        List<TestPlanVo> planVos = planService.genVos(planPos);
+
+        List<TestHistory> historyPos = historyService.list(id);
+        Map<Date, List<TestHistoryVo>> historyVos = historyService.genVosByDate(historyPos);
 
         pushSettingsService.pushRecentProjects(userVo);
         pushSettingsService.pushPrjSettings(userVo);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        ret.put("project", vo);
+//        ret.put("project", vo);
+        ret.put("plans", planVos);
+        ret.put("histories", historyVos);
+
 		return ret;
 	}
 

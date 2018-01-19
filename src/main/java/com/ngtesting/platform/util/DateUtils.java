@@ -2,10 +2,7 @@ package com.ngtesting.platform.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class DateUtils {
 
@@ -924,5 +921,16 @@ public class DateUtils {
 
 		return days + "天" + hours + "小时" + mins + "分钟";
 	}
+
+    public static Date GetBeginTimeOfDay(Date dt) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(dt);
+        calendar.set(Calendar.HOUR,0);
+        calendar.set(Calendar.MINUTE,0);
+        calendar.set(Calendar.SECOND,0);
+        calendar.set(Calendar.MILLISECOND,0);
+
+        return calendar.getTime();
+    }
 
 }

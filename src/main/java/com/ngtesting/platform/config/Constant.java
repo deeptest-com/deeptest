@@ -83,7 +83,7 @@ public final class Constant {
     public enum MsgType {
         create("create", "创建"),
         update("update", "更新"),
-        update_case("update_case", "更新用例");
+        update_case("update_case", "更新用例为");
 
         MsgType(String code, String msg) {
             this.code = code;

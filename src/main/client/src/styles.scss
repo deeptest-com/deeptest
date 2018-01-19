@@ -378,7 +378,15 @@ ul.al-share {
 }
 
 .action-html {
-  .dict {
-    font-weight: bolder;
+  display: flex;
+  .content {
+    flex: 1;
+    text-overflow: ellipsis;
+    .dict {
+      font-style: italic;
+    }
+  }
+  .date {
+    width: 70px;
   }
 }

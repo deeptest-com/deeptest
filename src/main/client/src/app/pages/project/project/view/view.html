@@ -71,9 +71,9 @@
           {{item.key}}
         </div>
         <div class="descr">
-          <div *ngFor="let his of item.value; let j = index;" class="descr-item">
-            <span class="action-html" [innerHTML]="his.title"></span>
-            <span>{{his.createTime | date:'HH:mm:ss'}}</span>
+          <div class="action-html descr-item" *ngFor="let his of item.value; let j = index;">
+            <div [innerHTML]="his.title" class="content"></div>&nbsp;&nbsp;
+            <div class="date">{{his.createTime | date:'HH:mm:ss'}}</div>
           </div>
         </div>
       </div>

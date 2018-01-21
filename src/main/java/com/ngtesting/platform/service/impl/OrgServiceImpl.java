@@ -151,7 +151,9 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		saveOrUpdate(user);
 
 		userVo.setDefaultOrgId(user.getDefaultOrgId());
-		userVo.setDefaultPrjId(recentProjects.get(0).getProjectId());
+		if (recentProjects.size() > 0) {
+			userVo.setDefaultPrjId(recentProjects.get(0).getProjectId());
+		}
 	}
 
 	@Override

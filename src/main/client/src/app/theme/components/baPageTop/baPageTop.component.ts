@@ -60,6 +60,9 @@ export class BaPageTop implements OnInit, AfterViewInit, OnDestroy {
     this._state.subscribe(WS_CONSTANT.WS_RECENT_PROJECTS, this.eventCode, (json) => {
       console.log(WS_CONSTANT.WS_RECENT_PROJECTS + ' in ' + this.eventCode, json);
 
+      CONSTANT.CURR_ORG_ID = json.defaultOrgId;
+      CONSTANT.CURR_PRJ_ID = json.defaultPrjId;
+
       this.orgId = json.defaultOrgId;
       this.prjId = json.defaultPrjId;
 

@@ -26,6 +26,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	AccountService accountService;
     @Autowired
     RelationOrgGroupUserService orgGroupUserService;
+    @Autowired
+    ProjectService projectService;
 
     @Autowired
     MailService mailService;
@@ -140,8 +142,12 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
     @Override
-    public TestUser invitePers(UserVo user, List<RelationOrgGroupUserVo> relations, Long orgId) {
-        TestUser existUser  = accountService.getByEmail(user.getEmail());
+    public TestUser invitePers(UserVo userVo, UserVo newUser, List<RelationOrgGroupUserVo> relations) {
+	    Long orgId = userVo.getDefaultOrgId();
+        Long prjId = userVo.getDefaultPrjId();
+        String prjName = userVo.getDefaultPrjName();
+
+        TestUser existUser  = accountService.getByEmail(newUser.getEmail());
         boolean isNew;
 
         TestUser po;
@@ -153,10 +159,10 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             po = new TestUser();
             po.setDefaultOrgId(orgId);
 
-            po.setName(user.getName());
-            po.setPhone(user.getPhone());
-            po.setEmail(user.getEmail());
-            po.setDisabled(user.getDisabled());
+            po.setName(newUser.getName());
+            po.setPhone(newUser.getPhone());
+            po.setEmail(newUser.getEmail());
+            po.setDisabled(newUser.getDisabled());
             po.setAvatar("upload/sample/user/avatar.png");
 
             saveOrUpdate(po);
@@ -167,8 +173,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             org.getUserSet().add(po);
             saveOrUpdate(org);
 
-            orgGroupUserService.saveRelations(relations);
+            projectService.getHistoryPers(orgId, po.getId(), prjId, prjName);
 
+            orgGroupUserService.saveRelations(relations);
 
             TestVerifyCode verifyCode = accountService.genVerifyCodePers(po.getId());
             String sys = PropertyConfig.getConfig("sys.name");
@@ -184,7 +191,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
                 url = PropertyConfig.getConfig("url.login");
             }
             map.put("url", url);
-            mailService.sendTemplateMail("来自[" + sys + "]的邀请", "invite-user.ftl", user.getEmail(), map);
+            mailService.sendTemplateMail("来自[" + sys + "]的邀请", "invite-user.ftl", newUser.getEmail(), map);
 
             return po;
         } else {

@@ -18,18 +18,17 @@ public interface ProjectService extends BaseService {
 	TestProject save(TestProjectVo vo, Long orgId, Long userId);
 	Boolean delete(Long id);
 	
-//	List<TestProjectAccessHistoryVo> setDefaultPers(Long orgId, Long projectId, UserVo userVo);
-	
 	List<TestProjectAccessHistory> listRecentProject(Long orgId, Long userId);
 	List<TestProjectAccessHistoryVo> listRecentProjectVo(Long orgId, Long userId);
-//	Long initDefaultBasicDataPers(Long id, Long userId);
 
 	TestProjectVo viewPers(Long projectId, UserVo userVo);
 	List<TestProject> list(Long orgId, String keywords, String disabled);
 
     void updateNameInHisotyPers(Long projectId, Long userId);
 
-    boolean isLastestProjectGroup(Long orgId, Long projectGroupId);
+	TestProjectAccessHistory getHistoryPers(Long orgId, Long userId, Long projectId, String projectName);
+
+	boolean isLastestProjectGroup(Long orgId, Long projectGroupId);
 
 	TestProjectVo genVo(TestProject po);
 	List<TestProjectVo> genVos(List<TestProject> pos, String keywords, String disabled);
@@ -38,6 +37,5 @@ public interface ProjectService extends BaseService {
 	TestProjectAccessHistoryVo genHistoryVo(TestProjectAccessHistory po);
 	List<TestProjectAccessHistoryVo> genHistoryVos(List<TestProjectAccessHistory> pos);
 
-//	void removeCache(Long orgId);
 	
 }

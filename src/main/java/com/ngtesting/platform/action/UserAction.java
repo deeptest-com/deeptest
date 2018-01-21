@@ -148,10 +148,11 @@ public class UserAction extends BaseAction {
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long orgId = userVo.getDefaultOrgId();
+        Long prjId = userVo.getDefaultPrjId();
 
 		UserVo user = JSON.parseObject(JSON.toJSONString(json.get("user")), UserVo.class);
 		List<RelationOrgGroupUserVo> relations = (List<RelationOrgGroupUserVo>) json.get("relations");
-		TestUser po = userService.invitePers(user, relations, orgId);
+		TestUser po = userService.invitePers(userVo, user, relations);
 
 		if (po == null) {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());
@@ -290,7 +291,7 @@ public class UserAction extends BaseAction {
 			userVo.setDefaultPrjId(recentProjects.get(0).getProjectId());
 		}
 
-		if (prjId != null) {
+		if (userVo.getDefaultPrjId() != null) {
 			Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUserPers(userId, prjId, orgId);
 			ret.put("prjPrivileges", prjPrivileges);
 		}

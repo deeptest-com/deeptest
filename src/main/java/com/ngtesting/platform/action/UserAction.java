@@ -115,6 +115,52 @@ public class UserAction extends BaseAction {
 		return ret;
 	}
 
+    @RequestMapping(value = "getProfile", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> getProfile(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Long orgId = userVo.getDefaultOrgId();
+        Long prjId = userVo.getDefaultPrjId();
+
+        Long orgIdNew = json.getLong("orgId");
+        Long prjIdNew = json.getLong("prjId");
+
+        if (orgIdNew != null && orgIdNew.longValue() != orgId.longValue()) { // org不能为空
+            orgService.setDefaultPers(orgId, userVo);
+        }
+        if (prjIdNew != null && (prjId == null || prjIdNew.longValue() != prjId.longValue())) { // prj可能为空
+            projectService.viewPers(prjIdNew, userVo);
+        }
+
+        Long userId = userVo.getId();
+
+        Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userId);
+        ret.put("sysPrivileges", sysPrivileges);
+
+        List<OrgVo> orgs = orgService.listVo(null, "false", userId);
+        ret.put("myOrgs", orgs);
+
+        Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(userVo.getId(), orgId);
+        ret.put("orgPrivileges", orgPrivileges);
+
+        Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
+        ret.put("casePropertyMap", casePropertyMap);
+
+        List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(orgId, userId);
+        ret.put("recentProjects", recentProjects);
+        userVo.setDefaultPrjId(recentProjects.get(0).getProjectId());
+
+        Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUserPers(userId, prjId, orgId);
+        ret.put("prjPrivileges", prjPrivileges);
+
+        ret.put("profile", userVo);
+        ret.put("code", RespCode.SUCCESS.getCode());
+
+        return ret;
+    }
+
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
@@ -147,12 +193,10 @@ public class UserAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		Long orgId = userVo.getDefaultOrgId();
-        Long prjId = userVo.getDefaultPrjId();
 
-		UserVo user = JSON.parseObject(JSON.toJSONString(json.get("user")), UserVo.class);
+		UserVo newUserVo = JSON.parseObject(JSON.toJSONString(json.get("user")), UserVo.class);
 		List<RelationOrgGroupUserVo> relations = (List<RelationOrgGroupUserVo>) json.get("relations");
-		TestUser po = userService.invitePers(userVo, user, relations);
+		TestUser po = userService.invitePers(userVo, newUserVo, relations);
 
 		if (po == null) {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());
@@ -250,55 +294,5 @@ public class UserAction extends BaseAction {
 		return ret;
 	}
 
-	@RequestMapping(value = "getProfile", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> getProfile(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		Long orgId = userVo.getDefaultOrgId();
-		Long prjId = userVo.getDefaultPrjId();
-
-		Long orgIdNew = json.getLong("orgId");
-		Long prjIdNew = json.getLong("prjId");
-
-		if (orgIdNew != null && orgIdNew.longValue() != orgId.longValue()) { // org不能为空
-			orgService.setDefaultPers(orgId, userVo);
-		}
-		if (prjIdNew != null && (prjId == null || prjIdNew.longValue() != prjId.longValue())) { // prj可能为空
-			projectService.viewPers(prjIdNew, userVo);
-		}
-
-		Long userId = userVo.getId();
-
-		ret.put("profile", userVo);
-
-		Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userId);
-		ret.put("sysPrivileges", sysPrivileges);
-
-		List<OrgVo> orgs = orgService.listVo(null, "false", userId);
-		ret.put("myOrgs", orgs);
-
-		Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(userVo.getId(), orgId);
-		ret.put("orgPrivileges", orgPrivileges);
-
-		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
-		ret.put("casePropertyMap", casePropertyMap);
-
-		List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(orgId, userId);
-		ret.put("recentProjects", recentProjects);
-		if (recentProjects.size() > 0) {
-			userVo.setDefaultPrjId(recentProjects.get(0).getProjectId());
-		}
-
-		if (userVo.getDefaultPrjId() != null) {
-			Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUserPers(userId, prjId, orgId);
-			ret.put("prjPrivileges", prjPrivileges);
-		}
-
-		ret.put("code", RespCode.SUCCESS.getCode());
-
-		return ret;
-	}
 
 }

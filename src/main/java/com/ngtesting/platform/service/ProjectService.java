@@ -15,7 +15,7 @@ public interface ProjectService extends BaseService {
 	
 	TestProject getDetail(Long id);
 
-	TestProject save(TestProjectVo vo, Long orgId, Long userId);
+	TestProject save(TestProjectVo vo, Long orgId, UserVo userVo);
 	Boolean delete(Long id);
 	
 	List<TestProjectAccessHistory> listRecentProject(Long orgId, Long userId);

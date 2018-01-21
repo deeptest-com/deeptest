@@ -15,7 +15,7 @@ public interface UserService extends BaseService {
     List<TestUser> search(Long orgId, String keywords, JSONArray exceptIds);
 	
 	TestUser save(UserVo vo, Long orgId);
-	TestUser invitePers(UserVo uerVo, UserVo user, List<RelationOrgGroupUserVo> relations);
+	TestUser invitePers(UserVo uerVo, UserVo newUserVo, List<RelationOrgGroupUserVo> relations);
 	boolean disable(Long userId, Long orgId);
 	boolean remove(Long userId, Long orgId);
 

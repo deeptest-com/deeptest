@@ -142,12 +142,12 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
     @Override
-    public TestUser invitePers(UserVo userVo, UserVo newUser, List<RelationOrgGroupUserVo> relations) {
+    public TestUser invitePers(UserVo userVo, UserVo newUserVo, List<RelationOrgGroupUserVo> relations) {
 	    Long orgId = userVo.getDefaultOrgId();
         Long prjId = userVo.getDefaultPrjId();
         String prjName = userVo.getDefaultPrjName();
 
-        TestUser existUser  = accountService.getByEmail(newUser.getEmail());
+        TestUser existUser  = accountService.getByEmail(newUserVo.getEmail());
         boolean isNew;
 
         TestUser po;
@@ -159,17 +159,17 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             po = new TestUser();
             po.setDefaultOrgId(orgId);
 
-            po.setName(newUser.getName());
-            po.setPhone(newUser.getPhone());
-            po.setEmail(newUser.getEmail());
-            po.setDisabled(newUser.getDisabled());
+            po.setName(newUserVo.getName());
+            po.setPhone(newUserVo.getPhone());
+            po.setEmail(newUserVo.getEmail());
+            po.setDisabled(newUserVo.getDisabled());
             po.setAvatar("upload/sample/user/avatar.png");
 
             saveOrUpdate(po);
         }
 
         TestOrg org = (TestOrg)get(TestOrg.class, orgId);
-        if (!contains(org.getUserSet(), po.getId())) {
+        if (!contains(org.getUserSet(), po.getId())) { // 不在组里
             org.getUserSet().add(po);
             saveOrUpdate(org);
 
@@ -191,7 +191,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
                 url = PropertyConfig.getConfig("url.login");
             }
             map.put("url", url);
-            mailService.sendTemplateMail("来自[" + sys + "]的邀请", "invite-user.ftl", newUser.getEmail(), map);
+            mailService.sendTemplateMail("来自[" + sys + "]的邀请", "invite-user.ftl",
+                    newUserVo.getEmail(), map);
 
             return po;
         } else {

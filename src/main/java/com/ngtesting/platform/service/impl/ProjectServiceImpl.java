@@ -1,11 +1,14 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.ProjectDao;
+import com.ngtesting.platform.entity.TestHistory;
 import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestProject.ProjectType;
 import com.ngtesting.platform.entity.TestProjectAccessHistory;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.CaseService;
+import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
@@ -34,6 +37,8 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 	private static final Log log = LogFactory
 			.getLog(ProjectService.class);
 
+    @Autowired
+    HistoryService historyService;
 	@Autowired
 	private ProjectDao projectDao;
     @Autowired
@@ -140,7 +145,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 	}
 
 	@Override
-	public TestProject save(TestProjectVo vo, Long orgId, Long userId) {
+	public TestProject save(TestProjectVo vo, Long orgId, UserVo userVo) {
 		if (vo == null) {
 			return null;
 		}
@@ -164,7 +169,12 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		saveOrUpdate(po);
 
         if(isNew && ProjectType.project.equals(ProjectType.valueOf(vo.getType()))) {
-            caseService.createRoot(po.getId(), userId);
+            caseService.createRoot(po.getId(), userVo.getId());
+        }
+        if(ProjectType.project.equals(ProjectType.valueOf(vo.getType()))) {
+            historyService.create(po.getId(), userVo,
+                    isNew?Constant.MsgType.create.msg:Constant.MsgType.create.update.msg,
+                    TestHistory.TargetType.project, po.getId(), po.getName());
         }
 		
 		if (!disableChanged) {

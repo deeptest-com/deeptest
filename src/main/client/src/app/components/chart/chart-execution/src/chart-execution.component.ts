@@ -1,11 +1,11 @@
 import {Component, Input, OnInit} from "@angular/core";
 
 @Component({
-  selector: 'report-execution',
-  templateUrl: './report-execution.html',
+  selector: 'chart-execution',
+  templateUrl: './chart-execution.html',
   styleUrls: ['./styles.scss']
 })
-export class ReportExecutionComponent implements OnInit {
+export class ChartExecutionComponent implements OnInit {
 
   @Input() data: any;
   tab: string = 'exe-result';

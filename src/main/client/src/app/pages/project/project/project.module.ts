@@ -11,8 +11,8 @@ import { PipeModule } from '../../../pipe/pipe.module';
 import { DirectiveModule } from '../../../directive/directive.module';
 import { TableTreeModule } from '../../../components/table-tree';
 import { PopDialogModule } from '../../../components/pop-dialog';
-import { ReportDesignModule } from '../../../components/report-design';
-import { ReportExecutionModule } from '../../../components/report-execution';
+import { ChartDesignModule } from '../../../components/chart/chart-design';
+import { ChartExecutionModule } from '../../../components/chart/chart-execution';
 import { SearchSelectModule } from '../../../components/search-select';
 
 import { RouteService } from '../../../service/route';
@@ -43,8 +43,8 @@ import { ProjectView } from './view/view.component';
     DirectiveModule,
     TableTreeModule,
     PopDialogModule,
-    ReportDesignModule,
-    ReportExecutionModule,
+    ChartDesignModule,
+    ChartExecutionModule,
     SearchSelectModule,
     AppTranslationModule
   ],

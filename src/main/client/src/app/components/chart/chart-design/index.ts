@@ -5,22 +5,19 @@ import { NgbTabsetModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AngularEchartsModule } from 'ngx-echarts';
 
-import { ReportDesignComponent } from './src/report-design.component';
 import { DesignProcessComponent } from './src/design-process/design-process.component';
 import { DesignProgressComponent } from './src/design-progress/design-progress.component';
 
-export * from './src/report-design.component';
-
 @NgModule({
-    declarations: [ReportDesignComponent, DesignProcessComponent, DesignProgressComponent],
-    exports: [ReportDesignComponent, DesignProcessComponent, DesignProgressComponent],
+    declarations: [DesignProcessComponent, DesignProgressComponent],
+    exports: [DesignProcessComponent, DesignProgressComponent],
     providers: [],
     imports: [CommonModule, NgbTabsetModule, AngularEchartsModule]
 })
-export class ReportDesignModule {
+export class ChartDesignModule {
     static forRoot(): ModuleWithProviders {
         return {
-            ngModule: ReportDesignModule,
+            ngModule: ChartDesignModule,
             providers: []
         };
     }

@@ -15,7 +15,7 @@ import { PopDialogModule } from '../../../components/pop-dialog';
 import { RunEditModule, RunEditComponent } from '../../../components/run-edit';
 import { CaseSelectionModule, CaseSelectionComponent } from '../../../components/case-selection';
 import { EnvironmentConfigModule, EnvironmentConfigComponent } from '../../../components/environment-config';
-import { ReportExecutionModule } from '../../../components/report-execution';
+import { ChartExecutionModule } from '../../../components/chart/chart-execution';
 import { ExecutionBarModule } from '../../../components/execution-bar';
 
 import { RouteService } from '../../../service/route';
@@ -57,7 +57,7 @@ export function myDateParserFormatterFactory() {
     RunEditModule,
     CaseSelectionModule,
     EnvironmentConfigModule,
-    ReportExecutionModule,
+    ChartExecutionModule,
     ExecutionBarModule
   ],
   declarations: [

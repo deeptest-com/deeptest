@@ -49,7 +49,7 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
         history.setProjectId(projectId);
         history.setEntityId(entityId);
         history.setEntityType(entityType);
-        history.setOptUserId(optUser.getId());
+        history.setUserId(optUser.getId());
         saveOrUpdate(history);
 
         return history;

@@ -25,13 +25,6 @@ public class TestHistory extends BaseEntity {
     private Long projectId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "opt_user_id", insertable = false, updatable = false)
-    private TestUser optUser;
-
-    @Column(name = "opt_user_id")
-    private Long optUserId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private TestUser user;
 
@@ -40,6 +33,8 @@ public class TestHistory extends BaseEntity {
 
     public enum TargetType {
         project("project", "项目"),
+        project_member("project_member", "项目成员"),
+
         plan("plan", "计划"),
         run("run", "测试集");
 
@@ -79,28 +74,12 @@ public class TestHistory extends BaseEntity {
         this.entityType = entityType;
     }
 
-    public TestUser getOptUser() {
-        return optUser;
-    }
-
-    public void setOptUser(TestUser optUser) {
-        this.optUser = optUser;
-    }
-
     public Long getEntityId() {
         return entityId;
     }
 
     public void setEntityId(Long entityId) {
         this.entityId = entityId;
-    }
-
-    public Long getOptUserId() {
-        return optUserId;
-    }
-
-    public void setOptUserId(Long optUserId) {
-        this.optUserId = optUserId;
     }
 
     public String getDescr() {

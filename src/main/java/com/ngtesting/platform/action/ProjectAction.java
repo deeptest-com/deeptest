@@ -160,6 +160,11 @@ public class ProjectAction extends BaseAction {
         List<TestRelationProjectRoleEntity> pos = relationProjectRoleEntityService.batchSavePers(json);
         List<RelationProjectRoleEntityVo> entityInRoles = relationProjectRoleEntityService.genVos(pos);
 
+        Long projectId = json.getLong("projectId");
+        TestProject project = (TestProject) relationProjectRoleEntityService.get(TestProject.class, projectId);
+        historyService.create(project.getId(), userVo, Constant.MsgType.update.msg,
+                TestHistory.TargetType.project_member, project.getId(), project.getName());
+
 		ret.put("entityInRoles", entityInRoles);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

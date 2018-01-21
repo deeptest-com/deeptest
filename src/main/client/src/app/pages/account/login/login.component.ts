@@ -3,7 +3,7 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 import {FormGroup, AbstractControl, FormBuilder, Validators} from '@angular/forms';
 
 import { CONSTANT } from '../../../utils/constant';
-
+import {GlobalState} from '../../../global.state';
 import {ValidatorUtils} from '../../../validator';
 
 import { RouteService } from '../../../service/route';
@@ -20,7 +20,7 @@ export class Login implements OnInit {
   public form:FormGroup;
   model: any = { rememberMe: true};
 
-  constructor(fb:FormBuilder, private _route: ActivatedRoute, private accountService: AccountService, private routeService: RouteService) {
+  constructor(private _state: GlobalState, fb:FormBuilder, private _route: ActivatedRoute, private accountService: AccountService, private routeService: RouteService) {
     this.form = fb.group({
       'email': ['', [Validators.required, Validators.email]],
       'password': ['', [Validators.minLength(6)]],
@@ -34,9 +34,14 @@ export class Login implements OnInit {
     this._route.params.subscribe(params => {
       this.vcode = params['vcode'];
     });
-    this.accountService.loginWithVcode(this.vcode).subscribe((errors: any) => {
-      this.formErrors = [errors];
-    });
+    if(this.vcode) {
+      this.accountService.loginWithVcode(this.vcode).subscribe((errors: any) => {
+        this.formErrors = [errors];
+        this._state.notifyDataChanged(CONSTANT.EVENT_LOADING_COMPLETE, {});
+      });
+    } else {
+      this._state.notifyDataChanged(CONSTANT.EVENT_LOADING_COMPLETE, {});
+    }
   }
 
   onValueChanged(data?: any) {

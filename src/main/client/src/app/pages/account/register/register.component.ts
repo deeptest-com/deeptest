@@ -3,6 +3,7 @@ import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ValidatorUtils, PhoneValidator, EqualPasswordsValidator} from '../../../validator';
 
 import { CONSTANT } from '../../../utils/constant';
+import {GlobalState} from '../../../global.state';
 import { RouteService } from '../../../service/route';
 import { AccountService } from '../../../service/account';
 
@@ -12,13 +13,13 @@ import { AccountService } from '../../../service/account';
   styleUrls: ['./register.scss'],
   templateUrl: './register.html',
 })
-export class Register {
+export class Register implements OnInit {
 
   public form:FormGroup;
 
   public model: any = {};
 
-  constructor(fb:FormBuilder, private accountService: AccountService, private routeService: RouteService) {
+  constructor(private _state: GlobalState, fb:FormBuilder, private accountService: AccountService, private routeService: RouteService) {
 
     this.form = fb.group({
       'name': ['', [Validators.required, Validators.minLength(2)]],
@@ -34,6 +35,9 @@ export class Register {
     this.onValueChanged();
   }
 
+  ngOnInit() {
+    this._state.notifyDataChanged(CONSTANT.EVENT_LOADING_COMPLETE, {});
+  }
   onValueChanged(data?: any) {
     let that = this;
     if (!that.form) { return; }

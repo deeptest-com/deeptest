@@ -4,9 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.config.Constant.RespCode;
-import com.ngtesting.platform.config.PropertyConfig;
 import com.ngtesting.platform.entity.TestUser;
-import com.ngtesting.platform.entity.TestVerifyCode;
 import com.ngtesting.platform.service.*;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.vo.*;
@@ -32,8 +30,6 @@ public class UserAction extends BaseAction {
     AccountService accountService;
 	@Autowired
 	RelationOrgGroupUserService orgGroupUserService;
-	@Autowired
-	MailService mailService;
 	@Autowired
 	PushSettingsService pushSettingsService;
 
@@ -154,26 +150,14 @@ public class UserAction extends BaseAction {
 		Long orgId = userVo.getDefaultOrgId();
 
 		UserVo user = JSON.parseObject(JSON.toJSONString(json.get("user")), UserVo.class);
-		TestUser po = userService.invitePers(user, orgId);
+		List<RelationOrgGroupUserVo> relations = (List<RelationOrgGroupUserVo>) json.get("relations");
+		TestUser po = userService.invitePers(user, relations, orgId);
 
 		if (po == null) {
 			ret.put("code", RespCode.BIZ_FAIL.getCode());
-			ret.put("msg", "邮箱已存在");
+			ret.put("msg", "邮箱已加入当期组织");
 			return ret;
 		}
-
-		List<RelationOrgGroupUserVo> relations = (List<RelationOrgGroupUserVo>) json.get("relations");
-		orgGroupUserService.saveRelations(relations);
-
-		TestVerifyCode verifyCode = accountService.genVerifyCodePers(po.getId());
-		String sys = PropertyConfig.getConfig("sys.name");
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("user", userVo.getName() + "(" + userVo.getEmail() + ")");
-		map.put("name", user.getName());
-		map.put("vcode", verifyCode.getCode());
-		map.put("sys", sys);
-		map.put("url", PropertyConfig.getConfig("url.reset.password"));
-		mailService.sendTemplateMail("来自[" + sys + "]的邀请", "invite-user.ftl", user.getEmail(), map);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

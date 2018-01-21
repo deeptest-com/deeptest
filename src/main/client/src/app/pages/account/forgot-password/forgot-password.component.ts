@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import { CONSTANT } from '../../../utils/constant';
-import { Utils } from '../../../utils/utils';
+import {GlobalState} from '../../../global.state';
 import {ValidatorUtils} from '../../../validator';
 
 import { RouteService } from '../../../service/route';
@@ -23,7 +23,7 @@ export class ForgotPassword implements OnInit, AfterViewInit {
   form: any;
   public errors: string;
 
-  constructor(private _routeService: RouteService, private _route: ActivatedRoute,
+  constructor(private _state: GlobalState,
               private fb: FormBuilder, private accountService: AccountService) {
 
   }
@@ -33,7 +33,7 @@ export class ForgotPassword implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-
+    this._state.notifyDataChanged(CONSTANT.EVENT_LOADING_COMPLETE, {});
   }
 
   onSubmit():void {

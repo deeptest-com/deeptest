@@ -1,20 +1,13 @@
 import { Component,ViewEncapsulation, Pipe, OnInit, AfterViewInit, ViewChild } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router, ActivatedRoute, Params } from '@angular/router';
-
-import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
-  NgbTabsetModule, NgbButtonsModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
-import { BrowserModule } from '@angular/platform-browser';
+import { FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute, Params } from '@angular/router';
 
 import { CONSTANT } from '../../../utils/constant';
-import { Utils } from '../../../utils/utils';
+import {GlobalState} from '../../../global.state';
 import {ValidatorUtils} from '../../../validator/validator.utils';
 import {EqualPasswordsValidator} from '../../../validator';
 
-import { RouteService } from '../../../service/route';
-
 import { AccountService } from '../../../service/account';
-import {TrueOrFalsePipe} from "../../../pipe/field-property";
 
 declare var jQuery;
 
@@ -32,7 +25,7 @@ export class ResetPassword implements OnInit, AfterViewInit {
   msg: string;
   public errors: string;
 
-  constructor(private _routeService: RouteService, private _route: ActivatedRoute,
+  constructor(private _state: GlobalState, private _route: ActivatedRoute,
               private fb: FormBuilder, private accountService: AccountService) {
 
     this._route.params.subscribe(params => {
@@ -51,6 +44,7 @@ export class ResetPassword implements OnInit, AfterViewInit {
           this.checkPass = false;
           this.msg = json.msg;
         }
+        this._state.notifyDataChanged(CONSTANT.EVENT_LOADING_COMPLETE, {});
       });
     }
   }

@@ -1,15 +1,15 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.ngtesting.platform.config.PropertyConfig;
 import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestUser;
-import com.ngtesting.platform.service.AccountService;
-import com.ngtesting.platform.service.RelationOrgGroupUserService;
-import com.ngtesting.platform.service.RelationProjectRoleEntityService;
-import com.ngtesting.platform.service.UserService;
+import com.ngtesting.platform.entity.TestVerifyCode;
+import com.ngtesting.platform.service.*;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.Page;
+import com.ngtesting.platform.vo.RelationOrgGroupUserVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -25,13 +25,10 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	@Autowired
 	AccountService accountService;
     @Autowired
-    AccountService projectService;
-	@Autowired
-    RelationProjectRoleEntityService relationProjectRoleUserService;
+    RelationOrgGroupUserService orgGroupUserService;
+
     @Autowired
-    RelationOrgGroupUserService relationOrgGroupUserService;
-	@Autowired
-	RelationProjectRoleEntityService relationProjectRoleEntityService;
+    MailService mailService;
 
 	@Override
 	public Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
@@ -110,7 +107,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		if (userVo == null) {
 			return null;
 		}
-		
+
 		TestUser temp = accountService.getByEmail(userVo.getEmail());
 		if (temp != null && temp.getId() != userVo.getId()) {
 			return null;
@@ -123,7 +120,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 			po = new TestUser();
 			po.setDefaultOrgId(orgId);
 		}
-		
+
 		po.setName(userVo.getName());
 		po.setPhone(userVo.getPhone());
 		po.setEmail(userVo.getEmail());
@@ -143,10 +140,56 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
     @Override
-    public TestUser invitePers(UserVo vo, Long orgId) {
-        TestUser po = save(vo, orgId);
+    public TestUser invitePers(UserVo user, List<RelationOrgGroupUserVo> relations, Long orgId) {
+        TestUser existUser  = accountService.getByEmail(user.getEmail());
+        boolean isNew;
 
-        return po;
+        TestUser po;
+        if (existUser != null) {
+            isNew = false;
+            po = existUser;
+        } else {
+            isNew = true;
+            po = new TestUser();
+            po.setDefaultOrgId(orgId);
+
+            po.setName(user.getName());
+            po.setPhone(user.getPhone());
+            po.setEmail(user.getEmail());
+            po.setDisabled(user.getDisabled());
+            po.setAvatar("upload/sample/user/avatar.png");
+
+            saveOrUpdate(po);
+        }
+
+        TestOrg org = (TestOrg)get(TestOrg.class, orgId);
+        if (!contains(org.getUserSet(), po.getId())) {
+            org.getUserSet().add(po);
+            saveOrUpdate(org);
+
+            orgGroupUserService.saveRelations(relations);
+
+
+            TestVerifyCode verifyCode = accountService.genVerifyCodePers(po.getId());
+            String sys = PropertyConfig.getConfig("sys.name");
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("user", po.getName() + "(" + po.getEmail() + ")");
+            map.put("name", po.getName());
+            map.put("sys", sys);
+
+            String url;
+            if (isNew) {
+                url = PropertyConfig.getConfig("url.reset.password") + "/" + verifyCode.getCode();
+            } else {
+                url = PropertyConfig.getConfig("url.login");
+            }
+            map.put("url", url);
+            mailService.sendTemplateMail("来自[" + sys + "]的邀请", "invite-user.ftl", user.getEmail(), map);
+
+            return po;
+        } else {
+            return null;
+        }
     }
 
     @Override

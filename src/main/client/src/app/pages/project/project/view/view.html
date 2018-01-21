@@ -48,7 +48,9 @@
                 <td>{{plan.startTime | date:'y/MM/dd'}}</td>
                 <td>{{plan.endTime | date:'y/MM/dd'}}</td>
                 <td>{{plan.status | exeStatus}}</td>
-                <td>陈琦</td>
+                <td>
+                  <span [routerLink]="['/pages/org/' + orgId + '/prj/' + id + '/implement/plan/' + plan.id + '/view']" class="link no-underline">查看</span>
+                </td>
               </tr>
               </tbody>
             </table>

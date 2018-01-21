@@ -2,7 +2,7 @@
   <div class="tabs-container light">
     <div class="tabs">
       <ngb-tabset  (tabChange)="tabChange($event)">
-        <ngb-tab id="design-activity">
+        <ngb-tab id="design-process">
           <ng-template ngbTabTitle>执行过程</ng-template>
           <ng-template ngbTabContent></ng-template>
         </ngb-tab>
@@ -15,8 +15,8 @@
   </div>
   <div class="row">
 
-    <div *ngIf="tab == 'exe-activity'" class="design-content">
-      <design-activity></design-activity>
+    <div *ngIf="tab == 'exe-process'" class="design-content">
+      <design-process></design-process>
     </div>
 
     <div *ngIf="tab == 'exe-progress'" class="design-content">

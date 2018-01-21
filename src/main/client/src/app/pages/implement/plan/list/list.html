@@ -40,8 +40,8 @@
       <tbody>
       <tr *ngFor="let item of models">
         <td>{{ item.name }}</td>
-        <td>{{ item.startTime | date:'y-MM-dd HH:mm:ss' }}</td>
-        <td>{{ item.endTime | date:'y-MM-dd HH:mm:ss' }}</td>
+        <td>{{ item.startTime | date:'y/MM/dd HH:mm:ss' }}</td>
+        <td>{{ item.endTime | date:'y/MM/dd HH:mm:ss' }}</td>
         <td>{{ item.status | exeStatus}}</td>
         <td>
           <span [routerLink]="['/pages/org/' + orgId + '/prj/' + prjId + '/implement/plan/' + item.id + '/view']" class="link no-underline">查看</span>

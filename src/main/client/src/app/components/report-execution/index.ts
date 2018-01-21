@@ -7,15 +7,15 @@ import { AngularEchartsModule } from 'ngx-echarts';
 
 import { ReportExecutionComponent } from './src/report-execution.component';
 import { ExecutionResultComponent } from './src/execution-result/execution-result.component';
-import { ExecutionActivityComponent } from './src/execution-activity/execution-activity.component';
+import { ExecutionProcessComponent } from './src/execution-process/execution-process.component';
 import { ExecutionProgressComponent } from './src/execution-progress/execution-progress.component';
 
 export * from './src/report-execution.component';
 export * from './src/execution-result/execution-result.component';
 
 @NgModule({
-    declarations: [ReportExecutionComponent, ExecutionResultComponent, ExecutionActivityComponent, ExecutionProgressComponent],
-    exports: [ReportExecutionComponent, ExecutionResultComponent, ExecutionActivityComponent, ExecutionProgressComponent],
+    declarations: [ReportExecutionComponent, ExecutionResultComponent, ExecutionProcessComponent, ExecutionProgressComponent],
+    exports: [ReportExecutionComponent, ExecutionResultComponent, ExecutionProcessComponent, ExecutionProgressComponent],
     providers: [],
     imports: [CommonModule, NgbTabsetModule, AngularEchartsModule]
 })

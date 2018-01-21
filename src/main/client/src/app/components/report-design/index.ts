@@ -6,14 +6,14 @@ import { NgbTabsetModule } from '@ng-bootstrap/ng-bootstrap';
 import { AngularEchartsModule } from 'ngx-echarts';
 
 import { ReportDesignComponent } from './src/report-design.component';
-import { DesignActivityComponent } from './src/design-activity/design-activity.component';
+import { DesignProcessComponent } from './src/design-process/design-process.component';
 import { DesignProgressComponent } from './src/design-progress/design-progress.component';
 
 export * from './src/report-design.component';
 
 @NgModule({
-    declarations: [ReportDesignComponent, DesignActivityComponent, DesignProgressComponent],
-    exports: [ReportDesignComponent, DesignActivityComponent, DesignProgressComponent],
+    declarations: [ReportDesignComponent, DesignProcessComponent, DesignProgressComponent],
+    exports: [ReportDesignComponent, DesignProcessComponent, DesignProgressComponent],
     providers: [],
     imports: [CommonModule, NgbTabsetModule, AngularEchartsModule]
 })

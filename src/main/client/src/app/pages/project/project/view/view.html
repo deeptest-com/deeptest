@@ -21,7 +21,7 @@
 
     <div class="row chart">
       <design-progress [showTitle]="true"></design-progress>
-      <execution-activity [showTitle]="true"></execution-activity>
+      <execution-process [showTitle]="true"></execution-process>
     </div>
 
     <div class="row cards">
@@ -32,25 +32,22 @@
           </div>
           <div class="card-block">
             <table class="table">
+              <thead class="thead-inverse">
+              <tr>
+                <th style="width: 200px">名称</th>
+                <th style="width: 150px">计划开始时间</th>
+                <th style="width: 150px">计划结束时间</th>
+                <th style="width: 150px">状态</th>
+                <th style="width: 150px">操作</th>
+              </tr>
+              </thead>
+
               <tbody>
-              <tr>
-                <td>测试计划01</td>
-                <td>2017-08-01</td>
-                <td>陈琦</td>
-              </tr>
-              <tr>
-                <td>测试计划02</td>
-                <td>2017-08-10</td>
-                <td>陈琦</td>
-              </tr>
-              <tr>
-                <td>测试计划02</td>
-                <td>2017-08-10</td>
-                <td>陈琦</td>
-              </tr>
-              <tr>
-                <td>测试计划02</td>
-                <td>2017-08-10</td>
+              <tr *ngFor="let plan of plans; let i = index;">
+                <td>{{plan.name}}</td>
+                <td>{{plan.startTime | date:'y/MM/dd'}}</td>
+                <td>{{plan.endTime | date:'y/MM/dd'}}</td>
+                <td>{{plan.status | exeStatus}}</td>
                 <td>陈琦</td>
               </tr>
               </tbody>

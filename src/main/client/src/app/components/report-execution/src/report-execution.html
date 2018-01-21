@@ -6,7 +6,7 @@
           <ng-template ngbTabTitle>执行结果</ng-template>
           <ng-template ngbTabContent></ng-template>
         </ngb-tab>
-        <ngb-tab id="exe-activity">
+        <ngb-tab id="exe-process">
           <ng-template ngbTabTitle>执行过程</ng-template>
           <ng-template ngbTabContent></ng-template>
         </ngb-tab>
@@ -23,8 +23,8 @@
       <execution-result></execution-result>
     </div>
 
-    <div *ngIf="tab == 'exe-activity'" class="execution-content">
-      <execution-activity></execution-activity>
+    <div *ngIf="tab == 'exe-process'" class="execution-content">
+      <execution-process></execution-process>
     </div>
 
     <div *ngIf="tab == 'exe-progress'" class="execution-content">

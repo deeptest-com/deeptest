@@ -1,11 +1,11 @@
 import {Component, Input, OnInit} from "@angular/core";
 
 @Component({
-  selector: 'design-activity',
-  templateUrl: './design-activity.html',
+  selector: 'design-process',
+  templateUrl: './design-process.html',
   styleUrls: ['./styles.scss']
 })
-export class DesignActivityComponent implements OnInit {
+export class DesignProcessComponent implements OnInit {
 
   @Input() data: any;
   chartOption: any;

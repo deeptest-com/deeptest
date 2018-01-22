@@ -1,10 +1,10 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {ValidatorUtils, PhoneValidator, EqualPasswordsValidator} from '../../../validator';
+import {ValidatorUtils, PhoneValidator, PasswordsEqualValidator} from '../../../validator';
 
 import { CONSTANT } from '../../../utils/constant';
 import {GlobalState} from '../../../global.state';
-import { RouteService } from '../../../service/route';
+import {SlimLoadingBarService} from "../../../components/ng2-loading-bar";
 import { AccountService } from '../../../service/account';
 
 @Component({
@@ -19,7 +19,8 @@ export class Register implements OnInit {
 
   public model: any = {};
 
-  constructor(private _state: GlobalState, fb:FormBuilder, private accountService: AccountService, private routeService: RouteService) {
+  constructor(private _state: GlobalState, fb:FormBuilder, private accountService: AccountService,
+              private slimLoadingBarService: SlimLoadingBarService) {
 
     this.form = fb.group({
       'name': ['', [Validators.required, Validators.minLength(2)]],
@@ -29,7 +30,7 @@ export class Register implements OnInit {
       'repeatPassword': ['', [Validators.required, Validators.minLength(6)]]
       },
       {
-        validator: EqualPasswordsValidator.validate('passwordsEqual', 'password', 'repeatPassword')
+        validator: PasswordsEqualValidator.validate('passwordsEqual', 'password', 'repeatPassword')
       });
     this.form.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(data => this.onValueChanged(data));
     this.onValueChanged();
@@ -46,8 +47,13 @@ export class Register implements OnInit {
   }
 
   public onSubmit():void {
+    this.formErrors = [];
+    this.slimLoadingBarService.start(() => { console.log('Loading complete'); });
+
     this.accountService.register(this.model).subscribe((json: any) => {
       this.formErrors = [json.msg];
+
+      this.slimLoadingBarService.complete();
     });
   }
 

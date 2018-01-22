@@ -3,7 +3,6 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import {GlobalState} from "../../../../global.state";
 import {CONSTANT} from "../../../../utils/constant";
-import {Utils} from "../../../../utils/utils";
 import {RouteService} from "../../../../service/route";
 import {SlimLoadingBarService} from "../../../../components/ng2-loading-bar";
 import {CaseService} from "../../../../service/case";
@@ -26,8 +25,7 @@ export class CaseSuite implements OnInit, AfterViewInit {
   public treeSettings: any = {usage: 'edit', isExpanded: true, sonSign: false};
 
   constructor(private _routeService:RouteService, private _route: ActivatedRoute, private _state:GlobalState,
-              private _caseService:CaseService,
-              private slimLoadingBarService:SlimLoadingBarService) {
+              private _caseService:CaseService, private slimLoadingBarService:SlimLoadingBarService) {
 
   }
 
@@ -58,15 +56,10 @@ export class CaseSuite implements OnInit, AfterViewInit {
     });
   }
   startLoading() {
-    this.slimLoadingBarService.start(() => {
-      console.log('Loading complete');
-    });
+    this.slimLoadingBarService.start(() => { console.log('Loading complete'); });
   }
   completeLoading() {
-    let that = this;
-    setTimeout(function () {
-      that.slimLoadingBarService.complete();
-    }, 500);
+    setTimeout(() => { this.slimLoadingBarService.complete(); }, 500);
   }
 
   rename(event: any) {

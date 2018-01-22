@@ -5,7 +5,7 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 import { CONSTANT } from '../../../../utils/constant';
 import { Utils } from '../../../../utils/utils';
 import {ValidatorUtils} from '../../../../validator/validator.utils';
-import {EqualPasswordsValidator} from '../../../../validator';
+import {PasswordsEqualValidator} from '../../../../validator';
 
 import { RouteService } from '../../../../service/route';
 
@@ -70,7 +70,7 @@ export class PasswordEditComponent implements OnInit, AfterViewInit {
         'oldPassword': ['', [Validators.required]],
         'password': ['', [Validators.required, Validators.pattern(/^[0-9a-zA-Z]{6,10}$/)]],
         'rePassword': ['', [Validators.required, Validators.pattern(/^[0-9a-zA-Z]{6,10}$/)]]
-      }, {validator: EqualPasswordsValidator.validate('passwordsEqual', 'password', 'rePassword')}
+      }, {validator: PasswordsEqualValidator.validate('passwordsEqual', 'password', 'rePassword')}
     );
 
     this.form.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(data => this.onValueChanged(data));

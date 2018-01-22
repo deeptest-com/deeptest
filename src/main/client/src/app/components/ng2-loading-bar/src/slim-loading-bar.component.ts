@@ -13,14 +13,14 @@ import { isPresent } from './slim-loading-bar.utils';
 @Component({
     selector: 'ng2-slim-loading-bar',
     template: `
-<div class="slim-loading-bar">
+<div class="slim-loading-bar" [style.position]="position">
     <div class="slim-loading-bar-progress" [style.width]="progress + '%'" [style.backgroundColor]="color" [style.color]="color"
         [style.height]="height" [style.opacity]="show ? '1' : '0'"></div>
 </div>`,
   styleUrls: ['./styles.scss']
 })
 export class SlimLoadingBarComponent implements OnInit {
-
+    @Input() position: string = 'fixed';
     @Input() progress: string = '0';
     @Input() color: string = '#209e91';
     @Input() height: string = '1px';

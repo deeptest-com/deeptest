@@ -5,16 +5,16 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "tst_msg")
+@Table(name = "tst_email")
 public class TestEmail extends BaseEntity {
     private static final long serialVersionUID = -8090821887365755816L;
 
     private String subject;
-    @Column(name = "msg", length = 10000)
+    @Column(name = "content", length = 10000)
     private String content;
 
-    private String to;
-    private String cc;
+    private String mailTo;
+    private String mailCc;
 
     public String getSubject() {
         return subject;
@@ -32,19 +32,19 @@ public class TestEmail extends BaseEntity {
         this.content = content;
     }
 
-    public String getTo() {
-        return to;
+    public String getMailTo() {
+        return mailTo;
     }
 
-    public void setTo(String to) {
-        this.to = to;
+    public void setMailTo(String mailTo) {
+        this.mailTo = mailTo;
     }
 
-    public String getCc() {
-        return cc;
+    public String getMailCc() {
+        return mailCc;
     }
 
-    public void setCc(String cc) {
-        this.cc = cc;
+    public void setMailCc(String mailCc) {
+        this.mailCc = mailCc;
     }
 }

@@ -1,10 +1,8 @@
 import {FormGroup, ValidatorFn} from "@angular/forms";
 
-export var EqualPasswordsValidator:any = {
+export var PasswordsEqualValidator:any = {
   validate: function (resultKey, firstField, secondField):ValidatorFn {
     return (c:FormGroup) => {
-      console.log('===');
-
       let result = {};
       let fail = false;
 

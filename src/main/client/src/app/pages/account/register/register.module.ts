@@ -1,7 +1,9 @@
 import { NgModule }      from '@angular/core';
 import { CommonModule }  from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { NgaModule } from '../../../theme/nga.module';
+import { SlimLoadingBarModule } from '../../../components/ng2-loading-bar';
 
 import { routing }       from './register.routing';
 import { RouteService } from '../../../service/route';
@@ -16,6 +18,7 @@ import { Register } from './register.component';
     ReactiveFormsModule,
     FormsModule,
     NgaModule,
+    SlimLoadingBarModule,
     routing
   ],
   declarations: [

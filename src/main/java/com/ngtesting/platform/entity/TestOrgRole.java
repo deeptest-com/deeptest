@@ -34,7 +34,7 @@ public class TestOrgRole extends BaseEntity {
 			@JoinColumn(name = "org_role_id", nullable = false, updatable = false) },
 			inverseJoinColumns = { @JoinColumn(name = "org_privilege_id",
 					nullable = false, updatable = false) })
-    private Set<TestOrgPrivilege> orgPrivilegeSet = new HashSet<>(0);
+    private Set<TestOrgPrivilegeDefine> orgPrivilegeSet = new HashSet<>(0);
 
     public static enum OrgRoleCode {
         org_admin("org_admin", "组织管理员"),
@@ -62,11 +62,11 @@ public class TestOrgRole extends BaseEntity {
 	public void setDescr(String descr) {
 		this.descr = descr;
 	}
-	public Set<TestOrgPrivilege> getOrgPrivilegeSet() {
+	public Set<TestOrgPrivilegeDefine> getOrgPrivilegeSet() {
 		return orgPrivilegeSet;
 	}
 	public void setOrgPrivilegeSet(
-			Set<TestOrgPrivilege> orgPrivilegeSet) {
+			Set<TestOrgPrivilegeDefine> orgPrivilegeSet) {
 		this.orgPrivilegeSet = orgPrivilegeSet;
 	}
 	public TestOrg getOrg() {

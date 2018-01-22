@@ -11,7 +11,7 @@ public interface CaseInRunService extends BaseService {
 
 	List<TestCaseInRunVo> query(Long runId);
     TestCaseInRunVo getById(Long id);
-    TestCaseInRunVo setResultPers(Long caseInRunId, String result, String status, Long next);
+    TestCaseInRunVo setResultPers(Long caseInRunId, String result, String status, Long next, UserVo userVo);
     TestCaseInRunVo addCaseToRunPers(Long runId, TestCase po, UserVo userVo);
     void removeCasePers(Long runId, Long entityId, UserVo userVo);
 

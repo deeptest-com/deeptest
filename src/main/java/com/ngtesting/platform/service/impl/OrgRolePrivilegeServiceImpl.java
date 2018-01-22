@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.ngtesting.platform.entity.TestOrgPrivilege;
+import com.ngtesting.platform.entity.TestOrgPrivilegeDefine;
 import com.ngtesting.platform.entity.TestOrgRole;
 import com.ngtesting.platform.service.OrgRolePrivilegeService;
 import com.ngtesting.platform.vo.OrgPrivilegeVo;
@@ -18,9 +18,9 @@ public class OrgRolePrivilegeServiceImpl extends BaseServiceImpl implements OrgR
 	@Override
 	public List<OrgPrivilegeVo> listPrivilegesByOrgRole(Long orgId, Long orgRoleId) {
 
-        List<TestOrgPrivilege> allPrivileges = listAllOrgPrivileges();
+        List<TestOrgPrivilegeDefine> allPrivileges = listAllOrgPrivileges();
 
-        List<TestOrgPrivilege> orgRolePrivileges;
+        List<TestOrgPrivilegeDefine> orgRolePrivileges;
         if (orgRoleId == null) {
         	orgRolePrivileges = new LinkedList<>();
         } else {
@@ -28,12 +28,12 @@ public class OrgRolePrivilegeServiceImpl extends BaseServiceImpl implements OrgR
         }
 
         List<OrgPrivilegeVo> vos = new LinkedList<OrgPrivilegeVo>();
-        for (TestOrgPrivilege po1 : allPrivileges) {
+        for (TestOrgPrivilegeDefine po1 : allPrivileges) {
         	OrgPrivilegeVo vo = genVo(orgId, po1);
 
         	vo.setSelected(false);
         	vo.setSelecting(false);
-        	for (TestOrgPrivilege po2 : orgRolePrivileges) {
+        	for (TestOrgPrivilegeDefine po2 : orgRolePrivileges) {
         		if (po1.getId().longValue() == po2.getId().longValue()) {
             		vo.setSelected(true);
             		vo.setSelecting(true);
@@ -45,15 +45,15 @@ public class OrgRolePrivilegeServiceImpl extends BaseServiceImpl implements OrgR
 		return vos;
 	}
 
-	private OrgPrivilegeVo genVo(Long orgId, TestOrgPrivilege po1) {
+	private OrgPrivilegeVo genVo(Long orgId, TestOrgPrivilegeDefine po1) {
 		OrgPrivilegeVo vo = new OrgPrivilegeVo(po1.getId(), po1.getName(), po1.getDescr(), orgId);
 
 		return vo;
 	}
 
-	private List<TestOrgPrivilege> listOrgRolePrivileges(Long orgId, Long orgRoleId) {
+	private List<TestOrgPrivilegeDefine> listOrgRolePrivileges(Long orgId, Long orgRoleId) {
 
-		DetachedCriteria dc = DetachedCriteria.forClass(TestOrgPrivilege.class);
+		DetachedCriteria dc = DetachedCriteria.forClass(TestOrgPrivilegeDefine.class);
 
         dc.createAlias("orgRoleSet", "roles");
         dc.add(Restrictions.eq("roles.id", orgRoleId));
@@ -67,13 +67,13 @@ public class OrgRolePrivilegeServiceImpl extends BaseServiceImpl implements OrgR
 		return ls;
 	}
 
-	private List<TestOrgPrivilege> listAllOrgPrivileges() {
-		DetachedCriteria dc = DetachedCriteria.forClass(TestOrgPrivilege.class);
+	private List<TestOrgPrivilegeDefine> listAllOrgPrivileges() {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestOrgPrivilegeDefine.class);
 
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         dc.addOrder(Order.asc("id"));
-        List<TestOrgPrivilege> ls = findAllByCriteria(dc);
+        List<TestOrgPrivilegeDefine> ls = findAllByCriteria(dc);
 
 		return ls;
 	}
@@ -85,12 +85,12 @@ public class OrgRolePrivilegeServiceImpl extends BaseServiceImpl implements OrgR
 		}
 
 		TestOrgRole orgRole = (TestOrgRole) get(TestOrgRole.class, roleId);
-		Set<TestOrgPrivilege> privilegeSet = orgRole.getOrgPrivilegeSet();
+		Set<TestOrgPrivilegeDefine> privilegeSet = orgRole.getOrgPrivilegeSet();
 
 		for (Object obj: orgPrivileges) {
 			OrgPrivilegeVo vo = JSON.parseObject(JSON.toJSONString(obj), OrgPrivilegeVo.class);
 			if (vo.getSelecting() != vo.getSelected()) { // 变化了
-				TestOrgPrivilege orgPrivilege = (TestOrgPrivilege) get(TestOrgPrivilege.class, vo.getId());
+				TestOrgPrivilegeDefine orgPrivilege = (TestOrgPrivilegeDefine) get(TestOrgPrivilegeDefine.class, vo.getId());
 
     			if (vo.getSelecting() && !privilegeSet.contains(orgPrivilege)) { // 勾选
     				privilegeSet.add(orgPrivilege);
@@ -118,7 +118,7 @@ public class OrgRolePrivilegeServiceImpl extends BaseServiceImpl implements OrgR
 
 		Map<String, Boolean> map = new HashMap();
 		for (TestOrgRole role: ls) {
-            for (TestOrgPrivilege priv: role.getOrgPrivilegeSet()) {
+            for (TestOrgPrivilegeDefine priv: role.getOrgPrivilegeSet()) {
                 map.put(priv.getCode().toString(), true);
             }
 		}

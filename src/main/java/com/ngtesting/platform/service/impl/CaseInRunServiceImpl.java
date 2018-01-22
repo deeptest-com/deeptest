@@ -14,6 +14,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,10 +52,12 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
     }
 
     @Override
-    public TestCaseInRunVo setResultPers(Long caseInRunId, String result, String status, Long nextId) {
+    public TestCaseInRunVo setResultPers(Long caseInRunId, String result, String status, Long nextId, UserVo userVo) {
         TestCaseInRun po = (TestCaseInRun) get(TestCaseInRun.class, caseInRunId);
         po.setResult(result);
         po.setStatus(status);
+        po.setExeById(userVo.getId());
+        po.setExeTime(new Date());
         saveOrUpdate(po);
 
         TestRun run = po.getRun();

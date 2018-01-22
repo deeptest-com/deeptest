@@ -48,6 +48,8 @@
       <div class="form-group row">
         <label class="col-sm-3 col-form-label"></label>
         <div class="col-sm-9">
+          <ng2-slim-loading-bar [position]="'absolute'"></ng2-slim-loading-bar>
+
           <div class="validate-errors">
             <div class="validate-error" *ngFor="let msg of formErrors">
               <div>{{ msg }}</div>
@@ -57,16 +59,6 @@
       </div>
 
     </form>
-
-    <!--<div class="auth-sep"><span><span>or Sign up with one click</span></span></div>
-
-    <div class="al-share-auth">
-      <ul class="al-share clearfix">
-        <li><i class="socicon socicon-facebook" title="Share on Facebook"></i></li>
-        <li><i class="socicon socicon-twitter" title="Share on Twitter"></i></li>
-        <li><i class="socicon socicon-google" title="Share on Google Plus"></i></li>
-      </ul>
-    </div>-->
 
   </div>
 </div>

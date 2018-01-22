@@ -25,7 +25,7 @@ export class ExecutionProgressComponent implements OnInit {
       legend: {
         right: '0%',
         width: '15%',
-        data: ['用例数', '工作量']
+        data: ['用例数']
       },
       grid: {
         top: '15%',
@@ -53,11 +53,11 @@ export class ExecutionProgressComponent implements OnInit {
           type: 'value',
           max: 1100
         },
-        {
-          name: '剩余工作量（小时）',
-          max: 70,
-          type: 'value'
-        }
+        // {
+        //   name: '剩余工作量（小时）',
+        //   max: 70,
+        //   type: 'value'
+        // }
       ],
       series: [
         {
@@ -65,13 +65,13 @@ export class ExecutionProgressComponent implements OnInit {
           type: 'line',
           data: [1000, 950, 880, 750, 690, 630, 540],
         },
-        {
-          name: '工作量',
-          type: 'line',
-          yAxisIndex:1,
-          data: [67, 59, 45, 33, 29, 13, 3],
-
-        }
+        // {
+        //   name: '工作量',
+        //   type: 'line',
+        //   yAxisIndex:1,
+        //   data: [67, 59, 45, 33, 29, 13, 3],
+        //
+        // }
       ]
     };;
   }

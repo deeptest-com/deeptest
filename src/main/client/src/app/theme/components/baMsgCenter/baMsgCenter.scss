@@ -180,9 +180,11 @@
           max-height: 34px;
           overflow: hidden;
           text-overflow: ellipsis;
+          .dict {
+            font-style: italic;
+          }
         }
         span {
-          font-style: italic;
           text-align: right;
           display: block;
           font-size: 11px;

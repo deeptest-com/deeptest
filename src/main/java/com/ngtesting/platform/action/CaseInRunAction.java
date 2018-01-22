@@ -84,7 +84,7 @@ public class CaseInRunAction extends BaseAction {
         String status = json.getString("status");
         Long nextId = json.getLong("nextId");
 
-        TestCaseInRunVo vo = caseInRunService.setResultPers(caseInRunId, result, status, nextId);
+        TestCaseInRunVo vo = caseInRunService.setResultPers(caseInRunId, result, status, nextId, userVo);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

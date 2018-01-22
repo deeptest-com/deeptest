@@ -3,13 +3,13 @@ package com.ngtesting.platform.entity;
 import com.ngtesting.platform.config.Constant;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "tst_case_in_run")
 public class TestCaseInRun extends BaseEntity {
     private static final long serialVersionUID = -2393416384079250976L;
 
-//    @Enumerated(EnumType.STRING)
     private String status = "untest";
 
     private Integer ordr;
@@ -19,6 +19,8 @@ public class TestCaseInRun extends BaseEntity {
     @Transient
     private String key;
 
+    private Date exeTime;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_id", insertable = false, updatable = false)
     private TestCase testCase;
@@ -27,18 +29,34 @@ public class TestCaseInRun extends BaseEntity {
     private Long caseId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plan_id", insertable = false, updatable = false)
+    private TestPlan plan;
+    @Column(name = "plan_id")
+    private Long planId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "run_id", insertable = false, updatable = false)
     private TestRun run;
-
     @Column(name = "run_id")
     private Long runId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id", insertable = false, updatable = false)
+    private TestProject project;
+    @Column(name = "project_id")
+    private Long projectId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "create_by_id", insertable = false, updatable = false)
     private TestUser createBy;
-
     @Column(name = "create_by_id")
     private Long createById;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exe_by_id", insertable = false, updatable = false)
+    private TestUser exeBy;
+    @Column(name = "exe_by_id")
+    private Long exeById;
 
     public TestCaseInRun() {
         super();
@@ -51,22 +69,61 @@ public class TestCaseInRun extends BaseEntity {
         this.pId = pid;
     }
 
-//    public static enum CaseStatusInRun {
-//        untest("untest"),
-//        pass("pass"),
-//        fail("fail"),
-//        block("block");
-//
-//        CaseStatusInRun(String val) {
-//            this.val = val;
-//        }
-//
-//        private String val;
-//        public String toString() {
-//            return val;
-//        }
-//    }
+    public TestPlan getPlan() {
+        return plan;
+    }
 
+    public void setPlan(TestPlan plan) {
+        this.plan = plan;
+    }
+
+    public Long getPlanId() {
+        return planId;
+    }
+
+    public void setPlanId(Long planId) {
+        this.planId = planId;
+    }
+
+    public TestProject getProject() {
+        return project;
+    }
+
+    public void setProject(TestProject project) {
+        this.project = project;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public Date getExeTime() {
+        return exeTime;
+    }
+
+    public void setExeTime(Date exeTime) {
+        this.exeTime = exeTime;
+    }
+
+    public TestUser getExeBy() {
+        return exeBy;
+    }
+
+    public void setExeBy(TestUser exeBy) {
+        this.exeBy = exeBy;
+    }
+
+    public Long getExeById() {
+        return exeById;
+    }
+
+    public void setExeById(Long exeById) {
+        this.exeById = exeById;
+    }
 
     public String getKey() {
         return Constant.KEY_TESTCASE_EXE + getId();

@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "tst_org_privilege")
-public class TestOrgPrivilege extends BaseEntity {
+@Table(name = "tst_org_privilege_define")
+public class TestOrgPrivilegeDefine extends BaseEntity {
 	private static final long serialVersionUID = -5510206858644860272L;
 
 	@Enumerated(EnumType.STRING)

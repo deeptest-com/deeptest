@@ -1,8 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.entity.TestOrgPrivilege;
+import com.ngtesting.platform.entity.TestOrgPrivilegeDefine;
 import com.ngtesting.platform.entity.TestOrgRole;
-import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.OrgRoleService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
@@ -83,15 +82,15 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 //	}
 
     @Override
-    public List<TestOrgPrivilege> getDefaultPrivByRoleCode(TestOrgRole.OrgRoleCode e) {
-        TestOrgPrivilege.OrgPrivilegeCode code = TestOrgPrivilege.OrgPrivilegeCode.valueOf(e.code);
-        DetachedCriteria dc = DetachedCriteria.forClass(TestOrgPrivilege.class);
+    public List<TestOrgPrivilegeDefine> getDefaultPrivByRoleCode(TestOrgRole.OrgRoleCode e) {
+        TestOrgPrivilegeDefine.OrgPrivilegeCode code = TestOrgPrivilegeDefine.OrgPrivilegeCode.valueOf(e.code);
+        DetachedCriteria dc = DetachedCriteria.forClass(TestOrgPrivilegeDefine.class);
         dc.add(Restrictions.eq("code", code));
         dc.add(Restrictions.ne("deleted", true));
         dc.add(Restrictions.ne("disabled", true));
 
         dc.addOrder(Order.asc("id"));
-        List<TestOrgPrivilege> ls = findAllByCriteria(dc);
+        List<TestOrgPrivilegeDefine> ls = findAllByCriteria(dc);
 
 	    return ls;
     }

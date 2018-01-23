@@ -57,7 +57,9 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
         po.setResult(result);
         po.setStatus(status);
         po.setExeById(userVo.getId());
-        po.setExeTime(new Date());
+        if (!"block".equals(status)) {
+            po.setExeTime(new Date());
+        }
         saveOrUpdate(po);
 
         TestRun run = po.getRun();

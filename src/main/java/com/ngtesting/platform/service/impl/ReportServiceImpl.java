@@ -73,9 +73,14 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
 
         List<Object[]> ls = getDao().getListBySQL("{call chart_execution_progress_by_plan(?,?)}",
                 planId, numb);
+        Integer exeSum = 0;
         for (Object[] arr : ls) {
             xList.add(arr[0].toString());
-            numbList.add(arr[1]==null?0:arr[1]);
+
+            Integer totalNumb = Integer.valueOf(arr[2].toString());
+            Integer exeNumb = arr[1]==null?0:Integer.valueOf(arr[1].toString());
+            exeSum += exeNumb;
+            numbList.add(totalNumb - exeSum);
         }
         map.put("xList", xList);
         map.put("numbList", numbList);

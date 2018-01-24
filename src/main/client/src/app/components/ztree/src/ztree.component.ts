@@ -59,7 +59,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isExpanded = this.settings.isExpanded;
     this.sonSign = this.settings.sonSign;
 
-    if (this.settings.usage == 'selection') {
+    if (this.settings.usage == 'selection' || this.settings.usage == 'exe') {
       this.settings.view.addHoverDom = null;
       this.settings.view.removeHoverDom = null;
       this.settings.edit.enable = false;
@@ -299,7 +299,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     console.log('===', treeNodes[0]);
     this.moveEvent.emit({
-      data: {srcId: treeNodes[0].id, targetId: targetNode.id, moveType: moveType, isCopy: isCopy},
+      data: {pId: treeNodes[0].pId, srcId: treeNodes[0].id, targetId: targetNode.id, moveType: moveType, isCopy: isCopy},
       deferred: deferred
     });
   }

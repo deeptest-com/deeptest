@@ -81,27 +81,6 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
     }
 
     @Override
-    public TestCaseInRunVo addCaseToRunPers(Long runId, TestCase po, UserVo userVo) {
-        TestRun run = (TestRun)get(TestRun.class, runId);
-
-        TestCaseInRun caseInRun = new TestCaseInRun(run.getProjectId(), run.getPlanId(),
-                run.getId(), po.getId(), po.getOrdr(), po.getpId());
-        run.getTestcases().add(caseInRun);
-
-        saveOrUpdate(caseInRun);
-        TestCaseInRunVo vo = genVo(caseInRun, false);
-
-        return vo;
-    }
-
-    @Override
-    public void removeCasePers(Long runId, Long entityId, UserVo userVo) {
-        TestCaseInRun po = (TestCaseInRun) get(TestCaseInRun.class, entityId);
-        po.setDeleted(true);
-        saveOrUpdate(po);
-    }
-
-    @Override
     public List<TestCaseInRunVo> genVos(List<TestCaseInRun> pos) {
         List<TestCaseInRunVo> vos = new LinkedList<>();
 

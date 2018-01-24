@@ -2,7 +2,6 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.entity.TestCase;
 import com.ngtesting.platform.service.CaseInRunService;
 import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.service.CustomFieldService;
@@ -92,22 +91,6 @@ public class CaseInRunAction extends BaseAction {
     }
 
     @AuthPassport(validate = true)
-    @RequestMapping(value = "rename", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> rename(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-
-        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
-        TestCase po = caseService.renamePers(json, userVo.getId());
-        TestCaseInRunVo vo = caseInRunService.addCaseToRunPers(json.getLong("runId"), po, userVo);
-
-        ret.put("data", vo);
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
-    @AuthPassport(validate = true)
     @RequestMapping(value = "move", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> move(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -117,24 +100,6 @@ public class CaseInRunAction extends BaseAction {
         TestCaseVo vo = caseService.movePers(json, userVo.getId());
 
         ret.put("data", vo);
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
-    @AuthPassport(validate = true)
-    @RequestMapping(value = "delete", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-        Long id = json.getLong("id");
-        Long entityId = json.getLong("entityId");
-        Long runId = json.getLong("runId");
-
-        TestCase testCase = caseService.delete(id, userVo.getId());
-        caseService.updateParentIfNeededPers(testCase.getpId());
-        caseInRunService.removeCasePers(runId, entityId, userVo);
-
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

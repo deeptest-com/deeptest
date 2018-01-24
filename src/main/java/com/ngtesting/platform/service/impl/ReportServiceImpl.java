@@ -105,6 +105,9 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
 
         String day = null;
         Map<String, Object> dayStatus = new HashMap();
+
+        Object a[] = {"last",null,null,null};
+        ls.add(a);
         for (Object[] arr : ls) {
             String dayTemp = arr[0].toString();
 

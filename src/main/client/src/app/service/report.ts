@@ -16,4 +16,14 @@ export class ReportService {
   planReport(planId: number) {
     return this._reqService.post(this._api_url + 'plan', {planId: planId});
   }
+
+  list(query:any, pageNumb: number, pageSize: number) {
+    _.merge(query, {pageNumb: pageNumb, pageSize: pageSize});
+    return this._reqService.post(this._api_url + 'list', query);
+  }
+
+  get(id: number) {
+    let model = {id: id};
+    return this._reqService.post(this._api_url + 'get', model);
+  }
 }

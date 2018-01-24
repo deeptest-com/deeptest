@@ -41,7 +41,7 @@ export class ExecutionProgressComponent implements OnInit {
         top: '15%',
         right: '15%',
         bottom: '5%',
-        left: '1%',
+        left: '5%',
         containLabel: true,
       },
       color: ['#2f4554', '#c23531'],

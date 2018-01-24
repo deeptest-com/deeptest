@@ -46,7 +46,7 @@ export class ExecutionProcessComponent implements OnInit {
         top: '15%',
         right: '15%',
         bottom: '8%',
-        left: '1%',
+        left: '3%',
         containLabel: true
       },
       legend: {

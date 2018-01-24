@@ -84,7 +84,8 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
     public TestCaseInRunVo addCaseToRunPers(Long runId, TestCase po, UserVo userVo) {
         TestRun run = (TestRun)get(TestRun.class, runId);
 
-        TestCaseInRun caseInRun = new TestCaseInRun(runId, po.getId(), po.getOrdr(), po.getpId());
+        TestCaseInRun caseInRun = new TestCaseInRun(run.getProjectId(), run.getPlanId(),
+                run.getId(), po.getId(), po.getOrdr(), po.getpId());
         run.getTestcases().add(caseInRun);
 
         saveOrUpdate(caseInRun);

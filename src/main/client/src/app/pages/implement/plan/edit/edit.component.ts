@@ -181,7 +181,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
     }
   }
   _saveRun() {
-    this._runService.saveRun(this.planId, this.run).subscribe((json:any) => {
+    this._runService.saveRun(CONSTANT.CURR_PRJ_ID, this.planId, this.run).subscribe((json:any) => {
 
       this.model.runVos[this.runIndex]= json.data;
     });

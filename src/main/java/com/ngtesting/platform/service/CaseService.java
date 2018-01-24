@@ -22,6 +22,9 @@ public interface CaseService extends BaseService {
 	void loadNodeTree(TestCaseVo vo, TestCase po);
 
 	TestCase save(JSONObject json, Long userId);
+
+	void updateParentIfNeededPers(Long pid);
+
 	boolean cloneStepsAndChildrenPers(TestCase testcase, TestCase src);
 
     TestCase saveField(JSONObject json);

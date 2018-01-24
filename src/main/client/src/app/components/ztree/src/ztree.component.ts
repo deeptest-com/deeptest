@@ -297,6 +297,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }).catch((err) => {console.log('err', err);});
 
+    console.log('===', treeNodes[0]);
     this.moveEvent.emit({
       data: {srcId: treeNodes[0].id, targetId: targetNode.id, moveType: moveType, isCopy: isCopy},
       deferred: deferred

@@ -207,7 +207,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	public TestCase save(JSONObject json, Long userId) {
         TestCaseVo testCaseVo = JSON.parseObject(JSON.toJSONString(json), TestCaseVo.class);
 
-        TestCase testCasePo = new TestCase();
+        TestCase testCasePo;
         if (testCaseVo.getId() > 0) {
             testCasePo = (TestCase)get(TestCase.class, testCaseVo.getId());
             copyProperties(testCasePo, testCaseVo);
@@ -215,8 +215,10 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             testCasePo.setUpdateById(userId);
             testCasePo.setUpdateTime(new Date());
         } else {
+            testCasePo = new TestCase();
             copyProperties(testCasePo, testCaseVo);
             testCasePo.setId(null);
+            testCasePo.setLeaf(true);
             testCasePo.setOrdr(getChildMaxOrderNumb(testCasePo.getpId()));
 
             testCasePo.setCreateById(userId);
@@ -312,6 +314,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	@Override
 	public TestCase delete(Long id, Long userId) {
         TestCase testCase = (TestCase) get(TestCase.class, id);
+
         testCase.setDeleted(true);
         testCase.setUpdateById(userId);
         testCase.setUpdateTime(new Date());
@@ -319,6 +322,11 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
         return testCase;
 	}
+
+    @Override
+    public void updateParentIfNeededPers(Long pid) {
+        getDao().querySql("{call update_parent_if_needed(?)}", pid);
+    }
 
     @Override
     public boolean cloneStepsAndChildrenPers(TestCase testCase, TestCase src) {

@@ -14,6 +14,7 @@ public class TestCaseInRunVo extends BaseVo {
     private String descr;
 	private String result;
 	private Long pId;
+	private Boolean isLeaf;
 
     private Long entityId; // 真正是实体Id
 
@@ -53,6 +54,14 @@ public class TestCaseInRunVo extends BaseVo {
 
 	private List<TestCaseStepVo> steps = new LinkedList<>();
 	private List<TestCaseCommentsVo> comments = new LinkedList<>();
+
+	public Boolean getLeaf() {
+		return isLeaf;
+	}
+
+	public void setLeaf(Boolean leaf) {
+		isLeaf = leaf;
+	}
 
 	public List<TestCaseCommentsVo> getComments() {
 		return comments;

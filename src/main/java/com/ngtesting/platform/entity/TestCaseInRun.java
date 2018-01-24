@@ -14,6 +14,7 @@ public class TestCaseInRun extends BaseEntity {
 
     private Integer ordr;
     private Long pId;
+    private Boolean isLeaf;
 
     private String result;
     @Transient
@@ -61,12 +62,23 @@ public class TestCaseInRun extends BaseEntity {
     public TestCaseInRun() {
         super();
     }
-    public TestCaseInRun(Long runId, Long caseId, Integer ordr, Long pid) {
+    public TestCaseInRun(Long projectId, Long planId, Long runId, Long caseId, Integer ordr, Long pid) {
         super();
+        this.projectId = projectId;
+        this.planId = planId;
+
         this.runId = runId;
         this.caseId = caseId;
         this.ordr = ordr;
         this.pId = pid;
+    }
+
+    public Boolean getLeaf() {
+        return isLeaf;
+    }
+
+    public void setLeaf(Boolean leaf) {
+        isLeaf = leaf;
     }
 
     public TestPlan getPlan() {

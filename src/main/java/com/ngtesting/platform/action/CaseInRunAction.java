@@ -131,7 +131,8 @@ public class CaseInRunAction extends BaseAction {
         Long entityId = json.getLong("entityId");
         Long runId = json.getLong("runId");
 
-        caseService.delete(id, userVo.getId());
+        TestCase testCase = caseService.delete(id, userVo.getId());
+        caseService.updateParentIfNeededPers(testCase.getpId());
         caseInRunService.removeCasePers(runId, entityId, userVo);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

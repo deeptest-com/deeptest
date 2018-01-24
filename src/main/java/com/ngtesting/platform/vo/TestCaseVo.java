@@ -1,6 +1,5 @@
 package com.ngtesting.platform.vo;
 
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,6 +14,7 @@ public class TestCaseVo extends BaseVo {
     private String descr;
     private Integer ordr;
 	private Long pId;
+	private Boolean isLeaf;
 	private Long projectId;
 
 	private Long createById;
@@ -59,23 +59,13 @@ public class TestCaseVo extends BaseVo {
         super();
     }
 
-    public TestCaseVo(Long id, Long pId, String name, String priority, Integer estimate, String objective, String descr,
-                      Long createById, Long updateById, Date createTime, Date updateTime) {
-        super();
+	public Boolean getLeaf() {
+		return isLeaf;
+	}
 
-		this.id = id;
-		this.pId = pId;
-        this.name = name;
-        this.priority = priority;
-        this.estimate = estimate;
-        this.objective = objective;
-        this.descr = descr;
-
-        this.createById = createById;
-        this.updateById = updateById;
-        this.createTime = createTime;
-        this.updateTime = updateTime;
-    }
+	public void setLeaf(Boolean leaf) {
+		isLeaf = leaf;
+	}
 
 	public List<TestCaseCommentsVo> getComments() {
 		return comments;

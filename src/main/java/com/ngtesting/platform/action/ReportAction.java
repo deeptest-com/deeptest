@@ -41,8 +41,8 @@ public class ReportAction extends BaseAction {
 
         data.put("design", designReport);
         data.put("exe", exeReport);
-        data.put("data", data);
 
+        ret.put("data", data);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

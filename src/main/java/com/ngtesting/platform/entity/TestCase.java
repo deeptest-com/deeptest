@@ -35,10 +35,10 @@ public class TestCase extends BaseEntity {
     private String descr;
 	private Integer ordr;
 
-    @Column(name = "pId")
     private Long pId;
 
     private Boolean reviewResult;
+    private Boolean isLeaf;
 
     @Transient
     private String key;
@@ -97,6 +97,14 @@ public class TestCase extends BaseEntity {
     @Where(clause="!deleted")
     @OrderBy("changeTime ASC")
     private List<TestCaseComments> comments = new LinkedList<>();
+
+    public Boolean getLeaf() {
+        return isLeaf;
+    }
+
+    public void setLeaf(Boolean leaf) {
+        isLeaf = leaf;
+    }
 
     public List<TestCaseComments> getComments() {
         return comments;

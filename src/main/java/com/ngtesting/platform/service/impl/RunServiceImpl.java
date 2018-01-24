@@ -67,6 +67,7 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 
     @Override
     public TestRun save(JSONObject json, UserVo user) {
+        Long prjId = json.getLong("prjId");
         Long planId = json.getLong("planId");
         Long runId = json.getLong("id");
         Long assigneeId = json.getLong("userId");
@@ -79,6 +80,7 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
             action = Constant.MsgType.update;
         } else {
             run = new TestRun();
+            run.setProjectId(prjId);
             run.setPlanId(planId);
             action = Constant.MsgType.create;
         }
@@ -117,7 +119,7 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
             Long id = Long.valueOf(obj.toString());
             TestCase testcase = (TestCase) get(TestCase.class, id);
 
-            TestCaseInRun caseInRun = new TestCaseInRun(runId, id, testcase.getOrdr(), testcase.getpId());
+            TestCaseInRun caseInRun = new TestCaseInRun(run.getProjectId(), run.getPlanId(), run.getId(), id, testcase.getOrdr(), testcase.getpId());
             run.getTestcases().add(caseInRun);
         }
         saveOrUpdate(run);

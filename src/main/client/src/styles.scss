@@ -33,7 +33,7 @@ tr.selected {
   text-align: center;
 }
 .hidden {
-  display: none;
+  display: none!important;
 }
 .transparent {
   color: transparent;

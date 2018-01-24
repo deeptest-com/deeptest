@@ -9,8 +9,8 @@
         <span *ngIf="settings=='selection' && checkCount" (click)="reset()">取消所有</span>
         <span *ngIf="settings=='selection' && !checkCount" (click)="selectAll()">选择所有</span>
       </label>
-      <input [formControl]="keywordsControl" [value]="keywords" name="keywords" type="search" class="form-control form-control-sm" placeholder="过滤">
-      <span *ngIf="isDragging" [class.highlight]="isToCopy" class="tips">按Ctrl键释放复制</span>
+      <input [class.hidden]="isDragging" [formControl]="keywordsControl" [value]="keywords" name="keywords" type="search" class="form-control form-control-sm" placeholder="过滤">
+      <span [class.hidden]="!isDragging" [class.highlight]="isToCopy" class="tips">按Ctrl键释放复制</span>
       &nbsp;&nbsp;
       <span *ngIf="checkCount">已选{{checkCount}}个用例</span>
     </form>

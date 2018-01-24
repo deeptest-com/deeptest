@@ -188,6 +188,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         testCase.setProjectId(projectId);
         testCase.setCreateById(userId);
         testCase.setCreateTime(new Date());
+        testCase.setLeaf(false);
         testCase.setOrdr(0);
         saveOrUpdate(testCase);
 
@@ -199,6 +200,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         testCase2.setProjectId(projectId);
         testCase2.setCreateById(userId);
         testCase2.setCreateTime(new Date());
+        testCase.setLeaf(true);
         testCase2.setOrdr(0);
         saveOrUpdate(testCase2);
     }

@@ -8,13 +8,24 @@ import {Component, Input, OnInit} from "@angular/core";
 export class ExecutionProcessComponent implements OnInit {
 
   @Input() showTitle: boolean = false;
-  @Input() data: any;
   chartOption: any;
+
+  _data: any = {};
+  @Input() set data(model: any) {
+    if (model) {
+      this._data = model;
+      this.genChart();
+    }
+  }
 
   constructor() {
   }
 
   ngOnInit(): any {
+
+  }
+
+  genChart(): any {
     this.chartOption = {
       title: {
         text: '测试执行',
@@ -41,9 +52,9 @@ export class ExecutionProcessComponent implements OnInit {
       legend: {
         right: '0%',
         width: '15%',
-        data:['通过','失败','阻塞']
+        data:['阻塞', '失败', '通过']
       },
-      color: ['#749f83', '#c23531', '#ca8622', '#c4ccd3'],
+      color: ['#c23531', '#ca8622', '#749f83'],
 
       xAxis : [
         {
@@ -53,13 +64,7 @@ export class ExecutionProcessComponent implements OnInit {
             rotate: 45,
             margin: 10
           },
-          data : [
-            '07-01','07-02','07-03','07-04','07-05',
-            '07-06','07-07','07-01','07-02','07-03',
-            '07-04','07-05','07-06','07-07','07-01',
-            '07-04','07-05','07-06','07-07','07-01',
-            '07-04','07-05','07-06','07-07','07-01',
-            '07-02','07-03','07-04','07-05','07-06','07-07']
+          data : this._data.xList
         }
       ],
       yAxis : [
@@ -69,50 +74,24 @@ export class ExecutionProcessComponent implements OnInit {
         }
       ],
       series : [
-
         {
-          name:'通过',
+          name:'阻塞',
           type:'bar',
           stack: '过程',
-          data:[
-            120, 132, 101, 134, 90,
-            230, 210,120, 132, 101,
-            230, 210,120, 132, 101,
-            134, 90, 230, 210,120,
-            134, 90, 230, 210,120,
-            132, 101, 134, 90, 230, 210]
+          data: this._data.blockList
         },
         {
           name:'失败',
           type:'bar',
           stack: '过程',
-          data:[
-            20, 12, 11, 24, 9,
-            3, 10,20, 12, 11,
-            24, 9, 3, 10,20,
-            3, 10,20, 12, 11,
-            24, 9, 3, 10,20,
-            12, 11, 24, 9, 3, 10]
+          data: this._data.failList
         },
         {
-          name:'阻塞',
+          name:'通过',
           type:'bar',
           stack: '过程',
-          data:[
-            5, 6, 3, 0, 7,
-            0, 3, 5, 6, 3,
-            0, 7, 0, 3, 5,
-            0, 3, 5, 6, 3,
-            0, 7, 0, 3, 5,
-            6, 3, 0, 7, 0, 3]
-        },
-/*        {
-          name:'未执行',
-          type:'bar',
-          stack: '过程',
-          data:[150, 232, 201, 154, 190, 40, 20]
-        }*/
-
+          data: this._data.passList
+        }
       ]
     };
   }

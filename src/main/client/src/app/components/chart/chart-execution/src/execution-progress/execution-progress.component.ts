@@ -7,13 +7,23 @@ import {Component, Input, OnInit} from "@angular/core";
 })
 export class ExecutionProgressComponent implements OnInit {
 
-  @Input() data: any;
   chartOption: any;
+
+  _data: any = {};
+  @Input() set data(model: any) {
+    if (model) {
+      this._data = model;
+      this.genChart();
+    }
+  }
 
   constructor() {
   }
 
   ngOnInit(): any {
+
+  }
+  genChart(): any {
     this.chartOption = {
       title: {
         show: false
@@ -39,10 +49,10 @@ export class ExecutionProgressComponent implements OnInit {
         type: 'category',
         name: '',
         splitLine: {show: false},
-        data: ['07-01', '07-02', '07-03', '07-04', '07-05', '07-06', '07-07'],
+        data: this._data.xList,
         axisLabel :{
           interval: 0,
-          rotate: 15,
+          rotate: 45,
           margin:20
         },
       },
@@ -50,8 +60,7 @@ export class ExecutionProgressComponent implements OnInit {
       yAxis: [
         {
           name: '剩余用例（个）',
-          type: 'value',
-          max: 1100
+          type: 'value'
         },
         // {
         //   name: '剩余工作量（小时）',
@@ -63,7 +72,7 @@ export class ExecutionProgressComponent implements OnInit {
         {
           name: '用例数',
           type: 'line',
-          data: [1000, 950, 880, 750, 690, 630, 540],
+          data: this._data.numbList
         },
         // {
         //   name: '工作量',

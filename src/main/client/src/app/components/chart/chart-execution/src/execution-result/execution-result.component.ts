@@ -6,14 +6,25 @@ import {Component, Input, OnInit} from "@angular/core";
   styleUrls: ['./styles.scss']
 })
 export class ExecutionResultComponent implements OnInit {
-
-  @Input() data: any;
   chartOption: any;
+
+  _data: any = {};
+  @Input() set data(model: any) {
+    console.log('===', model);
+    if (model) {
+      this._data = model;
+      this.genChart();
+    }
+  }
 
   constructor() {
   }
 
   ngOnInit(): any {
+
+  }
+
+  genChart(): any {
     this.chartOption = {
       title: {
         show: false
@@ -22,7 +33,7 @@ export class ExecutionResultComponent implements OnInit {
         show: false
       },
       padding: 0,
-      color: ['#749f83', '#c23531', '#ca8622', '#c4ccd3'],
+      color: ['#c23531', '#ca8622', '#749f83', '#c4ccd3'],
       tooltip: {
         trigger: 'item',
         formatter: "{a} <br/>{b} : {c} ({d}%)"
@@ -30,16 +41,11 @@ export class ExecutionResultComponent implements OnInit {
 
       series: [
         {
-          name: '访问来源',
+          name: '执行结果',
           type: 'pie',
           radius: '90%',
           center: ['50%', '55%'],
-          data: [
-            {value: 335, name: '成功'},
-            {value: 310, name: '失败'},
-            {value: 234, name: '阻塞'},
-            {value: 135, name: '未执行'}
-          ],
+          data: this._data,
           itemStyle: {
             emphasis: {
               shadowBlur: 10,

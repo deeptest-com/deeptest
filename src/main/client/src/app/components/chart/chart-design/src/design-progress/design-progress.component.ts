@@ -7,13 +7,23 @@ import {Component, Input, OnInit} from "@angular/core";
 })
 export class DesignProgressComponent implements OnInit {
   @Input() showTitle: boolean = false;
-  @Input() data: any;
   chartOption: any;
+
+  _data: any = {};
+  @Input() set data(model: any) {
+    if (model) {
+      this._data = model;
+      this.genChart();
+    }
+  }
 
   constructor() {
   }
-
   ngOnInit(): any {
+
+  }
+
+  genChart(): any {
     this.chartOption = {
       title: {
         text: '测试设计',
@@ -45,10 +55,10 @@ export class DesignProgressComponent implements OnInit {
         type: 'category',
         name: '',
         splitLine: {show: false},
-        data: ['07-01', '07-02', '07-03', '07-04', '07-05', '07-06', '07-07'],
+        data: this._data.xList,
         axisLabel :{
           interval: 0,
-          rotate: 15,
+          rotate: 45,
           margin:20
         },
       },
@@ -56,20 +66,19 @@ export class DesignProgressComponent implements OnInit {
       yAxis: [
         {
           name: '数量（个）',
-          type: 'value',
-          max: 1100
+          type: 'value'
         }
       ],
       series: [
         {
           name: '合计用例',
           type: 'line',
-          data: [540, 630, 690, 750, 880, 950, 1000],
+          data: this._data.totalList,
         },
         {
           name:'新增用例',
           type:'bar',
-          data:[100, 90, 70, 60, 130, 70, 50]
+          data: this._data.numbList
         }
       ]
     };

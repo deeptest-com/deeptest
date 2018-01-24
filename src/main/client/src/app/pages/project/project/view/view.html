@@ -20,8 +20,8 @@
     </div>
 
     <div class="row chart">
-      <design-progress [showTitle]="true"></design-progress>
-      <execution-process [showTitle]="true"></execution-process>
+      <design-progress [data]="chartData.design" [showTitle]="true"></design-progress>
+      <execution-process [data]="chartData.exe" [showTitle]="true"></execution-process>
     </div>
 
     <div class="row cards">

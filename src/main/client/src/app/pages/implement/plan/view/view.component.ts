@@ -13,6 +13,7 @@ import { RouteService } from '../../../../service/route';
 
 import { PlanService } from '../../../../service/plan';
 import { RunService } from '../../../../service/run';
+import { ReportService } from '../../../../service/report';
 
 declare var jQuery;
 
@@ -34,8 +35,10 @@ export class PlanView implements OnInit, AfterViewInit {
   testSet: any;
   modalTitle: string;
 
-  constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute, private fb: FormBuilder,
-              private _i18n: I18n, private compiler: Compiler,
+  chartData: any = {};
+
+  constructor(private _routeService: RouteService, private _route: ActivatedRoute,
+              private _reportService: ReportService,
               private _planService: PlanService, private _runService: RunService) {
 
   }
@@ -49,6 +52,9 @@ export class PlanView implements OnInit, AfterViewInit {
 
     if (this.planId) {
       this.loadData();
+      this._reportService.planReport(this.planId).subscribe((json:any) => {
+        this.chartData = json.data;
+      });
     }
   }
   ngAfterViewInit() {}

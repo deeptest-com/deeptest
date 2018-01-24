@@ -30,6 +30,7 @@ import { UserService } from '../../../service/user';
 
 import { ProjectService } from '../../../service/project';
 import { AccountService } from '../../../service/account';
+import { ReportService } from '../../../service/report';
 
 import { Plan } from './plan.component';
 import { PlanList } from './list/list.component';
@@ -71,7 +72,7 @@ export function myDateParserFormatterFactory() {
     RequestService,
     DatetimePickerService,
     PlanService, RunService, SuiteService, CaseService, UserService,
-    AccountService, ProjectService,
+    AccountService, ProjectService, ReportService,
     {
       provide: NgbDateParserFormatter,
       useFactory: myDateParserFormatterFactory

@@ -7,14 +7,13 @@ import {Component, Input, OnInit} from "@angular/core";
 })
 export class ChartExecutionComponent implements OnInit {
 
-  @Input() data: any;
+  @Input() chartData: any;
   tab: string = 'exe-result';
 
   constructor() {
   }
 
   ngOnInit(): any {
-
   }
 
   tabChange(event: any) {

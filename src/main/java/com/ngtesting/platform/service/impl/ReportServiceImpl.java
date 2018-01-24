@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.service.ReportService;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +18,18 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
 
         List<Object[]> ls = getDao().getListBySQL("{call chart_design_progress_by_project(?,?)}",
                 projectId, numb);
+        Integer sum = null;
         for (Object[] arr : ls) {
+            if(sum == null) {
+                sum = Integer.valueOf(arr[3].toString());
+            }
             xList.add(arr[0].toString());
             numbList.add(arr[1]==null?0:arr[1]);
-            totalList.add(arr[2]==null?0:arr[2]);
+
+            if(arr[2]!=null) {
+                sum += Integer.valueOf(arr[2].toString());
+            }
+            totalList.add(sum);
         }
         map.put("xList", xList);
         map.put("numbList", numbList);
@@ -38,22 +47,19 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
     }
 
     @Override
-    public Map<String, List<Object>> chart_execution_result_by_plan(Long planId, Integer numb) {
-        Map<String, List<Object>> map = new LinkedHashMap<>();
+    public List<Map<Object, Object>> chart_execution_result_by_plan(Long planId, Integer numb) {
+        List<Map<Object, Object>> data = new LinkedList<>();
 
-        List<Object> xList = new LinkedList<>();
-        List<Object> numbList = new LinkedList<>();
-
-        List<Object[]> ls = getDao().getListBySQL("{call chart_design_progress_by_project(?,?)}",
-                planId, numb);
+        List<Object[]> ls = getDao().getListBySQL("{call chart_execution_result_by_plan(?)}",
+                planId);
         for (Object[] arr : ls) {
-            xList.add(arr[0].toString());
-            numbList.add(arr[1]==null?0:arr[1]);
+            Map<Object, Object> map = new HashMap();
+            map.put("name", Constant.ExeStatus.get(arr[0]));
+            map.put("value", arr[1]);
+            data.add(map);
         }
-        map.put("xList", xList);
-        map.put("numbList", numbList);
 
-        return map;
+        return data;
     }
 
     @Override
@@ -126,14 +132,17 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
                 dayStatus = new HashMap();
             }
 
-            String status = arr[1].toString();
-            if ("pass".equals(status)) {
-                dayStatus.put("pass", arr[2]);
-            } else if("fail".equals(status)) {
-                dayStatus.put("fail", arr[2]);
-            } else if("block".equals(status)) {
-                dayStatus.put("block", arr[2]);
+            if (arr[1] != null) {
+                String status = arr[1].toString();
+                if ("pass".equals(status)) {
+                    dayStatus.put("pass", arr[2]);
+                } else if("fail".equals(status)) {
+                    dayStatus.put("fail", arr[2]);
+                } else if("block".equals(status)) {
+                    dayStatus.put("block", arr[2]);
+                }
             }
+
             day = dayTemp;
         }
 

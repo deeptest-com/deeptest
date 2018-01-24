@@ -23,6 +23,7 @@ import { routing }       from './project.routing';
 import { ProjectService } from '../../../service/project';
 import { UserService } from '../../../service/user';
 import { UserAndGroupService } from '../../../service/userAndGroup';
+import { ReportService } from '../../../service/report';
 
 import { Project } from './project.component';
 import { ProjectList } from './list/list.component';
@@ -60,7 +61,8 @@ import { ProjectView } from './view/view.component';
     DatetimePickerService,
     ProjectService,
     UserService,
-    UserAndGroupService
+    UserAndGroupService,
+    ReportService
   ]
 })
 export class ProjectModule {}

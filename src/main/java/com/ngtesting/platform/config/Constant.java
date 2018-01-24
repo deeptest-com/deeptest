@@ -1,7 +1,9 @@
 package com.ngtesting.platform.config;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class Constant {
 
@@ -96,5 +98,12 @@ public final class Constant {
             return code;
         }
     }
+
+    public static Map<String, String> ExeStatus = new HashMap() {{
+        put("pass", "成功");
+        put("fail", "失败");
+        put("block", "阻塞");
+        put("untest", "未执行");
+    }};
 
 }

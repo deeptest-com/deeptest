@@ -9,13 +9,11 @@ export class ReportService {
   constructor(private _reqService: RequestService) { }
   _api_url = 'report/';
 
-  list(query:any, pageNumb: number, pageSize: number) {
-    _.merge(query, {pageNumb: pageNumb, pageSize: pageSize});
-    return this._reqService.post(this._api_url + 'list', query);
+  projectReport(projectId: number) {
+    return this._reqService.post(this._api_url + 'project', {projectId: projectId});
   }
 
-  get(id: number) {
-    let model = {id: id};
-    return this._reqService.post(this._api_url + 'get', model);
+  planReport(planId: number) {
+    return this._reqService.post(this._api_url + 'plan', {planId: planId});
   }
 }

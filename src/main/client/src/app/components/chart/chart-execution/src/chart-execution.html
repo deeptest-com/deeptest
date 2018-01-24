@@ -20,15 +20,15 @@
   <div class="row">
 
     <div *ngIf="tab == 'exe-result'" class="execution-content">
-      <execution-result></execution-result>
+      <execution-result [data]="chartData.result"></execution-result>
     </div>
 
     <div *ngIf="tab == 'exe-process'" class="execution-content">
-      <execution-process></execution-process>
+      <execution-process [data]="chartData.process"></execution-process>
     </div>
 
     <div *ngIf="tab == 'exe-progress'" class="execution-content">
-      <execution-progress></execution-progress>
+      <execution-progress [data]="chartData.progress"></execution-progress>
     </div>
 
   </div>

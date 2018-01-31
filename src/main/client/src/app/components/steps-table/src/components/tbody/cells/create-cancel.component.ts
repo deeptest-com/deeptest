@@ -9,10 +9,10 @@ import * as _ from 'lodash';
   selector: 'ng2-st-tbody-create-cancel',
   template: `
     <a href="#" class="ng2-smart-action ng2-smart-action-edit-save" (click)="onSave($event)">
-      <i class="ion-checkmark"></i>
+      <i class="fa fa-check"></i>
     </a>
     <a href="#" class="ng2-smart-action ng2-smart-action-edit-cancel" (click)="onCancelEdit($event)">
-      <i class="ion-close"></i>
+      <i class="fa fa-times"></i>
     </a>
   `,
 })

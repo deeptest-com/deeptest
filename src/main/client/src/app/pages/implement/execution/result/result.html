@@ -8,7 +8,7 @@
 
           <button (click)="returnTo()" type="button"
                   class="button-right btn btn-secondary btn-with-icon btn-sm back">
-            <i class="ion-backspace"></i>返回
+            <i class="fa fa-arrow-circle-left"></i>返回
           </button>
         </div>
       </div>
@@ -30,7 +30,7 @@
 
           <button (click)="returnTo()" type="button"
                   class="button-right btn btn-secondary btn-with-icon btn-sm back">
-            <i class="ion-backspace"></i>返回
+            <i class="fa fa-arrow-circle-left"></i>返回
           </button>
         </div>
       </div>
@@ -134,11 +134,11 @@
         </div>
         <div *ngIf="canEdit" class="contentType col-sm-2">
           <span *ngIf="model.contentType=='richText'" (click)="changeContentType('steps')" class="link">
-            <i class="ion-ios-grid-view"></i>
+            <i class="fa fa-th"></i>
             表格
           </span>
             <span *ngIf="model.contentType=='steps'" (click)="changeContentType('richText')" class="link">
-            <i class="ion-document-text"></i>
+            <i class="fa fa-file-text-o"></i>
             富文本
           </span>
         </div>

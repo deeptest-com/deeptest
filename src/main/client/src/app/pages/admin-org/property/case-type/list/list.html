@@ -18,9 +18,9 @@
         </td>
         <td>
           <span *ngIf="i == 0" class="ionic-icon link placeholder"></span>
-          <span (click)="up(item)" *ngIf="i > 0" class="ion-arrow-up-a ionic-icon link"></span>
+          <span (click)="up(item)" *ngIf="i > 0" class="fa fa-arrow-up ionic-icon link"></span>
 
-          <span (click)="down(item)" *ngIf="i < models.length - 1" class="ion-arrow-down-a ionic-icon link"></span>
+          <span (click)="down(item)" *ngIf="i < models.length - 1" class="fa fa-arrow-down ionic-icon link"></span>
           <span *ngIf="i == models.length - 1" class="ionic-icon link placeholder"></span>
           &nbsp;
           <span [routerLink]="['/pages/org-admin/property/case-type/edit', item.id]" class="link no-underline">编辑</span>

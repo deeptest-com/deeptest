@@ -10,17 +10,17 @@ import { DataSource } from '../../../lib/data-source/data-source';
   template: `
 
     <span *ngIf="isFirst" href="#" class="ng2-smart-action link transparent">
-      <span class="ion-arrow-up-a ionic-icon near"></span>
+      <span class="fa fa-arrow-up ionic-icon near"></span>
     </span>
     <span *ngIf="!isFirst" href="#" class="ng2-smart-action link" (click)="onUp($event)">
-      <span class="ion-arrow-up-a ionic-icon near"></span>
+      <span class="fa fa-arrow-up ionic-icon near"></span>
     </span>
     
     <span *ngIf="isLast" href="#" class="ng2-smart-action link transparent">
-      <span class="ion-arrow-down-a ionic-icon near"></span>
+      <span class="fa fa-arrow-down ionic-icon near"></span>
     </span>
     <span *ngIf="!isLast" href="#" class="ng2-smart-action link" (click)="onDown($event)">
-      <span class="ion-arrow-down-a ionic-icon near"></span>
+      <span class="fa fa-arrow-down ionic-icon near"></span>
     </span>
     
   `,

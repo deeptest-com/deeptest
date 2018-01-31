@@ -15,15 +15,10 @@ import { PAGES_MENU } from './pages.menu';
       </div>
     </div>
     <footer class="al-footer clearfix">
-      <div class="al-footer-right" translate>{{'general.created_with'}} <i class="ion-heart"></i></div>
+      <div class="al-footer-right" translate>{{'general.created_with'}} <i class="fa fa-heart"></i></div>
       <div class="al-footer-main clearfix">
         <div class="al-copy">&copy; <a href="http://ngtesting.com" translate>{{'general.ngtesting'}}</a> 2017</div>
-        <ul class="al-share clearfix">
-          <li><i class="socicon socicon-facebook"></i></li>
-          <li><i class="socicon socicon-twitter"></i></li>
-          <li><i class="socicon socicon-google"></i></li>
-          <li><i class="socicon socicon-github"></i></li>
-        </ul>
+        
       </div>
     </footer>
     <ba-back-top position="200"></ba-back-top>

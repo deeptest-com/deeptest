@@ -3,7 +3,7 @@
 
     <ul class="select-choices">
       <li *ngFor="let item of selectedModels" class="select-search-choice">
-        <span (click)="remove(item)" class="ion-close pointer" tabindex="-1"></span>
+        <span (click)="remove(item)" class="fa fa-times pointer" tabindex="-1"></span>
         <span>{{item.name}}</span>
       </li>
 
@@ -20,8 +20,8 @@
         <div *ngFor="let item of searchResult" class="select-result" [class.active]="selectedModel?.id == item.id"
              (mouseenter)="onMouseEnter($event, item)" (click)="onSelectItem($event, item)">
           <div class="image">
-            <span *ngIf="item.type=='user'" class="ion-person"></span>
-            <span *ngIf="item.type=='group'" class="ion-person-stalker"></span>
+            <span *ngIf="item.type=='user'" class="fa fa-user"></span>
+            <span *ngIf="item.type=='group'" class="fa fa-users"></span>
           </div>
           <div *ngIf="item.type=='user'" class="user-name">
             <div>{{item.name}}</div>
@@ -34,7 +34,7 @@
       </div>
 
       <div class="close" (click)="cancel($event)">
-        <span class="ion-close"></span>
+        <span class="fa fa-times"></span>
       </div>
 
     </div>

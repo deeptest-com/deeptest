@@ -2,13 +2,13 @@
   <div *ngIf="status == 'view'" class="form-inline">
     <span *ngIf="type=='text'">
       <field-show-label [label]="label"></field-show-label>
-      <a *ngIf="!readonly" href="#" class="smart-edit" (click)="edit($event, format)"><i class="ion-edit"></i></a>
+      <a *ngIf="!readonly" href="#" class="smart-edit" (click)="edit($event, format)"><i class="fa fa-pencil"></i></a>
       <field-show-value [model]="model" [prop]="prop" [valType]="type" [valFormat]="format"></field-show-value>
     </span>
     <span *ngIf="type!='text'">
       <field-show-label [label]="label"></field-show-label>
       <field-show-value [model]="model" [prop]="prop" [valType]="type" [valFormat]="format"></field-show-value>
-      <a *ngIf="!readonly" href="#" class="smart-edit" (click)="edit($event)"><i class="ion-edit"></i></a>
+      <a *ngIf="!readonly" href="#" class="smart-edit" (click)="edit($event)"><i class="fa fa-pencil"></i></a>
     </span>
   </div>
   <div *ngIf="!readonly && status == 'edit'" class="form-inline edit-mode">
@@ -44,8 +44,8 @@
             </ng-container>
           </span>-->
 
-          <a href="#" class="smart-edit" (click)="save($event)"><i class="ion-checkmark"></i></a>
-          <a href="#" class="smart-edit" (click)="cancel($event)"><i class="ion-close"></i></a>
+          <a href="#" class="smart-edit" (click)="save($event)"><i class="fa fa-check"></i></a>
+          <a href="#" class="smart-edit" (click)="cancel($event)"><i class="fa fa-times"></i></a>
 
         </span>
     </ng-container>

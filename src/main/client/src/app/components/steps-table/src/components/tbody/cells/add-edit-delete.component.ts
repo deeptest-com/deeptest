@@ -9,15 +9,15 @@ import { DataSource } from '../../../lib/data-source/data-source';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <a href="#" class="ng2-smart-action ng2-smart-action-edit-edit" (click)="onCreate($event)">
-      <i class="ion-plus"></i>
+      <i class="fa fa-plus"></i>
     </a>
     
     <a href="#" class="ng2-smart-action ng2-smart-action-edit-edit" (click)="onEdit($event)">
-      <i class="ion-edit"></i>
+      <i class="fa fa-pencil"></i>
     </a>
     
     <a href="#" class="ng2-smart-action ng2-smart-action-delete-delete" (click)="onDelete($event)">
-      <i class="ion-trash-a"></i>
+      <i class="fa fa-trash"></i>
     </a>
   `,
 })

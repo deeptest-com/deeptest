@@ -8,7 +8,7 @@
       <div class="buttons">
         <button [routerLink]="['/pages/org/' + orgId + '/prj/' + prjId + '/implement/plan/list']" type="button"
                 class="btn btn-primary btn-with-icon btn-sm back">
-          <i class="ion-backspace"></i>返回
+          <i class="fa fa-arrow-circle-left"></i>返回
         </button>
       </div>
     </div>
@@ -37,7 +37,7 @@
             <input class="form-control" placeholder="yyyy-mm-dd" name="startTime" formControlName="startTime" #startTime="ngbDatepicker"
                    [(ngModel)]="model.startTime" ngbDatepicker [minDate]="startDate">
             <div class="input-group-addon" (click)="startTime.toggle()" >
-              <i class="ion-calendar"></i>
+              <i class="fa fa-calendar"></i>
             </div>
           </div>
         </div>
@@ -48,7 +48,7 @@
             <input class="form-control" placeholder="yyyy-mm-dd" name="endTime" formControlName="endTime"
                    [(ngModel)]="model.endTime" ngbDatepicker [minDate]="startDate" #endTime="ngbDatepicker">
             <div class="input-group-addon" (click)="endTime.toggle()" >
-              <i class="ion-calendar"></i>
+              <i class="fa fa-calendar"></i>
             </div>
           </div>
         </div>

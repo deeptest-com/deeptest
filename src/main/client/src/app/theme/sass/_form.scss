@@ -236,10 +236,10 @@ label.custom-radio {
     &:before {
       cursor: pointer;
       font-family: fontAwesome;
+      content: "\a0";
       font-weight: $font-light;
       font-size: 12px;
       color: $content-text;
-      content: "\a0";
       background-color: transparent;
       border: 1px solid $border;
       border-radius: 0;
@@ -656,10 +656,11 @@ label.custom-checkbox {
     &:before {
       cursor: pointer;
       font-family: fontAwesome;
+      content: "\a0";
       font-weight: $font-light;
       font-size: 12px;
       color: $content-text;
-      content: "\a0";
+
       background-color: transparent;
       border: 1px solid $border;
       border-radius: 0;

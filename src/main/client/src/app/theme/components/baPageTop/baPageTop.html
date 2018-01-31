@@ -5,12 +5,12 @@
   <div class="menu change-orgs">
     <div ngbDropdown class="btn-group">
       <button class="btn btn-default" ngbDropdownToggle>
-        <span class="ion-navicon"></span>
+        <span class="fa fa-bars"></span>
       </button>
       <div class="dropdown-menu">
         <button (click)="changeOrg(item)" *ngFor="let item of orgs" class="dropdown-item">
           <span class="link">
-            <span [class.transparent]="item?.id!=orgId" class="ion-checkmark"></span>
+            <span [class.transparent]="item?.id!=orgId" class="fa fa-check"></span>
             &nbsp;{{item.name}}
           </span>
         </button>
@@ -82,7 +82,7 @@
   </div>
 
   <div class="search">
-    <i class="ion-ios-search-strong" ng-click="startSearch()"></i>
+    <i class="fa fa-search" ng-click="startSearch()"></i>
     <input [(ngModel)]="keywords" (ngModelChange)=onSearchKeywordChanged($event) id="searchInput" type="text" placeholder="输入用例编号">
   </div>
 

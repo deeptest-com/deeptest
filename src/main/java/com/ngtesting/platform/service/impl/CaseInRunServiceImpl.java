@@ -113,15 +113,39 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
 
     @Override
     public TestCaseInRunVo movePers(JSONObject json, UserVo userVo) {
-        Long entityId = json.getLong("entityId");
+        Long runId = json.getLong("runId");
+        Long caseId = json.getLong("srcId");
 
         TestCaseVo vo = caseService.movePers(json, userVo.getId());
 
-        TestCaseInRun caseInRun = (TestCaseInRun) get(TestCase.class, entityId);
+        TestCaseInRun caseInRun = getByRunAndCaseId(runId, caseId);
         caseInRun.setpId(vo.getpId());
+        caseInRun.setOrdr(vo.getOrdr());
+        caseInRun.setLeaf(vo.getLeaf());
         saveOrUpdate(caseInRun);
 
         return genVo(caseInRun, false);
+    }
+
+    @Override
+    public TestCaseInRun getByRunAndCaseId(Long runId, Long caseId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestCaseInRun.class);
+
+        dc.add(Restrictions.eq("runId", runId));
+        dc.add(Restrictions.eq("caseId", caseId));
+
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+
+        dc.addOrder(Order.asc("pId"));
+        dc.addOrder(Order.asc("ordr"));
+
+        List<TestCaseInRun> ls = findAllByCriteria(dc);
+        if (ls.size() == 1) {
+            return ls.get(0);
+        } else {
+            return null;
+        }
     }
 
     @Override

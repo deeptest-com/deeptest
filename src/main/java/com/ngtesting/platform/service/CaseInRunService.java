@@ -20,6 +20,8 @@ public interface CaseInRunService extends BaseService {
     TestCaseInRun deleteCaseFromRunPers(Long entityId, UserVo userVo);
     TestCaseInRunVo movePers(JSONObject json, UserVo userVo);
 
+    TestCaseInRun getByRunAndCaseId(Long runId, Long caseId);
+
     void updateParentIfNeededPers(Long pid);
 
     List<TestCaseInRunVo> genVos(List<TestCaseInRun> pos);

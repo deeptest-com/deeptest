@@ -61,7 +61,7 @@ export class CommentListComponent implements OnInit, AfterViewInit, OnDestroy{
   }
   removeComments(id: number, indx: number) {
     this._caseCommentsService.remove(id).subscribe((json:any) => {
-      this.model.commnets.splice(indx, 1);
+      this.model.comments.splice(indx, 1);
     });
   }
 

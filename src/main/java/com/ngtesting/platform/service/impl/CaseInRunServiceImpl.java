@@ -1,13 +1,12 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.*;
 import com.ngtesting.platform.service.CaseCommentsService;
 import com.ngtesting.platform.service.CaseInRunService;
+import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.vo.TestCaseCommentsVo;
-import com.ngtesting.platform.vo.TestCaseInRunVo;
-import com.ngtesting.platform.vo.TestCaseStepVo;
-import com.ngtesting.platform.vo.UserVo;
+import com.ngtesting.platform.vo.*;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -21,6 +20,8 @@ import java.util.List;
 
 @Service
 public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunService {
+    @Autowired
+    CaseService caseService;
     @Autowired
     CaseCommentsService caseCommentsService;
 
@@ -81,6 +82,54 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
     }
 
     @Override
+    public TestCaseInRunVo renamePers(JSONObject json, UserVo userVo) {
+        Long caseId = json.getLong("id");
+        Long entityId = json.getLong("entityId");
+        Long runId = json.getLong("runId");
+        String name = json.getString("name");
+        Long pId = json.getLong("pId");
+        Long projectId = json.getLong("projectId");
+
+        TestCaseInRunVo vo;
+        TestCase casePo = caseService.renamePers(caseId, name, pId, projectId, userVo.getId());
+
+        if (caseId == null || caseId <= 0) {
+            vo = addCaseToRunPers(runId, casePo, userVo);
+        } else {
+            vo = genVo((TestCaseInRun) get(TestCaseInRun.class, entityId), false);
+        }
+
+        return vo;
+    }
+
+    @Override
+    public TestCaseInRun deleteCaseFromRunPers(Long entityId, UserVo userVo) {
+        TestCaseInRun po = (TestCaseInRun) get(TestCaseInRun.class, entityId);
+
+        getDao().querySql("{call delete_case_in_run_and_its_children(?,?)}", po.getRunId(), po.getCaseId());
+
+        return po;
+    }
+
+    @Override
+    public TestCaseInRunVo movePers(JSONObject json, UserVo userVo) {
+        Long entityId = json.getLong("entityId");
+
+        TestCaseVo vo = caseService.movePers(json, userVo.getId());
+
+        TestCaseInRun caseInRun = (TestCaseInRun) get(TestCase.class, entityId);
+        caseInRun.setpId(vo.getpId());
+        saveOrUpdate(caseInRun);
+
+        return genVo(caseInRun, false);
+    }
+
+    @Override
+    public void updateParentIfNeededPers(Long pid) {
+        getDao().querySql("{call update_case_in_run_parent_if_needed(?)}", pid);
+    }
+
+    @Override
     public List<TestCaseInRunVo> genVos(List<TestCaseInRun> pos) {
         List<TestCaseInRunVo> vos = new LinkedList<>();
 
@@ -89,6 +138,20 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
             vos.add(vo);
         }
         return vos;
+    }
+
+    @Override
+    public TestCaseInRunVo addCaseToRunPers(Long runId, TestCase po, UserVo userVo) {
+        TestRun run = (TestRun)get(TestRun.class, runId);
+
+        TestCaseInRun caseInRun = new TestCaseInRun(run.getProjectId(), run.getPlanId(),
+                run.getId(), po.getId(), po.getOrdr(), po.getpId(), true);
+        run.getTestcases().add(caseInRun);
+
+        saveOrUpdate(caseInRun);
+        TestCaseInRunVo vo = genVo(caseInRun, false);
+
+        return vo;
     }
 
     @Override

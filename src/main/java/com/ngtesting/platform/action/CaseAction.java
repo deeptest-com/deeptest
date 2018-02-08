@@ -116,6 +116,23 @@ public class CaseAction extends BaseAction {
 	}
 
 	@AuthPassport(validate = true)
+	@RequestMapping(value = "delete", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		Long id = json.getLong("id");
+
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+		TestCase testCase = caseService.delete(id, userVo.getId());
+		caseService.updateParentIfNeededPers(testCase.getpId());
+
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@AuthPassport(validate = true)
 	@RequestMapping(value = "move", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> move(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -135,23 +152,6 @@ public class CaseAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-
-    @AuthPassport(validate = true)
-    @RequestMapping(value = "delete", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-
-        Long id = json.getLong("id");
-
-        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
-        TestCase testCase = caseService.delete(id, userVo.getId());
-		caseService.updateParentIfNeededPers(testCase.getpId());
-
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
 
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "saveField", method = RequestMethod.POST)

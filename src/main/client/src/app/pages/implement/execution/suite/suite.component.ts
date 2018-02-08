@@ -72,14 +72,14 @@ export class ExecutionSuite implements OnInit, AfterViewInit {
       event.deferred.resolve(json.data);
     });
   }
-  move(event: any) {
-    this._caseInRunService.move(this.projectId, this.runId, event.data).subscribe((json:any) => {
+  delete(event: any) {
+    let testCase = event.data;
+    this._caseInRunService.delete(testCase.id, testCase.entityId).subscribe((json:any) => {
       event.deferred.resolve(json.data);
     });
   }
-  remove(event: any) {
-    let testCase = event.data;
-    this._caseInRunService.delete(testCase.id, testCase.entityId).subscribe((json:any) => {
+  move(event: any) {
+    this._caseInRunService.move(this.projectId, this.runId, event.data).subscribe((json:any) => {
       event.deferred.resolve(json.data);
     });
   }

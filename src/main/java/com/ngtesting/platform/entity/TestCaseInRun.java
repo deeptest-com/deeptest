@@ -62,7 +62,8 @@ public class TestCaseInRun extends BaseEntity {
     public TestCaseInRun() {
         super();
     }
-    public TestCaseInRun(Long projectId, Long planId, Long runId, Long caseId, Integer ordr, Long pid, Boolean isLeaf) {
+    public TestCaseInRun(Long projectId, Long planId, Long runId, Long caseId,
+                         Integer ordr, Long pid, Boolean isLeaf) {
         super();
         this.projectId = projectId;
         this.planId = planId;

@@ -68,7 +68,7 @@ export class CaseSuite implements OnInit, AfterViewInit {
       event.deferred.resolve(json.data);
     });
   }
-  remove(event: any) {
+  delete(event: any) {
     let testCase = event.data;
     this._caseService.delete(testCase.id).subscribe((json:any) => {
       event.deferred.resolve(json.data);

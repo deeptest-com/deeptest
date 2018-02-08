@@ -67,13 +67,18 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 		return vo;
 	}
 
-	@Override
-	public TestCase renamePers(JSONObject json, Long userId) {
-	    Long id = json.getLong("id");
+    @Override
+    public TestCase renamePers(JSONObject json, Long userId) {
+        Long id = json.getLong("id");
         String name = json.getString("name");
         Long pId = json.getLong("pId");
         Long projectId = json.getLong("projectId");
 
+        return renamePers(id, name, pId, projectId, userId);
+    }
+
+	@Override
+	public TestCase renamePers(Long id, String name, Long pId, Long projectId, Long userId) {
         TestCase testCasePo = new TestCase();
         if (id != null && id > 0) {
             testCasePo = (TestCase)get(TestCase.class, id);
@@ -317,17 +322,14 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	public TestCase delete(Long id, Long userId) {
         TestCase testCase = (TestCase) get(TestCase.class, id);
 
-        testCase.setDeleted(true);
-        testCase.setUpdateById(userId);
-        testCase.setUpdateTime(new Date());
-        saveOrUpdate(testCase);
+        getDao().querySql("{call delete_case_and_its_children(?)}", id);
 
         return testCase;
 	}
 
     @Override
     public void updateParentIfNeededPers(Long pid) {
-        getDao().querySql("{call update_parent_if_needed(?)}", pid);
+        getDao().querySql("{call update_case_parent_if_needed(?)}", pid);
     }
 
     @Override

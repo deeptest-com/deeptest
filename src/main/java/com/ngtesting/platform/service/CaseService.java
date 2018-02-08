@@ -15,6 +15,9 @@ public interface CaseService extends BaseService {
 
     TestCase renamePers(JSONObject json, Long userId);
 	TestCase delete(Long vo, Long userId);
+
+	TestCase renamePers(Long id, String name, Long pId, Long projectId, Long userId);
+
 	TestCaseVo movePers(JSONObject json, Long userId);
 
 	void createRoot(Long projectId, Long userId);

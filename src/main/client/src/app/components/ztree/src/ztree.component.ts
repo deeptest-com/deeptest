@@ -59,7 +59,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isExpanded = this.settings.isExpanded;
     this.sonSign = this.settings.sonSign;
 
-    if (this.settings.usage == 'selection' || this.settings.usage == 'exe') {
+    if (this.settings.usage == 'selection') {
       this.settings.view.addHoverDom = null;
       this.settings.view.removeHoverDom = null;
       this.settings.edit.enable = false;

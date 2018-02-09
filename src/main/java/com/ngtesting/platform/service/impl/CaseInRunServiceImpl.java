@@ -28,6 +28,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
     @Override
     public List<TestCaseInRunVo> query(Long runId) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestCaseInRun.class);
+        dc.createAlias("testCase", "cs");
 
         dc.add(Restrictions.eq("runId", runId));
 
@@ -35,7 +36,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 
         dc.addOrder(Order.asc("pId"));
-        dc.addOrder(Order.asc("ordr"));
+        dc.addOrder(Order.asc("cs.ordr"));
 
         List<TestCaseInRun> ls = findAllByCriteria(dc);
 
@@ -120,7 +121,6 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
 
         TestCaseInRun caseInRun = getByRunAndCaseId(runId, caseId);
         caseInRun.setpId(vo.getpId());
-        caseInRun.setOrdr(vo.getOrdr());
         caseInRun.setLeaf(vo.getLeaf());
         saveOrUpdate(caseInRun);
 
@@ -137,8 +137,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 
-        dc.addOrder(Order.asc("pId"));
-        dc.addOrder(Order.asc("ordr"));
+        dc.addOrder(Order.asc("id"));
 
         List<TestCaseInRun> ls = findAllByCriteria(dc);
         if (ls.size() == 1) {
@@ -146,11 +145,6 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
         } else {
             return null;
         }
-    }
-
-    @Override
-    public void updateParentIfNeededPers(Long pid) {
-        getDao().querySql("{call update_case_in_run_parent_if_needed(?)}", pid);
     }
 
     @Override
@@ -169,7 +163,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
         TestRun run = (TestRun)get(TestRun.class, runId);
 
         TestCaseInRun caseInRun = new TestCaseInRun(run.getProjectId(), run.getPlanId(),
-                run.getId(), po.getId(), po.getOrdr(), po.getpId(), true);
+                run.getId(), po.getId(), po.getpId(), true);
         run.getTestcases().add(caseInRun);
 
         saveOrUpdate(caseInRun);

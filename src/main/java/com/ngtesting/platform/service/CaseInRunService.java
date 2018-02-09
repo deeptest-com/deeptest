@@ -22,8 +22,6 @@ public interface CaseInRunService extends BaseService {
 
     TestCaseInRun getByRunAndCaseId(Long runId, Long caseId);
 
-    void updateParentIfNeededPers(Long pid);
-
     List<TestCaseInRunVo> genVos(List<TestCaseInRun> pos);
 	TestCaseInRunVo genVo(TestCaseInRun po, Boolean withSteps);
 

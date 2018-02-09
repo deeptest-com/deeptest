@@ -12,7 +12,6 @@ public class TestCaseInRun extends BaseEntity {
 
     private String status = "untest";
 
-    private Integer ordr;
     private Long pId;
     private Boolean isLeaf;
 
@@ -62,15 +61,13 @@ public class TestCaseInRun extends BaseEntity {
     public TestCaseInRun() {
         super();
     }
-    public TestCaseInRun(Long projectId, Long planId, Long runId, Long caseId,
-                         Integer ordr, Long pid, Boolean isLeaf) {
+    public TestCaseInRun(Long projectId, Long planId, Long runId, Long caseId, Long pid, Boolean isLeaf) {
         super();
         this.projectId = projectId;
         this.planId = planId;
 
         this.runId = runId;
         this.caseId = caseId;
-        this.ordr = ordr;
         this.pId = pid;
         this.isLeaf = isLeaf;
     }
@@ -157,14 +154,6 @@ public class TestCaseInRun extends BaseEntity {
 
     public void setpId(Long pId) {
         this.pId = pId;
-    }
-
-    public Integer getOrdr() {
-        return ordr;
-    }
-
-    public void setOrdr(Integer ordr) {
-        this.ordr = ordr;
     }
 
     public String getStatus() {

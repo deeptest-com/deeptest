@@ -100,7 +100,6 @@ public class CaseInRunAction extends BaseAction {
 
         TestCaseInRunVo vo = caseInRunService.renamePers(json, userVo);
         caseService.updateParentIfNeededPers(vo.getpId());
-        caseInRunService.updateParentIfNeededPers(vo.getpId());
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -119,7 +118,6 @@ public class CaseInRunAction extends BaseAction {
         TestCaseInRun caseInRun = caseInRunService.deleteCaseFromRunPers(entityId, userVo);
 
         caseService.updateParentIfNeededPers(caseInRun.getpId());
-        caseInRunService.updateParentIfNeededPers(caseInRun.getpId());
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
@@ -134,7 +132,6 @@ public class CaseInRunAction extends BaseAction {
 
         TestCaseInRunVo vo = caseInRunService.movePers(json, userVo);
         caseService.updateParentIfNeededPers(vo.getpId());
-        caseInRunService.updateParentIfNeededPers(vo.getpId());
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

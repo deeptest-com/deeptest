@@ -120,7 +120,7 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
             TestCase testcase = (TestCase) get(TestCase.class, id);
 
             TestCaseInRun caseInRun = new TestCaseInRun(run.getProjectId(), run.getPlanId(),
-                    run.getId(), id, testcase.getOrdr(), testcase.getpId(), testcase.getLeaf());
+                    run.getId(), id, testcase.getpId(), testcase.getLeaf());
             run.getTestcases().add(caseInRun);
         }
         saveOrUpdate(run);

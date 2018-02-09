@@ -1,6 +1,6 @@
 export var CONSTANT: CONSTANT_INTERFACE = {
   _SERVICE_URL_DEV: 'http://localhost:8080/',
-  _SERVICE_URL_PRODUCTION: 'http://47.97.19.195/platform/',
+  _SERVICE_URL_PRODUCTION: 'http://116.62.17.31/platform/',
 
   SERVICE_URL: undefined,
   API_URL: undefined,

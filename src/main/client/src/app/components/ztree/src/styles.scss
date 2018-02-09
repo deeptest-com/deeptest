@@ -2,11 +2,8 @@ span.tmpzTreeMove_arrow {
   background-image: none !important;
   margin-top: 0px !important;
   &:before {
-    font-family: "Ionicons";
-    //height:12px !important;
-    //line-height: 12px;
-    //font-size: 12px !important;
-    content: "\f109";
+    font-family: FontAwesome;
+    content: "\f178";
   }
 }
 
@@ -138,7 +135,7 @@ span.tmpzTreeMove_arrow {
 
     &.add,&.edit,&.remove {
       width: 17px;
-      font-family: "Ionicons";
+      font-family: "FontAwesome";
       padding: 0 0 0 5px;
     }
     &.add:before {

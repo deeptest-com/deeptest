@@ -411,11 +411,11 @@
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
-					<url>http://47.97.19.195/manager/text</url>
+					<url>http://116.62.17.31/manager/text</url>
 					<port>80</port>
 					<server>tomcat7</server>
 					<username>admin</username>
-					<password>A2ssw0ra</password>
+					<password>NCWR2cqqjn</password>
 					<path>/platform</path>
 					<update>true</update>
 				</configuration>

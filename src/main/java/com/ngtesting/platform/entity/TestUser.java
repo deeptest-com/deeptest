@@ -20,7 +20,6 @@ public class TestUser extends BaseEntity {
     private String token;
     private String avatar;
 
-    private String verifyCode;
     private Date lastLoginTime;
 
     private Long defaultOrgId;
@@ -91,14 +90,6 @@ public class TestUser extends BaseEntity {
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public String getVerifyCode() {
-		return verifyCode;
-	}
-
-	public void setVerifyCode(String verifyCode) {
-		this.verifyCode = verifyCode;
 	}
 
 	public Date getLastLoginTime() {

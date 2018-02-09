@@ -117,6 +117,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		dc.add(Restrictions.ne("disabled", true));
 
         dc.createAlias("project", "project");
+//		dc.add(Restrictions.ne("project.deleted", true));
         dc.add(Restrictions.ne("project.deleted", true));
 		dc.add(Restrictions.ne("project.disabled", true));
 
@@ -168,10 +169,10 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 
 		saveOrUpdate(po);
 
-        if(isNew && ProjectType.project.equals(ProjectType.valueOf(vo.getType()))) {
+        if(isNew && ProjectType.project.equals(po.getType())) {
             caseService.createRoot(po.getId(), userVo.getId());
         }
-        if(ProjectType.project.equals(ProjectType.valueOf(vo.getType()))) {
+        if(ProjectType.project.equals(po.getType())) {
             historyService.create(po.getId(), userVo,
                     isNew?Constant.MsgType.create.msg:Constant.MsgType.create.update.msg,
                     TestHistory.TargetType.project, po.getId(), po.getName());

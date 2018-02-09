@@ -141,7 +141,10 @@ public class ProjectAction extends BaseAction {
 		TestProjectVo vo = json.getObject("model", TestProjectVo.class);
 
         TestProject po = projectService.save(vo, orgId, userVo);
-        projectService.updateNameInHisotyPers(po.getId(), userId);
+		if (TestProject.ProjectType.project.equals(po.getType())) {
+			projectService.updateNameInHisotyPers(po.getId(), userId);
+		}
+
         pushSettingsService.pushRecentProjects(userVo);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

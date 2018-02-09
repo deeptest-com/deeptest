@@ -150,42 +150,42 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         TestUser existUser  = accountService.getByEmail(newUserVo.getEmail());
         boolean isNew;
 
-        TestUser po;
+        TestUser userPo;
         if (existUser != null) {
             isNew = false;
-            po = existUser;
+            userPo = existUser;
         } else {
             isNew = true;
-            po = new TestUser();
-            po.setDefaultOrgId(orgId);
+            userPo = new TestUser();
+            userPo.setDefaultOrgId(orgId);
 
-            po.setName(newUserVo.getName());
-            po.setPhone(newUserVo.getPhone());
-            po.setEmail(newUserVo.getEmail());
-            po.setDisabled(newUserVo.getDisabled());
-            po.setAvatar("upload/sample/user/avatar.png");
+            userPo.setName(newUserVo.getName());
+            userPo.setPhone(newUserVo.getPhone());
+            userPo.setEmail(newUserVo.getEmail());
+            userPo.setDisabled(newUserVo.getDisabled());
+            userPo.setAvatar("upload/sample/user/avatar.png");
 
-            saveOrUpdate(po);
+            saveOrUpdate(userPo);
         }
 
         TestOrg org = (TestOrg)get(TestOrg.class, orgId);
-        if (!contains(org.getUserSet(), po.getId())) { // 不在组里
-            org.getUserSet().add(po);
+        if (!contains(org.getUserSet(), userPo.getId())) { // 不在组里
+            org.getUserSet().add(userPo);
             saveOrUpdate(org);
 
-            projectService.getHistoryPers(orgId, po.getId(), prjId, prjName);
+            projectService.getHistoryPers(orgId, userPo.getId(), prjId, prjName);
 
             orgGroupUserService.saveRelations(relations);
 
-            TestVerifyCode verifyCode = accountService.genVerifyCodePers(po.getId());
             String sys = PropertyConfig.getConfig("sys.name");
             Map<String, String> map = new HashMap<String, String>();
-            map.put("user", po.getName() + "(" + po.getEmail() + ")");
-            map.put("name", po.getName());
+            map.put("user", userPo.getName() + "(" + userPo.getEmail() + ")");
+            map.put("name", userPo.getName());
             map.put("sys", sys);
 
             String url;
             if (isNew) {
+				TestVerifyCode verifyCode = accountService.genVerifyCodePers(userPo.getId());
                 url = PropertyConfig.getConfig("url.reset.password") + "/" + verifyCode.getCode();
             } else {
                 url = PropertyConfig.getConfig("url.login");
@@ -194,7 +194,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             mailService.sendTemplateMail("来自[" + sys + "]的邀请", "invite-user.ftl",
                     newUserVo.getEmail(), map);
 
-            return po;
+            return userPo;
         } else {
             return null;
         }

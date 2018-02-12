@@ -105,6 +105,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 
         po.setApplyTo(TestCustomField.FieldApplyTo.valueOf(vo.getApplyTo()));
         po.setType(TestCustomField.FieldType.valueOf(vo.getType()));
+
         if (StringUtil.isNotEmpty(vo.getFormat())) {
             po.setFormat(TestCustomField.FieldFormat.valueOf(vo.getFormat()));
         }
@@ -114,6 +115,9 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
         if (vo.getId() == null) {
             String hql = "select max(ordr) from TestCustomField";
             Integer maxOrder = (Integer) getByHQL(hql);
+            if (maxOrder == null) {
+                maxOrder = 0;
+            }
             po.setOrdr(maxOrder + 10);
         }
         if (!po.getType().equals(FieldType.text)) {

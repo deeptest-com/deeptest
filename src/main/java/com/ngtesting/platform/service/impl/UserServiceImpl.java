@@ -165,6 +165,10 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             userPo.setDisabled(newUserVo.getDisabled());
             userPo.setAvatar("upload/sample/user/avatar.png");
 
+			userPo.setDefaultOrgId(userVo.getDefaultOrgId());
+			userPo.setDefaultPrjId(userVo.getDefaultPrjId());
+			userPo.setName(newUserVo.getName());
+
             saveOrUpdate(userPo);
         }
 

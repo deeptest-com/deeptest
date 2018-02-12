@@ -154,6 +154,10 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
     }
   }
 
+  editDropdownOptions() {
+
+  }
+
   showModal(): void {
     this.modalWrapper.showModal();
   }

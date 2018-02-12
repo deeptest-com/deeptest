@@ -103,8 +103,8 @@ public class TestCustomField extends BaseEntity {
     }
 
     public static enum FieldFormat {
-        rich_text("rich_text"),
-        plain_text("plain_text");
+        plain_text("plain_text"),
+        rich_text("rich_text");
 
         private FieldFormat(String textVal) {
             this.textVal = textVal;

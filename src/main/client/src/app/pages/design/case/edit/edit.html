@@ -90,7 +90,7 @@
           <div class="col-sm-9">
             <select [(ngModel)]="model.priority" formControlName="priority" class="form-control" name="priority">
               <option value="high">高</option>
-              <option value="middle">中</option>
+              <option value="medium">中</option>
               <option value="low">低</option>
             </select>
           </div>
@@ -115,7 +115,7 @@
           <div *ngFor="let field of fields; let i = index;" class="form-group row">
             <label class="col-sm-3 col-form-label"><span>{{field.label}}</span></label>
             <div class="col-sm-9">
-              <custom-field [form]="form" [model]="model" [field]="field"></custom-field>
+              <custom-field [form]="form" [model]="model" [field]="field" [validateMsg]="validateMsg"></custom-field>
             </div>
           </div>
         </ng-container>

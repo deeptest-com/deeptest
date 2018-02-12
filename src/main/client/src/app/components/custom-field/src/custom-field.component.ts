@@ -18,6 +18,8 @@ export class CustomFieldComponent implements OnInit, OnChanges {
   public model: any;
   @Input()
   public field: any;
+  @Input()
+  public validateMsg: any;
 
   @Input()
   public form: any;
@@ -34,9 +36,20 @@ export class CustomFieldComponent implements OnInit, OnChanges {
   }
 
   public ngOnInit(): void {
-    console.log('=2=', this.model, this.field);
+    // console.log('===field===', this.model, this.field);
 
+    this.validateMsg[this.field.myColumn] = {};
     let control: FormControl = new FormControl(this.field.myColumn);
+    if (this.field.required) {
+      control.setValidators([Validators.required]);
+      this.validateMsg[this.field.myColumn]['required'] = this.field.label + '不能为空';
+    }
+
     this.form.addControl(this.field.myColumn, control);
+  }
+
+  onEditorKeyup(event: any) {
+    // console.log('===', this.model, this.field.myColumn, event);
+    this.model[this.field.myColumn] = event;
   }
 }

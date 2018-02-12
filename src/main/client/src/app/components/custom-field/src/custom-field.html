@@ -2,28 +2,30 @@
 
   <ng-container [ngSwitch]="field.type">
     <ng-container *ngSwitchCase="'string'">
-      <input type="text" class="form-control" name="{{field.myColumn}}" formControlName="{{field.myColumn}}"
-             [(ngModel)]="model[field.myColumn]" #{{field.myColumn}}>
+      <input name="{{field.myColumn}}" formControlName="{{field.myColumn}}"
+             [(ngModel)]="model[field.myColumn]" #{{field.myColumn}} type="text" class="form-control">
     </ng-container>
     <ng-container *ngSwitchCase="'number'">
-      <input type="text" class="form-control" name="{{field.myColumn}}" formControlName="{{field.myColumn}}"
-             [(ngModel)]="model[field.myColumn]" #{{field.myColumn}}>
+      <input name="{{field.myColumn}}" formControlName="{{field.myColumn}}"
+             [(ngModel)]="model[field.myColumn]" #{{field.myColumn}} type="text" class="form-control">
     </ng-container>
 
     <ng-container *ngSwitchCase="'dropdown'">
-      <select [(ngModel)]="model[field.myColumn]" formControlName="applyTo" name="{{field.myColumn}}" class="form-control form-control-sm">
+      <select name="{{field.myColumn}}" formControlName="{{field.myColumn}}"
+              [(ngModel)]="model[field.myColumn]" #{{field.myColumn}} class="form-control form-control-sm">
         <option value=""></option>
       </select>
     </ng-container>
 
     <ng-container *ngSwitchCase="'text'">
       <ng-container *ngIf="field.format=='plain_text'">
-        <textarea type="text" class="form-control" name="{{field.myColumn}}" formControlName="{{field.myColumn}}"
-                  [(ngModel)]="model[field.myColumn]" #{{field.myColumn}}>
+        <textarea name="{{field.myColumn}}" formControlName="{{field.myColumn}}"
+                  [(ngModel)]="model[field.myColumn]" #{{field.myColumn}} type="text" class="form-control">
         </textarea>
       </ng-container>
       <ng-container *ngIf="field.format=='rich_text'">
-        rich_text
+        <tiny-mce [elemId]="'custom-field-'+field.myColumn" [content]="model[field.myColumn]" [height]="'200px'"
+                  (editorKeyup)="onEditorKeyup($event)"></tiny-mce>
       </ng-container>
     </ng-container>
 

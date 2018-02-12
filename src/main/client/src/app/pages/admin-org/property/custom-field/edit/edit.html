@@ -11,7 +11,7 @@
     <div class="form-group row">
       <label class="col-sm-2 col-form-label"><span>编码</span></label>
       <label class="col-sm-10 col-form-label left">
-        {{model.myColumn}} - {{model.code}}
+        {{model.myColumn}}-{{model.code}}
         <input type="hidden" class="form-control" name="myColumn" formControlName="myColumn"
                [(ngModel)]="model.myColumn" #myColumn>
       </label>
@@ -34,20 +34,23 @@
 
     <div class="form-group row">
       <label class="col-sm-2 col-form-label"><span>类型</span></label>
-      <div *ngIf="!model.buildIn" class="col-sm-10">
+      <div *ngIf="!model.buildIn" class="col-sm-6">
         <select [(ngModel)]="model.type" formControlName="type" name="type" class="form-control form-control-sm">
           <option value=""></option>
           <option *ngFor="let item of typeList" value="{{item}}">{{item | fieldType}}</option>
         </select>
       </div>
-      <label *ngIf="model.buildIn" class="col-sm-10 col-form-label left">
+      <label *ngIf="model.buildIn" class="col-sm-6 col-form-label left">
         {{model.type | fieldType}}
         <input type="hidden" class="form-control" name="type" formControlName="type"
                [(ngModel)]="model.type" #type>
       </label>
+      <label *ngIf="model.type == 'dropdown'" class="col-sm-2 col-form-label">
+        <span (click)="editDropdownOptions()" class="link">管理选项列表</span>
+      </label>
     </div>
 
- <div *ngIf="model.type == 'text'" class="form-group row">
+   <div *ngIf="model.type == 'text'" class="form-group row">
       <label class="col-sm-2 col-form-label"><span>行数</span></label>
       <div *ngIf="!model.buildIn" class="col-sm-10">
         <input type="text" class="form-control" name="rows" formControlName="rows"

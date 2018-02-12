@@ -1,0 +1,19 @@
+.tiny-mce-popup {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+
+  .modal-header {
+
+  }
+  .modal-body {
+    flex: 1;
+  }
+  .modal-footer {
+    border: none;
+  }
+
+  .modal {
+    top: calc(40% - 100px);
+  }
+}

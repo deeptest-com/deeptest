@@ -1,18 +1,18 @@
 <div class="dropdown-options">
 
-    <div class="modal-header">
-      <h4 class="modal-title">{{title}}选项列表</h4>
-      <button type="button" class="close" aria-label="Close" (click)="dismiss()">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    <div class="modal-body">
-      <div class="row">
-      <table class="table table-striped">
-        <thead>
+  <div class="modal-header">
+    <h4 class="modal-title">{{title}}选项列表</h4>
+    <button type="button" class="close" aria-label="Close" (click)="dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <table class="table">
+        <thead class="thead-default">
         <tr>
           <th>名称</th>
-          <th>值</th>
+          <th>取值</th>
           <th>操作</th>
         </tr>
         </thead>
@@ -33,52 +33,43 @@
         </tr>
         </tbody>
       </table>
+    </div>
+
+    <div *ngIf="model" class="row">
+      <h5 _ngcontent-c11="" class="modal-title">编辑选项</h5>
+
+      <form [formGroup]="form" class="form-inline my-validate-form">
+
+        <label>名称</label>
+
+        <input type="text" class="form-control" name="label" formControlName="label"
+               [(ngModel)]="model.label" #label>
+
+        <label>取值</label>
+
+        <input type="text" class="form-control" name="value" formControlName="value"
+               [(ngModel)]="model.value" #value>
+
+        <button (click)="save()" type="button" class="btn btn-primary" [disabled]="!form.valid">保存</button>
+      </form>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+          <div class="validate-errors">
+            <div class="validate-error" *ngFor="let msg of formErrors">
+              <div>{{ msg }}</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div *ngIf="model" class="row">
-        <h5 _ngcontent-c11="" class="modal-title">编辑选项</h5>
-
-        <form [formGroup]="form" class="my-validate-form">
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label"><span>名称</span></label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="label" formControlName="label"
-                     [(ngModel)]="model.label" #label>
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label"><span>值</span></label>
-            <label class="col-sm-10 col-form-label left">
-              <input type="text" class="form-control" name="value" formControlName="value"
-                     [(ngModel)]="model.value" #value>
-            </label>
-          </div>
-
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label"></label>
-            <div class="col-sm-10">
-              <button (click)="save()" type="button" class="btn btn-primary" [disabled]="!form.valid">保存</button>
-            </div>
-          </div>
-
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label"></label>
-            <div class="col-sm-10">
-              <div class="validate-errors">
-                <div class="validate-error" *ngFor="let msg of formErrors">
-                  <div>{{ msg }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </form>
-      </div>
 
     </div>
 
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="dismiss()">关闭</button>
-    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="dismiss()">关闭</button>
+  </div>
 
 </div>

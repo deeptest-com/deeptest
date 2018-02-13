@@ -2,6 +2,7 @@ package com.ngtesting.platform.vo;
 
 import com.ngtesting.platform.entity.TestCustomField;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class CustomFieldVo extends BaseVo {
@@ -15,7 +16,7 @@ public class CustomFieldVo extends BaseVo {
     private String applyTo;
     private String type;
 
-	private List<List<String>> options;
+	private List<CustomFieldOptionVo> options = new LinkedList<>();
 
     private Integer rows = 3;
 
@@ -26,11 +27,11 @@ public class CustomFieldVo extends BaseVo {
 
     private Integer ordr;
 
-    public List<List<String>> getOptions() {
+    public List<CustomFieldOptionVo> getOptions() {
         return options;
     }
 
-    public void setOptions(List<List<String>> options) {
+    public void setOptions(List<CustomFieldOptionVo> options) {
         this.options = options;
     }
 

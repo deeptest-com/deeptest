@@ -3,6 +3,7 @@ package com.ngtesting.platform.entity;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -37,8 +38,6 @@ public class TestCustomField extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private FieldFormat format;
 
-    private LinkedList<LinkedList<String>> options = new LinkedList();
-
     private Integer rows;
     private Boolean global;
     private Boolean required;
@@ -59,6 +58,10 @@ public class TestCustomField extends BaseEntity {
 			inverseJoinColumns = { @JoinColumn(name = "project_id",
 					nullable = false, updatable = false) })
     private Set<TestProject> projectSet = new HashSet<TestProject>(0);
+
+    @OneToMany(mappedBy="field", fetch = FetchType.LAZY)
+    @OrderBy("ordr")
+    private List<TestCustomFieldOptions> options = new LinkedList<>();
 
     public static enum FieldType {
     	string("string"),
@@ -119,11 +122,11 @@ public class TestCustomField extends BaseEntity {
         }
     }
 
-    public LinkedList<LinkedList<String>> getOptions() {
+    public List<TestCustomFieldOptions> getOptions() {
         return options;
     }
 
-    public void setOptions(LinkedList<LinkedList<String>> options) {
+    public void setOptions(List<TestCustomFieldOptions> options) {
         this.options = options;
     }
 

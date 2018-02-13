@@ -3,36 +3,28 @@ package com.ngtesting.platform.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "tst_custom_field_options")
-public class TestCustomFieldOptions extends BaseEntity {
+@Table(name = "tst_custom_field_option")
+public class TestCustomFieldOption extends BaseEntity {
     private static final long serialVersionUID = -5005831075946958149L;
 
-    public TestCustomFieldOptions() {
+    public TestCustomFieldOption() {
 
 	}
-	public void TestCustomField(String code, String label, String descr, Integer order) {
-		this.code = code;
+	public void TestCustomField(String value, String label, String descr, Integer ordr) {
+		this.value = value;
         this.label = label;
 		this.descr = descr;
-		this.order = order;
+		this.ordr = ordr;
 	}
 
-    private String code;
+    private String value;
     private String label;
     private String descr;
-    private Integer order;
+    private Integer ordr;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "field_id", insertable = false, updatable = false)
     private TestCustomField field;
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
 
     public String getLabel() {
         return label;
@@ -50,12 +42,12 @@ public class TestCustomFieldOptions extends BaseEntity {
         this.descr = descr;
     }
 
-    public Integer getOrder() {
-        return order;
+    public Integer getOrdr() {
+        return ordr;
     }
 
-    public void setOrder(Integer order) {
-        this.order = order;
+    public void setOrdr(Integer ordr) {
+        this.ordr = ordr;
     }
 
     public TestCustomField getField() {
@@ -64,5 +56,13 @@ public class TestCustomFieldOptions extends BaseEntity {
 
     public void setField(TestCustomField field) {
         this.field = field;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }

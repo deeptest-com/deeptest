@@ -16,7 +16,7 @@ public class CustomFieldVo extends BaseVo {
     private String applyTo;
     private String type;
 
-	private List<CustomFieldOptionVo> options = new LinkedList<>();
+	private List<CustomFieldOptionVo> optionVos = new LinkedList<>();
 
     private Integer rows = 3;
 
@@ -27,12 +27,12 @@ public class CustomFieldVo extends BaseVo {
 
     private Integer ordr;
 
-    public List<CustomFieldOptionVo> getOptions() {
-        return options;
+    public List<CustomFieldOptionVo> getOptionVos() {
+        return optionVos;
     }
 
-    public void setOptions(List<CustomFieldOptionVo> options) {
-        this.options = options;
+    public void setOptionVos(List<CustomFieldOptionVo> optionVos) {
+        this.optionVos = optionVos;
     }
 
     public Boolean getRequired() {

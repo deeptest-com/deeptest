@@ -3,20 +3,20 @@ package com.ngtesting.platform.vo;
 public class CustomFieldOptionVo extends BaseVo {
 	private static final long serialVersionUID = 4904548137077167076L;
 
-	private String code;
+	private String value;
 	private String label;
 	private String descr;
 	private Integer order;
 
-	public String getCode() {
-		return code;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-	public String getLabel() {
+    public String getLabel() {
 		return label;
 	}
 

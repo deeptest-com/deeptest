@@ -6,6 +6,7 @@ import com.ngtesting.platform.entity.TestCustomField.FieldApplyTo;
 import com.ngtesting.platform.entity.TestCustomField.FieldFormat;
 import com.ngtesting.platform.entity.TestCustomField.FieldType;
 import com.ngtesting.platform.entity.TestProject;
+import com.ngtesting.platform.service.CustomFieldOptionService;
 import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.util.BeanUtilEx;
@@ -18,13 +19,18 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFieldService {
 
     @Autowired
     ProjectService projectService;
+    @Autowired
+    CustomFieldOptionService customFieldOptionService;
 
     @Override
     public List<TestCustomField> list(Long orgId) {
@@ -281,17 +287,6 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     }
 
     @Override
-    public CustomFieldVo genVo(TestCustomField po) {
-        if (po == null) {
-            return null;
-        }
-        CustomFieldVo vo = new CustomFieldVo();
-        BeanUtilEx.copyProperties(vo, po);
-
-        return vo;
-    }
-
-    @Override
     public List<CustomFieldVo> genVos(List<TestCustomField> pos) {
         List<CustomFieldVo> vos = new LinkedList<CustomFieldVo>();
 
@@ -300,6 +295,18 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
             vos.add(vo);
         }
         return vos;
+    }
+    @Override
+    public CustomFieldVo genVo(TestCustomField po) {
+        if (po == null) {
+            return null;
+        }
+        CustomFieldVo vo = new CustomFieldVo();
+        BeanUtilEx.copyProperties(vo, po);
+
+        vo.setOptionVos(this.customFieldOptionService.genVos(po.getOptions()));
+
+        return vo;
     }
 
     @Override

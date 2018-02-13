@@ -1,5 +1,10 @@
 import { Component, OnDestroy, AfterViewInit, OnChanges,ViewChild, Input, Output, EventEmitter, Injector, ElementRef } from '@angular/core';
-import {NgbModal, NgbModalRef, NgbActiveModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
+
+import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import { CONSTANT } from '../../../utils/constant';
+import {ValidatorUtils} from '../../../validator';
 
 import 'tinymce';
 
@@ -17,14 +22,17 @@ export class DropdownOptionsComponent implements OnDestroy, AfterViewInit, OnCha
   @Input() options: any;
   @Input() height: number;
 
-  constructor(private host: ElementRef, public activeModal: NgbActiveModal) {}
+  form: FormGroup;
+  model: any = {};
+
+  constructor(private fb: FormBuilder, private host: ElementRef, public activeModal: NgbActiveModal) {
+    this.buildForm();
+  }
 
   save(): any {
-    this.removeTinymce();
     this.activeModal.close({act: 'save', data: this.options});
   }
   dismiss(): any {
-    this.removeTinymce();
     this.activeModal.dismiss({act: 'cancel'});
   }
 
@@ -37,17 +45,49 @@ export class DropdownOptionsComponent implements OnDestroy, AfterViewInit, OnCha
 
   }
   ngOnDestroy() {
-    this.removeTinymce();
+
   }
 
   onEditorKeyup(event: any) {
     this.options = event;
   }
 
-  removeTinymce() {
-    if (tinymce.get("mceEditor")) {
-      tinymce.get("mceEditor").remove();
-    }
+  edit(item: any) {
+    console.log(item);
   }
+  delete(item: any) {
+    console.log(item);
+  }
+  up(item: any) {
+    console.log(item);
+  }
+  down(item: any) {
+    console.log(item);
+  }
+
+  buildForm(): void {
+    this.form = this.fb.group(
+      {
+        label: ['', [Validators.required]],
+        value: ['', [Validators.required]]
+      }, {}
+    );
+
+    this.form.valueChanges.debounceTime(CONSTANT.DebounceTime).subscribe(data => this.onValueChanged(data));
+    this.onValueChanged();
+  }
+  onValueChanged(data?: any) {
+    let that = this;
+    that.formErrors = ValidatorUtils.genMsg(that.form, that.validateMsg, []);
+  }
+  formErrors = [];
+  validateMsg = {
+    'value': {
+      'required':      '值不能为空'
+    },
+    'label': {
+      'required':      '名称不能为空'
+    }
+  };
 
 }

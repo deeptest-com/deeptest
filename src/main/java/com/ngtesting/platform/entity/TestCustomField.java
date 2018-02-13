@@ -61,7 +61,7 @@ public class TestCustomField extends BaseEntity {
 
     @OneToMany(mappedBy="field", fetch = FetchType.LAZY)
     @OrderBy("ordr")
-    private List<TestCustomFieldOptions> options = new LinkedList<>();
+    private List<TestCustomFieldOption> options = new LinkedList<>();
 
     public static enum FieldType {
     	string("string"),
@@ -122,11 +122,11 @@ public class TestCustomField extends BaseEntity {
         }
     }
 
-    public List<TestCustomFieldOptions> getOptions() {
+    public List<TestCustomFieldOption> getOptions() {
         return options;
     }
 
-    public void setOptions(List<TestCustomFieldOptions> options) {
+    public void setOptions(List<TestCustomFieldOption> options) {
         this.options = options;
     }
 

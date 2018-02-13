@@ -2,6 +2,8 @@ package com.ngtesting.platform.vo;
 
 import com.ngtesting.platform.entity.TestCustomField;
 
+import java.util.List;
+
 public class CustomFieldVo extends BaseVo {
 	private static final long serialVersionUID = -2071266644244632484L;
 
@@ -13,6 +15,8 @@ public class CustomFieldVo extends BaseVo {
     private String applyTo;
     private String type;
 
+	private List<List<String>> options;
+
     private Integer rows = 3;
 
     private String format = TestCustomField.FieldFormat.plain_text.toString();
@@ -21,6 +25,14 @@ public class CustomFieldVo extends BaseVo {
     private Boolean buildIn = false;
 
     private Integer ordr;
+
+    public List<List<String>> getOptions() {
+        return options;
+    }
+
+    public void setOptions(List<List<String>> options) {
+        this.options = options;
+    }
 
     public Boolean getRequired() {
         return required;

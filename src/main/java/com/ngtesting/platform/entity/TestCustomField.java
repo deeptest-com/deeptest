@@ -2,6 +2,7 @@ package com.ngtesting.platform.entity;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 @Entity
@@ -35,6 +36,8 @@ public class TestCustomField extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private FieldFormat format;
+
+    private LinkedList<LinkedList<String>> options = new LinkedList();
 
     private Integer rows;
     private Boolean global;
@@ -114,6 +117,14 @@ public class TestCustomField extends BaseEntity {
         public String toString() {
             return textVal;
         }
+    }
+
+    public LinkedList<LinkedList<String>> getOptions() {
+        return options;
+    }
+
+    public void setOptions(LinkedList<LinkedList<String>> options) {
+        this.options = options;
     }
 
     public String getMyColumn() {

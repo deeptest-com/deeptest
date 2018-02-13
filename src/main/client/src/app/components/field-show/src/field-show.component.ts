@@ -65,7 +65,7 @@ export class FieldShowComponent implements OnInit {
     if (format == 'richText') { // show tinymce in popoup
       this.compiler.clearCacheFor(TinyMCEComponentPopup);
 
-      this.richTextEditModal = this.modalService.open(TinyMCEComponentPopup, {windowClass: 'pop-selection'});
+      this.richTextEditModal = this.modalService.open(TinyMCEComponentPopup, {windowClass: 'pop-modal'});
       this.richTextEditModal.componentInstance.content = this.model[this.prop];
       this.richTextEditModal.componentInstance.modelId = this.model['id'];
       this.richTextEditModal.componentInstance.editorKeyup = this.onEditorKeyup;

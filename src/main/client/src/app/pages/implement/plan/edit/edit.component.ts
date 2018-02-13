@@ -144,7 +144,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
 
   editRun(run?: any, index?: number) {
     this.compiler.clearCacheFor(RunEditComponent);
-    this.runEditModal = this.modalService.open(RunEditComponent, {windowClass: 'pop-selection'});
+    this.runEditModal = this.modalService.open(RunEditComponent, {windowClass: 'pop-modal'});
 
     if (!run) {
       this.run = {};
@@ -189,7 +189,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
 
   editRunCases(run: any, index: number) {
     this.compiler.clearCacheFor(CaseSelectionComponent);
-    this.caseSelectionModal = this.modalService.open(CaseSelectionComponent, {windowClass: 'pop-selection'});
+    this.caseSelectionModal = this.modalService.open(CaseSelectionComponent, {windowClass: 'pop-modal'});
     this.caseSelectionModal.componentInstance.treeSettings = this.treeSettings;
 
     this._caseService.queryForSelection(CONSTANT.CURR_PRJ_ID, run.id).subscribe((json:any) => {
@@ -215,7 +215,7 @@ export class PlanEdit implements OnInit, AfterViewInit {
 
   editEnvi(testSet: any): void {
     this.compiler.clearCacheFor(EnvironmentConfigComponent);
-    this.envSelectionModal = this.modalService.open(EnvironmentConfigComponent, {windowClass: 'pop-selection'});
+    this.envSelectionModal = this.modalService.open(EnvironmentConfigComponent, {windowClass: 'pop-modal'});
     this.envSelectionModal.result.then((result) => {
       console.log('result', result);
     }, (reason) => {

@@ -53,7 +53,7 @@ export class DropdownOptionsComponent implements OnDestroy, AfterViewInit, OnCha
   }
 
   edit(item: any) {
-    console.log(item);
+    this.model = item;
   }
   delete(item: any) {
     console.log(item);

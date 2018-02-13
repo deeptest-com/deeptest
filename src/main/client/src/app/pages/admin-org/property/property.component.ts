@@ -1,4 +1,4 @@
-import {Component, OnInit, AfterViewInit, OnDestroy, ViewChild} from "@angular/core";
+import {Component, OnInit, AfterViewInit,OnDestroy, ViewChild} from "@angular/core";
 import {Location} from '@angular/common';
 import {Subscription} from 'rxjs/Rx';
 import { RouteService } from '../../../service/route';
@@ -9,7 +9,6 @@ import { RouteService } from '../../../service/route';
   templateUrl: './property.html'
 })
 export class Property implements OnInit, AfterViewInit, OnDestroy {
-  protected _onRouteChange:Subscription;
   tab: string = 'case-type';
   status: string = 'list';
   @ViewChild('tabset') tabset;
@@ -29,7 +28,6 @@ export class Property implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._onRouteChange.unsubscribe();
   }
 
   tabChange(event: any) {

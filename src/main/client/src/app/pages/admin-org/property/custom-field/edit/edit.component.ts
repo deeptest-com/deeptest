@@ -163,7 +163,7 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
   editDropdownOptions() {
     this.compiler.clearCacheFor(DropdownOptionsComponent);
 
-    this.dropdownOptionsModal = this.modalService.open(DropdownOptionsComponent, {windowClass: 'pop-selection'});
+    this.dropdownOptionsModal = this.modalService.open(DropdownOptionsComponent, {windowClass: 'pop-modal'});
     this.dropdownOptionsModal.componentInstance.title = this.model.label;
     this.dropdownOptionsModal.componentInstance.options = this.model.optionVos;
     this.dropdownOptionsModal.componentInstance.editorKeyup = this.onEditorKeyup;

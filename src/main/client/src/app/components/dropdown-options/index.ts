@@ -3,22 +3,20 @@ import { CommonModule } from '@angular/common';
 import {FormsModule} from "@angular/forms";
 import { RouterModule } from '@angular/router';
 
-import { TinyMCEComponent } from './src/tiny-mce.component';
-import { TinyMCEComponentPopup } from './src/tiny-mce-popup.component';
+import { DropdownOptionsComponent } from './src/dropdown-options.component';
 
-export * from './src/tiny-mce.component';
-export * from './src/tiny-mce-popup.component';
+export * from './src/dropdown-options.component';
 
 @NgModule({
   imports: [CommonModule, RouterModule, FormsModule],
-  declarations: [TinyMCEComponent, TinyMCEComponentPopup],
-  exports: [TinyMCEComponent, TinyMCEComponentPopup],
+  declarations: [DropdownOptionsComponent],
+  exports: [DropdownOptionsComponent],
   providers: []
 })
-export class TinyMCEModule {
+export class DropdownOptionsModule {
   static forRoot(): ModuleWithProviders {
     return {
-      ngModule: TinyMCEModule,
+      ngModule: DropdownOptionsModule,
       providers: []
     };
   }

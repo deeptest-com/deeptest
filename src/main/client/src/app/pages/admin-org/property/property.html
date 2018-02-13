@@ -1,7 +1,7 @@
 <div class="property">
   <div class="tabs-container">
     <div class="tabs">
-      <ngb-tabset  (tabChange)="tabChange($event)">
+      <ngb-tabset #tabset="ngbTabset" (tabChange)="tabChange($event)">
           <ngb-tab id="case-type">
             <ng-template ngbTabTitle>用例类型</ng-template>
             <ng-template ngbTabContent></ng-template>

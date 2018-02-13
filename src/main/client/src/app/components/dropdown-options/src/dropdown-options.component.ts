@@ -6,22 +6,22 @@ import 'tinymce';
 declare var tinymce: any;
 
 @Component({
-  selector: 'tiny-mce-popup',
-  templateUrl: './tiny-mce-popup.html',
-  styleUrls: ['./tiny-mce-popup.scss']
+  selector: 'dropdown-options',
+  templateUrl: './dropdown-options.html',
+  styleUrls: ['./dropdown-options.scss']
 })
-export class TinyMCEComponentPopup implements OnDestroy, AfterViewInit, OnChanges {
+export class DropdownOptionsComponent implements OnDestroy, AfterViewInit, OnChanges {
   @Input() title: string;
   @Output() confirm = new EventEmitter<any>();
 
-  @Input() content: any;
+  @Input() options: any;
   @Input() height: number;
 
   constructor(private host: ElementRef, public activeModal: NgbActiveModal) {}
 
   save(): any {
     this.removeTinymce();
-    this.activeModal.close({act: 'save', data: this.content});
+    this.activeModal.close({act: 'save', data: this.options});
   }
   dismiss(): any {
     this.removeTinymce();
@@ -30,7 +30,7 @@ export class TinyMCEComponentPopup implements OnDestroy, AfterViewInit, OnChange
 
   ngOnChanges() {
     let editor = tinymce.get("mceEditor");
-    if (editor) {editor.setContent(this.content);}
+    if (editor) {editor.setContent(this.options);}
   }
 
   ngAfterViewInit() {
@@ -41,7 +41,7 @@ export class TinyMCEComponentPopup implements OnDestroy, AfterViewInit, OnChange
   }
 
   onEditorKeyup(event: any) {
-    this.content = event;
+    this.options = event;
   }
 
   removeTinymce() {

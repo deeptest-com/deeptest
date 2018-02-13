@@ -52,7 +52,6 @@ export class UserEdit implements OnInit, AfterViewInit {
   }
 
   buildForm(): void {
-    let that = this;
     this.form = this.fb.group(
       {
         'name': ['', [Validators.required]],
@@ -67,8 +66,7 @@ export class UserEdit implements OnInit, AfterViewInit {
     this.onValueChanged();
   }
   onValueChanged(data?: any) {
-    let that = this;
-    that.formErrors = ValidatorUtils.genMsg(that.form, that.validateMsg, []);
+    this.formErrors = ValidatorUtils.genMsg(this.form, this.validateMsg, []);
   }
 
   formErrors = [];
@@ -87,12 +85,11 @@ export class UserEdit implements OnInit, AfterViewInit {
   };
 
   loadData() {
-    let that = this;
-    that.userService.get(that.id).subscribe((json:any) => {
-      that.user = json.user;
-      that.relations = json.relations;
+    this.userService.get(this.id).subscribe((json:any) => {
+      this.user = json.user;
+      this.relations = json.relations;
 
-      _.forEach(that.relations, (group: any, index: number) => {
+      _.forEach(this.relations, (group: any, index: number) => {
         this.form.addControl('group-' + group.orgGroupId, new FormControl('', []))
       });
     });

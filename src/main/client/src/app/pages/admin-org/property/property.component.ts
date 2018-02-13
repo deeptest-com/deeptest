@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy} from "@angular/core";
+import {Component, OnInit, OnDestroy, ViewChild} from "@angular/core";
 import {Router, NavigationEnd} from '@angular/router';
 import {Subscription} from 'rxjs/Rx';
 import { GlobalState } from '../../../global.state';
@@ -13,15 +13,17 @@ export class Property implements OnInit, OnDestroy {
   protected _onRouteChange:Subscription;
   tab: string = 'case-type';
   status: string = 'list';
+  @ViewChild('tabset') tabset;
 
   constructor(private _router:Router, private _state: GlobalState, private _routeService: RouteService) {
 
-    this._onRouteChange = this._router.events.subscribe((event) => {
+    this._onRouteChange = this._router.events.subscribe((event:any) => {
       if (event instanceof NavigationEnd && event.url) {
         let arr = event.url.split('property/')[1].split('/');
         this.tab = arr[0];
         this.status = arr[1];
       }
+      this.tabset.select(this.tab);
     });
   }
 

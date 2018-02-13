@@ -11,6 +11,8 @@ import { NgbModalModule, NgbPaginationModule, NgbDropdownModule,
 import { PipeModule } from '../../../../pipe/pipe.module';
 import { DirectiveModule } from '../../../../directive/directive.module';
 import { PopDialogModule } from '../../../../components/pop-dialog';
+import { DropdownOptionsModule } from '../../../../components/dropdown-options';
+import { DropdownOptionsComponent } from '../../../../components/dropdown-options';
 
 import { RouteService } from '../../../../service/route';
 import { RequestService } from '../../../../service/request';
@@ -31,7 +33,7 @@ import { CustomFieldEdit } from './edit';
     NgbModalModule, NgbPaginationModule, NgbDropdownModule,
     NgbTabsetModule, NgbButtonsModule, NgbCollapseModule,
 
-    PipeModule, DirectiveModule, PopDialogModule
+    PipeModule, DirectiveModule, PopDialogModule, DropdownOptionsModule
   ],
   declarations: [
     CustomField,
@@ -43,7 +45,8 @@ import { CustomFieldEdit } from './edit';
     RequestService,
     DatetimePickerService,
     CustomFieldService
-  ]
+  ],
+  entryComponents: [DropdownOptionsComponent]
 })
 export class CustomFieldModule {}
 

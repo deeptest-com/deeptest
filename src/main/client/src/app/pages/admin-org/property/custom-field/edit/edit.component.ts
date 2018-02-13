@@ -1,7 +1,9 @@
-import {Component, ViewEncapsulation, ViewChild} from '@angular/core';
+import {Component, ViewEncapsulation, ViewChild, Compiler} from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { NgModule, Pipe, OnInit, AfterViewInit }      from '@angular/core';
+
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 import * as _ from 'lodash';
 import {GlobalState} from '../../../../../global.state';
@@ -12,7 +14,9 @@ import {ValidatorUtils, CustomValidator} from '../../../../../validator';
 import { RouteService } from '../../../../../service/route';
 
 import { CustomFieldService } from '../../../../../service/custom-field';
-import { PopDialogComponent } from '../../../../../components/pop-dialog'
+import { PopDialogComponent } from '../../../../../components/pop-dialog';
+
+import { DropdownOptionsComponent } from '../../../../../components/dropdown-options';
 
 declare var jQuery;
 
@@ -36,9 +40,11 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
   form: FormGroup;
   isSubmitted: boolean;
   @ViewChild('modalWrapper') modalWrapper: PopDialogComponent;
+  public dropdownOptionsModal: any;
 
   constructor(private _state:GlobalState, private _routeService: RouteService, private _route: ActivatedRoute,
-              private fb: FormBuilder, private customFieldService: CustomFieldService) {
+              private fb: FormBuilder, private customFieldService: CustomFieldService,
+              private compiler: Compiler, private modalService: NgbModal) {
 
   }
   ngOnInit() {
@@ -155,7 +161,21 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
   }
 
   editDropdownOptions() {
+    this.compiler.clearCacheFor(DropdownOptionsComponent);
 
+    this.dropdownOptionsModal = this.modalService.open(DropdownOptionsComponent, {windowClass: 'pop-selection'});
+    this.dropdownOptionsModal.componentInstance.options = this.model.options;
+    this.dropdownOptionsModal.componentInstance.editorKeyup = this.onEditorKeyup;
+
+    this.dropdownOptionsModal.result.then((result) => {
+      this.model.options = result.data;
+      this.save();
+    }, (reason) => {
+      console.log('reason', reason);
+    });
+  }
+  onEditorKeyup() {
+    console.log('onEditorKeyup');
   }
 
   showModal(): void {

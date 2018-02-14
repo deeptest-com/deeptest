@@ -46,7 +46,7 @@
                [(ngModel)]="model.type" #type>
       </label>
       <label *ngIf="model.type == 'dropdown'" class="col-sm-2 col-form-label">
-        <span (click)="editDropdownOptions()" class="link">管理选项列表</span>
+        <span (click)="editDropdownOptions()" class="link">管理选项列表({{model.optionVos.length}})</span>
       </label>
     </div>
 

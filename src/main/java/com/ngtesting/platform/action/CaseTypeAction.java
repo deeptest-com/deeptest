@@ -143,7 +143,7 @@ public class CaseTypeAction extends BaseAction {
 		Long id = json.getLong("id");
 		String act = json.getString("act");
 
-		boolean success = caseTypeService.changeOrderPers(id, act);
+		boolean success = caseTypeService.changeOrderPers(id, act, orgId);
 
 		List<CaseTypeVo> vos = caseTypeService.listVos(orgId);
 

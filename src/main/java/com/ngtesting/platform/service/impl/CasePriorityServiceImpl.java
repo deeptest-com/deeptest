@@ -56,8 +56,8 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 		if (vo.getId() == null) {
 			po.setCode(UUID.randomUUID().toString());
 			
-			String hql = "select max(displayOrder) from TestCasePriority";
-			Integer maxOrder = (Integer) getByHQL(hql);
+			String hql = "select max(displayOrder) from TestCasePriority pri where pri.orgId=?";
+			Integer maxOrder = (Integer) getByHQL(hql, orgId);
 	        po.setDisplayOrder(maxOrder + 10);
 		}
 		
@@ -91,10 +91,10 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 	}
 	
 	@Override
-	public boolean changeOrderPers(Long id, String act) {
+	public boolean changeOrderPers(Long id, String act, Long orgId) {
 		TestCasePriority type = (TestCasePriority) get(TestCasePriority.class, id);
 		
-        String hql = "from TestCasePriority tp where tp.deleted = false and tp.disabled = false ";
+        String hql = "from TestCasePriority tp where where tp.orgId=? and tp.deleted = false and tp.disabled = false ";
         if ("up".equals(act)) {
         	hql += "and tp.displayOrder < ? order by displayOrder desc";
         } else if ("down".equals(act)) {
@@ -103,7 +103,7 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
         	return false;
         }
         
-        TestCasePriority neighbor = (TestCasePriority) getDao().findFirstByHQL(hql, type.getDisplayOrder());
+        TestCasePriority neighbor = (TestCasePriority) getDao().findFirstByHQL(hql, orgId, type.getDisplayOrder());
 		
         Integer order = type.getDisplayOrder();
         type.setDisplayOrder(neighbor.getDisplayOrder());
@@ -114,25 +114,6 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 		
 		return true;
 	}
-
-//	@Override
-//	public void createDefaultBasicDataPers(Long orgId) {
-//		DetachedCriteria dc = DetachedCriteria.forClass(TestCasePriority.class);
-//		dc.add(Restrictions.eq("isBuildIn", true));
-//		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//
-//		dc.addOrder(Order.asc("displayOrder"));
-//		List<TestCasePriority> ls = findAllByCriteria(dc);
-//
-//		for (TestCasePriority p : ls) {
-//			TestCasePriority temp = new TestCasePriority();
-//			BeanUtilEx.copyProperties(temp, p);
-//			temp.setId(null);
-//			temp.setOrgId(orgId);
-//			saveOrUpdate(temp);
-//		}
-//	}
 
 	@Override
 	public CasePriorityVo genVo(TestCasePriority po) {

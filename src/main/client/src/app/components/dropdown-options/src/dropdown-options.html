@@ -7,6 +7,34 @@
     </button>
   </div>
   <div class="modal-body">
+
+    <div *ngIf="model" class="row">
+
+      <form [formGroup]="form" class="form-inline my-validate-form">
+        <label>名称</label>
+        <input type="text" class="form-control" name="label" formControlName="label"
+               [(ngModel)]="model.label" #label>
+        <label>取值</label>
+        <input type="text" class="form-control" name="value" formControlName="value"
+               [(ngModel)]="model.value" #value>
+        <button (click)="save()" type="button" class="btn btn-primary" [disabled]="!form.valid">
+          <span *ngIf="!model.id">保存</span>
+          <span *ngIf="model.id">更新</span>
+        </button>
+        <button (click)="cancel()" type="button" class="btn btn-secondary">
+          <span>重置</span>
+        </button>
+
+        <label class="validate-errors inline">
+          <label class="validate-error inline" *ngFor="let msg of formErrors">
+            <label>{{ msg }}</label>
+          </label>
+        </label>
+
+      </form>
+
+    </div>
+
     <div class="row">
       <table class="table">
         <thead class="thead-default">
@@ -17,15 +45,15 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let item of options; let i = index;">
+        <tr *ngFor="let item of field.optionVos; let i = index;">
           <td>{{ item.label }}</td>
           <td>{{ item.value }}</td>
           <td>
             <span *ngIf="i == 0" class="ionic-icon link placeholder"></span>
             <span (click)="up(item)" *ngIf="i > 0" class="fa fa-arrow-up ionic-icon link"></span>
 
-            <span (click)="down(item)" *ngIf="i < options.length - 1" class="fa fa-arrow-down ionic-icon link"></span>
-            <span *ngIf="i == options.length - 1" class="ionic-icon link placeholder"></span>
+            <span (click)="down(item)" *ngIf="i < field.optionVos.length - 1" class="fa fa-arrow-down ionic-icon link"></span>
+            <span *ngIf="i == field.optionVos.length - 1" class="ionic-icon link placeholder"></span>
             &nbsp;
             <span (click)="edit(item)" class="link no-underline">编辑</span>
             <span (click)="delete(item)" class="link no-underline">删除</span>
@@ -33,37 +61,6 @@
         </tr>
         </tbody>
       </table>
-    </div>
-
-    <div *ngIf="model" class="row">
-      <h5 _ngcontent-c11="" class="modal-title">编辑选项</h5>
-
-      <form [formGroup]="form" class="form-inline my-validate-form">
-
-        <label>名称</label>
-
-        <input type="text" class="form-control" name="label" formControlName="label"
-               [(ngModel)]="model.label" #label>
-
-        <label>取值</label>
-
-        <input type="text" class="form-control" name="value" formControlName="value"
-               [(ngModel)]="model.value" #value>
-
-        <button (click)="save()" type="button" class="btn btn-primary" [disabled]="!form.valid">保存</button>
-      </form>
-      <div class="form-group row">
-        <label class="col-sm-2 col-form-label"></label>
-        <div class="col-sm-10">
-          <div class="validate-errors">
-            <div class="validate-error" *ngFor="let msg of formErrors">
-              <div>{{ msg }}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
     </div>
 
   </div>

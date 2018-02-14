@@ -140,7 +140,7 @@ public class CasePriorityAction extends BaseAction {
 		Long id = json.getLong("id");
 		String act = json.getString("act");
 
-		boolean success = casePriorityService.changeOrderPers(id, act);
+		boolean success = casePriorityService.changeOrderPers(id, act, orgId);
 
 		List<CasePriorityVo> vos = casePriorityService.listVos(orgId);
 

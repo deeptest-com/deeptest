@@ -165,8 +165,7 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
 
     this.dropdownOptionsModal = this.modalService.open(DropdownOptionsComponent, {windowClass: 'pop-modal'});
     this.dropdownOptionsModal.componentInstance.title = this.model.label;
-    this.dropdownOptionsModal.componentInstance.options = this.model.optionVos;
-    this.dropdownOptionsModal.componentInstance.editorKeyup = this.onEditorKeyup;
+    this.dropdownOptionsModal.componentInstance.field = this.model;
 
     this.dropdownOptionsModal.result.then((result) => {
       this.model.options = result.data;
@@ -174,9 +173,6 @@ export class CustomFieldEdit implements OnInit, AfterViewInit {
     }, (reason) => {
       console.log('reason', reason);
     });
-  }
-  onEditorKeyup() {
-    console.log('onEditorKeyup');
   }
 
   showModal(): void {

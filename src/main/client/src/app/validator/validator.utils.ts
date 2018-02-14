@@ -23,9 +23,6 @@ export class ValidatorUtils {
     for (const idx in customValidators) {
       let validator = customValidators[idx];
 
-
-
-
       if (form.errors && form.errors[validator]) {
         errors.push(validateMsg[validator]);
       }

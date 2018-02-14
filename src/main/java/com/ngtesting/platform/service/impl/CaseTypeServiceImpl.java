@@ -56,8 +56,8 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 		if (vo.getId() == null) {
 			po.setCode(UUID.randomUUID().toString());
 			
-			String hql = "select max(displayOrder) from TestCaseType";
-			Integer maxOrder = (Integer) getByHQL(hql);
+			String hql = "select max(displayOrder) from TestCaseType tp where tp.orgId=?";
+			Integer maxOrder = (Integer) getByHQL(hql, orgId);
 	        po.setDisplayOrder(maxOrder + 10);
 		}
 		
@@ -91,10 +91,10 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 	}
 	
 	@Override
-	public boolean changeOrderPers(Long id, String act) {
+	public boolean changeOrderPers(Long id, String act, Long orgId) {
 		TestCaseType type = (TestCaseType) get(TestCaseType.class, id);
 		
-        String hql = "from TestCaseType tp where tp.deleted = false and tp.disabled = false ";
+        String hql = "from TestCaseType tp where tp.orgId=? and tp.deleted = false and tp.disabled = false ";
         if ("up".equals(act)) {
         	hql += "and tp.displayOrder < ? order by displayOrder desc";
         } else if ("down".equals(act)) {
@@ -103,7 +103,7 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
         	return false;
         }
         
-        TestCaseType neighbor = (TestCaseType) getFirstByHql(hql, type.getDisplayOrder());
+        TestCaseType neighbor = (TestCaseType) getFirstByHql(hql, orgId, type.getDisplayOrder());
 		
         Integer order = type.getDisplayOrder();
         type.setDisplayOrder(neighbor.getDisplayOrder());

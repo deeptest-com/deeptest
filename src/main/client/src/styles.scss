@@ -291,9 +291,16 @@ ul.al-share {
   }
   .validate-errors {
     margin: 0 0 5px 0;
+    &.inline {
+      margin-left: 15px;
+      margin-bottom: 0px;
+    }
     .validate-error {
       line-height:160%;
       color: #fa758e;
+      &.inline {
+        margin-right: 10px;
+      }
     }
   }
 }

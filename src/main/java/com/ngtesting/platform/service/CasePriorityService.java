@@ -18,7 +18,7 @@ public interface CasePriorityService extends BaseService {
 
 	List<CasePriorityVo> listVos(Long orgId);
 
-	boolean changeOrderPers(Long id, String act);
+	boolean changeOrderPers(Long id, String act, Long orgId);
 
 //    void createDefaultBasicDataPers(Long id);
 }

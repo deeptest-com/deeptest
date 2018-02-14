@@ -22,9 +22,20 @@ public class TestCustomFieldOption extends BaseEntity {
     private String descr;
     private Integer ordr;
 
+    @Column(name = "field_id")
+    private Long fieldId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "field_id", insertable = false, updatable = false)
     private TestCustomField field;
+
+    public Long getFieldId() {
+        return fieldId;
+    }
+
+    public void setFieldId(Long fieldId) {
+        this.fieldId = fieldId;
+    }
 
     public String getLabel() {
         return label;

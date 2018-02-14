@@ -6,9 +6,18 @@ public class CustomFieldOptionVo extends BaseVo {
 	private String value;
 	private String label;
 	private String descr;
-	private Integer order;
+	private Integer ordr;
+	private Long fieldId;
 
-    public String getValue() {
+	public Long getFieldId() {
+		return fieldId;
+	}
+
+	public void setFieldId(Long fieldId) {
+		this.fieldId = fieldId;
+	}
+
+	public String getValue() {
         return value;
     }
 
@@ -32,11 +41,11 @@ public class CustomFieldOptionVo extends BaseVo {
 		this.descr = descr;
 	}
 
-	public Integer getOrder() {
-		return order;
-	}
+    public Integer getOrdr() {
+        return ordr;
+    }
 
-	public void setOrder(Integer order) {
-		this.order = order;
-	}
+    public void setOrdr(Integer ordr) {
+        this.ordr = ordr;
+    }
 }

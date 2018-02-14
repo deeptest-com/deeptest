@@ -20,6 +20,9 @@ export class FieldShowComponent implements OnInit {
   @Input()
   public model: any = {};
   @Input()
+  public field: any = {};
+
+  @Input()
   public prop: string;
   @Input()
   public type: string;

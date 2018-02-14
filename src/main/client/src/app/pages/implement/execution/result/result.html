@@ -114,7 +114,7 @@
       <div *ngFor="let field of fields;" class="row field-show-container">
         <div class="col-sm-12">
           <field-show (onSave)="saveField($event)" [(model)]="model" [readonly]="!canEdit"
-                      [label]="field.label" [prop]="field.myColumn" [type]="field.type"
+                      [label]="field.label" [prop]="field.myColumn" [type]="field.type" [field]="field"
                       [format]="field.format" [rows]="field.rows" [required]="field.isRequired"></field-show>
         </div>
       </div>

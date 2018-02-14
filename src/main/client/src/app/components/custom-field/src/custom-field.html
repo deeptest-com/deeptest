@@ -13,7 +13,8 @@
     <ng-container *ngSwitchCase="'dropdown'">
       <select name="{{field.myColumn}}" formControlName="{{field.myColumn}}"
               [(ngModel)]="model[field.myColumn]" #{{field.myColumn}} class="form-control form-control-sm">
-        <option value=""></option>
+        <option value="">请选择</option>
+        <option *ngFor="let opt of field.optionVos; let i = index;" value="{{opt.value}}">{{opt.label}}</option>
       </select>
     </ng-container>
 

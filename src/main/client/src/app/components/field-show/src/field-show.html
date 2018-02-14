@@ -17,32 +17,31 @@
           <span class="field-input-container">
            <span *ngSwitchCase="'string'">
               <input type="text" class="form-control" name="{{prop}}" formControlName="{{prop}}"
-                     (keydown.enter)="save($event)"
-                     [(ngModel)]="model[prop]" #{{prop}}>
+                     (keydown.enter)="save($event)" [(ngModel)]="model[prop]" #{{prop}}>
           </span>
 
           <span *ngSwitchCase="'number'">
-              <input type="text" class="form-control" name="{{prop}}" formControlName="{{prop}}"
-                     (keyup.enter)="save($event)" [(ngModel)]="model[prop]" #{{prop}}>
+              <input type="number" class="form-control" name="{{prop}}" formControlName="{{prop}}"
+                     (keydown.enter)="save($event)" [(ngModel)]="model[prop]" #{{prop}}>
           </span>
 
           <span *ngSwitchCase="'dropdown'">
-              <select [(ngModel)]="model[prop]" formControlName="{{prop}}" name="{{prop}}"
-                      class="form-control form-control-sm">
-                <option *ngFor="let entry of (casePropertyMap[optionsKey] | mapToArray)" value="{{entry.key}}">{{entry.value}}</option>
+              <select [(ngModel)]="model[prop]" formControlName="{{prop}}" name="{{prop}}" class="form-control form-control-sm">
+                <option value="">请选择</option>
+                <option *ngFor="let entry of field.optionVos" value="{{entry.value}}">{{entry.label}}</option>
               </select>
           </span>
 
-<!--          <span *ngSwitchCase="'text'">
+          <span *ngSwitchCase="'text'">
             <ng-container *ngIf="format=='plain_text'">
               <textarea type="text" class="form-control" name="{{prop}}" formControlName="{{prop}}"
                         [(ngModel)]="model[prop]" rows="2" #{{prop}}>
               </textarea>
             </ng-container>
-            <ng-container *ngIf="format=='richText'">
-              MARKDOWN
+            <ng-container *ngIf="format=='rich_text'">
+              rich_text
             </ng-container>
-          </span>-->
+          </span>
 
           <a href="#" class="smart-edit" (click)="save($event)"><i class="fa fa-check"></i></a>
           <a href="#" class="smart-edit" (click)="cancel($event)"><i class="fa fa-times"></i></a>

@@ -7,7 +7,7 @@
     </ng-container>
     <ng-container *ngSwitchCase="'number'">
       <input name="{{field.myColumn}}" formControlName="{{field.myColumn}}"
-             [(ngModel)]="model[field.myColumn]" #{{field.myColumn}} type="text" class="form-control">
+             [(ngModel)]="model[field.myColumn]" #{{field.myColumn}} type="number" class="form-control">
     </ng-container>
 
     <ng-container *ngSwitchCase="'dropdown'">

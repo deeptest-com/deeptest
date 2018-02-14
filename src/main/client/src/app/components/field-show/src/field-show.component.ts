@@ -65,7 +65,7 @@ export class FieldShowComponent implements OnInit {
     event.preventDefault();
     event.stopPropagation();
 
-    if (format == 'richText') { // show tinymce in popoup
+    if (format == 'richText' || format == 'rich_text') { // show tinymce in popoup
       this.compiler.clearCacheFor(TinyMCEComponentPopup);
 
       this.richTextEditModal = this.modalService.open(TinyMCEComponentPopup, {windowClass: 'pop-modal'});

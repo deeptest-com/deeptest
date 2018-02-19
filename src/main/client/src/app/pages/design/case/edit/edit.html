@@ -65,11 +65,11 @@
           <div [class.hidden]="tab != 'content'">
             <span *ngIf="model.contentType=='richText'" (click)="changeContentType('steps')" class="link">
               <i class="fa fa-th"></i>
-              表格
+              切换到表格
             </span>
             <span *ngIf="model.contentType=='steps'" (click)="changeContentType('richText')" class="link">
               <i class="fa fa-file-text-o"></i>
-              富文本
+              切换到富文本
             </span>
           </div>
         </div>

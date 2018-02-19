@@ -8,7 +8,13 @@
   }
 
   .module-tips {
-    padding: 20px;
-    text-align: center;
+    padding: 0 20px;
+    .header {
+      line-height: 40px;
+      font-size: 17px;
+    }
+    label {
+      max-width: 80px;
+    }
   }
 }

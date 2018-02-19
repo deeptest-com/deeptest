@@ -20,7 +20,6 @@ export class TinyMCEComponent implements OnDestroy, AfterViewInit, OnChanges {
   @Input() height: string;
   contentModel: string;
   @Input() set content(cont: string) {
-    console.log('9999', cont);
     if (!cont) {
       this.contentModel = '';
     } else {

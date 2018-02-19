@@ -34,6 +34,7 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() moveEvent: EventEmitter<any> = new EventEmitter<any>();
 
   private disposersForDragListeners:Function[] = [];
+  childrenCount: any = {};
 
   _treeModel: any;
   ztree: any;
@@ -193,7 +194,21 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.notifyCaseChange(treeNode);
   }
   notifyCaseChange = (node: any)  => {
-    this._state.notifyDataChanged('case.' + this.settings.usage, {node: node, random: Math.random()});
+    this.childrenCount = {};
+    this.getChildren(node);
+    this._state.notifyDataChanged('case.' + this.settings.usage, {node: node, childrenCount: this.childrenCount, random: Math.random()});
+  }
+  getChildren = (treeNode) => {
+    if (treeNode.isParent){
+      for(var obj in treeNode.children){
+        this.getChildren(treeNode.children[obj]);
+      }
+    } else {
+      if (!this.childrenCount[treeNode.type]) {
+        this.childrenCount[treeNode.type] = 0;
+      }
+      this.childrenCount[treeNode.type] = this.childrenCount[treeNode.type] + 1;
+    }
   }
 
   addHoverDom = (treeId, treeNode) => {
@@ -297,7 +312,6 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }).catch((err) => {console.log('err', err);});
 
-    console.log('===', treeNodes[0]);
     this.moveEvent.emit({
       data: {pId: treeNodes[0].pId, srcId: treeNodes[0].id, targetId: targetNode.id, moveType: moveType, isCopy: isCopy},
       deferred: deferred

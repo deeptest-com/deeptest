@@ -2,6 +2,17 @@
   margin: 5px;
   line-height: 30px;
 
+  .module-tips {
+    padding: 0 20px;
+    .header {
+      line-height: 40px;
+      font-size: 17px;
+    }
+    label {
+      max-width: 80px;
+    }
+  }
+
   .result-button {
     button {
       margin-right: 8px;

@@ -57,7 +57,7 @@ export class CaseEdit implements OnInit, AfterViewInit, OnDestroy {
       let testCase = data.node;
 
       if (!testCase || testCase.isParent) {
-        this.model = {};
+        this.model = {childrenCount: data.childrenCount};
         return;
       }
 

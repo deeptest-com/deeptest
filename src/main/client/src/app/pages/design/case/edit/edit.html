@@ -1,5 +1,26 @@
 <div class="case-edit">
-  <div [class.hidden]="model.id" class="row module-tips">请选择用例</div>
+  <div [class.hidden]="model.id" class="module-tips">
+    <div *ngIf="model.childrenCount">
+      <div class="row header">用例数：</div>
+      <div *ngIf="model.childrenCount.functional" class="row">
+        <label class="col-sm-2">功能</label>
+        <div class="col-sm-10">{{model.childrenCount.functional}}个</div>
+      </div>
+      <div *ngIf="model.childrenCount.performance" class="row">
+        <label class="col-sm-2">性能</label>
+        <div class="col-sm-10">{{model.childrenCount.performance}}个</div>
+      </div>
+      <div *ngIf="model.childrenCount.security" class="row">
+        <label class="col-sm-2">安全</label>
+        <div class="col-sm-10">{{model.childrenCount.security}}个</div>
+      </div>
+      <div *ngIf="model.childrenCount.others" class="row">
+        <label class="col-sm-2">其他</label>
+        <div class="col-sm-10">{{model.childrenCount.others}}个</div>
+      </div>
+    </div>
+  </div>
+
   <div [class.hidden]="!model.id" class="row">
     <form [formGroup]="form" (ngSubmit)="save()" class="my-validate-form small-label">
       <div class="form-group row">

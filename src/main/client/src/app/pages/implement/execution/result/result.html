@@ -1,11 +1,31 @@
 <div class="execution-result">
 
-  <div *ngIf="!model" class="row">
+  <div *ngIf="!model.id" class="row">
     <form [formGroup]="form" class="my-validate-form">
       <div class="form-group row">
-        <div class="result-button col-sm-12">
-          <span>请选择用例</span>
+        <div class="result-button col-sm-8">
+          <div *ngIf="model.childrenCount" class="module-tips">
+            <div class="row header">用例数：</div>
 
+            <div *ngIf="model.childrenCount.functional" class="row">
+              <label class="col-sm-2">功能</label>
+              <div class="col-sm-10">{{model.childrenCount.functional}}个</div>
+            </div>
+            <div *ngIf="model.childrenCount.performance" class="row">
+              <label class="col-sm-2">性能</label>
+              <div class="col-sm-10">{{model.childrenCount.performance}}个</div>
+            </div>
+            <div *ngIf="model.childrenCount.security" class="row">
+              <label class="col-sm-2">安全</label>
+              <div class="col-sm-10">{{model.childrenCount.security}}个</div>
+            </div>
+            <div *ngIf="model.childrenCount.others" class="row">
+              <label class="col-sm-2">其他</label>
+              <div class="col-sm-10">{{model.childrenCount.others}}个</div>
+            </div>
+          </div>
+        </div>
+        <div class="result-button col-sm-4">
           <button (click)="returnTo()" type="button"
                   class="button-right btn btn-primary btn-with-icon btn-sm back">
             <i class="fa fa-arrow-circle-left"></i>返回
@@ -15,7 +35,7 @@
     </form>
   </div>
 
-  <div *ngIf="model" class="row">
+  <div *ngIf="model.id" class="row">
     <form [formGroup]="form" (ngSubmit)="save()" class="my-validate-form">
       <div class="form-group row">
         <div class="result-button col-sm-12">

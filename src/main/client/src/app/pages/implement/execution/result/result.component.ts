@@ -31,7 +31,7 @@ export class ExecutionResult implements OnInit, AfterViewInit, OnDestroy {
   runId: number;
 
   id: number;
-  model: any;
+  model: any = {};
   settings: any;
   data: any;
   form: any;
@@ -65,7 +65,7 @@ export class ExecutionResult implements OnInit, AfterViewInit, OnDestroy {
       console.log(CONSTANT.EVENT_CASE_EXE, data);
       let testCase = data.node;
       if (!testCase || testCase.isParent) {
-        this.model = null;
+        this.model = {childrenCount: data.childrenCount};
         return;
       }
 

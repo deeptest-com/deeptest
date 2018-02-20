@@ -41,7 +41,7 @@ public class TestCustomField extends BaseEntity {
     private Integer rows;
     private Boolean global;
     private Boolean required;
-    private Boolean buildIn;
+    private Boolean buildIn = false;
 
     private Integer ordr;
 

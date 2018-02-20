@@ -46,7 +46,8 @@ public class CustomFieldOptionServiceImpl extends BaseServiceImpl implements Cus
 
         if (vo.getId() == null) {
             String hql = "select max(ordr) from TestCustomFieldOption opt where opt.fieldId = ?";
-            Integer maxOrder = (Integer) getByHQL(hql, vo.getFieldId());
+            Object obj = getByHQL(hql, vo.getFieldId());
+            Integer maxOrder = obj!=null?(Integer) getByHQL(hql, vo.getFieldId()): 10;
             po.setOrdr(maxOrder + 10);
         }
 

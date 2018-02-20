@@ -4,12 +4,16 @@
 
   .module-tips {
     padding: 0 20px;
-    .header {
-      line-height: 40px;
-      font-size: 17px;
-    }
-    label {
-      max-width: 80px;
+
+    .row {
+      line-height: 20px;
+      label {
+        max-width: 80px;
+      }
+      &.header {
+        line-height: 30px;
+        font-size: 15px;
+      }
     }
   }
 

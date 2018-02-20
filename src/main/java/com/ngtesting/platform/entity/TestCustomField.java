@@ -39,8 +39,8 @@ public class TestCustomField extends BaseEntity {
     private FieldFormat format;
 
     private Integer rows;
-    private Boolean global;
-    private Boolean required;
+    private Boolean global = true;
+    private Boolean required = false;
     private Boolean buildIn = false;
 
     private Integer ordr;

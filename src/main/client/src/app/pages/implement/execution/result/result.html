@@ -5,7 +5,7 @@
       <div class="form-group row">
         <div class="result-button col-sm-8">
           <div *ngIf="model.childrenCount" class="module-tips">
-            <div class="row header">用例数：</div>
+            <div class="row header">用例类型：</div>
 
             <div *ngIf="model.childrenCount.functional" class="row">
               <label class="col-sm-2">功能</label>
@@ -22,6 +22,27 @@
             <div *ngIf="model.childrenCount.others" class="row">
               <label class="col-sm-2">其他</label>
               <div class="col-sm-10">{{model.childrenCount.others}}个</div>
+            </div>
+          </div>
+
+          <div *ngIf="model.childrenCount" class="module-tips">
+            <div class="row header">执行状态：</div>
+
+            <div *ngIf="model.childrenCount.untest" class="row">
+              <label class="col-sm-2">未执行</label>
+              <div class="col-sm-10">{{model.childrenCount.untest}}个</div>
+            </div>
+            <div *ngIf="model.childrenCount.pass" class="row">
+              <label class="col-sm-2">通过</label>
+              <div class="col-sm-10">{{model.childrenCount.pass}}个</div>
+            </div>
+            <div *ngIf="model.childrenCount.fail" class="row">
+              <label class="col-sm-2">失败</label>
+              <div class="col-sm-10">{{model.childrenCount.fail}}个</div>
+            </div>
+            <div *ngIf="model.childrenCount.block" class="row">
+              <label class="col-sm-2">阻塞</label>
+              <div class="col-sm-10">{{model.childrenCount.block}}个</div>
             </div>
           </div>
         </div>

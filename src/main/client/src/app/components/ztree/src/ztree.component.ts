@@ -195,19 +195,26 @@ export class ZtreeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   notifyCaseChange = (node: any)  => {
     this.childrenCount = {};
-    this.getChildren(node);
+    this.countChildren(node);
     this._state.notifyDataChanged('case.' + this.settings.usage, {node: node, childrenCount: this.childrenCount, random: Math.random()});
   }
-  getChildren = (treeNode) => {
+  countChildren = (treeNode) => {
     if (treeNode.isParent){
       for(var obj in treeNode.children){
-        this.getChildren(treeNode.children[obj]);
+        this.countChildren(treeNode.children[obj]);
       }
     } else {
       if (!this.childrenCount[treeNode.type]) {
         this.childrenCount[treeNode.type] = 0;
       }
       this.childrenCount[treeNode.type] = this.childrenCount[treeNode.type] + 1;
+
+      if (treeNode.status) {
+        if (!this.childrenCount[treeNode.status]) {
+          this.childrenCount[treeNode.status] = 0;
+        }
+        this.childrenCount[treeNode.status] = this.childrenCount[treeNode.status] + 1;
+      }
     }
   }
 

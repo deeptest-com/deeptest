@@ -1,7 +1,7 @@
 <div class="case-edit">
   <div [class.hidden]="model.id" class="module-tips">
     <div *ngIf="model.childrenCount">
-      <div class="row header">用例数：</div>
+      <div class="row header">用例类型：</div>
       <div *ngIf="model.childrenCount.functional" class="row">
         <label class="col-sm-2">功能</label>
         <div class="col-sm-10">{{model.childrenCount.functional}}个</div>

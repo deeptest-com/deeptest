@@ -1,1 +1,0 @@
-export * from './autotest.component';

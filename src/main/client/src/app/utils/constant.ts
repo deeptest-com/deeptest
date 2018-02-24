@@ -1,6 +1,6 @@
 export var CONSTANT: CONSTANT_INTERFACE = {
   _SERVICE_URL_DEV: 'http://localhost:8080/',
-  _SERVICE_URL_PRODUCTION: 'http://116.62.17.31/platform/',
+  _SERVICE_URL_PRODUCTION: 'http://lab.dui.ai/platform/',
 
   SERVICE_URL: undefined,
   API_URL: undefined,

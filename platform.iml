@@ -48,6 +48,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/src/client/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/src/client/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/src/main/client/dist" />
       <excludeFolder url="file://$MODULE_DIR$/src/main/client/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/src/main/webapp/WEB-INF/classes" />

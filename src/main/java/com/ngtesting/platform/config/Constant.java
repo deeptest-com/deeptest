@@ -17,6 +17,7 @@ public final class Constant {
     // 跨域白名单
     public static final List<String> CLIENT_URL_LIST = Arrays.asList(
             "http://localhost:4200",
+                "http://lab.dui.ai/",
                 "http://116.62.17.31");
     public static final String API_PATH_CLIENT = "api/client/v1/";
 

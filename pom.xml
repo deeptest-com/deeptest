@@ -19,7 +19,7 @@
 			<activation>
 				<property>
 					<name>env</name>
-					<value>prod</value>
+					<value>dev</value>
 				</property>
 				<activeByDefault>true</activeByDefault>
 			</activation>

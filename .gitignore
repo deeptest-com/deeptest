@@ -1,12 +1,6 @@
 /target/
 /.idea/
-/ngtesting.iml
 /tmp/
-/.externalToolBuilders/
-/.settings/
-/.classpath
-/.project
-/.DS_Store
 /logs/
-/npm-debug.log
-/src/client/
+src/main/webapp/WEB-INF/classes/
+/platform.iml

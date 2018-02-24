@@ -1,6 +1,2 @@
 mvn -Denv=prod clean package tomcat7:deploy
 
-npm run build:prod
-mkdir ~/dev/project/ngtesting-platform/src/main/webapp/client
-sudo cp -R dist ~/dev/project/ngtesting-platform/src/main/webapp/client
-scp -r dist/* aaron@116.62.17.31:/home/aaron/dev/server/apache-tomcat-8.5.27/webapps/ROOT

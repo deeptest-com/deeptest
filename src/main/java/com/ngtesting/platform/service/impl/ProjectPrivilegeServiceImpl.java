@@ -43,7 +43,9 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
         		if (po1.getId().longValue() == po2.getProjectPrivilegeDefineId().longValue()) {
             		vo.setSelected(true);
             		vo.setSelecting(true);
-            		vo.setRelationId(po2.getId());
+
+            		Long relationId = po2.getId();
+            		vo.setRelationId(relationId);
             	}
         	}
         	map.get(key).add(vo);
@@ -91,19 +93,23 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
         }
 
 		for (String key: map.keySet()) {
-			List<ProjectPrivilegeDefineVo> ls = JSON.parseObject(JSON.toJSONString(map.get(key)), List.class);
+			List ls = JSON.parseObject(JSON.toJSONString(map.get(key)), List.class);
 
-			for (ProjectPrivilegeDefineVo vo: ls) {
+			for (Object obj: ls) {
+				ProjectPrivilegeDefineVo vo = JSON.parseObject(JSON.toJSONString(obj),
+						ProjectPrivilegeDefineVo.class);
+
                 if (vo.getSelecting() != vo.getSelected()) { // 变化了
 
 	    			if (vo.getSelecting() && !privilegeDefineIds.contains(vo.getId())) { // 勾选
                         TestProjectRolePriviledgeRelation temp = new TestProjectRolePriviledgeRelation(vo.getId(), projectRoleId);
                         saveOrUpdate(temp);
 	    			} else { // 取消
-                        TestProjectRolePriviledgeRelation temp = (TestProjectRolePriviledgeRelation)get(TestProjectRolePriviledgeRelation.class,
-                                vo.getRelationId());
-                        temp.setDeleted(true);
-                        saveOrUpdate(temp);
+                        Long id = vo.getRelationId();
+                        TestProjectRolePriviledgeRelation temp = (TestProjectRolePriviledgeRelation)get(
+                                TestProjectRolePriviledgeRelation.class, id);
+
+                        getDao().delete(temp);
 	    			}
 
 				}

@@ -91,6 +91,7 @@ public class ProjectRoleAction extends BaseAction {
 		TestProjectRoleForOrg po = projectRoleService.save(projectRoleVo, orgId);
 
 		Map<String, List<ProjectPrivilegeDefineVo>> projectPrivileges = (Map<String, List<ProjectPrivilegeDefineVo>>) json.get("projectPrivileges");
+		int i=0;
 		boolean success = projectPrivilegeService.saveProjectPrivileges(po.getId(), projectPrivileges);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

@@ -150,7 +150,7 @@ public class UserAction extends BaseAction {
 
         List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(orgId, userId);
         ret.put("recentProjects", recentProjects);
-        userVo.setDefaultPrjId(recentProjects.get(0).getProjectId());
+        userVo.setDefaultPrjId(recentProjects.size() > 0?recentProjects.get(0).getProjectId(): null);
 
         Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUserPers(userId, prjId, orgId);
         ret.put("prjPrivileges", prjPrivileges);

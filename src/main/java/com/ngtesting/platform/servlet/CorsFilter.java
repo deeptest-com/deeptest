@@ -1,18 +1,11 @@
 package com.ngtesting.platform.servlet;
 
-import java.io.IOException;
+import com.ngtesting.platform.util.WebUtils;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.util.WebUtils;
+import java.io.IOException;
 
 public class CorsFilter implements Filter {
     @Override
@@ -21,9 +14,9 @@ public class CorsFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) resp;
 
         String referer = req.getHeader("Origin");
-        if (Constant.CLIENT_URL_LIST.contains(referer)) {
+//        if (Constant.CLIENT_URL_LIST.contains(referer)) {
             res = WebUtils.AddCorsSupport(res, referer);
-        }
+//        }
 
         chain.doFilter(req, res);
     }

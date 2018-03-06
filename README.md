@@ -1,4 +1,4 @@
-# eCommerce Fashion Store
+# Next Generation Test Management Tool
 
 SpringMVC, Hibernate, AngularJS 4.0, MySQL
 
@@ -7,8 +7,6 @@ SpringMVC, Hibernate, AngularJS 4.0, MySQL
 
 
 ```
-
-<img src="#" height="500px" style="margin: 10px auto;">
 
 ### Licenses
 

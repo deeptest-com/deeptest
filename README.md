@@ -1,6 +1,6 @@
 # Next Generation Test Management Tool
 
-SpringMVC, Hibernate, AngularJS 4.0, MySQL
+AngularJS 4.0, SpringMVC, Hibernate, MySQL
 
 ### Quick start
 ```bash

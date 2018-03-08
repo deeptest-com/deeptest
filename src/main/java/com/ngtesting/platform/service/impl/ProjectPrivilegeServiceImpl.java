@@ -2,7 +2,9 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.ngtesting.platform.entity.TestProjectPrivilegeDefine;
+import com.ngtesting.platform.entity.TestProjectRoleForOrg;
 import com.ngtesting.platform.entity.TestProjectRolePriviledgeRelation;
+import com.ngtesting.platform.entity.TestRelationProjectRoleEntity;
 import com.ngtesting.platform.service.ProjectPrivilegeService;
 import com.ngtesting.platform.vo.ProjectPrivilegeDefineVo;
 import org.hibernate.criterion.DetachedCriteria;
@@ -78,6 +80,27 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
         List<TestProjectPrivilegeDefine> ls = findAllByCriteria(dc);
 
 		return ls;
+	}
+
+	@Override
+	public boolean addUserAsProjectRolePers(Long orgId, Long projectId, String roleCode, Long userId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestProjectRoleForOrg.class);
+
+        dc.add(Restrictions.eq("orgId", orgId));
+        dc.add(Restrictions.eq("code", "test_leader"));
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+        dc.addOrder(Order.asc("id"));
+        List<TestProjectRoleForOrg> ls = findAllByCriteria(dc);
+        if (ls.size() == 0) {
+            return false;
+        }
+
+        TestProjectRoleForOrg role = ls.get(0);
+        TestRelationProjectRoleEntity relation = new TestRelationProjectRoleEntity(
+                projectId, userId,  role.getId(), "user");
+        saveOrUpdate(relation);
+        return true;
 	}
 
 	@Override

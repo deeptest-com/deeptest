@@ -9,6 +9,7 @@ import com.ngtesting.platform.entity.TestProjectAccessHistory;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.service.HistoryService;
+import com.ngtesting.platform.service.ProjectPrivilegeService;
 import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.StringUtil;
@@ -43,6 +44,8 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 	private ProjectDao projectDao;
     @Autowired
     private CaseService caseService;
+    @Autowired
+    ProjectPrivilegeService projectPrivilegeService;
 
 	@Override
 	// @Cacheable(value="orgProjects",key="#orgId.toString().concat('_').concat(#disabled)")
@@ -55,7 +58,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		// el = cache.get(key);
 		// return (Map<String, Object>)el.getObjectValue();
 		// }
-		
+
 		List<TestProject> pos = list(orgId, keywords, disabled);
 
 		List<TestProjectVo> vos = this.genVos(pos, keywords, disabled);
@@ -64,7 +67,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		// cache.put(el);
 		return vos;
 	}
-	
+
 	@Override
 	public List<TestProject> list(Long orgId, String keywords, String disabled) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
@@ -77,10 +80,10 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		dc.add(Restrictions.eq("type", ProjectType.group));
 		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 		dc.addOrder(Order.asc("id"));
-		
+
 		dc.setFetchMode("children", FetchMode.JOIN);
-		dc.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY); 
-		
+		dc.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+
 		Filter filter = getDao().getSession().enableFilter("filter_project_deleted");
 		filter.setParameter("isDeleted", Boolean.valueOf(false));
 		List<TestProject> pos = findAllByCriteria(dc);
@@ -88,7 +91,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 
 		return pos;
 	}
-	
+
 	@Override
 	public List<TestProjectVo> listProjectGroups(Long orgId) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
@@ -96,17 +99,17 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		dc.add(Restrictions.eq("orgId", orgId));
 		dc.add(Restrictions.eq("type", ProjectType.group));
 		dc.add(Restrictions.eq("disabled", false));
-		
+
 		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 		dc.addOrder(Order.asc("id"));
-		
+
 		List<TestProject> pos = findAllByCriteria(dc);
 
 		List<TestProjectVo> vos = this.genGroupVos(pos);
 
 		return vos;
 	}
-	
+
 	@Override
 	public List<TestProjectAccessHistory> listRecentProject(Long orgId, Long userId) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProjectAccessHistory.class);
@@ -122,7 +125,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		dc.add(Restrictions.ne("project.disabled", true));
 
 		dc.addOrder(Order.desc("lastAccessTime"));
-		 
+
 		List<TestProjectAccessHistory> pos = findPage(dc, 0, 4).getItems();
 
 		return pos;
@@ -158,9 +161,9 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		} else {
             po = (TestProject) get(TestProject.class, vo.getId());
 		}
-		
+
 		boolean disableChanged = vo.getDisabled() != po.getDisabled();
-		
+
 		po.setParentId(vo.getParentId());
 		po.setName(vo.getName());
 		po.setDescr(vo.getDescr());
@@ -170,6 +173,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		saveOrUpdate(po);
 
         if(isNew && ProjectType.project.equals(po.getType())) {
+            projectPrivilegeService.addUserAsProjectRolePers(orgId, po.getId(), "test_leader", userVo.getId());
             caseService.createRoot(po.getId(), userVo.getId());
         }
         if(ProjectType.project.equals(po.getType())) {
@@ -177,11 +181,11 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
                     isNew?Constant.MsgType.create.msg:Constant.MsgType.create.update.msg,
                     TestHistory.TargetType.project, po.getId(), po.getName());
         }
-		
+
 		if (!disableChanged) {
 			return po;
 		}
-		
+
 		// 项目被启用
 		if (!po.getDisabled()) {
 			if (po.getType().equals(ProjectType.project)) {
@@ -201,7 +205,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 				}
 			}
 		}
-		
+
 		// 项目组被归档，归档子项目
 		if (po.getDisabled() && po.getType().equals(ProjectType.group)) {
 			for (TestProject child : po.getChildren()) {
@@ -226,21 +230,21 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		TestProject po = (TestProject) get(TestProject.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
-		
+
 		// 项目组被删除，删除子项目
 		if (po.getType().equals(ProjectType.group)) {
 			for (TestProject child : po.getChildren()) {
 				child.setDeleted(true);
 				saveOrUpdate(child);
 			}
-			
+
 		}
 
 		return true;
 	}
 
 
-	
+
 	@Override
 	public List<TestProjectAccessHistoryVo> genHistoryVos(List<TestProjectAccessHistory> pos) {
 		List<TestProjectAccessHistoryVo> voList = new LinkedList<TestProjectAccessHistoryVo>();
@@ -248,10 +252,10 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 			TestProjectAccessHistoryVo vo = genHistoryVo(po);
 			voList.add(vo);
 		}
-		
+
 		return voList;
 	}
-	
+
 	@Override
 	public TestProjectAccessHistoryVo genHistoryVo(TestProjectAccessHistory po) {
 		if (po == null) {
@@ -260,14 +264,14 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		TestProjectAccessHistoryVo vo = new TestProjectAccessHistoryVo();
 		BeanUtilEx.copyProperties(vo, po);
 		vo.setProjectName(po.getProjectName());
-		
+
 		return vo;
 	}
 
 	@Override
 	public TestProjectVo viewPers(Long projectId, UserVo userVo) {
 		TestProject project = getDetail(projectId);
-		
+
 		getHistoryPers(project.getOrgId(), userVo.getId(), projectId, project.getName());
 
         TestUser userPo = (TestUser)get(TestUser.class, userVo.getId());
@@ -295,7 +299,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		dc.add(Restrictions.eq("userId", userId));
 		dc.add(Restrictions.eq("deleted", false));
 		dc.add(Restrictions.eq("disabled", false));
-		 
+
 		TestProjectAccessHistory history;
 		List<TestProjectAccessHistory> pos = findAllByCriteria(dc);
 		if (pos.size() > 0) {

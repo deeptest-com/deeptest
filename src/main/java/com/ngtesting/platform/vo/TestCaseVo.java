@@ -54,10 +54,19 @@ public class TestCaseVo extends BaseVo {
     private List<TestCaseVo> children = new LinkedList<>();
 	private List<TestCaseStepVo> steps = new LinkedList<>();
 	private List<TestCaseCommentsVo> comments = new LinkedList<>();
+	private List<TestCaseHistoryVo> histories = new LinkedList<>();
 
     public TestCaseVo() {
         super();
     }
+
+	public List<TestCaseHistoryVo> getHistories() {
+		return histories;
+	}
+
+	public void setHistories(List<TestCaseHistoryVo> histories) {
+		this.histories = histories;
+	}
 
 	public Boolean getLeaf() {
 		return isLeaf;

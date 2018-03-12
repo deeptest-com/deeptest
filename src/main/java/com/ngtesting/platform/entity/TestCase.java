@@ -25,14 +25,13 @@ public class TestCase extends BaseEntity {
 	// steps, richText
     private String contentType = "steps";
 
-    @Column(name = "content", length = 5000)
+    @Column(name = "content", length = 10000)
     private String content;
+
 
 	@Column(name = "objective", length = 1000)
 	private String objective;
 
-	@Column(name = "descr", length = 1000)
-    private String descr;
 	private Integer ordr;
 
     private Long pId;
@@ -95,8 +94,21 @@ public class TestCase extends BaseEntity {
 
     @OneToMany(mappedBy="testCase", fetch=FetchType.LAZY)
     @Where(clause="!deleted")
+    @OrderBy("createTime DESC")
+    private List<TestCaseHistory> histories = new LinkedList<>();
+
+    @OneToMany(mappedBy="testCase", fetch=FetchType.LAZY)
+    @Where(clause="!deleted")
     @OrderBy("changeTime ASC")
     private List<TestCaseComments> comments = new LinkedList<>();
+
+    public List<TestCaseHistory> getHistories() {
+        return histories;
+    }
+
+    public void setHistories(List<TestCaseHistory> histories) {
+        this.histories = histories;
+    }
 
     public Boolean getLeaf() {
         return isLeaf;
@@ -317,13 +329,6 @@ public class TestCase extends BaseEntity {
 		this.priority = priority;
 	}
 
-	public String getDescr() {
-		return descr;
-	}
-
-	public void setDescr(String descr) {
-		this.descr = descr;
-	}
 
 	public Integer getEstimate() {
 		return estimate;

@@ -14,7 +14,7 @@ import javax.persistence.Table;
 public class TestDocument extends BaseEntity {
 	private static final long serialVersionUID = 2390019554025797778L;
 	private String title;
-    @Column(name = "msg", length = 10000)
+    @Column(name = "descr", length = 10000)
     private String descr;
     private String uri;
 

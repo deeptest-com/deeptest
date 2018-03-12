@@ -40,11 +40,12 @@ public class CaseInRunAction extends BaseAction {
     public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
+        Long orgId = json.getLong("orgId");
         Long projectId = json.getLong("projectId");
         Long runId = json.getLong("runId");
 
         List<TestCaseInRunVo> vos = caseInRunService.query(runId);
-        List<CustomFieldVo> customFieldList = customFieldService.listForCaseByProject(projectId);
+        List<CustomFieldVo> customFieldList = customFieldService.listForCaseByProject(orgId, projectId);
 
         ret.put("data", vos);
         ret.put("customFields", customFieldList);

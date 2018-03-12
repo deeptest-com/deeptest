@@ -59,9 +59,9 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
         po.setResult(result);
         po.setStatus(status);
         po.setExeById(userVo.getId());
-        if (!"block".equals(status)) {
+//        if (!"block".equals(status)) {
             po.setExeTime(new Date());
-        }
+//        }
         saveOrUpdate(po);
 
         TestRun run = po.getRun();
@@ -92,7 +92,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
         Long projectId = json.getLong("projectId");
 
         TestCaseInRunVo vo;
-        TestCase casePo = caseService.renamePers(caseId, name, pId, projectId, userVo.getId());
+        TestCase casePo = caseService.renamePers(caseId, name, pId, projectId, userVo);
 
         if (caseId == null || caseId <= 0) {
             vo = addCaseToRunPers(runId, casePo, userVo);
@@ -117,7 +117,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
         Long runId = json.getLong("runId");
         Long caseId = json.getLong("srcId");
 
-        TestCaseVo vo = caseService.movePers(json, userVo.getId());
+        TestCaseVo vo = caseService.movePers(json, userVo);
 
         TestCaseInRun caseInRun = getByRunAndCaseId(runId, caseId);
         caseInRun.setpId(vo.getpId());

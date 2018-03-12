@@ -2,7 +2,9 @@ package com.ngtesting.platform.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestCase;
+import com.ngtesting.platform.entity.TestCaseHistory;
 import com.ngtesting.platform.vo.TestCaseVo;
+import com.ngtesting.platform.vo.UserVo;
 
 import java.util.List;
 
@@ -13,25 +15,26 @@ public interface CaseService extends BaseService {
 
 	TestCaseVo getById(Long caseId);
 
-    TestCase renamePers(JSONObject json, Long userId);
-	TestCase delete(Long vo, Long userId);
+    TestCase renamePers(JSONObject json, UserVo user);
+	TestCase delete(Long vo, UserVo user);
 
-	TestCase renamePers(Long id, String name, Long pId, Long projectId, Long userId);
+	TestCase renamePers(Long id, String name, Long pId, Long projectId, UserVo user);
 
-	TestCaseVo movePers(JSONObject json, Long userId);
+	TestCaseVo movePers(JSONObject json, UserVo user);
 
-	void createRoot(Long projectId, Long userId);
+	void createRoot(Long projectId, UserVo user);
 
 	void loadNodeTree(TestCaseVo vo, TestCase po);
 
-	TestCase save(JSONObject json, Long userId);
+	TestCase save(JSONObject json, UserVo user);
 
 	void updateParentIfNeededPers(Long pid);
 
 	boolean cloneStepsAndChildrenPers(TestCase testcase, TestCase src);
 
-    TestCase saveField(JSONObject json);
-	TestCase saveCustomizedField(JSONObject json);
+	void saveHistory(UserVo user, String act, TestCase testCase, String field);
+
+	TestCase saveField(JSONObject json, UserVo user);
 
 	List<TestCase> getChildren(Long caseId);
 
@@ -46,7 +49,9 @@ public interface CaseService extends BaseService {
 
 	TestCaseVo genVo(TestCase po, boolean withSteps);
 
-	void copyProperties(TestCase testCasePo, TestCaseVo testCaseVo);
+    List<TestCaseHistory> findHistories(Long testCaseId);
+
+    void copyProperties(TestCase testCasePo, TestCaseVo testCaseVo);
 
     TestCase changeContentTypePers(Long id, String contentType);
 

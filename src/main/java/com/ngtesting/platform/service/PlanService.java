@@ -14,7 +14,7 @@ public interface PlanService extends BaseService {
 	TestPlan save(JSONObject json, UserVo optUser);
 	TestPlan delete(Long vo, Long userId);
 
-	List<TestPlan> list(Long projectId);
+	List<TestPlan> list(Long projectId, String type);
 
 	List<TestPlanVo> genVos(List<TestPlan> pos);
 	TestPlanVo genVo(TestPlan po);

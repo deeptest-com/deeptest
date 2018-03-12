@@ -36,12 +36,13 @@ public class CaseAction extends BaseAction {
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
+        Long orgId = json.getLong("orgId");
 		Long projectId = json.getLong("projectId");
 
 		List<TestCase> ls = caseService.query(projectId);
         List<TestCaseVo> vos = caseService.genVos(ls, false);
 
-        List<CustomFieldVo> customFieldList = customFieldService.listForCaseByProject(projectId);
+        List<CustomFieldVo> customFieldList = customFieldService.listForCaseByProject(orgId, projectId);
 
         ret.put("data", vos);
 		ret.put("customFields", customFieldList);
@@ -90,7 +91,7 @@ public class CaseAction extends BaseAction {
 
         UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		TestCase po = caseService.save(json, userVo.getId());
+		TestCase po = caseService.save(json, userVo);
 		TestCaseVo caseVo = caseService.genVo(po, true);
 
 		ret.put("data", caseVo);
@@ -106,7 +107,7 @@ public class CaseAction extends BaseAction {
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		TestCase testCasePo = caseService.renamePers(json, userVo.getId());
+		TestCase testCasePo = caseService.renamePers(json, userVo);
         caseService.updateParentIfNeededPers(testCasePo.getpId());
 		TestCaseVo caseVo = caseService.genVo(testCasePo);
 
@@ -125,7 +126,7 @@ public class CaseAction extends BaseAction {
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		TestCase testCase = caseService.delete(id, userVo.getId());
+		TestCase testCase = caseService.delete(id, userVo);
 		caseService.updateParentIfNeededPers(testCase.getpId());
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -143,7 +144,7 @@ public class CaseAction extends BaseAction {
         Long srcId = json.getLong("srcId");
         Long parentId = caseService.getById(srcId).getpId();
         Long targetId = json.getLong("targetId");
-        TestCaseVo vo = caseService.movePers(json, userVo.getId());
+        TestCaseVo vo = caseService.movePers(json, userVo);
 
         caseService.updateParentIfNeededPers(parentId);
         caseService.updateParentIfNeededPers(targetId);
@@ -159,7 +160,9 @@ public class CaseAction extends BaseAction {
 	public Map<String, Object> saveField(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TestCase po = caseService.saveField(json);
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+		TestCase po = caseService.saveField(json, userVo);
         TestCaseVo caseVo = caseService.genVo(po);
 
 		ret.put("data", caseVo);

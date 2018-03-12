@@ -9,7 +9,7 @@ public class TestHistory extends BaseEntity {
     private static final long serialVersionUID = -6608023158199904153L;
 
     private String title;
-    @Column(name = "msg", length = 10000)
+    @Column(name = "descr", length = 1000)
     private String descr;
     private String uri;
 

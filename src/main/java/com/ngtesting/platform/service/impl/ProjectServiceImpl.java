@@ -174,7 +174,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 
         if(isNew && ProjectType.project.equals(po.getType())) {
             projectPrivilegeService.addUserAsProjectRolePers(orgId, po.getId(), "test_leader", userVo.getId());
-            caseService.createRoot(po.getId(), userVo.getId());
+            caseService.createRoot(po.getId(), userVo);
         }
         if(ProjectType.project.equals(po.getType())) {
             historyService.create(po.getId(), userVo,

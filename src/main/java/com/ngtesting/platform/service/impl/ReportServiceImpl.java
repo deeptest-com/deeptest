@@ -1,6 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.service.ReportService;
 import org.springframework.stereotype.Service;
 
@@ -9,15 +10,15 @@ import java.util.*;
 @Service
 public class ReportServiceImpl extends BaseServiceImpl implements ReportService {
     @Override
-    public Map<String, List<Object>> chart_design_progress_by_project(Long projectId, Integer numb) {
+    public Map<String, List<Object>> chart_design_progress_by_project(Long projectId, TestProject.ProjectType type, Integer numb) {
         Map<String, List<Object>> map = new LinkedHashMap<>();
 
         List<Object> xList = new LinkedList<>();
         List<Object> numbList = new LinkedList<>();
         List<Object> totalList = new LinkedList<>();
 
-        List<Object[]> ls = getDao().getListBySQL("{call chart_design_progress_by_project(?,?)}",
-                projectId, numb);
+        List<Object[]> ls = getDao().getListBySQL("{call chart_design_progress_by_project(?,?,?)}",
+                projectId, type.toString(), numb);
         Integer sum = null;
         for (Object[] arr : ls) {
             if(sum == null) {
@@ -39,9 +40,9 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
     }
 
     @Override
-    public Map<String, List<Object>> chart_excution_process_by_project(Long projectId, Integer numb) {
-        List<Object[]> ls = getDao().getListBySQL("{call chart_excution_process_by_project(?,?)}",
-                projectId, numb);
+    public Map<String, List<Object>> chart_excution_process_by_project(Long projectId, TestProject.ProjectType type, Integer numb) {
+        List<Object[]> ls = getDao().getListBySQL("{call chart_excution_process_by_project(?,?,?)}",
+                projectId, type.toString(), numb);
 
         return countByStatus(ls);
     }

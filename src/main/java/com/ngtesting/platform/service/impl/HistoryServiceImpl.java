@@ -1,6 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.entity.TestHistory;
+import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.DateUtils;
@@ -18,12 +19,18 @@ import java.util.*;
 public class HistoryServiceImpl extends BaseServiceImpl implements HistoryService {
 
 	@Override
-	public List<TestHistory> list(Long projectId) {
+	public List<TestHistory> list(Long projectId, String projectType) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestHistory.class);
 
-		dc.add(Restrictions.eq("projectId", projectId));
 		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+
+		if (projectType.equals(TestProject.ProjectType.project.toString())) {
+			dc.add(Restrictions.eq("projectId", projectId));
+		} else {
+			dc.createAlias("project", "project");
+			dc.add(Restrictions.eq("project.parentId", projectId));
+		}
 
 		dc.addOrder(Order.desc("createTime"));
 

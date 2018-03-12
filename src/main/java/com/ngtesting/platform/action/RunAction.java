@@ -4,13 +4,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.bean.websocket.OptFacade;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.config.WsConstant;
-import com.ngtesting.platform.entity.TestCaseInRun;
 import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.service.RunService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.vo.CustomFieldVo;
-import com.ngtesting.platform.vo.TestCaseInRunVo;
 import com.ngtesting.platform.vo.TestRunVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -38,25 +34,26 @@ public class RunAction extends BaseAction {
     @Autowired
     CustomFieldService customFieldService;
 
-	@AuthPassport(validate = true)
-	@RequestMapping(value = "loadCase", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> loadCase(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-        Long projectId = json.getLong("projectId");
-		Long runId = json.getLong("runId");
-
-		List<TestCaseInRun> ls = runService.lodaCase(runId);
-		List<TestCaseInRunVo> vos = runService.genCaseVos(ls);
-
-        List<CustomFieldVo> customFieldList = customFieldService.listForCaseByProject(projectId);
-
-		ret.put("data", vos);
-        ret.put("customFields", customFieldList);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
+//	@AuthPassport(validate = true)
+//	@RequestMapping(value = "loadCase", method = RequestMethod.POST)
+//	@ResponseBody
+//	public Map<String, Object> loadCase(HttpServletRequest request, @RequestBody JSONObject json) {
+//		Map<String, Object> ret = new HashMap<String, Object>();
+//
+//		Long orgId = json.getLong("orgId");
+//        Long projectId = json.getLong("projectId");
+//		Long runId = json.getLong("runId");
+//
+//		List<TestCaseInRun> ls = runService.lodaCase(runId);
+//		List<TestCaseInRunVo> vos = runService.genCaseVos(ls);
+//
+//        List<CustomFieldVo> customFieldList = customFieldService.listForCaseByProject(orgId, projectId);
+//
+//		ret.put("data", vos);
+//        ret.put("customFields", customFieldList);
+//		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+//		return ret;
+//	}
 
     @AuthPassport(validate = true)
     @RequestMapping(value = "get", method = RequestMethod.POST)

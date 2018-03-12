@@ -63,7 +63,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     }
 
     @Override
-    public List<CustomFieldVo> listForCaseByProject(Long projectId) {
+    public List<CustomFieldVo> listForCaseByProject(Long orgId, Long projectId) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestCustomField.class);
 
         dc.createAlias("projectSet", "p").add(Restrictions.eq("p.id", projectId));
@@ -74,6 +74,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
         List<TestCustomField> ls1 = findAllByCriteria(dc);
 
         DetachedCriteria dc2 = DetachedCriteria.forClass(TestCustomField.class);
+        dc2.add(Restrictions.eq("orgId", orgId));
         dc2.add(Restrictions.eq("global", true));
         dc2.add(Restrictions.eq("applyTo", FieldApplyTo.test_case));
         dc2.add(Restrictions.eq("disabled", Boolean.FALSE));

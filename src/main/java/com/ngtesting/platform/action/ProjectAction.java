@@ -111,10 +111,10 @@ public class ProjectAction extends BaseAction {
 
 		TestProjectVo vo = projectService.viewPers(id, userVo);
 
-        List<TestPlan> planPos = planService.list(id);
+        List<TestPlan> planPos = planService.list(id, vo.getType());
         List<TestPlanVo> planVos = planService.genVos(planPos);
 
-        List<TestHistory> historyPos = historyService.list(id);
+        List<TestHistory> historyPos = historyService.list(id, vo.getType());
         Map<String, List<TestHistoryVo>> historyVos = historyService.genVosByDate(historyPos);
 
         pushSettingsService.pushRecentProjects(userVo);

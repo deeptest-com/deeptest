@@ -8,7 +8,9 @@ public class TestCaseStep extends BaseEntity {
 
 	private static final long serialVersionUID = 1860144344660852859L;
 
+	@Column(name = "opt", length = 10000)
 	private String opt;
+	@Column(name = "expect", length = 10000)
     private String expect;
 
 	private Integer ordr;

@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface HistoryService extends BaseService {
 
-	List<TestHistory> list(Long projectId);
+	List<TestHistory> list(Long projectId, String projectType);
 	TestHistoryVo getById(Long id);
 
 	TestHistory create(Long projectI, UserVo optUser, String action,

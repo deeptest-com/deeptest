@@ -2,13 +2,14 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.TestHistory;
 import com.ngtesting.platform.entity.TestPlan;
+import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestRun;
 import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.PlanService;
 import com.ngtesting.platform.service.RunService;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.vo.TestPlanVo;
 import com.ngtesting.platform.vo.TestRunVo;
 import com.ngtesting.platform.vo.UserVo;
@@ -117,12 +118,18 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
     }
 
     @Override
-    public List<TestPlan> list(Long projectId) {
+    public List<TestPlan> list(Long projectId, String projectType) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestPlan.class);
 
-        dc.add(Restrictions.eq("projectId", projectId));
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+
+        if (projectType.equals(TestProject.ProjectType.project.toString())) {
+            dc.add(Restrictions.eq("projectId", projectId));
+        } else {
+            dc.createAlias("project", "project");
+            dc.add(Restrictions.eq("project.parentId", projectId));
+        }
 
         dc.addOrder(Order.asc("createTime"));
 

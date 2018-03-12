@@ -2,6 +2,7 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.service.ReportService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.vo.UserVo;
@@ -34,10 +35,13 @@ public class ReportAction extends BaseAction {
 
         UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
+        Long id = json.getLong("projectId");
+        TestProject prj = (TestProject)reportService.get(TestProject.class, id);
+
         Map<String, List<Object>> designReport =
-                reportService.chart_design_progress_by_project(json.getLong("projectId"), 14);
+                reportService.chart_design_progress_by_project(id, prj.getType(), 14);
         Map<String, List<Object>> exeReport =
-                reportService.chart_excution_process_by_project(json.getLong("projectId"), 14);
+                reportService.chart_excution_process_by_project(id, prj.getType(), 14);
 
         data.put("design", designReport);
         data.put("exe", exeReport);

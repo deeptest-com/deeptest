@@ -7,10 +7,10 @@ AngularJS 4, SpringMVC, Hibernate, MySQL
 
 
 ```
-### 测试项目
+### Testing Project
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/01.png" width="800px" style="margin: 10px auto;">
 
-### 测试计划
+### Testing Plan
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/02.png" width="800px" style="margin: 10px auto;">
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/03.png" width="800px" style="margin: 10px auto;">
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/04.png" width="800px" style="margin: 10px auto;">

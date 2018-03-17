@@ -5,7 +5,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "tst_history")
 public class TestHistory extends BaseEntity {
-
     private static final long serialVersionUID = -6608023158199904153L;
 
     private String title;
@@ -36,7 +35,8 @@ public class TestHistory extends BaseEntity {
         project_member("project_member", "项目成员"),
 
         plan("plan", "计划"),
-        run("run", "测试集");
+        suite("suite", "测试集"),
+        run("run", "测试任务");
 
         TargetType(String code, String name) {
             this.code = code;

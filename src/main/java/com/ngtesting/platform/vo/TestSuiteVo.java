@@ -1,46 +1,47 @@
 package com.ngtesting.platform.vo;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class TestSuiteVo extends BaseVo {
 
-	private static final long serialVersionUID = 7077320758714477534L;
+	private static final long serialVersionUID = 2718812662455394471L;
 
-	private String title;
-	private Integer priority;
+	private String name;
 	private Integer estimate;
-	private String objective;
-    private String descr;
+	private String descr;
 
-	private String path;
-	private String type;
+	private Long projectId;
+	private Long userId;
+    private String userName;
 
-    public TestSuiteVo(Long id, String title, Integer priority, Integer estimate, String objective, String descr, String path, String type) {
+	private List<TestCaseInSuiteVo> testcases = new LinkedList();
+    public TestSuiteVo(){}
+    public TestSuiteVo(Long id, String name, Integer estimate, String descr, Long projectId, Long userId) {
         super();
 
 		this.id = id;
-        this.title = title;
-        this.priority = priority;
+        this.name = name;
         this.estimate = estimate;
-        this.objective = objective;
         this.descr = descr;
-        this.path = path;
-        this.type = type;
-
+        this.projectId = projectId;
+        this.userId = userId;
     }
 
-    public String getTitle() {
-		return title;
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getName() {
+		return name;
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public Integer getPriority() {
-		return priority;
-	}
-
-	public void setPriority(Integer priority) {
-		this.priority = priority;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Integer getEstimate() {
@@ -59,28 +60,27 @@ public class TestSuiteVo extends BaseVo {
 		this.descr = descr;
 	}
 
-	public String getPath() {
-		return path;
+	public Long getProjectId() {
+		return projectId;
 	}
 
-	public void setPath(String path) {
-		this.path = path;
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
 	}
 
-	public String getType() {
-		return type;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
-	public String getObjective() {
-		return objective;
+	public List<TestCaseInSuiteVo> getTestcases() {
+		return testcases;
 	}
 
-	public void setObjective(String objective) {
-		this.objective = objective;
+	public void setTestcases(List<TestCaseInSuiteVo> testcases) {
+		this.testcases = testcases;
 	}
-
 }

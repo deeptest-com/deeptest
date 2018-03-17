@@ -7,6 +7,7 @@ import java.util.List;
 @Entity
 @Table(name = "tst_run")
 public class TestRun extends BaseEntity {
+    private static final long serialVersionUID = 8005561488367274306L;
 
     private String name;
 	private Integer estimate;
@@ -18,8 +19,6 @@ public class TestRun extends BaseEntity {
     private String descr;
 
     private Integer ordr;
-
-    private Boolean isRead = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
@@ -81,14 +80,6 @@ public class TestRun extends BaseEntity {
 
     public void setAssigneeId(Long assigneeId) {
         this.assigneeId = assigneeId;
-    }
-
-    public Boolean getRead() {
-        return isRead;
-    }
-
-    public void setRead(Boolean read) {
-        isRead = read;
     }
 
     public TestUser getUser() {

@@ -6,6 +6,7 @@ import javax.persistence.*;
 @Table(name = "tst_case_history")
 public class TestCaseHistory extends BaseEntity {
 
+    private static final long serialVersionUID = 1545026595607666706L;
     private String title;
     @Column(name = "descr", length = 1000)
     private String descr;

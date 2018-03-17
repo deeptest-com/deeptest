@@ -11,7 +11,10 @@ import java.util.List;
 public interface CaseService extends BaseService {
 
 	List<TestCase> query(Long projectId);
-	List<TestCaseVo> queryForSelection(Long projectId, Long runId);
+
+	List<TestCaseVo> queryForSuiteSelection(Long projectId, Long suiteId);
+
+	List<TestCaseVo> queryForRunSelection(Long projectId, Long runId);
 
 	TestCaseVo getById(Long caseId);
 

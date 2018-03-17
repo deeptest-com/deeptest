@@ -45,7 +45,22 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	}
 
     @Override
-    public List<TestCaseVo> queryForSelection(Long projectId, Long runId) {
+    public List<TestCaseVo> queryForSuiteSelection(Long projectId, Long suiteId) {
+        List<Long> selectIds = new LinkedList<>();
+	    if (suiteId != null) {
+            TestSuite suite = (TestSuite)get(TestSuite.class, suiteId);
+            for (TestCaseInSuite testcase : suite.getTestcases()) {
+                selectIds.add(testcase.getCaseId());
+            }
+        }
+
+        List<TestCase> pos = query(projectId);
+        List<TestCaseVo> vos = genVos(pos, selectIds, false);
+
+        return vos;
+    }
+    @Override
+    public List<TestCaseVo> queryForRunSelection(Long projectId, Long runId) {
         TestRun run = (TestRun)get(TestRun.class, runId);
 
         List<Long> selectIds = new LinkedList<>();

@@ -16,8 +16,6 @@ public class TestCaseInRun extends BaseEntity {
     private Boolean isLeaf;
 
     private String result;
-    @Transient
-    private String key;
 
     private Date exeTime;
 

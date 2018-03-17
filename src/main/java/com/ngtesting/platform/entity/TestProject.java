@@ -40,16 +40,21 @@ public class TestProject extends BaseEntity {
     @OneToMany(mappedBy="parent", fetch = FetchType.LAZY)
     @OrderBy("id")
     @Filter(name="filter_project_deleted", condition="deleted = :isDeleted ")
-    private List<TestProject> children = new LinkedList<TestProject>();
+    private List<TestProject> children = new LinkedList();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "projectSet")
-    private Set<TestCustomField> customFieldSet = new HashSet<TestCustomField>(0);
+    private Set<TestCustomField> customFieldSet = new HashSet(0);
+
+	@OneToMany(mappedBy="project", fetch = FetchType.LAZY)
+	@OrderBy("id")
+	@Filter(name="filter_suite_deleted", condition="deleted = :isDeleted ")
+	private List<TestSuite> testsuites = new LinkedList();
 
     public static enum ProjectType {
         group("group"),
         project("project");
 
-        private ProjectType(String textVal) {
+		ProjectType(String textVal) {
             this.textVal = textVal;
         }
 
@@ -60,7 +65,15 @@ public class TestProject extends BaseEntity {
         }
     }
 
-	public String getName() {
+    public List<TestSuite> getTestsuites() {
+        return testsuites;
+    }
+
+    public void setTestsuites(List<TestSuite> testsuites) {
+        this.testsuites = testsuites;
+    }
+
+    public String getName() {
 		return name;
 	}
 

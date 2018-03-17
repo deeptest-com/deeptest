@@ -10,7 +10,6 @@ import java.util.List;
 @Entity
 @Table(name = "tst_plan")
 public class TestPlan extends BaseEntity {
-
     private static final long serialVersionUID = -2388027442087410471L;
 
     private String name;

@@ -49,17 +49,15 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
 
     @Override
     public List<Map<Object, Object>> chart_execution_result_by_plan(Long planId, Integer numb) {
-        List<Map<Object, Object>> data = new LinkedList<>();
-
         List<Object[]> ls = getDao().getListBySQL("{call chart_execution_result_by_plan(?)}",
                 planId);
+
+        Map<String, String> map = new HashMap();
         for (Object[] arr : ls) {
-            Map<Object, Object> map = new HashMap();
-            map.put("name", Constant.ExeStatus.get(arr[0]));
-            map.put("value", arr[1]);
-            data.add(map);
+            map.put(arr[0].toString(), arr[1].toString());
         }
 
+        List<Map<Object, Object>> data = orderByStatus(map);
         return data;
     }
 
@@ -156,6 +154,21 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
         map.put("blockList", blockList);
 
         return map;
+    }
+
+    @Override
+    public List<Map<Object, Object>> orderByStatus(Map map) {
+        List<Map<Object, Object>> data2 = new LinkedList<>();
+        List<String> keys = Arrays.asList("pass","fail","block", "untest");
+
+        for(String key : keys) {
+            Map<Object, Object> map2 = new HashMap();
+            map2.put("name", Constant.ExeStatus.get(key));
+            map2.put("value", map.get(key)!=null?map.get(key): 0);
+            data2.add(map2);
+        }
+
+        return data2;
     }
 
 }

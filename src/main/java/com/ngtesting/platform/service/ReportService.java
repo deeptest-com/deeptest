@@ -15,4 +15,6 @@ public interface ReportService extends BaseService {
     Map<String, List<Object>> chart_execution_progress_by_plan(Long planId, Integer numb);
 
     Map<String, List<Object>> countByStatus(List<Object[]> ls);
+
+    List<Map<Object, Object>> orderByStatus(Map map);
 }

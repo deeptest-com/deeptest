@@ -51,15 +51,31 @@ public class CaseAction extends BaseAction {
 	}
 
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "queryForSelection", method = RequestMethod.POST)
+	@RequestMapping(value = "queryForSuiteSelection", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> queryForSelection(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> queryForSuiteSelection(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		Long projectId = json.getLong("projectId");
+		Long suiteId = json.getLong("suiteId");
+
+        List<TestCaseVo> vos = caseService.queryForSuiteSelection(projectId, suiteId);
+
+		ret.put("data", vos);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "queryForRunSelection", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> queryForRunSelection(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		Long projectId = json.getLong("projectId");
 		Long runId = json.getLong("runId");
 
-        List<TestCaseVo> vos = caseService.queryForSelection(projectId, runId);
+		List<TestCaseVo> vos = caseService.queryForRunSelection(projectId, runId);
 
 		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

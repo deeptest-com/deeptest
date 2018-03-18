@@ -5,9 +5,12 @@ import com.ngtesting.platform.bean.websocket.OptFacade;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.entity.TestPlan;
+import com.ngtesting.platform.entity.TestSuite;
 import com.ngtesting.platform.service.PlanService;
+import com.ngtesting.platform.service.SuiteService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.vo.TestPlanVo;
+import com.ngtesting.platform.vo.TestSuiteVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,6 +33,8 @@ public class PlanAction extends BaseAction {
 
 	@Autowired
 	PlanService planService;
+	@Autowired
+	SuiteService suiteService;
 
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "query", method = RequestMethod.POST)
@@ -53,11 +58,15 @@ public class PlanAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long projectId = json.getLong("projectId");
         Long id = json.getLong("id");
 
         TestPlanVo vo = planService.getById(id);
+		List<TestSuite> ls = suiteService.query(projectId, null, null);
+		List<TestSuiteVo> suites = suiteService.genVos(ls);
 
         ret.put("data", vo);
+		ret.put("suites", suites);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

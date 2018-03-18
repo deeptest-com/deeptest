@@ -37,7 +37,6 @@ public class SuiteAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		List<TestSuite> ls = suiteService.query(json);
-
 		List<TestSuiteVo> vos = suiteService.genVos(ls);
 
         ret.put("data", vos);

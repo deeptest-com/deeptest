@@ -158,6 +158,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
         return vos;
     }
 
+    // 执行时新增的用例
     @Override
     public TestCaseInRunVo addCaseToRunPers(Long runId, TestCase po, UserVo userVo) {
         TestRun run = (TestRun)get(TestRun.class, runId);

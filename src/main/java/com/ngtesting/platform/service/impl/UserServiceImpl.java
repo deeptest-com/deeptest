@@ -21,7 +21,7 @@ import java.util.*;
 
 @Service
 public class UserServiceImpl extends BaseServiceImpl implements UserService {
-	
+
 	@Autowired
 	AccountService accountService;
     @Autowired
@@ -35,12 +35,12 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	@Override
 	public Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
-        
+
         dc.createAlias("orgSet", "companies");
         dc.add(Restrictions.eq("companies.id", orgId));
-        
+
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-        
+
         if (StringUtil.isNotEmpty(keywords)) {
         	dc.add(Restrictions.or(Restrictions.like("name", "%" + keywords + "%"),
         		   Restrictions.like("email", "%" + keywords + "%"),
@@ -49,10 +49,10 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         if (StringUtil.isNotEmpty(disabled)) {
         	dc.add(Restrictions.eq("disabled", Boolean.valueOf(disabled)));
         }
-        
+
         dc.addOrder(Order.asc("id"));
         Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
-		
+
 		return page;
 	}
 
@@ -114,7 +114,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		if (temp != null && temp.getId() != userVo.getId()) {
 			return null;
 		}
-		
+
 		TestUser po;
 		if (userVo.getId() != null) {
 			po = (TestUser) get(TestUser.class, userVo.getId());
@@ -131,7 +131,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 			po.setAvatar("upload/sample/user/avatar.png");
 		}
         saveOrUpdate(po);
-		
+
 		TestOrg org = (TestOrg)get(TestOrg.class, orgId);
 		if (!contains(org.getUserSet(), po.getId())) {
 			org.getUserSet().add(po);
@@ -209,7 +209,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		TestUser po = (TestUser) get(TestUser.class, userId);
 		po.setDisabled(!po.getDisabled());
 		saveOrUpdate(po);
-		
+
 		return true;
 	}
 
@@ -218,7 +218,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		TestUser po = (TestUser) get(TestUser.class, userId);
 		po.setDeleted(true);
 		saveOrUpdate(po);
-		
+
 		return true;
 	}
 

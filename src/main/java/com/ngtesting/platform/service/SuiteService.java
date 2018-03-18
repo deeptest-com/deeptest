@@ -12,6 +12,9 @@ import java.util.List;
 public interface SuiteService extends BaseService {
 
 	List<TestSuite> query(JSONObject json);
+
+	List<TestSuite> query(Long projectId, String status, String keywords);
+
 	TestSuiteVo getById(Long caseId);
 
 	TestSuiteVo getById(Long caseId, Boolean withCases);

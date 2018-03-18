@@ -37,6 +37,10 @@ public class SuiteServiceImpl extends BaseServiceImpl implements SuiteService {
         String status = json.getString("status");
         String keywords = json.getString("keywords");
 
+        return query(projectId, status, keywords);
+    }
+    @Override
+    public List<TestSuite> query(Long projectId, String status, String keywords) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestSuite.class);
 
         if (projectId != null) {

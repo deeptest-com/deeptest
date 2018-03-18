@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.bean.websocket.OptFacade;
@@ -10,10 +11,8 @@ import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.service.RunService;
 import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.vo.TestCaseInRunVo;
-import com.ngtesting.platform.vo.TestCaseStepVo;
-import com.ngtesting.platform.vo.TestRunVo;
-import com.ngtesting.platform.vo.UserVo;
+import com.ngtesting.platform.vo.*;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -95,8 +94,25 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
         historyService.create(run.getProjectId(), user, action.msg, TestHistory.TargetType.run,
                 run.getId(), run.getName());
 
-
+        importSuiteCasesPers(run, JSON.parseObject(JSON.toJSONString(json.get("suites")), List.class));
         return run;
+    }
+
+    @Override
+    public boolean importSuiteCasesPers(TestRun run, List<TestSuiteVo> suites) {
+        if (suites == null || suites.size() == 0) {
+            return false;
+        }
+        List<Long> suiteIds = new LinkedList<>();
+        for (Object obj: suites) {
+            TestSuiteVo vo = JSON.parseObject(JSON.toJSONString(obj), TestSuiteVo.class);
+            if (vo.getSelecting() != null && vo.getSelecting()) {
+                suiteIds.add(vo.getId());
+            }
+        }
+        addCasesBySuitesPers(run.getId(), suiteIds);
+
+        return true;
     }
 
     @Override
@@ -109,21 +125,15 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
             run.setPlanId(planId);
         }
 
-        for (TestCaseInRun item : run.getTestcases()) {
-            getDao().delete(item);
-        }
-
         run.setTestcases(new LinkedList<TestCaseInRun>());
         saveOrUpdate(run);
+
+        List<Long> caseIds = new LinkedList<>();
         for (Object obj : ids) {
             Long id = Long.valueOf(obj.toString());
-            TestCase testcase = (TestCase) get(TestCase.class, id);
-
-            TestCaseInRun caseInRun = new TestCaseInRun(run.getProjectId(), run.getPlanId(),
-                    run.getId(), id, testcase.getpId(), testcase.getLeaf());
-            run.getTestcases().add(caseInRun);
+            caseIds.add(id);
         }
-        saveOrUpdate(run);
+        addCasesPers(run.getId(), caseIds);
 
         Constant.MsgType action = Constant.MsgType.update_case;
         msgService.create(run, action, optUser);
@@ -140,6 +150,17 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
         JSONArray data = json.getJSONArray("cases");
 
         return saveCases(planId, runId, data.toArray(), optUser);
+    }
+
+    @Override
+    public void addCasesBySuitesPers(Long id, List<Long> suiteIds) {
+        String ids = StringUtils.join(suiteIds.toArray(), ",");
+        getDao().querySql("{call add_cases_by_suites(?,?)}", id, ids);
+    }
+    @Override
+    public void addCasesPers(Long suiteId, List<Long> caseIds) {
+        String ids = StringUtils.join(caseIds.toArray(), ",");
+        getDao().querySql("{call add_cases(?,?)}", suiteId, ids);
     }
 
     @Override

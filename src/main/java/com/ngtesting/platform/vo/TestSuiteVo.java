@@ -14,6 +14,7 @@ public class TestSuiteVo extends BaseVo {
 	private Long projectId;
 	private Long userId;
     private String userName;
+    private Boolean selecting;
 
     Integer count;
 
@@ -28,6 +29,13 @@ public class TestSuiteVo extends BaseVo {
         this.descr = descr;
         this.projectId = projectId;
         this.userId = userId;
+    }
+
+    public Boolean getSelecting() {
+        return selecting;
+    }
+    public void setSelecting(Boolean selecting) {
+        this.selecting = selecting;
     }
 
     public Integer getCount() {

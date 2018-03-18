@@ -150,27 +150,27 @@ public class SuiteServiceImpl extends BaseServiceImpl implements SuiteService {
             suite.setProjectId(planId);
         }
 
-        for (TestCaseInSuite item : suite.getTestcases()) {
-            getDao().delete(item);
-        }
-
         suite.setTestcases(new LinkedList<TestCaseInSuite>());
         saveOrUpdate(suite);
+
+        List<Long> caseIds = new LinkedList<>();
         for (Object obj : ids) {
             Long id = Long.valueOf(obj.toString());
-            TestCase testcase = (TestCase) get(TestCase.class, id);
-
-            TestCaseInSuite caseInSuite = new TestCaseInSuite(suite.getProjectId(),
-                    suite.getId(), id, testcase.getpId(), testcase.getLeaf());
-            suite.getTestcases().add(caseInSuite);
+            caseIds.add(id);
         }
-        saveOrUpdate(suite);
+        addCasesPers(suite.getId(), caseIds);
 
         Constant.MsgType action = Constant.MsgType.update_case;
         historyService.create(suite.getProjectId(), optUser, action.msg, TestHistory.TargetType.run,
                 suite.getId(), suite.getName());
 
         return suite;
+    }
+
+    @Override
+    public void addCasesPers(Long suiteId, List<Long> caseIds) {
+        String ids = StringUtils.join(caseIds.toArray(), ",");
+        getDao().querySql("{call add_cases_to_suite(?,?)}", suiteId, ids);
     }
 
     @Override

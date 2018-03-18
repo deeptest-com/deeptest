@@ -155,12 +155,12 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
     @Override
     public void addCasesBySuitesPers(Long id, List<Long> suiteIds) {
         String ids = StringUtils.join(suiteIds.toArray(), ",");
-        getDao().querySql("{call add_cases_by_suites(?,?)}", id, ids);
+        getDao().querySql("{call add_cases_to_run_by_suites(?,?)}", id, ids);
     }
     @Override
-    public void addCasesPers(Long suiteId, List<Long> caseIds) {
+    public void addCasesPers(Long id, List<Long> caseIds) {
         String ids = StringUtils.join(caseIds.toArray(), ",");
-        getDao().querySql("{call add_cases(?,?)}", suiteId, ids);
+        getDao().querySql("{call add_cases_to_run(?,?)}", id, ids);
     }
 
     @Override

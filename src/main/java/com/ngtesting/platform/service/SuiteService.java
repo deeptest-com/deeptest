@@ -34,7 +34,9 @@ public interface SuiteService extends BaseService {
 
     TestSuiteVo genVo(TestSuite po, Boolean withCases);
 
-	Long countCase(Long suiteId);
+    void addCasesPers(Long suiteId, List<Long> caseIds);
+
+    Long countCase(Long suiteId);
 
 	TestCaseInSuiteVo genCaseVo(TestCaseInSuite po);
 

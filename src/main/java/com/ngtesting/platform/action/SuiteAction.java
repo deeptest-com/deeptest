@@ -54,7 +54,7 @@ public class SuiteAction extends BaseAction {
         UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
         Long id = json.getLong("id");
 
-        TestSuiteVo vo = suiteService.getById(id);
+        TestSuiteVo vo = suiteService.getById(id, false);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

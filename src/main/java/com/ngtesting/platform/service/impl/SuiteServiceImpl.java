@@ -62,16 +62,12 @@ public class SuiteServiceImpl extends BaseServiceImpl implements SuiteService {
 
         return vo;
     }
-
     @Override
-    public List<TestSuiteVo> genVos(List<TestSuite> pos) {
-        List<TestSuiteVo> vos = new LinkedList<TestSuiteVo>();
+    public TestSuiteVo getById(Long caseId, Boolean withCases) {
+        TestSuite po = (TestSuite) get(TestSuite.class, caseId);
+        TestSuiteVo vo = genVo(po, withCases);
 
-        for (TestSuite po : pos) {
-            TestSuiteVo vo = genVo(po);
-            vos.add(vo);
-        }
-        return vos;
+        return vo;
     }
 
     @Override
@@ -173,19 +169,31 @@ public class SuiteServiceImpl extends BaseServiceImpl implements SuiteService {
         return suite;
     }
 
-    private Integer getChildMaxOrderNumb(TestSuite parent) {
-        String hql = "select max(ordr) from TestSuite where parentId = " + parent.getId();
-        Integer maxOrder = (Integer) getByHQL(hql);
+    @Override
+    public Long countCase(Long suiteId) {
+        String hql = "select count(id) from TestCaseInSuite where isLeaf=true and suiteId=" + suiteId;
+        Long count = (Long) getByHQL(hql);
 
-        if (maxOrder == null) {
-            maxOrder = 0;
+        return count;
+    }
+
+    @Override
+    public List<TestSuiteVo> genVos(List<TestSuite> pos) {
+        List<TestSuiteVo> vos = new LinkedList<TestSuiteVo>();
+
+        for (TestSuite po : pos) {
+            TestSuiteVo vo = genVo(po);
+            vos.add(vo);
         }
-
-        return maxOrder;
+        return vos;
     }
 
     @Override
     public TestSuiteVo genVo(TestSuite po) {
+        return genVo(po, false);
+    }
+    @Override
+    public TestSuiteVo genVo(TestSuite po, Boolean withCases) {
         TestSuiteVo vo = new TestSuiteVo();
 
         vo.setId(po.getId());
@@ -195,14 +203,22 @@ public class SuiteServiceImpl extends BaseServiceImpl implements SuiteService {
         vo.setProjectId(po.getProjectId());
         vo.setUserId(po.getUserId());
 
-        TestUser user = (TestUser)get(TestUser.class, po.getUserId());
+        TestUser user = (TestUser) get(TestUser.class, po.getUserId());
         vo.setUserName(user.getName());
         vo.setCreateTime(po.getCreateTime());
         vo.setUpdateTime(po.getUpdateTime());
 
-        for (TestCaseInSuite p: po.getTestcases()) {
-            TestCaseInSuiteVo v = genCaseVo(p);
-            vo.getTestcases().add(v);
+        int count = 0;
+        if (withCases) {
+            for (TestCaseInSuite p : po.getTestcases()) {
+                TestCaseInSuiteVo v = genCaseVo(p);
+                vo.getTestcases().add(v);
+                if (p.getLeaf()) {
+                    count++;
+                }
+            }
+        } else {
+            vo.setCount(countCase(vo.getId()).intValue());
         }
 
         return vo;

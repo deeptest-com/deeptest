@@ -15,6 +15,8 @@ public class TestSuiteVo extends BaseVo {
 	private Long userId;
     private String userName;
 
+    Integer count;
+
 	private List<TestCaseInSuiteVo> testcases = new LinkedList();
     public TestSuiteVo(){}
     public TestSuiteVo(Long id, String name, Integer estimate, String descr, Long projectId, Long userId) {
@@ -26,6 +28,14 @@ public class TestSuiteVo extends BaseVo {
         this.descr = descr;
         this.projectId = projectId;
         this.userId = userId;
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
     }
 
     public String getUserName() {

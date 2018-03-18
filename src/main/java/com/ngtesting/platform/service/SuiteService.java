@@ -13,6 +13,9 @@ public interface SuiteService extends BaseService {
 
 	List<TestSuite> query(JSONObject json);
 	TestSuiteVo getById(Long caseId);
+
+	TestSuiteVo getById(Long caseId, Boolean withCases);
+
 	TestSuite save(JSONObject json, UserVo optUser);
 	TestSuite delete(Long vo, Long userId);
 
@@ -26,7 +29,11 @@ public interface SuiteService extends BaseService {
 
 	TestSuiteVo genVo(TestSuite po);
 
-    TestCaseInSuiteVo genCaseVo(TestCaseInSuite po);
+    TestSuiteVo genVo(TestSuite po, Boolean withCases);
+
+	Long countCase(Long suiteId);
+
+	TestCaseInSuiteVo genCaseVo(TestCaseInSuite po);
 
     TestSuite updatePo(TestSuiteVo vo);
 }

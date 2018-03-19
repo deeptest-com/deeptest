@@ -1,4 +1,4 @@
-# Next Generation Test Management Tool
+# Next Generation Testing Tool
 
 AngularJS 4, SockJS, SpringMVC, Hibernate, MySQL
 

@@ -144,6 +144,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
             // 不能用旧的
             testCase.setSteps(new LinkedList());
+            testCase.setHistories(new LinkedList());
             testCase.setComments(new LinkedList());
 
             testCase.setId(null);
@@ -404,6 +405,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             // 不能用以前的
             clonedChild.setComments(new LinkedList());
             clonedChild.setSteps(new LinkedList());
+            clonedChild.setHistories(new LinkedList());
 
             clonedChild.setId(null);
             clonedChild.setpId(testCase.getId());

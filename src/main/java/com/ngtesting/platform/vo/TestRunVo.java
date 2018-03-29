@@ -25,6 +25,8 @@ public class TestRunVo extends BaseVo {
     private Long userId;
     private String userName;
 
+    private List<UserVo> assignees = new LinkedList<>();
+
     private Map<String, Integer> countMap = new HashMap<String, Integer>(){{
         put("total", 0);
         put("pass", 0);
@@ -39,6 +41,13 @@ public class TestRunVo extends BaseVo {
         put("block", 0);
         put("untest", 0);
     }};
+
+    public List<UserVo> getAssignees() {
+        return assignees;
+    }
+    public void setAssignees(List<UserVo> assignees) {
+        this.assignees = assignees;
+    }
 
     public Long getUserId() {
         return userId;

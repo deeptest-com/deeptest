@@ -104,30 +104,32 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
         return vo;
     }
     @Override
-    public TestAlert saveAlert(TestRun run) {
-        TestAlert po = getByRun(run.getId());;
-        if (po == null) {
-            po = new TestAlert();
+    public void saveAlert(TestRun run) {
+
+        for (TestUser user : run.getAssignees()) {
+            TestAlert po = getByRun(run.getId());;
+            if (po == null) {
+                po = new TestAlert();
+            }
+
+            po.setType("run");
+            po.setDescr(run.getDescr());
+            po.setEntityId(run.getId());
+            po.setEntityName(run.getName());
+            po.setStatus(run.getStatus().toString());
+            po.setRead(false);
+            po.setUserId(run.getUserId());
+            po.setAssigneeId(user.getId());
+
+            TestPlan plan = run.getPlan();
+            if (plan == null || plan.getId() == null) {
+                plan= (TestPlan)get(TestPlan.class, run.getPlanId());
+            }
+            po.setStartTime(plan.getStartTime());
+            po.setEndTime(plan.getEndTime());
+
+            saveOrUpdate(po);
         }
-
-        po.setType("run");
-        po.setDescr(run.getDescr());
-        po.setEntityId(run.getId());
-        po.setEntityName(run.getName());
-        po.setStatus(run.getStatus().toString());
-        po.setRead(false);
-        po.setAssigneeId(run.getAssigneeId());
-        po.setUserId(run.getUserId());
-
-        TestPlan plan = run.getPlan();
-        if (plan == null || plan.getId() == null) {
-            plan= (TestPlan)get(TestPlan.class, run.getPlanId());
-        }
-        po.setStartTime(plan.getStartTime());
-        po.setEndTime(plan.getEndTime());
-
-        saveOrUpdate(po);
-        return po;
     }
 
     @Override

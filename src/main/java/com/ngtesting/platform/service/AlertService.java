@@ -12,7 +12,7 @@ public interface AlertService extends BaseService {
 
     List<TestAlert> scanTestAlert(Long userId);
 
-    TestAlert saveAlert(TestRun run);
+    void saveAlert(TestRun run);
 
     TestAlert getByRun(Long id);
 

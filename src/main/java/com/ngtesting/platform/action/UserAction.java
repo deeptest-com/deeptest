@@ -1,6 +1,7 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.config.Constant.RespCode;
@@ -247,8 +248,9 @@ public class UserAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long orgId = json.getLong("orgId");
 		String keywords = json.getString("keywords");
+		JSONArray exceptIds = json.getJSONArray("exceptIds");
 
-		List userPos = userService.search(orgId, keywords, null);
+		List userPos = userService.search(orgId, keywords, exceptIds);
 		List<UserVo> userVos = userService.genVos(userPos);
 
 		ret.put("data", userVos);

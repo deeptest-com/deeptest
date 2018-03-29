@@ -18,20 +18,20 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 	@Override
 	public List<TestCasePriority> list(Long orgId) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestCasePriority.class);
-        
+
         dc.add(Restrictions.eq("orgId", orgId));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-        
+
         dc.addOrder(Order.asc("displayOrder"));
         List ls = findAllByCriteria(dc);
-		
+
 		return ls;
 	}
 	@Override
 	public List<CasePriorityVo> listVos(Long orgId) {
         List ls = list(orgId);
-        
+
         List<CasePriorityVo> vos = genVos(ls);
 		return vos;
 	}
@@ -41,26 +41,26 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 		if (vo == null) {
 			return null;
 		}
-		
+
 		TestCasePriority po;
 		if (vo.getId() != null) {
 			po = (TestCasePriority) get(TestCasePriority.class, vo.getId());
 		} else {
 			po = new TestCasePriority();
 		}
-		
+
 		BeanUtilEx.copyProperties(po, vo);
-		
+
 		po.setOrgId(orgId);
-		
+
 		if (vo.getId() == null) {
 			po.setCode(UUID.randomUUID().toString());
-			
+
 			String hql = "select max(displayOrder) from TestCasePriority pri where pri.orgId=?";
 			Integer maxOrder = (Integer) getByHQL(hql, orgId);
 	        po.setDisplayOrder(maxOrder + 10);
 		}
-		
+
 		saveOrUpdate(po);
 		return po;
 	}
@@ -70,30 +70,30 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 		TestCasePriority po = (TestCasePriority) get(TestCasePriority.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
-		
+
 		return true;
 	}
 
 	@Override
 	public boolean setDefaultPers(Long id, Long orgId) {
 		List<TestCasePriority> ls = list(orgId);
-		for (TestCasePriority type : ls) {
-			if (type.getId().longValue() == id.longValue()) {
-				type.setIsDefault(true);
-				saveOrUpdate(type);
-			} else if (type.getIsDefault()) {
-				type.setIsDefault(false);
-				saveOrUpdate(type);
+		for (TestCasePriority priority : ls) {
+			if (priority.getId().longValue() == id.longValue()) {
+				priority.setIsDefault(true);
+				saveOrUpdate(priority);
+			} else if (priority.getIsDefault() != null && priority.getIsDefault()) {
+				priority.setIsDefault(false);
+				saveOrUpdate(priority);
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	@Override
 	public boolean changeOrderPers(Long id, String act, Long orgId) {
 		TestCasePriority type = (TestCasePriority) get(TestCasePriority.class, id);
-		
+
         String hql = "from TestCasePriority tp where where tp.orgId=? and tp.deleted = false and tp.disabled = false ";
         if ("up".equals(act)) {
         	hql += "and tp.displayOrder < ? order by displayOrder desc";
@@ -102,16 +102,16 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
         } else {
         	return false;
         }
-        
+
         TestCasePriority neighbor = (TestCasePriority) getDao().findFirstByHQL(hql, orgId, type.getDisplayOrder());
-		
+
         Integer order = type.getDisplayOrder();
         type.setDisplayOrder(neighbor.getDisplayOrder());
         neighbor.setDisplayOrder(order);
-        
+
         saveOrUpdate(type);
         saveOrUpdate(neighbor);
-		
+
 		return true;
 	}
 
@@ -122,7 +122,7 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 		}
 		CasePriorityVo vo = new CasePriorityVo();
 		BeanUtilEx.copyProperties(vo, po);
-		
+
 		return vo;
 	}
 	@Override

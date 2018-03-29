@@ -1,8 +1,10 @@
 package com.ngtesting.platform.entity;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "tst_run")
@@ -28,13 +30,6 @@ public class TestRun extends BaseEntity {
     private Long projectId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assignee_id", insertable = false, updatable = false)
-    private TestUser assignee;
-
-    @Column(name = "assignee_id")
-    private Long assigneeId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private TestUser user;
 
@@ -51,6 +46,13 @@ public class TestRun extends BaseEntity {
     @OneToMany(mappedBy="run", cascade={CascadeType.ALL}, fetch=FetchType.LAZY)
     private List<TestCaseInRun> testcases = new LinkedList<>();
 
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "tst_r_run_assignee", joinColumns = {
+            @JoinColumn(name = "run_id", nullable = false, updatable = false) },
+            inverseJoinColumns = { @JoinColumn(name = "assignee_id",
+                    nullable = false, updatable = false) })
+    private Set<TestUser> assignees = new HashSet(0);
+
     public static enum RunStatus {
         not_start("not_start"),
         in_progress("in_progress"),
@@ -66,29 +68,21 @@ public class TestRun extends BaseEntity {
         }
     }
 
-    public TestUser getAssignee() {
-        return assignee;
+    public Set<TestUser> getAssignees() {
+        return assignees;
     }
 
-    public void setAssignee(TestUser assignee) {
-        this.assignee = assignee;
+    public void setAssignees(Set<TestUser> assignees) {
+        this.assignees = assignees;
     }
 
-    public Long getAssigneeId() {
-        return assigneeId;
-    }
-
-    public void setAssigneeId(Long assigneeId) {
-        this.assigneeId = assigneeId;
-    }
-
-    public TestUser getUser() {
-        return user;
-    }
-
-    public void setUser(TestUser user) {
-        this.user = user;
-    }
+//    public TestUser getUser() {
+//        return user;
+//    }
+//
+//    public void setUser(TestUser user) {
+//        this.user = user;
+//    }
 
     public Long getUserId() {
         return userId;

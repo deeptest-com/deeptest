@@ -146,7 +146,9 @@ public class ProjectAction extends BaseAction {
 		}
 
         pushSettingsService.pushRecentProjects(userVo);
+        pushSettingsService.pushPrjSettings(userVo);
 
+		ret.put("data", vo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -184,6 +186,8 @@ public class ProjectAction extends BaseAction {
 
 		List<TestRelationProjectRoleEntity> pos = relationProjectRoleEntityService.changeRolePers(json);
 		List<RelationProjectRoleEntityVo> entityInRoles = relationProjectRoleEntityService.genVos(pos);
+
+        pushSettingsService.pushPrjSettings(userVo);
 
 		ret.put("entityInRoles", entityInRoles);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

@@ -69,7 +69,7 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
         Long prjId = json.getLong("prjId");
         Long planId = json.getLong("planId");
         Long runId = json.getLong("id");
-        Long assigneeId = json.getLong("userId");
+        List assignees = json.getJSONArray("assignees");
         String runName = json.getString("name");
 
         Constant.MsgType action = null;
@@ -85,7 +85,12 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
         }
         run.setName(runName);
         run.setUserId(user.getId());
-        run.setAssigneeId(assigneeId);
+
+        for (Object userId : assignees) {
+            TestUser u = (TestUser)get(TestUser.class, Long.valueOf(userId.toString()));
+            run.getAssignees().add(u);
+        }
+        run.setUserId(user.getId());
 
         saveOrUpdate(run);
 
@@ -201,6 +206,11 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 		BeanUtilEx.copyProperties(vo, po);
 		TestUser user = (TestUser)get(TestUser.class, po.getUserId());
         vo.setUserName(user.getName());
+
+        for (TestUser u : po.getAssignees()) {
+            UserVo userVo = new UserVo(u.getId(), u.getName());
+            vo.getAssignees().add(userVo);
+        }
 
 		String sql = "select cs1.`status` status, count(cs1.tcinid) count from "
                 +          "(select tcin.id tcinid, tcin.`status`, tc.id tcid from tst_case_in_run tcin "

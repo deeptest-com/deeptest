@@ -19,20 +19,20 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 	@Override
 	public List<TestCaseType> list(Long orgId) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestCaseType.class);
-        
+
         dc.add(Restrictions.eq("orgId", orgId));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-        
+
         dc.addOrder(Order.asc("displayOrder"));
         List ls = findAllByCriteria(dc);
-		
+
 		return ls;
 	}
 	@Override
 	public List<CaseTypeVo> listVos(Long orgId) {
         List ls = list(orgId);
-        
+
         List<CaseTypeVo> vos = genVos(ls);
 		return vos;
 	}
@@ -42,25 +42,25 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 		if (vo == null) {
 			return null;
 		}
-		
+
 		TestCaseType po;
 		if (vo.getId() != null) {
 			po = (TestCaseType) get(TestCaseType.class, vo.getId());
 		} else {
 			po = new TestCaseType();
 		}
-		
+
 		BeanUtilEx.copyProperties(po, vo);
 		po.setOrgId(orgId);
-		
+
 		if (vo.getId() == null) {
 			po.setCode(UUID.randomUUID().toString());
-			
+
 			String hql = "select max(displayOrder) from TestCaseType tp where tp.orgId=?";
 			Integer maxOrder = (Integer) getByHQL(hql, orgId);
 	        po.setDisplayOrder(maxOrder + 10);
 		}
-		
+
 		saveOrUpdate(po);
 		return po;
 	}
@@ -70,7 +70,7 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 		TestCaseType po = (TestCaseType) get(TestCaseType.class, id);
 		po.setDeleted(true);
 		saveOrUpdate(po);
-		
+
 		return true;
 	}
 
@@ -81,19 +81,19 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 			if (type.getId().longValue() == id.longValue()) {
 				type.setIsDefault(true);
 				saveOrUpdate(type);
-			} else if (type.getIsDefault()) {
+			} else if (type.getIsDefault() != null && type.getIsDefault()) {
 				type.setIsDefault(false);
 				saveOrUpdate(type);
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	@Override
 	public boolean changeOrderPers(Long id, String act, Long orgId) {
 		TestCaseType type = (TestCaseType) get(TestCaseType.class, id);
-		
+
         String hql = "from TestCaseType tp where tp.orgId=? and tp.deleted = false and tp.disabled = false ";
         if ("up".equals(act)) {
         	hql += "and tp.displayOrder < ? order by displayOrder desc";
@@ -102,16 +102,16 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
         } else {
         	return false;
         }
-        
+
         TestCaseType neighbor = (TestCaseType) getFirstByHql(hql, orgId, type.getDisplayOrder());
-		
+
         Integer order = type.getDisplayOrder();
         type.setDisplayOrder(neighbor.getDisplayOrder());
         neighbor.setDisplayOrder(order);
-        
+
         saveOrUpdate(type);
         saveOrUpdate(neighbor);
-		
+
 		return true;
 	}
 
@@ -141,7 +141,7 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 		}
 		CaseTypeVo vo = new CaseTypeVo();
 		BeanUtilEx.copyProperties(vo, po);
-		
+
 		return vo;
 	}
 	@Override

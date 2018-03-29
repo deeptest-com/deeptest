@@ -1,14 +1,16 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.TestCase;
+import com.ngtesting.platform.entity.TestCasePriority;
+import com.ngtesting.platform.entity.TestCaseType;
+import com.ngtesting.platform.service.CasePriorityService;
 import com.ngtesting.platform.service.CaseService;
+import com.ngtesting.platform.service.CaseTypeService;
 import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.vo.CustomFieldVo;
-import com.ngtesting.platform.vo.TestCaseVo;
-import com.ngtesting.platform.vo.UserVo;
+import com.ngtesting.platform.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +29,10 @@ import java.util.Map;
 public class CaseAction extends BaseAction {
 	@Autowired
     CaseService caseService;
+    @Autowired
+    CaseTypeService caseTypeService;
+    @Autowired
+    CasePriorityService casePriorityService;
 	@Autowired
 	CustomFieldService customFieldService;
 
@@ -42,9 +48,17 @@ public class CaseAction extends BaseAction {
 		List<TestCase> ls = caseService.query(projectId);
         List<TestCaseVo> vos = caseService.genVos(ls, false);
 
+        List<TestCaseType> caseTypePos = caseTypeService.list(orgId);
+        List<CaseTypeVo> caseTypeList = caseTypeService.genVos(caseTypePos);
+
+        List<TestCasePriority> casePriorityPos = casePriorityService.list(orgId);
+        List<CasePriorityVo> casePriorityList = casePriorityService.genVos(casePriorityPos);
+
         List<CustomFieldVo> customFieldList = customFieldService.listForCaseByProject(orgId, projectId);
 
         ret.put("data", vos);
+        ret.put("caseTypeList", caseTypeList);
+        ret.put("casePriorityList", casePriorityList);
 		ret.put("customFields", customFieldList);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

@@ -19,6 +19,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -86,8 +87,10 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
         run.setName(runName);
         run.setUserId(user.getId());
 
-        for (Object userId : assignees) {
-            TestUser u = (TestUser)get(TestUser.class, Long.valueOf(userId.toString()));
+        run.setAssignees(new HashSet());
+        for (Object obj : assignees) {
+            JSONObject jsonObject = JSON.parseObject(obj.toString());
+            TestUser u = (TestUser)get(TestUser.class, jsonObject.getLong("id"));
             run.getAssignees().add(u);
         }
         run.setUserId(user.getId());
@@ -202,10 +205,9 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 
 	@Override
 	public TestRunVo genVo(TestRun po) {
-		TestRunVo vo = new TestRunVo();
-		BeanUtilEx.copyProperties(vo, po);
 		TestUser user = (TestUser)get(TestUser.class, po.getUserId());
-        vo.setUserName(user.getName());
+        TestRunVo vo = new TestRunVo(po.getId(), po.getName(), po.getEstimate(), po.getStatus().toString(),
+                po.getDescr(), po.getOrdr(), po.getProjectId(), po.getPlanId(), po.getUserId(), user.getName());
 
         for (TestUser u : po.getAssignees()) {
             UserVo userVo = new UserVo(u.getId(), u.getName());

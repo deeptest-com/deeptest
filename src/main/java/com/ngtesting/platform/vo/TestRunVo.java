@@ -25,6 +25,23 @@ public class TestRunVo extends BaseVo {
     private Long userId;
     private String userName;
 
+    public TestRunVo() {
+
+    }
+    public TestRunVo(Long id, String name, Integer estimate, String status,
+        String descr, Integer ordr, Long projectId, Long planId, Long userId, String userName) {
+        this.id = id;
+        this.name = name;
+        this.estimate = estimate;
+        this.status = status;
+        this.descr = descr;
+        this.ordr = ordr;
+        this.projectId = projectId;
+        this.planId = planId;
+        this.userId = userId;
+        this.userName = userName;
+    }
+
     private List<UserVo> assignees = new LinkedList<>();
 
     private Map<String, Integer> countMap = new HashMap<String, Integer>(){{

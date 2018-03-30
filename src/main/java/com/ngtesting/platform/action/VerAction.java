@@ -22,7 +22,7 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "plan/")
+@RequestMapping(Constant.API_PATH_CLIENT + "ver/")
 public class VerAction extends BaseAction {
 	@Autowired
 	private OptFacade optFacade;

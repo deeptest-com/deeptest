@@ -7,10 +7,16 @@ AngularJS 4, SockJS, SpringMVC, Hibernate, MySQL
 
 
 ```
-### Testing Project
+### Test Project
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/01.png" width="800px" style="margin: 10px auto;">
 
-### Testing Plan
+### Test Case
+<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/05.png" width="800px" style="margin: 10px auto;">
+
+### Test Execution
+<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/06.png" width="800px" style="margin: 10px auto;">
+
+### Test Plan
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/02.png" width="800px" style="margin: 10px auto;">
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/03.png" width="800px" style="margin: 10px auto;">
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/04.png" width="800px" style="margin: 10px auto;">

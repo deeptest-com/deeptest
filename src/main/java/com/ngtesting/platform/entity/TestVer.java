@@ -1,25 +1,19 @@
 package com.ngtesting.platform.entity;
 
-import org.hibernate.annotations.Where;
-
 import javax.persistence.*;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 @Entity
-@Table(name = "tst_plan")
-public class TestPlan extends BaseEntity {
-    private static final long serialVersionUID = -2388027442087410471L;
+@Table(name = "tst_ver")
+public class TestVer extends BaseEntity {
 
+    private static final long serialVersionUID = 7260005873110268288L;
     private String name;
-	private Integer estimate;
 
     @Enumerated(EnumType.STRING)
-    private PlanStatus status = PlanStatus.not_start;
+    private VerStatus status = VerStatus.in_progress;
 
     protected Date startTime;
-
     protected Date endTime;
 
 	@Column(name = "descr", length = 1000)
@@ -32,17 +26,11 @@ public class TestPlan extends BaseEntity {
     @Column(name = "project_id")
     private Long projectId;
 
-    @OneToMany(mappedBy="plan", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-    @OrderBy("id")
-    @Where(clause="!deleted")
-    private List<TestRun> runs = new LinkedList<>();
-
-    public static enum PlanStatus {
-        not_start("not_start"),
+    public static enum VerStatus {
         in_progress("in_progress"),
         end("end");
 
-        PlanStatus(String val) {
+        VerStatus(String val) {
             this.val = val;
         }
 
@@ -50,14 +38,6 @@ public class TestPlan extends BaseEntity {
         public String toString() {
             return val;
         }
-    }
-
-    public List<TestRun> getRuns() {
-        return runs;
-    }
-
-    public void setRuns(List<TestRun> runs) {
-        this.runs = runs;
     }
 
     public String getName() {
@@ -68,19 +48,11 @@ public class TestPlan extends BaseEntity {
         this.name = name;
     }
 
-    public Integer getEstimate() {
-        return estimate;
-    }
-
-    public void setEstimate(Integer estimate) {
-        this.estimate = estimate;
-    }
-
-    public PlanStatus getStatus() {
+    public VerStatus getStatus() {
         return status;
     }
 
-    public void setStatus(PlanStatus status) {
+    public void setStatus(VerStatus status) {
         this.status = status;
     }
 

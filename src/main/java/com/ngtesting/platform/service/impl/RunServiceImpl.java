@@ -212,8 +212,8 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
         TestRunVo vo = new TestRunVo(po.getId(), po.getName(), po.getEstimate(), po.getStatus().toString(),
                 po.getDescr(), po.getOrdr(), po.getProjectId(), po.getPlanId(), po.getUserId(), user.getName());
         vo.setEnvId(po.getEnvId());
-        TestEnv env = po.getEnv();
-        vo.setEnvName(po.getEnvId()!=null?po.getEnv().getName():"");
+        TestEnv env = (TestEnv)get(TestEnv.class, po.getEnvId());
+        vo.setEnvName(env.getName());
 
         for (TestUser u : po.getAssignees()) {
             UserVo userVo = new UserVo(u.getId(), u.getName());

@@ -11,12 +11,22 @@ public class TestEnv extends BaseEntity {
 	@Column(name = "descr", length = 1000)
     private String descr;
 
+    private Integer displayOrder;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
     private TestProject project;
 
     @Column(name = "project_id")
     private Long projectId;
+
+    public Integer getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(Integer displayOrder) {
+        this.displayOrder = displayOrder;
+    }
 
     public String getName() {
         return name;

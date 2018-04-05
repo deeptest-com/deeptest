@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.TestVer;
 import com.ngtesting.platform.service.VerService;
+import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.TestVerVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
@@ -18,13 +19,21 @@ import java.util.List;
 @Service
 public class VerServiceImpl extends BaseServiceImpl implements VerService {
     @Override
-    public List<TestVer> list(Long projectId) {
+    public List<TestVer> list(Long projectId, String keywords, String disabled) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestVer.class);
 
+        dc.add(Restrictions.eq("projectId", projectId));
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 
-        dc.addOrder(Order.asc("createTime"));
+        if (StringUtil.isNotEmpty(keywords)) {
+            dc.add(Restrictions.like("name", "%" + keywords + "%"));
+        }
+        if (StringUtil.isNotEmpty(disabled)) {
+            dc.add(Restrictions.eq("disabled", Boolean.valueOf(disabled)));
+        }
+
+        dc.addOrder(Order.asc("displayOrder"));
 
         List<TestVer> ls = findAllByCriteria(dc);
 
@@ -63,6 +72,10 @@ public class VerServiceImpl extends BaseServiceImpl implements VerService {
             action = Constant.MsgType.update;
         } else {
             po = new TestVer();
+            String hql = "select max(displayOrder) from TestVer tp where tp.projectId=?";
+            Integer maxOrder = (Integer) getByHQL(hql, vo.getProjectId());
+            po.setDisplayOrder(maxOrder + 10);
+
             action = Constant.MsgType.create;
         }
         po.setName(vo.getName());
@@ -85,6 +98,38 @@ public class VerServiceImpl extends BaseServiceImpl implements VerService {
     }
 
     @Override
+    public boolean changeOrderPers(Long id, String act, Long projectId) {
+        TestVer ver = (TestVer) get(TestVer.class, id);
+
+        String hql = "from TestVer tp where tp.projectId=? and tp.deleted = false and tp.disabled = false ";
+        if ("up".equals(act)) {
+            hql += "and tp.displayOrder < ? order by displayOrder desc";
+        } else if ("down".equals(act)) {
+            hql += "and tp.displayOrder > ? order by displayOrder asc";
+        } else {
+            return false;
+        }
+
+        TestVer neighbor = (TestVer) getFirstByHql(hql, projectId, ver.getDisplayOrder());
+
+        Integer order = ver.getDisplayOrder();
+        ver.setDisplayOrder(neighbor.getDisplayOrder());
+        neighbor.setDisplayOrder(order);
+
+        saveOrUpdate(ver);
+        saveOrUpdate(neighbor);
+
+        return true;
+    }
+    @Override
+    public List<TestVerVo> listVos(Long projectId) {
+        List ls = list(projectId, null, null);
+
+        List<TestVerVo> vos = genVos(ls);
+        return vos;
+    }
+
+    @Override
     public TestVerVo genVo(TestVer po) {
         TestVerVo vo = new TestVerVo();
 
@@ -94,7 +139,7 @@ public class VerServiceImpl extends BaseServiceImpl implements VerService {
         vo.setEndTime(po.getEndTime());
         vo.setDescr(po.getDescr());
         vo.setProjectId(po.getProjectId());
-        vo.setStatus(po.getStatus().toString());
+        vo.setDisabled(po.getDisabled());
 
         return vo;
     }

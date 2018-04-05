@@ -21,6 +21,43 @@ public class TestPlanVo extends BaseVo {
 
     private Long projectId;
 
+    private Long verId;
+    private Long envId;
+    private String verName;
+    private String envName;
+
+    public String getVerName() {
+        return verName;
+    }
+
+    public void setVerName(String verName) {
+        this.verName = verName;
+    }
+
+    public String getEnvName() {
+        return envName;
+    }
+
+    public void setEnvName(String envName) {
+        this.envName = envName;
+    }
+
+    public Long getVerId() {
+        return verId;
+    }
+
+    public void setVerId(Long verId) {
+        this.verId = verId;
+    }
+
+    public Long getEnvId() {
+        return envId;
+    }
+
+    public void setEnvId(Long envId) {
+        this.envId = envId;
+    }
+
     private List<TestRunVo> runVos = new LinkedList<>();
 
     public List<TestRunVo> getRunVos() {

@@ -115,25 +115,6 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 		return true;
 	}
 
-//	@Override
-//	public void createDefaultBasicDataPers(Long orgId) {
-//		DetachedCriteria dc = DetachedCriteria.forClass(TestCaseType.class);
-//		dc.add(Restrictions.eq("isBuildIn", true));
-//		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//
-//		dc.addOrder(Order.asc("displayOrder"));
-//		List<TestCaseType> ls = findAllByCriteria(dc);
-//
-//		for (TestCaseType p : ls) {
-//			TestCaseType temp = new TestCaseType();
-//			BeanUtilEx.copyProperties(temp, p);
-//			temp.setId(null);
-//			temp.setOrgId(orgId);
-//			saveOrUpdate(temp);
-//		}
-//	}
-
 	@Override
 	public CaseTypeVo genVo(TestCaseType po) {
 		if (po == null) {

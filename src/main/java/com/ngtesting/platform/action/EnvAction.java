@@ -32,14 +32,16 @@ public class EnvAction extends BaseAction {
 	EnvService envService;
 
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "query", method = RequestMethod.POST)
+	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> List(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
         UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long projectId = json.getLong("projectId");
+        String keywords = json.getString("keywords");
+        String disabled = json.getString("disabled");
 
-		List<TestEnv> ls = envService.list(projectId);
+		List<TestEnv> ls = envService.list(projectId, keywords, disabled);
 
 		List<TestEnvVo> vos = envService.genVos(ls);
 
@@ -95,5 +97,25 @@ public class EnvAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+
+    @AuthPassport(validate = true)
+    @RequestMapping(value = "changeOrder", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Long projectId = json.getLong("projectId");
+        Long id = json.getLong("id");
+        String act = json.getString("act");
+
+        boolean success = envService.changeOrderPers(id, act, projectId);
+        List<TestEnvVo> vos = envService.listVos(projectId);
+
+        ret.put("data", vos);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+
+        return ret;
+    }
 
 }

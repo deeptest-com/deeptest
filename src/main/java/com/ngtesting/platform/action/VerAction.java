@@ -31,14 +31,16 @@ public class VerAction extends BaseAction {
 	VerService verService;
 
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "query", method = RequestMethod.POST)
+	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long projectId = json.getLong("projectId");
+		String keywords = json.getString("keywords");
+		String disabled = json.getString("disabled");
 
-		List<TestVer> ls = verService.list(projectId);
+		List<TestVer> ls = verService.list(projectId, keywords, disabled);
 		List<TestVerVo> vos = verService.genVos(ls);
 
         ret.put("data", vos);
@@ -87,6 +89,26 @@ public class VerAction extends BaseAction {
 		TestVer po = verService.delete(id, userVo.getId());
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "changeOrder", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long projectId = json.getLong("projectId");
+		Long id = json.getLong("id");
+		String act = json.getString("act");
+
+		boolean success = verService.changeOrderPers(id, act, projectId);
+		List<TestVerVo> vos = verService.listVos(projectId);
+
+		ret.put("data", vos);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+
 		return ret;
 	}
 

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.TestEnv;
 import com.ngtesting.platform.service.EnvService;
+import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.TestEnvVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
@@ -19,13 +20,21 @@ import java.util.List;
 public class EnvServiceImpl extends BaseServiceImpl implements EnvService {
 
     @Override
-    public List<TestEnv> list(Long projectId) {
+    public List<TestEnv> list(Long projectId, String keywords, String disabled) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestEnv.class);
 
+        dc.add(Restrictions.eq("projectId", projectId));
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 
-        dc.addOrder(Order.asc("createTime"));
+        if (StringUtil.isNotEmpty(keywords)) {
+            dc.add(Restrictions.like("name", "%" + keywords + "%"));
+        }
+        if (StringUtil.isNotEmpty(disabled)) {
+            dc.add(Restrictions.eq("disabled", Boolean.valueOf(disabled)));
+        }
+
+        dc.addOrder(Order.asc("displayOrder"));
 
         List<TestEnv> ls = findAllByCriteria(dc);
 
@@ -53,6 +62,10 @@ public class EnvServiceImpl extends BaseServiceImpl implements EnvService {
             action = Constant.MsgType.update;
         } else {
             po = new TestEnv();
+            String hql = "select max(displayOrder) from TestEnv tp where tp.projectId=?";
+            Integer maxOrder = (Integer) getByHQL(hql, vo.getProjectId());
+            po.setDisplayOrder(maxOrder + 10);
+
             action = Constant.MsgType.create;
         }
         po.setName(vo.getName());
@@ -70,6 +83,38 @@ public class EnvServiceImpl extends BaseServiceImpl implements EnvService {
         po.setDeleted(true);
         saveOrUpdate(po);
         return po;
+    }
+
+    @Override
+    public boolean changeOrderPers(Long id, String act, Long orgId) {
+        TestEnv ver = (TestEnv) get(TestEnv.class, id);
+
+        String hql = "from TestEnv tp where tp.projectId=? and tp.deleted = false and tp.disabled = false ";
+        if ("up".equals(act)) {
+            hql += "and tp.displayOrder < ? order by displayOrder desc";
+        } else if ("down".equals(act)) {
+            hql += "and tp.displayOrder > ? order by displayOrder asc";
+        } else {
+            return false;
+        }
+
+        TestEnv neighbor = (TestEnv) getFirstByHql(hql, orgId, ver.getDisplayOrder());
+
+        Integer order = ver.getDisplayOrder();
+        ver.setDisplayOrder(neighbor.getDisplayOrder());
+        neighbor.setDisplayOrder(order);
+
+        saveOrUpdate(ver);
+        saveOrUpdate(neighbor);
+
+        return true;
+    }
+    @Override
+    public List<TestEnvVo> listVos(Long projectId) {
+        List ls = list(projectId, null, null);
+
+        List<TestEnvVo> vos = genVos(ls);
+        return vos;
     }
 
     @Override
@@ -91,6 +136,7 @@ public class EnvServiceImpl extends BaseServiceImpl implements EnvService {
         vo.setName(po.getName());
         vo.setDescr(po.getDescr());
         vo.setProjectId(po.getProjectId());
+        vo.setDisabled(po.getDisabled());
 
         return vo;
     }

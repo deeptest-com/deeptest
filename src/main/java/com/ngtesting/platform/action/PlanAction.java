@@ -6,12 +6,12 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.entity.TestPlan;
 import com.ngtesting.platform.entity.TestSuite;
+import com.ngtesting.platform.service.EnvService;
 import com.ngtesting.platform.service.PlanService;
 import com.ngtesting.platform.service.SuiteService;
+import com.ngtesting.platform.service.VerService;
 import com.ngtesting.platform.util.AuthPassport;
-import com.ngtesting.platform.vo.TestPlanVo;
-import com.ngtesting.platform.vo.TestSuiteVo;
-import com.ngtesting.platform.vo.UserVo;
+import com.ngtesting.platform.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +35,10 @@ public class PlanAction extends BaseAction {
 	PlanService planService;
 	@Autowired
 	SuiteService suiteService;
+	@Autowired
+	VerService verService;
+	@Autowired
+	EnvService envService;
 
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "query", method = RequestMethod.POST)
@@ -65,8 +69,13 @@ public class PlanAction extends BaseAction {
 		List<TestSuite> ls = suiteService.query(projectId, null, null);
 		List<TestSuiteVo> suites = suiteService.genVos(ls);
 
+		List<TestVerVo> vers = verService.listVos(projectId);
+		List<TestEnvVo> envs = envService.listVos(projectId);
+
         ret.put("data", vo);
 		ret.put("suites", suites);
+		ret.put("vers", vers);
+		ret.put("envs", envs);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

@@ -65,9 +65,9 @@ public class ProjectAction extends BaseAction {
 	}
 
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "get", method = RequestMethod.POST)
+	@RequestMapping(value = "getInfo", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> getInfo(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
@@ -85,20 +85,35 @@ public class ProjectAction extends BaseAction {
 
 			ret.put("data", vo);
 		}
-
-		List<TestProjectVo> groups = projectService.listProjectGroups(orgId);
-        List<ProjectRoleVo> projectRoles = projectRoleService.list(orgId, null, null);
-
-		List<TestRelationProjectRoleEntity> entityInRolesPos = relationProjectRoleEntityService.listByProject(projectId);
-        List<RelationProjectRoleEntityVo> entityInRoles = relationProjectRoleEntityService.genVos(entityInRolesPos);
-
+        List<TestProjectVo> groups = projectService.listProjectGroups(orgId);
         ret.put("groups", groups);
-        ret.put("projectRoles", projectRoles);
-		ret.put("entityInRoles", entityInRoles);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+    @AuthPassport(validate = true)
+    @RequestMapping(value = "getUsers", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> getUsers(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Long orgId = userVo.getDefaultOrgId();
+
+        Long projectId = json.getLong("id");
+
+
+        List<ProjectRoleVo> projectRoles = projectRoleService.list(orgId, null, null);
+
+        List<TestRelationProjectRoleEntity> entityInRolesPos = relationProjectRoleEntityService.listByProject(projectId);
+        List<RelationProjectRoleEntityVo> entityInRoles = relationProjectRoleEntityService.genVos(entityInRolesPos);
+
+        ret.put("projectRoles", projectRoles);
+        ret.put("entityInRoles", entityInRoles);
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
 
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "view", method = RequestMethod.POST)

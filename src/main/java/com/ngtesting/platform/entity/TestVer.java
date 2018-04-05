@@ -10,14 +10,13 @@ public class TestVer extends BaseEntity {
     private static final long serialVersionUID = 7260005873110268288L;
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    private VerStatus status = VerStatus.in_progress;
-
     protected Date startTime;
     protected Date endTime;
 
 	@Column(name = "descr", length = 1000)
     private String descr;
+
+    private Integer displayOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
@@ -26,18 +25,12 @@ public class TestVer extends BaseEntity {
     @Column(name = "project_id")
     private Long projectId;
 
-    public static enum VerStatus {
-        in_progress("in_progress"),
-        end("end");
+    public Integer getDisplayOrder() {
+        return displayOrder;
+    }
 
-        VerStatus(String val) {
-            this.val = val;
-        }
-
-        private String val;
-        public String toString() {
-            return val;
-        }
+    public void setDisplayOrder(Integer displayOrder) {
+        this.displayOrder = displayOrder;
     }
 
     public String getName() {
@@ -46,14 +39,6 @@ public class TestVer extends BaseEntity {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public VerStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(VerStatus status) {
-        this.status = status;
     }
 
     public Date getStartTime() {

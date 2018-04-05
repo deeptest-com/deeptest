@@ -6,7 +6,6 @@ public class TestVerVo extends BaseVo {
     private static final long serialVersionUID = 6989572574245991239L;
 
     private String name;
-    private String status;
 
     protected Date startTime;
     protected Date endTime;
@@ -44,14 +43,6 @@ public class TestVerVo extends BaseVo {
 
     public void setDescr(String descr) {
         this.descr = descr;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public Long getProjectId() {

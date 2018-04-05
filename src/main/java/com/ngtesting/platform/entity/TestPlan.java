@@ -28,9 +28,20 @@ public class TestPlan extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
     private TestProject project;
-
     @Column(name = "project_id")
     private Long projectId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ver_id", insertable = false, updatable = false)
+    private TestVer ver;
+    @Column(name = "ver_id")
+    private Long verId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "env_id", insertable = false, updatable = false)
+    private TestVer env;
+    @Column(name = "env_id")
+    private Long envId;
 
     @OneToMany(mappedBy="plan", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
     @OrderBy("id")
@@ -50,6 +61,38 @@ public class TestPlan extends BaseEntity {
         public String toString() {
             return val;
         }
+    }
+
+    public TestVer getVer() {
+        return ver;
+    }
+
+    public void setVer(TestVer ver) {
+        this.ver = ver;
+    }
+
+    public Long getVerId() {
+        return verId;
+    }
+
+    public void setVerId(Long verId) {
+        this.verId = verId;
+    }
+
+    public TestVer getEnv() {
+        return env;
+    }
+
+    public void setEnv(TestVer env) {
+        this.env = env;
+    }
+
+    public Long getEnvId() {
+        return envId;
+    }
+
+    public void setEnvId(Long envId) {
+        this.envId = envId;
     }
 
     public List<TestRun> getRuns() {

@@ -24,6 +24,8 @@ public class TestRunVo extends BaseVo {
 
     private Long userId;
     private String userName;
+    private Long envId;
+    private String envName;
 
     public TestRunVo() {
 
@@ -58,6 +60,22 @@ public class TestRunVo extends BaseVo {
         put("block", 0);
         put("untest", 0);
     }};
+
+    public Long getEnvId() {
+        return envId;
+    }
+
+    public void setEnvId(Long envId) {
+        this.envId = envId;
+    }
+
+    public String getEnvName() {
+        return envName;
+    }
+
+    public void setEnvName(String envName) {
+        this.envName = envName;
+    }
 
     public List<UserVo> getAssignees() {
         return assignees;

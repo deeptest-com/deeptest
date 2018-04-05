@@ -37,12 +37,6 @@ public class TestPlan extends BaseEntity {
     @Column(name = "ver_id")
     private Long verId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "env_id", insertable = false, updatable = false)
-    private TestVer env;
-    @Column(name = "env_id")
-    private Long envId;
-
     @OneToMany(mappedBy="plan", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
     @OrderBy("id")
     @Where(clause="!deleted")
@@ -77,22 +71,6 @@ public class TestPlan extends BaseEntity {
 
     public void setVerId(Long verId) {
         this.verId = verId;
-    }
-
-    public TestVer getEnv() {
-        return env;
-    }
-
-    public void setEnv(TestVer env) {
-        this.env = env;
-    }
-
-    public Long getEnvId() {
-        return envId;
-    }
-
-    public void setEnvId(Long envId) {
-        this.envId = envId;
     }
 
     public List<TestRun> getRuns() {

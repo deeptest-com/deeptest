@@ -101,7 +101,6 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
         po.setDescr(vo.getDescr());
         po.setProjectId(vo.getProjectId());
         po.setVerId(vo.getVerId());
-        po.setEnvId(vo.getEnvId());
 
         saveOrUpdate(po);
 
@@ -186,9 +185,7 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
         vo.setEstimate(po.getEstimate());
         vo.setStartTime(po.getStartTime());
         vo.setEndTime(po.getEndTime());
-        vo.setEnvId(po.getEnvId());
         vo.setVerId(po.getVerId());
-        vo.setEnvName(po.getEnvId()!=null?po.getEnv().getName():"");
         vo.setVerName(po.getVerId()!=null?po.getVer().getName():"");
         vo.setDescr(po.getDescr());
         vo.setProjectId(po.getProjectId());

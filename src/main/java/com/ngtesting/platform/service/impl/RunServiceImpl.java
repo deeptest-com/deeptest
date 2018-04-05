@@ -69,7 +69,9 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
     public TestRun save(JSONObject json, UserVo user) {
         Long prjId = json.getLong("prjId");
         Long planId = json.getLong("planId");
+        Long envId = json.getLong("envId");
         Long runId = json.getLong("id");
+
         List assignees = json.getJSONArray("assignees");
         String runName = json.getString("name");
 
@@ -86,6 +88,7 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
         }
         run.setName(runName);
         run.setUserId(user.getId());
+        run.setEnvId(envId);
 
         run.setAssignees(new HashSet());
         for (Object obj : assignees) {
@@ -208,6 +211,9 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 		TestUser user = (TestUser)get(TestUser.class, po.getUserId());
         TestRunVo vo = new TestRunVo(po.getId(), po.getName(), po.getEstimate(), po.getStatus().toString(),
                 po.getDescr(), po.getOrdr(), po.getProjectId(), po.getPlanId(), po.getUserId(), user.getName());
+        vo.setEnvId(po.getEnvId());
+        TestEnv env = po.getEnv();
+        vo.setEnvName(po.getEnvId()!=null?po.getEnv().getName():"");
 
         for (TestUser u : po.getAssignees()) {
             UserVo userVo = new UserVo(u.getId(), u.getName());

@@ -43,6 +43,12 @@ public class TestRun extends BaseEntity {
     @Column(name = "plan_id")
     private Long planId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "env_id", insertable = false, updatable = false)
+    private TestEnv env;
+    @Column(name = "env_id")
+    private Long envId;
+
     @OneToMany(mappedBy="run", cascade={CascadeType.ALL}, fetch=FetchType.LAZY)
     private List<TestCaseInRun> testcases = new LinkedList<>();
 
@@ -66,6 +72,30 @@ public class TestRun extends BaseEntity {
         public String toString() {
             return val;
         }
+    }
+
+    public TestUser getUser() {
+        return user;
+    }
+
+    public void setUser(TestUser user) {
+        this.user = user;
+    }
+
+    public TestEnv getEnv() {
+        return env;
+    }
+
+    public void setEnv(TestEnv env) {
+        this.env = env;
+    }
+
+    public Long getEnvId() {
+        return envId;
+    }
+
+    public void setEnvId(Long envId) {
+        this.envId = envId;
     }
 
     public Set<TestUser> getAssignees() {

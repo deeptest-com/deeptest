@@ -62,8 +62,11 @@ public class EnvServiceImpl extends BaseServiceImpl implements EnvService {
             action = Constant.MsgType.update;
         } else {
             po = new TestEnv();
-            String hql = "select max(displayOrder) from TestEnv tp where tp.projectId=?";
+            String hql = "select max(displayOrder) from TestEnv tp where tp.projectId=? and tp.deleted != true";
             Integer maxOrder = (Integer) getByHQL(hql, vo.getProjectId());
+            if (maxOrder == null) {
+                maxOrder = 0;
+            }
             po.setDisplayOrder(maxOrder + 10);
 
             action = Constant.MsgType.create;

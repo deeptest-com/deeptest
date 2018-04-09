@@ -72,8 +72,11 @@ public class VerServiceImpl extends BaseServiceImpl implements VerService {
             action = Constant.MsgType.update;
         } else {
             po = new TestVer();
-            String hql = "select max(displayOrder) from TestVer tp where tp.projectId=?";
+            String hql = "select max(displayOrder) from TestVer tp where tp.projectId=? and tp.deleted != true";
             Integer maxOrder = (Integer) getByHQL(hql, vo.getProjectId());
+            if (maxOrder == null) {
+                maxOrder = 0;
+            }
             po.setDisplayOrder(maxOrder + 10);
 
             action = Constant.MsgType.create;

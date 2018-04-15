@@ -12,9 +12,9 @@ public interface CaseService extends BaseService {
 
 	List<TestCase> query(Long projectId);
 
-	List<TestCaseVo> queryForSuiteSelection(Long projectId, Long suiteId);
+	List<TestCaseVo> queryForSuiteSelection(Long projectId, Long caseProjectId, Long suiteId);
 
-	List<TestCaseVo> queryForRunSelection(Long projectId, Long runId);
+	List<TestCaseVo> queryForRunSelection(Long projectId, Long caseProjectId, Long runId);
 
 	TestCaseVo getById(Long caseId);
 

@@ -63,7 +63,7 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
     @Override
     public TestPlanVo getById(Long caseId) {
         if (caseId == null) {
-            return new TestPlanVo();
+            return null;
         }
         TestPlan po = (TestPlan) get(TestPlan.class, caseId);
         TestPlanVo vo = genVo(po);

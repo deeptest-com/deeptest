@@ -243,7 +243,31 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		return true;
 	}
 
+	@Override
+	public List<TestProjectVo> listBrothers(Long projectId) {
+	    TestProject project = (TestProject)get(TestProject.class, projectId);
+        DetachedCriteria dc = DetachedCriteria.forClass(TestProject.class);
 
+        dc.add(Restrictions.eq("parentId", project.getParentId()));
+        dc.add(Restrictions.eq("type", ProjectType.project));
+        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc.addOrder(Order.asc("id"));
+
+        List<TestProject> pos = findAllByCriteria(dc);
+
+        List<TestProjectVo> vos = this.genVos(pos);
+        return vos;
+	}
+    @Override
+    public List<Long> listBrotherIds(Long projectId) {
+        String hql = "select prj.id from TestProject prj where prj.parentId=" +
+                "(select p.parentId from TestProject p where p.id=?)"
+                + " and type=? and prj.deleted != true and prj.deleted != true";
+
+        List<Long> ids = getListByHQL(hql, projectId, ProjectType.project);
+        return ids;
+    }
 
 	@Override
 	public List<TestProjectAccessHistoryVo> genHistoryVos(List<TestProjectAccessHistory> pos) {

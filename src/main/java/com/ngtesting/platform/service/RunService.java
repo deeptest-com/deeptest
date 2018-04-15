@@ -18,9 +18,9 @@ public interface RunService extends BaseService {
 
 	boolean importSuiteCasesPers(TestRun run, List<TestSuiteVo> suites);
 
-	TestRun saveCases(Long planId, Long runId, Object[] ids, UserVo optUser);
+	TestRun saveCases(Long projectId, Long caseProjectId, Long planId, Long runId, Object[] ids, UserVo optUser);
 
-    TestRun saveCases(JSONObject json, UserVo optUser);
+	TestRun saveCases(JSONObject json, UserVo optUser);
 
 	void addCasesBySuitesPers(Long suiteId, List<Long> suiteIds);
 	void addCasesPers(Long suiteId, List<Long> caseIds);

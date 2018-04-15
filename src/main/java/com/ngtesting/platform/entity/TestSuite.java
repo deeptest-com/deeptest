@@ -18,6 +18,12 @@ public class TestSuite extends BaseEntity {
     private Integer ordr;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_project_id", insertable = false, updatable = false)
+    private TestProject caseProject;
+    @Column(name = "case_project_id")
+    private Long caseProjectId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
     private TestProject project;
 
@@ -33,6 +39,22 @@ public class TestSuite extends BaseEntity {
 
     @OneToMany(mappedBy="suite", cascade={CascadeType.ALL}, fetch=FetchType.LAZY)
     private List<TestCaseInSuite> testcases = new LinkedList<>();
+
+    public TestProject getCaseProject() {
+        return caseProject;
+    }
+
+    public void setCaseProject(TestProject caseProject) {
+        this.caseProject = caseProject;
+    }
+
+    public Long getCaseProjectId() {
+        return caseProjectId;
+    }
+
+    public void setCaseProjectId(Long caseProjectId) {
+        this.caseProjectId = caseProjectId;
+    }
 
     public String getName() {
         return name;

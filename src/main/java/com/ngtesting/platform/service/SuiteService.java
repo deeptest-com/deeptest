@@ -28,7 +28,7 @@ public interface SuiteService extends BaseService {
 
     TestSuite saveCases(JSONObject json, UserVo optUser);
 
-	TestSuite saveCases(Long planId, Long runId, Object[] ids, UserVo optUser);
+	TestSuite saveCases(Long projectId, Long caseProjectId, Long runId, Object[] ids, UserVo optUser);
 
 	TestSuiteVo genVo(TestSuite po);
 

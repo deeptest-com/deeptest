@@ -5,10 +5,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.TestCase;
 import com.ngtesting.platform.entity.TestCasePriority;
 import com.ngtesting.platform.entity.TestCaseType;
-import com.ngtesting.platform.service.CasePriorityService;
-import com.ngtesting.platform.service.CaseService;
-import com.ngtesting.platform.service.CaseTypeService;
-import com.ngtesting.platform.service.CustomFieldService;
+import com.ngtesting.platform.service.*;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +24,8 @@ import java.util.Map;
 @Controller
 @RequestMapping(Constant.API_PATH_CLIENT + "case/")
 public class CaseAction extends BaseAction {
+	@Autowired
+	ProjectService projectService;
 	@Autowired
     CaseService caseService;
     @Autowired
@@ -71,11 +70,14 @@ public class CaseAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		Long projectId = json.getLong("projectId");
+        Long caseProjectId = json.getLong("caseProjectId");
 		Long suiteId = json.getLong("suiteId");
 
-        List<TestCaseVo> vos = caseService.queryForSuiteSelection(projectId, suiteId);
+        List<TestCaseVo> vos = caseService.queryForSuiteSelection(projectId, caseProjectId, suiteId);
+		List<TestProjectVo> projects = projectService.listBrothers(projectId);
 
 		ret.put("data", vos);
+		ret.put("brotherProjects", projects);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -87,11 +89,14 @@ public class CaseAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		Long projectId = json.getLong("projectId");
+        Long caseProjectId = json.getLong("caseProjectId");
 		Long runId = json.getLong("runId");
 
-		List<TestCaseVo> vos = caseService.queryForRunSelection(projectId, runId);
+		List<TestCaseVo> vos = caseService.queryForRunSelection(projectId, caseProjectId, runId);
+		List<TestProjectVo> projects = projectService.listBrothers(projectId);
 
 		ret.put("data", vos);
+		ret.put("brotherProjects", projects);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

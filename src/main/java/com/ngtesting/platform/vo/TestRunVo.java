@@ -19,6 +19,9 @@ public class TestRunVo extends BaseVo {
     private Integer ordr;
 
     private Long projectId;
+    private String projectName;
+    private Long caseProjectId;
+    private String caseProjectName;
 
     private Long planId;
 
@@ -31,7 +34,8 @@ public class TestRunVo extends BaseVo {
 
     }
     public TestRunVo(Long id, String name, Integer estimate, String status,
-        String descr, Integer ordr, Long projectId, Long planId, Long userId, String userName) {
+        String descr, Integer ordr, Long projectId, String projectName, Long caseProjectId, String caseProjectName,
+                     Long planId, Long userId, String userName) {
         this.id = id;
         this.name = name;
         this.estimate = estimate;
@@ -39,6 +43,9 @@ public class TestRunVo extends BaseVo {
         this.descr = descr;
         this.ordr = ordr;
         this.projectId = projectId;
+        this.projectName = projectName;
+        this.caseProjectId = caseProjectId;
+        this.caseProjectName = caseProjectName;
         this.planId = planId;
         this.userId = userId;
         this.userName = userName;
@@ -60,6 +67,30 @@ public class TestRunVo extends BaseVo {
         put("block", 0);
         put("untest", 0);
     }};
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public Long getCaseProjectId() {
+        return caseProjectId;
+    }
+
+    public void setCaseProjectId(Long caseProjectId) {
+        this.caseProjectId = caseProjectId;
+    }
+
+    public String getCaseProjectName() {
+        return caseProjectName;
+    }
+
+    public void setCaseProjectName(String caseProjectName) {
+        this.caseProjectName = caseProjectName;
+    }
 
     public Long getEnvId() {
         return envId;

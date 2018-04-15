@@ -45,7 +45,9 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	}
 
     @Override
-    public List<TestCaseVo> queryForSuiteSelection(Long projectId, Long suiteId) {
+    public List<TestCaseVo> queryForSuiteSelection(Long projectId, Long caseProjectId, Long suiteId) {
+        Long id = caseProjectId == null? projectId: caseProjectId;
+
         List<Long> selectIds = new LinkedList<>();
 	    if (suiteId != null) {
             TestSuite suite = (TestSuite)get(TestSuite.class, suiteId);
@@ -54,13 +56,15 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             }
         }
 
-        List<TestCase> pos = query(projectId);
+        List<TestCase> pos = query(id);
         List<TestCaseVo> vos = genVos(pos, selectIds, false);
 
         return vos;
     }
     @Override
-    public List<TestCaseVo> queryForRunSelection(Long projectId, Long runId) {
+    public List<TestCaseVo> queryForRunSelection(Long projectId, Long caseProjectId, Long runId) {
+	    Long id = caseProjectId == null? projectId: caseProjectId;
+
         TestRun run = (TestRun)get(TestRun.class, runId);
 
         List<Long> selectIds = new LinkedList<>();
@@ -68,7 +72,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             selectIds.add(testcase.getCaseId());
         }
 
-        List<TestCase> pos = query(projectId);
+        List<TestCase> pos = query(id);
         List<TestCaseVo> vos = genVos(pos, selectIds, false);
 
         return vos;
@@ -207,6 +211,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         root.setName("测试用例");
         root.setType(null);
         root.setpId(null);
+        root.setLeaf(false);
         root.setProjectId(projectId);
 
         root.setCreateById(user.getId());
@@ -237,7 +242,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         testCase2.setProjectId(projectId);
         testCase2.setCreateById(user.getId());
         testCase2.setCreateTime(new Date());
-        testCase.setLeaf(true);
+        testCase2.setLeaf(true);
         testCase2.setOrdr(0);
         saveOrUpdate(testCase2);
         saveHistory(user, "create", testCase2,null);

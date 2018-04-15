@@ -12,6 +12,9 @@ public class TestSuiteVo extends BaseVo {
 	private String descr;
 
 	private Long projectId;
+	private String projectName;
+    private Long caseProjectId;
+    private String caseProjectName;
 	private Long userId;
     private String userName;
     private Boolean selecting;
@@ -31,7 +34,31 @@ public class TestSuiteVo extends BaseVo {
         this.userId = userId;
     }
 
-    public Boolean getSelecting() {
+    public Long getCaseProjectId() {
+        return caseProjectId;
+    }
+
+    public void setCaseProjectId(Long caseProjectId) {
+        this.caseProjectId = caseProjectId;
+    }
+
+
+    public String getCaseProjectName() {
+        return caseProjectName;
+    }
+
+    public void setCaseProjectName(String caseProjectName) {
+        this.caseProjectName = caseProjectName;
+    }
+
+    public String getProjectName() {
+		return projectName;
+	}
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
+
+	public Boolean getSelecting() {
         return selecting;
     }
     public void setSelecting(Boolean selecting) {

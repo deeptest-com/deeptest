@@ -7,6 +7,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.*;
 import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.MsgService;
+import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.service.SuiteService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.vo.TestCaseInSuiteVo;
@@ -27,6 +28,8 @@ public class SuiteServiceImpl extends BaseServiceImpl implements SuiteService {
 
     @Autowired
     HistoryService historyService;
+    @Autowired
+    ProjectService projectService;
 
     @Autowired
     MsgService msgService;
@@ -44,7 +47,8 @@ public class SuiteServiceImpl extends BaseServiceImpl implements SuiteService {
         DetachedCriteria dc = DetachedCriteria.forClass(TestSuite.class);
 
         if (projectId != null) {
-            dc.add(Restrictions.eq("projectId", projectId));
+            List<Long> ids = projectService.listBrotherIds(projectId);
+            dc.add(Restrictions.in("projectId", ids));
         }
         if (StringUtils.isNotEmpty(keywords)) {
             dc.add(Restrictions.like("name", "%" + keywords + "%"));
@@ -93,6 +97,7 @@ public class SuiteServiceImpl extends BaseServiceImpl implements SuiteService {
         po.setEstimate(vo.getEstimate());
         po.setDescr(vo.getDescr());
         po.setProjectId(vo.getProjectId());
+        po.setCaseProjectId(vo.getCaseProjectId());
         po.setUserId(optUser.getId());
 
         saveOrUpdate(po);
@@ -134,21 +139,23 @@ public class SuiteServiceImpl extends BaseServiceImpl implements SuiteService {
 
     @Override
     public TestSuite saveCases(JSONObject json, UserVo optUser) {
-        Long planId = json.getLong("planId");
+        Long projectId = json.getLong("projectId");
+        Long caseProjectId = json.getLong("caseProjectId");
         Long suiteId = json.getLong("suiteId");
         JSONArray data = json.getJSONArray("cases");
 
-        return saveCases(planId, suiteId, data.toArray(), optUser);
+        return saveCases(projectId, caseProjectId, suiteId, data.toArray(), optUser);
     }
     @Override
-    public TestSuite saveCases(Long planId, Long suiteId, Object[] ids, UserVo optUser) {
+    public TestSuite saveCases(Long projectId, Long caseProjectId, Long suiteId, Object[] ids, UserVo optUser) {
         TestSuite suite;
         if (suiteId != null) {
             suite = (TestSuite) get(TestSuite.class, suiteId);
         } else {
             suite = new TestSuite();
-            suite.setProjectId(planId);
         }
+        suite.setProjectId(projectId);
+        suite.setCaseProjectId(caseProjectId);
 
         suite.setTestcases(new LinkedList<TestCaseInSuite>());
         saveOrUpdate(suite);
@@ -204,7 +211,15 @@ public class SuiteServiceImpl extends BaseServiceImpl implements SuiteService {
         vo.setName(po.getName());
         vo.setEstimate(po.getEstimate());
         vo.setDescr(po.getDescr());
+
         vo.setProjectId(po.getProjectId());
+        TestProject prj1 = (TestProject)get(TestProject.class, po.getProjectId());
+        vo.setProjectName(prj1.getName());
+
+        vo.setCaseProjectId(po.getCaseProjectId());
+        TestProject prj2 = (TestProject)get(TestProject.class, po.getCaseProjectId());
+        vo.setCaseProjectName(prj2.getName());
+
         vo.setUserId(po.getUserId());
 
         TestUser user = (TestUser) get(TestUser.class, po.getUserId());

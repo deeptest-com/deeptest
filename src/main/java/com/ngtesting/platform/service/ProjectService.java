@@ -12,12 +12,13 @@ public interface ProjectService extends BaseService {
 
 	List<TestProjectVo> listVos(Long orgId, String keywords, String disabled);
 	List<TestProjectVo> listProjectGroups(Long orgId);
-	
+
 	TestProject getDetail(Long id);
 
 	TestProject save(TestProjectVo vo, Long orgId, UserVo userVo);
 	Boolean delete(Long id);
-	
+
+	List<TestProjectVo> listBrothers(Long projectId);
 	List<TestProjectAccessHistory> listRecentProject(Long orgId, Long userId);
 	List<TestProjectAccessHistoryVo> listRecentProjectVo(Long orgId, Long userId);
 
@@ -35,7 +36,9 @@ public interface ProjectService extends BaseService {
 	List<TestProjectVo> genGroupVos(List<TestProject> pos);
 	List<TestProjectVo> genVos(List<TestProject> pos);
 	TestProjectAccessHistoryVo genHistoryVo(TestProjectAccessHistory po);
-	List<TestProjectAccessHistoryVo> genHistoryVos(List<TestProjectAccessHistory> pos);
 
-	
+    List<Long> listBrotherIds(Long projectId);
+
+    List<TestProjectAccessHistoryVo> genHistoryVos(List<TestProjectAccessHistory> pos);
+
 }

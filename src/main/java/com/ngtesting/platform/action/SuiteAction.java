@@ -101,9 +101,9 @@ public class SuiteAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		TestSuite po = suiteService.saveCases(json, userVo);
-		TestSuiteVo runVo = suiteService.genVo(po);
+		TestSuiteVo vo = suiteService.genVo(po);
 
-		ret.put("data", runVo);
+		ret.put("data", vo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

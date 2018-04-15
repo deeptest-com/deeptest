@@ -83,6 +83,7 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
         } else {
             run = new TestRun();
             run.setProjectId(prjId);
+            run.setCaseProjectId(prjId);
             run.setPlanId(planId);
             action = Constant.MsgType.create;
         }
@@ -127,7 +128,18 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
     }
 
     @Override
-    public TestRun saveCases(Long planId, Long runId, Object[] ids, UserVo optUser) {
+    public TestRun saveCases(JSONObject json, UserVo optUser) {
+        Long projectId = json.getLong("projectId");
+        Long caseProjectId = json.getLong("caseProjectId");
+        Long planId = json.getLong("planId");
+        Long runId = json.getLong("runId");
+        JSONArray data = json.getJSONArray("cases");
+
+        return saveCases(projectId, caseProjectId, planId, runId, data.toArray(), optUser);
+    }
+
+    @Override
+    public TestRun saveCases(Long projectId, Long caseProjectId, Long planId, Long runId, Object[] ids, UserVo optUser) {
         TestRun run;
         if (runId != null) {
             run = (TestRun) get(TestRun.class, runId);
@@ -135,6 +147,8 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
             run = new TestRun();
             run.setPlanId(planId);
         }
+        run.setProjectId(projectId);
+        run.setCaseProjectId(caseProjectId);
 
         run.setTestcases(new LinkedList<TestCaseInRun>());
         saveOrUpdate(run);
@@ -152,15 +166,6 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
                 run.getId(), run.getName());
 
         return run;
-    }
-
-    @Override
-    public TestRun saveCases(JSONObject json, UserVo optUser) {
-        Long planId = json.getLong("planId");
-        Long runId = json.getLong("runId");
-        JSONArray data = json.getJSONArray("cases");
-
-        return saveCases(planId, runId, data.toArray(), optUser);
     }
 
     @Override
@@ -209,8 +214,14 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 	@Override
 	public TestRunVo genVo(TestRun po) {
 		TestUser user = (TestUser)get(TestUser.class, po.getUserId());
+        TestProject project = (TestProject)get(TestProject.class, po.getProjectId());
+        TestProject caseProject = (TestProject)get(TestProject.class, po.getCaseProjectId());
+
         TestRunVo vo = new TestRunVo(po.getId(), po.getName(), po.getEstimate(), po.getStatus().toString(),
-                po.getDescr(), po.getOrdr(), po.getProjectId(), po.getPlanId(), po.getUserId(), user.getName());
+                po.getDescr(), po.getOrdr(),
+                po.getProjectId(), project.getName(),
+                po.getCaseProjectId(), caseProject.getName(),
+                po.getPlanId(), po.getUserId(), user.getName());
 
         if (po.getEnvId() != null) {
             vo.setEnvId(po.getEnvId());

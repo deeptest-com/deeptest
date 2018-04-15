@@ -414,8 +414,6 @@
 					<url>http://116.62.17.31/manager/text</url>
 					<port>80</port>
 					<server>tomcat7</server>
-					<username>admin</username>
-					<password>NCWR2cqqjn</password>
 					<path>/platform</path>
 					<update>true</update>
 				</configuration>

@@ -22,14 +22,12 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
         Integer sum = null;
         for (Object[] arr : ls) {
             if(sum == null) {
-                sum = Integer.valueOf(arr[3].toString());
+                sum = Integer.valueOf(arr[2].toString());
             }
             xList.add(arr[0].toString());
-            numbList.add(arr[1]==null?0:arr[1]);
+            numbList.add(arr[1]);
 
-            if(arr[2]!=null) {
-                sum += Integer.valueOf(arr[2].toString());
-            }
+            sum += Integer.valueOf(arr[1].toString());
             totalList.add(sum);
         }
         map.put("xList", xList);
@@ -41,7 +39,7 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
 
     @Override
     public Map<String, List<Object>> chart_excution_process_by_project(Long projectId, TestProject.ProjectType type, Integer numb) {
-        List<Object[]> ls = getDao().getListBySQL("{call chart_excution_process_by_project(?,?,?)}",
+        List<Object[]> ls = getDao().getListBySQL("{call chart_execution_process_by_project(?,?,?)}",
                 projectId, type.toString(), numb);
 
         return countByStatus(ls);

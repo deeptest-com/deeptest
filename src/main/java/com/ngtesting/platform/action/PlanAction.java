@@ -66,7 +66,7 @@ public class PlanAction extends BaseAction {
         Long id = json.getLong("id");
 
         TestPlanVo vo = planService.getById(id);
-		List<TestSuite> ls = suiteService.query(projectId, null, null);
+		List<TestSuite> ls = suiteService.query(projectId, null);
 		List<TestSuiteVo> suites = suiteService.genVos(ls);
 
 		List<TestVerVo> vers = verService.listVos(projectId);

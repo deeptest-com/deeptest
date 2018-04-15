@@ -37,13 +37,12 @@ public class SuiteServiceImpl extends BaseServiceImpl implements SuiteService {
     @Override
     public List<TestSuite> query(JSONObject json) {
         Long projectId = json.getLong("projectId");
-        String status = json.getString("status");
         String keywords = json.getString("keywords");
 
-        return query(projectId, status, keywords);
+        return query(projectId, keywords);
     }
     @Override
-    public List<TestSuite> query(Long projectId, String status, String keywords) {
+    public List<TestSuite> query(Long projectId, String keywords) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestSuite.class);
 
         if (projectId != null) {
@@ -57,6 +56,7 @@ public class SuiteServiceImpl extends BaseServiceImpl implements SuiteService {
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         dc.addOrder(Order.desc("createTime"));
+        dc.addOrder(Order.asc("projectId"));
         dc.addOrder(Order.asc("id"));
         List<TestSuite> ls = findAllByCriteria(dc);
 

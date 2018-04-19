@@ -296,14 +296,17 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 	public TestProjectVo viewPers(Long projectId, UserVo userVo) {
 		TestProject project = getDetail(projectId);
 
-		getHistoryPers(project.getOrgId(), userVo.getId(), projectId, project.getName());
-
         TestUser userPo = (TestUser)get(TestUser.class, userVo.getId());
-        userPo.setDefaultPrjId(projectId);
-        saveOrUpdate(userPo);
+        if (project.getType().equals(ProjectType.project)) {
+            genHistoryPers(project.getOrgId(), userVo.getId(), projectId, project.getName());
 
-		userVo.setDefaultPrjId(projectId);
-        userVo.setDefaultPrjName(project.getName());
+			userPo.setDefaultPrjId(projectId);
+			saveOrUpdate(userPo);
+
+			userVo.setDefaultPrjId(projectId);
+			userVo.setDefaultPrjName(project.getName());
+		}
+
 		TestProjectVo vo = genVo(project);
 		return vo;
 	}
@@ -311,11 +314,11 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
     @Override
     public void updateNameInHisotyPers(Long projectId, Long userId) {
         TestProject project = getDetail(projectId);
-        getHistoryPers(project.getOrgId(), userId, projectId, project.getName());
+        genHistoryPers(project.getOrgId(), userId, projectId, project.getName());
     }
 
     @Override
-    public TestProjectAccessHistory getHistoryPers(Long orgId, Long userId, Long projectId, String projectName) {
+    public void genHistoryPers(Long orgId, Long userId, Long projectId, String projectName) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestProjectAccessHistory.class);
 
 		dc.add(Restrictions.eq("orgId", orgId));
@@ -334,7 +337,6 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		}
         history.setLastAccessTime(new Date());
         saveOrUpdate(history);
-		return history;
 	}
 
 	@Override

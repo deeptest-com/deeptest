@@ -27,7 +27,7 @@ public interface ProjectService extends BaseService {
 
     void updateNameInHisotyPers(Long projectId, Long userId);
 
-	TestProjectAccessHistory getHistoryPers(Long orgId, Long userId, Long projectId, String projectName);
+	void genHistoryPers(Long orgId, Long userId, Long projectId, String projectName);
 
 	boolean isLastestProjectGroup(Long orgId, Long projectGroupId);
 

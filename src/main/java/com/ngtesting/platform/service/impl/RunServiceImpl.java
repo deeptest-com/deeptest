@@ -101,12 +101,12 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 
         saveOrUpdate(run);
 
+        importSuiteCasesPers(run, JSON.parseObject(JSON.toJSONString(json.get("suites")), List.class));
+
         alertService.saveAlert(run);
         msgService.create(run, action, user);
         historyService.create(run.getProjectId(), user, action.msg, TestHistory.TargetType.run,
                 run.getId(), run.getName());
-
-        importSuiteCasesPers(run, JSON.parseObject(JSON.toJSONString(json.get("suites")), List.class));
         return run;
     }
 
@@ -115,14 +115,24 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
         if (suites == null || suites.size() == 0) {
             return false;
         }
+
+        Long caseProjectId = null;
         List<Long> suiteIds = new LinkedList<>();
         for (Object obj: suites) {
             TestSuiteVo vo = JSON.parseObject(JSON.toJSONString(obj), TestSuiteVo.class);
             if (vo.getSelecting() != null && vo.getSelecting()) {
                 suiteIds.add(vo.getId());
+
+                if (caseProjectId == null && run.getCaseProjectId().longValue() != vo.getCaseProjectId().longValue()) {
+                    caseProjectId = vo.getCaseProjectId().longValue();
+                }
             }
         }
         addCasesBySuitesPers(run.getId(), suiteIds);
+        if (caseProjectId != null) {
+            run.setCaseProjectId(caseProjectId);
+            saveOrUpdate(run);
+        }
 
         return true;
     }
@@ -176,7 +186,7 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
     @Override
     public void addCasesPers(Long id, List<Long> caseIds) {
         String ids = StringUtils.join(caseIds.toArray(), ",");
-        getDao().querySql("{call add_cases_to_run(?,?)}", id, ids);
+        getDao().querySql("{call add_cases_to_run(?,?,?)}", id, ids, false);
     }
 
     @Override

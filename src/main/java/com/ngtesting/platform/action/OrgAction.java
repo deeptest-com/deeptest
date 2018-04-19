@@ -107,16 +107,15 @@ public class OrgAction extends BaseAction {
 	}
 
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "setDefault", method = RequestMethod.POST)
+	@RequestMapping(value = "change", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> change(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long orgId = json.getLong("id");
 
 		orgService.setDefaultPers(orgId, userVo);
-
 		pushSettingsService.pushRecentProjects(userVo);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

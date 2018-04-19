@@ -124,16 +124,14 @@ public class ProjectAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long id = json.getLong("id");
 
-		TestProjectVo vo = projectService.viewPers(id, userVo);
+		TestProject po = projectService.getDetail(id);
+		TestProjectVo vo = projectService.genVo(po);
 
         List<TestPlan> planPos = planService.list(id, vo.getType());
         List<TestPlanVo> planVos = planService.genVos(planPos);
 
         List<TestHistory> historyPos = historyService.list(id, vo.getType());
         Map<String, List<TestHistoryVo>> historyVos = historyService.genVosByDate(historyPos);
-
-        pushSettingsService.pushRecentProjects(userVo);
-        pushSettingsService.pushPrjSettings(userVo);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
         ret.put("project", vo);
@@ -142,6 +140,28 @@ public class ProjectAction extends BaseAction {
 
 		return ret;
 	}
+
+    @AuthPassport(validate = true)
+    @RequestMapping(value = "change", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> change(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Long id = json.getLong("id");
+
+        TestProjectVo vo = projectService.viewPers(id, userVo);
+
+        if (vo.getType().equals(TestProject.ProjectType.project.toString())) {
+            pushSettingsService.pushRecentProjects(userVo);
+            pushSettingsService.pushPrjSettings(userVo);
+        }
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        ret.put("data", vo);
+
+        return ret;
+    }
 
 	@AuthPassport(validate = true)
 	@RequestMapping(value = "save", method = RequestMethod.POST)

@@ -177,7 +177,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             org.getUserSet().add(userPo);
             saveOrUpdate(org);
 
-            projectService.getHistoryPers(orgId, userPo.getId(), prjId, prjName);
+            projectService.genHistoryPers(orgId, userPo.getId(), prjId, prjName);
 
             orgGroupUserService.saveRelations(relations);
 

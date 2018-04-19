@@ -87,6 +87,12 @@ public class TestCase extends BaseEntity {
     @Column(name = "update_by_id")
     private Long updateById;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ai_test_task_id", insertable = false, updatable = false)
+    private AiTestTask aiTestTask;
+    @Column(name = "ai_test_task_id")
+    private Long aiTestTaskId;
+
     @OneToMany(mappedBy="testCase", fetch=FetchType.LAZY)
     @Where(clause="!deleted")
     @OrderBy("ordr")
@@ -101,6 +107,22 @@ public class TestCase extends BaseEntity {
     @Where(clause="!deleted")
     @OrderBy("changeTime ASC")
     private List<TestCaseComments> comments = new LinkedList<>();
+
+    public AiTestTask getAiTestTask() {
+        return aiTestTask;
+    }
+
+    public void setAiTestTask(AiTestTask aiTestTask) {
+        this.aiTestTask = aiTestTask;
+    }
+
+    public Long getAiTestTaskId() {
+        return aiTestTaskId;
+    }
+
+    public void setAiTestTaskId(Long aiTestTaskId) {
+        this.aiTestTaskId = aiTestTaskId;
+    }
 
     public List<TestCaseHistory> getHistories() {
         return histories;

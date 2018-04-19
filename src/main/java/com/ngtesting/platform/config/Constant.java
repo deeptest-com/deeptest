@@ -107,4 +107,8 @@ public final class Constant {
         put("untest", "未执行");
     }};
 
+    public static Map<String, String> JenkinsTask = new HashMap() {{
+        put("asr", "ngtesting");
+    }};
+
 }

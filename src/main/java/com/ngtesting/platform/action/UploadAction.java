@@ -42,7 +42,7 @@ public class UploadAction extends BaseAction {
 		String extName = FilenameUtils.getExtension(origName);
 		String fileName = UUID.randomUUID().toString() + "." + extName;
 
-		String uploadPath = FileUtils.SaveFile(file, "image/", fileName);
+		String uploadPath = FileUtils.SaveFile(file, "data/", fileName);
 
 		ret.put("origName", origName);
 		ret.put("uploadPath", uploadPath);

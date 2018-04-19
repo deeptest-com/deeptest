@@ -55,8 +55,7 @@ public class SuiteServiceImpl extends BaseServiceImpl implements SuiteService {
 
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-        dc.addOrder(Order.desc("createTime"));
-        dc.addOrder(Order.asc("projectId"));
+        dc.addOrder(Order.asc("caseProjectId"));
         dc.addOrder(Order.asc("id"));
         List<TestSuite> ls = findAllByCriteria(dc);
 

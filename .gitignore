@@ -4,3 +4,4 @@
 /logs/
 src/main/webapp/WEB-INF/classes/
 /platform.iml
+/src/main/webapp/upload/data/

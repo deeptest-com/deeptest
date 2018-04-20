@@ -24,6 +24,7 @@ public class AiTestTaskVo extends BaseVo {
     private String regexInput;
     private Integer startIndex;
     private Integer numbToRun;
+    private String mlfs;
 
     private Integer ordr;
     private Long pId;
@@ -38,6 +39,14 @@ public class AiTestTaskVo extends BaseVo {
 
     private Long projectId;
     private Long createById;
+
+    public String getMlfs() {
+        return mlfs;
+    }
+
+    public void setMlfs(String mlfs) {
+        this.mlfs = mlfs;
+    }
 
     public String getRegexInput() {
         return regexInput;

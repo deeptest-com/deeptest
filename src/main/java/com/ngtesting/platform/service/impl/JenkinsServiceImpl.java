@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,18 +20,14 @@ import static com.ngtesting.platform.config.Constant.JenkinsTask;
 public class JenkinsServiceImpl extends BaseServiceImpl implements JenkinsService {
 
     @Override
-    public String genRunJsonStr(AiTestTaskVo task) {
+    public AiRunVo genRunVo(AiTestTaskVo task) {
         AiRunVo run = new AiRunVo();
         AiRunEnvi env = new AiRunEnvi();
         AiRunRes res = new AiRunRes();
-        List<AiRunMlf> mlfs = new LinkedList<>();
+        List<AiRunMlf> mlfs = JSON.parseObject(task.getMlfs(), List.class);
         res.setMlfs(mlfs);
         run.setEnvi(env);
         run.setRes(res);
-        res.setMlfs(mlfs);
-        AiRunMlf mlf = new AiRunMlf();
-        mlfs.add(mlf);
-        mlf.setRegexInput(task.getRegexInput());
 
         env.setTestType(task.getTestType());
         env.setSite(task.getTestEnv());
@@ -43,14 +38,15 @@ public class JenkinsServiceImpl extends BaseServiceImpl implements JenkinsServic
         env.setAudioType(task.getAudioType());
         env.setAliasKey(task.getProductBranch());
         env.setIsFuse(task.getFuse().toString());
-        mlf.setPath(task.getTestsetPath());
 
-        return JSON.toJSONString(run);
+        return run;
     }
 
     @Override
     public String execute(AiTestTaskVo vo) {
-        String json = genRunJsonStr(vo);
+        AiRunVo runVo = genRunVo(vo);
+        String json = JSON.toJSONString(runVo);
+
         JenkinsServer jenkinsServer;
         try {
             String jenkinsSvr = PropertyConfig.getConfig("jenkins.server");
@@ -62,7 +58,9 @@ public class JenkinsServiceImpl extends BaseServiceImpl implements JenkinsServic
             JobWithDetails job = jobs.get(JenkinsTask.get(vo.getTestType())).details();
 
             Map<String, String> params = new HashMap();
-            params.put("json", json);
+            params.put("json", JSON.toJSONString(runVo));
+            params.put("suite", JenkinsTask.get(vo.getTestType()));
+
             job.build(params, true);
 
         } catch (Exception e) {
@@ -71,6 +69,5 @@ public class JenkinsServiceImpl extends BaseServiceImpl implements JenkinsServic
 
         return json;
     }
-
 }
 

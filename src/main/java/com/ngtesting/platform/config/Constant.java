@@ -108,7 +108,7 @@ public final class Constant {
     }};
 
     public static Map<String, String> JenkinsTask = new HashMap() {{
-        put("asr", "ngtesting");
+        put("asr", "ngtesting-asr");
     }};
 
 }

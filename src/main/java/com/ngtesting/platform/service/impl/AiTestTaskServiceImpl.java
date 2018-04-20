@@ -2,18 +2,27 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.config.PropertyConfig;
 import com.ngtesting.platform.entity.AiTestTask;
 import com.ngtesting.platform.service.AiTestTaskService;
 import com.ngtesting.platform.util.BeanUtilEx;
-import com.ngtesting.platform.vo.*;
+import com.ngtesting.platform.util.DateUtils;
+import com.ngtesting.platform.util.FileUtils;
+import com.ngtesting.platform.vo.AiRunMlf;
+import com.ngtesting.platform.vo.AiTestTaskVo;
+import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
+import org.zeroturnaround.zip.ZipUtil;
 
+import java.io.File;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class AiTestTaskServiceImpl extends BaseServiceImpl implements AiTestTaskService {
@@ -150,34 +159,43 @@ public class AiTestTaskServiceImpl extends BaseServiceImpl implements AiTestTask
 
     @Override
 	public AiTestTask save(JSONObject json, UserVo user) {
-        AiTestTaskVo testCaseVo = JSON.parseObject(JSON.toJSONString(json), AiTestTaskVo.class);
+        AiTestTaskVo testTaskVo = JSON.parseObject(JSON.toJSONString(json), AiTestTaskVo.class);
 
         String action = "";
+        AiTestTask testTaskPo;
+        if (testTaskVo.getId() > 0) {
+            testTaskPo = (AiTestTask)get(AiTestTask.class, testTaskVo.getId());
+            copyProperties(testTaskPo, testTaskVo);
 
-        AiTestTask testCasePo;
-        if (testCaseVo.getId() > 0) {
-            testCasePo = (AiTestTask)get(AiTestTask.class, testCaseVo.getId());
-            copyProperties(testCasePo, testCaseVo);
-
-            testCasePo.setUpdateTime(new Date());
+            testTaskPo.setUpdateTime(new Date());
 
             action = "update";
         } else {
-            testCasePo = new AiTestTask();
-            copyProperties(testCasePo, testCaseVo);
-            testCasePo.setId(null);
-            testCasePo.setLeaf(true);
-            testCasePo.setOrdr(getChildMaxOrderNumb(testCasePo.getpId()));
+            testTaskPo = new AiTestTask();
+            copyProperties(testTaskPo, testTaskVo);
+            testTaskPo.setId(null);
+            testTaskPo.setLeaf(true);
+            testTaskPo.setOrdr(getChildMaxOrderNumb(testTaskPo.getpId()));
 
-            testCasePo.setCreateById(user.getId());
-            testCasePo.setCreateTime(new Date());
+            testTaskPo.setCreateById(user.getId());
+            testTaskPo.setCreateTime(new Date());
 
             action = "create";
         }
 
-        saveOrUpdate(testCasePo);
+        // 解压文件
+        String zipPath = Constant.WORK_DIR + testTaskVo.getTestsetPath();
+        String destDir = PropertyConfig.getConfig("res.upload.dir");
+        String dateDist = DateUtils.GetDateNoSeparator();
+        destDir = destDir + dateDist + "/" + UUID.randomUUID().toString();
 
-		return testCasePo;
+        ZipUtil.unpack(new File(zipPath), new File(destDir));
+
+        List<AiRunMlf> mlfs = FileUtils.ListMlf(destDir, testTaskVo.getTestType());
+        testTaskPo.setMlfs(JSON.toJSONString(mlfs));
+        saveOrUpdate(testTaskPo);
+
+		return testTaskPo;
 	}
 
 	@Override

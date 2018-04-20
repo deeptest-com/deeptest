@@ -1,18 +1,16 @@
 package com.ngtesting.platform.util;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Scanner;
-
-import javax.imageio.ImageIO;
-
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.vo.AiRunMlf;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
 
 public class FileUtils {
 
@@ -114,6 +112,51 @@ public class FileUtils {
 	  if(!file.exists()){
 		  file.mkdirs();
 	  }
+    }
+
+    public static List<AiRunMlf> ListMlf(String dir, String testType) {
+        List<AiRunMlf> mlfs = new LinkedList<>();
+        FileUtils.TraverseFolder(dir, mlfs, testType);
+
+        return mlfs;
+    }
+
+    public static void TraverseFolder(String path, List<AiRunMlf> mlfs, String testType) {
+        File file = new File(path);
+        if (file.exists()) {
+            File[] files = file.listFiles();
+            if (files.length == 0) {
+                return;
+            } else {
+                for (File file2 : files) {
+                    if (file2.isDirectory()) {
+                        if (file2.getAbsolutePath().indexOf("__MACOSX") == -1) {
+                            TraverseFolder(file2.getAbsolutePath(), mlfs, testType);
+                        }
+                    } else {
+                        String fileName = file2.getAbsolutePath();
+
+                        System.out.println("文件:" + file2.getAbsolutePath());
+
+                        String mlfPath = null;
+                        if ("nlu-sent".equals(testType) && fileName.indexOf(".txt") > -1) {
+                            mlfPath = file2.getAbsolutePath();
+                        } else if (!"nlu-sent".equals(testType) && fileName.indexOf(".mlf") > -1) {
+                            mlfPath = file2.getAbsolutePath();
+                        }
+                        if (mlfPath != null) {
+                            mlfPath = "work/" + mlfPath.split("work/")[1];
+
+                            AiRunMlf mlf = new AiRunMlf();
+                            mlf.setPath(mlfPath);
+                            mlfs.add(mlf);
+                        }
+                    }
+                }
+            }
+        } else {
+            System.out.println("文件不存在!");
+        }
     }
 
 }

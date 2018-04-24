@@ -11,6 +11,7 @@ import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class FileUtils {
 
@@ -18,6 +19,9 @@ public class FileUtils {
 	public static final int THUMB_HEIGHT = 100;
 
     public static String SaveFile(MultipartFile file, String uploadRelativeDist, String fileName) {
+        return SaveFile(file, uploadRelativeDist, fileName, true);
+    }
+    public static String SaveFile(MultipartFile file, String uploadRelativeDist, String fileName, boolean thumb) {
         String dateDist = DateUtils.GetDateNoSeparator();
 
         String uploadPath = Constant.FTP_UPLOAD_DIR + uploadRelativeDist + dateDist + "/";
@@ -34,7 +38,10 @@ public class FileUtils {
             return null;
         }
 
-        FileUtils.Thumb(localPath);
+        if (thumb) {
+            FileUtils.Thumb(localPath);
+        }
+
         return uploadPath + fileName;
     }
 
@@ -85,6 +92,14 @@ public class FileUtils {
             }
         }
         return des;
+    }
+
+    public static String RandomFilePath(String brother, String ext) {
+        String dir = brother.substring(0, brother.lastIndexOf("/") + 1) ;
+        String fileName = UUID.randomUUID().toString() + "." + ext;
+        String path = dir + fileName;
+
+        return path;
     }
 
     public static String ReadFile(String fullFileName) {

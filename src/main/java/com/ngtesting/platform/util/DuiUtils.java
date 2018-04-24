@@ -22,7 +22,7 @@ public class DuiUtils {
         System.out.println(cmd);
 
         Map<String, String> regex = new HashedMap();
-        regex.put("output", "(HTK Results Analysis at .*?)\\s*|$");
+        regex.put("output", "(HTK Results Analysis at .*?)\\s*\\|$");
         ShellResult res = ShellUtil.exec(cmd, regex);
 
         System.out.println(res.getRegexMap().get("output"));

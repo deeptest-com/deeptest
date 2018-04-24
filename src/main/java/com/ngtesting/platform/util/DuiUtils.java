@@ -1,10 +1,12 @@
 package com.ngtesting.platform.util;
 
-import java.util.HashMap;
+import org.apache.commons.collections.map.HashedMap;
+
+import java.util.Map;
 
 public class DuiUtils {
 
-    public static void HResultsCall(String labPath, String recPath, String resultPath){
+    public static String HResultsCall(String labPath, String recPath, String resultPath){
         String hresultsPath = "HResults";
 
         String os = System.getProperty("os.name").toLowerCase();
@@ -16,11 +18,16 @@ public class DuiUtils {
             cmd = hresultsPath + " -t -e "+"\"一\" \"幺\""+" -A -D -T 1 -h -I " + labPath + " /dev/null "
                     + recPath;
         }
-        cmd += " > " + resultPath;
+        cmd += " | tee " + resultPath;
         System.out.println(cmd);
 
-        ShellUtil.exec(cmd, new HashMap<String, String>());
+        Map<String, String> regex = new HashedMap();
+        regex.put("output", "(HTK Results Analysis at .*?) \\s*");
+        ShellResult res = ShellUtil.exec(cmd, regex);
 
+        System.out.println(res.getRegexMap().get("output"));
+
+        return res.getRegexMap().get("output") != null? res.getRegexMap().get("output").toString(): "";
     }
 
 }

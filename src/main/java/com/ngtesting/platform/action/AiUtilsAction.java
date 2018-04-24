@@ -45,11 +45,12 @@ public class AiUtilsAction extends BaseAction {
         }
 
         String outputPath = FileUtils.RandomFilePath(paths.get(1),"txt").replace(".txt", "-result.txt");
-        DuiUtils.HResultsCall(Constant.WORK_DIR + paths.get(0),
+        String cmdOutput = DuiUtils.HResultsCall(Constant.WORK_DIR + paths.get(0),
                 Constant.WORK_DIR + paths.get(1), Constant.WORK_DIR + outputPath);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
         ret.put("data", outputPath);
+        ret.put("cmdOutput", cmdOutput);
 
 		return ret;
 	}

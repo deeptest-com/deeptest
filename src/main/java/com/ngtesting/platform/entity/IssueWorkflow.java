@@ -1,10 +1,14 @@
 package com.ngtesting.platform.entity;
 
+import org.hibernate.annotations.Where;
+
 import javax.persistence.*;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
-@Table(name = "tst_ver")
+@Table(name = "isu_workflow")
 public class IssueWorkflow extends BaseEntity {
 
     private static final long serialVersionUID = 7260005873110268288L;
@@ -16,8 +20,6 @@ public class IssueWorkflow extends BaseEntity {
 	@Column(name = "descr", length = 1000)
     private String descr;
 
-    private Integer displayOrder;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
     private TestProject project;
@@ -25,12 +27,17 @@ public class IssueWorkflow extends BaseEntity {
     @Column(name = "project_id")
     private Long projectId;
 
-    public Integer getDisplayOrder() {
-        return displayOrder;
+    @OneToMany(mappedBy="workflow", fetch=FetchType.LAZY)
+    @Where(clause="!deleted")
+    @OrderBy("ordr")
+    private List<IssueStatusTransition> statusTansitions = new LinkedList<>();
+
+    public List<IssueStatusTransition> getStatusTansitions() {
+        return statusTansitions;
     }
 
-    public void setDisplayOrder(Integer displayOrder) {
-        this.displayOrder = displayOrder;
+    public void setStatusTansitions(List<IssueStatusTransition> statusTansitions) {
+        this.statusTansitions = statusTansitions;
     }
 
     public String getName() {

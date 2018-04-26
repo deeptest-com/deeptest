@@ -3,7 +3,7 @@ package com.ngtesting.platform.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "tst_custom_field_option")
+@Table(name = "isu_custom_field_option")
 public class IssueCustomFieldOption extends BaseEntity {
     private static final long serialVersionUID = -5005831075946958149L;
 
@@ -27,7 +27,7 @@ public class IssueCustomFieldOption extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "field_id", insertable = false, updatable = false)
-    private TestCustomField field;
+    private IssueCustomField field;
 
     public Long getFieldId() {
         return fieldId;
@@ -61,11 +61,11 @@ public class IssueCustomFieldOption extends BaseEntity {
         this.ordr = ordr;
     }
 
-    public TestCustomField getField() {
+    public IssueCustomField getField() {
         return field;
     }
 
-    public void setField(TestCustomField field) {
+    public void setField(IssueCustomField field) {
         this.field = field;
     }
 

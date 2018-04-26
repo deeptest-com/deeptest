@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "tst_ver")
+@Table(name = "isu_status")
 public class IssueStatus extends BaseEntity {
 
     private static final long serialVersionUID = 7260005873110268288L;

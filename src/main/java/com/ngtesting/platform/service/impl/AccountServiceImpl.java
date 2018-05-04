@@ -41,7 +41,7 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 	public TestUser registerPers(String name, String email, String phone, String password) {
 		String newToken = null;
 		DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
-		
+
 		dc.add(Restrictions.eq("email", email));
 		dc.add(Restrictions.ne("deleted", true));
 		dc.add(Restrictions.ne("disabled", true));
@@ -59,7 +59,8 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 		user.setPhone(phone);
 		user.setPassword(password);
 		user.setAvatar("upload/sample/user/avatar.png");
-        user.setLeftSize(300);
+        user.setLeftSizeCase(300);
+		user.setLeftSizeIssue(300);
 		user.setLastLoginTime(new Date());
 		saveOrUpdate(user);
 
@@ -146,11 +147,11 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 		if (ls.size() < 1) {
 			return null;
 		}
-		
+
 		TestVerifyCode code = ls.get(0);
 		code.setDeleted(true);
 		saveOrUpdate(code);
-		
+
 		TestUser user = (TestUser) get(TestUser.class, code.getRefId());
 		if (user == null) {
 			return null;
@@ -164,13 +165,13 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 
 		user.setLastLoginTime(new Date());
 		saveOrUpdate(user);
-		
+
 		return user;
 	}
 
 	@Override
 	public TestUser logoutPers(String email) {
-		
+
 		DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
 		dc.add(Restrictions.eq("email", email));
 		dc.add(Restrictions.ne("deleted", true));
@@ -185,13 +186,13 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 		}
 		return user;
 	}
-	
+
 
 	@Override
 	public TestUser getByToken(String token) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
 		dc.add(Restrictions.eq("token", token));
-		
+
 		dc.add(Restrictions.ne("deleted", true));
 		dc.add(Restrictions.ne("disabled", true));
 
@@ -209,7 +210,7 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 		if (po == null || !po.getPassword().equals(oldPassword)) {
 			return false;
 		}
-		
+
 		po.setPassword(password);
 		saveOrUpdate(po);
 		return true;
@@ -235,13 +236,5 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
         saveOrUpdate(po);
         return po;
     }
-
-    @Override
-	public TestUser setLeftSizePers(Long userId, Integer left) {
-		TestUser po = (TestUser) get(TestUser.class, userId);
-		po.setLeftSize(left);
-		saveOrUpdate(po);
-		return po;
-	}
 
 }

@@ -6,6 +6,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.*;
 import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.PlanService;
+import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.service.RunService;
 import com.ngtesting.platform.vo.TestPlanVo;
 import com.ngtesting.platform.vo.TestRunVo;
@@ -23,7 +24,8 @@ import java.util.List;
 
 @Service
 public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
-
+    @Autowired
+    ProjectService projectService;
     @Autowired
     RunService runService;
 
@@ -39,8 +41,10 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
         DetachedCriteria dc = DetachedCriteria.forClass(TestPlan.class);
 
         if (projectId != null) {
-            dc.add(Restrictions.eq("projectId", projectId));
+            List<Long> ids = projectService.listBrotherIds(projectId);
+            dc.add(Restrictions.in("projectId", ids));
         }
+
         if (StringUtils.isNotEmpty(status)) {
             dc.add(Restrictions.eq("status", TestPlan.PlanStatus.valueOf(status)));
         }
@@ -186,10 +190,16 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
         vo.setStartTime(po.getStartTime());
         vo.setEndTime(po.getEndTime());
         vo.setVerId(po.getVerId());
+
         TestVer ver = po.getVerId()==null? null: (TestVer) get(TestVer.class, po.getVerId());
         vo.setVerName(ver!=null?ver.getName():"");
+
         vo.setDescr(po.getDescr());
         vo.setProjectId(po.getProjectId());
+
+        TestProject project = (TestProject) get(TestProject.class, po.getProjectId());
+        vo.setProjectName(project!=null?project.getName():"");
+
         vo.setStatus(po.getStatus().toString());
 
         for (TestRun run : po.getRuns()) {

@@ -63,7 +63,7 @@ public class OrgRoleAction extends BaseAction {
 		Long orgRoleId = req.getLong("id");
 
 		List<OrgPrivilegeVo> orgRolePrivileges = orgRolePrivilegeService.listPrivilegesByOrgRole(orgId, orgRoleId);
-        List<UserVo> orgRoleUsers = orgRoleUserService.listUserByOrgRole(orgRoleId);
+        List<UserVo> orgRoleUsers = orgRoleUserService.listUserByOrgRole(orgId, orgRoleId);
 
 		if (orgRoleId == null) {
 			ret.put("orgRole", new OrgRoleVo());

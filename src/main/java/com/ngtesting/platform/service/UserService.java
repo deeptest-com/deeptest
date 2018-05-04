@@ -13,9 +13,13 @@ public interface UserService extends BaseService {
 	Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage);
 	List<Map> getProjectUsers(Long orgId, Long projectId);
     List<TestUser> search(Long orgId, String keywords, JSONArray exceptIds);
-	
+
 	TestUser save(UserVo vo, Long orgId);
-	TestUser invitePers(UserVo uerVo, UserVo newUserVo, List<RelationOrgGroupUserVo> relations);
+	TestUser setLeftSizePers(Long userId, Integer left, String prop);
+
+    List<TestUser> listAllOrgUsers(Long orgId);
+
+    TestUser invitePers(UserVo uerVo, UserVo newUserVo, List<RelationOrgGroupUserVo> relations);
 	boolean disable(Long userId, Long orgId);
 	boolean remove(Long userId, Long orgId);
 

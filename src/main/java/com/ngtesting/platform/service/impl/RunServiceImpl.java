@@ -244,14 +244,13 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
             vo.getAssignees().add(userVo);
         }
 
-		String sql = "select cs1.`status` status, count(cs1.tcinid) count from "
-                +          "(select tcin.id tcinid, tcin.`status`, tc.id tcid from tst_case_in_run tcin "
-                +               "left join tst_case tc on tcin.case_id = tc.id "
+		String sql = "select cs1.`status` status, count(cs1.tcin_id) count from "
+                +          "(select tcin.id tcin_id,  tcin.case_id tcin_case_id, tcin.`status` from tst_case_in_run tcin "
                 +               "where tcin.run_id  = " + po.getId()
-                +                   " AND tcin.deleted != true AND tcin.disabled != true order by tc.ordr) cs1 "
-                +     "where cs1.tcid not in "
-                +          "(select distinct tc.p_id from tst_case_in_run tcin left join tst_case tc on tcin.case_id = tc.id "
-                +               "where tcin.run_id  = " + po.getId() + " and tc.p_id is not NULL "
+                +                   " AND tcin.deleted != true AND tcin.disabled != true) cs1 "
+                +     "where cs1.tcin_case_id not in " // 排除父节点
+                +          "(select distinct tcin.p_id from tst_case_in_run tcin "
+                +               "where tcin.run_id  = " + po.getId() + " and tcin.p_id is not NULL "
                 +                   " AND tcin.deleted != true AND tcin.disabled != true ) "
                 +     "group by cs1.`status`";
 
@@ -275,12 +274,24 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 		        continue;
             }
 
+            int numb = vo.getCountMap().get(status);
             if (total != 0) {
                 int width = vo.getCountMap().get(status) * barWidth / total;
+                if (width > 0) {
+                    if (width < 10 && numb < 10) {
+                        width = 10;
+                    } else if (width < 18 && numb >= 10 && numb < 100) {
+                        width = 18;
+                    } else if (width < 27 && numb >= 100) {
+                        width = 27;
+                    }
+                }
+
                 vo.getWidthMap().put(status, width);
 
                 sum += width;
                 if (maxWidth < width) {
+                    maxWidth = width;
                     maxStatus = status;
                 }
             }

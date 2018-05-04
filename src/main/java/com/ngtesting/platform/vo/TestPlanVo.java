@@ -20,9 +20,18 @@ public class TestPlanVo extends BaseVo {
     private String descr;
 
     private Long projectId;
+    private String projectName;
 
     private Long verId;
     private String verName;
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
 
     public String getVerName() {
         return verName;

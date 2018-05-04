@@ -286,8 +286,9 @@ public class UserAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		Integer left = json.getInteger("left");
+		String prop = json.getString("prop");
 
-		TestUser user = accountService.setLeftSizePers(userVo.getId(), left);
+		TestUser user = userService.setLeftSizePers(userVo.getId(), left, prop);
 		userVo = userService.genVo(user);
 		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
 

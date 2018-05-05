@@ -108,6 +108,19 @@ public class TestCase extends BaseEntity {
     @OrderBy("changeTime ASC")
     private List<TestCaseComments> comments = new LinkedList<>();
 
+    @OneToMany(mappedBy="testCase", fetch=FetchType.LAZY)
+    @Where(clause="!deleted")
+    @OrderBy("createTime")
+    private List<TestCaseAttachment> attachments = new LinkedList<>();
+
+    public List<TestCaseAttachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<TestCaseAttachment> attachments) {
+        this.attachments = attachments;
+    }
+
     public AiTestTask getAiTestTask() {
         return aiTestTask;
     }

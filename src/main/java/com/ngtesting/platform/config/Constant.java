@@ -111,4 +111,27 @@ public final class Constant {
         put("asr", "ngtesting-asr");
     }};
 
+    public enum CaseAct {
+        create("create", "创建"),
+        rename("rename", "改名"),
+        update("update", "更新"),
+        move("move", "移动"),
+        copy("copy", "复制"),
+        delete("delete", "删除"),
+
+        upload_attachment("upload_attachment", "上传附件"),
+        delete_attachment("delete_attachment", "删除附件");
+
+        CaseAct(String code, String msg) {
+            this.code = code;
+            this.msg = msg;
+        }
+
+        public String code;
+        public String msg;
+        public String toString() {
+            return code;
+        }
+    }
+
 }

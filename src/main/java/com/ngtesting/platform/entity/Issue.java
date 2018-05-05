@@ -1,7 +1,11 @@
 package com.ngtesting.platform.entity;
 
+import org.hibernate.annotations.Where;
+
 import javax.persistence.*;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Table(name = "isu_issue")
@@ -24,6 +28,19 @@ public class Issue extends BaseEntity {
 
     @Column(name = "project_id")
     private Long projectId;
+
+    @OneToMany(mappedBy="issue", fetch=FetchType.LAZY)
+    @Where(clause="!deleted")
+    @OrderBy("createTime")
+    private List<IssueAttachment> attachments = new LinkedList<>();
+
+    public List<IssueAttachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<IssueAttachment> attachments) {
+        this.attachments = attachments;
+    }
 
     public Integer getDisplayOrder() {
         return displayOrder;

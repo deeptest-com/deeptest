@@ -10,7 +10,6 @@ Deploy webapp to path /platform in tomcat
 Open chrome browser and goto http://localhost:8080/platform/client
 If you use different tomcat path, search and replace below service url to your own in main.*.js
 - http://localhost:8080/platform/
-- http://lab.dui.ai/platform/
 ```
 
 ### Test Project

@@ -8,7 +8,9 @@ Setup Tomcat8 and Mysql5.x server
 Import database from xdoc/ngtesting-dump.sql
 Deploy webapp to path /platform in tomcat
 Open chrome browser and goto http://localhost:8080/platform/client
-If you use different tomcat path, search and replace above url in ngtesting-platform/src/main/webapp/client/*
+If you use different tomcat path, search and replace below service url "http://localhost:8080/platform" to your own in forder ngtesting-platform/src/main/webapp/client/*
+*http://localhost:8080/platform/
+*http://lab.dui.ai/platform/
 ```
 
 ### Test Project

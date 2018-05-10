@@ -154,6 +154,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             testCase.setSteps(new LinkedList());
             testCase.setHistories(new LinkedList());
             testCase.setComments(new LinkedList());
+            testCase.setAttachments(new LinkedList());
 
             testCase.setId(null);
             action = Constant.CaseAct.copy;
@@ -407,6 +408,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             clonedChild.setComments(new LinkedList());
             clonedChild.setSteps(new LinkedList());
             clonedChild.setHistories(new LinkedList());
+            clonedChild.setAttachments(new LinkedList());
 
             clonedChild.setId(null);
             clonedChild.setpId(testCase.getId());

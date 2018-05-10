@@ -118,6 +118,10 @@ public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements 
 
 	@Override
 	public boolean saveRelations(List<RelationOrgGroupUserVo> orgGroupUserVos) {
+		return saveRelations(null, orgGroupUserVos);
+	}
+	@Override
+	public boolean saveRelations(Long userId, List<RelationOrgGroupUserVo> orgGroupUserVos) {
 		if (orgGroupUserVos == null) {
 			return false;
 		}
@@ -126,12 +130,15 @@ public class RelationOrgGroupUserServiceImpl extends BaseServiceImpl implements 
 			if (vo.getSelecting() != vo.getSelected()) { // 变化了
 				TestRelationOrgGroupUser relationOrgGroupUser = this.getRelationOrgGroupUser(vo.getOrgGroupId(), vo.getUserId());
 
-    			if (vo.getSelecting() && relationOrgGroupUser == null) { // 勾选
-    				relationOrgGroupUser = new TestRelationOrgGroupUser(vo.getOrgId(), vo.getOrgGroupId(), vo.getUserId());
-    				saveOrUpdate(relationOrgGroupUser);
-    			} else if (relationOrgGroupUser != null) { // 取消
-    				getDao().delete(relationOrgGroupUser);
-    			}
+				if (vo.getSelecting() && relationOrgGroupUser == null) { // 勾选
+					relationOrgGroupUser = new TestRelationOrgGroupUser(vo.getOrgId(), vo.getOrgGroupId(), vo.getUserId());
+					if (relationOrgGroupUser.getUserId() == null) {
+						relationOrgGroupUser.setUserId(userId);
+					}
+					saveOrUpdate(relationOrgGroupUser);
+				} else if (relationOrgGroupUser != null) { // 取消
+					getDao().delete(relationOrgGroupUser);
+				}
 			}
 		}
 

@@ -1,1 +1,5 @@
+sed -i '' "s/lab.dui.ai/localhost:8080/g" src/main/webapp/client/main.*.bundle.js
+
+
+
 mvn -Denv=prod clean package tomcat7:deploy

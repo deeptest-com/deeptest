@@ -30,7 +30,7 @@ public final class Constant {
         return Constant.WORK_DIR + FTP_UPLOAD_DIR;
     }
 
-    public static final int PAGE_SIZE = 10;
+    public static final int PAGE_SIZE = 20;
 
     public static enum RespCode {
         SUCCESS(1), BIZ_FAIL(101), BIZ_FAIL_2(102), INTERFACE_FAIL(-10), NOT_LOGIN(-100),

@@ -196,7 +196,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
             projectService.genHistoryPers(orgId, userPo.getId(), prjId, prjName);
 
-            orgGroupUserService.saveRelations(relations);
+            orgGroupUserService.saveRelations(userPo.getId(), relations);
 
             String sys = PropertyConfig.getConfig("sys.name");
             Map<String, String> map = new HashMap<String, String>();
@@ -244,10 +244,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean remove(Long userId, Long orgId) {
-		TestUser po = (TestUser) get(TestUser.class, userId);
-		po.setDeleted(true);
-		saveOrUpdate(po);
+	public boolean removeUserFromOrgPers(Long userId, Long orgId) {
+        getDao().querySql("{call remove_user_from_org(?,?)}", userId, orgId);
 
 		return true;
 	}
@@ -260,8 +258,10 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		UserVo vo = new UserVo();
 		BeanUtilEx.copyProperties(vo, user);
 
-        TestProject prj = (TestProject)get(TestProject.class, user.getDefaultPrjId());
-        vo.setDefaultPrjName(prj.getName());
+		if (user.getDefaultPrjId() != null) {
+            TestProject prj = (TestProject)get(TestProject.class, user.getDefaultPrjId());
+            vo.setDefaultPrjName(prj.getName());
+        }
 
 		return vo;
 	}

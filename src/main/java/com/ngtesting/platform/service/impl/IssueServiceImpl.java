@@ -150,6 +150,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
             testCase.setSteps(new LinkedList());
             testCase.setHistories(new LinkedList());
             testCase.setComments(new LinkedList());
+            testCase.setAttachments(new LinkedList());
 
             testCase.setId(null);
             action = "copy";
@@ -411,6 +412,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
             clonedChild.setComments(new LinkedList());
             clonedChild.setSteps(new LinkedList());
             clonedChild.setHistories(new LinkedList());
+            clonedChild.setAttachments(new LinkedList());
 
             clonedChild.setId(null);
             clonedChild.setpId(testCase.getId());

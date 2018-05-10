@@ -21,7 +21,7 @@ public interface UserService extends BaseService {
 
     TestUser invitePers(UserVo uerVo, UserVo newUserVo, List<RelationOrgGroupUserVo> relations);
 	boolean disable(Long userId, Long orgId);
-	boolean remove(Long userId, Long orgId);
+	boolean removeUserFromOrgPers(Long userId, Long orgId);
 
 	List<UserVo> genVos(List<TestUser> pos);
 	UserVo genVo(TestUser user);

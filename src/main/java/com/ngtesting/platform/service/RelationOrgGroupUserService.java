@@ -10,4 +10,5 @@ public interface RelationOrgGroupUserService extends BaseService {
 
 	boolean saveRelations(List<RelationOrgGroupUserVo> orgGroupUserVos);
 
+    boolean saveRelations(Long userId, List<RelationOrgGroupUserVo> orgGroupUserVos);
 }

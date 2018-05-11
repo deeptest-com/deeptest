@@ -116,6 +116,8 @@ public class OrgAction extends BaseAction {
 		Long orgId = json.getLong("id");
 
 		orgService.setDefaultPers(orgId, userVo);
+
+		pushSettingsService.pushOrgSettings(userVo);
 		pushSettingsService.pushRecentProjects(userVo);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

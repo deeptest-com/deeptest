@@ -23,7 +23,9 @@ public class TestProjectPrivilegeDefine extends BaseEntity {
 //    	req("req"),
 		plan("plan"),
     	cases("cases"),
-		run("run");
+		run("run"),
+        autotask("autotask"),
+        issue("issue");
 //    	result("result"),
 //    	report("report");
 
@@ -42,7 +44,8 @@ public class TestProjectPrivilegeDefine extends BaseEntity {
         update("update"),
         remove("remove"),
         close("close"),
-		exe("exe");
+		exe("exe"),
+		all("all");
 
         private PrivilegeAction(String textVal) {
             this.textVal = textVal;

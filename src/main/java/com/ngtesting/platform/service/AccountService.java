@@ -23,5 +23,4 @@ public interface AccountService extends BaseService {
 
     TestUser getByPhone(String token);
 	TestUser getByEmail(String email);
-    TestUser setLeftSizePers(Long userId, Integer left);
 }

@@ -3,7 +3,7 @@ package com.ngtesting.platform.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "tst_document")
+@Table(name = "isu_document")
 public class IssueDocument extends BaseEntity {
 	private static final long serialVersionUID = 2390019554025797778L;
 	private String title;
@@ -14,8 +14,12 @@ public class IssueDocument extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private DocType docType = IssueDocument.DocType.file;
 
-    @Column(name = "event_id")
-    private Long eventId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "issue_id", insertable = false, updatable = false)
+    private Issue issue;
+
+    @Column(name = "issue_id")
+    private Long issueId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
@@ -57,15 +61,23 @@ public class IssueDocument extends BaseEntity {
         this.uri = uri;
     }
 
-    public Long getEventId() {
-        return eventId;
+    public Issue getIssue() {
+        return issue;
     }
 
-    public void setEventId(Long eventId) {
-        this.eventId = eventId;
+    public void setIssue(Issue issue) {
+        this.issue = issue;
     }
 
-	public DocType getDocType() {
+    public Long getIssueId() {
+        return issueId;
+    }
+
+    public void setIssueId(Long issueId) {
+        this.issueId = issueId;
+    }
+
+    public DocType getDocType() {
 		return docType;
 	}
 

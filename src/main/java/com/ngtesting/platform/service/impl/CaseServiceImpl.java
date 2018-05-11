@@ -2,7 +2,9 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.*;
+import com.ngtesting.platform.service.CaseAttachmentService;
 import com.ngtesting.platform.service.CaseCommentsService;
 import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.util.BeanUtilEx;
@@ -24,6 +26,8 @@ import java.util.List;
 public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     @Autowired
     CaseCommentsService caseCommentsService;
+    @Autowired
+    CaseAttachmentService caseAttachmentService;
 
 	@Override
 	public List<TestCase> query(Long projectId) {
@@ -99,13 +103,13 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	@Override
 	public TestCase renamePers(Long id, String name, Long pId, Long projectId, UserVo user) {
         TestCase testCasePo = new TestCase();
-        String action = "";
+        Constant.CaseAct action;
         if (id != null && id > 0) {
             testCasePo = (TestCase)get(TestCase.class, id);
 
             testCasePo.setUpdateById(user.getId());
             testCasePo.setUpdateTime(new Date());
-            action = "rename";
+            action = Constant.CaseAct.rename;
         } else {
             testCasePo.setLeaf(true);
             testCasePo.setId(null);
@@ -117,7 +121,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
             testCasePo.setCreateById(user.getId());
             testCasePo.setCreateTime(new Date());
-            action = "create";
+            action = Constant.CaseAct.create;
         }
         testCasePo.setName(name);
         testCasePo.setReviewResult(null);
@@ -141,7 +145,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         TestCase target = (TestCase) get(TestCase.class, targetId);
 
         TestCase testCase;
-        String action;
+        Constant.CaseAct action;
         if (isCopy) {
             testCase = new TestCase();
             BeanUtilEx.copyProperties(testCase, src);
@@ -150,12 +154,13 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             testCase.setSteps(new LinkedList());
             testCase.setHistories(new LinkedList());
             testCase.setComments(new LinkedList());
+            testCase.setAttachments(new LinkedList());
 
             testCase.setId(null);
-            action = "copy";
+            action = Constant.CaseAct.copy;
         } else {
             testCase = src;
-            action = "move";
+            action = Constant.CaseAct.move;
         }
 
         if ("inner".equals(moveType)) {
@@ -232,7 +237,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         testCase.setLeaf(false);
         testCase.setOrdr(0);
         saveOrUpdate(testCase);
-        saveHistory(user, "create", testCase,null);
+        saveHistory(user, Constant.CaseAct.create, testCase,null);
 
         TestCase testCase2 = new TestCase();
         testCase2.setName("新用例");
@@ -245,14 +250,14 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         testCase2.setLeaf(true);
         testCase2.setOrdr(0);
         saveOrUpdate(testCase2);
-        saveHistory(user, "create", testCase2,null);
+        saveHistory(user, Constant.CaseAct.create, testCase2,null);
     }
 
     @Override
 	public TestCase save(JSONObject json, UserVo user) {
         TestCaseVo testCaseVo = JSON.parseObject(JSON.toJSONString(json), TestCaseVo.class);
 
-        String action = "";
+        Constant.CaseAct action;
 
         TestCase testCasePo;
         if (testCaseVo.getId() > 0) {
@@ -262,7 +267,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             testCasePo.setUpdateById(user.getId());
             testCasePo.setUpdateTime(new Date());
 
-            action = "update";
+            action = Constant.CaseAct.update;
         } else {
             testCasePo = new TestCase();
             copyProperties(testCasePo, testCaseVo);
@@ -273,7 +278,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             testCasePo.setCreateById(user.getId());
             testCasePo.setCreateTime(new Date());
 
-            action = "create";
+            action = Constant.CaseAct.create;
         }
 
         testCasePo.setReviewResult(null);
@@ -349,26 +354,18 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         testCase.setReviewResult(null);
 		saveOrUpdate(testCase);
 
-        saveHistory(user, "update", testCase,label);
+        saveHistory(user, Constant.CaseAct.update, testCase,label);
 
 		return testCase;
 	}
 
     @Override
-    public void saveHistory(UserVo user, String act, TestCase testCase, String field) {
-	    String action = "";
-        switch (act) {
-            case "create": action = "创建";break;
-            case "rename": action = "改名";break;
-            case "update": action = "更新";break;
-            case "move": action = "移动";break;
-            case "copy": action = "复制";break;
-            case "delete": action = "删除";break;
-        }
+    public void saveHistory(UserVo user, Constant.CaseAct act, TestCase testCase, String field) {
+	    String action = act.msg;
 
         String msg = "用户" + StringUtil.highlightDict(user.getName()) + action;
         if (StringUtils.isNotEmpty(field)) {
-            msg += "字段" + field;
+            msg += " " + field;
         } else {
 //            msg += "信息";
         }
@@ -383,7 +380,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         TestCase testCase = (TestCase) get(TestCase.class, id);
 
         getDao().querySql("{call delete_case_and_its_children(?)}", id);
-        saveHistory(user, "delete", testCase,null);
+        saveHistory(user, Constant.CaseAct.delete, testCase,null);
 
         return testCase;
 	}
@@ -411,6 +408,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             clonedChild.setComments(new LinkedList());
             clonedChild.setSteps(new LinkedList());
             clonedChild.setHistories(new LinkedList());
+            clonedChild.setAttachments(new LinkedList());
 
             clonedChild.setId(null);
             clonedChild.setpId(testCase.getId());
@@ -485,6 +483,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         vo.setSteps(new LinkedList<TestCaseStepVo>());
         vo.setComments(new LinkedList<TestCaseCommentsVo>());
         vo.setHistories(new LinkedList<TestCaseHistoryVo>());
+        vo.setAttachments(new LinkedList<TestCaseAttachmentVo>());
 
         if (withSteps) {
             List<TestCaseStep> steps = po.getSteps();
@@ -511,10 +510,19 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
                 vo.getHistories().add(historyVo);
             }
+
+            List<TestCaseAttachment> attachments = po.getAttachments();
+            Iterator<TestCaseAttachment> iteratorAttach  = attachments.iterator();
+            while (iteratorAttach.hasNext()) {
+                TestCaseAttachment attachment = iteratorAttach.next();
+                TestCaseAttachmentVo attachVo = caseAttachmentService.genVo(attachment);
+                vo.getAttachments().add(attachVo);
+            }
         }
 
         return vo;
     }
+
     @Override
     public List<TestCaseHistory> findHistories(Long testCaseId) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestCaseHistory.class);

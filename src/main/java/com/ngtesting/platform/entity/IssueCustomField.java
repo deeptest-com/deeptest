@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "tst_custom_field")
+@Table(name = "isu_custom_field")
 public class IssueCustomField extends BaseEntity {
 	private static final long serialVersionUID = -1940351858441687302L;
 
@@ -53,7 +53,7 @@ public class IssueCustomField extends BaseEntity {
     private Long orgId;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "tst_r_custom_field_project", joinColumns = {
+	@JoinTable(name = "isu_r_custom_field_project", joinColumns = {
 			@JoinColumn(name = "custom_field_id", nullable = false, updatable = false) },
 			inverseJoinColumns = { @JoinColumn(name = "project_id",
 					nullable = false, updatable = false) })
@@ -61,7 +61,7 @@ public class IssueCustomField extends BaseEntity {
 
     @OneToMany(mappedBy="field", fetch = FetchType.LAZY)
     @OrderBy("ordr")
-    private List<TestCustomFieldOption> options = new LinkedList<>();
+    private List<IssueCustomFieldOption> options = new LinkedList<>();
 
     public static enum FieldType {
     	string("string"),
@@ -122,11 +122,11 @@ public class IssueCustomField extends BaseEntity {
         }
     }
 
-    public List<TestCustomFieldOption> getOptions() {
+    public List<IssueCustomFieldOption> getOptions() {
         return options;
     }
 
-    public void setOptions(List<TestCustomFieldOption> options) {
+    public void setOptions(List<IssueCustomFieldOption> options) {
         this.options = options;
     }
 

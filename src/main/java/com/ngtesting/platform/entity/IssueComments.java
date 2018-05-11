@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "tst_case_comments")
+@Table(name = "isu_comments")
 public class IssueComments extends BaseEntity {
 	private static final long serialVersionUID = -5934497865835276588L;
 
@@ -21,11 +21,11 @@ public class IssueComments extends BaseEntity {
     private Long userId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "test_case_id", insertable = false, updatable = false)
-	private TestCase testCase;
+	@JoinColumn(name = "issue_id", insertable = false, updatable = false)
+	private Issue issue;
 
-	@Column(name = "test_case_id")
-	private Long testCaseId;
+	@Column(name = "issue_id")
+	private Long issueId;
 
 	public IssueComments() {
 		super();
@@ -71,19 +71,19 @@ public class IssueComments extends BaseEntity {
         this.content = content;
     }
 
-    public TestCase getTestCase() {
-        return testCase;
+    public Issue getIssue() {
+        return issue;
     }
 
-    public void setTestCase(TestCase testCase) {
-        this.testCase = testCase;
+    public void setIssue(Issue issue) {
+        this.issue = issue;
     }
 
-    public Long getTestCaseId() {
-        return testCaseId;
+    public Long getIssueId() {
+        return issueId;
     }
 
-    public void setTestCaseId(Long testCaseId) {
-        this.testCaseId = testCaseId;
+    public void setIssueId(Long issueId) {
+        this.issueId = issueId;
     }
 }

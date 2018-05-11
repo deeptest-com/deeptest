@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface OrgRoleUserService extends BaseService {
 
-	List<UserVo> listUserByOrgRole(Long orgRoleId);
+	List<UserVo> listUserByOrgRole(Long orgId, Long orgRoleId);
 
 	boolean saveOrgRoleUsers(Long roleId, List<UserVo> orgUsers);
 

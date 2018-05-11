@@ -3,6 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.ngtesting.platform.config.PropertyConfig;
 import com.ngtesting.platform.entity.TestOrg;
+import com.ngtesting.platform.entity.TestProject;
 import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.entity.TestVerifyCode;
 import com.ngtesting.platform.service.*;
@@ -141,6 +142,22 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		return po;
 	}
 
+	@Override
+	public List<TestUser> listAllOrgUsers(Long orgId) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestUser.class);
+
+		dc.createAlias("orgSet", "orgs");
+		dc.add(Restrictions.eq("orgs.id", orgId));
+
+		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+
+		dc.addOrder(Order.asc("id"));
+		List<TestUser> ls = findAllByCriteria(dc);
+
+		return ls;
+	}
+
     @Override
     public TestUser invitePers(UserVo userVo, UserVo newUserVo, List<RelationOrgGroupUserVo> relations) {
 	    Long orgId = userVo.getDefaultOrgId();
@@ -179,7 +196,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
             projectService.genHistoryPers(orgId, userPo.getId(), prjId, prjName);
 
-            orgGroupUserService.saveRelations(relations);
+            orgGroupUserService.saveRelations(userPo.getId(), relations);
 
             String sys = PropertyConfig.getConfig("sys.name");
             Map<String, String> map = new HashMap<String, String>();
@@ -204,6 +221,19 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         }
     }
 
+	@Override
+	public TestUser setLeftSizePers(Long userId, Integer left, String prop) {
+		TestUser po = (TestUser) get(TestUser.class, userId);
+		if ("case".equals(prop)) {
+			po.setLeftSizeCase(left);
+		} else if ("issue".equals(prop)) {
+			po.setLeftSizeIssue(left);
+		}
+
+		saveOrUpdate(po);
+		return po;
+	}
+
     @Override
 	public boolean disable(Long userId, Long orgId) {
 		TestUser po = (TestUser) get(TestUser.class, userId);
@@ -214,10 +244,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean remove(Long userId, Long orgId) {
-		TestUser po = (TestUser) get(TestUser.class, userId);
-		po.setDeleted(true);
-		saveOrUpdate(po);
+	public boolean removeUserFromOrgPers(Long userId, Long orgId) {
+        getDao().querySql("{call remove_user_from_org(?,?)}", userId, orgId);
 
 		return true;
 	}
@@ -229,6 +257,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		}
 		UserVo vo = new UserVo();
 		BeanUtilEx.copyProperties(vo, user);
+
+		if (user.getDefaultPrjId() != null) {
+            TestProject prj = (TestProject)get(TestProject.class, user.getDefaultPrjId());
+            vo.setDefaultPrjName(prj.getName());
+        }
 
 		return vo;
 	}

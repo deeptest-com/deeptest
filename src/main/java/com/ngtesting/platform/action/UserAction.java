@@ -225,15 +225,15 @@ public class UserAction extends BaseAction {
 	}
 
 	@AuthPassport(validate = true)
-	@RequestMapping(value = "delete", method = RequestMethod.POST)
+	@RequestMapping(value = "removeFromOrg", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> removeFromOrg(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		Long userId = json.getLong("id");
+		Long userId = json.getLong("userId");
 		Long orgId = json.getLong("orgId");
 
-		boolean success = userService.remove(userId, orgId);
+		boolean success = userService.removeUserFromOrgPers(userId, orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -286,8 +286,9 @@ public class UserAction extends BaseAction {
 		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		Integer left = json.getInteger("left");
+		String prop = json.getString("prop");
 
-		TestUser user = accountService.setLeftSizePers(userVo.getId(), left);
+		TestUser user = userService.setLeftSizePers(userVo.getId(), left, prop);
 		userVo = userService.genVo(user);
 		request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, userVo);
 

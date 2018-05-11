@@ -3,7 +3,7 @@ package com.ngtesting.platform.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "tst_case_history")
+@Table(name = "isu_history")
 public class IssueHistory extends BaseEntity {
 
     private static final long serialVersionUID = 1545026595607666706L;
@@ -12,26 +12,26 @@ public class IssueHistory extends BaseEntity {
     private String descr;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_id", insertable = false, updatable = false)
-    private TestCase testCase;
+    @JoinColumn(name = "issue_id", insertable = false, updatable = false)
+    private Issue issue;
 
-    @Column(name = "case_id")
-    private Long testCaseId;
+    @Column(name = "issue_id")
+    private Long issueId;
 
-    public TestCase getTestCase() {
-        return testCase;
+    public Issue getIssue() {
+        return issue;
     }
 
-    public void setTestCase(TestCase testCase) {
-        this.testCase = testCase;
+    public void setIssue(Issue issue) {
+        this.issue = issue;
     }
 
-    public Long getTestCaseId() {
-        return testCaseId;
+    public Long getIssueId() {
+        return issueId;
     }
 
-    public void setTestCaseId(Long testCaseId) {
-        this.testCaseId = testCaseId;
+    public void setIssueId(Long issueId) {
+        this.issueId = issueId;
     }
 
     public String getDescr() {

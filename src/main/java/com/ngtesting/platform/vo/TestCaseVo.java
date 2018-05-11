@@ -56,7 +56,17 @@ public class TestCaseVo extends BaseVo {
 	private List<TestCaseCommentsVo> comments = new LinkedList<>();
 	private List<TestCaseHistoryVo> histories = new LinkedList<>();
 
-    public TestCaseVo() {
+	private List<TestCaseAttachmentVo> attachments = new LinkedList<>();
+
+	public List<TestCaseAttachmentVo> getAttachments() {
+		return attachments;
+	}
+
+	public void setAttachments(List<TestCaseAttachmentVo> attachments) {
+		this.attachments = attachments;
+	}
+
+	public TestCaseVo() {
         super();
     }
 

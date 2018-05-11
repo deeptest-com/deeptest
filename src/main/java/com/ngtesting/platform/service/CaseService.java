@@ -1,6 +1,7 @@
 package com.ngtesting.platform.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.TestCase;
 import com.ngtesting.platform.entity.TestCaseHistory;
 import com.ngtesting.platform.vo.TestCaseVo;
@@ -35,7 +36,7 @@ public interface CaseService extends BaseService {
 
 	boolean cloneStepsAndChildrenPers(TestCase testcase, TestCase src);
 
-	void saveHistory(UserVo user, String act, TestCase testCase, String field);
+	void saveHistory(UserVo user, Constant.CaseAct act, TestCase testCase, String field);
 
 	TestCase saveField(JSONObject json, UserVo user);
 

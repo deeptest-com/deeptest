@@ -17,7 +17,8 @@ public class UserVo extends BaseVo {
     private Boolean selected;
     private Boolean selecting;
 
-	private Integer leftSize;
+	private Integer leftSizeCase;
+	private Integer leftSizeIssue;
 
 	private String type = "user";
 
@@ -37,13 +38,21 @@ public class UserVo extends BaseVo {
 		this.defaultPrjName = defaultPrjName;
 	}
 
-	public Integer getLeftSize() {
-        return leftSize;
-    }
+	public Integer getLeftSizeCase() {
+		return leftSizeCase;
+	}
 
-    public void setLeftSize(Integer leftSize) {
-        this.leftSize = leftSize;
-    }
+	public void setLeftSizeCase(Integer leftSizeCase) {
+		this.leftSizeCase = leftSizeCase;
+	}
+
+	public Integer getLeftSizeIssue() {
+		return leftSizeIssue;
+	}
+
+	public void setLeftSizeIssue(Integer leftSizeIssue) {
+		this.leftSizeIssue = leftSizeIssue;
+	}
 
 	public String getEmail() {
 		return email;

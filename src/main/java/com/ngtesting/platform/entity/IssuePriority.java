@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "tst_ver")
+@Table(name = "isu_priority")
 public class IssuePriority extends BaseEntity {
 
     private static final long serialVersionUID = 7260005873110268288L;
@@ -19,11 +19,11 @@ public class IssuePriority extends BaseEntity {
     private Integer displayOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", insertable = false, updatable = false)
-    private TestProject project;
+    @JoinColumn(name = "org_id", insertable = false, updatable = false)
+    private TestOrg org;
 
-    @Column(name = "project_id")
-    private Long projectId;
+    @Column(name = "org_id")
+    private Long orgId;
 
     public Integer getDisplayOrder() {
         return displayOrder;
@@ -65,19 +65,19 @@ public class IssuePriority extends BaseEntity {
         this.descr = descr;
     }
 
-    public TestProject getProject() {
-        return project;
+    public TestOrg getOrg() {
+        return org;
     }
 
-    public void setProject(TestProject project) {
-        this.project = project;
+    public void setOrg(TestOrg org) {
+        this.org = org;
     }
 
-    public Long getProjectId() {
-        return projectId;
+    public Long getOrgId() {
+        return orgId;
     }
 
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    public void setOrgId(Long orgId) {
+        this.orgId = orgId;
     }
 }

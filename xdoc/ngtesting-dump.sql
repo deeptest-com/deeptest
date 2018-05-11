@@ -11,7 +11,7 @@
  Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 05/05/2018 16:58:08 PM
+ Date: 05/11/2018 11:31:48 AM
 */
 
 SET NAMES utf8mb4;
@@ -84,7 +84,7 @@ CREATE TABLE `tst_project_privilege_define` (
 --  Records of `tst_project_privilege_define`
 -- ----------------------------
 BEGIN;
-INSERT INTO `tst_project_privilege_define` VALUES ('100', '2017-12-26 10:13:08', b'0', b'0', '2017-12-26 10:13:11', '1', null, '测试计划', 'create', 'plan'), ('110', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试计划', 'update', 'plan'), ('120', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试计划', 'remove', 'plan'), ('130', '2017-12-26 10:11:16', b'0', b'0', '2017-12-26 10:11:18', '1', null, '测试用例', 'create', 'cases'), ('140', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试用例', 'update', 'cases'), ('150', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试用例', 'remove', 'cases'), ('160', '2017-12-26 10:18:29', b'0', b'0', '2017-12-26 10:18:38', '1', null, '测试集', 'create', 'run'), ('170', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试集', 'update', 'run'), ('180', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试集', 'remove', 'run'), ('190', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试集', 'close', 'run'), ('200', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试结果', 'exe', 'run'), ('210', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'create', 'autotask'), ('220', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'update', 'autotask'), ('230', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'remove', 'autotask'), ('240', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '问题', 'all', 'issue');
+INSERT INTO `tst_project_privilege_define` VALUES ('90', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', '', '项目', 'all', 'project'), ('100', '2017-12-26 10:13:08', b'0', b'0', '2017-12-26 10:13:11', '1', null, '测试计划', 'create', 'plan'), ('110', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试计划', 'update', 'plan'), ('120', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试计划', 'remove', 'plan'), ('130', '2017-12-26 10:11:16', b'0', b'0', '2017-12-26 10:11:18', '1', null, '测试用例', 'create', 'cases'), ('140', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试用例', 'update', 'cases'), ('150', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试用例', 'remove', 'cases'), ('160', '2017-12-26 10:18:29', b'0', b'0', '2017-12-26 10:18:38', '1', null, '测试集', 'create', 'run'), ('170', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试集', 'update', 'run'), ('180', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试集', 'remove', 'run'), ('190', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试集', 'close', 'run'), ('200', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试结果', 'exe', 'run'), ('210', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'create', 'autotask'), ('220', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'update', 'autotask'), ('230', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'remove', 'autotask'), ('240', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '问题', 'all', 'issue');
 COMMIT;
 
 -- ----------------------------
@@ -601,7 +601,7 @@ select define.`code`, define.action
 	from tst_project_privilege_define define left join tst_project_role_priviledge_relation r 
 					          on r.project_privilege_define_id = define.id
 	
-	where r.deleted!=true and r.disabled!=true and r.project_role_id in 
+	where r.project_role_id in 
 	(select relation.project_role_id from tst_r_project_role_entity relation 
 	        where 
 		(
@@ -951,6 +951,46 @@ EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
 END
+ ;;
+delimiter ;
+
+-- ----------------------------
+--  Procedure structure for `remove_user_from_org`
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `remove_user_from_org`;
+delimiter ;;
+CREATE DEFINER=`ngtesting`@`%` PROCEDURE `remove_user_from_org`(IN _user_id BIGINT, IN _org_id BIGINT)
+BEGIN
+
+delete from tst_r_org_user where user_id=_user_id and org_id=_org_id;
+delete from tst_r_org_role_user where user_id=_user_id and org_role_id in (select tmp.id from tst_org_role tmp where tmp.org_id=_org_id);
+delete from tst_r_org_group_user where user_id=_user_id and org_group_id in (select tmp.id from tst_org_group tmp where tmp.org_id=_org_id);
+
+END
+ ;;
+delimiter ;
+
+-- ----------------------------
+--  Procedure structure for `test`
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `test`;
+delimiter ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `test`(IN run_id  BIGINT, IN case_ids VARCHAR(10000))
+    DETERMINISTIC
+begin
+
+declare spl VARCHAR(10000) default ','; 
+declare cnt int default 0;
+declare i int default 0; 
+
+set cnt = 1+(length(case_ids) - length(replace(case_ids, spl, ''))); 
+while i < cnt do
+	set i=i+1;
+
+	SELECT i, reverse(substring_index( reverse(substring_index(case_ids, spl, i)), spl, 1));
+
+end while;
+end
  ;;
 delimiter ;
 

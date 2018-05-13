@@ -11,6 +11,7 @@ public class UserVo extends BaseVo {
 
     private String token;
     private Long defaultOrgId;
+	private String defaultOrgName;
     private Long defaultPrjId;
 	private String defaultPrjName;
 
@@ -116,5 +117,13 @@ public class UserVo extends BaseVo {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getDefaultOrgName() {
+		return defaultOrgName;
+	}
+
+	public void setDefaultOrgName(String defaultOrgName) {
+		this.defaultOrgName = defaultOrgName;
 	}
 }

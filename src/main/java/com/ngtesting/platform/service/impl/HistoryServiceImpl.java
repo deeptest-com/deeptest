@@ -6,6 +6,7 @@ import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.util.BeanUtilEx;
 import com.ngtesting.platform.util.DateUtils;
 import com.ngtesting.platform.util.StringUtil;
+import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.TestHistoryVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.hibernate.criterion.DetachedCriteria;
@@ -34,9 +35,9 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
 
 		dc.addOrder(Order.desc("createTime"));
 
-		List<TestHistory> ls = findAllByCriteria(dc);
+		Page page = findPage(dc, 0, 25);
 
-		return ls;
+		return page.getItems();
 	}
 
     @Override

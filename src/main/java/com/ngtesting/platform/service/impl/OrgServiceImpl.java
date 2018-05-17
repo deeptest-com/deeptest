@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
@@ -38,6 +39,8 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	RelationProjectRoleEntityService relationProjectRoleEntityService;
     @Autowired
     ProjectPrivilegeService projectPrivilegeService;
+	@Autowired
+	OrgRolePrivilegeService orgRolePrivilegeService;
 
 	@Override
 	public List<TestOrg> list(String keywords, String disabled, Long userId) {
@@ -170,7 +173,8 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 			if (po.getId().longValue() == user.getDefaultOrgId().longValue()) {
 				vo.setDefaultOrg(true);
 			}
-
+			Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(userId, po.getId());
+			vo.setOrgPrivileges(orgPrivileges);
 			voList.add(vo);
 		}
 

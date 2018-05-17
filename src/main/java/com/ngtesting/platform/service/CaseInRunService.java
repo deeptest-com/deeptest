@@ -17,10 +17,12 @@ public interface CaseInRunService extends BaseService {
     TestCaseInRunVo renamePers(JSONObject json, UserVo userVo);
 
     TestCaseInRunVo addCaseToRunPers(Long runId, TestCase po, UserVo userVo);
-    TestCaseInRun deleteCaseFromRunPers(Long entityId, UserVo userVo);
+//    TestCaseInRun removeCaseFromRunPers(Long entityId, UserVo userVo);
     TestCaseInRunVo movePers(JSONObject json, UserVo userVo);
 
     TestCaseInRun getByRunAndCaseId(Long runId, Long caseId);
+
+    void updateLeafAccordingToCasePers(Long pid);
 
     List<TestCaseInRunVo> genVos(List<TestCaseInRun> pos);
 	TestCaseInRunVo genVo(TestCaseInRun po, Boolean withSteps);

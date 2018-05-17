@@ -80,10 +80,14 @@ public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSett
         Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
 
         ret.put("org", org);
+
+        ret.put("defaultOrgId", userVo.getDefaultOrgId());
+        ret.put("defaultOrgName", userVo.getDefaultOrgName());
         ret.put("defaultPrjId", userVo.getDefaultPrjId());
+        ret.put("defaultPrjName", userVo.getDefaultPrjName());
         ret.put("orgPrivileges", orgPrivileges);
         ret.put("casePropertyMap", casePropertyMap);
-
+        
         sendMsg(userId, ret);
     }
 

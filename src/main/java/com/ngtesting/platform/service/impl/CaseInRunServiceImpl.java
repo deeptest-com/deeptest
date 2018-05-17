@@ -100,22 +100,23 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
             vo = genVo((TestCaseInRun) get(TestCaseInRun.class, entityId), false);
         }
 
+        getDao().flush();
+        caseService.updateParentIfNeededPers(vo.getpId());
+        updateLeafAccordingToCasePers(vo.getpId());
+
         return vo;
-    }
-
-    @Override
-    public TestCaseInRun deleteCaseFromRunPers(Long entityId, UserVo userVo) {
-        TestCaseInRun po = (TestCaseInRun) get(TestCaseInRun.class, entityId);
-
-        getDao().querySql("{call delete_case_in_run_and_its_children(?,?)}", po.getRunId(), po.getCaseId());
-
-        return po;
     }
 
     @Override
     public TestCaseInRunVo movePers(JSONObject json, UserVo userVo) {
         Long runId = json.getLong("runId");
         Long caseId = json.getLong("srcId");
+
+        Long srcId = json.getLong("srcId");
+        TestCase src = (TestCase) get(TestCase.class, srcId);;
+        Long targetId = json.getLong("targetId");
+
+        Long parentId = src.getpId();
 
         TestCaseVo vo = caseService.movePers(json, userVo);
 
@@ -124,8 +125,22 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
         caseInRun.setLeaf(vo.getLeaf());
         saveOrUpdate(caseInRun);
 
+        getDao().flush();
+        updateLeafAccordingToCasePers(targetId);
+        updateLeafAccordingToCasePers(parentId);
+
         return genVo(caseInRun, false);
     }
+
+//    @Override
+//    public TestCaseInRun removeCaseFromRunPers(Long entityId, UserVo userVo) {
+//        TestCaseInRun po = (TestCaseInRun) get(TestCaseInRun.class, entityId);
+//
+//        getDao().querySql("{call remove_case_in_run_and_its_children(?,?,?)}",
+//                po.getRunId(), po.getCaseId(), po.getpId());
+//
+//        return po;
+//    }
 
     @Override
     public TestCaseInRun getByRunAndCaseId(Long runId, Long caseId) {
@@ -145,6 +160,11 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
         } else {
             return null;
         }
+    }
+
+    @Override
+    public void updateLeafAccordingToCasePers(Long pid) {
+        getDao().querySql("{call update_case_in_run_leaf(?)}", pid);
     }
 
     @Override

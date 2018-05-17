@@ -202,7 +202,7 @@ public class AiTestTaskServiceImpl extends BaseServiceImpl implements AiTestTask
 	public AiTestTask delete(Long id, UserVo user) {
         AiTestTask testCase = (AiTestTask) get(AiTestTask.class, id);
 
-        getDao().querySql("{call delete_case_and_its_children(?)}", id);
+        getDao().querySql("{call remove_case_and_its_children(?)}", id);
 
         return testCase;
 	}

@@ -129,6 +129,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
         saveOrUpdate(testCasePo);
 
+        updateParentIfNeededPers(testCasePo.getpId());
+
         saveHistory(user, action, testCasePo,null);
 
         return testCasePo;
@@ -137,12 +139,15 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	@Override
 	public TestCaseVo movePers(JSONObject json, UserVo user) {
         Long srcId = json.getLong("srcId");
+
         Long targetId = json.getLong("targetId");
         String moveType = json.getString("moveType");
         Boolean isCopy = json.getBoolean("isCopy");
 
         TestCase src = (TestCase) get(TestCase.class, srcId);;
         TestCase target = (TestCase) get(TestCase.class, targetId);
+
+        Long parentId = src.getpId();
 
         TestCase testCase;
         Constant.CaseAct action;
@@ -184,6 +189,10 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         if (isCopy) {
             isParent = cloneStepsAndChildrenPers(testCase, src);
         }
+
+        getDao().flush();
+        updateParentIfNeededPers(parentId);
+        updateParentIfNeededPers(targetId);
 
         TestCaseVo caseVo = new TestCaseVo();
         if (isCopy && isParent) {
@@ -379,7 +388,10 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	public TestCase delete(Long id, UserVo user) {
         TestCase testCase = (TestCase) get(TestCase.class, id);
 
-        getDao().querySql("{call delete_case_and_its_children(?)}", id);
+        getDao().querySql("{call remove_case_and_its_children(?)}", id);
+
+        getDao().flush();
+        updateParentIfNeededPers(testCase.getpId());
         saveHistory(user, Constant.CaseAct.delete, testCase,null);
 
         return testCase;

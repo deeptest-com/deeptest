@@ -11,7 +11,7 @@
  Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 05/11/2018 11:31:48 AM
+ Date: 05/16/2018 17:08:27 PM
 */
 
 SET NAMES utf8mb4;
@@ -78,13 +78,13 @@ CREATE TABLE `tst_project_privilege_define` (
   `action` varchar(255) DEFAULT NULL,
   `code` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=261 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=241 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `tst_project_privilege_define`
 -- ----------------------------
 BEGIN;
-INSERT INTO `tst_project_privilege_define` VALUES ('90', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', '', '项目', 'all', 'project'), ('100', '2017-12-26 10:13:08', b'0', b'0', '2017-12-26 10:13:11', '1', null, '测试计划', 'create', 'plan'), ('110', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试计划', 'update', 'plan'), ('120', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试计划', 'remove', 'plan'), ('130', '2017-12-26 10:11:16', b'0', b'0', '2017-12-26 10:11:18', '1', null, '测试用例', 'create', 'cases'), ('140', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试用例', 'update', 'cases'), ('150', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试用例', 'remove', 'cases'), ('160', '2017-12-26 10:18:29', b'0', b'0', '2017-12-26 10:18:38', '1', null, '测试集', 'create', 'run'), ('170', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试集', 'update', 'run'), ('180', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试集', 'remove', 'run'), ('190', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试集', 'close', 'run'), ('200', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试结果', 'exe', 'run'), ('210', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'create', 'autotask'), ('220', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'update', 'autotask'), ('230', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'remove', 'autotask'), ('240', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '问题', 'all', 'issue');
+INSERT INTO `tst_project_privilege_define` VALUES ('100', '2017-12-26 10:13:08', b'0', b'0', '2017-12-26 10:13:11', '1', null, '测试计划', 'create', 'plan'), ('110', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试计划', 'update', 'plan'), ('120', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试计划', 'remove', 'plan'), ('130', '2017-12-26 10:11:16', b'0', b'0', '2017-12-26 10:11:18', '1', null, '测试用例', 'create', 'cases'), ('140', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试用例', 'update', 'cases'), ('150', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试用例', 'remove', 'cases'), ('160', '2017-12-26 10:18:29', b'0', b'0', '2017-12-26 10:18:38', '1', null, '测试集', 'create', 'run'), ('170', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试集', 'update', 'run'), ('180', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试集', 'remove', 'run'), ('190', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试集', 'close', 'run'), ('200', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试结果', 'exe', 'run'), ('210', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'create', 'autotask'), ('220', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'update', 'autotask'), ('230', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'remove', 'autotask'), ('240', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '问题', 'all', 'issue');
 COMMIT;
 
 -- ----------------------------
@@ -601,7 +601,7 @@ select define.`code`, define.action
 	from tst_project_privilege_define define left join tst_project_role_priviledge_relation r 
 					          on r.project_privilege_define_id = define.id
 	
-	where r.project_role_id in 
+	where r.deleted!=true and r.disabled!=true and r.project_role_id in 
 	(select relation.project_role_id from tst_r_project_role_entity relation 
 	        where 
 		(
@@ -955,6 +955,60 @@ END
 delimiter ;
 
 -- ----------------------------
+--  Procedure structure for `remove_case_and_its_children`
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `remove_case_and_its_children`;
+delimiter ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `remove_case_and_its_children`(IN _case_id BIGINT )
+BEGIN
+
+DECLARE sTemp VARCHAR(10000);  
+DECLARE sTempChd VARCHAR(10000);  
+SET sTemp = _case_id;  
+SET sTempChd = cast(_case_id as CHAR);  
+
+WHILE sTempChd is not null DO  
+	SET sTemp = concat(sTemp,',',sTempChd);  
+	SELECT group_concat(id) INTO sTempChd FROM tst_case cs where FIND_IN_SET(p_id,sTempChd)>0 
+		and cs.deleted!=true;  
+END WHILE;  
+
+UPDATE tst_case cs SET cs.deleted=true WHERE FIND_IN_SET(cs.id, sTemp); 
+
+END
+ ;;
+delimiter ;
+
+-- ----------------------------
+--  Procedure structure for `remove_case_in_run_and_its_children`
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `remove_case_in_run_and_its_children`;
+delimiter ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `remove_case_in_run_and_its_children`(IN _run_id BIGINT, IN _case_id BIGINT, IN _pid BIGINT)
+BEGIN
+
+DECLARE has_children INT;
+DECLARE sTemp VARCHAR(10000);  
+DECLARE sTempChd VARCHAR(10000);  
+SET sTemp = '';  
+SET sTempChd = cast(_case_id as CHAR);  
+
+WHILE sTempChd is not null DO  
+	SET sTemp = concat(sTemp,',',sTempChd);  
+	SELECT group_concat(case_id) INTO sTempChd FROM tst_case_in_run cs where FIND_IN_SET(cs.p_id,sTempChd)>0 
+		and cs.run_id=_run_id and cs.deleted!=true;
+END WHILE;
+
+UPDATE tst_case_in_run cs SET cs.deleted=true WHERE FIND_IN_SET(cs.case_id, sTemp)>0 and cs.run_id=_run_id;
+
+#SELECT COUNT(*) FROM tst_case_in_run csin WHERE csin.p_id=_pid and csin.run_id=_run_id INTO has_children;
+#UPDATE tst_case_in_run cs SET cs.deleted=true WHERE cs.case_id=_pid and cs.run_id=_run_id AND has_children;
+
+END
+ ;;
+delimiter ;
+
+-- ----------------------------
 --  Procedure structure for `remove_user_from_org`
 -- ----------------------------
 DROP PROCEDURE IF EXISTS `remove_user_from_org`;
@@ -991,6 +1045,24 @@ while i < cnt do
 
 end while;
 end
+ ;;
+delimiter ;
+
+-- ----------------------------
+--  Procedure structure for `update_case_in_run_leaf`
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `update_case_in_run_leaf`;
+delimiter ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_case_in_run_leaf`(IN _case_id BIGINT)
+BEGIN
+
+DECLARE _is_leaf BIT;
+
+select cs.is_leaf FROM tst_case cs WHERE cs.id = _case_id INTO _is_leaf;
+
+UPDATE tst_case_in_run csin SET csin.is_leaf=_is_leaf WHERE csin.case_id=_case_id;
+
+END
  ;;
 delimiter ;
 

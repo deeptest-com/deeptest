@@ -383,7 +383,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
 	public TestCase delete(Long id, UserVo user) {
         TestCase testCase = (TestCase) get(TestCase.class, id);
 
-        getDao().querySql("{call delete_case_and_its_children(?)}", id);
+        getDao().querySql("{call remove_case_and_its_children(?)}", id);
         saveHistory(user, "delete", testCase,null);
 
         return testCase;

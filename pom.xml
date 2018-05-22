@@ -40,7 +40,7 @@
 			</activation>
 			<properties>
 				<profiles.active>prod</profiles.active>
-				<deploy.url>http://47.97.19.195/manager/text</deploy.url>
+				<deploy.url>http://116.62.17.31/manager/text</deploy.url>
 			</properties>
 		</profile>
 	</profiles>
@@ -424,8 +424,7 @@
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
-					<url>http://116.62.17.31/manager/text</url>
-					<port>80</port>
+					<url>${deploy.url}</url>
 					<server>tomcat7</server>
 					<path>/platform</path>
 					<update>true</update>

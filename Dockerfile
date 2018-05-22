@@ -21,6 +21,7 @@ EXPOSE 3306
 
 WORKDIR /home/ngt/dev/project
 RUN git clone https://github.com/aaronchen2k/ngtesting-platform.git
+WORKDIR /home/ngt/dev/project/ngtesting-platform
 RUN mvn clean package
 
 CMD ["/etc/init.d/ssh start"]

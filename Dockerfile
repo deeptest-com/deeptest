@@ -28,6 +28,6 @@ WORKDIR /home/ngt/dev/project
 RUN rm -rf /home/ngt/dev/project/ngtesting-platform
 RUN git clone https://github.com/aaronchen2k/ngtesting-platform.git
 WORKDIR /home/ngt/dev/project/ngtesting-platform
-RUN mvn clean package tomcat7:deploy -Pdev
+RUN mvn -Denv=dev clean package tomcat7:deploy
 
 RUN env

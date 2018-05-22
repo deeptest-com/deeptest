@@ -40,7 +40,7 @@
 			</activation>
 			<properties>
 				<profiles.active>prod</profiles.active>
-				<deploy.url>http://116.62.17.31/manager/text</deploy.url>
+				<deploy.url>http://localhost:8080/manager/text</deploy.url>
 			</properties>
 		</profile>
 	</profiles>

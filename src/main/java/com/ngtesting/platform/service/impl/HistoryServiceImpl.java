@@ -35,7 +35,7 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
 
 		dc.addOrder(Order.desc("createTime"));
 
-		Page page = findPage(dc, 0, 25);
+		Page page = findPage(dc, 0, 30);
 
 		return page.getItems();
 	}

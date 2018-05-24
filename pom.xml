@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ngtesting</groupId>
 	<artifactId>ngtesting-platform</artifactId>
-	<version>0.7-SNAPSHOT</version>
+	<version>1.0</version>
 	<packaging>war</packaging>
 	<name>ngtesting-platform</name>
 	<description />
@@ -40,7 +40,7 @@
 			</activation>
 			<properties>
 				<profiles.active>prod</profiles.active>
-				<deploy.url>http://localhost:8080/manager/text</deploy.url>
+				<deploy.url>http://116.62.17.31/manager/text</deploy.url>
 			</properties>
 		</profile>
 	</profiles>
@@ -64,7 +64,6 @@
 		    <version>2.1</version>
 		    <scope>provided</scope>
 		</dependency>
-
 
 		<dependency>
 			<groupId>commons-beanutils</groupId>

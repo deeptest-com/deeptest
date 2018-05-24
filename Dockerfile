@@ -1,5 +1,5 @@
 # VERSION 0.0.1
-FROM registry.cn-hangzhou.aliyuncs.com/ngtesting/deploy:0.1
+FROM registry.cn-hangzhou.aliyuncs.com/ngtesting/deploy
 
 MAINTAINER Aaron "462826@qq.com"
 
@@ -21,13 +21,14 @@ EXPOSE 3306
 
 RUN apt-get -y update
 
-RUN /etc/init.d/ssh start
-RUN /home/ngt/dev/server/apache-tomcat-8.5.31/bin/startup.sh
-
 WORKDIR /home/ngt/dev/project
 RUN rm -rf /home/ngt/dev/project/ngtesting-platform
 RUN git clone https://github.com/aaronchen2k/ngtesting-platform.git
 WORKDIR /home/ngt/dev/project/ngtesting-platform
-RUN mvn -Denv=dev clean package tomcat7:deploy
+RUN mvn -Denv=dev clean package
+RUN rm -rf /home/ngt/dev/server/apache-tomcat-8.5.31/webapps/ngtesting-platform-*
+RUN cp target/ngtesting-platform-*.war /home/ngt/dev/server/apache-tomcat-8.5.31/webapps
+
+CMD /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
 RUN env

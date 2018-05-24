@@ -16,7 +16,7 @@ ENV PATH .:$MAVEN_HOME/bin:$PATH
 ENV CATALINA_HOME /home/ngt/dev/server/apache-tomcat-8.5.31
 
 EXPOSE 22
-EXPOSE 80
+EXPOSE 8080
 EXPOSE 3306
 
 RUN apt-get -y update
@@ -29,6 +29,6 @@ RUN mvn -Denv=dev clean package
 RUN rm -rf /home/ngt/dev/server/apache-tomcat-8.5.31/webapps/ngtesting-platform-*
 RUN cp target/ngtesting-platform-*.war /home/ngt/dev/server/apache-tomcat-8.5.31/webapps
 
-CMD /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+CMD /usr/bin/supervisord -c /etc/supervisor/supervisord.conf | tee /logs/cmd.log
 
 RUN env

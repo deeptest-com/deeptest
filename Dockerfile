@@ -29,4 +29,4 @@ RUN mvn -Denv=dev clean package
 RUN rm -rf /home/ngt/dev/server/apache-tomcat-8.5.31/webapps/ngtesting-platform-*
 RUN cp target/ngtesting-platform-*.war /home/ngt/dev/server/apache-tomcat-8.5.31/webapps
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf",  "supervisord>.log", "supervisord>server.log"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]

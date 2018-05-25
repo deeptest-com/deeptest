@@ -15,10 +15,6 @@ ENV PATH .:$MAVEN_HOME/bin:$PATH
 
 ENV CATALINA_HOME /home/ngt/dev/server/apache-tomcat-8.5.31
 
-EXPOSE 22
-EXPOSE 8080
-EXPOSE 3306
-
 RUN apt-get -y update
 
 WORKDIR /home/ngt/dev/project

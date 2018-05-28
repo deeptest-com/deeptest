@@ -11,7 +11,7 @@
  Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 05/16/2018 17:08:27 PM
+ Date: 05/28/2018 19:34:26 PM
 */
 
 SET NAMES utf8mb4;
@@ -252,9 +252,17 @@ IF project_type='project' THEN
 			WHERE cs.project_id=project_id AND cs.is_leaf=true AND cs.deleted != true AND cs.disabled != true
 			AND cs.create_time < DATE_FORMAT(adddate(CURDATE(), INTERVAL -(numb-1) DAY),'%Y-%m-%d %H:%i:%s') 
 		into `before`;
-ELSE
+ELSEIF project_type='group' THEN
 	SELECT COUNT(cs.id) numb FROM tst_case cs
-			WHERE cs.project_id in (SELECT p.id from tst_project p where p.parent_id = project_id) 
+			WHERE cs.project_id in (SELECT p.id from tst_project p where p.parent_id = project_id 
+							AND p.deleted != true AND p.disabled != true) 
+			AND cs.is_leaf=true AND cs.deleted != true AND cs.disabled != true
+			AND cs.create_time < DATE_FORMAT(adddate(CURDATE(), INTERVAL -(numb-1) DAY),'%Y-%m-%d %H:%i:%s') 
+		into `before`;
+ELSEIF project_type='org' THEN
+	SELECT COUNT(cs.id) numb FROM tst_case cs
+			WHERE cs.project_id in (SELECT p.id from tst_project p where p.org_id = project_id 
+							AND p.deleted != true AND p.disabled != true) 
 			AND cs.is_leaf=true AND cs.deleted != true AND cs.disabled != true
 			AND cs.create_time < DATE_FORMAT(adddate(CURDATE(), INTERVAL -(numb-1) DAY),'%Y-%m-%d %H:%i:%s') 
 		into `before`;
@@ -274,7 +282,7 @@ IF project_type='project' THEN
 		) temp ON days.date = temp.dt
 	ORDER BY days.date;
 
-ELSE
+ELSEIF project_type='group' THEN
 	select days.date, IFNULL(temp.numb,0), `before` from 
 		(select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
 			from sys_nums,(select @num:=numb) t 
@@ -283,7 +291,24 @@ ELSE
 		(
 			SELECT COUNT(cs.id) numb, DATE_FORMAT(cs.create_time,'%Y/%m/%d') dt 
 			FROM tst_case cs 
-			WHERE cs.project_id in (SELECT p.id from tst_project p where p.parent_id = project_id)  
+			WHERE cs.project_id in (SELECT p.id from tst_project p where p.parent_id = project_id 
+							AND p.deleted != true AND p.disabled != true)  
+			AND cs.is_leaf=true AND cs.deleted != true AND cs.disabled != true
+			GROUP BY dt
+		) temp ON days.date = temp.dt
+	ORDER BY days.date;
+
+ELSEIF project_type='org' THEN
+	select days.date, IFNULL(temp.numb,0), `before` from 
+		(select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
+			from sys_nums,(select @num:=numb) t 
+			where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+			order by date) days left join 
+		(
+			SELECT COUNT(cs.id) numb, DATE_FORMAT(cs.create_time,'%Y/%m/%d') dt 
+			FROM tst_case cs 
+			WHERE cs.project_id in (SELECT p.id from tst_project p where p.org_id = project_id 
+							AND p.deleted != true AND p.disabled != true)  
 			AND cs.is_leaf=true AND cs.deleted != true AND cs.disabled != true
 			GROUP BY dt
 		) temp ON days.date = temp.dt
@@ -347,7 +372,7 @@ IF project_type='project' THEN
 		) temp ON days.date = temp.dt
 	ORDER BY days.date, temp.`status`;
 
-ELSE
+ELSEIF project_type='group' THEN
 	select days.date, temp.`status`, IFNULL(temp.numb,0) from 
 		(select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
 			from sys_nums,(select @num:=numb) t 
@@ -356,7 +381,24 @@ ELSE
 		(
 			SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exe_time,'%Y/%m/%d') dt, csr.`status` `status` 
 				FROM tst_case_in_run csr 
-				WHERE csr.project_id in (SELECT p.id from tst_project p where p.parent_id = project_id)  
+				WHERE csr.project_id in (SELECT p.id from tst_project p where p.parent_id = project_id 
+								AND p.deleted != true AND p.disabled != true)  
+					AND csr.is_leaf=true AND csr.deleted != true AND csr.disabled != TRUE
+					AND csr.`status` != 'untest' GROUP BY dt, csr.`status`
+		) temp ON days.date = temp.dt
+	ORDER BY days.date, temp.`status`;
+
+ELSEIF project_type='org' THEN
+	select days.date, temp.`status`, IFNULL(temp.numb,0) from 
+		(select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
+			from sys_nums,(select @num:=numb) t 
+			where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+			order by date) days left join 
+		(
+			SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exe_time,'%Y/%m/%d') dt, csr.`status` `status` 
+				FROM tst_case_in_run csr 
+				WHERE csr.project_id in (SELECT p.id from tst_project p where p.org_id = project_id 
+								AND p.deleted != true AND p.disabled != true)  
 					AND csr.is_leaf=true AND csr.deleted != true AND csr.disabled != TRUE
 					AND csr.`status` != 'untest' GROUP BY dt, csr.`status`
 		) temp ON days.date = temp.dt

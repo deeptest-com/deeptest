@@ -8,6 +8,7 @@ import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.PlanService;
 import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.service.RunService;
+import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.TestPlanVo;
 import com.ngtesting.platform.vo.TestRunVo;
 import com.ngtesting.platform.vo.UserVo;
@@ -123,7 +124,24 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
     }
 
     @Override
-    public List<TestPlan> list(Long projectId, String projectType) {
+    public List<TestPlan> listByOrg(Long orgId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestPlan.class);
+
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+
+        dc.createAlias("project", "project");
+        dc.add(Restrictions.eq("project.orgId", orgId));
+
+        dc.addOrder(Order.asc("createTime"));
+
+        Page page = findPage(dc, 0, 10);
+
+        return page.getItems();
+    }
+
+    @Override
+    public List<TestPlan> listByProject(Long projectId, String projectType) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestPlan.class);
 
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));

@@ -127,10 +127,10 @@ public class ProjectAction extends BaseAction {
 		TestProject po = projectService.getDetail(id);
 		TestProjectVo vo = projectService.genVo(po);
 
-        List<TestPlan> planPos = planService.list(id, vo.getType());
+        List<TestPlan> planPos = planService.listByProject(id, vo.getType());
         List<TestPlanVo> planVos = planService.genVos(planPos);
 
-        List<TestHistory> historyPos = historyService.list(id, vo.getType());
+        List<TestHistory> historyPos = historyService.listByProject(id, vo.getType());
         Map<String, List<TestHistoryVo>> historyVos = historyService.genVosByDate(historyPos);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

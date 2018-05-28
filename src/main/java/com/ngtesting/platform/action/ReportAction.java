@@ -27,6 +27,30 @@ public class ReportAction extends BaseAction {
     ReportService reportService;
 
     @AuthPassport(validate = true)
+    @RequestMapping(value = "org", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> org(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<String, Object>();
+
+        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+        Long id = json.getLong("orgId");
+
+        Map<String, List<Object>> designReport =
+                reportService.chart_design_progress_by_project(id, TestProject.ProjectType.org, 14);
+        Map<String, List<Object>> exeReport =
+                reportService.chart_excution_process_by_project(id, TestProject.ProjectType.org, 14);
+
+        data.put("design", designReport);
+        data.put("exe", exeReport);
+
+        ret.put("data", data);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @AuthPassport(validate = true)
     @RequestMapping(value = "project", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> project(HttpServletRequest request, @RequestBody JSONObject json) {

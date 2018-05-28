@@ -51,6 +51,7 @@ public class TestProject extends BaseEntity {
 	private List<TestSuite> testsuites = new LinkedList();
 
     public static enum ProjectType {
+		org("org"),
         group("group"),
         project("project");
 

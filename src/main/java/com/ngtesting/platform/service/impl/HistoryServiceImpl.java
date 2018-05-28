@@ -20,7 +20,24 @@ import java.util.*;
 public class HistoryServiceImpl extends BaseServiceImpl implements HistoryService {
 
 	@Override
-	public List<TestHistory> list(Long projectId, String projectType) {
+	public List<TestHistory> listByOrg(Long orgId) {
+		DetachedCriteria dc = DetachedCriteria.forClass(TestHistory.class);
+
+		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+
+		dc.createAlias("project", "project");
+		dc.add(Restrictions.eq("project.orgId", orgId));
+
+		dc.addOrder(Order.desc("createTime"));
+
+		Page page = findPage(dc, 0, 30);
+
+		return page.getItems();
+	}
+
+	@Override
+	public List<TestHistory> listByProject(Long projectId, String projectType) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestHistory.class);
 
 		dc.add(Restrictions.eq("deleted", Boolean.FALSE));

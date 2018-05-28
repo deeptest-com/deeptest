@@ -2,12 +2,18 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.entity.TestHistory;
 import com.ngtesting.platform.entity.TestOrg;
+import com.ngtesting.platform.entity.TestPlan;
 import com.ngtesting.platform.entity.TestUser;
+import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.OrgService;
+import com.ngtesting.platform.service.PlanService;
 import com.ngtesting.platform.service.PushSettingsService;
 import com.ngtesting.platform.util.AuthPassport;
 import com.ngtesting.platform.vo.OrgVo;
+import com.ngtesting.platform.vo.TestHistoryVo;
+import com.ngtesting.platform.vo.TestPlanVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,6 +33,11 @@ import java.util.Map;
 public class OrgAction extends BaseAction {
 	@Autowired
 	OrgService orgService;
+
+	@Autowired
+	PlanService planService;
+	@Autowired
+	HistoryService historyService;
 
 	@Autowired
 	PushSettingsService pushSettingsService;
@@ -71,6 +82,32 @@ public class OrgAction extends BaseAction {
 		}
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "view", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Long id = json.getLong("id");
+
+		TestOrg po = (TestOrg) orgService.get(TestOrg.class, id);
+		OrgVo vo = orgService.genVo(po);
+
+		List<TestPlan> planPos = planService.listByOrg(id);
+		List<TestPlanVo> planVos = planService.genVos(planPos);
+
+		List<TestHistory> historyPos = historyService.listByOrg(id);
+		Map<String, List<TestHistoryVo>> historyVos = historyService.genVosByDate(historyPos);
+
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		ret.put("org", vo);
+		ret.put("plans", planVos);
+		ret.put("histories", historyVos);
+
 		return ret;
 	}
 

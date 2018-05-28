@@ -154,6 +154,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         if (isCopy) {
             testCase = new TestCase();
             BeanUtilEx.copyProperties(testCase, src);
+            testCase.setCreateTime(new Date());
+            testCase.setUpdateTime(null);
 
             // 不能用旧的
             testCase.setSteps(new LinkedList());

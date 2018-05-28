@@ -18,7 +18,7 @@ public class DuiUtils {
             cmd = hresultsPath + " -t -e "+"\"一\" \"幺\""+" -A -D -T 1 -h -I " + labPath + " /dev/null "
                     + recPath;
         }
-        cmd += " | tee " + resultPath;
+        cmd += " > " + resultPath;
         System.out.println(cmd);
 
         Map<String, String> regex = new HashedMap();

@@ -1,4 +1,4 @@
-# VERSION 0.0.1
+# VERSION 1.0
 FROM registry.cn-hangzhou.aliyuncs.com/ngtesting/deploy
 
 MAINTAINER Aaron "462826@qq.com"
@@ -14,6 +14,10 @@ ENV MAVEN_HOME /home/ngt/dev/tool/apache-maven-3.5.3
 ENV PATH .:$MAVEN_HOME/bin:$PATH
 
 ENV CATALINA_HOME /home/ngt/dev/server/apache-tomcat-8.5.31
+
+EXPOSE 22
+EXPOSE 8080
+EXPOSE 3306
 
 RUN apt-get -y update
 

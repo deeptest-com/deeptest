@@ -1,11 +1,14 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.*;
+import com.ngtesting.platform.service.CaseAttachmentService;
 import com.ngtesting.platform.service.CaseCommentsService;
 import com.ngtesting.platform.service.CaseInRunService;
 import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.util.BeanUtilEx;
+import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.*;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -24,6 +27,8 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
     CaseService caseService;
     @Autowired
     CaseCommentsService caseCommentsService;
+    @Autowired
+    CaseAttachmentService caseAttachmentService;
 
     @Override
     public List<TestCaseInRunVo> query(Long runId) {
@@ -63,6 +68,8 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
             po.setExeTime(new Date());
 //        }
         saveOrUpdate(po);
+
+        saveHistory(userVo, Constant.CaseAct.exe_result, po, status, result==null?"":result.trim());
 
         TestRun run = po.getRun();
         TestPlan plan = run.getPlan();
@@ -206,6 +213,9 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
 
         vo.setSteps(new LinkedList<TestCaseStepVo>());
         vo.setComments(new LinkedList<TestCaseCommentsVo>());
+        vo.setAttachments(new LinkedList<TestCaseAttachmentVo>());
+        vo.setHistories(new LinkedList<TestCaseInRunHistoryVo>());
+
         if (withSteps) {
             List<TestCaseStep> steps = testcase.getSteps();
             for (TestCaseStep step : steps) {
@@ -222,6 +232,22 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
                 TestCaseCommentsVo commentVo = caseCommentsService.genVo(comment);
                 vo.getComments().add(commentVo);
             }
+
+            List<TestCaseInRunHistory> histories = findHistories(po.getId());
+            for (TestCaseInRunHistory his : histories) {
+                TestCaseInRunHistoryVo historyVo = new TestCaseInRunHistoryVo(
+                        his.getId(), his.getTitle(), his.getDescr(), his.getTestCaseInRunId(), his.getCreateTime());
+
+                vo.getHistories().add(historyVo);
+            }
+
+            List<TestCaseAttachment> attachments = testcase.getAttachments();
+            Iterator<TestCaseAttachment> iteratorAttach  = attachments.iterator();
+            while (iteratorAttach.hasNext()) {
+                TestCaseAttachment attachment = iteratorAttach.next();
+                TestCaseAttachmentVo attachVo = caseAttachmentService.genVo(attachment);
+                vo.getAttachments().add(attachVo);
+            }
         } else {
             vo.setSteps(null);
             vo.setComments(null);
@@ -230,5 +256,35 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
         return vo;
     }
 
-}
+    @Override
+    public List<TestCaseInRunHistory> findHistories(Long id) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestCaseInRunHistory.class);
+        dc.add(Restrictions.eq("testCaseInRunId", id));
 
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+
+        dc.addOrder(Order.desc("createTime"));
+
+        List<TestCaseInRunHistory> ls = findAllByCriteria(dc);
+        return ls;
+    }
+
+    @Override
+    public void saveHistory(UserVo user, Constant.CaseAct act, TestCaseInRun testCaseInRun,
+                            String status, String result) {
+        String action = act.msg;
+
+        String msg = "用户" + StringUtil.highlightDict(user.getName()) + action
+                + "为\"" + Constant.ExeStatus.get(status) + "\"";
+        if (!StringUtil.IsEmpty(result)) {
+            msg += ", 内容：" + result;
+        }
+
+        TestCaseInRunHistory his = new TestCaseInRunHistory();
+        his.setTitle(msg);
+        his.setTestCaseInRunId(testCaseInRun.getId());
+        saveOrUpdate(his);
+    }
+
+}

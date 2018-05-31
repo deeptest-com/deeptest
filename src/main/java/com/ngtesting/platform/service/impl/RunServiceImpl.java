@@ -244,15 +244,20 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
             vo.getAssignees().add(userVo);
         }
 
-		String sql = "select cs1.`status` status, count(cs1.tcin_id) count from "
-                +          "(select tcin.id tcin_id,  tcin.case_id tcin_case_id, tcin.`status` from tst_case_in_run tcin "
+        String sql = "select tcin.`status` status, count(tcin.id) count from tst_case_in_run tcin "
                 +               "where tcin.run_id  = " + po.getId()
-                +                   " AND tcin.deleted != true AND tcin.disabled != true) cs1 "
-                +     "where cs1.tcin_case_id not in " // 排除父节点
-                +          "(select distinct tcin.p_id from tst_case_in_run tcin "
-                +               "where tcin.run_id  = " + po.getId() + " and tcin.p_id is not NULL "
-                +                   " AND tcin.deleted != true AND tcin.disabled != true ) "
-                +     "group by cs1.`status`";
+                +                   " AND tcin.deleted != true AND tcin.disabled != true AND tcin.is_leaf = true "
+                +     " group by tcin.`status`";
+
+//		String sql = "select cs1.`status` status, count(cs1.tcin_id) count from "
+//                +          "(select tcin.id tcin_id,  tcin.case_id tcin_case_id, tcin.`status` from tst_case_in_run tcin "
+//                +               "where tcin.run_id  = " + po.getId()
+//                +                   " AND tcin.deleted != true AND tcin.disabled != true) cs1 "
+//                +     "where cs1.tcin_case_id not in " // 排除父节点
+//                +          "(select distinct tcin.p_id from tst_case_in_run tcin "
+//                +               "where tcin.run_id  = " + po.getId() + " and tcin.p_id is not NULL "
+//                +                   " AND tcin.deleted != true AND tcin.disabled != true ) "
+//                +     "group by cs1.`status`";
 
 		List<Map> counts = findListBySql(sql);
 		for (Map obj : counts) {

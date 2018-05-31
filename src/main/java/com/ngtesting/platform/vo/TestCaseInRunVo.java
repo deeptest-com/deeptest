@@ -55,6 +55,9 @@ public class TestCaseInRunVo extends BaseVo {
 
 	private List<TestCaseStepVo> steps = new LinkedList<>();
 	private List<TestCaseCommentsVo> comments = new LinkedList<>();
+	private List<TestCaseAttachmentVo> attachments = new LinkedList<>();
+
+    private List<TestCaseInRunHistoryVo> histories = new LinkedList<>();
 
 	public Integer getOrdr() {
 		return ordr;
@@ -379,4 +382,20 @@ public class TestCaseInRunVo extends BaseVo {
     public void setType(String type) {
         this.type = type;
     }
+
+    public List<TestCaseInRunHistoryVo> getHistories() {
+        return histories;
+    }
+
+    public void setHistories(List<TestCaseInRunHistoryVo> histories) {
+        this.histories = histories;
+    }
+
+    public List<TestCaseAttachmentVo> getAttachments() {
+		return attachments;
+	}
+
+	public void setAttachments(List<TestCaseAttachmentVo> attachments) {
+		this.attachments = attachments;
+	}
 }

@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.TestProject;
+import com.ngtesting.platform.entity.TestUser;
 import com.ngtesting.platform.service.ReportService;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +47,7 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
     }
 
     @Override
-    public List<Map<Object, Object>> chart_execution_result_by_plan(Long planId, Integer numb) {
+    public List<Map<Object, Object>> chart_execution_result_by_plan(Long planId) {
         List<Object[]> ls = getDao().getListBySQL("{call chart_execution_result_by_plan(?)}",
                 planId);
 
@@ -68,15 +69,24 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
     }
 
     @Override
-    public Map<String, List<Object>> chart_execution_progress_by_plan(Long planId, Integer numb) {
-        Map<String, List<Object>> map = new LinkedHashMap<>();
+    public Map<String, Object> chart_execution_process_by_plan_user(Long planId, Integer numb) {
+        List<Object[]> ls = getDao().getListBySQL("{call chart_execution_process_by_plan_user(?,?)}",
+                planId, numb);
+
+        return countByUser(ls);
+    }
+
+    @Override
+    public Map<String, Object> chart_execution_progress_by_plan(Long planId, Integer numb) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        Map<String, List<Object>> series = new LinkedHashMap<>();
 
         List<Object> xList = new LinkedList<>();
         List<Object> numbList = new LinkedList<>();
 
         List<Object[]> ls = getDao().getListBySQL("{call chart_execution_progress_by_plan(?,?)}",
                 planId, numb);
-        Integer exeSum = 0;
+        Integer exeSum = 0; int i = 0;
         for (Object[] arr : ls) {
             xList.add(arr[0].toString());
 
@@ -86,7 +96,9 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
             numbList.add(totalNumb - exeSum);
         }
         map.put("xList", xList);
-        map.put("numbList", numbList);
+
+        map.put("series", series);
+        series.put("剩余用例", numbList);
 
         return map;
     }
@@ -132,6 +144,7 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
                 dayStatus = new HashMap();
             }
 
+            // 同一天，对多行内容进行统计
             if (arr[1] != null) {
                 String status = arr[1].toString();
                 if ("pass".equals(status)) {
@@ -155,6 +168,64 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
     }
 
     @Override
+    public Map<String, Object> countByUser(List<Object[]> ls) {
+        Map<String, Object> map = new LinkedHashMap<>();
+
+        List<Object> xList = new LinkedList<>();
+        Map<String, List<Object>> byUserMap = new TreeMap<>();
+
+        String day = null;
+
+        Object a[] = {"last",null,null,null};
+        ls.add(a);
+
+        for (Object[] arr : ls) {
+            if (arr[1] != null && !arr[1].equals("null")) {
+                String userId = arr[1].toString();
+                String userName = getUserName(userId);
+
+                if (!byUserMap.containsKey(userName)) {
+                    byUserMap.put(userName, new LinkedList<>());
+                }
+            }
+        }
+
+        Map<String, Object> dayMap = new HashMap();
+        for (Object[] arr : ls) {
+            String dayTemp = arr[0].toString();
+            String userId = arr[1]!=null? arr[1].toString(): null;
+            Integer numb = arr[2]!=null?Integer.valueOf(arr[2].toString()): null;
+            Integer sum =  arr[3]!=null?Integer.valueOf(arr[3].toString()): null;
+
+            if (!dayTemp.equals(day) && day != null) { // 新的一天
+                xList.add(day);
+
+                for (String userName: byUserMap.keySet()) {
+                    if (dayMap.containsKey(userName)) {
+                        byUserMap.get(userName).add(dayMap.get(userName));
+                    } else {
+                        byUserMap.get(userName).add(0);
+                    }
+                }
+
+                dayMap = new HashMap();
+            }
+
+            // 同一天，对多行内容进行统计
+            if (userId != null) {
+                dayMap.put(getUserName(userId), numb);
+            }
+
+            day = dayTemp;
+        }
+
+        map.put("xList", xList);
+        map.put("series", byUserMap);
+
+        return map;
+    }
+
+    @Override
     public List<Map<Object, Object>> orderByStatus(Map map) {
         List<Map<Object, Object>> data2 = new LinkedList<>();
         List<String> keys = Arrays.asList("pass","fail","block", "untest");
@@ -167,6 +238,16 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
         }
 
         return data2;
+    }
+
+    @Override
+    public String getUserName(String id) {
+        if (id == null) {
+           return null;
+        }
+        TestUser user = (TestUser) get(TestUser.class, Long.valueOf(id));
+
+        return user.getName() + '-' + id;
     }
 
 }

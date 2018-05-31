@@ -1,9 +1,12 @@
 package com.ngtesting.platform.entity;
 
 import com.ngtesting.platform.config.Constant;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Table(name = "tst_case_in_run")
@@ -56,6 +59,11 @@ public class TestCaseInRun extends BaseEntity {
     @Column(name = "exe_by_id")
     private Long exeById;
 
+    @OneToMany(mappedBy="testCaseInRun", fetch=FetchType.LAZY)
+    @Where(clause="!deleted")
+    @OrderBy("createTime DESC")
+    private List<TestCaseInRunHistory> histories = new LinkedList<>();
+
     public TestCaseInRun() {
         super();
     }
@@ -68,6 +76,14 @@ public class TestCaseInRun extends BaseEntity {
         this.caseId = caseId;
         this.pId = pid;
         this.isLeaf = isLeaf;
+    }
+
+    public List<TestCaseInRunHistory> getHistories() {
+        return histories;
+    }
+
+    public void setHistories(List<TestCaseInRunHistory> histories) {
+        this.histories = histories;
     }
 
     public Boolean getLeaf() {

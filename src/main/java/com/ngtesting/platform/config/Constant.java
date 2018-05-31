@@ -120,7 +120,9 @@ public final class Constant {
         delete("delete", "删除"),
 
         upload_attachment("upload_attachment", "上传附件"),
-        delete_attachment("delete_attachment", "删除附件");
+        delete_attachment("delete_attachment", "删除附件"),
+
+        exe_result("exe_result", "标注执行结果");
 
         CaseAct(String code, String msg) {
             this.code = code;

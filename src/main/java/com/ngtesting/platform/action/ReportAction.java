@@ -85,15 +85,19 @@ public class ReportAction extends BaseAction {
         UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
         List<Map<Object, Object>> resultReport =
-                reportService.chart_execution_result_by_plan(json.getLong("planId"), 14);
+                reportService.chart_execution_result_by_plan(json.getLong("planId"));
         Map<String, List<Object>> processReport =
                 reportService.chart_execution_process_by_plan(json.getLong("planId"), 14);
-        Map<String, List<Object>> progressReport =
+        Map<String, Object> processByUserReport =
+                reportService.chart_execution_process_by_plan_user(json.getLong("planId"), 14);
+        Map<String, Object> progressReport =
                 reportService.chart_execution_progress_by_plan(json.getLong("planId"), 14);
 
         data.put("result", resultReport);
         data.put("process", processReport);
+        data.put("processByUser", processByUserReport);
         data.put("progress", progressReport);
+
         ret.put("data", data);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

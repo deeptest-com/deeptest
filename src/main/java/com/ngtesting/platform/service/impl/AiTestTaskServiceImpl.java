@@ -46,8 +46,8 @@ public class AiTestTaskServiceImpl extends BaseServiceImpl implements AiTestTask
 	}
 
     @Override
-	public AiTestTaskVo getById(Long caseId) {
-		AiTestTask po = (AiTestTask) get(AiTestTask.class, caseId);
+	public AiTestTaskVo getById(Long taskId) {
+		AiTestTask po = (AiTestTask) get(AiTestTask.class, taskId);
 		AiTestTaskVo vo = genVo(po);
 
 		return vo;
@@ -65,28 +65,28 @@ public class AiTestTaskServiceImpl extends BaseServiceImpl implements AiTestTask
 
 	@Override
 	public AiTestTask renamePers(Long id, String name, Long pId, Long projectId, UserVo user) {
-        AiTestTask testCasePo = new AiTestTask();
+        AiTestTask po = new AiTestTask();
         String action = "";
         if (id != null && id > 0) {
-            testCasePo = (AiTestTask)get(AiTestTask.class, id);
+            po = (AiTestTask)get(AiTestTask.class, id);
 
-            testCasePo.setUpdateTime(new Date());
+            po.setUpdateTime(new Date());
             action = "rename";
         } else {
-            testCasePo.setLeaf(true);
-            testCasePo.setId(null);
-            testCasePo.setpId(pId);
-            testCasePo.setOrdr(getChildMaxOrderNumb(testCasePo.getpId()));
+            po.setLeaf(true);
+            po.setId(null);
+            po.setpId(pId);
+            po.setOrdr(getChildMaxOrderNumb(po.getpId()));
 
-            testCasePo.setCreateTime(new Date());
+            po.setCreateTime(new Date());
             action = "create";
         }
-        testCasePo.setName(name);
-        testCasePo.setProjectId(projectId);
+        po.setName(name);
+        po.setProjectId(projectId);
 
-        saveOrUpdate(testCasePo);
+        saveOrUpdate(po);
 
-        return testCasePo;
+        return po;
 	}
 
 	@Override
@@ -99,49 +99,49 @@ public class AiTestTaskServiceImpl extends BaseServiceImpl implements AiTestTask
         AiTestTask src = (AiTestTask) get(AiTestTask.class, srcId);;
         AiTestTask target = (AiTestTask) get(AiTestTask.class, targetId);
 
-        AiTestTask testCase;
+        AiTestTask task;
         String action;
         if (isCopy) {
-            testCase = new AiTestTask();
-            BeanUtilEx.copyProperties(testCase, src);
+            task = new AiTestTask();
+            BeanUtilEx.copyProperties(task, src);
 
-            testCase.setId(null);
+            task.setId(null);
             action = "copy";
         } else {
-            testCase = src;
+            task = src;
             action = "move";
         }
 
         if ("inner".equals(moveType)) {
-            testCase.setpId(target.getId());
+            task.setpId(target.getId());
         } else if ("prev".equals(moveType)) {
             String hql = "update AiTestTask c set c.ordr = c.ordr+1 where c.ordr >= ? and c.pId=? and id!=?";
-            getDao().queryHql(hql, target.getOrdr(), target.getpId(), testCase.getId());
+            getDao().queryHql(hql, target.getOrdr(), target.getpId(), task.getId());
 
-            testCase.setpId(target.getpId());
-            testCase.setOrdr(target.getOrdr());
+            task.setpId(target.getpId());
+            task.setOrdr(target.getOrdr());
         } else if ("next".equals(moveType)) {
             String hql = "update AiTestTask c set c.ordr = c.ordr+1 where c.ordr > ? and c.pId=? and id!=?";
-            getDao().queryHql(hql, target.getOrdr(), target.getpId(), testCase.getId());
+            getDao().queryHql(hql, target.getOrdr(), target.getpId(), task.getId());
 
-            testCase.setpId(target.getpId());
-            testCase.setOrdr(target.getOrdr() + 1);
+            task.setpId(target.getpId());
+            task.setOrdr(target.getOrdr() + 1);
         }
 
-        saveOrUpdate(testCase);
+        saveOrUpdate(task);
         boolean isParent = false;
         if (isCopy) {
-            isParent = cloneChildrenPers(testCase, src);
+            isParent = cloneChildrenPers(task, src);
         }
 
-        AiTestTaskVo caseVo = new AiTestTaskVo();
+        AiTestTaskVo vo = new AiTestTaskVo();
         if (isCopy && isParent) {
-            loadNodeTree(caseVo, testCase);
+            loadNodeTree(vo, task);
         } else {
-            caseVo = genVo(testCase);
+            vo = genVo(task);
         }
 
-        return caseVo;
+        return vo;
 	}
 
     @Override
@@ -200,20 +200,20 @@ public class AiTestTaskServiceImpl extends BaseServiceImpl implements AiTestTask
 
 	@Override
 	public AiTestTask delete(Long id, UserVo user) {
-        AiTestTask testCase = (AiTestTask) get(AiTestTask.class, id);
+        AiTestTask task = (AiTestTask) get(AiTestTask.class, id);
 
-        getDao().querySql("{call remove_case_and_its_children(?)}", id);
+        getDao().querySql("{call remove_aitask_and_its_children(?)}", id);
 
-        return testCase;
+        return task;
 	}
 
     @Override
     public void updateParentIfNeededPers(Long pid) {
-        getDao().querySql("{call update_case_parent_if_needed(?)}", pid);
+        getDao().querySql("{call update_aitask_parent_if_needed(?)}", pid);
     }
 
     @Override
-    public boolean cloneChildrenPers(AiTestTask testCase, AiTestTask src) {
+    public boolean cloneChildrenPers(AiTestTask task, AiTestTask src) {
 	    boolean isParent = false;
 
         List<AiTestTask> children = getChildren(src.getId());
@@ -222,7 +222,7 @@ public class AiTestTaskServiceImpl extends BaseServiceImpl implements AiTestTask
             BeanUtilEx.copyProperties(clonedChild, child);
 
             clonedChild.setId(null);
-            clonedChild.setpId(testCase.getId());
+            clonedChild.setpId(task.getId());
 
             saveOrUpdate(clonedChild);
             cloneChildrenPers(clonedChild, child);
@@ -232,9 +232,9 @@ public class AiTestTaskServiceImpl extends BaseServiceImpl implements AiTestTask
     }
 
     @Override
-    public List<AiTestTask> getChildren(Long caseId) {
+    public List<AiTestTask> getChildren(Long taskId) {
         DetachedCriteria dc = DetachedCriteria.forClass(AiTestTask.class);
-        dc.add(Restrictions.eq("pId", caseId));
+        dc.add(Restrictions.eq("pId", taskId));
 
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
@@ -278,8 +278,8 @@ public class AiTestTaskServiceImpl extends BaseServiceImpl implements AiTestTask
         return vo;
     }
     @Override
-    public void copyProperties(AiTestTask testCasePo, AiTestTaskVo testCaseVo) {
-        BeanUtilEx.copyProperties(testCasePo, testCaseVo);
+    public void copyProperties(AiTestTask po, AiTestTaskVo vo) {
+        BeanUtilEx.copyProperties(po, vo);
     }
 
 }

@@ -1,8 +1,10 @@
 package com.ngtesting.platform.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.TestCase;
 import com.ngtesting.platform.entity.TestCaseInRun;
+import com.ngtesting.platform.entity.TestCaseInRunHistory;
 import com.ngtesting.platform.vo.TestCaseInRunVo;
 import com.ngtesting.platform.vo.UserVo;
 
@@ -27,4 +29,8 @@ public interface CaseInRunService extends BaseService {
     List<TestCaseInRunVo> genVos(List<TestCaseInRun> pos);
 	TestCaseInRunVo genVo(TestCaseInRun po, Boolean withSteps);
 
+    List<TestCaseInRunHistory> findHistories(Long id);
+
+    void saveHistory(UserVo user, Constant.CaseAct act, TestCaseInRun testCaseInRun,
+                     String status, String result);
 }

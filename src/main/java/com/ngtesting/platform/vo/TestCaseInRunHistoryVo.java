@@ -2,18 +2,18 @@ package com.ngtesting.platform.vo;
 
 import java.util.Date;
 
-public class TestCaseHistoryVo extends BaseVo {
+public class TestCaseInRunHistoryVo extends BaseVo {
 
-    private static final long serialVersionUID = 8174711284511001943L;
+    private static final long serialVersionUID = 6709823091860707370L;
 
     private String title;
     private String descr;
     private Long testCaseId;
 
-    public TestCaseHistoryVo() {
+    public TestCaseInRunHistoryVo() {
     }
 
-    public TestCaseHistoryVo(Long id, String title, String descr, Long testCaseId, Date createTime) {
+    public TestCaseInRunHistoryVo(Long id, String title, String descr, Long testCaseId, Date createTime) {
         this.id = id;
         this.title = title;
         this.descr = descr;

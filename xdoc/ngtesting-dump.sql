@@ -11,7 +11,7 @@
  Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 05/28/2018 19:34:26 PM
+ Date: 05/31/2018 14:08:04 PM
 */
 
 SET NAMES utf8mb4;
@@ -334,14 +334,51 @@ select days.date, temp.`status`, temp.numb, (@sumNumb := @sumNumb + temp.numb) `
 	(select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
 		from sys_nums,(select @num:=numb) t 
 		where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-		order by date) days left join 
+		order by date) days 
+	left join 
 	(
 		SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exe_time,'%Y/%m/%d') dt, csr.`status` `status` 
 		FROM tst_case_in_run csr 
-		WHERE csr.plan_id=plan_id AND csr.is_leaf=true AND csr.deleted != true AND csr.disabled != TRUE
-			AND csr.`status` != 'untest' GROUP BY dt, csr.`status`
+			left join tst_run run on csr.run_id=run.id
+		WHERE csr.plan_id=plan_id and run.deleted != true AND run.disabled != true 
+			AND csr.is_leaf=true AND csr.deleted != true AND csr.disabled != TRUE
+			AND csr.`status` != 'untest' 
+		GROUP BY dt, csr.`status`
 	) temp ON days.date = temp.dt
 ORDER BY days.date, temp.`status`;
+
+END
+ ;;
+delimiter ;
+
+-- ----------------------------
+--  Procedure structure for `chart_execution_process_by_plan_user`
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `chart_execution_process_by_plan_user`;
+delimiter ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `chart_execution_process_by_plan_user`(IN _plan_id BIGINT, IN numb BIGINT)
+BEGIN
+
+set @sumNumb:= 0;
+
+select days.date, temp.exe_by_id, temp.numb, (@sumNumb := @sumNumb + temp.numb) `sum` from 
+
+	(select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
+		from sys_nums,(select @num:=numb) t 
+		where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+		order by date
+	) days left join (
+		SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exe_time,'%Y/%m/%d') dt, csr.exe_by_id 
+		FROM tst_case_in_run csr 
+			left join tst_run run on csr.run_id=run.id
+		
+		WHERE csr.plan_id=_plan_id and run.deleted != true AND run.disabled != true
+			AND csr.is_leaf=true AND csr.deleted != true AND csr.disabled != TRUE
+			AND csr.`status` != 'untest' 
+		GROUP BY dt, csr.exe_by_id
+	) temp ON days.date = temp.dt
+
+ORDER BY days.date, temp.exe_by_id;
 
 END
  ;;
@@ -415,30 +452,34 @@ delimiter ;
 -- ----------------------------
 DROP PROCEDURE IF EXISTS `chart_execution_progress_by_plan`;
 delimiter ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `chart_execution_progress_by_plan`(IN plan_id BIGINT, IN numb BIGINT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `chart_execution_progress_by_plan`(IN _plan_id BIGINT, IN _numb BIGINT)
 BEGIN
 
 DECLARE total BIGINT;
 
-SELECT COUNT(csr.id) numb FROM tst_case_in_run csr 
-		WHERE csr.plan_id=plan_id AND csr.is_leaf=true AND csr.deleted != true AND csr.disabled != TRUE 
-		AND (csr.exe_time=null 
-			|| csr.exe_time > DATE_FORMAT(adddate(CURDATE(), INTERVAL -numb DAY),'%Y-%m-%d %H:%i:%s') 
-		    ) 
-	into total;
+SELECT COUNT(csr.id) numb 
+	FROM tst_case_in_run csr 
+		left join tst_run run on csr.run_id=run.id 
+		
+	WHERE csr.plan_id=_plan_id and run.deleted != true AND run.disabled != true
+		AND csr.is_leaf=true AND csr.deleted != true AND csr.disabled != TRUE 
+into total;
 
 select days.date, temp.numb, total from
 	(select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-		from sys_nums,(select @num:=numb) t 
+		from sys_nums,(select @num:=_numb) t 
 		where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
 		order by date) days 
 	
 	left join 
 
 	(SELECT DATE_FORMAT(csr.exe_time,'%Y/%m/%d') dt, COUNT(csr.id) numb 
-		FROM tst_case_in_run csr 
-		WHERE csr.plan_id=plan_id AND csr.is_leaf=true AND csr.deleted != true AND csr.disabled != TRUE 
-			AND csr.`status` != 'untest' AND csr.`status` != 'block'
+		FROM tst_case_in_run csr
+			left join tst_run run on csr.run_id=run.id
+		
+		WHERE csr.plan_id=_plan_id and run.deleted != true AND run.disabled != true
+			AND csr.is_leaf=true AND csr.deleted != true AND csr.disabled != TRUE 
+			AND csr.`status` != 'untest'
 		GROUP BY dt 
 		ORDER BY dt) temp 
 
@@ -457,16 +498,12 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `chart_execution_result_by_plan`(IN _plan_id BIGINT)
 BEGIN
 
-select cs1.`status` status, count(cs1.tcin_id) count from 
-	(select tcin.id tcin_id,  tcin.case_id tcin_case_id, tcin.`status` from tst_case_in_run tcin 
-                 where tcin.plan_id  = _plan_id AND tcin.deleted != true AND tcin.disabled != true ) cs1 
-                
-where cs1.tcin_case_id not in 
-	(select distinct tcin.p_id from tst_case_in_run tcin  
-                 where tcin.plan_id  = _plan_id     and tcin.p_id is not NULL
-			AND tcin.deleted != true AND tcin.disabled != true ) 
-
-group by cs1.`status`;
+select tcin.`status` status, count(tcin.id) count 
+	from tst_case_in_run tcin 
+		left join tst_run run on tcin.run_id=run.id 
+	where tcin.plan_id  = _plan_id and run.deleted != true AND run.disabled != true
+		AND tcin.deleted != true AND tcin.disabled != true  AND tcin.is_leaf=true
+group by tcin.`status`;
 
 END
  ;;
@@ -574,11 +611,11 @@ END
 delimiter ;
 
 -- ----------------------------
---  Procedure structure for `fix_is_leaf_issue`
+--  Procedure structure for `fix_is_leaf_issue_for_case`
 -- ----------------------------
-DROP PROCEDURE IF EXISTS `fix_is_leaf_issue`;
+DROP PROCEDURE IF EXISTS `fix_is_leaf_issue_for_case`;
 delimiter ;;
-CREATE DEFINER=`ngtesting`@`%` PROCEDURE `fix_is_leaf_issue`(IN _project_id  BIGINT)
+CREATE DEFINER=`ngtesting`@`%` PROCEDURE `fix_is_leaf_issue_for_case`(IN _project_id  BIGINT)
 BEGIN
 
 
@@ -596,19 +633,30 @@ BEGIN
 	);
 
 
+END
+ ;;
+delimiter ;
+
+-- ----------------------------
+--  Procedure structure for `fix_is_leaf_issue_in_run`
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `fix_is_leaf_issue_in_run`;
+delimiter ;;
+CREATE DEFINER=`ngtesting`@`%` PROCEDURE `fix_is_leaf_issue_in_run`(IN _plan_id  BIGINT)
+BEGIN
+
 	update tst_case_in_run cs set cs.is_leaf=true where  cs.case_id NOT IN   
 	(
 		select pids.p_id from 
 			(select DISTINCT p_id FROM tst_case_in_run 
-				where project_id=_project_id and deleted!=true and disabled!=true and p_id is not null) pids
+				where plan_id=_plan_id and deleted!=true and disabled!=true and p_id is not null) pids
 	);
 	update tst_case_in_run cs set cs.is_leaf=false where  cs.case_id  IN   
 	(
 		select pids.p_id from 
 			(select DISTINCT p_id FROM tst_case_in_run 
-				where project_id=_project_id and deleted!=true and disabled!=true and p_id is not null) pids
+				where plan_id=_plan_id and deleted!=true and disabled!=true and p_id is not null) pids
 	);
-
 
 END
  ;;
@@ -997,6 +1045,31 @@ END
 delimiter ;
 
 -- ----------------------------
+--  Procedure structure for `remove_aitask_and_its_children`
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `remove_aitask_and_its_children`;
+delimiter ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `remove_aitask_and_its_children`(IN _id BIGINT )
+BEGIN
+
+DECLARE sTemp VARCHAR(10000);  
+DECLARE sTempChd VARCHAR(10000);  
+SET sTemp = _id;  
+SET sTempChd = cast(_id as CHAR);  
+
+WHILE sTempChd is not null DO  
+	SET sTemp = concat(sTemp,',',sTempChd);  
+	SELECT group_concat(id) INTO sTempChd FROM ai_test_task cs where FIND_IN_SET(p_id,sTempChd)>0 
+		and cs.deleted!=true;  
+END WHILE;  
+
+UPDATE ai_test_task cs SET cs.deleted=true WHERE FIND_IN_SET(cs.id, sTemp); 
+
+END
+ ;;
+delimiter ;
+
+-- ----------------------------
 --  Procedure structure for `remove_case_and_its_children`
 -- ----------------------------
 DROP PROCEDURE IF EXISTS `remove_case_and_its_children`;
@@ -1087,6 +1160,27 @@ while i < cnt do
 
 end while;
 end
+ ;;
+delimiter ;
+
+-- ----------------------------
+--  Procedure structure for `update_aitask_parent_if_needed`
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `update_aitask_parent_if_needed`;
+delimiter ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_aitask_parent_if_needed`(IN _id BIGINT )
+BEGIN
+
+DECLARE is_leaf BIT;
+
+select case when (SELECT COUNT(cs.id) numb FROM ai_test_task cs
+			WHERE cs.p_id=_id AND cs.deleted != true AND cs.disabled != TRUE
+		 )=0 then 1 else 0 end is_leaf from dual
+	INTO is_leaf;
+
+UPDATE ai_test_task cs SET cs.is_leaf=is_leaf WHERE cs.id=_id AND (cs.is_leaf IS NULL OR cs.is_leaf!=is_leaf);
+
+END
  ;;
 delimiter ;
 

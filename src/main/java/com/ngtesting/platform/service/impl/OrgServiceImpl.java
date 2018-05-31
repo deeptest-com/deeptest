@@ -151,7 +151,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 
 		List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(orgId, userVo.getId());
         user.setDefaultPrjId(recentProjects.size()>0?recentProjects.get(0).getProjectId(): null);
-		saveOrUpdate(user);
+        saveOrUpdate(user);
 
 		userVo.setDefaultOrgId(user.getDefaultOrgId());
 		if (user.getDefaultOrgId()!=null) {

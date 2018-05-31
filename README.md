@@ -14,18 +14,19 @@ If you use different tomcat path, search and replace below service url to your o
 ```
 
 ### Test Project
-<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/01.jpg" width="800px" style="margin: 10px auto;">
+<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/project_view.jpg" width="800px" style="margin: 10px auto;">
 
 ### Test Case
-<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/05.jpg" width="800px" style="margin: 10px auto;">
+<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/case_edit.jpg" width="800px" style="margin: 10px auto;">
 
 ### Test Execution
-<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/06.jpg" width="800px" style="margin: 10px auto;">
+<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/case_exe.jpg" width="800px" style="margin: 10px auto;">
 
 ### Test Plan
-<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/02.jpg" width="800px" style="margin: 10px auto;">
-<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/03.jpg" width="800px" style="margin: 10px auto;">
-<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/04.jpg" width="800px" style="margin: 10px auto;">
+<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/plan_exe_result.jpg" width="800px" style="margin: 10px auto;">
+<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/plan_exe_process.jpg" width="800px" style="margin: 10px auto;">
+<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/plan_exe_process_by_user.jpg" width="800px" style="margin: 10px auto;">
+<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/plan_exe_progress.jpg" width="800px" style="margin: 10px auto;">
 
 ### Licenses
 

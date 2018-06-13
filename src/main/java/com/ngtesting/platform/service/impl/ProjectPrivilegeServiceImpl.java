@@ -18,7 +18,7 @@ import java.util.*;
 public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements ProjectPrivilegeService {
 
 	@Override
-	public Map<String, List<ProjectPrivilegeDefineVo>> listPrivilegesByOrgAndProjectRole(Long orgId, Long projectRoleId) {
+	public Map<String, Map<String, ProjectPrivilegeDefineVo>> listPrivilegesByOrgAndProjectRole(Long orgId, Long projectRoleId) {
 
         List<TestProjectPrivilegeDefine> allPrivileges = listAllProjectPrivileges();
 
@@ -29,13 +29,13 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
         	projectRolePrivileges = listProjectRolePrivileges(projectRoleId);
         }
 
-        Map<String, List<ProjectPrivilegeDefineVo>> map = new LinkedHashMap<String, List<ProjectPrivilegeDefineVo>>();
+        Map<String, Map<String, ProjectPrivilegeDefineVo>> map = new LinkedHashMap<>();
         for (TestProjectPrivilegeDefine po1 : allPrivileges) {
         	String key = po1.getName();
-        	if (!map.containsKey(key)) {
-        		List<ProjectPrivilegeDefineVo> vos = new LinkedList();
-        		map.put(key, vos);
-        	}
+
+			if (!map.containsKey(key)) {
+				map.put(key, new HashMap<String, ProjectPrivilegeDefineVo>());
+			}
 
         	ProjectPrivilegeDefineVo vo = genVo(orgId, po1);
 
@@ -50,7 +50,7 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
             		vo.setRelationId(relationId);
             	}
         	}
-        	map.get(key).add(vo);
+        	map.get(key).put(vo.getAction(), vo);
         }
 
 		return map;
@@ -116,14 +116,13 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
         }
 
 		for (String key: map.keySet()) {
-			List ls = JSON.parseObject(JSON.toJSONString(map.get(key)), List.class);
+            Map<String, ProjectPrivilegeDefineVo> voMap = JSON.parseObject(JSON.toJSONString(map.get(key)), Map.class);
 
-			for (Object obj: ls) {
-				ProjectPrivilegeDefineVo vo = JSON.parseObject(JSON.toJSONString(obj),
+			for (String key2: voMap.keySet()) {
+				ProjectPrivilegeDefineVo vo = JSON.parseObject(JSON.toJSONString(voMap.get(key2)),
 						ProjectPrivilegeDefineVo.class);
 
                 if (vo.getSelecting() != vo.getSelected()) { // 变化了
-
 	    			if (vo.getSelecting() && !privilegeDefineIds.contains(vo.getId())) { // 勾选
                         TestProjectRolePriviledgeRelation temp = new TestProjectRolePriviledgeRelation(vo.getId(), projectRoleId);
                         saveOrUpdate(temp);

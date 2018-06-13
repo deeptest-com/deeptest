@@ -258,6 +258,10 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 		UserVo vo = new UserVo();
 		BeanUtilEx.copyProperties(vo, user);
 
+		if (user.getDefaultOrgId() != null) {
+			TestOrg org = (TestOrg)get(TestOrg.class, user.getDefaultOrgId());
+			vo.setDefaultOrgName(org.getName());
+		}
 		if (user.getDefaultPrjId() != null) {
             TestProject prj = (TestProject)get(TestProject.class, user.getDefaultPrjId());
             vo.setDefaultPrjName(prj.getName());

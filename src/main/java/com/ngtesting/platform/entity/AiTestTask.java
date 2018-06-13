@@ -16,6 +16,7 @@ public class AiTestTask extends BaseEntity {
     private Integer displayOrder;
 
     private Long testProductId;
+    private String testTarget = "func";
     private String testType = "asr";
     private String testEnv = "test";
     private Integer testDuration;
@@ -63,6 +64,14 @@ public class AiTestTask extends BaseEntity {
 
     @Column(name = "create_by_id")
     private Long createById;
+
+    public String getTestTarget() {
+        return testTarget;
+    }
+
+    public void setTestTarget(String testTarget) {
+        this.testTarget = testTarget;
+    }
 
     public String getMlfs() {
         return mlfs;

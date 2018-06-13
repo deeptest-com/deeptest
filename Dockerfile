@@ -19,14 +19,15 @@ EXPOSE 22
 EXPOSE 8080
 EXPOSE 3306
 
-RUN apt-get -y update
+# RUN apt-get -y update
 
-WORKDIR /home/ngt/dev/project
-RUN rm -rf /home/ngt/dev/project/ngtesting-platform
-RUN git clone https://github.com/aaronchen2k/ngtesting-platform.git
-WORKDIR /home/ngt/dev/project/ngtesting-platform
-RUN mvn -Denv=dev clean package
-RUN rm -rf /home/ngt/dev/server/apache-tomcat-8.5.31/webapps/ngtesting-platform-*
-RUN cp target/ngtesting-platform-*.war /home/ngt/dev/server/apache-tomcat-8.5.31/webapps
+# WORKDIR /home/ngt/dev/project
+# RUN rm -rf /home/ngt/dev/project/ngtesting-platform
+# RUN git clone https://github.com/aaronchen2k/ngtesting-platform.git
+# WORKDIR /home/ngt/dev/project/ngtesting-platform
+# RUN mvn -Denv=dev clean package
+# RUN rm -rf /home/ngt/dev/server/apache-tomcat-8.5.31/webapps/ngtesting-platform-*
+# RUN cp target/ngtesting-platform-*.war /home/ngt/dev/server/apache-tomcat-8.5.31/webapps
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+RUN chown -R mysql:mysql /var/lib/mysql /var/run/mysqld
+ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]

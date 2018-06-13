@@ -189,7 +189,14 @@ public class AiTestTaskServiceImpl extends BaseServiceImpl implements AiTestTask
         String dateDist = DateUtils.GetDateNoSeparator();
         destDir = destDir + dateDist + "/" + UUID.randomUUID().toString();
 
-        ZipUtil.unpack(new File(zipPath), new File(destDir));
+        File file = new File(destDir);
+        System.out.println(destDir);
+        if (!file.exists()) {
+            boolean ret = file.mkdirs();
+        }
+        if (zipPath.endsWith(".zip")) {
+            ZipUtil.unpack(new File(zipPath), file);
+        }
 
         List<AiRunMlf> mlfs = FileUtils.ListMlf(destDir, testTaskVo.getTestType());
         testTaskPo.setMlfs(JSON.toJSONString(mlfs));

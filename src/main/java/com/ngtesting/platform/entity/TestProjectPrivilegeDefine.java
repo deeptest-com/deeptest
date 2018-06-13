@@ -1,8 +1,6 @@
 package com.ngtesting.platform.entity;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 @Entity
@@ -10,53 +8,13 @@ import javax.persistence.Table;
 public class TestProjectPrivilegeDefine extends BaseEntity {
 	private static final long serialVersionUID = -5510206858644860272L;
 
-	@Enumerated(EnumType.STRING)
-    private ProjectPrivilegeCode code;
+    private String code;
 
     private String name;
     private String descr;
 
-    @Enumerated(EnumType.STRING)
-    private PrivilegeAction action;
-
-    public static enum ProjectPrivilegeCode {
-//    	req("req"),
-		plan("plan"),
-    	cases("cases"),
-		run("run"),
-        autotask("autotask"),
-        issue("issue");
-//    	result("result"),
-//    	report("report");
-
-        private ProjectPrivilegeCode(String textVal) {
-            this.textVal = textVal;
-        }
-
-        private String textVal;
-        public String toString() {
-            return textVal;
-        }
-    }
-
-    public static enum PrivilegeAction {
-		create("create"),
-        update("update"),
-        remove("remove"),
-        close("close"),
-		exe("exe"),
-		all("all");
-
-        private PrivilegeAction(String textVal) {
-            this.textVal = textVal;
-        }
-
-        private String textVal;
-        public String toString() {
-            return textVal;
-        }
-
-    }
+    private String action;
+	private String actionName;
 
 	public String getName() {
 		return name;
@@ -74,20 +32,27 @@ public class TestProjectPrivilegeDefine extends BaseEntity {
 		this.descr = descr;
 	}
 
-	public ProjectPrivilegeCode getCode() {
+	public String getCode() {
 		return code;
 	}
 
-	public void setCode(ProjectPrivilegeCode code) {
+	public void setCode(String code) {
 		this.code = code;
 	}
 
-	public PrivilegeAction getAction() {
+	public String getAction() {
 		return action;
 	}
 
-	public void setAction(PrivilegeAction action) {
+	public void setAction(String action) {
 		this.action = action;
 	}
 
+	public String getActionName() {
+		return actionName;
+	}
+
+	public void setActionName(String actionName) {
+		this.actionName = actionName;
+	}
 }

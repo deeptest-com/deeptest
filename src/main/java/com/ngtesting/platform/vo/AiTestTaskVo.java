@@ -13,6 +13,7 @@ public class AiTestTaskVo extends BaseVo {
 	private Integer displayOrder;
 
 	private Long testProductId;
+    private String testTarget;
 	private String testType;
 	private String testEnv;
 	private Integer testDuration;
@@ -39,6 +40,14 @@ public class AiTestTaskVo extends BaseVo {
 
     private Long projectId;
     private Long createById;
+
+    public String getTestTarget() {
+        return testTarget;
+    }
+
+    public void setTestTarget(String testTarget) {
+        this.testTarget = testTarget;
+    }
 
     public String getMlfs() {
         return mlfs;

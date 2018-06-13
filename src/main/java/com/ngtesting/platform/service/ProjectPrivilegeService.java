@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface ProjectPrivilegeService extends BaseService {
 
-	Map<String, List<ProjectPrivilegeDefineVo>> listPrivilegesByOrgAndProjectRole(Long orgId, Long projectRoleId);
+    Map<String, Map<String, ProjectPrivilegeDefineVo>> listPrivilegesByOrgAndProjectRole(Long orgId, Long projectRoleId);
     List<TestProjectRolePriviledgeRelation> listProjectRolePrivileges(Long projectRoleId);
 
     List<TestProjectPrivilegeDefine> listAllProjectPrivileges();

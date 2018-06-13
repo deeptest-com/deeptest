@@ -59,10 +59,9 @@ public class JenkinsServiceImpl extends BaseServiceImpl implements JenkinsServic
 
             Map<String, String> params = new HashMap();
             params.put("json", JSON.toJSONString(runVo));
-            params.put("suite", JenkinsTask.get(vo.getTestType()));
+//            params.put("suite", JenkinsTask.get(vo.getTestType()));
 
             job.build(params, true);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -70,4 +69,3 @@ public class JenkinsServiceImpl extends BaseServiceImpl implements JenkinsServic
         return json;
     }
 }
-

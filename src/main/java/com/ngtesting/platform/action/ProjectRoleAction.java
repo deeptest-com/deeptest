@@ -60,7 +60,7 @@ public class ProjectRoleAction extends BaseAction {
 		Long orgId = userVo.getDefaultOrgId();
 		Long roleId = req.getLong("id");
 
-		Map<String, List<ProjectPrivilegeDefineVo>> orgPrivileges =
+		Map<String, Map<String, ProjectPrivilegeDefineVo>> orgPrivileges =
 				projectPrivilegeService.listPrivilegesByOrgAndProjectRole(orgId, roleId);
 		if (roleId == null) {
 			ret.put("projectRole", new ProjectRoleVo());
@@ -93,6 +93,9 @@ public class ProjectRoleAction extends BaseAction {
 		Map<String, List<ProjectPrivilegeDefineVo>> projectPrivileges = (Map<String, List<ProjectPrivilegeDefineVo>>) json.get("projectPrivileges");
 		int i=0;
 		boolean success = projectPrivilegeService.saveProjectPrivileges(po.getId(), projectPrivileges);
+
+		Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUserPers(userVo.getId(), userVo.getDefaultPrjId(), orgId);
+		ret.put("prjPrivileges", prjPrivileges);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

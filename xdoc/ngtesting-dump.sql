@@ -11,7 +11,7 @@
  Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 05/31/2018 14:08:04 PM
+ Date: 06/13/2018 09:14:06 AM
 */
 
 SET NAMES utf8mb4;
@@ -77,14 +77,15 @@ CREATE TABLE `tst_project_privilege_define` (
   `name` varchar(255) DEFAULT NULL,
   `action` varchar(255) DEFAULT NULL,
   `code` varchar(255) DEFAULT NULL,
+  `action_name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=241 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=17301 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `tst_project_privilege_define`
 -- ----------------------------
 BEGIN;
-INSERT INTO `tst_project_privilege_define` VALUES ('100', '2017-12-26 10:13:08', b'0', b'0', '2017-12-26 10:13:11', '1', null, '测试计划', 'create', 'plan'), ('110', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试计划', 'update', 'plan'), ('120', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试计划', 'remove', 'plan'), ('130', '2017-12-26 10:11:16', b'0', b'0', '2017-12-26 10:11:18', '1', null, '测试用例', 'create', 'cases'), ('140', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试用例', 'update', 'cases'), ('150', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试用例', 'remove', 'cases'), ('160', '2017-12-26 10:18:29', b'0', b'0', '2017-12-26 10:18:38', '1', null, '测试集', 'create', 'run'), ('170', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试集', 'update', 'run'), ('180', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试集', 'remove', 'run'), ('190', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试集', 'close', 'run'), ('200', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试结果', 'exe', 'run'), ('210', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'create', 'autotask'), ('220', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'update', 'autotask'), ('230', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'remove', 'autotask'), ('240', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '问题', 'all', 'issue');
+INSERT INTO `tst_project_privilege_define` VALUES ('11100', '2017-12-26 10:11:16', b'0', b'0', '2017-12-26 10:11:18', '1', null, '项目', 'view', 'project', '查看'), ('11200', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '项目', 'maintain', 'project', '维护'), ('11300', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '项目', 'delete', 'project', '删除'), ('12100', '2017-12-26 10:11:16', b'0', b'0', '2017-12-26 10:11:18', '1', null, '测试用例', 'view', 'test_case', '查看'), ('12200', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试用例', 'maintain', 'test_case', '维护'), ('12300', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试用例', 'delete', 'test_case', '删除'), ('13100', '2017-12-26 10:18:29', b'0', b'0', '2017-12-26 10:18:38', '1', null, '测试集', 'view', 'test_suite', '查看'), ('13200', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试集', 'maintain', 'test_suite', '维护'), ('13300', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试集', 'delete', 'test_suite', '删除'), ('14100', '2017-12-26 10:13:08', b'0', b'0', '2017-12-26 10:13:11', '1', null, '执行计划', 'view', 'test_plan', '查看'), ('14200', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '执行计划', 'maintain', 'test_plan', '维护'), ('14300', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '执行计划', 'delete', 'test_plan', '删除'), ('15100', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试任务', 'view', 'test_task', '查看'), ('15200', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试任务', 'exe', 'test_task', '执行'), ('15300', '2017-04-05 11:52:26', b'0', b'0', '2017-04-05 11:52:28', '1', null, '测试任务', 'close', 'test_task', '关闭'), ('16100', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'view', 'auto_task', '查看'), ('16200', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'maintain', 'auto_task', '维护'), ('16300', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'exe', 'auto_task', '执行'), ('16400', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '自动化任务', 'delete', 'auto_task', '删除'), ('17100', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '问题', 'view', 'issue', '查看'), ('17200', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '问题', 'maintain', 'issue', '维护'), ('17300', '2018-05-03 17:03:01', b'0', b'0', '2018-05-03 17:03:08', '1', null, '问题', 'delete', 'issue', '删除');
 COMMIT;
 
 -- ----------------------------
@@ -663,6 +664,67 @@ END
 delimiter ;
 
 -- ----------------------------
+--  Procedure structure for `fix_project_privilege`
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `fix_project_privilege`;
+delimiter ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `fix_project_privilege`()
+    DETERMINISTIC
+BEGIN
+	
+	DECLARE project_role_id bigint;
+	DECLARE done1 INT DEFAULT FALSE;
+
+	DECLARE cur1 CURSOR FOR SELECT id from tst_project_role_for_org;
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET done1 = TRUE;
+
+	DELETE FROM tst_project_role_priviledge_relation WHERE TRUE;
+
+	OPEN cur1;
+
+	read_loop: LOOP
+	  FETCH cur1 INTO project_role_id;
+	  IF done1 THEN
+	    LEAVE read_loop;
+	  END IF;
+
+	  INSERT INTO `tst_project_role_priviledge_relation` (`create_time`,`deleted`,`disabled`,`update_time`,`version`,
+			`is_build_in`,`project_privilege_define_id`,`project_role_id`)
+		VALUES 
+
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 11100, project_role_id),
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 11200, project_role_id),
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 11300, project_role_id),
+
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 12100, project_role_id),
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 12200, project_role_id),
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 12300, project_role_id),
+
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 13100, project_role_id),
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 13200, project_role_id),
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 13300, project_role_id),
+
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 15100, project_role_id),
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 15200, project_role_id),
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 15300, project_role_id),
+
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 16100, project_role_id),
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 16200, project_role_id),
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 16300, project_role_id),
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 16300, project_role_id),
+			
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 17100, project_role_id),
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 17200, project_role_id),
+		 ('2018-06-06 19:56:54', b'0', b'0', '2018-02-28 18:20:44', '1', b'0', 17300, project_role_id);
+
+	END LOOP;
+	CLOSE cur1;
+
+END
+ ;;
+delimiter ;
+
+-- ----------------------------
 --  Procedure structure for `get_days`
 -- ----------------------------
 DROP PROCEDURE IF EXISTS `get_days`;
@@ -816,6 +878,8 @@ DECLARE project_role_leader_id BIGINT;
 DECLARE project_id BIGINT;
 DECLARE case_id BIGINT;
 
+DECLARE count BIGINT;
+
 select usr.name from tst_user usr where id=user_id into user_name;
 
 
@@ -878,42 +942,61 @@ insert into tst_project_role_for_org (code, name, is_build_in, org_id, disabled,
 select max(id) from tst_project_role_for_org into project_role_id;
 set project_role_leader_id=project_role_id;
 
-set i=100;
-while i<=240 do
-	insert into tst_project_role_priviledge_relation 
+set i=11100;
+while i<=17300 do
+	select count(id) from tst_project_privilege_define where id=i into count;
+	IF count > 0 THEN  
+	      insert into tst_project_role_priviledge_relation 
                 ( project_privilege_define_id,   project_role_id,   create_time, deleted, disabled, is_build_in, version )
-         VALUES ( i, project_role_id, now(),       false,   false,    false , 0);
-	set i=i+10;
+		VALUES ( i, project_role_id, now(),       false,   false,    false, 0 );
+	END IF;  
+	set i=i+100;
 end while;
 
 insert into tst_project_role_for_org (code, name, is_build_in, org_id, disabled, deleted, create_time, version) 
 		   values('test_designer', '测试设计', false, org_id, false, false, NOW(), 0);
 select max(id) from tst_project_role_for_org into project_role_id;
 
-set i=130;
-while i<=200 do
-	insert into tst_project_role_priviledge_relation 
+set i=12100;
+while i<=17300 do
+	select count(id) from tst_project_privilege_define where id=i into count;
+	IF count > 0 THEN  
+	      insert into tst_project_role_priviledge_relation 
                 ( project_privilege_define_id,   project_role_id,   create_time, deleted, disabled, is_build_in, version )
-         VALUES ( i, project_role_id, now(),       false,   false,    false, 0 );
-	set i=i+10;
+		VALUES ( i, project_role_id, now(),       false,   false,    false, 0 );
+	END IF;  
+	set i=i+100;
 end while;
 
 insert into tst_project_role_for_org (code, name, is_build_in, org_id, disabled, deleted, create_time, version) 
 		   values('tester', '测试执行', false, org_id, false, false, NOW(), 0);
 select max(id) from tst_project_role_for_org into project_role_id;
 
-set i=160;
-while i<=200 do
-	insert into tst_project_role_priviledge_relation 
+set i=12100;
+while i<=17300 do
+	select count(id) from tst_project_privilege_define where id=i AND i != 12200 into count;
+	IF count > 0 THEN  
+	      insert into tst_project_role_priviledge_relation 
                 ( project_privilege_define_id,   project_role_id,   create_time, deleted, disabled, is_build_in, version )
-         VALUES ( i, project_role_id, now(),       false,   false,    false, 0 );
-	set i=i+10;
+		VALUES ( i, project_role_id, now(),       false,   false,    false, 0 );
+	END IF;  
+	set i=i+100;
 end while;
 
 insert into tst_project_role_for_org (code, name, is_build_in, org_id, disabled, deleted, create_time, version) 
 		   values('readonly', '只读用户', false, org_id, false, false, NOW(), 0);
 select max(id) from tst_project_role_for_org into project_role_id;
 
+set i=11100;
+while i<=17300 do
+	select count(id) from tst_project_privilege_define where id=i and action = 'view' into count;
+	IF count > 0 THEN  
+	      insert into tst_project_role_priviledge_relation 
+                ( project_privilege_define_id,   project_role_id,   create_time, deleted, disabled, is_build_in, version )
+		VALUES ( i, project_role_id, now(),       false,   false,    false, 0 );
+	END IF;  
+	set i=i+100;
+end while;
 
 
 insert into tst_project (name, type, parent_id, org_id, disabled, deleted, create_time, version) 

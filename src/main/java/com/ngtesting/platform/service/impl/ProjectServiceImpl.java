@@ -365,7 +365,9 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
                     TestProjectVo childVo = genVo(child, privMap);
                     voList2.add(childVo);
 
-                    if (childVo.getPrivs().get("project-view") ) {
+                    if (childVo.getPrivs() != null
+                            && childVo.getPrivs().get("project-view") != null
+                            && childVo.getPrivs().get("project-view") ) {
                         childCanView = true;
                     }
                 }

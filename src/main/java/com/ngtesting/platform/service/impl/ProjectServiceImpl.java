@@ -27,9 +27,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ProjectServiceImpl extends BaseServiceImpl implements
@@ -48,23 +46,22 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
     ProjectPrivilegeService projectPrivilegeService;
 
 	@Override
-	// @Cacheable(value="orgProjects",key="#orgId.toString().concat('_').concat(#disabled)")
-	public List<TestProjectVo> listVos(Long orgId, String keywords, String disabled) {
-		// CacheManager manager = CacheManager.create();
-		// net.sf.ehcache.Cache cache = manager.getCache("orgProjects");
-		// String key = orgId + "_" + disabled;
-		// Element el = null;
-		// if(cache.isKeyInCache(key)){
-		// el = cache.get(key);
-		// return (Map<String, Object>)el.getObjectValue();
-		// }
+	public List<TestProjectVo> listVos(Long orgId, Long userId, String keywords, String disabled) {
+		Map<String, Map<String, Boolean>> privMap = new HashMap();
+		List<Object[]> ls = getDao().getListBySQL("{call get_project_privilege_by_org_for_user(?,?)}",
+				userId, orgId);
+		for (Object[] arr : ls) {
+		    if (privMap.get(arr[0].toString()) == null) {
+                privMap.put(arr[0].toString(), new HashMap());
+            }
+
+			String str = arr[1].toString() + "-" + arr[2].toString();
+            privMap.get(arr[0].toString()).put(str, true);
+		}
 
 		List<TestProject> pos = list(orgId, keywords, disabled);
+		List<TestProjectVo> vos = this.genVos(pos, keywords, disabled, privMap);
 
-		List<TestProjectVo> vos = this.genVos(pos, keywords, disabled);
-
-		// el = new Element(key, ret);
-		// cache.put(el);
 		return vos;
 	}
 
@@ -173,7 +170,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 		saveOrUpdate(po);
 
         if(isNew && ProjectType.project.equals(po.getType())) {
-            projectPrivilegeService.addUserAsProjectRolePers(orgId, po.getId(), "test_leader", userVo.getId());
+            projectPrivilegeService.addUserAsProjectTestLeaderPers(orgId, po.getId(), "test_leader", userVo.getId());
             caseService.createRoot(po.getId(), userVo);
         }
         if(ProjectType.project.equals(po.getType())) {
@@ -256,7 +253,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 
         List<TestProject> pos = findAllByCriteria(dc);
 
-        List<TestProjectVo> vos = this.genVos(pos);
+        List<TestProjectVo> vos = this.genVos(pos, null);
         return vos;
 	}
     @Override
@@ -307,7 +304,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 			userVo.setDefaultPrjName(project.getName());
 		}
 
-		TestProjectVo vo = genVo(project);
+		TestProjectVo vo = genVo(project, null);
 		return vo;
 	}
 
@@ -349,27 +346,36 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
 	}
 
     @Override
-    public List<TestProjectVo> genVos(List<TestProject> pos) {
-        return this.genVos(pos, null, null);
+    public List<TestProjectVo> genVos(List<TestProject> pos, Map<String, Map<String, Boolean>> privMap) {
+        return this.genVos(pos, null, null, privMap);
     }
     @Override
-    public List<TestProjectVo> genVos(List<TestProject> pos, String keywords, String disabled) {
+    public List<TestProjectVo> genVos(List<TestProject> pos, String keywords, String disabled, Map<String, Map<String, Boolean>> privMap) {
         List<TestProjectVo> voList = new LinkedList<TestProjectVo>();
         for (TestProject po : pos) {
-            TestProjectVo vo = genVo(po);
+            TestProjectVo vo = genVo(po, privMap);
             voList.add(vo);
 
             List<TestProjectVo> voList2 = new LinkedList<TestProjectVo>();
             List<TestProject> children = po.getChildren();
+            boolean childCanView = false;
             for (TestProject child : children) {
                 if ( (StringUtil.IsEmpty(keywords) || child.getName().toLowerCase().indexOf(keywords.toLowerCase()) > -1)
                         && ( StringUtil.IsEmpty(disabled) || child.getDisabled() == Boolean.valueOf(disabled)) ) {
-                    TestProjectVo childVo = genVo(child);
+                    TestProjectVo childVo = genVo(child, privMap);
                     voList2.add(childVo);
+
+                    if (childVo.getPrivs().get("project-view") ) {
+                        childCanView = true;
+                    }
                 }
             }
             vo.setChildrenNumb(voList2.size());
             voList.addAll(voList2);
+
+            if (childCanView) {
+                vo.getPrivs().put("project-view", true);
+            }
         }
 
         return voList;
@@ -378,7 +384,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
     public List<TestProjectVo> genGroupVos(List<TestProject> pos) {
         List<TestProjectVo> voList = new LinkedList<TestProjectVo>();
         for (TestProject po : pos) {
-            TestProjectVo vo = genVo(po);
+            TestProjectVo vo = genVo(po, null);
             voList.add(vo);
         }
 
@@ -386,7 +392,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
     }
 
     @Override
-    public TestProjectVo genVo(TestProject po) {
+    public TestProjectVo genVo(TestProject po, Map<String, Map<String, Boolean>> privMap) {
         if (po == null) {
             return null;
         }
@@ -394,6 +400,10 @@ public class ProjectServiceImpl extends BaseServiceImpl implements
         BeanUtilEx.copyProperties(vo, po);
         if (po.getParentId() == null) {
             vo.setParentId(null);
+        }
+
+        if (privMap != null && privMap.get(po.getId().toString()) != null) {
+            vo.setPrivs(privMap.get(po.getId().toString()));
         }
 
         return vo;

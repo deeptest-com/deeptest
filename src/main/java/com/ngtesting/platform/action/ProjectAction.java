@@ -56,7 +56,7 @@ public class ProjectAction extends BaseAction {
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
 
-		List<TestProjectVo> vos = projectService.listVos(orgId, keywords, disabled);
+		List<TestProjectVo> vos = projectService.listVos(orgId, userVo.getId(), keywords, disabled);
 
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -77,7 +77,7 @@ public class ProjectAction extends BaseAction {
 
 		if (projectId != null) {
 			TestProject project = projectService.getDetail(projectId);
-			TestProjectVo vo = projectService.genVo(project);
+			TestProjectVo vo = projectService.genVo(project, null);
 
 			if (TestProject.ProjectType.group.equals(project.getType())) {
 				vo.setLastestProjectGroup(projectService.isLastestProjectGroup(orgId, projectId));
@@ -125,7 +125,7 @@ public class ProjectAction extends BaseAction {
 		Long id = json.getLong("id");
 
 		TestProject po = projectService.getDetail(id);
-		TestProjectVo vo = projectService.genVo(po);
+		TestProjectVo vo = projectService.genVo(po, null);
 
         List<TestPlan> planPos = planService.listByProject(id, vo.getType());
         List<TestPlanVo> planVos = planService.genVos(planPos);

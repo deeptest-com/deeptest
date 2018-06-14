@@ -11,7 +11,7 @@
  Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 06/13/2018 09:14:06 AM
+ Date: 06/14/2018 17:13:45 PM
 */
 
 SET NAMES utf8mb4;
@@ -725,6 +725,22 @@ END
 delimiter ;
 
 -- ----------------------------
+--  Procedure structure for `fix_project_role_entity`
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `fix_project_role_entity`;
+delimiter ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `fix_project_role_entity`()
+    DETERMINISTIC
+BEGIN
+	
+	update tst_r_project_role_entity tmp 
+		set org_id = (select org_id from tst_project prj where tmp.project_id = prj.id);
+
+END
+ ;;
+delimiter ;
+
+-- ----------------------------
 --  Procedure structure for `get_days`
 -- ----------------------------
 DROP PROCEDURE IF EXISTS `get_days`;
@@ -737,6 +753,80 @@ select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%
 	where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
 	order by date;
 
+END
+ ;;
+delimiter ;
+
+-- ----------------------------
+--  Procedure structure for `get_project_privilege_by_org_for_user`
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `get_project_privilege_by_org_for_user`;
+delimiter ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_project_privilege_by_org_for_user`(IN user_id  BIGINT, IN _org_id BIGINT)
+    DETERMINISTIC
+BEGIN
+
+select tmp.project_id, define.`code`, define.action
+	from tst_project_privilege_define define
+		left join tst_project_role_priviledge_relation r on r.project_privilege_define_id = define.id
+	 
+		INNER join
+		(select relation.project_id, relation.project_role_id from tst_r_project_role_entity relation 
+			where 
+			(
+			  (type = 'user' && relation.entity_id = user_id) 
+			   or (type = 'group' && 
+				relation.entity_id in (
+					select grp.id from tst_org_group grp 
+									left join tst_r_org_group_user relat on relat.org_group_id = grp.id 
+									left join tst_user userr on relat.user_id = userr.id
+									where userr.id = user_id
+					UNION
+					select grp.id from tst_org_group grp 
+						where grp.name = '所有人' and grp.org_id = org_id)
+				)
+			)
+			and relation.org_id = _org_id
+		) tmp
+	
+		on r.project_role_id = tmp.project_role_id
+	
+	where r.deleted!=true and r.disabled!=true
+	order by tmp.project_id,  define.`code`;
+END
+ ;;
+delimiter ;
+
+-- ----------------------------
+--  Procedure structure for `get_project_privilege_by_project_for_user`
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `get_project_privilege_by_project_for_user`;
+delimiter ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_project_privilege_by_project_for_user`(IN user_id  BIGINT, IN _project_id BIGINT, IN org_id BIGINT)
+BEGIN
+
+select define.`code`, define.action
+	from tst_project_privilege_define define left join tst_project_role_priviledge_relation r 
+					          on r.project_privilege_define_id = define.id
+	
+	where r.deleted!=true and r.disabled!=true and r.project_role_id in 
+	(select relation.project_role_id from tst_r_project_role_entity relation 
+	        where 
+		(
+		  (type = 'user' && relation.entity_id = user_id) 
+		   or (type = 'group' && 
+			relation.entity_id in (
+				select grp.id from tst_org_group grp 
+								left join tst_r_org_group_user relat on relat.org_group_id = grp.id 
+								left join tst_user userr on relat.user_id = userr.id
+								where userr.id = user_id
+				UNION
+				select grp.id from tst_org_group grp 
+					where grp.name = '所有人' and grp.org_id = org_id)
+			)
+		)
+		and relation.project_id = _project_id
+	);
 END
  ;;
 delimiter ;
@@ -957,9 +1047,9 @@ insert into tst_project_role_for_org (code, name, is_build_in, org_id, disabled,
 		   values('test_designer', '测试设计', false, org_id, false, false, NOW(), 0);
 select max(id) from tst_project_role_for_org into project_role_id;
 
-set i=12100;
+set i=11100;
 while i<=17300 do
-	select count(id) from tst_project_privilege_define where id=i into count;
+	select count(id) from tst_project_privilege_define where id=i AND id != 11200 and id != 11300 into count;
 	IF count > 0 THEN  
 	      insert into tst_project_role_priviledge_relation 
                 ( project_privilege_define_id,   project_role_id,   create_time, deleted, disabled, is_build_in, version )
@@ -972,9 +1062,9 @@ insert into tst_project_role_for_org (code, name, is_build_in, org_id, disabled,
 		   values('tester', '测试执行', false, org_id, false, false, NOW(), 0);
 select max(id) from tst_project_role_for_org into project_role_id;
 
-set i=12100;
+set i=11100;
 while i<=17300 do
-	select count(id) from tst_project_privilege_define where id=i AND i != 12200 into count;
+	select count(id) from tst_project_privilege_define where id=i AND id != 11200 and id != 11300 AND i != 12200 into count;
 	IF count > 0 THEN  
 	      insert into tst_project_role_priviledge_relation 
                 ( project_privilege_define_id,   project_role_id,   create_time, deleted, disabled, is_build_in, version )

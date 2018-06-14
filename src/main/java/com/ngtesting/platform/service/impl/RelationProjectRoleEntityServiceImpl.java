@@ -36,10 +36,10 @@ public class RelationProjectRoleEntityServiceImpl extends BaseServiceImpl implem
 	public TestRelationProjectRoleEntity getRelationProjectRoleEntity(Long projectRoleId) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestRelationProjectRoleEntity.class);
         dc.add(Restrictions.eq("projectRoleId", projectRoleId));
-        
+
         dc.addOrder(Order.asc("id"));
         List<TestRelationProjectRoleEntity> ls = findAllByCriteria(dc);
-        
+
         if (ls.size() == 0) {
         	return null;
         }
@@ -50,13 +50,13 @@ public class RelationProjectRoleEntityServiceImpl extends BaseServiceImpl implem
 	public List<TestRelationProjectRoleEntity> listRelationProjectRoleEntitys(Long projectRoleId) {
 		DetachedCriteria dc = DetachedCriteria.forClass(TestRelationProjectRoleEntity.class);
         dc.add(Restrictions.eq("projectRoleId", projectRoleId));
-        
+
         dc.add(Restrictions.eq("deleted", Boolean.FALSE));
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-        
+
         dc.addOrder(Order.asc("id"));
         List<TestRelationProjectRoleEntity> ls = findAllByCriteria(dc);
-        
+
 		return ls;
 	}
 
@@ -126,7 +126,7 @@ public class RelationProjectRoleEntityServiceImpl extends BaseServiceImpl implem
                 }
 
                 TestRelationProjectRoleEntity po = new TestRelationProjectRoleEntity(
-                        projectId, entityId, projectRoleId, entityType);
+                        projectRole.getOrgId(), projectId, entityId, projectRoleId, entityType);
                 saveOrUpdate(po);
             }
         }

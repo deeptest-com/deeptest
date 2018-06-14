@@ -7,10 +7,11 @@ import com.ngtesting.platform.vo.TestProjectVo;
 import com.ngtesting.platform.vo.UserVo;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ProjectService extends BaseService {
 
-	List<TestProjectVo> listVos(Long orgId, String keywords, String disabled);
+	List<TestProjectVo> listVos(Long orgId, Long userId, String keywords, String disabled);
 	List<TestProjectVo> listProjectGroups(Long orgId);
 
 	TestProject getDetail(Long id);
@@ -31,10 +32,10 @@ public interface ProjectService extends BaseService {
 
 	boolean isLastestProjectGroup(Long orgId, Long projectGroupId);
 
-	TestProjectVo genVo(TestProject po);
-	List<TestProjectVo> genVos(List<TestProject> pos, String keywords, String disabled);
+	TestProjectVo genVo(TestProject po, Map<String, Map<String, Boolean>> privs);
+	List<TestProjectVo> genVos(List<TestProject> pos, String keywords, String disabled, Map<String, Map<String, Boolean>> privs);
+	List<TestProjectVo> genVos(List<TestProject> pos, Map<String, Map<String, Boolean>> privs);
 	List<TestProjectVo> genGroupVos(List<TestProject> pos);
-	List<TestProjectVo> genVos(List<TestProject> pos);
 	TestProjectAccessHistoryVo genHistoryVo(TestProjectAccessHistory po);
 
     List<Long> listBrotherIds(Long projectId);

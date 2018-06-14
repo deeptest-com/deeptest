@@ -83,7 +83,7 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 	}
 
 	@Override
-	public boolean addUserAsProjectRolePers(Long orgId, Long projectId, String roleCode, Long userId) {
+	public boolean addUserAsProjectTestLeaderPers(Long orgId, Long projectId, String roleCode, Long userId) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestProjectRoleForOrg.class);
 
         dc.add(Restrictions.eq("orgId", orgId));
@@ -98,7 +98,7 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 
         TestProjectRoleForOrg role = ls.get(0);
         TestRelationProjectRoleEntity relation = new TestRelationProjectRoleEntity(
-                projectId, userId,  role.getId(), "user");
+				role.getOrgId(), projectId, userId,  role.getId(), "user");
         saveOrUpdate(relation);
         return true;
 	}
@@ -147,7 +147,7 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 	    if (prjId == null) {
             return map;
         }
-		List<Object[]> ls = getDao().getListBySQL("{call get_project_privilege_for_user(?,?,?)}", userId, prjId, orgId);
+		List<Object[]> ls = getDao().getListBySQL("{call get_project_privilege_by_project_for_user(?,?,?)}", userId, prjId, orgId);
 		for (Object[] arr : ls) {
 			map.put(arr[0].toString() + "-" + arr[1].toString(), true);
 		}

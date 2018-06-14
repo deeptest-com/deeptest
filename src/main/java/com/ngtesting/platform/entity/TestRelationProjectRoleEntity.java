@@ -7,6 +7,9 @@ import javax.persistence.*;
 public class TestRelationProjectRoleEntity extends BaseEntity {
 	private static final long serialVersionUID = 5513768856000982338L;
 
+    @Column(name = "org_id")
+    private Long orgId;
+
 	@Column(name = "project_id")
 	private Long projectId;
 
@@ -26,7 +29,8 @@ public class TestRelationProjectRoleEntity extends BaseEntity {
     public TestRelationProjectRoleEntity() {
 
     }
-    public TestRelationProjectRoleEntity(Long projectId, Long entityId, Long projectRoleId, String type) {
+    public TestRelationProjectRoleEntity(Long orgId, Long projectId, Long entityId, Long projectRoleId, String type) {
+        this.orgId = orgId;
         this.projectId = projectId;
         this.entityId = entityId;
         this.projectRoleId = projectRoleId;
@@ -45,6 +49,14 @@ public class TestRelationProjectRoleEntity extends BaseEntity {
         public String toString() {
             return val;
         }
+    }
+
+    public Long getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(Long orgId) {
+        this.orgId = orgId;
     }
 
     public EntityType getType() {

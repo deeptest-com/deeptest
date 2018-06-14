@@ -1,22 +1,27 @@
 package com.ngtesting.platform.vo;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TestProjectVo extends BaseVo {
 	private static final long serialVersionUID = 8069068510875783820L;
 
 	private String name;
     private String descr;
     private Long orgId;
-    
+
     private Long parentId;
     private String type;
     private Integer order;
     private Integer childrenNumb;
 
 	private Boolean isLastestProjectGroup;
-    
+
     private Boolean selected = false;
     private Boolean selecting = false;
+
+	Map<String, Boolean> privs = new HashMap<>();
 
 	public Boolean getLastestProjectGroup() {
 		return isLastestProjectGroup;
@@ -24,6 +29,14 @@ public class TestProjectVo extends BaseVo {
 
 	public void setLastestProjectGroup(Boolean lastestProjectGroup) {
 		isLastestProjectGroup = lastestProjectGroup;
+	}
+
+	public Map<String, Boolean> getPrivs() {
+		return privs;
+	}
+
+	public void setPrivs(Map<String, Boolean> privs) {
+		this.privs = privs;
 	}
 
 	public String getName() {
@@ -51,7 +64,7 @@ public class TestProjectVo extends BaseVo {
 	public void setParentId(Long parentId) {
 		this.parentId = parentId;
 	}
-	
+
 	public String getType() {
 		return type;
 	}

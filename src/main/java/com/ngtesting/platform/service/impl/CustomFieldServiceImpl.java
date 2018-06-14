@@ -214,7 +214,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 
         List<TestProjectVo> vos = new LinkedList<TestProjectVo>();
         for (TestProject po1 : allProjects) {
-            TestProjectVo vo = projectService.genVo(po1);
+            TestProjectVo vo = projectService.genVo(po1, null);
 
             vo.setSelected(false);
             vo.setSelecting(false);
@@ -227,7 +227,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
             vos.add(vo);
 
             for (TestProject child : po1.getChildren()) {
-                TestProjectVo childVo = projectService.genVo(child);
+                TestProjectVo childVo = projectService.genVo(child, null);
 
                 for (TestProject item : projectsForField) {
                     if (child.getId().longValue() == item.getId().longValue()) {

@@ -24,8 +24,11 @@ public class SystemInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
         if (Constant.WEB_ROOT == null) {
-            Constant.WEB_ROOT = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/";
+            Constant.WEB_ROOT = request.getScheme() + "://" + request.getServerName() +
+                    (request.getServerPort() != 80? ":" + request.getServerPort() : "")
+                    + request.getContextPath() + "/";
         }
         if (Constant.WORK_DIR == null) {
             Constant.WORK_DIR = request.getSession().getServletContext().getRealPath("/");;

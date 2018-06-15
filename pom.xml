@@ -425,7 +425,7 @@
 				<configuration>
 					<url>${deploy.url}</url>
 					<server>tomcat7</server>
-					<path>/platform</path>
+					<path>/</path>
 					<update>true</update>
 				</configuration>
 			</plugin>

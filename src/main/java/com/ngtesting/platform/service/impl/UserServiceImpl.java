@@ -1,6 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.config.PropertyConfig;
 import com.ngtesting.platform.entity.TestOrg;
 import com.ngtesting.platform.entity.TestProject;
@@ -207,9 +208,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             String url;
             if (isNew) {
 				TestVerifyCode verifyCode = accountService.genVerifyCodePers(userPo.getId());
-                url = PropertyConfig.getConfig("url.reset.password") + "/" + verifyCode.getCode();
+                url = Constant.WEB_ROOT + PropertyConfig.getConfig("url.reset.password") + "/" + verifyCode.getCode();
             } else {
-                url = PropertyConfig.getConfig("url.login");
+                url = Constant.WEB_ROOT + PropertyConfig.getConfig("url.login");
             }
             map.put("url", url);
             mailService.sendTemplateMail("来自[" + sys + "]的邀请", "invite-user.ftl",

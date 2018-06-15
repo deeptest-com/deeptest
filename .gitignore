@@ -5,6 +5,5 @@
 src/main/webapp/WEB-INF/classes/
 /ngtesting-platform.iml
 /src/main/webapp/upload/data/
-/src/main/resources/prod/config.properties
 /xdoc/jira.pem
 /xdoc/jira.pub

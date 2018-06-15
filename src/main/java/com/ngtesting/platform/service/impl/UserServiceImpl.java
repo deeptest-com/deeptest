@@ -208,9 +208,17 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             String url;
             if (isNew) {
 				TestVerifyCode verifyCode = accountService.genVerifyCodePers(userPo.getId());
-                url = Constant.WEB_ROOT + PropertyConfig.getConfig("url.reset.password") + "/" + verifyCode.getCode();
+
+				url = PropertyConfig.getConfig("url.reset.password");
+				if (!url.startsWith("http")) {
+					url = Constant.WEB_ROOT + url;
+				}
+                url += "/" + verifyCode.getCode();
             } else {
-                url = Constant.WEB_ROOT + PropertyConfig.getConfig("url.login");
+                url = PropertyConfig.getConfig("url.login");
+				if (!url.startsWith("http")) {
+					url = Constant.WEB_ROOT + url;
+				}
             }
             map.put("url", url);
             mailService.sendTemplateMail("来自[" + sys + "]的邀请", "invite-user.ftl",

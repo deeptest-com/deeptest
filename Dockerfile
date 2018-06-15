@@ -25,7 +25,7 @@ WORKDIR /home/ngt/dev/project
 RUN rm -rf /home/ngt/dev/project/ngtesting-platform
 RUN git clone https://github.com/aaronchen2k/ngtesting-platform.git
 WORKDIR /home/ngt/dev/project/ngtesting-platform
-RUN mvn -Denv=dev clean package
+RUN mvn -Denv=prod clean package
 RUN rm -rf /home/ngt/dev/server/apache-tomcat-8.5.31/webapps/ngtesting*
 RUN cp target/ngtesting*.war /home/ngt/dev/server/apache-tomcat-8.5.31/webapps/platform.war
 

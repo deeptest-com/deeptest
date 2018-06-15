@@ -108,7 +108,12 @@ public class AccountAction extends BaseAction {
             Map<String, String> map = new HashMap<String, String>();
             map.put("name", user.getName());
             map.put("vcode", verifyCode.getCode());
-            map.put("url", Constant.WEB_ROOT + PropertyConfig.getConfig("url.login"));
+
+			String url = PropertyConfig.getConfig("url.login");
+			if (!url.startsWith("http")) {
+				url = Constant.WEB_ROOT + url;
+			}
+			map.put("url", url);
             mailService.sendTemplateMail("[\"" + sys + "\"]注册成功", "register-success.ftl", user.getEmail(), map);
             ret.put("msg", "注册成功，请访问您的邮箱进行登录");
             ret.put("code", RespCode.SUCCESS.getCode());
@@ -161,7 +166,13 @@ public class AccountAction extends BaseAction {
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("name", user.getName());
 			map.put("vcode", verifyCode.getCode());
-			map.put("url", Constant.WEB_ROOT + PropertyConfig.getConfig("url.reset.password"));
+
+			String url = PropertyConfig.getConfig("url.reset.password");
+			if (!url.startsWith("http")) {
+				url = Constant.WEB_ROOT + url;
+			}
+
+			map.put("url", url);
 			mailService.sendTemplateMail("[\"" + sys + "\"]忘记密码", "forgot-password.ftl", user.getEmail(), map);
 
 			ret.put("data", verifyCode);

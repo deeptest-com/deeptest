@@ -15,9 +15,9 @@ ENV PATH .:$MAVEN_HOME/bin:$PATH
 
 ENV CATALINA_HOME /home/ngt/dev/server/apache-tomcat-8.5.31
 
-EXPOSE 22
-EXPOSE 8080
-EXPOSE 3306
+# EXPOSE 22
+# EXPOSE 8080
+# EXPOSE 3306
 
 # RUN apt-get -y update
 
@@ -30,4 +30,4 @@ EXPOSE 3306
 # RUN cp target/ngtesting-platform-*.war /home/ngt/dev/server/apache-tomcat-8.5.31/webapps
 
 RUN chown -R mysql:mysql /var/lib/mysql /var/run/mysqld
-ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+#ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]

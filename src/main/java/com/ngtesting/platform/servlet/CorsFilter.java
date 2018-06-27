@@ -1,4 +1,4 @@
-package com.ngtesting.platform.config;
+package com.ngtesting.platform.servlet;
 
 import com.ngtesting.platform.utils.WebUtils;
 

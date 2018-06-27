@@ -1,5 +1,6 @@
 package com.ngtesting.platform.config;
 
+import com.ngtesting.platform.servlet.CorsFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

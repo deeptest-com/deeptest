@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping(value = "/account")
-public class AccountController {
+public class AccountContrl {
     @Autowired
     private AccountService accountService;
     @Autowired

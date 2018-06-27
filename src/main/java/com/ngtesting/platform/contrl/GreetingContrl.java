@@ -9,7 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.util.HtmlUtils;
 
 @Controller
-public class GreetingController {
+public class GreetingContrl {
 
     @Value("${mail.smtp.host}")
     private String mailHost;

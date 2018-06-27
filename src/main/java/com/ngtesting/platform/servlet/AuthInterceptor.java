@@ -1,7 +1,7 @@
 package com.ngtesting.platform.servlet;
 
 import com.alibaba.fastjson.JSON;
-import com.ngtesting.platform.utils.Constants;
+import com.ngtesting.platform.config.Constants;
 import com.ngtesting.platform.utils.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

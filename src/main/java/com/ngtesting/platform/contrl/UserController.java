@@ -2,6 +2,7 @@ package com.ngtesting.platform.contrl;
 
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.UserService;
+import com.ngtesting.platform.config.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Controller
-@RequestMapping(value = "/user")
+@RequestMapping(value=Constants.API_PATH_CLIENT + "/user")
 public class UserController {
     @Autowired
     private UserService userService;

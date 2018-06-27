@@ -1,4 +1,4 @@
-package com.ngtesting.platform;
+package com.ngtesting.platform.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

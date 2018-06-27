@@ -76,6 +76,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>webjars-locator-core</artifactId>
@@ -94,6 +95,11 @@
             <groupId>org.webjars</groupId>
             <artifactId>jquery</artifactId>
             <version>3.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.47</version>
         </dependency>
 
         <!-- 分页插件 -->

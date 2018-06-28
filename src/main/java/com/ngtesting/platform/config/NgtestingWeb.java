@@ -7,12 +7,14 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.multipart.MultipartResolver;
 
 @EnableAutoConfiguration(exclude = {MultipartAutoConfiguration.class})
 
 @SpringBootApplication
 @MapperScan("com.ngtesting.platform.dao")
+@ComponentScan(basePackages={"com.ngtesting.platform"})
 public class NgtestingWeb {
 
 	public static void main(String[] args) {
@@ -20,8 +22,7 @@ public class NgtestingWeb {
 	}
 
     @Bean(name = "multipartResolver")
-    public MultipartResolver multipartResolver()
-    {
+    public MultipartResolver multipartResolver() {
         CustomMultipartResolver customMultipartResolver = new CustomMultipartResolver();
         return customMultipartResolver;
     }

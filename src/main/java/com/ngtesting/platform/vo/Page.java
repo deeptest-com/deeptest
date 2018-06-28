@@ -1,6 +1,6 @@
 package com.ngtesting.platform.vo;
 
-import com.ngtesting.platform.config.Constants;
+import com.ngtesting.platform.config.Constant;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class Page<T> {
     /**
      * 分页大小
      */
-    private int limit = Constants.PAGE_SIZE;
+    private int limit = Constant.PAGE_SIZE;
 
     /**
      * 分页开始索引

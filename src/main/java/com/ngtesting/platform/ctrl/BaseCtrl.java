@@ -1,6 +1,6 @@
-package com.ngtesting.platform.contrl;
+package com.ngtesting.platform.ctrl;
 
-public class BaseContrl {
+public class BaseCtrl {
 
 //	public UserVo genRequest(HttpServletRequest request, JSONObject json) {
 //		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);

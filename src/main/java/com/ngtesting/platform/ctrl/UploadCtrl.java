@@ -1,6 +1,6 @@
-package com.ngtesting.platform.contrl;
+package com.ngtesting.platform.ctrl;
 
-import com.ngtesting.platform.config.Constants;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.service.intf.UserService;
 import com.ngtesting.platform.utils.FileUtil;
 import com.ngtesting.platform.vo.UserVo;
@@ -22,8 +22,8 @@ import java.util.UUID;
 
 
 @Controller
-@RequestMapping(Constants.API_PATH_CLIENT + "/")
-public class UploadContrl extends BaseContrl {
+@RequestMapping(Constant.API_PATH_CLIENT + "/")
+public class UploadCtrl extends BaseCtrl {
 	@Autowired
 	UserService userService;
 
@@ -33,7 +33,7 @@ public class UploadContrl extends BaseContrl {
             @RequestParam("file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constants.HTTP_SESSION_USER_KEY);
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Long orgId = userVo.getDefaultOrgId();
 
 		String origName = file.getOriginalFilename();
@@ -49,7 +49,7 @@ public class UploadContrl extends BaseContrl {
 		String fileSize = new DecimalFormat("##0.00").format(flt / 1000 / 1000);
 		ret.put("fileSize", fileSize + 'M');
 
-		ret.put("code", Constants.RespCode.SUCCESS.getCode());
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;
 	}

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Constants {
+public class Constant {
 
     // 配置项，初始化在 PropertyConfig.processProperties()
     public static String WORK_DIR;
@@ -19,15 +19,15 @@ public class Constants {
             "http://localhost:4200",
             "http://lab.dui.ai/",
             "http://116.62.17.31");
-    public static final String API_PATH_CLIENT = "api/client/v1/";
+    public static final String API_PATH_CLIENT = "/api/client/v1/";
 
-    public static final String API_PACKAGE_FOR_CLIENT = "com.ngtesting.platform.action";
+    public static final String API_PACKAGE_FOR_CLIENT = "com.ngtesting.platform.ctrl";
 
     // 上传目录
     public static final String FTP_UPLOAD_DIR = "upload/";
 
     public static String GetUploadDir() {
-        return Constants.WORK_DIR + FTP_UPLOAD_DIR;
+        return Constant.WORK_DIR + FTP_UPLOAD_DIR;
     }
 
     public static final int PAGE_SIZE = 20;

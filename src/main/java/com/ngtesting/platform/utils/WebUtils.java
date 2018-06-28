@@ -1,5 +1,7 @@
 package com.ngtesting.platform.utils;
 
+import com.ngtesting.platform.config.Constant;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +25,17 @@ public class WebUtils {
      * COOKIE MAX_AGE
      */
     private static final int COOKIE_MAX_AGE = 86400;
+
+    public static void InitWebContext(HttpServletRequest request) {
+        if (Constant.WEB_ROOT == null) {
+            Constant.WEB_ROOT = request.getScheme() + "://" + request.getServerName() +
+                    (request.getServerPort() != 80? ":" + request.getServerPort() : "")
+                    + request.getContextPath() + "/";
+        }
+        if (Constant.WORK_DIR == null) {
+            Constant.WORK_DIR = request.getSession().getServletContext().getRealPath("/");;
+        }
+    }
 
     /**
      * 获得系统servelet路径

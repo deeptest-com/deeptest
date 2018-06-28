@@ -1,6 +1,6 @@
 package com.ngtesting.platform.utils;
 
-import com.ngtesting.platform.config.Constants;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.vo.AiRunMlf;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,8 +24,8 @@ public class FileUtil {
     public static String SaveFile(MultipartFile file, String uploadRelativeDist, String fileName, boolean thumb) {
         String dateDist = DateUtil.GetDateNoSeparator();
 
-        String uploadPath = Constants.FTP_UPLOAD_DIR + uploadRelativeDist + dateDist + "/";
-        String localFolder = Constants.WORK_DIR + uploadPath;
+        String uploadPath = Constant.FTP_UPLOAD_DIR + uploadRelativeDist + dateDist + "/";
+        String localFolder = Constant.WORK_DIR + uploadPath;
 
         FileUtil.CreateDirIfNeeded(localFolder);
 

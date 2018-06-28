@@ -1,4 +1,4 @@
-package com.ngtesting.platform.contrl;
+package com.ngtesting.platform.ctrl;
 
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.AccountService;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping(value = "/account")
-public class AccountContrl {
+public class AccountCtrl {
     @Autowired
     private AccountService accountService;
     @Autowired

@@ -10,11 +10,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.MultipartResolver;
 
 @EnableAutoConfiguration(exclude = {MultipartAutoConfiguration.class})
 
 @SpringBootApplication
+@EnableTransactionManagement
 @MapperScan("com.ngtesting.platform.dao")
 @ComponentScan(basePackages={"com.ngtesting.platform"})
 public class AppLaunch {

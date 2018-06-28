@@ -6,4 +6,5 @@ public interface AccountDao {
 
     Integer register(TstUser record);
 
+    void initUser(Integer userId);
 }

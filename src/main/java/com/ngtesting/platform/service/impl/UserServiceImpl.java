@@ -14,7 +14,12 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    private UserDao userDao; //这里会报错，但是并不会影响
+    private UserDao userDao;
+
+    @Override
+    public TstUser getByToken(String token) {
+        return null;
+    }
 
     @Override
     public int addUser(TstUser user) {

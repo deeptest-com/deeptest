@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.ngtesting.platform.model.TstUser;
 
 public interface UserService {
+    TstUser getByToken(String token);
 
     int addUser(TstUser user);
 

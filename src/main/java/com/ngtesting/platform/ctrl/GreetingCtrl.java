@@ -14,8 +14,8 @@ public class GreetingCtrl {
     @Value("${mail.smtp.host}")
     private String mailHost;
 
-    @MessageMapping("/hello")
-    @SendTo("/topic/greetings")
+    @MessageMapping("/comm")
+    @SendTo("/topic/comm")
     public Greeting greeting(HelloMessage message) throws Exception {
         Thread.sleep(1000); // simulated delay
         return new Greeting("Hello, " + mailHost + ", " + HtmlUtils.htmlEscape(message.getName()) + "!");

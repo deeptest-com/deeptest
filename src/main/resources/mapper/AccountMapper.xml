@@ -9,4 +9,8 @@
           #{leftSizeCase},#{leftSizeIssue},#{defaultOrgId},#{defaultPrjId})
     </insert>
 
+    <select id="initUser" parameterType="INTEGER" useCache="false" statementType="CALLABLE">
+        { call init_user(#{userId,mode=IN,jdbcType=INTEGER}) }
+    </select>
+
 </mapper>

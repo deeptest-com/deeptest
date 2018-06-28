@@ -3,13 +3,12 @@ package com.ngtesting.platform.servlet;
 import com.alibaba.fastjson.JSON;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.AccountService;
 import com.ngtesting.platform.service.intf.UserService;
 import com.ngtesting.platform.utils.AuthPassport;
-import com.ngtesting.platform.utils.SpringContextHolder;
 import com.ngtesting.platform.utils.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
@@ -24,6 +23,9 @@ import java.util.Map;
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
     private Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -55,11 +57,9 @@ public class AuthInterceptor implements HandlerInterceptor {
             if (packageName.startsWith(Constant.API_PACKAGE_FOR_CLIENT)) {
                 if (!StringUtils.isEmpty(token)) {
                     // 登录验证
-                    AccountService accountService = SpringContextHolder.getBean(AccountService.class);
-                    UserService userService = SpringContextHolder.getBean(UserService.class);
+//                    UserService userService = SpringContextHolder.getBean(UserService.class);
 
-                    TstUser user = accountService.getByToken(token.trim());
-//                    UserVo userVo = userService.genVo(user);
+                    TstUser user = userService.getByToken(token.trim());
                     if (user != null) {
                         request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, user);
                         return true;

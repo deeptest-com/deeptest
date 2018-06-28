@@ -2,14 +2,13 @@ package com.ngtesting.platform.model;
 
 import java.util.Date;
 
-public class TstUser {
-    private Integer id;
+public class TstUser extends BaseModel {
 
     private String email;
     private String password;
     private String nickname;
     private String phone;
-    private String avatar;
+    private String avatar = "upload/sample/user/avatar.png";
 
     private String token;
     private Date lastLoginTime;
@@ -18,14 +17,6 @@ public class TstUser {
 
     private Integer defaultOrgId;
     private Integer defaultPrjId;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public String getEmail() {
         return email;

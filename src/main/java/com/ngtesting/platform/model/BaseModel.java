@@ -1,117 +1,62 @@
 package com.ngtesting.platform.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class BaseModel {
-    private Long id;
+public class BaseModel implements Serializable {
+    private Integer id;
 
-    private String email;
-    private String password;
-    private String name;
-    private String phone;
-    private String avatar;
+    protected Date createTime = new Date();
+    protected Date updateTime = new Date();
+    protected Boolean deleted = Boolean.FALSE;
+    protected Boolean disabled = Boolean.FALSE;
+    protected Integer version;
 
-    private String token;
-    private Date lastLoginTime;
-    private Integer leftSizeCase = 300;
-    private Integer leftSizeIssue = 200;
-
-    private Long defaultOrgId;
-    private Long defaultPrjId;
-
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getEmail() {
-        return email;
+    public Date getCreateTime() {
+        return createTime;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
-    public String getPhone() {
-        return phone;
+    public Date getUpdateTime() {
+        return updateTime;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 
-    public String getName() {
-        return name;
+    public Boolean getDeleted() {
+        return deleted;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
-    public String getPassword() {
-        return password;
+    public Boolean getDisabled() {
+        return disabled;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
     }
 
-    public String getToken() {
-        return token;
+    public Integer getVersion() {
+        return version;
     }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public Date getLastLoginTime() {
-        return lastLoginTime;
-    }
-
-    public void setLastLoginTime(Date lastLoginTime) {
-        this.lastLoginTime = lastLoginTime;
-    }
-
-    public Long getDefaultOrgId() {
-        return defaultOrgId;
-    }
-
-    public void setDefaultOrgId(Long defaultOrgId) {
-        this.defaultOrgId = defaultOrgId;
-    }
-
-    public Long getDefaultPrjId() {
-        return defaultPrjId;
-    }
-
-    public void setDefaultPrjId(Long defaultPrjId) {
-        this.defaultPrjId = defaultPrjId;
-    }
-
-    public Integer getLeftSizeCase() {
-        return leftSizeCase;
-    }
-
-    public void setLeftSizeCase(Integer leftSizeCase) {
-        this.leftSizeCase = leftSizeCase;
-    }
-
-    public Integer getLeftSizeIssue() {
-        return leftSizeIssue;
-    }
-
-    public void setLeftSizeIssue(Integer leftSizeIssue) {
-        this.leftSizeIssue = leftSizeIssue;
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 }

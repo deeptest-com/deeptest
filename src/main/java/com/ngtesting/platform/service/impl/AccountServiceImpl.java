@@ -21,7 +21,6 @@ public class AccountServiceImpl implements AccountService {
     @Transactional(propagation = Propagation.REQUIRED,isolation = Isolation.DEFAULT,timeout=36000,rollbackFor=Exception.class)
     @Override
     public TstUser register(TstUser user) {
-        user.setAvatar("upload/sample/user/avatar.png");
 
         accountDao.register(user);
         accountDao.initUser(user.getId());

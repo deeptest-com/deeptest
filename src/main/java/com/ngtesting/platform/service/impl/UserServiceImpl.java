@@ -17,20 +17,28 @@ public class UserServiceImpl implements UserService {
     private UserDao userDao;
 
     @Override
-    public TstUser getByToken(String token) {
-        return null;
-    }
-
-    @Override
-    public int addUser(TstUser user) {
-        return userDao.insert(user);
-    }
-
-    @Override
-    public PageInfo<TstUser> findAllUser(int pageNum, int pageSize) {
+    public PageInfo<TstUser> query(int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
-        List<TstUser> userDomains = userDao.selectUsers();
+        List<TstUser> userDomains = userDao.query();
         PageInfo result = new PageInfo(userDomains);
         return result;
     }
+
+    @Override
+    public TstUser get(Integer id) {
+        TstUser user = userDao.get(id);
+        return user;
+    }
+
+    @Override
+    public TstUser getByToken(String token) {
+        TstUser user = userDao.getByToken(token);
+        return user;
+    }
+
+    @Override
+    public void update(TstUser record) {
+        userDao.update(record);
+    }
+
 }

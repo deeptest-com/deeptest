@@ -5,10 +5,8 @@ import com.ngtesting.platform.model.TstUser;
 import java.util.List;
 
 public interface UserDao {
-
-    Integer insert(TstUser record);
-
-    List<TstUser> selectUsers();
+    List<TstUser> query();
     TstUser get(Integer userId);
-
+    TstUser getByToken(String token);
+    void update(TstUser record);
 }

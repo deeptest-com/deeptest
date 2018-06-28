@@ -2,7 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.UserDao" >
 
-    <sql id="BASE_COLUMN">
+    <select id="query" resultType="TstUser"> <!-- resultMap="UserResult" -->
+        SELECT * FROM tstUser
+    </select>
+
+    <select id="get" parameterType="INTEGER" resultType="TstUser">
+        SELECT * FROM TstUser WHERE id = #{id}
+    </select>
+
+    <select id="getByToken" parameterType="string" resultType="TstUser">
+        SELECT * FROM TstUser WHERE token = #{token}
+    </select>
+
+    <update id="update" parameterType="TstUser">
+        UPDATE STUDENTS
+        SET EMAIL=#{email}, name=#{name}
+        WHERE userId=#{id}
+    </update>
+
+
+<!--    <sql id="BASE_COLUMN">
         userId,email,password,name,phone,avatar,token,leftSizeCase,leftSizeIssue,
         defaultOrgId,defaultPrjId,
     </sql>
@@ -11,50 +30,12 @@
         <id property="id" column="id" />
         <result property="email" column="email" />
         <result property="password" column="password" />
-        <result property="name" column="name" />
-        <result property="phone" column="phone" />
-        <result property="avatar" column="avatar" />
-        <result property="token" column="token" />
-        <result property="leftSizeCase" column="leftSizeCase" />
-        <result property="leftSizeIssue" column="leftSizeIssue" />
-        <result property="defaultOrgId" column="defaultOrgId" />
-        <result property="defaultPrjId" column="defaultPrjId" />
-        <result property="lastLoginTime" column="lastLoginTime" />
     </resultMap>
 
-    <insert id="insert" parameterType="TstUser">
-        INSERT INTO TstUser
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            email,password,name,phone,avatar,token,leftSizeCase,leftSizeIssue,
-            defaultOrgId,defaultPrjId,lastLoginTime
-<!--            <if test="lastLoginTime != null">
-                lastLoginTime,
-            </if>-->
-        </trim>
-        <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
-            #{email},#{password},#{name},#{phone},#{avatar},#{token},#{leftSizeCase},#{leftSizeIssue},
-            #{defaultOrgId},#{defaultPrjId},#{lastLoginTime},
-
-<!--            <if test="lastLoginTime != null">
-                #{lastLoginTime, jdbcType=DATE},
-            </if>-->
-        </trim>
-    </insert>
-
-    <update id="update" parameterType="TstUser">
-      UPDATE STUDENTS
-        SET EMAIL=#{email}, name=#{name}
-      WHERE userId=#{id}
-    </update>
-
-    <select id="select" resultType="TstUser"> <!-- resultMap="UserResult" -->
+    <select id="select" resultType="TstUser"> &lt;!&ndash; resultMap="UserResult" &ndash;&gt;
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM tstUser
-    </select>
-
-    <select id="get" parameterType="int" resultType="TstUser">
-        SELECT * FROM TstUser WHERE id = #{id}
-    </select>
+    </select>-->
 
 </mapper>

@@ -4,9 +4,11 @@
 
     <insert id="register" parameterType="TstUser" useGeneratedKeys="true" keyProperty="id">
         insert into TstUser (email,password,nickname,phone,avatar,token,
-          leftSizeCase,leftSizeIssue,defaultOrgId,defaultPrjId)
+          leftSizeCase,leftSizeIssue,defaultOrgId,defaultPrjId,
+          deleted,disabled,createTime)
         values (#{email},#{password},#{nickname},#{phone},#{avatar},#{token},
-          #{leftSizeCase},#{leftSizeIssue},#{defaultOrgId},#{defaultPrjId})
+          #{leftSizeCase},#{leftSizeIssue},#{defaultOrgId},#{defaultPrjId},
+          #{deleted},#{disabled},#{createTime})
     </insert>
 
     <select id="initUser" parameterType="INTEGER" useCache="false" statementType="CALLABLE">

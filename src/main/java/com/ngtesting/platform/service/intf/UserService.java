@@ -4,10 +4,12 @@ import com.github.pagehelper.PageInfo;
 import com.ngtesting.platform.model.TstUser;
 
 public interface UserService {
+    PageInfo<TstUser> query(int pageNum, int pageSize);
+
+    TstUser get(Integer id);
+
     TstUser getByToken(String token);
 
-    int addUser(TstUser user);
-
-    PageInfo<TstUser> findAllUser(int pageNum, int pageSize);
+    void update(TstUser record);
 
 }

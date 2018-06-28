@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Controller
 @RequestMapping(value = Constant.API_PATH_CLIENT + "/user")
@@ -67,28 +66,24 @@ public class UserCtrl {
     }
 
     @ResponseBody
-    @PostMapping("/add")
-    public int addUser(TstUser user){
-        return userService.addUser(user);
-    }
-
-    @ResponseBody
-    @GetMapping("/all")
-    public Object findAllUser(
+    @GetMapping("/query")
+    public Object query(
             @RequestParam(name = "pageNum", required = false, defaultValue = "1")
                     int pageNum,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10")
                     int pageSize){
-        return userService.findAllUser(pageNum,pageSize);
+        return userService.query(pageNum, pageSize);
     }
 
     @ResponseBody
-    @RequestMapping("/info")
-    public Object info() {
-        Map<String,Object> model = new HashMap<String,Object>();
-        model.put("id", UUID.randomUUID().toString());
-        model.put("content", "Hello World");
-        return model;
+    @RequestMapping("/get")
+    public Object get(@RequestBody Integer id) {
+        Map<String, Object> ret = new HashMap();
+        TstUser po = userService.get(id);
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        ret.put("data", po);
+        return ret;
     }
 
 }

@@ -2,17 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.UserDao" >
 
-    <sql id="BASE_TABLE">
-        tst_user
-    </sql>
-
     <sql id="BASE_COLUMN">
         userId,email,password,name,phone,avatar,token,leftSizeCase,leftSizeIssue,
         defaultOrgId,defaultPrjId,
     </sql>
 
     <resultMap id="UserResult" type="TstUser">
-        <id property="userId" column="userId" />
+        <id property="id" column="id" />
         <result property="email" column="email" />
         <result property="password" column="password" />
         <result property="name" column="name" />
@@ -27,8 +23,7 @@
     </resultMap>
 
     <insert id="insert" parameterType="TstUser">
-        INSERT INTO
-        <include refid="BASE_TABLE"/>
+        INSERT INTO TstUser
         <trim prefix="(" suffix=")" suffixOverrides=",">
             email,password,name,phone,avatar,token,leftSizeCase,leftSizeIssue,
             defaultOrgId,defaultPrjId,lastLoginTime
@@ -55,12 +50,11 @@
     <select id="select" resultType="TstUser"> <!-- resultMap="UserResult" -->
         SELECT
         <include refid="BASE_COLUMN"/>
-        FROM
-        <include refid="BASE_TABLE"/>
+        FROM tstUser
     </select>
 
     <select id="get" parameterType="int" resultType="TstUser">
-        SELECT * FROM TstUser WHERE ID = #{id}
+        SELECT * FROM TstUser WHERE id = #{id}
     </select>
 
 </mapper>

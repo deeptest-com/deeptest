@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 @RequestMapping(value = Constant.API_PATH_CLIENT + "/account")
 public class AccountCtrl {
@@ -20,9 +23,13 @@ public class AccountCtrl {
     @AuthPassport(validate=false)
     @ResponseBody
     @PostMapping("/register")
-    public TstUser register(@RequestBody TstUser user){
+    public Map register(@RequestBody TstUser user){
+        Map<String, Object> ret = new HashMap();
         TstUser po = accountService.register(user);
-        return po;
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        ret.put("data", po);
+        return ret;
     }
 
     @AuthPassport(validate=false)

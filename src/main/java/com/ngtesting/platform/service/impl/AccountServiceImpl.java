@@ -24,8 +24,8 @@ public class AccountServiceImpl implements AccountService {
         user.setAvatar("upload/sample/user/avatar.png");
 
         accountDao.register(user);
-        accountDao.initUser(user.getUserId());
-        TstUser po = userDao.get(user.getUserId());
+        accountDao.initUser(user.getId());
+        TstUser po = userDao.get(user.getId());
         return po;
     }
 

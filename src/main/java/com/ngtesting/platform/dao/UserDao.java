@@ -9,6 +9,6 @@ public interface UserDao {
     Integer insert(TstUser record);
 
     List<TstUser> selectUsers();
-    TstUser get(Integer id);
+    TstUser get(Integer userId);
 
 }

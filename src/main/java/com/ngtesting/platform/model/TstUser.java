@@ -3,7 +3,7 @@ package com.ngtesting.platform.model;
 import java.util.Date;
 
 public class TstUser {
-    private Integer userId;
+    private Integer id;
 
     private String email;
     private String password;
@@ -19,12 +19,12 @@ public class TstUser {
     private Integer defaultOrgId;
     private Integer defaultPrjId;
 
-    public Integer getUserId() {
-        return userId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getEmail() {

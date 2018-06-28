@@ -5,6 +5,7 @@ import com.ngtesting.platform.config.Constants;
 import com.ngtesting.platform.utils.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class AuthInterceptor implements HandlerInterceptor {
     private Logger logger = LoggerFactory.getLogger(getClass());
 

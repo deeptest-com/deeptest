@@ -45,7 +45,6 @@ pagehelper:
     returnPageInfo: check
 
 mail:
-  name: ngtesting
   smtp:
     host: smtp.qq.com
     auth: true
@@ -56,3 +55,8 @@ mail:
     encoding: UTF-8
     username: 3193472405@qq.com
     password: dkwmlkquhjbzdgje
+sys:
+  name: ngtesting
+  url:
+    login: http://localhost:4200/#/login
+    resetPassword: http://localhost:4200/#/reset-password

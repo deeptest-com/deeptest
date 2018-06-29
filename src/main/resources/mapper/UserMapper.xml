@@ -10,8 +10,11 @@
         SELECT * FROM TstUser WHERE id = #{id}
     </select>
 
+    <select id="getByEmail" parameterType="string" resultType="TstUser">
+        SELECT * FROM TstUser WHERE email = #{email} LIMIT 1;
+    </select>
     <select id="getByToken" parameterType="string" resultType="TstUser">
-        SELECT * FROM TstUser WHERE token = #{token}
+        SELECT * FROM TstUser WHERE token = #{token} LIMIT 1;
     </select>
 
     <update id="update" parameterType="TstUser">

@@ -76,11 +76,6 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 		return null;
 	}
 
-    @Override
-    public void createDefaultBasicDataPers(TstUser user) {
-//        getDao().querySql("{call init_user(?)}", user.getId());
-    }
-
 	@Override
 	public TstOrg save(TstOrg vo, Integer userId) {
 //		if (vo == null) {

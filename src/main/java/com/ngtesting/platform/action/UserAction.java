@@ -65,7 +65,7 @@ public class UserAction {
     }
 
     @ResponseBody
-    @GetMapping("/query")
+    @PostMapping("/query")
     public Object query(
             @RequestParam(name = "pageNum", required = false, defaultValue = "1")
                     int pageNum,

@@ -1,7 +1,6 @@
 package com.ngtesting.platform.service;
 
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.model.TstVerifyCode;
 
 public interface AccountService {
     TstUser register(TstUser user);
@@ -12,7 +11,7 @@ public interface AccountService {
     boolean checkResetPassword(String verifyCode);
     TstUser resetPasswordPers(String verifyCode, String password);
 
-    TstVerifyCode genVerifyCode(Integer userId);
+    String genVerifyCode(TstUser user);
     TstUser getByToken(String token);
     TstUser getByPhone(String token);
     TstUser getByEmail(String email);

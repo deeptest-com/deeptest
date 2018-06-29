@@ -15,4 +15,9 @@
         { call init_user(#{userId,mode=IN,jdbcType=INTEGER}) }
     </select>
 
+    <insert id="genVerifyCode" parameterType="Map" useGeneratedKeys="true" keyProperty="id">
+        insert into TstVerifyCode (refId,code,expireTime,createTime,deleted,disabled)
+        values (#{userId},#{code},#{expireTime},#{createTime},false,false)
+    </insert>
+
 </mapper>

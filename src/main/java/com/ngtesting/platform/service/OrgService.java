@@ -20,8 +20,6 @@ public interface OrgService extends BaseService {
 
 	TstOrg genVo(TstOrg po);
 
-	void createDefaultBasicDataPers(TstUser user);
-
     TstOrg save(TstOrg vo, Integer userId);
 
 	void setDefaultPers(Integer orgId, TstUser user);

@@ -1,9 +1,9 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.TstProjectRole;
-import com.ngtesting.platform.service.inf.ProjectPrivilegeService;
-import com.ngtesting.platform.service.inf.ProjectRolePriviledgeRelationService;
-import com.ngtesting.platform.service.inf.ProjectRoleService;
+import com.ngtesting.platform.service.ProjectPrivilegeService;
+import com.ngtesting.platform.service.ProjectRolePriviledgeRelationService;
+import com.ngtesting.platform.service.ProjectRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

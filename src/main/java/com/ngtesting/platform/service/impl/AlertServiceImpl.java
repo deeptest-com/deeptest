@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.TstAlert;
 import com.ngtesting.platform.model.TstRun;
-import com.ngtesting.platform.service.inf.AlertService;
+import com.ngtesting.platform.service.AlertService;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;

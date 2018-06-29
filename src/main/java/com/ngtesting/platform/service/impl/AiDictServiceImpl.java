@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.AiDict;
-import com.ngtesting.platform.service.inf.AiDictService;
+import com.ngtesting.platform.service.AiDictService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;

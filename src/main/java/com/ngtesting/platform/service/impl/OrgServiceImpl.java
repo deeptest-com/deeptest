@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.TstOrg;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.inf.*;
+import com.ngtesting.platform.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,19 +18,19 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
     @Autowired
 	OrgRoleService orgRoleService;
     @Autowired
-	OrgGroupService orgGroupService;
+    OrgGroupService orgGroupService;
 	@Autowired
-	CaseExeStatusService caseExeStatusService;
+    CaseExeStatusService caseExeStatusService;
 	@Autowired
-	CasePriorityService casePriorityService;
+    CasePriorityService casePriorityService;
 	@Autowired
-	CaseTypeService caseTypeService;
+    CaseTypeService caseTypeService;
 	@Autowired
 	RelationProjectRoleEntityService relationProjectRoleEntityService;
     @Autowired
     ProjectPrivilegeService projectPrivilegeService;
 	@Autowired
-	OrgRolePrivilegeService orgRolePrivilegeService;
+    OrgRolePrivilegeService orgRolePrivilegeService;
 
 	@Override
 	public List<TstOrg> list(String keywords, String disabled, Integer userId) {

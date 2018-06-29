@@ -2,8 +2,8 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.TstCaseAttachment;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.inf.CaseAttachmentService;
-import com.ngtesting.platform.service.inf.CaseService;
+import com.ngtesting.platform.service.CaseAttachmentService;
+import com.ngtesting.platform.service.CaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -3,7 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.TstEnv;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.inf.EnvService;
+import com.ngtesting.platform.service.EnvService;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;

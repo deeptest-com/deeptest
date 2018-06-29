@@ -4,7 +4,7 @@ import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.model.TstOrg;
 import com.ngtesting.platform.model.TstProjectAccessHistory;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.inf.*;
+import com.ngtesting.platform.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSett
 //    @Autowired
 //    SysPrivilegeService sysPrivilegeService;
     @Autowired
-    OrgRolePrivilegeService orgRolePrivilegeService;
+OrgRolePrivilegeService orgRolePrivilegeService;
     @Autowired
     ProjectPrivilegeService projectPrivilegeService;
     @Autowired

@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.TstCasePriority;
-import com.ngtesting.platform.service.inf.IssueQueryService;
+import com.ngtesting.platform.service.IssueQueryService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

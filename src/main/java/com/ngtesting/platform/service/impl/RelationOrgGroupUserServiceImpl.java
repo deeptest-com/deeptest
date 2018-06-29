@@ -2,8 +2,8 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.TstOrgGroup;
 import com.ngtesting.platform.model.TstRelationOrgGroupUser;
-import com.ngtesting.platform.service.inf.RelationOrgGroupUserService;
-import com.ngtesting.platform.service.inf.UserService;
+import com.ngtesting.platform.service.RelationOrgGroupUserService;
+import com.ngtesting.platform.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

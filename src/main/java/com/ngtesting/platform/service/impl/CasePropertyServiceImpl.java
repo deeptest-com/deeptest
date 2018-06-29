@@ -1,6 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.service.inf.CasePropertyService;
+import com.ngtesting.platform.service.CasePropertyService;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;

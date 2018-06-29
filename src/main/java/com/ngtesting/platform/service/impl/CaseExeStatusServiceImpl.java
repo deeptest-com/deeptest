@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.TstCaseExeStatus;
-import com.ngtesting.platform.service.inf.CaseExeStatusService;
+import com.ngtesting.platform.service.CaseExeStatusService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -5,9 +5,9 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstCase;
 import com.ngtesting.platform.model.TstCaseHistory;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.inf.CaseAttachmentService;
-import com.ngtesting.platform.service.inf.CaseCommentsService;
-import com.ngtesting.platform.service.inf.CaseService;
+import com.ngtesting.platform.service.CaseAttachmentService;
+import com.ngtesting.platform.service.CaseCommentsService;
+import com.ngtesting.platform.service.CaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.TstProjectPrivilegeDefine;
 import com.ngtesting.platform.model.TstProjectRolePriviledgeRelation;
-import com.ngtesting.platform.service.inf.ProjectPrivilegeService;
+import com.ngtesting.platform.service.ProjectPrivilegeService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;

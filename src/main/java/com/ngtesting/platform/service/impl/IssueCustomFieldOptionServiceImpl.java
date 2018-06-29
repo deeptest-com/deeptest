@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.TstCustomFieldOption;
-import com.ngtesting.platform.service.inf.IssueCustomFieldOptionService;
+import com.ngtesting.platform.service.IssueCustomFieldOptionService;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;

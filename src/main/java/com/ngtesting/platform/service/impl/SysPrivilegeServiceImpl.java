@@ -1,6 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.service.inf.SysPrivilegeService;
+import com.ngtesting.platform.service.SysPrivilegeService;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;

@@ -2,8 +2,8 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.TstRelationProjectRoleEntity;
-import com.ngtesting.platform.service.inf.ProjectPrivilegeService;
-import com.ngtesting.platform.service.inf.RelationProjectRoleEntityService;
+import com.ngtesting.platform.service.ProjectPrivilegeService;
+import com.ngtesting.platform.service.RelationProjectRoleEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

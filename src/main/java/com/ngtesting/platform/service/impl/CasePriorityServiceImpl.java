@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.TstCasePriority;
-import com.ngtesting.platform.service.inf.CasePriorityService;
+import com.ngtesting.platform.service.CasePriorityService;
 import com.ngtesting.platform.utils.BeanUtilEx;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.AiAsrLangModel;
-import com.ngtesting.platform.service.inf.AiAsrLangModelService;
+import com.ngtesting.platform.service.AiAsrLangModelService;
 import com.ngtesting.platform.utils.BeanUtilEx;
 import org.springframework.stereotype.Service;
 

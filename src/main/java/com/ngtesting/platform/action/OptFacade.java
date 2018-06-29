@@ -1,8 +1,8 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.service.inf.AlertService;
-import com.ngtesting.platform.service.inf.MsgService;
+import com.ngtesting.platform.service.AlertService;
+import com.ngtesting.platform.service.MsgService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.inf.HistoryService;
+import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.utils.BeanUtilEx;
 import org.springframework.stereotype.Service;
 

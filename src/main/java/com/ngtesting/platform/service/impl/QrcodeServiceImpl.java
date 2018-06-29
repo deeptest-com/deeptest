@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.service.inf.QrcodeService;
+import com.ngtesting.platform.service.QrcodeService;
 import org.springframework.stereotype.Service;
 
 import java.awt.image.BufferedImage;

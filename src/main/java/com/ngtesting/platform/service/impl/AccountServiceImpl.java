@@ -4,7 +4,7 @@ import com.ngtesting.platform.dao.AccountDao;
 import com.ngtesting.platform.dao.UserDao;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.model.TstVerifyCode;
-import com.ngtesting.platform.service.inf.AccountService;
+import com.ngtesting.platform.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;

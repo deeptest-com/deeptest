@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.TstCustomFieldOption;
-import com.ngtesting.platform.service.inf.CustomFieldOptionService;
+import com.ngtesting.platform.service.CustomFieldOptionService;
 import com.ngtesting.platform.utils.BeanUtilEx;
 import org.springframework.stereotype.Service;
 

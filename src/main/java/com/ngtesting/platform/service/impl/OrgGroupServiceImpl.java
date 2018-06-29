@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.ngtesting.platform.model.TstOrgGroup;
-import com.ngtesting.platform.service.inf.OrgGroupService;
+import com.ngtesting.platform.service.OrgGroupService;
 import com.ngtesting.platform.vo.Page;
 import org.springframework.stereotype.Service;
 

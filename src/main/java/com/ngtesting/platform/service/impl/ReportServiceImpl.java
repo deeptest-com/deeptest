@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstProject;
-import com.ngtesting.platform.service.inf.ReportService;
+import com.ngtesting.platform.service.ReportService;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

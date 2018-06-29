@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 
-import com.ngtesting.platform.service.inf.IssueWorkflowService;
+import com.ngtesting.platform.service.IssueWorkflowService;
 import org.springframework.stereotype.Service;
 
 @Service

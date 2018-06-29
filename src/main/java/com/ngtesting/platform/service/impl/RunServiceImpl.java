@@ -6,10 +6,10 @@ import com.ngtesting.platform.model.TstCaseInRun;
 import com.ngtesting.platform.model.TstRun;
 import com.ngtesting.platform.model.TstSuite;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.inf.AlertService;
-import com.ngtesting.platform.service.inf.HistoryService;
-import com.ngtesting.platform.service.inf.MsgService;
-import com.ngtesting.platform.service.inf.RunService;
+import com.ngtesting.platform.service.AlertService;
+import com.ngtesting.platform.service.HistoryService;
+import com.ngtesting.platform.service.MsgService;
+import com.ngtesting.platform.service.RunService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

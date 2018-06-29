@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.Document;
-import com.ngtesting.platform.service.inf.DocumentService;
+import com.ngtesting.platform.service.DocumentService;
 import com.ngtesting.platform.utils.BeanUtilEx;
 import com.ngtesting.platform.vo.Page;
 import com.sun.tools.doclets.formats.html.markup.DocType;

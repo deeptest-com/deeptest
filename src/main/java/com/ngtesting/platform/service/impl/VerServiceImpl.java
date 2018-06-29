@@ -3,7 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.model.TstVer;
-import com.ngtesting.platform.service.inf.VerService;
+import com.ngtesting.platform.service.VerService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

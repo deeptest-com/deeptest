@@ -1,6 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.service.inf.AiProductBranchService;
+import com.ngtesting.platform.service.AiProductBranchService;
 import com.ngtesting.platform.model.AiProductBranch;
 import org.springframework.stereotype.Service;
 

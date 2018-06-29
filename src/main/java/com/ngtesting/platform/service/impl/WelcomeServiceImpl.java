@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.SysNums;
-import com.ngtesting.platform.service.inf.WelcomeService;
+import com.ngtesting.platform.service.WelcomeService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

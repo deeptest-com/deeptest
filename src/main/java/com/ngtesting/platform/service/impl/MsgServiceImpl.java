@@ -4,7 +4,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstMsg;
 import com.ngtesting.platform.model.TstRun;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.inf.MsgService;
+import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.vo.Page;
 import org.springframework.stereotype.Service;
 

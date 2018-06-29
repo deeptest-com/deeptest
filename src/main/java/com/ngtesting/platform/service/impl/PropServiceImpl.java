@@ -1,6 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.service.inf.PropService;
+import com.ngtesting.platform.service.PropService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.service.inf.MailService;
+import com.ngtesting.platform.service.MailService;
 import org.springframework.stereotype.Service;
 
 import java.io.File;

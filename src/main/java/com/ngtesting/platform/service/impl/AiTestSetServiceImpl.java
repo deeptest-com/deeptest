@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.AiTestSet;
-import com.ngtesting.platform.service.inf.AiTestSetService;
+import com.ngtesting.platform.service.AiTestSetService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

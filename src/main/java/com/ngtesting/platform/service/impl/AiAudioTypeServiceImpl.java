@@ -1,6 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.service.inf.AiAudioTypeService;
+import com.ngtesting.platform.service.AiAudioTypeService;
 import com.ngtesting.platform.model.AiAudioType;
 import org.springframework.stereotype.Service;
 

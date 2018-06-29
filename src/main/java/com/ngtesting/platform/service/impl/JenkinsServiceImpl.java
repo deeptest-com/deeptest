@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.ngtesting.platform.model.AiTestTask;
-import com.ngtesting.platform.service.inf.JenkinsService;
+import com.ngtesting.platform.service.JenkinsService;
 import com.ngtesting.platform.vo.AiRun;
 import com.ngtesting.platform.vo.AiRunEnvi;
 import com.ngtesting.platform.vo.AiRunMlf;

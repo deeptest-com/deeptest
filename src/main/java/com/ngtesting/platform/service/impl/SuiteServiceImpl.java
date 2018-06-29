@@ -1,24 +1,18 @@
 package com.ngtesting.platform.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstCaseInSuite;
 import com.ngtesting.platform.model.TstSuite;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.inf.HistoryService;
-import com.ngtesting.platform.service.inf.MsgService;
-import com.ngtesting.platform.service.inf.ProjectService;
-import com.ngtesting.platform.service.inf.SuiteService;
-import com.ngtesting.platform.utils.BeanUtilEx;
+import com.ngtesting.platform.service.HistoryService;
+import com.ngtesting.platform.service.MsgService;
+import com.ngtesting.platform.service.ProjectService;
+import com.ngtesting.platform.service.SuiteService;
 import com.ngtesting.platform.vo.Page;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @Service

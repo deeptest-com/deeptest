@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.TstCaseType;
-import com.ngtesting.platform.service.inf.CaseTypeService;
+import com.ngtesting.platform.service.CaseTypeService;
 import com.ngtesting.platform.utils.BeanUtilEx;
 import org.springframework.stereotype.Service;
 

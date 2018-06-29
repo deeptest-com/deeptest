@@ -1,6 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.service.inf.CommonService;
+import com.ngtesting.platform.service.CommonService;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.TstOrgPrivilege;
 import com.ngtesting.platform.model.TstOrgRole;
-import com.ngtesting.platform.service.inf.OrgRoleService;
+import com.ngtesting.platform.service.OrgRoleService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

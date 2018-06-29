@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.TstCaseComments;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.inf.CaseCommentsService;
+import com.ngtesting.platform.service.CaseCommentsService;
 import org.springframework.stereotype.Service;
 
 @Service

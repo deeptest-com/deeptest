@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.TstOrgPrivilege;
-import com.ngtesting.platform.service.inf.OrgRolePrivilegeService;
+import com.ngtesting.platform.service.OrgRolePrivilegeService;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;

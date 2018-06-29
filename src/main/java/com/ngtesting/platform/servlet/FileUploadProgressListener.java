@@ -1,6 +1,6 @@
 package com.ngtesting.platform.servlet;
 
-import com.ngtesting.platform.vo.ProgressVo;
+import com.ngtesting.platform.model.Progress;
 import org.apache.commons.fileupload.ProgressListener;
 import org.springframework.stereotype.Component;
 
@@ -13,13 +13,13 @@ public class FileUploadProgressListener implements ProgressListener {
 
     public void setSession(HttpSession session) {
         this.session = session;
-        ProgressVo progressEntity = new ProgressVo();
+        Progress progressEntity = new Progress();
         session.setAttribute("status", progressEntity);
     }
 
     @Override
     public void update(long bytesRead, long contentLength, int items) {
-        ProgressVo status = (ProgressVo) session.getAttribute("status");
+        Progress status = (Progress) session.getAttribute("status");
         status.setBytesRead(bytesRead);
         status.setContentLength(contentLength);
         status.setItems(items);

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class BaseModel implements Serializable {
-    private Integer id;
+    protected Integer id;
 
     protected Date createTime = new Date();
     protected Date updateTime = new Date();

@@ -2,8 +2,8 @@ package com.ngtesting.platform.ctrl;
 
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.AccountService;
-import com.ngtesting.platform.service.intf.UserService;
+import com.ngtesting.platform.model.TstVerifyCode;
+import com.ngtesting.platform.service.inf.*;
 import com.ngtesting.platform.utils.AuthPassport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,17 +18,45 @@ public class AccountCtrl {
     @Autowired
     private AccountService accountService;
     @Autowired
+    private OrgService orgService;
+    @Autowired
     private UserService userService;
+
+    @Autowired
+    private PropService propService;
+    @Autowired
+    private MailService mailService;
 
     @AuthPassport(validate=false)
     @ResponseBody
     @PostMapping("/register")
-    public Map register(@RequestBody TstUser user){
+    public Map register(@RequestBody TstUser json){
         Map<String, Object> ret = new HashMap();
-        TstUser po = accountService.register(user);
+        TstUser user = accountService.register(json);
 
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        ret.put("data", po);
+        if (user != null) {
+            orgService.createDefaultBasicDataPers(user);
+
+            TstVerifyCode verifyCode = accountService.genVerifyCode(user.getId());
+            String sys = propService.getSysName();
+
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("name", user.getNickname());
+            map.put("vcode", verifyCode.getCode());
+
+            String url = propService.getUrlLogin();
+            if (!url.startsWith("http")) {
+                url = Constant.WEB_ROOT + url;
+            }
+            map.put("url", url);
+            mailService.sendTemplateMail("[\"" + sys + "\"]注册成功", "register-success.ftl", user.getEmail(), map);
+            ret.put("msg", "注册成功，请访问您的邮箱进行登录");
+            ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        } else {
+            ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
+            ret.put("msg", "邮箱已存在");
+        }
+
         return ret;
     }
 

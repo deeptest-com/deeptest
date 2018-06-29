@@ -1,9 +1,9 @@
 package com.ngtesting.platform.ctrl;
 
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.service.intf.UserService;
+import com.ngtesting.platform.service.inf.UserService;
 import com.ngtesting.platform.utils.FileUtil;
-import com.ngtesting.platform.vo.UserVo;
+import com.ngtesting.platform.model.TstUser;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,8 +33,8 @@ public class UploadCtrl extends BaseCtrl {
             @RequestParam("file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		Long orgId = userVo.getDefaultOrgId();
+		TstUser TstUser = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Integer orgId = TstUser.getDefaultOrgId();
 
 		String origName = file.getOriginalFilename();
 		String extName = FilenameUtils.getExtension(origName);

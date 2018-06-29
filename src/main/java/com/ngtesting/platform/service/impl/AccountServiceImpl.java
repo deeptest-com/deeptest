@@ -4,7 +4,7 @@ import com.ngtesting.platform.dao.AccountDao;
 import com.ngtesting.platform.dao.UserDao;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.model.TstVerifyCode;
-import com.ngtesting.platform.service.intf.AccountService;
+import com.ngtesting.platform.service.inf.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -39,7 +39,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean changePassword(Long userId, String oldPassword, String password) {
+    public boolean changePassword(Integer userId, String oldPassword, String password) {
         return false;
     }
 
@@ -54,7 +54,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public TstVerifyCode genVerifyCode(Long userId) {
+    public TstVerifyCode genVerifyCode(Integer userId) {
         return null;
     }
 

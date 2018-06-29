@@ -3,7 +3,7 @@ package com.ngtesting.platform.servlet;
 import com.alibaba.fastjson.JSON;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.UserService;
+import com.ngtesting.platform.service.inf.UserService;
 import com.ngtesting.platform.utils.AuthPassport;
 import com.ngtesting.platform.utils.WebUtils;
 import org.slf4j.Logger;

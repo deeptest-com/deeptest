@@ -3,8 +3,8 @@ package com.ngtesting.platform.ctrl;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.UserService;
-import com.ngtesting.platform.vo.UserVo;
+import com.ngtesting.platform.service.inf.UserService;
+import com.ngtesting.platform.model.TstUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -24,21 +24,21 @@ public class UserCtrl {
     public Map<String, Object> getProfile(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//        Long orgId = userVo.getDefaultOrgId();
-//        Long prjId = userVo.getDefaultPrjId();
+        TstUser TstUser = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+//        Long orgId = TstUser.getDefaultOrgId();
+//        Long prjId = TstUser.getDefaultPrjId();
 //
 //        Long orgIdNew = json.getLong("orgId");
 //        Long prjIdNew = json.getLong("prjId");
 //
 //        if (orgIdNew != null && orgIdNew.longValue() != orgId.longValue()) { // org不能为空
-//            orgService.setDefaultPers(orgId, userVo);
+//            orgService.setDefaultPers(orgId, TstUser);
 //        }
 //        if (prjIdNew != null && (prjId == null || prjIdNew.longValue() != prjId.longValue())) { // prj可能为空
-//            projectService.viewPers(prjIdNew, userVo);
+//            projectService.viewPers(prjIdNew, TstUser);
 //        }
 //
-//        Long userId = userVo.getId();
+//        Long userId = TstUser.getId();
 //
 //        Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userId);
 //        ret.put("sysPrivileges", sysPrivileges);
@@ -46,7 +46,7 @@ public class UserCtrl {
 //        List<OrgVo> orgs = orgService.listVo(null, "false", userId);
 //        ret.put("myOrgs", orgs);
 //
-//        Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(userVo.getId(), orgId);
+//        Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(TstUser.getId(), orgId);
 //        ret.put("orgPrivileges", orgPrivileges);
 //
 //        Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
@@ -54,12 +54,12 @@ public class UserCtrl {
 //
 //        List<TestProjectAccessHistoryVo> recentProjects = projectService.listRecentProjectVo(orgId, userId);
 //        ret.put("recentProjects", recentProjects);
-//        userVo.setDefaultPrjId(recentProjects.size() > 0?recentProjects.get(0).getProjectId(): null);
+//        TstUser.setDefaultPrjId(recentProjects.size() > 0?recentProjects.get(0).getProjectId(): null);
 //
 //        Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUserPers(userId, prjId, orgId);
 //        ret.put("prjPrivileges", prjPrivileges);
 
-        ret.put("profile", userVo);
+        ret.put("profile", TstUser);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
         return ret;

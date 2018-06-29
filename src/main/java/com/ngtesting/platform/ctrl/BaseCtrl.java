@@ -2,17 +2,17 @@ package com.ngtesting.platform.ctrl;
 
 public class BaseCtrl {
 
-//	public UserVo genRequest(HttpServletRequest request, JSONObject json) {
-//		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+//	public TstUser genRequest(HttpServletRequest request, JSONObject json) {
+//		TstUser TstUser = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 //
 //		if (json.getLong("orgId") == null) {
-//			json.put("orgId", userVo.getDefaultOrgId());
+//			json.put("orgId", TstUser.getDefaultOrgId());
 //		}
 //		if (json.getLong("projectId") == null) {
-//			json.put("projectId", userVo.getDefaultPrjId());
+//			json.put("projectId", TstUser.getDefaultPrjId());
 //		}
 //
-//		return userVo;
+//		return TstUser;
 //	}
 
 //	public boolean parameIsEmpty(String... params) {

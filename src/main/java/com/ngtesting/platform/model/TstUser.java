@@ -16,7 +16,70 @@ public class TstUser extends BaseModel {
     private Integer leftSizeIssue = 200;
 
     private Integer defaultOrgId;
+    private String defaultOrgName;
     private Integer defaultPrjId;
+    private String defaultPrjName;
+
+    private Boolean selected;
+    private Boolean selecting;
+
+    private String type = "user";
+
+    public Integer getDefaultOrgId() {
+        return defaultOrgId;
+    }
+
+    public void setDefaultOrgId(Integer defaultOrgId) {
+        this.defaultOrgId = defaultOrgId;
+    }
+
+    public String getDefaultOrgName() {
+        return defaultOrgName;
+    }
+
+    public void setDefaultOrgName(String defaultOrgName) {
+        this.defaultOrgName = defaultOrgName;
+    }
+
+    public Integer getDefaultPrjId() {
+        return defaultPrjId;
+    }
+
+    public void setDefaultPrjId(Integer defaultPrjId) {
+        this.defaultPrjId = defaultPrjId;
+    }
+
+    public String getDefaultPrjName() {
+        return defaultPrjName;
+    }
+
+    public void setDefaultPrjName(String defaultPrjName) {
+        this.defaultPrjName = defaultPrjName;
+    }
+
+    public Boolean getSelected() {
+        return selected;
+    }
+
+    public void setSelected(Boolean selected) {
+        this.selected = selected;
+    }
+
+    public Boolean getSelecting() {
+        return selecting;
+    }
+
+    public void setSelecting(Boolean selecting) {
+        this.selecting = selecting;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getEmail() {
         return email;
@@ -72,22 +135,6 @@ public class TstUser extends BaseModel {
 
     public void setLastLoginTime(Date lastLoginTime) {
         this.lastLoginTime = lastLoginTime;
-    }
-
-    public Integer getDefaultOrgId() {
-        return defaultOrgId;
-    }
-
-    public void setDefaultOrgId(Integer defaultOrgId) {
-        this.defaultOrgId = defaultOrgId;
-    }
-
-    public Integer getDefaultPrjId() {
-        return defaultPrjId;
-    }
-
-    public void setDefaultPrjId(Integer defaultPrjId) {
-        this.defaultPrjId = defaultPrjId;
     }
 
     public Integer getLeftSizeCase() {

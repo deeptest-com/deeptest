@@ -6,7 +6,7 @@
         SELECT * FROM tstUser
     </select>
 
-    <select id="get" parameterType="INTEGER" resultType="TstUser">
+    <select id="get" parameterType="int" resultType="TstUser">
         SELECT * FROM TstUser WHERE id = #{id}
     </select>
 

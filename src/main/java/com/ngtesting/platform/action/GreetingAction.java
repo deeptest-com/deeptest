@@ -1,4 +1,4 @@
-package com.ngtesting.platform.ctrl;
+package com.ngtesting.platform.action;
 
 import com.ngtesting.platform.vo.Greeting;
 import com.ngtesting.platform.vo.HelloMessage;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.util.HtmlUtils;
 
 @Controller
-public class GreetingCtrl {
+public class GreetingAction {
 
     @Value("${mail.smtp.host}")
     private String mailHost;

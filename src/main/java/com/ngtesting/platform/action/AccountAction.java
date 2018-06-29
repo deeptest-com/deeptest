@@ -1,4 +1,4 @@
-package com.ngtesting.platform.ctrl;
+package com.ngtesting.platform.action;
 
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstUser;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping(value = Constant.API_PATH_CLIENT + "/account")
-public class AccountCtrl {
+public class AccountAction {
     @Autowired
     private AccountService accountService;
     @Autowired

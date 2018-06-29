@@ -1,4 +1,4 @@
-package com.ngtesting.platform.ctrl;
+package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.service.inf.AlertService;

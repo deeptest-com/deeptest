@@ -1,6 +1,6 @@
-package com.ngtesting.platform.ctrl;
+package com.ngtesting.platform.action;
 
-public class BaseCtrl {
+public class BaseAction {
 
 //	public TstUser genRequest(HttpServletRequest request, JSONObject json) {
 //		TstUser TstUser = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);

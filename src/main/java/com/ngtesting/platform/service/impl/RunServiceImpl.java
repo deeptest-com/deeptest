@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.ctrl.OptFacade;
+import com.ngtesting.platform.action.OptFacade;
 import com.ngtesting.platform.model.TstCaseInRun;
 import com.ngtesting.platform.model.TstRun;
 import com.ngtesting.platform.model.TstSuite;

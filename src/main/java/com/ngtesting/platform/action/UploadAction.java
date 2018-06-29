@@ -1,4 +1,4 @@
-package com.ngtesting.platform.ctrl;
+package com.ngtesting.platform.action;
 
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.service.inf.UserService;
@@ -23,7 +23,7 @@ import java.util.UUID;
 
 @Controller
 @RequestMapping(Constant.API_PATH_CLIENT + "/")
-public class UploadCtrl extends BaseCtrl {
+public class UploadAction extends BaseAction {
 	@Autowired
 	UserService userService;
 

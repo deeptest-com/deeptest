@@ -21,7 +21,7 @@ public class Constant {
             "http://116.62.17.31");
     public static final String API_PATH_CLIENT = "/api/client/v1/";
 
-    public static final String API_PACKAGE_FOR_CLIENT = "com.ngtesting.platform.ctrl";
+    public static final String API_PACKAGE_FOR_CLIENT = "com.ngtesting.platform.action";
 
     // 上传目录
     public static final String FTP_UPLOAD_DIR = "upload/";

@@ -4,7 +4,6 @@ import com.ngtesting.platform.model.Document;
 import com.ngtesting.platform.service.DocumentService;
 import com.ngtesting.platform.utils.BeanUtilEx;
 import com.ngtesting.platform.vo.Page;
-import com.sun.tools.doclets.formats.html.markup.DocType;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -14,7 +13,7 @@ import java.util.List;
 public class DocumentServiceImpl extends BaseServiceImpl implements DocumentService {
 
 	@Override
-	public Page listByPage(Integer eventId, Integer currentPage, Integer itemsPerPage, DocType type) {
+	public Page listByPage(Integer eventId, Integer currentPage, Integer itemsPerPage, Document.DocType type) {
 //        DetachedCriteria dc = DetachedCriteria.forClass(Document.class);
 //        dc.add(Restrictions.eq("eventId", eventId));
 //

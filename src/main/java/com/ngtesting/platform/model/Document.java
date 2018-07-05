@@ -11,6 +11,23 @@ public class Document extends BaseModel {
     private Long eventId;
     private Long authorId;
 
+	public static enum DocType {
+		file("file"),
+		audio("audio"),
+		video("video"),
+		image("image"),
+		link("link");
+
+		private DocType(String textVal) {
+			this.textVal = textVal;
+		}
+
+		private String textVal;
+		public String toString() {
+			return textVal;
+		}
+	}
+
 	public String getDescr() {
 		return descr;
 	}

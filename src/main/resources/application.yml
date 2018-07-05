@@ -60,7 +60,3 @@ sys:
   url:
     login: http://localhost:4200/#/login
     resetPassword: http://localhost:4200/#/reset-password
-
-logging:
-  level:
-    com.ngtesting.platform.dao: debug

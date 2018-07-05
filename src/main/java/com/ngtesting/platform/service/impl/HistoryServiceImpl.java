@@ -97,7 +97,7 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
 
 	@Override
 	public List<TstHistory> genVos(List<TstHistory> pos) {
-        List<TstHistory> vos = new LinkedList<>();
+        List<TstHistory> vos = new LinkedList();
 
         for (TstHistory po: pos) {
 			TstHistory vo = genVo(po);

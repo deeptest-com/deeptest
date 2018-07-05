@@ -24,12 +24,12 @@ public class UserAction {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser TstUser = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//        Long orgId = TstUser.getDefaultOrgId();
-//        Long prjId = TstUser.getDefaultPrjId();
-//
-//        Long orgIdNew = json.getLong("orgId");
-//        Long prjIdNew = json.getLong("prjId");
-//
+        Integer orgId = TstUser.getDefaultOrgId();
+        Integer prjId = TstUser.getDefaultPrjId();
+
+        Integer orgIdNew = json.getInteger("orgId");
+        Integer prjIdNew = json.getInteger("prjId");
+
 //        if (orgIdNew != null && orgIdNew.longValue() != orgId.longValue()) { // org不能为空
 //            orgService.setDefaultPers(orgId, TstUser);
 //        }

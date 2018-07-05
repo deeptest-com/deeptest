@@ -1,56 +1,39 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.dao.AlertDao;
 import com.ngtesting.platform.model.TstAlert;
 import com.ngtesting.platform.model.TstRun;
 import com.ngtesting.platform.service.AlertService;
+import com.ngtesting.platform.utils.DateUtil;
+import com.ngtesting.platform.utils.StringUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 @Service
 public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
+    @Autowired
+    private AlertDao alertDao;
+
     @Override
     public List<TstAlert> list(Integer userId, Boolean isRead) {
-        List<TstAlert> pos = scanTestAlert(userId);
+        List<TstAlert> pos = scanAlerts(userId);
         List<TstAlert> vos = genVos(pos);
 
         return vos;
     }
 
     @Override
-    public List<TstAlert> scanTestAlert(Integer userId) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstAlert.class);
-//
-//        Date now = new Date();
-//        Date startTimeOfToday = DateUtils.GetStartTimeOfDay(now);
-//        Date endTimeOfToday = DateUtils.GetEndTimeOfDay(now);
-//
-//        dc.add(
-//            Restrictions.or(
-//                // 今天开始
-//                Restrictions.and(
-//                        Restrictions.isNotNull("startTime"),
-//                        Restrictions.ge("startTime", startTimeOfToday),
-//                        Restrictions.le("startTime", endTimeOfToday)),
-//                // 今天结束
-//                Restrictions.and(
-//                        Restrictions.isNotNull("endTime"),
-//                        Restrictions.ge("endTime", startTimeOfToday),
-//                        Restrictions.le("endTime", endTimeOfToday))
-//            )
-//        );
-//
-//        dc.add(Restrictions.eq("userId", userId));
-////        dc.add(Restrictions.eq("isRead", false));
-//
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//
-//        dc.addOrder(Order.asc("startTime"));
-//
-//        List<TstAlert> pos = findAllByCriteria(dc);
-        return null;
+    public List<TstAlert> scanAlerts(Integer userId) {
+        Date now = new Date();
+        Date startTimeOfToday = DateUtil.GetStartTimeOfDay(now);
+        Date endTimeOfToday = DateUtil.GetEndTimeOfDay(now);
+        List<TstAlert> alerts = alertDao.scanAlerts(userId, startTimeOfToday, endTimeOfToday);
+
+        return alerts;
     }
 
     @Override
@@ -66,32 +49,21 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
 
     @Override
     public TstAlert genVo(TstAlert po) {
-        TstAlert vo = new TstAlert();
-//        BeanUtilEx.copyProperties(vo, po);
-//        vo.setName(po.getEntityName());
-//
-//        TestUser user = (TestUser)get(TestUser.class, po.getUserId());
-//        TestUser assignee = (TestUser)get(TestUser.class, po.getAssigneeId());
-//        vo.setUserName(user.getName());
-//        vo.setUserAvatar(user.getAvatar());
-//
-//        vo.setAssigneeName(assignee.getName());
-//        vo.setAssigneeAvatar(assignee.getAvatar());
-//
-//        Date now = new Date();
-//        Long startTimeOfToday = DateUtils.GetStartTimeOfDay(now).getTime();
-//        Long endTimeOfToday = DateUtils.GetEndTimeOfDay(now).getTime();
-//
-//        Date startTime = po.getStartTime();
-//        Date endTime = po.getEndTime();
-//
-//        if (endTime != null && endTime.getTime() >= startTimeOfToday && endTime.getTime() <= endTimeOfToday) {
-//            vo.setTitle("测试集" + StringUtil.highlightDict(vo.getName()) + "完成");
-//        } else {
-//            vo.setTitle("测试集" + StringUtil.highlightDict(vo.getName()) + "开始");
-//        }
 
-        return vo;
+        Date now = new Date();
+        Long startTimeOfToday = DateUtil.GetStartTimeOfDay(now).getTime();
+        Long endTimeOfToday = DateUtil.GetEndTimeOfDay(now).getTime();
+
+        Date startTime = po.getStartTime();
+        Date endTime = po.getEndTime();
+
+        if (endTime != null && endTime.getTime() >= startTimeOfToday && endTime.getTime() <= endTimeOfToday) {
+            po.setTitle("任务" + StringUtil.highlightDict(po.getName()) + "完成");
+        } else {
+            po.setTitle("任务" + StringUtil.highlightDict(po.getName()) + "开始");
+        }
+
+        return po;
     }
     @Override
     public void saveAlert(TstRun run) {

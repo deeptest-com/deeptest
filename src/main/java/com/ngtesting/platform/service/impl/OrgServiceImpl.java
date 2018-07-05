@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@Service(value = "orgService")
 public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 
 	@Autowired

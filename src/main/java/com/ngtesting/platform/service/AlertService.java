@@ -9,7 +9,7 @@ public interface AlertService extends BaseService {
 
     List<TstAlert> list(Integer userId, Boolean isRead);
 
-    List<TstAlert> scanTestAlert(Integer userId);
+    List<TstAlert> scanAlerts(Integer userId);
 
     void saveAlert(TstRun run);
 

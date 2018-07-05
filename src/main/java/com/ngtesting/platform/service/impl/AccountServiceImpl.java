@@ -14,10 +14,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service(value = "accountService")
 public class AccountServiceImpl implements AccountService {
@@ -66,8 +63,17 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public TstUser login(String mobile, String password, Boolean rememberMe) {
-        return null;
+    public TstUser login(String email, String password, Boolean rememberMe) {
+        TstUser user = userDao.getByEmailAndPassword(email, password);
+        if (user == null) {
+            return user;
+        }
+
+        String newToken = UUID.randomUUID().toString();
+        accountDao.login(user.getId(), newToken, new Date());
+        user.setToken(newToken);
+
+        return user;
     }
 
     @Override

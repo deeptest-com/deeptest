@@ -4,7 +4,7 @@ import com.ngtesting.platform.model.TstUser;
 
 public interface AccountService {
     TstUser register(TstUser user);
-    TstUser login(String mobile, String password, Boolean rememberMe);
+    TstUser login(String email, String password, Boolean rememberMe);
     TstUser logout(String email);
     boolean changePassword(Integer userId, String oldPassword, String password);
 

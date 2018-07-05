@@ -2,6 +2,8 @@ package com.ngtesting.platform.model;
 
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class TstProject extends BaseModel {
@@ -21,10 +23,10 @@ public class TstProject extends BaseModel {
     private Boolean selected = false;
     private Boolean selecting = false;
 
+    List<TstProject> children = new LinkedList();
 	Map<String, Boolean> privs = new HashMap<>();
 
 	public static enum ProjectType {
-		org("org"),
 		group("group"),
 		project("project");
 
@@ -113,4 +115,11 @@ public class TstProject extends BaseModel {
 		this.selecting = selecting;
 	}
 
+    public List<TstProject> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<TstProject> children) {
+        this.children = children;
+    }
 }

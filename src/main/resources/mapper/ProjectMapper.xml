@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.ProjectDao" >
+
+    <resultMap id="projectMaps" type="TstProject">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="descr" property="descr"/>
+        <result column="parentId" property="parentId"/>
+        <result column="type" property="type"/>
+
+        <collection property="children" ofType="TstProject" select="getChildren"
+                    column="{id=id,keywords=keywords,disabled=disabled">
+        </collection>
+    </resultMap>
+
+    <select id="query" resultMap="projectMaps">
+        SELECT #{keywords} as keywords,
+               #{disabled} as disabled,
+               id,name,descr,parentId,type FROM TstProject p WHERE p.orgId=#{orgId} AND p.type='group'
+        <if test="keywords != null and keywords != ''">
+            AND p.name LIKE CONCAT('%','${keywords}','%' )
+        </if>
+        <if test="disabled != null and disabled != ''">
+            AND p.disabled = #{disabled}
+        </if>
+    </select>
+    <select id="getChildren" parameterType="Map" resultType="TstProject">
+      SELECT * FROM TstProject c WHERE c.parentId = #{id} AND c.type='project'
+        <if test="keywords != null and keywords != ''">
+            AND c.name LIKE CONCAT('%','${keywords}','%' )
+        </if>
+        <if test="disabled != null and disabled != ''">
+            AND c.disabled = #{disabled}
+        </if>
+    </select>
+
+    <select id="getProjectPrivilegeByOrgForUser" resultType="Map" useCache="false" statementType="CALLABLE">
+        { call get_project_privilege_by_org_for_user(#{userId,mode=IN,jdbcType=INTEGER},#{orgId,mode=IN,jdbcType=INTEGER}) }
+    </select>
+
+</mapper>

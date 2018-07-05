@@ -1,37 +1,28 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.dao.MsgDao;
 import com.ngtesting.platform.model.TstMsg;
 import com.ngtesting.platform.model.TstRun;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.vo.Page;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
+    @Autowired
+    private MsgDao msgDao;
 
     @Override
     public List<TstMsg> list(Integer userId, Boolean isRead) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstMsg.class);
-//
-//        dc.add(Restrictions.eq("userId", userId));
-//        if (isRead != null) {
-//            dc.add(Restrictions.eq("isRead", isRead));
-//        }
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//
-//        dc.addOrder(Order.desc("createTime"));
-//
-//        List<TstMsg> pos = findAllByCriteria(dc);
-//        List<TstMsg> vos = genVos(pos);
-//
-//        return vos;
 
-        return null;
+        List<TstMsg> msgs = msgDao.query(userId, false);
+
+        return msgs;
     }
 
 	@Override

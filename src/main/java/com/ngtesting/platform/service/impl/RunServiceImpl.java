@@ -1,7 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.action.OptFacade;
 import com.ngtesting.platform.model.TstCaseInRun;
 import com.ngtesting.platform.model.TstRun;
 import com.ngtesting.platform.model.TstSuite;
@@ -18,8 +17,6 @@ import java.util.List;
 
 @Service
 public class RunServiceImpl extends BaseServiceImpl implements RunService {
-    @Autowired
-    private OptFacade optFacade;
 
     @Autowired
     MsgService msgService;

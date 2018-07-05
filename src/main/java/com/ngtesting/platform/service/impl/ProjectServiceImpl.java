@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstProjectAccessHistory;
 import com.ngtesting.platform.model.TstUser;
@@ -7,12 +8,12 @@ import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.ProjectPrivilegeService;
 import com.ngtesting.platform.service.ProjectService;
-import com.ngtesting.platform.utils.BeanUtilEx;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -24,37 +25,35 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
     @Autowired
 	HistoryService historyService;
-//	@Autowired
-//	private ProjectDao projectDao;
+	@Autowired
+	private ProjectDao projectDao;
     @Autowired
     private CaseService caseService;
     @Autowired
 	ProjectPrivilegeService projectPrivilegeService;
 
 	@Override
-	public List<TstProject> listVos(Integer orgId, Integer userId, String keywords, String disabled) {
-//		Map<String, Map<String, Boolean>> privMap = new HashMap();
-//		List<Object[]> ls = getDao().getListBySQL("{call get_project_privilege_by_org_for_user(?,?)}",
-//				userId, orgId);
-//		for (Object[] arr : ls) {
-//		    if (privMap.get(arr[0].toString()) == null) {
-//                privMap.put(arr[0].toString(), new HashMap());
-//            }
-//
-//			String str = arr[1].toString() + "-" + arr[2].toString();
-//            privMap.get(arr[0].toString()).put(str, true);
-//		}
-//
-//		List<TstProject> pos = list(orgId, keywords, disabled);
-//		List<TstProject> vos = this.genVos(pos, keywords, disabled, privMap);
-//
-//		return vos;
+	public List<TstProject> list(Integer orgId, Integer userId, String keywords, Boolean disabled) {
+		Map<String, Map<String, Boolean>> privMap = new HashMap();
+        List<Map<String, String>> projectPrivs = projectDao.getProjectPrivilegeByOrgForUser(userId, orgId);
+        for (Map<String, String> map : projectPrivs) {
+		    if (privMap.get(map.get("projectId")) == null) {
+		        String prjId = map.get("projectId");
+                privMap.put(prjId, new HashMap());
+            }
 
-		return null;
+			String str = map.get("code") + "-" + map.get("action");
+            privMap.get(map.get("projectId").toString()).put(str, true);
+		}
+
+        List<TstProject> pos = projectDao.query(orgId, keywords, disabled);
+		List<TstProject> vos = this.genVos(pos, privMap);
+
+		return vos;
 	}
 
 	@Override
-	public List<TstProject> list(Integer orgId, String keywords, String disabled) {
+	public List<TstProject> list(Integer orgId, String keywords, Boolean disabled) {
 //		DetachedCriteria dc = DetachedCriteria.forClass(TstProject.class);
 //
 //		dc.add(Restrictions.eq("orgId", orgId));
@@ -354,45 +353,6 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	}
 
     @Override
-    public List<TstProject> genVos(List<TstProject> pos, Map<String, Map<String, Boolean>> privMap) {
-        return this.genVos(pos, null, null, privMap);
-    }
-    @Override
-    public List<TstProject> genVos(List<TstProject> pos, String keywords, String disabled, Map<String, Map<String, Boolean>> privMap) {
-//        List<TstProject> voList = new LinkedList<TstProject>();
-//        for (TstProject po : pos) {
-//            TstProject vo = genVo(po, privMap);
-//            voList.add(vo);
-//
-//            List<TstProject> voList2 = new LinkedList<TstProject>();
-//            List<TstProject> children = po.getChildren();
-//            boolean childCanView = false;
-//            for (TstProject child : children) {
-//                if ( (StringUtil.IsEmpty(keywords) || child.getName().toLowerCase().indexOf(keywords.toLowerCase()) > -1)
-//                        && ( StringUtil.IsEmpty(disabled) || child.getDisabled() == Boolean.valueOf(disabled)) ) {
-//                    TstProject childVo = genVo(child, privMap);
-//                    voList2.add(childVo);
-//
-//                    if (childVo.getPrivs() != null
-//                            && childVo.getPrivs().get("project-view") != null
-//                            && childVo.getPrivs().get("project-view") ) {
-//                        childCanView = true;
-//                    }
-//                }
-//            }
-//            vo.setChildrenNumb(voList2.size());
-//            voList.addAll(voList2);
-//
-//            if (childCanView) {
-//                vo.getPrivs().put("project-view", true);
-//            }
-//        }
-
-//        return voList;
-
-		return null;
-    }
-    @Override
     public List<TstProject> genGroupVos(List<TstProject> pos) {
         List<TstProject> voList = new LinkedList<TstProject>();
 //        for (TstProject po : pos) {
@@ -404,21 +364,42 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
     }
 
     @Override
+    public List<TstProject> genVos(List<TstProject> pos, Map<String, Map<String, Boolean>> privMap) {
+        List<TstProject> voList = new LinkedList<>();
+        for (TstProject po : pos) {
+            voList.add(po);
+            List<TstProject> children = po.getChildren();
+            boolean childCanView = false;
+            for (TstProject child : children) {
+                child = genVo(child, privMap);
+
+                if (child.getPrivs() != null
+                        && child.getPrivs().get("project-view") != null
+                        && child.getPrivs().get("project-view") ) {
+                    childCanView = true;
+                }
+                voList.add(child);
+            }
+            po.setChildrenNumb(po.getChildren().size());
+
+            if (childCanView) {
+                po.getPrivs().put("project-view", true);
+            }
+        }
+
+        return voList;
+    }
+    @Override
     public TstProject genVo(TstProject po, Map<String, Map<String, Boolean>> privMap) {
         if (po == null) {
             return null;
         }
-        TstProject vo = new TstProject();
-        BeanUtilEx.copyProperties(vo, po);
-        if (po.getParentId() == null) {
-            vo.setParentId(null);
-        }
 
         if (privMap != null && privMap.get(po.getId().toString()) != null) {
-            vo.setPrivs(privMap.get(po.getId().toString()));
+            po.setPrivs(privMap.get(po.getId().toString()));
         }
 
-        return vo;
+        return po;
     }
 
 }

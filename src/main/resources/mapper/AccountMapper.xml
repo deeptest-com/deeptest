@@ -10,6 +10,11 @@
           #{leftSizeCase},#{leftSizeIssue},#{defaultOrgId},#{defaultPrjId},
           #{deleted},#{disabled},#{createTime})
     </insert>
+    <update id="login">
+        UPDATE TstUser
+          SET token=#{token}, lastLoginTime=#{lastLoginTime}
+          WHERE id=#{id}
+    </update>
 
     <select id="initUser" parameterType="INTEGER" useCache="false" statementType="CALLABLE">
         { call init_user(#{userId,mode=IN,jdbcType=INTEGER}) }

@@ -9,7 +9,8 @@ import java.util.Map;
 
 public interface ProjectService extends BaseService {
 
-	List<TstProject> listVos(Integer orgId, Integer userId, String keywords, String disabled);
+	List<TstProject> list(Integer orgId, Integer userId, String keywords, Boolean disabled);
+	List<TstProject> list(Integer orgId, String keywords, Boolean disabled);
 	List<TstProject> listProjectGroups(Integer orgId);
 
 	TstProject getDetail(Integer id);
@@ -22,7 +23,6 @@ public interface ProjectService extends BaseService {
 	List<TstProjectAccessHistory> listRecentProjectVo(Integer orgId, Integer userId);
 
 	TstProject viewPers(Integer projectId, TstUser userVo);
-	List<TstProject> list(Integer orgId, String keywords, String disabled);
 
     void updateNameInHisotyPers(Integer projectId, Integer userId);
 
@@ -31,7 +31,6 @@ public interface ProjectService extends BaseService {
 	boolean isLastestProjectGroup(Integer orgId, Integer projectGroupId);
 
 	TstProject genVo(TstProject po, Map<String, Map<String, Boolean>> privs);
-	List<TstProject> genVos(List<TstProject> pos, String keywords, String disabled, Map<String, Map<String, Boolean>> privs);
 	List<TstProject> genVos(List<TstProject> pos, Map<String, Map<String, Boolean>> privs);
 	List<TstProject> genGroupVos(List<TstProject> pos);
 	TstProjectAccessHistory genHistoryVo(TstProjectAccessHistory po);

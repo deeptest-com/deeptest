@@ -13,6 +13,10 @@
     <select id="getByEmail" parameterType="string" resultType="TstUser">
         SELECT * FROM TstUser WHERE email = #{email} LIMIT 1;
     </select>
+    <select id="getByEmailAndPassword" resultType="TstUser">
+        SELECT * FROM TstUser WHERE email = #{email} AND password=#{password} LIMIT 1;
+    </select>
+
     <select id="getByToken" parameterType="string" resultType="TstUser">
         SELECT * FROM TstUser WHERE token = #{token} LIMIT 1;
     </select>

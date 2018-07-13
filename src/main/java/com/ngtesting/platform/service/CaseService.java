@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public interface CaseService extends BaseService {
 
@@ -34,11 +35,11 @@ public interface CaseService extends BaseService {
 
 	TestCase save(JSONObject json, UserVo user);
 
-	String export(Long projectId);
+	String exportPers(Long projectId);
 
-	void writeHeader(Sheet sheet, Integer rowCount, XSSFCellStyle cellStyle);
+	Integer writeHeader(Sheet sheet, Integer rowCount, XSSFCellStyle cellStyle);
 
-	void writeTestCase(TestCase testCase, Sheet sheet, Integer rowCount, XSSFCellStyle cellStyle);
+	Integer writeTestCase(TestCase testCase, Sheet sheet, Long topId, Integer rowCount, AtomicInteger level, XSSFCellStyle cellStyle);
 
     void updateParentIfNeededPers(Long pid);
 

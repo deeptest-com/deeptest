@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
@@ -407,7 +408,10 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	}
 
     @Override
-    public String export(Long projectId) {
+    public String exportPers(Long projectId) {
+
+	    getDao().querySql("{call fix_is_leaf_issue_for_case(?)}", projectId);
+
         DetachedCriteria dc = DetachedCriteria.forClass(TestCase.class);
 
         if (projectId != null) {
@@ -422,8 +426,10 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         dc.addOrder(Order.asc("ordr"));
 
         String fileName = UUID.randomUUID().toString() + ".xlsx";
-        String fileDir = Constant.WORK_DIR + Constant.FTP_UPLOAD_DIR + "/export/";
-        String filePath = fileDir + fileName;
+        String fileDir = Constant.FTP_UPLOAD_DIR + "export/";
+        String fileRelatPath = fileDir + fileName;
+        String filePath = Constant.WORK_DIR + fileDir + fileName;
+
         FileUtils.CreateDirIfNeeded(fileDir);
 
         XSSFWorkbook wb = new XSSFWorkbook();
@@ -435,7 +441,9 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         sheet.setColumnWidth(3, 16 * 256);
         sheet.setColumnWidth(4, 16 * 256);
 
-        int rowCount = 0;
+        Long topId = null;
+        Integer rowCount = 0;
+        AtomicInteger level = new AtomicInteger(0);
 
         XSSFCellStyle cellStyle = wb.createCellStyle();
         Font fontStyle = wb.createFont();
@@ -449,11 +457,14 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 //        cellStyle.setBorderRight(BorderStyle.THIN);
 //        cellStyle.setBorderTop(BorderStyle.THIN);
 
-        writeHeader(sheet, rowCount++, cellStyle);
+        rowCount = writeHeader(sheet, rowCount, cellStyle);
 
         List<TestCase> pos = findAllByCriteria(dc);
         for (TestCase testCase : pos) {
-            writeTestCase(testCase, sheet, rowCount, cellStyle);
+            if (topId == null) {
+                topId = testCase.getId();
+            }
+            rowCount = writeTestCase(testCase, sheet, topId, rowCount, level, cellStyle);
         }
 
         try {
@@ -463,12 +474,12 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             ex.printStackTrace();
         }
 
-        return filePath;
+        return fileRelatPath;
     }
 
     @Override
-    public void writeHeader(Sheet sheet, Integer rowCount, XSSFCellStyle cellStyle) {
-        Row titleRow = sheet.createRow(rowCount);
+    public Integer writeHeader(Sheet sheet, Integer rowCount, XSSFCellStyle cellStyle) {
+        Row titleRow = sheet.createRow(rowCount++);
         int cellCount = 0;
         Cell idCell = titleRow.createCell(cellCount++);
         Cell titleCell = titleRow.createCell(cellCount++);
@@ -477,7 +488,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         Cell estimateCell = titleRow.createCell(cellCount++);
         Cell objectiveCell = titleRow.createCell(cellCount++);
 
-        idCell.setCellValue("编号");
+        idCell.setCellValue("层级");
         titleCell.setCellValue("标题");
         typeCell.setCellValue("类型");
         priorityCell.setCellValue("优先级");
@@ -490,32 +501,43 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         priorityCell.setCellStyle(cellStyle);
         estimateCell.setCellStyle(cellStyle);
         objectiveCell.setCellStyle(cellStyle);
+
+        return rowCount;
     }
 
     @Override
-    public void writeTestCase(TestCase testCase, Sheet sheet, Integer rowCount, XSSFCellStyle cellStyle) {
-        Row titleRow = sheet.createRow(rowCount++);
-        int cellCount = 0;
-        Cell idCell = titleRow.createCell(cellCount++);
-        Cell titleCell = titleRow.createCell(cellCount++);
-        Cell typeCell = titleRow.createCell(cellCount++);
-        Cell priorityCell = titleRow.createCell(cellCount++);
-        Cell estimateCell = titleRow.createCell(cellCount++);
-        Cell objectiveCell = titleRow.createCell(cellCount++);
+    public Integer writeTestCase(TestCase testCase, Sheet sheet, Long topId, Integer rowCount,
+                                 AtomicInteger level, XSSFCellStyle cellStyle) {
+	    if (testCase.getpId() != null && testCase.getpId().longValue() == topId.longValue()) {
+            level.set(1);
+        }
 
-        idCell.setCellValue(testCase.getId());
+        Row row = sheet.createRow(rowCount++);
+        int cellCount = 0;
+        Cell idCell = row.createCell(cellCount++);
+        Cell titleCell = row.createCell(cellCount++);
+        Cell typeCell = row.createCell(cellCount++);
+        Cell priorityCell = row.createCell(cellCount++);
+        Cell estimateCell = row.createCell(cellCount++);
+        Cell objectiveCell = row.createCell(cellCount++);
+
+        idCell.setCellValue(level.toString());
         titleCell.setCellValue(testCase.getName());
-        typeCell.setCellValue(testCase.getType());
-        priorityCell.setCellValue(testCase.getPriority());
-        estimateCell.setCellValue(testCase.getEstimate());
-        objectiveCell.setCellValue(testCase.getObjective());
+        if (testCase.getLeaf()) {
+            typeCell.setCellValue(testCase.getType());
+            priorityCell.setCellValue(testCase.getPriority());
+            estimateCell.setCellValue(testCase.getEstimate() == null ? "" : testCase.getEstimate().toString());
+            objectiveCell.setCellValue(testCase.getObjective());
+        }
 
         idCell.setCellStyle(cellStyle);
         titleCell.setCellStyle(cellStyle);
-        typeCell.setCellStyle(cellStyle);
-        priorityCell.setCellStyle(cellStyle);
-        estimateCell.setCellStyle(cellStyle);
-        objectiveCell.setCellStyle(cellStyle);
+        if (testCase.getLeaf()) {
+            typeCell.setCellStyle(cellStyle);
+            priorityCell.setCellStyle(cellStyle);
+            estimateCell.setCellStyle(cellStyle);
+            objectiveCell.setCellStyle(cellStyle);
+        }
 
         if (testCase.getLeaf()) {
             for (TestCaseStep step : testCase.getSteps()) {
@@ -530,14 +552,17 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
                 ordrCell.setCellValue(step.getOrdr());
                 optCell.setCellValue(step.getOpt());
                 resultCell.setCellValue(step.getExpect());
-
-
             }
         } else {
-            for (TestCase child : getChildren(testCase.getId())) {
-                writeTestCase(child, sheet, rowCount, cellStyle);
+            List chridren = getChildren(testCase.getId());
+            if (chridren.size() > 0) {
+                level.incrementAndGet();
+                for (TestCase child : getChildren(testCase.getId())) {
+                    rowCount = writeTestCase(child, sheet, topId, rowCount, level, cellStyle);
+                }
             }
         }
+        return rowCount;
     }
 
     @Override

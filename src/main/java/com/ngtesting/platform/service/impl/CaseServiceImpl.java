@@ -428,9 +428,9 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         String fileName = UUID.randomUUID().toString() + ".xlsx";
         String fileDir = Constant.FTP_UPLOAD_DIR + "export/";
         String fileRelatPath = fileDir + fileName;
-        String filePath = Constant.WORK_DIR + fileDir + fileName;
+        String filePath = Constant.WORK_DIR + fileRelatPath;
 
-        FileUtils.CreateDirIfNeeded(fileDir);
+        FileUtils.CreateDirIfNeeded(Constant.WORK_DIR + fileDir);
 
         XSSFWorkbook wb = new XSSFWorkbook();
         Sheet sheet = wb.createSheet();

@@ -273,7 +273,7 @@ public class RunServiceImpl extends BaseServiceImpl implements RunService {
 		int sum = 0;
 		Integer total = vo.getCountMap().get("total");
 
-        Integer barWidth = 240;
+        Integer barWidth = 200;
         for (String status : vo.getCountMap().keySet()) {
 		    if ("total".equals(status)) {
 		        continue;

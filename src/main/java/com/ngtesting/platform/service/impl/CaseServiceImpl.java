@@ -8,19 +8,26 @@ import com.ngtesting.platform.service.CaseAttachmentService;
 import com.ngtesting.platform.service.CaseCommentsService;
 import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.util.BeanUtilEx;
+import com.ngtesting.platform.util.FileUtils;
 import com.ngtesting.platform.util.StringUtil;
 import com.ngtesting.platform.vo.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.*;
 
 @Service
 public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
@@ -398,6 +405,140 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
         return testCase;
 	}
+
+    @Override
+    public String export(Long projectId) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestCase.class);
+
+        if (projectId != null) {
+            dc.add(Restrictions.eq("projectId", projectId));
+        }
+
+        dc.add(Restrictions.isNull("pId"));
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+
+        dc.addOrder(Order.asc("pId"));
+        dc.addOrder(Order.asc("ordr"));
+
+        String fileName = UUID.randomUUID().toString() + ".xlsx";
+        String fileDir = Constant.WORK_DIR + Constant.FTP_UPLOAD_DIR + "/export/";
+        String filePath = fileDir + fileName;
+        FileUtils.CreateDirIfNeeded(fileDir);
+
+        XSSFWorkbook wb = new XSSFWorkbook();
+        Sheet sheet = wb.createSheet();
+        sheet.autoSizeColumn(1, true);
+        sheet.setColumnWidth(0, 10 * 256);
+        sheet.setColumnWidth(1, 50 * 256);
+        sheet.setColumnWidth(2, 16 * 256);
+        sheet.setColumnWidth(3, 16 * 256);
+        sheet.setColumnWidth(4, 16 * 256);
+
+        int rowCount = 0;
+
+        XSSFCellStyle cellStyle = wb.createCellStyle();
+        Font fontStyle = wb.createFont();
+//        fontStyle.setBold(true); // 加粗
+        fontStyle.setFontName("黑体"); // 字体
+        fontStyle.setFontHeightInPoints((short) 15); // 大小
+        cellStyle.setFont(fontStyle);
+
+//        cellStyle.setBorderBottom(BorderStyle.THIN);
+//        cellStyle.setBorderLeft(BorderStyle.THIN);
+//        cellStyle.setBorderRight(BorderStyle.THIN);
+//        cellStyle.setBorderTop(BorderStyle.THIN);
+
+        writeHeader(sheet, rowCount++, cellStyle);
+
+        List<TestCase> pos = findAllByCriteria(dc);
+        for (TestCase testCase : pos) {
+            writeTestCase(testCase, sheet, rowCount, cellStyle);
+        }
+
+        try {
+            OutputStream out = new FileOutputStream(filePath);
+            wb.write(out);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return filePath;
+    }
+
+    @Override
+    public void writeHeader(Sheet sheet, Integer rowCount, XSSFCellStyle cellStyle) {
+        Row titleRow = sheet.createRow(rowCount);
+        int cellCount = 0;
+        Cell idCell = titleRow.createCell(cellCount++);
+        Cell titleCell = titleRow.createCell(cellCount++);
+        Cell typeCell = titleRow.createCell(cellCount++);
+        Cell priorityCell = titleRow.createCell(cellCount++);
+        Cell estimateCell = titleRow.createCell(cellCount++);
+        Cell objectiveCell = titleRow.createCell(cellCount++);
+
+        idCell.setCellValue("编号");
+        titleCell.setCellValue("标题");
+        typeCell.setCellValue("类型");
+        priorityCell.setCellValue("优先级");
+        estimateCell.setCellValue("耗时");
+        objectiveCell.setCellValue("目的");
+
+        idCell.setCellStyle(cellStyle);
+        titleCell.setCellStyle(cellStyle);
+        typeCell.setCellStyle(cellStyle);
+        priorityCell.setCellStyle(cellStyle);
+        estimateCell.setCellStyle(cellStyle);
+        objectiveCell.setCellStyle(cellStyle);
+    }
+
+    @Override
+    public void writeTestCase(TestCase testCase, Sheet sheet, Integer rowCount, XSSFCellStyle cellStyle) {
+        Row titleRow = sheet.createRow(rowCount++);
+        int cellCount = 0;
+        Cell idCell = titleRow.createCell(cellCount++);
+        Cell titleCell = titleRow.createCell(cellCount++);
+        Cell typeCell = titleRow.createCell(cellCount++);
+        Cell priorityCell = titleRow.createCell(cellCount++);
+        Cell estimateCell = titleRow.createCell(cellCount++);
+        Cell objectiveCell = titleRow.createCell(cellCount++);
+
+        idCell.setCellValue(testCase.getId());
+        titleCell.setCellValue(testCase.getName());
+        typeCell.setCellValue(testCase.getType());
+        priorityCell.setCellValue(testCase.getPriority());
+        estimateCell.setCellValue(testCase.getEstimate());
+        objectiveCell.setCellValue(testCase.getObjective());
+
+        idCell.setCellStyle(cellStyle);
+        titleCell.setCellStyle(cellStyle);
+        typeCell.setCellStyle(cellStyle);
+        priorityCell.setCellStyle(cellStyle);
+        estimateCell.setCellStyle(cellStyle);
+        objectiveCell.setCellStyle(cellStyle);
+
+        if (testCase.getLeaf()) {
+            for (TestCaseStep step : testCase.getSteps()) {
+                sheet.addMergedRegion(new CellRangeAddress(rowCount, rowCount, 2, 5));
+
+                Row stepRow = sheet.createRow(rowCount++);
+                cellCount = 0;
+                Cell ordrCell = stepRow.createCell(cellCount++);
+                Cell optCell = stepRow.createCell(cellCount++);
+                Cell resultCell = stepRow.createCell(cellCount++);
+
+                ordrCell.setCellValue(step.getOrdr());
+                optCell.setCellValue(step.getOpt());
+                resultCell.setCellValue(step.getExpect());
+
+
+            }
+        } else {
+            for (TestCase child : getChildren(testCase.getId())) {
+                writeTestCase(child, sheet, rowCount, cellStyle);
+            }
+        }
+    }
 
     @Override
     public void updateParentIfNeededPers(Long pid) {

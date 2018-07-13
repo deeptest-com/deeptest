@@ -34,10 +34,7 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
     HistoryService historyService;
 
     @Override
-    public List<TestPlan> query(JSONObject json) {
-        Long projectId = json.getLong("projectId");
-        String status = json.getString("status");
-        String keywords = json.getString("keywords");
+    public Page page(Long projectId, String status, String keywords, Integer currentPage, Integer itemsPerPage) {
 
         DetachedCriteria dc = DetachedCriteria.forClass(TestPlan.class);
 
@@ -57,9 +54,9 @@ public class PlanServiceImpl extends BaseServiceImpl implements PlanService {
         dc.add(Restrictions.eq("disabled", Boolean.FALSE));
         dc.addOrder(Order.desc("createTime"));
         dc.addOrder(Order.asc("id"));
-        List<TestPlan> ls = findAllByCriteria(dc);
+        Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
 
-        return ls;
+        return page;
     }
 
     @Override

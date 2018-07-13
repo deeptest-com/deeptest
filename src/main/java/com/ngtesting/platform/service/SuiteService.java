@@ -3,6 +3,7 @@ package com.ngtesting.platform.service;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.entity.TestCaseInSuite;
 import com.ngtesting.platform.entity.TestSuite;
+import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.TestCaseInSuiteVo;
 import com.ngtesting.platform.vo.TestSuiteVo;
 import com.ngtesting.platform.vo.UserVo;
@@ -11,9 +12,8 @@ import java.util.List;
 
 public interface SuiteService extends BaseService {
 
-	List<TestSuite> query(JSONObject json);
-
-	List<TestSuite> query(Long projectId, String keywords);
+    Page page(Long projectId, String keywords, Integer currentPage, Integer itemsPerPage);
+    List<TestSuite> query(Long projectId, String keywords);
 
 	TestSuiteVo getById(Long caseId);
 

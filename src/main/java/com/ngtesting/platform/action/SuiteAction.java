@@ -6,6 +6,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.entity.TestSuite;
 import com.ngtesting.platform.service.SuiteService;
 import com.ngtesting.platform.util.AuthPassport;
+import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.TestSuiteVo;
 import com.ngtesting.platform.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +37,15 @@ public class SuiteAction extends BaseAction {
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		List<TestSuite> ls = suiteService.query(json);
-		List<TestSuiteVo> vos = suiteService.genVos(ls);
+		int page = json.getInteger("page") == null? 0: json.getInteger("page") - 1;
+		int pageSize = json.getInteger("pageSize") == null? Constant.PAGE_SIZE: json.getInteger("pageSize");
+        Long projectId = json.getLong("projectId");
+        String keywords = json.getString("keywords");
 
+		Page pageData = suiteService.page(projectId, keywords, page, pageSize);
+		List<TestSuiteVo> vos = suiteService.genVos(pageData.getItems());
+
+        ret.put("collectionSize", pageData.getTotal());
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

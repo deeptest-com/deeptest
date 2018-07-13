@@ -6,6 +6,8 @@ import com.ngtesting.platform.entity.TestCase;
 import com.ngtesting.platform.entity.TestCaseHistory;
 import com.ngtesting.platform.vo.TestCaseVo;
 import com.ngtesting.platform.vo.UserVo;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 
 import java.util.List;
 
@@ -32,7 +34,13 @@ public interface CaseService extends BaseService {
 
 	TestCase save(JSONObject json, UserVo user);
 
-	void updateParentIfNeededPers(Long pid);
+	String export(Long projectId);
+
+	void writeHeader(Sheet sheet, Integer rowCount, XSSFCellStyle cellStyle);
+
+	void writeTestCase(TestCase testCase, Sheet sheet, Integer rowCount, XSSFCellStyle cellStyle);
+
+    void updateParentIfNeededPers(Long pid);
 
 	boolean cloneStepsAndChildrenPers(TestCase testcase, TestCase src);
 

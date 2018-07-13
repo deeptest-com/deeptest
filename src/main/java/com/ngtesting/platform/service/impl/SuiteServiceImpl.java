@@ -10,6 +10,7 @@ import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.service.SuiteService;
 import com.ngtesting.platform.util.BeanUtilEx;
+import com.ngtesting.platform.vo.Page;
 import com.ngtesting.platform.vo.TestCaseInSuiteVo;
 import com.ngtesting.platform.vo.TestSuiteVo;
 import com.ngtesting.platform.vo.UserVo;
@@ -35,12 +36,26 @@ public class SuiteServiceImpl extends BaseServiceImpl implements SuiteService {
     MsgService msgService;
 
     @Override
-    public List<TestSuite> query(JSONObject json) {
-        Long projectId = json.getLong("projectId");
-        String keywords = json.getString("keywords");
+    public Page page(Long projectId, String keywords, Integer currentPage, Integer itemsPerPage) {
+        DetachedCriteria dc = DetachedCriteria.forClass(TestSuite.class);
 
-        return query(projectId, keywords);
+        if (projectId != null) {
+            List<Long> ids = projectService.listBrotherIds(projectId);
+            dc.add(Restrictions.in("projectId", ids));
+        }
+        if (StringUtils.isNotEmpty(keywords)) {
+            dc.add(Restrictions.like("name", "%" + keywords + "%"));
+        }
+
+        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
+        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+        dc.addOrder(Order.asc("caseProjectId"));
+        dc.addOrder(Order.asc("id"));
+        Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
+
+        return page;
     }
+
     @Override
     public List<TestSuite> query(Long projectId, String keywords) {
         DetachedCriteria dc = DetachedCriteria.forClass(TestSuite.class);

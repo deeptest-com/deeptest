@@ -46,10 +46,17 @@ public class PlanAction extends BaseAction {
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		List<TestPlan> ls = planService.query(json);
+        int page = json.getInteger("page") == null? 0: json.getInteger("page") - 1;
+        int pageSize = json.getInteger("pageSize") == null? Constant.PAGE_SIZE: json.getInteger("pageSize");
 
-		List<TestPlanVo> vos = planService.genVos(ls);
+        Long projectId = json.getLong("projectId");
+        String status = json.getString("status");
+        String keywords = json.getString("keywords");
 
+        Page pageData = planService.page(projectId, status, keywords, page, pageSize);
+        List<TestPlanVo> vos = planService.genVos(pageData.getItems());
+
+        ret.put("collectionSize", pageData.getTotal());
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

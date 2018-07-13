@@ -164,6 +164,24 @@ public class CaseAction extends BaseAction {
 		return ret;
 	}
 
+	@AuthPassport(validate = true)
+	@RequestMapping(value = "exportAllCases", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> exportAllCases(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		Long projectId = json.getLong("projectId");
+
+		UserVo userVo = (UserVo) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+		String excelPath = caseService.export(projectId);
+
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		ret.put("excelPath", excelPath);
+
+		return ret;
+	}
+
     @AuthPassport(validate = true)
     @RequestMapping(value = "save", method = RequestMethod.POST)
     @ResponseBody

@@ -298,16 +298,27 @@
             <version>3.3.0</version>
         </dependency>
 
-<!-- 		<dependency>
-		    <groupId>net.oauth.core</groupId>
-		    <artifactId>oauth</artifactId>
-		    <version>20100601-atlassian-2</version>
-		</dependency>
-		<dependency>
-		    <groupId>net.oauth.core</groupId>
-		    <artifactId>oauth-httpclient4</artifactId>
-		    <version>20100601-atlassian-2</version>
-		</dependency> -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.17</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.17</version>
+        </dependency>
+
+        <!-- 		<dependency>
+                    <groupId>net.oauth.core</groupId>
+                    <artifactId>oauth</artifactId>
+                    <version>20100601-atlassian-2</version>
+                </dependency>
+                <dependency>
+                    <groupId>net.oauth.core</groupId>
+                    <artifactId>oauth-httpclient4</artifactId>
+                    <version>20100601-atlassian-2</version>
+                </dependency> -->
 
 		<dependency>
 		    <groupId>com.google.collections</groupId>

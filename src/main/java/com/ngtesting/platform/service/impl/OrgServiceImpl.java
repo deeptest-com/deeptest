@@ -29,7 +29,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	@Autowired
     CaseTypeService caseTypeService;
 	@Autowired
-	RelationProjectRoleEntityService relationProjectRoleEntityService;
+    ProjectRoleEntityRelationService relationProjectRoleEntityService;
     @Autowired
     ProjectPrivilegeService projectPrivilegeService;
 	@Autowired

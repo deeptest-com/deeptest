@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.OrgRoleUserDao" >
+
+    <select id="query" resultType="TstUser">
+        SELECT * FROM TstAlert o WHERE o.userId=#{userId}
+        <if test="isRead != null">
+            AND o.isRead = #{isRead}
+        </if>
+        AND o.deleted != true AND o.disabled != true
+        ORDER BY o.createTime DESC
+    </select>
+
+</mapper>

@@ -11,10 +11,10 @@ public class TstProject extends BaseModel {
 
 	private String name;
     private String descr;
-    private Long orgId;
+    private Integer orgId;
 
-    private Long parentId;
-    private String type;
+    private Integer parentId;
+    private ProjectType type;
     private Integer order;
     private Integer childrenNumb;
 
@@ -69,24 +69,24 @@ public class TstProject extends BaseModel {
 	public void setDescr(String descr) {
 		this.descr = descr;
 	}
-	public Long getOrgId() {
+	public Integer getOrgId() {
 		return orgId;
 	}
-	public void setOrgId(Long orgId) {
+	public void setOrgId(Integer orgId) {
 		this.orgId = orgId;
 	}
 
-	public Long getParentId() {
+	public Integer getParentId() {
 		return parentId;
 	}
-	public void setParentId(Long parentId) {
+	public void setParentId(Integer parentId) {
 		this.parentId = parentId;
 	}
 
-	public String getType() {
+	public ProjectType getType() {
 		return type;
 	}
-	public void setType(String type) {
+	public void setType(ProjectType type) {
 		this.type = type;
 	}
 

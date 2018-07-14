@@ -1,33 +1,32 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.dao.SysPrivilegeDao;
+import com.ngtesting.platform.model.SysPrivilege;
 import com.ngtesting.platform.service.SysPrivilegeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class SysPrivilegeServiceImpl extends BaseServiceImpl implements SysPrivilegeService {
 
+    @Autowired
+    SysPrivilegeDao sysPrivilegeDao;
+
     @Override
-    public Map<String, Boolean> listByUser(Long userId) {
+    public Map<String, Boolean> listByUser(Integer userId) {
 
-//        String hql = "select priv from SysPrivilege priv" +
-//                " join priv.sysRoleSet roles " +
-//                " join roles.userSet users " +
-//                " where users.id = ?" +
-//                " and priv.deleted != true and priv.disabled!= true " +
-//                " order by priv.id asc";
-//
-//        List<SysPrivilege> ls = getDao().getListByHQL(hql, userId);
-//
-//        Map<String, Boolean> map = new HashMap();
-//        for (SysPrivilege po: ls) {
-//            map.put(po.getCode().toString(), true);
-//        }
-//
-//		return map;
+        List<SysPrivilege> privs = sysPrivilegeDao.queryByUser(userId);
 
-        return null;
+        Map<String, Boolean> map = new HashMap();
+        for (SysPrivilege po: privs) {
+            map.put(po.getCode().toString(), true);
+        }
+
+		return map;
 	}
 
 }

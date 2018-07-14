@@ -20,7 +20,6 @@ public interface ProjectService extends BaseService {
 
 	List<TstProject> listBrothers(Integer projectId);
 	List<TstProjectAccessHistory> listRecentProject(Integer orgId, Integer userId);
-	List<TstProjectAccessHistory> listRecentProjectVo(Integer orgId, Integer userId);
 
 	TstProject viewPers(Integer projectId, TstUser userVo);
 
@@ -33,10 +32,7 @@ public interface ProjectService extends BaseService {
 	TstProject genVo(TstProject po, Map<String, Map<String, Boolean>> privs);
 	List<TstProject> genVos(List<TstProject> pos, Map<String, Map<String, Boolean>> privs);
 	List<TstProject> genGroupVos(List<TstProject> pos);
-	TstProjectAccessHistory genHistoryVo(TstProjectAccessHistory po);
 
     List<Integer> listBrotherIds(Integer projectId);
-
-    List<TstProjectAccessHistory> genHistoryVos(List<TstProjectAccessHistory> pos);
 
 }

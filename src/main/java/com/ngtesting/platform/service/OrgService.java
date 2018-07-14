@@ -1,7 +1,6 @@
 package com.ngtesting.platform.service;
 
 import com.ngtesting.platform.model.TstOrg;
-import com.ngtesting.platform.model.TstUser;
 
 import java.util.List;
 
@@ -9,7 +8,7 @@ import java.util.List;
 public interface OrgService extends BaseService {
 
 	List<TstOrg> list(String keywords, String disabled, Integer userId);
-	List<TstOrg> listVo(String keywords, String disabled, Integer id);
+	List<TstOrg> listByUser(Integer userId);
 
 	TstOrg getDetail(Integer id);
 
@@ -18,10 +17,6 @@ public interface OrgService extends BaseService {
 
 	List<TstOrg> genVos(List<TstOrg> pos, Integer userId);
 
-	TstOrg genVo(TstOrg po);
-
     TstOrg save(TstOrg vo, Integer userId);
-
-	void setDefaultPers(Integer orgId, TstUser user);
 
 }

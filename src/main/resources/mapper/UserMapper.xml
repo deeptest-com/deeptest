@@ -2,7 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.UserDao" >
 
-    <select id="query" resultType="TstUser"> <!-- resultMap="UserResult" -->
+    <select id="query" resultType="TstOrg">
+        SELECT * FROM tstUser
+    </select>
+    <select id="queryByUser" resultType="TstOrg">
         SELECT * FROM tstUser
     </select>
 
@@ -21,9 +24,12 @@
         SELECT * FROM TstUser WHERE token = #{token} LIMIT 1;
     </select>
 
-    <update id="update" parameterType="TstUser">
-        UPDATE STUDENTS
-        SET EMAIL=#{email}, name=#{name}
+    <insert id="save" parameterType="TstUser">
+
+    </insert>
+    <update id="setDefaultPrj">
+        UPDATE TstUser
+        SET defaultPrjId=#{prjId}, defaultPrjName=#{prjName}
         WHERE userId=#{id}
     </update>
 

@@ -17,5 +17,5 @@ public interface ProjectPrivilegeService extends BaseService {
 
     boolean saveProjectPrivileges(Integer roleId, Map<String, List<TstProjectPrivilegeDefine>> map);
 
-	Map<String, Boolean> listByUserPers(Integer userId, Integer prjId, Integer orgId);
+	Map<String, Boolean> listByUser(Integer userId, Integer prjId, Integer orgId);
 }

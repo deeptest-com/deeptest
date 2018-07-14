@@ -1,9 +1,10 @@
 package com.ngtesting.platform.model;
 
 
-public class TstOrgPrivilege extends BaseModel {
+public class TstOrgPrivilegeDefine extends BaseModel {
 	private static final long serialVersionUID = -6981838223153872057L;
 
+	private String code;
 	private String name;
     private String descr;
 
@@ -12,14 +13,22 @@ public class TstOrgPrivilege extends BaseModel {
     private Boolean selecting;
     private Boolean selected;
 
-    public TstOrgPrivilege() {
+    public TstOrgPrivilegeDefine() {
 	}
 
-	public TstOrgPrivilege(Integer id, String name, String descr, Integer orgId) {
+	public TstOrgPrivilegeDefine(Integer id, String code, String name, String descr, Integer orgId) {
 		this.id = id;
 		this.name = name;
 		this.descr = descr;
 		this.orgId = orgId;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getName() {

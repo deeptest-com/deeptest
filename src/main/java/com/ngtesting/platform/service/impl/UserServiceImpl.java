@@ -41,4 +41,31 @@ public class UserServiceImpl implements UserService {
         userDao.update(record);
     }
 
+    @Override
+    public void setDefaultOrg(Integer userId, Integer orgId) {
+        userDao.setDefaultOrg(userId, orgId);
+
+//		TestUser user = (TestUser) get(TestUser.class, TstUser.getId());
+//
+//		user.setDefaultOrgId(orgId);
+//
+//		List<TstProjectAccessHistory> recentProjects = projectService.listRecentProject(orgId, TstUser.getId());
+//        user.setDefaultPrjId(recentProjects.size()>0?recentProjects.get(0).getProjectId(): null);
+//        saveOrUpdate(user);
+//
+//		TstUser.setDefaultOrgId(user.getDefaultOrgId());
+//		if (user.getDefaultOrgId()!=null) {
+//			TstOrg org = (TstOrg)get(TstOrg.class, user.getDefaultOrgId());
+//			TstUser.setDefaultOrgName(org.getName());
+//		}
+//
+//        TstUser.setDefaultPrjId(recentProjects.size()>0?recentProjects.get(0).getProjectId(): null);
+//		TstUser.setDefaultPrjName(recentProjects.size()>0?recentProjects.get(0).getProjectName(): "");
+    }
+
+    @Override
+    public void setDefaultPrj(Integer userId, Integer prjId, String prjName) {
+        userDao.setDefaultPrj(userId, prjId, prjName);
+    }
+
 }

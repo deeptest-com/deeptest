@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.OrgDao" >
+
+    <select id="query" resultType="TstOrg">
+        SELECT * FROM TstOrg o WHERE TRUE
+        <if test="keywords != null and keywords != ''">
+            AND o.name LIKE CONCAT('%','${keywords}','%' )
+        </if>
+        <if test="disabled != null and disabled != ''">
+            AND o.disabled = #{disabled}
+        </if>
+    </select>
+
+    <select id="queryByUser" parameterType="int" resultType="TstOrg">
+        SELECT * FROM TstOrg o
+        JOIN TstROrgUser r on r.orgId=o.id
+
+        WHERE r.userId = #{userId}
+        AND o.disabled != TRUE
+    </select>
+
+    <update id="setDefault">
+        UPDATE TstOrg
+        SET defaultPrjId=#{prjId}, defaultPrjName=#{prjName}
+        WHERE userId=#{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-mybatis.orgDTD Mapper 3.0EN" "http:mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.OrgRolePrivilegeDao" >
+
+    <select id="queryByUser" resultType="TstOrgPrivilegeDefine">
+        SELECT priv.code,priv.name from TstOrgPrivilegeDefine priv
+
+            join TstROrgRolePrivilege r_role_priv ON r_role_priv.orgPrivilegeId=priv.id
+            join TstROrgRoleUser r_role_user ON r_role_user.orgRoleId=r_role_priv.orgRoleId
+            join TstOrgRole org_role ON r_role_user.orgRoleId=org_role.id
+
+            where r_role_user.userId = #{userId} AND org_role.orgId=#{orgId}
+            AND priv.deleted != true and priv.disabled!= true
+            order by priv.id asc
+
+    </select>
+
+</mapper>

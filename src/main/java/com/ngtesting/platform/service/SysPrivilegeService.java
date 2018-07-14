@@ -4,5 +4,5 @@ import java.util.Map;
 
 public interface SysPrivilegeService extends BaseService {
 
-	Map<String, Boolean> listByUser(Long userId);
+	Map<String, Boolean> listByUser(Integer userId);
 }

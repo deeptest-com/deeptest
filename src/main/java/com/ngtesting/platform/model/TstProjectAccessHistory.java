@@ -4,13 +4,13 @@ import java.util.Date;
 
 
 public class TstProjectAccessHistory extends BaseModel {
-	private static final long serialVersionUID = -5963995629184890598L;
+	private static final Long serialVersionUID = -5963995629184890598L;
 
 	private Date lastAccessTime;
 
-	private Long userId;
+	private Integer userId;
 
-    private Long projectId;
+    private Integer projectId;
     private String projectName;
 
 
@@ -22,19 +22,19 @@ public class TstProjectAccessHistory extends BaseModel {
 		this.lastAccessTime = lastAccessTime;
 	}
 
-	public Long getUserId() {
+	public Integer getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
 
-	public Long getProjectId() {
+	public Integer getProjectId() {
 		return projectId;
 	}
 
-	public void setProjectId(Long projectId) {
+	public void setProjectId(Integer projectId) {
 		this.projectId = projectId;
 	}
 

@@ -1,8 +1,10 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.dao.ProjectPrivilegeDao;
 import com.ngtesting.platform.model.TstProjectPrivilegeDefine;
 import com.ngtesting.platform.model.TstProjectRolePriviledgeRelation;
 import com.ngtesting.platform.service.ProjectPrivilegeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -11,6 +13,8 @@ import java.util.Map;
 
 @Service
 public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements ProjectPrivilegeService {
+	@Autowired
+	private ProjectPrivilegeDao projectPrivilegeDao;
 
 	@Override
 	public Map<String, Map<String, TstProjectPrivilegeDefine>> listPrivilegesByOrgAndProjectRole(Integer orgId, Integer projectRoleId) {
@@ -143,15 +147,15 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 	}
 
 	@Override
-	public Map<String, Boolean> listByUserPers(Integer userId, Integer prjId, Integer orgId) {
+	public Map<String, Boolean> listByUser(Integer userId, Integer prjId, Integer orgId) {
         Map<String, Boolean> map = new HashMap();
-//	    if (prjId == null) {
-//            return map;
-//        }
-//		List<Object[]> ls = getDao().getListBySQL("{call get_project_privilege_by_project_for_user(?,?,?)}", userId, prjId, orgId);
-//		for (Object[] arr : ls) {
-//			map.put(arr[0].toString() + "-" + arr[1].toString(), true);
-//		}
+	    if (prjId == null) {
+            return map;
+        }
+		List<Map<String, String>> ls = projectPrivilegeDao.listByProjectForUser(userId, prjId, orgId);
+		for (Map<String, String> item : ls) {
+			map.put(item.get("code") + "-" + item.get("action"), true);
+		}
 		return map;
 	}
 

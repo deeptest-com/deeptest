@@ -1,6 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.model.TstOrgPrivilege;
+import com.ngtesting.platform.model.TstOrgPrivilegeDefine;
 import com.ngtesting.platform.model.TstOrgRole;
 import com.ngtesting.platform.service.OrgRoleService;
 import org.springframework.stereotype.Service;
@@ -79,7 +79,7 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 //	}
 
     @Override
-    public List<TstOrgPrivilege> getDefaultPrivByRoleCode(TstOrgRole.OrgRoleCode e) {
+    public List<TstOrgPrivilegeDefine> getDefaultPrivByRoleCode(TstOrgRole.OrgRoleCode e) {
 //        TestOrgPrivilegeDefine.OrgPrivilegeCode code = TestOrgPrivilegeDefine.OrgPrivilegeCode.valueOf(e.code);
 //        DetachedCriteria dc = DetachedCriteria.forClass(TestOrgPrivilegeDefine.class);
 //        dc.add(Restrictions.eq("code", code));

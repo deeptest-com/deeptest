@@ -1,6 +1,8 @@
 package com.ngtesting.platform.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.dao.ProjectDao;
+import com.ngtesting.platform.dao.UserDao;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstProjectAccessHistory;
 import com.ngtesting.platform.model.TstUser;
@@ -27,6 +29,8 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	HistoryService historyService;
 	@Autowired
 	private ProjectDao projectDao;
+	@Autowired
+	private UserDao userDao;
     @Autowired
     private CaseService caseService;
     @Autowired
@@ -100,46 +104,21 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
 	@Override
 	public List<TstProjectAccessHistory> listRecentProject(Integer orgId, Integer userId) {
-//		DetachedCriteria dc = DetachedCriteria.forClass(TstProjectAccessHistory.class);
-//
-//		dc.add(Restrictions.eq("orgId", orgId));
-//		dc.add(Restrictions.eq("userId", userId));
-//		dc.add(Restrictions.ne("deleted", true));
-//		dc.add(Restrictions.ne("disabled", true));
-//
-//        dc.createAlias("project", "project");
-////		dc.add(Restrictions.ne("project.deleted", true));
-//        dc.add(Restrictions.ne("project.deleted", true));
-//		dc.add(Restrictions.ne("project.disabled", true));
-//
-//		dc.addOrder(Order.desc("lastAccessTime"));
-//
-//		List<TstProjectAccessHistory> pos = findPage(dc, 0, 4).getItems();
-//
-//		return pos;
+        PageHelper.startPage(0, 5);
+		List<TstProjectAccessHistory> pos = projectDao.listRecent(orgId, userId);
+//        PageInfo result = new PageInfo(pos);
 
-		return null;
-	}
-	@Override
-	public List<TstProjectAccessHistory> listRecentProjectVo(Integer orgId, Integer userId) {
-//		List<TstProjectAccessHistory> pos = listRecentProject(orgId, userId);
-//		List<TstProjectAccessHistory> vos = genHistoryVos(pos);
-//
-//		return vos;
-
-		return null;
+		return pos;
 	}
 
 	@Override
 	public TstProject getDetail(Integer id) {
-//		if (id == null) {
-//			return null;
-//		}
-//		TstProject po = (TstProject) get(TstProject.class, id);
-//
-//		return po;
+		if (id == null) {
+			return null;
+		}
+		TstProject po = projectDao.getDetail(id);
 
-		return null;
+		return po;
 	}
 
 	@Override
@@ -270,47 +249,16 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
     }
 
 	@Override
-	public List<TstProjectAccessHistory> genHistoryVos(List<TstProjectAccessHistory> pos) {
-		List<TstProjectAccessHistory> voList = new LinkedList<TstProjectAccessHistory>();
-//		for (TstProjectAccessHistory po : pos) {
-//			TstProjectAccessHistory vo = genHistoryVo(po);
-//			voList.add(vo);
-//		}
+	public TstProject viewPers(Integer projectId, TstUser tstUser) {
+		TstProject po = getDetail(projectId);
 
-		return voList;
-	}
+        if (po.getType().equals(TstProject.ProjectType.project)) {
+            projectDao.genHistory(po.getOrgId(), tstUser.getId(), projectId, po.getName());
 
-	@Override
-	public TstProjectAccessHistory genHistoryVo(TstProjectAccessHistory po) {
-//		if (po == null) {
-//			return null;
-//		}
-//		TstProjectAccessHistory vo = new TstProjectAccessHistory();
-//		BeanUtilEx.copyProperties(vo, po);
-//		vo.setProjectName(po.getProjectName());
-//
-//		return vo;
+			userDao.setDefaultPrj(tstUser.getId(), projectId, po.getName());
+		}
 
-		return null;
-	}
-
-	@Override
-	public TstProject viewPers(Integer projectId, TstUser TstUser) {
-		TstProject project = getDetail(projectId);
-
-//        TestUser userPo = (TestUser)get(TestUser.class, TstUser.getId());
-//        if (project.getType().equals(ProjectType.project)) {
-//            genHistoryPers(project.getOrgId(), TstUser.getId(), projectId, project.getName());
-//
-//			userPo.setDefaultPrjId(projectId);
-//			saveOrUpdate(userPo);
-//
-//			TstUser.setDefaultPrjId(projectId);
-//			TstUser.setDefaultPrjName(project.getName());
-//		}
-
-		TstProject vo = genVo(project, null);
-		return vo;
+		return po;
 	}
 
     @Override

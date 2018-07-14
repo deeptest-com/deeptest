@@ -12,4 +12,7 @@ public interface UserService {
 
     void update(TstUser record);
 
+    void setDefaultOrg(Integer userId, Integer orgId);
+
+    void setDefaultPrj(Integer userId, Integer prjId, String prjName);
 }

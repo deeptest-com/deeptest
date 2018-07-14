@@ -54,7 +54,7 @@ OrgRolePrivilegeService orgRolePrivilegeService;
 
         Integer userId = TstUser.getId();
 
-        List<TstOrg> orgs = orgService.listVo(null, "false", userId);
+        List<TstOrg> orgs = orgService.listByUser(userId);
         ret.put("myOrgs", orgs);
 
         ret.put("defaultOrgId", TstUser.getDefaultOrgId());
@@ -96,7 +96,7 @@ OrgRolePrivilegeService orgRolePrivilegeService;
         Integer userId = TstUser.getId();
         Integer orgId = TstUser.getDefaultOrgId();
 
-        List<TstProjectAccessHistory> recentProjects = projectService.listRecentProjectVo(orgId, userId);
+        List<TstProjectAccessHistory> recentProjects = projectService.listRecentProject(orgId, userId);
         ret.put("recentProjects", recentProjects);
 
         ret.put("defaultOrgId", orgId);
@@ -115,7 +115,7 @@ OrgRolePrivilegeService orgRolePrivilegeService;
         Integer orgId = TstUser.getDefaultOrgId();
         Integer prjId = TstUser.getDefaultPrjId();
 
-        Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUserPers(userId, prjId, orgId);
+        Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userId, prjId, orgId);
         ret.put("prjPrivileges", prjPrivileges);
         ret.put("prjName", TstUser.getDefaultPrjName());
 

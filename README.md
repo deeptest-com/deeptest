@@ -1,3 +1,5 @@
+考虑到未来缺陷管理模块DQL（Defect Query Language）语言设计的方便性，本系统正在将持久层从Hibernate迁移到myBatis，故暂停更新，抱歉！
+
 # Next Generation Testing Tools
 
 AngularJS 4, SockJS, SpringMVC, Hibernate, MySQL

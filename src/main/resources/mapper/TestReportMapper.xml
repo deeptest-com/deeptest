@@ -2,14 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.TestReportDao" >
 
-    <select id="chart_design_progress_by_project" resultType="Map" useCache="false" statementType="CALLABLE">
+    <select id="chart_design_progress_by_project" resultType="java.util.LinkedHashMap" useCache="false" statementType="CALLABLE">
         { call chart_design_progress_by_project(
                 #{projectId,mode=IN,jdbcType=INTEGER},
                 #{projectType,mode=IN,jdbcType=VARCHAR},
                 #{numb,mode=IN,jdbcType=INTEGER} ) }
     </select>
 
-    <select id="chart_execution_process_by_project" resultType="Map" useCache="false" statementType="CALLABLE">
+    <select id="chart_execution_process_by_project" resultType="java.util.LinkedHashMap" useCache="false" statementType="CALLABLE">
         { call chart_execution_process_by_project(
                 #{projectId,mode=IN,jdbcType=INTEGER},
                 #{projectType,mode=IN,jdbcType=VARCHAR},

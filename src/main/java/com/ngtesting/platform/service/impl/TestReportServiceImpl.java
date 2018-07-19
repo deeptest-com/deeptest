@@ -26,9 +26,9 @@ public class TestReportServiceImpl extends BaseServiceImpl implements TestReport
         Integer sum = null;
         for (Map record : ls) {
             if(sum == null) {
-                sum = Integer.valueOf(record.get("summ").toString());
+                sum = Integer.valueOf(record.get("sum").toString());
             }
-            xList.add(record.get("datee").toString());
+            xList.add(record.get("date").toString());
             numbList.add(record.get("numb"));
 
             sum += Integer.valueOf(record.get("numb").toString());
@@ -43,15 +43,15 @@ public class TestReportServiceImpl extends BaseServiceImpl implements TestReport
 
     @Override
     public Map<String, List<Object>> chart_excution_process_by_project(Integer projectId, TstProject.ProjectType type, Integer numb) {
-        List<Map> mapList = reportDao.chart_execution_process_by_project(projectId, type.toString(), numb);
+        List<Map> ls = reportDao.chart_execution_process_by_project(projectId, type.toString(), numb);
 
-        List<Object[]> ls = new ArrayList<Object[]>();
-        for (Map<String, Object> map : mapList) {
-            System.out.println(map.values());
-            Collection values = map.values();
-            List list = new ArrayList(values);
-            ls.add(list.toArray());
-        }
+//        List<Object[]> ls = new ArrayList<Object[]>();
+//        for (Map<String, Object> map : mapList) {
+//            System.out.println(map.values());
+//            Collection values = map.values();
+//            List list = new ArrayList(values);
+//            ls.add(list.toArray());
+//        }
 
         return countByStatus(ls);
     }
@@ -120,7 +120,7 @@ public class TestReportServiceImpl extends BaseServiceImpl implements TestReport
     }
 
     @Override
-    public Map<String, List<Object>> countByStatus(List<Object[]> ls) {
+    public Map<String, List<Object>> countByStatus(List<Map> ls) {
         Map<String, List<Object>> map = new LinkedHashMap<>();
 
         List<Object> xList = new LinkedList<>();
@@ -131,10 +131,14 @@ public class TestReportServiceImpl extends BaseServiceImpl implements TestReport
         String day = null;
         Map<String, Object> dayStatus = new HashMap();
 
-        Object a[] = {"last",null,null,null};
-        ls.add(a);
-        for (Object[] arr : ls) {
-            String dayTemp = arr[0].toString();
+        Map last = new HashMap() {{
+            put("date", "last");
+            put("status", null);
+            put("numb", null);
+        }};
+        ls.add(last);
+        for (Map arr : ls) {
+            String dayTemp = arr.get("date").toString();
 
             if (!dayTemp.equals(day) && day != null) { // 新的一天
                 xList.add(day);
@@ -161,14 +165,15 @@ public class TestReportServiceImpl extends BaseServiceImpl implements TestReport
             }
 
             // 同一天，对多行内容进行统计
-            if (arr[1] != null) {
-                String status = arr[1].toString();
+            if (arr.get("status") != null) {
+                String status = arr.get("status").toString();
+                String numb = arr.get("numb").toString();
                 if ("pass".equals(status)) {
-                    dayStatus.put("pass", arr[2]);
+                    dayStatus.put("pass", numb);
                 } else if("fail".equals(status)) {
-                    dayStatus.put("fail", arr[2]);
+                    dayStatus.put("fail", numb);
                 } else if("block".equals(status)) {
-                    dayStatus.put("block", arr[2]);
+                    dayStatus.put("block", numb);
                 }
             }
 

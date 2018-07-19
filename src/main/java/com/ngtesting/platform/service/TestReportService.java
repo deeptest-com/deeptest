@@ -15,7 +15,7 @@ public interface TestReportService extends BaseService {
     Map<String, Object> chart_execution_process_by_plan_user(Integer planId, Integer numb);
     Map<String, Object> chart_execution_progress_by_plan(Integer planId, Integer numb);
 
-    Map<String, List<Object>> countByStatus(List<Object[]> ls);
+    Map<String, List<Object>> countByStatus(List<Map> ls);
 
     Map<String, Object> countByUser(List<Object[]> ls);
 

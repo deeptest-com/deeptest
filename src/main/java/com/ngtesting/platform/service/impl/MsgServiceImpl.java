@@ -3,7 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.MsgDao;
 import com.ngtesting.platform.model.TstMsg;
-import com.ngtesting.platform.model.TstRun;
+import com.ngtesting.platform.model.TstTask;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.vo.Page;
@@ -65,7 +65,7 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
     }
 
     @Override
-    public TstMsg create(TstRun run, Constant.MsgType action, TstUser optUser) {
+    public TstMsg create(TstTask run, Constant.MsgType action, TstUser optUser) {
         TstMsg msg = new TstMsg();
 
 //        msg.setName("用户" + StringUtil.highlightDict(optUser.getName()) + action.msg

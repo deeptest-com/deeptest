@@ -112,11 +112,11 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	}
 
 	@Override
-	public TstProject getDetail(Integer id) {
+	public TstProject get(Integer id) {
 		if (id == null) {
 			return null;
 		}
-		TstProject po = projectDao.getDetail(id);
+		TstProject po = projectDao.get(id);
 
 		return po;
 	}
@@ -250,7 +250,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
 	@Override
 	public TstProject viewPers(Integer projectId, TstUser tstUser) {
-		TstProject po = getDetail(projectId);
+		TstProject po = get(projectId);
 
         if (po.getType().equals(TstProject.ProjectType.project)) {
             projectDao.genHistory(po.getOrgId(), tstUser.getId(), projectId, po.getName());

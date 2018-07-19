@@ -65,7 +65,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     public List<TstCase> queryForRunSelection(Integer projectId, Integer caseProjectId, Integer runId) {
 //        Integer id = caseProjectId == null? projectId: caseProjectId;
 //
-//        TstRun run = (TstRun)get(TstRun.class, runId);
+//        TstTask run = (TstTask)get(TstTask.class, runId);
 //
 //        List<Long> selectIds = new LinkedList<>();
 //        for (TstCaseInRun testcase : run.getTestcases()) {

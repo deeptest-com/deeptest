@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.AlertDao;
 import com.ngtesting.platform.model.TstAlert;
-import com.ngtesting.platform.model.TstRun;
+import com.ngtesting.platform.model.TstTask;
 import com.ngtesting.platform.service.AlertService;
 import com.ngtesting.platform.utils.DateUtil;
 import com.ngtesting.platform.utils.StringUtil;
@@ -66,7 +66,7 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
         return po;
     }
     @Override
-    public void saveAlert(TstRun run) {
+    public void saveAlert(TstTask run) {
 
 //        for (TestUser user : run.getAssignees()) {
 //            TstAlert po = getByRun(run.getId());;

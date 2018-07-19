@@ -1,25 +1,33 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.dao.TestPlanDao;
 import com.ngtesting.platform.model.TstPlan;
+import com.ngtesting.platform.model.TstProject;
+import com.ngtesting.platform.model.TstTask;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.TestPlanService;
+import com.ngtesting.platform.service.TestTaskService;
 import com.ngtesting.platform.vo.Page;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.LinkedList;
 import java.util.List;
 
 @Service
 public class TestPlanServiceImpl extends BaseServiceImpl implements TestPlanService {
 //    @Autowired
 //    ProjectService projectService;
-//    @Autowired
-//    TestTaskService runService;
+
 //
 //    @Autowired
 //    HistoryService historyService;
+
+    @Autowired
+    TestPlanDao testPlanDao;
+    @Autowired
+    TestTaskService taskService;
 
     @Override
     public Page page(Integer projectId, String status, String keywords, Integer currentPage, Integer itemsPerPage) {
@@ -60,17 +68,6 @@ public class TestPlanServiceImpl extends BaseServiceImpl implements TestPlanServ
 //        return vo;
 
         return null;
-    }
-
-    @Override
-    public List<TstPlan> genVos(List<TstPlan> pos) {
-        List<TstPlan> vos = new LinkedList<TstPlan>();
-
-//        for (TstPlan po : pos) {
-//            TstPlan vo = genVo(po);
-//            vos.add(vo);
-//        }
-        return vos;
     }
 
     @Override
@@ -136,26 +133,16 @@ public class TestPlanServiceImpl extends BaseServiceImpl implements TestPlanServ
     }
 
     @Override
-    public List<TstPlan> listByProject(Integer projectId, String projectType) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstPlan.class);
-//
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//
-//        if (projectType.equals(TestProject.ProjectType.project.toString())) {
-//            dc.add(Restrictions.eq("projectId", projectId));
-//        } else {
-//            dc.createAlias("project", "project");
-//            dc.add(Restrictions.eq("project.parentId", projectId));
-//        }
-//
-//        dc.addOrder(Order.asc("createTime"));
-//
-//        List<TstPlan> ls = findAllByCriteria(dc);
-//
-//        return ls;
+    public List<TstPlan> listByProject(Integer projectId, TstProject.ProjectType projectType) {
+        List<TstPlan> pos;
 
-        return null;
+        if (projectType.equals(TstProject.ProjectType.project)) {
+            pos = testPlanDao.listByProject(projectId);
+        } else {
+            pos = testPlanDao.listByProjectGroup(projectId);
+        }
+
+        return pos;
     }
 
     private Integer getChildMaxOrderNumb(TstPlan parent) {
@@ -198,33 +185,19 @@ public class TestPlanServiceImpl extends BaseServiceImpl implements TestPlanServ
     }
 
     @Override
+    public List<TstPlan> genVos(List<TstPlan> pos) {
+        for (TstPlan po : pos) {
+            genVo(po);
+        }
+        return pos;
+    }
+
+    @Override
     public TstPlan genVo(TstPlan po) {
-        TstPlan vo = new TstPlan();
+        List<TstTask> runs = taskService.listByPlan(po.getId());
+        po.setRuns(runs);
 
-//        vo.setId(po.getId());
-//        vo.setName(po.getName());
-//        vo.setEstimate(po.getEstimate());
-//        vo.setStartTime(po.getStartTime());
-//        vo.setEndTime(po.getEndTime());
-//        vo.setVerId(po.getVerId());
-//
-//        TestVer ver = po.getVerId()==null? null: (TestVer) get(TestVer.class, po.getVerId());
-//        vo.setVerName(ver!=null?ver.getName():"");
-//
-//        vo.setDescr(po.getDescr());
-//        vo.setProjectId(po.getProjectId());
-//
-//        TestProject project = (TestProject) get(TestProject.class, po.getProjectId());
-//        vo.setProjectName(project!=null?project.getName():"");
-//
-//        vo.setStatus(po.getStatus().toString());
-//
-//        for (TestRun run : po.getRuns()) {
-//            TstRun runVo = runService.genVo(run);
-//            vo.getRunVos().add(runVo);
-//        }
-
-        return vo;
+        return po;
     }
 
     @Override

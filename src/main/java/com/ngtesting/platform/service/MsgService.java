@@ -2,7 +2,7 @@ package com.ngtesting.platform.service;
 
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstMsg;
-import com.ngtesting.platform.model.TstRun;
+import com.ngtesting.platform.model.TstTask;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.vo.Page;
 
@@ -16,7 +16,7 @@ public interface MsgService extends BaseService {
 	TstMsg getById(Integer id);
 	void delete(Integer msgId, Integer userId);
 
-	TstMsg create(TstRun run, Constant.MsgType action, TstUser optUser);
+	TstMsg create(TstTask run, Constant.MsgType action, TstUser optUser);
 	TstMsg markReadPers(Integer id, Integer id1);
     void markAllReadPers(Integer id);
 

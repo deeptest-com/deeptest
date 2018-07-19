@@ -1,6 +1,5 @@
 package com.ngtesting.platform.bean.websocket;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant.RespCode;
 import com.ngtesting.platform.config.WsConstant;
@@ -14,7 +13,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.TextMessage;
 
 import java.util.HashMap;
 import java.util.List;
@@ -70,8 +68,8 @@ public class OptFacade {
 
         ret.put("code", 1);
 //        if (ret.get("type") != null) {
-            simpMessagingTemplate.convertAndSendToUser(user.getToken(), "/notification",
-                    new TextMessage(JSON.toJSONString(ret)));
+//            simpMessagingTemplate.convertAndSendToUser(user.getToken(), "/notification",
+//                    new TextMessage(JSON.toJSONString(ret)));
 //        }
     }
 

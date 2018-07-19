@@ -1,6 +1,7 @@
 package com.ngtesting.platform.service;
 
 import com.ngtesting.platform.model.TstHistory;
+import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstUser;
 
 import java.util.List;
@@ -10,7 +11,7 @@ public interface HistoryService extends BaseService {
 
 	List<TstHistory> listByOrg(Integer orgId);
 
-	List<TstHistory> listByProject(Integer projectId, String projectType);
+	List<TstHistory> listByProject(Integer projectId, TstProject.ProjectType projectType);
 	TstHistory getById(Integer id);
 
 	TstHistory create(Integer projectI, TstUser optUser, String action,

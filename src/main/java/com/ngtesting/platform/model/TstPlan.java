@@ -11,7 +11,7 @@ public class TstPlan extends BaseModel {
     private String name;
     private Integer estimate;
 
-    private String status;
+    private PlanStatus status;
 
     protected Date startTime;
 
@@ -24,6 +24,23 @@ public class TstPlan extends BaseModel {
 
     private Long verId;
     private String verName;
+
+    private List<TstTask> runs = new LinkedList<>();
+
+    public static enum PlanStatus {
+        not_start("not_start"),
+        in_progress("in_progress"),
+        end("end");
+
+        PlanStatus(String val) {
+            this.val = val;
+        }
+
+        private String val;
+        public String toString() {
+            return val;
+        }
+    }
 
     public String getProjectName() {
         return projectName;
@@ -49,14 +66,12 @@ public class TstPlan extends BaseModel {
         this.verId = verId;
     }
 
-    private List<TstRun> runVos = new LinkedList<>();
-
-    public List<TstRun> getRunVos() {
-        return runVos;
+    public List<TstTask> getRuns() {
+        return runs;
     }
 
-    public void setRunVos(List<TstRun> runVos) {
-        this.runVos = runVos;
+    public void setRuns(List<TstTask> runs) {
+        this.runs = runs;
     }
 
     public String getName() {
@@ -75,11 +90,11 @@ public class TstPlan extends BaseModel {
         this.estimate = estimate;
     }
 
-    public String getStatus() {
+    public PlanStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(PlanStatus status) {
         this.status = status;
     }
 

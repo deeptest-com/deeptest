@@ -1,8 +1,9 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.dao.TestTaskDao;
 import com.ngtesting.platform.model.TstCaseInRun;
-import com.ngtesting.platform.model.TstRun;
+import com.ngtesting.platform.model.TstTask;
 import com.ngtesting.platform.model.TstSuite;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.AlertService;
@@ -27,6 +28,9 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     @Autowired
     HistoryService historyService;
 
+    @Autowired
+    TestTaskDao taskDao;
+
 	@Override
 	public List<TstCaseInRun> lodaCase(Integer runId) {
 //		DetachedCriteria dc = DetachedCriteria.forClass(TstCaseInRun.class);
@@ -49,9 +53,9 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 	}
 
     @Override
-    public TstRun getById(Integer id) {
-//        TstRun po = (TstRun) get(TstRun.class, id);
-//        TstRun vo = genVo(po);
+    public TstTask getById(Integer id) {
+//        TstTask po = (TstTask) get(TstTask.class, id);
+//        TstTask vo = genVo(po);
 //
 //        return vo;
 
@@ -59,7 +63,7 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     }
 
     @Override
-    public TstRun save(JSONObject json, TstUser user) {
+    public TstTask save(JSONObject json, TstUser user) {
 //        Integer prjId = json.getInteger("prjId");
 //        Integer planId = json.getInteger("planId");
 //        Integer envId = json.getInteger("envId");
@@ -69,12 +73,12 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 //        String runName = json.getString("name");
 //
 //        Constant.MsgType action = null;
-//        TstRun run;
+//        TstTask run;
 //        if (runId != null) {
-//            run = (TstRun) get(TstRun.class, runId);
+//            run = (TstTask) get(TstTask.class, runId);
 //            action = Constant.MsgType.update;
 //        } else {
-//            run = new TstRun();
+//            run = new TstTask();
 //            run.setProjectId(prjId);
 //            run.setCaseProjectId(prjId);
 //            run.setPlanId(planId);
@@ -106,7 +110,7 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     }
 
     @Override
-    public boolean importSuiteCasesPers(TstRun run, List<TstSuite> suites) {
+    public boolean importSuiteCasesPers(TstTask run, List<TstSuite> suites) {
 //        if (suites == null || suites.size() == 0) {
 //            return false;
 //        }
@@ -133,7 +137,7 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     }
 
     @Override
-    public TstRun saveCases(JSONObject json, TstUser optUser) {
+    public TstTask saveCases(JSONObject json, TstUser optUser) {
 //        Integer projectId = json.getInteger("projectId");
 //        Integer caseProjectId = json.getInteger("caseProjectId");
 //        Integer planId = json.getInteger("planId");
@@ -146,12 +150,12 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     }
 
     @Override
-    public TstRun saveCases(Integer projectId, Integer caseProjectId, Integer planId, Integer runId, Object[] ids, TstUser optUser) {
-        TstRun run = null;
+    public TstTask saveCases(Integer projectId, Integer caseProjectId, Integer planId, Integer runId, Object[] ids, TstUser optUser) {
+        TstTask run = null;
 //        if (runId != null) {
-//            run = (TstRun) get(TstRun.class, runId);
+//            run = (TstTask) get(TstTask.class, runId);
 //        } else {
-//            run = new TstRun();
+//            run = new TstTask();
 //            run.setPlanId(planId);
 //        }
 //        run.setProjectId(projectId);
@@ -187,8 +191,8 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     }
 
     @Override
-    public TstRun delete(Integer id, Integer clientId) {
-//        TstRun run = (TstRun) get(TstRun.class, id);
+    public TstTask delete(Integer id, Integer clientId) {
+//        TstTask run = (TstTask) get(TstTask.class, id);
 //        run.setDeleted(true);
 //        saveOrUpdate(run);
 //        return run;
@@ -197,9 +201,9 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     }
 
     @Override
-    public TstRun closePers(Integer id, Integer userId) {
-//        TstRun run = (TstRun) get(TstRun.class, id);
-//        run.setStatus(TstRun.RunStatus.end);
+    public TstTask closePers(Integer id, Integer userId) {
+//        TstTask run = (TstTask) get(TstTask.class, id);
+//        run.setStatus(TstTask.RunStatus.end);
 //        saveOrUpdate(run);
 //
 //        return run;
@@ -212,34 +216,22 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     }
 
     @Override
-	public List<TstRun> genVos(List<TstRun> pos) {
-        List<TstRun> vos = new LinkedList<>();
+    public List<TstTask> listByPlan(Integer planId) {
+        List<TstTask> tasks = taskDao.listByPlan(planId);
+        return genVos(tasks);
+    }
 
-        for (TstRun po: pos) {
-			TstRun vo = genVo(po);
-        	vos.add(vo);
+    @Override
+	public List<TstTask> genVos(List<TstTask> pos) {
+        for (TstTask po: pos) {
+			genVo(po);
         }
-		return vos;
+		return pos;
 	}
 
 	@Override
-	public TstRun genVo(TstRun po) {
-//		TestUser user = (TestUser)get(TestUser.class, po.getUserId());
-//        TstProject project = (TstProject)get(TstProject.class, po.getProjectId());
-//        TstProject caseProject = (TstProject)get(TstProject.class, po.getCaseProjectId());
-//
-//        TstRun vo = new TstRun(po.getId(), po.getName(), po.getEstimate(), po.getStatus().toString(),
-//                po.getDescr(), po.getOrdr(),
-//                po.getProjectId(), project.getName(),
-//                po.getCaseProjectId(), caseProject.getName(),
-//                po.getPlanId(), po.getUserId(), user.getName());
-//
-//        if (po.getEnvId() != null) {
-//            vo.setEnvId(po.getEnvId());
-//            TstEnv env = (TstEnv)get(TstEnv.class, po.getEnvId());
-//            vo.setEnvName(env.getName());
-//        }
-//
+	public TstTask genVo(TstTask po) {
+
 //        for (TestUser u : po.getAssignees()) {
 //            TstUser TstUser = new TstUser(u.getId(), u.getName());
 //            vo.getAssignees().add(TstUser);
@@ -341,8 +333,8 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 		return vo;
 	}
 
-	private Integer getChildMaxOrderNumb(TstRun parent) {
-//		String hql = "select max(ordr) from TstRun where parentId = " + parent.getId();
+	private Integer getChildMaxOrderNumb(TstTask parent) {
+//		String hql = "select max(ordr) from TstTask where parentId = " + parent.getId();
 //		Integer maxOrder = (Integer) getByHQL(hql);
 //
 //		if (maxOrder == null) {

@@ -1,6 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.TstHistory;
+import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.utils.BeanUtilEx;
@@ -34,7 +35,7 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
 	}
 
 	@Override
-	public List<TstHistory> listByProject(Integer projectId, String projectType) {
+	public List<TstHistory> listByProject(Integer projectId, TstProject.ProjectType projectType) {
 //		DetachedCriteria dc = DetachedCriteria.forClass(TstHistory.class);
 //
 //		dc.add(Restrictions.eq("deleted", Boolean.FALSE));

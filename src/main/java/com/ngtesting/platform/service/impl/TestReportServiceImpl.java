@@ -1,14 +1,19 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.dao.TestReportDao;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.service.TestReportService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
 public class TestReportServiceImpl extends BaseServiceImpl implements TestReportService {
+    @Autowired
+    TestReportDao reportDao;
+
     @Override
     public Map<String, List<Object>> chart_design_progress_by_project(Integer projectId, TstProject.ProjectType type, Integer numb) {
         Map<String, List<Object>> map = new LinkedHashMap<>();
@@ -17,34 +22,38 @@ public class TestReportServiceImpl extends BaseServiceImpl implements TestReport
         List<Object> numbList = new LinkedList<>();
         List<Object> totalList = new LinkedList<>();
 
-//        List<Object[]> ls = getDao().getListBySQL("{call chart_design_progress_by_project(?,?,?)}",
-//                projectId, type.toString(), numb);
-//        Integer sum = null;
-//        for (Object[] arr : ls) {
-//            if(sum == null) {
-//                sum = Integer.valueOf(arr[2].toString());
-//            }
-//            xList.add(arr[0].toString());
-//            numbList.add(arr[1]);
-//
-//            sum += Integer.valueOf(arr[1].toString());
-//            totalList.add(sum);
-//        }
-//        map.put("xList", xList);
-//        map.put("numbList", numbList);
-//        map.put("totalList", totalList);
+        List<Map> ls = reportDao.chart_design_progress_by_project(projectId, type.toString(), numb);
+        Integer sum = null;
+        for (Map record : ls) {
+            if(sum == null) {
+                sum = Integer.valueOf(record.get("summ").toString());
+            }
+            xList.add(record.get("datee").toString());
+            numbList.add(record.get("numb"));
+
+            sum += Integer.valueOf(record.get("numb").toString());
+            totalList.add(sum);
+        }
+        map.put("xList", xList);
+        map.put("numbList", numbList);
+        map.put("totalList", totalList);
 
         return map;
     }
 
     @Override
     public Map<String, List<Object>> chart_excution_process_by_project(Integer projectId, TstProject.ProjectType type, Integer numb) {
-//        List<Object[]> ls = getDao().getListBySQL("{call chart_execution_process_by_project(?,?,?)}",
-//                projectId, type.toString(), numb);
-//
-//        return countByStatus(ls);
+        List<Map> mapList = reportDao.chart_execution_process_by_project(projectId, type.toString(), numb);
 
-        return null;
+        List<Object[]> ls = new ArrayList<Object[]>();
+        for (Map<String, Object> map : mapList) {
+            System.out.println(map.values());
+            Collection values = map.values();
+            List list = new ArrayList(values);
+            ls.add(list.toArray());
+        }
+
+        return countByStatus(ls);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service;
 
 import com.ngtesting.platform.model.TstAlert;
-import com.ngtesting.platform.model.TstRun;
+import com.ngtesting.platform.model.TstTask;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ public interface AlertService extends BaseService {
 
     List<TstAlert> scanAlerts(Integer userId);
 
-    void saveAlert(TstRun run);
+    void saveAlert(TstTask run);
 
     TstAlert getByRun(Integer id);
 

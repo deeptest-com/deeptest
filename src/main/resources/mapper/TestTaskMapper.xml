@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.TestTaskDao" >
+
+    <select id="listByPlan" resultMap="taskWithAssignees">
+        SELECT task.*,
+          user.id userId, user.name userName,
+          project.id projectId, project.name projectName,
+          caseProject.id caseProjectId, caseProject.name caseProjectName,
+          env.id envId, env.name envName
+
+        FROM TstTask task
+
+        JOIN TestUser user ON task.userId = user.id
+        JOIN TestProject project ON task.projectId = project.id
+        JOIN TestProject caseProject ON task.caseProjectId = caseProject.id
+        LEFT JOIN TestEnv env ON task.envId = env.id
+
+        WHERE o.userId=#{userId}
+        AND o.deleted != true AND o.disabled != true
+        ORDER BY o.createTime DESC
+    </select>
+    <select id="getAssigneesByTaskId" parameterType="int" resultType="TstUser">
+        SELECT u.id, u.name
+
+        FROM TestUser u
+        JOIN TstRRunAssignee r ON r.assigneeId = u.id
+
+        WHERE r.taskId = #{id}
+    </select>
+
+    <resultMap type="TstTask" id="taskWithAssignees" autoMapping="true">
+        <id column="id" property="id"/>
+        <collection property="assignees" column="id" ofType="TestUser"  select="getAssigneesByTaskId" autoMapping="true"></collection>
+    </resultMap>
+
+</mapper>

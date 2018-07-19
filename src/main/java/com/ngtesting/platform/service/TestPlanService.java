@@ -2,6 +2,7 @@ package com.ngtesting.platform.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.TstPlan;
+import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.vo.Page;
 
@@ -16,7 +17,7 @@ public interface TestPlanService extends BaseService {
 
 	List<TstPlan> listByOrg(Integer orgId);
 
-	List<TstPlan> listByProject(Integer projectId, String type);
+	List<TstPlan> listByProject(Integer projectId, TstProject.ProjectType type);
 
 	List<TstPlan> genVos(List<TstPlan> pos);
 	TstPlan genVo(TstPlan po);

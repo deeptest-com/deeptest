@@ -5,15 +5,15 @@ import com.ngtesting.platform.model.TstUser;
 import java.util.Map;
 
 public interface PushSettingsService extends BaseService {
-    void pushUserSettings(TstUser TstUser);
+    void pushUserSettings(TstUser TstuserUser);
 
-    void pushMyOrgs(TstUser TstUser);
+    void pushMyOrgs(TstUser user);
 
-    void pushOrgSettings(TstUser TstUser);
+    void pushOrgSettings(TstUser user);
 
-    void pushRecentProjects(TstUser TstUser);
+    void pushRecentProjects(TstUser user);
 
-    void pushPrjSettings(TstUser TstUser);
+    void pushPrjSettings(TstUser user);
 
-    void sendMsg(Integer userId, Map ret);
+    void sendMsg(TstUser user, Map ret);
 }

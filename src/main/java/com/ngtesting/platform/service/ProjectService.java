@@ -13,9 +13,9 @@ public interface ProjectService extends BaseService {
 	List<TstProject> list(Integer orgId, String keywords, Boolean disabled);
 	List<TstProject> listProjectGroups(Integer orgId);
 
-	TstProject getDetail(Integer id);
+    TstProject get(Integer id);
 
-	TstProject save(TstProject vo, Integer orgId, TstUser userVo);
+    TstProject save(TstProject vo, Integer orgId, TstUser userVo);
 	Boolean delete(Integer id);
 
 	List<TstProject> listBrothers(Integer projectId);
@@ -34,5 +34,4 @@ public interface ProjectService extends BaseService {
 	List<TstProject> genGroupVos(List<TstProject> pos);
 
     List<Integer> listBrotherIds(Integer projectId);
-
 }

@@ -1,12 +1,15 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.model.TstOrg;
 import com.ngtesting.platform.model.TstProjectAccessHistory;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.TextMessage;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,13 +17,14 @@ import java.util.Map;
 
 @Service
 public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSettingsService {
-//    @Autowired
-//    private ApplicationScopeBean scopeBean;
-//
-//    @Autowired
-//    SysPrivilegeService sysPrivilegeService;
     @Autowired
-OrgRolePrivilegeService orgRolePrivilegeService;
+    private SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    SysPrivilegeService sysPrivilegeService;
+
+    @Autowired
+    OrgRolePrivilegeService orgRolePrivilegeService;
     @Autowired
     ProjectPrivilegeService projectPrivilegeService;
     @Autowired
@@ -32,99 +36,98 @@ OrgRolePrivilegeService orgRolePrivilegeService;
     ProjectService projectService;
 
     @Override
-    public void pushUserSettings(TstUser TstUser) {
+    public void pushUserSettings(TstUser user) {
         Map<String, Object> ret = new HashMap<>();
         ret.put("code", 1);
         ret.put("type", WsConstant.WS_USER_SETTINGS);
 
-        Integer userId = TstUser.getId();
-
 //        Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userId);
 //        ret.put("sysPrivileges", sysPrivileges);
 
-        ret.put("profile", TstUser);
-        sendMsg(TstUser.getId(), ret);
+        ret.put("profile", user);
+        sendMsg(user, ret);
     }
 
     @Override
-    public void pushMyOrgs(TstUser TstUser) {
+    public void pushMyOrgs(TstUser user) {
         Map<String, Object> ret = new HashMap<>();
         ret.put("code", 1);
         ret.put("type", WsConstant.WS_MY_ORGS);
 
-        Integer userId = TstUser.getId();
+        Integer userId = user.getId();
 
         List<TstOrg> orgs = orgService.listByUser(userId);
         ret.put("myOrgs", orgs);
 
-        ret.put("defaultOrgId", TstUser.getDefaultOrgId());
+        ret.put("defaultOrgId", user.getDefaultOrgId());
 
-        sendMsg(TstUser.getId(), ret);
+        sendMsg(user, ret);
     }
 
     @Override
-    public void pushOrgSettings(TstUser TstUser) {
+    public void pushOrgSettings(TstUser user) {
         Map<String, Object> ret = new HashMap<>();
         ret.put("code", 1);
         ret.put("type", WsConstant.WS_ORG_SETTINGS);
 
-        Integer userId = TstUser.getId();
-        Integer orgId = TstUser.getDefaultOrgId();
+        Integer userId = user.getId();
+        Integer orgId = user.getDefaultOrgId();
 
 //        TstOrg org = (TstOrg)get(TstOrg.class, orgId);
-        Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(TstUser.getId(), orgId);
+        Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(user.getId(), orgId);
         Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
 
 //        ret.put("org", org);
 
-        ret.put("defaultOrgId", TstUser.getDefaultOrgId());
-        ret.put("defaultOrgName", TstUser.getDefaultOrgName());
-        ret.put("defaultPrjId", TstUser.getDefaultPrjId());
-        ret.put("defaultPrjName", TstUser.getDefaultPrjName());
+        ret.put("defaultOrgId", user.getDefaultOrgId());
+        ret.put("defaultOrgName", user.getDefaultOrgName());
+        ret.put("defaultPrjId", user.getDefaultPrjId());
+        ret.put("defaultPrjName", user.getDefaultPrjName());
         ret.put("orgPrivileges", orgPrivileges);
         ret.put("casePropertyMap", casePropertyMap);
 
-        sendMsg(userId, ret);
+        sendMsg(user, ret);
     }
 
     @Override
-    public void pushRecentProjects(TstUser TstUser) {
+    public void pushRecentProjects(TstUser user) {
         Map<String, Object> ret = new HashMap<>();
         ret.put("code", 1);
         ret.put("type", WsConstant.WS_RECENT_PROJECTS);
 
-        Integer userId = TstUser.getId();
-        Integer orgId = TstUser.getDefaultOrgId();
+        Integer userId = user.getId();
+        Integer orgId = user.getDefaultOrgId();
 
         List<TstProjectAccessHistory> recentProjects = projectService.listRecentProject(orgId, userId);
         ret.put("recentProjects", recentProjects);
 
         ret.put("defaultOrgId", orgId);
-        ret.put("defaultPrjId", TstUser.getDefaultPrjId());
+        ret.put("defaultPrjId", user.getDefaultPrjId());
 
-        sendMsg(TstUser.getId(), ret);
+        sendMsg(user, ret);
     }
 
     @Override
-    public void pushPrjSettings(TstUser TstUser) {
+    public void pushPrjSettings(TstUser user) {
         Map<String, Object> ret = new HashMap<>();
         ret.put("code", 1);
         ret.put("type", WsConstant.WS_PRJ_SETTINGS);
 
-        Integer userId = TstUser.getId();
-        Integer orgId = TstUser.getDefaultOrgId();
-        Integer prjId = TstUser.getDefaultPrjId();
+        Integer userId = user.getId();
+        Integer orgId = user.getDefaultOrgId();
+        Integer prjId = user.getDefaultPrjId();
 
         Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userId, prjId, orgId);
         ret.put("prjPrivileges", prjPrivileges);
-        ret.put("prjName", TstUser.getDefaultPrjName());
+        ret.put("prjName", user.getDefaultPrjName());
 
-        sendMsg(userId, ret);
+        sendMsg(user, ret);
     }
 
     @Override
-    public void sendMsg(Integer userId, Map ret) {
-//        scopeBean.sendMessageToClient(userId.toString(), new TextMessage(JSON.toJSONString(ret)));
+    public void sendMsg(TstUser user, Map ret) {
+        simpMessagingTemplate.convertAndSendToUser(user.getToken(), "/notification",
+                new TextMessage(JSON.toJSONString(ret)));
     }
 
 }

@@ -2,7 +2,7 @@ package com.ngtesting.platform.model;
 
 import java.util.*;
 
-public class TstRun extends BaseModel {
+public class TstTask extends BaseModel {
 
     private static final long serialVersionUID = 3655131645148750323L;
     private String name;
@@ -30,25 +30,8 @@ public class TstRun extends BaseModel {
     private Long envId;
     private String envName;
 
-    public TstRun() {
+    public TstTask() {
 
-    }
-    public TstRun(Integer id, String name, Integer estimate, String status,
-                  String descr, Integer ordr, Integer projectId, String projectName, Integer caseProjectId, String caseProjectName,
-                  Integer planId, Integer userId, String userName) {
-        this.id = id;
-        this.name = name;
-        this.estimate = estimate;
-        this.status = status;
-        this.descr = descr;
-        this.ordr = ordr;
-        this.projectId = projectId;
-        this.projectName = projectName;
-        this.caseProjectId = caseProjectId;
-        this.caseProjectName = caseProjectName;
-        this.planId = planId;
-        this.userId = userId;
-        this.userName = userName;
     }
 
     private List<TstUser> assignees = new LinkedList<>();

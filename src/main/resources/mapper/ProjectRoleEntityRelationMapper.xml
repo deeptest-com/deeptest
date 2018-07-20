@@ -3,7 +3,24 @@
 <mapper namespace="com.ngtesting.platform.dao.ProjectRoleEntityRelationDao" >
 
     <select id="listByProject" resultType="TstProjectRoleEntityRelation">
-        SELECT * FROM TstProjectRoleEntityRelation o
+        SELECT
+          o.*,
+          role.name projectRoleName,
+          CASE o.type
+              WHEN 'user' THEN
+                usr.nickname
+              WHEN 'group' THEN
+                grp.name
+              ELSE
+                'N/A'
+          END entityName
+
+        FROM TstProjectRoleEntityRelation o
+
+        JOIN TstProjectRole role ON role.id = o.projectRoleId
+
+        LEFT JOIN TstUser usr ON usr.id = o.entityId
+        LEFT JOIN TstOrgGroup grp ON grp.id = o.entityId
 
         WHERE o.projectId=#{projectId}
 

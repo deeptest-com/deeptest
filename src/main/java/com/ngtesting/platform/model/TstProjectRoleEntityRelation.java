@@ -16,14 +16,28 @@ public class TstProjectRoleEntityRelation extends BaseModel {
     private Boolean selected;
     private Boolean selecting;
 
-	private String type;
+	private EntityType type;
+
+	public enum EntityType {
+		user("user"),
+		group("group");
+
+		EntityType(String val) {
+			this.val = val;
+		}
+
+		private String val;
+		public String toString() {
+			return val;
+		}
+	}
 
     public TstProjectRoleEntityRelation() {
 
     }
 
     public TstProjectRoleEntityRelation(Integer id, Integer projectId, Integer entityId, Integer projectRoleId,
-										String projectRoleName, String entityName, String type) {
+										String projectRoleName, String entityName, EntityType type) {
         this.id = id;
         this.projectId = projectId;
         this.entityId = entityId;
@@ -33,12 +47,11 @@ public class TstProjectRoleEntityRelation extends BaseModel {
         this.type = type;
     }
 
-
-	public String getType() {
+	public EntityType getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(EntityType type) {
 		this.type = type;
 	}
 

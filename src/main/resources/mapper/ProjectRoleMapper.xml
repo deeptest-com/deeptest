@@ -15,7 +15,7 @@
             </if>
             AND o.deleted != TRUE
 
-        ORDER BY o.id DESC
+        ORDER BY o.id ASC
     </select>
 
 </mapper>

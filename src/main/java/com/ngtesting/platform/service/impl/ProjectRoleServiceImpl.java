@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.dao.ProjectRoleDao;
 import com.ngtesting.platform.model.TstProjectRole;
 import com.ngtesting.platform.service.ProjectPrivilegeService;
 import com.ngtesting.platform.service.ProjectRolePriviledgeRelationService;
@@ -12,6 +13,9 @@ import java.util.List;
 
 @Service
 public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRoleService {
+	@Autowired
+	private ProjectRoleDao projectRoleDao;
+
     @Autowired
     private ProjectPrivilegeService projectPrivilegeService;
     @Autowired
@@ -19,6 +23,8 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 
 	@Override
 	public List list(Integer orgId, String keywords, String disabled) {
+		List<TstProjectRole> ls = projectRoleDao.list(orgId, keywords, disabled);
+
 //        DetachedCriteria dc = DetachedCriteria.forClass(TestProjectRoleForOrg.class);
 //        dc.add(Restrictions.eq("orgId", orgId));
 //
@@ -38,7 +44,7 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 //
 //		return vos;
 
-		return null;
+		return ls;
 	}
 
 	@Override

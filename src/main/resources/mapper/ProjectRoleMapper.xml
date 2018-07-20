@@ -2,13 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.ProjectRoleDao" >
 
-    <select id="query" resultType="TstProjectRole">
-        SELECT * FROM TstAlert o WHERE o.userId=#{userId}
-        <if test="isRead != null">
-            AND o.isRead = #{isRead}
-        </if>
-        AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+    <select id="list" resultType="TstProjectRole">
+        SELECT * FROM TstProjectRole o
+
+        WHERE
+            o.orgId=#{orgId}
+            <if test="keywordsParam != null and keywordsParam != ''">
+                AND c.name LIKE CONCAT('%','${keywordsParam}','%' )
+            </if>
+            <if test="disabledParam != null and disabledParam != ''">
+                AND c.disabled = #{disabledParam}
+            </if>
+            AND o.deleted != TRUE
+
+        ORDER BY o.id DESC
     </select>
 
 </mapper>

@@ -14,7 +14,7 @@
 
     <select id="queryByUser" parameterType="int" resultType="TstOrg">
         SELECT * FROM TstOrg o
-        JOIN TstROrgUser r on r.orgId=o.id
+        JOIN TstOrgUserRelation r on r.orgId=o.id
 
         WHERE r.userId = #{userId}
         AND o.disabled != TRUE

@@ -2,13 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.ProjectRoleEntityRelationDao" >
 
-    <select id="query" resultType="TstProjectRoleEntityRelation">
-        SELECT * FROM TstAlert o WHERE o.userId=#{userId}
-        <if test="isRead != null">
-            AND o.isRead = #{isRead}
-        </if>
-        AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+    <select id="listByProject" resultType="TstProjectRoleEntityRelation">
+        SELECT * FROM TstProjectRoleEntityRelation o
+
+        WHERE o.projectId=#{projectId}
+
+        AND o.deleted != TRUE AND o.disabled != TRUE
+        ORDER BY o.id DESC
     </select>
 
 </mapper>

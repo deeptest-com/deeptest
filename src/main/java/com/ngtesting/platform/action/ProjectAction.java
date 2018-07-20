@@ -2,17 +2,14 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.TstHistory;
-import com.ngtesting.platform.model.TstPlan;
-import com.ngtesting.platform.model.TstProject;
-import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.HistoryService;
-import com.ngtesting.platform.service.ProjectService;
-import com.ngtesting.platform.service.PushSettingsService;
-import com.ngtesting.platform.service.TestPlanService;
+import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -29,6 +26,11 @@ public class ProjectAction {
     private TestPlanService planService;
     @Autowired
     private HistoryService historyService;
+
+    @Autowired
+    private ProjectRoleService projectRoleService;
+    @Autowired
+    private ProjectRoleEntityRelationService projectRoleEntityRelationService;
 
     @Autowired
     private PushSettingsService pushSettingsService;
@@ -145,6 +147,27 @@ public class ProjectAction {
         pushSettingsService.pushPrjSettings(user);
 
         ret.put("data", vo);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @ResponseBody
+    @PostMapping("/getUsers")
+    public Map<String, Object> getUsers(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Integer orgId = user.getDefaultOrgId();
+
+        Integer projectId = json.getInteger("id");
+
+        List<TstProjectRole> projectRoles = projectRoleService.list(orgId, null, null);
+
+        List<TstProjectRoleEntityRelation> entityInRoles = projectRoleEntityRelationService.listByProject(projectId);
+
+        ret.put("projectRoles", projectRoles);
+        ret.put("entityInRoles", entityInRoles);
+
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

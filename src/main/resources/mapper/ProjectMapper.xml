@@ -2,36 +2,32 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.ProjectDao" >
 
-    <resultMap id="projectMaps" type="TstProject">
+    <resultMap id="projectMaps" type="TstProject" autoMapping="true">
         <id column="id" property="id"/>
-        <result column="name" property="name"/>
-        <result column="descr" property="descr"/>
-        <result column="parentId" property="parentId"/>
-        <result column="type" property="type"/>
 
         <collection property="children" ofType="TstProject" select="getChildren"
-                    column="{id=id,keywords=keywords,disabled=disabled">
+                    column="{id=id,keywordsParam=keywordsParam,disabledParam=disabledParam">
         </collection>
     </resultMap>
 
     <select id="query" resultMap="projectMaps">
-        SELECT #{keywords} as keywords,
-               #{disabled} as disabled,
-               id,name,descr,parentId,type FROM TstProject p WHERE p.orgId=#{orgId} AND p.type='group'
-        <if test="keywords != null and keywords != ''">
-            AND p.name LIKE CONCAT('%','${keywords}','%' )
+        SELECT #{keywordsParam} as keywordsParam,
+               #{disabledParam} as disabledParam,
+               p.* FROM TstProject p WHERE p.orgId=#{orgId} AND p.type='group'
+        <if test="keywordsParam != null and keywordsParam != ''">
+            AND p.name LIKE CONCAT('%','${keywordsParam}','%' )
         </if>
-        <if test="disabled != null and disabled != ''">
-            AND p.disabled = #{disabled}
+        <if test="disabledParam != null and disabledParam != ''">
+            AND p.disabledParam = #{disabledParam}
         </if>
     </select>
     <select id="getChildren" parameterType="Map" resultType="TstProject">
-      SELECT * FROM TstProject c WHERE c.parentId = #{id} AND c.type='project'
-        <if test="keywords != null and keywords != ''">
-            AND c.name LIKE CONCAT('%','${keywords}','%' )
+      SELECT c.* FROM TstProject c WHERE c.parentId = #{id} AND c.type='project'
+        <if test="keywordsParam != null and keywordsParam != ''">
+            AND c.name LIKE CONCAT('%','${keywordsParam}','%' )
         </if>
-        <if test="disabled != null and disabled != ''">
-            AND c.disabled = #{disabled}
+        <if test="disabledParam != null and disabledParam != ''">
+            AND c.disabled = #{disabledParam}
         </if>
     </select>
 
@@ -59,5 +55,57 @@
             AND prj.disabled != TRUE
         ORDER BY his.lastAccessTime
     </select>
+
+    <select id="isLastestProjectGroup" resultType="INTEGER">
+        SELECT COUNT(prj.id) FROM TstProject prj
+
+        WHERE prj.orgId = #{orgId}
+        AND prj.id != #{projectGroupId}
+        AND prj.type = 'group'
+
+        AND prj.deleted != TRUE
+        AND prj.disabled != TRUE
+        ORDER BY prj.id
+    </select>
+
+    <select id="listProjectGroups" resultType="TstProject">
+        SELECT * FROM TstProject prj
+
+        WHERE prj.orgId = #{orgId}
+        AND prj.type = 'group'
+
+        AND prj.deleted != TRUE
+        AND prj.disabled != TRUE
+        ORDER BY prj.id
+    </select>
+
+    <insert id="save" parameterType="TstProject" useGeneratedKeys="true" keyProperty="id">
+        insert into TstProject (name,descr,orgId,parentId,type,
+          selected,selecting, deleted,disabled,createTime)
+
+        values (#{name},#{descr},#{orgId},#{parentId},#{type},
+          FALSE,FALSE,#{deleted},#{disabled},#{createTime})
+    </insert>
+    <update id="update" parameterType="TstProject">
+        UPDATE TstProject
+        SET name=#{name}, descr=#{descr}, orgId=#{orgId}, parentId=#{parentId}, disabled=#{disabled}
+        WHERE id=#{id}
+    </update>
+
+    <update id="enable" parameterType="TstProject">
+        UPDATE TstProject
+        SET disabled=FALSE
+        WHERE id=#{id}
+    </update>
+    <update id="enableChildren" parameterType="TstProject">
+        UPDATE TstProject
+        SET disabled=FALSE
+        WHERE parentId=#{id}
+    </update>
+    <update id="disableChildren" parameterType="TstProject">
+        UPDATE TstProject
+        SET disabled=TRUE
+        WHERE parentId=#{id}
+    </update>
 
 </mapper>

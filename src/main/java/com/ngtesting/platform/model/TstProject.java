@@ -15,7 +15,6 @@ public class TstProject extends BaseModel {
 
     private Integer parentId;
     private ProjectType type;
-    private Integer order;
     private Integer childrenNumb;
 
 	private Boolean isLastestProjectGroup;
@@ -90,12 +89,6 @@ public class TstProject extends BaseModel {
 		this.type = type;
 	}
 
-	public Integer getOrder() {
-		return order;
-	}
-	public void setOrder(Integer order) {
-		this.order = order;
-	}
 	public Integer getChildrenNumb() {
 		return childrenNumb;
 	}

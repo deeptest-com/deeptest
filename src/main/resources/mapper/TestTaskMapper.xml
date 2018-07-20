@@ -2,36 +2,37 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.TestTaskDao" >
 
-    <select id="listByPlan" resultMap="taskWithAssignees">
+    <select id="listByPlan" resultMap="testTaskWithAssignees">
         SELECT task.*,
           user.id userId, user.name userName,
           project.id projectId, project.name projectName,
           caseProject.id caseProjectId, caseProject.name caseProjectName,
-          env.id envId, env.name envName
+          env.id envId, env.name envName,
+          assignee.id assigneeId, assignee.nickname assigneeNickname, assignee.avatar assigneeAvatar
 
         FROM TstTask task
 
-        JOIN TestUser user ON task.userId = user.id
-        JOIN TestProject project ON task.projectId = project.id
-        JOIN TestProject caseProject ON task.caseProjectId = caseProject.id
+        JOIN TstUser user ON task.userId = user.id
+        JOIN TstProject project ON task.projectId = project.id
+        JOIN TstProject caseProject ON task.caseProjectId = caseProject.id
         LEFT JOIN TestEnv env ON task.envId = env.id
 
+        LEFT JOIN TstRTaskAssignee r on r.taskId = task.id
+        LEFT JOIN TstUser assignee on r.assigneeId = assignee.id
+
         WHERE o.userId=#{userId}
-        AND o.deleted != true AND o.disabled != true
+        AND o.deleted != TRUE AND o.disabled != TRUE
         ORDER BY o.createTime DESC
     </select>
-    <select id="getAssigneesByTaskId" parameterType="int" resultType="TstUser">
-        SELECT u.id, u.name
 
-        FROM TestUser u
-        JOIN TstRRunAssignee r ON r.assigneeId = u.id
+    <resultMap type="TstTask" id="testTask" autoMapping="true"></resultMap>
 
-        WHERE r.taskId = #{id}
-    </select>
-
-    <resultMap type="TstTask" id="taskWithAssignees" autoMapping="true">
-        <id column="id" property="id"/>
-        <collection property="assignees" column="id" ofType="TestUser"  select="getAssigneesByTaskId" autoMapping="true"></collection>
+    <resultMap type="TstTask" id="testTaskWithAssignees" extends="testTask">
+        <collection property="assignees" ofType="TstUser">
+            <id property="id" column="assigneeId" />
+            <result property="nickname" column="assigneeNickname" />
+            <result property="avatar" column="assigneeAvatar" />
+        </collection>
     </resultMap>
 
 </mapper>

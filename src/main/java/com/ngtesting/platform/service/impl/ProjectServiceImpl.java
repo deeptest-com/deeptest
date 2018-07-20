@@ -1,8 +1,10 @@
 package com.ngtesting.platform.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.dao.UserDao;
+import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstProjectAccessHistory;
 import com.ngtesting.platform.model.TstUser;
@@ -84,22 +86,9 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
 	@Override
 	public List<TstProject> listProjectGroups(Integer orgId) {
-//		DetachedCriteria dc = DetachedCriteria.forClass(TstProject.class);
-//
-//		dc.add(Restrictions.eq("orgId", orgId));
-//		dc.add(Restrictions.eq("type", ProjectType.group));
-//		dc.add(Restrictions.eq("disabled", false));
-//
-//		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//		dc.addOrder(Order.asc("id"));
-//
-//		List<TstProject> pos = findAllByCriteria(dc);
-//
-//		List<TstProject> vos = this.genGroupVos(pos);
-//
-//		return vos;
-
-		return null;
+		List<TstProject> pos = projectDao.listProjectGroups(orgId);
+		this.genGroupVos(pos);
+		return pos;
 	}
 
 	@Override
@@ -123,77 +112,54 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
 	@Override
 	public TstProject save(TstProject vo, Integer orgId, TstUser TstUser) {
-//		if (vo == null) {
-//			return null;
-//		}
-//
-//		boolean isNew = vo.getId() == null;
-//		TstProject po = new TstProject();
-//		if (isNew) {
-//            po.setOrgId(orgId);
-//		} else {
-//            po = (TstProject) get(TstProject.class, vo.getId());
-//		}
-//
-//		boolean disableChanged = vo.getDisabled() != po.getDisabled();
-//
-//		po.setParentId(vo.getParentId());
-//		po.setName(vo.getName());
-//		po.setDescr(vo.getDescr());
-//		po.setType(ProjectType.valueOf(vo.getType()));
-//		po.setDisabled(vo.getDisabled());
-//
-//		saveOrUpdate(po);
-//
-//        if(isNew && ProjectType.project.equals(po.getType())) {
-//            projectPrivilegeService.addUserAsProjectTestLeaderPers(orgId, po.getId(), "test_leader", TstUser.getId());
-//            caseService.createRoot(po.getId(), TstUser);
-//        }
-//        if(ProjectType.project.equals(po.getType())) {
-//            historyService.create(po.getId(), TstUser,
-//                    isNew? Constant.MsgType.create.msg: Constant.MsgType.create.update.msg,
-//                    TestHistory.TargetType.project, po.getId(), po.getName());
-//        }
-//
-//		if (!disableChanged) {
-//			return po;
-//		}
-//
-//		// 项目被启用
-//		if (!po.getDisabled()) {
-//			if (po.getType().equals(ProjectType.project)) {
-//				// 启用父
-//				TstProject parent = po.getParent();
-//				if (parent.getDisabled()) {
-//					parent.setDisabled(false);
-//					saveOrUpdate(parent);
-//				}
-//			} else {
-//				// 启用子
-//				for (TstProject child : po.getChildren()) {
-//					if (child.getDisabled()) {
-//						child.setDisabled(false);
-//						saveOrUpdate(child);
-//					}
-//				}
-//			}
-//		}
-//
-//		// 项目组被归档，归档子项目
-//		if (po.getDisabled() && po.getType().equals(ProjectType.group)) {
-//			for (TstProject child : po.getChildren()) {
-//				if (!child.getDisabled()) {
-//					child.setDisabled(true);
-//					saveOrUpdate(child);
-//				}
-//			}
-//		}
-//
-//		// this.removeCache(user.getOrgId());
-//
-//		return po;
+		if (vo == null) {
+			return null;
+		}
 
-		return null;
+        vo.setOrgId(orgId);
+
+        boolean disableStatusChanged = false;
+		boolean isNew = vo.getId() == null;
+		if (isNew) {
+            projectDao.save(vo);
+		} else {
+            TstProject old = projectDao.get(vo.getId());
+            disableStatusChanged = vo.getDisabled() != old.getDisabled();
+
+            projectDao.update(vo);
+		}
+
+        if(isNew && TstProject.ProjectType.project.equals(vo.getType())) {
+            projectPrivilegeService.addUserAsProjectTestLeaderPers(orgId, vo.getId(), "test_leader", TstUser.getId());
+            caseService.createRoot(vo.getId(), TstUser);
+        }
+        if(TstProject.ProjectType.project.equals(vo.getType())) {
+            historyService.create(vo.getId(), TstUser,
+                    isNew? Constant.MsgType.create.msg: Constant.MsgType.create.update.msg,
+                    TstHistory.TargetType.project, vo.getId(), vo.getName());
+        }
+
+		if (!disableStatusChanged) {
+			return vo;
+		}
+
+		// 项目被启用
+		if (!vo.getDisabled()) {
+			if (vo.getType().equals(TstProject.ProjectType.project)) {
+				// 启用父
+				projectDao.enable(vo.getParentId());
+			} else {
+				// 启用子
+                projectDao.enableChildren(vo.getId());
+			}
+		}
+
+		// 项目组被归档，归档子项目
+		if (vo.getDisabled() && vo.getType().equals(TstProject.ProjectType.group)) {
+            projectDao.disableChildren(vo.getId());
+		}
+
+		return vo;
 	}
 
 	@Override
@@ -291,24 +257,17 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
 	@Override
 	public boolean isLastestProjectGroup(Integer orgId, Integer projectGroupId) {
-//		String hql = "select count(prj.id) from TstProject prj where prj.id != ?"
-//				+ " and orgId=? and type=? and prj.deleted != true and prj.deleted != true";
-//
-//		long count = (Integer) getByHQL(hql, orgId, projectGroupId, ProjectType.group);
-//		return count == 0;
-
-		return true;
+		Integer count = projectDao.isLastestProjectGroup(orgId, projectGroupId);
+		return count > 0;
 	}
 
     @Override
     public List<TstProject> genGroupVos(List<TstProject> pos) {
-        List<TstProject> voList = new LinkedList<TstProject>();
-//        for (TstProject po : pos) {
-//            TstProject vo = genVo(po, null);
-//            voList.add(vo);
-//        }
+        for (TstProject po : pos) {
+            genVo(po, null);
+        }
 
-        return voList;
+        return pos;
     }
 
     @Override

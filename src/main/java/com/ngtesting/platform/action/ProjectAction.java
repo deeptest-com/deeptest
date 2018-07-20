@@ -12,10 +12,7 @@ import com.ngtesting.platform.service.PushSettingsService;
 import com.ngtesting.platform.service.TestPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -52,6 +49,33 @@ public class ProjectAction {
         ret.put("data", vos);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
+        return ret;
+    }
+
+    @ResponseBody
+    @PostMapping("/getInfo")
+    public Map<String, Object> getInfo(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Integer orgId = user.getDefaultOrgId();
+
+        Integer projectId = json.getInteger("id");
+
+        if (projectId != null) {
+            TstProject project = projectService.get(projectId);
+            TstProject vo = projectService.genVo(project, null);
+
+            if (TstProject.ProjectType.group.equals(project.getType())) {
+                vo.setLastestProjectGroup(projectService.isLastestProjectGroup(orgId, projectId));
+            }
+
+            ret.put("data", vo);
+        }
+        List<TstProject> groups = projectService.listProjectGroups(orgId);
+        ret.put("groups", groups);
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
 
@@ -98,6 +122,30 @@ public class ProjectAction {
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         ret.put("data", vo);
 
+        return ret;
+    }
+
+    @ResponseBody
+    @PostMapping("/save")
+    public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Integer userId = user.getId();
+        Integer orgId = user.getDefaultOrgId();
+
+        TstProject vo = json.getObject("model", TstProject.class);
+
+        TstProject po = projectService.save(vo, orgId, user);
+        if (TstProject.ProjectType.project.equals(po.getType())) {
+            projectService.updateNameInHisotyPers(po.getId(), userId);
+        }
+
+        pushSettingsService.pushRecentProjects(user);
+        pushSettingsService.pushPrjSettings(user);
+
+        ret.put("data", vo);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
 

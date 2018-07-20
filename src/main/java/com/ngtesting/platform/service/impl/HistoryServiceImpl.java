@@ -68,7 +68,7 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
     }
     @Override
     public TstHistory create(Integer projectId, TstUser optUser, String action,
-                              String entityType, Integer entityId, String name) {
+							 TstHistory.TargetType entityType, Integer entityId, String name) {
         TstHistory history = new TstHistory();
 
 //        history.setTitle("用户" + StringUtil.highlightDict(optUser.getName())

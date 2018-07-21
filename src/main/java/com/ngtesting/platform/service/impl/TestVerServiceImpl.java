@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public class TestVerServiceImpl extends BaseServiceImpl implements TestVerService {
     @Override
-    public List<TstVer> list(Long projectId, String keywords, String disabled) {
+    public List<TstVer> list(Integer projectId, String keywords, String disabled) {
 //        DetachedCriteria dc = DetachedCriteria.forClass(TstVer.class);
 //
 //        dc.add(Restrictions.eq("projectId", projectId));
@@ -35,7 +35,7 @@ public class TestVerServiceImpl extends BaseServiceImpl implements TestVerServic
     }
 
     @Override
-    public TstVer getById(Long caseId) {
+    public TstVer getById(Integer caseId) {
 //        TstVer po = (TstVer) get(TstVer.class, caseId);
 //        TstVer vo = genVo(po);
 //
@@ -46,7 +46,7 @@ public class TestVerServiceImpl extends BaseServiceImpl implements TestVerServic
 
     @Override
     public TstVer save(JSONObject json, TstUser optUser) {
-        Long id = json.getLong("id");
+        Integer id = json.getInteger("id");
 
         TstVer po = null;
 //        TstVer vo = JSON.parseObject(JSON.toJSONString(json), TstVer.class);
@@ -78,7 +78,7 @@ public class TestVerServiceImpl extends BaseServiceImpl implements TestVerServic
     }
 
     @Override
-    public TstVer delete(Long id, Long clientId) {
+    public TstVer delete(Integer id, Integer clientId) {
 //        TstVer po = (TstVer)get(TstVer.class, id);
 //        po.setDeleted(true);
 //        saveOrUpdate(po);
@@ -88,7 +88,7 @@ public class TestVerServiceImpl extends BaseServiceImpl implements TestVerServic
     }
 
     @Override
-    public boolean changeOrderPers(Long id, String act, Long projectId) {
+    public boolean changeOrderPers(Integer id, String act, Integer projectId) {
 //        TstVer ver = (TstVer) get(TstVer.class, id);
 //
 //        String hql = "from TstVer tp where tp.projectId=? and tp.deleted = false and tp.disabled = false ";

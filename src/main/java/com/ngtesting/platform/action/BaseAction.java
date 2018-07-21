@@ -5,10 +5,10 @@ public class BaseAction {
 //	public TstUser genRequest(HttpServletRequest request, JSONObject json) {
 //		TstUser TstUser = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 //
-//		if (json.getLong("orgId") == null) {
+//		if (json.getInteger("orgId") == null) {
 //			json.put("orgId", TstUser.getDefaultOrgId());
 //		}
-//		if (json.getLong("projectId") == null) {
+//		if (json.getInteger("projectId") == null) {
 //			json.put("projectId", TstUser.getDefaultPrjId());
 //		}
 //

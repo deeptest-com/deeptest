@@ -16,7 +16,7 @@ public class CaseAttachmentServiceImpl extends BaseServiceImpl implements CaseAt
     CaseService caseService;
 
     @Override
-    public void uploadAttachmentPers(Long caseId, String name, String path, TstUser user) {
+    public void uploadAttachmentPers(Integer caseId, String name, String path, TstUser user) {
 //        TestCaseAttachment attach = new TestCaseAttachment();
 //        attach.setName(name);
 //        attach.setUri(path);
@@ -30,7 +30,7 @@ public class CaseAttachmentServiceImpl extends BaseServiceImpl implements CaseAt
     }
 
     @Override
-    public void removeAttachmentPers(Long id, TstUser user) {
+    public void removeAttachmentPers(Integer id, TstUser user) {
 //        TestCaseAttachment attach = (TestCaseAttachment) get(TestCaseAttachment.class, id);
 //        attach.setDeleted(true);
 //        saveOrUpdate(attach);
@@ -39,7 +39,7 @@ public class CaseAttachmentServiceImpl extends BaseServiceImpl implements CaseAt
     }
 
     @Override
-    public List<TstCaseAttachment> listByCase(Long caseId) {
+    public List<TstCaseAttachment> listByCase(Integer caseId) {
 //        DetachedCriteria dc = DetachedCriteria.forClass(TestCaseAttachment.class);
 //
 //        dc.add(Restrictions.eq("testCaseId", caseId));

@@ -24,7 +24,7 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
 	}
 
 	@Override
-	public TstCaseExeStatus save(TstCaseExeStatus vo, Long orgId) {
+	public TstCaseExeStatus save(TstCaseExeStatus vo, Integer orgId) {
 //		if (vo == null) {
 //			return null;
 //		}

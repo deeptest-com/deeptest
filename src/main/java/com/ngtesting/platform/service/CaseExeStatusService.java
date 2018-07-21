@@ -7,7 +7,7 @@ import java.util.List;
 public interface CaseExeStatusService extends BaseService {
 	List<TstCaseExeStatus> list(Integer orgId);
 
-	TstCaseExeStatus save(TstCaseExeStatus vo, Long orgId);
+	TstCaseExeStatus save(TstCaseExeStatus vo, Integer orgId);
 	boolean delete(Integer id);
 
 	boolean changeOrderPers(Integer id, String act);

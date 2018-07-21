@@ -34,7 +34,7 @@ public class CaseCommentsServiceImpl extends BaseServiceImpl implements CaseComm
     }
 
     @Override
-    public boolean delete(Long id, Long userId) {
+    public boolean delete(Integer id, Integer userId) {
 //        TestCaseComments po = (TestCaseComments) get(TestCaseComments.class, id);
 //        po.setDeleted(true);
 //        saveOrUpdate(po);

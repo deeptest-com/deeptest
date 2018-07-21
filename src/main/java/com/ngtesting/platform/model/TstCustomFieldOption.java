@@ -7,13 +7,13 @@ public class TstCustomFieldOption extends BaseModel {
 	private String label;
 	private String descr;
 	private Integer ordr;
-	private Long fieldId;
+	private Integer fieldId;
 
-	public Long getFieldId() {
+	public Integer getFieldId() {
 		return fieldId;
 	}
 
-	public void setFieldId(Long fieldId) {
+	public void setFieldId(Integer fieldId) {
 		this.fieldId = fieldId;
 	}
 

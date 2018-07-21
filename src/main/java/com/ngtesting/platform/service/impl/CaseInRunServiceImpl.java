@@ -58,7 +58,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
     }
 
     @Override
-    public TstCaseInRun setResultPers(Integer caseInRunId, String result, String status, Long nextId, TstUser TstUser) {
+    public TstCaseInRun setResultPers(Integer caseInRunId, String result, String status, Integer nextId, TstUser TstUser) {
 //        TestCaseInRun po = (TestCaseInRun) get(TestCaseInRun.class, caseInRunId);
 //        po.setResult(result);
 //        po.setStatus(status);

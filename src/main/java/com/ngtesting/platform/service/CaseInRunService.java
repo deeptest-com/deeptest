@@ -13,7 +13,7 @@ public interface CaseInRunService extends BaseService {
 
 	List<TstCaseInRun> query(Integer runId);
     TstCaseInRun getById(Integer id);
-    TstCaseInRun setResultPers(Integer caseInRunId, String result, String status, Long next, TstUser userVo);
+    TstCaseInRun setResultPers(Integer caseInRunId, String result, String status, Integer next, TstUser userVo);
 
     TstCaseInRun renamePers(JSONObject json, TstUser userVo);
 

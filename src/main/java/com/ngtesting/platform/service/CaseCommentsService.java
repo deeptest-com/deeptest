@@ -7,7 +7,7 @@ import com.ngtesting.platform.model.TstUser;
 public interface CaseCommentsService extends BaseService {
 
 	TstCaseComments save(JSONObject vo, TstUser userVo);
-	boolean delete(Long d, Long userId);
+	boolean delete(Integer d, Integer userId);
 
     TstCaseComments genVo(TstCaseComments po);
 }

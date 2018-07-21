@@ -7,10 +7,10 @@ import java.util.List;
 
 public interface CaseAttachmentService extends BaseService {
 
-    void uploadAttachmentPers(Long caseId, String name, String path, TstUser user);
-    void removeAttachmentPers(Long id, TstUser user);
+    void uploadAttachmentPers(Integer caseId, String name, String path, TstUser user);
+    void removeAttachmentPers(Integer id, TstUser user);
 
-    List<TstCaseAttachment> listByCase(Long caseId);
+    List<TstCaseAttachment> listByCase(Integer caseId);
 
     List<TstCaseAttachment> genVos(List<TstCaseAttachment> pos);
     TstCaseAttachment genVo(TstCaseAttachment attachment);

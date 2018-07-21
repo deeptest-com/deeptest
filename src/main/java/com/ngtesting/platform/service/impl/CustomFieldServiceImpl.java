@@ -17,7 +17,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 //    CustomFieldOptionService customFieldOptionService;
 
     @Override
-    public List<TstCustomField> list(Long orgId) {
+    public List<TstCustomField> list(Integer orgId) {
 //        DetachedCriteria dc = DetachedCriteria.forClass(TstCustomField.class);
 //
 //        dc.add(Restrictions.eq("orgId", orgId));
@@ -33,7 +33,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     }
 
     @Override
-    public List<TstCustomField> listForCaseByOrg(Long orgId) {
+    public List<TstCustomField> listForCaseByOrg(Integer orgId) {
 //        DetachedCriteria dc = DetachedCriteria.forClass(TstCustomField.class);
 //
 //        dc.add(Restrictions.eq("orgId", orgId));
@@ -51,7 +51,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     }
 
     @Override
-    public List<TstCustomField> listForCaseByProject(Long orgId, Long projectId) {
+    public List<TstCustomField> listForCaseByProject(Integer orgId, Integer projectId) {
 //        DetachedCriteria dc = DetachedCriteria.forClass(TstCustomField.class);
 //
 //        dc.createAlias("projectSet", "p").add(Restrictions.eq("p.id", projectId));
@@ -79,7 +79,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     }
 
     @Override
-    public List<TstCustomField> listVos(Long orgId) {
+    public List<TstCustomField> listVos(Integer orgId) {
 //        List<TstCustomField> ls = list(orgId);
 //
 //        List<TstCustomField> vos = genVos(ls);
@@ -89,7 +89,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     }
 
     @Override
-    public TstCustomField save(TstCustomField vo, Long orgId) {
+    public TstCustomField save(TstCustomField vo, Integer orgId) {
         return null;
 
 //        if (vo == null) {
@@ -134,7 +134,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     }
 
     @Override
-    public boolean delete(Long id) {
+    public boolean delete(Integer id) {
 //        TstCustomField po = (TstCustomField) get(TstCustomField.class, id);
 //        po.getProjectSet().clear();
 //        getDao().delete(po);
@@ -170,7 +170,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     }
 
     @Override
-    public boolean changeOrderPers(Long id, String act) {
+    public boolean changeOrderPers(Integer id, String act) {
 //        TstCustomField type = (TstCustomField) get(TstCustomField.class, id);
 //
 //        String hql = "from TstCustomField tp where tp.deleted = false and tp.disabled = false ";
@@ -195,7 +195,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     }
 
     @Override
-    public List<TstProject> listProjectsForField(Long orgId, Long fieldId) {
+    public List<TstProject> listProjectsForField(Integer orgId, Integer fieldId) {
 //        List<TstProject> allProjects = projectService.list(orgId, null, null);
 //
 //        Set<TstProject> projectsForField;
@@ -240,7 +240,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     }
 
     @Override
-    public boolean saveRelationsProjects(Long fieldId, List<TstProject> projects) {
+    public boolean saveRelationsProjects(Integer fieldId, List<TstProject> projects) {
 //        if (projects == null) {
 //            return false;
 //        }
@@ -266,7 +266,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     }
 
     @Override
-    public String getLastUnusedColumn(Long orgId) {
+    public String getLastUnusedColumn(Integer orgId) {
 //        String hql = "select cf.myColumn from TstCustomField cf where cf.deleted = false and cf.disabled = false " +
 //                "and cf.orgId = ? order by cf.myColumn asc";
 //

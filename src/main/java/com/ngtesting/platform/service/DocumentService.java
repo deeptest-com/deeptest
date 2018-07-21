@@ -12,7 +12,7 @@ public interface DocumentService extends BaseService {
 	List<Document> genVos(List<Document> docPos);
 
 	Document genVo(Document po);
-	boolean remove(Long id);
+	boolean remove(Integer id);
 	Document save(Document vo);
 
 }

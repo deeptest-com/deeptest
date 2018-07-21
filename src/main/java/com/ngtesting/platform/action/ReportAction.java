@@ -36,7 +36,7 @@ public class ReportAction extends BaseAction {
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-//        Long id = json.getLong("orgId");
+//        Integer id = json.getInteger("orgId");
 //
 //        Map<String, List<Object>> designReport =
 //                reportService.chart_design_progress_by_project(id, TestProject.ProjectType.org, 14);
@@ -84,13 +84,13 @@ public class ReportAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 //
 //        List<Map<Object, Object>> resultReport =
-//                reportService.chart_execution_result_by_plan(json.getLong("planId"));
+//                reportService.chart_execution_result_by_plan(json.getInteger("planId"));
 //        Map<String, List<Object>> processReport =
-//                reportService.chart_execution_process_by_plan(json.getLong("planId"), 14);
+//                reportService.chart_execution_process_by_plan(json.getInteger("planId"), 14);
 //        Map<String, Object> processByUserReport =
-//                reportService.chart_execution_process_by_plan_user(json.getLong("planId"), 14);
+//                reportService.chart_execution_process_by_plan_user(json.getInteger("planId"), 14);
 //        Map<String, Object> progressReport =
-//                reportService.chart_execution_progress_by_plan(json.getLong("planId"), 14);
+//                reportService.chart_execution_progress_by_plan(json.getInteger("planId"), 14);
 //
 //        data.put("result", resultReport);
 //        data.put("process", processReport);

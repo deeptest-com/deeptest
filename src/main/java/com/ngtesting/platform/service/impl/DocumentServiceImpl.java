@@ -53,7 +53,7 @@ public class DocumentServiceImpl extends BaseServiceImpl implements DocumentServ
 	}
 
 	@Override
-	public boolean remove(Long id) {
+	public boolean remove(Integer id) {
 //		Document po = (Document) get(Document.class, id);
 //		po.setDeleted(true);
 //		saveOrUpdate(po);

@@ -28,4 +28,18 @@
         ORDER BY o.id DESC
     </select>
 
+    <insert id="addRole">
+        insert into TstProjectRoleEntityRelation (orgId,projectId,projectRoleId,entityId,type,
+          deleted,disabled,createTime)
+
+        values (#{orgId},#{projectId},#{projectRoleId},#{entityId},#{type},
+          FALSE,FALSE,NOW())
+    </insert>
+
+    <update id="changeRole">
+        UPDATE TstProjectRoleEntityRelation
+        SET projectRoleId=#{projectRoleId},updateTime=NOW()
+        WHERE projectId=#{projectId} AND entityId=#{entityId}
+    </update>
+
 </mapper>

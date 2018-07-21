@@ -36,7 +36,7 @@ public class UserAction {
     @Autowired
     ProjectPrivilegeService projectPrivilegeService;
 
-    @RequestMapping(value = "getProfile", method = RequestMethod.POST)
+    @PostMapping(value = "getProfile")
     @ResponseBody
     public Map<String, Object> getProfile(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();

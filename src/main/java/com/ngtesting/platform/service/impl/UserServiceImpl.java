@@ -68,4 +68,12 @@ public class UserServiceImpl implements UserService {
         userDao.setDefaultPrj(userId, prjId, prjName);
     }
 
+    @Override
+    public List<TstUser> search(Integer orgId, String keywords, String exceptIds) {
+        PageHelper.startPage(0, 20);
+        List<TstUser> users = userDao.search(orgId, keywords, exceptIds);
+
+        return users;
+    }
+
 }

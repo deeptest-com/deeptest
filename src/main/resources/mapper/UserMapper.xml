@@ -33,6 +33,27 @@
         WHERE userId=#{id}
     </update>
 
+    <select id="search" resultType="TstUser">
+        SELECT * FROM TstUser usr
+
+        JOIN TstOrgUserRelation r ON r.orgId = #{orgId} AND r.userId = usr.id
+
+        WHERE TRUE
+        <if test="keywords != null and keywords != ''">
+            AND (
+              usr.nickname LIKE CONCAT('%','${keywords}','%' )
+              OR usr.email LIKE CONCAT('%','${keywords}','%' )
+              OR usr.phone LIKE CONCAT('%','${keywords}','%' )
+            )
+        </if>
+        <if test="exceptIds != null and exceptIds != ''">
+            AND usr.id NOT IN #{exceptIds}
+        </if>
+
+        AND usr.deleted != TRUE
+        AND usr.disabled != TRUE
+        ORDER BY usr.id ASC
+    </select>
 
 <!--    <sql id="BASE_COLUMN">
         userId,email,password,name,phone,avatar,token,leftSizeCase,leftSizeIssue,

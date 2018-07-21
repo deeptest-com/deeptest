@@ -1,10 +1,12 @@
 package com.ngtesting.platform.dao;
 
-import com.ngtesting.platform.model.TstMsg;
+import com.ngtesting.platform.model.TstOrgGroup;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 public interface OrgGroupDao {
-    List<TstMsg> query(@Param("userId") Integer userId);
+    List<TstOrgGroup> search(@Param("orgId") Integer orgId,
+                             @Param("keywords") String keywords,
+                             @Param("exceptIds") String exceptIds);
 }

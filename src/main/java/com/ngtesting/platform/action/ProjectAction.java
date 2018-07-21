@@ -172,4 +172,39 @@ public class ProjectAction {
         return ret;
     }
 
+    @PostMapping(value = "saveMembers")
+    @ResponseBody
+    public Map<String, Object> saveMembers(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Integer orgId = user.getDefaultOrgId();
+        Integer projectId = json.getInteger("projectId");
+
+        List<TstProjectRoleEntityRelation> entityInRoles = projectRoleEntityRelationService.batchSavePers(json, orgId);
+
+        TstProject project = projectService.get(projectId);
+        historyService.create(projectId, user, Constant.MsgType.update.msg,
+                TstHistory.TargetType.project_member, projectId, project.getName());
+
+        ret.put("entityInRoles", entityInRoles);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @PostMapping(value = "changeRole")
+    @ResponseBody
+    public Map<String, Object> changeRole(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+        List<TstProjectRoleEntityRelation> entityInRoles = projectRoleEntityRelationService.changeRolePers(json);
+
+        pushSettingsService.pushPrjSettings(user);
+
+        ret.put("entityInRoles", entityInRoles);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
 }

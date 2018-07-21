@@ -16,6 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -111,6 +112,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	}
 
 	@Override
+    @Transactional
 	public TstProject save(TstProject vo, Integer orgId, TstUser TstUser) {
 		if (vo == null) {
 			return null;

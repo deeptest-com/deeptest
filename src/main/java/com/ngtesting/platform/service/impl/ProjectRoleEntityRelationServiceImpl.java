@@ -8,6 +8,7 @@ import com.ngtesting.platform.service.ProjectRoleEntityRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -94,70 +95,46 @@ public class ProjectRoleEntityRelationServiceImpl extends BaseServiceImpl implem
 //    }
 
     @Override
-	public List<TstProjectRoleEntityRelation> batchSavePers(JSONObject json) {
-//        Integer projectId = json.getInteger("projectId");
-//		Integer projectRoleId = json.getInteger("roleId");
-//        List entityTypeAndIds = json.getJSONArray("entityTypeAndIds");
-//
-//        List<String> relationEntityAndRoleId = new ArrayList<>();
-//        List<String> relationEntityId = new ArrayList<>();
-//		List<TstProjectRoleEntityRelation> pos = listByProject(projectId);
-//		for (TstProjectRoleEntityRelation po : pos) {
-//            relationEntityAndRoleId.add(po.getType() + "-" + po.getEntityId() + "-" + po.getProjectRoleId());
-//            relationEntityId.add(po.getType() + "-" + po.getEntityId());
-//        }
-//
-//        for (Object entityTypeAndIdObj : entityTypeAndIds) {
-//            String[] arr = entityTypeAndIdObj.toString().split(",");
-//            String entityType = arr[0];
-//            Integer entityId = Integer.valueOf(arr[1]);
-//
-//		    String key = entityType + "-" + entityId  + "-" + projectRoleId;
-//		    if (relationEntityId.contains(entityType + "-" +entityId) && !relationEntityAndRoleId.contains(key)) { // 目前为其他角色
-//                TstProjectRoleEntityRelation po = getByProjectAndEntityId(projectId, entityId);
-//                po.setProjectRoleId(projectRoleId);
-//
-//                TestProjectRoleForOrg projectRole = (TestProjectRoleForOrg)get(TestProjectRoleForOrg.class, projectRoleId);
-//                saveOrUpdate(po);
-//            } else if (!relationEntityAndRoleId.contains(key)) { // 不存在
-//                TestProjectRoleForOrg projectRole = (TestProjectRoleForOrg)get(TestProjectRoleForOrg.class, projectRoleId);
-//                String name;
-//
-//                if(TstProjectRoleEntityRelation.EntityType.user.toString().equals(entityType)) {
-//                    TestUser user = (TestUser)get(TestUser.class, entityId);
-//                    name = user.getName();
-//                } else {
-//                    TestOrgGroup group = (TestOrgGroup)get(TestOrgGroup.class, entityId);
-//                    name = group.getName();
-//                }
-//
-//                TstProjectRoleEntityRelation po = new TstProjectRoleEntityRelation(
-//                        projectRole.getOrgId(), projectId, entityId, projectRoleId, entityType);
-//                saveOrUpdate(po);
-//            }
-//        }
-//
-//		return listByProject(projectId);
+	public List<TstProjectRoleEntityRelation> batchSavePers(JSONObject json, Integer orgId) {
+        Integer projectId = json.getInteger("projectId");
+		Integer projectRoleId = json.getInteger("roleId");
+        List entityTypeAndIds = json.getJSONArray("entityTypeAndIds");
 
-        return null;
+        List<String> relationEntityAndRoleId = new ArrayList<>();
+        List<String> relationEntityId = new ArrayList<>();
+		List<TstProjectRoleEntityRelation> pos = listByProject(projectId);
+		for (TstProjectRoleEntityRelation po : pos) {
+            relationEntityAndRoleId.add(po.getType() + "-" + po.getEntityId() + "-" + po.getProjectRoleId());
+            relationEntityId.add(po.getType() + "-" + po.getEntityId());
+        }
+
+        for (Object entityTypeAndIdObj : entityTypeAndIds) {
+            String[] arr = entityTypeAndIdObj.toString().split(",");
+            String entityType = arr[0];
+            Integer entityId = Integer.valueOf(arr[1]);
+
+		    String key1 = entityType + "-" + entityId  + "-" + projectRoleId;
+            String key2 = entityType + "-" +entityId;
+		    if (relationEntityId.contains(key2) && !relationEntityAndRoleId.contains(key1)) { // 目前为其他角色
+                projectRoleEntityRelationDao.changeRole(projectId, projectRoleId, entityId);
+            } else if (!relationEntityAndRoleId.contains(key1)) { // 不存在
+                projectRoleEntityRelationDao.addRole(orgId, projectId, projectRoleId, entityId, entityType);
+            }
+        }
+
+		return listByProject(projectId);
 	}
 
     @Override
     public List<TstProjectRoleEntityRelation> changeRolePers(JSONObject json) {
-//        Integer projectId = json.getInteger("projectId");
-//        Integer projectRoleId = json.getInteger("roleId");
-//        Integer entityId = json.getInteger("entityId");
-//
-//        TestProjectRoleForOrg projectRole = (TestProjectRoleForOrg)get(TestProjectRoleForOrg.class, projectRoleId);
-//
-//        TstProjectRoleEntityRelation po = (TstProjectRoleEntityRelation)get(TstProjectRoleEntityRelation.class, entityId);
-//        po.setProjectRoleId(projectRoleId);
-//
-//        saveOrUpdate(po);
-//
-//        return listByProject(projectId);
 
-        return null;
+        Integer projectId = json.getInteger("projectId");
+        Integer projectRoleId = json.getInteger("roleId");
+        Integer entityId = json.getInteger("entityId");
+
+        projectRoleEntityRelationDao.changeRole(projectId, projectRoleId, entityId);
+
+        return listByProject(projectId);
     }
 
     @Override

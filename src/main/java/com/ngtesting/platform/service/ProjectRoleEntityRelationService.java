@@ -14,7 +14,7 @@ public interface ProjectRoleEntityRelationService extends BaseService {
     TstProjectRoleEntityRelation getByProjectAndEntityId(Integer projectId, Integer usereId);
 //    void addUserToProjectAsLeaderPers(Integer userId, Integer roleId, Integer projectId);
 
-    List<TstProjectRoleEntityRelation> batchSavePers(JSONObject json);
+    List<TstProjectRoleEntityRelation> batchSavePers(JSONObject json, Integer orgId);
     List<TstProjectRoleEntityRelation> changeRolePers(JSONObject json);
 
     String getEntityName(TstProjectRoleEntityRelation po);

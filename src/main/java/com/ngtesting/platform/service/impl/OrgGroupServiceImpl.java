@@ -1,9 +1,11 @@
 package com.ngtesting.platform.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
+import com.github.pagehelper.PageHelper;
+import com.ngtesting.platform.dao.OrgGroupDao;
 import com.ngtesting.platform.model.TstOrgGroup;
 import com.ngtesting.platform.service.OrgGroupService;
 import com.ngtesting.platform.vo.Page;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -12,8 +14,11 @@ import java.util.List;
 @Service
 public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupService {
 
+	@Autowired
+	private OrgGroupDao groupDao;
+
 	@Override
-	public Page listByPage(Long orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
+	public Page listByPage(Integer orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
 //        DetachedCriteria dc = DetachedCriteria.forClass(TstOrgGroup.class);
 //        dc.add(Restrictions.eq("orgId", orgId));
 //
@@ -35,37 +40,15 @@ public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupServ
 	}
 
 	@Override
-	public List search(Long orgId, String keywords, JSONArray exceptIds) {
-//		DetachedCriteria dc = DetachedCriteria.forClass(TstOrgGroup.class);
-//
-//		dc.add(Restrictions.eq("orgId", orgId));
-//
-//		List<Long> ids = new ArrayList();
-//		for (Object json : exceptIds.toArray()) {
-//			ids.add(Long.valueOf(json.toString()));
-//		}
-//
-//		if (exceptIds.size() > 0) {
-//			dc.add(Restrictions.not(Restrictions.in("id", ids)));
-//		}
-//
-//		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//
-//		if (StringUtil.isNotEmpty(keywords)) {
-//			dc.add(Restrictions.like("name", "%" + keywords + "%"));
-//		}
-//
-//		dc.addOrder(Order.asc("id"));
-//		Page page = findPage(dc, 0, 20);
-//
-//		return page.getItems();
+	public List<TstOrgGroup> search(Integer orgId, String keywords, String exceptIds) {
+        PageHelper.startPage(0, 20);
+        List<TstOrgGroup> groups = groupDao.search(orgId, keywords, exceptIds);
 
-		return null;
+		return groups;
 	}
 
 	@Override
-	public TstOrgGroup save(TstOrgGroup vo, Long orgId) {
+	public TstOrgGroup save(TstOrgGroup vo, Integer orgId) {
 //		if (vo == null) {
 //			return null;
 //		}
@@ -87,7 +70,7 @@ public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupServ
 	}
 
 	@Override
-	public boolean delete(Long id) {
+	public boolean delete(Integer id) {
 //		TstOrgGroup po = (TstOrgGroup) get(TstOrgGroup.class, id);
 //		po.setDeleted(true);
 //		saveOrUpdate(po);

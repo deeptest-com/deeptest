@@ -10,7 +10,7 @@ public interface TestVerService extends BaseService {
 	List<TstVer> list(Integer projectId, String keywords, String disabled);
 	TstVer getById(Integer caseId);
 	TstVer save(JSONObject json, TstUser optUser);
-	TstVer delete(Integer vo, Integer userId);
+	void delete(Integer vo, Integer userId);
 
 	boolean changeOrderPers(Integer id, String act, Integer orgId);
 }

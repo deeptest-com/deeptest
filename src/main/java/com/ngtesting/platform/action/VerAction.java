@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -36,10 +37,9 @@ public class VerAction extends BaseAction {
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
 
-//		List<TstVer> ls = verService.list(projectId, keywords, disabled);
-//		List<TstVer> vos = verService.genVos(ls);
-//
-//        ret.put("data", vos);
+		List<TstVer> ls = verService.list(projectId, keywords, disabled);
+
+        ret.put("data", ls);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -48,7 +48,6 @@ public class VerAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
         Integer id = json.getInteger("id");
 
 		TstVer vo = verService.getById(id);
@@ -62,12 +61,11 @@ public class VerAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-//		TstVer po = verService.save(json, userVo);
-//		TstVer vo = verService.genVo(po);
-//
-//		ret.put("data", vo);
+		TstVer po = verService.save(json, user);
+
+		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -79,7 +77,7 @@ public class VerAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Integer id = json.getInteger("id");
 
-		TstVer po = verService.delete(id, userVo.getId());
+		verService.delete(id, userVo.getId());
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -90,15 +88,14 @@ public class VerAction extends BaseAction {
 	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Integer projectId = json.getInteger("projectId");
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
 		boolean success = verService.changeOrderPers(id, act, projectId);
-//		List<TstVer> vos = verService.listVos(projectId);
-//
-//		ret.put("data", vos);
+		List<TstVer> vos = verService.list(projectId, null, null);
+
+		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;

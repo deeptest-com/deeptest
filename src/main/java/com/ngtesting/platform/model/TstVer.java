@@ -13,6 +13,8 @@ public class TstVer extends BaseModel {
     private String descr;
     private Integer projectId;
 
+    private Integer ordr;
+
     public String getName() {
         return name;
     }
@@ -51,5 +53,13 @@ public class TstVer extends BaseModel {
 
     public void setProjectId(Integer projectId) {
         this.projectId = projectId;
+    }
+
+    public Integer getOrdr() {
+        return ordr;
+    }
+
+    public void setOrdr(Integer ordr) {
+        this.ordr = ordr;
     }
 }

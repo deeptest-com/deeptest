@@ -3,12 +3,84 @@
 <mapper namespace="com.ngtesting.platform.dao.TestVerDao" >
 
     <select id="query" resultType="TstVer">
-        SELECT * FROM TstAlert o WHERE o.userId=#{userId}
-        <if test="isRead != null">
-            AND o.isRead = #{isRead}
+        SELECT * FROM TstVer o WHERE TRUE
+        <if test="keywords != null and keywords != ''">
+            AND o.name LIKE CONCAT('%','${keywords}','%' )
         </if>
-        AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+        <if test="disabled != null and disabled != ''">
+            AND o.disabled = #{disabled}
+        </if>
+        AND o.projectId = #{projectId}
+        AND o.deleted != TRUE
+
+        ORDER BY o.ordr ASC
     </select>
+
+    <select id="get" resultType="TstVer">
+        SELECT * FROM TstVer o
+        WHERE o.id = #{id}
+    </select>
+
+    <select id="getMaxOrdrNumb" resultType="Integer">
+        select max(ordr) from TstVer tp
+        where tp.projectId=#{projectId}
+        and tp.deleted != true
+        and tp.disabled != true
+    </select>
+
+    <insert id="add" parameterType="TstVer" useGeneratedKeys="true" keyProperty="id">
+        insert into TstVer
+          (name,startTime,endTime,descr,projectId,ordr,deleted,disabled,createTime)
+        values
+          (#{name},#{startTime},#{endTime},#{descr},#{projectId},#{ordr},FALSE,FALSE,NOW())
+    </insert>
+
+    <update id="update" parameterType="TstVer">
+        UPDATE TstVer
+        SET name=#{name},
+            startTime=#{startTime}, endTime=#{endTime},
+            descr=#{descr},
+            projectId=#{projectId},
+            ordr=#{ordr},
+            disabled=#{disabled},
+            updateTime=NOW()
+        WHERE id=#{id}
+    </update>
+
+    <select id="getPrev" resultType="TstVer">
+        <![CDATA[
+            SELECT * FROM TstVer o
+
+            WHERE o.ordr < #{ordr}
+            AND o.projectId = #{projectId}
+
+            ORDER BY o.ordr DESC LIMIT 1
+        ]]>
+    </select>
+
+    <select id="getNext" resultType="TstVer">
+        <![CDATA[
+            SELECT * FROM TstVer o
+
+            WHERE o.ordr > #{ordr}
+            AND o.projectId = #{projectId}
+
+            ORDER BY o.ordr ASC LIMIT 1
+        ]]>
+    </select>
+
+    <update id="setOrder">
+        UPDATE TstVer
+        SET ordr=#{ordr},
+        updateTime=NOW()
+        WHERE id=#{id}
+    </update>
+
+    <update id="delete">
+        UPDATE TstVer
+        SET deleted=TRUE,
+        updateTime=NOW()
+        WHERE id=#{id}
+    </update>
 
 </mapper>

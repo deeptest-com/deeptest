@@ -28,7 +28,7 @@
         ORDER BY o.id DESC
     </select>
 
-    <insert id="addRole">
+    <insert id="addRole" useGeneratedKeys="true" keyProperty="id">
         insert into TstProjectRoleEntityRelation (orgId,projectId,projectRoleId,entityId,type,
           deleted,disabled,createTime)
 

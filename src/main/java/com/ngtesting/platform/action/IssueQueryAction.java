@@ -129,7 +129,7 @@ public class IssueQueryAction extends BaseAction {
 //		Integer id = json.getInteger("id");
 //		String act = json.getString("act");
 //
-//		boolean success = casePriorityService.changeOrderPers(id, act, orgId);
+//		boolean success = casePriorityService.changeOrder(id, act, orgId);
 //
 //		List<CasePriorityVo> vos = casePriorityService.listVos(orgId);
 //

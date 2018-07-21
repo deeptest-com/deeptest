@@ -138,7 +138,7 @@ public class IssueTypeAction extends BaseAction {
 //		Integer id = json.getInteger("id");
 //		String act = json.getString("act");
 //
-//		boolean success = typeService.changeOrderPers(id, act, orgId);
+//		boolean success = typeService.changeOrder(id, act, orgId);
 //
 //		List<CaseTypeVo> vos = typeService.listVos(orgId);
 //

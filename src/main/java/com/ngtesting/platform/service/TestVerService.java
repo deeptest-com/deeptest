@@ -12,5 +12,5 @@ public interface TestVerService extends BaseService {
 	TstVer save(JSONObject json, TstUser optUser);
 	void delete(Integer vo, Integer userId);
 
-	boolean changeOrderPers(Integer id, String act, Integer orgId);
+	boolean changeOrder(Integer id, String act, Integer orgId);
 }

@@ -50,10 +50,8 @@
     <select id="getPrev" resultType="TstVer">
         <![CDATA[
             SELECT * FROM TstVer o
-
-            WHERE o.ordr < #{ordr}
-            AND o.projectId = #{projectId}
-
+            WHERE o.ordr < #{ordr} AND o.projectId = #{projectId}
+            AND o.deleted != TRUE
             ORDER BY o.ordr DESC LIMIT 1
         ]]>
     </select>
@@ -61,25 +59,21 @@
     <select id="getNext" resultType="TstVer">
         <![CDATA[
             SELECT * FROM TstVer o
-
-            WHERE o.ordr > #{ordr}
-            AND o.projectId = #{projectId}
-
+            WHERE o.ordr > #{ordr} AND o.projectId = #{projectId}
+            AND o.deleted != TRUE
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>
 
     <update id="setOrder">
         UPDATE TstVer
-        SET ordr=#{ordr},
-        updateTime=NOW()
+        SET ordr=#{ordr}, updateTime=NOW()
         WHERE id=#{id}
     </update>
 
     <update id="delete">
         UPDATE TstVer
-        SET deleted=TRUE,
-        updateTime=NOW()
+        SET deleted=TRUE, updateTime=NOW()
         WHERE id=#{id}
     </update>
 

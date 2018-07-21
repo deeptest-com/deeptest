@@ -65,15 +65,13 @@ public class TestVerServiceImpl extends BaseServiceImpl implements TestVerServic
 
     @Override
     @Transactional
-    public boolean changeOrderPers(Integer id, String act, Integer projectId) {
+    public boolean changeOrder(Integer id, String act, Integer projectId) {
         TstVer curr = verDao.get(id);
         TstVer neighbor = null;
         if ("up".equals(act)) {
             neighbor = verDao.getPrev(curr.getOrdr(), projectId);
         } else if ("down".equals(act)) {
             neighbor = verDao.getNext(curr.getOrdr(), projectId);
-        } else {
-            return false;
         }
         if (neighbor == null) {
             return false;

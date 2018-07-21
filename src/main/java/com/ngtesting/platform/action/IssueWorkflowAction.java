@@ -132,7 +132,7 @@ public class IssueWorkflowAction extends BaseAction {
 //		Integer id = json.getInteger("id");
 //		String act = json.getString("act");
 //
-//		boolean success = issueWorkflowService.changeOrderPers(id, act, orgId);
+//		boolean success = issueWorkflowService.changeOrder(id, act, orgId);
 //
 //		List<CaseTypeVo> vos = issueWorkflowService.listVos(orgId);
 //

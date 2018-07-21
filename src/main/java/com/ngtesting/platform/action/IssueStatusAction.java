@@ -109,7 +109,7 @@ public class IssueStatusAction extends BaseAction {
 //		Integer id = json.getInteger("id");
 //		String act = json.getString("act");
 //
-//		boolean success = statusService.changeOrderPers(id, act);
+//		boolean success = statusService.changeOrder(id, act);
 //
 //		List<CaseExeStatusVo> vos = statusService.listVos(orgId);
 //

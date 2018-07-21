@@ -92,7 +92,7 @@ public class VerAction extends BaseAction {
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-		boolean success = verService.changeOrderPers(id, act, projectId);
+		boolean success = verService.changeOrder(id, act, projectId);
 		List<TstVer> vos = verService.list(projectId, null, null);
 
 		ret.put("data", vos);

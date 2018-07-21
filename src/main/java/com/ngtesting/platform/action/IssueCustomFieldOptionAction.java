@@ -64,7 +64,7 @@ public class IssueCustomFieldOptionAction extends BaseAction {
 //		Integer id = json.getInteger("id");
 //		String act = json.getString("act");
 //
-//		boolean success = customFieldOptionService.changeOrderPers(id, act, fieldId);
+//		boolean success = customFieldOptionService.changeOrder(id, act, fieldId);
 //        List<CustomFieldOptionVo> vos = customFieldOptionService.listVos(fieldId);
 
 //        ret.put("data", vos);

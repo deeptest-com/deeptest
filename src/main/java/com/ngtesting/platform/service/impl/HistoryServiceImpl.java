@@ -1,10 +1,13 @@
 package com.ngtesting.platform.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.ngtesting.platform.dao.HistoryDao;
 import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.utils.BeanUtilEx;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
@@ -14,9 +17,15 @@ import java.util.Map;
 
 @Service
 public class HistoryServiceImpl extends BaseServiceImpl implements HistoryService {
+    @Autowired
+	HistoryDao historyDao;
 
 	@Override
 	public List<TstHistory> listByOrg(Integer orgId) {
+        PageHelper.startPage(0, 30);
+
+        List<TstHistory> ls = historyDao.listByOrg(orgId);
+
 //		DetachedCriteria dc = DetachedCriteria.forClass(TstHistory.class);
 //
 //		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
@@ -26,16 +35,21 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
 //		dc.add(Restrictions.eq("project.orgId", orgId));
 //
 //		dc.addOrder(Order.desc("createTime"));
-//
-//		Page page = findPage(dc, 0, 30);
-//
-//		return page.getItems();
 
-		return null;
+		return ls;
 	}
 
 	@Override
 	public List<TstHistory> listByProject(Integer projectId, TstProject.ProjectType projectType) {
+        PageHelper.startPage(0, 30);
+
+        List<TstHistory> ls;
+        if (projectType.equals(TstProject.ProjectType.project)) {
+            ls = historyDao.listByProject(projectId);
+		} else {
+            ls = historyDao.listByProjectGroup(projectId);
+		}
+
 //		DetachedCriteria dc = DetachedCriteria.forClass(TstHistory.class);
 //
 //		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
@@ -49,12 +63,8 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
 //		}
 //
 //		dc.addOrder(Order.desc("createTime"));
-//
-//		Page page = findPage(dc, 0, 30);
-//
-//		return page.getItems();
 
-		return null;
+		return ls;
 	}
 
     @Override

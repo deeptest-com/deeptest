@@ -1,6 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.dao.TestPlanDao;
 import com.ngtesting.platform.model.TstPlan;
 import com.ngtesting.platform.model.TstProject;
@@ -17,6 +18,9 @@ import java.util.List;
 
 @Service
 public class TestPlanServiceImpl extends BaseServiceImpl implements TestPlanService {
+    @Autowired
+    TestPlanService testPlanService;
+
 //    @Autowired
 //    ProjectService projectService;
 
@@ -115,21 +119,10 @@ public class TestPlanServiceImpl extends BaseServiceImpl implements TestPlanServ
 
     @Override
     public List<TstPlan> listByOrg(Integer orgId) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstPlan.class);
-//
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//
-//        dc.createAlias("project", "project");
-//        dc.add(Restrictions.eq("project.orgId", orgId));
-//
-//        dc.addOrder(Order.asc("createTime"));
-//
-//        Page page = findPage(dc, 0, 10);
-//
-//        return page.getItems();
+        PageHelper.startPage(0, 10);
+        List<TstPlan> ls = testPlanDao.listByOrg(orgId);
 
-        return null;
+        return ls;
     }
 
     @Override

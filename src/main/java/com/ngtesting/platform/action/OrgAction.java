@@ -2,7 +2,9 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstOrg;
+import com.ngtesting.platform.model.TstPlan;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +61,7 @@ public class OrgAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Integer id = json.getInteger("id");
 
-		TstOrg po = orgService.getDetail(id);
+		TstOrg po = orgService.get(id);
 
 		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -75,20 +77,18 @@ public class OrgAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Integer id = json.getInteger("id");
 
-//		TestOrg po = (TestOrg) orgService.get(TestOrg.class, id);
-//		OrgVo vo = orgService.genVo(po);
-//
-//		List<TestPlan> planPos = planService.listByOrg(id);
-//		List<TestPlanVo> planVos = planService.genVos(planPos);
-//
-//		List<TestHistory> historyPos = historyService.listByOrg(id);
-//		Map<String, List<TestHistoryVo>> historyVos = historyService.genVosByDate(historyPos);
+		TstOrg po = orgService.get(id);
 
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-//		ret.put("org", vo);
-//		ret.put("plans", planVos);
-//		ret.put("histories", historyVos);
+		List<TstPlan> planPos = planService.listByOrg(id);
+		List<TstPlan> planVos = planService.genVos(planPos);
 
+		List<TstHistory> historyPos = historyService.listByOrg(id);
+		Map<String, List<TstHistory>> historyVos = historyService.genVosByDate(historyPos);
+
+		ret.put("org", po);
+		ret.put("plans", planVos);
+		ret.put("histories", historyVos);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
 
@@ -109,7 +109,6 @@ public class OrgAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody

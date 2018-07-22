@@ -230,7 +230,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
     @Override
     public void updateNameInHisotyPers(Integer projectId, Integer userId) {
-//        TstProject project = getDetail(projectId);
+//        TstProject project = get(projectId);
 //        genHistoryPers(project.getOrgId(), userId, projectId, project.getName());
     }
 

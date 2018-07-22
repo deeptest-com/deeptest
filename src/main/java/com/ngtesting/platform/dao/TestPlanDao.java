@@ -12,4 +12,6 @@ public interface TestPlanDao {
     List<TstPlan> listByProject(@Param("projectId") Integer projectId);
 
     List<TstPlan> listByProjectGroup(@Param("projectId") Integer projectId);
+
+    List<TstPlan> listByOrg(@Param("orgId") Integer orgId);
 }

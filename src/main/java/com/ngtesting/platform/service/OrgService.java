@@ -10,7 +10,7 @@ public interface OrgService extends BaseService {
 	List<TstOrg> list(Integer userId, String keywords, String disabled);
 	List<TstOrg> listByUser(Integer userId);
 
-	TstOrg getDetail(Integer id);
+	TstOrg get(Integer id);
 
     Boolean disable(Integer id);
 	Boolean delete(Integer id);

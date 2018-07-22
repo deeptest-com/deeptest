@@ -36,4 +36,14 @@
         ORDER BY o.createTime DESC
     </select>
 
+    <select id="listByOrg" resultType="TstPlan">
+        SELECT o.*, p.name projectName, v.name verName FROM TstPlan o
+        JOIN TstProject p ON o.projectId=p.id
+        LEFT JOIN TstVer v ON o.verId=v.id
+
+        WHERE p.orgId=#{orgId}
+        AND o.deleted != true AND o.disabled != true
+        ORDER BY o.createTime DESC
+    </select>
+
 </mapper>

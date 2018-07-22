@@ -2,11 +2,39 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.HistoryDao" >
 
-    <select id="query" resultType="TstHistory">
-        SELECT * FROM TstAlert o WHERE o.userId=#{userId}
-        <if test="isRead != null">
-            AND o.isRead = #{isRead}
-        </if>
+    <select id="listByProject" resultType="TstHistory">
+        SELECT o.*
+
+        FROM TstHistory o
+
+        JOIN TstProject p ON o.projectId=p.id
+        LEFT JOIN TstVer v ON o.verId=v.id
+
+        WHERE o.projectId=#{projectId}
+        AND o.deleted != true AND o.disabled != true
+        ORDER BY o.createTime DESC
+    </select>
+
+    <select id="listByProjectGroup" resultType="TstHistory">
+        SELECT o.*
+
+        FROM TstHistory o
+        JOIN TstProject p ON o.projectId=p.id
+        LEFT JOIN TstVer v ON o.verId=v.id
+
+        WHERE p.parentId=#{projectId}
+        AND o.deleted != true AND o.disabled != true
+        ORDER BY o.createTime DESC
+    </select>
+
+    <select id="listByOrg" resultType="TstHistory">
+        SELECT o.*
+
+        FROM TstHistory o
+        JOIN TstProject p ON o.projectId=p.id
+        LEFT JOIN TstVer v ON o.verId=v.id
+
+        WHERE p.orgId=#{orgId}
         AND o.deleted != true AND o.disabled != true
         ORDER BY o.createTime DESC
     </select>

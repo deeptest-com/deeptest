@@ -58,7 +58,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	}
 
 	@Override
-	public TstOrg getDetail(Integer id) {
+	public TstOrg get(Integer id) {
 //		if (id == null) {
 //			return null;
 //		}

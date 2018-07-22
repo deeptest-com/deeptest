@@ -1,8 +1,8 @@
 # Next Generation Testing Tools
 
-考虑到未来DQL（Defect Query Language）设计和应用部署的方便性，正在将持久层从Hibernate迁移到MyBatis，并用SpringBoot替换SpringMVC。 敬请期待新版本！
+考虑到部署和DQL（Defect Query Language）设计的方便性，正在迁移到SpringBoot、MyBatis技术栈！
 
-AngularJS 4, SockJS, SpringMVC, Hibernate, MySQL
+AngularJS, SockJS, SpringBoot, MyBatis, MySQL
 
 ### Quick start
 ```bash

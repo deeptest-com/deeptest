@@ -27,7 +27,6 @@ public class TestVerServiceImpl extends BaseServiceImpl implements TestVerServic
     @Override
     public TstVer getById(Integer id) {
         TstVer po = verDao.get(id);
-
         return po;
     }
 

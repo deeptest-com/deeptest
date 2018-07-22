@@ -3,10 +3,7 @@ package com.ngtesting.platform.action;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.bean.websocket.OptFacade;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.TstEnv;
-import com.ngtesting.platform.model.TstPlan;
-import com.ngtesting.platform.model.TstSuite;
-import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.TestEnvService;
 import com.ngtesting.platform.service.TestPlanService;
 import com.ngtesting.platform.service.TestSuiteService;
@@ -76,12 +73,12 @@ public class PlanAction extends BaseAction {
 		List<TstSuite> ls = suiteService.query(projectId, null);
 		List<TstSuite> suites = suiteService.genVos(ls);
 
-//		List<TstVer> vers = verService.list(projectId);
-		List<TstEnv> envs = envService.listVos(projectId);
+		List<TstVer> vers = verService.list(projectId, null, null);
+		List<TstEnv> envs = envService.list(projectId, null, null);
 
         ret.put("data", vo);
 		ret.put("suites", suites);
-//		ret.put("vers", vers);
+		ret.put("vers", vers);
 		ret.put("envs", envs);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

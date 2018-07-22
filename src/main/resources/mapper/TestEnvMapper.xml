@@ -3,12 +3,77 @@
 <mapper namespace="com.ngtesting.platform.dao.TestEnvDao" >
 
     <select id="query" resultType="TstEnv">
-        SELECT * FROM TstAlert o WHERE o.userId=#{userId}
-        <if test="isRead != null">
-            AND o.isRead = #{isRead}
+        SELECT * FROM TstEnv o WHERE TRUE
+        <if test="keywords != null and keywords != ''">
+            AND o.name LIKE CONCAT('%','${keywords}','%' )
         </if>
-        AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+        <if test="disabled != null and disabled != ''">
+            AND o.disabled = #{disabled}
+        </if>
+        AND o.projectId = #{projectId}
+        AND o.deleted != TRUE
+
+        ORDER BY o.ordr ASC
     </select>
+
+    <select id="get" resultType="TstEnv">
+        SELECT * FROM TstEnv o
+        WHERE o.id = #{id}
+    </select>
+
+    <select id="getMaxOrdrNumb" resultType="Integer">
+        select max(ordr) from TstEnv tp
+        where tp.projectId=#{projectId}
+        and tp.deleted != true
+        and tp.disabled != true
+    </select>
+
+    <insert id="add" parameterType="TstEnv" useGeneratedKeys="true" keyProperty="id">
+        insert into TstEnv
+        (name,descr,projectId,ordr,deleted,disabled,createTime)
+        values
+        (#{name},#{descr},#{projectId},#{ordr},FALSE,FALSE,NOW())
+    </insert>
+
+    <update id="update" parameterType="TstEnv">
+        UPDATE TstEnv
+        SET name=#{name},
+        descr=#{descr},
+        projectId=#{projectId},
+        ordr=#{ordr},
+        disabled=#{disabled},
+        updateTime=NOW()
+        WHERE id=#{id}
+    </update>
+
+    <select id="getPrev" resultType="TstEnv">
+        <![CDATA[
+            SELECT * FROM TstEnv o
+            WHERE o.ordr < #{ordr} AND o.projectId = #{projectId}
+            AND o.deleted != TRUE
+            ORDER BY o.ordr DESC LIMIT 1
+        ]]>
+    </select>
+
+    <select id="getNext" resultType="TstEnv">
+        <![CDATA[
+            SELECT * FROM TstEnv o
+            WHERE o.ordr > #{ordr} AND o.projectId = #{projectId}
+            AND o.deleted != TRUE
+            ORDER BY o.ordr ASC LIMIT 1
+        ]]>
+    </select>
+
+    <update id="setOrder">
+        UPDATE TstEnv
+        SET ordr=#{ordr}, updateTime=NOW()
+        WHERE id=#{id}
+    </update>
+
+    <update id="delete">
+        UPDATE TstEnv
+        SET deleted=TRUE, updateTime=NOW()
+        WHERE id=#{id}
+    </update>
 
 </mapper>

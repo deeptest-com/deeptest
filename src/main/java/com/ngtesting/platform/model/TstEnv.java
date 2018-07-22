@@ -7,6 +7,8 @@ public class TstEnv extends BaseModel {
 
     private Integer projectId;
 
+    private Integer ordr;
+
     public String getName() {
         return name;
     }
@@ -31,4 +33,11 @@ public class TstEnv extends BaseModel {
         this.projectId = projectId;
     }
 
+    public Integer getOrdr() {
+        return ordr;
+    }
+
+    public void setOrdr(Integer ordr) {
+        this.ordr = ordr;
+    }
 }

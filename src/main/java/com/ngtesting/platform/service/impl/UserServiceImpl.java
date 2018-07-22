@@ -2,8 +2,14 @@ package com.ngtesting.platform.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ngtesting.platform.dao.OrgDao;
+import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.dao.UserDao;
+import com.ngtesting.platform.model.TstOrg;
+import com.ngtesting.platform.model.TstProject;
+import com.ngtesting.platform.model.TstProjectAccessHistory;
 import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +20,14 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     @Autowired
+    private OrgDao orgDao;
+    @Autowired
+    private ProjectDao projectDao;
+    @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private ProjectService projectService;
 
     @Override
     public PageInfo<TstUser> query(int pageNum, int pageSize) {
@@ -42,30 +55,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void setDefaultOrg(Integer userId, Integer orgId) {
-//        userDao.setDefaultOrg(userId, orgId, orgName);
+    public void setDefaultOrg(TstUser user, Integer orgId) {
+        TstOrg org = orgDao.get(orgId);
+        userDao.setDefaultOrg(user.getId(), orgId, org.getName());
+        user.setDefaultOrgId(orgId);
+        user.setDefaultOrgName(org.getName());
 
-//		TestUser user = (TestUser) get(TestUser.class, TstUser.getId());
-//
-//		user.setDefaultOrgId(orgId);
-//
-//		List<TstProjectAccessHistory> recentProjects = projectService.listRecentProject(orgId, TstUser.getId());
-//        user.setDefaultPrjId(recentProjects.size()>0?recentProjects.get(0).getProjectId(): null);
-//        saveOrUpdate(user);
-//
-//		TstUser.setDefaultOrgId(user.getDefaultOrgId());
-//		if (user.getDefaultOrgId()!=null) {
-//			TstOrg org = (TstOrg)get(TstOrg.class, user.getDefaultOrgId());
-//			TstUser.setDefaultOrgName(org.getName());
-//		}
-//
-//        TstUser.setDefaultPrjId(recentProjects.size()>0?recentProjects.get(0).getProjectId(): null);
-//		TstUser.setDefaultPrjName(recentProjects.size()>0?recentProjects.get(0).getProjectName(): "");
+        List<TstProjectAccessHistory> recentProjects = projectService.listRecentProject(orgId, user.getId());
+        if (recentProjects.size() > 0) {
+            TstProjectAccessHistory his = recentProjects.get(0);
+            setDefaultPrj(user, his.getPrjId());
+
+        } else {
+            setDefaultPrj(user, null);
+        }
     }
 
     @Override
-    public void setDefaultPrj(Integer userId, Integer prjId) {
-//        userDao.setDefaultPrj(userId, prjId, prjName);
+    public void setDefaultPrj(TstUser user, Integer prjId) {
+        if (prjId != null) {
+            TstProject prj = projectDao.get(prjId);
+            userDao.setDefaultPrj(user.getId(), prjId, prj.getName());
+
+            user.setDefaultPrjId(prjId);
+            user.setDefaultPrjName(prj.getName());
+        } else {
+            userDao.setDefaultPrj(user.getId(), null, null);
+
+            user.setDefaultPrjId(null);
+            user.setDefaultPrjName(null);
+        }
     }
 
     @Override

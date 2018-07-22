@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface OrgService extends BaseService {
 
-	List<TstOrg> list(String keywords, String disabled, Integer userId);
+	List<TstOrg> list(Integer userId, String keywords, String disabled);
 	List<TstOrg> listByUser(Integer userId);
 
 	TstOrg getDetail(Integer id);
@@ -15,7 +15,7 @@ public interface OrgService extends BaseService {
     Boolean disable(Integer id);
 	Boolean delete(Integer id);
 
-	List<TstOrg> genVos(List<TstOrg> pos, Integer userId);
+	void genVos(List<TstOrg> pos, Integer userId);
 
     TstOrg save(TstOrg vo, Integer userId);
 

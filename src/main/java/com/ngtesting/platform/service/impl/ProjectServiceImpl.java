@@ -3,15 +3,11 @@ package com.ngtesting.platform.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.ProjectDao;
-import com.ngtesting.platform.dao.UserDao;
 import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstProjectAccessHistory;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.CaseService;
-import com.ngtesting.platform.service.HistoryService;
-import com.ngtesting.platform.service.ProjectPrivilegeService;
-import com.ngtesting.platform.service.ProjectService;
+import com.ngtesting.platform.service.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +28,13 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	HistoryService historyService;
 	@Autowired
 	private ProjectDao projectDao;
-	@Autowired
-	private UserDao userDao;
+//	@Autowired
+//	private UserDao userDao;
     @Autowired
     private CaseService caseService;
+
+    @Autowired
+    private UserService userService;
     @Autowired
 	ProjectPrivilegeService projectPrivilegeService;
 
@@ -223,7 +222,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
         if (po.getType().equals(TstProject.ProjectType.project)) {
             projectDao.genHistory(po.getOrgId(), tstUser.getId(), projectId, po.getName());
 
-			userDao.setDefaultPrj(tstUser.getId(), projectId);
+            userService.setDefaultPrj(tstUser, projectId);
 		}
 
 		return po;

@@ -3,7 +3,9 @@
 <mapper namespace="com.ngtesting.platform.dao.OrgDao" >
 
     <select id="query" resultType="TstOrg">
-        SELECT * FROM TstOrg o WHERE TRUE
+        SELECT * FROM TstOrg o
+        JOIN TstOrgUserRelation r on r.orgId=o.id
+        WHERE r.userId = #{userId}
         <if test="keywords != null and keywords != ''">
             AND o.name LIKE CONCAT('%','${keywords}','%' )
         </if>
@@ -20,10 +22,36 @@
         AND o.disabled != TRUE
     </select>
 
+    <select id="get" parameterType="int" resultType="TstOrg">
+        SELECT * FROM TstOrg o
+
+        WHERE o.id = #{id}
+    </select>
+
     <update id="setDefault">
         UPDATE TstOrg
         SET defaultPrjId=#{prjId}, defaultPrjName=#{prjName}
         WHERE userId=#{id}
     </update>
+
+    <insert id="save" parameterType="TstOrg" useGeneratedKeys="true" keyProperty="id">
+        insert into TstOrg (name,website,
+        deleted,disabled,createTime)
+
+        values (#{name},#{website},
+        #{deleted},#{disabled},#{createTime})
+    </insert>
+    <update id="update" parameterType="TstOrg">
+        UPDATE TstOrg
+        SET name=#{name},website=#{website},disabled=#{disabled}
+        WHERE id=#{id}
+    </update>
+
+    <insert id="initOrg">
+        { call init_org(
+        #{orgId,mode=IN,jdbcType=INTEGER},
+        #{userId,mode=IN,jdbcType=INTEGER}
+        ) }
+    </insert>
 
 </mapper>

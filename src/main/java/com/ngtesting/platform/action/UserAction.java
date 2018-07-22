@@ -49,7 +49,7 @@ public class UserAction {
         Integer prjIdNew = json.getInteger("prjId");
 
         if (orgIdNew != null && orgIdNew.longValue() != orgId.longValue()) { // org不能为空
-            userService.setDefaultOrg(user.getId(), orgId);
+            userService.setDefaultOrg(user, orgId);
         }
         if (prjIdNew != null && (prjId == null || prjIdNew.longValue() != prjId.longValue())) { // prj可能为空
             projectService.viewPers(prjIdNew, user);
@@ -72,7 +72,7 @@ public class UserAction {
         List<TstProjectAccessHistory> recentProjects = projectService.listRecentProject(orgId, userId);
         ret.put("recentProjects", recentProjects);
 
-        user.setDefaultPrjId(recentProjects.size() > 0?recentProjects.get(0).getPrjId(): null);
+//        user.setDefaultPrjId(recentProjects.size() > 0?recentProjects.get(0).getPrjId(): null);
 
         Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userId, prjId, orgId);
         ret.put("prjPrivileges", prjPrivileges);

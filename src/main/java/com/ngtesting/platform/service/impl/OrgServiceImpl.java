@@ -7,6 +7,7 @@ import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -41,34 +42,19 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
     private UserDao userDao;
 
 	@Override
-	public List<TstOrg> list(String keywords, String disabled, Integer userId) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstOrg.class);
-//        dc.createAlias("userSet", "users");
-//        dc.add(Restrictions.eq("users.id", userId));
-//
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//
-//        if (StringUtil.isNotEmpty(keywords)) {
-//			dc.add(Restrictions.like("name", "%" + keywords + "%"));
-//		}
-//        if (StringUtil.isNotEmpty(disabled)) {
-//			dc.add(Restrictions.eq("disabled", Boolean.valueOf(disabled)));
-//		}
-//
-//        dc.addOrder(Order.asc("id"));
-//        List<TstOrg> ls = findAllByCriteria(dc);
-//
-//		return ls;
+	public List<TstOrg> list(Integer userId, String keywords, String disabled) {
+        List<TstOrg> ls = orgDao.query(userId, keywords, disabled);
 
+        genVos(ls, userId);
 
-		return null;
+		return ls;
 	}
 
 	@Override
 	public List<TstOrg> listByUser(Integer userId) {
         List<TstOrg> pos = orgDao.queryByUser(userId);
-		List<TstOrg> vos = genVos(pos, userId);
-		return vos;
+		genVos(pos, userId);
+		return pos;
 	}
 
 	@Override
@@ -84,37 +70,21 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	}
 
 	@Override
+    @Transactional
 	public TstOrg save(TstOrg vo, Integer userId) {
-//		if (vo == null) {
-//			return null;
-//		}
-//
-//		TestUser user = (TestUser)get(TestUser.class, userId);
-//
-//		boolean isNew = vo.getId() == null;
-//		TstOrg po = new TstOrg();
-//		if (!isNew) {
-//			po = (TstOrg) get(TstOrg.class, vo.getId());
-//		}
-//
-//		po.setName(vo.getName());
-//		po.setWebsite(vo.getWebsite());
-//		po.setDisabled(vo.getDisabled());
-//
-//		saveOrUpdate(po);
-//
-//        if (isNew) {
-//            getDao().querySql("{call init_org(?,?)}", po.getId(), user.getId());
-//        }
-//
-//		if (user.getDefaultOrgId() == null) {
-//			user.setDefaultOrgId(po.getId());
-//			saveOrUpdate(user);
-//		}
-//
-//		return po;
+		boolean isNew = vo.getId() == null;
+		if (isNew) {
+            vo.setDeleted(false);
+            orgDao.save(vo);
+		} else {
+            orgDao.update(vo);
+        }
 
-		return null;
+        if (isNew) {
+            orgDao.initOrg(vo.getId(), userId);
+        }
+
+		return vo;
 	}
 
 	@Override
@@ -144,7 +114,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	}
 
 	@Override
-	public List<TstOrg> genVos(List<TstOrg> pos, Integer userId) {
+	public void genVos(List<TstOrg> pos, Integer userId) {
 		TstUser user = userDao.get(userId);
 
 		for (TstOrg po : pos) {
@@ -154,8 +124,6 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 			Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(userId, po.getId());
             po.setOrgPrivileges(orgPrivileges);
 		}
-
-		return pos;
 	}
 
 }

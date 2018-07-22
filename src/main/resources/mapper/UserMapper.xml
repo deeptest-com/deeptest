@@ -29,12 +29,12 @@
     </insert>
     <update id="setDefaultOrg">
         UPDATE TstUser
-        SET defaultOrgId=#{orgId}
+        SET defaultOrgId=#{orgId}, defaultOrgName=#{orgName}
         WHERE id=#{id}
     </update>
     <update id="setDefaultPrj">
         UPDATE TstUser
-        SET defaultPrjId=#{prjId}
+        SET defaultPrjId=#{prjId}, defaultPrjName=#{prjName}
         WHERE id=#{id}
     </update>
 

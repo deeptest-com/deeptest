@@ -25,9 +25,11 @@ public interface CaseService extends BaseService {
 
 	TstCase movePers(JSONObject json, TstUser user);
 
-	void createRoot(Integer projectId, TstUser user);
-
 	void loadNodeTree(TstCase vo, TstCase po);
+
+	void createSample(Integer projectId, TstUser user);
+
+	void create(TstCase testCase);
 
 	TstCase save(JSONObject json, TstUser user);
 

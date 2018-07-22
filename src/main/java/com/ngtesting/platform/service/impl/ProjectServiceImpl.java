@@ -133,7 +133,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
         if(isNew && TstProject.ProjectType.project.equals(vo.getType())) {
             projectPrivilegeService.addUserAsProjectTestLeaderPers(orgId, vo.getId(), "test_leader", TstUser.getId());
-            caseService.createRoot(vo.getId(), TstUser);
+            caseService.createSample(vo.getId(), TstUser);
         }
         if(TstProject.ProjectType.project.equals(vo.getType())) {
             historyService.create(vo.getId(), TstUser,

@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.dao.CaseDao;
 import com.ngtesting.platform.model.TstCase;
 import com.ngtesting.platform.model.TstCaseHistory;
 import com.ngtesting.platform.model.TstUser;
@@ -11,11 +12,15 @@ import com.ngtesting.platform.service.CaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 @Service
 public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
+    @Autowired
+    CaseDao caseDao;
+
     @Autowired
     CaseCommentsService caseCommentsService;
     @Autowired
@@ -224,20 +229,20 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     }
 
     @Override
-    public void createRoot(Integer projectId, TstUser user) {
-//        TstCase root = new TstCase();
-//        root.setName("测试用例");
-//        root.setType(null);
-//        root.setpId(null);
-//        root.setLeaf(false);
-//        root.setProjectId(projectId);
-//
-//        root.setCreateById(user.getId());
-//        root.setCreateTime(new Date());
-//
-//        root.setOrdr(0);
-//
-//        saveOrUpdate(root);
+    public void createSample(Integer projectId, TstUser user) {
+        TstCase root = new TstCase();
+        root.setName("测试用例");
+        root.setType(null);
+        root.setpId(null);
+        root.setLeaf(false);
+        root.setProjectId(projectId);
+
+        root.setCreateById(user.getId());
+        root.setCreateTime(new Date());
+
+        root.setOrdr(0);
+
+        caseDao.create(root);
 //
 //        TstCase testCase = new TstCase();
 //        testCase.setName("新特性");
@@ -264,6 +269,11 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 //        testCase2.setOrdr(0);
 //        saveOrUpdate(testCase2);
 //        saveHistory(user, Constant.CaseAct.create, testCase2,null);
+    }
+
+    @Override
+    public void create(TstCase testCase) {
+        caseDao.create(testCase);
     }
 
     @Override

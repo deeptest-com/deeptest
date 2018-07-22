@@ -7,22 +7,22 @@ public class TstCase extends BaseModel {
 	private static final long serialVersionUID = -5955583523485410239L;
 
 	private String name;
-	private String priority;
-	private Integer estimate;
+	private String priority = "medium";
+	private Integer estimate = 10;
     private String type;
 	private String objective;
     private String descr;
     private Integer ordr;
-	private Long pId;
+	private Integer pId;
 	private Boolean isLeaf;
-	private Long projectId;
+	private Integer projectId;
 
-	private Long createById;
-	private Long updateById;
+	private Integer createById;
+	private Integer updateById;
 
     private Boolean checked;
 
-	private String contentType;
+	private String contentType = "steps";
 	private String content;
 	private String key;
 	private Boolean reviewResult;
@@ -134,19 +134,19 @@ public class TstCase extends BaseModel {
         this.checked = checked;
     }
 
-    public Long getCreateById() {
+    public Integer getCreateById() {
         return createById;
     }
 
-    public void setCreateById(Long createById) {
+    public void setCreateById(Integer createById) {
         this.createById = createById;
     }
 
-    public Long getUpdateById() {
+    public Integer getUpdateById() {
         return updateById;
     }
 
-    public void setUpdateById(Long updateById) {
+    public void setUpdateById(Integer updateById) {
         this.updateById = updateById;
     }
 
@@ -158,11 +158,11 @@ public class TstCase extends BaseModel {
         this.children = children;
     }
 
-    public Long getProjectId() {
+    public Integer getProjectId() {
 		return projectId;
 	}
 
-	public void setProjectId(Long projectId) {
+	public void setProjectId(Integer projectId) {
 		this.projectId = projectId;
 	}
 
@@ -190,11 +190,11 @@ public class TstCase extends BaseModel {
 		this.name = name;
 	}
 
-	public Long getpId() {
+	public Integer getpId() {
 		return pId;
 	}
 
-	public void setpId(Long pId) {
+	public void setpId(Integer pId) {
 		this.pId = pId;
 	}
 

@@ -1,10 +1,7 @@
 package com.ngtesting.platform.dao;
 
-import com.ngtesting.platform.model.TstMsg;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
+import com.ngtesting.platform.model.TstCase;
 
 public interface CaseDao {
-    List<TstMsg> query(@Param("userId") Integer userId);
+    void create(TstCase testCase);
 }

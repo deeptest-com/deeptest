@@ -16,10 +16,11 @@ public interface UserDao {
     void save(TstUser record);
     void update(TstUser record);
 
-    void setDefaultOrg(Integer userId, Integer orgId);
+    void setDefaultOrg(@Param("id") Integer id,
+                       @Param("orgId") Integer orgId);
+
     void setDefaultPrj(@Param("id") Integer id,
-                       @Param("prjId") Integer prjId,
-                       @Param("prjName") String prjName);
+                       @Param("prjId") Integer prjId);
 
     List<TstUser> search(@Param("orgId") Integer orgId,
                          @Param("keywords") String keywords,

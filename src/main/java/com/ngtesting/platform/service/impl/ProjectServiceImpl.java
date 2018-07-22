@@ -223,7 +223,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
         if (po.getType().equals(TstProject.ProjectType.project)) {
             projectDao.genHistory(po.getOrgId(), tstUser.getId(), projectId, po.getName());
 
-			userDao.setDefaultPrj(tstUser.getId(), projectId, po.getName());
+			userDao.setDefaultPrj(tstUser.getId(), projectId);
 		}
 
 		return po;

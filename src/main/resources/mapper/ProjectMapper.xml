@@ -40,17 +40,20 @@
     </select>
 
     <insert id="genHistory">
-      { call gen_project_access_history(#{orgId,mode=IN,jdbcType=INTEGER},#{userId,mode=IN,jdbcType=INTEGER}),
-            #{prjId,mode=IN,jdbcType=INTEGER},#{prjName,mode=IN,jdbcType=CHAR},}
+      { call gen_project_access_history(
+                #{orgId,mode=IN,jdbcType=INTEGER},
+                #{userId,mode=IN,jdbcType=INTEGER},
+                #{prjId,mode=IN,jdbcType=INTEGER},
+                #{prjName,mode=IN,jdbcType=CHAR}
+             ) }
     </insert>
 
     <select id="listRecent" resultType="TstProjectAccessHistory">
         SELECT * FROM TstProjectAccessHistory his
-        JOIN TstProject prj on his.projectId = prj.id
+        JOIN TstProject prj on his.prjId = prj.id
         WHERE his.orgId = #{orgId}
             AND his.userId = #{userId}
-            AND his.deleted != TRUE
-            AND his.disabled != TRUE
+
             AND prj.deleted != TRUE
             AND prj.disabled != TRUE
         ORDER BY his.lastAccessTime

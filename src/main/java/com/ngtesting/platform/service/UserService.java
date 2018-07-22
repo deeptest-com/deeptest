@@ -16,7 +16,7 @@ public interface UserService {
 
     void setDefaultOrg(Integer userId, Integer orgId);
 
-    void setDefaultPrj(Integer userId, Integer prjId, String prjName);
+    void setDefaultPrj(Integer userId, Integer prjId);
 
     List<TstUser> search(Integer orgId, String keywords, String exceptIds);
 }

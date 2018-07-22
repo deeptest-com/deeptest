@@ -232,43 +232,45 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     public void createSample(Integer projectId, TstUser user) {
         TstCase root = new TstCase();
         root.setName("测试用例");
-        root.setType(null);
-        root.setpId(null);
         root.setLeaf(false);
         root.setProjectId(projectId);
-
         root.setCreateById(user.getId());
         root.setCreateTime(new Date());
-
         root.setOrdr(0);
+        root.setVersion(0);
 
         caseDao.create(root);
-//
-//        TstCase testCase = new TstCase();
-//        testCase.setName("新特性");
-//        testCase.setType("functional");
-//        testCase.setPriority("medium");
-//        testCase.setpId(root.getId());
-//        testCase.setProjectId(projectId);
-//        testCase.setCreateById(user.getId());
-//        testCase.setCreateTime(new Date());
-//        testCase.setLeaf(false);
-//        testCase.setOrdr(0);
-//        saveOrUpdate(testCase);
-//        saveHistory(user, Constant.CaseAct.create, testCase,null);
-//
-//        TstCase testCase2 = new TstCase();
-//        testCase2.setName("新用例");
-//        testCase2.setType("functional");
-//        testCase2.setPriority("medium");
-//        testCase2.setpId(testCase.getId());
-//        testCase2.setProjectId(projectId);
-//        testCase2.setCreateById(user.getId());
-//        testCase2.setCreateTime(new Date());
-//        testCase2.setLeaf(true);
-//        testCase2.setOrdr(0);
-//        saveOrUpdate(testCase2);
-//        saveHistory(user, Constant.CaseAct.create, testCase2,null);
+
+        TstCase testCase = new TstCase();
+        testCase.setName("新特性");
+        testCase.setType("functional");
+        testCase.setPriority("medium");
+        testCase.setEstimate(10);
+        testCase.setContentType("steps");
+        testCase.setpId(root.getId());
+        testCase.setProjectId(projectId);
+        testCase.setCreateById(user.getId());
+        testCase.setCreateTime(new Date());
+        testCase.setLeaf(false);
+        testCase.setOrdr(0);
+        root.setVersion(0);
+        caseDao.create(testCase);
+        saveHistory(user, Constant.CaseAct.create, testCase,null);
+
+        TstCase testCase2 = new TstCase();
+        testCase2.setName("新用例");
+        testCase2.setType("functional");
+        testCase2.setPriority("medium");
+        testCase2.setEstimate(10);
+        testCase2.setContentType("steps");
+        testCase2.setpId(testCase.getId());
+        testCase2.setProjectId(projectId);
+        testCase2.setCreateById(user.getId());
+        testCase2.setCreateTime(new Date());
+        testCase2.setLeaf(true);
+        testCase2.setOrdr(0);
+        caseDao.create(testCase2);
+        saveHistory(user, Constant.CaseAct.create, testCase2,null);
     }
 
     @Override

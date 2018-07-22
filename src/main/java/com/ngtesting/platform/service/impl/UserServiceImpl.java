@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void setDefaultOrg(Integer userId, Integer orgId) {
-        userDao.setDefaultOrg(userId, orgId);
+//        userDao.setDefaultOrg(userId, orgId, orgName);
 
 //		TestUser user = (TestUser) get(TestUser.class, TstUser.getId());
 //
@@ -64,8 +64,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void setDefaultPrj(Integer userId, Integer prjId, String prjName) {
-        userDao.setDefaultPrj(userId, prjId, prjName);
+    public void setDefaultPrj(Integer userId, Integer prjId) {
+//        userDao.setDefaultPrj(userId, prjId, prjName);
     }
 
     @Override

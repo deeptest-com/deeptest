@@ -3,11 +3,11 @@
 <mapper namespace="com.ngtesting.platform.dao.CaseDao" >
 
     <insert id="create" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
-        insert into TstCase (name,type,priority,pId,projectId,createById,isLeaf,ordr
-        deleted,disabled,createTime)
+        insert into TstCase (name,type,priority,contentType,estimate,pId,projectId,createById,isLeaf,ordr,
+        deleted,disabled,createTime,version)
 
-        values (#{name},#{type},#{priority},#{pId},#{projectId},#{createById},#{isLeaf},#{ordr},
-        #{deleted},#{disabled},#{createTime})
+        values (#{name},#{type},#{priority},#{contentType},#{estimate},#{pId},#{projectId},#{createById},#{isLeaf},#{ordr},
+        #{deleted},#{disabled},#{createTime},#{version})
     </insert>
 
 </mapper>

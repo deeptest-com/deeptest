@@ -27,10 +27,15 @@
     <insert id="save" parameterType="TstUser">
 
     </insert>
+    <update id="setDefaultOrg">
+        UPDATE TstUser
+        SET defaultOrgId=#{orgId}
+        WHERE id=#{id}
+    </update>
     <update id="setDefaultPrj">
         UPDATE TstUser
-        SET defaultPrjId=#{prjId}, defaultPrjName=#{prjName}
-        WHERE userId=#{id}
+        SET defaultPrjId=#{prjId}
+        WHERE id=#{id}
     </update>
 
     <select id="search" resultType="TstUser">

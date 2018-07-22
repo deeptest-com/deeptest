@@ -10,8 +10,8 @@ public class TstProjectAccessHistory extends BaseModel {
 
 	private Integer userId;
 
-    private Integer projectId;
-    private String projectName;
+    private Integer prjId;
+    private String prjName;
 
 
     public Date getLastAccessTime() {
@@ -30,20 +30,19 @@ public class TstProjectAccessHistory extends BaseModel {
 		this.userId = userId;
 	}
 
-	public Integer getProjectId() {
-		return projectId;
+	public Integer getPrjId() {
+		return prjId;
 	}
 
-	public void setProjectId(Integer projectId) {
-		this.projectId = projectId;
+	public void setPrjId(Integer prjId) {
+		this.prjId = prjId;
 	}
 
-	public String getProjectName() {
-		return projectName;
+	public String getPrjName() {
+		return prjName;
 	}
 
-	public void setProjectName(String projectName) {
-		this.projectName = projectName;
+	public void setPrjName(String prjName) {
+		this.prjName = prjName;
 	}
-
 }

@@ -8,7 +8,7 @@ public class TstCase extends BaseModel {
 
 	private String name;
 	private String priority = "medium";
-	private Integer estimate = 10;
+	private Integer estimate;
     private String type;
 	private String objective;
     private String descr;
@@ -22,7 +22,7 @@ public class TstCase extends BaseModel {
 
     private Boolean checked;
 
-	private String contentType = "steps";
+	private String contentType;
 	private String content;
 	private String key;
 	private Boolean reviewResult;

@@ -8,7 +8,6 @@
         FROM TstHistory o
 
         JOIN TstProject p ON o.projectId=p.id
-        LEFT JOIN TstVer v ON o.verId=v.id
 
         WHERE o.projectId=#{projectId}
         AND o.deleted != true AND o.disabled != true
@@ -20,7 +19,6 @@
 
         FROM TstHistory o
         JOIN TstProject p ON o.projectId=p.id
-        LEFT JOIN TstVer v ON o.verId=v.id
 
         WHERE p.parentId=#{projectId}
         AND o.deleted != true AND o.disabled != true
@@ -32,7 +30,6 @@
 
         FROM TstHistory o
         JOIN TstProject p ON o.projectId=p.id
-        LEFT JOIN TstVer v ON o.verId=v.id
 
         WHERE p.orgId=#{orgId}
         AND o.deleted != true AND o.disabled != true

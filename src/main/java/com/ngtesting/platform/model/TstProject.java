@@ -26,6 +26,7 @@ public class TstProject extends BaseModel {
 	Map<String, Boolean> privs = new HashMap<>();
 
 	public static enum ProjectType {
+		org("org"),
 		group("group"),
 		project("project");
 

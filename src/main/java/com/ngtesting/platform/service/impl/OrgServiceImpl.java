@@ -59,14 +59,8 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 
 	@Override
 	public TstOrg get(Integer id) {
-//		if (id == null) {
-//			return null;
-//		}
-//		TstOrg po = (TstOrg) get(TstOrg.class, id);
-//
-//		return po;
-
-		return null;
+		TstOrg po = orgDao.get(id);
+		return po;
 	}
 
 	@Override

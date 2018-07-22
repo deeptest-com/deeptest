@@ -36,15 +36,15 @@ public class ReportAction extends BaseAction {
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-//        Integer id = json.getInteger("orgId");
-//
-//        Map<String, List<Object>> designReport =
-//                reportService.chart_design_progress_by_project(id, TestProject.ProjectType.org, 14);
-//        Map<String, List<Object>> exeReport =
-//                reportService.chart_excution_process_by_project(id, TestProject.ProjectType.org, 14);
-//
-//        data.put("design", designReport);
-//        data.put("exe", exeReport);
+        Integer id = json.getInteger("orgId");
+
+        Map<String, List<Object>> designReport =
+                reportService.chart_design_progress_by_project(id, TstProject.ProjectType.org, 14);
+        Map<String, List<Object>> exeReport =
+                reportService.chart_excution_process_by_project(id, TstProject.ProjectType.org, 14);
+
+        data.put("design", designReport);
+        data.put("exe", exeReport);
 
         ret.put("data", data);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

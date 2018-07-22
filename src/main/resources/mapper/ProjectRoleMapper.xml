@@ -18,4 +18,14 @@
         ORDER BY o.id ASC
     </select>
 
+    <select id="getRoleByCode" resultType="TstProjectRole">
+        SELECT * FROM TstProjectRole o
+
+        WHERE o.orgId=#{orgId}
+        AND o.code = #{roleCode}
+        AND o.deleted != TRUE
+
+        ORDER BY o.id ASC
+    </select>
+
 </mapper>

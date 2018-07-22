@@ -1,7 +1,10 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.ProjectPrivilegeDao;
+import com.ngtesting.platform.dao.ProjectRoleDao;
+import com.ngtesting.platform.dao.ProjectRoleEntityRelationDao;
 import com.ngtesting.platform.model.TstProjectPrivilegeDefine;
+import com.ngtesting.platform.model.TstProjectRole;
 import com.ngtesting.platform.model.TstProjectRolePriviledgeRelation;
 import com.ngtesting.platform.service.ProjectPrivilegeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +16,12 @@ import java.util.Map;
 
 @Service
 public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements ProjectPrivilegeService {
+    @Autowired
+    ProjectRoleDao projectRoleDao;
 	@Autowired
 	private ProjectPrivilegeDao projectPrivilegeDao;
+    @Autowired
+    ProjectRoleEntityRelationDao projectRoleEntityRelationDao;
 
 	@Override
 	public Map<String, Map<String, TstProjectPrivilegeDefine>> listPrivilegesByOrgAndProjectRole(Integer orgId, Integer projectRoleId) {
@@ -89,22 +96,9 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 
 	@Override
 	public boolean addUserAsProjectTestLeaderPers(Integer orgId, Integer projectId, String roleCode, Integer userId) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TestProjectRoleForOrg.class);
-//
-//        dc.add(Restrictions.eq("orgId", orgId));
-//        dc.add(Restrictions.eq("code", "test_leader"));
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//        dc.addOrder(Order.asc("id"));
-//        List<TestProjectRoleForOrg> ls = findAllByCriteria(dc);
-//        if (ls.size() == 0) {
-//            return false;
-//        }
-//
-//        TestProjectRoleForOrg role = ls.get(0);
-//        TestRelationProjectRoleEntity relation = new TestRelationProjectRoleEntity(
-//				role.getOrgId(), projectId, userId,  role.getId(), "user");
-//        saveOrUpdate(relation);
+        TstProjectRole projectRole = projectRoleDao.getRoleByCode(orgId, roleCode);
+
+	    projectRoleEntityRelationDao.addRole(orgId, projectId, projectRole.getId(), userId, "user");
         return true;
 	}
 

@@ -9,4 +9,7 @@ public interface ProjectRoleDao {
     List<TstProjectRole> list(@Param("orgId") Integer orgId,
                               @Param("keywordsParam") String keywords,
                               @Param("disabledParam") String disabled);
+
+    TstProjectRole getRoleByCode(@Param("orgId") Integer orgId,
+                          @Param("roleCode") String roleCode);
 }

@@ -81,10 +81,10 @@
 
     <insert id="save" parameterType="TstProject" useGeneratedKeys="true" keyProperty="id">
         insert into TstProject (name,descr,orgId,parentId,type,
-          selected,selecting, deleted,disabled,createTime)
+          deleted,disabled,createTime)
 
         values (#{name},#{descr},#{orgId},#{parentId},#{type},
-          FALSE,FALSE,#{deleted},#{disabled},#{createTime})
+          #{deleted},#{disabled},#{createTime})
     </insert>
     <update id="update" parameterType="TstProject">
         UPDATE TstProject

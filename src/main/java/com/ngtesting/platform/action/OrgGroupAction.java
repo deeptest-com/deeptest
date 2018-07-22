@@ -2,13 +2,14 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstOrgGroup;
 import com.ngtesting.platform.model.TstOrgGroupUserRelation;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.OrgGroupService;
 import com.ngtesting.platform.service.OrgGroupUserRelationService;
-import com.ngtesting.platform.vo.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,14 +41,14 @@ public class OrgGroupAction extends BaseAction {
 
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
-		int page = json.getInteger("page") == null? 0: json.getInteger("page") - 1;
-		int pageSize = json.getInteger("pageSize") == null? Constant.PAGE_SIZE: json.getInteger("pageSize");
+		Integer pageNum = json.getInteger("page");
+		Integer pageSize = json.getInteger("pageSize");
 
-		Page pageData = orgGroupService.listByPage(orgId, keywords, disabled, page, pageSize);
-		List<TstOrgGroup> vos = orgGroupService.genVos(pageData.getItems());
+		Page page = PageHelper.startPage(pageNum, pageSize);
+		List<TstOrgGroup> groups = orgGroupService.listByPage(orgId, keywords, disabled, pageNum, pageSize);
 
-		ret.put("collectionSize", pageData.getTotal());
-        ret.put("data", vos);
+		ret.put("total", page.getTotal());
+        ret.put("data", groups);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -70,10 +71,9 @@ public class OrgGroupAction extends BaseAction {
 			return ret;
 		}
 
-//		TstOrgGroup po = (TstOrgGroup) orgGroupService.get(TstOrgGroup.class, Integer.valueOf(orgGroupId));
-//		TstOrgGroup group = orgGroupService.genVo(po);
-//
-//        ret.put("group", group);
+		TstOrgGroup po = orgGroupService.get(orgGroupId);
+
+        ret.put("group", po);
         ret.put("relations", relations);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

@@ -1,8 +1,11 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstOrg;
+import com.ngtesting.platform.model.TstOrgGroupUserRelation;
 import com.ngtesting.platform.model.TstProjectAccessHistory;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.*;
@@ -25,6 +28,9 @@ public class UserAction {
     private OrgService orgService;
 
     @Autowired
+    OrgGroupUserRelationService orgGroupUserRelationService;
+
+    @Autowired
     private ProjectService projectService;
 
     @Autowired
@@ -35,6 +41,54 @@ public class UserAction {
     CasePropertyService casePropertyService;
     @Autowired
     ProjectPrivilegeService projectPrivilegeService;
+
+    @RequestMapping(value = "list", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Integer orgId = user.getDefaultOrgId();
+
+        String keywords = json.getString("keywords");
+        String disabled = json.getString("disabled");
+        Integer pageNum = json.getInteger("page");
+        Integer pageSize = json.getInteger("pageSize");
+
+        Page page = PageHelper.startPage(pageNum, pageSize);
+        List<TstUser> users = userService.list(orgId, keywords, disabled, pageNum, pageSize);
+
+        ret.put("total", page.getTotal());
+        ret.put("data", users);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @RequestMapping(value = "get", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Integer orgId = user.getDefaultOrgId();
+        Integer userId = json.getInteger("id");
+
+        List<TstOrgGroupUserRelation> relations = orgGroupUserRelationService.listRelationsByUser(orgId, userId);
+
+        if (userId == null) {
+            ret.put("user", new TstUser());
+            ret.put("relations", relations);
+            ret.put("code", Constant.RespCode.SUCCESS.getCode());
+            return ret;
+        }
+
+        TstUser po = userService.get(userId);
+
+        ret.put("user", po);
+        ret.put("relations", relations);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
 
     @PostMapping(value = "getProfile")
     @ResponseBody
@@ -83,15 +137,15 @@ public class UserAction {
         return ret;
     }
 
-    @ResponseBody
-    @PostMapping("/query")
-    public Object query(
-            @RequestParam(name = "pageNum", required = false, defaultValue = "1")
-                    int pageNum,
-            @RequestParam(name = "pageSize", required = false, defaultValue = "10")
-                    int pageSize){
-        return userService.query(pageNum, pageSize);
-    }
+//    @ResponseBody
+//    @PostMapping("/query")
+//    public Object query(
+//            @RequestParam(name = "pageNum", required = false, defaultValue = "1")
+//                    int pageNum,
+//            @RequestParam(name = "pageSize", required = false, defaultValue = "10")
+//                    int pageSize){
+//        return userService.query(pageNum, pageSize);
+//    }
 
     @ResponseBody
     @RequestMapping("/get")

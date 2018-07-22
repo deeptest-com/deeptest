@@ -1,7 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.ngtesting.platform.dao.OrgDao;
 import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.dao.UserDao;
@@ -30,11 +29,10 @@ public class UserServiceImpl implements UserService {
     private ProjectService projectService;
 
     @Override
-    public PageInfo<TstUser> query(int pageNum, int pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<TstUser> userDomains = userDao.query();
-        PageInfo result = new PageInfo(userDomains);
-        return result;
+    public List<TstUser> list(Integer orgId, String keywords, String disabled, int pageNum, int pageSize) {
+        List<TstUser> users = userDao.query(orgId, keywords, disabled);
+
+        return users;
     }
 
     @Override

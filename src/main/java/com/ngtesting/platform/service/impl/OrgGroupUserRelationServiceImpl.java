@@ -1,121 +1,109 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.dao.OrgGroupUserRelationDao;
 import com.ngtesting.platform.model.TstOrgGroup;
 import com.ngtesting.platform.model.TstOrgGroupUserRelation;
+import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.OrgGroupService;
 import com.ngtesting.platform.service.OrgGroupUserRelationService;
 import com.ngtesting.platform.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
 public class OrgGroupUserRelationServiceImpl extends BaseServiceImpl implements OrgGroupUserRelationService {
 
 	@Autowired
-	UserService userService;
+    OrgGroupService orgGroupService;
+    @Autowired
+    UserService userService;
+    @Autowired
+    OrgGroupUserRelationDao orgGroupUserRelationDao;
 
 	@Override
 	public List<TstOrgGroupUserRelation> listRelationsByUser(Integer orgId, Integer userId) {
 
-//        List<TestOrgGroup> allOrgGroups = listAllOrgGroups(orgId);
-//
-//        List<TestRelationOrgGroupUser> relations;
-//        if (userId == null) {
-//        	relations = new LinkedList<>();
-//        } else {
-//        	relations = listRelations(orgId, null, userId);
-//        }
-//
-//        List<TstOrgGroupUserRelation> vos = new LinkedList<>();
-//        for (TestOrgGroup orgGroup : allOrgGroups) {
-//        	TstOrgGroupUserRelation vo = genVo(orgId, orgGroup.getId(), userId);
-//
-//        	vo.setSelected(false);
-//        	vo.setSelecting(false);
-//        	for (TestRelationOrgGroupUser po : relations) {
-//        		if (po.getOrgGroupId() == orgGroup.getId() && po.getUserId() == userId) {
-//            		vo.setSelected(true);
-//            		vo.setSelecting(true);
-//            	}
-//        	}
-//        	vos.add(vo);
-//        }
-//
-//		return vos;
+        List<TstOrgGroup> allOrgGroups = listAllOrgGroups(orgId);
 
-		return null;
+        List<TstOrgGroupUserRelation> relations;
+        if (userId == null) {
+        	relations = new LinkedList<>();
+        } else {
+        	relations = listRelations(orgId, null, userId);
+        }
+
+        List<TstOrgGroupUserRelation> vos = new LinkedList<>();
+        for (TstOrgGroup orgGroup : allOrgGroups) {
+        	TstOrgGroupUserRelation vo = genVo(orgId, orgGroup, userId);
+
+        	vo.setSelected(false);
+        	vo.setSelecting(false);
+        	for (TstOrgGroupUserRelation po : relations) {
+        		if (po.getOrgGroupId().longValue() == orgGroup.getId().longValue()
+						&& po.getUserId().longValue() == userId.longValue()) {
+            		vo.setSelected(true);
+            		vo.setSelecting(true);
+            	}
+        	}
+        	vos.add(vo);
+        }
+
+		return vos;
 	}
 
 	@Override
-	public List<TstOrgGroupUserRelation> listRelationsByGroup(Integer orgId, Integer orgGroupId) {
+	public List<TstOrgGroupUserRelation> listRelationsByGroup(Integer orgId, Integer groupId) {
 
-//        List<TestUser> allUsers = userService.listAllOrgUsers(orgId);
-//
-//        List<TestRelationOrgGroupUser> relations;
-//        if (orgGroupId == null) {
-//        	relations = new LinkedList<>();
-//        } else {
-//        	relations = listRelations(orgId, orgGroupId, null);
-//        }
-//
-//        List<TstOrgGroupUserRelation> vos = new LinkedList<>();
-//        for (TestUser user : allUsers) {
-//        	TstOrgGroupUserRelation vo = genVo(orgId, orgGroupId, user.getId());
-//
-//        	vo.setSelected(false);
-//        	vo.setSelecting(false);
-//        	for (TestRelationOrgGroupUser po : relations) {
-//        		if (po.getUserId().longValue() == user.getId().longValue()
-//						&& po.getOrgGroupId().longValue() == orgGroupId.longValue()) {
-//            		vo.setSelected(true);
-//            		vo.setSelecting(true);
-//            	}
-//        	}
-//        	vos.add(vo);
-//        }
-//
-//		return vos;
+        List<TstUser> allOrgUsers = listAllOrgUsers(orgId);
 
-		return null;
+        List<TstOrgGroupUserRelation> relations;
+        if (groupId == null) {
+            relations = new LinkedList<>();
+        } else {
+            relations = listRelations(orgId, groupId, null);
+        }
+
+        List<TstOrgGroupUserRelation> vos = new LinkedList<>();
+        for (TstUser user : allOrgUsers) {
+            TstOrgGroupUserRelation vo = genVo(orgId, user, groupId);
+
+            vo.setSelected(false);
+            vo.setSelecting(false);
+            for (TstOrgGroupUserRelation po : relations) {
+                if (po.getUserId().longValue() == user.getId().longValue()
+                        && po.getOrgGroupId().longValue() == groupId.longValue()) {
+                    vo.setSelected(true);
+                    vo.setSelecting(true);
+                }
+            }
+            vos.add(vo);
+        }
+
+        return vos;
 	}
 
-	private List<TstOrgGroupUserRelation> listRelations(Integer orgId, Integer orgGroupId, Integer userId) {
-//		DetachedCriteria dc2 = DetachedCriteria.forClass(TestRelationOrgGroupUser.class);
-//		if (orgId != null) {
-//        	dc2.add(Restrictions.eq("orgId", orgId));
-//        }
-//		// 以下2个条件只会有一个
-//        if (orgGroupId != null) {
-//        	dc2.add(Restrictions.eq("orgGroupId", orgGroupId));
-//        }
-//        if (userId != null) {
-//        	dc2.add(Restrictions.eq("userId", userId));
-//        }
-//
-//        dc2.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc2.add(Restrictions.eq("disabled", Boolean.FALSE));
-//        dc2.addOrder(Order.asc("id"));
-//        List<TestRelationOrgGroupUser> relations = findAllByCriteria(dc2);
-//
-//		return relations;
+    @Override
+    public List<TstOrgGroupUserRelation> listRelations(Integer orgId, Integer groupId, Integer userId) {
+        List<TstOrgGroupUserRelation> ls = orgGroupUserRelationDao.query(orgId, groupId, userId);
 
-		return null;
+        return ls;
 	}
 
-	private List<TstOrgGroup> listAllOrgGroups(Integer orgId) {
-//		DetachedCriteria dc = DetachedCriteria.forClass(TestOrgGroup.class);
-//        dc.add(Restrictions.eq("orgId", orgId));
-//
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//        dc.addOrder(Order.asc("id"));
-//        List<TestOrgGroup> ls = findAllByCriteria(dc);
-//
-//		return ls;
+    @Override
+    public List<TstOrgGroup> listAllOrgGroups(Integer orgId) {
+        List<TstOrgGroup> ls = orgGroupService.search(orgId, null, null);
 
-		return null;
+		return ls;
 	}
+    @Override
+    public List<TstUser> listAllOrgUsers(Integer orgId) {
+        List<TstUser> ls = userService.search(orgId, null, null);
+
+        return ls;
+    }
 
 	@Override
 	public boolean saveRelations(List<TstOrgGroupUserRelation> orgGroupTstUsers) {
@@ -148,7 +136,8 @@ public class OrgGroupUserRelationServiceImpl extends BaseServiceImpl implements 
 		return true;
 	}
 
-	private TstOrgGroupUserRelation getRelationOrgGroupUser(Integer orgGroupId, Integer userId) {
+    @Override
+    public TstOrgGroupUserRelation getRelationOrgGroupUser(Integer orgGroupId, Integer userId) {
 //		DetachedCriteria dc = DetachedCriteria.forClass(TestRelationOrgGroupUser.class);
 //        dc.add(Restrictions.eq("orgGroupId", orgGroupId));
 //        dc.add(Restrictions.eq("userId", userId));
@@ -164,25 +153,30 @@ public class OrgGroupUserRelationServiceImpl extends BaseServiceImpl implements 
 		return null;
 	}
 
-	private TstOrgGroupUserRelation genVo(Integer orgId, Integer orgGroupId, Integer userId) {
+    @Override
+    public TstOrgGroupUserRelation genVo(Integer orgId, TstOrgGroup group, Integer userId) {
 
-//		TstOrgGroupUserRelation vo = new TstOrgGroupUserRelation();
-//		vo.setOrgId(orgId);
-//
-//		if (orgGroupId != null) {
-//			TestOrgGroup orgGroup = (TestOrgGroup) get(TestOrgGroup.class, orgGroupId);
-//			vo.setOrgGroupId(orgGroupId);
-//			vo.setOrgGroupName(orgGroup.getName());
-//		}
-//
-//		if (userId != null) {
-//			TestUser user = (TestUser) get(TestUser.class, userId);
-//			vo.setUserId(user.getId());
-//			vo.setUserName(user.getName());
-//		}
-//
-//		return vo;
+		TstOrgGroupUserRelation vo = new TstOrgGroupUserRelation();
+		vo.setOrgId(orgId);
 
-		return null;
+        vo.setOrgGroupId(group.getId());
+        vo.setOrgGroupName(group.getName());
+
+        vo.setUserId(userId);
+
+		return vo;
 	}
+
+    @Override
+    public TstOrgGroupUserRelation genVo(Integer orgId, TstUser user, Integer groupId) {
+        TstOrgGroupUserRelation vo = new TstOrgGroupUserRelation();
+        vo.setOrgId(orgId);
+
+        vo.setOrgGroupId(groupId);
+
+        vo.setUserId(user.getId());
+        vo.setUserName(user.getNickname());
+
+        return vo;
+    }
 }

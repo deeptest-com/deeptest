@@ -4,24 +4,24 @@ package com.ngtesting.platform.model;
 public class TstOrgGroupUserRelation extends BaseModel {
 	private static final long serialVersionUID = -7361457861754458408L;
 
-	private Long orgId;
+	private Integer orgId;
 
-	private Long orgGroupId;
+	private Integer orgGroupId;
 
     private String orgGroupName;
 
-    private Long userId;
+    private Integer userId;
 
     private String userName;
 
     private Boolean selected;
     private Boolean selecting;
 
-	public Long getOrgGroupId() {
+	public Integer getOrgGroupId() {
 		return orgGroupId;
 	}
 
-	public void setOrgGroupId(Long orgGroupId) {
+	public void setOrgGroupId(Integer orgGroupId) {
 		this.orgGroupId = orgGroupId;
 	}
 
@@ -33,11 +33,11 @@ public class TstOrgGroupUserRelation extends BaseModel {
 		this.orgGroupName = orgGroupName;
 	}
 
-	public Long getUserId() {
+	public Integer getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
 
@@ -65,11 +65,11 @@ public class TstOrgGroupUserRelation extends BaseModel {
 		this.selecting = selecting;
 	}
 
-	public Long getOrgId() {
+	public Integer getOrgId() {
 		return orgId;
 	}
 
-	public void setOrgId(Long orgId) {
+	public void setOrgId(Integer orgId) {
 		this.orgId = orgId;
 	}
 

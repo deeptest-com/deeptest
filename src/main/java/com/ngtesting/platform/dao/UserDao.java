@@ -6,7 +6,14 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface UserDao {
-    List<TstUser> query();
+    List<TstUser> query(@Param("orgId") Integer orgId,
+                        @Param("keywords") String keywords,
+                        @Param("disabled") String disabled);
+
+    List<TstUser> search(@Param("orgId") Integer orgId,
+                         @Param("keywords") String keywords,
+                         @Param("exceptIds") String exceptIds);
+
     TstUser get(Integer userId);
     TstUser getByEmail(String nickname);
     TstUser getByEmailAndPassword(@Param("email") String email,
@@ -24,7 +31,5 @@ public interface UserDao {
                        @Param("prjId") Integer prjId,
                        @Param("prjName") String prjName);
 
-    List<TstUser> search(@Param("orgId") Integer orgId,
-                         @Param("keywords") String keywords,
-                         @Param("exceptIds") String exceptIds);
+
 }

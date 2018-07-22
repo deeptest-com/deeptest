@@ -15,6 +15,7 @@ If you use different tomcat path, search and replace below service url to your o
 - http://localhost:8080/platform/
 ```
 
+
 ### Test Project
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/project_view.jpg" width="800px" style="margin: 10px auto;">
 

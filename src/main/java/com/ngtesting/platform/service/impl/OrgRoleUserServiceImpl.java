@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.dao.OrgRoleUserDao;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.OrgRoleUserService;
 import com.ngtesting.platform.service.UserService;
@@ -12,6 +13,8 @@ import java.util.List;
 public class OrgRoleUserServiceImpl extends BaseServiceImpl implements OrgRoleUserService {
 	@Autowired
 	UserService userService;
+	@Autowired
+	OrgRoleUserDao orgRoleUserDao;
 
 	@Override
 	public List<TstUser> listUserByOrgRole(Integer orgId, Integer orgRoleId) {

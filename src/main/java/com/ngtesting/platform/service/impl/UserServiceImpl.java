@@ -1,32 +1,45 @@
 package com.ngtesting.platform.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.OrgDao;
+import com.ngtesting.platform.dao.OrgUserRelationDao;
 import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.dao.UserDao;
-import com.ngtesting.platform.model.TstOrg;
-import com.ngtesting.platform.model.TstProject;
-import com.ngtesting.platform.model.TstProjectAccessHistory;
-import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.ProjectService;
-import com.ngtesting.platform.service.UserService;
+import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.service.*;
+import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service(value = "userService")
 public class UserServiceImpl implements UserService {
+    @Autowired
+    private PropService propService;
+    @Autowired
+    private MailService mailService;
 
     @Autowired
     private OrgDao orgDao;
+    @Autowired
+    private OrgUserRelationDao orgUserRelationDao;
     @Autowired
     private ProjectDao projectDao;
     @Autowired
     private UserDao userDao;
 
     @Autowired
+    private AccountService accountService;
+    @Autowired
     private ProjectService projectService;
+    @Autowired
+    OrgGroupUserRelationService orgGroupUserRelationService;
+    @Autowired
+    OrgRoleUserService orgRoleUserService;
 
     @Override
     public List<TstUser> list(Integer orgId, String keywords, String disabled, int pageNum, int pageSize) {
@@ -46,6 +59,100 @@ public class UserServiceImpl implements UserService {
         TstUser user = userDao.getByToken(token);
         return user;
     }
+
+    @Override
+    public TstUser getByPhone(String phone) {
+        TstUser user = userDao.getByPhone(phone);
+        return user;
+    }
+
+    @Override
+    public TstUser getByEmail(String email) {
+        TstUser user = userDao.getByEmail(email);
+        return user;
+    }
+
+    @Override
+    public TstUser invitePers(TstUser user, TstUser vo, List<TstOrgGroupUserRelation> relations) {
+        Integer orgId = user.getDefaultOrgId();
+        Integer prjId = user.getDefaultPrjId();
+        String orgName = user.getDefaultOrgName();
+        String prjName = user.getDefaultPrjName();
+
+        TstUser existUser  = getByEmail(vo.getEmail());
+        boolean isNew;
+        if (existUser != null) {
+            isNew = false;
+            vo = existUser;
+        } else {
+            isNew = true;
+            vo.setDefaultOrgId(orgId);
+            vo.setPassword(StringUtil.RandomString(6));
+            vo.setAvatar("upload/sample/user/avatar.png");
+
+            vo.setDefaultOrgId(orgId);
+            vo.setDefaultPrjId(prjId);
+            vo.setDefaultOrgName(orgName);
+            vo.setDefaultPrjName(prjName);
+
+            userDao.save(vo);
+        }
+
+        if (orgUserRelationDao.userInOrg(vo.getId(), orgId) == 0) { // 不在组织里
+            orgUserRelationDao.addUserToOrg(vo.getId(), orgId);
+            projectService.viewPers(prjId, vo);
+
+            // 发送邮件
+            String sys = propService.getSysName();
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("user", user.getNickname() + "(" + user.getEmail() + ")");
+            map.put("name", vo.getNickname());
+            map.put("sys", sys);
+
+            String url;
+            if (isNew) {
+                String verifyCode = accountService.genVerifyCode(vo.getId());
+
+                url = propService.getUrlResetPassword();
+                if (!url.startsWith("http")) {
+                    url = Constant.WEB_ROOT + url;
+                }
+                url += "/" + verifyCode;
+            } else {
+                url = propService.getUrlLogin();
+                if (!url.startsWith("http")) {
+                    url = Constant.WEB_ROOT + url;
+                }
+            }
+            map.put("url", url);
+            mailService.sendTemplateMail("来自[" + sys + "]的邀请", "invite-user.ftl",
+                    vo.getEmail(), map);
+            return vo;
+        } else {
+            return null;
+        }
+    }
+
+//    @Override
+//    @Transactional
+//    public TstUser save(TstUser vo, Integer orgId) {
+//
+//        TstUser temp = accountService.getByEmail(vo.getEmail());
+//        if (temp != null && temp.getId() != vo.getId()) {
+//            return null;
+//        }
+//
+//        vo.setPassword(StringUtil.RandomString(6));
+//        vo.setDefaultOrgId(orgId);
+//        if (vo.getAvatar() == null) {
+//            vo.setAvatar("upload/sample/user/avatar.png");
+//        }
+//        userDao.save(vo);
+//
+//        orgGroupUserRelationService.addUserToOrg(vo, orgId);
+//
+//        return vo;
+//    }
 
     @Override
     public void update(TstUser record) {

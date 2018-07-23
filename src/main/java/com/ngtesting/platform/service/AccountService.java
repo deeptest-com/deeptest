@@ -11,9 +11,6 @@ public interface AccountService {
     boolean checkResetPassword(String verifyCode);
     TstUser resetPasswordPers(String verifyCode, String password);
 
-    String genVerifyCode(TstUser user);
-    TstUser getByToken(String token);
-    TstUser getByPhone(String token);
-    TstUser getByEmail(String email);
+    String genVerifyCode(Integer userId);
 
 }

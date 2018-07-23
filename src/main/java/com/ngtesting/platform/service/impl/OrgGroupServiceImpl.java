@@ -31,6 +31,13 @@ public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupServ
 	}
 
     @Override
+    public List<TstOrgGroup> list(Integer orgId) {
+        List<TstOrgGroup> groups = groupDao.list(orgId);
+
+        return groups;
+    }
+
+    @Override
     public TstOrgGroup get(Integer id) {
         TstOrgGroup group = groupDao.get(id);
         return group;

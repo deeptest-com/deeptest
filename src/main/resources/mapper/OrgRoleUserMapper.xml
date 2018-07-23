@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.OrgRoleUserDao" >
 
-    <select id="query" resultType="TstUser">
-        SELECT * FROM TstAlert o WHERE o.userId=#{userId}
+    <select id="userInOrg" resultType="TstUser">
+        SELECT count(*) FROM TstOrgUserRelation o WHERE o.userId=#{userId}
         <if test="isRead != null">
             AND o.isRead = #{isRead}
         </if>

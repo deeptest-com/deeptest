@@ -1,5 +1,6 @@
 package com.ngtesting.platform.action;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -137,16 +138,6 @@ public class UserAction {
         return ret;
     }
 
-//    @ResponseBody
-//    @PostMapping("/query")
-//    public Object query(
-//            @RequestParam(name = "pageNum", required = false, defaultValue = "1")
-//                    int pageNum,
-//            @RequestParam(name = "pageSize", required = false, defaultValue = "10")
-//                    int pageSize){
-//        return userService.query(pageNum, pageSize);
-//    }
-
     @ResponseBody
     @RequestMapping("/get")
     public Object get(@RequestBody Integer id) {
@@ -157,5 +148,50 @@ public class UserAction {
         ret.put("data", po);
         return ret;
     }
+
+    @RequestMapping(value = "invite")
+    @ResponseBody
+    public Map<String, Object> invite(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+        TstUser vo = JSON.parseObject(JSON.toJSONString(json.get("user")), TstUser.class);
+        List<TstOrgGroupUserRelation> relations = (List<TstOrgGroupUserRelation>) json.get("relations");
+        TstUser po = userService.invitePers(user, vo, relations);
+
+        if (po == null) {
+            ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
+            ret.put("msg", "邮箱已加入当期组织");
+            return ret;
+        }
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+//    @PostMapping(value = "save")
+//    @ResponseBody
+//    public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
+//        Map<String, Object> ret = new HashMap<String, Object>();
+//
+//        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+//        Integer orgId = user.getDefaultOrgId();
+//
+//        TstUser vo = JSON.parseObject(JSON.toJSONString(json.get("user")), TstUser.class);
+//        TstUser po = userService.save(vo, orgId);
+//
+//        if (po == null) {
+//            ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
+//            ret.put("msg", "邮箱已存在");
+//            return ret;
+//        }
+//
+//        List<TstOrgGroupUserRelation> relations = (List<TstOrgGroupUserRelation>) json.get("relations");
+//        orgGroupUserRelationService.saveRelations(relations);
+//        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+//
+//        return ret;
+//    }
 
 }

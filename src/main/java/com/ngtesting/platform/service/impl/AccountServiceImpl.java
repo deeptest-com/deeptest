@@ -43,7 +43,7 @@ public class AccountServiceImpl implements AccountService {
         if (po != null) {
             accountDao.initUser(user.getId());
 
-            String verifyCode = genVerifyCode(po);
+            String verifyCode = genVerifyCode(po.getId());
             String sys = propService.getSysName();
 
             Map<String, String> map = new HashMap<String, String>();
@@ -97,10 +97,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String genVerifyCode(TstUser user) {
+    public String genVerifyCode(Integer userId) {
         String code = UUID.randomUUID().toString().replaceAll("-", "");
         Map<String, Object> map = new HashMap();
-        map.put("userId", user.getId().toString());
+        map.put("userId", userId.toString());
         map.put("code", code);
 
         Date now = new Date();
@@ -110,21 +110,6 @@ public class AccountServiceImpl implements AccountService {
         accountDao.genVerifyCode(map);
 
         return code;
-    }
-
-    @Override
-    public TstUser getByToken(String token) {
-        return null;
-    }
-
-    @Override
-    public TstUser getByPhone(String token) {
-        return null;
-    }
-
-    @Override
-    public TstUser getByEmail(String email) {
-        return null;
     }
 
 }

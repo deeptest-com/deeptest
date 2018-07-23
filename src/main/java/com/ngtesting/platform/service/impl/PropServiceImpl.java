@@ -31,6 +31,9 @@ public class PropServiceImpl implements PropService {
     @Value("${sys.url.login}")
     private String urlLogin;
 
+    @Value("${sys.url.resetPassword}")
+    private String urlResetPassword;
+
     @Bean
     public SimpleMailMessage simpleMailMessage() {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
@@ -61,5 +64,10 @@ public class PropServiceImpl implements PropService {
     @Override
     public String getUrlLogin() {
         return urlLogin;
+    }
+
+    @Override
+    public String getUrlResetPassword() {
+        return urlResetPassword;
     }
 }

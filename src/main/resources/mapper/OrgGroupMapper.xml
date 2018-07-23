@@ -35,6 +35,17 @@
         ORDER BY grp.id ASC
     </select>
 
+    <select id="list" resultType="TstOrgGroup">
+        SELECT * FROM TstOrgGroup grp
+
+        WHERE grp.orgId = #{orgId}
+
+        AND grp.name != '所有人'
+        AND grp.deleted != TRUE
+        AND grp.disabled != TRUE
+        ORDER BY grp.id ASC
+    </select>
+
     <select id="get" parameterType="int" resultType="TstOrgGroup">
         SELECT * FROM TstOrgGroup grp
 

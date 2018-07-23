@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.OrgUserRelationDao" >
+
+    <insert id="addUserToOrg">
+        insert into TstOrgUserRelation (userId,orgId)
+
+        values (#{userId},#{orgId})
+    </insert>
+
+    <select id="userInOrg" resultType="int">
+        SELECT count(*) FROM TstOrgUserRelation r
+        WHERE r.userId = #{userId} AND r.orgId=#{orgId}
+    </select>
+
+</mapper>

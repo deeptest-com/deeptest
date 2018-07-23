@@ -8,15 +8,15 @@
   <style type="text/css">
   </style>
  </head>
- 
+
  <body>
  	<div>
  		${name}, 您好：
  	</div>
  	<br />
  	<div>
-        ${user}邀请你使用${sys}。
- 		访问地址 <a href="${url}">${url}</a>。
+        ${user}邀请您使用${sys}。<br />
+ 		请访问地址 <a href="${url}">${url}</a>。
  	</div>
  </body>
  </html>

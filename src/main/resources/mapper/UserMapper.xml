@@ -34,19 +34,34 @@
     </select>
 
     <select id="getByEmail" parameterType="string" resultType="TstUser">
-        SELECT * FROM TstUser WHERE email = #{email} LIMIT 1;
+        SELECT * FROM TstUser WHERE email = #{email}
+        AND disabled != TRUE AND deleted != TRUE
+        LIMIT 1;
     </select>
     <select id="getByEmailAndPassword" resultType="TstUser">
         SELECT * FROM TstUser WHERE email = #{email} AND password=#{password} LIMIT 1;
     </select>
 
-    <select id="getByToken" parameterType="string" resultType="TstUser">
-        SELECT * FROM TstUser WHERE token = #{token} LIMIT 1;
+    <select id="getByToken" resultType="TstUser">
+        SELECT * FROM TstUser WHERE token = #{token}
+        AND disabled != TRUE AND deleted != TRUE
+        LIMIT 1;
+    </select>
+    <select id="getByPhone" resultType="TstUser">
+        SELECT * FROM TstUser WHERE phone = #{phone}
+        AND disabled != TRUE AND deleted != TRUE
+        LIMIT 1;
     </select>
 
-    <insert id="save" parameterType="TstUser">
-
+    <insert id="save" parameterType="TstUser" useGeneratedKeys="true" keyProperty="id">
+        insert into TstUser (email,password,nickname,phone,avatar,token,
+          leftSizeCase,leftSizeIssue,defaultOrgId,defaultOrgName,defaultPrjId,defaultPrjName,
+          deleted,disabled,createTime)
+        values (#{email},#{password},#{nickname},#{phone},#{avatar},#{token},
+          #{leftSizeCase},#{leftSizeIssue},#{defaultOrgId},#{defaultOrgName},#{defaultPrjId},#{defaultPrjName},
+          #{deleted},#{disabled},#{createTime})
     </insert>
+
     <update id="setDefaultOrg">
         UPDATE TstUser
         SET defaultOrgId=#{orgId}, defaultOrgName=#{orgName}

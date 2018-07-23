@@ -18,7 +18,8 @@ public interface UserDao {
     TstUser getByEmail(String nickname);
     TstUser getByEmailAndPassword(@Param("email") String email,
                                   @Param("password") String password);
-    TstUser getByToken(String token);
+    TstUser getByToken(@Param("token") String token);
+    TstUser getByPhone(@Param("phone") String phone);
 
     void save(TstUser record);
     void update(TstUser record);
@@ -30,6 +31,4 @@ public interface UserDao {
     void setDefaultPrj(@Param("id") Integer id,
                        @Param("prjId") Integer prjId,
                        @Param("prjName") String prjName);
-
-
 }

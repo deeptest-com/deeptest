@@ -14,4 +14,25 @@
         ORDER BY o.id ASC
     </select>
 
+    <delete id="removeUserFromAllGroups">
+        DELETE FROM TstOrgGroupUserRelation
+        WHERE orgId=#{orgId} AND userId=#{userId}
+    </delete>
+    <delete id="removeGroupFromAllUsers">
+        DELETE FROM TstOrgGroupUserRelation
+        WHERE orgId=#{orgId} AND orgGroupId=#{groupId}
+    </delete>
+
+    <insert id="saveRelations">
+        insert into TstOrgGroupUserRelation (orgId,orgGroupId,orgGroupName,userId,userName,
+          deleted,disabled,createTime,version)
+        values
+            <foreach collection="list" item="item" separator=",">
+                (#{item.orgId},
+                  #{item.orgGroupId}, #{item.orgGroupName},
+                  #{item.userId}, #{item.userName},
+                  FALSE, FALSE, NOW(),0)
+            </foreach>
+    </insert>
+
 </mapper>

@@ -91,7 +91,7 @@ public class OrgGroupAction extends BaseAction {
 		List<TstOrgGroupUserRelation> relations = (List<TstOrgGroupUserRelation>) json.get("relations");
 
 		TstOrgGroup po = orgGroupService.save(group, orgId);
-		boolean success = orgGroupUserService.saveRelations(relations);
+		boolean success = orgGroupUserService.saveRelationsForGroup(orgId, po.getId(), relations);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

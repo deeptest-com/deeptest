@@ -98,9 +98,11 @@ public class UserServiceImpl implements UserService {
             userDao.save(vo);
         }
 
-        if (orgUserRelationDao.userInOrg(vo.getId(), orgId) == 0) { // 不在组织里
+        if (isNew || orgUserRelationDao.userInOrg(vo.getId(), orgId) == 0) { // 不在组织里
             orgUserRelationDao.addUserToOrg(vo.getId(), orgId);
             projectService.viewPers(prjId, vo);
+
+            orgGroupUserRelationService.saveRelationsForUser(orgId, vo.getId(), relations);
 
             // 发送邮件
             String sys = propService.getSysName();
@@ -132,27 +134,6 @@ public class UserServiceImpl implements UserService {
             return null;
         }
     }
-
-//    @Override
-//    @Transactional
-//    public TstUser save(TstUser vo, Integer orgId) {
-//
-//        TstUser temp = accountService.getByEmail(vo.getEmail());
-//        if (temp != null && temp.getId() != vo.getId()) {
-//            return null;
-//        }
-//
-//        vo.setPassword(StringUtil.RandomString(6));
-//        vo.setDefaultOrgId(orgId);
-//        if (vo.getAvatar() == null) {
-//            vo.setAvatar("upload/sample/user/avatar.png");
-//        }
-//        userDao.save(vo);
-//
-//        orgGroupUserRelationService.addUserToOrg(vo, orgId);
-//
-//        return vo;
-//    }
 
     @Override
     public void update(TstUser record) {

@@ -62,6 +62,12 @@
           #{deleted},#{disabled},#{createTime})
     </insert>
 
+    <update id="update" parameterType="TstUser">
+        UPDATE TstUser
+        SET email=#{email}, nickname=#{nickname}, phone=#{phone}, disabled=#{disabled}
+        WHERE id=#{id}
+    </update>
+
     <update id="setDefaultOrg">
         UPDATE TstUser
         SET defaultOrgId=#{orgId}, defaultOrgName=#{orgName}
@@ -94,22 +100,5 @@
         AND usr.disabled != TRUE
         ORDER BY usr.id ASC
     </select>
-
-<!--    <sql id="BASE_COLUMN">
-        userId,email,password,name,phone,avatar,token,leftSizeCase,leftSizeIssue,
-        defaultOrgId,defaultPrjId,
-    </sql>
-
-    <resultMap id="UserResult" type="TstUser">
-        <id property="id" column="id" />
-        <result property="email" column="email" />
-        <result property="password" column="password" />
-    </resultMap>
-
-    <select id="select" resultType="TstUser"> &lt;!&ndash; resultMap="UserResult" &ndash;&gt;
-        SELECT
-        <include refid="BASE_COLUMN"/>
-        FROM tstUser
-    </select>-->
 
 </mapper>

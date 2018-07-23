@@ -170,28 +170,28 @@ public class UserAction {
         return ret;
     }
 
-//    @PostMapping(value = "save")
-//    @ResponseBody
-//    public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
-//        Map<String, Object> ret = new HashMap<String, Object>();
-//
-//        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//        Integer orgId = user.getDefaultOrgId();
-//
-//        TstUser vo = JSON.parseObject(JSON.toJSONString(json.get("user")), TstUser.class);
-//        TstUser po = userService.save(vo, orgId);
+    @PostMapping(value = "update")
+    @ResponseBody
+    public Map<String, Object> update(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Integer orgId = user.getDefaultOrgId();
+
+        TstUser vo = JSON.parseObject(JSON.toJSONString(json.get("user")), TstUser.class);
+        userService.update(vo);
 //
 //        if (po == null) {
 //            ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
 //            ret.put("msg", "邮箱已存在");
 //            return ret;
 //        }
-//
-//        List<TstOrgGroupUserRelation> relations = (List<TstOrgGroupUserRelation>) json.get("relations");
-//        orgGroupUserRelationService.saveRelations(relations);
-//        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-//
-//        return ret;
-//    }
+
+        List<TstOrgGroupUserRelation> relations = (List<TstOrgGroupUserRelation>) json.get("relations");
+        orgGroupUserRelationService.saveRelationsForUser(orgId, vo.getId(), relations);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+
+        return ret;
+    }
 
 }

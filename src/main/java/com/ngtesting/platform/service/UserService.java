@@ -16,8 +16,6 @@ public interface UserService {
 
     TstUser invitePers(TstUser user, TstUser vo, List<TstOrgGroupUserRelation> relations);
 
-//    TstUser save(TstUser vo, Integer orgId);
-
     void update(TstUser record);
 
     void setDefaultOrg(TstUser user, Integer orgId);

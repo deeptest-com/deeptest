@@ -16,9 +16,8 @@ public interface OrgGroupUserRelationService extends BaseService {
 
 	List<TstUser> listAllOrgUsers(Integer orgId);
 
-	boolean saveRelations(List<TstOrgGroupUserRelation> orgGroupUserVos);
-
-    boolean saveRelations(Integer userId, List<TstOrgGroupUserRelation> orgGroupUserVos);
+	boolean saveRelationsForUser(Integer orgId, Integer userId, List<TstOrgGroupUserRelation> orgGroupUserVos);
+    boolean saveRelationsForGroup(Integer orgId, Integer groupId, List<TstOrgGroupUserRelation> orgGroupUserVos);
 
 	TstOrgGroupUserRelation getRelationOrgGroupUser(Integer orgGroupId, Integer userId);
 

@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.ngtesting.platform.dao.OrgGroupUserRelationDao;
 import com.ngtesting.platform.model.TstOrgGroup;
 import com.ngtesting.platform.model.TstOrgGroupUserRelation;
@@ -9,6 +10,7 @@ import com.ngtesting.platform.service.OrgGroupUserRelationService;
 import com.ngtesting.platform.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -106,35 +108,45 @@ public class OrgGroupUserRelationServiceImpl extends BaseServiceImpl implements 
     }
 
 	@Override
-	public boolean saveRelations(List<TstOrgGroupUserRelation> orgGroupTstUsers) {
-//		return saveRelations(null, orgGroupTstUsers);
+    @Transactional
+	public boolean saveRelationsForUser(Integer orgId, Integer userId, List<TstOrgGroupUserRelation> orgGroupUserRelation) {
+		if (orgGroupUserRelation == null) {
+            return false;
+        }
+
+        List<TstOrgGroupUserRelation> selectedList = new LinkedList<>();
+		for (Object obj: orgGroupUserRelation) {
+			TstOrgGroupUserRelation vo = JSON.parseObject(JSON.toJSONString(obj), TstOrgGroupUserRelation.class);
+			if (vo.getSelecting()) {
+                selectedList.add(vo);
+            }
+		}
+
+        orgGroupUserRelationDao.removeUserFromAllGroups(orgId, userId);
+        orgGroupUserRelationDao.saveRelations(selectedList);
 
 		return true;
 	}
-	@Override
-	public boolean saveRelations(Integer userId, List<TstOrgGroupUserRelation> orgGroupTstUsers) {
-//		if (orgGroupTstUsers == null) {
-//			return false;
-//		}
-//		for (Object obj: orgGroupTstUsers) {
-//			TstOrgGroupUserRelation vo = JSON.parseObject(JSON.toJSONString(obj), TstOrgGroupUserRelation.class);
-//			if (vo.getSelecting() != vo.getSelected()) { // 变化了
-//				TestRelationOrgGroupUser relationOrgGroupUser = this.getRelationOrgGroupUser(vo.getOrgGroupId(), vo.getUserId());
-//
-//				if (vo.getSelecting() && relationOrgGroupUser == null) { // 勾选
-//					relationOrgGroupUser = new TestRelationOrgGroupUser(vo.getOrgId(), vo.getOrgGroupId(), vo.getUserId());
-//					if (relationOrgGroupUser.getUserId() == null) {
-//						relationOrgGroupUser.setUserId(userId);
-//					}
-//					saveOrUpdate(relationOrgGroupUser);
-//				} else if (relationOrgGroupUser != null) { // 取消
-//					getDao().delete(relationOrgGroupUser);
-//				}
-//			}
-//		}
 
-		return true;
-	}
+    @Override
+    public boolean saveRelationsForGroup(Integer orgId, Integer groupId, List<TstOrgGroupUserRelation> orgGroupUserRelation) {
+        if (orgGroupUserRelation == null) {
+            return false;
+        }
+
+        List<TstOrgGroupUserRelation> selectedList = new LinkedList<>();
+        for (Object obj: orgGroupUserRelation) {
+            TstOrgGroupUserRelation vo = JSON.parseObject(JSON.toJSONString(obj), TstOrgGroupUserRelation.class);
+            if (vo.getSelecting()) {
+                selectedList.add(vo);
+            }
+        }
+
+        orgGroupUserRelationDao.removeGroupFromAllUsers(orgId, groupId);
+        orgGroupUserRelationDao.saveRelations(selectedList);
+
+        return true;
+    }
 
     @Override
     public TstOrgGroupUserRelation getRelationOrgGroupUser(Integer orgGroupId, Integer userId) {

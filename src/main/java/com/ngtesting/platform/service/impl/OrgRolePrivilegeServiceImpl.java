@@ -31,7 +31,6 @@ public class OrgRolePrivilegeServiceImpl extends BaseServiceImpl implements OrgR
 
         List<TstOrgPrivilegeDefine> vos = new LinkedList<TstOrgPrivilegeDefine>();
         for (TstOrgPrivilegeDefine po1 : allPrivileges) {
-
 			po1.setSelected(false);
 			po1.setSelecting(false);
         	for (TstOrgPrivilegeDefine po2 : orgRolePrivileges) {

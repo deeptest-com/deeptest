@@ -7,6 +7,7 @@ import com.ngtesting.platform.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -19,33 +20,31 @@ public class OrgRoleUserServiceImpl extends BaseServiceImpl implements OrgRoleUs
 	@Override
 	public List<TstUser> listUserByOrgRole(Integer orgId, Integer orgRoleId) {
 
-//        List<TstUser> allUsers = userService.listAllOrgUsers(orgId);
-//
-//        List<TstUser> orgRoleUsers;
-//        if (orgRoleId == null) {
-//        	orgRoleUsers = new LinkedList<>();
-//        } else {
-//        	orgRoleUsers = listOrgRoleUsers(orgRoleId);
-//        }
-//
-//        List<TstUser> vos = new LinkedList<TstUser>();
-//        for (TstUser po1 : allUsers) {
-//        	TstUser vo = genVo(po1);
-//
-//        	vo.setSelected(false);
-//        	vo.setSelecting(false);
-//        	for (TstUser po2 : orgRoleUsers) {
-//        		if (po1.getId().longValue() == po2.getId().longValue()) {
-//            		vo.setSelected(true);
-//            		vo.setSelecting(true);
-//            	}
-//        	}
-//        	vos.add(vo);
-//        }
-//
-//		return vos;
+        List<TstUser> allUsers = userService.listAllOrgUsers(orgId);
 
-		return null;
+        List<TstUser> orgRoleUsers;
+        if (orgRoleId == null) {
+        	orgRoleUsers = new LinkedList<>();
+        } else {
+        	orgRoleUsers = listOrgRoleUsers(orgRoleId);
+        }
+
+        List<TstUser> vos = new LinkedList<TstUser>();
+        for (TstUser po1 : allUsers) {
+        	TstUser vo = genVo(po1);
+
+        	vo.setSelected(false);
+        	vo.setSelecting(false);
+        	for (TstUser po2 : orgRoleUsers) {
+        		if (po1.getId().longValue() == po2.getId().longValue()) {
+            		vo.setSelected(true);
+            		vo.setSelecting(true);
+            	}
+        	}
+        	vos.add(vo);
+        }
+
+		return vos;
 	}
 
 	private TstUser genVo(TstUser po1) {

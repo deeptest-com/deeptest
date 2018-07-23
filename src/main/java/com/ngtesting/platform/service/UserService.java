@@ -8,6 +8,8 @@ import java.util.List;
 public interface UserService {
     List<TstUser> list(Integer orgId, String keywords, String disabled, int pageNum, int pageSize);
 
+    List<TstUser> listAllOrgUsers(Integer orgId);
+
     TstUser get(Integer id);
 
     TstUser getByToken(String token);

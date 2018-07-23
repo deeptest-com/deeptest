@@ -1,38 +1,32 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.dao.OrgRoleDao;
 import com.ngtesting.platform.model.TstOrgPrivilegeDefine;
 import com.ngtesting.platform.model.TstOrgRole;
 import com.ngtesting.platform.service.OrgRoleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleService {
+	@Autowired
+    OrgRoleDao orgRoleDao;
 
 	@Override
-	public List list(Integer orgId, String keywords, String disabled) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TestOrgRole.class);
-//        dc.add(Restrictions.eq("orgId", orgId));
-//
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//
-//        if (StringUtil.isNotEmpty(keywords)) {
-//        	dc.add(Restrictions.like("name", "%" + keywords + "%"));
-//        }
-//        if (StringUtil.isNotEmpty(disabled)) {
-//        	dc.add(Restrictions.eq("disabled", Boolean.valueOf(disabled)));
-//        }
-//
-//        dc.addOrder(Order.asc("id"));
-//        List ls = findAllByCriteria(dc);
-//
-//		return ls;
+	public List<TstOrgRole> list(Integer orgId, String keywords, String disabled) {
+        List<TstOrgRole> ls = orgRoleDao.query(orgId, keywords, disabled);
 
-		return null;
+		return ls;
 	}
 
-	@Override
+    @Override
+    public TstOrgRole get(Integer orgRoleId) {
+        return orgRoleDao.get(orgRoleId);
+    }
+
+    @Override
 	public TstOrgRole save(TstOrgRole vo, Integer orgId) {
 //		if (vo == null) {
 //			return null;

@@ -14,11 +14,11 @@
         ORDER BY o.id ASC
     </select>
 
-    <delete id="removeUserFromAllGroups">
+    <delete id="removeAllGroupsForUser">
         DELETE FROM TstOrgGroupUserRelation
         WHERE orgId=#{orgId} AND userId=#{userId}
     </delete>
-    <delete id="removeGroupFromAllUsers">
+    <delete id="removeAllUsersForGroup">
         DELETE FROM TstOrgGroupUserRelation
         WHERE orgId=#{orgId} AND orgGroupId=#{groupId}
     </delete>

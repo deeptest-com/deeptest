@@ -43,10 +43,9 @@ public class OrgRoleAction extends BaseAction {
 		String keywords = json.getString("keywords");
 		String disabled = json.getString("disabled");
 
-		List ls = orgRoleService.list(orgId, keywords, disabled);
-//		List<TstOrgRole> vos = orgRoleService.genVos(ls);
-//
-//        ret.put("data", vos);
+		List<TstOrgRole> ls = orgRoleService.list(orgId, keywords, disabled);
+
+        ret.put("data", ls);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -60,25 +59,23 @@ public class OrgRoleAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 		Integer orgRoleId = req.getInteger("id");
 
-		List<TstOrgPrivilegeDefine> orgRolePrivileges = orgRolePrivilegeService.listPrivilegesByOrgRole(orgId, orgRoleId);
-        List<TstUser> orgRoleUsers = orgRoleUserService.listUserByOrgRole(orgId, orgRoleId);
+        TstOrgRole po = orgRoleService.get(orgRoleId);
+
+		List<TstOrgPrivilegeDefine> orgRolePrivileges =
+                orgRolePrivilegeService.listPrivilegesByOrgRole(orgId, orgRoleId);
+        List<TstUser> orgRoleUsers =
+                orgRoleUserService.listUserByOrgRole(orgId, orgRoleId);
 
 		if (orgRoleId == null) {
 			ret.put("orgRole", new TstOrgRole());
-	        ret.put("orgRolePrivileges", orgRolePrivileges);
-			ret.put("orgRoleUsers", orgRoleUsers);
-			ret.put("code", Constant.RespCode.SUCCESS.getCode());
-			return ret;
-		}
+		} else {
+            ret.put("orgRole", po);
+        }
 
-//		TstOrgRole po = (TstOrgRole) orgRoleService.get(TstOrgRole.class, orgRoleId);
-//		TstOrgRole vo = orgRoleService.genVo(po);
-//
-//        ret.put("orgRole", vo);
         ret.put("orgRolePrivileges", orgRolePrivileges);
         ret.put("orgRoleUsers", orgRoleUsers);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
 	}
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)

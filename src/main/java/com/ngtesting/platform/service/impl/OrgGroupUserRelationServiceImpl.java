@@ -58,7 +58,6 @@ public class OrgGroupUserRelationServiceImpl extends BaseServiceImpl implements 
 
 	@Override
 	public List<TstOrgGroupUserRelation> listRelationsByGroup(Integer orgId, Integer groupId) {
-
         List<TstUser> allOrgUsers = listAllOrgUsers(orgId);
 
         List<TstOrgGroupUserRelation> relations;
@@ -123,7 +122,9 @@ public class OrgGroupUserRelationServiceImpl extends BaseServiceImpl implements 
 		}
 
         orgGroupUserRelationDao.removeAllGroupsForUser(orgId, userId);
-        orgGroupUserRelationDao.saveRelations(selectedList);
+		if (selectedList.size() > 0) {
+            orgGroupUserRelationDao.saveRelations(selectedList);
+        }
 
 		return true;
 	}
@@ -143,7 +144,9 @@ public class OrgGroupUserRelationServiceImpl extends BaseServiceImpl implements 
         }
 
         orgGroupUserRelationDao.removeAllUsersForGroup(orgId, groupId);
-        orgGroupUserRelationDao.saveRelations(selectedList);
+        if (selectedList.size() > 0) {
+            orgGroupUserRelationDao.saveRelations(selectedList);
+        }
 
         return true;
     }

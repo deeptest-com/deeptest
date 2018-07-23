@@ -49,6 +49,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<TstUser> listAllOrgUsers(Integer orgId) {
+        List<TstUser> ls = userDao.query(orgId, null, "false");
+
+        return ls;
+    }
+
+    @Override
     public TstUser get(Integer id) {
         TstUser user = userDao.get(id);
         return user;

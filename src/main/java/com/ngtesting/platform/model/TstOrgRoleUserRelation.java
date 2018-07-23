@@ -17,7 +17,6 @@ public class TstOrgRoleUserRelation extends BaseModel {
     private Boolean selected;
     private Boolean selecting;
 
-
 	public Long getOrgId() {
 		return orgId;
 	}

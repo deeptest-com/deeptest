@@ -122,7 +122,7 @@ public class OrgGroupUserRelationServiceImpl extends BaseServiceImpl implements 
             }
 		}
 
-        orgGroupUserRelationDao.removeUserFromAllGroups(orgId, userId);
+        orgGroupUserRelationDao.removeAllGroupsForUser(orgId, userId);
         orgGroupUserRelationDao.saveRelations(selectedList);
 
 		return true;
@@ -142,7 +142,7 @@ public class OrgGroupUserRelationServiceImpl extends BaseServiceImpl implements 
             }
         }
 
-        orgGroupUserRelationDao.removeGroupFromAllUsers(orgId, groupId);
+        orgGroupUserRelationDao.removeAllUsersForGroup(orgId, groupId);
         orgGroupUserRelationDao.saveRelations(selectedList);
 
         return true;

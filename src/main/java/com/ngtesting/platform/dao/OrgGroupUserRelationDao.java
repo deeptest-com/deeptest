@@ -10,7 +10,7 @@ public interface OrgGroupUserRelationDao {
                                         @Param("groupId") Integer groupId,
                                         @Param("userId") Integer userId);
 
-    void removeUserFromAllGroups(@Param("orgId") Integer orgId, @Param("userId") Integer userId);
-    void removeGroupFromAllUsers(@Param("orgId") Integer orgId, @Param("groupId") Integer groupId);
+    void removeAllGroupsForUser(@Param("orgId") Integer orgId, @Param("userId") Integer userId);
+    void removeAllUsersForGroup(@Param("orgId") Integer orgId, @Param("groupId") Integer groupId);
     void saveRelations(@Param("list") List<TstOrgGroupUserRelation> orgGroupUserRelation);
 }

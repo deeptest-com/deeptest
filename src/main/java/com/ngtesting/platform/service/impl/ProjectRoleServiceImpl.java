@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRoleService {
@@ -31,24 +32,16 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 
 	@Override
 	public TstProjectRole save(TstProjectRole vo, Integer orgId) {
-//		if (vo == null) {
-//			return null;
-//		}
-//
-//		TestProjectRoleForOrg po = new TestProjectRoleForOrg();
-//		if (vo.getId() != null) {
-//			po = (TestProjectRoleForOrg) get(TestProjectRoleForOrg.class, vo.getId());
-//		}
-//
-//		po.setName(vo.getName());
-//		po.setDescr(vo.getDescr());
-//		po.setOrgId(orgId);
-//		po.setDisabled(vo.getDisabled());
-//
-//		saveOrUpdate(po);
-//		return po;
+		vo.setOrgId(orgId);
 
-		return null;
+		if (vo.getId() == null) {
+			vo.setCode(UUID.randomUUID().toString());
+			projectRoleDao.save(vo);
+		} else {
+			projectRoleDao.update(vo);
+		}
+
+		return vo;
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.ngtesting.platform.dao.ProjectPrivilegeDao;
 import com.ngtesting.platform.dao.ProjectRoleDao;
 import com.ngtesting.platform.dao.ProjectRoleEntityRelationDao;
@@ -73,39 +74,30 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
 	}
 
 	@Override
-	public boolean saveProjectPrivileges(Integer projectRoleId, Map<String, List<TstProjectPrivilegeDefine>> map) {
-//		if (map == null) {
-//			return false;
-//		}
-//
-//        List<TstProjectRolePriviledgeRelation> privilegeSet = listProjectRolePrivileges(projectRoleId);
-//        List<Integer> privilegeDefineIds = new LinkedList<>();
-//        for (TstProjectRolePriviledgeRelation temp: privilegeSet) {
-//            privilegeDefineIds.add(temp.getProjectPrivilegeDefineId());
-//        }
-//
-//		for (String key: map.keySet()) {
-//            Map<String, TstProjectPrivilegeDefine> voMap = JSON.parseObject(JSON.toJSONString(map.get(key)), Map.class);
-//
-//			for (String key2: voMap.keySet()) {
-//				TstProjectPrivilegeDefine vo = JSON.parseObject(JSON.toJSONString(voMap.get(key2)),
-//						TstProjectPrivilegeDefine.class);
-//
-//                if (vo.getSelecting() != vo.getSelected()) { // 变化了
-//	    			if (vo.getSelecting() && !privilegeDefineIds.contains(vo.getId())) { // 勾选
-//                        TstProjectRolePriviledgeRelation temp = new TstProjectRolePriviledgeRelation(vo.getId(), projectRoleId);
-//                        saveOrUpdate(temp);
-//	    			} else { // 取消
-//                        Integer id = vo.getRelationId();
-//                        TstProjectRolePriviledgeRelation temp = (TstProjectRolePriviledgeRelation)get(
-//                                TstProjectRolePriviledgeRelation.class, id);
-//
-//                        getDao().delete(temp);
-//	    			}
-//
-//				}
-//			}
-//		}
+	public boolean saveProjectPrivileges(Integer orgId, Integer projectRoleId,
+                                         Map<String, List<TstProjectPrivilegeDefine>> map) {
+		if (map == null) {
+			return false;
+		}
+
+        List<TstProjectPrivilegeDefine> selectedList = new LinkedList<>();
+		for (String key: map.keySet()) {
+            Map<String, TstProjectPrivilegeDefine> voMap = JSON.parseObject(JSON.toJSONString(map.get(key)), Map.class);
+
+			for (String key2: voMap.keySet()) {
+                TstProjectPrivilegeDefine vo = JSON.parseObject(JSON.toJSONString(voMap.get(key2)),
+                        TstProjectPrivilegeDefine.class);
+
+                if (vo.getSelecting()) {
+                    selectedList.add(vo);
+                }
+            }
+		}
+
+        projectRolePrivilegeRelationDao.removeAllPrivilegsForRole(projectRoleId);
+        if (selectedList.size() > 0) {
+            projectRolePrivilegeRelationDao.saveRelations(orgId, projectRoleId, selectedList);
+        }
 
 		return true;
 	}

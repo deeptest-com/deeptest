@@ -88,7 +88,7 @@ public class ProjectRoleAction extends BaseAction {
 		Map<String, List<TstProjectPrivilegeDefine>> projectPrivileges =
 				(Map<String, List<TstProjectPrivilegeDefine>>) json.get("projectPrivileges");
 
-		boolean success = projectPrivilegeService.saveProjectPrivileges(po.getId(), projectPrivileges);
+		boolean success = projectPrivilegeService.saveProjectPrivileges(orgId, po.getId(), projectPrivileges);
 
 		Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userVo.getId(), userVo.getDefaultPrjId(), orgId);
 		ret.put("prjPrivileges", prjPrivileges);

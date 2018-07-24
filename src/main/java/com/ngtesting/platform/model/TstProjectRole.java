@@ -8,7 +8,7 @@ public class TstProjectRole extends BaseModel {
     private String name;
     private String descr;
 
-    private Long orgId;
+    private Integer orgId;
 
 	public String getCode() {
 		return code;
@@ -26,11 +26,11 @@ public class TstProjectRole extends BaseModel {
 		this.name = name;
 	}
 
-	public Long getOrgId() {
+	public Integer getOrgId() {
 		return orgId;
 	}
 
-	public void setOrgId(Long orgId) {
+	public void setOrgId(Integer orgId) {
 		this.orgId = orgId;
 	}
 

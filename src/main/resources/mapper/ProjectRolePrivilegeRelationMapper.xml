@@ -10,4 +10,17 @@
         ORDER BY o.projectPrivilegeDefineId ASC
     </select>
 
+    <delete id="removeAllPrivilegsForRole">
+        DELETE FROM TstProjectRolePriviledgeRelation
+        WHERE projectRoleId=#{projectRoleId}
+    </delete>
+
+    <insert id="saveRelations">
+        insert into TstProjectRolePriviledgeRelation (orgId,projectRoleId,projectPrivilegeDefineId)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{orgId},#{projectRoleId}, #{item.id})
+        </foreach>
+    </insert>
+
 </mapper>

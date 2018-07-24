@@ -34,4 +34,20 @@
         WHERE o.id=#{id}
     </select>
 
+    <insert id="save" parameterType="TstProjectRole" useGeneratedKeys="true" keyProperty="id">
+        insert into TstProjectRole
+        (code,name,orgId,deleted,disabled,createTime,version)
+        values
+        (#{code},#{name},#{orgId},FALSE,FALSE,NOW(),0)
+    </insert>
+
+    <update id="update" parameterType="TstProjectRole">
+        UPDATE TstProjectRole
+        SET name=#{name},orgId=#{orgId},
+        disabled=#{disabled},
+        updateTime=NOW()
+
+        WHERE id=#{id}
+    </update>
+
 </mapper>

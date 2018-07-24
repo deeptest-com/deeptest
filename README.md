@@ -6,13 +6,7 @@ AngularJS, SockJS, SpringBoot, MyBatis, MySQL
 
 ### Quick start
 ```bash
-Setup Tomcat8 and Mysql5.x server
-Import database from xdoc/ngtesting-dump.sql
-Deploy webapp to path /platform in tomcat
-Open http://localhost:8080/platform to test backend web and database server works well
-Open chrome browser and goto http://localhost:8080/platform/client
-If you use different tomcat path, search and replace below service url to your own in main.*.js
-- http://localhost:8080/platform/
+
 ```
 
 

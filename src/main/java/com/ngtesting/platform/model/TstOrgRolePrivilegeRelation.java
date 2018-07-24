@@ -1,7 +1,9 @@
 package com.ngtesting.platform.model;
 
 
-public class TstOrgRolePrivilegeRelation extends BaseModel {
+import java.io.Serializable;
+
+public class TstOrgRolePrivilegeRelation implements Serializable {
 	private static final long serialVersionUID = -7584449391114803263L;
 
 	private Integer orgId;

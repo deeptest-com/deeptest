@@ -1,35 +1,37 @@
 package com.ngtesting.platform.model;
 
 
-public class TstOrgRoleUserRelation extends BaseModel {
+import java.io.Serializable;
+
+public class TstOrgRoleUserRelation implements Serializable {
 	private static final long serialVersionUID = 5187849457380831324L;
 
-	private Long orgId;
+	private Integer orgId;
 
-	private Long orgRoleId;
+	private Integer orgRoleId;
 
     private String orgRoleName;
 
-    private Long userId;
+    private Integer userId;
 
     private String userName;
 
     private Boolean selected;
     private Boolean selecting;
 
-	public Long getOrgId() {
+	public Integer getOrgId() {
 		return orgId;
 	}
 
-	public void setOrgId(Long orgId) {
+	public void setOrgId(Integer orgId) {
 		this.orgId = orgId;
 	}
 
-	public Long getOrgRoleId() {
+	public Integer getOrgRoleId() {
 		return orgRoleId;
 	}
 
-	public void setOrgRoleId(Long orgRoleId) {
+	public void setOrgRoleId(Integer orgRoleId) {
 		this.orgRoleId = orgRoleId;
 	}
 
@@ -41,11 +43,11 @@ public class TstOrgRoleUserRelation extends BaseModel {
 		this.orgRoleName = orgRoleName;
 	}
 
-	public Long getUserId() {
+	public Integer getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
 

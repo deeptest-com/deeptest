@@ -24,7 +24,7 @@ public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSett
     SysPrivilegeService sysPrivilegeService;
 
     @Autowired
-    OrgRolePrivilegeService orgRolePrivilegeService;
+    OrgPrivilegeService orgRolePrivilegeService;
     @Autowired
     ProjectPrivilegeService projectPrivilegeService;
     @Autowired

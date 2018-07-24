@@ -3,12 +3,10 @@ package com.ngtesting.platform.action;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.TstOrgPrivilegeDefine;
-import com.ngtesting.platform.model.TstOrgRole;
-import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.OrgRolePrivilegeService;
+import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.service.OrgRolePrivilegeRelationService;
 import com.ngtesting.platform.service.OrgRoleService;
-import com.ngtesting.platform.service.OrgRoleUserService;
+import com.ngtesting.platform.service.OrgRoleUserRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,9 +26,9 @@ public class OrgRoleAction extends BaseAction {
 	@Autowired
     OrgRoleService orgRoleService;
 	@Autowired
-    OrgRolePrivilegeService orgRolePrivilegeService;
+    OrgRolePrivilegeRelationService orgRolePrivilegeRelationService;
     @Autowired
-    OrgRoleUserService orgRoleUserService;
+    OrgRoleUserRelationService orgRoleUserRelationService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
@@ -61,10 +59,10 @@ public class OrgRoleAction extends BaseAction {
 
         TstOrgRole po = orgRoleService.get(orgRoleId);
 
-		List<TstOrgPrivilegeDefine> orgRolePrivileges =
-                orgRolePrivilegeService.listPrivilegesByOrgRole(orgId, orgRoleId);
-        List<TstUser> orgRoleUsers =
-                orgRoleUserService.listUserByOrgRole(orgId, orgRoleId);
+		List<TstOrgRolePrivilegeRelation> orgRolePrivileges =
+                orgRolePrivilegeRelationService.listRelationsByOrgRole(orgId, orgRoleId);
+        List<TstOrgRoleUserRelation> orgRoleUsers =
+                orgRoleUserRelationService.listRelationsByOrgRole(orgId, orgRoleId);
 
 		if (orgRoleId == null) {
 			ret.put("orgRole", new TstOrgRole());
@@ -89,11 +87,11 @@ public class OrgRoleAction extends BaseAction {
 		TstOrgRole orgRoleVo = JSON.parseObject(JSON.toJSONString(json.get("orgRole")), TstOrgRole.class);
 		TstOrgRole po = orgRoleService.save(orgRoleVo, orgId);
 
-		List<TstOrgPrivilegeDefine> orgPrivileges = (List<TstOrgPrivilegeDefine>) json.get("orgPrivileges");
-		boolean success = orgRolePrivilegeService.saveOrgRolePrivileges(po.getId(), orgPrivileges);
+		List<TstOrgRolePrivilegeRelation> orgPrivileges = (List<TstOrgRolePrivilegeRelation>) json.get("relations");
+		boolean success = orgRolePrivilegeRelationService.saveRelationsForRole(orgId, po.getId(), orgPrivileges);
 
-        List<TstUser> orgRoleUsers = (List<TstUser>) json.get("orgRoleUsers");
-        success = orgRoleUserService.saveOrgRoleUsers(po.getId(), orgRoleUsers);
+        List<TstOrgRoleUserRelation> orgRoleUsers = (List<TstOrgRoleUserRelation>) json.get("relations");
+        success = orgRoleUserRelationService.saveRelationsForRole(orgId, po.getId(), orgRoleUsers);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

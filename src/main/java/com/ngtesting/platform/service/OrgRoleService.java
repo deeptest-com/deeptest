@@ -8,13 +8,12 @@ import java.util.List;
 public interface OrgRoleService extends BaseService {
 
 	List list(Integer orgId, String keywords, String disabled);
+    List<TstOrgRole> listAllOrgRoles(Integer orgId);
+
 	TstOrgRole get(Integer orgRoleId);
 
 	TstOrgRole save(TstOrgRole vo, Integer orgId);
 	boolean delete(Integer id);
 
-//	void initOrgRoleBasicDataPers(Integer orgId);
-
     List<TstOrgPrivilegeDefine> getDefaultPrivByRoleCode(TstOrgRole.OrgRoleCode e);
-
 }

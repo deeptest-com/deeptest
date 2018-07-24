@@ -22,6 +22,13 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 	}
 
     @Override
+    public List<TstOrgRole> listAllOrgRoles(Integer orgId) {
+        List<TstOrgRole> ls = orgRoleDao.query(orgId, null, "false");
+
+        return ls;
+    }
+
+    @Override
     public TstOrgRole get(Integer orgRoleId) {
         return orgRoleDao.get(orgRoleId);
     }
@@ -57,21 +64,6 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 		return true;
 	}
 
-//	@Override
-//	public void initOrgRoleBasicDataPers(Integer orgId) {
-//		for (TestOrgRole.OrgRoleCode e : TestOrgRole.OrgRoleCode.values()) {
-//            TestOrgRole po = new TestOrgRole();
-//
-//            po.setName(e.name);
-//            po.setCode(e);
-//            po.setDescr("");
-//            po.setOrgId(orgId);
-//            po.getOrgPrivilegeSet().addAll(getDefaultPrivByRoleCode(e));
-//
-//            saveOrUpdate(po);
-//		}
-//	}
-
     @Override
     public List<TstOrgPrivilegeDefine> getDefaultPrivByRoleCode(TstOrgRole.OrgRoleCode e) {
 //        TestOrgPrivilegeDefine.OrgPrivilegeCode code = TestOrgPrivilegeDefine.OrgPrivilegeCode.valueOf(e.code);
@@ -87,20 +79,5 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 
 		return null;
     }
-
-//    @Override
-//	public void addUserToOrgRolePers(TestUser user, Integer orgId, TestOrgRole.OrgRoleCode code) {
-//		DetachedCriteria dc = DetachedCriteria.forClass(TestOrgRole.class);
-//		dc.add(Restrictions.eq("orgId", orgId));
-//		dc.add(Restrictions.eq("code", code));
-//		dc.add(Restrictions.ne("deleted", true));
-//		dc.add(Restrictions.ne("disabled", true));
-//
-//		dc.addOrder(Order.asc("id"));
-//		List<TestOrgRole> ls = findAllByCriteria(dc);
-//		TestOrgRole role = ls.get(0);
-//		role.getUserSet().add(user);
-//		saveOrUpdate(role);
-//	}
 
 }

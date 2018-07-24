@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-mybatis.orgDTD Mapper 3.0EN" "http:mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.OrgRolePrivilegeDao" >
+<mapper namespace="com.ngtesting.platform.dao.OrgRolePrivilegeRelationDao" >
 
     <select id="queryByUser" resultType="TstOrgPrivilegeDefine">
         SELECT priv.code,priv.name from TstOrgPrivilegeDefine priv
@@ -14,5 +14,22 @@
             order by priv.id asc
 
     </select>
+
+    <delete id="removeAllPrivilegesForRole">
+        DELETE FROM TstOrgRolePrivilegeRelation
+        WHERE orgId=#{orgId} AND orgRoleId=#{roleId}
+    </delete>
+    <delete id="removeAllRolesForPrivilege">
+        DELETE FROM TstOrgRolePrivilegeRelation
+        WHERE orgId=#{orgId} AND orgPrivilegeId=#{privilegeId}
+    </delete>
+
+    <insert id="saveRelations">
+        insert into TstOrgRolePrivilegeRelation (orgId,orgRoleId,orgPrivilegeId)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.orgId},#{item.orgRoleId}, #{item.orgPrivilegeId})
+        </foreach>
+    </insert>
 
 </mapper>

@@ -34,7 +34,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
     @Autowired
     ProjectPrivilegeService projectPrivilegeService;
 	@Autowired
-    OrgRolePrivilegeService orgRolePrivilegeService;
+    OrgPrivilegeService orgRolePrivilegeService;
 
 	@Autowired
 	private OrgDao orgDao;

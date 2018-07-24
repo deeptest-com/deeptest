@@ -25,46 +25,15 @@ public class OrgGroupUserRelationServiceImpl extends BaseServiceImpl implements 
     @Autowired
     OrgGroupUserRelationDao orgGroupUserRelationDao;
 
-	@Override
-	public List<TstOrgGroupUserRelation> listRelationsByUser(Integer orgId, Integer userId) {
-
-        List<TstOrgGroup> allOrgGroups = listAllOrgGroups(orgId);
-
-        List<TstOrgGroupUserRelation> relations;
-        if (userId == null) {
-        	relations = new LinkedList<>();
-        } else {
-        	relations = listRelations(orgId, null, userId);
-        }
-
-        List<TstOrgGroupUserRelation> vos = new LinkedList<>();
-        for (TstOrgGroup orgGroup : allOrgGroups) {
-        	TstOrgGroupUserRelation vo = genVo(orgId, orgGroup, userId);
-
-        	vo.setSelected(false);
-        	vo.setSelecting(false);
-        	for (TstOrgGroupUserRelation po : relations) {
-        		if (po.getOrgGroupId().longValue() == orgGroup.getId().longValue()
-						&& po.getUserId().longValue() == userId.longValue()) {
-            		vo.setSelected(true);
-            		vo.setSelecting(true);
-            	}
-        	}
-        	vos.add(vo);
-        }
-
-		return vos;
-	}
-
-	@Override
-	public List<TstOrgGroupUserRelation> listRelationsByGroup(Integer orgId, Integer groupId) {
+    @Override
+    public List<TstOrgGroupUserRelation> listRelationsByGroup(Integer orgId, Integer groupId) {
         List<TstUser> allOrgUsers = listAllOrgUsers(orgId);
 
         List<TstOrgGroupUserRelation> relations;
         if (groupId == null) {
             relations = new LinkedList<>();
         } else {
-            relations = listRelations(orgId, groupId, null);
+            relations = orgGroupUserRelationDao.query(orgId, groupId, null);
         }
 
         List<TstOrgGroupUserRelation> vos = new LinkedList<>();
@@ -84,13 +53,37 @@ public class OrgGroupUserRelationServiceImpl extends BaseServiceImpl implements 
         }
 
         return vos;
-	}
+    }
 
-    @Override
-    public List<TstOrgGroupUserRelation> listRelations(Integer orgId, Integer groupId, Integer userId) {
-        List<TstOrgGroupUserRelation> ls = orgGroupUserRelationDao.query(orgId, groupId, userId);
+	@Override
+	public List<TstOrgGroupUserRelation> listRelationsByUser(Integer orgId, Integer userId) {
 
-        return ls;
+        List<TstOrgGroup> allOrgGroups = listAllOrgGroups(orgId);
+
+        List<TstOrgGroupUserRelation> relations;
+        if (userId == null) {
+        	relations = new LinkedList<>();
+        } else {
+        	relations = orgGroupUserRelationDao.query(orgId, null, userId);
+        }
+
+        List<TstOrgGroupUserRelation> vos = new LinkedList<>();
+        for (TstOrgGroup orgGroup : allOrgGroups) {
+        	TstOrgGroupUserRelation vo = genVo(orgId, orgGroup, userId);
+
+        	vo.setSelected(false);
+        	vo.setSelecting(false);
+        	for (TstOrgGroupUserRelation po : relations) {
+        		if (po.getOrgGroupId().longValue() == orgGroup.getId().longValue()
+						&& po.getUserId().longValue() == userId.longValue()) {
+            		vo.setSelected(true);
+            		vo.setSelecting(true);
+            	}
+        	}
+        	vos.add(vo);
+        }
+
+		return vos;
 	}
 
     @Override
@@ -150,23 +143,6 @@ public class OrgGroupUserRelationServiceImpl extends BaseServiceImpl implements 
 
         return true;
     }
-
-    @Override
-    public TstOrgGroupUserRelation getRelationOrgGroupUser(Integer orgGroupId, Integer userId) {
-//		DetachedCriteria dc = DetachedCriteria.forClass(TestRelationOrgGroupUser.class);
-//        dc.add(Restrictions.eq("orgGroupId", orgGroupId));
-//        dc.add(Restrictions.eq("userId", userId));
-//
-//        dc.addOrder(Order.asc("id"));
-//        List<TestRelationOrgGroupUser> ls = findAllByCriteria(dc);
-//
-//        if (ls.size() == 0) {
-//        	return null;
-//        }
-//		return ls.get(0);
-
-		return null;
-	}
 
     @Override
     public TstOrgGroupUserRelation genVo(Integer orgId, TstOrgGroup group, Integer userId) {

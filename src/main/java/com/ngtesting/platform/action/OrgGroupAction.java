@@ -62,6 +62,8 @@ public class OrgGroupAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 		Integer orgGroupId = json.getInteger("id");
 
+		TstOrgGroup po = orgGroupService.get(orgGroupId);
+
 		List<TstOrgGroupUserRelation> relations = orgGroupUserService.listRelationsByGroup(orgId, orgGroupId);
 		if (orgGroupId == null) {
 
@@ -70,8 +72,6 @@ public class OrgGroupAction extends BaseAction {
 			ret.put("code", Constant.RespCode.SUCCESS.getCode());
 			return ret;
 		}
-
-		TstOrgGroup po = orgGroupService.get(orgGroupId);
 
         ret.put("group", po);
         ret.put("relations", relations);

@@ -37,7 +37,7 @@ public class UserAction {
     @Autowired
     SysPrivilegeService sysPrivilegeService;
     @Autowired
-    OrgRolePrivilegeService orgRolePrivilegeService;
+    OrgPrivilegeService orgRolePrivilegeService;
     @Autowired
     CasePropertyService casePropertyService;
     @Autowired

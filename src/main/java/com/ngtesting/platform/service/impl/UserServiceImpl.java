@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     OrgGroupUserRelationService orgGroupUserRelationService;
     @Autowired
-    OrgRoleUserService orgRoleUserService;
+    OrgRoleUserRelationService orgRoleUserService;
 
     @Override
     public List<TstUser> list(Integer orgId, String keywords, String disabled, int pageNum, int pageSize) {

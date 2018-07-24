@@ -1,7 +1,9 @@
 package com.ngtesting.platform.model;
 
 
-public class TstOrgGroupUserRelation extends BaseModel {
+import java.io.Serializable;
+
+public class TstOrgGroupUserRelation implements Serializable {
 	private static final long serialVersionUID = -7361457861754458408L;
 
 	private Integer orgId;

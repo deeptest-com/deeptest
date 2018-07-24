@@ -26,7 +26,7 @@ public class OrgRolePrivilegeRelationServiceImpl extends BaseServiceImpl impleme
 
 	@Override
 	public List<TstOrgRolePrivilegeRelation> listRelationsByOrgRole(Integer orgId, Integer orgRoleId) {
-        List<TstOrgPrivilegeDefine> allPrivileges = orgPrivilegeService.listAllOrgPrivileges(orgId);
+        List<TstOrgPrivilegeDefine> allPrivileges = orgPrivilegeService.listAllOrgPrivileges();
 
         List<TstOrgRolePrivilegeRelation> relations;
         if (orgRoleId == null) {

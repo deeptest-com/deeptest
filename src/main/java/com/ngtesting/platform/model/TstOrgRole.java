@@ -8,7 +8,7 @@ public class TstOrgRole extends BaseModel {
     private String name;
     private String descr;
 
-    private Long orgId;
+    private Integer orgId;
 
 	public static enum OrgRoleCode {
 		org_admin("org_admin", "组织管理员"),
@@ -40,11 +40,11 @@ public class TstOrgRole extends BaseModel {
 		this.name = name;
 	}
 
-	public Long getOrgId() {
+	public Integer getOrgId() {
 		return orgId;
 	}
 
-	public void setOrgId(Long orgId) {
+	public void setOrgId(Integer orgId) {
 		this.orgId = orgId;
 	}
 

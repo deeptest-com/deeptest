@@ -14,4 +14,7 @@ public interface OrgRoleDao {
                            @Param("disabled") String disabled);
 
     TstOrgRole get(@Param("id") Integer id);
+
+    void save(TstOrgRole vo);
+    void update(TstOrgRole vo);
 }

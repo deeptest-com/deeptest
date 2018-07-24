@@ -8,5 +8,5 @@ import java.util.Map;
 public interface OrgPrivilegeService extends BaseService {
     Map<String, Boolean> listByUser(Integer userId, Integer orgId);
 
-    List<TstOrgPrivilegeDefine> listAllOrgPrivileges(Integer orgId);
+    List<TstOrgPrivilegeDefine> listAllOrgPrivileges();
 }

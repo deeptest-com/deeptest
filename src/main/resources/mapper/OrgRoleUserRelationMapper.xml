@@ -2,13 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.OrgRoleUserRelationDao" >
 
-    <select id="userInOrg" resultType="TstUser">
-        SELECT count(*) FROM TstOrgRoleUserRelation o WHERE o.userId=#{userId}
-        <if test="isRead != null">
-            AND o.isRead = #{isRead}
+    <select id="query" resultType="TstOrgRoleUserRelation">
+        SELECT * FROM TstOrgRoleUserRelation o WHERE o.orgId=#{orgId}
+        <if test="roleId != null">
+            AND o.orgRoleId = #{roleId}
         </if>
-        AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+        <if test="userId != null">
+            AND o.userId = #{userId}
+        </if>
+        ORDER BY o.userId ASC
     </select>
 
     <delete id="removeAllRolesForUser">
@@ -25,7 +27,6 @@
         values
         <foreach collection="list" item="item" separator=",">
             (#{item.orgId},#{item.orgRoleId}, #{item.userId})
-        </foreach>
         </foreach>
     </insert>
 

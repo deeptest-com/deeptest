@@ -1,15 +1,18 @@
 package com.ngtesting.platform.dao;
 
 import com.ngtesting.platform.model.TstOrgRoleUserRelation;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 public interface OrgRoleUserRelationDao {
-    List<TstOrgRoleUserRelation> query(Integer orgId, Integer orgRoleId, Integer userId);
+    List<TstOrgRoleUserRelation> query(@Param("orgId") Integer orgId,
+                                       @Param("roleId") Integer roleId,
+                                       @Param("userId") Integer userId);
 
-    void removeAllRolesForUser(Integer orgId, Integer userId);
+    void removeAllRolesForUser(@Param("orgId") Integer orgId, @Param("userId") Integer userId);
 
-    void removeAllUsersForRole(Integer orgId, Integer roleId);
+    void removeAllUsersForRole(@Param("orgId") Integer orgId, @Param("roleId") Integer roleId);
 
-    void saveRelations(List<TstOrgRoleUserRelation> selectedList);
+    void saveRelations(@Param("list") List<TstOrgRoleUserRelation> selectedList);
 }

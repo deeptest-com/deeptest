@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleService {
@@ -35,24 +36,16 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 
     @Override
 	public TstOrgRole save(TstOrgRole vo, Integer orgId) {
-//		if (vo == null) {
-//			return null;
-//		}
-//
-//		TestOrgRole po = new TestOrgRole();
-//		if (vo.getId() != null) {
-//			po = (TestOrgRole) get(TestOrgRole.class, vo.getId());
-//		}
-//
-//		po.setName(vo.getName());
-//		po.setDescr(vo.getDescr());
-//		po.setOrgId(orgId);
-//		po.setDisabled(vo.getDisabled());
-//
-//		saveOrUpdate(po);
-//		return po;
+        vo.setOrgId(orgId);
 
-		return null;
+        if (vo.getId() == null) {
+            vo.setCode(UUID.randomUUID().toString());
+            orgRoleDao.save(vo);
+        } else {
+            orgRoleDao.update(vo);
+        }
+
+        return vo;
 	}
 
 	@Override

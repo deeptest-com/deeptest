@@ -59,9 +59,9 @@ public class OrgRoleAction extends BaseAction {
 
         TstOrgRole po = orgRoleService.get(orgRoleId);
 
-		List<TstOrgRolePrivilegeRelation> orgRolePrivileges =
+		List<TstOrgRolePrivilegeRelation> privileges =
                 orgRolePrivilegeRelationService.listRelationsByOrgRole(orgId, orgRoleId);
-        List<TstOrgRoleUserRelation> orgRoleUsers =
+        List<TstOrgRoleUserRelation> users =
                 orgRoleUserRelationService.listRelationsByOrgRole(orgId, orgRoleId);
 
 		if (orgRoleId == null) {
@@ -70,8 +70,8 @@ public class OrgRoleAction extends BaseAction {
             ret.put("orgRole", po);
         }
 
-        ret.put("orgRolePrivileges", orgRolePrivileges);
-        ret.put("orgRoleUsers", orgRoleUsers);
+        ret.put("privileges", privileges);
+        ret.put("users", users);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
 	}
@@ -87,11 +87,11 @@ public class OrgRoleAction extends BaseAction {
 		TstOrgRole orgRoleVo = JSON.parseObject(JSON.toJSONString(json.get("orgRole")), TstOrgRole.class);
 		TstOrgRole po = orgRoleService.save(orgRoleVo, orgId);
 
-		List<TstOrgRolePrivilegeRelation> orgPrivileges = (List<TstOrgRolePrivilegeRelation>) json.get("relations");
-		boolean success = orgRolePrivilegeRelationService.saveRelationsForRole(orgId, po.getId(), orgPrivileges);
+		List<TstOrgRolePrivilegeRelation> privileges = (List<TstOrgRolePrivilegeRelation>) json.get("privileges");
+		boolean success = orgRolePrivilegeRelationService.saveRelationsForRole(orgId, po.getId(), privileges);
 
-        List<TstOrgRoleUserRelation> orgRoleUsers = (List<TstOrgRoleUserRelation>) json.get("relations");
-        success = orgRoleUserRelationService.saveRelationsForRole(orgId, po.getId(), orgRoleUsers);
+        List<TstOrgRoleUserRelation> users = (List<TstOrgRoleUserRelation>) json.get("users");
+        success = orgRoleUserRelationService.saveRelationsForRole(orgId, po.getId(), users);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

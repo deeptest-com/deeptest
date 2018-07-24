@@ -67,10 +67,9 @@ public class ProjectRoleAction extends BaseAction {
 			return ret;
 		}
 
-//		TstProjectRole po = (TstProjectRole) projectRoleService.get(TstProjectRole.class, roleId);
-//		TstProjectRole vo = projectRoleService.genVo(po);
-//
-//        ret.put("projectRole", vo);
+		TstProjectRole po = projectRoleService.get(roleId);
+
+        ret.put("projectRole", po);
         ret.put("projectPrivileges", orgPrivileges);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

@@ -42,7 +42,7 @@ public class CasePropertyServiceImpl extends BaseServiceImpl implements CaseProp
 
 	@Override
 	public Map<String,String> getPriorityMap(Integer orgId) {
-        List<TstCasePriority> ls = casePriorityDao.listPriority(orgId);
+        List<TstCasePriority> ls = casePriorityDao.list(orgId);
 
         Map<String,String> map = new LinkedHashMap();
 		for (TstCasePriority item : ls) {
@@ -54,7 +54,7 @@ public class CasePropertyServiceImpl extends BaseServiceImpl implements CaseProp
 
 	@Override
 	public Map<String,String> getTypeMap(Integer orgId) {
-        List<TstCaseType> ls = caseTypeDao.listType(orgId);
+        List<TstCaseType> ls = caseTypeDao.list(orgId);
         Map<String,String> map = new LinkedHashMap();
 		for (TstCaseType item : ls) {
 			map.put(item.getCode(), item.getName());

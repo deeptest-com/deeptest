@@ -1,40 +1,31 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.dao.CasePriorityDao;
 import com.ngtesting.platform.model.TstCasePriority;
 import com.ngtesting.platform.service.CasePriorityService;
-import com.ngtesting.platform.utils.BeanUtilEx;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @Service
 public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePriorityService {
+    @Autowired
+	CasePriorityDao casePriorityDao;
+
 	@Override
 	public List<TstCasePriority> list(Integer orgId) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TestCasePriority.class);
-//
-//        dc.add(Restrictions.eq("orgId", orgId));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//
-//        dc.addOrder(Order.asc("displayOrder"));
-//        List ls = findAllByCriteria(dc);
-//
-//		return ls;
-		return null;
-	}
-	@Override
-	public List<TstCasePriority> listVos(Integer orgId) {
-//        List ls = list(orgId);
-//
-//        List<TstCasePriority> vos = genVos(ls);
-//		return vos;
+		List<TstCasePriority> ls = casePriorityDao.list(orgId);
 
-		return null;
+		return ls;
 	}
 
-	@Override
+    @Override
+    public TstCasePriority get(Integer id) {
+        return casePriorityDao.get(id);
+    }
+
+    @Override
 	public TstCasePriority save(TstCasePriority vo, Integer orgId) {
 //		if (vo == null) {
 //			return null;
@@ -113,27 +104,6 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 //        saveOrUpdate(neighbor);
 
 		return true;
-	}
-
-	@Override
-	public TstCasePriority genVo(TstCasePriority po) {
-		if (po == null) {
-			return null;
-		}
-		TstCasePriority vo = new TstCasePriority();
-		BeanUtilEx.copyProperties(vo, po);
-
-		return vo;
-	}
-	@Override
-	public List<TstCasePriority> genVos(List<TstCasePriority> pos) {
-        List<TstCasePriority> vos = new LinkedList<TstCasePriority>();
-
-        for (TstCasePriority po: pos) {
-        	TstCasePriority vo = genVo(po);
-        	vos.add(vo);
-        }
-		return vos;
 	}
 
 }

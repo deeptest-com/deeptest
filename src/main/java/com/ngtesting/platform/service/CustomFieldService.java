@@ -10,11 +10,10 @@ public interface CustomFieldService extends BaseService {
 	List<TstCustomField> listForCaseByOrg(Integer orgId);
     List<TstCustomField> listForCaseByProject(Integer orgId, Integer projectId);
 
+	TstCustomField get(Integer customFieldId);
+
 	TstCustomField save(TstCustomField vo, Integer orgId);
 	boolean delete(Integer id);
-
-	List<TstCustomField> genVos(List<TstCustomField> pos);
-	TstCustomField genVo(TstCustomField po);
 
 	List<TstCustomField> listVos(Integer orgId);
 
@@ -33,4 +32,7 @@ public interface CustomFieldService extends BaseService {
 	void initPo(TstCustomField po, TstCustomField vo);
 
     String getLastUnusedColumn(Integer orgId);
+
+	List<TstCustomField> genVos(List<TstCustomField> pos);
+	TstCustomField genVo(TstCustomField po);
 }

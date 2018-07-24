@@ -3,6 +3,7 @@ package com.ngtesting.platform.action;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstCasePriority;
+import com.ngtesting.platform.model.TstCaseType;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.CasePriorityService;
 import com.ngtesting.platform.service.CasePropertyService;
@@ -40,7 +41,7 @@ public class CasePriorityAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		List<TstCasePriority> vos = casePriorityService.listVos(orgId);
+		List<TstCasePriority> vos = casePriorityService.list(orgId);
 
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -53,19 +54,15 @@ public class CasePriorityAction extends BaseAction {
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
 		Integer id = json.getInteger("id");
+		TstCasePriority po;
 		if (id == null) {
-			ret.put("data", new TstCasePriority());
-			ret.put("code", Constant.RespCode.SUCCESS.getCode());
-			return ret;
+			po = new TstCasePriority();
+		} else {
+			po = casePriorityService.get(id);
 		}
 
-//		TstCasePriority po = (TstCasePriority) casePriorityService.get(TstCasePriority.class, id);
-//		CasePriorityVo vo = casePriorityService.genVo(po);
-//		ret.put("data", vo);
-
+		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -81,12 +78,11 @@ public class CasePriorityAction extends BaseAction {
 		TstCasePriority vo = json.getObject("model", TstCasePriority.class);
 
 		TstCasePriority po = casePriorityService.save(vo, orgId);
-		TstCasePriority projectVo = casePriorityService.genVo(po);
 
 		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
 		ret.put("casePropertyMap", casePropertyMap);
 
-        ret.put("data", projectVo);
+        ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -114,7 +110,7 @@ public class CasePriorityAction extends BaseAction {
 		Integer id = json.getInteger("id");
 
 		boolean success = casePriorityService.setDefaultPers(id, orgId);
-		List<TstCasePriority> vos = casePriorityService.listVos(orgId);
+		List<TstCasePriority> vos = casePriorityService.list(orgId);
 
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -134,7 +130,7 @@ public class CasePriorityAction extends BaseAction {
 
 		boolean success = casePriorityService.changeOrderPers(id, act, orgId);
 
-		List<TstCasePriority> vos = casePriorityService.listVos(orgId);
+		List<TstCasePriority> vos = casePriorityService.list(orgId);
 
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

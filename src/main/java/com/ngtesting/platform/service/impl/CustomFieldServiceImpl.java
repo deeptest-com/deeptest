@@ -1,8 +1,12 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.dao.CustomFieldDao;
 import com.ngtesting.platform.model.TstCustomField;
 import com.ngtesting.platform.model.TstProject;
+import com.ngtesting.platform.service.CustomFieldOptionService;
 import com.ngtesting.platform.service.CustomFieldService;
+import com.ngtesting.platform.service.ProjectService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -10,26 +14,19 @@ import java.util.List;
 
 @Service
 public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFieldService {
+    @Autowired
+    CustomFieldDao customFieldDao;
 
-//    @Autowired
-//    ProjectService projectService;
-//    @Autowired
-//    CustomFieldOptionService customFieldOptionService;
+    @Autowired
+    ProjectService projectService;
+    @Autowired
+    CustomFieldOptionService customFieldOptionService;
 
     @Override
     public List<TstCustomField> list(Integer orgId) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstCustomField.class);
-//
-//        dc.add(Restrictions.eq("orgId", orgId));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//
-//        dc.addOrder(Order.asc("ordr"));
-//        List ls = findAllByCriteria(dc);
-//
-//        return ls;
+        List<TstCustomField> ls = customFieldDao.list(orgId);
 
-        return null;
+        return ls;
     }
 
     @Override
@@ -79,13 +76,16 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     }
 
     @Override
-    public List<TstCustomField> listVos(Integer orgId) {
-//        List<TstCustomField> ls = list(orgId);
-//
-//        List<TstCustomField> vos = genVos(ls);
-//        return vos;
+    public TstCustomField get(Integer customFieldId) {
+        return customFieldDao.get(customFieldId);
+    }
 
-        return  null;
+    @Override
+    public List<TstCustomField> listVos(Integer orgId) {
+        List<TstCustomField> ls = list(orgId);
+
+        List<TstCustomField> vos = genVos(ls);
+        return vos;
     }
 
     @Override
@@ -267,49 +267,35 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 
     @Override
     public String getLastUnusedColumn(Integer orgId) {
-//        String hql = "select cf.myColumn from TstCustomField cf where cf.deleted = false and cf.disabled = false " +
-//                "and cf.orgId = ? order by cf.myColumn asc";
-//
-//        String ret = null;
-//        List<String> ls = getDao().getListByHQL(hql, orgId);
-//        for (int i = 1; i <= 20; i++) {
-//            String prop = "prop" + String.format("%02d", i);
-//            if (!ls.contains(prop)) {
-//                ret = prop;
-//                break;
-//            }
-//        }
-//
-//        return ret;
+        List<String> ls = customFieldDao.getLastUnusedColumn(orgId);
 
-        return null;
+        String ret = null;
+        for (int i = 1; i <= 20; i++) {
+            String prop = "prop" + String.format("%02d", i);
+            if (!ls.contains(prop)) {
+                ret = prop;
+                break;
+            }
+        }
+
+        return ret;
     }
 
     @Override
     public List<TstCustomField> genVos(List<TstCustomField> pos) {
-//        List<TstCustomField> vos = new LinkedList<TstCustomField>();
-//
-//        for (TstCustomField po : pos) {
-//            TstCustomField vo = genVo(po);
-//            vos.add(vo);
-//        }
-//        return vos;
+        List<TstCustomField> vos = new LinkedList<TstCustomField>();
 
-        return null;
+        for (TstCustomField po : pos) {
+            TstCustomField vo = genVo(po);
+            vos.add(vo);
+        }
+        return vos;
     }
     @Override
     public TstCustomField genVo(TstCustomField po) {
-//        if (po == null) {
-//            return null;
-//        }
-//        TstCustomField vo = new TstCustomField();
-//        BeanUtilEx.copyProperties(vo, po);
-//
-//        vo.setOptionVos(this.customFieldOptionService.genVos(po.getOptions()));
-//
-//        return vo;
+//        po.setOptionVos(this.customFieldOptionService.genVos(po.getOptions()));
 
-        return null;
+        return po;
     }
 
     @Override

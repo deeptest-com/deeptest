@@ -41,9 +41,7 @@ public class CaseTypeAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		List<TstCaseType> vos = caseTypeService.listVos(orgId);
-
-		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
+		List<TstCaseType> vos = caseTypeService.list(orgId);
 
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -60,16 +58,14 @@ public class CaseTypeAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		Integer id = json.getInteger("id");
+		TstCaseType po;
 		if (id == null) {
-			ret.put("data", new TstCaseType());
-			ret.put("code", Constant.RespCode.SUCCESS.getCode());
-			return ret;
+			po = new TstCaseType();
+		} else {
+			po = caseTypeService.get(id);
 		}
 
-//		TstCaseType po = (TstCaseType) caseTypeService.get(TstCaseType.class, id);
-//		CaseTypeVo vo = caseTypeService.genVo(po);
-//		ret.put("data", vo);
-
+		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -122,7 +118,7 @@ public class CaseTypeAction extends BaseAction {
 
 		boolean success = caseTypeService.setDefaultPers(id, orgId);
 
-		List<TstCaseType> vos = caseTypeService.listVos(orgId);
+		List<TstCaseType> vos = caseTypeService.list(orgId);
 
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -143,7 +139,7 @@ public class CaseTypeAction extends BaseAction {
 
 		boolean success = caseTypeService.changeOrderPers(id, act, orgId);
 
-		List<TstCaseType> vos = caseTypeService.listVos(orgId);
+		List<TstCaseType> vos = caseTypeService.list(orgId);
 
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

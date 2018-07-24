@@ -44,16 +44,14 @@ public class IssueAction extends BaseAction {
 //        List<TstCase> vos = issueService.genVos(ls, false);
 
         List<TstCaseType> caseTypePos = caseTypeService.list(orgId);
-        List<TstCaseType> caseTypeList = caseTypeService.genVos(caseTypePos);
 
         List<TstCasePriority> casePriorityPos = casePriorityService.list(orgId);
-        List<TstCasePriority> casePriorityList = casePriorityService.genVos(casePriorityPos);
 
         List<TstCustomField> customFieldList = customFieldService.listForCaseByProject(orgId, projectId);
 
 //        ret.put("data", vos);
-        ret.put("caseTypeList", caseTypeList);
-        ret.put("casePriorityList", casePriorityList);
+        ret.put("caseTypeList", caseTypePos);
+        ret.put("casePriorityList", casePriorityPos);
 		ret.put("customFields", customFieldList);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

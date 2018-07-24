@@ -40,7 +40,7 @@ public class IssuePriorityAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		List<TstCasePriority> vos = casePriorityService.listVos(orgId);
+		List<TstCasePriority> vos = casePriorityService.list(orgId);
 
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

@@ -2,12 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.CaseTypeDao" >
 
-    <select id="listType" resultType="TstCaseType">
-        SELECT * FROM TstCaseType o WHERE
-        o.orgId=#{orgId}
-        AND o.disabled!=TRUE
-        AND o.deleted!=TRUE
+    <select id="list" resultType="TstCaseType">
+        SELECT * FROM TstCaseType o
+        WHERE o.orgId=#{orgId}
+
+        AND o.disabled!=TRUE AND o.deleted!=TRUE
         ORDER BY ordr ASC
+    </select>
+
+    <select id="get" resultType="TstCaseType">
+        SELECT * FROM TstCaseType o
+
+        WHERE o.id = #{id}
     </select>
 
 </mapper>

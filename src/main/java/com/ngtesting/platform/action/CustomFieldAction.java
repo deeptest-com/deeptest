@@ -58,8 +58,8 @@ public class CustomFieldAction extends BaseAction {
 			vo.setMyColumn(customFieldService.getLastUnusedColumn(orgId));
 			vo.setCode(UUID.randomUUID().toString());
 		} else {
-//			TstCustomField po = (TstCustomField) customFieldService.get(TstCustomField.class, customFieldId);
-//			vo = customFieldService.genVo(po);
+			TstCustomField po = customFieldService.get(customFieldId);
+			vo = customFieldService.genVo(po);
 		}
 
 		if (vo.getMyColumn() == null) {

@@ -1,10 +1,14 @@
 package com.ngtesting.platform.dao;
 
-import com.ngtesting.platform.model.TstMsg;
+import com.ngtesting.platform.model.TstCustomField;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 public interface CustomFieldDao {
-    List<TstMsg> query(@Param("userId") Integer userId);
+    List list(@Param("orgId") Integer orgId);
+
+    TstCustomField get(@Param("id") Integer id);
+
+    List<String> getLastUnusedColumn(@Param("orgId") Integer orgId);
 }

@@ -6,5 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface CasePriorityDao {
-    List<TstCasePriority> listPriority(@Param("orgId") Integer orgId);
+    List<TstCasePriority> list(@Param("orgId") Integer orgId);
+
+    TstCasePriority get(@Param("id") Integer id);
 }

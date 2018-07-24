@@ -2,13 +2,27 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.CustomFieldDao" >
 
-    <select id="query" resultType="TstCustomField">
-        SELECT * FROM TstAlert o WHERE o.userId=#{userId}
-        <if test="isRead != null">
-            AND o.isRead = #{isRead}
-        </if>
-        AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+    <select id="list" resultType="TstCustomField">
+        SELECT * FROM TstCustomField o
+        WHERE o.orgId=#{orgId}
+
+        AND o.disabled!=TRUE AND o.deleted!=TRUE
+        ORDER BY ordr ASC
+    </select>
+
+    <select id="get" resultType="TstCustomField">
+        SELECT * FROM TstCustomField o
+
+        WHERE o.id = #{id}
+    </select>
+
+    <select id="getLastUnusedColumn" resultType="TstCustomField">
+        select cf.myColumn from TstCustomField cf
+
+        where cf.orgId = #{orgId}
+          and cf.deleted = false and cf.disabled = false
+
+        order by cf.myColumn asc
     </select>
 
 </mapper>

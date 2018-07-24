@@ -11,19 +11,78 @@ public class TstCustomField extends BaseModel {
     private String myColumn;
 
     private String descr;
-    private String applyTo;
-    private String type;
+    private FieldApplyTo applyTo;
+    private FieldType type;
 
 	private List<TstCustomFieldOption> optionVos = new LinkedList<>();
 
     private Integer rows = 3;
 
-    private String format = "plain_text";
+    private FieldFormat format = FieldFormat.plain_text;
     private Boolean required;
     private Boolean global = true;
     private Boolean buildIn = false;
 
     private Integer ordr;
+
+	public static enum FieldType {
+		string("string"),
+		number("number"),
+		dropdown("dropdown"),
+		text("text");
+
+//    	url("url"),
+//
+//    	radio("radio"),
+//    	checkbox("checkbox"),
+//
+//
+//    	multi_select("multi_select"),
+//
+//    	date("date"),
+//
+//    	user("user"),
+//    	version("version"),
+//    	step("step"),
+//    	result("result");
+
+		private FieldType(String textVal) {
+			this.textVal = textVal;
+		}
+
+		private String textVal;
+		public String toString() {
+			return textVal;
+		}
+	}
+
+	public static enum FieldApplyTo {
+		test_case("test_case"),
+		test_result("test_result");
+
+		private FieldApplyTo(String textVal) {
+			this.textVal = textVal;
+		}
+
+		private String textVal;
+		public String toString() {
+			return textVal;
+		}
+	}
+
+	public static enum FieldFormat {
+		plain_text("plain_text");
+//        rich_text("rich_text");
+
+		private FieldFormat(String textVal) {
+			this.textVal = textVal;
+		}
+
+		private String textVal;
+		public String toString() {
+			return textVal;
+		}
+	}
 
     public List<TstCustomFieldOption> getOptionVos() {
         return optionVos;
@@ -89,19 +148,19 @@ public class TstCustomField extends BaseModel {
 		this.descr = descr;
 	}
 
-	public String getType() {
+	public FieldType getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(FieldType type) {
 		this.type = type;
 	}
 
-    public String getApplyTo() {
+    public FieldApplyTo getApplyTo() {
 		return applyTo;
 	}
 
-	public void setApplyTo(String applyTo) {
+	public void setApplyTo(FieldApplyTo applyTo) {
 		this.applyTo = applyTo;
 	}
 
@@ -113,11 +172,11 @@ public class TstCustomField extends BaseModel {
 		this.rows = rows;
 	}
 
-	public String getFormat() {
+	public FieldFormat getFormat() {
 		return format;
 	}
 
-	public void setFormat(String format) {
+	public void setFormat(FieldFormat format) {
 		this.format = format;
 	}
 

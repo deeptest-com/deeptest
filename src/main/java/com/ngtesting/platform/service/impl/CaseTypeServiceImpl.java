@@ -1,42 +1,31 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.dao.CaseTypeDao;
 import com.ngtesting.platform.model.TstCaseType;
 import com.ngtesting.platform.service.CaseTypeService;
-import com.ngtesting.platform.utils.BeanUtilEx;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @Service
 public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeService {
+    @Autowired
+	CaseTypeDao caseTypeDao;
 
 	@Override
 	public List<TstCaseType> list(Integer orgId) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstCaseType.class);
-//
-//        dc.add(Restrictions.eq("orgId", orgId));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//
-//        dc.addOrder(Order.asc("displayOrder"));
-//        List ls = findAllByCriteria(dc);
-//
-//		return ls;
+        List<TstCaseType> ls = caseTypeDao.list(orgId);
 
-		return null;
-	}
-	@Override
-	public List<TstCaseType> listVos(Integer orgId) {
-//        List ls = list(orgId);
-//
-//        List<TstCaseType> vos = genVos(ls);
-//		return vos;
-
-		return null;
+		return ls;
 	}
 
-	@Override
+    @Override
+    public TstCaseType get(Integer id) {
+        return caseTypeDao.get(id);
+    }
+
+    @Override
 	public TstCaseType save(TstCaseType vo, Integer orgId) {
 //		if (vo == null) {
 //			return null;
@@ -114,27 +103,6 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 //        saveOrUpdate(neighbor);
 
 		return true;
-	}
-
-	@Override
-	public TstCaseType genVo(TstCaseType po) {
-		if (po == null) {
-			return null;
-		}
-		TstCaseType vo = new TstCaseType();
-		BeanUtilEx.copyProperties(vo, po);
-
-		return vo;
-	}
-	@Override
-	public List<TstCaseType> genVos(List<TstCaseType> pos) {
-        List<TstCaseType> vos = new LinkedList<TstCaseType>();
-
-        for (TstCaseType po: pos) {
-        	TstCaseType vo = genVo(po);
-        	vos.add(vo);
-        }
-		return vos;
 	}
 
 }

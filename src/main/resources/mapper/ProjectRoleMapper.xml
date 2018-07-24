@@ -8,10 +8,10 @@
         WHERE
             o.orgId=#{orgId}
             <if test="keywordsParam != null and keywordsParam != ''">
-                AND c.name LIKE CONCAT('%','${keywordsParam}','%' )
+                AND o.name LIKE CONCAT('%','${keywordsParam}','%' )
             </if>
             <if test="disabledParam != null and disabledParam != ''">
-                AND c.disabled = #{disabledParam}
+                AND o.disabled = #{disabledParam}
             </if>
             AND o.deleted != TRUE
 

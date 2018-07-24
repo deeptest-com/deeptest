@@ -1,20 +1,22 @@
 package com.ngtesting.platform.model;
 
-public class TstProjectRolePriviledgeRelation extends BaseModel {
+import java.io.Serializable;
+
+public class TstProjectRolePriviledgeRelation implements Serializable {
     private static final long serialVersionUID = -737513767576675486L;
 
-    private Boolean isBuildIn = false;
+//    private Boolean isBuildIn = false;
 
     private Long projectPrivilegeDefineId;
     private Long projectRoleId;
 
-    public Boolean getBuildIn() {
-        return isBuildIn;
-    }
-
-    public void setBuildIn(Boolean buildIn) {
-        isBuildIn = buildIn;
-    }
+//    public Boolean getBuildIn() {
+//        return isBuildIn;
+//    }
+//
+//    public void setBuildIn(Boolean buildIn) {
+//        isBuildIn = buildIn;
+//    }
 
     public Long getProjectPrivilegeDefineId() {
         return projectPrivilegeDefineId;

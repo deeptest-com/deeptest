@@ -58,6 +58,8 @@ public class ProjectRoleAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 		Integer roleId = req.getInteger("id");
 
+		TstProjectRole po = projectRoleService.get(roleId);
+
 		Map<String, Map<String, TstProjectPrivilegeDefine>> orgPrivileges =
 				projectPrivilegeService.listPrivilegesByOrgAndProjectRole(orgId, roleId);
 		if (roleId == null) {
@@ -66,8 +68,6 @@ public class ProjectRoleAction extends BaseAction {
 			ret.put("code", Constant.RespCode.SUCCESS.getCode());
 			return ret;
 		}
-
-		TstProjectRole po = projectRoleService.get(roleId);
 
         ret.put("projectRole", po);
         ret.put("projectPrivileges", orgPrivileges);

@@ -58,15 +58,14 @@ public class ProjectRoleAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 		Integer roleId = req.getInteger("id");
 
-		TstProjectRole po = projectRoleService.get(roleId);
-
 		Map<String, Map<String, TstProjectPrivilegeDefine>> orgPrivileges =
 				projectPrivilegeService.listPrivilegesByOrgAndProjectRole(orgId, roleId);
+
+		TstProjectRole po = null;
 		if (roleId == null) {
-			ret.put("projectRole", new TstProjectRole());
-	        ret.put("projectPrivileges", orgPrivileges);
-			ret.put("code", Constant.RespCode.SUCCESS.getCode());
-			return ret;
+			po = new TstProjectRole();
+		} else {
+			po = projectRoleService.get(roleId);
 		}
 
         ret.put("projectRole", po);
@@ -74,7 +73,6 @@ public class ProjectRoleAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody

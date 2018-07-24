@@ -48,7 +48,7 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 
 	@Override
 	public TstProjectRole get(Integer roleId) {
-		return null;
+		return projectRoleDao.get(roleId);
 	}
 
 	@Override

@@ -12,4 +12,6 @@ public interface ProjectRoleDao {
 
     TstProjectRole getRoleByCode(@Param("orgId") Integer orgId,
                           @Param("roleCode") String roleCode);
+
+    TstProjectRole get(@Param("id") Integer roleId);
 }

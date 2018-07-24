@@ -28,4 +28,10 @@
         ORDER BY o.id ASC
     </select>
 
+    <select id="get" resultType="TstProjectRole">
+        SELECT * FROM TstProjectRole o
+
+        WHERE o.id=#{id}
+    </select>
+
 </mapper>

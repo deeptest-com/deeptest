@@ -28,13 +28,13 @@ public class CasePropertyServiceImpl extends BaseServiceImpl implements CaseProp
 
 	@Override
 	public Map<String,Map<String,String>> getMap(Integer orgId) {
-		Map<String,String> priorityMap = getPriorityMap(orgId);
 		Map<String,String> typeMap = getTypeMap(orgId);
+		Map<String,String> priorityMap = getPriorityMap(orgId);
 		Map<String,String> exeStatusMap = getExeStatusMap(orgId);
 
 		Map map = new LinkedHashMap();
-		map.put("priority", priorityMap);
 		map.put("type", typeMap);
+		map.put("priority", priorityMap);
 		map.put("status", exeStatusMap);
 
 		return map;

@@ -27,33 +27,21 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 
     @Override
 	public TstCasePriority save(TstCasePriority vo, Integer orgId) {
-//		if (vo == null) {
-//			return null;
-//		}
-//
-//		TestCasePriority po;
-//		if (vo.getId() != null) {
-//			po = (TestCasePriority) get(TestCasePriority.class, vo.getId());
-//		} else {
-//			po = new TestCasePriority();
-//		}
-//
-//		BeanUtilEx.copyProperties(po, vo);
-//
-//		po.setOrgId(orgId);
-//
-//		if (vo.getId() == null) {
-//			po.setCode(UUID.randomUUID().toString());
-//
-//			String hql = "select max(displayOrder) from TestCasePriority pri where pri.orgId=?";
-//			Integer maxOrder = (Integer) getByHQL(hql, orgId);
-//	        po.setDisplayOrder(maxOrder + 10);
-//		}
-//
-//		saveOrUpdate(po);
-//		return po;
+        vo.setOrgId(orgId);
 
-		return null;
+        if (vo.getId() == null) {
+            Integer maxOrder = casePriorityDao.getMaxOrdrNumb(orgId);
+            if (maxOrder == null) {
+                maxOrder = 0;
+            }
+            vo.setOrdr(maxOrder + 10);
+
+            casePriorityDao.save(vo);
+        } else {
+            casePriorityDao.update(vo);
+        }
+
+        return vo;
 	}
 
 	@Override

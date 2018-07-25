@@ -11,4 +11,10 @@ public interface CustomFieldDao {
     TstCustomField get(@Param("id") Integer id);
 
     List<String> getLastUnusedColumn(@Param("orgId") Integer orgId);
+
+    Integer getMaxOrdrNumb(@Param("orgId") Integer orgId);
+
+    void save(TstCustomField vo);
+
+    void update(TstCustomField vo);
 }

@@ -3,7 +3,6 @@ package com.ngtesting.platform.action;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstCasePriority;
-import com.ngtesting.platform.model.TstCaseType;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.CasePriorityService;
 import com.ngtesting.platform.service.CasePropertyService;
@@ -20,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 
 @Controller
@@ -58,6 +58,7 @@ public class CasePriorityAction extends BaseAction {
 		TstCasePriority po;
 		if (id == null) {
 			po = new TstCasePriority();
+			po.setCode(UUID.randomUUID().toString());
 		} else {
 			po = casePriorityService.get(id);
 		}
@@ -72,8 +73,8 @@ public class CasePriorityAction extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Integer orgId = user.getDefaultOrgId();
 
 		TstCasePriority vo = json.getObject("model", TstCasePriority.class);
 

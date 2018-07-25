@@ -14,7 +14,7 @@ public class TstCustomField extends BaseModel {
     private FieldApplyTo applyTo;
     private FieldType type;
 
-	private List<TstCustomFieldOption> optionVos = new LinkedList<>();
+	private List<TstCustomFieldOption> options = new LinkedList<>();
 
     private Integer rows = 3;
 
@@ -22,6 +22,8 @@ public class TstCustomField extends BaseModel {
     private Boolean required;
     private Boolean global = true;
     private Boolean buildIn = false;
+
+    private Integer orgId;
 
     private Integer ordr;
 
@@ -84,12 +86,12 @@ public class TstCustomField extends BaseModel {
 		}
 	}
 
-    public List<TstCustomFieldOption> getOptionVos() {
-        return optionVos;
+    public List<TstCustomFieldOption> getOptions() {
+        return options;
     }
 
-    public void setOptionVos(List<TstCustomFieldOption> optionVos) {
-        this.optionVos = optionVos;
+    public void setOptions(List<TstCustomFieldOption> options) {
+        this.options = options;
     }
 
     public Boolean getRequired() {
@@ -188,5 +190,11 @@ public class TstCustomField extends BaseModel {
 		this.ordr = ordr;
 	}
 
+    public Integer getOrgId() {
+        return orgId;
+    }
 
+    public void setOrgId(Integer orgId) {
+        this.orgId = orgId;
+    }
 }

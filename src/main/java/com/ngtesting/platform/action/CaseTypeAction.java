@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 
 @Controller
@@ -49,18 +50,16 @@ public class CaseTypeAction extends BaseAction {
 		return ret;
 	}
 
-
 	@RequestMapping(value = "get", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
 		Integer id = json.getInteger("id");
 		TstCaseType po;
 		if (id == null) {
 			po = new TstCaseType();
+            po.setCode(UUID.randomUUID().toString());
 		} else {
 			po = caseTypeService.get(id);
 		}
@@ -82,12 +81,11 @@ public class CaseTypeAction extends BaseAction {
 		TstCaseType vo = json.getObject("model", TstCaseType.class);
 
 		TstCaseType po = caseTypeService.save(vo, orgId);
-//		CaseTypeVo projectVo = caseTypeService.genVo(po);
 
 		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
 		ret.put("casePropertyMap", casePropertyMap);
 
-//        ret.put("data", projectVo);
+        ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -125,7 +123,6 @@ public class CaseTypeAction extends BaseAction {
 
 		return ret;
 	}
-
 
 	@RequestMapping(value = "changeOrder", method = RequestMethod.POST)
 	@ResponseBody

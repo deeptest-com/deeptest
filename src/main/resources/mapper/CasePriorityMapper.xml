@@ -16,4 +16,62 @@
         WHERE o.id = #{id}
     </select>
 
+    <insert id="save" parameterType="TstCasePriority" useGeneratedKeys="true" keyProperty="id">
+        insert into TstCasePriority
+        (name,code,orgId,ordr,isDefault,deleted,disabled,createTime,version)
+        values
+        (#{name},#{code},#{orgId},#{ordr},#{isDefault},FALSE,FALSE,NOW(),0)
+    </insert>
+
+    <update id="update" parameterType="TstCasePriority">
+        UPDATE TstCasePriority
+        SET name=#{name},orgId=#{orgId},
+        disabled=#{disabled},
+        updateTime=NOW()
+
+        WHERE id=#{id}
+    </update>
+
+    <select id="getPrev" resultType="TstCasePriority">
+        <![CDATA[
+            SELECT * FROM TstCasePriority o
+            WHERE o.ordr < #{ordr} AND o.orgId = #{orgId}
+            AND o.deleted != TRUE
+            ORDER BY o.ordr DESC LIMIT 1
+        ]]>
+    </select>
+
+    <select id="getNext" resultType="TstCasePriority">
+        <![CDATA[
+            SELECT * FROM TstCasePriority o
+            WHERE o.ordr > #{ordr} AND o.orgId = #{orgId}
+            AND o.deleted != TRUE
+            ORDER BY o.ordr ASC LIMIT 1
+        ]]>
+    </select>
+
+    <update id="setOrder">
+        UPDATE TstCasePriority
+        SET ordr=#{ordr}, updateTime=NOW()
+        WHERE id=#{id}
+    </update>
+
+    <update id="removeDefault">
+        UPDATE TstCasePriority
+        SET isDefault=FALSE, updateTime=NOW()
+        WHERE orgId=#{orgId}
+    </update>
+
+    <update id="setDefault">
+        UPDATE TstCasePriority
+        SET isDefault=TRUE, updateTime=NOW()
+        WHERE orgId=#{orgId}
+    </update>
+
+    <delete id="delete">
+        UPDATE TstCasePriority
+        SET disabled=TRUE, updateTime=NOW()
+        WHERE id=#{id}
+    </delete>
+
 </mapper>

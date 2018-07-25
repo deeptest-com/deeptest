@@ -5,6 +5,7 @@ import com.ngtesting.platform.model.TstCaseType;
 import com.ngtesting.platform.service.CaseTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,82 +28,59 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 
     @Override
 	public TstCaseType save(TstCaseType vo, Integer orgId) {
-//		if (vo == null) {
-//			return null;
-//		}
-//
-//		TstCaseType po;
-//		if (vo.getId() != null) {
-//			po = (TstCaseType) get(TstCaseType.class, vo.getId());
-//		} else {
-//			po = new TstCaseType();
-//		}
-//
-//		BeanUtilEx.copyProperties(po, vo);
-//		po.setOrgId(orgId);
-//
-//		if (vo.getId() == null) {
-//			po.setCode(UUID.randomUUID().toString());
-//
-//			String hql = "select max(displayOrder) from TstCaseType tp where tp.orgId=?";
-//			Integer maxOrder = (Integer) getByHQL(hql, orgId);
-//	        po.setDisplayOrder(maxOrder + 10);
-//		}
-//
-//		saveOrUpdate(po);
-//		return po;
+        vo.setOrgId(orgId);
 
-		return null;
+        if (vo.getId() == null) {
+            Integer maxOrder = caseTypeDao.getMaxOrdrNumb(orgId);
+            if (maxOrder == null) {
+                maxOrder = 0;
+            }
+            vo.setOrdr(maxOrder + 10);
+
+            caseTypeDao.save(vo);
+        } else {
+            caseTypeDao.update(vo);
+        }
+
+        return vo;
 	}
 
 	@Override
 	public boolean delete(Integer id) {
-//		TstCaseType po = (TstCaseType) get(TstCaseType.class, id);
-//		po.setDeleted(true);
-//		saveOrUpdate(po);
+        caseTypeDao.delete(id);
 
 		return true;
 	}
 
 	@Override
+    @Transactional
 	public boolean setDefaultPers(Integer id, Integer orgId) {
-//		List<TstCaseType> ls = list(orgId);
-//		for (TstCaseType type : ls) {
-//			if (type.getId().longValue() == id.longValue()) {
-//				type.setIsDefault(true);
-//				saveOrUpdate(type);
-//			} else if (type.getIsDefault() != null && type.getIsDefault()) {
-//				type.setIsDefault(false);
-//				saveOrUpdate(type);
-//			}
-//		}
+        caseTypeDao.removeDefault(orgId);
+        caseTypeDao.setDefault(id, orgId);
 
 		return true;
 	}
 
 	@Override
+    @Transactional
 	public boolean changeOrderPers(Integer id, String act, Integer orgId) {
-//		TstCaseType type = (TstCaseType) get(TstCaseType.class, id);
-//
-//        String hql = "from TstCaseType tp where tp.orgId=? and tp.deleted = false and tp.disabled = false ";
-//        if ("up".equals(act)) {
-//        	hql += "and tp.displayOrder < ? order by displayOrder desc";
-//        } else if ("down".equals(act)) {
-//        	hql += "and tp.displayOrder > ? order by displayOrder asc";
-//        } else {
-//        	return false;
-//        }
-//
-//        TstCaseType neighbor = (TstCaseType) getFirstByHql(hql, orgId, type.getDisplayOrder());
-//
-//        Integer order = type.getDisplayOrder();
-//        type.setDisplayOrder(neighbor.getDisplayOrder());
-//        neighbor.setDisplayOrder(order);
-//
-//        saveOrUpdate(type);
-//        saveOrUpdate(neighbor);
+        TstCaseType curr = caseTypeDao.get(id);
+        TstCaseType neighbor = null;
+        if ("up".equals(act)) {
+            neighbor = caseTypeDao.getPrev(curr.getOrdr(), orgId);
+        } else if ("down".equals(act)) {
+            neighbor = caseTypeDao.getNext(curr.getOrdr(), orgId);
+        }
+        if (neighbor == null) {
+            return false;
+        }
 
-		return true;
+        Integer currOrder = curr.getOrdr();
+        Integer neighborOrder = neighbor.getOrdr();
+        caseTypeDao.setOrder(id, neighborOrder);
+        caseTypeDao.setOrder(neighbor.getId(), currOrder);
+
+        return true;
 	}
 
 }

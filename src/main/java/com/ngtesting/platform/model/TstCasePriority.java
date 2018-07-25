@@ -8,8 +8,8 @@ public class TstCasePriority extends BaseModel {
 	private String descr;
     private String priority;
     private Boolean isDefault;
-    private Integer displayOrder;
-    private Long orgId;
+    private Integer ordr;
+    private Integer orgId;
 
 	public String getCode() {
 		return code;
@@ -29,22 +29,27 @@ public class TstCasePriority extends BaseModel {
 	public void setPriority(String priority) {
 		this.priority = priority;
 	}
-	public Boolean getIsDefault() {
+
+	public Boolean getDefault() {
 		return isDefault;
 	}
-	public void setIsDefault(Boolean isDefault) {
-		this.isDefault = isDefault;
+
+	public void setDefault(Boolean aDefault) {
+		isDefault = aDefault;
 	}
-	public Integer getDisplayOrder() {
-		return displayOrder;
+
+	public Integer getOrdr() {
+		return ordr;
 	}
-	public void setDisplayOrder(Integer displayOrder) {
-		this.displayOrder = displayOrder;
+
+	public void setOrdr(Integer ordr) {
+		this.ordr = ordr;
 	}
-	public Long getOrgId() {
+
+	public Integer getOrgId() {
 		return orgId;
 	}
-	public void setOrgId(Long orgId) {
+	public void setOrgId(Integer orgId) {
 		this.orgId = orgId;
 	}
 	public String getDescr() {

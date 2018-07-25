@@ -90,20 +90,23 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 
     @Override
     public TstCustomField save(TstCustomField vo, Integer orgId) {
-        return null;
+        vo.setOrgId(orgId);
 
-//        if (vo == null) {
-//            return null;
-//        }
-//
-//        TstCustomField po;
-//        if (vo.getId() != null) {
-//            po = (TstCustomField) get(TstCustomField.class, vo.getId());
-//        } else {
-//            po = new TstCustomField();
-//        }
-//        this.initPo(po, vo);
-//
+        if (vo.getId() == null) {
+            Integer maxOrder = customFieldDao.getMaxOrdrNumb(orgId);
+            if (maxOrder == null) {
+                maxOrder = 0;
+            }
+            vo.setOrdr(maxOrder + 10);
+
+            customFieldDao.save(vo);
+        } else {
+            customFieldDao.update(vo);
+        }
+
+        return vo;
+
+
 //        po.setApplyTo(TstCustomField.FieldApplyTo.valueOf(vo.getApplyTo()));
 //        po.setType(TstCustomField.FieldType.valueOf(vo.getType()));
 //
@@ -293,20 +296,9 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     }
     @Override
     public TstCustomField genVo(TstCustomField po) {
-//        po.setOptionVos(this.customFieldOptionService.genVos(po.getOptions()));
+        po.setOptions(this.customFieldOptionService.genVos(po.getOptions()));
 
         return po;
-    }
-
-    @Override
-    public void initPo(TstCustomField po, TstCustomField vo) {
-        po.setCode(vo.getCode());
-        po.setMyColumn(vo.getMyColumn());
-        po.setLabel(vo.getLabel());
-        po.setDescr(vo.getDescr());
-        po.setRows(vo.getRows());
-        po.setGlobal(vo.getGlobal());
-        po.setRequired(vo.getRequired());
     }
 
 }

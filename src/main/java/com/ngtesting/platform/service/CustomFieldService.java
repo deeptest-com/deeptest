@@ -29,8 +29,6 @@ public interface CustomFieldService extends BaseService {
 
 	boolean saveRelationsProjects(Integer id, List<TstProject> projects);
 
-	void initPo(TstCustomField po, TstCustomField vo);
-
     String getLastUnusedColumn(Integer orgId);
 
 	List<TstCustomField> genVos(List<TstCustomField> pos);

@@ -6,9 +6,9 @@ public class TstCaseType extends BaseModel {
 	private String code;
 	private String name;
 	private String descr;
-    private Boolean isDefault;
-    private Integer displayOrder;
-    private Long orgId;
+    private Boolean isDefault = false;
+    private Integer ordr;
+    private Integer orgId;
 
 	public String getCode() {
 		return code;
@@ -22,22 +22,10 @@ public class TstCaseType extends BaseModel {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Boolean getIsDefault() {
-		return isDefault;
-	}
-	public void setIsDefault(Boolean isDefault) {
-		this.isDefault = isDefault;
-	}
-	public Integer getDisplayOrder() {
-		return displayOrder;
-	}
-	public void setDisplayOrder(Integer displayOrder) {
-		this.displayOrder = displayOrder;
-	}
-	public Long getOrgId() {
+	public Integer getOrgId() {
 		return orgId;
 	}
-	public void setOrgId(Long orgId) {
+	public void setOrgId(Integer orgId) {
 		this.orgId = orgId;
 	}
 	public String getDescr() {
@@ -47,4 +35,19 @@ public class TstCaseType extends BaseModel {
 		this.descr = descr;
 	}
 
+	public Integer getOrdr() {
+		return ordr;
+	}
+
+	public void setOrdr(Integer ordr) {
+		this.ordr = ordr;
+	}
+
+	public Boolean getDefault() {
+		return isDefault;
+	}
+
+	public void setDefault(Boolean aDefault) {
+		isDefault = aDefault;
+	}
 }

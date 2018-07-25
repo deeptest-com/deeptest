@@ -45,7 +45,7 @@
         ORDER BY grp.id ASC
     </select>
 
-    <select id="get" parameterType="int" resultType="TstOrgGroup">
+    <select id="get" resultType="TstOrgGroup">
         SELECT * FROM TstOrgGroup grp
 
         WHERE grp.id = #{id}
@@ -66,5 +66,13 @@
 
         WHERE id=#{id}
     </update>
+
+    <delete id="delete" parameterType="TstOrgGroup">
+        UPDATE TstOrgGroup
+        disabled=TRUE,
+        updateTime=NOW()
+
+        WHERE id=#{id}
+    </delete>
 
 </mapper>

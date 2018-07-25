@@ -59,32 +59,6 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	}
 
 	@Override
-	public List<TstProject> list(Integer orgId, String keywords, Boolean disabled) {
-//		DetachedCriteria dc = DetachedCriteria.forClass(TstProject.class);
-//
-//		dc.add(Restrictions.eq("orgId", orgId));
-//		if (StringUtil.isNotEmpty(disabled)) {
-//			dc.add(Restrictions.eq("disabled", Boolean.valueOf(disabled)));
-//		}
-//
-//		dc.add(Restrictions.eq("type", ProjectType.group));
-//		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//		dc.addOrder(Order.asc("id"));
-//
-//		dc.setFetchMode("children", FetchMode.JOIN);
-//		dc.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-//
-//		Filter filter = getDao().getSession().enableFilter("filter_project_deleted");
-//		filter.setParameter("isDeleted", Boolean.valueOf(false));
-//		List<TstProject> pos = findAllByCriteria(dc);
-//		getDao().getSession().disableFilter("filter_project_deleted");
-//
-//		return pos;
-
-		return null;
-	}
-
-	@Override
 	public List<TstProject> listProjectGroups(Integer orgId) {
 		List<TstProject> pos = projectDao.listProjectGroups(orgId);
 		this.genGroupVos(pos);

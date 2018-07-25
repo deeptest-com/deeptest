@@ -1,7 +1,6 @@
 package com.ngtesting.platform.service;
 
 import com.ngtesting.platform.model.TstCustomField;
-import com.ngtesting.platform.model.TstProject;
 
 import java.util.List;
 
@@ -23,11 +22,7 @@ public interface CustomFieldService extends BaseService {
 
 	List<String> listFormat();
 
-	boolean changeOrderPers(Integer id, String act);
-
-	List<TstProject> listProjectsForField(Integer orgId, Integer fieldId);
-
-	boolean saveRelationsProjects(Integer id, List<TstProject> projects);
+	boolean changeOrderPers(Integer id, String act, Integer orgId);
 
     String getLastUnusedColumn(Integer orgId);
 

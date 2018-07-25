@@ -94,6 +94,7 @@ public class OrgRoleUserRelationServiceImpl extends BaseServiceImpl implements O
         for (Object obj: relations) {
             TstOrgRoleUserRelation vo = JSON.parseObject(JSON.toJSONString(obj), TstOrgRoleUserRelation.class);
             if (vo.getSelecting()) {
+                vo.setUserId(userId);
                 selectedList.add(vo);
             }
         }
@@ -116,6 +117,7 @@ public class OrgRoleUserRelationServiceImpl extends BaseServiceImpl implements O
         for (Object obj: relations) {
             TstOrgRoleUserRelation vo = JSON.parseObject(JSON.toJSONString(obj), TstOrgRoleUserRelation.class);
             if (vo.getSelecting()) {
+                vo.setOrgRoleId(roleId);
                 selectedList.add(vo);
             }
         }

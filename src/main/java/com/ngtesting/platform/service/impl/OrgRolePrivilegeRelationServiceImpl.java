@@ -94,6 +94,7 @@ public class OrgRolePrivilegeRelationServiceImpl extends BaseServiceImpl impleme
         for (Object obj: relations) {
             TstOrgRolePrivilegeRelation vo = JSON.parseObject(JSON.toJSONString(obj), TstOrgRolePrivilegeRelation.class);
             if (vo.getSelecting()) {
+                vo.setOrgRoleId(roleId);
                 selectedList.add(vo);
             }
         }
@@ -116,6 +117,7 @@ public class OrgRolePrivilegeRelationServiceImpl extends BaseServiceImpl impleme
         for (Object obj: relations) {
             TstOrgRolePrivilegeRelation vo = JSON.parseObject(JSON.toJSONString(obj), TstOrgRolePrivilegeRelation.class);
             if (vo.getSelecting()) {
+                vo.setOrgPrivilegeId(privilegeId);
                 selectedList.add(vo);
             }
         }

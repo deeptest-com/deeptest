@@ -15,6 +15,13 @@ public interface CustomFieldDao {
     Integer getMaxOrdrNumb(@Param("orgId") Integer orgId);
 
     void save(TstCustomField vo);
-
     void update(TstCustomField vo);
+    void delete(@Param("id") Integer id);
+
+    TstCustomField getPrev(@Param("ordr")Integer ordr, @Param("orgId") Integer orgId);
+
+    TstCustomField getNext(@Param("ordr")Integer ordr, @Param("orgId") Integer orgId);
+
+    void setOrder(@Param("id")Integer id, @Param("ordr") Integer ordr);
+
 }

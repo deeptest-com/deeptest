@@ -4,8 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstCustomField;
-import com.ngtesting.platform.model.TstProject;
+import com.ngtesting.platform.model.TstCustomFieldProjectRelation;
 import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.CustomFieldProjectRelationService;
 import com.ngtesting.platform.service.CustomFieldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,6 +27,8 @@ import java.util.UUID;
 public class CustomFieldAction extends BaseAction {
 	@Autowired
     CustomFieldService customFieldService;
+	@Autowired
+	CustomFieldProjectRelationService  customFieldProjectRelationService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
@@ -70,13 +73,13 @@ public class CustomFieldAction extends BaseAction {
 		List<String> applyToList = customFieldService.listApplyTo();
 		List<String> typeList = customFieldService.listType();
 		List<String> formatList = customFieldService.listFormat();
-		List<TstProject> projectList = customFieldService.listProjectsForField(orgId, customFieldId);
+		List<TstCustomFieldProjectRelation> relations = customFieldProjectRelationService.listRelationsByField(orgId, customFieldId);
 
         ret.put("data", vo);
         ret.put("applyToList", applyToList);
         ret.put("typeList", typeList);
         ret.put("formatList", formatList);
-        ret.put("projects", projectList);
+        ret.put("relations", relations);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -91,10 +94,10 @@ public class CustomFieldAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 
 		TstCustomField customField = JSON.parseObject(JSON.toJSONString(json.get("model")), TstCustomField.class);
-		List<TstProject> projects = (List<TstProject>) json.get("relations");
+		List<TstCustomFieldProjectRelation> relations = (List<TstCustomFieldProjectRelation>) json.get("relations");
 
 		TstCustomField po = customFieldService.save(customField, orgId);
-		boolean success = customFieldService.saveRelationsProjects(po.getId(), projects);
+		boolean success = customFieldProjectRelationService.saveRelationsByField(orgId, po.getId(), relations);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -123,7 +126,7 @@ public class CustomFieldAction extends BaseAction {
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-		boolean success = customFieldService.changeOrderPers(id, act);
+		boolean success = customFieldService.changeOrderPers(id, act, orgId);
 
 		List<TstCustomField> vos = customFieldService.listVos(orgId);
 

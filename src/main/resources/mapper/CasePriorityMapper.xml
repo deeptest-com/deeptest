@@ -16,6 +16,13 @@
         WHERE o.id = #{id}
     </select>
 
+    <select id="getMaxOrdrNumb" resultType="Integer">
+        select max(ordr) from TstCasePriority o
+        where o.orgId=#{orgId}
+        and o.deleted != true
+        and o.disabled != true
+    </select>
+
     <insert id="save" parameterType="TstCasePriority" useGeneratedKeys="true" keyProperty="id">
         insert into TstCasePriority
         (name,code,orgId,ordr,isDefault,deleted,disabled,createTime,version)
@@ -31,6 +38,12 @@
 
         WHERE id=#{id}
     </update>
+
+    <delete id="delete">
+        UPDATE TstCasePriority
+        SET disabled=TRUE, updateTime=NOW()
+        WHERE id=#{id}
+    </delete>
 
     <select id="getPrev" resultType="TstCasePriority">
         <![CDATA[
@@ -67,11 +80,5 @@
         SET isDefault=TRUE, updateTime=NOW()
         WHERE orgId=#{orgId}
     </update>
-
-    <delete id="delete">
-        UPDATE TstCasePriority
-        SET disabled=TRUE, updateTime=NOW()
-        WHERE id=#{id}
-    </delete>
 
 </mapper>

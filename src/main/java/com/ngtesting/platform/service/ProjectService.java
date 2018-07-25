@@ -10,7 +10,6 @@ import java.util.Map;
 public interface ProjectService extends BaseService {
 
 	List<TstProject> list(Integer orgId, Integer userId, String keywords, Boolean disabled);
-	List<TstProject> list(Integer orgId, String keywords, Boolean disabled);
 	List<TstProject> listProjectGroups(Integer orgId);
 
     TstProject get(Integer id);

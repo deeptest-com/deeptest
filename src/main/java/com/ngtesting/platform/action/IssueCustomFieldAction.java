@@ -58,8 +58,7 @@ public class IssueCustomFieldAction extends BaseAction {
 			vo.setMyColumn(customFieldService.getLastUnusedColumn(orgId));
 			vo.setCode(UUID.randomUUID().toString());
 		} else {
-//			TstCustomField po = (TstCustomField) customFieldService.get(TstCustomField.class, customFieldId);
-//			vo = customFieldService.genVo(po);
+			vo = customFieldService.get(customFieldId);
 		}
 
 		if (vo.getMyColumn() == null) {
@@ -94,7 +93,7 @@ public class IssueCustomFieldAction extends BaseAction {
 //		List<TestProjectVo> projects = (List<TestProjectVo>) json.get("relations");
 //
 //		TstCustomField po = customFieldService.save(customField, orgId);
-//		boolean success = customFieldService.saveRelationsProjects(po.getId(), projects);
+//		boolean success = customFieldService.saveRelationsByField(po.getId(), projects);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

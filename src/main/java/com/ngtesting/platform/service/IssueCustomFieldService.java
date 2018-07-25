@@ -33,4 +33,6 @@ public interface IssueCustomFieldService extends BaseService {
 	void initPo(TstCustomField po, TstCustomField vo);
 
     String getLastUnusedColumn(Integer orgId);
+
+    TstCustomField get(Integer customFieldId);
 }

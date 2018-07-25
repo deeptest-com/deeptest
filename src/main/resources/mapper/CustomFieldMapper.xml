@@ -25,21 +25,38 @@
         order by cf.myColumn asc
     </select>
 
+    <select id="getMaxOrdrNumb" resultType="Integer">
+        select max(ordr) from TstCustomField o
+        where o.orgId=#{orgId}
+        and o.deleted != true
+        and o.disabled != true
+    </select>
+
     <insert id="save" parameterType="TstCustomField" useGeneratedKeys="true" keyProperty="id">
         insert into TstCustomField
-        (name,code,orgId,ordr,isDefault,deleted,disabled,createTime,version)
+        (label,code,myColumn,descr,applyTo,`type`,`rows`,format,required,`global`,
+          orgId,ordr,buildIn,deleted,disabled,createTime,version)
         values
-        (#{name},#{code},#{orgId},#{ordr},#{isDefault},FALSE,FALSE,NOW(),0)
+        (#{label},#{code},#{myColumn},#{descr},#{applyTo},#{type},#{rows},#{format},#{required},#{global},
+          #{orgId},#{ordr},#{buildIn},FALSE,FALSE,NOW(),0)
     </insert>
 
     <update id="update" parameterType="TstCustomField">
         UPDATE TstCustomField
-        SET name=#{name},orgId=#{orgId},
-        disabled=#{disabled},
-        updateTime=NOW()
+        SET label=#{label},descr=#{descr},applyTo=#{applyTo},type=#{type},rows=#{rows},
+            format=#{format},required=#{required},global=#{global},
+
+        orgId=#{orgId},`global`=#{global},required=#{required},
+        disabled=#{disabled}, updateTime=NOW()
 
         WHERE id=#{id}
     </update>
+
+    <delete id="delete">
+        UPDATE TstCustomField
+        SET disabled=TRUE, updateTime=NOW()
+        WHERE id=#{id}
+    </delete>
 
     <select id="getPrev" resultType="TstCustomField">
         <![CDATA[
@@ -64,23 +81,5 @@
         SET ordr=#{ordr}, updateTime=NOW()
         WHERE id=#{id}
     </update>
-
-    <update id="removeDefault">
-        UPDATE TstCustomField
-        SET isDefault=FALSE, updateTime=NOW()
-        WHERE orgId=#{orgId}
-    </update>
-
-    <update id="setDefault">
-        UPDATE TstCustomField
-        SET isDefault=TRUE, updateTime=NOW()
-        WHERE orgId=#{orgId}
-    </update>
-
-    <delete id="delete">
-        UPDATE TstCustomField
-        SET disabled=TRUE, updateTime=NOW()
-        WHERE id=#{id}
-    </delete>
 
 </mapper>

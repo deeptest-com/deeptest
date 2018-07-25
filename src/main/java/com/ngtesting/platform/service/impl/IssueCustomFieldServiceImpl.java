@@ -284,6 +284,11 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
     }
 
     @Override
+    public TstCustomField get(Integer customFieldId) {
+        return null;
+    }
+
+    @Override
     public List<TstCustomField> genVos(List<TstCustomField> pos) {
         List<TstCustomField> vos = new LinkedList<TstCustomField>();
 

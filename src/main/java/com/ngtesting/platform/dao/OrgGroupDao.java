@@ -15,9 +15,11 @@ public interface OrgGroupDao {
                              @Param("exceptIds") String exceptIds);
     List<TstOrgGroup> list(@Param("orgId") Integer orgId);
 
+    TstOrgGroup get(Integer id);
+
     void save(TstOrgGroup vo);
 
     void update(TstOrgGroup vo);
 
-    TstOrgGroup get(Integer id);
+    void delete(Integer id);
 }

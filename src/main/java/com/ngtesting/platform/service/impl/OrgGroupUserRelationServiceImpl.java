@@ -110,6 +110,7 @@ public class OrgGroupUserRelationServiceImpl extends BaseServiceImpl implements 
 		for (Object obj: orgGroupUserRelation) {
 			TstOrgGroupUserRelation vo = JSON.parseObject(JSON.toJSONString(obj), TstOrgGroupUserRelation.class);
 			if (vo.getSelecting()) {
+			    vo.setUserId(userId);
                 selectedList.add(vo);
             }
 		}
@@ -132,6 +133,7 @@ public class OrgGroupUserRelationServiceImpl extends BaseServiceImpl implements 
         for (Object obj: orgGroupUserRelation) {
             TstOrgGroupUserRelation vo = JSON.parseObject(JSON.toJSONString(obj), TstOrgGroupUserRelation.class);
             if (vo.getSelecting()) {
+                vo.setOrgGroupId(groupId);
                 selectedList.add(vo);
             }
         }

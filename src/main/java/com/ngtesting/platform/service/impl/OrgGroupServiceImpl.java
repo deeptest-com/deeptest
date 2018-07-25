@@ -58,22 +58,8 @@ public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupServ
 
 	@Override
 	public boolean delete(Integer id) {
-//		TstOrgGroup po = (TstOrgGroup) get(TstOrgGroup.class, id);
-//		po.setDeleted(true);
-//		saveOrUpdate(po);
+		groupDao.delete(id);
 
 		return true;
 	}
-
-//	@Override
-//	public void initDefaultBasicDataPers(TestOrg org) {
-//		String [] groups = new String[]{"测试主管","测试设计","测试执行"};
-//		for(String name : groups) {
-//			TstOrgGroup po = new TstOrgGroup();
-//			po.setName(name);
-//            po.setOrgId(org.getId());
-//			saveOrUpdate(po);
-//		}
-//	}
-
 }

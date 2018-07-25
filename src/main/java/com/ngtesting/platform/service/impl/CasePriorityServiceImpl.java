@@ -46,52 +46,38 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 
 	@Override
 	public boolean delete(Integer id) {
-//		TestCasePriority po = (TestCasePriority) get(TestCasePriority.class, id);
-//		po.setDeleted(true);
-//		saveOrUpdate(po);
+        casePriorityDao.delete(id);
 
-		return true;
+        return true;
 	}
 
 	@Override
 	public boolean setDefaultPers(Integer id, Integer orgId) {
-//		List<TestCasePriority> ls = list(orgId);
-//		for (TestCasePriority priority : ls) {
-//			if (priority.getId().longValue() == id.longValue()) {
-//				priority.setIsDefault(true);
-//				saveOrUpdate(priority);
-//			} else if (priority.getIsDefault() != null && priority.getIsDefault()) {
-//				priority.setIsDefault(false);
-//				saveOrUpdate(priority);
-//			}
-//		}
+        casePriorityDao.removeDefault(orgId);
+        casePriorityDao.setDefault(id, orgId);
 
-		return true;
+        return true;
 	}
 
 	@Override
 	public boolean changeOrderPers(Integer id, String act, Integer orgId) {
-//		TestCasePriority type = (TestCasePriority) get(TestCasePriority.class, id);
-//
-//        String hql = "from TestCasePriority tp where where tp.orgId=? and tp.deleted = false and tp.disabled = false ";
-//        if ("up".equals(act)) {
-//        	hql += "and tp.displayOrder < ? order by displayOrder desc";
-//        } else if ("down".equals(act)) {
-//        	hql += "and tp.displayOrder > ? order by displayOrder asc";
-//        } else {
-//        	return false;
-//        }
-//
-//        TestCasePriority neighbor = (TestCasePriority) getDao().findFirstByHQL(hql, orgId, type.getDisplayOrder());
-//
-//        Integer order = type.getDisplayOrder();
-//        type.setDisplayOrder(neighbor.getDisplayOrder());
-//        neighbor.setDisplayOrder(order);
-//
-//        saveOrUpdate(type);
-//        saveOrUpdate(neighbor);
+        TstCasePriority curr = casePriorityDao.get(id);
+        TstCasePriority neighbor = null;
+        if ("up".equals(act)) {
+            neighbor = casePriorityDao.getPrev(curr.getOrdr(), orgId);
+        } else if ("down".equals(act)) {
+            neighbor = casePriorityDao.getNext(curr.getOrdr(), orgId);
+        }
+        if (neighbor == null) {
+            return false;
+        }
 
-		return true;
+        Integer currOrder = curr.getOrdr();
+        Integer neighborOrder = neighbor.getOrdr();
+        casePriorityDao.setOrder(id, neighborOrder);
+        casePriorityDao.setOrder(neighbor.getId(), currOrder);
+
+        return true;
 	}
 
 }

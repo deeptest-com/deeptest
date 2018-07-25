@@ -11,7 +11,7 @@ AngularJS, SockJS, SpringBoot, MyBatis, MySQL
 
 
 ### Test Project
-<img src="https://gitee.com/ngtesting_open/ngtesting-web/raw/master/xdoc/capture/project_view.jpg" width="800px" style="margin: 10px auto;">
+<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/project_view.jpg" width="800px" style="margin: 10px auto;">
 
 ### Test Case
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/case_edit.jpg" width="800px" style="margin: 10px auto;">

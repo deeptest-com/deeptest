@@ -72,7 +72,7 @@
     <update id="setDefault">
         UPDATE TstCaseType
         SET isDefault=TRUE, updateTime=NOW()
-        WHERE orgId=#{orgId}
+        WHERE orgId=#{orgId} AND id=#{id}
     </update>
 
     <delete id="delete">

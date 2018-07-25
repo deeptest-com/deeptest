@@ -43,11 +43,11 @@ public class TstCaseType extends BaseModel {
 		this.ordr = ordr;
 	}
 
-	public Boolean getDefault() {
-		return isDefault;
+	public Boolean getIsDefault() {
+		return this.isDefault;
 	}
 
-	public void setDefault(Boolean aDefault) {
-		isDefault = aDefault;
+	public void setIsDefault(Boolean isDefault) {
+        this.isDefault = isDefault;
 	}
 }

@@ -78,7 +78,7 @@
     <update id="setDefault">
         UPDATE TstCasePriority
         SET isDefault=TRUE, updateTime=NOW()
-        WHERE orgId=#{orgId}
+        WHERE orgId=#{orgId} AND id=#{id}
     </update>
 
 </mapper>

@@ -20,6 +20,15 @@
         ORDER BY o.ordr ASC
     </select>
 
+    <insert id="save" parameterType="TstCaseStep" useGeneratedKeys="true" keyProperty="id">
+        insert into TstCaseStep
+        (opt,expect,ordr,caseId,
+        createTime,deleted,disabled,version)
+        values
+        (#{opt},#{expect},#{ordr},#{caseId},
+        NOW(),FALSE,FALSE,0)
+    </insert>
+
     <resultMap id="caseStepMaps" type="TstCaseStep" autoMapping="true">
         <id column="id" property="id"/>
         <id column="opt" property="opt"/>

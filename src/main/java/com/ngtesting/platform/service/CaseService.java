@@ -35,8 +35,6 @@ public interface CaseService extends BaseService {
 
     TstCase saveField(JSONObject json, TstUser user);
 
-	List<TstCase> getChildren(Integer caseId);
-
     Integer getChildMaxOrderNumb(Integer parentId);
 
     TstCase changeContentTypePers(Integer id, String contentType);

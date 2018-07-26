@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.CaseDao;
+import com.ngtesting.platform.dao.CaseStepDao;
 import com.ngtesting.platform.dao.TestSuiteDao;
 import com.ngtesting.platform.dao.TestTaskDao;
 import com.ngtesting.platform.model.TstCase;
+import com.ngtesting.platform.model.TstCaseStep;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.CaseHistoryService;
 import com.ngtesting.platform.service.CaseService;
@@ -16,13 +18,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 @Service
 public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     @Autowired
     CaseDao caseDao;
+    @Autowired
+    CaseStepDao caseStepDao;
+
     @Autowired
     TestSuiteDao testSuiteDao;
     @Autowired
@@ -150,12 +154,6 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             testCase.setId(null);
             testCase.setCreateTime(new Date());
             testCase.setUpdateTime(null);
-
-            // 先清空
-            testCase.setSteps(new LinkedList());
-            testCase.setHistories(new LinkedList());
-            testCase.setComments(new LinkedList());
-            testCase.setAttachments(new LinkedList());
         } else {
             action = Constant.CaseAct.move;
 
@@ -178,9 +176,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
         boolean isParent = false;
         if (isCopy) {
-            isParent = cloneStepsAndChildrenPers(testCase, src);
-
             caseDao.moveCopy(testCase);
+            isParent = cloneStepsAndChildrenPers(testCase, src);
         } else {
             caseDao.moveUpdate(testCase);
         }
@@ -203,7 +200,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
     @Override
     public void loadNodeTree(TstCase po) {
-        List<TstCase> children = getChildren(po.getId());
+        List<TstCase> children = caseDao.getChildren(po.getId());
         for (TstCase childPo : children) {
             po.getChildren().add(childPo);
 
@@ -292,41 +289,35 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	}
 
     @Override
+    @Transactional
     public boolean cloneStepsAndChildrenPers(TstCase testCase, TstCase src) {
-//	    boolean isParent = false;
-//
-//        for (TstCaseStep step : src.getSteps()) {
-//            TstCaseStep step1 = new TstCaseStep(testCase.getId(), step.getOpt(), step.getExpect(), step.getOrdr());
-//            saveOrUpdate(step1);
-//            testCase.getSteps().add(step1);
-//        }
-//
-//        List<TstCase> children = getChildren(src.getId());
-//        for(TstCase child : children) {
-//            TstCase clonedChild = new TstCase();
-//            BeanUtilEx.copyProperties(clonedChild, child);
-//            // 不能用以前的
-//            clonedChild.setComments(new LinkedList());
-//            clonedChild.setSteps(new LinkedList());
-//            clonedChild.setHistories(new LinkedList());
-//            clonedChild.setAttachments(new LinkedList());
-//
-//            clonedChild.setId(null);
-//            clonedChild.setpId(testCase.getId());
-//
-//            saveOrUpdate(clonedChild);
-//            cloneStepsAndChildrenPers(clonedChild, child);
-//        }
-//
-//        return children.size() > 0;
+        List<TstCaseStep> steps = caseStepDao.query(src.getId());
 
-        return true;
-    }
+        for (TstCaseStep step : steps) {
+            TstCaseStep step1 = new TstCaseStep();
+            BeanUtilEx.copyProperties(step, step1);
 
-    @Override
-    public List<TstCase> getChildren(Integer caseId) {
-        List<TstCase> children = caseDao.getChildren(caseId);
-        return children;
+            step1.setId(null);
+            step1.setCaseId(testCase.getId());
+            caseStepDao.save(step1);
+        }
+
+        List<TstCase> children = caseDao.getChildren(src.getId());
+        for(TstCase child : children) {
+            TstCase clonedChild = new TstCase();
+            BeanUtilEx.copyProperties(child, clonedChild);
+
+            clonedChild.setId(null);
+            clonedChild.setpId(testCase.getId());
+
+            testCase.setCreateTime(new Date());
+            testCase.setUpdateTime(null);
+
+            caseDao.moveCopy(clonedChild);
+            cloneStepsAndChildrenPers(clonedChild, child);
+        }
+
+        return children.size() > 0;
     }
 
     @Override

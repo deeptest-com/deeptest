@@ -74,7 +74,7 @@ public class IssueDocumentServiceImpl extends BaseServiceImpl implements IssueDo
 	public Document genVo(Document po) {
 
     	Document vo = new Document();
-    	BeanUtilEx.copyProperties(vo, po);
+    	BeanUtilEx.copyProperties(po, vo);
 
 		return vo;
 	}

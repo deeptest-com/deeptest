@@ -253,8 +253,8 @@ public class AiTestTaskServiceImpl extends BaseServiceImpl implements AiTestTask
 	}
 
     @Override
-    public void copyProperties(AiTestTask po, AiTestTask vo) {
-        BeanUtilEx.copyProperties(po, vo);
+    public void copyProperties(AiTestTask vo, AiTestTask po) {
+        BeanUtilEx.copyProperties(vo, po);
     }
 
 }

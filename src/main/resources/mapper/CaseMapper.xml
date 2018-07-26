@@ -97,11 +97,25 @@
         set c.pId = #{pId}, c.ordr = #{ordr}
         where c.id=#{id}
     </update>
-    <insert id="moveCopy">
-        update TstCase c
-        set c.pId = #{pId}, c.ordr = #{ordr}
-        where c.id=#{id}
+    <insert id="moveCopy" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
+        insert into TstCase
+        (name,priority,type,contentType,estimate,isLeaf,ordr,pId,
+            projectId,createById,
+            createTime,deleted,disabled,version)
+        values
+          (#{name},#{priority},#{type},#{contentType},#{estimate},#{isLeaf},#{ordr},#{pId},
+              #{projectId},#{createById},
+              NOW(),FALSE,FALSE,0)
     </insert>
+
+    <select id="getChildren" resultType="TstCase">
+        select * from TstCase o
+        where o.pId=#{id}
+        and o.deleted != true
+        and o.disabled != true
+
+        ORDER BY o.pId, o.ordr
+    </select>
 
     <resultMap id="caseMaps" type="TstCase" autoMapping="true">
         <id column="id" property="id"/>

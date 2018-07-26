@@ -74,7 +74,7 @@ public class DocumentServiceImpl extends BaseServiceImpl implements DocumentServ
 	public Document genVo(Document po) {
 
     	Document vo = new Document();
-    	BeanUtilEx.copyProperties(vo, po);
+    	BeanUtilEx.copyProperties(po, vo);
 
 		return vo;
 	}

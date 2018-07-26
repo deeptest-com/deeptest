@@ -83,7 +83,7 @@ public class CustomFieldOptionServiceImpl extends BaseServiceImpl implements Cus
     @Override
     public TstCustomFieldOption genVo(TstCustomFieldOption po) {
         TstCustomFieldOption vo = new TstCustomFieldOption();
-        BeanUtilEx.copyProperties(vo, po);
+        BeanUtilEx.copyProperties(po, vo);
 
         return vo;
     }

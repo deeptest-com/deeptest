@@ -40,7 +40,7 @@ public class AiAsrLangModelServiceImpl extends BaseServiceImpl implements AiAsrL
     @Override
     public AiAsrLangModel genVo(AiAsrLangModel po) {
         AiAsrLangModel vo = new AiAsrLangModel();
-        BeanUtilEx.copyProperties(vo, po);
+        BeanUtilEx.copyProperties(po, vo);
         return vo;
     }
 }

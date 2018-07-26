@@ -120,7 +120,7 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
 	@Override
 	public TstHistory genVo(TstHistory po) {
 		TstHistory vo = new TstHistory();
-		BeanUtilEx.copyProperties(vo, po);
+		BeanUtilEx.copyProperties(po, vo);
 
 		return vo;
 	}

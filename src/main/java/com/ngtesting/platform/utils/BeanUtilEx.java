@@ -9,7 +9,7 @@ public class BeanUtilEx extends BeanUtils {
 
 	}
 
-	public static void copyProperties(Object target, Object source) {
+	public static void copyProperties(Object source, Object target) {
         ConvertUtils.register(new DateConverter(null), java.util.Date.class);
 
 		if (source == null) {
@@ -17,7 +17,7 @@ public class BeanUtilEx extends BeanUtils {
 		}
 
 		try {
-			BeanUtils.copyProperties(target, source);
+			BeanUtils.copyProperties(source, target);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

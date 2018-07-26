@@ -126,6 +126,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	}
 
 	@Override
+    @Transactional
 	public TstCase movePers(JSONObject json, TstUser user) {
         Integer srcId = json.getInteger("srcId");
 
@@ -136,14 +137,17 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         TstCase src = caseDao.getDetail(srcId);
         TstCase target = caseDao.getDetail(targetId);
 
-        Integer parentId = src.getpId();
+        Integer srcParentId = src.getpId();
 
         TstCase testCase;
         Constant.CaseAct action;
 
         if (isCopy) {
+            action = Constant.CaseAct.copy;
+
             testCase = new TstCase();
-            BeanUtilEx.copyProperties(testCase, src);
+            BeanUtilEx.copyProperties(src, testCase);
+            testCase.setId(null);
             testCase.setCreateTime(new Date());
             testCase.setUpdateTime(null);
 
@@ -152,16 +156,14 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             testCase.setHistories(new LinkedList());
             testCase.setComments(new LinkedList());
             testCase.setAttachments(new LinkedList());
-
-            testCase.setId(null);
-            action = Constant.CaseAct.copy;
         } else {
-            testCase = src;
             action = Constant.CaseAct.move;
+
+            testCase = src;
         }
 
         if ("inner".equals(moveType)) {
-            testCase.setpId(target.getId());
+            testCase.setpId(targetId);
         } else if ("prev".equals(moveType)) {
             caseDao.addOrderForTargetAndNextCases(testCase.getId(), target.getOrdr(), target.getpId());
 
@@ -183,8 +185,12 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             caseDao.moveUpdate(testCase);
         }
 
-        caseDao.updateParentIfNeeded(parentId);
-        caseDao.updateParentIfNeeded(targetId);
+        if (!isCopy) {
+            caseDao.updateParentIfNeeded(srcParentId);
+        }
+        if ("inner".equals(moveType)) {
+            caseDao.updateParentIfNeeded(targetId);
+        }
 
         TstCase ret = caseDao.getDetail(testCase.getId());
         if (isCopy && isParent) {
@@ -197,7 +203,6 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
     @Override
     public void loadNodeTree(TstCase po) {
-
         List<TstCase> children = getChildren(po.getId());
         for (TstCase childPo : children) {
             po.getChildren().add(childPo);
@@ -320,15 +325,6 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
     @Override
     public List<TstCase> getChildren(Integer caseId) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstCase.class);
-//        dc.add(Restrictions.eq("pId", caseId));
-//
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//
-//        dc.addOrder(Order.asc("pId"));
-//        dc.addOrder(Order.asc("ordr"));
-//
         List<TstCase> children = caseDao.getChildren(caseId);
         return children;
     }

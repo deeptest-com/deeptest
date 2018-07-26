@@ -52,11 +52,6 @@
         WHERE id=#{id}
     </update>
 
-    <insert id="moveCopy" parameterType="TstCase">
-    </insert>
-    <update id="moveUpdate" parameterType="TstCase">
-    </update>
-
     <update id="update" parameterType="TstCase">
        UPDATE TstCase
         SET name=#{name},priority=#{priority},type=#{type},
@@ -85,6 +80,28 @@
     <update id="delete">
         { call remove_case_and_its_children(#{pId,mode=IN,jdbcType=INTEGER}) }
     </update>
+
+    <update id="addOrderForTargetAndNextCases">
+        update TstCase c
+        set c.ordr = c.ordr+1
+        where c.ordr >= #{targetOrdr} and c.pId=#{targetPid} and id!=#{srcId}
+    </update>
+    <update id="addOrderForNextCases">
+        update TstCase c
+        set c.ordr = c.ordr+1
+        where c.ordr > #{targetOrdr} and c.pId=#{targetPid} and id!=#{srcId}
+    </update>
+
+    <update id="moveUpdate">
+        update TstCase c
+        set c.pId = #{pId}, c.ordr = #{ordr}
+        where c.id=#{id}
+    </update>
+    <insert id="moveCopy">
+        update TstCase c
+        set c.pId = #{pId}, c.ordr = #{ordr}
+        where c.id=#{id}
+    </insert>
 
     <resultMap id="caseMaps" type="TstCase" autoMapping="true">
         <id column="id" property="id"/>

@@ -163,17 +163,11 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         if ("inner".equals(moveType)) {
             testCase.setpId(target.getId());
         } else if ("prev".equals(moveType)) {
-//            String hql = "update TstCase c set c.ordr = c.ordr+1 where c.ordr >= ? and c.pId=? and id!=?";
-//            getDao().queryHql(hql, target.getOrdr(), target.getpId(), testCase.getId());
-
             caseDao.addOrderForTargetAndNextCases(testCase.getId(), target.getOrdr(), target.getpId());
 
             testCase.setpId(target.getpId());
             testCase.setOrdr(target.getOrdr());
         } else if ("next".equals(moveType)) {
-//            String hql = "update TstCase c set c.ordr = c.ordr+1 where c.ordr > ? and c.pId=? and id!=?";
-//            getDao().queryHql(hql, target.getOrdr(), target.getpId(), testCase.getId());
-
             caseDao.addOrderForNextCases(testCase.getId(), target.getOrdr(), target.getpId());
 
             testCase.setpId(target.getpId());

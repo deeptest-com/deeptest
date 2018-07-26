@@ -2,6 +2,7 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.dao.CaseAttachmentDao;
 import com.ngtesting.platform.model.TstCaseAttachment;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.CaseAttachmentService;
@@ -23,7 +24,8 @@ import java.util.Map;
 public class CaseAttachmentAction extends BaseAction {
 	@Autowired
     CaseAttachmentService caseAttachmentService;
-
+	@Autowired
+	CaseAttachmentDao caseAttachmentDao;
 
 	@RequestMapping(value = "uploadAttachment", method = RequestMethod.POST)
 	@ResponseBody
@@ -37,7 +39,7 @@ public class CaseAttachmentAction extends BaseAction {
         String name = json.getString("name");
 
 		caseAttachmentService.uploadAttachmentPers(caseId, name, path, userVo);
-        List<TstCaseAttachment> vos = caseAttachmentService.listByCase(caseId);
+        List<TstCaseAttachment> vos = caseAttachmentDao.query(caseId);
 
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -56,7 +58,7 @@ public class CaseAttachmentAction extends BaseAction {
 		Integer id = json.getInteger("id");
 
         caseAttachmentService.removeAttachmentPers(id, userVo);
-        List<TstCaseAttachment> vos = caseAttachmentService.listByCase(caseId);
+        List<TstCaseAttachment> vos = caseAttachmentDao.query(caseId);
 
 		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

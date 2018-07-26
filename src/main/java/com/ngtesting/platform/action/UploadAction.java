@@ -28,7 +28,7 @@ public class UploadAction extends BaseAction {
 	UserService userService;
 
 	@ResponseBody
-	@PostMapping("/upload")
+	@PostMapping("/uploadSingle")
 	public Map<String, Object> uploadSingle(
             @RequestParam("file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> ret = new HashMap<String, Object>();

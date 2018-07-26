@@ -19,7 +19,7 @@ public class FileUtil {
 	public static final int THUMB_HEIGHT = 100;
 
     public static String SaveFile(MultipartFile file, String uploadRelativeDist, String fileName) {
-        return SaveFile(file, uploadRelativeDist, fileName, true);
+        return SaveFile(file, uploadRelativeDist, fileName, false);
     }
     public static String SaveFile(MultipartFile file, String uploadRelativeDist, String fileName, boolean thumb) {
         String dateDist = DateUtil.GetDateNoSeparator();

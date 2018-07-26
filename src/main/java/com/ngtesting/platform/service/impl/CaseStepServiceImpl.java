@@ -1,55 +1,61 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.dao.CaseStepDao;
 import com.ngtesting.platform.model.TstCaseStep;
 import com.ngtesting.platform.service.CaseStepService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CaseStepServiceImpl extends BaseServiceImpl implements CaseStepService {
+    @Autowired
+    CaseStepDao caseStepDao;
 
     @Override
+    @Transactional
     public TstCaseStep save(JSONObject json, Integer userId) {
-//        TstCaseStep vo = JSON.parseObject(JSON.toJSONString(json), TstCaseStep.class);
-//
-//		TstCaseStep po = new TstCaseStep();
-//
-//        if (vo.getId() != null) {
-//            po = (TstCaseStep)get(TstCaseStep.class, vo.getId());
-//            BeanUtilEx.copyProperties(po, vo);
-//        } else {
-//            BeanUtilEx.copyProperties(po, vo);
-//            po.setId(null);
-//            moveOthersPers(vo.getTestCaseId(), vo.getOrdr(), "down");
-//        }
-//        saveOrUpdate(po);
-//
-//        return po;
+        TstCaseStep vo = JSON.parseObject(JSON.toJSONString(json), TstCaseStep.class);
 
-        return null;
+        if (vo.getId() != null) {
+            caseStepDao.update(vo);
+        } else {
+            vo.setId(null);
+            caseStepDao.save(vo);
+            caseStepDao.moveOthersDown(vo.getCaseId(), vo.getId(), vo.getOrdr());
+        }
+
+        return vo;
     }
 
     @Override
-    public void moveOthersPers(Integer testCaseId, Integer ordr, String direction) {
-//        String sql = "update tst_case_step set ";
-//        if ("up".equals(direction)) {
-//            sql += " ordr=ordr-1";
-//        } else if ("down".equals(direction)) {
-//            sql += " ordr=ordr+1";
-//        }
-//
-//        sql += " where deleted = false and disabled = false and test_case_id = ? and ";
-//        if ("up".equals(direction)) {
-//            sql += " ordr > ? ";
-//        } else if ("down".equals(direction)) {
-//            sql += " ordr >= ? ";
-//        }
-//        sql += " order by ordr asc";
-//        getDao().querySql(sql, testCaseId, ordr);
+    public boolean delete(Integer stepId, Integer userId) {
+        TstCaseStep step = caseStepDao.get(stepId);
+        caseStepDao.delete(stepId);
+
+        caseStepDao.moveOthersUp(step.getCaseId(), step.getOrdr());
+        return true;
     }
 
     @Override
+    @Transactional
     public TstCaseStep changeOrderPers(JSONObject vo, String direction, Integer userId) {
+            TstCaseStep step = caseStepDao.get(vo.getInteger("id"));
+            TstCaseStep neighbor = null;
+            if ("up".equals(direction)) {
+                neighbor = caseStepDao.getPrev(step.getCaseId(), step.getOrdr());
+            } else if ("down".equals(direction)) {
+                neighbor = caseStepDao.getNext(step.getCaseId(), step.getOrdr());
+            }
+
+            Integer stepOrder = step.getOrdr();
+            Integer neighborOrder = neighbor.getOrdr();
+
+            caseStepDao.setOrder(step.getId(), neighborOrder);
+            caseStepDao.setOrder(neighbor.getId(), stepOrder);
+
 //        TstCaseStep po = (TstCaseStep)get(TstCaseStep.class, vo.getLong("id"));
 //        String hql = "from TstCaseStep st where st.deleted = false and st.disabled = false "
 //                + " and testCaseId = ?";
@@ -71,23 +77,5 @@ public class CaseStepServiceImpl extends BaseServiceImpl implements CaseStepServ
 //        return po;
 
         return null;
-    }
-
-    @Override
-    public void createSampleStep(Integer caseId) {
-//        TstCaseStep step = new TstCaseStep(caseId, "步骤", "期待结果", 1);
-//        step.setTestCaseId(caseId);
-//        saveOrUpdate(step);
-    }
-
-    @Override
-    public boolean delete(Integer stepId, Integer userId) {
-//        TstCaseStep step = (TstCaseStep) get(TstCaseStep.class, stepId);
-//        step.setDeleted(true);
-//        saveOrUpdate(step);
-//
-//        moveOthersPers(step.getTestCaseId(), step.getOrdr(), "up");
-
-        return true;
     }
 }

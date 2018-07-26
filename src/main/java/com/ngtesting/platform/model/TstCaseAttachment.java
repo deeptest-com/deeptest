@@ -9,8 +9,18 @@ public class TstCaseAttachment extends BaseModel {
 	private String uri;
 
 	private String docType;
-	private Long testCaseId;
-	private Long userId;
+	private Integer caseId;
+	private Integer userId;
+
+    public TstCaseAttachment() {
+    }
+    public TstCaseAttachment(String name, String path, Integer caseId, Integer userId) {
+        super();
+        this.name = name;
+        this.uri = path;
+        this.caseId = caseId;
+        this.userId = userId;
+    }
 
     public String getName() {
         return name;
@@ -44,19 +54,19 @@ public class TstCaseAttachment extends BaseModel {
 		this.docType = docType;
 	}
 
-	public Long getTestCaseId() {
-		return testCaseId;
-	}
+    public Integer getCaseId() {
+        return caseId;
+    }
 
-	public void setTestCaseId(Long testCaseId) {
-		this.testCaseId = testCaseId;
-	}
+    public void setCaseId(Integer caseId) {
+        this.caseId = caseId;
+    }
 
-	public Long getUserId() {
+    public Integer getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
 }

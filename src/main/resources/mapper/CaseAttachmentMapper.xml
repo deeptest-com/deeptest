@@ -3,12 +3,48 @@
 <mapper namespace="com.ngtesting.platform.dao.CaseAttachmentDao" >
 
     <select id="query" resultType="TstCaseAttachment">
-        SELECT * FROM TstAlert o WHERE o.userId=#{userId}
-        <if test="isRead != null">
-            AND o.isRead = #{isRead}
-        </if>
+        SELECT * FROM TstCaseAttachment o
+
+        WHERE o.caseId=#{caseId}
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+        ORDER BY o.createTime ASC
     </select>
+
+    <select id="get" resultType="TstCaseAttachment">
+        SELECT * FROM TstCaseAttachment o
+
+        WHERE o.id=#{id}
+    </select>
+
+    <insert id="save" parameterType="TstCaseAttachment" useGeneratedKeys="true" keyProperty="id">
+        insert into TstCaseAttachment
+        (name,uri,caseId,userId,
+          deleted,disabled,createTime)
+        values (#{name},#{uri},#{caseId},#{userId},
+          #{deleted},#{disabled},#{createTime})
+    </insert>
+
+    <update id="delete">
+        UPDATE TstCaseAttachment
+        SET disabled=TRUE
+        WHERE id=#{id}
+    </update>
+
+    <select id="listByCaseId" parameterType="Map" resultMap="caseAttachmentMaps">
+        SELECT o.* FROM TstCaseAttachment o
+
+        WHERE o.caseId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.createTime ASC
+    </select>
+
+    <resultMap id="caseAttachmentMaps" type="TstCaseAttachment" autoMapping="true">
+        <id column="id" property="id"/>
+        <id column="name" property="name"/>
+        <id column="caseId" property="caseId"/>
+        <id column="userId" property="userId"/>
+        <id column="createTime" property="createTime"/>
+    </resultMap>
 
 </mapper>

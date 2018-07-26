@@ -22,6 +22,20 @@ public class CaseStepAction extends BaseAction {
     @Autowired
     CaseStepService caseStepService;
 
+    @RequestMapping(value = "save", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+        TstCaseStep po = caseStepService.save(json, userVo.getId());
+
+        ret.put("data", po);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
     @RequestMapping(value = "up", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> up(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -30,9 +44,8 @@ public class CaseStepAction extends BaseAction {
         TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
         TstCaseStep po = caseStepService.changeOrderPers(json, "up", userVo.getId());
-//        TstCaseStepVo stepVo = caseStepService.genVo(po);
-//
-//        ret.put("data", stepVo);
+
+        ret.put("data", po);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -45,24 +58,8 @@ public class CaseStepAction extends BaseAction {
         TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
         TstCaseStep po = caseStepService.changeOrderPers(json, "down", userVo.getId());
-//        TstCaseStepVo stepVo = caseStepService.genVo(po);
-//
-//        ret.put("data", stepVo);
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
 
-    @RequestMapping(value = "save", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
-        TstCaseStep po = caseStepService.save(json, userVo.getId());
-//        TstCaseStepVo stepVo = caseStepService.genVo(po);
-//
-//        ret.put("data", stepVo);
+        ret.put("data", po);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

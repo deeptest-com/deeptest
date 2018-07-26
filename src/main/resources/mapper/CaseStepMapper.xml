@@ -6,9 +6,12 @@
         SELECT * FROM TstCaseStep o
 
         WHERE o.caseId=#{caseId}
-
         AND o.deleted != true AND o.disabled != true
         ORDER BY o.ordr ASC
+    </select>
+    <select id="get" resultType="TstCaseStep">
+        SELECT * FROM TstCaseStep o
+        WHERE o.id=#{id}
     </select>
 
     <select id="listByCaseId" parameterType="Map" resultMap="caseStepMaps">
@@ -28,6 +31,55 @@
         (#{opt},#{expect},#{ordr},#{caseId},
         NOW(),FALSE,FALSE,0)
     </insert>
+    <update id="update">
+        UPDATE TstCaseStep
+        SET opt =#{opt},expect=#{expect},updateTime=NOW()
+        where id = #{id}
+    </update>
+    <update id="delete">
+        UPDATE TstCaseStep
+        SET disabled = TRUE
+        where id = #{id}
+    </update>
+
+    <update id="moveOthersUp">
+        UPDATE TstCaseStep
+          SET ordr = ordr - 1
+        where caseId = #{caseId} and ordr > #{ordr}
+          AND deleted != TRUE and disabled != TRUE
+    </update>
+    <update id="moveOthersDown">
+        UPDATE TstCaseStep
+          SET ordr = ordr + 1
+        where caseId = #{caseId} and id!=#{id} AND ordr >= #{ordr}
+          AND deleted != TRUE and disabled != TRUE
+    </update>
+
+    <select id="getPrev" resultType="TstCaseStep">
+        <![CDATA[
+        SELECT o.* FROM TstCaseStep o
+
+        WHERE o.caseId = #{caseId}
+        AND o.ordr < #{ordr}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.ordr desc LIMIT 1
+        ]]>
+    </select>
+    <select id="getNext" resultType="TstCaseStep">
+        SELECT o.* FROM TstCaseStep o
+
+        WHERE o.caseId = #{caseId}
+        AND o.ordr > #{ordr}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.ordr ASC LIMIT 1
+    </select>
+    <update id="setOrder">
+        UPDATE TstCaseStep
+        SET ordr = #{ordr}
+        where id = #{id}
+    </update>
 
     <resultMap id="caseStepMaps" type="TstCaseStep" autoMapping="true">
         <id column="id" property="id"/>

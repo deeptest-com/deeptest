@@ -131,6 +131,10 @@
         <collection property="comments" select="com.ngtesting.platform.dao.CaseCommentsDao.listByCaseId"
                     column="{id=id}">
         </collection>
+
+        <collection property="attachments" select="com.ngtesting.platform.dao.CaseAttachmentDao.listByCaseId"
+                    column="{id=id}">
+        </collection>
     </resultMap>
 
 </mapper>

@@ -64,9 +64,7 @@
             estimate=#{estimate},objective=#{objective},updateById=#{updateById}
         WHERE id=#{id}
     </update>
-    <update id="delete" parameterType="TstCase">
-        <!-- remove_case_and_its_children -->
-    </update>
+
     <update id="updateParentIfNeeded">
         { call update_case_parent_if_needed(
             #{pId,mode=IN,jdbcType=INTEGER}
@@ -83,6 +81,9 @@
         UPDATE TstCase
         SET reviewResult=#{result}
         WHERE id=#{id}
+    </update>
+    <update id="delete">
+        { call remove_case_and_its_children(#{pId,mode=IN,jdbcType=INTEGER}) }
     </update>
 
     <resultMap id="caseMaps" type="TstCase" autoMapping="true">

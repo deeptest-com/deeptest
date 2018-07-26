@@ -19,7 +19,7 @@ public interface CaseDao {
     void moveUpdate(TstCase testCase);
 
     void update(TstCase testCasePo);
-    void delete(Integer id);
+    void delete(@Param("pId") Integer id);
 
     Integer getChildMaxOrderNumb(@Param("pId") Integer pId);
 

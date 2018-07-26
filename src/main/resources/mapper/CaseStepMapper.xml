@@ -3,12 +3,29 @@
 <mapper namespace="com.ngtesting.platform.dao.CaseStepDao" >
 
     <select id="query" resultType="TstCaseStep">
-        SELECT * FROM TstAlert o WHERE o.userId=#{userId}
-        <if test="isRead != null">
-            AND o.isRead = #{isRead}
-        </if>
+        SELECT * FROM TstCaseStep o
+
+        WHERE o.caseId=#{caseId}
+
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+        ORDER BY o.ordr ASC
     </select>
+
+    <select id="listByCaseId" parameterType="Map" resultMap="caseStepMaps">
+        SELECT o.* FROM TstCaseStep o
+
+        WHERE o.caseId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.ordr ASC
+    </select>
+
+    <resultMap id="caseStepMaps" type="TstCaseStep" autoMapping="true">
+        <id column="id" property="id"/>
+        <id column="opt" property="opt"/>
+        <id column="expect" property="expect"/>
+        <id column="ordr" property="ordr"/>
+        <id column="caseId" property="caseId"/>
+    </resultMap>
 
 </mapper>

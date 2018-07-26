@@ -9,18 +9,7 @@ public class TstCaseStep extends BaseModel {
 
     private Integer ordr;
 
-    private Integer testCaseId;
-
-    public TstCaseStep() {
-    }
-
-    public TstCaseStep(Integer id, String opt, String expect, Integer ordr, Integer testCaseId) {
-        this.id = id;
-        this.opt = opt;
-        this.expect = expect;
-        this.ordr = ordr;
-        this.testCaseId = testCaseId;
-    }
+    private Integer caseId;
 
     public String getOpt() {
         return opt;
@@ -46,12 +35,12 @@ public class TstCaseStep extends BaseModel {
         this.ordr = ordr;
     }
 
-    public Integer getTestCaseId() {
-        return testCaseId;
+    public Integer getCaseId() {
+        return caseId;
     }
 
-    public void setTestCaseId(Integer testCaseId) {
-        this.testCaseId = testCaseId;
+    public void setCaseId(Integer caseId) {
+        this.caseId = caseId;
     }
 
     public Boolean getDeleted() {

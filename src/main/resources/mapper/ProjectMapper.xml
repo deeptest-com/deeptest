@@ -2,14 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.ProjectDao" >
 
-    <resultMap id="projectMaps" type="TstProject" autoMapping="true">
-        <id column="id" property="id"/>
-
-        <collection property="children" ofType="TstProject" select="getChildren"
-                    column="{id=id,keywordsParam=keywordsParam,disabledParam=disabledParam">
-        </collection>
-    </resultMap>
-
     <select id="query" resultMap="projectMaps">
         SELECT #{keywordsParam} as keywordsParam,
                #{disabledParam} as disabledParam,
@@ -110,5 +102,13 @@
         SET disabled=TRUE
         WHERE parentId=#{id}
     </update>
+
+    <resultMap id="projectMaps" type="TstProject" autoMapping="true">
+        <id column="id" property="id"/>
+
+        <collection property="children" ofType="TstProject" select="getChildren"
+                    column="{id=id,keywordsParam=keywordsParam,disabledParam=disabledParam">
+        </collection>
+    </resultMap>
 
 </mapper>

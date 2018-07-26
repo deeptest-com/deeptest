@@ -2,10 +2,10 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.TstCaseInRun;
+import com.ngtesting.platform.model.TstCaseInTask;
 import com.ngtesting.platform.model.TstCustomField;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.CaseInRunService;
+import com.ngtesting.platform.service.CaseInTaskService;
 import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.service.CustomFieldService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class CaseInRunAction extends BaseAction {
     @Autowired
     CaseService caseService;
 	@Autowired
-    CaseInRunService caseInRunService;
+    CaseInTaskService caseInRunService;
 
     @Autowired
     CustomFieldService customFieldService;
@@ -41,7 +41,7 @@ public class CaseInRunAction extends BaseAction {
         Integer projectId = json.getInteger("projectId");
         Integer runId = json.getInteger("runId");
 
-        List<TstCaseInRun> vos = caseInRunService.query(runId);
+        List<TstCaseInTask> vos = caseInRunService.query(runId);
         List<TstCustomField> customFieldList = customFieldService.listForCaseByProject(orgId, projectId);
 
         ret.put("data", vos);
@@ -59,7 +59,7 @@ public class CaseInRunAction extends BaseAction {
         Integer orgId = userVo.getDefaultOrgId();
         Integer caseId = json.getInteger("id");
 
-        TstCaseInRun vo = caseInRunService.getById(caseId);
+        TstCaseInTask vo = caseInRunService.getById(caseId);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -79,7 +79,7 @@ public class CaseInRunAction extends BaseAction {
         String status = json.getString("status");
         Integer nextId = json.getInteger("nextId");
 
-        TstCaseInRun vo = caseInRunService.setResultPers(caseInRunId, result, status, nextId, userVo);
+        TstCaseInTask vo = caseInRunService.setResultPers(caseInRunId, result, status, nextId, userVo);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -93,7 +93,7 @@ public class CaseInRunAction extends BaseAction {
 
         TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        TstCaseInRun vo = caseInRunService.renamePers(json, userVo);
+        TstCaseInTask vo = caseInRunService.renamePers(json, userVo);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -106,7 +106,7 @@ public class CaseInRunAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        TstCaseInRun vo = caseInRunService.movePers(json, userVo);
+        TstCaseInTask vo = caseInRunService.movePers(json, userVo);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -121,7 +121,7 @@ public class CaseInRunAction extends BaseAction {
 //        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 //
 //        Integer entityId = json.getInteger("entityId");
-//        TstCaseInRun caseInRun = caseInRunService.removeCaseFromRunPers(entityId, userVo);
+//        TstCaseInTask caseInRun = caseInRunService.removeCaseFromRunPers(entityId, userVo);
 //
 //        ret.put("code", Constant.RespCode.SUCCESS.getCode());
 //        return ret;

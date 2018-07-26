@@ -1,25 +1,12 @@
 package com.ngtesting.platform.model;
 
-import java.util.Date;
-
 public class TstCaseHistory extends BaseModel {
 
     private static final long serialVersionUID = 8174711284511001943L;
 
     private String title;
     private String descr;
-    private Integer testCaseId;
-
-    public TstCaseHistory() {
-    }
-
-    public TstCaseHistory(Integer id, String title, String descr, Integer testCaseId, Date createTime) {
-        this.id = id;
-        this.title = title;
-        this.descr = descr;
-        this.testCaseId = testCaseId;
-        this.createTime = createTime;
-    }
+    private Integer caseId;
 
     public String getTitle() {
         return title;
@@ -37,11 +24,11 @@ public class TstCaseHistory extends BaseModel {
         this.descr = descr;
     }
 
-    public Integer getTestCaseId() {
-        return testCaseId;
+    public Integer getCaseId() {
+        return caseId;
     }
 
-    public void setTestCaseId(Integer testCaseId) {
-        this.testCaseId = testCaseId;
+    public void setCaseId(Integer caseId) {
+        this.caseId = caseId;
     }
 }

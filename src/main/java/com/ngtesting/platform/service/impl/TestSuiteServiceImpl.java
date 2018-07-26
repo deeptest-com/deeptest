@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.dao.TestSuiteDao;
 import com.ngtesting.platform.model.TstCaseInSuite;
 import com.ngtesting.platform.model.TstSuite;
 import com.ngtesting.platform.model.TstUser;
@@ -17,7 +18,8 @@ import java.util.List;
 
 @Service
 public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteService {
-
+    @Autowired
+    TestSuiteDao testSuiteDao;
     @Autowired
     HistoryService historyService;
     @Autowired
@@ -165,6 +167,7 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
 
         return saveCases(projectId, caseProjectId, suiteId, data.toArray(), optUser);
     }
+
     @Override
     public TstSuite saveCases(Integer projectId, Integer caseProjectId, Integer suiteId, Object[] ids, TstUser optUser) {
         TstSuite suite = null;

@@ -13,7 +13,4 @@ public interface CaseStepService extends BaseService {
 	void createSampleStep(Integer caseId);
 	boolean delete(Integer stepId, Integer userId);
 
-	TstCaseStep genVo(TstCaseStep step);
-
-
 }

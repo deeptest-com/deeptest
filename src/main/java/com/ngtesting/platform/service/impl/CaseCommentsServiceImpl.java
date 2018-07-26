@@ -2,13 +2,17 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.dao.UserDao;
 import com.ngtesting.platform.model.TstCaseComments;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.CaseCommentsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CaseCommentsServiceImpl extends BaseServiceImpl implements CaseCommentsService {
+    @Autowired
+    UserDao userDao;
 
     @Override
     public TstCaseComments save(JSONObject json, TstUser TstUser) {
@@ -44,17 +48,15 @@ public class CaseCommentsServiceImpl extends BaseServiceImpl implements CaseComm
 
     @Override
     public TstCaseComments genVo(TstCaseComments po) {
-        TstCaseComments vo = new TstCaseComments();
-//        BeanUtilEx.copyProperties(vo, po);
-//        if (vo.getUpdateTime() == null) {
-//            vo.setUpdateTime(vo.getCreateTime());
-//        }
-//
-//        TestUser user = (TestUser)get(TestUser.class, po.getUserId());
-//
-//        vo.setUserName(user.getName());
-//        vo.setUserAvatar(user.getAvatar());
-        return vo;
+        if (po.getUpdateTime() == null) {
+            po.setUpdateTime(po.getCreateTime());
+        }
+
+        TstUser user = userDao.get(po.getUserId());
+
+        po.setUserName(user.getNickname());
+        po.setUserAvatar(user.getAvatar());
+        return po;
     }
 
 }

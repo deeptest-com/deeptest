@@ -6,5 +6,5 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface CaseCommentsDao {
-    List<TstMsg> query(@Param("userId") Integer userId);
+
 }

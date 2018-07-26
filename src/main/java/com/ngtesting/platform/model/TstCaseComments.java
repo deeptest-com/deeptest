@@ -1,7 +1,5 @@
 package com.ngtesting.platform.model;
 
-import java.util.Date;
-
 public class TstCaseComments extends BaseModel {
     private static final long serialVersionUID = -624520281526573819L;
 
@@ -10,11 +8,7 @@ public class TstCaseComments extends BaseModel {
     private Integer userId;
     private String userName;
     private String userAvatar;
-    private Integer testCaseId;
-    private Date changeTime;
-
-    public TstCaseComments() {
-    }
+    private Integer caseId;
 
     public Integer getUserId() {
         return userId;
@@ -22,14 +16,6 @@ public class TstCaseComments extends BaseModel {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
-    }
-
-    public Date getChangeTime() {
-        return changeTime;
-    }
-
-    public void setChangeTime(Date changeTime) {
-        this.changeTime = changeTime;
     }
 
     public String getContent() {
@@ -40,12 +26,12 @@ public class TstCaseComments extends BaseModel {
         this.content = content;
     }
 
-    public Integer getTestCaseId() {
-        return testCaseId;
+    public Integer getCaseId() {
+        return caseId;
     }
 
-    public void setTestCaseId(Integer testCaseId) {
-        this.testCaseId = testCaseId;
+    public void setCaseId(Integer caseId) {
+        this.caseId = caseId;
     }
 
     public String getSummary() {

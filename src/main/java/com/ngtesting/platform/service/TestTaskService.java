@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.model.TstCaseInRun;
+import com.ngtesting.platform.model.TstCaseInTask;
 import com.ngtesting.platform.model.TstTask;
 import com.ngtesting.platform.model.TstSuite;
 import com.ngtesting.platform.model.TstUser;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface TestTaskService extends BaseService {
 
-	List<TstCaseInRun> lodaCase(Integer runId);
+	List<TstCaseInTask> lodaCase(Integer runId);
 	TstTask getById(Integer caseId);
 	TstTask save(JSONObject json, TstUser optUser);
 
@@ -33,8 +33,8 @@ public interface TestTaskService extends BaseService {
     List<TstTask> genVos(List<TstTask> pos);
 	TstTask genVo(TstTask po);
 
-	List<TstCaseInRun> genCaseVos(List<TstCaseInRun> ls);
-	TstCaseInRun genCaseVo(TstCaseInRun po);
+	List<TstCaseInTask> genCaseVos(List<TstCaseInTask> ls);
+	TstCaseInTask genCaseVo(TstCaseInTask po);
 
 
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.CaseInRunDao" >
+<mapper namespace="com.ngtesting.platform.dao.CaseInTaskDao" >
 
-    <select id="query" resultType="TstCaseInRun">
+    <select id="query" resultType="TstCaseInTask">
         SELECT * FROM TstAlert o WHERE o.userId=#{userId}
         <if test="isRead != null">
             AND o.isRead = #{isRead}

@@ -41,7 +41,6 @@ public class CaseAction extends BaseAction {
 		Integer projectId = json.getInteger("projectId");
 
 		List<TstCase> ls = caseService.query(projectId);
-        List<TstCase> vos = caseService.genVos(ls, false);
 
         List<TstCaseType> caseTypePos = caseTypeService.list(orgId);
 
@@ -49,7 +48,7 @@ public class CaseAction extends BaseAction {
 
         List<TstCustomField> customFieldList = customFieldService.listForCaseByProject(orgId, projectId);
 
-        ret.put("data", vos);
+        ret.put("data", ls);
         ret.put("caseTypeList", caseTypePos);
         ret.put("casePriorityList", casePriorityPos);
 		ret.put("customFields", customFieldList);
@@ -84,7 +83,7 @@ public class CaseAction extends BaseAction {
         Integer caseProjectId = json.getInteger("caseProjectId");
 		Integer runId = json.getInteger("runId");
 
-		List<TstCase> vos = caseService.queryForRunSelection(projectId, caseProjectId, runId);
+		List<TstCase> vos = caseService.queryForTaskSelection(projectId, caseProjectId, runId);
 		List<TstProject> projects = projectService.listBrothers(projectId);
 
 		ret.put("data", vos);
@@ -117,9 +116,8 @@ public class CaseAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
         TstCase testCasePo = caseService.renamePers(json, userVo);
-        TstCase caseVo = caseService.genVo(testCasePo);
 
-        ret.put("data", caseVo);
+        ret.put("data", testCasePo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -146,7 +144,7 @@ public class CaseAction extends BaseAction {
 
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		TstCase testCase = caseService.delete(id, userVo);
+		caseService.delete(id, userVo);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -177,9 +175,8 @@ public class CaseAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
         TstCase po = caseService.save(json, userVo);
-        TstCase caseVo = caseService.genVo(po, true);
 
-        ret.put("data", caseVo);
+        ret.put("data", po);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -192,9 +189,8 @@ public class CaseAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		TstCase po = caseService.saveField(json, userVo);
-        TstCase caseVo = caseService.genVo(po);
 
-		ret.put("data", caseVo);
+		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -207,7 +203,7 @@ public class CaseAction extends BaseAction {
 		Integer id = json.getInteger("id");
         String contentType = json.getString("contentType");
 
-		TstCase po = caseService.changeContentTypePers(id, contentType);
+		caseService.changeContentTypePers(id, contentType);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -221,10 +217,9 @@ public class CaseAction extends BaseAction {
 		Integer id = json.getInteger("id");
 		Boolean pass = json.getBoolean("pass");
 
-		TstCase po = caseService.reviewPassPers(id, pass);
-        TstCase caseVo = caseService.genVo(po);
+		TstCase po = caseService.reviewResult(id, pass);
 
-        ret.put("reviewResult", caseVo);
+        ret.put("reviewResult", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

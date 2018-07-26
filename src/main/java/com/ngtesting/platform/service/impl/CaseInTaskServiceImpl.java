@@ -3,12 +3,12 @@ package com.ngtesting.platform.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstCase;
-import com.ngtesting.platform.model.TstCaseInRun;
-import com.ngtesting.platform.model.TstCaseInRunHistory;
+import com.ngtesting.platform.model.TstCaseInTask;
+import com.ngtesting.platform.model.TstCaseInTaskHistory;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.CaseAttachmentService;
 import com.ngtesting.platform.service.CaseCommentsService;
-import com.ngtesting.platform.service.CaseInRunService;
+import com.ngtesting.platform.service.CaseInTaskService;
 import com.ngtesting.platform.service.CaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Service
-public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunService {
+public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTaskService {
     @Autowired
     CaseService caseService;
     @Autowired
@@ -26,7 +26,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
     CaseAttachmentService caseAttachmentService;
 
     @Override
-    public List<TstCaseInRun> query(Integer runId) {
+    public List<TstCaseInTask> query(Integer runId) {
 //        DetachedCriteria dc = DetachedCriteria.forClass(TestCaseInRun.class);
 //        dc.createAlias("testCase", "cs");
 //
@@ -40,7 +40,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
 //
 //        List<TestCaseInRun> ls = findAllByCriteria(dc);
 //
-//        List<TstCaseInRun> vos = genVos(ls);
+//        List<TstCaseInTask> vos = genVos(ls);
 //
 //        return vos;
 
@@ -48,9 +48,9 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
     }
 
     @Override
-    public TstCaseInRun getById(Integer id) {
+    public TstCaseInTask getById(Integer id) {
 //        TestCaseInRun po = (TestCaseInRun) get(TestCaseInRun.class, id);
-//        TstCaseInRun vo = genVo(po, true);
+//        TstCaseInTask vo = genVo(po, true);
 //
 //        return vo;
 
@@ -58,7 +58,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
     }
 
     @Override
-    public TstCaseInRun setResultPers(Integer caseInRunId, String result, String status, Integer nextId, TstUser TstUser) {
+    public TstCaseInTask setResultPers(Integer caseInRunId, String result, String status, Integer nextId, TstUser TstUser) {
 //        TestCaseInRun po = (TestCaseInRun) get(TestCaseInRun.class, caseInRunId);
 //        po.setResult(result);
 //        po.setStatus(status);
@@ -91,7 +91,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
     }
 
     @Override
-    public TstCaseInRun renamePers(JSONObject json, TstUser TstUser) {
+    public TstCaseInTask renamePers(JSONObject json, TstUser TstUser) {
 //        Long caseId = json.getLong("id");
 //        Long entityId = json.getLong("entityId");
 //        Long runId = json.getLong("runId");
@@ -99,7 +99,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
 //        Long pId = json.getLong("pId");
 //        Long projectId = json.getLong("projectId");
 //
-//        TstCaseInRun vo;
+//        TstCaseInTask vo;
 //        TestCase casePo = caseService.renamePers(caseId, name, pId, projectId, TstUser);
 //
 //        if (caseId == null || caseId <= 0) {
@@ -118,7 +118,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
     }
 
     @Override
-    public TstCaseInRun movePers(JSONObject json, TstUser TstUser) {
+    public TstCaseInTask movePers(JSONObject json, TstUser TstUser) {
 //        Long runId = json.getLong("runId");
 //        Long caseId = json.getLong("srcId");
 //
@@ -155,7 +155,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
 //    }
 
     @Override
-    public TstCaseInRun getByRunAndCaseId(Integer runId, Integer caseId) {
+    public TstCaseInTask getByRunAndCaseId(Integer runId, Integer caseId) {
 //        DetachedCriteria dc = DetachedCriteria.forClass(TestCaseInRun.class);
 //
 //        dc.add(Restrictions.eq("runId", runId));
@@ -184,7 +184,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
 
     // 执行时新增的用例
     @Override
-    public TstCaseInRun addCaseToRunPers(Integer runId, TstCase po, TstUser TstUser) {
+    public TstCaseInTask addCaseToRunPers(Integer runId, TstCase po, TstUser TstUser) {
 //        TestRun run = (TestRun)get(TestRun.class, runId);
 //
 //        TestCaseInRun caseInRun = new TestCaseInRun(run.getProjectId(), run.getPlanId(),
@@ -192,7 +192,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
 //        run.getTestcases().add(caseInRun);
 //
 //        saveOrUpdate(caseInRun);
-//        TstCaseInRun vo = genVo(caseInRun, false);
+//        TstCaseInTask vo = genVo(caseInRun, false);
 //
 //        return vo;
 
@@ -200,19 +200,19 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
     }
 
     @Override
-    public List<TstCaseInRun> genVos(List<TstCaseInRun> pos) {
-        List<TstCaseInRun> vos = new LinkedList<>();
+    public List<TstCaseInTask> genVos(List<TstCaseInTask> pos) {
+        List<TstCaseInTask> vos = new LinkedList<>();
 
 //        for (TestCaseInRun po: pos) {
-//            TstCaseInRun vo = genVo(po, false);
+//            TstCaseInTask vo = genVo(po, false);
 //            vos.add(vo);
 //        }
         return vos;
     }
 
     @Override
-    public TstCaseInRun genVo(TstCaseInRun po, Boolean withSteps) {
-        TstCaseInRun vo = new TstCaseInRun();
+    public TstCaseInTask genVo(TstCaseInTask po, Boolean withSteps) {
+        TstCaseInTask vo = new TstCaseInTask();
 
 //        TestCase testcase = (TestCase)get(TestCase.class, po.getCaseId());
 //        BeanUtilEx.copyProperties(vo, testcase);
@@ -224,7 +224,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
 //        vo.setSteps(new LinkedList<TstCaseStep>());
 //        vo.setComments(new LinkedList<TstCaseComments>());
 //        vo.setAttachments(new LinkedList<TstCaseAttachment>());
-//        vo.setHistories(new LinkedList<TstCaseInRunHistory>());
+//        vo.setHistories(new LinkedList<TstCaseInTaskHistory>());
 //
 //        if (withSteps) {
 //            List<TestCaseStep> steps = testcase.getSteps();
@@ -245,7 +245,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
 //
 //            List<TestCaseInRunHistory> histories = findHistories(po.getId());
 //            for (TestCaseInRunHistory his : histories) {
-//                TstCaseInRunHistory historyVo = new TstCaseInRunHistory(
+//                TstCaseInTaskHistory historyVo = new TstCaseInTaskHistory(
 //                        his.getId(), his.getTitle(), his.getDescr(), his.getTestCaseInRunId(), his.getCreateTime());
 //
 //                vo.getHistories().add(historyVo);
@@ -267,7 +267,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
     }
 
     @Override
-    public List<TstCaseInRunHistory> findHistories(Integer id) {
+    public List<TstCaseInTaskHistory> findHistories(Integer id) {
 //        DetachedCriteria dc = DetachedCriteria.forClass(TestCaseInRunHistory.class);
 //        dc.add(Restrictions.eq("testCaseInRunId", id));
 //
@@ -283,7 +283,7 @@ public class CaseInRunServiceImpl extends BaseServiceImpl implements CaseInRunSe
     }
 
     @Override
-    public void saveHistory(TstUser user, Constant.CaseAct act, TstCaseInRun testCaseInRun,
+    public void saveHistory(TstUser user, Constant.CaseAct act, TstCaseInTask testCaseInRun,
                             String status, String result) {
 //        String action = act.msg;
 //

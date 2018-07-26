@@ -86,7 +86,7 @@ public class IssueAction extends BaseAction {
         Integer caseProjectId = json.getInteger("caseProjectId");
 		Integer runId = json.getInteger("runId");
 
-//		List<TstCase> vos = issueService.queryForRunSelection(projectId, caseProjectId, runId);
+//		List<TstCase> vos = issueService.queryForTaskSelection(projectId, caseProjectId, runId);
 		List<TstProject> projects = projectService.listBrothers(projectId);
 
 //		ret.put("data", vos);
@@ -223,7 +223,7 @@ public class IssueAction extends BaseAction {
 		Integer id = json.getInteger("id");
 		Boolean pass = json.getBoolean("pass");
 
-//		TstCase po = issueService.reviewPassPers(id, pass);
+//		TstCase po = issueService.reviewResult(id, pass);
 //        TstCaseVo caseVo = issueService.genVo(po);
 //
 //        ret.put("reviewResult", caseVo);

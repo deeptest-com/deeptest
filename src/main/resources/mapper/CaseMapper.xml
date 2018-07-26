@@ -10,4 +10,41 @@
         #{deleted},#{disabled},#{createTime},#{version})
     </insert>
 
+    <select id="query" resultType="TstCase">
+        SELECT * FROM TstCase o
+
+        WHERE o.projectId = #{projectId}
+         AND O.deleted != TRUE  AND o.disabled != TRUE
+
+        ORDER BY pId, ordr
+    </select>
+
+    <select id="get" resultType="TstCase">
+        SELECT * FROM TstCase o
+
+        WHERE o.id = #{id}
+    </select>
+
+    <select id="getDetail" resultMap="caseMaps">
+        SELECT * FROM TstCase o
+
+        WHERE o.id = #{id}
+    </select>
+
+    <resultMap id="caseMaps" type="TstCase" autoMapping="true">
+        <id column="id" property="id"/>
+
+        <collection property="steps" select="com.ngtesting.platform.dao.CaseStepDao.listByCaseId"
+                    column="{id=id}">
+        </collection>
+
+        <collection property="histories" select="com.ngtesting.platform.dao.CaseHistoryDao.listByCaseId"
+                    column="{id=id}">
+        </collection>
+
+        <collection property="comments" select="com.ngtesting.platform.dao.CaseCommentsDao.listByCaseId"
+                    column="{id=id}">
+        </collection>
+    </resultMap>
+
 </mapper>

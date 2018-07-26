@@ -40,8 +40,8 @@ public class RunAction extends BaseAction {
 //        Integer projectId = json.getInteger("projectId");
 //		Integer runId = json.getInteger("runId");
 //
-//		List<TstCaseInRun> ls = taskService.lodaCase(runId);
-//		List<TstCaseInRunVo> vos = taskService.genCaseVos(ls);
+//		List<TstCaseInTask> ls = taskService.lodaCase(runId);
+//		List<TstCaseInTaskVo> vos = taskService.genCaseVos(ls);
 //
 //        List<TstCustomField> customFieldList = customFieldService.listForCaseByProject(orgId, projectId);
 //

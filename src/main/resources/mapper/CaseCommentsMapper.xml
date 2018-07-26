@@ -3,12 +3,34 @@
 <mapper namespace="com.ngtesting.platform.dao.CaseCommentsDao" >
 
     <select id="query" resultType="TstCaseComments">
-        SELECT * FROM TstAlert o WHERE o.userId=#{userId}
-        <if test="isRead != null">
-            AND o.isRead = #{isRead}
-        </if>
+        SELECT * FROM TstCaseComments o WHERE o.caseId=#{caseId}
+
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+        ORDER BY o.updateTime ASC
     </select>
+
+    <select id="listByCaseId" parameterType="Map" resultMap="caseCommentsMaps">
+        SELECT o.*, usr.id userId, usr.nickname userName, usr.avatar userAvatar
+
+        FROM TstCaseComments o
+
+        JOIN TstUser usr ON o.userId = usr.id
+
+        WHERE o.caseId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.updateTime ASC
+    </select>
+
+    <resultMap id="caseCommentsMaps" type="TstCaseComments" autoMapping="true">
+        <id column="id" property="id"/>
+        <id column="summary" property="summary"/>
+        <id column="userId" property="userId"/>
+        <id column="userName" property="userName"/>
+        <id column="userAvatar" property="userAvatar"/>
+        <id column="updateTime" property="updateTime"/>
+        <id column="caseId" property="caseId"/>
+
+    </resultMap>
 
 </mapper>

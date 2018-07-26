@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.dao.TestTaskDao;
-import com.ngtesting.platform.model.TstCaseInRun;
+import com.ngtesting.platform.model.TstCaseInTask;
 import com.ngtesting.platform.model.TstTask;
 import com.ngtesting.platform.model.TstSuite;
 import com.ngtesting.platform.model.TstUser;
@@ -32,8 +32,8 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     TestTaskDao taskDao;
 
 	@Override
-	public List<TstCaseInRun> lodaCase(Integer runId) {
-//		DetachedCriteria dc = DetachedCriteria.forClass(TstCaseInRun.class);
+	public List<TstCaseInTask> lodaCase(Integer runId) {
+//		DetachedCriteria dc = DetachedCriteria.forClass(TstCaseInTask.class);
 //
 //		if (runId != null) {
 //			dc.add(Restrictions.eq("runId", runId));
@@ -45,7 +45,7 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 //		dc.addOrder(Order.asc("pId"));
 //		dc.addOrder(Order.asc("ordr"));
 //
-//		List<TstCaseInRun> ls = findAllByCriteria(dc);
+//		List<TstCaseInTask> ls = findAllByCriteria(dc);
 //
 //		return ls;
 
@@ -161,7 +161,7 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 //        run.setProjectId(projectId);
 //        run.setCaseProjectId(caseProjectId);
 //
-//        run.setTestcases(new LinkedList<TstCaseInRun>());
+//        run.setTestcases(new LinkedList<TstCaseInTask>());
 //        saveOrUpdate(run);
 //
 //        List<Integer> caseIds = new LinkedList<>();
@@ -304,19 +304,19 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 	}
 
 	@Override
-	public List<TstCaseInRun> genCaseVos(List<TstCaseInRun> pos) {
-		List<TstCaseInRun> vos = new LinkedList();
+	public List<TstCaseInTask> genCaseVos(List<TstCaseInTask> pos) {
+		List<TstCaseInTask> vos = new LinkedList();
 
-		for (TstCaseInRun po: pos) {
-			TstCaseInRun vo = genCaseVo(po);
+		for (TstCaseInTask po: pos) {
+			TstCaseInTask vo = genCaseVo(po);
 			vos.add(vo);
 		}
 		return vos;
 	}
 
 	@Override
-	public TstCaseInRun genCaseVo(TstCaseInRun po) {
-		TstCaseInRun vo = new TstCaseInRun();
+	public TstCaseInTask genCaseVo(TstCaseInTask po) {
+		TstCaseInTask vo = new TstCaseInTask();
 
 //        TestCase testcase = po.getTestCase();
 //		BeanUtilEx.copyProperties(vo, testcase);

@@ -2,7 +2,7 @@ package com.ngtesting.platform.model;
 
 import java.util.Date;
 
-public class TstCaseInRunHistory extends BaseModel {
+public class TstCaseInTaskHistory extends BaseModel {
 
     private static final long serialVersionUID = 6709823091860707370L;
 
@@ -10,10 +10,10 @@ public class TstCaseInRunHistory extends BaseModel {
     private String descr;
     private Integer testCaseId;
 
-    public TstCaseInRunHistory() {
+    public TstCaseInTaskHistory() {
     }
 
-    public TstCaseInRunHistory(Integer id, String title, String descr, Integer testCaseId, Date createTime) {
+    public TstCaseInTaskHistory(Integer id, String title, String descr, Integer testCaseId, Date createTime) {
         this.id = id;
         this.title = title;
         this.descr = descr;

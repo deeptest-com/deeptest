@@ -3,7 +3,6 @@ package com.ngtesting.platform.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.TstCaseStep;
 import com.ngtesting.platform.service.CaseStepService;
-import com.ngtesting.platform.utils.BeanUtilEx;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -90,12 +89,5 @@ public class CaseStepServiceImpl extends BaseServiceImpl implements CaseStepServ
 //        moveOthersPers(step.getTestCaseId(), step.getOrdr(), "up");
 
         return true;
-    }
-
-    @Override
-    public TstCaseStep genVo(TstCaseStep po) {
-        TstCaseStep vo = new TstCaseStep();
-        BeanUtilEx.copyProperties(vo, po);
-        return vo;
     }
 }

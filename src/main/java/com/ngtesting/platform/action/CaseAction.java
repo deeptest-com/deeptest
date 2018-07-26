@@ -167,14 +167,14 @@ public class CaseAction extends BaseAction {
 		return ret;
 	}
 
-    @RequestMapping(value = "save", method = RequestMethod.POST)
+    @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
+    public Map<String, Object> update(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        TstCase po = caseService.save(json, userVo);
+        TstCase po = caseService.update(json, userVo);
 
         ret.put("data", po);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -209,15 +209,15 @@ public class CaseAction extends BaseAction {
 		return ret;
 	}
 
-	@RequestMapping(value = "reviewPass", method = RequestMethod.POST)
+	@RequestMapping(value = "reviewResult", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> reviewPass(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> reviewResult(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		Integer id = json.getInteger("id");
-		Boolean pass = json.getBoolean("pass");
+		Boolean result = json.getBoolean("result");
 
-		TstCase po = caseService.reviewResult(id, pass);
+		TstCase po = caseService.reviewResult(id, result);
 
         ret.put("reviewResult", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

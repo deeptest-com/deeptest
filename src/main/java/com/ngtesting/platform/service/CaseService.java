@@ -29,17 +29,17 @@ public interface CaseService extends BaseService {
 
 	void create(TstCase testCase);
 
-	TstCase save(JSONObject json, TstUser user);
-
-	void updateParentIfNeededPers(Integer pid);
+	TstCase update(JSONObject json, TstUser user);
 
 	boolean cloneStepsAndChildrenPers(TstCase testcase, TstCase src);
 
-	TstCase saveField(JSONObject json, TstUser user);
+    TstCase saveField(JSONObject json, TstUser user);
 
 	List<TstCase> getChildren(Integer caseId);
 
-	TstCase changeContentTypePers(Integer id, String contentType);
+    Integer getChildMaxOrderNumb(Integer parentId);
+
+    TstCase changeContentTypePers(Integer id, String contentType);
 
     TstCase reviewResult(Integer id, Boolean pass);
 

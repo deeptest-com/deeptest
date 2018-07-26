@@ -21,15 +21,69 @@
 
     <select id="get" resultType="TstCase">
         SELECT * FROM TstCase o
-
         WHERE o.id = #{id}
     </select>
 
     <select id="getDetail" resultMap="caseMaps">
         SELECT * FROM TstCase o
-
         WHERE o.id = #{id}
     </select>
+
+    <select id="getChildMaxOrderNumb" resultType="Integer">
+        select max(ordr) from TstCase o
+        where o.pId=#{pId}
+        and o.deleted != true
+        and o.disabled != true
+    </select>
+
+    <insert id="renameNew" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
+        insert into TstCase
+        (name,priority,type,contentType,estimate,isLeaf,ordr,pId,
+            projectId,createById,
+            createTime,deleted,disabled,version)
+        values
+          (#{name},#{priority},#{type},#{contentType},#{estimate},#{isLeaf},#{ordr},#{pId},
+              #{projectId},#{createById},
+              NOW(),FALSE,FALSE,0)
+    </insert>
+    <update id="renameUpdate" parameterType="TstCase">
+        UPDATE TstCase
+          SET name=#{name}, updateTime=NOW()
+        WHERE id=#{id}
+    </update>
+
+    <insert id="moveCopy" parameterType="TstCase">
+    </insert>
+    <update id="moveUpdate" parameterType="TstCase">
+    </update>
+
+    <update id="update" parameterType="TstCase">
+       UPDATE TstCase
+        SET name=#{name},priority=#{priority},type=#{type},
+            contentType=#{contentType},content=#{content},
+            estimate=#{estimate},objective=#{objective},updateById=#{updateById}
+        WHERE id=#{id}
+    </update>
+    <update id="delete" parameterType="TstCase">
+        <!-- remove_case_and_its_children -->
+    </update>
+    <update id="updateParentIfNeeded">
+        { call update_case_parent_if_needed(
+            #{pId,mode=IN,jdbcType=INTEGER}
+        )}
+    </update>
+
+    <update id="changeContentTypePers">
+        UPDATE TstCase
+        SET contentType=#{contentType}
+        WHERE id=#{id}
+    </update>
+
+    <update id="reviewResult">
+        UPDATE TstCase
+        SET reviewResult=#{result}
+        WHERE id=#{id}
+    </update>
 
     <resultMap id="caseMaps" type="TstCase" autoMapping="true">
         <id column="id" property="id"/>

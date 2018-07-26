@@ -22,6 +22,24 @@
         ORDER BY o.updateTime ASC
     </select>
 
+    <insert id="save" parameterType="TstCaseComments" useGeneratedKeys="true" keyProperty="id">
+        insert into TstCaseComments (summary,content,caseId,userId,
+          createTime,updateTime,deleted,disabled)
+
+        values (#{summary},#{content},#{caseId},#{userId},
+          NOW(),NOW(),#{deleted},#{disabled})
+    </insert>
+    <update id="update" parameterType="TstCaseComments">
+        UPDATE TstCaseComments
+        SET summary=#{summary},content=#{content},updateTime=NOW()
+        WHERE id=#{id}
+    </update>
+    <update id="delete">
+        UPDATE TstCaseComments
+        SET disabled=TRUE, userId=#{userId}
+        WHERE id=#{id}
+    </update>
+
     <resultMap id="caseCommentsMaps" type="TstCaseComments" autoMapping="true">
         <id column="id" property="id"/>
         <id column="summary" property="summary"/>

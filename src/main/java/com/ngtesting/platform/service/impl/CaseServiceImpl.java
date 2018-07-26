@@ -13,6 +13,7 @@ import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.utils.BeanUtilEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -81,28 +82,26 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     }
 
 	@Override
+    @Transactional
 	public TstCase renamePers(Integer id, String name, Integer pId, Integer projectId, TstUser user) {
         TstCase po = new TstCase();
         Constant.CaseAct action;
 
         boolean isNew;
         if (id != null && id > 0) {
-            isNew = true;
-
+            isNew = false;
+            action = Constant.CaseAct.rename;
             po = caseDao.get(id);
 
             po.setUpdateById(user.getId());
             po.setUpdateTime(new Date());
-            action = Constant.CaseAct.rename;
         } else {
-            isNew = false;
+            isNew = true;
+            action = Constant.CaseAct.create;
 
             po.setLeaf(true);
             po.setId(null);
             po.setpId(pId);
-            po.setType("functional");
-            po.setPriority("medium");
-            po.setContent("");
             po.setOrdr(getChildMaxOrderNumb(po.getpId()));
 
             po.setCreateById(user.getId());
@@ -114,12 +113,12 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         po.setProjectId(projectId);
 
         if (isNew) {
-            caseDao.save(po);
+            caseDao.renameNew(po);
+            caseDao.updateParentIfNeeded(po.getpId());
         } else {
-            caseDao.update(po);
+            caseDao.renameUpdate(po);
         }
 
-        updateParentIfNeededPers(po.getpId());
         caseHistoryService.saveHistory(user, action, po,null);
 
         TstCase ret = caseDao.getDetail(po.getId());
@@ -185,13 +184,13 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         if (isCopy) {
             isParent = cloneStepsAndChildrenPers(testCase, src);
 
-            caseDao.save(testCase);
+            caseDao.moveCopy(testCase);
         } else {
-            caseDao.update(testCase);
+            caseDao.moveUpdate(testCase);
         }
 
-        updateParentIfNeededPers(parentId);
-        updateParentIfNeededPers(targetId);
+        caseDao.updateParentIfNeeded(parentId);
+        caseDao.updateParentIfNeeded(targetId);
 
         TstCase ret = caseDao.getDetail(testCase.getId());
         if (isCopy && isParent) {
@@ -228,10 +227,6 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
         TstCase testCase = new TstCase();
         testCase.setName("新特性");
-        testCase.setType("functional");
-        testCase.setPriority("medium");
-        testCase.setEstimate(10);
-        testCase.setContentType("steps");
         testCase.setpId(root.getId());
         testCase.setProjectId(projectId);
         testCase.setCreateById(user.getId());
@@ -244,10 +239,6 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
         TstCase testCase2 = new TstCase();
         testCase2.setName("新用例");
-        testCase2.setType("functional");
-        testCase2.setPriority("medium");
-        testCase2.setEstimate(10);
-        testCase2.setContentType("steps");
         testCase2.setpId(testCase.getId());
         testCase2.setProjectId(projectId);
         testCase2.setCreateById(user.getId());
@@ -264,42 +255,14 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     }
 
     @Override
-	public TstCase save(JSONObject json, TstUser user) {
+	public TstCase update(JSONObject json, TstUser user) {
         TstCase testCaseVo = JSON.parseObject(JSON.toJSONString(json), TstCase.class);
 
-        Constant.CaseAct action;
+        testCaseVo.setUpdateById(user.getId());
+        testCaseVo.setUpdateTime(new Date());
+        caseDao.update(testCaseVo);
 
-        TstCase testCasePo;
-        if (testCaseVo.getId() != null && testCaseVo.getId() > 0) {
-            action = Constant.CaseAct.update;
-
-            caseDao.update(testCaseVo);
-
-//            testCasePo = (TstCase)get(TstCase.class, testCaseVo.getId());
-//            copyProperties(testCasePo, testCaseVo);
-//
-//            testCasePo.setUpdateById(user.getId());
-//            testCasePo.setUpdateTime(new Date());
-        } else {
-            action = Constant.CaseAct.create;
-
-            testCaseVo.setId(null);
-            testCaseVo.setLeaf(true);
-            testCaseVo.setCreateById(user.getId());
-            testCaseVo.setOrdr(getChildMaxOrderNumb(testCaseVo.getpId()));
-            caseDao.save(testCaseVo);
-
-//            testCasePo = new TstCase();
-//            copyProperties(testCasePo, testCaseVo);
-//            testCasePo.setId(null);
-//            testCasePo.setLeaf(true);
-//            testCasePo.setOrdr(getChildMaxOrderNumb(testCasePo.getpId()));
-//
-//            testCasePo.setCreateById(user.getId());
-//            testCasePo.setCreateTime(new Date());
-        }
-
-        caseHistoryService.saveHistory(user, action, testCaseVo,null);
+        caseHistoryService.saveHistory(user, Constant.CaseAct.update, testCaseVo,null);
 
         TstCase ret = caseDao.getDetail(testCaseVo.getId());
 		return ret;
@@ -325,14 +288,9 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         caseDao.delete(id);
 
         TstCase testCase = caseDao.get(id);
-        updateParentIfNeededPers(testCase.getpId());
+        caseDao.updateParentIfNeeded(testCase.getpId());
         caseHistoryService.saveHistory(user, Constant.CaseAct.delete, testCase,null);
 	}
-
-    @Override
-    public void updateParentIfNeededPers(Integer pid) {
-//        getDao().querySql("{call update_case_parent_if_needed(?)}", pid);
-    }
 
     @Override
     public boolean cloneStepsAndChildrenPers(TstCase testCase, TstCase src) {
@@ -381,7 +339,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         return children;
     }
 
-	private Integer getChildMaxOrderNumb(Integer parentId) {
+    @Override
+    public Integer getChildMaxOrderNumb(Integer parentId) {
 		Integer maxOrder = caseDao.getChildMaxOrderNumb(parentId);
 
 		if (maxOrder == null) {
@@ -407,10 +366,6 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
     @Override
     public TstCase reviewResult(Integer id, Boolean result) {
-//        TstCase testCase = (TstCase)get(TstCase.class, id);
-//        testCase.setReviewResult(pass);
-//        saveOrUpdate(testCase);
-//
         caseDao.reviewResult(id, result);
         TstCase testCase = caseDao.getDetail(id);
         return testCase;

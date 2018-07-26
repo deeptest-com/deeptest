@@ -8,13 +8,13 @@ public class TstCase extends BaseModel {
 
 	private String name;
 	private String priority = "medium";
-	private Integer estimate;
-    private String type;
+	private Integer estimate = 10;
+    private CaseType type = CaseType.functional;
 	private String objective;
     private String descr;
+    private Boolean isLeaf;
     private Integer ordr;
 	private Integer pId;
-	private Boolean isLeaf;
 	private Integer projectId;
 
 	private Integer createById;
@@ -22,7 +22,7 @@ public class TstCase extends BaseModel {
 
     private Boolean checked;
 
-	private String contentType;
+	private CaseContentType contentType = CaseContentType.steps;
 	private String content;
 	private String key;
 	private Boolean reviewResult;
@@ -50,6 +50,37 @@ public class TstCase extends BaseModel {
 	private String prop18;
 	private String prop19;
 	private String prop20;
+
+	public static enum CaseType {
+		functional("functional"),
+		performance("performance"),
+		security("security"),
+		others("others");
+
+		CaseType(String textVal) {
+			this.textVal = textVal;
+		}
+
+		private String textVal;
+
+		public String toString() {
+			return textVal;
+		}
+	}
+    public static enum CaseContentType {
+        steps("steps"),
+        richText("richText");
+
+        CaseContentType(String textVal) {
+            this.textVal = textVal;
+        }
+
+        private String textVal;
+
+        public String toString() {
+            return textVal;
+        }
+    }
 
     private List<TstCase> children = new LinkedList<>();
 	private List<TstCaseStep> steps = new LinkedList<>();
@@ -110,11 +141,11 @@ public class TstCase extends BaseModel {
 		this.key = key;
 	}
 
-	public String getContentType() {
+	public CaseContentType getContentType() {
 		return contentType;
 	}
 
-	public void setContentType(String contentType) {
+	public void setContentType(CaseContentType contentType) {
 		this.contentType = contentType;
 	}
 
@@ -174,11 +205,11 @@ public class TstCase extends BaseModel {
         this.ordr = ordr;
     }
 
-    public String getType() {
+    public CaseType getType() {
         return this.type;
     }
 
-    public void setType(String type) {
+    public void setType(CaseType type) {
         this.type = type;
     }
 

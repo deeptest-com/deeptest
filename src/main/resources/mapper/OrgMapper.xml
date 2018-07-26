@@ -49,9 +49,9 @@
 
     <insert id="initOrg">
         { call init_org(
-        #{orgId,mode=IN,jdbcType=INTEGER},
-        #{userId,mode=IN,jdbcType=INTEGER}
-        ) }
+            #{orgId,mode=IN,jdbcType=INTEGER},
+            #{userId,mode=IN,jdbcType=INTEGER}
+        )}
     </insert>
 
 </mapper>

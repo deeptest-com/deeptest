@@ -103,9 +103,8 @@ public class SuiteAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		TstSuite po = suiteService.saveCases(json, userVo);
-		TstSuite vo = suiteService.genVo(po);
 
-		ret.put("data", vo);
+		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

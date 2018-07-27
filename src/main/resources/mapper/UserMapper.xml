@@ -25,8 +25,12 @@
         ORDER BY usr.id ASC
     </select>
 
-    <select id="queryByUser" resultType="TstOrg">
+    <select id="queryByUser" resultType="TstUser">
         SELECT * FROM tstUser
+    </select>
+
+    <select id="getProjectUsers" resultType="TstUser">
+        { call get_project_users(#{prjId,mode=IN,jdbcType=INTEGER}) }
     </select>
 
     <select id="get" parameterType="int" resultType="TstUser">

@@ -12,6 +12,6 @@ public interface TestTaskDao {
 
     List<TstTask> listByPlan(@Param("planId") Integer planId);
 
-    List<TstCaseInTask> listCases(Integer taskId);
-    List<Integer> listCaseIds(Integer taskId);
+    List<TstCaseInTask> listCases(@Param("id") Integer id);
+    List<Integer> listCaseIds(@Param("id") Integer id);
 }

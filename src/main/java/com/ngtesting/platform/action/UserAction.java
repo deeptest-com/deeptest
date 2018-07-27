@@ -43,7 +43,7 @@ public class UserAction {
     @Autowired
     ProjectPrivilegeService projectPrivilegeService;
 
-    @RequestMapping(value = "list", method = RequestMethod.POST)
+    @PostMapping(value = "list")
     @ResponseBody
     public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -61,6 +61,23 @@ public class UserAction {
 
         ret.put("total", page.getTotal());
         ret.put("data", users);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @PostMapping(value = "getUsers")
+    @ResponseBody
+    public Map<String, Object> getUsers(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Integer orgId = user.getDefaultOrgId();
+
+        Integer projectId = json.getInteger("projectId");
+
+        List <TstUser> vos = userService.getProjectUsers(orgId, projectId);
+
+        ret.put("data", vos);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

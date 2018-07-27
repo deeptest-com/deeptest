@@ -27,4 +27,6 @@ public interface UserService {
     List<TstUser> search(Integer orgId, String keywords, String exceptIds);
 
     TstUser setLeftSizePers(TstUser user, Integer left, String prop);
+
+    List<TstUser> getProjectUsers(Integer orgId, Integer projectId);
 }

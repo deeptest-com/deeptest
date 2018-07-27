@@ -16,7 +16,7 @@
         WHERE o.projectId = #{projectId}
          AND O.deleted != TRUE  AND o.disabled != TRUE
 
-        ORDER BY pId, ordr
+        ORDER BY o.pId, o.id
     </select>
 
     <select id="get" resultType="TstCase">

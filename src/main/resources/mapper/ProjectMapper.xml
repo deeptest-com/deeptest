@@ -12,15 +12,20 @@
         <if test="disabledParam != null and disabledParam != ''">
             AND p.disabledParam = #{disabledParam}
         </if>
+        AND p.deleted != TRUE
+        ORDER BY p.id
     </select>
     <select id="getChildren" parameterType="Map" resultType="TstProject">
-      SELECT c.* FROM TstProject c WHERE c.parentId = #{id} AND c.type='project'
+      SELECT c.* FROM TstProject c
+        WHERE c.parentId = #{id} AND c.type='project'
         <if test="keywordsParam != null and keywordsParam != ''">
             AND c.name LIKE CONCAT('%','${keywordsParam}','%' )
         </if>
         <if test="disabledParam != null and disabledParam != ''">
             AND c.disabled = #{disabledParam}
         </if>
+        AND c.deleted != TRUE
+        ORDER BY c.id
     </select>
 
     <select id="getProjectPrivilegeByOrgForUser" resultType="Map" useCache="false" statementType="CALLABLE">
@@ -48,7 +53,7 @@
 
             AND prj.deleted != TRUE
             AND prj.disabled != TRUE
-        ORDER BY his.lastAccessTime
+        ORDER BY his.lastAccessTime DESC
     </select>
 
     <select id="isLastestProjectGroup" resultType="INTEGER">
@@ -63,6 +68,12 @@
         ORDER BY prj.id
     </select>
 
+    <select id="listBrothers" resultType="TstProject">
+        SELECT * FROM TstProject prj
+        JOIN TstProject temp ON temp.parentId = prj.parentId
+        WHERE temp.id=#{id}
+        ORDER BY prj.id
+    </select>
     <select id="listProjectGroups" resultType="TstProject">
         SELECT * FROM TstProject prj
 

@@ -60,6 +60,15 @@
         WHERE o.id = #{id}
     </select>
 
+    <select id="listCaseIds" resultType="int">
+        SELECT o.id
+        FROM TstCaseInSuite o
+
+        WHERE o.suiteId=#{id}
+        AND o.deleted != TRUE AND o.disabled != TRUE
+        ORDER BY o.pId, o.id
+    </select>
+
     <select id="getWithCases" resultMap="testSuiteMaps">
         SELECT o.*, prj.name projectName, casePrj.name caseProjectName
                     ( SELECT count(cs.id) FROM TstCaseInSuite cs

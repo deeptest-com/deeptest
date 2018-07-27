@@ -33,4 +33,6 @@ public interface UserDao {
                        @Param("prjName") String prjName);
 
     void setLeftSize(TstUser user);
+
+    List<TstUser> getProjectUsers(@Param("prjId") Integer prjId);
 }

@@ -175,7 +175,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 //        List<TstProject> vos = this.genVos(pos, null);
 //        return vos;
 
-		return null;
+		return projectDao.listBrothers(projectId);
 	}
     @Override
     public List<Integer> listBrotherIds(Integer projectId) {

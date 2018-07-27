@@ -25,6 +25,15 @@
         ORDER BY o.createTime DESC
     </select>
 
+    <select id="listCaseIds" resultType="int">
+        SELECT o.id
+        FROM TstCaseInTask o
+
+        WHERE o.taskId=#{id}
+        AND o.deleted != TRUE AND o.disabled != TRUE
+        ORDER BY o.pId, o.id
+    </select>
+
     <resultMap type="TstTask" id="testTask" autoMapping="true"></resultMap>
 
     <resultMap type="TstTask" id="testTaskWithAssignees" extends="testTask">

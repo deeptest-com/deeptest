@@ -45,7 +45,7 @@ public class OrgAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		String keywords = json.getString("keywords");
-		String disabled = json.getString("disabled");
+		Boolean disabled = json.getBoolean("disabled");
 
 		List<TstOrg> vos = orgService.list(userVo.getId(), keywords, disabled);
 
@@ -151,7 +151,7 @@ public class OrgAction extends BaseAction {
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Integer orgId = json.getInteger("id");
 		String keywords = json.getString("keywords");
-		String disabled = json.getString("disabled");
+		Boolean disabled = json.getBoolean("disabled");
 
 		userService.setDefaultOrg(user, orgId);
 		pushSettingsService.pushOrgSettings(user);

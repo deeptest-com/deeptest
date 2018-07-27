@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
     OrgRoleUserRelationService orgRoleUserService;
 
     @Override
-    public List<TstUser> list(Integer orgId, String keywords, String disabled, int pageNum, int pageSize) {
+    public List<TstUser> list(Integer orgId, String keywords, Boolean disabled, int pageNum, int pageSize) {
         List<TstUser> users = userDao.query(orgId, keywords, disabled);
 
         return users;
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<TstUser> listAllOrgUsers(Integer orgId) {
-        List<TstUser> ls = userDao.query(orgId, null, "false");
+        List<TstUser> ls = userDao.query(orgId, null, false);
 
         return ls;
     }

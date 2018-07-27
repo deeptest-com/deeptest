@@ -8,7 +8,7 @@ import java.util.List;
 public interface UserDao {
     List<TstUser> query(@Param("orgId") Integer orgId,
                         @Param("keywords") String keywords,
-                        @Param("disabled") String disabled);
+                        @Param("disabled") Boolean disabled);
 
     List<TstUser> search(@Param("orgId") Integer orgId,
                          @Param("keywords") String keywords,

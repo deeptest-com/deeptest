@@ -11,7 +11,7 @@ public interface OrgRoleDao {
 
     List<TstOrgRole> query(@Param("orgId") Integer orgId,
                            @Param("keywords") String keywords,
-                           @Param("disabled") String disabled);
+                           @Param("disabled") Boolean disabled);
 
     TstOrgRole get(@Param("id") Integer id);
 

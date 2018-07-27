@@ -42,7 +42,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
     private UserDao userDao;
 
 	@Override
-	public List<TstOrg> list(Integer userId, String keywords, String disabled) {
+	public List<TstOrg> list(Integer userId, String keywords, Boolean disabled) {
         List<TstOrg> ls = orgDao.query(userId, keywords, disabled);
 
         genVos(ls, userId);

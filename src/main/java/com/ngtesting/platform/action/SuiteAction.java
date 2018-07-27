@@ -38,12 +38,12 @@ public class SuiteAction extends BaseAction {
 		Integer projectId = json.getInteger("projectId");
 
 		String keywords = json.getString("keywords");
-		String disabled = json.getString("disabled");
+        Boolean disabled = json.getBoolean("disabled");
 		Integer pageNum = json.getInteger("page");
 		Integer pageSize = json.getInteger("pageSize");
 
 		com.github.pagehelper.Page page = PageHelper.startPage(pageNum, pageSize);
-		List ls = suiteService.listByPage(projectId, keywords, disabled);
+		List ls = suiteService.listByPage(projectId, keywords,disabled);
 
         ret.put("total", page.getTotal());
         ret.put("data", ls);

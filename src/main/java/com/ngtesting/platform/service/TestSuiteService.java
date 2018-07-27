@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface TestSuiteService extends BaseService {
 
-	List listByPage(Integer projectId, String keywords, String disabled);
+	List listByPage(Integer projectId, String keywords, Boolean disabled);
 
     List<TstSuite> query(Integer projectId, String keywords);
     TstSuite get(Integer id);

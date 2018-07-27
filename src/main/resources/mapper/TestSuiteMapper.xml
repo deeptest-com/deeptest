@@ -3,17 +3,14 @@
 <mapper namespace="com.ngtesting.platform.dao.TestSuiteDao" >
 
     <select id="query" resultType="TstSuite">
-        SELECT o.*, usr.nickname userName, prj.name projectName, casePrj.name caseProjectName,
-              ( SELECT count(cs.id) FROM TstCaseInSuite cs
-                                WHERE cs.suiteId = o.id AND isLeaf=TRUE AND cs.deleted != true AND cs.disabled != true ) `count`
-
+        SELECT o.*, usr.nickname userName, prj.name projectName, casePrj.name caseProjectName
         FROM TstSuite o
 
         JOIN TstUser usr ON usr.id=o.userId
         JOIN TstProject prj ON prj.id=o.projectId
         JOIN TstProject casePrj ON casePrj.id=o.caseProjectId
 
-        WHERE TRUE
+        WHERE o.projectId = #{projectId}
         <if test="keywords != null and keywords != ''">
             AND o.name LIKE CONCAT('%','${keywords}','%' )
         </if>
@@ -21,7 +18,6 @@
             AND o.disabled = #{disabled}
         </if>
 
-        AND o.projectId = #{projectId}
         AND o.deleted != TRUE
         ORDER BY o.id ASC
     </select>

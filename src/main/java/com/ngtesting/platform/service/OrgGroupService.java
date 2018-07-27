@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface OrgGroupService extends BaseService {
 
-	List<TstOrgGroup> listByPage(Integer orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage);
+	List<TstOrgGroup> listByPage(Integer orgId, String keywords, Boolean disabled, Integer currentPage, Integer itemsPerPage);
 	List search(Integer orgId, String keywords, String exceptIds);
 	List<TstOrgGroup> list(Integer orgId);
 	TstOrgGroup get(Integer id);

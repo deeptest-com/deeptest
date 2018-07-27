@@ -20,7 +20,7 @@ public class TestEnvServiceImpl extends BaseServiceImpl implements TestEnvServic
     TestEnvDao envDao;
 
     @Override
-    public List<TstEnv> list(Integer projectId, String keywords, String disabled) {
+    public List<TstEnv> list(Integer projectId, String keywords, Boolean disabled) {
         List<TstEnv> ls = envDao.query(projectId, keywords, disabled);
         return ls;
     }

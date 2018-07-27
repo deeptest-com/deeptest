@@ -33,7 +33,7 @@ public class SysRoleAction extends BaseAction {
 		Integer orgId = json.getInteger("orgId");
 
 		String keywords = json.getString("keywords");
-		String disabled = json.getString("disabled");
+		Boolean disabled = json.getBoolean("disabled");
 		int page = json.getInteger("page") == null? 0: json.getInteger("page") - 1;
 		int pageSize = json.getInteger("pageSize") == null? Constant.PAGE_SIZE: json.getInteger("pageSize");
 

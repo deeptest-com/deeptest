@@ -39,7 +39,7 @@ public class OrgRoleAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 
 		String keywords = json.getString("keywords");
-		String disabled = json.getString("disabled");
+		Boolean disabled = json.getBoolean("disabled");
 
 		List<TstOrgRole> ls = orgRoleService.list(orgId, keywords, disabled);
 

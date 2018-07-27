@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface OrgRoleService extends BaseService {
 
-	List list(Integer orgId, String keywords, String disabled);
+	List list(Integer orgId, String keywords, Boolean disabled);
     List<TstOrgRole> listAllOrgRoles(Integer orgId);
 
 	TstOrgRole get(Integer orgRoleId);

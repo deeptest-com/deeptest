@@ -19,7 +19,7 @@ public class TestVerServiceImpl extends BaseServiceImpl implements TestVerServic
     TestVerDao verDao;
 
     @Override
-    public List<TstVer> list(Integer projectId, String keywords, String disabled) {
+    public List<TstVer> list(Integer projectId, String keywords, Boolean disabled) {
         List<TstVer> ls = verDao.query(projectId, keywords, disabled);
         return ls;
     }

@@ -31,10 +31,10 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
     MsgService msgService;
 
     @Override
-    public List listByPage(Integer projectId, String keywords, String disabled) {
-        List<TstSuite> groups = testSuiteDao.query(projectId, keywords, disabled);
+    public List listByPage(Integer projectId, String keywords, Boolean disabled) {
+        List<TstSuite> suites = testSuiteDao.query(projectId, keywords, disabled);
 
-        return groups;
+        return suites;
     }
 
     @Override

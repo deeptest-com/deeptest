@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class SysRoleServiceImpl extends BaseServiceImpl implements SysRoleService {
 
 	@Override
-	public Page listByPage(Integer orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage) {
+	public Page listByPage(Integer orgId, String keywords, Boolean disabled, Integer currentPage, Integer itemsPerPage) {
 //        DetachedCriteria dc = DetachedCriteria.forClass(SysRole.class);
 //        dc.add(Restrictions.eq("orgId", orgId));
 //

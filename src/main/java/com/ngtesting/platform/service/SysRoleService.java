@@ -5,7 +5,7 @@ import com.ngtesting.platform.vo.Page;
 
 public interface SysRoleService extends BaseService {
 
-	Page listByPage(Integer orgId, String keywords, String disabled, Integer currentPage, Integer itemsPerPage);
+	Page listByPage(Integer orgId, String keywords, Boolean disabled, Integer currentPage, Integer itemsPerPage);
 
 	SysRole save(SysRole vo, Integer orgId);
 	boolean delete(Integer id);

@@ -8,7 +8,7 @@ import java.util.List;
 public interface OrgGroupDao {
     List<TstOrgGroup> query(@Param("orgId") Integer orgId,
                         @Param("keywords") String keywords,
-                        @Param("disabled") String disabled);
+                        @Param("disabled") Boolean disabled);
 
     List<TstOrgGroup> search(@Param("orgId") Integer orgId,
                              @Param("keywords") String keywords,

@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface OrgService extends BaseService {
 
-	List<TstOrg> list(Integer userId, String keywords, String disabled);
+	List<TstOrg> list(Integer userId, String keywords, Boolean disabled);
 	List<TstOrg> listByUser(Integer userId);
 
 	TstOrg get(Integer id);

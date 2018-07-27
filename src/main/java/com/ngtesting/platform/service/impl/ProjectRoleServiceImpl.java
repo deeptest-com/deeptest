@@ -19,7 +19,7 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
     private ProjectPrivilegeService projectPrivilegeService;
 
 	@Override
-	public List list(Integer orgId, String keywords, String disabled) {
+	public List list(Integer orgId, String keywords, Boolean disabled) {
 		List<TstProjectRole> ls = projectRoleDao.list(orgId, keywords, disabled);
 
 		return ls;

@@ -35,7 +35,7 @@ public class EnvAction extends BaseAction {
         TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
         Integer projectId = json.getInteger("projectId");
         String keywords = json.getString("keywords");
-        String disabled = json.getString("disabled");
+        Boolean disabled = json.getBoolean("disabled");
 
         List<TstEnv> ls = envService.list(projectId, keywords, disabled);
 

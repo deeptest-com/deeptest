@@ -16,7 +16,7 @@ public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupServ
 	private OrgGroupDao groupDao;
 
 	@Override
-	public List<TstOrgGroup> listByPage(Integer orgId, String keywords, String disabled, Integer pageNum, Integer pageSize) {
+	public List<TstOrgGroup> listByPage(Integer orgId, String keywords, Boolean disabled, Integer pageNum, Integer pageSize) {
         List<TstOrgGroup> groups = groupDao.query(orgId, keywords, disabled);
 
         return groups;

@@ -7,7 +7,7 @@ import com.ngtesting.platform.model.TstVer;
 import java.util.List;
 
 public interface TestVerService extends BaseService {
-	List<TstVer> list(Integer projectId, String keywords, String disabled);
+	List<TstVer> list(Integer projectId, String keywords, Boolean disabled);
 	TstVer getById(Integer caseId);
 	TstVer save(JSONObject json, TstUser optUser);
 	void delete(Integer vo, Integer userId);

@@ -7,7 +7,7 @@ import com.ngtesting.platform.model.TstEnv;
 import java.util.List;
 
 public interface TestEnvService extends BaseService {
-	List<TstEnv> list(Integer projectId, String keywords, String disabled);
+	List<TstEnv> list(Integer projectId, String keywords, Boolean disabled);
 	TstEnv getById(Integer caseId);
 	TstEnv save(JSONObject json, TstUser optUser);
 	void delete(Integer vo, Integer userId);

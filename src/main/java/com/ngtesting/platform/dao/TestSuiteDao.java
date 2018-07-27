@@ -9,7 +9,7 @@ import java.util.List;
 public interface TestSuiteDao {
     List<TstSuite> query(@Param("projectId") Integer projectId,
                          @Param("keywords") String keywords,
-                         @Param("disabled") String disabled);
+                         @Param("disabled") Boolean disabled);
 
     TstSuite get(@Param("id") Integer id);
     TstSuite getWithCases(@Param("id") Integer id);

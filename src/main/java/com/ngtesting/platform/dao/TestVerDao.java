@@ -8,7 +8,7 @@ import java.util.List;
 public interface TestVerDao {
     List<TstVer> query(@Param("projectId") Integer projectId,
                        @Param("keywords") String keywords,
-                       @Param("disabled") String disabled);
+                       @Param("disabled") Boolean disabled);
     TstVer get(@Param("id") Integer id);
 
     Integer getMaxOrdrNumb(@Param("projectId") Integer projectId);

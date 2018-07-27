@@ -40,7 +40,7 @@ public class OrgGroupAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 
 		String keywords = json.getString("keywords");
-		String disabled = json.getString("disabled");
+		Boolean disabled = json.getBoolean("disabled");
 		Integer pageNum = json.getInteger("page");
 		Integer pageSize = json.getInteger("pageSize");
 

@@ -80,6 +80,20 @@ public class SuiteAction extends BaseAction {
 		return ret;
 	}
 
+    @RequestMapping(value = "saveCases", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> saveCases(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+        TstSuite po = suiteService.saveCases(json, userVo);
+
+        ret.put("data", po);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -91,20 +105,6 @@ public class SuiteAction extends BaseAction {
 
 		TstSuite po = suiteService.delete(id, userVo.getId());
 
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
-	@RequestMapping(value = "saveCases", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> saveCases(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
-		TstSuite po = suiteService.saveCases(json, userVo);
-
-		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

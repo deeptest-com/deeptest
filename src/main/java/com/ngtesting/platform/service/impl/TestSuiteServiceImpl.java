@@ -1,7 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.TestSuiteDao;
@@ -13,6 +12,7 @@ import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.service.TestSuiteService;
+import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -133,43 +133,24 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
         Integer projectId = json.getInteger("projectId");
         Integer caseProjectId = json.getInteger("caseProjectId");
         Integer suiteId = json.getInteger("suiteId");
-        JSONArray data = json.getJSONArray("cases");
+        List<Integer> ids = JSON.parseArray(json.getString("cases"), Integer.class) ;
 
-        return saveCases(projectId, caseProjectId, suiteId, data.toArray(), optUser);
+        return saveCases(projectId, caseProjectId, suiteId, ids, optUser);
     }
 
     @Override
-    public TstSuite saveCases(Integer projectId, Integer caseProjectId, Integer suiteId, Object[] ids, TstUser optUser) {
-        TstSuite suite = null;
-//        if (suiteId != null) {
-//            suite = (TstSuite) get(TstSuite.class, suiteId);
-//        } else {
-//            suite = new TstSuite();
-//        }
-//        suite.setProjectId(projectId);
-//        suite.setCaseProjectId(caseProjectId);
-//
-//        suite.setTestCases(new LinkedList<TstCaseInSuite>());
-//        saveOrUpdate(suite);
-//
-//        List<Integer> caseIds = new LinkedList<>();
-//        for (Object obj : ids) {
-//            Integer id = Integer.valueOf(obj.toString());
-//            caseIds.add(id);
-//        }
-//        addCasesPers(suite.getId(), caseIds);
-//
-//        Constant.MsgType action = Constant.MsgType.update_case;
-//        historyService.create(suite.getProjectId(), optUser, action.msg, TestHistory.TargetType.run,
-//                suite.getId(), suite.getName());
+    public TstSuite saveCases(Integer projectId, Integer caseProjectId, Integer suiteId, List<Integer> caseIds, TstUser optUser) {
+        testSuiteDao.updateSuiteProject(suiteId, projectId, caseProjectId, optUser.getId());
+
+        String caseIdsStr = StringUtil.join(caseIds.toArray(), ",");
+        testSuiteDao.addCases(suiteId, caseIdsStr);
+
+        TstSuite suite = testSuiteDao.get(suiteId);
+        Constant.MsgType action = Constant.MsgType.update_case;
+        historyService.create(suite.getProjectId(), optUser, action.msg, TstHistory.TargetType.run,
+                suite.getId(), suite.getName());
 
         return suite;
-    }
-
-    @Override
-    public void addCasesPers(Integer suiteId, List<Integer> caseIds) {
-//        String ids = StringUtils.join(caseIds.toArray(), ",");
-//        getDao().querySql("{call add_cases_to_suite(?,?)}", suiteId, ids);
     }
 
     @Override

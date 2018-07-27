@@ -20,4 +20,12 @@ public interface TestSuiteDao {
     List<TstCaseInSuite> listCases(@Param("id") Integer id);
 
     List<Integer> listCaseIds(@Param("id") Integer id);
+
+    void updateSuiteProject(@Param("id") Integer id,
+                            @Param("projectId") Integer projectId,
+                            @Param("caseProjectId") Integer caseProjectId,
+                            @Param("userId") Integer userId);
+
+    void addCases(@Param("suiteId") Integer suiteId,
+                  @Param("caseIds") String caseIds);
 }

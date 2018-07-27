@@ -25,13 +25,11 @@ public interface TestSuiteService extends BaseService {
 
     TstSuite saveCases(JSONObject json, TstUser optUser);
 
-	TstSuite saveCases(Integer projectId, Integer caseProjectId, Integer runId, Object[] ids, TstUser optUser);
+	TstSuite saveCases(Integer projectId, Integer caseProjectId, Integer runId, List<Integer> ids, TstUser optUser);
 
 	TstSuite genVo(TstSuite po);
 
     TstSuite genVo(TstSuite po, Boolean withCases);
-
-    void addCasesPers(Integer suiteId, List<Integer> caseIds);
 
     Integer countCase(Integer suiteId);
 

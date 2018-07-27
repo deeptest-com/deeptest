@@ -5,7 +5,7 @@
     <select id="query" resultType="TstSuite">
         SELECT o.*, usr.nickname userName, prj.name projectName, casePrj.name caseProjectName,
               ( SELECT count(cs.id) FROM TstCaseInSuite cs
-                                WHERE cs.suiteId = o.id AND cs.deleted != true AND cs.disabled != true ) `count`
+                                WHERE cs.suiteId = o.id AND isLeaf=TRUE AND cs.deleted != true AND cs.disabled != true ) `count`
 
         FROM TstSuite o
 
@@ -49,7 +49,7 @@
     <select id="get" resultType="TstSuite">
         SELECT o.*, usr.nickname userName, prj.name projectName, casePrj.name caseProjectName,
                     ( SELECT count(cs.id) FROM TstCaseInSuite cs
-                                WHERE cs.suiteId = o.id AND cs.deleted != true AND cs.disabled != true ) `count`
+                                WHERE cs.suiteId = o.id AND isLeaf=TRUE AND cs.deleted != true AND cs.disabled != true ) `count`
 
         FROM TstSuite o
 
@@ -68,6 +68,18 @@
         AND o.deleted != TRUE AND o.disabled != TRUE
         ORDER BY o.pId, o.id
     </select>
+
+    <update id="updateSuiteProject">
+        UPDATE TstSuite
+        SET projectId=#{projectId},caseProjectId=#{caseProjectId},userId=#{userId},
+        updateTime=NOW()
+
+        WHERE id=#{id}
+    </update>
+    <update id="addCases">
+        { call add_cases_to_suite(#{suiteId,mode=IN,jdbcType=INTEGER},
+                                  #{caseIds,mode=IN,jdbcType=VARCHAR}) }
+    </update>
 
     <select id="getWithCases" resultMap="testSuiteMaps">
         SELECT o.*, prj.name projectName, casePrj.name caseProjectName

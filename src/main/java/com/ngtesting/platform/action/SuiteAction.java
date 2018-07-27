@@ -1,12 +1,12 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.bean.websocket.OptFacade;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstSuite;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.TestSuiteService;
-import com.ngtesting.platform.vo.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,16 +34,19 @@ public class SuiteAction extends BaseAction {
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		int page = json.getInteger("page") == null? 0: json.getInteger("page") - 1;
-		int pageSize = json.getInteger("pageSize") == null? Constant.PAGE_SIZE: json.getInteger("pageSize");
-        Integer projectId = json.getInteger("projectId");
-        String keywords = json.getString("keywords");
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Integer projectId = json.getInteger("projectId");
 
-		Page pageData = suiteService.page(projectId, keywords, page, pageSize);
-		List<TstSuite> vos = suiteService.genVos(pageData.getItems());
+		String keywords = json.getString("keywords");
+		String disabled = json.getString("disabled");
+		Integer pageNum = json.getInteger("page");
+		Integer pageSize = json.getInteger("pageSize");
 
-        ret.put("collectionSize", pageData.getTotal());
-        ret.put("data", vos);
+		com.github.pagehelper.Page page = PageHelper.startPage(pageNum, pageSize);
+		List ls = suiteService.listByPage(projectId, keywords, disabled);
+
+        ret.put("total", page.getTotal());
+        ret.put("data", ls);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -53,10 +56,10 @@ public class SuiteAction extends BaseAction {
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
         Integer id = json.getInteger("id");
 
-		TstSuite vo = suiteService.getById(id, false);
+		TstSuite vo = suiteService.get(id);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -71,9 +74,8 @@ public class SuiteAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		TstSuite po = suiteService.save(json, userVo);
-		TstSuite vo = suiteService.genVo(po);
 
-		ret.put("data", vo);
+		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

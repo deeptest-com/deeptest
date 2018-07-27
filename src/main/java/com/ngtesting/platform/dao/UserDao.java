@@ -31,4 +31,6 @@ public interface UserDao {
     void setDefaultPrj(@Param("id") Integer id,
                        @Param("prjId") Integer prjId,
                        @Param("prjName") String prjName);
+
+    void setLeftSize(TstUser user);
 }

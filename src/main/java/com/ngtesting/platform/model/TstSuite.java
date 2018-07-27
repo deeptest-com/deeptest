@@ -10,34 +10,23 @@ public class TstSuite extends BaseModel {
 	private Integer estimate;
 	private String descr;
 
-	private Long projectId;
+	private Integer projectId;
 	private String projectName;
-    private Long caseProjectId;
+    private Integer caseProjectId;
     private String caseProjectName;
-	private Long userId;
+	private Integer userId;
     private String userName;
     private Boolean selecting;
 
     Integer count;
 
-	private List<TstCaseInSuite> testcases = new LinkedList();
-    public TstSuite(){}
-    public TstSuite(Integer id, String name, Integer estimate, String descr, Long projectId, Long userId) {
-        super();
+	private List<TstCaseInSuite> testCases = new LinkedList();
 
-		this.id = id;
-        this.name = name;
-        this.estimate = estimate;
-        this.descr = descr;
-        this.projectId = projectId;
-        this.userId = userId;
-    }
-
-    public Long getCaseProjectId() {
+    public Integer getCaseProjectId() {
         return caseProjectId;
     }
 
-    public void setCaseProjectId(Long caseProjectId) {
+    public void setCaseProjectId(Integer caseProjectId) {
         this.caseProjectId = caseProjectId;
     }
 
@@ -104,27 +93,27 @@ public class TstSuite extends BaseModel {
 		this.descr = descr;
 	}
 
-	public Long getProjectId() {
+	public Integer getProjectId() {
 		return projectId;
 	}
 
-	public void setProjectId(Long projectId) {
+	public void setProjectId(Integer projectId) {
 		this.projectId = projectId;
 	}
 
-	public Long getUserId() {
+	public Integer getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
 
-	public List<TstCaseInSuite> getTestcases() {
-		return testcases;
+	public List<TstCaseInSuite> getTestCases() {
+		return testCases;
 	}
 
-	public void setTestcases(List<TstCaseInSuite> testcases) {
-		this.testcases = testcases;
+	public void setTestCases(List<TstCaseInSuite> testCases) {
+		this.testCases = testCases;
 	}
 }

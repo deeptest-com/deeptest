@@ -4,20 +4,19 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.TstCaseInSuite;
 import com.ngtesting.platform.model.TstSuite;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.vo.Page;
 
 import java.util.List;
 
 public interface TestSuiteService extends BaseService {
 
-    Page page(Integer projectId, String keywords, Integer currentPage, Integer itemsPerPage);
+	List listByPage(Integer projectId, String keywords, String disabled);
+
     List<TstSuite> query(Integer projectId, String keywords);
+    TstSuite get(Integer id);
 
-	TstSuite getById(Integer caseId);
+    TstSuite getWithCases(Integer id);
 
-	TstSuite getById(Integer caseId, Boolean withCases);
-
-	TstSuite save(JSONObject json, TstUser optUser);
+    TstSuite save(JSONObject json, TstUser optUser);
 	TstSuite delete(Integer vo, Integer userId);
 
 	List<TstSuite> list(Integer projectId, String type);
@@ -39,4 +38,5 @@ public interface TestSuiteService extends BaseService {
 	TstCaseInSuite genCaseVo(TstCaseInSuite po);
 
     TstSuite updatePo(TstSuite vo);
+
 }

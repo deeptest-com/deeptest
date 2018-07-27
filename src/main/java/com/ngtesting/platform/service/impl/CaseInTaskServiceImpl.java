@@ -82,7 +82,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
 //        }
 //
 //        if (nextId != null) {
-//            return getById(nextId);
+//            return getWithCasesById(nextId);
 //        } else {
 //            return genVo(po, true);
 //        }
@@ -189,7 +189,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
 //
 //        TestCaseInRun caseInRun = new TestCaseInRun(run.getProjectId(), run.getPlanId(),
 //                run.getId(), po.getId(), po.getpId(), true);
-//        run.getTestcases().add(caseInRun);
+//        run.getTestCases().add(caseInRun);
 //
 //        saveOrUpdate(caseInRun);
 //        TstCaseInTask vo = genVo(caseInRun, false);

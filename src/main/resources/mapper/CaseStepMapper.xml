@@ -14,15 +14,6 @@
         WHERE o.id=#{id}
     </select>
 
-    <select id="listByCaseId" parameterType="Map" resultMap="caseStepMaps">
-        SELECT o.* FROM TstCaseStep o
-
-        WHERE o.caseId = #{id}
-        AND o.deleted != true AND o.disabled != true
-
-        ORDER BY o.ordr ASC
-    </select>
-
     <insert id="save" parameterType="TstCaseStep" useGeneratedKeys="true" keyProperty="id">
         insert into TstCaseStep
         (opt,expect,ordr,caseId,
@@ -81,6 +72,14 @@
         where id = #{id}
     </update>
 
+    <select id="listByCaseId" parameterType="Map" resultMap="caseStepMaps">
+        SELECT o.* FROM TstCaseStep o
+
+        WHERE o.caseId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.ordr ASC
+    </select>
     <resultMap id="caseStepMaps" type="TstCaseStep" autoMapping="true">
         <id column="id" property="id"/>
         <id column="opt" property="opt"/>

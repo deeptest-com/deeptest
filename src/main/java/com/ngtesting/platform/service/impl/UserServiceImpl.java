@@ -188,4 +188,16 @@ public class UserServiceImpl implements UserService {
         return users;
     }
 
+    @Override
+    public TstUser setLeftSizePers(TstUser user, Integer left, String prop) {
+        if ("case".equals(prop)) {
+            user.setLeftSizeCase(left);
+        } else if ("issue".equals(prop)) {
+            user.setLeftSizeIssue(left);
+        }
+
+        userDao.setLeftSize(user);
+        return user;
+    }
+
 }

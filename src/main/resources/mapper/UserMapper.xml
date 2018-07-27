@@ -79,6 +79,12 @@
         WHERE id=#{id}
     </update>
 
+    <update id="setLeftSize" parameterType="TstUser">
+        UPDATE TstUser
+        SET leftSizeCase=#{leftSizeCase}, leftSizeIssue=#{leftSizeIssue}
+        WHERE id=#{id}
+    </update>
+
     <select id="search" resultType="TstUser">
         SELECT * FROM TstUser usr
 

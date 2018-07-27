@@ -1,11 +1,23 @@
 package com.ngtesting.platform.dao;
 
 import com.ngtesting.platform.model.TstCaseInSuite;
+import com.ngtesting.platform.model.TstSuite;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 public interface TestSuiteDao {
-    List<TstCaseInSuite> listCases(Integer suiteId);
+    List<TstSuite> query(@Param("projectId") Integer projectId,
+                         @Param("keywords") String keywords,
+                         @Param("disabled") String disabled);
 
-    List<Integer> listCaseIds(Integer suiteId);
+    TstSuite get(@Param("id") Integer id);
+    TstSuite getWithCases(@Param("id") Integer id);
+
+    void save(TstSuite vo);
+    void update(TstSuite vo);
+
+    List<TstCaseInSuite> listCases(@Param("id") Integer id);
+
+    List<Integer> listCaseIds(@Param("id") Integer id);
 }

@@ -161,7 +161,7 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 //        run.setProjectId(projectId);
 //        run.setCaseProjectId(caseProjectId);
 //
-//        run.setTestcases(new LinkedList<TstCaseInTask>());
+//        run.setTestCases(new LinkedList<TstCaseInTask>());
 //        saveOrUpdate(run);
 //
 //        List<Integer> caseIds = new LinkedList<>();

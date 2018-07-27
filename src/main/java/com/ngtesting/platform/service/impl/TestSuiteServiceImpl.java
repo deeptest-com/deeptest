@@ -1,16 +1,18 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.TestSuiteDao;
 import com.ngtesting.platform.model.TstCaseInSuite;
+import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstSuite;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.service.TestSuiteService;
-import com.ngtesting.platform.vo.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,26 +31,10 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
     MsgService msgService;
 
     @Override
-    public Page page(Integer projectId, String keywords, Integer currentPage, Integer itemsPerPage) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstSuite.class);
-//
-//        if (projectId != null) {
-//            List<Integer> ids = projectService.listBrotherIds(projectId);
-//            dc.add(Restrictions.in("projectId", ids));
-//        }
-//        if (StringUtils.isNotEmpty(keywords)) {
-//            dc.add(Restrictions.like("name", "%" + keywords + "%"));
-//        }
-//
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//        dc.addOrder(Order.asc("caseProjectId"));
-//        dc.addOrder(Order.asc("id"));
-//        Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
-//
-//        return page;
+    public List listByPage(Integer projectId, String keywords, String disabled) {
+        List<TstSuite> groups = testSuiteDao.query(projectId, keywords, disabled);
 
-        return null;
+        return groups;
     }
 
     @Override
@@ -75,54 +61,38 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
     }
 
     @Override
-    public TstSuite getById(Integer caseId) {
-//        TstSuite po = (TstSuite) get(TstSuite.class, caseId);
-//        TstSuite vo = genVo(po);
-//
-//        return vo;
+    public TstSuite get(Integer id) {
+        TstSuite po = testSuiteDao.get(id);
 
-        return null;
+        return po;
     }
     @Override
-    public TstSuite getById(Integer caseId, Boolean withCases) {
-//        TstSuite po = (TstSuite) get(TstSuite.class, caseId);
-//        TstSuite vo = genVo(po, withCases);
-//
-//        return vo;
+    public TstSuite getWithCases(Integer id) {
+        TstSuite po = testSuiteDao.getWithCases(id);
 
-        return null;
+        return po;
     }
 
     @Override
     public TstSuite save(JSONObject json, TstUser optUser) {
-//        Integer id = json.getInteger("id");
-//
-//        TstSuite po;
-//        TstSuite vo = JSON.parseObject(JSON.toJSONString(json), TstSuite.class);
-//
-//        Constant.MsgType action;
-//        if (id != null) {
-//            po = (TstSuite)get(TstSuite.class, id);
-//            action = Constant.MsgType.update;
-//        } else {
-//            po = new TstSuite();
-//            action = Constant.MsgType.create;
-//        }
-//        po.setName(vo.getName());
-//        po.setEstimate(vo.getEstimate());
-//        po.setDescr(vo.getDescr());
-//        po.setProjectId(vo.getProjectId());
-//        po.setCaseProjectId(vo.getCaseProjectId());
-//        po.setUserId(optUser.getId());
-//
-//        saveOrUpdate(po);
-//
-//        historyService.create(po.getProjectId(), optUser, action.msg, TestHistory.TargetType.suite,
-//                po.getId(), po.getName());
-//
-//        return po;
+        TstSuite vo = JSON.parseObject(JSON.toJSONString(json), TstSuite.class);
+        vo.setUserId(optUser.getId());
 
-        return null;
+        Constant.MsgType action;
+        if (vo.getId() != null) {
+            action = Constant.MsgType.update;
+
+            testSuiteDao.update(vo);
+        } else {
+            action = Constant.MsgType.create;
+
+            testSuiteDao.save(vo);
+        }
+
+        historyService.create(vo.getProjectId(), optUser, action.msg, TstHistory.TargetType.suite,
+                vo.getId(), vo.getName());
+
+        return vo;
     }
 
     @Override
@@ -179,7 +149,7 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
 //        suite.setProjectId(projectId);
 //        suite.setCaseProjectId(caseProjectId);
 //
-//        suite.setTestcases(new LinkedList<TstCaseInSuite>());
+//        suite.setTestCases(new LinkedList<TstCaseInSuite>());
 //        saveOrUpdate(suite);
 //
 //        List<Integer> caseIds = new LinkedList<>();
@@ -255,9 +225,9 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
 //
 //        int count = 0;
 //        if (withCases) {
-//            for (TstCaseInSuite p : po.getTestcases()) {
+//            for (TstCaseInSuite p : po.getTestCases()) {
 //                TstCaseInSuite v = genCaseVo(p);
-//                vo.getTestcases().add(v);
+//                vo.getTestCases().add(v);
 //                if (p.getLeaf()) {
 //                    count++;
 //                }

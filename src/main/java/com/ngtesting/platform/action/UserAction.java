@@ -194,4 +194,21 @@ public class UserAction {
         return ret;
     }
 
+    @PostMapping(value = "setLeftSize")
+    @ResponseBody
+    public Map<String, Object> setLeftSize(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+        Integer left = json.getInteger("left");
+        String prop = json.getString("prop");
+
+        user = userService.setLeftSizePers(user, left, prop);
+
+        ret.put("data", user);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
 }

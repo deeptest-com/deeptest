@@ -171,7 +171,7 @@ public class IssueAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
         Integer srcId = json.getInteger("srcId");
-//        Integer parentId = issueService.getById(srcId).getpId();
+//        Integer parentId = issueService.getWithCasesById(srcId).getpId();
 //        Integer targetId = json.getInteger("targetId");
 //        TstCaseVo vo = issueService.movePers(json, userVo);
 //

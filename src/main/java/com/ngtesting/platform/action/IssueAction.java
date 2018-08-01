@@ -57,45 +57,6 @@ public class IssueAction extends BaseAction {
 		return ret;
 	}
 
-
-	@RequestMapping(value = "queryForSuiteSelection", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> queryForSuiteSelection(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-		Integer projectId = json.getInteger("projectId");
-        Integer caseProjectId = json.getInteger("caseProjectId");
-		Integer suiteId = json.getInteger("suiteId");
-
-//        List<TstCase> vos = issueService.queryForSuiteSelection(projectId, caseProjectId, suiteId);
-		List<TstProject> projects = projectService.listBrothers(projectId);
-
-//		ret.put("data", vos);
-		ret.put("brotherProjects", projects);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
-
-	@RequestMapping(value = "queryForRunSelection", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> queryForRunSelection(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-		Integer projectId = json.getInteger("projectId");
-        Integer caseProjectId = json.getInteger("caseProjectId");
-		Integer runId = json.getInteger("runId");
-
-//		List<TstCase> vos = issueService.queryForTaskSelection(projectId, caseProjectId, runId);
-		List<TstProject> projects = projectService.listBrothers(projectId);
-
-//		ret.put("data", vos);
-		ret.put("brotherProjects", projects);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
-
     @RequestMapping(value = "get", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {

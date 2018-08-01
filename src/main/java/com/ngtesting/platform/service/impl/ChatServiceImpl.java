@@ -17,9 +17,9 @@ public class ChatServiceImpl extends BaseServiceImpl implements ChatService {
 //        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 //        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 //        dc.addOrder(Order.asc("id"));
-//        Page page = findPage(dc, 0, 10);
+//        Page listByPage = findPage(dc, 0, 10);
 //
-//        return page.getItems();
+//        return listByPage.getItems();
 
 		return null;
 	}

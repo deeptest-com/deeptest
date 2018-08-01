@@ -4,23 +4,21 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.TstPlan;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.vo.Page;
 
 import java.util.List;
 
 public interface TestPlanService extends BaseService {
 
-	Page page(Integer projectId, String status, String keywords, Integer currentPage, Integer itemsPerPage);
+	List<TstPlan> listByPage(Integer projectId, String keywords, String status);
+
 	TstPlan getById(Integer caseId);
 	TstPlan save(JSONObject json, TstUser optUser);
-	TstPlan delete(Integer vo, Integer userId);
+	void delete(Integer vo, Integer userId);
 
 	List<TstPlan> listByOrg(Integer orgId);
 
 	List<TstPlan> listByProject(Integer projectId, TstProject.ProjectType type);
 
-	List<TstPlan> genVos(List<TstPlan> pos);
-	TstPlan genVo(TstPlan po);
-
-    TstPlan updatePo(TstPlan vo);
+	void genVos(List<TstPlan> pos);
+	void genVo(TstPlan po);
 }

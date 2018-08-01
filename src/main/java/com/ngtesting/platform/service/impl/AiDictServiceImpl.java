@@ -142,14 +142,14 @@ public class AiDictServiceImpl extends BaseServiceImpl implements AiDictService 
 //	        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 //	        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 //	        dc.addOrder(Order.asc("id"));
-//	        Page page = findPage(dc, startIndex, numb);
+//	        Page listByPage = findPage(dc, startIndex, numb);
 //
 //	        List<String> ls = new LinkedList<String>();
-//	        for (Object obj: page.getItems()) {
+//	        for (Object obj: listByPage.getItems()) {
 //				AiDict dict = (AiDict) obj;
 //	        	ls.add(dict.getPhrase());
 //	        }
-//	        if (page.getItems().size() == 0) {
+//	        if (listByPage.getItems().size() == 0) {
 //	        	log.info("***词库 '" + key + "' 不在数据库中");
 //
 //	        	ls = genRegDict(key);

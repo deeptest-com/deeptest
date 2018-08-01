@@ -41,7 +41,7 @@ public class MsgAction extends BaseAction {
 
         String keywords = json.getString("keywords");
         String isRead = json.getString("isRead");
-        int page = json.getInteger("page") == null? 0: json.getInteger("page") - 1;
+        int page = json.getInteger("listByPage") == null? 0: json.getInteger("listByPage") - 1;
         int pageSize = json.getInteger("pageSize") == null? Constant.PAGE_SIZE: json.getInteger("pageSize");
 
         Page pageDate = msgService.listByPage(userVo.getId(), isRead, keywords, page, pageSize);

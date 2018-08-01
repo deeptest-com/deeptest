@@ -74,6 +74,12 @@
         WHERE temp.id=#{id}
         ORDER BY prj.id
     </select>
+    <select id="listBrotherIds" resultType="int">
+        SELECT prj.id FROM TstProject prj
+        JOIN TstProject temp ON temp.parentId = prj.parentId
+        WHERE temp.id=#{id}
+        ORDER BY prj.id
+    </select>
     <select id="listProjectGroups" resultType="TstProject">
         SELECT * FROM TstProject prj
 

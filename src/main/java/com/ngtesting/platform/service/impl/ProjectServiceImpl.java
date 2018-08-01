@@ -160,36 +160,6 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	}
 
 	@Override
-	public List<TstProject> listBrothers(Integer projectId) {
-//	    TstProject project = (TstProject)get(TstProject.class, projectId);
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstProject.class);
-//
-//        dc.add(Restrictions.eq("parentId", project.getParentId()));
-//        dc.add(Restrictions.eq("type", ProjectType.project));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc.addOrder(Order.asc("id"));
-//
-//        List<TstProject> pos = findAllByCriteria(dc);
-//
-//        List<TstProject> vos = this.genVos(pos, null);
-//        return vos;
-
-		return projectDao.listBrothers(projectId);
-	}
-    @Override
-    public List<Integer> listBrotherIds(Integer projectId) {
-//        String hql = "select prj.id from TstProject prj where prj.parentId=" +
-//                "(select p.parentId from TstProject p where p.id=?)"
-//                + " and type=? and prj.deleted != true and prj.deleted != true";
-//
-//        List<Integer> ids = getListByHQL(hql, projectId, ProjectType.project);
-//        return ids;
-
-		return null;
-    }
-
-	@Override
 	public TstProject viewPers(Integer projectId, TstUser tstUser) {
 		TstProject po = get(projectId);
 

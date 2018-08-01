@@ -80,13 +80,13 @@ public class OrgAction extends BaseAction {
 		TstOrg po = orgService.get(id);
 
 		List<TstPlan> planPos = planService.listByOrg(id);
-		List<TstPlan> planVos = planService.genVos(planPos);
+		planService.genVos(planPos);
 
 		List<TstHistory> historyPos = historyService.listByOrg(id);
 		Map<String, List<TstHistory>> historyVos = historyService.genVosByDate(historyPos);
 
 		ret.put("org", po);
-		ret.put("plans", planVos);
+		ret.put("plans", planPos);
 		ret.put("histories", historyVos);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

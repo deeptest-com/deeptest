@@ -3,14 +3,13 @@ package com.ngtesting.platform.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.dao.TestSuiteDao;
-import com.ngtesting.platform.model.TstCaseInSuite;
 import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstSuite;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.MsgService;
-import com.ngtesting.platform.service.ProjectService;
 import com.ngtesting.platform.service.TestSuiteService;
 import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
     @Autowired
     HistoryService historyService;
     @Autowired
-    ProjectService projectService;
+    ProjectDao projectDao;
 
     @Autowired
     MsgService msgService;
@@ -38,26 +37,12 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
     }
 
     @Override
-    public List<TstSuite> query(Integer projectId, String keywords) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstSuite.class);
-//
-//        if (projectId != null) {
-//            List<Integer> ids = projectService.listBrotherIds(projectId);
-//            dc.add(Restrictions.in("projectId", ids));
-//        }
-//        if (StringUtils.isNotEmpty(keywords)) {
-//            dc.add(Restrictions.like("name", "%" + keywords + "%"));
-//        }
-//
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//        dc.addOrder(Order.asc("caseProjectId"));
-//        dc.addOrder(Order.asc("id"));
-//        List<TstSuite> ls = findAllByCriteria(dc);
-//
-//        return ls;
+    public List<TstSuite> listForImport(Integer projectId) {
+        List<Integer> projectIds = projectDao.listBrotherIds(projectId);
 
-        return null;
+        List<TstSuite> suites = testSuiteDao.listForImport(projectIds);
+
+        return suites;
     }
 
     @Override
@@ -96,36 +81,8 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
     }
 
     @Override
-    public TstSuite delete(Integer id, Integer clientId) {
-//        TstSuite po = (TstSuite)get(TstSuite.class, id);
-//        po.setDeleted(true);
-//        saveOrUpdate(po);
-//        return po;
-
-        return null;
-    }
-
-    @Override
-    public List<TstSuite> list(Integer projectId, String projectType) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstSuite.class);
-//
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//
-//        if (projectType.equals(TestProject.ProjectType.project.toString())) {
-//            dc.add(Restrictions.eq("projectId", projectId));
-//        } else {
-//            dc.createAlias("project", "project");
-//            dc.add(Restrictions.eq("project.parentId", projectId));
-//        }
-//
-//        dc.addOrder(Order.asc("createTime"));
-//
-//        List<TstSuite> ls = findAllByCriteria(dc);
-//
-//        return ls;
-
-        return null;
+    public void delete(Integer id, Integer userId) {
+        testSuiteDao.get(id);
     }
 
     @Override
@@ -153,37 +110,22 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
         return suite;
     }
 
-    @Override
-    public Integer countCase(Integer suiteId) {
-//        String hql = "select count(id) from TstCaseInSuite where isLeaf=true and suiteId=" + suiteId;
-//        Integer count = (Integer) getByHQL(hql);
-//
-//        return count;
-
-        return null;
-    }
-
-    @Override
-    public List<TstSuite> genVos(List<TstSuite> pos) {
-//        List<TstSuite> vos = new LinkedList<TstSuite>();
-//
+//    @Override
+//    public List<TstSuite> genVos(List<TstSuite> pos) {
 //        for (TstSuite po : pos) {
-//            TstSuite vo = genVo(po);
-//            vos.add(vo);
+//            genVo(po);
 //        }
-//        return vos;
-
-        return null;
-    }
-
-    @Override
-    public TstSuite genVo(TstSuite po) {
-        return genVo(po, false);
-    }
-    @Override
-    public TstSuite genVo(TstSuite po, Boolean withCases) {
-        TstSuite vo = new TstSuite();
-
+//        return pos;
+//    }
+//
+//    @Override
+//    public TstSuite genVo(TstSuite po) {
+//        return genVo(po, false);
+//    }
+//    @Override
+//    public TstSuite genVo(TstSuite po, Boolean withCases) {
+//        TstSuite vo = new TstSuite();
+//
 //        vo.setId(po.getId());
 //        vo.setName(po.getName());
 //        vo.setEstimate(po.getEstimate());
@@ -216,40 +158,28 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
 //        } else {
 //            vo.setCount(countCase(vo.getId()).intValue());
 //        }
-
-        return vo;
-    }
-
-    @Override
-    public TstCaseInSuite genCaseVo(TstCaseInSuite po) {
-        TstCaseInSuite vo = new TstCaseInSuite();
-
-//        TestCase testcase = po.getTestCase();
-//        BeanUtilEx.copyProperties(vo, testcase);
-
-//        vo.setSteps(new LinkedList<TstCaseStep>());
 //
-//        List<TestCaseStep> steps = testcase.getSteps();
-//        for (TestCaseStep step : steps) {
-//            TstCaseStep stepVo = new TstCaseStep(
-//                    step.getId(), step.getOpt(), step.getExpect(), step.getOrdr(), step.getTestCaseId());
+//        return vo;
+//    }
+
+//    @Override
+//    public TstCaseInSuite genCaseVo(TstCaseInSuite po) {
+//        TstCaseInSuite vo = new TstCaseInSuite();
 //
-//            vo.getSteps().add(stepVo);
-//        }
-        return vo;
-    }
-
-    @Override
-    public TstSuite updatePo(TstSuite vo) {
-        TstSuite po = new TstSuite();
-//        po.setName(vo.getName());
-//        po.setEstimate(vo.getEstimate());
-//        po.setDescr(vo.getDescr());
-//        po.setProjectId(vo.getProjectId());
-//        po.setUserId(vo.getUserId());
-
-        return po;
-    }
+////        TestCase testcase = po.getTestCase();
+////        BeanUtilEx.copyProperties(vo, testcase);
+//
+////        vo.setSteps(new LinkedList<TstCaseStep>());
+////
+////        List<TestCaseStep> steps = testcase.getSteps();
+////        for (TestCaseStep step : steps) {
+////            TstCaseStep stepVo = new TstCaseStep(
+////                    step.getId(), step.getOpt(), step.getExpect(), step.getOrdr(), step.getTestCaseId());
+////
+////            vo.getSteps().add(stepVo);
+////        }
+//        return vo;
+//    }
 
 }
 

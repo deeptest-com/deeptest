@@ -42,9 +42,9 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
 //
 //		dc.addOrder(Order.desc("createTime"));
 //
-//        Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
+//        Page listByPage = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
 //
-//		return page;
+//		return listByPage;
         return null;
 	}
 

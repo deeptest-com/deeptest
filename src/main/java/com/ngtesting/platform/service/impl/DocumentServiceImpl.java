@@ -24,9 +24,9 @@ public class DocumentServiceImpl extends BaseServiceImpl implements DocumentServ
 //        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
 //        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
 //        dc.addOrder(Order.asc("id"));
-//        Page page = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
+//        Page listByPage = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
 //
-//        return page;
+//        return listByPage;
 
 		return null;
 	}

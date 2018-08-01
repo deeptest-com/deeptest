@@ -12,13 +12,12 @@ public interface ProjectService extends BaseService {
 	List<TstProject> list(Integer orgId, Integer userId, String keywords, Boolean disabled);
 	List<TstProject> listProjectGroups(Integer orgId);
 
-    TstProject get(Integer id);
+	List<TstProjectAccessHistory> listRecentProject(Integer orgId, Integer userId);
+
+	TstProject get(Integer id);
 
     TstProject save(TstProject vo, Integer orgId, TstUser userVo);
 	Boolean delete(Integer id);
-
-	List<TstProject> listBrothers(Integer projectId);
-	List<TstProjectAccessHistory> listRecentProject(Integer orgId, Integer userId);
 
 	TstProject viewPers(Integer projectId, TstUser userVo);
 
@@ -31,6 +30,4 @@ public interface ProjectService extends BaseService {
 	TstProject genVo(TstProject po, Map<String, Map<String, Boolean>> privs);
 	List<TstProject> genVos(List<TstProject> pos, Map<String, Map<String, Boolean>> privs);
 	List<TstProject> genGroupVos(List<TstProject> pos);
-
-    List<Integer> listBrotherIds(Integer projectId);
 }

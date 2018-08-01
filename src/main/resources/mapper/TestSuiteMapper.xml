@@ -22,6 +22,25 @@
         ORDER BY o.id ASC
     </select>
 
+    <select id="listForImport" resultType="TstSuite">
+        SELECT o.*, usr.nickname userName, prj.name projectName, casePrj.name caseProjectName,
+        ( SELECT count(cs.id) FROM TstCaseInSuite cs
+                                WHERE cs.suiteId = o.id AND isLeaf=TRUE AND cs.deleted != true AND cs.disabled != true ) `count`
+
+        FROM TstSuite o
+
+        JOIN TstUser usr ON usr.id=o.userId
+        JOIN TstProject prj ON prj.id=o.projectId
+        JOIN TstProject casePrj ON casePrj.id=o.caseProjectId
+
+        WHERE o.projectId IN (
+            <foreach collection="projectIds" item="item" separator=",">
+                #{item}
+            </foreach>)
+        AND o.deleted != TRUE AND o.disabled != TRUE
+        ORDER BY o.caseProjectId ASC, o.id ASC
+    </select>
+
     <insert id="save" parameterType="TstSuite" useGeneratedKeys="true" keyProperty="id">
         insert into TstSuite
         (name,estimate,descr,
@@ -55,6 +74,12 @@
 
         WHERE o.id = #{id}
     </select>
+
+    <update id="delete">
+        UPDATE TstSuite
+        SET deleted = TRUE
+        WHERE id=#{id}
+    </update>
 
     <select id="listCaseIds" resultType="int">
         SELECT o.id

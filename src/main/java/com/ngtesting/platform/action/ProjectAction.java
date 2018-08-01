@@ -93,14 +93,14 @@ public class ProjectAction {
         TstProject vo = projectService.genVo(po, null);
 
         List<TstPlan> planPos = planService.listByProject(id, vo.getType());
-        List<TstPlan> planVos = planService.genVos(planPos);
+        planService.genVos(planPos);
 
         List<TstHistory> historyPos = historyService.listByProject(id, vo.getType());
         Map<String, List<TstHistory>> historyVos = historyService.genVosByDate(historyPos);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         ret.put("project", vo);
-        ret.put("plans", planVos);
+        ret.put("plans", planPos);
         ret.put("histories", historyVos);
 
         return ret;

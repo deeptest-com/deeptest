@@ -2,6 +2,7 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ import java.util.Map;
 public class CaseAction extends BaseAction {
 	@Autowired
     ProjectService projectService;
+	@Autowired
+	ProjectDao projectDao;
+
 	@Autowired
     CaseService caseService;
     @Autowired
@@ -66,7 +70,7 @@ public class CaseAction extends BaseAction {
 		Integer suiteId = json.getInteger("suiteId");
 
         List<TstCase> vos = caseService.queryForSuiteSelection(projectId, caseProjectId, suiteId);
-		List<TstProject> projects = projectService.listBrothers(projectId);
+		List<TstProject> projects = projectDao.listBrothers(projectId);
 
 		ret.put("data", vos);
 		ret.put("brotherProjects", projects);
@@ -84,7 +88,7 @@ public class CaseAction extends BaseAction {
 		Integer runId = json.getInteger("runId");
 
 		List<TstCase> vos = caseService.queryForTaskSelection(projectId, caseProjectId, runId);
-		List<TstProject> projects = projectService.listBrothers(projectId);
+		List<TstProject> projects = projectDao.listBrothers(projectId);
 
 		ret.put("data", vos);
 		ret.put("brotherProjects", projects);

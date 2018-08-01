@@ -29,7 +29,7 @@ public class IssueDocumentAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		Integer eventId = json.getInteger("eventId");
-		int page = json.getInteger("page") == null? 0: json.getInteger("page") - 1;
+		int page = json.getInteger("listByPage") == null? 0: json.getInteger("listByPage") - 1;
 		int pageSize = json.getInteger("pageSize") == null? Constant.PAGE_SIZE: json.getInteger("pageSize");
 
 		Page pageData = documentService.listByPage(eventId, page, pageSize, null);

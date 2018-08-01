@@ -53,7 +53,7 @@ public class UserAction {
 
         String keywords = json.getString("keywords");
         Boolean disabled = json.getBoolean("disabled");
-        Integer pageNum = json.getInteger("page");
+        Integer pageNum = json.getInteger("listByPage");
         Integer pageSize = json.getInteger("pageSize");
 
         Page page = PageHelper.startPage(pageNum, pageSize);

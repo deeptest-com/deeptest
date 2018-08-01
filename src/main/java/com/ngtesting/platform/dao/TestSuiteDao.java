@@ -11,11 +11,14 @@ public interface TestSuiteDao {
                          @Param("keywords") String keywords,
                          @Param("disabled") Boolean disabled);
 
+    List<TstSuite> listForImport(@Param("projectIds") List<Integer> projectIds);
+
     TstSuite get(@Param("id") Integer id);
     TstSuite getWithCases(@Param("id") Integer id);
 
     void save(TstSuite vo);
     void update(TstSuite vo);
+    void delete(@Param("id") Integer id);
 
     List<TstCaseInSuite> listCases(@Param("id") Integer id);
 

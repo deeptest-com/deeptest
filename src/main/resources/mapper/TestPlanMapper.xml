@@ -3,11 +3,23 @@
 <mapper namespace="com.ngtesting.platform.dao.TestPlanDao" >
 
     <select id="query" resultType="TstPlan">
-        SELECT * FROM TstAlert o WHERE o.userId=#{userId}
-        <if test="isRead != null">
-            AND o.isRead = #{isRead}
+        SELECT o.*, usr.nickname userName, prj.name projectName, ver.name verName
+        FROM TstPlan o
+
+        JOIN TstUser usr ON usr.id=o.userId
+        JOIN TstProject prj ON prj.id=o.projectId
+        LEFT JOIN TstVer ver ON ver.id=o.verId
+
+        WHERE o.projectId = #{projectId}
+
+        <if test="keywords != null and keywords != ''">
+            AND o.name LIKE CONCAT('%','${keywords}','%' )
         </if>
-        AND o.deleted != true AND o.disabled != true
+        <if test="status != null and status != ''">
+            AND o.status = #{status}
+        </if>
+
+        AND o.deleted != TRUE
         ORDER BY o.createTime DESC
     </select>
 
@@ -45,5 +57,38 @@
         AND o.deleted != true AND o.disabled != true
         ORDER BY o.createTime DESC
     </select>
+
+    <select id="get" resultType="TstPlan">
+        SELECT o.*, usr.nickname userName, prj.name projectName, ver.name verName
+        FROM TstPlan o
+
+        JOIN TstUser usr ON usr.id=o.userId
+        JOIN TstProject prj ON prj.id=o.projectId
+        LEFT JOIN TstVer ver ON ver.id=o.verId
+
+        WHERE o.id = #{id}
+    </select>
+
+    <insert id="save" parameterType="TstPlan" useGeneratedKeys="true" keyProperty="id">
+        insert into TstPlan (name,estimate,startTime,endTime,descr,status,projectId,userId,verId,
+        deleted,disabled,createTime)
+
+        values (#{name},#{estimate},#{startTime},#{endTime},#{descr},#{status},#{projectId},#{userId},#{verId},
+        #{deleted},#{disabled},#{createTime})
+    </insert>
+    <update id="update" parameterType="TstPlan">
+        UPDATE TstPlan
+        SET name=#{name}, estimate=#{estimate}, startTime=#{startTime}, endTime=#{endTime},
+        descr=#{descr}, projectId=#{projectId}, userId=#{userId}, verId=#{verId},
+        disabled=#{disabled}
+
+        WHERE id=#{id}
+    </update>
+
+    <update id="delete">
+        UPDATE TstPlan
+        SET deleted = TRUE
+        WHERE id=#{id}
+    </update>
 
 </mapper>

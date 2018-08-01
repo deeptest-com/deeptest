@@ -34,7 +34,6 @@ public class SuiteAction extends BaseAction {
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Integer projectId = json.getInteger("projectId");
 
 		String keywords = json.getString("keywords");
@@ -103,7 +102,7 @@ public class SuiteAction extends BaseAction {
 
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		TstSuite po = suiteService.delete(id, userVo.getId());
+		suiteService.delete(id, userVo.getId());
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

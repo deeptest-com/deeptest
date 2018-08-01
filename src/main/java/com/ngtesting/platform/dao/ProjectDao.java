@@ -33,4 +33,6 @@ public interface ProjectDao {
     void disableChildren(@Param("id") Integer id);
 
     List<TstProject> listBrothers(@Param("id") Integer id);
+
+    List<Integer> listBrotherIds(@Param("id") Integer projectId);
 }

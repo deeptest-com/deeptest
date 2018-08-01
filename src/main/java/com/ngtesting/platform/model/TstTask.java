@@ -8,15 +8,13 @@ public class TstTask extends BaseModel {
     private String name;
     private Integer estimate;
 
-    private String status;
+    private TaskStatus status = TaskStatus.not_start;
 
     protected Date startTime;
 
     protected Date endTime;
 
     private String descr;
-
-    private Integer ordr;
 
     private Integer projectId;
     private String projectName;
@@ -50,6 +48,21 @@ public class TstTask extends BaseModel {
         put("block", 0);
         put("untest", 0);
     }};
+
+    public static enum TaskStatus {
+        not_start("not_start"),
+        in_progress("in_progress"),
+        end("end");
+
+        TaskStatus(String val) {
+            this.val = val;
+        }
+
+        private String val;
+        public String toString() {
+            return val;
+        }
+    }
 
     public String getProjectName() {
         return projectName;
@@ -130,14 +143,6 @@ public class TstTask extends BaseModel {
         this.countMap = countMap;
     }
 
-    public Integer getOrdr() {
-        return ordr;
-    }
-
-    public void setOrdr(Integer ordr) {
-        this.ordr = ordr;
-    }
-
     public Integer getPlanId() {
         return planId;
     }
@@ -162,11 +167,11 @@ public class TstTask extends BaseModel {
         this.estimate = estimate;
     }
 
-    public String getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 

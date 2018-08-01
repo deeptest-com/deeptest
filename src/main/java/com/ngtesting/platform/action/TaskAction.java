@@ -99,7 +99,6 @@ public class TaskAction extends BaseAction {
 		return ret;
 	}
 
-
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -108,7 +107,7 @@ public class TaskAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		TstTask po = taskService.save(json, userVo);
-		TstTask vo = taskService.genVo(po);
+		TstTask vo = taskService.getById(po.getId());
 
         optFacade.opt(WsConstant.WS_TODO, userVo);
 
@@ -125,7 +124,7 @@ public class TaskAction extends BaseAction {
         TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		TstTask po = taskService.saveCases(json, userVo);
-		TstTask caseVo = taskService.genVo(po);
+		TstTask caseVo = taskService.getById(po.getId());
 
 		ret.put("data", caseVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

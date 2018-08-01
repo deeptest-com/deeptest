@@ -23,7 +23,8 @@
     </select>
 
     <select id="listForImport" resultType="TstSuite">
-        SELECT o.*, usr.nickname userName, prj.name projectName, casePrj.name caseProjectName,
+        SELECT o.id, o.name, o.projectId, o.caseProjectId,
+          prj.name projectName, casePrj.name caseProjectName, usr.nickname userName,
         ( SELECT count(cs.id) FROM TstCaseInSuite cs
                                 WHERE cs.suiteId = o.id AND isLeaf=TRUE AND cs.deleted != true AND cs.disabled != true ) `count`
 

@@ -1,21 +1,22 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.TestTaskDao;
-import com.ngtesting.platform.model.TstCaseInTask;
-import com.ngtesting.platform.model.TstSuite;
-import com.ngtesting.platform.model.TstTask;
-import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.AlertService;
 import com.ngtesting.platform.service.HistoryService;
 import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.service.TestTaskService;
+import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskService {
@@ -42,74 +43,57 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 
     @Override
     public TstTask save(JSONObject json, TstUser user) {
-//        Integer prjId = json.getInteger("prjId");
-//        Integer planId = json.getInteger("planId");
-//        Integer envId = json.getInteger("envId");
-//        Integer taskId = json.getInteger("id");
-//
-//        List assignees = json.getJSONArray("assignees");
-//        String taskName = json.getString("name");
-//
-//        Constant.MsgType action = null;
-//        TstTask task;
-//        if (taskId != null) {
-//            task = (TstTask) get(TstTask.class, taskId);
-//            action = Constant.MsgType.update;
-//        } else {
-//            task = new TstTask();
-//            task.setProjectId(prjId);
-//            task.setCaseProjectId(prjId);
-//            task.setPlanId(planId);
-//            action = Constant.MsgType.create;
-//        }
-//        task.setName(taskName);
-//        task.setUserId(user.getId());
-//        task.setEnvId(envId);
-//
-//        task.setAssignees(new HashSet());
-//        for (Object obj : assignees) {
-//            JSONObject jsonObject = JSON.parseObject(obj.toString());
-//            TestUser u = (TestUser)get(TestUser.class, jsonObject.getInteger("id"));
-//            task.getAssignees().add(u);
-//        }
-//        task.setUserId(user.getId());
-//
-//        saveOrUpdate(task);
-//
-//        importSuiteCasesPers(task, JSON.parseObject(JSON.toJSONString(json.get("suites")), List.class));
-//
-//        alertService.saveAlert(task);
-//        msgService.create(task, action, user);
-//        historyService.create(task.getProjectId(), user, action.msg, TestHistory.TargetType.task,
-//                task.getId(), task.getName());
-//        return task;
+        TstTask task = JSON.parseObject(JSON.toJSONString(json), TstTask.class);
+        task.setUserId(user.getId());
 
-        return null;
+        Constant.MsgType action = null;
+        if (task.getId() != null) {
+            action = Constant.MsgType.update;
+            taskDao.update(task);
+
+            taskDao.removeAssignees(task.getId());
+        } else {
+            action = Constant.MsgType.create;
+            taskDao.save(task);
+        }
+
+        List assignees = json.getJSONArray("assignees");
+        taskDao.saveAssignees(task.getId(), assignees);
+
+        importSuiteCasesPers(task, JSON.parseObject(JSON.toJSONString(json.get("suites")), List.class));
+
+        alertService.saveAlert(task);
+        msgService.create(task, action, user);
+        historyService.create(task.getProjectId(), user, action.msg, TstHistory.TargetType.task,
+                task.getId(), task.getName());
+
+        TstTask ret = taskDao.get(task.getId());
+        return ret;
     }
 
     @Override
     public boolean importSuiteCasesPers(TstTask task, List<TstSuite> suites) {
-//        if (suites == null || suites.size() == 0) {
-//            return false;
-//        }
-//
-//        Integer caseProjectId = null;
-//        List<Integer> suiteIds = new LinkedList<>();
-//        for (Object obj: suites) {
-//            TstSuite vo = JSON.parseObject(JSON.toJSONString(obj), TstSuite.class);
-//            if (vo.getSelecting() != null && vo.getSelecting()) {
-//                suiteIds.add(vo.getId());
-//
-//                if (caseProjectId == null && task.getCaseProjectId().longValue() != vo.getCaseProjectId().longValue()) {
-//                    caseProjectId = vo.getCaseProjectId().longValue();
-//                }
-//            }
-//        }
-//        addCasesBySuitesPers(task.getId(), suiteIds);
-//        if (caseProjectId != null) {
-//            task.setCaseProjectId(caseProjectId);
-//            saveOrUpdate(task);
-//        }
+        if (suites == null || suites.size() == 0) {
+            return false;
+        }
+
+        Integer caseProjectId = null;
+        List<Integer> suiteIds = new LinkedList<>();
+        for (Object obj: suites) {
+            TstSuite vo = JSON.parseObject(JSON.toJSONString(obj), TstSuite.class);
+            if (vo.getSelecting() != null && vo.getSelecting()) {
+                suiteIds.add(vo.getId());
+
+                caseProjectId = vo.getCaseProjectId();
+            }
+        }
+        addCasesBySuitesPers(task.getId(), suiteIds);
+        if (caseProjectId != null &&
+                (task.getCaseProjectId() == null ||  caseProjectId.intValue() != task.getCaseProjectId().intValue())) {
+            taskDao.updateCaseProject(task.getId(), caseProjectId);
+        } else {
+            return false;
+        }
 
         return true;
     }
@@ -157,8 +141,8 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 
     @Override
     public void addCasesBySuitesPers(Integer id, List<Integer> suiteIds) {
-//        String ids = StringUtils.join(suiteIds.toArray(), ",");
-//        getDao().querySql("{call add_cases_to_task_by_suites(?,?)}", id, ids);
+        String suiteIdsStr = StringUtil.join(suiteIds.toArray(), ",");
+        taskDao.addCasesBySuites(id, suiteIdsStr);
     }
     @Override
     public void addCasesPers(Integer id, List<Integer> caseIds) {
@@ -197,76 +181,53 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 
 	@Override
 	public TstTask genVo(TstTask po) {
+		List<Map> counts = taskDao.countStatus(po.getId());
+		for (Map obj : counts) {
+			String status = obj.get("status").toString();
+			Integer count = Integer.valueOf(obj.get("count").toString());
 
-//        for (TestUser u : po.getAssignees()) {
-//            TstUser TstUser = new TstUser(u.getId(), u.getName());
-//            vo.getAssignees().add(TstUser);
-//        }
-//
-//        String sql = "select tcin.`status` status, count(tcin.id) count from tst_case_in_task tcin "
-//                +               "where tcin.task_id  = " + po.getId()
-//                +                   " AND tcin.deleted != true AND tcin.disabled != true AND tcin.is_leaf = true "
-//                +     " group by tcin.`status`";
-//
-////		String sql = "select cs1.`status` status, count(cs1.tcin_id) count from "
-////                +          "(select tcin.id tcin_id,  tcin.case_id tcin_case_id, tcin.`status` from tst_case_in_task tcin "
-////                +               "where tcin.task_id  = " + po.getId()
-////                +                   " AND tcin.deleted != true AND tcin.disabled != true) cs1 "
-////                +     "where cs1.tcin_case_id not in " // 排除父节点
-////                +          "(select distinct tcin.p_id from tst_case_in_task tcin "
-////                +               "where tcin.task_id  = " + po.getId() + " and tcin.p_id is not NULL "
-////                +                   " AND tcin.deleted != true AND tcin.disabled != true ) "
-////                +     "group by cs1.`status`";
-//
-//		List<Map> counts = findListBySql(sql);
-//		for (Map obj : counts) {
-//			String status = obj.get("status").toString();
-//			Integer count = Integer.valueOf(obj.get("count").toString());
-//
-//			vo.getCountMap().put(status, count);
-//			vo.getCountMap().put("total", vo.getCountMap().get("total") + count);
-//		}
-//
-//        String maxStatus = "";
-//        int maxWidth = 0;
-//		int sum = 0;
-//		Integer total = vo.getCountMap().get("total");
-//
-//        Integer barWidth = 200;
-//        for (String status : vo.getCountMap().keySet()) {
-//		    if ("total".equals(status)) {
-//		        continue;
-//            }
-//
-//            int numb = vo.getCountMap().get(status);
-//            if (total != 0) {
-//                int width = vo.getCountMap().get(status) * barWidth / total;
-//                if (width > 0) {
-//                    if (width < 10 && numb < 10) {
-//                        width = 10;
-//                    } else if (width < 18 && numb >= 10 && numb < 100) {
-//                        width = 18;
-//                    } else if (width < 27 && numb >= 100) {
-//                        width = 27;
-//                    }
-//                }
-//
-//                vo.getWidthMap().put(status, width);
-//
-//                sum += width;
-//                if (maxWidth < width) {
-//                    maxWidth = width;
-//                    maxStatus = status;
-//                }
-//            }
-//        }
-//        if (total != 0) {
-//            vo.getWidthMap().put(maxStatus, vo.getWidthMap().get(maxStatus) + (barWidth - sum));
-//        }
-//
-//		return vo;
+            po.getCountMap().put(status, count);
+            po.getCountMap().put("total", po.getCountMap().get("total") + count);
+		}
 
-        return null;
+        String maxStatus = "";
+        int maxWidth = 0;
+		int sum = 0;
+		Integer total = po.getCountMap().get("total");
+
+        Integer barWidth = 200;
+        for (String status : po.getCountMap().keySet()) {
+		    if ("total".equals(status)) {
+		        continue;
+            }
+
+            int numb = po.getCountMap().get(status);
+            if (total != 0) {
+                int width = po.getCountMap().get(status) * barWidth / total;
+                if (width > 0) {
+                    if (width < 10 && numb < 10) {
+                        width = 10;
+                    } else if (width < 18 && numb >= 10 && numb < 100) {
+                        width = 18;
+                    } else if (width < 27 && numb >= 100) {
+                        width = 27;
+                    }
+                }
+
+                po.getWidthMap().put(status, width);
+
+                sum += width;
+                if (maxWidth < width) {
+                    maxWidth = width;
+                    maxStatus = status;
+                }
+            }
+        }
+        if (total != 0) {
+            po.getWidthMap().put(maxStatus, po.getWidthMap().get(maxStatus) + (barWidth - sum));
+        }
+
+		return po;
 	}
 
 	@Override

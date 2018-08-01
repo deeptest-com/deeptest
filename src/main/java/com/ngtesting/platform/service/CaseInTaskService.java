@@ -11,19 +11,19 @@ import java.util.List;
 
 public interface CaseInTaskService extends BaseService {
 
-	List<TstCaseInTask> query(Integer runId);
+	List<TstCaseInTask> query(Integer taskId);
     TstCaseInTask getById(Integer id);
-    TstCaseInTask setResultPers(Integer caseInRunId, String result, String status, Integer next, TstUser userVo);
+    TstCaseInTask setResultPers(Integer caseInTaskId, String result, String status, Integer next, TstUser userVo);
 
     TstCaseInTask renamePers(JSONObject json, TstUser userVo);
 
     List<TstCaseInTask> genVos(List<TstCaseInTask> pos);
 
-    TstCaseInTask addCaseToRunPers(Integer runId, TstCase po, TstUser userVo);
-//    TestCaseInRun removeCaseFromRunPers(Long entityId, TstUser userVo);
+    TstCaseInTask addCaseToTaskPers(Integer taskId, TstCase po, TstUser userVo);
+//    TestCaseInTask removeCaseFromTaskPers(Long entityId, TstUser userVo);
     TstCaseInTask movePers(JSONObject json, TstUser userVo);
 
-    TstCaseInTask getByRunAndCaseId(Integer runId, Integer caseId);
+    TstCaseInTask getByTaskAndCaseId(Integer taskId, Integer caseId);
 
     void updateLeafAccordingToCasePers(Integer pid);
 
@@ -32,6 +32,6 @@ public interface CaseInTaskService extends BaseService {
 
     List<TstCaseInTaskHistory> findHistories(Integer id);
 
-    void saveHistory(TstUser user, Constant.CaseAct act, TstCaseInTask testCaseInRun,
+    void saveHistory(TstUser user, Constant.CaseAct act, TstCaseInTask testCaseInTask,
                      String status, String result);
 }

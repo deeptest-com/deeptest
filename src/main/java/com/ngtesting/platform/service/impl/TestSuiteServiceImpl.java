@@ -104,7 +104,7 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
 
         TstSuite suite = testSuiteDao.get(suiteId);
         Constant.MsgType action = Constant.MsgType.update_case;
-        historyService.create(suite.getProjectId(), optUser, action.msg, TstHistory.TargetType.run,
+        historyService.create(suite.getProjectId(), optUser, action.msg, TstHistory.TargetType.task,
                 suite.getId(), suite.getName());
 
         return suite;

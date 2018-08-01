@@ -22,12 +22,12 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "caseInRun/")
-public class CaseInRunAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_CLIENT + "caseInTask/")
+public class CaseInTaskAction extends BaseAction {
     @Autowired
     CaseService caseService;
 	@Autowired
-    CaseInTaskService caseInRunService;
+    CaseInTaskService caseInTaskService;
 
     @Autowired
     CustomFieldService customFieldService;
@@ -39,9 +39,9 @@ public class CaseInRunAction extends BaseAction {
 
         Integer orgId = json.getInteger("orgId");
         Integer projectId = json.getInteger("projectId");
-        Integer runId = json.getInteger("runId");
+        Integer taskId = json.getInteger("taskId");
 
-        List<TstCaseInTask> vos = caseInRunService.query(runId);
+        List<TstCaseInTask> vos = caseInTaskService.query(taskId);
         List<TstCustomField> customFieldList = customFieldService.listForCaseByProject(orgId, projectId);
 
         ret.put("data", vos);
@@ -59,7 +59,7 @@ public class CaseInRunAction extends BaseAction {
         Integer orgId = userVo.getDefaultOrgId();
         Integer caseId = json.getInteger("id");
 
-        TstCaseInTask vo = caseInRunService.getById(caseId);
+        TstCaseInTask vo = caseInTaskService.getById(caseId);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -79,7 +79,7 @@ public class CaseInRunAction extends BaseAction {
         String status = json.getString("status");
         Integer nextId = json.getInteger("nextId");
 
-        TstCaseInTask vo = caseInRunService.setResultPers(caseInRunId, result, status, nextId, userVo);
+        TstCaseInTask vo = caseInTaskService.setResultPers(caseInRunId, result, status, nextId, userVo);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -93,7 +93,7 @@ public class CaseInRunAction extends BaseAction {
 
         TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        TstCaseInTask vo = caseInRunService.renamePers(json, userVo);
+        TstCaseInTask vo = caseInTaskService.renamePers(json, userVo);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -106,7 +106,7 @@ public class CaseInRunAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        TstCaseInTask vo = caseInRunService.movePers(json, userVo);
+        TstCaseInTask vo = caseInTaskService.movePers(json, userVo);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -121,7 +121,7 @@ public class CaseInRunAction extends BaseAction {
 //        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 //
 //        Integer entityId = json.getInteger("entityId");
-//        TstCaseInTask caseInRun = caseInRunService.removeCaseFromRunPers(entityId, userVo);
+//        TstCaseInTask caseInRun = caseInTaskService.removeCaseFromRunPers(entityId, userVo);
 //
 //        ret.put("code", Constant.RespCode.SUCCESS.getCode());
 //        return ret;

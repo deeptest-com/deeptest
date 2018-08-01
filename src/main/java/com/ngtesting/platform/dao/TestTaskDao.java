@@ -14,4 +14,12 @@ public interface TestTaskDao {
 
     List<TstCaseInTask> listCases(@Param("id") Integer id);
     List<Integer> listCaseIds(@Param("id") Integer id);
+
+    void delete(@Param("id") Integer id, @Param("userId") Integer userId);
+
+    void close(@Param("id") Integer id, @Param("userId") Integer userId);
+
+    void closePlanIfAllTaskClosed(@Param("planId") Integer planId);
+
+    TstTask get(@Param("id") Integer id);
 }

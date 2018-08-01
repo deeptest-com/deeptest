@@ -45,7 +45,7 @@ public class UserAndGroupAction extends BaseAction {
 			int i = 0;
 			for (Object item : exceptIds.toArray()) {
 				if (i++ > 0) {
-					ids += "";
+					ids += ",";
 				}
 				ids += item.toString();
 			}

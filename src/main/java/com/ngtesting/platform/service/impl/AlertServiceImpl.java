@@ -40,8 +40,8 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
     public List<TstAlert> genVos(List<TstAlert> pos) {
         List<TstAlert> vos = new LinkedList<>();
 
-        for (TstAlert run: pos) {
-            TstAlert vo = genVo(run);
+        for (TstAlert po: pos) {
+            TstAlert vo = genVo(po);
             vos.add(vo);
         }
         return vos;
@@ -66,26 +66,26 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
         return po;
     }
     @Override
-    public void saveAlert(TstTask run) {
+    public void saveAlert(TstTask task) {
 
-//        for (TestUser user : run.getAssignees()) {
-//            TstAlert po = getByRun(run.getId());;
+//        for (TestUser user : task.getAssignees()) {
+//            TstAlert po = getByTask(task.getId());;
 //            if (po == null) {
 //                po = new TstAlert();
 //            }
 //
-//            po.setType("run");
-//            po.setDescr(run.getDescr());
-//            po.setEntityId(run.getId());
-//            po.setEntityName(run.getName());
-//            po.setStatus(run.getStatus().toString());
+//            po.setType("task");
+//            po.setDescr(task.getDescr());
+//            po.setEntityId(task.getId());
+//            po.setEntityName(task.getName());
+//            po.setStatus(task.getStatus().toString());
 //            po.setRead(false);
-//            po.setUserId(run.getUserId());
+//            po.setUserId(task.getUserId());
 //            po.setAssigneeId(user.getId());
 //
-//            TestPlan plan = run.getPlan();
+//            TestPlan plan = task.getPlan();
 //            if (plan == null || plan.getId() == null) {
-//                plan= (TestPlan)get(TestPlan.class, run.getPlanId());
+//                plan= (TestPlan)get(TestPlan.class, task.getPlanId());
 //            }
 //            po.setStartTime(plan.getStartTime());
 //            po.setEndTime(plan.getEndTime());
@@ -107,10 +107,10 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
     }
 
     @Override
-    public TstAlert getByRun(Integer id) {
+    public TstAlert getByTask(Integer id) {
 //        DetachedCriteria dc = DetachedCriteria.forClass(TstAlert.class);
 //
-//        dc.add(Restrictions.eq("type", "run"));
+//        dc.add(Restrictions.eq("type", "task"));
 //        dc.add(Restrictions.eq("entityId", id));
 //
 //        dc.add(Restrictions.eq("deleted", Boolean.FALSE));

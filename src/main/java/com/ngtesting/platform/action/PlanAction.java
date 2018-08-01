@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.bean.websocket.OptFacade;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.TestEnvService;
 import com.ngtesting.platform.service.TestPlanService;
@@ -93,7 +94,7 @@ public class PlanAction extends BaseAction {
 		TstPlan po = planService.save(json, userVo);
 		planService.genVo(po);
 
-//		optFacade.opt(WsConstant.WS_TODO, userVo.getId().toString());
+		optFacade.opt(WsConstant.WS_TODO, userVo);
 
 		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

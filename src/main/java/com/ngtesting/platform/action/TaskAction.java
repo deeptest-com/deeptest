@@ -3,6 +3,7 @@ package com.ngtesting.platform.action;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.bean.websocket.OptFacade;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.model.TstTask;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.CustomFieldService;
@@ -20,8 +21,8 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "run/")
-public class RunAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_CLIENT + "task/")
+public class TaskAction extends BaseAction {
     @Autowired
     private OptFacade optFacade;
 
@@ -75,7 +76,7 @@ public class RunAction extends BaseAction {
 
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		TstTask po = taskService.delete(id, userVo.getId());
+		taskService.delete(id, userVo.getId());
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -89,9 +90,9 @@ public class RunAction extends BaseAction {
 		Integer id = json.getInteger("id");
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		TstTask po = taskService.closePers(id, userVo.getId());
-		taskService.closePlanIfAllRunClosedPers(po.getPlanId());
-		TstTask vo = taskService.genVo(po);
+		taskService.closePers(id, userVo.getId());
+		taskService.closePlanIfAllTaskClosedPers(id);
+		TstTask vo = taskService.getById(id);
 
         ret.put("data", vo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -108,7 +109,7 @@ public class RunAction extends BaseAction {
 		TstTask po = taskService.save(json, userVo);
 		TstTask vo = taskService.genVo(po);
 
-//        optFacade.opt(WsConstant.WS_TODO, userVo.getId().toString());
+        optFacade.opt(WsConstant.WS_TODO, userVo);
 
 		ret.put("data", vo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

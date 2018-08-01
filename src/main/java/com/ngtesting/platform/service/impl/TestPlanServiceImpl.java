@@ -102,8 +102,8 @@ public class TestPlanServiceImpl extends BaseServiceImpl implements TestPlanServ
 
     @Override
     public void genVo(TstPlan po) {
-        List<TstTask> runs = taskService.listByPlan(po.getId());
-        po.setRuns(runs);
+        List<TstTask> tasks = taskService.listByPlan(po.getId());
+        po.setTasks(tasks);
     }
 
 }

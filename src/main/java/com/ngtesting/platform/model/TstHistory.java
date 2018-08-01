@@ -10,7 +10,7 @@ public class TstHistory extends BaseModel {
 
         plan("plan", "计划"),
         suite("suite", "测试集"),
-        run("run", "测试任务");
+        task("task", "测试任务");
 
         TargetType(String code, String name) {
             this.code = code;

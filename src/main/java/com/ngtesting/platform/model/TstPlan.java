@@ -28,7 +28,7 @@ public class TstPlan extends BaseModel {
     private Integer verId;
     private String verName;
 
-    private List<TstTask> runs = new LinkedList<>();
+    private List<TstTask> tasks = new LinkedList<>();
 
     public static enum PlanStatus {
         not_start("not_start"),
@@ -69,12 +69,12 @@ public class TstPlan extends BaseModel {
         this.verId = verId;
     }
 
-    public List<TstTask> getRuns() {
-        return runs;
+    public List<TstTask> getTasks() {
+        return tasks;
     }
 
-    public void setRuns(List<TstTask> runs) {
-        this.runs = runs;
+    public void setTasks(List<TstTask> tasks) {
+        this.tasks = tasks;
     }
 
     public String getName() {

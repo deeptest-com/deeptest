@@ -1,10 +1,11 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.dao.TestTaskDao;
 import com.ngtesting.platform.model.TstCaseInTask;
-import com.ngtesting.platform.model.TstTask;
 import com.ngtesting.platform.model.TstSuite;
+import com.ngtesting.platform.model.TstTask;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.AlertService;
 import com.ngtesting.platform.service.HistoryService;
@@ -31,35 +32,12 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     @Autowired
     TestTaskDao taskDao;
 
-	@Override
-	public List<TstCaseInTask> lodaCase(Integer runId) {
-//		DetachedCriteria dc = DetachedCriteria.forClass(TstCaseInTask.class);
-//
-//		if (runId != null) {
-//			dc.add(Restrictions.eq("runId", runId));
-//		}
-//
-//		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//
-//		dc.addOrder(Order.asc("pId"));
-//		dc.addOrder(Order.asc("ordr"));
-//
-//		List<TstCaseInTask> ls = findAllByCriteria(dc);
-//
-//		return ls;
-
-        return null;
-	}
-
     @Override
     public TstTask getById(Integer id) {
-//        TstTask po = (TstTask) get(TstTask.class, id);
-//        TstTask vo = genVo(po);
-//
-//        return vo;
+        TstTask po = taskDao.get(id);
+        TstTask vo = genVo(po);
 
-        return null;
+        return vo;
     }
 
     @Override
@@ -67,50 +45,50 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 //        Integer prjId = json.getInteger("prjId");
 //        Integer planId = json.getInteger("planId");
 //        Integer envId = json.getInteger("envId");
-//        Integer runId = json.getInteger("id");
+//        Integer taskId = json.getInteger("id");
 //
 //        List assignees = json.getJSONArray("assignees");
-//        String runName = json.getString("name");
+//        String taskName = json.getString("name");
 //
 //        Constant.MsgType action = null;
-//        TstTask run;
-//        if (runId != null) {
-//            run = (TstTask) get(TstTask.class, runId);
+//        TstTask task;
+//        if (taskId != null) {
+//            task = (TstTask) get(TstTask.class, taskId);
 //            action = Constant.MsgType.update;
 //        } else {
-//            run = new TstTask();
-//            run.setProjectId(prjId);
-//            run.setCaseProjectId(prjId);
-//            run.setPlanId(planId);
+//            task = new TstTask();
+//            task.setProjectId(prjId);
+//            task.setCaseProjectId(prjId);
+//            task.setPlanId(planId);
 //            action = Constant.MsgType.create;
 //        }
-//        run.setName(runName);
-//        run.setUserId(user.getId());
-//        run.setEnvId(envId);
+//        task.setName(taskName);
+//        task.setUserId(user.getId());
+//        task.setEnvId(envId);
 //
-//        run.setAssignees(new HashSet());
+//        task.setAssignees(new HashSet());
 //        for (Object obj : assignees) {
 //            JSONObject jsonObject = JSON.parseObject(obj.toString());
 //            TestUser u = (TestUser)get(TestUser.class, jsonObject.getInteger("id"));
-//            run.getAssignees().add(u);
+//            task.getAssignees().add(u);
 //        }
-//        run.setUserId(user.getId());
+//        task.setUserId(user.getId());
 //
-//        saveOrUpdate(run);
+//        saveOrUpdate(task);
 //
-//        importSuiteCasesPers(run, JSON.parseObject(JSON.toJSONString(json.get("suites")), List.class));
+//        importSuiteCasesPers(task, JSON.parseObject(JSON.toJSONString(json.get("suites")), List.class));
 //
-//        alertService.saveAlert(run);
-//        msgService.create(run, action, user);
-//        historyService.create(run.getProjectId(), user, action.msg, TestHistory.TargetType.run,
-//                run.getId(), run.getName());
-//        return run;
+//        alertService.saveAlert(task);
+//        msgService.create(task, action, user);
+//        historyService.create(task.getProjectId(), user, action.msg, TestHistory.TargetType.task,
+//                task.getId(), task.getName());
+//        return task;
 
         return null;
     }
 
     @Override
-    public boolean importSuiteCasesPers(TstTask run, List<TstSuite> suites) {
+    public boolean importSuiteCasesPers(TstTask task, List<TstSuite> suites) {
 //        if (suites == null || suites.size() == 0) {
 //            return false;
 //        }
@@ -122,15 +100,15 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 //            if (vo.getSelecting() != null && vo.getSelecting()) {
 //                suiteIds.add(vo.getId());
 //
-//                if (caseProjectId == null && run.getCaseProjectId().longValue() != vo.getCaseProjectId().longValue()) {
+//                if (caseProjectId == null && task.getCaseProjectId().longValue() != vo.getCaseProjectId().longValue()) {
 //                    caseProjectId = vo.getCaseProjectId().longValue();
 //                }
 //            }
 //        }
-//        addCasesBySuitesPers(run.getId(), suiteIds);
+//        addCasesBySuitesPers(task.getId(), suiteIds);
 //        if (caseProjectId != null) {
-//            run.setCaseProjectId(caseProjectId);
-//            saveOrUpdate(run);
+//            task.setCaseProjectId(caseProjectId);
+//            saveOrUpdate(task);
 //        }
 
         return true;
@@ -138,81 +116,69 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 
     @Override
     public TstTask saveCases(JSONObject json, TstUser optUser) {
-//        Integer projectId = json.getInteger("projectId");
-//        Integer caseProjectId = json.getInteger("caseProjectId");
-//        Integer planId = json.getInteger("planId");
-//        Integer runId = json.getInteger("runId");
-//        JSONArray data = json.getJSONArray("cases");
-//
-//        return saveCases(projectId, caseProjectId, planId, runId, data.toArray(), optUser);
+        Integer projectId = json.getInteger("projectId");
+        Integer caseProjectId = json.getInteger("caseProjectId");
+        Integer planId = json.getInteger("planId");
+        Integer taskId = json.getInteger("taskId");
+        JSONArray data = json.getJSONArray("cases");
 
-        return null;
+        return saveCases(projectId, caseProjectId, planId, taskId, data.toArray(), optUser);
     }
 
     @Override
-    public TstTask saveCases(Integer projectId, Integer caseProjectId, Integer planId, Integer runId, Object[] ids, TstUser optUser) {
-        TstTask run = null;
-//        if (runId != null) {
-//            run = (TstTask) get(TstTask.class, runId);
+    public TstTask saveCases(Integer projectId, Integer caseProjectId, Integer planId, Integer taskId, Object[] ids, TstUser optUser) {
+        TstTask task = null;
+//        if (taskId != null) {
+//            task = (TstTask) get(TstTask.class, taskId);
 //        } else {
-//            run = new TstTask();
-//            run.setPlanId(planId);
+//            task = new TstTask();
+//            task.setPlanId(planId);
 //        }
-//        run.setProjectId(projectId);
-//        run.setCaseProjectId(caseProjectId);
+//        task.setProjectId(projectId);
+//        task.setCaseProjectId(caseProjectId);
 //
-//        run.setTestCases(new LinkedList<TstCaseInTask>());
-//        saveOrUpdate(run);
+//        task.setTestCases(new LinkedList<TstCaseInTask>());
+//        saveOrUpdate(task);
 //
 //        List<Integer> caseIds = new LinkedList<>();
 //        for (Object obj : ids) {
 //            Integer id = Integer.valueOf(obj.toString());
 //            caseIds.add(id);
 //        }
-//        addCasesPers(run.getId(), caseIds);
+//        addCasesPers(task.getId(), caseIds);
 //
 //        Constant.MsgType action = Constant.MsgType.update_case;
-//        msgService.create(run, action, optUser);
-//        historyService.create(run.getProjectId(), optUser, action.msg, TestHistory.TargetType.run,
-//                run.getId(), run.getName());
+//        msgService.create(task, action, optUser);
+//        historyService.create(task.getProjectId(), optUser, action.msg, TestHistory.TargetType.task,
+//                task.getId(), task.getName());
 
-        return run;
+        return task;
     }
 
     @Override
     public void addCasesBySuitesPers(Integer id, List<Integer> suiteIds) {
 //        String ids = StringUtils.join(suiteIds.toArray(), ",");
-//        getDao().querySql("{call add_cases_to_run_by_suites(?,?)}", id, ids);
+//        getDao().querySql("{call add_cases_to_task_by_suites(?,?)}", id, ids);
     }
     @Override
     public void addCasesPers(Integer id, List<Integer> caseIds) {
 //        String ids = StringUtils.join(caseIds.toArray(), ",");
-//        getDao().querySql("{call add_cases_to_run(?,?,?)}", id, ids, false);
+//        getDao().querySql("{call add_cases_to_task(?,?,?)}", id, ids, false);
     }
 
     @Override
-    public TstTask delete(Integer id, Integer clientId) {
-//        TstTask run = (TstTask) get(TstTask.class, id);
-//        run.setDeleted(true);
-//        saveOrUpdate(run);
-//        return run;
-
-        return null;
+    public void delete(Integer id, Integer userId) {
+        taskDao.delete(id, userId);
     }
 
     @Override
-    public TstTask closePers(Integer id, Integer userId) {
-//        TstTask run = (TstTask) get(TstTask.class, id);
-//        run.setStatus(TstTask.RunStatus.end);
-//        saveOrUpdate(run);
-//
-//        return run;
-
-        return null;
+    public void closePers(Integer id, Integer userId) {
+        taskDao.close(id, userId);
     }
     @Override
-    public void closePlanIfAllRunClosedPers(Integer planId) {
-//        getDao().querySql("{call close_plan_if_all_run_closed(?)}", planId);
+    public void closePlanIfAllTaskClosedPers(Integer planId) {
+        taskDao.closePlanIfAllTaskClosed(planId);
+//        getDao().querySql("{call close_plan_if_all_task_closed(?)}", planId);
     }
 
     @Override
@@ -237,18 +203,18 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 //            vo.getAssignees().add(TstUser);
 //        }
 //
-//        String sql = "select tcin.`status` status, count(tcin.id) count from tst_case_in_run tcin "
-//                +               "where tcin.run_id  = " + po.getId()
+//        String sql = "select tcin.`status` status, count(tcin.id) count from tst_case_in_task tcin "
+//                +               "where tcin.task_id  = " + po.getId()
 //                +                   " AND tcin.deleted != true AND tcin.disabled != true AND tcin.is_leaf = true "
 //                +     " group by tcin.`status`";
 //
 ////		String sql = "select cs1.`status` status, count(cs1.tcin_id) count from "
-////                +          "(select tcin.id tcin_id,  tcin.case_id tcin_case_id, tcin.`status` from tst_case_in_run tcin "
-////                +               "where tcin.run_id  = " + po.getId()
+////                +          "(select tcin.id tcin_id,  tcin.case_id tcin_case_id, tcin.`status` from tst_case_in_task tcin "
+////                +               "where tcin.task_id  = " + po.getId()
 ////                +                   " AND tcin.deleted != true AND tcin.disabled != true) cs1 "
 ////                +     "where cs1.tcin_case_id not in " // 排除父节点
-////                +          "(select distinct tcin.p_id from tst_case_in_run tcin "
-////                +               "where tcin.run_id  = " + po.getId() + " and tcin.p_id is not NULL "
+////                +          "(select distinct tcin.p_id from tst_case_in_task tcin "
+////                +               "where tcin.task_id  = " + po.getId() + " and tcin.p_id is not NULL "
 ////                +                   " AND tcin.deleted != true AND tcin.disabled != true ) "
 ////                +     "group by cs1.`status`";
 //

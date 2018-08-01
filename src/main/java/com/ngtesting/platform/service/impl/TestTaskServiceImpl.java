@@ -13,6 +13,7 @@ import com.ngtesting.platform.service.TestTaskService;
 import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -42,6 +43,7 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     }
 
     @Override
+    @Transactional
     public TstTask save(JSONObject json, TstUser user) {
         TstTask task = JSON.parseObject(JSON.toJSONString(json), TstTask.class);
         task.setUserId(user.getId());
@@ -72,6 +74,7 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     }
 
     @Override
+    @Transactional
     public boolean importSuiteCasesPers(TstTask task, List<TstSuite> suites) {
         if (suites == null || suites.size() == 0) {
             return false;
@@ -99,6 +102,7 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     }
 
     @Override
+    @Transactional
     public TstTask saveCases(JSONObject json, TstUser optUser) {
         Integer projectId = json.getInteger("projectId");
         Integer caseProjectId = json.getInteger("caseProjectId");
@@ -110,31 +114,32 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     }
 
     @Override
+    @Transactional
     public TstTask saveCases(Integer projectId, Integer caseProjectId, Integer planId, Integer taskId, Object[] ids, TstUser optUser) {
         TstTask task = null;
-//        if (taskId != null) {
+        if (taskId != null) {
 //            task = (TstTask) get(TstTask.class, taskId);
-//        } else {
-//            task = new TstTask();
-//            task.setPlanId(planId);
-//        }
-//        task.setProjectId(projectId);
-//        task.setCaseProjectId(caseProjectId);
-//
+        } else {
+            task = new TstTask();
+            task.setPlanId(planId);
+        }
+        task.setProjectId(projectId);
+        task.setCaseProjectId(caseProjectId);
+
 //        task.setTestCases(new LinkedList<TstCaseInTask>());
 //        saveOrUpdate(task);
-//
-//        List<Integer> caseIds = new LinkedList<>();
-//        for (Object obj : ids) {
-//            Integer id = Integer.valueOf(obj.toString());
-//            caseIds.add(id);
-//        }
-//        addCasesPers(task.getId(), caseIds);
-//
-//        Constant.MsgType action = Constant.MsgType.update_case;
-//        msgService.create(task, action, optUser);
-//        historyService.create(task.getProjectId(), optUser, action.msg, TestHistory.TargetType.task,
-//                task.getId(), task.getName());
+
+        List<Integer> caseIds = new LinkedList<>();
+        for (Object obj : ids) {
+            Integer id = Integer.valueOf(obj.toString());
+            caseIds.add(id);
+        }
+        addCasesPers(task.getId(), caseIds);
+
+        Constant.MsgType action = Constant.MsgType.update_case;
+        msgService.create(task, action, optUser);
+        historyService.create(task.getProjectId(), optUser, action.msg, TstHistory.TargetType.task,
+                task.getId(), task.getName());
 
         return task;
     }

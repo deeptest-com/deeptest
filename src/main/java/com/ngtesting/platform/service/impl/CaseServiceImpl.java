@@ -61,7 +61,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     public List<TstCase> queryForTaskSelection(Integer projectId, Integer caseProjectId, Integer taskId) {
         Integer id = caseProjectId == null? projectId: caseProjectId;
 
-        List<TstCase> pos = caseDao.query(projectId);
+        List<TstCase> pos = caseDao.query(id);
         List<Integer> selectIds = testTaskDao.listCaseIds(taskId);
         genVos(pos, selectIds);
 

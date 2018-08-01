@@ -78,9 +78,9 @@ public class CaseAction extends BaseAction {
 		return ret;
 	}
 
-	@RequestMapping(value = "queryForRunSelection", method = RequestMethod.POST)
+	@RequestMapping(value = "queryForTaskSelection", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> queryForRunSelection(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> queryForTaskSelection(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		Integer projectId = json.getInteger("projectId");

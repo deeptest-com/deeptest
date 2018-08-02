@@ -91,4 +91,10 @@
         WHERE id=#{id}
     </update>
 
+    <update id="closePlanIfAllTaskClosed">
+        { call close_plan_if_all_task_closed(
+            #{planId,mode=IN,jdbcType=INTEGER}
+        )}
+    </update>
+
 </mapper>

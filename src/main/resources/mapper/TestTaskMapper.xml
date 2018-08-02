@@ -59,10 +59,10 @@
     <insert id="save" parameterType="TstTask" useGeneratedKeys="true" keyProperty="id">
         insert into TstTask
         (name,status,projectId,caseProjectId,planId,envId,userId,
-          deleted,disabled,createTime,version)
+          deleted,disabled,createTime)
         values
         (#{name},#{status},#{projectId},#{caseProjectId},#{planId},#{envId},#{userId},
-          FALSE,FALSE,NOW(),0)
+          FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="TstTask">
@@ -76,6 +76,15 @@
         UPDATE TstTask SET caseProjectId=#{caseProjectId}, updateTime=NOW()
         WHERE id=#{id}
     </update>
+
+    <delete id="delete">
+        UPDATE TstTask SET deleted=TRUE, userId=#{userId}, updateTime=NOW()
+        WHERE id=#{id}
+    </delete>
+    <delete id="close">
+        UPDATE TstTask SET status='end', userId=#{userId}, updateTime=NOW()
+        WHERE id=#{id}
+    </delete>
 
     <delete id="removeAssignees">
         DELETE FROM TstTaskAssigneeRelation

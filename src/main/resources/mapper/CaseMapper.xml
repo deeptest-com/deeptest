@@ -4,10 +4,10 @@
 
     <insert id="create" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
         insert into TstCase (name,type,priority,contentType,estimate,pId,projectId,createById,isLeaf,ordr,
-        deleted,disabled,createTime,version)
+        deleted,disabled,createTime)
 
         values (#{name},#{type},#{priority},#{contentType},#{estimate},#{pId},#{projectId},#{createById},#{isLeaf},#{ordr},
-        #{deleted},#{disabled},#{createTime},#{version})
+        #{deleted},#{disabled},#{createTime})
     </insert>
 
     <select id="query" resultType="TstCase">
@@ -40,11 +40,11 @@
         insert into TstCase
         (name,priority,type,contentType,estimate,isLeaf,ordr,pId,
             projectId,createById,
-            createTime,deleted,disabled,version)
+            createTime,deleted,disabled)
         values
           (#{name},#{priority},#{type},#{contentType},#{estimate},#{isLeaf},#{ordr},#{pId},
               #{projectId},#{createById},
-              NOW(),FALSE,FALSE,0)
+              NOW(),FALSE,FALSE)
     </insert>
     <update id="renameUpdate" parameterType="TstCase">
         UPDATE TstCase
@@ -101,11 +101,11 @@
         insert into TstCase
         (name,priority,type,contentType,estimate,isLeaf,ordr,pId,
             projectId,createById,
-            createTime,deleted,disabled,version)
+            createTime,deleted,disabled)
         values
           (#{name},#{priority},#{type},#{contentType},#{estimate},#{isLeaf},#{ordr},#{pId},
               #{projectId},#{createById},
-              NOW(),FALSE,FALSE,0)
+              NOW(),FALSE,FALSE)
     </insert>
 
     <select id="getChildren" resultType="TstCase">

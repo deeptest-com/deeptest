@@ -53,9 +53,9 @@
 
     <insert id="save" parameterType="TstOrgGroup" useGeneratedKeys="true" keyProperty="id">
         insert into TstOrgGroup
-          (name,orgId,deleted,disabled,createTime,version)
+          (name,orgId,deleted,disabled,createTime)
         values
-          (#{name},#{orgId},FALSE,FALSE,NOW(),0)
+          (#{name},#{orgId},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="TstOrgGroup">

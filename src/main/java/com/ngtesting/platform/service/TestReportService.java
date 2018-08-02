@@ -7,19 +7,17 @@ import java.util.Map;
 
 public interface TestReportService extends BaseService {
 
-    Map<String, List<Object>> chart_excution_process_by_project(Integer projectId, TstProject.ProjectType type, Integer numb);
-    Map<String, List<Object>> chart_design_progress_by_project(Integer projectId, TstProject.ProjectType type, Integer numb);
+    Map<String, List<Object>> chartExcutionProcessByProject(Integer projectId, TstProject.ProjectType type, Integer numb);
+    Map<String, List<Object>> chartDesignProgressByProject(Integer projectId, TstProject.ProjectType type, Integer numb);
 
-    List<Map<Object, Object>> chart_execution_result_by_plan(Integer planId);
-    Map<String, List<Object>> chart_execution_process_by_plan(Integer planId, Integer numb);
-    Map<String, Object> chart_execution_process_by_plan_user(Integer planId, Integer numb);
-    Map<String, Object> chart_execution_progress_by_plan(Integer planId, Integer numb);
+    List<Map<Object, Object>> chartExecutionResultByPlan(Integer planId);
+    Map<String, List<Object>> chartExecutionProcessByPlan(Integer planId, Integer numb);
+    Map<String, Object> chartExecutionProcessByPlanUser(Integer planId, Integer numb);
+    Map<String, Object> chartExecutionProgressByPlan(Integer planId, Integer numb);
 
     Map<String, List<Object>> countByStatus(List<Map> ls);
 
-    Map<String, Object> countByUser(List<Object[]> ls);
+    Map<String, Object> countByUser(List<Map> ls);
 
     List<Map<Object, Object>> orderByStatus(Map map);
-
-    String getUserName(String id);
 }

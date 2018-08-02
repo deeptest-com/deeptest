@@ -15,14 +15,14 @@ public class TestReportServiceImpl extends BaseServiceImpl implements TestReport
     TestReportDao reportDao;
 
     @Override
-    public Map<String, List<Object>> chart_design_progress_by_project(Integer projectId, TstProject.ProjectType type, Integer numb) {
+    public Map<String, List<Object>> chartDesignProgressByProject(Integer projectId, TstProject.ProjectType type, Integer numb) {
         Map<String, List<Object>> map = new LinkedHashMap<>();
 
         List<Object> xList = new LinkedList<>();
         List<Object> numbList = new LinkedList<>();
         List<Object> totalList = new LinkedList<>();
 
-        List<Map> ls = reportDao.chart_design_progress_by_project(projectId, type.toString(), numb);
+        List<Map> ls = reportDao.chartDesignProgressByProject(projectId, type.toString(), numb);
         Integer sum = null;
         for (Map record : ls) {
             if(sum == null) {
@@ -42,79 +42,62 @@ public class TestReportServiceImpl extends BaseServiceImpl implements TestReport
     }
 
     @Override
-    public Map<String, List<Object>> chart_excution_process_by_project(Integer projectId, TstProject.ProjectType type, Integer numb) {
-        List<Map> ls = reportDao.chart_execution_process_by_project(projectId, type.toString(), numb);
-
-//        List<Object[]> ls = new ArrayList<Object[]>();
-//        for (Map<String, Object> map : mapList) {
-//            System.out.println(map.values());
-//            Collection values = map.values();
-//            List list = new ArrayList(values);
-//            ls.add(list.toArray());
-//        }
+    public Map<String, List<Object>> chartExcutionProcessByProject(Integer projectId, TstProject.ProjectType type, Integer numb) {
+        List<Map> ls = reportDao.chartExecutionProcessByProject(projectId, type.toString(), numb);
 
         return countByStatus(ls);
     }
 
     @Override
-    public List<Map<Object, Object>> chart_execution_result_by_plan(Integer planId) {
-//        List<Object[]> ls = getDao().getListBySQL("{call chart_execution_result_by_plan(?)}",
-//                planId);
-//
-//        Map<String, String> map = new HashMap();
-//        for (Object[] arr : ls) {
-//            map.put(arr[0].toString(), arr[1].toString());
-//        }
-//
-//        List<Map<Object, Object>> data = orderByStatus(map);
-//        return data;
+    public List<Map<Object, Object>> chartExecutionResultByPlan(Integer planId) {
+        List<Map> ls = reportDao.chartExecutionResultByPlan(planId);
 
-        return null;
+        Map<String, String> map = new HashMap();
+        for (Map item : ls) {
+            map.put(item.get("status").toString(), item.get("count").toString());
+        }
+
+        List<Map<Object, Object>> data = orderByStatus(map);
+        return data;
     }
 
     @Override
-    public Map<String, List<Object>> chart_execution_process_by_plan(Integer planId, Integer numb) {
-//        List<Object[]> ls = getDao().getListBySQL("{call chart_execution_process_by_plan(?,?)}",
-//                planId, numb);
-//
-//        return countByStatus(ls);
+    public Map<String, List<Object>> chartExecutionProcessByPlan(Integer planId, Integer numb) {
+        List<Map> ls = reportDao.chartExecutionProcessByPlan(planId, numb);
 
-        return null;
+        return countByStatus(ls);
     }
 
     @Override
-    public Map<String, Object> chart_execution_process_by_plan_user(Integer planId, Integer numb) {
-//        List<Object[]> ls = getDao().getListBySQL("{call chart_execution_process_by_plan_user(?,?)}",
-//                planId, numb);
-//
-//        return countByUser(ls);
+    public Map<String, Object> chartExecutionProcessByPlanUser(Integer planId, Integer numb) {
+        List<Map> ls = reportDao.chartExecutionProcessByPlanUser(planId, numb);
 
-        return null;
+        return countByUser(ls);
     }
 
     @Override
-    public Map<String, Object> chart_execution_progress_by_plan(Integer planId, Integer numb) {
+    public Map<String, Object> chartExecutionProgressByPlan(Integer planId, Integer numb) {
         Map<String, Object> map = new LinkedHashMap<>();
-//        Map<String, List<Object>> series = new LinkedHashMap<>();
-//
-//        List<Object> xList = new LinkedList<>();
-//        List<Object> numbList = new LinkedList<>();
-//
-//        List<Object[]> ls = getDao().getListBySQL("{call chart_execution_progress_by_plan(?,?)}",
-//                planId, numb);
-//        Integer exeSum = 0; int i = 0;
-//        for (Object[] arr : ls) {
-//            xList.add(arr[0].toString());
-//
-//            Integer totalNumb = Integer.valueOf(arr[2].toString());
-//            Integer exeNumb = arr[1]==null?0:Integer.valueOf(arr[1].toString());
-//            exeSum += exeNumb;
-//            numbList.add(totalNumb - exeSum);
-//        }
-//        map.put("xList", xList);
-//
-//        map.put("series", series);
-//        series.put("剩余用例", numbList);
+        Map<String, List<Object>> series = new LinkedHashMap<>();
+
+        List<Object> xList = new LinkedList<>();
+        List<Object> numbList = new LinkedList<>();
+
+        List<Map> ls = reportDao.chartExecutionProgressByPlan(planId, numb);
+        Integer exeSum = 0;
+        int i = 0;
+        for (Map item : ls) {
+            xList.add(item.get("date").toString());
+
+            Integer totalNumb = Integer.valueOf(item.get("total").toString());
+            Integer exeNumb = item.get("numb")==null?0:Integer.valueOf(item.get("numb").toString());
+            exeSum += exeNumb;
+            numbList.add(totalNumb - exeSum);
+        }
+        map.put("xList", xList);
+
+        map.put("series", series);
+        series.put("剩余用例", numbList);
 
         return map;
     }
@@ -189,7 +172,7 @@ public class TestReportServiceImpl extends BaseServiceImpl implements TestReport
     }
 
     @Override
-    public Map<String, Object> countByUser(List<Object[]> ls) {
+    public Map<String, Object> countByUser(List<Map> ls) {
         Map<String, Object> map = new LinkedHashMap<>();
 
         List<Object> xList = new LinkedList<>();
@@ -197,13 +180,18 @@ public class TestReportServiceImpl extends BaseServiceImpl implements TestReport
 
         String day = null;
 
-        Object a[] = {"last",null,null,null};
-        ls.add(a);
+        Map last = new HashMap() {{
+            put("date", "last");
+            put("nickname", null);
+            put("numb", null);
+            put("sum", null);
+        }};
 
-        for (Object[] arr : ls) {
-            if (arr[1] != null && !arr[1].equals("null")) {
-                String userId = arr[1].toString();
-                String userName = getUserName(userId);
+        ls.add(last);
+
+        for (Map item : ls) {
+            if (item.get("name") != null && !item.get("name").equals("null")) {
+                String userName = item.get("name").toString();
 
                 if (!byUserMap.containsKey(userName)) {
                     byUserMap.put(userName, new LinkedList<>());
@@ -212,11 +200,11 @@ public class TestReportServiceImpl extends BaseServiceImpl implements TestReport
         }
 
         Map<String, Object> dayMap = new HashMap();
-        for (Object[] arr : ls) {
-            String dayTemp = arr[0].toString();
-            String userId = arr[1]!=null? arr[1].toString(): null;
-            Integer numb = arr[2]!=null?Integer.valueOf(arr[2].toString()): null;
-            Integer sum =  arr[3]!=null?Integer.valueOf(arr[3].toString()): null;
+        for (Map item : ls) {
+            String dayTemp = item.get("date").toString();
+            String name = item.get("name")!=null?item.get("name").toString():null;
+            Integer numb = item.get("numb")!=null?Integer.valueOf(item.get("numb").toString()):null;
+            Integer sum =  item.get("sum")!=null?Integer.valueOf(item.get("sum").toString()):null;
 
             if (!dayTemp.equals(day) && day != null) { // 新的一天
                 xList.add(day);
@@ -233,8 +221,8 @@ public class TestReportServiceImpl extends BaseServiceImpl implements TestReport
             }
 
             // 同一天，对多行内容进行统计
-            if (userId != null) {
-                dayMap.put(getUserName(userId), numb);
+            if (name != null) {
+                dayMap.put(name, numb);
             }
 
             day = dayTemp;
@@ -259,18 +247,6 @@ public class TestReportServiceImpl extends BaseServiceImpl implements TestReport
         }
 
         return data2;
-    }
-
-    @Override
-    public String getUserName(String id) {
-//        if (id == null) {
-//           return null;
-//        }
-//        TstUser user = (TstUser) getDetail(TstUser.class, Integer.valueOf(id));
-//
-//        return user.getName() + '-' + id;
-
-        return null;
     }
 
 }

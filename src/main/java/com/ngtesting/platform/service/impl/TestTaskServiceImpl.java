@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.dao.TestPlanDao;
 import com.ngtesting.platform.dao.TestTaskDao;
 import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.AlertService;
@@ -33,6 +34,8 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 
     @Autowired
     TestTaskDao taskDao;
+    @Autowired
+    TestPlanDao planDao;
 
     @Override
     public TstTask getById(Integer id) {
@@ -146,7 +149,7 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     }
     @Override
     public void closePlanIfAllTaskClosedPers(Integer planId) {
-        taskDao.closePlanIfAllTaskClosed(planId);
+        planDao.closePlanIfAllTaskClosed(planId);
     }
 
     @Override

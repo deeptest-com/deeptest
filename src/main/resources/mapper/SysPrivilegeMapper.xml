@@ -4,8 +4,8 @@
 
     <select id="queryByUser" resultType="SysPrivilege">
         SELECT priv.* from SysPrivilege priv
-            join SysRRolePrivilege r_role_priv ON r_role_priv.privilegeId=priv.id
-            join SysRRoleUser r_role_user ON r_role_user.roleId=r_role_priv.roleId
+            join SysRolePrivilegeRelation r_role_priv ON r_role_priv.privilegeId=priv.id
+            join SysRoleUserRelation r_role_user ON r_role_user.roleId=r_role_priv.roleId
                 where r_role_user.userId = #{userId}
                 AND priv.deleted != true and priv.disabled!= true
                 order by priv.id asc

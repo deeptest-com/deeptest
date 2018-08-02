@@ -9,11 +9,21 @@ import java.util.Map;
 public interface TestReportDao {
     List<TstMsg> query(@Param("userId") Integer userId);
 
-    List<Map> chart_design_progress_by_project(@Param("projectId") Integer projectId,
-                                               @Param("projectType") String projectType,
-                                               @Param("numb") Integer numb);
+    List<Map> chartDesignProgressByProject(@Param("projectId") Integer projectId,
+                                           @Param("projectType") String projectType,
+                                           @Param("numb") Integer numb);
 
-    List<Map> chart_execution_process_by_project(@Param("projectId") Integer projectId,
-                                                      @Param("projectType") String projectType,
-                                                      @Param("numb") Integer numb);
+    List<Map> chartExecutionProcessByProject(@Param("projectId") Integer projectId,
+                                             @Param("projectType") String projectType,
+                                             @Param("numb") Integer numb);
+
+    List<Map> chartExecutionResultByPlan(@Param("planId") Integer planId);
+    List<Map> chartExecutionProcessByPlan(@Param("planId") Integer planId,
+                                          @Param("numb") Integer numb);
+
+    List<Map> chartExecutionProcessByPlanUser(@Param("planId") Integer planId,
+                                                   @Param("numb") Integer numb);
+
+    List<Map> chartExecutionProgressByPlan(@Param("planId") Integer planId,
+                                                @Param("numb") Integer numb);
 }

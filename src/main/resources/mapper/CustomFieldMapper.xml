@@ -35,10 +35,10 @@
     <insert id="save" parameterType="TstCustomField" useGeneratedKeys="true" keyProperty="id">
         insert into TstCustomField
         (label,code,myColumn,descr,applyTo,`type`,`rows`,format,required,`global`,
-          orgId,ordr,buildIn,deleted,disabled,createTime,version)
+          orgId,ordr,buildIn,deleted,disabled,createTime)
         values
         (#{label},#{code},#{myColumn},#{descr},#{applyTo},#{type},#{rows},#{format},#{required},#{global},
-          #{orgId},#{ordr},#{buildIn},FALSE,FALSE,NOW(),0)
+          #{orgId},#{ordr},#{buildIn},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="TstCustomField">

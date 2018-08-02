@@ -39,9 +39,9 @@ public class ReportAction extends BaseAction {
         Integer id = json.getInteger("orgId");
 
         Map<String, List<Object>> designReport =
-                reportService.chart_design_progress_by_project(id, TstProject.ProjectType.org, 14);
+                reportService.chartDesignProgressByProject(id, TstProject.ProjectType.org, 14);
         Map<String, List<Object>> exeReport =
-                reportService.chart_excution_process_by_project(id, TstProject.ProjectType.org, 14);
+                reportService.chartExcutionProcessByProject(id, TstProject.ProjectType.org, 14);
 
         data.put("design", designReport);
         data.put("exe", exeReport);
@@ -63,9 +63,9 @@ public class ReportAction extends BaseAction {
         TstProject prj = projectService.get(projectId);
 
         Map<String, List<Object>> designReport =
-                reportService.chart_design_progress_by_project(projectId, prj.getType(), 14);
+                reportService.chartDesignProgressByProject(projectId, prj.getType(), 14);
         Map<String, List<Object>> exeReport =
-                reportService.chart_excution_process_by_project(projectId, prj.getType(), 14);
+                reportService.chartExcutionProcessByProject(projectId, prj.getType(), 14);
 
         data.put("design", designReport);
         data.put("exe", exeReport);
@@ -81,25 +81,24 @@ public class ReportAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//
-//        List<Map<Object, Object>> resultReport =
-//                reportService.chart_execution_result_by_plan(json.getInteger("planId"));
-//        Map<String, List<Object>> processReport =
-//                reportService.chart_execution_process_by_plan(json.getInteger("planId"), 14);
-//        Map<String, Object> processByUserReport =
-//                reportService.chart_execution_process_by_plan_user(json.getInteger("planId"), 14);
-//        Map<String, Object> progressReport =
-//                reportService.chart_execution_progress_by_plan(json.getInteger("planId"), 14);
-//
-//        data.put("result", resultReport);
-//        data.put("process", processReport);
-//        data.put("processByUser", processByUserReport);
-//        data.put("progress", progressReport);
-//
-//        ret.put("data", data);
-//
-//        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        Integer planId = json.getInteger("planId");
+
+        List<Map<Object, Object>> resultReport =
+                reportService.chartExecutionResultByPlan(planId);
+        Map<String, List<Object>> processReport =
+                reportService.chartExecutionProcessByPlan(planId, 14);
+        Map<String, Object> processByUserReport =
+                reportService.chartExecutionProcessByPlanUser(planId, 14);
+        Map<String, Object> progressReport =
+                reportService.chartExecutionProgressByPlan(planId, 14);
+
+        data.put("result", resultReport);
+        data.put("process", processReport);
+        data.put("processByUser", processByUserReport);
+        data.put("progress", progressReport);
+
+        ret.put("data", data);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
         return ret;
     }

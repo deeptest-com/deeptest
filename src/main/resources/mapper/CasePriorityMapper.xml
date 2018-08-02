@@ -25,9 +25,9 @@
 
     <insert id="save" parameterType="TstCasePriority" useGeneratedKeys="true" keyProperty="id">
         insert into TstCasePriority
-        (name,code,orgId,ordr,isDefault,deleted,disabled,createTime,version)
+        (name,code,orgId,ordr,isDefault,deleted,disabled,createTime)
         values
-        (#{name},#{code},#{orgId},#{ordr},#{isDefault},FALSE,FALSE,NOW(),0)
+        (#{name},#{code},#{orgId},#{ordr},#{isDefault},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="TstCasePriority">

@@ -24,7 +24,6 @@ public interface TestTaskDao {
     void delete(@Param("id") Integer id, @Param("userId") Integer userId);
 
     void close(@Param("id") Integer id, @Param("userId") Integer userId);
-    void closePlanIfAllTaskClosed(@Param("planId") Integer planId);
 
     void removeAssignees(@Param("id") Integer id);
     void saveAssignees(@Param("id") Integer id, @Param("list")  List<TstUser> assignees);

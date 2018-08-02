@@ -46,10 +46,10 @@
         insert into TstSuite
         (name,estimate,descr,
           projectId,caseProjectId,userId,
-          deleted,disabled,createTime,version)
+          deleted,disabled,createTime)
         values
           (#{name},#{estimate},#{descr},#{projectId},#{caseProjectId},#{userId},
-          FALSE,FALSE,NOW(),0)
+          FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="TstSuite">

@@ -17,10 +17,10 @@
     <insert id="save" parameterType="TstCaseStep" useGeneratedKeys="true" keyProperty="id">
         insert into TstCaseStep
         (opt,expect,ordr,caseId,
-        createTime,deleted,disabled,version)
+        createTime,deleted,disabled)
         values
         (#{opt},#{expect},#{ordr},#{caseId},
-        NOW(),FALSE,FALSE,0)
+        NOW(),FALSE,FALSE)
     </insert>
     <update id="update">
         UPDATE TstCaseStep

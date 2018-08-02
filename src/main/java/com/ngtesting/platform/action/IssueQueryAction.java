@@ -59,7 +59,7 @@ public class IssueQueryAction extends BaseAction {
 //			return ret;
 //		}
 //
-//		TstCasePriority po = (TstCasePriority) casePriorityService.get(TstCasePriority.class, id);
+//		TstCasePriority po = (TstCasePriority) casePriorityService.getDetail(TstCasePriority.class, id);
 //		CasePriorityVo vo = casePriorityService.genVo(po);
 //		ret.put("data", vo);
 

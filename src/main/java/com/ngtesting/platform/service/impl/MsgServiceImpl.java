@@ -50,7 +50,7 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
 
     @Override
     public TstMsg getById(Integer id) {
-//        TstMsg po = (TstMsg) get(TstMsg.class, id);
+//        TstMsg po = (TstMsg) getDetail(TstMsg.class, id);
 //        TstMsg vo = genVo(po);
 //
 //        return vo;
@@ -59,7 +59,7 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
 
     @Override
     public void delete(Integer msgId, Integer userId) {
-//        TstMsg po = (TstMsg) get(TstMsg.class, msgId);
+//        TstMsg po = (TstMsg) getDetail(TstMsg.class, msgId);
 //        po.setDeleted(true);
 //        saveOrUpdate(po);
     }
@@ -81,7 +81,7 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
 
     @Override
     public TstMsg markReadPers(Integer id, Integer id1) {
-//        TstMsg po = (TstMsg) get(TstMsg.class, id);
+//        TstMsg po = (TstMsg) getDetail(TstMsg.class, id);
 //        po.setRead(Boolean.TRUE);
 //        saveOrUpdate(po);
 //        return po;

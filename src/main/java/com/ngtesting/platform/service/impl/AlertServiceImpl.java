@@ -85,7 +85,7 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
 //
 //            TestPlan plan = task.getPlan();
 //            if (plan == null || plan.getId() == null) {
-//                plan= (TestPlan)get(TestPlan.class, task.getPlanId());
+//                plan= (TestPlan)getDetail(TestPlan.class, task.getPlanId());
 //            }
 //            po.setStartTime(plan.getStartTime());
 //            po.setEndTime(plan.getEndTime());
@@ -120,7 +120,7 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
 //
 //        List<TstAlert> pos = findAllByCriteria(dc);
 //        if (pos.size() > 0) {
-//            return pos.get(0);
+//            return pos.getDetail(0);
 //        } else {
 //            return null;
 //        }

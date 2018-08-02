@@ -63,7 +63,7 @@ public class IssueTypeAction extends BaseAction {
 //			return ret;
 //		}
 //
-//		TstCaseType po = (TstCaseType) propertyService.get(TstCaseType.class, id);
+//		TstCaseType po = (TstCaseType) propertyService.getDetail(TstCaseType.class, id);
 //		CaseTypeVo vo = typeService.genVo(po);
 //		ret.put("data", vo);
 

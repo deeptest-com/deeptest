@@ -46,7 +46,7 @@ public class ProjectRoleEntityRelationServiceImpl extends BaseServiceImpl implem
 //        if (ls.size() == 0) {
 //        	return null;
 //        }
-//		return ls.get(0);
+//		return ls.getDetail(0);
 
         return null;
 	}
@@ -80,7 +80,7 @@ public class ProjectRoleEntityRelationServiceImpl extends BaseServiceImpl implem
 //        List<TstProjectRoleEntityRelation> ls = findAllByCriteria(dc);
 //
 //        if (ls.size() > 0) {
-//            return ls.get(0);
+//            return ls.getDetail(0);
 //        }
 
         return null;
@@ -141,10 +141,10 @@ public class ProjectRoleEntityRelationServiceImpl extends BaseServiceImpl implem
     public String getEntityName(TstProjectRoleEntityRelation po) {
         String name = null;
 //        if (TstProjectRoleEntityRelation.EntityType.group.equals(po.getType())) {
-//            TestOrgGroup group = (TestOrgGroup)get(TestOrgGroup.class, po.getEntityId());
+//            TestOrgGroup group = (TestOrgGroup)getDetail(TestOrgGroup.class, po.getEntityId());
 //            name = group.getName();
 //        } else {
-//            TestUser user = (TestUser)get(TestUser.class, po.getEntityId());
+//            TestUser user = (TestUser)getDetail(TestUser.class, po.getEntityId());
 //            name = user.getName();
 //        }
         return name;

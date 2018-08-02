@@ -50,7 +50,7 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 
 	@Override
 	public boolean delete(Integer id) {
-//		TestOrgRole po = (TestOrgRole) get(TestOrgRole.class, id);
+//		TestOrgRole po = (TestOrgRole) getDetail(TestOrgRole.class, id);
 //		po.setDeleted(true);
 //		saveOrUpdate(po);
 

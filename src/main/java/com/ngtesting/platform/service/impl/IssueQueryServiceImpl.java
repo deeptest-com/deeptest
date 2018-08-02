@@ -41,7 +41,7 @@ public class IssueQueryServiceImpl extends BaseServiceImpl implements IssueQuery
 //
 //		TstCasePriority po;
 //		if (vo.getId() != null) {
-//			po = (TstCasePriority) get(TstCasePriority.class, vo.getId());
+//			po = (TstCasePriority) getDetail(TstCasePriority.class, vo.getId());
 //		} else {
 //			po = new TstCasePriority();
 //		}
@@ -66,7 +66,7 @@ public class IssueQueryServiceImpl extends BaseServiceImpl implements IssueQuery
 
 	@Override
 	public boolean delete(Integer id) {
-//		TstCasePriority po = (TstCasePriority) get(TstCasePriority.class, id);
+//		TstCasePriority po = (TstCasePriority) getDetail(TstCasePriority.class, id);
 //		po.setDeleted(true);
 //		saveOrUpdate(po);
 
@@ -91,7 +91,7 @@ public class IssueQueryServiceImpl extends BaseServiceImpl implements IssueQuery
 
 	@Override
 	public boolean changeOrderPers(Integer id, String act, Integer orgId) {
-//		TstCasePriority type = (TstCasePriority) get(TstCasePriority.class, id);
+//		TstCasePriority type = (TstCasePriority) getDetail(TstCasePriority.class, id);
 //
 //        String hql = "from TstCasePriority tp where where tp.orgId=? and tp.deleted = false and tp.disabled = false ";
 //        if ("up".equals(act)) {

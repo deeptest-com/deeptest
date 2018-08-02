@@ -333,7 +333,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
     @Override
     public TstCase changeContentTypePers(Integer id, String contentType) {
-//        TstCase testCase = (TstCase)get(TstCase.class, id);
+//        TstCase testCase = (TstCase)getDetail(TstCase.class, id);
 //        testCase.setContentType(contentType);
 //        testCase.setReviewResult(null);
 //        saveOrUpdate(testCase);

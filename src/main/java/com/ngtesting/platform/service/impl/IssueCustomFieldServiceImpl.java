@@ -94,7 +94,7 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
 //
 //        TstCustomField po;
 //        if (vo.getId() != null) {
-//            po = (TstCustomField) get(TstCustomField.class, vo.getId());
+//            po = (TstCustomField) getDetail(TstCustomField.class, vo.getId());
 //        } else {
 //            po = new TstCustomField();
 //        }
@@ -133,7 +133,7 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
 
     @Override
     public boolean delete(Integer id) {
-//        TstCustomField po = (TstCustomField) get(TstCustomField.class, id);
+//        TstCustomField po = (TstCustomField) getDetail(TstCustomField.class, id);
 //        po.getProjectSet().clear();
 //        getDao().delete(po);
 
@@ -169,7 +169,7 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
 
     @Override
     public boolean changeOrderPers(Integer id, String act) {
-//        TstCustomField type = (TstCustomField) get(TstCustomField.class, id);
+//        TstCustomField type = (TstCustomField) getDetail(TstCustomField.class, id);
 //
 //        String hql = "from TstCustomField tp where tp.deleted = false and tp.disabled = false ";
 //        if ("up".equals(act)) {
@@ -200,7 +200,7 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
 //        if (fieldId == null) {
 //            projectsForField = new HashSet<TstProject>();
 //        } else {
-//            TstCustomField field = (TstCustomField) get(TstCustomField.class, fieldId);
+//            TstCustomField field = (TstCustomField) getDetail(TstCustomField.class, fieldId);
 //            projectsForField = field.getProjectSet();
 //        }
 //
@@ -243,13 +243,13 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
 //            return false;
 //        }
 //
-//        TstCustomField field = (TstCustomField) get(TstCustomField.class, fieldId);
+//        TstCustomField field = (TstCustomField) getDetail(TstCustomField.class, fieldId);
 //        Set<TstProject> projectSet = field.getProjectSet();
 //
 //        for (Object obj : projects) {
 //            TstProject vo = JSON.parseObject(JSON.toJSONString(obj), TstProject.class);
 //            if (vo.getSelecting() != vo.getSelected()) { // 变化了
-//                TstProject project = (TstProject) get(TstProject.class, vo.getId());
+//                TstProject project = (TstProject) getDetail(TstProject.class, vo.getId());
 //
 //                if (vo.getSelecting() && !projectSet.contains(project)) { // 勾选
 //                    projectSet.add(project);

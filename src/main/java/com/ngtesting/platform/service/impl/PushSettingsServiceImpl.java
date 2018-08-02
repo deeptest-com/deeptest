@@ -73,7 +73,7 @@ public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSett
         Integer userId = user.getId();
         Integer orgId = user.getDefaultOrgId();
 
-//        TstOrg org = (TstOrg)get(TstOrg.class, orgId);
+//        TstOrg org = (TstOrg)getDetail(TstOrg.class, orgId);
         Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(user.getId(), orgId);
         Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
 

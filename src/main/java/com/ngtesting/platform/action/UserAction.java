@@ -146,7 +146,7 @@ public class UserAction {
         List<TstProjectAccessHistory> recentProjects = projectService.listRecentProject(orgId, userId);
         ret.put("recentProjects", recentProjects);
 
-//        user.setDefaultPrjId(recentProjects.size() > 0?recentProjects.get(0).getPrjId(): null);
+//        user.setDefaultPrjId(recentProjects.size() > 0?recentProjects.getDetail(0).getPrjId(): null);
 
         Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userId, prjId, orgId);
         ret.put("prjPrivileges", prjPrivileges);

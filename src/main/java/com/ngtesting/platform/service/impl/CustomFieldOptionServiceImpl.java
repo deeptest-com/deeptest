@@ -35,7 +35,7 @@ public class CustomFieldOptionServiceImpl extends BaseServiceImpl implements Cus
 //
 //        TestCustomFieldOption po;
 //        if (vo.getId() != null) {
-//            po = (TestCustomFieldOption) get(TestCustomFieldOption.class, vo.getId());
+//            po = (TestCustomFieldOption) getDetail(TestCustomFieldOption.class, vo.getId());
 //        } else {
 //            po = new TestCustomFieldOption();
 //        }

@@ -61,7 +61,7 @@ public class IssueWorkflowAction extends BaseAction {
 //			return ret;
 //		}
 //
-//		TstCaseType po = (TstCaseType) issueWorkflowService.get(TstCaseType.class, id);
+//		TstCaseType po = (TstCaseType) issueWorkflowService.getDetail(TstCaseType.class, id);
 //		CaseTypeVo vo = issueWorkflowService.genVo(po);
 //		ret.put("data", vo);
 

@@ -67,7 +67,7 @@ public class OptFacade {
         }
 
         ret.put("code", 1);
-//        if (ret.get("type") != null) {
+//        if (ret.getDetail("type") != null) {
 //            simpMessagingTemplate.convertAndSendToUser(user.getToken(), "/notification",
 //                    new TextMessage(JSON.toJSONString(ret)));
 //        }

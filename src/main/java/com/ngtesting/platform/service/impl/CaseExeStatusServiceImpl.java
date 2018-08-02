@@ -31,7 +31,7 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
 //
 //		TestCaseExeStatus po;
 //		if (vo.getId() != null) {
-//			po = (TestCaseExeStatus) get(TestCaseExeStatus.class, vo.getId());
+//			po = (TestCaseExeStatus) getDetail(TestCaseExeStatus.class, vo.getId());
 //		} else {
 //			po = new TestCaseExeStatus();
 //		}
@@ -56,7 +56,7 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
 
 	@Override
 	public boolean delete(Integer id) {
-//		TestCaseExeStatus po = (TestCaseExeStatus) get(TestCaseExeStatus.class, id);
+//		TestCaseExeStatus po = (TestCaseExeStatus) getDetail(TestCaseExeStatus.class, id);
 //		po.setDeleted(true);
 //		saveOrUpdate(po);
 
@@ -65,7 +65,7 @@ public class CaseExeStatusServiceImpl extends BaseServiceImpl implements CaseExe
 
 	@Override
 	public boolean changeOrderPers(Integer id, String act) {
-//		TestCaseExeStatus type = (TestCaseExeStatus) get(TestCaseExeStatus.class, id);
+//		TestCaseExeStatus type = (TestCaseExeStatus) getDetail(TestCaseExeStatus.class, id);
 //
 //        String hql = "from TestCaseExeStatus tp where tp.deleted = false and tp.disabled = false ";
 //        if ("up".equals(act)) {

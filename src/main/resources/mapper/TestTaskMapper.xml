@@ -21,7 +21,7 @@
         ORDER BY task.createTime ASC
     </select>
 
-    <select id="get" resultMap="taskMap">
+    <select id="getDetail" resultMap="taskMap">
         SELECT task.*,
         usr.nickname userName,
         project.name projectName,
@@ -42,8 +42,13 @@
         WHERE task.id=#{id}
     </select>
 
+    <select id="get" resultType="TstTask">
+        SELECT task.*  FROM TstTask task
+        WHERE task.id=#{id}
+    </select>
+
     <select id="listCaseIds" resultType="int">
-        SELECT o.id
+        SELECT o.caseId
         FROM TstCaseInTask o
 
         WHERE o.taskId=#{id}
@@ -53,10 +58,10 @@
 
     <insert id="save" parameterType="TstTask" useGeneratedKeys="true" keyProperty="id">
         insert into TstTask
-        (name,status,projectId,planId,envId,userId,
+        (name,status,projectId,caseProjectId,planId,envId,userId,
           deleted,disabled,createTime,version)
         values
-        (#{name},#{status},#{projectId},#{planId},#{envId},#{userId},
+        (#{name},#{status},#{projectId},#{caseProjectId},#{planId},#{envId},#{userId},
           FALSE,FALSE,NOW(),0)
     </insert>
 
@@ -88,6 +93,13 @@
         { call add_cases_to_task_by_suites(
               #{taskId,mode=IN,jdbcType=INTEGER},
               #{suiteIds,mode=IN,jdbcType=VARCHAR}
+        ) }
+    </update>
+    <update id="addCases" statementType="CALLABLE">
+        { call add_cases_to_task(
+            #{taskId,mode=IN,jdbcType=INTEGER},
+            #{caseIds,mode=IN,jdbcType=VARCHAR},
+            #{append,mode=IN,jdbcType=BOOLEAN}
         ) }
     </update>
 

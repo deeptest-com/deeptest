@@ -266,7 +266,7 @@ public class TestReportServiceImpl extends BaseServiceImpl implements TestReport
 //        if (id == null) {
 //           return null;
 //        }
-//        TstUser user = (TstUser) get(TstUser.class, Integer.valueOf(id));
+//        TstUser user = (TstUser) getDetail(TstUser.class, Integer.valueOf(id));
 //
 //        return user.getName() + '-' + id;
 

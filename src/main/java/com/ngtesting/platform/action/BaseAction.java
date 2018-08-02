@@ -33,7 +33,7 @@ public class BaseAction {
 //	}
 //
 //	public boolean pagingParamError(Map<String, String> json) {
-//		if (json.get("startIndex") == null || json.get("pageSize") == null) {
+//		if (json.getDetail("startIndex") == null || json.getDetail("pageSize") == null) {
 //			return true;
 //		}
 //

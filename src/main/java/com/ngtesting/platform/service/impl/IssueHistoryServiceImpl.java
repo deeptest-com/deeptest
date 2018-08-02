@@ -35,7 +35,7 @@ public class IssueHistoryServiceImpl extends BaseServiceImpl implements IssueHis
 
     @Override
     public TstHistory getById(Integer id) {
-//		TstHistory po = (TstHistory) get(TstHistory.class, id);
+//		TstHistory po = (TstHistory) getDetail(TstHistory.class, id);
 //		TstHistory vo = genVo(po);
 //
 //        return vo;
@@ -68,7 +68,7 @@ public class IssueHistoryServiceImpl extends BaseServiceImpl implements IssueHis
 //            if (!map.containsKey(date)) {
 //                map.put(date, new LinkedList());
 //            }
-//            map.get(date).add(genVo(his));
+//            map.getDetail(date).add(genVo(his));
 //		}
 		return map;
 	}

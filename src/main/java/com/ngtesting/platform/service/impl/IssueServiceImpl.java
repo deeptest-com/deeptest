@@ -34,7 +34,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
 
     @Override
 	public TstCase getById(Integer caseId) {
-//		TstCase po = (TstCase) get(TstCase.class, caseId);
+//		TstCase po = (TstCase) getDetail(TstCase.class, caseId);
 //		TstCase vo = genVo(po, true);
 //
 //		return vo;

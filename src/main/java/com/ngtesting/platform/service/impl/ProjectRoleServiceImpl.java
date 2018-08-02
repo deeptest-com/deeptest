@@ -46,7 +46,7 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 
 	@Override
 	public boolean delete(Integer id) {
-//		TestProjectRoleForOrg po = (TestProjectRoleForOrg) get(TestProjectRoleForOrg.class, id);
+//		TestProjectRoleForOrg po = (TestProjectRoleForOrg) getDetail(TestProjectRoleForOrg.class, id);
 //		po.setDeleted(true);
 //		saveOrUpdate(po);
 

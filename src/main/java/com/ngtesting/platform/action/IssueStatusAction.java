@@ -57,7 +57,7 @@ public class IssueStatusAction extends BaseAction {
 //			return ret;
 //		}
 //
-//		TstCaseExeStatus po = (TstCaseExeStatus) statusService.get(TstCaseExeStatus.class, id);
+//		TstCaseExeStatus po = (TstCaseExeStatus) statusService.getDetail(TstCaseExeStatus.class, id);
 //		CaseExeStatusVo vo = statusService.genVo(po);
 //		ret.put("data", vo);
 

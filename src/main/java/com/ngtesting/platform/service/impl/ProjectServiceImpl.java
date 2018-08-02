@@ -143,7 +143,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 //			return null;
 //		}
 //
-//		TstProject po = (TstProject) get(TstProject.class, id);
+//		TstProject po = (TstProject) getDetail(TstProject.class, id);
 //		po.setDeleted(true);
 //		saveOrUpdate(po);
 //
@@ -174,7 +174,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
     @Override
     public void updateNameInHisotyPers(Integer projectId, Integer userId) {
-//        TstProject project = get(projectId);
+//        TstProject project = getDetail(projectId);
 //        genHistoryPers(project.getOrgId(), userId, projectId, project.getName());
     }
 
@@ -191,7 +191,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 //		TstProjectAccessHistory history;
 //		List<TstProjectAccessHistory> pos = findAllByCriteria(dc);
 //		if (pos.size() > 0) {
-//			history = pos.get(0);
+//			history = pos.getDetail(0);
 //			history.setProjectName(projectName);
 //		} else {
 //			history = new TstProjectAccessHistory(orgId, userId, projectId, projectName);

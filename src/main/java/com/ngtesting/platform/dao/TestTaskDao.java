@@ -14,6 +14,7 @@ public interface TestTaskDao {
     List<TstTask> listByPlan(@Param("planId") Integer planId);
 
     TstTask get(@Param("id") Integer id);
+    TstTask getDetail(@Param("id") Integer id);
 
     List<TstCaseInTask> listCases(@Param("id") Integer id);
     List<Integer> listCaseIds(@Param("id") Integer id);
@@ -33,4 +34,9 @@ public interface TestTaskDao {
     void updateCaseProject(@Param("id") Integer id, @Param("caseProjectId") Integer caseProjectId);
 
     void addCasesBySuites(@Param("taskId") Integer taskId, @Param("suiteIds") String suiteIds);
+
+    void addCases(@Param("taskId") Integer taskId,
+                  @Param("caseIds") String caseIds,
+                  @Param("append") Boolean append);
+    // "{call (?,?,?)}",
 }

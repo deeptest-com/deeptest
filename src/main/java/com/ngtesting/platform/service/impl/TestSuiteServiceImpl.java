@@ -132,16 +132,16 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
 //        vo.setDescr(po.getDescr());
 //
 //        vo.setProjectId(po.getProjectId());
-//        TestProject prj1 = (TestProject)get(TestProject.class, po.getProjectId());
+//        TestProject prj1 = (TestProject)getDetail(TestProject.class, po.getProjectId());
 //        vo.setProjectName(prj1.getName());
 //
 //        vo.setCaseProjectId(po.getCaseProjectId());
-//        TestProject prj2 = (TestProject)get(TestProject.class, po.getCaseProjectId());
+//        TestProject prj2 = (TestProject)getDetail(TestProject.class, po.getCaseProjectId());
 //        vo.setCaseProjectName(prj2.getName());
 //
 //        vo.setUserId(po.getUserId());
 //
-//        TestUser user = (TestUser) get(TestUser.class, po.getUserId());
+//        TestUser user = (TestUser) getDetail(TestUser.class, po.getUserId());
 //        vo.setUserName(user.getName());
 //        vo.setCreateTime(po.getCreateTime());
 //        vo.setUpdateTime(po.getUpdateTime());

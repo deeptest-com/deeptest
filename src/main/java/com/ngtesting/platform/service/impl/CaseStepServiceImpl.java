@@ -56,7 +56,7 @@ public class CaseStepServiceImpl extends BaseServiceImpl implements CaseStepServ
             caseStepDao.setOrder(step.getId(), neighborOrder);
             caseStepDao.setOrder(neighbor.getId(), stepOrder);
 
-//        TstCaseStep po = (TstCaseStep)get(TstCaseStep.class, vo.getLong("id"));
+//        TstCaseStep po = (TstCaseStep)getDetail(TstCaseStep.class, vo.getLong("id"));
 //        String hql = "from TstCaseStep st where st.deleted = false and st.disabled = false "
 //                + " and testCaseId = ?";
 //        if ("up".equals(direction)) {
@@ -65,7 +65,7 @@ public class CaseStepServiceImpl extends BaseServiceImpl implements CaseStepServ
 //            hql += " and st.ordr > ? order by ordr asc";
 //        }
 //        TstCaseStep neighbor = (TstCaseStep) getDao().findFirstByHQL(hql, vo.getLong("caseId"), vo.getInteger("ordr"));
-//        TstCaseStep step = (TstCaseStep) get(TstCaseStep.class, vo.getLong("id"));
+//        TstCaseStep step = (TstCaseStep) getDetail(TstCaseStep.class, vo.getLong("id"));
 //
 //        Integer order = step.getOrdr();
 //        step.setOrdr(neighbor.getOrdr());

@@ -85,9 +85,9 @@ public class CaseAction extends BaseAction {
 
 		Integer projectId = json.getInteger("projectId");
         Integer caseProjectId = json.getInteger("caseProjectId");
-		Integer runId = json.getInteger("runId");
+		Integer taskId = json.getInteger("taskId");
 
-		List<TstCase> vos = caseService.queryForTaskSelection(projectId, caseProjectId, runId);
+		List<TstCase> vos = caseService.queryForTaskSelection(projectId, caseProjectId, taskId);
 		List<TstProject> projects = projectDao.listBrothers(projectId);
 
 		ret.put("data", vos);

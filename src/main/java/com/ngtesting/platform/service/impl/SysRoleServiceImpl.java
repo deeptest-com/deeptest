@@ -38,7 +38,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl implements SysRoleServic
 //
 //		SysRole po = new SysRole();
 //		if (vo.getId() != null) {
-//			po = (SysRole) get(SysRole.class, vo.getId());
+//			po = (SysRole) getDetail(SysRole.class, vo.getId());
 //		}
 //
 //		po.setName(vo.getName());
@@ -53,7 +53,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl implements SysRoleServic
 
 	@Override
 	public boolean delete(Integer id) {
-//		SysRole po = (SysRole) get(SysRole.class, id);
+//		SysRole po = (SysRole) getDetail(SysRole.class, id);
 //		po.setDeleted(true);
 //		saveOrUpdate(po);
 
@@ -62,7 +62,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl implements SysRoleServic
 
 	@Override
 	public boolean disable(Integer id) {
-//		SysRole po = (SysRole) get(SysRole.class, id);
+//		SysRole po = (SysRole) getDetail(SysRole.class, id);
 //		po.setDisabled(!po.getDisabled());
 //		saveOrUpdate(po);
 

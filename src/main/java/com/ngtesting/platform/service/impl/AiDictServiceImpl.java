@@ -112,7 +112,7 @@ public class AiDictServiceImpl extends BaseServiceImpl implements AiDictService 
 //		Map<String, Integer> map = JSON.parseObject(json, Map.class);
 //
 //		for (String key : map.keySet()) {
-//			Integer numb = map.get(key);
+//			Integer numb = map.getDetail(key);
 //			key = key.replace("{", "").replace("}", "");
 //			String skillId = null;
 //            String[] arr2 = key.split("-");
@@ -172,7 +172,7 @@ public class AiDictServiceImpl extends BaseServiceImpl implements AiDictService 
 //        List<AiDict> pos = findAllByCriteria(dc);
 //
 //        if (pos.size() > 0) {
-//        	return pos.get(0);
+//        	return pos.getDetail(0);
 //        }
 
         return null;

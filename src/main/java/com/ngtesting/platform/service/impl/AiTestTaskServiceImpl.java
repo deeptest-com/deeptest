@@ -32,7 +32,7 @@ public class AiTestTaskServiceImpl extends BaseServiceImpl implements AiTestTask
 
     @Override
 	public AiTestTask getById(Long taskId) {
-//		AiTestTask po = (AiTestTask) get(AiTestTask.class, taskId);
+//		AiTestTask po = (AiTestTask) getDetail(AiTestTask.class, taskId);
 //		AiTestTask vo = genVo(po);
 
 		return null;
@@ -53,7 +53,7 @@ public class AiTestTaskServiceImpl extends BaseServiceImpl implements AiTestTask
         AiTestTask po = new AiTestTask();
 //        String action = "";
 //        if (id != null && id > 0) {
-//            po = (AiTestTask)get(AiTestTask.class, id);
+//            po = (AiTestTask)getDetail(AiTestTask.class, id);
 //
 //            po.setUpdateTime(new Date());
 //            action = "rename";
@@ -81,8 +81,8 @@ public class AiTestTaskServiceImpl extends BaseServiceImpl implements AiTestTask
 //        String moveType = json.getString("moveType");
 //        Boolean isCopy = json.getBoolean("isCopy");
 //
-//        AiTestTask src = (AiTestTask) get(AiTestTask.class, srcId);;
-//        AiTestTask target = (AiTestTask) get(AiTestTask.class, targetId);
+//        AiTestTask src = (AiTestTask) getDetail(AiTestTask.class, srcId);;
+//        AiTestTask target = (AiTestTask) getDetail(AiTestTask.class, targetId);
 //
 //        AiTestTask task;
 //        String action;
@@ -149,7 +149,7 @@ public class AiTestTaskServiceImpl extends BaseServiceImpl implements AiTestTask
 //        String action = "";
 //        AiTestTask testTaskPo;
 //        if (testTaskVo.getId() > 0) {
-//            testTaskPo = (AiTestTask)get(AiTestTask.class, testTaskVo.getId());
+//            testTaskPo = (AiTestTask)getDetail(AiTestTask.class, testTaskVo.getId());
 //            copyProperties(testTaskPo, testTaskVo);
 //
 //            testTaskPo.setUpdateTime(new Date());
@@ -192,7 +192,7 @@ public class AiTestTaskServiceImpl extends BaseServiceImpl implements AiTestTask
 
 	@Override
 	public AiTestTask delete(Long id, TstUser user) {
-//        AiTestTask task = (AiTestTask) get(AiTestTask.class, id);
+//        AiTestTask task = (AiTestTask) getDetail(AiTestTask.class, id);
 //
 //        getDao().querySql("{call remove_aitask_and_its_children(?)}", id);
 

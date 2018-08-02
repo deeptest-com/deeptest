@@ -49,7 +49,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
 
     @Override
     public TstCaseInTask getById(Integer id) {
-//        TestCaseInTask po = (TestCaseInTask) get(TestCaseInTask.class, id);
+//        TestCaseInTask po = (TestCaseInTask) getDetail(TestCaseInTask.class, id);
 //        TstCaseInTask vo = genVo(po, true);
 //
 //        return vo;
@@ -59,7 +59,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
 
     @Override
     public TstCaseInTask setResultPers(Integer caseInTaskId, String result, String status, Integer nextId, TstUser TstUser) {
-//        TestCaseInTask po = (TestCaseInTask) get(TestCaseInTask.class, caseInTaskId);
+//        TestCaseInTask po = (TestCaseInTask) getDetail(TestCaseInTask.class, caseInTaskId);
 //        po.setResult(result);
 //        po.setStatus(status);
 //        po.setExeById(TstUser.getId());
@@ -105,7 +105,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
 //        if (caseId == null || caseId <= 0) {
 //            vo = addCaseToTaskPers(taskId, casePo, TstUser);
 //        } else {
-//            vo = genVo((TestCaseInTask) get(TestCaseInTask.class, entityId), false);
+//            vo = genVo((TestCaseInTask) getDetail(TestCaseInTask.class, entityId), false);
 //        }
 //
 //        getDao().flush();
@@ -123,7 +123,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
 //        Long caseId = json.getLong("srcId");
 //
 //        Long srcId = json.getLong("srcId");
-//        TestCase src = (TestCase) get(TestCase.class, srcId);;
+//        TestCase src = (TestCase) getDetail(TestCase.class, srcId);;
 //        Long targetId = json.getLong("targetId");
 //
 //        Long parentId = src.getpId();
@@ -146,7 +146,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
 
 //    @Override
 //    public TestCaseInTask removeCaseFromTaskPers(Long entityId, TstUser TstUser) {
-//        TestCaseInTask po = (TestCaseInTask) get(TestCaseInTask.class, entityId);
+//        TestCaseInTask po = (TestCaseInTask) getDetail(TestCaseInTask.class, entityId);
 //
 //        getDao().querySql("{call remove_case_in_task_and_its_children(?,?,?)}",
 //                po.getTaskId(), po.getCaseId(), po.getpId());
@@ -168,7 +168,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
 //
 //        List<TestCaseInTask> ls = findAllByCriteria(dc);
 //        if (ls.size() == 1) {
-//            return ls.get(0);
+//            return ls.getDetail(0);
 //        } else {
 //            return null;
 //        }
@@ -185,7 +185,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
     // 执行时新增的用例
     @Override
     public TstCaseInTask addCaseToTaskPers(Integer taskId, TstCase po, TstUser TstUser) {
-//        TestTask task = (TestTask)get(TestTask.class, taskId);
+//        TestTask task = (TestTask)getDetail(TestTask.class, taskId);
 //
 //        TestCaseInTask caseInTask = new TestCaseInTask(task.getProjectId(), task.getPlanId(),
 //                task.getId(), po.getId(), po.getpId(), true);
@@ -214,7 +214,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
     public TstCaseInTask genVo(TstCaseInTask po, Boolean withSteps) {
         TstCaseInTask vo = new TstCaseInTask();
 
-//        TestCase testcase = (TestCase)get(TestCase.class, po.getCaseId());
+//        TestCase testcase = (TestCase)getDetail(TestCase.class, po.getCaseId());
 //        BeanUtilEx.copyProperties(vo, testcase);
 //        BeanUtilEx.copyProperties(vo, po);
 //
@@ -288,7 +288,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
 //        String action = act.msg;
 //
 //        String msg = "用户" + StringUtil.highlightDict(user.getName()) + action
-//                + "为\"" + Constant.ExeStatus.get(status) + "\"";
+//                + "为\"" + Constant.ExeStatus.getDetail(status) + "\"";
 //        if (!StringUtil.IsEmpty(result)) {
 //            msg += ", 内容：" + result;
 //        }

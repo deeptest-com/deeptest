@@ -16,7 +16,7 @@ public class IssueCommentsServiceImpl extends BaseServiceImpl implements IssueCo
 //        TestCaseComments po = new TestCaseComments();
 //
 //        if (vo.getId() != null) {
-//            po = (TestCaseComments)get(TestCaseComments.class, vo.getId());
+//            po = (TestCaseComments)getDetail(TestCaseComments.class, vo.getId());
 //        } else {
 //            po.setId(null);
 //        }
@@ -34,7 +34,7 @@ public class IssueCommentsServiceImpl extends BaseServiceImpl implements IssueCo
 
     @Override
     public boolean delete(Long id, Long userId) {
-//        TestCaseComments po = (TestCaseComments) get(TestCaseComments.class, id);
+//        TestCaseComments po = (TestCaseComments) getDetail(TestCaseComments.class, id);
 //        po.setDeleted(true);
 //        saveOrUpdate(po);
 
@@ -49,7 +49,7 @@ public class IssueCommentsServiceImpl extends BaseServiceImpl implements IssueCo
 //            vo.setUpdateTime(vo.getCreateTime());
 //        }
 //
-//        TestUser user = (TestUser)get(TestUser.class, po.getUserId());
+//        TestUser user = (TestUser)getDetail(TestUser.class, po.getUserId());
 //
 //        vo.setUserName(user.getName());
 //        vo.setUserAvatar(user.getAvatar());

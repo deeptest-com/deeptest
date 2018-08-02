@@ -50,11 +50,11 @@ public class JenkinsServiceImpl extends BaseServiceImpl implements JenkinsServic
 //
 //            jenkinsServer = new JenkinsServer(new URI(jenkinsSvr), jenkinsUser, jenkinsPassword);
 //            Map<String, Job> jobs = jenkinsServer.getJobs();
-//            JobWithDetails job = jobs.get(JenkinsTask.get(vo.getTestType())).details();
+//            JobWithDetails job = jobs.getDetail(JenkinsTask.getDetail(vo.getTestType())).details();
 //
 //            Map<String, String> params = new HashMap();
 //            params.put("json", JSON.toJSONString(runVo));
-////            params.put("suite", JenkinsTask.get(vo.getTestType()));
+////            params.put("suite", JenkinsTask.getDetail(vo.getTestType()));
 //
 //            job.build(params, true);
 //        } catch (Exception e) {

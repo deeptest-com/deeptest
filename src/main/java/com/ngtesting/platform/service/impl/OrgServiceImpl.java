@@ -87,7 +87,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 //			return false;
 //		}
 //
-//		TstOrg po = (TstOrg) get(TstOrg.class, id);
+//		TstOrg po = (TstOrg) getDetail(TstOrg.class, id);
 //		po.setDisabled(true);
 //		saveOrUpdate(po);
 
@@ -100,7 +100,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 //			return false;
 //		}
 //
-//		TstOrg po = (TstOrg) get(TstOrg.class, id);
+//		TstOrg po = (TstOrg) getDetail(TstOrg.class, id);
 //		po.setDeleted(true);
 //		saveOrUpdate(po);
 

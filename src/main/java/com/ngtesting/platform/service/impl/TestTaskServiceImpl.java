@@ -36,7 +36,7 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 
     @Override
     public TstTask getById(Integer id) {
-        TstTask po = taskDao.get(id);
+        TstTask po = taskDao.getDetail(id);
         TstTask vo = genVo(po);
 
         return vo;
@@ -56,6 +56,10 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
             taskDao.removeAssignees(task.getId());
         } else {
             action = Constant.MsgType.create;
+
+            if (task.getCaseProjectId() == null) {
+                task.setCaseProjectId(task.getProjectId());
+            }
             taskDao.save(task);
         }
 
@@ -69,7 +73,7 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
         historyService.create(task.getProjectId(), user, action.msg, TstHistory.TargetType.task,
                 task.getId(), task.getName());
 
-        TstTask ret = taskDao.get(task.getId());
+        TstTask ret = taskDao.getDetail(task.getId());
         return ret;
     }
 
@@ -90,7 +94,10 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
                 caseProjectId = vo.getCaseProjectId();
             }
         }
-        addCasesBySuitesPers(task.getId(), suiteIds);
+
+        String suiteIdsStr = StringUtil.join(suiteIds.toArray(), ",");
+        taskDao.addCasesBySuites(task.getId(), suiteIdsStr);
+
         if (caseProjectId != null &&
                 (task.getCaseProjectId() == null ||  caseProjectId.intValue() != task.getCaseProjectId().intValue())) {
             taskDao.updateCaseProject(task.getId(), caseProjectId);
@@ -104,55 +111,28 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     @Override
     @Transactional
     public TstTask saveCases(JSONObject json, TstUser optUser) {
-        Integer projectId = json.getInteger("projectId");
-        Integer caseProjectId = json.getInteger("caseProjectId");
-        Integer planId = json.getInteger("planId");
         Integer taskId = json.getInteger("taskId");
+        Integer caseProjectId = json.getInteger("caseProjectId");
         JSONArray data = json.getJSONArray("cases");
 
-        return saveCases(projectId, caseProjectId, planId, taskId, data.toArray(), optUser);
-    }
-
-    @Override
-    @Transactional
-    public TstTask saveCases(Integer projectId, Integer caseProjectId, Integer planId, Integer taskId, Object[] ids, TstUser optUser) {
-        TstTask task = null;
-        if (taskId != null) {
-//            task = (TstTask) get(TstTask.class, taskId);
-        } else {
-            task = new TstTask();
-            task.setPlanId(planId);
-        }
-        task.setProjectId(projectId);
-        task.setCaseProjectId(caseProjectId);
-
-//        task.setTestCases(new LinkedList<TstCaseInTask>());
-//        saveOrUpdate(task);
+        taskDao.updateCaseProject(taskId, caseProjectId);
 
         List<Integer> caseIds = new LinkedList<>();
-        for (Object obj : ids) {
+        for (Object obj : data.toArray()) {
             Integer id = Integer.valueOf(obj.toString());
             caseIds.add(id);
         }
-        addCasesPers(task.getId(), caseIds);
 
+        String ids = StringUtil.join(caseIds.toArray(), ",");
+        taskDao.addCases(taskId, ids, false);
+
+        TstTask task = taskDao.get(taskId);
         Constant.MsgType action = Constant.MsgType.update_case;
         msgService.create(task, action, optUser);
         historyService.create(task.getProjectId(), optUser, action.msg, TstHistory.TargetType.task,
                 task.getId(), task.getName());
 
         return task;
-    }
-
-    @Override
-    public void addCasesBySuitesPers(Integer id, List<Integer> suiteIds) {
-        String suiteIdsStr = StringUtil.join(suiteIds.toArray(), ",");
-        taskDao.addCasesBySuites(id, suiteIdsStr);
-    }
-    @Override
-    public void addCasesPers(Integer id, List<Integer> caseIds) {
-//        String ids = StringUtils.join(caseIds.toArray(), ",");
-//        getDao().querySql("{call add_cases_to_task(?,?,?)}", id, ids, false);
     }
 
     @Override
@@ -167,7 +147,6 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     @Override
     public void closePlanIfAllTaskClosedPers(Integer planId) {
         taskDao.closePlanIfAllTaskClosed(planId);
-//        getDao().querySql("{call close_plan_if_all_task_closed(?)}", planId);
     }
 
     @Override

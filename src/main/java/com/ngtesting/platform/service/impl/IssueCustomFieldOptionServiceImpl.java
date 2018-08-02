@@ -35,7 +35,7 @@ public class IssueCustomFieldOptionServiceImpl extends BaseServiceImpl implement
 //
 //        TestCustomFieldOption po;
 //        if (vo.getId() != null) {
-//            po = (TestCustomFieldOption) get(TestCustomFieldOption.class, vo.getId());
+//            po = (TestCustomFieldOption) getDetail(TestCustomFieldOption.class, vo.getId());
 //        } else {
 //            po = new TestCustomFieldOption();
 //        }
@@ -62,7 +62,7 @@ public class IssueCustomFieldOptionServiceImpl extends BaseServiceImpl implement
 
     @Override
     public boolean changeOrderPers(Integer id, String act, Integer fieldId) {
-//        TestCustomFieldOption opt = (TestCustomFieldOption) get(TestCustomFieldOption.class, id);
+//        TestCustomFieldOption opt = (TestCustomFieldOption) getDetail(TestCustomFieldOption.class, id);
 //
 //        String hql = "from TestCustomFieldOption opt where opt.fieldId=? and opt.deleted = false and opt.disabled = false ";
 //        if ("up".equals(act)) {

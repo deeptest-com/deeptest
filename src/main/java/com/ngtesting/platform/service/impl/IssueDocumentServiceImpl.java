@@ -39,7 +39,7 @@ public class IssueDocumentServiceImpl extends BaseServiceImpl implements IssueDo
 //
 //		Document po = new Document();
 //		if (vo.getId() != null) {
-//			po = (Document) get(Document.class, vo.getId());
+//			po = (Document) getDetail(Document.class, vo.getId());
 //		}
 //
 //		po.setEventId(vo.getEventId());
@@ -54,7 +54,7 @@ public class IssueDocumentServiceImpl extends BaseServiceImpl implements IssueDo
 
 	@Override
 	public boolean remove(Integer id) {
-//		Document po = (Document) get(Document.class, id);
+//		Document po = (Document) getDetail(Document.class, id);
 //		po.setDeleted(true);
 //		saveOrUpdate(po);
 

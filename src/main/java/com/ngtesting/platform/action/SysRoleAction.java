@@ -54,7 +54,7 @@ public class SysRoleAction extends BaseAction {
 
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-//		SysRole po = (SysRole) roleService.get(SysRole.class, Integer.valueOf(accountId));
+//		SysRole po = (SysRole) roleService.getDetail(SysRole.class, Integer.valueOf(accountId));
 //		SysRole vo = roleService.genVo(po);
 //
 //        ret.put("data", vo);

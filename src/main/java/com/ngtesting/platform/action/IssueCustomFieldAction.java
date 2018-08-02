@@ -90,7 +90,7 @@ public class IssueCustomFieldAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 
 		TstCustomField customField = JSON.parseObject(JSON.toJSONString(json.get("model")), TstCustomField.class);
-//		List<TestProjectVo> projects = (List<TestProjectVo>) json.get("relations");
+//		List<TestProjectVo> projects = (List<TestProjectVo>) json.getDetail("relations");
 //
 //		TstCustomField po = customFieldService.save(customField, orgId);
 //		boolean success = customFieldService.saveRelationsByField(po.getId(), projects);

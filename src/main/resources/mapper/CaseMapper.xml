@@ -16,7 +16,7 @@
         WHERE o.projectId = #{projectId}
          AND O.deleted != TRUE  AND o.disabled != TRUE
 
-        ORDER BY o.pId, o.id
+        ORDER BY o.pId, o.ordr
     </select>
 
     <select id="get" resultType="TstCase">
@@ -79,6 +79,11 @@
     </update>
     <update id="delete">
         { call remove_case_and_its_children(#{pId,mode=IN,jdbcType=INTEGER}) }
+    </update>
+    <update id="updateProp" statementType="STATEMENT">
+        UPDATE TstCase
+        SET ${prop} = '${value}'
+        WHERE id=${id}
     </update>
 
     <update id="addOrderForTargetAndNextCases">

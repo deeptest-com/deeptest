@@ -47,9 +47,7 @@ public class CaseAction extends BaseAction {
 		List<TstCase> ls = caseService.query(projectId);
 
         List<TstCaseType> caseTypePos = caseTypeService.list(orgId);
-
         List<TstCasePriority> casePriorityPos = casePriorityService.list(orgId);
-
         List<TstCustomField> customFieldList = customFieldService.listForCaseByProject(orgId, projectId);
 
         ret.put("data", ls);

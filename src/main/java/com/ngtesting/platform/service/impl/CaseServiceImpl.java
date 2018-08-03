@@ -209,6 +209,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     }
 
     @Override
+    @Transactional
     public void createSample(Integer projectId, TstUser user) {
         TstCase root = new TstCase();
         root.setName("测试用例");
@@ -217,7 +218,6 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         root.setCreateById(user.getId());
         root.setCreateTime(new Date());
         root.setOrdr(0);
-        root.setVersion(0);
 
         caseDao.create(root);
 
@@ -229,7 +229,6 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         testCase.setCreateTime(new Date());
         testCase.setLeaf(false);
         testCase.setOrdr(0);
-        root.setVersion(0);
         caseDao.create(testCase);
         caseHistoryService.saveHistory(user, Constant.CaseAct.create, testCase,null);
 

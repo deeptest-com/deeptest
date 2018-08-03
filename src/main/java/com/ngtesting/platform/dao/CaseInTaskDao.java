@@ -1,10 +1,13 @@
 package com.ngtesting.platform.dao;
 
-import com.ngtesting.platform.model.TstMsg;
+import com.ngtesting.platform.model.TstCaseInTask;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 public interface CaseInTaskDao {
-    List<TstMsg> query(@Param("userId") Integer userId);
+    List<TstCaseInTask> query(@Param("taskId") Integer taskId);
+
+    TstCaseInTask get(@Param("id") Integer id);
+    TstCaseInTask getDetail(@Param("id") Integer id);
 }

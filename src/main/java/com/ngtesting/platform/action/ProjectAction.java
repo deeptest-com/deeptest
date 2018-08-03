@@ -151,6 +151,22 @@ public class ProjectAction {
         return ret;
     }
 
+    @PostMapping(value = "delete")
+    @ResponseBody
+    public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Integer id = json.getInteger("id");
+
+        projectService.delete(id, user.getId());
+
+        pushSettingsService.pushRecentProjects(user);
+        pushSettingsService.pushPrjSettings(user);
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
     @ResponseBody
     @PostMapping("/getUsers")
     public Map<String, Object> getUsers(HttpServletRequest request, @RequestBody JSONObject json) {

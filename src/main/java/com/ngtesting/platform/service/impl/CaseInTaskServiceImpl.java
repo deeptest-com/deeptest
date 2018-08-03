@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.dao.CaseInTaskDao;
 import com.ngtesting.platform.model.TstCase;
 import com.ngtesting.platform.model.TstCaseInTask;
 import com.ngtesting.platform.model.TstCaseInTaskHistory;
@@ -13,7 +14,6 @@ import com.ngtesting.platform.service.CaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -21,40 +21,24 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
     @Autowired
     CaseService caseService;
     @Autowired
+    CaseInTaskDao caseInTaskDao;
+    @Autowired
     CaseCommentsService caseCommentsService;
     @Autowired
     CaseAttachmentService caseAttachmentService;
 
     @Override
     public List<TstCaseInTask> query(Integer taskId) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TestCaseInTask.class);
-//        dc.createAlias("testCase", "cs");
-//
-//        dc.add(Restrictions.eq("taskId", taskId));
-//
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//
-//        dc.addOrder(Order.asc("pId"));
-//        dc.addOrder(Order.asc("cs.ordr"));
-//
-//        List<TestCaseInTask> ls = findAllByCriteria(dc);
-//
-//        List<TstCaseInTask> vos = genVos(ls);
-//
-//        return vos;
+        List<TstCaseInTask> ls = caseInTaskDao.query(taskId);
 
-        return null;
+        return ls;
     }
 
     @Override
-    public TstCaseInTask getById(Integer id) {
-//        TestCaseInTask po = (TestCaseInTask) getDetail(TestCaseInTask.class, id);
-//        TstCaseInTask vo = genVo(po, true);
-//
-//        return vo;
+    public TstCaseInTask getDetail(Integer id) {
+        TstCaseInTask po = caseInTaskDao.getDetail(id);
 
-        return null;
+        return po;
     }
 
     @Override
@@ -201,13 +185,10 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
 
     @Override
     public List<TstCaseInTask> genVos(List<TstCaseInTask> pos) {
-        List<TstCaseInTask> vos = new LinkedList<>();
-
-//        for (TestCaseInTask po: pos) {
-//            TstCaseInTask vo = genVo(po, false);
-//            vos.add(vo);
-//        }
-        return vos;
+        for (TstCaseInTask po: pos) {
+            genVo(po, false);
+        }
+        return pos;
     }
 
     @Override

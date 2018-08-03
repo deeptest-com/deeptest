@@ -13,6 +13,8 @@ public interface ProjectDao {
                            @Param("disabledParam") Boolean disabledParam);
 
     TstProject get(@Param("id") Integer id);
+    void delete(@Param("id") Integer id, @Param("userId") Integer userId);
+
     List<Map<String, String>> getProjectPrivilegeByOrgForUser(@Param("userId") Integer userId,
                                                               @Param("orgId") Integer orgId);
 

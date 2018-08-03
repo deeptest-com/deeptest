@@ -39,6 +39,9 @@
                 #{item}
             </foreach>)
         AND o.deleted != TRUE AND o.disabled != TRUE
+        AND prj.deleted != TRUE AND prj.disabled != TRUE
+        AND casePrj.deleted != TRUE AND casePrj.disabled != TRUE
+
         ORDER BY o.caseProjectId ASC, o.id ASC
     </select>
 

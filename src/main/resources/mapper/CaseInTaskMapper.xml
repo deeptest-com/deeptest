@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.CaseInTaskDao" >
+
+    <select id="query" resultType="TstCaseInTask">
+        SELECT cs.name name, cs.id id,
+          o.id entityId, o.pId pId, o.isLeaf isLeaf, o.ordr ordr
+
+        FROM TstCaseInTask o
+        JOIN TstCase cs ON o.caseId = cs.id
+
+        WHERE o.taskId=#{taskId}
+        AND o.deleted != true AND o.disabled != true
+        ORDER BY o.pId, o.ordr
+    </select>
+
+    <select id="get" resultType="TstCaseInTask">
+        SELECT cs.id id, cs.name name,
+          o.id entityId, o.pId pId, o.isLeaf isLeaf, o.ordr ordr
+
+        FROM TstCaseInTask o
+        JOIN TstCase cs ON o.caseId = cs.id
+
+        WHERE o.id=#{id}
+    </select>
+
+    <select id="getDetail" resultMap="caseInTaskMap">
+        SELECT cs.id id, cs.*,
+          o.id entityId, o.pId pId, o.isLeaf isLeaf, o.status status, o.result result, o.ordr ordr
+
+        FROM TstCaseInTask o
+        JOIN TstCase cs ON o.caseId = cs.id
+
+        WHERE o.id=#{id}
+    </select>
+
+    <resultMap id="caseInTaskMap" type="TstCaseInTask" autoMapping="true">
+        <id column="id" property="id"/>
+
+        <collection property="steps" select="com.ngtesting.platform.dao.CaseStepDao.listByCaseId"
+                    column="{id=id}">
+        </collection>
+
+        <collection property="histories" select="com.ngtesting.platform.dao.CaseHistoryDao.listByCaseId"
+                    column="{id=id}">
+        </collection>
+
+        <collection property="comments" select="com.ngtesting.platform.dao.CaseCommentsDao.listByCaseId"
+                    column="{id=id}">
+        </collection>
+
+        <collection property="attachments" select="com.ngtesting.platform.dao.CaseAttachmentDao.listByCaseId"
+                    column="{id=id}">
+        </collection>
+    </resultMap>
+
+</mapper>

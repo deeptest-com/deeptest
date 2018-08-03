@@ -2,12 +2,8 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.TstCaseInTask;
-import com.ngtesting.platform.model.TstCustomField;
-import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.CaseInTaskService;
-import com.ngtesting.platform.service.CaseService;
-import com.ngtesting.platform.service.CustomFieldService;
+import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +26,10 @@ public class CaseInTaskAction extends BaseAction {
     CaseInTaskService caseInTaskService;
 
     @Autowired
+    CaseTypeService caseTypeService;
+    @Autowired
+    CasePriorityService casePriorityService;
+    @Autowired
     CustomFieldService customFieldService;
 
     @RequestMapping(value = "query", method = RequestMethod.POST)
@@ -42,9 +42,14 @@ public class CaseInTaskAction extends BaseAction {
         Integer taskId = json.getInteger("taskId");
 
         List<TstCaseInTask> vos = caseInTaskService.query(taskId);
+
+        List<TstCaseType> caseTypePos = caseTypeService.list(orgId);
+        List<TstCasePriority> casePriorityPos = casePriorityService.list(orgId);
         List<TstCustomField> customFieldList = customFieldService.listForCaseByProject(orgId, projectId);
 
         ret.put("data", vos);
+        ret.put("caseTypeList", caseTypePos);
+        ret.put("casePriorityList", casePriorityPos);
         ret.put("customFields", customFieldList);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
@@ -59,7 +64,21 @@ public class CaseInTaskAction extends BaseAction {
         Integer orgId = userVo.getDefaultOrgId();
         Integer caseId = json.getInteger("id");
 
-        TstCaseInTask vo = caseInTaskService.getById(caseId);
+        TstCaseInTask vo = caseInTaskService.getDetail(caseId);
+
+        ret.put("data", vo);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @RequestMapping(value = "rename", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> rename(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+        TstCaseInTask vo = caseInTaskService.renamePers(json, userVo);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -85,46 +104,5 @@ public class CaseInTaskAction extends BaseAction {
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
-
-    @RequestMapping(value = "rename", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> rename(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
-        TstCaseInTask vo = caseInTaskService.renamePers(json, userVo);
-
-        ret.put("data", vo);
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
-    @RequestMapping(value = "move", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> move(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
-        TstCaseInTask vo = caseInTaskService.movePers(json, userVo);
-
-        ret.put("data", vo);
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
-//    @RequestMapping(value = "delete", method = RequestMethod.POST)
-//    @ResponseBody
-//    public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
-//        Map<String, Object> ret = new HashMap<String, Object>();
-//
-//        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//
-//        Integer entityId = json.getInteger("entityId");
-//        TstCaseInTask caseInRun = caseInTaskService.removeCaseFromRunPers(entityId, userVo);
-//
-//        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-//        return ret;
-//    }
 
 }

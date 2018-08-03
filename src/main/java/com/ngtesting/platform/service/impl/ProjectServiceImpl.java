@@ -138,23 +138,8 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	}
 
 	@Override
-	public Boolean delete(Integer id) {
-//		if (id == null) {
-//			return null;
-//		}
-//
-//		TstProject po = (TstProject) getDetail(TstProject.class, id);
-//		po.setDeleted(true);
-//		saveOrUpdate(po);
-//
-//		// 项目组被删除，删除子项目
-//		if (po.getType().equals(ProjectType.group)) {
-//			for (TstProject child : po.getChildren()) {
-//				child.setDeleted(true);
-//				saveOrUpdate(child);
-//			}
-//
-//		}
+	public Boolean delete(Integer id, Integer userId) {
+        projectDao.delete(id, userId);
 
 		return true;
 	}

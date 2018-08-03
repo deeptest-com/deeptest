@@ -35,6 +35,11 @@
     <select id="get" parameterType="Integer" resultType="TstProject">
         SELECT * FROM TstProject p WHERE p.id = #{id}
     </select>
+    <delete id="delete">
+        UPDATE TstProject
+        SET deleted=TRUE, updateTime=NOW()
+        WHERE id=#{id}
+    </delete>
 
     <insert id="genHistory">
       { call gen_project_access_history(

@@ -12,7 +12,7 @@ import java.util.List;
 public interface CaseInTaskService extends BaseService {
 
 	List<TstCaseInTask> query(Integer taskId);
-    TstCaseInTask getById(Integer id);
+    TstCaseInTask getDetail(Integer id);
     TstCaseInTask setResultPers(Integer caseInTaskId, String result, String status, Integer next, TstUser userVo);
 
     TstCaseInTask renamePers(JSONObject json, TstUser userVo);

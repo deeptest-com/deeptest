@@ -71,7 +71,7 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 
         importSuiteCasesPers(task, JSON.parseObject(JSON.toJSONString(json.get("suites")), List.class));
 
-        alertService.saveAlert(task);
+        alertService.create(task);
         msgService.create(task, action, user);
         historyService.create(task.getProjectId(), user, action.msg, TstHistory.TargetType.task,
                 task.getId(), task.getName());

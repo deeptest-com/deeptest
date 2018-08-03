@@ -3,12 +3,26 @@
 <mapper namespace="com.ngtesting.platform.dao.MsgDao" >
 
     <select id="query" resultType="TstMsg">
-        SELECT * FROM TstMsg o WHERE o.userId=#{userId}
+        SELECT o.*, usr.avatar userAvatar
+
+        FROM TstMsg o
+        LEFT JOIN TstUser usr on o.userId = usr.id
+
+        WHERE o.userId=#{userId}
         <if test="isRead != null">
             AND o.isRead = #{isRead}
         </if>
         AND o.deleted != true AND o.disabled != true
         ORDER BY o.createTime DESC
     </select>
+
+    <insert id="create" parameterType="TstMsg" useGeneratedKeys="true" keyProperty="id">
+        insert into TstMsg
+            (title,userId,isRead,
+              deleted,disabled,createTime)
+          values
+            (#{title},#{userId},FALSE,
+              FALSE,FALSE,NOW() )
+    </insert>
 
 </mapper>

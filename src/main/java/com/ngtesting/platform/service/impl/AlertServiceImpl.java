@@ -1,8 +1,11 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.AlertDao;
+import com.ngtesting.platform.dao.TestPlanDao;
 import com.ngtesting.platform.model.TstAlert;
+import com.ngtesting.platform.model.TstPlan;
 import com.ngtesting.platform.model.TstTask;
+import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.AlertService;
 import com.ngtesting.platform.utils.DateUtil;
 import com.ngtesting.platform.utils.StringUtil;
@@ -17,6 +20,9 @@ import java.util.List;
 public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
     @Autowired
     private AlertDao alertDao;
+
+    @Autowired
+    private TestPlanDao planDao;
 
     @Override
     public List<TstAlert> list(Integer userId, Boolean isRead) {
@@ -58,40 +64,37 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
         Date endTime = po.getEndTime();
 
         if (endTime != null && endTime.getTime() >= startTimeOfToday && endTime.getTime() <= endTimeOfToday) {
-            po.setTitle("任务" + StringUtil.highlightDict(po.getName()) + "完成");
+            po.setTitle("任务" + StringUtil.highlightDict(po.getTitle()) + "完成");
         } else {
-            po.setTitle("任务" + StringUtil.highlightDict(po.getName()) + "开始");
+            po.setTitle("任务" + StringUtil.highlightDict(po.getTitle()) + "开始");
         }
 
         return po;
     }
     @Override
-    public void saveAlert(TstTask task) {
+    public void create(TstTask task) {
+        for (TstUser user : task.getAssignees()) {
+            TstAlert po = getByTask(task.getId());;
+            if (po == null) {
+                po = new TstAlert();
+            }
 
-//        for (TestUser user : task.getAssignees()) {
-//            TstAlert po = getByTask(task.getId());;
-//            if (po == null) {
-//                po = new TstAlert();
-//            }
-//
-//            po.setType("task");
-//            po.setDescr(task.getDescr());
-//            po.setEntityId(task.getId());
-//            po.setEntityName(task.getName());
-//            po.setStatus(task.getStatus().toString());
-//            po.setRead(false);
-//            po.setUserId(task.getUserId());
-//            po.setAssigneeId(user.getId());
-//
-//            TestPlan plan = task.getPlan();
-//            if (plan == null || plan.getId() == null) {
-//                plan= (TestPlan)getDetail(TestPlan.class, task.getPlanId());
-//            }
-//            po.setStartTime(plan.getStartTime());
-//            po.setEndTime(plan.getEndTime());
-//
-//            saveOrUpdate(po);
-//        }
+            po.setType("task");
+            po.setTitle(task.getName());
+
+            po.setEntityId(task.getId());
+
+            po.setUserId(task.getUserId());
+            po.setAssigneeId(user.getId());
+
+            TstPlan plan= planDao.get(task.getPlanId());
+
+            po.setStartTime(plan.getStartTime());
+            po.setEndTime(plan.getEndTime());
+
+            alertDao.create(po);
+        }
+
     }
 
     @Override

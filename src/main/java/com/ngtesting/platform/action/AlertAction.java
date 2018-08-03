@@ -1,7 +1,7 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.bean.websocket.OptFacade;
+import com.ngtesting.platform.bean.websocket.WsFacade;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.AlertService;
@@ -21,7 +21,7 @@ import java.util.Map;
 @RequestMapping(Constant.API_PATH_CLIENT + "alert/")
 public class AlertAction extends BaseAction {
     @Autowired
-    private OptFacade optFacade;
+    private WsFacade optFacade;
 
 	@Autowired
     AlertService alertService;

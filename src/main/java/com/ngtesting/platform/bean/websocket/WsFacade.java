@@ -1,5 +1,6 @@
 package com.ngtesting.platform.bean.websocket;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant.RespCode;
 import com.ngtesting.platform.config.WsConstant;
@@ -13,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.TextMessage;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,8 +22,8 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 @Service
-public class OptFacade {
-    Log logger = LogFactory.getLog(OptFacade.class);
+public class WsFacade {
+    Log logger = LogFactory.getLog(WsFacade.class);
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
@@ -37,6 +39,12 @@ public class OptFacade {
     MsgService msgService;
     @Autowired
     AlertService alertService;
+
+    public void opt(String act, TstUser user) {
+        JSONObject json = new JSONObject();
+        json.put("type", act);
+        opt(json, user);
+    }
 
     public void opt(JSONObject json, TstUser user) {
         Map<String, Object> ret = new HashMap<>();
@@ -67,16 +75,10 @@ public class OptFacade {
         }
 
         ret.put("code", 1);
-//        if (ret.getDetail("type") != null) {
-//            simpMessagingTemplate.convertAndSendToUser(user.getToken(), "/notification",
-//                    new TextMessage(JSON.toJSONString(ret)));
-//        }
-    }
-
-    public void opt(String act, TstUser user) {
-        JSONObject json = new JSONObject();
-        json.put("type", act);
-        opt(json, user);
+        if (ret.get("type") != null) {
+            simpMessagingTemplate.convertAndSendToUser(user.getToken(), "/notification",
+                    new TextMessage(JSON.toJSONString(ret)));
+        }
     }
 
 }

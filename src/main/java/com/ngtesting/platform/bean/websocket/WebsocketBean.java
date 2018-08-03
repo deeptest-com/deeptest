@@ -17,7 +17,7 @@ import java.util.Map;
 public class WebsocketBean {
 
     @Autowired
-    private OptFacade optFacade;
+    private WsFacade optFacade;
 
     @Value("${mail.smtp.host}")
     private String mailHost;

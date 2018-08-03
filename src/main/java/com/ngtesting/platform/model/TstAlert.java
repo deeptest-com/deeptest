@@ -5,11 +5,13 @@ import java.util.Date;
 public class TstAlert extends BaseModel {
     private static final long serialVersionUID = -3772223392983975860L;
 
-    private String name;
     private String title;
-    private String descr;
     private String uri;
     private String type;
+
+    private Integer entityId;
+    private String entityName;
+    private String entityStatus;
 
     private Date startTime;
     private Date endTime;
@@ -33,12 +35,28 @@ public class TstAlert extends BaseModel {
         isSent = sent;
     }
 
-    public String getName() {
-        return name;
+    public Integer getEntityId() {
+        return entityId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setEntityId(Integer entityId) {
+        this.entityId = entityId;
+    }
+
+    public String getEntityName() {
+        return entityName;
+    }
+
+    public void setEntityName(String entityName) {
+        this.entityName = entityName;
+    }
+
+    public String getEntityStatus() {
+        return entityStatus;
+    }
+
+    public void setEntityStatus(String entityStatus) {
+        this.entityStatus = entityStatus;
     }
 
     public String getTitle() {
@@ -47,14 +65,6 @@ public class TstAlert extends BaseModel {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getDescr() {
-        return descr;
-    }
-
-    public void setDescr(String descr) {
-        this.descr = descr;
     }
 
     public String getUri() {

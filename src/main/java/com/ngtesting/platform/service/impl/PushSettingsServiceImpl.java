@@ -41,8 +41,8 @@ public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSett
         ret.put("code", 1);
         ret.put("type", WsConstant.WS_USER_SETTINGS);
 
-//        Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userId);
-//        ret.put("sysPrivileges", sysPrivileges);
+        Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(user.getId());
+        ret.put("sysPrivileges", sysPrivileges);
 
         ret.put("profile", user);
         sendMsg(user, ret);

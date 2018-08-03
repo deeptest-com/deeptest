@@ -6,6 +6,7 @@ import com.ngtesting.platform.model.TstMsg;
 import com.ngtesting.platform.model.TstTask;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.MsgService;
+import com.ngtesting.platform.utils.StringUtil;
 import com.ngtesting.platform.vo.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,16 +66,14 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
     }
 
     @Override
-    public TstMsg create(TstTask run, Constant.MsgType action, TstUser optUser) {
+    public TstMsg create(TstTask task, Constant.MsgType action, TstUser optUser) {
         TstMsg msg = new TstMsg();
 
-//        msg.setName("用户" + StringUtil.highlightDict(optUser.getName()) + action.msg
-//                + "测试集" + StringUtil.highlightDict(run.getName()));
-//
-//        msg.setDescr(run.getDescr());
-//        msg.setUserId(run.getUserId());
-//        msg.setOptUserId(optUser.getId());
-//        saveOrUpdate(msg);
+        msg.setTitle("用户" + StringUtil.highlightDict(optUser.getNickname()) + action.msg
+                + "测试集" + StringUtil.highlightDict(task.getName()));
+
+        msg.setUserId(task.getUserId());
+        msgDao.create(msg);
 
         return msg;
     }

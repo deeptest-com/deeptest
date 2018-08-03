@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface MsgDao {
     List<TstMsg> query(@Param("userId") Integer userId, @Param("isRead") Boolean isRead);
+
+    void create(TstMsg msg);
 }

@@ -28,4 +28,13 @@
         ]]>
     </select>
 
+    <insert id="create" parameterType="TstAlert" useGeneratedKeys="true" keyProperty="id">
+        insert into TstAlert
+          (`type`,title,userId,assigneeId,entityId,isRead,isSent,
+            deleted,disabled,createTime)
+        values
+          ( #{type},#{title},#{userId},#{assigneeId},#{entityId},FALSE ,FALSE,
+            FALSE,FALSE,NOW() )
+    </insert>
+
 </mapper>

@@ -1,7 +1,7 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.bean.websocket.OptFacade;
+import com.ngtesting.platform.bean.websocket.WsFacade;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.model.TstTask;
@@ -24,7 +24,7 @@ import java.util.Map;
 @RequestMapping(Constant.API_PATH_CLIENT + "task/")
 public class TaskAction extends BaseAction {
     @Autowired
-    private OptFacade optFacade;
+    private WsFacade optFacade;
 
 	@Autowired
 	TestTaskService taskService;

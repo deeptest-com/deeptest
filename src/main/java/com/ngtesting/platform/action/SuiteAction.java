@@ -2,7 +2,7 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
-import com.ngtesting.platform.bean.websocket.OptFacade;
+import com.ngtesting.platform.bean.websocket.WsFacade;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstSuite;
 import com.ngtesting.platform.model.TstUser;
@@ -24,7 +24,7 @@ import java.util.Map;
 @RequestMapping(Constant.API_PATH_CLIENT + "suite/")
 public class SuiteAction extends BaseAction {
 	@Autowired
-	private OptFacade optFacade;
+	private WsFacade optFacade;
 
 	@Autowired
 	TestSuiteService suiteService;

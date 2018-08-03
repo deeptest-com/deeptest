@@ -1,16 +1,31 @@
 package com.ngtesting.platform.model;
 
 public class TstMsg extends BaseModel {
+    private static final Long serialVersionUID = -6418363700406245211L;
 
-    private static final long serialVersionUID = -6418363700406245211L;
-
-    private String name;
-    private String descr;
+    private String title;
     private String uri;
-    private String avatar;
     private Boolean isRead;
 
-    private Long userId;
+    private Integer userId;
+    private String userName;
+    private String userAvatar;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserAvatar() {
+        return userAvatar;
+    }
+
+    public void setUserAvatar(String userAvatar) {
+        this.userAvatar = userAvatar;
+    }
 
     public Boolean getRead() {
         return isRead;
@@ -20,28 +35,12 @@ public class TstMsg extends BaseModel {
         isRead = read;
     }
 
-    public String getAvatar() {
-        return avatar;
+    public String getTitle() {
+        return title;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescr() {
-        return descr;
-    }
-
-    public void setDescr(String descr) {
-        this.descr = descr;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getUri() {
@@ -52,11 +51,11 @@ public class TstMsg extends BaseModel {
         this.uri = uri;
     }
 
-    public Long getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

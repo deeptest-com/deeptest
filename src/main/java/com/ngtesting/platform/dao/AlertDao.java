@@ -11,4 +11,6 @@ public interface AlertDao {
 
     List<TstAlert> scanAlerts(@Param("userId") Integer userId,
                               @Param("startTimeOfToday") Date startTimeOfToday, @Param("endTimeOfToday") Date endTimeOfToday);
+
+    void create(TstAlert po);
 }

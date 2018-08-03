@@ -48,43 +48,14 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 
     @Override
     public List<TstCustomField> listForCaseByProject(Integer orgId, Integer projectId) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstCustomField.class);
-//
-//        dc.createAlias("projectSet", "p").add(Restrictions.eq("p.id", projectId));
-//        dc.add(Restrictions.eq("applyTo", FieldApplyTo.test_case));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc.addOrder(Order.asc("ordr"));
-//        List<TstCustomField> ls1 = findAllByCriteria(dc);
-//
-//        DetachedCriteria dc2 = DetachedCriteria.forClass(TstCustomField.class);
-//        dc2.add(Restrictions.eq("orgId", orgId));
-//        dc2.add(Restrictions.eq("global", true));
-//        dc2.add(Restrictions.eq("applyTo", FieldApplyTo.test_case));
-//        dc2.add(Restrictions.eq("disabled", Boolean.FALSE));
-//        dc2.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc2.addOrder(Order.asc("ordr"));
-//        List<TstCustomField> ls2 = findAllByCriteria(dc2);
-//
-//        ls2.addAll(ls1);
-//        List<TstCustomField> vos = genVos(ls2);
-//
-//        return vos;
+        List<TstCustomField> ls = customFieldDao.listForCaseByProject(orgId, projectId);
 
-        return null;
+        return ls;
     }
 
     @Override
     public TstCustomField get(Integer customFieldId) {
-        return customFieldDao.get(customFieldId);
-    }
-
-    @Override
-    public List<TstCustomField> listVos(Integer orgId) {
-        List<TstCustomField> ls = list(orgId);
-
-        List<TstCustomField> vos = genVos(ls);
-        return vos;
+        return customFieldDao.getDetail(customFieldId);
     }
 
     @Override
@@ -175,23 +146,6 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
             ls.add(item.toString());
         }
         return ls;
-    }
-
-    @Override
-    public List<TstCustomField> genVos(List<TstCustomField> pos) {
-        List<TstCustomField> vos = new LinkedList();
-
-        for (TstCustomField po : pos) {
-            TstCustomField vo = genVo(po);
-            vos.add(vo);
-        }
-        return vos;
-    }
-    @Override
-    public TstCustomField genVo(TstCustomField po) {
-        po.setOptions(this.customFieldOptionService.genVos(po.getOptions()));
-
-        return po;
     }
 
 }

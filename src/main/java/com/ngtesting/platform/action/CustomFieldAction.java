@@ -38,7 +38,7 @@ public class CustomFieldAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		List<TstCustomField> vos = customFieldService.listVos(orgId);
+		List<TstCustomField> vos = customFieldService.list(orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		ret.put("data", vos);
@@ -61,8 +61,7 @@ public class CustomFieldAction extends BaseAction {
 			vo.setMyColumn(customFieldService.getLastUnusedColumn(orgId));
 			vo.setCode(UUID.randomUUID().toString());
 		} else {
-			TstCustomField po = customFieldService.get(customFieldId);
-			vo = customFieldService.genVo(po);
+			vo = customFieldService.get(customFieldId);
 		}
 
 		if (vo.getMyColumn() == null) {
@@ -128,7 +127,7 @@ public class CustomFieldAction extends BaseAction {
 
 		boolean success = customFieldService.changeOrderPers(id, act, orgId);
 
-		List<TstCustomField> vos = customFieldService.listVos(orgId);
+		List<TstCustomField> vos = customFieldService.list(orgId);
 
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

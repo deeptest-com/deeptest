@@ -1,57 +1,42 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.dao.CustomFieldOptionDao;
 import com.ngtesting.platform.model.TstCustomFieldOption;
 import com.ngtesting.platform.service.CustomFieldOptionService;
 import com.ngtesting.platform.utils.BeanUtilEx;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class CustomFieldOptionServiceImpl extends BaseServiceImpl implements CustomFieldOptionService {
+    @Autowired
+    CustomFieldOptionDao customFieldOptionDao;
 
     @Override
     public List<TstCustomFieldOption> listVos(Integer fieldId) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TestCustomFieldOption.class);
-//
-//        dc.add(Restrictions.eq("fieldId", fieldId));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//
-//        dc.addOrder(Order.asc("ordr"));
-//        List ls = findAllByCriteria(dc);
-//
-//        List<TstCustomFieldOption> vos = genVos(ls);
-//        return vos;
+        List ls = customFieldOptionDao.listByField(fieldId);
 
-        return null;
+        List<TstCustomFieldOption> vos = genVos(ls);
+        return vos;
     }
 
     @Override
     public TstCustomFieldOption save(TstCustomFieldOption vo) {
-//        if (vo == null) {
-//            return null;
-//        }
-//
-//        TestCustomFieldOption po;
-//        if (vo.getId() != null) {
-//            po = (TestCustomFieldOption) getDetail(TestCustomFieldOption.class, vo.getId());
-//        } else {
-//            po = new TestCustomFieldOption();
-//        }
-//        BeanUtilEx.copyProperties(po, vo);
-//
-//        if (vo.getId() == null) {
-//            String hql = "select max(ordr) from TestCustomFieldOption opt where opt.fieldId = ?";
-//            Object obj = getByHQL(hql, vo.getFieldId());
-//            Integer maxOrder = obj!=null?(Integer) getByHQL(hql, vo.getFieldId()): 10;
-//            po.setOrdr(maxOrder + 10);
-//        }
-//
-//        saveOrUpdate(po);
-//        return po;
+        if (vo.getId() == null) {
+            Integer maxOrder = customFieldOptionDao.getMaxOrder(vo.getFieldId());
+            if (maxOrder == null) {
+                maxOrder = 0;
+            }
+            vo.setOrdr(maxOrder + 10);
 
-        return null;
+            customFieldOptionDao.save(vo);
+        } else {
+            customFieldOptionDao.update(vo);
+        }
+
+        return vo;
     }
 
     @Override

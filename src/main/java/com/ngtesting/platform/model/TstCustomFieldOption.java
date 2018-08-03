@@ -3,8 +3,9 @@ package com.ngtesting.platform.model;
 public class TstCustomFieldOption extends BaseModel {
 	private static final long serialVersionUID = 4904548137077167076L;
 
-	private String value;
 	private String label;
+	private String value;
+
 	private String descr;
 	private Integer ordr;
 	private Integer fieldId;

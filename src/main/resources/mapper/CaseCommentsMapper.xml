@@ -9,7 +9,7 @@
         ORDER BY o.updateTime ASC
     </select>
 
-    <select id="listByCaseId" parameterType="Map" resultMap="caseCommentsMaps">
+    <select id="listByCaseId" parameterType="Map" resultMap="caseCommentsMap">
         SELECT o.*, usr.id userId, usr.nickname userName, usr.avatar userAvatar
 
         FROM TstCaseComments o
@@ -40,7 +40,7 @@
         WHERE id=#{id}
     </update>
 
-    <resultMap id="caseCommentsMaps" type="TstCaseComments" autoMapping="true">
+    <resultMap id="caseCommentsMap" type="TstCaseComments" autoMapping="true">
         <id column="id" property="id"/>
         <id column="summary" property="summary"/>
         <id column="userId" property="userId"/>

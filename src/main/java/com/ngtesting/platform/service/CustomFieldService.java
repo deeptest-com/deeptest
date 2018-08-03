@@ -14,8 +14,6 @@ public interface CustomFieldService extends BaseService {
 	TstCustomField save(TstCustomField vo, Integer orgId);
 	boolean delete(Integer id);
 
-	List<TstCustomField> listVos(Integer orgId);
-
 	List<String> listApplyTo();
 
 	List<String> listType();
@@ -26,6 +24,4 @@ public interface CustomFieldService extends BaseService {
 
     String getLastUnusedColumn(Integer orgId);
 
-	List<TstCustomField> genVos(List<TstCustomField> pos);
-	TstCustomField genVo(TstCustomField po);
 }

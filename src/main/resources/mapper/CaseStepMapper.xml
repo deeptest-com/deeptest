@@ -72,7 +72,7 @@
         where id = #{id}
     </update>
 
-    <select id="listByCaseId" parameterType="Map" resultMap="caseStepMaps">
+    <select id="listByCaseId" parameterType="Map" resultMap="caseStepMap">
         SELECT o.* FROM TstCaseStep o
 
         WHERE o.caseId = #{id}
@@ -80,7 +80,7 @@
 
         ORDER BY o.ordr ASC
     </select>
-    <resultMap id="caseStepMaps" type="TstCaseStep" autoMapping="true">
+    <resultMap id="caseStepMap" type="TstCaseStep" autoMapping="true">
         <id column="id" property="id"/>
         <id column="opt" property="opt"/>
         <id column="expect" property="expect"/>

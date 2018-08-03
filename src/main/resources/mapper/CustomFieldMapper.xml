@@ -10,17 +10,44 @@
         ORDER BY ordr ASC
     </select>
 
+    <select id="listForCaseByProject" resultType="TstCustomField">
+        (SELECT o.code, o.label, o.myColumn, o.descr, o.applyTo, o.type,
+          o.rows, o.format, o.ordr, o.required
+
+        FROM TstCustomField o
+        WHERE o.orgId = #{orgId} AND o.global = TRUE
+
+        AND o.disabled != TRUE AND o.deleted != TRUE
+        ORDER BY ordr ASC)
+
+        UNION
+
+        (SELECT  o.code, o.label, o.myColumn, o.descr, o.applyTo, o.type,
+          o.rows, o.format, o.ordr, o.required
+
+        FROM TstCustomField o
+        LEFT JOIN TstCustomFieldProjectRelation r ON r.customFieldId = o.id
+        WHERE o.orgId = #{orgId} AND o.global != TRUE AND r.projectId = #{projectId}
+
+        AND o.disabled != TRUE AND o.deleted != TRUE
+        ORDER BY ordr ASC)
+    </select>
+
     <select id="get" resultType="TstCustomField">
         SELECT * FROM TstCustomField o
 
         WHERE o.id = #{id}
     </select>
+    <select id="getDetail" resultMap="customFieldMap">
+        SELECT * FROM TstCustomField o
+        WHERE o.id = #{id}
+    </select>
 
-    <select id="getLastUnusedColumn" resultType="TstCustomField">
+    <select id="getLastUnusedColumn" resultType="String">
         select cf.myColumn from TstCustomField cf
 
         where cf.orgId = #{orgId}
-          and cf.deleted = false and cf.disabled = false
+          and cf.deleted != TRUE and cf.disabled != TRUE
 
         order by cf.myColumn asc
     </select>
@@ -54,7 +81,7 @@
 
     <delete id="delete">
         UPDATE TstCustomField
-        SET disabled=TRUE, updateTime=NOW()
+        SET deleted=TRUE, updateTime=NOW()
         WHERE id=#{id}
     </delete>
 
@@ -81,5 +108,13 @@
         SET ordr=#{ordr}, updateTime=NOW()
         WHERE id=#{id}
     </update>
+
+    <resultMap id="customFieldMap" type="TstCustomField" autoMapping="true">
+        <id column="id" property="id"/>
+
+        <collection property="options" select="com.ngtesting.platform.dao.CustomFieldOptionDao.listByFieldId"
+                    column="{id=id}">
+        </collection>
+    </resultMap>
 
 </mapper>

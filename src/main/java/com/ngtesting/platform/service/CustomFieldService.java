@@ -6,7 +6,6 @@ import java.util.List;
 
 public interface CustomFieldService extends BaseService {
 	List<TstCustomField> list(Integer orgId);
-	List<TstCustomField> listForCaseByOrg(Integer orgId);
     List<TstCustomField> listForCaseByProject(Integer orgId, Integer projectId);
 
 	TstCustomField get(Integer customFieldId);

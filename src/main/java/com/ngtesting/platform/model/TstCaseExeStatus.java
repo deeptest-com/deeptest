@@ -3,26 +3,31 @@ package com.ngtesting.platform.model;
 public class TstCaseExeStatus extends BaseModel {
 	private static final long serialVersionUID = -2071266644244632484L;
 
-	private String name;
-    private String code;
+	private String label;
+	private String value;
+
     private String descr;
     private Integer displayOrder;
     private Boolean isFinal;
     private Boolean isBuildIn = false;
     private Long orgId;
 
-	public String getName() {
-		return name;
+	public String getLabel() {
+		return label;
 	}
-	public void setName(String name) {
-		this.name = name;
+
+	public void setLabel(String label) {
+		this.label = label;
 	}
-	public String getCode() {
-		return code;
+
+	public String getValue() {
+		return value;
 	}
-	public void setCode(String code) {
-		this.code = code;
+
+	public void setValue(String value) {
+		this.value = value;
 	}
+
 	public String getDescr() {
 		return descr;
 	}

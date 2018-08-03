@@ -46,7 +46,7 @@ public class CasePropertyServiceImpl extends BaseServiceImpl implements CaseProp
 
         Map<String,String> map = new LinkedHashMap();
 		for (TstCasePriority item : ls) {
-			map.put(item.getCode(), item.getName());
+			map.put(item.getValue(), item.getLabel());
 		}
 
 		return map;
@@ -57,7 +57,7 @@ public class CasePropertyServiceImpl extends BaseServiceImpl implements CaseProp
         List<TstCaseType> ls = caseTypeDao.list(orgId);
         Map<String,String> map = new LinkedHashMap();
 		for (TstCaseType item : ls) {
-			map.put(item.getCode(), item.getName());
+			map.put(item.getValue(), item.getLabel());
 		}
 
 		return map;
@@ -68,7 +68,7 @@ public class CasePropertyServiceImpl extends BaseServiceImpl implements CaseProp
         List<TstCaseExeStatus> ls = caseExeStatusDao.listExeStatus(orgId);
         Map<String,String> map = new LinkedHashMap();
 		for (TstCaseExeStatus item : ls) {
-			map.put(item.getCode(), item.getName());
+			map.put(item.getValue(), item.getLabel());
 		}
 
 		return map;

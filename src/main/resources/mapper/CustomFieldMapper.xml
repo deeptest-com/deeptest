@@ -10,24 +10,24 @@
         ORDER BY ordr ASC
     </select>
 
-    <select id="listForCaseByProject" resultType="TstCustomField">
-        (SELECT o.code, o.label, o.myColumn, o.descr, o.applyTo, o.type,
+    <select id="listForCaseByProject" resultMap="customFieldMap">
+        (SELECT o.id, o.code, o.label, o.myColumn, o.descr, o.applyTo, o.type,
           o.rows, o.format, o.ordr, o.required
 
         FROM TstCustomField o
-        WHERE o.orgId = #{orgId} AND o.global = TRUE
+        WHERE o.orgId = #{orgId} AND o.global = TRUE AND o.applyTo = #{applyTo}
 
         AND o.disabled != TRUE AND o.deleted != TRUE
         ORDER BY ordr ASC)
 
         UNION
 
-        (SELECT  o.code, o.label, o.myColumn, o.descr, o.applyTo, o.type,
+        (SELECT o.id, o.code, o.label, o.myColumn, o.descr, o.applyTo, o.type,
           o.rows, o.format, o.ordr, o.required
 
         FROM TstCustomField o
         LEFT JOIN TstCustomFieldProjectRelation r ON r.customFieldId = o.id
-        WHERE o.orgId = #{orgId} AND o.global != TRUE AND r.projectId = #{projectId}
+        WHERE o.orgId = #{orgId} AND o.global != TRUE  AND o.applyTo = #{applyTo} AND r.projectId = #{projectId}
 
         AND o.disabled != TRUE AND o.deleted != TRUE
         ORDER BY ordr ASC)

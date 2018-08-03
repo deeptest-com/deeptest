@@ -3,25 +3,30 @@ package com.ngtesting.platform.model;
 public class TstCaseType extends BaseModel {
 	private static final long serialVersionUID = -2071266644244632484L;
 
-	private String code;
-	private String name;
+	private String label;
+	private String value;
+
 	private String descr;
     private Boolean isDefault = false;
     private Integer ordr;
     private Integer orgId;
 
-	public String getCode() {
-		return code;
+	public String getLabel() {
+		return label;
 	}
-	public void setCode(String code) {
-		this.code = code;
+
+	public void setLabel(String label) {
+		this.label = label;
 	}
-	public String getName() {
-		return name;
+
+	public String getValue() {
+		return value;
 	}
-	public void setName(String name) {
-		this.name = name;
+
+	public void setValue(String value) {
+		this.value = value;
 	}
+
 	public Integer getOrgId() {
 		return orgId;
 	}

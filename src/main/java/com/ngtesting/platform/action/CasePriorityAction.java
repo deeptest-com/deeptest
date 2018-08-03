@@ -58,7 +58,7 @@ public class CasePriorityAction extends BaseAction {
 		TstCasePriority po;
 		if (id == null) {
 			po = new TstCasePriority();
-			po.setCode(UUID.randomUUID().toString());
+			po.setValue(UUID.randomUUID().toString());
 		} else {
 			po = casePriorityService.get(id);
 		}

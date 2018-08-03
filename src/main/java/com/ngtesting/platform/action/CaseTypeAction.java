@@ -59,7 +59,7 @@ public class CaseTypeAction extends BaseAction {
 		TstCaseType po;
 		if (id == null) {
 			po = new TstCaseType();
-            po.setCode(UUID.randomUUID().toString());
+            po.setValue(UUID.randomUUID().toString());
 		} else {
 			po = caseTypeService.get(id);
 		}

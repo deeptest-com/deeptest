@@ -9,7 +9,7 @@ public class TstCase extends BaseModel {
 	private String name;
 	private String priority = "medium";
 	private Integer estimate = 10;
-    private CaseType type = CaseType.functional;
+    private String type = "functional";
 	private String objective;
     private String descr;
     private Boolean isLeaf;
@@ -51,22 +51,6 @@ public class TstCase extends BaseModel {
 	private String prop19;
 	private String prop20;
 
-	public static enum CaseType {
-		functional("functional"),
-		performance("performance"),
-		security("security"),
-		others("others");
-
-		CaseType(String textVal) {
-			this.textVal = textVal;
-		}
-
-		private String textVal;
-
-		public String toString() {
-			return textVal;
-		}
-	}
     public static enum CaseContentType {
         steps("steps"),
         richText("richText");
@@ -205,15 +189,15 @@ public class TstCase extends BaseModel {
         this.ordr = ordr;
     }
 
-    public CaseType getType() {
-        return this.type;
-    }
+	public String getType() {
+		return type;
+	}
 
-    public void setType(CaseType type) {
-        this.type = type;
-    }
+	public void setType(String type) {
+		this.type = type;
+	}
 
-    public String getName() {
+	public String getName() {
 		return name;
 	}
 

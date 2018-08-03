@@ -3,26 +3,32 @@ package com.ngtesting.platform.model;
 public class IsuPriority extends BaseModel {
 
 	private static final long serialVersionUID = 4118180732729567467L;
-	private String code;
-	private String name;
+
+	private String label;
+	private String value;
+
 	private String descr;
     private String priority;
     private Boolean isDefault;
     private Integer displayOrder;
     private Integer orgId;
 
-	public String getCode() {
-		return code;
+	public String getValue() {
+		return value;
 	}
-	public void setCode(String code) {
-		this.code = code;
+
+	public void setValue(String value) {
+		this.value = value;
 	}
-	public String getName() {
-		return name;
+
+	public String getLabel() {
+		return label;
 	}
-	public void setName(String name) {
-		this.name = name;
+
+	public void setLabel(String label) {
+		this.label = label;
 	}
+
 	public String getPriority() {
 		return priority;
 	}

@@ -8,7 +8,9 @@ import java.util.List;
 public interface CustomFieldDao {
     List<TstCustomField> list(@Param("orgId") Integer orgId);
     List<TstCustomField> listForCaseByProject(@Param("orgId")Integer orgId,
-                                              @Param("projectId")Integer projectId);
+                                              @Param("projectId")Integer projectId,
+                                              @Param("applyTo")String applyTo);
+
 
     TstCustomField get(@Param("id") Integer id);
     TstCustomField getDetail(@Param("id") Integer id);

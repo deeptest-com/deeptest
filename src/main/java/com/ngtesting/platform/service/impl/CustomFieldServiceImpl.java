@@ -33,26 +33,9 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     }
 
     @Override
-    public List<TstCustomField> listForCaseByOrg(Integer orgId) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstCustomField.class);
-//
-//        dc.add(Restrictions.eq("orgId", orgId));
-//        dc.add(Restrictions.eq("applyTo", FieldApplyTo.test_case));
-//
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//
-//        dc.addOrder(Order.asc("ordr"));
-//        List ls = findAllByCriteria(dc);
-//
-//        return ls;
-
-        return null;
-    }
-
-    @Override
     public List<TstCustomField> listForCaseByProject(Integer orgId, Integer projectId) {
-        List<TstCustomField> ls = customFieldDao.listForCaseByProject(orgId, projectId);
+        List<TstCustomField> ls = customFieldDao.listForCaseByProject(
+                orgId, projectId, TstCustomField.FieldApplyTo.test_case.toString());
 
         return ls;
     }

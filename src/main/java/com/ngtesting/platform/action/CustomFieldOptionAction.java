@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.CustomFieldDao;
-import com.ngtesting.platform.model.TstCustomField;
 import com.ngtesting.platform.model.TstCustomFieldOption;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.CustomFieldOptionService;
@@ -40,20 +39,16 @@ public class CustomFieldOptionAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Integer orgId = userVo.getDefaultOrgId();
 
+		Integer fieldId = json.getInteger("fieldId");
 
-		TstCustomField field = JSON.parseObject(JSON.toJSONString(json.getJSONObject("field")), TstCustomField.class);
 		TstCustomFieldOption option = JSON.parseObject(JSON.toJSONString(json.getJSONObject("model")), TstCustomFieldOption.class);
 
-		if (field.getId() == null) {
-            customFieldService.save(field, orgId);
-        }
-
-        option.setFieldId(field.getId());
+        option.setFieldId(fieldId);
 		customFieldOptionService.save(option);
 
-        field = customFieldDao.getDetail(field.getId());
+        List<TstCustomFieldOption> vos = customFieldOptionService.listVos(fieldId);
 
-        ret.put("data", field);
+        ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

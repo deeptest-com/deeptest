@@ -1,12 +1,14 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.CustomFieldDao;
+import com.ngtesting.platform.dao.CustomFieldOptionDao;
 import com.ngtesting.platform.model.TstCustomField;
 import com.ngtesting.platform.service.CustomFieldOptionService;
 import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -15,6 +17,8 @@ import java.util.List;
 public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFieldService {
     @Autowired
     CustomFieldDao customFieldDao;
+    @Autowired
+    CustomFieldOptionDao customFieldOptionDao;
 
     @Autowired
     ProjectService projectService;
@@ -59,6 +63,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     }
 
     @Override
+    @Transactional
     public TstCustomField save(TstCustomField vo, Integer orgId) {
         vo.setOrgId(orgId);
 
@@ -70,6 +75,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
             vo.setOrdr(maxOrder + 10);
 
             customFieldDao.save(vo);
+            customFieldOptionDao.saveAll(vo.getId(), vo.getOptions());
         } else {
             customFieldDao.update(vo);
         }

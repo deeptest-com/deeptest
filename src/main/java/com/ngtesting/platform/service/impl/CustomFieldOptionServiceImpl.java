@@ -3,7 +3,6 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.dao.CustomFieldOptionDao;
 import com.ngtesting.platform.model.TstCustomFieldOption;
 import com.ngtesting.platform.service.CustomFieldOptionService;
-import com.ngtesting.platform.utils.BeanUtilEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +15,8 @@ public class CustomFieldOptionServiceImpl extends BaseServiceImpl implements Cus
 
     @Override
     public List<TstCustomFieldOption> listVos(Integer fieldId) {
-        List ls = customFieldOptionDao.listByField(fieldId);
-
-        List<TstCustomFieldOption> vos = genVos(ls);
-        return vos;
+        List<TstCustomFieldOption> ls = customFieldOptionDao.listByFieldId(fieldId);
+        return ls;
     }
 
     @Override
@@ -50,26 +47,5 @@ public class CustomFieldOptionServiceImpl extends BaseServiceImpl implements Cus
 //TstCustomFieldOption
 
         return true;
-    }
-
-    @Override
-    public List<TstCustomFieldOption> genVos(List<TstCustomFieldOption> pos) {
-//        List<TstCustomFieldOption> vos = new LinkedList<>();
-//
-//        for (TestCustomFieldOption po : pos) {
-//            TstCustomFieldOption vo = genVo(po);
-//            vos.add(vo);
-//        }
-//        return vos;
-
-        return null;
-    }
-
-    @Override
-    public TstCustomFieldOption genVo(TstCustomFieldOption po) {
-        TstCustomFieldOption vo = new TstCustomFieldOption();
-        BeanUtilEx.copyProperties(po, vo);
-
-        return vo;
     }
 }

@@ -10,6 +10,4 @@ public interface CustomFieldOptionService extends BaseService {
     boolean delete(Integer id);
     boolean changeOrderPers(Integer id, String act, Integer fieldId);
 
-	List<TstCustomFieldOption> genVos(List<TstCustomFieldOption> pos);
-    TstCustomFieldOption genVo(TstCustomFieldOption po);
 }

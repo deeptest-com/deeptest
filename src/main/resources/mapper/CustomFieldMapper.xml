@@ -112,7 +112,7 @@
     <resultMap id="customFieldMap" type="TstCustomField" autoMapping="true">
         <id column="id" property="id"/>
 
-        <collection property="options" select="com.ngtesting.platform.dao.CustomFieldOptionDao.listByFieldId"
+        <collection property="options" select="com.ngtesting.platform.dao.CustomFieldOptionDao.getByFieldId"
                     column="{id=id}">
         </collection>
     </resultMap>

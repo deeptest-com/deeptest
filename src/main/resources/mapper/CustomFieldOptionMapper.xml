@@ -10,6 +10,17 @@
         (#{label},#{value},#{ordr},#{fieldId},
         NOW(),FALSE,FALSE)
     </insert>
+    <insert id="saveAll">
+        insert into TstCustomFieldOption
+        (label,value,ordr,fieldId,
+        createTime,deleted,disabled)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.label},#{item.value}, #{item.ordr}, #{fieldId},
+            NOW(),FALSE,FALSE)
+        </foreach>
+    </insert>
+
     <update id="update">
         UPDATE TstCustomFieldOption
         SET label =#{label},value=#{value},updateTime=NOW()
@@ -28,7 +39,16 @@
         AND o.deleted != true AND o.disabled != true
     </select>
 
-    <select id="listByFieldId" parameterType="Map" resultMap="optionMap">
+    <select id="listByFieldId" resultType="TstCustomFieldOption">
+        SELECT o.* FROM TstCustomFieldOption o
+
+        WHERE o.fieldId = #{fieldId}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.ordr ASC
+    </select>
+
+    <select id="getByFieldId" resultMap="optionMap">
         SELECT o.* FROM TstCustomFieldOption o
 
         WHERE o.fieldId = #{id}
@@ -36,6 +56,7 @@
 
         ORDER BY o.ordr ASC
     </select>
+
     <resultMap id="optionMap" type="TstCustomFieldOption" autoMapping="true">
         <id column="id" property="id"/>
         <id column="label" property="label"/>

@@ -6,10 +6,11 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface CustomFieldOptionDao {
-    List listByField(@Param("fieldId") Integer fieldId);
+    List<TstCustomFieldOption> listByFieldId(@Param("fieldId") Integer fieldId);
     Integer getMaxOrder(@Param("fieldId") Integer fieldId);
 
     void save(TstCustomFieldOption vo);
+    void saveAll(@Param("fieldId") Integer fieldId, @Param("list") List<TstCustomFieldOption> options);
 
     void update(TstCustomFieldOption vo);
 

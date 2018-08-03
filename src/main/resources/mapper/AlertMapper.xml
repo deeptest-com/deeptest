@@ -3,7 +3,9 @@
 <mapper namespace="com.ngtesting.platform.dao.AlertDao" >
 
     <select id="query" resultType="TstAlert">
-        SELECT * FROM TstAlert o WHERE o.userId=#{userId}
+        SELECT * FROM TstAlert o
+
+        WHERE o.userId=#{userId}
         <if test="isRead != null">
             AND o.isRead = #{isRead}
         </if>
@@ -30,10 +32,10 @@
 
     <insert id="create" parameterType="TstAlert" useGeneratedKeys="true" keyProperty="id">
         insert into TstAlert
-          (`type`,title,userId,assigneeId,entityId,isRead,isSent,
+          (`type`,title,userId,assigneeId,entityId,startTime,endTime,isRead,isSent,
             deleted,disabled,createTime)
         values
-          ( #{type},#{title},#{userId},#{assigneeId},#{entityId},FALSE ,FALSE,
+          ( #{type},#{title},#{userId},#{assigneeId},#{entityId},#{startTime},#{endTime},FALSE ,FALSE,
             FALSE,FALSE,NOW() )
     </insert>
 

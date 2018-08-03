@@ -73,7 +73,7 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
     }
     @Override
     public void create(TstTask task) {
-        for (TstUser user : task.getAssignees()) {
+        for (TstUser assignee : task.getAssignees()) {
             TstAlert po = getByTask(task.getId());;
             if (po == null) {
                 po = new TstAlert();
@@ -85,7 +85,7 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
             po.setEntityId(task.getId());
 
             po.setUserId(task.getUserId());
-            po.setAssigneeId(user.getId());
+            po.setAssigneeId(assignee.getId());
 
             TstPlan plan= planDao.get(task.getPlanId());
 

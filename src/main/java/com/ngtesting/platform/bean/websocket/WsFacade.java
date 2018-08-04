@@ -52,7 +52,7 @@ public class WsFacade {
 
         try {
             if (WsConstant.WS_OPEN.equals(type) || WsConstant.WS_TODO.equals(type)) {
-                List<TstMsg> msgs = msgService.list(user.getId(), false);
+                List<TstMsg> msgs = msgService.list(user.getId(), false, null);
                 List<TstAlert> alerts = alertService.list(user.getId(), false);
 
                 ret.put("msgs", msgs);

@@ -1,13 +1,14 @@
 package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.bean.websocket.WsFacade;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.model.TstMsg;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.CustomFieldService;
 import com.ngtesting.platform.service.MsgService;
-import com.ngtesting.platform.vo.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -37,18 +39,18 @@ public class MsgAction extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
         String keywords = json.getString("keywords");
-        String isRead = json.getString("isRead");
-        int page = json.getInteger("listByPage") == null? 0: json.getInteger("listByPage") - 1;
-        int pageSize = json.getInteger("pageSize") == null? Constant.PAGE_SIZE: json.getInteger("pageSize");
+        Boolean isRead = json.getBoolean("isRead");
+        Integer pageNum = json.getInteger("page");
+        Integer pageSize = json.getInteger("pageSize");
 
-        Page pageDate = msgService.listByPage(userVo.getId(), isRead, keywords, page, pageSize);
-//        List<TstUser> vos = msgService.genVos(pageDate.getItems());
+        com.github.pagehelper.Page page = PageHelper.startPage(pageNum, pageSize);
+        List<TstMsg> ls = msgService.list(user.getId(), isRead, keywords);
 
-        ret.put("collectionSize", pageDate.getTotal());
-//        ret.put("data", vos);
+        ret.put("total", page.getTotal());
+        ret.put("data", ls);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -87,15 +89,14 @@ public class MsgAction extends BaseAction {
     public Map<String, Object> markRead(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
         Integer id = json.getInteger("id");
-        TstMsg msg = msgService.markReadPers(id, userVo.getId());
-//        TestMsgVo vo = msgService.genVo(msg);
+        TstMsg msg = msgService.markReadPers(id);
 
-//        optFacade.opt(WsConstant.WS_TODO, userVo.getId().toString());
+        optFacade.opt(WsConstant.WS_TODO, user);
 
-//        ret.put("data", vo);
+        ret.put("data", msg);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -105,10 +106,10 @@ public class MsgAction extends BaseAction {
     public Map<String, Object> markAllRead(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		msgService.markAllReadPers(userVo.getId());
-//		optFacade.opt(WsConstant.WS_TODO, userVo.getId().toString());
+		msgService.markAllReadPers(user.getId());
+		optFacade.opt(WsConstant.WS_TODO, user);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

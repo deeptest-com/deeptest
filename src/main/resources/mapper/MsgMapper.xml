@@ -9,6 +9,9 @@
         LEFT JOIN TstUser usr on o.userId = usr.id
 
         WHERE o.userId=#{userId}
+        <if test="keywords != null and keywords != ''">
+            AND o.title LIKE CONCAT('%','${keywords}','%' )
+        </if>
         <if test="isRead != null">
             AND o.isRead = #{isRead}
         </if>
@@ -24,5 +27,27 @@
             (#{title},#{userId},FALSE,
               FALSE,FALSE,NOW() )
     </insert>
+
+    <select id="get" resultType="TstMsg">
+        SELECT o.*, usr.avatar userAvatar
+
+        FROM TstMsg o
+        LEFT JOIN TstUser usr on o.userId = usr.id
+
+        WHERE o.id=#{id}
+    </select>
+
+    <update id="markRead">
+        update TstMsg msg
+            set msg.isRead=true
+        WHERE o.id=#{id}
+    </update>
+    <update id="markAllRead">
+        update TstMsg msg
+        set msg.isRead=true
+        where msg.userId=#{userId}
+              AND msg.isRead != true
+              AND msg.deleted != true AND msg.disabled != true
+    </update>
 
 </mapper>

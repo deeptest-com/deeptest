@@ -13,4 +13,6 @@ public interface AlertDao {
                               @Param("startTimeOfToday") Date startTimeOfToday, @Param("endTimeOfToday") Date endTimeOfToday);
 
     void create(TstAlert po);
+
+    void markAllRead(@Param("ids") String ids);
 }

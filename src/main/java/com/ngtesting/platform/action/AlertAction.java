@@ -3,6 +3,7 @@ package com.ngtesting.platform.action;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.bean.websocket.WsFacade;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.AlertService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +32,10 @@ public class AlertAction extends BaseAction {
     public Map<String, Object> markAllRead(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		alertService.markAllReadPers(json.getString("ids"));
-//        optFacade.opt(WsConstant.WS_TODO, userVo.getId().toString());
+        optFacade.opt(WsConstant.WS_TODO, user);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

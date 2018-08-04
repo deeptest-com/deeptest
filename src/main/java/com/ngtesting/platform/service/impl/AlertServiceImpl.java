@@ -98,15 +98,8 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
     }
 
     @Override
-    public void markAllReadPers(String idStr) {
-//        String hql = "update TstAlert alert set alert.isRead=true where alert.id IN (?) " +
-//                "AND alert.isRead != true AND alert.deleted != true AND alert.disabled != true";
-//
-//        List<Long> ids = new LinkedList();
-//        for (String str : idStr.split(",")) {
-//            ids.add(Long.valueOf(str));
-//        }
-//        getDao().executeByHql(hql, ids.toArray());
+    public void markAllReadPers(String ids) {
+        alertDao.markAllRead(ids);
     }
 
     @Override

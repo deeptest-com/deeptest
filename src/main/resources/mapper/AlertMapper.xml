@@ -39,4 +39,14 @@
             FALSE,FALSE,NOW() )
     </insert>
 
+    <update id="markAllRead">
+        update TstAlert alert
+        set alert.isRead=true
+
+        where alert.id IN ( #{ids} )
+
+        AND alert.isRead != true
+        AND alert.deleted != true AND alert.disabled != true
+    </update>
+
 </mapper>

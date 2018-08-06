@@ -5,7 +5,7 @@ import com.ngtesting.platform.dao.AccountDao;
 import com.ngtesting.platform.dao.AccountVerifyCodeDao;
 import com.ngtesting.platform.dao.UserDao;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.model.TstVerifyCode;
+import com.ngtesting.platform.model.TstUserVerifyCode;
 import com.ngtesting.platform.service.AccountService;
 import com.ngtesting.platform.service.AccountVerifyCodeService;
 import com.ngtesting.platform.service.MailService;
@@ -119,7 +119,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Boolean beforResetPassword(String verifyCode) {
-        TstVerifyCode code = verifyCodeDao.getByCode(verifyCode);
+        TstUserVerifyCode code = verifyCodeDao.getByCode(verifyCode);
 
        return code != null;
     }
@@ -127,7 +127,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public TstUser resetPassword(String verifyCode, String password) {
-        TstVerifyCode code = verifyCodeDao.getByCode(verifyCode);
+        TstUserVerifyCode code = verifyCodeDao.getByCode(verifyCode);
         if (code == null) {
             return null;
         }

@@ -3,12 +3,12 @@
 <mapper namespace="com.ngtesting.platform.dao.AccountVerifyCodeDao" >
 
     <insert id="genVerifyCode" parameterType="Map" useGeneratedKeys="true" keyProperty="id">
-        insert into TstVerifyCode (refId,code,expireTime,createTime,deleted,disabled)
+        insert into TstUserVerifyCode (refId,code,expireTime,createTime,deleted,disabled)
         values (#{userId},#{code},#{expireTime},#{createTime},false,false)
     </insert>
 
-    <select id="getByCode" resultType="TstVerifyCode">
-        SELECT * FROM TstVerifyCode o
+    <select id="getByCode" resultType="TstUserVerifyCode">
+        SELECT * FROM TstUserVerifyCode o
 
         WHERE o.code=#{code}
         AND o.deleted != true AND o.disabled != true
@@ -16,8 +16,8 @@
     </select>
 
     <update id="disableCode">
-        UPDATE TstVerifyCode
-        SET disabled=TRUE, deleted=TRUE
+        UPDATE TstUserVerifyCode
+        SET disabled=TRUE, deleted=TRUE,updateTime=NOW()
         WHERE id=#{id}
     </update>
 

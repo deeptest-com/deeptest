@@ -2,7 +2,7 @@ package com.ngtesting.platform.model;
 
 import java.util.Date;
 
-public class TstVerifyCode {
+public class TstUserVerifyCode {
     private Integer id;
 
     private String code;

@@ -118,23 +118,31 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Boolean checkResetPassword(Integer userId, String verifyCode) {
-        TstVerifyCode code = accountDao.checkResetPassword(userId, verifyCode);
+    public Boolean beforResetPassword(String verifyCode) {
+        TstVerifyCode code = verifyCodeDao.getByCode(verifyCode);
 
        return code != null;
     }
 
     @Override
-    public TstUser resetPassword(Integer userId, String verifyCode, String password) {
-        TstVerifyCode code = verifyCodeDao.findAndDisableCode(userId, verifyCode);
+    @Transactional
+    public TstUser resetPassword(String verifyCode, String password) {
+        TstVerifyCode code = verifyCodeDao.getByCode(verifyCode);
+        if (code == null) {
+            return null;
+        }
 
         TstUser user = userDao.get(code.getRefId());
         if (user == null) {
             return null;
         }
 
+        verifyCodeDao.disableCode(code.getId());
+
         String newToken = UUID.randomUUID().toString();
-        accountDao.resetPassword(user.getId(), password, newToken);
+        user.setToken(newToken);
+        user.setPassword(password);
+        accountDao.resetPassword(user);
 
         return user;
     }

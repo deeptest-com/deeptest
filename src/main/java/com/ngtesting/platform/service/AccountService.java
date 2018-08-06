@@ -8,9 +8,7 @@ public interface AccountService {
     Boolean logout(String email);
     Boolean changePassword(Integer userId, String oldPassword, String password);
 
-    Boolean checkResetPassword(Integer userId, String verifyCode);
-
-    TstUser resetPassword(Integer userId, String verifyCode, String password);
-
     String forgotPassword(TstUser user);
+    Boolean beforResetPassword(String verifyCode);
+    TstUser resetPassword(String verifyCode, String password);
 }

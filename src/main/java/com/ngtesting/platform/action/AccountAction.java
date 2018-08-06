@@ -154,10 +154,9 @@ public class AccountAction {
     public Object checkResetPassword(HttpServletRequest request, @RequestBody JSONObject json){
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
         String verifyCode = json.getString("vcode");
 
-        boolean success = accountService.checkResetPassword(user.getId(), verifyCode);
+        boolean success = accountService.beforResetPassword(verifyCode);
         if (success) {
             ret.put("code", Constant.RespCode.SUCCESS.getCode());
         } else {
@@ -173,12 +172,11 @@ public class AccountAction {
     @PostMapping("/resetPassword")
     public Object resetPassword(HttpServletRequest request, @RequestBody JSONObject json){
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
         String verifyCode = json.getString("vcode");
         String password = json.getString("password");
 
-        user = accountService.resetPassword(user.getId(), verifyCode, password);
+        TstUser user = accountService.resetPassword(verifyCode, password);
 
         if (user != null) {
             request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, user);

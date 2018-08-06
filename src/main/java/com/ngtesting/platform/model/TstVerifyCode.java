@@ -3,6 +3,8 @@ package com.ngtesting.platform.model;
 import java.util.Date;
 
 public class TstVerifyCode {
+    private Integer id;
+
     private String code;
     private Date expireTime;
 
@@ -30,5 +32,13 @@ public class TstVerifyCode {
 
     public void setRefId(Integer refId) {
         this.refId = refId;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

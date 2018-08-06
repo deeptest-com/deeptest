@@ -32,4 +32,10 @@
         WHERE id=#{userId} AND password=#{oldPassword}
     </update>
 
+    <update id="resetPassword" parameterType="TstUser">
+        UPDATE TstUser
+        SET password=#{password},token=#{token},updateTime=NOW()
+        WHERE id=#{id}
+    </update>
+
 </mapper>

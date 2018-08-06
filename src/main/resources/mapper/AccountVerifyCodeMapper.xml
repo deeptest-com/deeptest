@@ -7,4 +7,18 @@
         values (#{userId},#{code},#{expireTime},#{createTime},false,false)
     </insert>
 
+    <select id="getByCode" resultType="TstVerifyCode">
+        SELECT * FROM TstVerifyCode o
+
+        WHERE o.code=#{code}
+        AND o.deleted != true AND o.disabled != true
+        ORDER BY o.createTime DESC
+    </select>
+
+    <update id="disableCode">
+        UPDATE TstVerifyCode
+        SET disabled=TRUE, deleted=TRUE
+        WHERE id=#{id}
+    </update>
+
 </mapper>

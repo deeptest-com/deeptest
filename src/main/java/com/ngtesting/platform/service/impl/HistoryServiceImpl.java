@@ -6,12 +6,11 @@ import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.HistoryService;
-import com.ngtesting.platform.utils.BeanUtilEx;
+import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,16 +24,6 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
         PageHelper.startPage(0, 30);
 
         List<TstHistory> ls = historyDao.listByOrg(orgId);
-
-//		DetachedCriteria dc = DetachedCriteria.forClass(TstHistory.class);
-//
-//		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//
-//		dc.createAlias("project", "project");
-//		dc.add(Restrictions.eq("project.orgId", orgId));
-//
-//		dc.addOrder(Order.desc("createTime"));
 
 		return ls;
 	}
@@ -50,44 +39,29 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
             ls = historyDao.listByProjectGroup(projectId);
 		}
 
-//		DetachedCriteria dc = DetachedCriteria.forClass(TstHistory.class);
-//
-//		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//
-//		if (projectType.equals(TestProject.ProjectType.project.toString())) {
-//			dc.add(Restrictions.eq("projectId", projectId));
-//		} else {
-//			dc.createAlias("project", "project");
-//			dc.add(Restrictions.eq("project.parentId", projectId));
-//		}
-//
-//		dc.addOrder(Order.desc("createTime"));
-
 		return ls;
 	}
 
     @Override
     public TstHistory getById(Integer id) {
-//		TstHistory po = (TstHistory) getDetail(TstHistory.class, id);
-//		TstHistory vo = genVo(po);
-//
-//        return vo;
+		TstHistory po = historyDao.get(id);
 
-		return null;
+		return po;
     }
     @Override
     public TstHistory create(Integer projectId, TstUser optUser, String action,
-							 TstHistory.TargetType entityType, Integer entityId, String name) {
-        TstHistory history = new TstHistory();
+							 TstHistory.TargetType entityType, Integer entityId, String entityName) {
+		String title = "用户" + StringUtil.highlightDict(optUser.getNickname())
+				+ action + entityType.name + StringUtil.highlightDict(entityName);
 
-//        history.setTitle("用户" + StringUtil.highlightDict(optUser.getName())
-//                + action + entityType.name + StringUtil.highlightDict(name));
-//        history.setProjectId(projectId);
-//        history.setEntityId(entityId);
-//        history.setEntityType(entityType);
-//        history.setUserId(optUser.getId());
-//        saveOrUpdate(history);
+        TstHistory history = new TstHistory();
+		history.setTitle(title);
+        history.setProjectId(projectId);
+        history.setEntityId(entityId);
+        history.setEntityType(entityType);
+        history.setUserId(optUser.getId());
+
+		historyDao.create(history);
 
         return history;
     }
@@ -104,25 +78,6 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
 //            map.getDetail(date).add(genVo(his));
 //		}
 		return map;
-	}
-
-	@Override
-	public List<TstHistory> genVos(List<TstHistory> pos) {
-        List<TstHistory> vos = new LinkedList();
-
-        for (TstHistory po: pos) {
-			TstHistory vo = genVo(po);
-        	vos.add(vo);
-        }
-		return vos;
-	}
-
-	@Override
-	public TstHistory genVo(TstHistory po) {
-		TstHistory vo = new TstHistory();
-		BeanUtilEx.copyProperties(po, vo);
-
-		return vo;
 	}
 
 }

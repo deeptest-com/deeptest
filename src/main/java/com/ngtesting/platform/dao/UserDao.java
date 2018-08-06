@@ -35,4 +35,5 @@ public interface UserDao {
     void setLeftSize(TstUser user);
 
     List<TstUser> getProjectUsers(@Param("prjId") Integer prjId);
+
 }

@@ -69,7 +69,6 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	public List<TstProjectAccessHistory> listRecentProject(Integer orgId, Integer userId) {
         PageHelper.startPage(0, 5);
 		List<TstProjectAccessHistory> pos = projectDao.listRecent(orgId, userId);
-//        PageInfo result = new PageInfo(pos);
 
 		return pos;
 	}
@@ -145,6 +144,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	}
 
 	@Override
+    @Transactional
 	public TstProject viewPers(Integer projectId, TstUser tstUser) {
 		TstProject po = get(projectId);
 

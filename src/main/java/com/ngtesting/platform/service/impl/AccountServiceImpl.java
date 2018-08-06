@@ -2,11 +2,13 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.AccountDao;
+import com.ngtesting.platform.dao.AccountVerifyCodeDao;
 import com.ngtesting.platform.dao.UserDao;
 import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.model.TstVerifyCode;
 import com.ngtesting.platform.service.AccountService;
+import com.ngtesting.platform.service.AccountVerifyCodeService;
 import com.ngtesting.platform.service.MailService;
-import com.ngtesting.platform.service.OrgService;
 import com.ngtesting.platform.service.PropService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,16 +16,22 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
-@Service(value = "accountService")
+@Service
 public class AccountServiceImpl implements AccountService {
     @Autowired
     private AccountDao accountDao;
     @Autowired
+    private AccountVerifyCodeDao verifyCodeDao;
+
+    @Autowired
     private UserDao userDao;
     @Autowired
-    private OrgService orgService;
+    private AccountVerifyCodeService accountVerifyCodeService;
     @Autowired
     private PropService propService;
     @Autowired
@@ -43,7 +51,7 @@ public class AccountServiceImpl implements AccountService {
         if (po != null) {
             accountDao.initUser(user.getId());
 
-            String verifyCode = genVerifyCode(po.getId());
+            String verifyCode = accountVerifyCodeService.genVerifyCode(po.getId());
             String sys = propService.getSysName();
 
             Map<String, String> map = new HashMap<String, String>();
@@ -77,39 +85,58 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public TstUser logout(String email) {
-        return null;
+    public Boolean logout(String email) {
+        Integer matched = accountDao.logout(email);
+        return matched > 0;
     }
 
     @Override
-    public boolean changePassword(Integer userId, String oldPassword, String password) {
-        return false;
+    public Boolean changePassword(Integer userId, String oldPassword, String password) {
+        Integer matched = accountDao.changePassword(userId, oldPassword, password);
+        return matched > 0;
     }
 
     @Override
-    public boolean checkResetPassword(String verifyCode) {
-        return false;
+    public String forgotPassword(TstUser user) {
+        String verifyCode = accountVerifyCodeService.genVerifyCode(user.getId());
+
+        String sys = propService.getSysName();
+
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("name", user.getNickname());
+        map.put("vcode", verifyCode);
+
+        String url = propService.getUrlResetPassword();
+        if (!url.startsWith("http")) {
+            url = Constant.WEB_ROOT + url;
+        }
+
+        map.put("url", url);
+        mailService.sendTemplateMail("[\"" + sys + "\"]忘记密码", "forgot-password.ftl", user.getEmail(), map);
+
+        return verifyCode;
     }
 
     @Override
-    public TstUser resetPasswordPers(String verifyCode, String password) {
-        return null;
+    public Boolean checkResetPassword(Integer userId, String verifyCode) {
+        TstVerifyCode code = accountDao.checkResetPassword(userId, verifyCode);
+
+       return code != null;
     }
 
     @Override
-    public String genVerifyCode(Integer userId) {
-        String code = UUID.randomUUID().toString().replaceAll("-", "");
-        Map<String, Object> map = new HashMap();
-        map.put("userId", userId.toString());
-        map.put("code", code);
+    public TstUser resetPassword(Integer userId, String verifyCode, String password) {
+        TstVerifyCode code = verifyCodeDao.findAndDisableCode(userId, verifyCode);
 
-        Date now = new Date();
-        map.put("createTime", now);
-        map.put("expireTime", new Date(now.getTime() + 10 * 60 * 1000));
+        TstUser user = userDao.get(code.getRefId());
+        if (user == null) {
+            return null;
+        }
 
-        accountDao.genVerifyCode(map);
+        String newToken = UUID.randomUUID().toString();
+        accountDao.resetPassword(user.getId(), password, newToken);
 
-        return code;
+        return user;
     }
 
 }

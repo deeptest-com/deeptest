@@ -35,6 +35,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private AccountService accountService;
     @Autowired
+    private AccountVerifyCodeService accountVerifyCodeService;
+    @Autowired
     private ProjectService projectService;
     @Autowired
     OrgGroupUserRelationService orgGroupUserRelationService;
@@ -127,7 +129,7 @@ public class UserServiceImpl implements UserService {
 
             String url;
             if (isNew) {
-                String verifyCode = accountService.genVerifyCode(vo.getId());
+                String verifyCode = accountVerifyCodeService.genVerifyCode(vo.getId());
 
                 url = propService.getUrlResetPassword();
                 if (!url.startsWith("http")) {

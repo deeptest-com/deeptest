@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.AccountService;
+import com.ngtesting.platform.service.AccountVerifyCodeService;
 import com.ngtesting.platform.service.OrgService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.utils.AuthPassport;
@@ -24,6 +25,9 @@ public class AccountAction {
     @Autowired
     private AccountService accountService;
     @Autowired
+    private AccountVerifyCodeService accountVerifyCodeService;
+
+    @Autowired
     private OrgService orgService;
     @Autowired
     private UserService userService;
@@ -31,7 +35,7 @@ public class AccountAction {
     @AuthPassport(validate=false)
     @ResponseBody
     @PostMapping("/register")
-    public Map register(@RequestBody TstUser json){
+    public Map register(HttpServletRequest request, @RequestBody TstUser json){
         Map<String, Object> ret = new HashMap();
         TstUser user = accountService.register(json);
 
@@ -49,7 +53,7 @@ public class AccountAction {
     @AuthPassport(validate=false)
     @ResponseBody
     @PostMapping("/login")
-    public Object login(@RequestBody JSONObject json, HttpServletRequest request){
+    public Object login(HttpServletRequest request, @RequestBody JSONObject json){
         Map<String, Object> ret = new HashMap<String, Object>();
 
         String email = json.getString("email");
@@ -75,7 +79,7 @@ public class AccountAction {
     @AuthPassport(validate=false)
     @ResponseBody
     @PostMapping("/loginWithVerifyCode")
-    public Object loginWithVerifyCode(@RequestBody JSONObject json){
+    public Object loginWithVerifyCode(HttpServletRequest request, @RequestBody JSONObject json){
         Map<String, Object> ret = new HashMap();
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -84,34 +88,108 @@ public class AccountAction {
 
     @ResponseBody
     @PostMapping("/logout")
-    public Object logout(TstUser user){
-        return null;
+    public Object logout(HttpServletRequest request, @RequestBody JSONObject json){
+        Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        if (user == null) {
+            ret.put("msg", "您不在登录状态");
+        } else {
+            Boolean result = accountService.logout(user.getEmail());
+
+            if (result) {
+                request.getSession().removeAttribute(Constant.HTTP_SESSION_USER_KEY);
+                ret.put("msg", "登出成功");
+                ret.put("code", Constant.RespCode.SUCCESS.getCode());
+            } else {
+                ret.put("msg", "登出失败");
+                ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
+            }
+        }
+
+        return ret;
     }
 
     @ResponseBody
     @PostMapping("/changePassword")
-    public Object changePassword(TstUser user){
-        return null;
-    }
+    public Object changePassword(HttpServletRequest request, @RequestBody JSONObject json){
+        Map<String, Object> ret = new HashMap<String, Object>();
 
-    @AuthPassport(validate=false)
-    @ResponseBody
-    @PostMapping("/checkResetPassword")
-    public Object checkResetPassword(TstUser user){
-        return null;
-    }
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        String oldPassword = json.getString("oldPassword");
+        String password = json.getString("password");
 
-    @AuthPassport(validate=false)
-    @ResponseBody
-    @PostMapping("/resetPassword")
-    public Object resetPassword(TstUser user){
-        return null;
+        boolean success = accountService.changePassword(user.getId(), oldPassword, password);
+        int code = success? Constant.RespCode.SUCCESS.getCode(): Constant.RespCode.BIZ_FAIL.getCode();
+
+        ret.put("code", code);
+        return ret;
     }
 
     @AuthPassport(validate=false)
     @ResponseBody
     @PostMapping("/forgotPassword")
-    public Object forgotPassword(TstUser user){
-        return null;
+    public Object forgotPassword(HttpServletRequest request, @RequestBody JSONObject json){
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        String email = json.getString("email");
+        TstUser user = userService.getByEmail(email);
+
+        if (user == null) {
+            ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
+            ret.put("msg", "用户不存在");
+            return ret;
+        }
+
+        String verifyCode = accountService.forgotPassword(user);
+
+        ret.put("data", verifyCode);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+
+        return ret;
+    }
+
+    @AuthPassport(validate=false)
+    @ResponseBody
+    @PostMapping("/checkResetPassword")
+    public Object checkResetPassword(HttpServletRequest request, @RequestBody JSONObject json){
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        String verifyCode = json.getString("vcode");
+
+        boolean success = accountService.checkResetPassword(user.getId(), verifyCode);
+        if (success) {
+            ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        } else {
+            ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
+            ret.put("msg", "重置密码链接已超时失效");
+        }
+
+        return ret;
+    }
+
+    @AuthPassport(validate=false)
+    @ResponseBody
+    @PostMapping("/resetPassword")
+    public Object resetPassword(HttpServletRequest request, @RequestBody JSONObject json){
+        Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+        String verifyCode = json.getString("vcode");
+        String password = json.getString("password");
+
+        user = accountService.resetPassword(user.getId(), verifyCode, password);
+
+        if (user != null) {
+            request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, user);
+
+            ret.put("token", user.getToken());
+            ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        } else {
+            ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
+            ret.put("msg", "重置密码失败");
+        }
+
+        return ret;
     }
 }

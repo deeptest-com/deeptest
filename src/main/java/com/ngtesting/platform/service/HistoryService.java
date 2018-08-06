@@ -15,10 +15,8 @@ public interface HistoryService extends BaseService {
 	TstHistory getById(Integer id);
 
 	TstHistory create(Integer projectId, TstUser optUser, String action,
-					  TstHistory.TargetType entityType, Integer entityId, String name);
+					  TstHistory.TargetType entityType, Integer entityId, String entityName);
 
     Map<String, List<TstHistory>> genVosByDate(List<TstHistory> historyPos);
-	List<TstHistory> genVos(List<TstHistory> pos);
-	TstHistory genVo(TstHistory po);
 
 }

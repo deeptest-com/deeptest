@@ -1,7 +1,5 @@
 # Next Generation Testing Tools
 
-考虑到部署和DQL（Defect Query Language）设计的方便性，正在迁移到SpringBoot、MyBatis技术栈！
-
 AngularJS, SockJS, SpringBoot, MyBatis, MySQL
 
 ### Quick start

@@ -78,9 +78,9 @@ public class CaseInTaskAction extends BaseAction {
 
         TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-//        TstCaseInTask vo = caseInTaskService.renamePers(json, userVo);
+        TstCaseInTask vo = caseInTaskService.rename(json, userVo);
 
-//        ret.put("data", vo);
+        ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -93,12 +93,13 @@ public class CaseInTaskAction extends BaseAction {
         TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
         Integer orgId = userVo.getDefaultOrgId();
 
-        Integer caseInRunId = json.getInteger("id");
+        Integer caseInTaskId = json.getInteger("id");
+        Integer caseId = json.getInteger("caseId");
         String result = json.getString("result");
         String status = json.getString("status");
         Integer nextId = json.getInteger("nextId");
 
-        TstCaseInTask vo = caseInTaskService.setResult(caseInRunId, result, status, nextId, userVo);
+        TstCaseInTask vo = caseInTaskService.setResult(caseInTaskId, caseId, result, status, nextId, userVo);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

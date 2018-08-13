@@ -24,18 +24,18 @@
         WHERE o.id=#{id}
     </select>
 
-    <update id="setResult" parameterType="TstCaseInTask">
+    <update id="setResult">
         update TstCaseInTask o
         set o.result=#{result},
           o.status=#{status},
           o.exeBy=#{exeBy},
-          o.exeTime=#{exeTime}
+          o.exeTime=NOW()
 
         where o.id = #{id}
     </update>
 
     <select id="getDetail" resultMap="caseInTaskMap">
-        SELECT cs.id id, cs.*,
+        SELECT cs.id id, cs.*, o.id entityId,
           o.id entityId, o.pId pId, o.isLeaf isLeaf, o.status status, o.result result, o.ordr ordr
 
         FROM TstCaseInTask o
@@ -46,12 +46,9 @@
 
     <resultMap id="caseInTaskMap" type="TstCaseInTask" autoMapping="true">
         <id column="id" property="id"/>
+        <id column="caseInTaskId" property="caseInTaskId"/>
 
         <collection property="steps" select="com.ngtesting.platform.dao.CaseStepDao.listByCaseId"
-                    column="{id=id}">
-        </collection>
-
-        <collection property="histories" select="com.ngtesting.platform.dao.CaseHistoryDao.listByCaseId"
                     column="{id=id}">
         </collection>
 
@@ -61,6 +58,10 @@
 
         <collection property="attachments" select="com.ngtesting.platform.dao.CaseAttachmentDao.listByCaseId"
                     column="{id=id}">
+        </collection>
+
+        <collection property="histories" select="com.ngtesting.platform.dao.CaseInTaskHistoryDao.listByCaseInTaskId"
+                    column="{caseInTaskId=entityId}">
         </collection>
     </resultMap>
 

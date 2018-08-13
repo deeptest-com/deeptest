@@ -18,7 +18,7 @@
         FALSE,FALSE,NOW() )
     </insert>
 
-    <select id="listByCaseId" parameterType="Map" resultMap="caseHistoryMaps">
+    <select id="listByCaseId" parameterType="Map" resultMap="caseHistoryMap">
         SELECT o.* FROM TstCaseHistory o
 
         WHERE o.caseId = #{id}
@@ -27,7 +27,7 @@
         ORDER BY o.createTime DESC LIMIT 10
     </select>
 
-    <resultMap id="caseHistoryMaps" type="TstCaseHistory" autoMapping="true">
+    <resultMap id="caseHistoryMap" type="TstCaseHistory" autoMapping="true">
         <id column="id" property="id"/>
         <id column="title" property="title"/>
         <id column="descr" property="descr"/>

@@ -1,27 +1,27 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.dao.CaseInTaskDao;
-import com.ngtesting.platform.dao.TestPlanDao;
-import com.ngtesting.platform.dao.TestTaskDao;
+import com.ngtesting.platform.dao.*;
+import com.ngtesting.platform.model.TstCase;
 import com.ngtesting.platform.model.TstCaseInTask;
 import com.ngtesting.platform.model.TstCaseInTaskHistory;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.CaseAttachmentService;
-import com.ngtesting.platform.service.CaseCommentsService;
+import com.ngtesting.platform.service.CaseHistoryService;
 import com.ngtesting.platform.service.CaseInTaskService;
-import com.ngtesting.platform.service.CaseService;
+import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
 
 @Service
 public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTaskService {
     @Autowired
-    CaseService caseService;
+    CaseHistoryService caseHistoryService;
+    @Autowired
+    CaseDao caseDao;
     @Autowired
     CaseInTaskDao caseInTaskDao;
     @Autowired
@@ -30,9 +30,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
     TestPlanDao planDao;
 
     @Autowired
-    CaseCommentsService caseCommentsService;
-    @Autowired
-    CaseAttachmentService caseAttachmentService;
+    CaseInTaskHistoryDao caseInTaskHistoryDao;
 
     @Override
     public List<TstCaseInTask> query(Integer taskId) {
@@ -50,17 +48,13 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
 
     @Override
     @Transactional
-    public TstCaseInTask setResult(Integer caseInTaskId, String result, String status, Integer nextId, TstUser TstUser) {
-        TstCaseInTask po = new TstCaseInTask();
+    public TstCaseInTask setResult(Integer caseInTaskId, Integer caseId, String result, String status, Integer nextId, TstUser user) {
+        TstCaseInTask po = caseInTaskDao.getDetail(caseInTaskId);
 
-        po.setId(caseInTaskId);
-        po.setResult(result);
-        po.setStatus(status);
-        po.setExeBy(TstUser.getId());
-        po.setExeTime(new Date());
-        caseInTaskDao.setResult(po);
+        caseInTaskDao.setResult(caseInTaskId, result, status, user.getId());
 
-        saveHistory(TstUser, Constant.CaseAct.exe_result, po, status, result==null?"":result.trim());
+        saveHistory(caseId, caseInTaskId,
+                Constant.CaseAct.exe_result, user, status, result==null?"":result.trim());
 
         taskDao.start(po.getTaskId());
         planDao.start(po.getPlanId());
@@ -73,36 +67,42 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
     }
 
     @Override
-    public List<TstCaseInTaskHistory> findHistories(Integer id) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TestCaseInTaskHistory.class);
-//        dc.add(Restrictions.eq("testCaseInTaskId", id));
-//
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//
-//        dc.addOrder(Order.desc("createTime"));
-//
-//        List<TestCaseInTaskHistory> ls = findAllByCriteria(dc);
-//        return ls;
+    public TstCaseInTask rename(JSONObject json, TstUser user) {
+        Integer caseId = json.getInteger("id");
+        Integer entityId = json.getInteger("entityId");
+        String name = json.getString("name");
 
-        return null;
+        TstCase testCase = caseDao.get(caseId);
+
+        testCase.setUpdateById(user.getId());
+
+        testCase.setName(name);
+        testCase.setReviewResult(null);
+
+        caseDao.renameUpdate(testCase);
+
+        caseHistoryService.saveHistory(user, Constant.CaseAct.rename, testCase,null);
+
+        return caseInTaskDao.getDetail(entityId);
     }
 
     @Override
-    public void saveHistory(TstUser user, Constant.CaseAct act, TstCaseInTask testCaseInTask,
+    public void saveHistory(Integer caseId, Integer caseInTaskId, Constant.CaseAct act, TstUser user,
                             String status, String result) {
-//        String action = act.msg;
-//
-//        String msg = "用户" + StringUtil.highlightDict(user.getName()) + action
-//                + "为\"" + Constant.ExeStatus.getDetail(status) + "\"";
-//        if (!StringUtil.IsEmpty(result)) {
-//            msg += ", 内容：" + result;
-//        }
-//
-//        TestCaseInTaskHistory his = new TestCaseInTaskHistory();
-//        his.setTitle(msg);
-//        his.setTestCaseInTaskId(testCaseInTask.getId());
-//        saveOrUpdate(his);
+        String action = act.msg;
+
+        String msg = "用户" + StringUtil.highlightDict(user.getNickname()) + action
+                + "为\"" + Constant.ExeStatus.get(status) + "\"";
+        if (!StringUtil.IsEmpty(result)) {
+            msg += ", 内容：" + result;
+        }
+
+        TstCaseInTaskHistory his = new TstCaseInTaskHistory();
+        his.setTitle(msg);
+        his.setCaseId(caseId);
+        his.setCaseInTaskId(caseInTaskId);
+
+        caseInTaskHistoryDao.save(his);
     }
 
 }

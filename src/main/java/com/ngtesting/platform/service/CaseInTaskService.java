@@ -1,8 +1,8 @@
 package com.ngtesting.platform.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstCaseInTask;
-import com.ngtesting.platform.model.TstCaseInTaskHistory;
 import com.ngtesting.platform.model.TstUser;
 
 import java.util.List;
@@ -11,10 +11,10 @@ public interface CaseInTaskService extends BaseService {
 
 	List<TstCaseInTask> query(Integer taskId);
     TstCaseInTask getDetail(Integer id);
-    TstCaseInTask setResult(Integer caseInTaskId, String result, String status, Integer next, TstUser userVo);
+    TstCaseInTask setResult(Integer caseInTaskId, Integer caseId, String result, String status, Integer next, TstUser userVo);
 
-    List<TstCaseInTaskHistory> findHistories(Integer id);
+    TstCaseInTask rename(JSONObject json, TstUser userVo);
 
-    void saveHistory(TstUser user, Constant.CaseAct act, TstCaseInTask testCaseInTask,
+    void saveHistory(Integer caseId, Integer caseInTaskId, Constant.CaseAct act, TstUser user,
                      String status, String result);
 }

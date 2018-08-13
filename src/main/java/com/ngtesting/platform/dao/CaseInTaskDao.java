@@ -12,4 +12,9 @@ public interface CaseInTaskDao {
     TstCaseInTask getDetail(@Param("id") Integer id);
 
     void setResult(TstCaseInTask po);
+
+    void setResult(@Param("id") Integer id,
+                   @Param("result") String result,
+                   @Param("status") String status,
+                   @Param("exeBy") Integer exeBy);
 }

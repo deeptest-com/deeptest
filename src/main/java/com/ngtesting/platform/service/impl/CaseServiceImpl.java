@@ -103,7 +103,6 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             po = caseDao.get(id);
 
             po.setUpdateById(user.getId());
-            po.setUpdateTime(new Date());
         } else {
             isNew = true;
             action = Constant.CaseAct.create;

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.CaseInTaskHistoryDao" >
+
+    <insert id="save" parameterType="TstCaseInTaskHistory" useGeneratedKeys="true" keyProperty="id">
+        insert into TstCaseInTaskHistory
+          (title,caseId,caseInTaskId,
+            deleted,disabled,createTime)
+        values
+          (#{title},#{caseId},#{caseInTaskId},
+            FALSE,FALSE,NOW() )
+    </insert>
+
+    <select id="listByCaseInTaskId" parameterType="Map" resultMap="caseInTaskHistoryMap">
+        SELECT o.* FROM TstCaseInTaskHistory o
+
+        WHERE o.caseInTaskId = #{caseInTaskId}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.createTime DESC LIMIT 10
+    </select>
+
+    <resultMap id="caseInTaskHistoryMap" type="TstCaseInTaskHistory" autoMapping="true">
+        <id column="id" property="id"/>
+        <id column="title" property="title"/>
+        <id column="descr" property="descr"/>
+        <id column="createTime" property="createTime"/>
+        <id column="caseId" property="caseId"/>
+        <id column="caseInTaskId" property="caseInTaskId"/>
+    </resultMap>
+
+</mapper>

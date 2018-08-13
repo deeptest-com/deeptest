@@ -11,4 +11,6 @@ public interface AccountService {
     String forgotPassword(TstUser user);
     Boolean beforResetPassword(String verifyCode);
     TstUser resetPassword(String verifyCode, String password);
+
+    TstUser loginWithVerifyCode(String vcode);
 }

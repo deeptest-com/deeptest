@@ -52,6 +52,29 @@ public class AccountAction {
 
     @AuthPassport(validate=false)
     @ResponseBody
+    @PostMapping("/loginWithVerifyCode")
+    public Object loginWithVerifyCode(HttpServletRequest request, @RequestBody JSONObject json){
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        String vcode = json.getString("vcode");
+        TstUser user = accountService.loginWithVerifyCode(vcode);
+
+        if (user != null) {
+            request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, user);
+
+            ret.put("profile", user);
+            ret.put("token", user.getToken());
+            ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        } else {
+            ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
+            ret.put("msg", "登录失败");
+        }
+
+        return ret;
+    }
+
+    @AuthPassport(validate=false)
+    @ResponseBody
     @PostMapping("/login")
     public Object login(HttpServletRequest request, @RequestBody JSONObject json){
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -73,16 +96,6 @@ public class AccountAction {
             ret.put("msg", "登录失败");
         }
 
-        return ret;
-    }
-
-    @AuthPassport(validate=false)
-    @ResponseBody
-    @PostMapping("/loginWithVerifyCode")
-    public Object loginWithVerifyCode(HttpServletRequest request, @RequestBody JSONObject json){
-        Map<String, Object> ret = new HashMap();
-
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
 

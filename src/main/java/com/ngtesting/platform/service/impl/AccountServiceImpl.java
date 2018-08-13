@@ -71,6 +71,28 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
+    public TstUser loginWithVerifyCode(String vcode) {
+        TstUserVerifyCode code = verifyCodeDao.getByCode(vcode);
+        if (code == null) {
+            return null;
+        }
+
+        TstUser user = userDao.get(code.getRefId());
+        if (user == null) {
+            return null;
+        }
+
+        verifyCodeDao.disableCode(code.getId());
+
+        String newToken = UUID.randomUUID().toString();
+        user.setToken(newToken);
+        accountDao.loginWithVerifyCode(user);
+
+        return user;
+    }
+
+    @Override
     public TstUser login(String email, String password, Boolean rememberMe) {
         TstUser user = userDao.getByEmailAndPassword(email, password);
         if (user == null) {

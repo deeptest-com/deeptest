@@ -8,6 +8,7 @@ import java.util.Date;
 public interface AccountDao {
 
     Integer register(TstUser record);
+    void loginWithVerifyCode(TstUser user);
     void login(@Param("id") Integer id, @Param("token") String token, @Param("lastLoginTime") Date lastLoginTime);
     Integer logout(@Param("email") String email);
 

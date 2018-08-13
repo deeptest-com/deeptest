@@ -82,29 +82,10 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	}
 
 	@Override
-	public Boolean disable(Integer id) {
-//		if (id == null) {
-//			return false;
-//		}
-//
-//		TstOrg po = (TstOrg) getDetail(TstOrg.class, id);
-//		po.setDisabled(true);
-//		saveOrUpdate(po);
-
-		return true;
-	}
-
-	@Override
 	public Boolean delete(Integer id) {
-//		if (id == null) {
-//			return false;
-//		}
-//
-//		TstOrg po = (TstOrg) getDetail(TstOrg.class, id);
-//		po.setDeleted(true);
-//		saveOrUpdate(po);
+		Integer count = orgDao.delete(id);
 
-		return true;
+		return count > 0;
 	}
 
 	@Override

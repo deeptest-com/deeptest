@@ -11,6 +11,7 @@ import com.ngtesting.platform.service.*;
 import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -89,6 +90,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public TstUser invitePers(TstUser user, TstUser vo, List<TstOrgGroupUserRelation> relations) {
         Integer orgId = user.getDefaultOrgId();
         Integer prjId = user.getDefaultPrjId();

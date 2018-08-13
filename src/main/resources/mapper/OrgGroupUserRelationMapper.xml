@@ -3,14 +3,16 @@
 <mapper namespace="com.ngtesting.platform.dao.OrgGroupUserRelationDao" >
 
     <select id="query" resultType="TstOrgGroupUserRelation">
-        SELECT * FROM TstOrgGroupUserRelation o WHERE o.orgId=#{orgId}
+        SELECT * FROM TstOrgGroupUserRelation o
+
+        WHERE o.orgId=#{orgId}
         <if test="groupId != null">
             AND o.orgGroupId = #{groupId}
         </if>
         <if test="userId != null">
             AND o.userId = #{userId}
         </if>
-        ORDER BY o.id ASC
+        ORDER BY o.orgGroupId ASC
     </select>
 
     <delete id="removeAllGroupsForUser">

@@ -20,4 +20,6 @@ public interface OrgDao {
 
     void save(TstOrg vo);
     void update(TstOrg vo);
+
+    Integer delete(@Param("id") Integer id);
 }

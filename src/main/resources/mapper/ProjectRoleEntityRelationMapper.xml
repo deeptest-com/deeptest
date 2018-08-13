@@ -24,21 +24,20 @@
 
         WHERE o.projectId=#{projectId}
 
-        AND o.deleted != TRUE AND o.disabled != TRUE
-        ORDER BY o.id DESC
+        ORDER BY o.type, role.id ASC
     </select>
 
     <insert id="addRole" useGeneratedKeys="true" keyProperty="id">
-        insert into TstProjectRoleEntityRelation (orgId,projectId,projectRoleId,entityId,type,
-          deleted,disabled,createTime)
+        insert into TstProjectRoleEntityRelation (orgId,projectId,projectRoleId,entityId,type
+          )
 
-        values (#{orgId},#{projectId},#{projectRoleId},#{entityId},#{type},
-          FALSE,FALSE,NOW())
+        values (#{orgId},#{projectId},#{projectRoleId},#{entityId},#{type}
+          )
     </insert>
 
     <update id="changeRole">
         UPDATE TstProjectRoleEntityRelation
-        SET projectRoleId=#{projectRoleId},updateTime=NOW()
+        SET projectRoleId=#{projectRoleId}
         WHERE projectId=#{projectId} AND entityId=#{entityId}
     </update>
 

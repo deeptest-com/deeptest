@@ -9,7 +9,7 @@
         <if test="keywords != null and keywords != ''">
             AND grp.name LIKE CONCAT('%','${keywords}','%' )
         </if>
-        <if test="disabled != null and disabled != ''">
+        <if test="disabled != null">
             AND grp.disabled = #{disabled}
         </if>
 

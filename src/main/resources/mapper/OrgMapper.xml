@@ -9,9 +9,10 @@
         <if test="keywords != null and keywords != ''">
             AND o.name LIKE CONCAT('%','${keywords}','%' )
         </if>
-        <if test="disabled != null and disabled != ''">
+        <if test="disabled != null">
             AND o.disabled = #{disabled}
         </if>
+        AND o.deleted != TRUE
     </select>
 
     <select id="queryByUser" parameterType="int" resultType="TstOrg">
@@ -20,6 +21,7 @@
 
         WHERE r.userId = #{userId}
         AND o.disabled != TRUE
+        AND o.deleted != TRUE
     </select>
 
     <select id="get" parameterType="int" resultType="TstOrg">
@@ -46,6 +48,11 @@
         SET name=#{name},website=#{website},disabled=#{disabled}
         WHERE id=#{id}
     </update>
+    <delete id="delete">
+        UPDATE TstOrg
+        SET deleted=TRUE
+        WHERE id=#{id}
+    </delete>
 
     <insert id="initOrg">
         { call init_org(

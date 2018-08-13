@@ -55,7 +55,7 @@ public class UserAction {
 
         String keywords = json.getString("keywords");
         Boolean disabled = json.getBoolean("disabled");
-        Integer pageNum = json.getInteger("listByPage");
+        Integer pageNum = json.getInteger("page");
         Integer pageSize = json.getInteger("pageSize");
 
         Page page = PageHelper.startPage(pageNum, pageSize);
@@ -198,13 +198,16 @@ public class UserAction {
         Integer orgId = user.getDefaultOrgId();
 
         TstUser vo = JSON.parseObject(JSON.toJSONString(json.get("user")), TstUser.class);
+
+        TstUser existUser = userService.getByEmail(vo.getEmail());
+
+        if (existUser != null && existUser.getId() != vo.getId()) {
+            ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
+            ret.put("msg", "邮箱已被占用");
+            return ret;
+        }
+
         userService.update(vo);
-//
-//        if (po == null) {
-//            ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
-//            ret.put("msg", "邮箱已存在");
-//            return ret;
-//        }
 
         List<TstOrgGroupUserRelation> relations = (List<TstOrgGroupUserRelation>) json.get("relations");
         orgGroupUserRelationService.saveRelationsForUser(orgId, vo.getId(), relations);

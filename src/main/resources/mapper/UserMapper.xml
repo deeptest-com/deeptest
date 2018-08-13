@@ -15,13 +15,12 @@
             OR usr.phone LIKE CONCAT('%','${keywords}','%' )
             )
         </if>
-        <if test="disabled != null and disabled != ''">
+        <if test="disabled != null">
             AND usr.disabled = #{disabled}
         </if>
 
         AND r.orgId = #{orgId}
         AND usr.deleted != TRUE
-        AND usr.disabled != TRUE
         ORDER BY usr.id ASC
     </select>
 

@@ -37,5 +37,6 @@ public interface TestTaskDao {
     void addCases(@Param("taskId") Integer taskId,
                   @Param("caseIds") String caseIds,
                   @Param("append") Boolean append);
-    // "{call (?,?,?)}",
+
+    void start(@Param("id") Integer id);
 }

@@ -85,6 +85,12 @@
         WHERE id=#{id}
     </update>
 
+    <update id="start">
+        UPDATE TstPlan o
+        SET o.status = 'in_progress'
+        WHERE o.id=#{id} AND o.status != 'in_progress'
+    </update>
+
     <update id="delete">
         UPDATE TstPlan
         SET deleted = TRUE

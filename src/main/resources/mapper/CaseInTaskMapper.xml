@@ -24,6 +24,16 @@
         WHERE o.id=#{id}
     </select>
 
+    <update id="setResult" parameterType="TstCaseInTask">
+        update TstCaseInTask o
+        set o.result=#{result},
+          o.status=#{status},
+          o.exeBy=#{exeBy},
+          o.exeTime=#{exeTime}
+
+        where o.id = #{id}
+    </update>
+
     <select id="getDetail" resultMap="caseInTaskMap">
         SELECT cs.id id, cs.*,
           o.id entityId, o.pId pId, o.isLeaf isLeaf, o.status status, o.result result, o.ordr ordr

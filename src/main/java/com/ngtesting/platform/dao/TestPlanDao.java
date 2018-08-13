@@ -26,4 +26,6 @@ public interface TestPlanDao {
     void delete(@Param("id") Integer id);
 
     void closePlanIfAllTaskClosed(@Param("planId") Integer planId);
+
+    void start(@Param("id") Integer id);
 }

@@ -194,12 +194,13 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             caseDao.updateParentIfNeeded(targetId);
         }
 
+        caseHistoryService.saveHistory(user, action, testCase,null);
+
         TstCase ret = caseDao.getDetail(testCase.getId());
         if (isCopy && isParent) {
             loadNodeTree(ret);
         }
 
-        caseHistoryService.saveHistory(user, action, testCase,null);
         return ret;
 	}
 
@@ -246,6 +247,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         testCase2.setLeaf(true);
         testCase2.setOrdr(0);
         caseDao.create(testCase2);
+
         caseHistoryService.saveHistory(user, Constant.CaseAct.create, testCase2,null);
     }
 
@@ -289,6 +291,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
         TstCase testCase = caseDao.get(id);
         caseDao.updateParentIfNeeded(testCase.getpId());
+
         caseHistoryService.saveHistory(user, Constant.CaseAct.delete, testCase,null);
 	}
 

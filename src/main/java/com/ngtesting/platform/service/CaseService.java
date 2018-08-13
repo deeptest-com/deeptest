@@ -44,4 +44,6 @@ public interface CaseService extends BaseService {
 	void genVos(List<TstCase> pos, List<Integer> selectIds);
 
 	void genVo(TstCase po, List<Integer> selectIds);
+
+    List<String> genExtPropList();
 }

@@ -52,12 +52,17 @@
         WHERE id=#{id}
     </update>
 
-    <update id="update" parameterType="TstCase">
+    <update id="update">
        UPDATE TstCase
-        SET name=#{name},priority=#{priority},type=#{type},
-            contentType=#{contentType},content=#{content},
-            estimate=#{estimate},objective=#{objective},updateById=#{updateById}
-        WHERE id=#{id}
+        SET name=#{obj.name},priority=#{obj.priority},type=#{obj.type},
+            contentType=#{obj.contentType},content=#{obj.content},
+            estimate=#{obj.estimate},objective=#{obj.objective},updateById=#{obj.updateById},
+
+            <foreach collection="props" item="item" separator=",">
+                prop${item} = #{obj.prop${item}}
+            </foreach>
+
+        WHERE id=#{obj.id}
     </update>
 
     <update id="updateParentIfNeeded">

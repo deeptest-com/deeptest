@@ -58,7 +58,9 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
             vo.setOrdr(maxOrder + 10);
 
             customFieldDao.save(vo);
-            customFieldOptionDao.saveAll(vo.getId(), vo.getOptions());
+            if (vo.getType().equals(TstCustomField.FieldType.dropdown)) {
+                customFieldOptionDao.saveAll(vo.getId(), vo.getOptions());
+            }
         } else {
             customFieldDao.update(vo);
         }

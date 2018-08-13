@@ -59,8 +59,8 @@ public class TstCustomField extends BaseModel {
 	}
 
 	public static enum FieldApplyTo {
-		test_case("test_case"),
-		test_result("test_result");
+		test_case("test_case");
+//		test_result("test_result");
 
 		private FieldApplyTo(String textVal) {
 			this.textVal = textVal;

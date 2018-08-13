@@ -38,13 +38,27 @@ public class CustomFieldOptionServiceImpl extends BaseServiceImpl implements Cus
 
     @Override
     public boolean delete(Integer id) {
-//        getDao().delete(id);
+        customFieldOptionDao.delete(id);
         return true;
     }
 
     @Override
     public boolean changeOrderPers(Integer id, String act, Integer fieldId) {
-//TstCustomFieldOption
+        TstCustomFieldOption curr = customFieldOptionDao.get(id);
+        TstCustomFieldOption neighbor = null;
+        if ("up".equals(act)) {
+            neighbor = customFieldOptionDao.getPrev(curr.getOrdr(), fieldId);
+        } else if ("down".equals(act)) {
+            neighbor = customFieldOptionDao.getNext(curr.getOrdr(), fieldId);
+        }
+        if (neighbor == null) {
+            return false;
+        }
+
+        Integer currOrder = curr.getOrdr();
+        Integer neighborOrder = neighbor.getOrdr();
+        customFieldOptionDao.setOrder(id, neighborOrder);
+        customFieldOptionDao.setOrder(neighbor.getId(), currOrder);
 
         return true;
     }

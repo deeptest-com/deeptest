@@ -18,7 +18,10 @@ public interface CaseDao {
     void moveCopy(TstCase testCase);
     void moveUpdate(TstCase testCase);
 
-    void update(TstCase testCasePo);
+    void update(
+            @Param("obj") TstCase testCasePo,
+            @Param("props") List<String> props);
+
     void delete(@Param("pId") Integer id);
 
     Integer getChildMaxOrderNumb(@Param("pId") Integer pId);

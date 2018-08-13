@@ -240,9 +240,7 @@ public class StringUtil extends StringUtils {
     	return mformat.format(d);
     }
 
-    public static String formatString(Long d, Long max){
-    	int length = max.toString().length();
-
+    public static String formatString(Integer d, Integer length){
     	return String.format("%0"+length+"d", d);
     }
 

@@ -13,15 +13,18 @@ import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.CaseHistoryService;
 import com.ngtesting.platform.service.CaseService;
 import com.ngtesting.platform.utils.BeanUtilEx;
+import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
 public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
+
     @Autowired
     CaseDao caseDao;
     @Autowired
@@ -31,6 +34,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     TestSuiteDao testSuiteDao;
     @Autowired
     TestTaskDao testTaskDao;
+
+    public static List<String> ExtPropList;
 
 //    @Autowired
 //    CaseCommentsService caseCommentsService;
@@ -255,7 +260,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
         testCaseVo.setUpdateById(user.getId());
         testCaseVo.setUpdateTime(new Date());
-        caseDao.update(testCaseVo);
+        caseDao.update(testCaseVo, genExtPropList());
 
         caseHistoryService.saveHistory(user, Constant.CaseAct.update, testCaseVo,null);
 
@@ -363,6 +368,19 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         if (selectIds != null && selectIds.contains(po.getId())) {
             po.setChecked(true);
         }
+    }
+
+    @Override
+    public List<String> genExtPropList() {
+        if (CaseServiceImpl.ExtPropList == null) {
+            CaseServiceImpl.ExtPropList = new LinkedList<>();
+            for (Integer i = 1; i <= 20; i++) {
+                String str = StringUtil.formatString(i, 2);
+                CaseServiceImpl.ExtPropList.add(str);
+            }
+        }
+
+        return CaseServiceImpl.ExtPropList;
     }
 
 }

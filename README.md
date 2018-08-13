@@ -4,7 +4,11 @@ AngularJS, SockJS, SpringBoot, MyBatis, MySQL
 
 ### Quick start
 ```bash
-
+Create a MySQL database named "ngtesting-web"
+Create MySQL user "ngtesting" with password "P2ssw0rd"
+Import xdoc/ngtesting-web.sql to database
+Goto dir xdoc/, enter "java -jar ngtesting-web-1.0-SNAPSHOT.jar" to run
+Open http://localhost:8080/test.html using Chrome 
 ```
 
 

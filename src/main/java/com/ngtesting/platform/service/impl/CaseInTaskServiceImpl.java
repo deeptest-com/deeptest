@@ -94,7 +94,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
         String msg = "用户" + StringUtil.highlightDict(user.getNickname()) + action
                 + "为\"" + Constant.ExeStatus.get(status) + "\"";
         if (!StringUtil.IsEmpty(result)) {
-            msg += ", 内容：" + result;
+            msg += ", 结果内容：" + result;
         }
 
         TstCaseInTaskHistory his = new TstCaseInTaskHistory();

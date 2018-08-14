@@ -46,6 +46,10 @@
         SELECT task.*  FROM TstTask task
         WHERE task.id=#{id}
     </select>
+    <select id="listAssigneeIds" resultType="Integer">
+        SELECT r.assigneeId  FROM TstTaskAssigneeRelation r
+        WHERE r.taskId=#{id}
+    </select>
 
     <select id="listCaseIds" resultType="int">
         SELECT o.caseId

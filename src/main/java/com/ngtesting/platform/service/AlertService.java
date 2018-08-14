@@ -15,7 +15,7 @@ public interface AlertService extends BaseService {
 
     TstAlert getByTask(Integer id);
 
-    void markAllReadPers(String ids);
+    void markAllReadPers(String ids, Integer userId);
 
     List<TstAlert> genVos(List<TstAlert> pos);
 

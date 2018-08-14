@@ -93,6 +93,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public TstUser login(String email, String password, Boolean rememberMe) {
         TstUser user = userDao.getByEmailAndPassword(email, password);
         if (user == null) {
@@ -107,18 +108,21 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public Boolean logout(String email) {
         Integer matched = accountDao.logout(email);
         return matched > 0;
     }
 
     @Override
+    @Transactional
     public Boolean changePassword(Integer userId, String oldPassword, String password) {
         Integer matched = accountDao.changePassword(userId, oldPassword, password);
         return matched > 0;
     }
 
     @Override
+    @Transactional
     public String forgotPassword(TstUser user) {
         String verifyCode = accountVerifyCodeService.genVerifyCode(user.getId());
 
@@ -140,6 +144,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public Boolean beforResetPassword(String verifyCode) {
         TstUserVerifyCode code = verifyCodeDao.getByCode(verifyCode);
 

@@ -98,8 +98,8 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
     }
 
     @Override
-    public void markAllReadPers(String ids) {
-        alertDao.markAllRead(ids);
+    public void markAllReadPers(String ids, Integer userId) {
+        alertDao.markAllRead(ids, userId);
     }
 
     @Override

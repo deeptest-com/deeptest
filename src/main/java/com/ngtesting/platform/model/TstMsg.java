@@ -7,9 +7,37 @@ public class TstMsg extends BaseModel {
     private String uri;
     private Boolean isRead;
 
+    private Integer assigneeId;
+    private String assigneeName;
+    private String assigneeAvatar;
+
     private Integer userId;
     private String userName;
     private String userAvatar;
+
+    public Integer getAssigneeId() {
+        return assigneeId;
+    }
+
+    public void setAssigneeId(Integer assigneeId) {
+        this.assigneeId = assigneeId;
+    }
+
+    public String getAssigneeName() {
+        return assigneeName;
+    }
+
+    public void setAssigneeName(String assigneeName) {
+        this.assigneeName = assigneeName;
+    }
+
+    public String getAssigneeAvatar() {
+        return assigneeAvatar;
+    }
+
+    public void setAssigneeAvatar(String assigneeAvatar) {
+        this.assigneeAvatar = assigneeAvatar;
+    }
 
     public String getUserName() {
         return userName;

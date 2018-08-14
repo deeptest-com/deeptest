@@ -55,20 +55,6 @@ public class MsgAction extends BaseAction {
 		return ret;
 	}
 
-    @RequestMapping(value = "get", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-
-        Integer msgId = json.getInteger("id");
-
-        TstMsg vo = msgService.getById(msgId);
-
-        ret.put("data", vo);
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -92,11 +78,10 @@ public class MsgAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
         Integer id = json.getInteger("id");
-        TstMsg msg = msgService.markReadPers(id);
+        msgService.markRead(id, user.getId());
 
         optFacade.opt(WsConstant.WS_TODO, user);
 
-        ret.put("data", msg);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -108,7 +93,7 @@ public class MsgAction extends BaseAction {
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		msgService.markAllReadPers(user.getId());
+		msgService.markAllRead(user.getId());
 		optFacade.opt(WsConstant.WS_TODO, user);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

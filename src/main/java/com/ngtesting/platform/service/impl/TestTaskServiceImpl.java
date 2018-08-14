@@ -47,9 +47,9 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 
     @Override
     @Transactional
-    public TstTask save(JSONObject json, TstUser user) {
+    public TstTask save(JSONObject json, TstUser optUser) {
         TstTask task = JSON.parseObject(JSON.toJSONString(json), TstTask.class);
-        task.setUserId(user.getId());
+        task.setUserId(optUser.getId());
 
         Constant.MsgType action = null;
         if (task.getId() != null) {
@@ -69,11 +69,13 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
         List assignees = json.getJSONArray("assignees");
         taskDao.saveAssignees(task.getId(), assignees);
 
-        importSuiteCasesPers(task, JSON.parseObject(JSON.toJSONString(json.get("suites")), List.class));
+        List<TstSuite> suites = JSON.parseObject(JSON.toJSONString(json.get("suites")), List.class);
+
+        importSuiteCasesPers(task, suites, optUser);
 
         alertService.create(task);
-        msgService.create(task, action, user);
-        historyService.create(task.getProjectId(), user, action.msg, TstHistory.TargetType.task,
+        msgService.create(task, action, optUser);
+        historyService.create(task.getProjectId(), optUser, action.msg, TstHistory.TargetType.task,
                 task.getId(), task.getName());
 
         TstTask ret = taskDao.getDetail(task.getId());
@@ -82,9 +84,9 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 
     @Override
     @Transactional
-    public boolean importSuiteCasesPers(TstTask task, List<TstSuite> suites) {
+    public void importSuiteCasesPers(TstTask task, List<TstSuite> suites, TstUser optUser) {
         if (suites == null || suites.size() == 0) {
-            return false;
+            return;
         }
 
         Integer caseProjectId = null;
@@ -98,17 +100,19 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
             }
         }
 
+        if (suiteIds.size() == 0) {
+            return;
+        }
+
         String suiteIdsStr = StringUtil.join(suiteIds.toArray(), ",");
         taskDao.addCasesBySuites(task.getId(), suiteIdsStr);
 
         if (caseProjectId != null &&
                 (task.getCaseProjectId() == null ||  caseProjectId.intValue() != task.getCaseProjectId().intValue())) {
             taskDao.updateCaseProject(task.getId(), caseProjectId);
-        } else {
-            return false;
         }
 
-        return true;
+        msgService.create(task, Constant.MsgType.create, optUser);
     }
 
     @Override

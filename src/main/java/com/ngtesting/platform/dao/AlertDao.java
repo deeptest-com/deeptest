@@ -14,5 +14,5 @@ public interface AlertDao {
 
     void create(TstAlert po);
 
-    void markAllRead(@Param("ids") String ids);
+    void markAllRead(@Param("ids") String ids, @Param("userId") Integer userId);
 }

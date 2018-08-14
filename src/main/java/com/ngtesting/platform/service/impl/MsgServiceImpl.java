@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.MsgDao;
+import com.ngtesting.platform.dao.TestTaskDao;
 import com.ngtesting.platform.model.TstMsg;
 import com.ngtesting.platform.model.TstTask;
 import com.ngtesting.platform.model.TstUser;
@@ -9,6 +10,7 @@ import com.ngtesting.platform.service.MsgService;
 import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,6 +18,8 @@ import java.util.List;
 public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
     @Autowired
     private MsgDao msgDao;
+    @Autowired
+    private TestTaskDao taskDao;
 
 	@Override
 	public List<TstMsg> list(Integer userId, Boolean isRead, String keywords) {
@@ -25,43 +29,38 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
 	}
 
     @Override
-    public TstMsg getById(Integer id) {
-//        TstMsg po = (TstMsg) getDetail(TstMsg.class, id);
-//        TstMsg vo = genVo(po);
-//
-//        return vo;
-        return null;
-    }
-
-    @Override
+    @Transactional
     public void delete(Integer msgId, Integer userId) {
-//        TstMsg po = (TstMsg) getDetail(TstMsg.class, msgId);
-//        po.setDeleted(true);
-//        saveOrUpdate(po);
+        msgDao.delete(msgId, userId);
     }
 
     @Override
-    public TstMsg create(TstTask task, Constant.MsgType action, TstUser optUser) {
-        TstMsg msg = new TstMsg();
+    @Transactional
+    public void create(TstTask task, Constant.MsgType action, TstUser optUser) {
 
-        msg.setTitle("用户" + StringUtil.highlightDict(optUser.getNickname()) + action.msg
-                + "测试集" + StringUtil.highlightDict(task.getName()));
+        List<Integer> ids = taskDao.listAssigneeIds(task.getId());
+        for (Integer id: ids) {
+            TstMsg msg = new TstMsg();
 
-        msg.setUserId(task.getUserId());
-        msgDao.create(msg);
+            msg.setTitle("用户" + StringUtil.highlightDict(optUser.getNickname()) + action.msg
+                    + "测试集" + StringUtil.highlightDict(task.getName()));
 
-        return msg;
+            msg.setUserId(optUser.getId());
+
+            msg.setAssigneeId(id);
+            msgDao.create(msg);
+        }
     }
 
     @Override
-    public TstMsg markReadPers(Integer id) {
+    @Transactional
+    public void markRead(Integer id, Integer userId) {
         msgDao.markRead(id);
-        TstMsg po = msgDao.get(id);
-        return po;
     }
 
     @Override
-    public void markAllReadPers(Integer userId) {
+    @Transactional
+    public void markAllRead(Integer userId) {
         msgDao.markAllRead(userId);
     }
 

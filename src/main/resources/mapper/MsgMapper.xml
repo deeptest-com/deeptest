@@ -34,13 +34,18 @@
         FROM TstMsg o
         LEFT JOIN TstUser usr on o.userId = usr.id
 
-        WHERE o.id=#{id}
+        WHERE o.id=#{id} AND o.userId = #{userId}
     </select>
 
+    <update id="delete">
+        update TstMsg msg
+        set msg.deleted=true
+        WHERE msg.id=#{id} AND msg.userId = #{userId}
+    </update>
     <update id="markRead">
         update TstMsg msg
             set msg.isRead=true
-        WHERE o.id=#{id}
+        WHERE msg.id=#{id}
     </update>
     <update id="markAllRead">
         update TstMsg msg

@@ -43,7 +43,7 @@
         update TstAlert alert
         set alert.isRead=true
 
-        where alert.id IN ( #{ids} )
+        where alert.id IN ( ${ids} ) AND alert.assigneeId = #{userId}
 
         AND alert.isRead != true
         AND alert.deleted != true AND alert.disabled != true

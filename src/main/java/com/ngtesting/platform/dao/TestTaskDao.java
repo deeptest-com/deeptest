@@ -39,4 +39,6 @@ public interface TestTaskDao {
                   @Param("append") Boolean append);
 
     void start(@Param("id") Integer id);
+
+    List<Integer> listAssigneeIds(@Param("id") Integer id);
 }

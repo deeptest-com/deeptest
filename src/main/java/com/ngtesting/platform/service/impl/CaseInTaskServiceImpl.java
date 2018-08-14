@@ -72,7 +72,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
         Integer entityId = json.getInteger("entityId");
         String name = json.getString("name");
 
-        TstCase testCase = caseDao.get(caseId);
+        TstCase testCase = caseDao.get(caseId, null);
 
         testCase.setUpdateById(user.getId());
 

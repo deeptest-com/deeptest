@@ -116,12 +116,12 @@ public class CaseAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-        Integer orgId = userVo.getDefaultOrgId();
+        Integer prjId = user.getDefaultPrjId();
         Integer caseId = json.getInteger("id");
 
-        TstCase vo = caseService.getById(caseId);
+        TstCase vo = caseService.getDetail(caseId, prjId);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

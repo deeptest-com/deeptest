@@ -25,7 +25,7 @@ public class CaseAttachmentServiceImpl extends BaseServiceImpl implements CaseAt
         TstCaseAttachment attach = new TstCaseAttachment(name, path, caseId, user.getId());
         caseAttachmentDao.save(attach);
 
-        TstCase testCase = caseDao.get(caseId);
+        TstCase testCase = caseDao.get(caseId, null);
         caseHistoryService.saveHistory(user, Constant.CaseAct.upload_attachment, testCase, name);
     }
 
@@ -34,7 +34,7 @@ public class CaseAttachmentServiceImpl extends BaseServiceImpl implements CaseAt
         caseAttachmentDao.delete(id);
 
         TstCaseAttachment attach = caseAttachmentDao.get(id);
-        TstCase testCase = caseDao.get(attach.getCaseId());
+        TstCase testCase = caseDao.get(attach.getCaseId(), null);
         caseHistoryService.saveHistory(user, Constant.CaseAct.delete_attachment, testCase, attach.getName());
     }
 

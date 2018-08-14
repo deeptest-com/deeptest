@@ -70,8 +70,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     }
 
     @Override
-	public TstCase getById(Integer caseId) {
-		TstCase po = caseDao.getDetail(caseId);
+	public TstCase getDetail(Integer caseId, Integer prjId) {
+		TstCase po = caseDao.getDetail(caseId, prjId);
 
 		return po;
 	}
@@ -96,7 +96,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         if (id != null && id > 0) {
             isNew = false;
             action = Constant.CaseAct.rename;
-            po = caseDao.get(id);
+            po = caseDao.get(id, null);
 
             po.setUpdateById(user.getId());
         } else {
@@ -125,7 +125,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
         caseHistoryService.saveHistory(user, action, po,null);
 
-        TstCase ret = caseDao.getDetail(po.getId());
+        TstCase ret = caseDao.getDetail(po.getId(), null);
         return ret;
 	}
 
@@ -138,8 +138,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         String moveType = json.getString("moveType");
         Boolean isCopy = json.getBoolean("isCopy");
 
-        TstCase src = caseDao.getDetail(srcId);
-        TstCase target = caseDao.getDetail(targetId);
+        TstCase src = caseDao.get(srcId, null);
+        TstCase target = caseDao.get(targetId, null);
 
         Integer srcParentId = src.getpId();
 
@@ -191,7 +191,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
         caseHistoryService.saveHistory(user, action, testCase,null);
 
-        TstCase ret = caseDao.getDetail(testCase.getId());
+        TstCase ret = caseDao.getDetail(testCase.getId(), null);
         if (isCopy && isParent) {
             loadNodeTree(ret);
         }
@@ -261,7 +261,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
         caseHistoryService.saveHistory(user, Constant.CaseAct.update, testCaseVo,null);
 
-        TstCase ret = caseDao.getDetail(testCaseVo.getId());
+        TstCase ret = caseDao.getDetail(testCaseVo.getId(), null);
 		return ret;
 	}
 
@@ -274,7 +274,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
 		caseDao.updateProp(id, prop, value);
 
-        TstCase testCase = caseDao.getDetail(id);
+        TstCase testCase = caseDao.getDetail(id, null);
         caseHistoryService.saveHistory(user, Constant.CaseAct.update, testCase,label);
 
 		return testCase;
@@ -284,7 +284,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	public void delete(Integer id, TstUser user) {
         caseDao.delete(id);
 
-        TstCase testCase = caseDao.get(id);
+        TstCase testCase = caseDao.get(id, null);
         caseDao.updateParentIfNeeded(testCase.getpId());
 
         caseHistoryService.saveHistory(user, Constant.CaseAct.delete, testCase,null);
@@ -335,22 +335,15 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
     @Override
     public TstCase changeContentTypePers(Integer id, String contentType) {
-//        TstCase testCase = (TstCase)getDetail(TstCase.class, id);
-//        testCase.setContentType(contentType);
-//        testCase.setReviewResult(null);
-//        saveOrUpdate(testCase);
-//
-//        return testCase;
-
         caseDao.changeContentTypePers(id, contentType);
-        TstCase testCase = caseDao.getDetail(id);
+        TstCase testCase = caseDao.getDetail(id, null);
         return testCase;
     }
 
     @Override
     public TstCase reviewResult(Integer id, Boolean result) {
         caseDao.reviewResult(id, result);
-        TstCase testCase = caseDao.getDetail(id);
+        TstCase testCase = caseDao.getDetail(id, null);
         return testCase;
     }
 

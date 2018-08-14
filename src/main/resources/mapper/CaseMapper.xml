@@ -22,11 +22,17 @@
     <select id="get" resultType="TstCase">
         SELECT * FROM TstCase o
         WHERE o.id = #{id}
+        <if test="prjId != null">
+            AND o.projectId=#{prjId}
+        </if>
     </select>
 
     <select id="getDetail" resultMap="caseMaps">
         SELECT * FROM TstCase o
         WHERE o.id = #{id}
+        <if test="prjId != null">
+            AND o.projectId=#{prjId}
+        </if>
     </select>
 
     <select id="getChildMaxOrderNumb" resultType="Integer">

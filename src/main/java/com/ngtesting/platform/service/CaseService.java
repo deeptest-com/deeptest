@@ -7,14 +7,13 @@ import com.ngtesting.platform.model.TstUser;
 import java.util.List;
 
 public interface CaseService extends BaseService {
-
 	List<TstCase> query(Integer projectId);
 
 	List<TstCase> queryForSuiteSelection(Integer projectId, Integer suiteId);
 
 	List<TstCase> queryForTaskSelection(Integer projectId, Integer runId);
 
-	TstCase getById(Integer caseId);
+	TstCase getDetail(Integer caseId, Integer prjId);
 
     TstCase renamePers(JSONObject json, TstUser user);
 	void delete(Integer id, TstUser user);

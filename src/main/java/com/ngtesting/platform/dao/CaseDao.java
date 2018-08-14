@@ -9,8 +9,8 @@ public interface CaseDao {
     void create(TstCase testCase);
     List<TstCase> query(@Param("projectId") Integer projectId);
 
-    TstCase get(@Param("id") Integer id);
-    TstCase getDetail(@Param("id") Integer id);
+    TstCase get(@Param("id") Integer id, @Param("prjId") Integer prjId);
+    TstCase getDetail(@Param("id") Integer id, @Param("prjId") Integer prjId);
 
     void renameNew(TstCase testCasePo);
     void renameUpdate(TstCase testCasePo);

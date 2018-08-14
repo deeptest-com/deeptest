@@ -10,9 +10,9 @@ public interface CaseService extends BaseService {
 
 	List<TstCase> query(Integer projectId);
 
-	List<TstCase> queryForSuiteSelection(Integer projectId, Integer caseProjectId, Integer suiteId);
+	List<TstCase> queryForSuiteSelection(Integer projectId, Integer suiteId);
 
-	List<TstCase> queryForTaskSelection(Integer projectId, Integer caseProjectId, Integer runId);
+	List<TstCase> queryForTaskSelection(Integer projectId, Integer runId);
 
 	TstCase getById(Integer caseId);
 

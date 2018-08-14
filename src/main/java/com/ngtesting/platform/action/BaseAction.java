@@ -1,51 +1,28 @@
 package com.ngtesting.platform.action;
 
+import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.dao.AuthDao;
+import com.ngtesting.platform.service.AuthService;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class BaseAction {
+    @Autowired
+    AuthService authService;
+    @Autowired
+    AuthDao authDao;
 
-//	public TstUser genRequest(HttpServletRequest request, JSONObject json) {
-//		TstUser TstUser = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//
-//		if (json.getInteger("orgId") == null) {
-//			json.put("orgId", TstUser.getDefaultOrgId());
-//		}
-//		if (json.getInteger("projectId") == null) {
-//			json.put("projectId", TstUser.getDefaultPrjId());
-//		}
-//
-//		return TstUser;
-//	}
+	public Map<String, Object> authFail() {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		ret.put("code", Constant.RespCode.AUTH_FAIL.getCode());
+		ret.put("msg", "权限不足");
+		return ret;
+	}
 
-//	public boolean parameIsEmpty(String... params) {
-//		for (String p : params) {
-//			if (StringUtils.isEmpty(p)) {
-//				return true;
-//			}
-//		}
-//
-//		return false;
-//	}
-//
-//	public Map<String, Object> paramError() {
-//		Map<String, Object> ret = new HashMap<String, Object>();
-//		ret.put("code", RespCode.INTERFACE_FAIL.getCode());
-//		ret.put("msg", "parameters error");
-//		return ret;
-//	}
-//
-//	public boolean pagingParamError(Map<String, String> json) {
-//		if (json.getDetail("startIndex") == null || json.getDetail("pageSize") == null) {
-//			return true;
-//		}
-//
-//		return false;
-//	}
-//
-//	public Map<String, Object> parameterError() {
-//		Map<String, Object> ret = new HashMap<String, Object>();
-//
-//		ret.put("code", RespCode.INTERFACE_FAIL.getCode());
-//		ret.put("msg", "parameter error");
-//		return ret;
-//	}
+	public Boolean userNotInProject(Integer userId, Integer projectId) {
+		return authDao.userNotInProject(userId, projectId);
+	}
 
 }

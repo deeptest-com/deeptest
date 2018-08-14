@@ -52,9 +52,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	}
 
     @Override
-    public List<TstCase> queryForSuiteSelection(Integer projectId, Integer caseProjectId, Integer suiteId) {
-        Integer id = caseProjectId == null? projectId: caseProjectId;
-
+    public List<TstCase> queryForSuiteSelection(Integer id, Integer suiteId) {
         List<TstCase> pos = caseDao.query(id);
         List<Integer> selectIds = testSuiteDao.listCaseIds(suiteId);
         genVos(pos, selectIds);
@@ -63,9 +61,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     }
 
     @Override
-    public List<TstCase> queryForTaskSelection(Integer projectId, Integer caseProjectId, Integer taskId) {
-        Integer id = caseProjectId == null? projectId: caseProjectId;
-
+    public List<TstCase> queryForTaskSelection(Integer id, Integer taskId) {
         List<TstCase> pos = caseDao.query(id);
         List<Integer> selectIds = testTaskDao.listCaseIds(taskId);
         genVos(pos, selectIds);

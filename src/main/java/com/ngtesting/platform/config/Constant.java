@@ -33,7 +33,14 @@ public class Constant {
     public static final int PAGE_SIZE = 20;
 
     public static enum RespCode {
-        SUCCESS(1), BIZ_FAIL(101), BIZ_FAIL_2(102), INTERFACE_FAIL(-10), NOT_LOGIN(-100),
+        SUCCESS(1),
+
+        BIZ_FAIL(101),
+        BIZ_FAIL_2(102),
+        INTERFACE_FAIL(-10),
+        NOT_LOGIN(-100),
+        AUTH_FAIL(-110),
+
         RELOAD(100);
 
         private RespCode(int code) {

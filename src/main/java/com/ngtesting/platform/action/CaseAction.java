@@ -41,8 +41,14 @@ public class CaseAction extends BaseAction {
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
         Integer orgId = json.getInteger("orgId");
 		Integer projectId = json.getInteger("projectId");
+
+		if (projectId.intValue() != user.getDefaultPrjId().intValue()) {
+            return authFail();
+        }
 
 		List<TstCase> ls = caseService.query(projectId);
 
@@ -62,12 +68,18 @@ public class CaseAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> queryForSuiteSelection(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		Integer projectId = json.getInteger("projectId");
         Integer caseProjectId = json.getInteger("caseProjectId");
 		Integer suiteId = json.getInteger("suiteId");
 
-        List<TstCase> vos = caseService.queryForSuiteSelection(projectId, caseProjectId, suiteId);
+        Integer id = caseProjectId == null? projectId: caseProjectId;
+        if (userNotInProject(user.getId(), id)) {
+            return authFail();
+        }
+
+        List<TstCase> vos = caseService.queryForSuiteSelection(id, suiteId);
 		List<TstProject> projects = projectDao.listBrothers(projectId);
 
 		ret.put("data", vos);
@@ -80,12 +92,18 @@ public class CaseAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> queryForTaskSelection(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		Integer projectId = json.getInteger("projectId");
         Integer caseProjectId = json.getInteger("caseProjectId");
 		Integer taskId = json.getInteger("taskId");
 
-		List<TstCase> vos = caseService.queryForTaskSelection(projectId, caseProjectId, taskId);
+        Integer id = caseProjectId == null? projectId: caseProjectId;
+        if (userNotInProject(user.getId(), id)) {
+            return authFail();
+        }
+
+		List<TstCase> vos = caseService.queryForTaskSelection(id, taskId);
 		List<TstProject> projects = projectDao.listBrothers(projectId);
 
 		ret.put("data", vos);

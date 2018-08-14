@@ -231,9 +231,13 @@ public class CaseAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> exportAll(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
         Integer projectId = json.getInteger("projectId");
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+        if (userNotInProject(user.getId(), projectId)) {
+            return authFail();
+        }
 
 //		String excelPath = caseService.export(projectId);
 //		ret.put("code", Constant.RespCode.SUCCESS.getCode());

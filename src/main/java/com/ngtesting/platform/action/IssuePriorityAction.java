@@ -96,9 +96,9 @@ public class IssuePriorityAction extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		Integer id = json.getInteger("id");
-
-		casePriorityService.delete(id);
+//		Integer id = json.getInteger("id");
+//
+//		casePriorityService.delete(id, orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

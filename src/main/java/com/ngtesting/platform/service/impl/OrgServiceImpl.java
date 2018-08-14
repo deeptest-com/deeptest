@@ -14,25 +14,6 @@ import java.util.Map;
 
 @Service(value = "orgService")
 public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
-
-	@Autowired
-	ProjectRoleService projectRoleService;
-	@Autowired
-	ProjectService projectService;
-    @Autowired
-	OrgRoleService orgRoleService;
-    @Autowired
-    OrgGroupService orgGroupService;
-	@Autowired
-    CaseExeStatusService caseExeStatusService;
-	@Autowired
-    CasePriorityService casePriorityService;
-	@Autowired
-    CaseTypeService caseTypeService;
-	@Autowired
-    ProjectRoleEntityRelationService relationProjectRoleEntityService;
-    @Autowired
-    ProjectPrivilegeService projectPrivilegeService;
 	@Autowired
     OrgPrivilegeService orgRolePrivilegeService;
 

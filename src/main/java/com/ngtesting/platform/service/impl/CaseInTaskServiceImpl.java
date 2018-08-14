@@ -40,39 +40,21 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
     }
 
     @Override
-    public TstCaseInTask getDetail(Integer id) {
-        TstCaseInTask po = caseInTaskDao.getDetail(id);
+    public TstCaseInTask getDetail(Integer id, Integer projectId) {
+        TstCaseInTask po = caseInTaskDao.getDetail(id, projectId);
 
         return po;
     }
 
     @Override
-    @Transactional
-    public TstCaseInTask setResult(Integer caseInTaskId, Integer caseId, String result, String status, Integer nextId, TstUser user) {
-        TstCaseInTask po = caseInTaskDao.getDetail(caseInTaskId);
-
-        caseInTaskDao.setResult(caseInTaskId, result, status, user.getId());
-
-        saveHistory(caseId, caseInTaskId,
-                Constant.CaseAct.exe_result, user, status, result==null?"":result.trim());
-
-        taskDao.start(po.getTaskId());
-        planDao.start(po.getPlanId());
-
-        if (nextId != null) {
-            return caseInTaskDao.getDetail(nextId);
-        } else {
-            return caseInTaskDao.getDetail(caseInTaskId);
-        }
-    }
-
-    @Override
     public TstCaseInTask rename(JSONObject json, TstUser user) {
+        Integer projectId = user.getDefaultPrjId();
+
         Integer caseId = json.getInteger("id");
         Integer entityId = json.getInteger("entityId");
         String name = json.getString("name");
 
-        TstCase testCase = caseDao.get(caseId, null);
+        TstCase testCase = caseDao.get(caseId, projectId);
 
         testCase.setUpdateById(user.getId());
 
@@ -83,7 +65,29 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
 
         caseHistoryService.saveHistory(user, Constant.CaseAct.rename, testCase,null);
 
-        return caseInTaskDao.getDetail(entityId);
+        return caseInTaskDao.getDetail(entityId, projectId);
+    }
+
+    @Override
+    @Transactional
+    public TstCaseInTask setResult(Integer caseInTaskId, Integer caseId, String result, String status, Integer nextId, TstUser user) {
+        Integer projectId = user.getDefaultPrjId();
+
+        TstCaseInTask po = caseInTaskDao.getDetail(caseInTaskId, projectId);
+
+        caseInTaskDao.setResult(caseInTaskId, result, status, user.getId());
+
+        saveHistory(caseId, caseInTaskId,
+                Constant.CaseAct.exe_result, user, status, result==null?"":result.trim());
+
+        taskDao.start(po.getTaskId());
+        planDao.start(po.getPlanId());
+
+        if (nextId != null) {
+            return caseInTaskDao.getDetail(nextId, projectId);
+        } else {
+            return caseInTaskDao.getDetail(caseInTaskId, projectId);
+        }
     }
 
     @Override

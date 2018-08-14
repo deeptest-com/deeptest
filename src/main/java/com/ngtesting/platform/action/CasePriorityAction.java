@@ -38,8 +38,8 @@ public class CasePriorityAction extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Integer orgId = user.getDefaultOrgId();
 
 		List<TstCasePriority> vos = casePriorityService.list(orgId);
 
@@ -53,6 +53,8 @@ public class CasePriorityAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Integer orgId = user.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
 		TstCasePriority po;
@@ -60,7 +62,7 @@ public class CasePriorityAction extends BaseAction {
 			po = new TstCasePriority();
 			po.setValue(UUID.randomUUID().toString());
 		} else {
-			po = casePriorityService.get(id);
+			po = casePriorityService.get(id, orgId);
 		}
 
 		ret.put("data", po);
@@ -93,9 +95,12 @@ public class CasePriorityAction extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Integer orgId = user.getDefaultOrgId();
+
 		Integer id = json.getInteger("id");
 
-		casePriorityService.delete(id);
+		casePriorityService.delete(id, orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -110,7 +115,7 @@ public class CasePriorityAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 		Integer id = json.getInteger("id");
 
-		boolean success = casePriorityService.setDefaultPers(id, orgId);
+		casePriorityService.setDefaultPers(id, orgId);
 		List<TstCasePriority> vos = casePriorityService.list(orgId);
 
         ret.put("data", vos);

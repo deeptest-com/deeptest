@@ -20,7 +20,7 @@ import java.util.Map;
 @Controller
 @RequestMapping(Constant.API_PATH_CLIENT + "issue_status/")
 public class IssueStatusAction extends BaseAction {
-	private static final Log log = LogFactory.getLog(CaseExeStatusAction.class);
+	private static final Log log = LogFactory.getLog(IssueStatusAction.class);
 
 	@Autowired
     IssueStatusService statusService;

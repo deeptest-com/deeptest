@@ -36,9 +36,11 @@ public class CaseInTaskAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        Integer orgId = json.getInteger("orgId");
-        Integer projectId = json.getInteger("projectId");
+        Integer orgId = user.getDefaultOrgId();
+        Integer projectId = user.getDefaultPrjId();
+
         Integer taskId = json.getInteger("taskId");
 
         List<TstCaseInTask> vos = caseInTaskService.query(taskId);
@@ -60,11 +62,12 @@ public class CaseInTaskAction extends BaseAction {
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-        Integer orgId = userVo.getDefaultOrgId();
-        Integer caseId = json.getInteger("id");
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Integer prjId = user.getDefaultPrjId();
 
-        TstCaseInTask vo = caseInTaskService.getDetail(caseId);
+        Integer id = json.getInteger("id");
+
+        TstCaseInTask vo = caseInTaskService.getDetail(id, prjId);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -76,9 +79,9 @@ public class CaseInTaskAction extends BaseAction {
     public Map<String, Object> rename(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        TstCaseInTask vo = caseInTaskService.rename(json, userVo);
+        TstCaseInTask vo = caseInTaskService.rename(json, user);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -90,8 +93,7 @@ public class CaseInTaskAction extends BaseAction {
     public Map<String, Object> setResult(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-        Integer orgId = userVo.getDefaultOrgId();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
         Integer caseInTaskId = json.getInteger("id");
         Integer caseId = json.getInteger("caseId");
@@ -99,7 +101,7 @@ public class CaseInTaskAction extends BaseAction {
         String status = json.getString("status");
         Integer nextId = json.getInteger("nextId");
 
-        TstCaseInTask vo = caseInTaskService.setResult(caseInTaskId, caseId, result, status, nextId, userVo);
+        TstCaseInTask vo = caseInTaskService.setResult(caseInTaskId, caseId, result, status, nextId, user);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

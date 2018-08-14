@@ -1,7 +1,6 @@
 package com.ngtesting.platform.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.model.TstCaseInTask;
 import com.ngtesting.platform.model.TstSuite;
 import com.ngtesting.platform.model.TstTask;
 import com.ngtesting.platform.model.TstUser;
@@ -25,9 +24,5 @@ public interface TestTaskService extends BaseService {
 
     List<TstTask> genVos(List<TstTask> pos);
 	TstTask genVo(TstTask po);
-
-	List<TstCaseInTask> genCaseVos(List<TstCaseInTask> ls);
-	TstCaseInTask genCaseVo(TstCaseInTask po);
-
 
 }

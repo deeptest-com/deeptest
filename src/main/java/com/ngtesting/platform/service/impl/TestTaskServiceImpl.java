@@ -221,48 +221,5 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 		return po;
 	}
 
-	@Override
-	public List<TstCaseInTask> genCaseVos(List<TstCaseInTask> pos) {
-		List<TstCaseInTask> vos = new LinkedList();
-
-		for (TstCaseInTask po: pos) {
-			TstCaseInTask vo = genCaseVo(po);
-			vos.add(vo);
-		}
-		return vos;
-	}
-
-	@Override
-	public TstCaseInTask genCaseVo(TstCaseInTask po) {
-		TstCaseInTask vo = new TstCaseInTask();
-
-//        TestCase testcase = po.getTestCase();
-//		BeanUtilEx.copyProperties(vo, testcase);
-//
-//		vo.setSteps(new LinkedList<TstCaseStep>());
-//
-//		List<TestCaseStep> steps = testcase.getSteps();
-//		for (TestCaseStep step : steps) {
-//			TstCaseStep stepVo = new TstCaseStep(
-//					step.getId(), step.getOpt(), step.getExpect(), step.getOrdr(), step.getTestCaseId());
-//
-//			vo.getSteps().add(stepVo);
-//		}
-		return vo;
-	}
-
-	private Integer getChildMaxOrderNumb(TstTask parent) {
-//		String hql = "select max(ordr) from TstTask where parentId = " + parent.getId();
-//		Integer maxOrder = (Integer) getByHQL(hql);
-//
-//		if (maxOrder == null) {
-//			maxOrder = 0;
-//		}
-//
-//		return maxOrder;
-
-        return 1;
-	}
-
 }
 

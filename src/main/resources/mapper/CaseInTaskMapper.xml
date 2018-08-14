@@ -21,7 +21,7 @@
         FROM TstCaseInTask o
         JOIN TstCase cs ON o.caseId = cs.id
 
-        WHERE o.id=#{id}
+        WHERE o.id=#{id} AND o.projectId = #{projectId}
     </select>
 
     <update id="setResult">

@@ -43,12 +43,8 @@ public class CaseAction extends BaseAction {
 
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        Integer orgId = json.getInteger("orgId");
-		Integer projectId = json.getInteger("projectId");
-
-		if (projectId.intValue() != user.getDefaultPrjId().intValue()) {
-            return authFail();
-        }
+        Integer orgId = user.getDefaultOrgId();
+		Integer projectId = user.getDefaultPrjId();
 
 		List<TstCase> ls = caseService.query(projectId);
 

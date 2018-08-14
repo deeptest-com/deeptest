@@ -9,7 +9,8 @@ public interface CaseInTaskDao {
     List<TstCaseInTask> query(@Param("taskId") Integer taskId);
 
     TstCaseInTask get(@Param("id") Integer id);
-    TstCaseInTask getDetail(@Param("id") Integer id);
+    TstCaseInTask getDetail(@Param("id") Integer id,
+                            @Param("projectId") Integer projectId);
 
     void setResult(TstCaseInTask po);
 

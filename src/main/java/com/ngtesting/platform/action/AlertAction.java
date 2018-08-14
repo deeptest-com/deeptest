@@ -34,7 +34,7 @@ public class AlertAction extends BaseAction {
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		alertService.markAllReadPers(json.getString("ids"), user.getId());
+		alertService.markAllRead(json.getString("ids"), user.getId());
         optFacade.opt(WsConstant.WS_TODO, user);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

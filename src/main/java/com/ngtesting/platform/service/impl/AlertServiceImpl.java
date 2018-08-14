@@ -11,6 +11,7 @@ import com.ngtesting.platform.utils.DateUtil;
 import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -72,12 +73,14 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
         return po;
     }
     @Override
+    @Transactional
     public void create(TstTask task) {
-        for (TstUser assignee : task.getAssignees()) {
-            TstAlert po = getByTask(task.getId());;
-            if (po == null) {
-                po = new TstAlert();
-            }
+        List<TstUser> assignees = task.getAssignees();
+
+        alertDao.removeOldIfNeeded(task.getId(), assignees);
+
+        for (TstUser assignee : assignees) {
+            TstAlert po = new TstAlert();
 
             po.setType("task");
             po.setTitle(task.getName());
@@ -94,33 +97,12 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
 
             alertDao.create(po);
         }
-
     }
 
     @Override
-    public void markAllReadPers(String ids, Integer userId) {
+    @Transactional
+    public void markAllRead(String ids, Integer userId) {
         alertDao.markAllRead(ids, userId);
-    }
-
-    @Override
-    public TstAlert getByTask(Integer id) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstAlert.class);
-//
-//        dc.add(Restrictions.eq("type", "task"));
-//        dc.add(Restrictions.eq("entityId", id));
-//
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//
-//        dc.addOrder(Order.asc("id"));
-//
-//        List<TstAlert> pos = findAllByCriteria(dc);
-//        if (pos.size() > 0) {
-//            return pos.getDetail(0);
-//        } else {
-//            return null;
-//        }
-        return null;
     }
 
 }

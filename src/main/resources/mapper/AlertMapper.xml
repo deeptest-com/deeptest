@@ -49,4 +49,15 @@
         AND alert.deleted != true AND alert.disabled != true
     </update>
 
+    <delete id="removeOldIfNeeded">
+        DELETE FROM TstAlert
+        WHERE `type` = 'task'
+        AND entityId = #{taskId}
+        AND assigneeId IN (
+            <foreach collection="assignees" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        )
+    </delete>
+
 </mapper>

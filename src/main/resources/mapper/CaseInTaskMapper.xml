@@ -9,7 +9,7 @@
         FROM TstCaseInTask o
         JOIN TstCase cs ON o.caseId = cs.id
 
-        WHERE o.taskId=#{taskId}
+        WHERE o.taskId=#{taskId} AND o.projectId = #{projectId}
         AND o.deleted != true AND o.disabled != true
         ORDER BY o.pId, o.ordr
     </select>

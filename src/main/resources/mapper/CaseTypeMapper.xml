@@ -13,14 +13,7 @@
     <select id="get" resultType="TstCaseType">
         SELECT * FROM TstCaseType o
 
-        WHERE o.id = #{id}
-    </select>
-
-    <select id="getMaxOrdrNumb" resultType="Integer">
-        select max(ordr) from TstCaseType o
-        where o.orgId=#{orgId}
-        and o.deleted != true
-        and o.disabled != true
+        WHERE o.id = #{id} AND o.orgId=#{orgId}
     </select>
 
     <insert id="save" parameterType="TstCaseType" useGeneratedKeys="true" keyProperty="id">
@@ -37,6 +30,30 @@
         updateTime=NOW()
 
         WHERE id=#{id}
+    </update>
+
+    <delete id="delete">
+        UPDATE TstCaseType
+        SET disabled=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND o.orgId=#{orgId}
+    </delete>
+
+    <update id="removeDefault">
+        UPDATE TstCaseType
+        SET isDefault=FALSE, updateTime=NOW()
+        WHERE orgId=#{orgId}
+    </update>
+
+    <update id="setDefault">
+        UPDATE TstCaseType
+        SET isDefault=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND orgId=#{orgId}
+    </update>
+
+    <update id="setOrder">
+        UPDATE TstCaseType
+        SET ordr=#{ordr}, updateTime=NOW()
+        WHERE id=#{id} AND orgId=#{orgId}
     </update>
 
     <select id="getPrev" resultType="TstCaseType">
@@ -57,28 +74,11 @@
         ]]>
     </select>
 
-    <update id="setOrder">
-        UPDATE TstCaseType
-        SET ordr=#{ordr}, updateTime=NOW()
-        WHERE id=#{id}
-    </update>
-
-    <update id="removeDefault">
-        UPDATE TstCaseType
-        SET isDefault=FALSE, updateTime=NOW()
-        WHERE orgId=#{orgId}
-    </update>
-
-    <update id="setDefault">
-        UPDATE TstCaseType
-        SET isDefault=TRUE, updateTime=NOW()
-        WHERE orgId=#{orgId} AND id=#{id}
-    </update>
-
-    <delete id="delete">
-        UPDATE TstCaseType
-        SET disabled=TRUE, updateTime=NOW()
-        WHERE id=#{id}
-    </delete>
+    <select id="getMaxOrdrNumb" resultType="Integer">
+        select max(ordr) from TstCaseType o
+        where o.orgId=#{orgId}
+        and o.deleted != true
+        and o.disabled != true
+    </select>
 
 </mapper>

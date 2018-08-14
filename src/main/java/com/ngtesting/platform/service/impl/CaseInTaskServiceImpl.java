@@ -33,8 +33,8 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
     CaseInTaskHistoryDao caseInTaskHistoryDao;
 
     @Override
-    public List<TstCaseInTask> query(Integer taskId) {
-        List<TstCaseInTask> ls = caseInTaskDao.query(taskId);
+    public List<TstCaseInTask> query(Integer taskId, Integer projectId) {
+        List<TstCaseInTask> ls = caseInTaskDao.query(taskId, projectId);
 
         return ls;
     }

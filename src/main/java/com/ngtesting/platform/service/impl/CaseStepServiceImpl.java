@@ -23,8 +23,8 @@ public class CaseStepServiceImpl extends BaseServiceImpl implements CaseStepServ
     @Transactional
     public TstCaseStep save(JSONObject json, TstUser user) {
         TstCaseStep step = JSON.parseObject(JSON.toJSONString(json), TstCaseStep.class);
-
         TstCase testCase = caseDao.get(step.getCaseId(), user.getDefaultPrjId());
+
         if (testCase == null) {
             return null;
         }
@@ -59,9 +59,11 @@ public class CaseStepServiceImpl extends BaseServiceImpl implements CaseStepServ
     @Override
     @Transactional
     public Boolean changeOrderPers(JSONObject vo, String direction, TstUser user) {
-        TstCaseStep step = caseStepDao.get(vo.getInteger("id"));
+        Integer id = vo.getInteger("id");
+        TstCaseStep step = caseStepDao.get(id);
 
         TstCase testCase = caseDao.get(step.getCaseId(), user.getDefaultPrjId());
+
         if (testCase == null) {
             return false;
         }

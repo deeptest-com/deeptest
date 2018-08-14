@@ -43,7 +43,7 @@ public class CaseInTaskAction extends BaseAction {
 
         Integer taskId = json.getInteger("taskId");
 
-        List<TstCaseInTask> vos = caseInTaskService.query(taskId);
+        List<TstCaseInTask> vos = caseInTaskService.query(taskId, projectId);
 
         List<TstCaseType> caseTypePos = caseTypeService.list(orgId);
         List<TstCasePriority> casePriorityPos = casePriorityService.list(orgId);

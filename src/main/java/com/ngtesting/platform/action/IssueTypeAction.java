@@ -117,7 +117,7 @@ public class IssueTypeAction extends BaseAction {
 //		Integer orgId = userVo.getDefaultOrgId();
 //		Integer id = json.getInteger("id");
 //
-//		boolean success = typeService.setDefaultPers(id, orgId);
+//		boolean success = typeService.setDefault(id, orgId);
 //
 //		List<CaseTypeVo> vos = typeService.listVos(orgId);
 //

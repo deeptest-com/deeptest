@@ -39,8 +39,8 @@ public class CaseTypeAction extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Integer orgId = user.getDefaultOrgId();
 
 		List<TstCaseType> vos = caseTypeService.list(orgId);
 
@@ -55,13 +55,16 @@ public class CaseTypeAction extends BaseAction {
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Integer orgId = userVo.getDefaultOrgId();
+
 		Integer id = json.getInteger("id");
 		TstCaseType po;
 		if (id == null) {
 			po = new TstCaseType();
             po.setValue(UUID.randomUUID().toString());
 		} else {
-			po = caseTypeService.get(id);
+			po = caseTypeService.get(id, orgId);
 		}
 
 		ret.put("data", po);
@@ -96,9 +99,12 @@ public class CaseTypeAction extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Integer orgId = userVo.getDefaultOrgId();
+
 		Integer id = json.getInteger("id");
 
-		caseTypeService.delete(id);
+		caseTypeService.delete(id, orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -112,9 +118,10 @@ public class CaseTypeAction extends BaseAction {
 
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 		Integer orgId = userVo.getDefaultOrgId();
+
 		Integer id = json.getInteger("id");
 
-		boolean success = caseTypeService.setDefaultPers(id, orgId);
+		boolean success = caseTypeService.setDefault(id, orgId);
 
 		List<TstCaseType> vos = caseTypeService.list(orgId);
 
@@ -129,12 +136,13 @@ public class CaseTypeAction extends BaseAction {
 	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Integer orgId = user.getDefaultOrgId();
+
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-		boolean success = caseTypeService.changeOrderPers(id, act, orgId);
+		caseTypeService.changeOrderPers(id, act, orgId);
 
 		List<TstCaseType> vos = caseTypeService.list(orgId);
 

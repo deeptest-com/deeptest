@@ -112,7 +112,7 @@ public class IssueWorkflowAction extends BaseAction {
 //		Integer orgId = userVo.getDefaultOrgId();
 //		Integer id = json.getInteger("id");
 //
-//		boolean success = issueWorkflowService.setDefaultPers(id, orgId);
+//		boolean success = issueWorkflowService.setDefault(id, orgId);
 //
 //		List<CaseTypeVo> vos = issueWorkflowService.listVos(orgId);
 //

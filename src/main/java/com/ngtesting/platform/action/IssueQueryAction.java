@@ -110,7 +110,7 @@ public class IssueQueryAction extends BaseAction {
 //		Integer orgId = userVo.getDefaultOrgId();
 //		Integer id = json.getInteger("id");
 //
-//		boolean success = casePriorityService.setDefaultPers(id, orgId);
+//		boolean success = casePriorityService.setDefault(id, orgId);
 //		List<CasePriorityVo> vos = casePriorityService.listVos(orgId);
 //
 //        ret.put("data", vos);

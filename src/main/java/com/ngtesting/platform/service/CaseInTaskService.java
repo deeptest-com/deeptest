@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface CaseInTaskService extends BaseService {
 
-	List<TstCaseInTask> query(Integer taskId);
+	List<TstCaseInTask> query(Integer taskId, Integer projectId);
     TstCaseInTask getDetail(Integer id, Integer projectId);
     TstCaseInTask setResult(Integer caseInTaskId, Integer caseId, String result, String status, Integer next, TstUser userVo);
 

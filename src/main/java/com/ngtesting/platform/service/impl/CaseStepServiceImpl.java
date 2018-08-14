@@ -2,8 +2,11 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.dao.CaseDao;
 import com.ngtesting.platform.dao.CaseStepDao;
+import com.ngtesting.platform.model.TstCase;
 import com.ngtesting.platform.model.TstCaseStep;
+import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.CaseStepService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,26 +16,40 @@ import org.springframework.transaction.annotation.Transactional;
 public class CaseStepServiceImpl extends BaseServiceImpl implements CaseStepService {
     @Autowired
     CaseStepDao caseStepDao;
+    @Autowired
+    CaseDao caseDao;
 
     @Override
     @Transactional
-    public TstCaseStep save(JSONObject json, Integer userId) {
-        TstCaseStep vo = JSON.parseObject(JSON.toJSONString(json), TstCaseStep.class);
+    public TstCaseStep save(JSONObject json, TstUser user) {
+        TstCaseStep step = JSON.parseObject(JSON.toJSONString(json), TstCaseStep.class);
 
-        if (vo.getId() != null) {
-            caseStepDao.update(vo);
-        } else {
-            vo.setId(null);
-            caseStepDao.save(vo);
-            caseStepDao.moveOthersDown(vo.getCaseId(), vo.getId(), vo.getOrdr());
+        TstCase testCase = caseDao.get(step.getCaseId(), user.getDefaultPrjId());
+        if (testCase == null) {
+            return null;
         }
 
-        return vo;
+        if (step.getId() != null) {
+            caseStepDao.update(step);
+        } else {
+            step.setId(null);
+            caseStepDao.save(step);
+            caseStepDao.moveOthersDown(step.getCaseId(), step.getId(), step.getOrdr());
+        }
+
+        return step;
     }
 
     @Override
-    public boolean delete(Integer stepId, Integer userId) {
+    @Transactional
+    public Boolean delete(Integer stepId, TstUser user) {
         TstCaseStep step = caseStepDao.get(stepId);
+
+        TstCase testCase = caseDao.get(step.getCaseId(), user.getDefaultPrjId());
+        if (testCase == null) {
+            return false;
+        }
+
         caseStepDao.delete(stepId);
 
         caseStepDao.moveOthersUp(step.getCaseId(), step.getOrdr());
@@ -41,41 +58,27 @@ public class CaseStepServiceImpl extends BaseServiceImpl implements CaseStepServ
 
     @Override
     @Transactional
-    public TstCaseStep changeOrderPers(JSONObject vo, String direction, Integer userId) {
-            TstCaseStep step = caseStepDao.get(vo.getInteger("id"));
-            TstCaseStep neighbor = null;
-            if ("up".equals(direction)) {
-                neighbor = caseStepDao.getPrev(step.getCaseId(), step.getOrdr());
-            } else if ("down".equals(direction)) {
-                neighbor = caseStepDao.getNext(step.getCaseId(), step.getOrdr());
-            }
+    public Boolean changeOrderPers(JSONObject vo, String direction, TstUser user) {
+        TstCaseStep step = caseStepDao.get(vo.getInteger("id"));
 
-            Integer stepOrder = step.getOrdr();
-            Integer neighborOrder = neighbor.getOrdr();
+        TstCase testCase = caseDao.get(step.getCaseId(), user.getDefaultPrjId());
+        if (testCase == null) {
+            return false;
+        }
 
-            caseStepDao.setOrder(step.getId(), neighborOrder);
-            caseStepDao.setOrder(neighbor.getId(), stepOrder);
+        TstCaseStep neighbor = null;
+        if ("up".equals(direction)) {
+            neighbor = caseStepDao.getPrev(step.getCaseId(), step.getOrdr());
+        } else if ("down".equals(direction)) {
+            neighbor = caseStepDao.getNext(step.getCaseId(), step.getOrdr());
+        }
 
-//        TstCaseStep po = (TstCaseStep)getDetail(TstCaseStep.class, vo.getLong("id"));
-//        String hql = "from TstCaseStep st where st.deleted = false and st.disabled = false "
-//                + " and testCaseId = ?";
-//        if ("up".equals(direction)) {
-//            hql += " and st.ordr < ? order by ordr desc";
-//        } else if ("down".equals(direction)) {
-//            hql += " and st.ordr > ? order by ordr asc";
-//        }
-//        TstCaseStep neighbor = (TstCaseStep) getDao().findFirstByHQL(hql, vo.getLong("caseId"), vo.getInteger("ordr"));
-//        TstCaseStep step = (TstCaseStep) getDetail(TstCaseStep.class, vo.getLong("id"));
-//
-//        Integer order = step.getOrdr();
-//        step.setOrdr(neighbor.getOrdr());
-//        neighbor.setOrdr(order);
-//
-//        saveOrUpdate(step);
-//        saveOrUpdate(neighbor);
-//
-//        return po;
+        Integer stepOrder = step.getOrdr();
+        Integer neighborOrder = neighbor.getOrdr();
 
-        return null;
+        caseStepDao.setOrder(step.getId(), neighborOrder);
+        caseStepDao.setOrder(neighbor.getId(), stepOrder);
+
+        return true;
     }
 }

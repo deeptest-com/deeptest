@@ -27,9 +27,9 @@ public class CaseStepAction extends BaseAction {
     public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        TstCaseStep po = caseStepService.save(json, userVo.getId());
+        TstCaseStep po = caseStepService.save(json, user);
 
         ret.put("data", po);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -40,12 +40,10 @@ public class CaseStepAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> up(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        caseStepService.changeOrderPers(json, "up", user);
 
-        TstCaseStep po = caseStepService.changeOrderPers(json, "up", userVo.getId());
-
-        ret.put("data", po);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -54,12 +52,10 @@ public class CaseStepAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> down(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        caseStepService.changeOrderPers(json, "down", user);
 
-        TstCaseStep po = caseStepService.changeOrderPers(json, "down", userVo.getId());
-
-        ret.put("data", po);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -69,9 +65,9 @@ public class CaseStepAction extends BaseAction {
     public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        boolean success = caseStepService.delete(json.getInteger("id"), userVo.getId());
+        caseStepService.delete(json.getInteger("id"), user);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

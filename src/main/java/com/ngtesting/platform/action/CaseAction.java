@@ -74,12 +74,12 @@ public class CaseAction extends BaseAction {
         Integer caseProjectId = json.getInteger("caseProjectId");
 		Integer suiteId = json.getInteger("suiteId");
 
-        Integer id = caseProjectId == null? projectId: caseProjectId;
-        if (userNotInProject(user.getId(), id)) {
+        Integer prjId = caseProjectId == null? projectId: caseProjectId;
+        if (userNotInProject(user.getId(), prjId)) {
             return authFail();
         }
 
-        List<TstCase> vos = caseService.queryForSuiteSelection(id, suiteId);
+        List<TstCase> vos = caseService.queryForSuiteSelection(prjId, suiteId);
 		List<TstProject> projects = projectDao.listBrothers(projectId);
 
 		ret.put("data", vos);
@@ -98,12 +98,12 @@ public class CaseAction extends BaseAction {
         Integer caseProjectId = json.getInteger("caseProjectId");
 		Integer taskId = json.getInteger("taskId");
 
-        Integer id = caseProjectId == null? projectId: caseProjectId;
-        if (userNotInProject(user.getId(), id)) {
+        Integer prjId = caseProjectId == null? projectId: caseProjectId;
+        if (userNotInProject(user.getId(), prjId)) {
             return authFail();
         }
 
-		List<TstCase> vos = caseService.queryForTaskSelection(id, taskId);
+		List<TstCase> vos = caseService.queryForTaskSelection(prjId, taskId);
 		List<TstProject> projects = projectDao.listBrothers(projectId);
 
 		ret.put("data", vos);
@@ -133,9 +133,9 @@ public class CaseAction extends BaseAction {
     public Map<String, Object> rename(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-        TstCase testCasePo = caseService.renamePers(json, userVo);
+        TstCase testCasePo = caseService.rename(json, user);
 
         ret.put("data", testCasePo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -147,8 +147,8 @@ public class CaseAction extends BaseAction {
 	public Map<String, Object> move(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		TstCase vo = caseService.movePers(json, userVo);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstCase vo = caseService.move(json, user);
 
 		ret.put("data", vo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -162,28 +162,11 @@ public class CaseAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		caseService.delete(id, userVo);
-
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
-	@RequestMapping(value = "exportAll", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> exportAll(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-		Integer projectId = json.getInteger("projectId");
-
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
-//		String excelPath = caseService.export(projectId);
+		caseService.delete(id, user);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-//		ret.put("excelPath", excelPath);
-
 		return ret;
 	}
 
@@ -191,10 +174,9 @@ public class CaseAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> update(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
-        TstCase po = caseService.update(json, userVo);
+        TstCase po = caseService.update(json, user);
 
         ret.put("data", po);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -205,10 +187,9 @@ public class CaseAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> saveField(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-
-		TstCase po = caseService.saveField(json, userVo);
+		TstCase po = caseService.saveField(json, user);
 
 		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -219,11 +200,12 @@ public class CaseAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> changeContentType(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		Integer id = json.getInteger("id");
         String contentType = json.getString("contentType");
 
-		caseService.changeContentTypePers(id, contentType);
+		caseService.changeContentType(id, contentType, user);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -233,15 +215,31 @@ public class CaseAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> reviewResult(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
 		Integer id = json.getInteger("id");
 		Boolean result = json.getBoolean("result");
 
-		TstCase po = caseService.reviewResult(id, result);
+		TstCase po = caseService.reviewResult(id, result, user);
 
         ret.put("reviewResult", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+
+    @RequestMapping(value = "exportAll", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> exportAll(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        Integer projectId = json.getInteger("projectId");
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+
+//		String excelPath = caseService.export(projectId);
+//		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+//		ret.put("excelPath", excelPath);
+
+        return ret;
+    }
 
 }

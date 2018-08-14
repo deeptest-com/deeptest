@@ -35,13 +35,6 @@
         </if>
     </select>
 
-    <select id="getChildMaxOrderNumb" resultType="Integer">
-        select max(ordr) from TstCase o
-        where o.pId=#{pId}
-        and o.deleted != true
-        and o.disabled != true
-    </select>
-
     <insert id="renameNew" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
         insert into TstCase
         (name,priority,type,contentType,estimate,isLeaf,ordr,pId,
@@ -62,41 +55,59 @@
        UPDATE TstCase
         SET name=#{obj.name},priority=#{obj.priority},type=#{obj.type},
             contentType=#{obj.contentType},content=#{obj.content},
-            estimate=#{obj.estimate},objective=#{obj.objective},updateById=#{obj.updateById},
+            estimate=#{obj.estimate},objective=#{obj.objective},
+            updateById=#{obj.updateById},updateTime=NOW(),
 
             <foreach collection="props" item="item" separator=",">
                 prop${item} = #{obj.prop${item}}
             </foreach>
 
-        WHERE id=#{obj.id}
+        WHERE id=#{obj.id} AND projectId=#{projectId}
     </update>
 
-    <update id="updateParentIfNeeded">
-        { call update_case_parent_if_needed(
-            #{pId,mode=IN,jdbcType=INTEGER}
-        )}
+    <update id="delete">
+        { call remove_case_and_its_children(#{pId,mode=IN,jdbcType=INTEGER}, #{projectId,mode=IN,jdbcType=INTEGER}) }
     </update>
 
-    <update id="changeContentTypePers">
+    <update id="changeContentType">
         UPDATE TstCase
         SET contentType=#{contentType}
-        WHERE id=#{id}
+        WHERE id=#{id} AND projectId=#{projectId}
     </update>
 
     <update id="reviewResult">
         UPDATE TstCase
         SET reviewResult=#{result}
-        WHERE id=#{id}
-    </update>
-    <update id="delete">
-        { call remove_case_and_its_children(#{pId,mode=IN,jdbcType=INTEGER}) }
-    </update>
-    <update id="updateProp" statementType="STATEMENT">
-        UPDATE TstCase
-        SET ${prop} = '${value}'
-        WHERE id=${id}
+        WHERE id=#{id} AND projectId=#{projectId}
     </update>
 
+    <update id="updateProp">
+        UPDATE TstCase
+        SET ${prop} = '${value}'
+        WHERE id=#{id} AND projectId=#{projectId}
+    </update>
+
+    <update id="moveUpdate">
+        update TstCase c
+        set c.pId = #{pId}, c.ordr = #{ordr}
+        where c.id=#{id}
+    </update>
+    <insert id="moveCopy" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
+        insert into TstCase
+        (name,priority,type,contentType,estimate,isLeaf,ordr,pId,
+        projectId,createById,
+        createTime,deleted,disabled)
+        values
+        (#{name},#{priority},#{type},#{contentType},#{estimate},#{isLeaf},#{ordr},#{pId},
+        #{projectId},#{createById},
+        NOW(),FALSE,FALSE)
+    </insert>
+
+    <update id="updateParentIfNeeded">
+        { call update_case_parent_if_needed(
+        #{pId,mode=IN,jdbcType=INTEGER}
+        )}
+    </update>
     <update id="addOrderForTargetAndNextCases">
         update TstCase c
         set c.ordr = c.ordr+1
@@ -108,21 +119,12 @@
         where c.ordr > #{targetOrdr} and c.pId=#{targetPid} and id!=#{srcId}
     </update>
 
-    <update id="moveUpdate">
-        update TstCase c
-        set c.pId = #{pId}, c.ordr = #{ordr}
-        where c.id=#{id}
-    </update>
-    <insert id="moveCopy" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
-        insert into TstCase
-        (name,priority,type,contentType,estimate,isLeaf,ordr,pId,
-            projectId,createById,
-            createTime,deleted,disabled)
-        values
-          (#{name},#{priority},#{type},#{contentType},#{estimate},#{isLeaf},#{ordr},#{pId},
-              #{projectId},#{createById},
-              NOW(),FALSE,FALSE)
-    </insert>
+    <select id="getChildMaxOrderNumb" resultType="Integer">
+        select max(ordr) from TstCase o
+        where o.pId=#{pId}
+        and o.deleted != true
+        and o.disabled != true
+    </select>
 
     <select id="getChildren" resultType="TstCase">
         select * from TstCase o

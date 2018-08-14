@@ -15,30 +15,23 @@ public interface CaseService extends BaseService {
 
 	TstCase getDetail(Integer caseId, Integer prjId);
 
-    TstCase renamePers(JSONObject json, TstUser user);
-	void delete(Integer id, TstUser user);
+	TstCase rename(JSONObject json, TstUser user);
+	TstCase rename(Integer id, String name, Integer pId, Integer projectId, TstUser user);
 
-	TstCase renamePers(Integer id, String name, Integer pId, Integer projectId, TstUser user);
-
-	TstCase movePers(JSONObject json, TstUser user);
-
-	void loadNodeTree(TstCase po);
-
-	void createSample(Integer projectId, TstUser user);
-
-	void create(TstCase testCase);
+	TstCase move(JSONObject json, TstUser user);
 
 	TstCase update(JSONObject json, TstUser user);
-
-	boolean cloneStepsAndChildrenPers(TstCase testcase, TstCase src);
+	void delete(Integer id, TstUser user);
 
     TstCase saveField(JSONObject json, TstUser user);
 
-    Integer getChildMaxOrderNumb(Integer parentId);
+    TstCase changeContentType(Integer id, String contentType, TstUser user);
+    TstCase reviewResult(Integer id, Boolean pass, TstUser user);
 
-    TstCase changeContentTypePers(Integer id, String contentType);
-
-    TstCase reviewResult(Integer id, Boolean pass);
+	void createSample(Integer projectId, TstUser user);
+	boolean cloneStepsAndChildrenPers(TstCase testcase, TstCase src);
+	void loadNodeTree(TstCase po);
+	Integer getChildMaxOrderNumb(Integer parentId);
 
 	void genVos(List<TstCase> pos, List<Integer> selectIds);
 

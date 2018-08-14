@@ -97,7 +97,7 @@ public class IssueAction extends BaseAction {
 
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
-//		TstCase testCasePo = issueService.renamePers(json, userVo);
+//		TstCase testCasePo = issueService.rename(json, userVo);
 //        issueService.updateParentIfNeededPers(testCasePo.getpId());
 //		TstCaseVo caseVo = issueService.genVo(testCasePo);
 //
@@ -134,7 +134,7 @@ public class IssueAction extends BaseAction {
         Integer srcId = json.getInteger("srcId");
 //        Integer parentId = issueService.getWithCasesById(srcId).getpId();
 //        Integer targetId = json.getInteger("targetId");
-//        TstCaseVo vo = issueService.movePers(json, userVo);
+//        TstCaseVo vo = issueService.move(json, userVo);
 //
 //        issueService.updateParentIfNeededPers(parentId);
 //        issueService.updateParentIfNeededPers(targetId);
@@ -169,7 +169,7 @@ public class IssueAction extends BaseAction {
 		Integer id = json.getInteger("id");
         String contentType = json.getString("contentType");
 
-//		TstCase po = issueService.changeContentTypePers(id, contentType);
+//		TstCase po = issueService.changeContentType(id, contentType);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

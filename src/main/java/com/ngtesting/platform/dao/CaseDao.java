@@ -20,9 +20,28 @@ public interface CaseDao {
 
     void update(
             @Param("obj") TstCase testCasePo,
-            @Param("props") List<String> props);
+            @Param("props") List<String> props,
+            @Param("projectId") Integer projectId);
 
-    void delete(@Param("pId") Integer id);
+    void delete(@Param("pId") Integer pId,
+                @Param("projectId") Integer projectId);
+
+
+    void changeContentType(@Param("id") Integer id,
+                           @Param("contentType") String contentType,
+                           @Param("projectId") Integer projectId);
+
+    void reviewResult(@Param("id") Integer id,
+                      @Param("result") Boolean result,
+                      @Param("projectId") Integer projectId);
+
+    void updateProp(@Param("id") Integer id,
+                    @Param("prop") String prop,
+                    @Param("value") String value,
+                    @Param("projectId") Integer projectId);
+
+    void updateParentIfNeeded(@Param("pId") Integer pId);
+    List<TstCase> getChildren(@Param("id") Integer id);
 
     Integer getChildMaxOrderNumb(@Param("pId") Integer pId);
 
@@ -33,18 +52,4 @@ public interface CaseDao {
     void addOrderForNextCases(@Param("srcId") Integer srcId,
                               @Param("targetOrdr") Integer targetOrdr,
                               @Param("targetPid") Integer targetPid);
-
-    void updateProp(@Param("id") Integer id,
-                    @Param("prop") String prop,
-                    @Param("value") String value);
-
-    List<TstCase> getChildren(@Param("id") Integer id);
-
-    void changeContentTypePers(@Param("id") Integer id,
-                               @Param("contentType") String contentType);
-
-    void reviewResult(@Param("id") Integer id,
-                      @Param("result") Boolean result);
-
-    void updateParentIfNeeded(@Param("pId") Integer pId);
 }

@@ -126,8 +126,12 @@ public class Constant {
         copy("copy", "复制"),
         delete("delete", "删除"),
 
-        upload_attachment("upload_attachment", "上传附件"),
-        delete_attachment("delete_attachment", "删除附件"),
+        attachment_upload("attachment_upload", "上传附件"),
+        attachment_delete("attachment_delete", "删除附件"),
+
+        comments_add("comments_add", "新增注释"),
+        comments_update("comments_update", "修改注释"),
+        comments_delete("comments_delete", "删除注释"),
 
         exe_result("exe_result", "标注执行结果");
 

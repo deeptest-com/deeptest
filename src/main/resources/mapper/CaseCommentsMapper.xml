@@ -22,6 +22,12 @@
         ORDER BY o.updateTime ASC
     </select>
 
+    <select id="get" resultType="TstCaseComments">
+        SELECT *
+        FROM TstCaseComments o
+        WHERE o.id=#{id}
+    </select>
+
     <insert id="save" parameterType="TstCaseComments" useGeneratedKeys="true" keyProperty="id">
         insert into TstCaseComments (summary,content,caseId,userId,
           createTime,updateTime,deleted,disabled)

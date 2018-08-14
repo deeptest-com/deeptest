@@ -3,7 +3,9 @@ package com.ngtesting.platform.action;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.CaseAttachmentDao;
+import com.ngtesting.platform.dao.CaseHistoryDao;
 import com.ngtesting.platform.model.TstCaseAttachment;
+import com.ngtesting.platform.model.TstCaseHistory;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.CaseAttachmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +26,14 @@ import java.util.Map;
 public class CaseAttachmentAction extends BaseAction {
 	@Autowired
     CaseAttachmentService caseAttachmentService;
+    @Autowired
+    CaseHistoryDao caseHistoryDao;
 	@Autowired
 	CaseAttachmentDao caseAttachmentDao;
 
-	@RequestMapping(value = "uploadAttachment", method = RequestMethod.POST)
+	@RequestMapping(value = "upload", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> uploadAttachment(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> upload(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
@@ -43,17 +47,20 @@ public class CaseAttachmentAction extends BaseAction {
 			return authFail();
 		}
 
-        List<TstCaseAttachment> vos = caseAttachmentDao.query(caseId);
+        List<TstCaseAttachment> attachments = caseAttachmentDao.query(caseId);
+        List<TstCaseHistory> histories = caseHistoryDao.query(caseId);
 
-        ret.put("data", vos);
+        ret.put("attachments", attachments);
+        ret.put("histories", histories);
+
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
 
 
-	@RequestMapping(value = "removeAttachment", method = RequestMethod.POST)
+	@RequestMapping(value = "remove", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> removeAttachment(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
@@ -66,9 +73,11 @@ public class CaseAttachmentAction extends BaseAction {
 			return authFail();
 		}
 
-        List<TstCaseAttachment> vos = caseAttachmentDao.query(caseId);
+        List<TstCaseAttachment> attachments = caseAttachmentDao.query(caseId);
+        List<TstCaseHistory> histories = caseHistoryDao.query(caseId);
 
-		ret.put("data", vos);
+        ret.put("attachments", attachments);
+        ret.put("histories", histories);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

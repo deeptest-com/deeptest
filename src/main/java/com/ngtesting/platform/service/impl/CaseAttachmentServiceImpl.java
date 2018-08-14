@@ -10,6 +10,7 @@ import com.ngtesting.platform.service.CaseAttachmentService;
 import com.ngtesting.platform.service.CaseHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CaseAttachmentServiceImpl extends BaseServiceImpl implements CaseAttachmentService {
@@ -21,6 +22,7 @@ public class CaseAttachmentServiceImpl extends BaseServiceImpl implements CaseAt
     CaseDao caseDao;
 
     @Override
+    @Transactional
     public Boolean save(Integer caseId, String name, String path, TstUser user) {
         TstCase testCase = caseDao.get(caseId, user.getDefaultPrjId());
         if (testCase == null) {
@@ -29,11 +31,12 @@ public class CaseAttachmentServiceImpl extends BaseServiceImpl implements CaseAt
 
         TstCaseAttachment attach = new TstCaseAttachment(name, path, caseId, user.getId());
         caseAttachmentDao.save(attach);
-        caseHistoryService.saveHistory(user, Constant.CaseAct.upload_attachment, testCase, name);
+        caseHistoryService.saveHistory(user, Constant.CaseAct.attachment_upload, testCase, name);
         return true;
     }
 
     @Override
+    @Transactional
     public Boolean delete(Integer id, TstUser user) {
         TstCaseAttachment attach = caseAttachmentDao.get(id);
         TstCase testCase = caseDao.get(attach.getCaseId(), user.getDefaultPrjId());
@@ -42,7 +45,7 @@ public class CaseAttachmentServiceImpl extends BaseServiceImpl implements CaseAt
         }
 
         caseAttachmentDao.delete(id);
-        caseHistoryService.saveHistory(user, Constant.CaseAct.delete_attachment, testCase, attach.getName());
+        caseHistoryService.saveHistory(user, Constant.CaseAct.attachment_delete, testCase, attach.getName());
 
         return true;
     }

@@ -10,10 +10,9 @@ public interface CaseTypeService extends BaseService {
 	TstCaseType get(Integer id, Integer orgId);
 
 	TstCaseType save(TstCaseType vo, Integer orgId);
-	boolean delete(Integer id, Integer orgId);
+	Boolean delete(Integer id, Integer orgId);
 
-	boolean setDefault(Integer orgId, Integer orgId2);
-
-	boolean changeOrderPers(Integer id, String act, Integer orgId);
+	Boolean setDefault(Integer orgId, Integer orgId2);
+	Boolean changeOrder(Integer id, String act, Integer orgId);
 
 }

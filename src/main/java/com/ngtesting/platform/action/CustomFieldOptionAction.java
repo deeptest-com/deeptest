@@ -36,15 +36,14 @@ public class CustomFieldOptionAction extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Integer orgId = user.getDefaultOrgId();
 
 		Integer fieldId = json.getInteger("fieldId");
 
 		TstCustomFieldOption option = JSON.parseObject(JSON.toJSONString(json.getJSONObject("model")), TstCustomFieldOption.class);
-
         option.setFieldId(fieldId);
-		customFieldOptionService.save(option);
+		customFieldOptionService.save(option, orgId);
 
         List<TstCustomFieldOption> vos = customFieldOptionService.listVos(fieldId);
 
@@ -53,16 +52,17 @@ public class CustomFieldOptionAction extends BaseAction {
 		return ret;
 	}
 
-
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		Integer orgId = user.getDefaultOrgId();
 
 		Integer fieldId = json.getInteger("fieldId");
 		Integer id = json.getInteger("id");
 
-		boolean success = customFieldOptionService.delete(id);
+		customFieldOptionService.delete(id, orgId);
         List<TstCustomFieldOption> vos = customFieldOptionService.listVos(fieldId);
 
 		ret.put("data", vos);
@@ -76,12 +76,14 @@ public class CustomFieldOptionAction extends BaseAction {
 	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        Integer orgId = user.getDefaultOrgId();
+
 		Integer fieldId = json.getInteger("fieldId");
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-		boolean success = customFieldOptionService.changeOrderPers(id, act, fieldId);
+		customFieldOptionService.changeOrderPers(id, act, fieldId, orgId);
         List<TstCustomFieldOption> vos = customFieldOptionService.listVos(fieldId);
 
         ret.put("data", vos);

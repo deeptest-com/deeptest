@@ -115,7 +115,7 @@ public class CasePriorityAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 		Integer id = json.getInteger("id");
 
-		casePriorityService.setDefaultPers(id, orgId);
+		casePriorityService.setDefault(id, orgId);
 		List<TstCasePriority> vos = casePriorityService.list(orgId);
 
         ret.put("data", vos);
@@ -134,7 +134,7 @@ public class CasePriorityAction extends BaseAction {
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-		boolean success = casePriorityService.changeOrderPers(id, act, orgId);
+		casePriorityService.changeOrder(id, act, orgId);
 
 		List<TstCasePriority> vos = casePriorityService.list(orgId);
 

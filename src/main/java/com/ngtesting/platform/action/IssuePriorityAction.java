@@ -113,7 +113,7 @@ public class IssuePriorityAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 		Integer id = json.getInteger("id");
 
-		boolean success = casePriorityService.setDefaultPers(id, orgId);
+		boolean success = casePriorityService.setDefault(id, orgId);
 //		List<CasePriorityVo> vos = casePriorityService.listVos(orgId);
 //
 //        ret.put("data", vos);
@@ -132,7 +132,7 @@ public class IssuePriorityAction extends BaseAction {
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-		boolean success = casePriorityService.changeOrderPers(id, act, orgId);
+		boolean success = casePriorityService.changeOrder(id, act, orgId);
 
 //		List<CasePriorityVo> vos = casePriorityService.listVos(orgId);
 //

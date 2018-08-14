@@ -35,7 +35,7 @@
     <delete id="delete">
         UPDATE TstCaseType
         SET disabled=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND o.orgId=#{orgId}
+        WHERE id=#{id} AND orgId=#{orgId}
     </delete>
 
     <update id="removeDefault">

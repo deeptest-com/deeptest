@@ -8,10 +8,10 @@ public interface CustomFieldService extends BaseService {
 	List<TstCustomField> list(Integer orgId);
     List<TstCustomField> listForCaseByProject(Integer orgId, Integer projectId);
 
-	TstCustomField get(Integer customFieldId);
+	TstCustomField get(Integer customFieldId, Integer orgId);
 
 	TstCustomField save(TstCustomField vo, Integer orgId);
-	boolean delete(Integer id);
+	boolean delete(Integer id, Integer orgId);
 
 	List<String> listApplyTo();
 

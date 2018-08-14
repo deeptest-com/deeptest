@@ -35,13 +35,13 @@
     <delete id="delete">
         UPDATE TstCasePriority
         SET disabled=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND o.orgId=#{orgId}
+        WHERE id=#{id} AND orgId=#{orgId}
     </delete>
 
     <update id="setOrder">
         UPDATE TstCasePriority
         SET ordr=#{ordr}, updateTime=NOW()
-        WHERE id=#{id}
+        WHERE id=#{id} AND orgId=#{orgId}
     </update>
 
     <update id="removeDefault">

@@ -11,7 +11,7 @@ public class TstCustomField extends BaseModel {
     private String myColumn;
 
     private String descr;
-    private FieldApplyTo applyTo;
+    private FieldApplyTo applyTo = FieldApplyTo.test_case;
     private FieldType type;
 
 	private List<TstCustomFieldOption> options = new LinkedList<>();

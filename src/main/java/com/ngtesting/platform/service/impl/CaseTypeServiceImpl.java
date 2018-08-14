@@ -46,7 +46,7 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 	}
 
 	@Override
-	public boolean delete(Integer id, Integer orgId) {
+	public Boolean delete(Integer id, Integer orgId) {
         caseTypeDao.delete(id, orgId);
 
 		return true;
@@ -54,7 +54,7 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 
 	@Override
     @Transactional
-	public boolean setDefault(Integer id, Integer orgId) {
+	public Boolean setDefault(Integer id, Integer orgId) {
         caseTypeDao.removeDefault(orgId);
         caseTypeDao.setDefault(id, orgId);
 
@@ -63,8 +63,12 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 
 	@Override
     @Transactional
-	public boolean changeOrderPers(Integer id, String act, Integer orgId) {
+	public Boolean changeOrder(Integer id, String act, Integer orgId) {
         TstCaseType curr = caseTypeDao.get(id, orgId);
+        if (curr == null) {
+            return false;
+        }
+
         TstCaseType neighbor = null;
         if ("up".equals(act)) {
             neighbor = caseTypeDao.getPrev(curr.getOrdr(), orgId);
@@ -77,8 +81,8 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 
         Integer currOrder = curr.getOrdr();
         Integer neighborOrder = neighbor.getOrdr();
-        caseTypeDao.setOrder(id, neighborOrder);
-        caseTypeDao.setOrder(neighbor.getId(), currOrder);
+        caseTypeDao.setOrder(id, neighborOrder, orgId);
+        caseTypeDao.setOrder(neighbor.getId(), currOrder, orgId);
 
         return true;
 	}

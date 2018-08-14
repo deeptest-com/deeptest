@@ -121,7 +121,7 @@ public class CaseTypeAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		boolean success = caseTypeService.setDefault(id, orgId);
+		caseTypeService.setDefault(id, orgId);
 
 		List<TstCaseType> vos = caseTypeService.list(orgId);
 
@@ -142,7 +142,7 @@ public class CaseTypeAction extends BaseAction {
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-		caseTypeService.changeOrderPers(id, act, orgId);
+		caseTypeService.changeOrder(id, act, orgId);
 
 		List<TstCaseType> vos = caseTypeService.list(orgId);
 

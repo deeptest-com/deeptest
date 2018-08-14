@@ -45,14 +45,14 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 	}
 
 	@Override
-	public boolean delete(Integer id, Integer orgId) {
+	public Boolean delete(Integer id, Integer orgId) {
         casePriorityDao.delete(id, orgId);
 
         return true;
 	}
 
 	@Override
-	public boolean setDefaultPers(Integer id, Integer orgId) {
+	public Boolean setDefault(Integer id, Integer orgId) {
         casePriorityDao.removeDefault(orgId);
         casePriorityDao.setDefault(id, orgId);
 
@@ -60,8 +60,12 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 	}
 
 	@Override
-	public boolean changeOrderPers(Integer id, String act, Integer orgId) {
+	public Boolean changeOrder(Integer id, String act, Integer orgId) {
         TstCasePriority curr = casePriorityDao.get(id, orgId);
+        if (curr == null) {
+            return false;
+        }
+
         TstCasePriority neighbor = null;
         if ("up".equals(act)) {
             neighbor = casePriorityDao.getPrev(curr.getOrdr(), orgId);
@@ -74,8 +78,8 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 
         Integer currOrder = curr.getOrdr();
         Integer neighborOrder = neighbor.getOrdr();
-        casePriorityDao.setOrder(id, neighborOrder);
-        casePriorityDao.setOrder(neighbor.getId(), currOrder);
+        casePriorityDao.setOrder(id, neighborOrder, orgId);
+        casePriorityDao.setOrder(neighbor.getId(), currOrder, orgId);
 
         return true;
 	}

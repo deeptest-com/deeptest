@@ -26,17 +26,18 @@ public class TestEnvServiceImpl extends BaseServiceImpl implements TestEnvServic
     }
 
     @Override
-    public TstEnv getById(Integer id) {
-        TstEnv po = envDao.get(id);
+    public TstEnv getById(Integer id, Integer projectId) {
+        TstEnv po = envDao.get(id, projectId);
         return po;
     }
 
     @Override
-    public TstEnv save(JSONObject json, TstUser optUser) {
+    public TstEnv save(JSONObject json, TstUser user) {
         Integer id = json.getInteger("id");
 
         TstEnv po = null;
         TstEnv vo = JSON.parseObject(JSON.toJSONString(json), TstEnv.class);
+        vo.setProjectId(user.getDefaultPrjId());
 
         Constant.MsgType action;
         if (id != null) {
@@ -59,14 +60,18 @@ public class TestEnvServiceImpl extends BaseServiceImpl implements TestEnvServic
     }
 
     @Override
-    public void delete(Integer id, Integer clientId) {
-        envDao.delete(id);
+    public void delete(Integer id, Integer projectId) {
+        envDao.delete(id, projectId);
     }
 
     @Override
     @Transactional
     public boolean changeOrder(Integer id, String act, Integer projectId) {
-        TstEnv curr = envDao.get(id);
+        TstEnv curr = envDao.get(id, projectId);
+        if (curr == null) {
+            return false;
+        }
+
         TstEnv neighbor = null;
         if ("up".equals(act)) {
             neighbor = envDao.getPrev(curr.getOrdr(), projectId);
@@ -79,8 +84,8 @@ public class TestEnvServiceImpl extends BaseServiceImpl implements TestEnvServic
 
         Integer currOrder = curr.getOrdr();
         Integer neighborOrder = neighbor.getOrdr();
-        envDao.setOrder(id, neighborOrder);
-        envDao.setOrder(neighbor.getId(), currOrder);
+        envDao.setOrder(id, neighborOrder, projectId);
+        envDao.setOrder(neighbor.getId(), currOrder, projectId);
 
         return true;
     }

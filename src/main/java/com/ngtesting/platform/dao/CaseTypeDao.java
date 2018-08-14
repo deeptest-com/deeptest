@@ -18,8 +18,10 @@ public interface CaseTypeDao {
                 @Param("orgId") Integer orgId);
 
     void removeDefault(@Param("orgId") Integer orgId);
-    void setDefault(@Param("id") Integer id, @Param("orgId") Integer orgId);
-    void setOrder(@Param("id") Integer id, @Param("ordr") Integer ordr,
+    void setDefault(@Param("id") Integer id,
+                    @Param("orgId") Integer orgId);
+    void setOrder(@Param("id") Integer id,
+                  @Param("ordr") Integer ordr,
                   @Param("orgId") Integer orgId);
 
     TstCaseType getPrev(@Param("ordr")Integer ordr, @Param("orgId") Integer orgId);

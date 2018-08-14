@@ -25,17 +25,17 @@ public class TestVerServiceImpl extends BaseServiceImpl implements TestVerServic
     }
 
     @Override
-    public TstVer getById(Integer id) {
-        TstVer po = verDao.get(id);
+    public TstVer getById(Integer id, Integer projectId) {
+        TstVer po = verDao.get(id, projectId);
         return po;
     }
 
     @Override
-    public TstVer save(JSONObject json, TstUser optUser) {
+    public TstVer save(JSONObject json, TstUser user) {
         Integer id = json.getInteger("id");
 
-        TstVer po = null;
         TstVer vo = JSON.parseObject(JSON.toJSONString(json), TstVer.class);
+        vo.setProjectId(user.getDefaultPrjId());
 
         Constant.MsgType action;
         if (id != null) {
@@ -58,14 +58,18 @@ public class TestVerServiceImpl extends BaseServiceImpl implements TestVerServic
     }
 
     @Override
-    public void delete(Integer id, Integer clientId) {
-        verDao.delete(id);
+    public void delete(Integer id, Integer projectId) {
+        verDao.delete(id, projectId);
     }
 
     @Override
     @Transactional
     public boolean changeOrder(Integer id, String act, Integer projectId) {
-        TstVer curr = verDao.get(id);
+        TstVer curr = verDao.get(id, projectId);
+        if (curr == null) {
+            return false;
+        }
+
         TstVer neighbor = null;
         if ("up".equals(act)) {
             neighbor = verDao.getPrev(curr.getOrdr(), projectId);
@@ -78,8 +82,8 @@ public class TestVerServiceImpl extends BaseServiceImpl implements TestVerServic
 
         Integer currOrder = curr.getOrdr();
         Integer neighborOrder = neighbor.getOrdr();
-        verDao.setOrder(id, neighborOrder);
-        verDao.setOrder(neighbor.getId(), currOrder);
+        verDao.setOrder(id, neighborOrder, projectId);
+        verDao.setOrder(neighbor.getId(), currOrder, projectId);
 
         return true;
     }

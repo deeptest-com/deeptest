@@ -7,7 +7,7 @@
         <if test="keywords != null and keywords != ''">
             AND o.name LIKE CONCAT('%','${keywords}','%' )
         </if>
-        <if test="disabled != null and disabled != ''">
+        <if test="disabled != null">
             AND o.disabled = #{disabled}
         </if>
         AND o.projectId = #{projectId}
@@ -18,14 +18,7 @@
 
     <select id="get" resultType="TstVer">
         SELECT * FROM TstVer o
-        WHERE o.id = #{id}
-    </select>
-
-    <select id="getMaxOrdrNumb" resultType="Integer">
-        select max(ordr) from TstVer tp
-        where tp.projectId=#{projectId}
-        and tp.deleted != true
-        and tp.disabled != true
+        WHERE o.id = #{id} AND o.projectId = #{projectId}
     </select>
 
     <insert id="add" parameterType="TstVer" useGeneratedKeys="true" keyProperty="id">
@@ -40,12 +33,30 @@
         SET name=#{name},
             startTime=#{startTime}, endTime=#{endTime},
             descr=#{descr},
-            projectId=#{projectId},
             ordr=#{ordr},
             disabled=#{disabled},
             updateTime=NOW()
-        WHERE id=#{id}
+        WHERE id=#{id} AND projectId = #{projectId}
     </update>
+
+    <update id="delete">
+        UPDATE TstVer
+        SET deleted=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND projectId = #{projectId}
+    </update>
+
+    <update id="setOrder">
+        UPDATE TstVer
+        SET ordr=#{ordr}, updateTime=NOW()
+        WHERE id=#{id} AND projectId = #{projectId}
+    </update>
+
+    <select id="getMaxOrdrNumb" resultType="Integer">
+        select max(ordr) from TstVer tp
+        where tp.projectId=#{projectId}
+        and tp.deleted != true
+        and tp.disabled != true
+    </select>
 
     <select id="getPrev" resultType="TstVer">
         <![CDATA[
@@ -64,17 +75,5 @@
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>
-
-    <update id="setOrder">
-        UPDATE TstVer
-        SET ordr=#{ordr}, updateTime=NOW()
-        WHERE id=#{id}
-    </update>
-
-    <update id="delete">
-        UPDATE TstVer
-        SET deleted=TRUE, updateTime=NOW()
-        WHERE id=#{id}
-    </update>
 
 </mapper>

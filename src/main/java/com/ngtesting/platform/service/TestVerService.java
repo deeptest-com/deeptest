@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface TestVerService extends BaseService {
 	List<TstVer> list(Integer projectId, String keywords, Boolean disabled);
-	TstVer getById(Integer caseId);
+	TstVer getById(Integer caseId, Integer projectId);
 	TstVer save(JSONObject json, TstUser optUser);
 	void delete(Integer vo, Integer userId);
 

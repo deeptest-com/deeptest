@@ -7,7 +7,7 @@
         <if test="keywords != null and keywords != ''">
             AND o.name LIKE CONCAT('%','${keywords}','%' )
         </if>
-        <if test="disabled != null and disabled != ''">
+        <if test="disabled != null">
             AND o.disabled = #{disabled}
         </if>
         AND o.projectId = #{projectId}
@@ -18,7 +18,7 @@
 
     <select id="get" resultType="TstEnv">
         SELECT * FROM TstEnv o
-        WHERE o.id = #{id}
+        WHERE o.id = #{id} AND o.projectId = #{projectId}
     </select>
 
     <select id="getMaxOrdrNumb" resultType="Integer">
@@ -39,11 +39,22 @@
         UPDATE TstEnv
         SET name=#{name},
         descr=#{descr},
-        projectId=#{projectId},
         ordr=#{ordr},
         disabled=#{disabled},
         updateTime=NOW()
-        WHERE id=#{id}
+        WHERE id=#{id} AND projectId = #{projectId}
+    </update>
+
+    <update id="delete">
+        UPDATE TstEnv
+        SET deleted=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND projectId = #{projectId}
+    </update>
+
+    <update id="setOrder">
+        UPDATE TstEnv
+        SET ordr=#{ordr}, updateTime=NOW()
+        WHERE id=#{id} AND projectId = #{projectId}
     </update>
 
     <select id="getPrev" resultType="TstEnv">
@@ -63,17 +74,5 @@
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>
-
-    <update id="setOrder">
-        UPDATE TstEnv
-        SET ordr=#{ordr}, updateTime=NOW()
-        WHERE id=#{id}
-    </update>
-
-    <update id="delete">
-        UPDATE TstEnv
-        SET deleted=TRUE, updateTime=NOW()
-        WHERE id=#{id}
-    </update>
 
 </mapper>

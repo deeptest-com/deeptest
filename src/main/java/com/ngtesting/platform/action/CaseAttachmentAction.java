@@ -32,13 +32,17 @@ public class CaseAttachmentAction extends BaseAction {
 	public Map<String, Object> uploadAttachment(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
         Integer caseId = json.getInteger("caseId");
 		String path = json.getString("path");
         String name = json.getString("name");
 
-		caseAttachmentService.uploadAttachmentPers(caseId, name, path, userVo);
+		Boolean result = caseAttachmentService.save(caseId, name, path, user);
+		if (!result) {
+			return authFail();
+		}
+
         List<TstCaseAttachment> vos = caseAttachmentDao.query(caseId);
 
         ret.put("data", vos);
@@ -52,12 +56,16 @@ public class CaseAttachmentAction extends BaseAction {
 	public Map<String, Object> removeAttachment(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 
         Integer caseId = json.getInteger("caseId");
 		Integer id = json.getInteger("id");
 
-        caseAttachmentService.removeAttachmentPers(id, userVo);
+		Boolean result = caseAttachmentService.delete(id, user);
+		if (!result) {
+			return authFail();
+		}
+
         List<TstCaseAttachment> vos = caseAttachmentDao.query(caseId);
 
 		ret.put("data", vos);

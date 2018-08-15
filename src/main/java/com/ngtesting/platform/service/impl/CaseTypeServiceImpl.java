@@ -39,7 +39,7 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
             vo.setOrgId(orgId);
             caseTypeDao.save(vo);
         } else {
-            if (vo.getOrgId() != orgId) {
+            if (vo.getOrgId().intValue() != orgId.intValue()) {
                 return null;
             }
             caseTypeDao.update(vo);

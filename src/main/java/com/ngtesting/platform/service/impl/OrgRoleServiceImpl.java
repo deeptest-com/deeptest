@@ -41,7 +41,7 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
             vo.setCode(UUID.randomUUID().toString());
             orgRoleDao.save(vo);
         } else {
-            if (vo.getOrgId() != orgId) {
+            if (vo.getOrgId().intValue() != orgId.intValue()) {
                 return null;
             }
             orgRoleDao.update(vo);

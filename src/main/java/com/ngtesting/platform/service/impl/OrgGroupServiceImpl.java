@@ -49,7 +49,7 @@ public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupServ
 			vo.setOrgId(orgId);
 			groupDao.save(vo);
 		} else {
-		    if (vo.getOrgId() != orgId) {
+            if (vo.getOrgId().intValue() != orgId.intValue()) {
                 return null;
             }
             groupDao.update(vo);

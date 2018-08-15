@@ -61,7 +61,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
                 customFieldOptionDao.saveAll(vo.getId(), vo.getOptions());
             }
         } else {
-            if (vo.getOrgId() != orgId) {
+            if (vo.getOrgId().intValue() != orgId.intValue()) {
                 return null;
             }
 

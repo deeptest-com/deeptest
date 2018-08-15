@@ -37,7 +37,7 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 			vo.setCode(UUID.randomUUID().toString());
 			projectRoleDao.save(vo);
 		} else {
-			if (vo.getOrgId() != orgId) {
+            if (vo.getOrgId().intValue() != orgId.intValue()) {
 				return null;
 			}
 

@@ -39,7 +39,7 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
             vo.setOrgId(orgId);
             casePriorityDao.save(vo);
         } else {
-            if (vo.getOrgId() != orgId) {
+            if (vo.getOrgId().intValue() != orgId.intValue()) {
                 return null;
             }
             casePriorityDao.update(vo);

@@ -81,7 +81,6 @@ public class OrgAction extends BaseAction {
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 		Integer orgId = json.getInteger("id");
-
         if (userNotInOrg(user.getId(), orgId)) {
             return authFail();
         }
@@ -108,7 +107,11 @@ public class OrgAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-		orgService.save(vo, user.getId());
+        TstOrg org = orgService.save(vo, user);
+        if (org == null) {
+            return authFail();
+        }
+
         List<TstOrg> vos = orgService.list(user.getId(), "false", null);
 
         pushSettingsService.pushMyOrgs(user);
@@ -148,7 +151,7 @@ public class OrgAction extends BaseAction {
 
 		userService.setDefaultOrg(user, orgId);
 
-		pushSettingsService.pushOrgSettings(user);
+		pushSettingsService.pushOrgSettings(user, request);
 		pushSettingsService.pushRecentProjects(user);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -171,7 +174,7 @@ public class OrgAction extends BaseAction {
         }
 
 		userService.setDefaultOrg(user, orgId);
-		pushSettingsService.pushOrgSettings(user);
+		pushSettingsService.pushOrgSettings(user, request);
 		pushSettingsService.pushRecentProjects(user);
 
         List<TstOrg> vos = orgService.list(user.getId(), keywords, disabled);

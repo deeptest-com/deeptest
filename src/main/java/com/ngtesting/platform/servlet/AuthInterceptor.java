@@ -3,6 +3,7 @@ package com.ngtesting.platform.servlet;
 import com.alibaba.fastjson.JSON;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.OrgPrivilegeService;
 import com.ngtesting.platform.service.PropService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.utils.AuthPassport;
@@ -29,6 +30,8 @@ public class AuthInterceptor implements HandlerInterceptor {
     private PropService propService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private OrgPrivilegeService orgPrivilegeService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

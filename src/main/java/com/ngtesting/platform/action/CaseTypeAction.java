@@ -93,7 +93,6 @@ public class CaseTypeAction extends BaseAction {
 		return ret;
 	}
 
-
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {

@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     OrgGroupUserRelationService orgGroupUserRelationService;
     @Autowired
-    OrgRoleUserRelationService orgRoleUserService;
+    OrgPrivilegeService orgPrivilegeService;
 
     @Override
     public List<TstUser> list(Integer orgId, String keywords, Boolean disabled, int pageNum, int pageSize) {
@@ -155,6 +155,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public TstUser update(TstUser vo) {
         userDao.update(vo);
 
@@ -163,6 +164,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public TstUser modifyProp(JSONObject json) {
         Integer id = json.getInteger("id");
         String prop = json.getString("prop");
@@ -175,6 +177,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void setDefaultOrg(TstUser user, Integer orgId) {
         TstOrg org = orgDao.get(orgId);
         userDao.setDefaultOrg(user.getId(), orgId, org.getName());
@@ -192,6 +195,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void setDefaultPrj(TstUser user, Integer prjId) {
         if (prjId != null) {
             TstProject prj = projectDao.get(prjId);

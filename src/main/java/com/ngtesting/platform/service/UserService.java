@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.TstOrgGroupUserRelation;
 import com.ngtesting.platform.model.TstUser;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface UserService {

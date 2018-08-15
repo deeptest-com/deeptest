@@ -1,6 +1,7 @@
 package com.ngtesting.platform.service;
 
 import com.ngtesting.platform.model.TstOrg;
+import com.ngtesting.platform.model.TstUser;
 
 import java.util.List;
 
@@ -16,6 +17,6 @@ public interface OrgService extends BaseService {
 
 	void genVos(List<TstOrg> pos, Integer userId);
 
-    TstOrg save(TstOrg vo, Integer userId);
+    TstOrg save(TstOrg vo, TstUser user);
 
 }

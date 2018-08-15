@@ -21,7 +21,7 @@ public interface CaseService extends BaseService {
 	TstCase move(JSONObject json, TstUser user);
 
 	TstCase update(JSONObject json, TstUser user);
-	void delete(Integer id, TstUser user);
+	Integer delete(Integer id, TstUser user);
 
     TstCase saveField(JSONObject json, TstUser user);
 

@@ -30,21 +30,21 @@ public class CaseCommentsServiceImpl extends BaseServiceImpl implements CaseComm
     public TstCaseComments save(JSONObject json, TstUser user) {
         TstCaseComments vo = JSON.parseObject(JSON.toJSONString(json), TstCaseComments.class);
 
-        TstCase testCase = caseDao.get(vo.getCaseId(), user.getDefaultPrjId());
-        if (testCase == null) {
-            return null;
-        }
-
         vo.setUserId(user.getId());
         vo.setUserName(user.getNickname());
         vo.setUserAvatar(user.getAvatar());
 
-        if (vo.getId() != null) {
-            caseCommentsDao.update(vo);
-//            caseHistoryService.saveHistory(user, Constant.CaseAct.comments_update, testCase, vo.getContent());
-        } else {
+        if (vo.getId() == null) {
             caseCommentsDao.save(vo);
 //            caseHistoryService.saveHistory(user, Constant.CaseAct.comments_add, testCase, vo.getContent());
+        } else {
+            TstCase testCase = caseDao.get(vo.getCaseId(), user.getDefaultPrjId());
+            if (testCase == null) {
+                return null;
+            }
+
+            caseCommentsDao.update(vo);
+//            caseHistoryService.saveHistory(user, Constant.CaseAct.comments_update, testCase, vo.getContent());
         }
 
         return vo;

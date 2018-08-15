@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.dao.AuthDao;
 import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstProject;
@@ -37,6 +38,8 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
     private UserService userService;
     @Autowired
 	ProjectPrivilegeService projectPrivilegeService;
+    @Autowired
+    AuthDao authDao;
 
 	@Override
 	public List<TstProject> list(Integer orgId, Integer userId, String keywords, Boolean disabled) {
@@ -85,18 +88,21 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
 	@Override
     @Transactional
-	public TstProject save(TstProject vo, Integer orgId, TstUser TstUser) {
+	public TstProject save(TstProject vo, Integer orgId, TstUser user) {
 		if (vo == null) {
 			return null;
 		}
 
-        vo.setOrgId(orgId);
-
         boolean disableStatusChanged = false;
 		boolean isNew = vo.getId() == null;
 		if (isNew) {
+            vo.setOrgId(orgId);
             projectDao.save(vo);
 		} else {
+            if (authDao.userNotInProject(user.getId(), vo.getId())) {
+                return null;
+            }
+
             TstProject old = projectDao.get(vo.getId());
             disableStatusChanged = vo.getDisabled() != old.getDisabled();
 
@@ -104,11 +110,12 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 		}
 
         if(isNew && TstProject.ProjectType.project.equals(vo.getType())) {
-            projectPrivilegeService.addUserAsProjectTestLeaderPers(orgId, vo.getId(), "test_leader", TstUser.getId());
-            caseService.createSample(vo.getId(), TstUser);
+            projectPrivilegeService.addUserAsProjectTestLeaderPers(orgId, vo.getId(),
+                    "test_leader", user.getId());
+            caseService.createSample(vo.getId(), user);
         }
         if(TstProject.ProjectType.project.equals(vo.getType())) {
-            historyService.create(vo.getId(), TstUser,
+            historyService.create(vo.getId(), user,
                     isNew? Constant.MsgType.create.msg: Constant.MsgType.create.update.msg,
                     TstHistory.TargetType.project, vo.getId(), vo.getName());
         }

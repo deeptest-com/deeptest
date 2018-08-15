@@ -77,12 +77,15 @@
         JOIN TstProject casePrj ON casePrj.id=o.caseProjectId
 
         WHERE o.id = #{id}
+        <if test="projectId != null">
+            AND o.projectId=#{projectId}
+        </if>
     </select>
 
     <update id="delete">
         UPDATE TstSuite
         SET deleted = TRUE
-        WHERE id=#{id}
+        WHERE id=#{id} AND projectId=#{projectId}
     </update>
 
     <select id="listCaseIds" resultType="int">

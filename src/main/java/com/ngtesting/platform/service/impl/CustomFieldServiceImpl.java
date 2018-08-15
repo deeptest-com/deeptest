@@ -48,6 +48,8 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     @Override
     @Transactional
     public TstCustomField save(TstCustomField vo, Integer orgId) {
+        vo.setOrgId(orgId);
+
         if (vo.getId() == null) {
             Integer maxOrder = customFieldDao.getMaxOrdrNumb(orgId);
             if (maxOrder == null) {
@@ -55,31 +57,32 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
             }
             vo.setOrdr(maxOrder + 10);
 
-            vo.setOrgId(orgId);
             customFieldDao.save(vo);
             if (vo.getType().equals(TstCustomField.FieldType.dropdown)) {
                 customFieldOptionDao.saveAll(vo.getId(), vo.getOptions());
             }
         } else {
-            if (vo.getOrgId().intValue() != orgId.intValue()) {
+            Integer count = customFieldDao.update(vo);
+            if (count == 0) {
                 return null;
             }
-
-            customFieldDao.update(vo);
         }
 
         return vo;
     }
 
     @Override
-    public boolean delete(Integer id, Integer orgId) {
-        customFieldDao.delete(id, orgId);
+    public Boolean delete(Integer id, Integer orgId) {
+        Integer count = customFieldDao.delete(id, orgId);
+        if (count == 0) {
+            return false;
+        }
 
         return true;
     }
 
     @Override
-    public boolean changeOrderPers(Integer id, String act, Integer orgId) {
+    public Boolean changeOrderPers(Integer id, String act, Integer orgId) {
         TstCustomField curr = customFieldDao.get(id, orgId);
         if (curr == null) {
             return false;

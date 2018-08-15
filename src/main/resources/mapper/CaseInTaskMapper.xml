@@ -9,7 +9,11 @@
         FROM TstCaseInTask o
         JOIN TstCase cs ON o.caseId = cs.id
 
-        WHERE o.taskId=#{taskId} AND o.projectId = #{projectId}
+        WHERE o.taskId=#{taskId}
+        <if test="projectId != null">
+            AND o.projectId=#{projectId}
+        </if>
+
         AND o.deleted != true AND o.disabled != true
         ORDER BY o.pId, o.ordr
     </select>
@@ -21,18 +25,11 @@
         FROM TstCaseInTask o
         JOIN TstCase cs ON o.caseId = cs.id
 
-        WHERE o.id=#{id} AND o.projectId = #{projectId}
+        WHERE o.id=#{id}
+        <if test="projectId != null">
+            AND o.projectId=#{projectId}
+        </if>
     </select>
-
-    <update id="setResult">
-        update TstCaseInTask o
-        set o.result=#{result},
-          o.status=#{status},
-          o.exeBy=#{exeBy},
-          o.exeTime=NOW()
-
-        where o.id = #{id}
-    </update>
 
     <select id="getDetail" resultMap="caseInTaskMap">
         SELECT cs.id id, cs.*, o.id entityId,
@@ -42,7 +39,20 @@
         JOIN TstCase cs ON o.caseId = cs.id
 
         WHERE o.id=#{id}
+        <if test="projectId != null">
+            AND o.projectId=#{projectId}
+        </if>
     </select>
+
+    <update id="setResult">
+        update TstCaseInTask o
+        set o.result=#{result},
+        o.status=#{status},
+        o.exeBy=#{exeBy},
+        o.exeTime=NOW()
+
+        where o.id = #{id}
+    </update>
 
     <resultMap id="caseInTaskMap" type="TstCaseInTask" autoMapping="true">
         <id column="id" property="id"/>

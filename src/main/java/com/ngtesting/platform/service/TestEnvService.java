@@ -10,7 +10,7 @@ public interface TestEnvService extends BaseService {
 	List<TstEnv> list(Integer projectId, String keywords, Boolean disabled);
 	TstEnv getById(Integer caseId, Integer projectId);
 	TstEnv save(JSONObject json, TstUser optUser);
-	void delete(Integer vo, Integer projectId);
+	Boolean delete(Integer vo, Integer projectId);
 
-	boolean changeOrder(Integer id, String act, Integer orgId);
+	Boolean changeOrder(Integer id, String act, Integer orgId);
 }

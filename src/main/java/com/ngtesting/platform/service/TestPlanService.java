@@ -1,6 +1,5 @@
 package com.ngtesting.platform.service;
 
-import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.TstPlan;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstUser;
@@ -11,9 +10,9 @@ public interface TestPlanService extends BaseService {
 
 	List<TstPlan> listByPage(Integer projectId, String keywords, String status);
 
-	TstPlan getById(Integer caseId);
-	TstPlan save(JSONObject json, TstUser optUser);
-	void delete(Integer vo, Integer userId);
+	TstPlan getById(Integer caseId, Integer projectId);
+	TstPlan save(TstPlan vo, TstUser optUser, Integer projectId);
+	void delete(Integer vo, Integer projectId);
 
 	List<TstPlan> listByOrg(Integer orgId);
 

@@ -46,7 +46,7 @@ public class CustomFieldOptionServiceImpl extends BaseServiceImpl implements Cus
     }
 
     @Override
-    public boolean delete(Integer id, Integer orgId) {
+    public Boolean delete(Integer id, Integer orgId) {
         TstCustomFieldOption option = customFieldOptionDao.get(id);
 
         TstCustomField field = customFieldDao.get(option.getFieldId(), orgId);
@@ -59,8 +59,9 @@ public class CustomFieldOptionServiceImpl extends BaseServiceImpl implements Cus
     }
 
     @Override
-    public boolean changeOrderPers(Integer id, String act, Integer fieldId, Integer orgId) {
+    public Boolean changeOrder(Integer id, String act, Integer fieldId, Integer orgId) {
         TstCustomFieldOption curr = customFieldOptionDao.get(id);
+
         TstCustomField field = customFieldDao.get(curr.getFieldId(), orgId);
         if (field == null) {
             return false;
@@ -72,14 +73,12 @@ public class CustomFieldOptionServiceImpl extends BaseServiceImpl implements Cus
         } else if ("down".equals(act)) {
             neighbor = customFieldOptionDao.getNext(curr.getOrdr(), fieldId);
         }
-        if (neighbor == null) {
-            return false;
+        if (neighbor != null) {
+            Integer currOrder = curr.getOrdr();
+            Integer neighborOrder = neighbor.getOrdr();
+            customFieldOptionDao.setOrder(id, neighborOrder);
+            customFieldOptionDao.setOrder(neighbor.getId(), currOrder);
         }
-
-        Integer currOrder = curr.getOrdr();
-        Integer neighborOrder = neighbor.getOrdr();
-        customFieldOptionDao.setOrder(id, neighborOrder);
-        customFieldOptionDao.setOrder(neighbor.getId(), currOrder);
 
         return true;
     }

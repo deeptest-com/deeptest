@@ -72,7 +72,8 @@ public class CustomFieldAction extends BaseAction {
 		List<String> applyToList = customFieldService.listApplyTo();
 		List<String> typeList = customFieldService.listType();
 		List<String> formatList = customFieldService.listFormat();
-		List<TstCustomFieldProjectRelation> relations = customFieldProjectRelationService.listRelationsByField(orgId, id);
+		List<TstCustomFieldProjectRelation> relations =
+                customFieldProjectRelationService.listRelationsByField(orgId, id);
 
         ret.put("data", vo);
         ret.put("applyToList", applyToList);
@@ -116,9 +117,12 @@ public class CustomFieldAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		customFieldService.delete(id, orgId);
+		Boolean result = customFieldService.delete(id, orgId);
+        if (!result) {
+            return authFail();
+        }
 
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
 
@@ -133,7 +137,10 @@ public class CustomFieldAction extends BaseAction {
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-		customFieldService.changeOrderPers(id, act, orgId);
+        Boolean result = customFieldService.changeOrderPers(id, act, orgId);
+        if (!result) {
+            return authFail();
+        }
 
 		List<TstCustomField> vos = customFieldService.list(orgId);
 

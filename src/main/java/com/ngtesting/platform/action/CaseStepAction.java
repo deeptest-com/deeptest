@@ -26,10 +26,12 @@ public class CaseStepAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         TstCaseStep po = caseStepService.save(json, user);
+        if (po == null) {
+            return authFail();
+        }
 
         ret.put("data", po);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -43,7 +45,10 @@ public class CaseStepAction extends BaseAction {
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        caseStepService.delete(json.getInteger("id"), user);
+        Boolean result = caseStepService.delete(json.getInteger("id"), user);
+        if (!result) {
+            return authFail();
+        }
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
@@ -55,7 +60,10 @@ public class CaseStepAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        caseStepService.changeOrderPers(json, "up", user);
+        Boolean result = caseStepService.changeOrder(json, "up", user);
+        if (!result) {
+            return authFail();
+        }
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
@@ -67,7 +75,10 @@ public class CaseStepAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        caseStepService.changeOrderPers(json, "down", user);
+        Boolean result = caseStepService.changeOrder(json, "down", user);
+        if (!result) {
+            return authFail();
+        }
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

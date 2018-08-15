@@ -1,5 +1,6 @@
 package com.ngtesting.platform.action;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.bean.websocket.WsFacade;
@@ -43,8 +44,8 @@ public class PlanAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-
-		Integer projectId = json.getInteger("projectId");
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer projectId = user.getDefaultPrjId();
 
 		String keywords = json.getString("keywords");
 		String status = json.getString("status");
@@ -65,11 +66,16 @@ public class PlanAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer projectId = user.getDefaultPrjId();
 
-		Integer projectId = json.getInteger("projectId");
         Integer id = json.getInteger("id");
 
-		TstPlan vo = planService.getById(id);
+		TstPlan vo = planService.getById(id, projectId);
+		if (vo == null) {
+            return authFail();
+        }
+
 		List<TstSuite> suites = suiteService.listForImport(projectId);
 
 		List<TstVer> vers = verService.list(projectId, null, null);
@@ -88,30 +94,34 @@ public class PlanAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer projectId = user.getDefaultPrjId();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstPlan vo = JSON.parseObject(JSON.toJSONString(json), TstPlan.class);
+        if (vo.getProjectId().intValue() != projectId) {
+            return authFail();
+        }
 
-		TstPlan po = planService.save(json, userVo);
+		TstPlan po = planService.save(vo, user, projectId);
 		planService.genVo(po);
 
-		optFacade.opt(WsConstant.WS_TODO, userVo);
+		optFacade.opt(WsConstant.WS_TODO, user);
 
 		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
 
-
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer projectId = user.getDefaultPrjId();
 
 		Integer id = json.getInteger("id");
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-
-		planService.delete(id, userVo.getId());
+		planService.delete(id, projectId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

@@ -81,9 +81,12 @@ public class CaseInTaskAction extends BaseAction {
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        TstCaseInTask vo = caseInTaskService.rename(json, user);
+        TstCaseInTask testCase = caseInTaskService.rename(json, user);
+        if (testCase == null) {
+            return authFail();
+        }
 
-        ret.put("data", vo);
+        ret.put("data", testCase);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -101,9 +104,12 @@ public class CaseInTaskAction extends BaseAction {
         String status = json.getString("status");
         Integer nextId = json.getInteger("nextId");
 
-        TstCaseInTask vo = caseInTaskService.setResult(caseInTaskId, caseId, result, status, nextId, user);
+        TstCaseInTask testCase = caseInTaskService.setResult(caseInTaskId, caseId, result, status, nextId, user);
+        if (testCase == null) {
+            return authFail();
+        }
 
-        ret.put("data", vo);
+        ret.put("data", testCase);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

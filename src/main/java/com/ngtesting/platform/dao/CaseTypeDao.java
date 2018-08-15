@@ -12,15 +12,15 @@ public interface CaseTypeDao {
                     @Param("orgId") Integer orgId);
 
 
-    void save(TstCaseType vo);
-    void update(TstCaseType vo);
-    void delete(@Param("id") Integer id,
+    Integer save(TstCaseType vo);
+    Integer update(TstCaseType vo);
+    Integer delete(@Param("id") Integer id,
                 @Param("orgId") Integer orgId);
 
-    void removeDefault(@Param("orgId") Integer orgId);
-    void setDefault(@Param("id") Integer id,
+    Integer removeDefault(@Param("orgId") Integer orgId);
+    Integer setDefault(@Param("id") Integer id,
                     @Param("orgId") Integer orgId);
-    void setOrder(@Param("id") Integer id,
+    Integer setOrder(@Param("id") Integer id,
                   @Param("ordr") Integer ordr,
                   @Param("orgId") Integer orgId);
 

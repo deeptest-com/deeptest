@@ -12,12 +12,12 @@ public interface TestVerDao {
     TstVer get(@Param("id") Integer id,
                @Param("projectId") Integer projectId);
 
-    void add(TstVer vo);
-    void update(TstVer vo);
+    Integer add(TstVer vo);
+    Integer update(TstVer vo);
 
-    void delete(@Param("id") Integer id,
+    Integer delete(@Param("id") Integer id,
                 @Param("projectId") Integer projectId);
-    void setOrder(@Param("id") Integer id,
+    Integer setOrder(@Param("id") Integer id,
                   @Param("ordr") Integer ordr,
                   @Param("projectId") Integer projectId);
 

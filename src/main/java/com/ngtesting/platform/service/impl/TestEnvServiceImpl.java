@@ -2,10 +2,9 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.TestEnvDao;
-import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.model.TstEnv;
+import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.TestEnvService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,21 +31,14 @@ public class TestEnvServiceImpl extends BaseServiceImpl implements TestEnvServic
     }
 
     @Override
+    @Transactional
     public TstEnv save(JSONObject json, TstUser user) {
-        Integer id = json.getInteger("id");
-
-        TstEnv po = null;
         TstEnv vo = JSON.parseObject(JSON.toJSONString(json), TstEnv.class);
+        Integer id = vo.getId();
+
         vo.setProjectId(user.getDefaultPrjId());
 
-        Constant.MsgType action;
-        if (id != null) {
-            action = Constant.MsgType.update;
-
-            envDao.update(vo);
-        } else {
-            action = Constant.MsgType.create;
-
+        if (id == null) {
             Integer maxOrder = envDao.getMaxOrdrNumb(vo.getProjectId());
             if (maxOrder == null) {
                 maxOrder = 0;
@@ -54,19 +46,30 @@ public class TestEnvServiceImpl extends BaseServiceImpl implements TestEnvServic
             vo.setOrdr(maxOrder + 10);
 
             envDao.add(vo);
+        } else {
+            Integer count = envDao.update(vo);
+            if (count == 0) {
+                return null;
+            }
         }
 
         return vo;
     }
 
     @Override
-    public void delete(Integer id, Integer projectId) {
-        envDao.delete(id, projectId);
+    @Transactional
+    public Boolean delete(Integer id, Integer projectId) {
+        Integer count = envDao.delete(id, projectId);
+        if (count == 0) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     @Transactional
-    public boolean changeOrder(Integer id, String act, Integer projectId) {
+    public Boolean changeOrder(Integer id, String act, Integer projectId) {
         TstEnv curr = envDao.get(id, projectId);
         if (curr == null) {
             return false;
@@ -78,14 +81,12 @@ public class TestEnvServiceImpl extends BaseServiceImpl implements TestEnvServic
         } else if ("down".equals(act)) {
             neighbor = envDao.getNext(curr.getOrdr(), projectId);
         }
-        if (neighbor == null) {
-            return false;
+        if (neighbor != null) {
+            Integer currOrder = curr.getOrdr();
+            Integer neighborOrder = neighbor.getOrdr();
+            envDao.setOrder(id, neighborOrder, projectId);
+            envDao.setOrder(neighbor.getId(), currOrder, projectId);
         }
-
-        Integer currOrder = curr.getOrdr();
-        Integer neighborOrder = neighbor.getOrdr();
-        envDao.setOrder(id, neighborOrder, projectId);
-        envDao.setOrder(neighbor.getId(), currOrder, projectId);
 
         return true;
     }

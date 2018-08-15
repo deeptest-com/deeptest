@@ -18,24 +18,24 @@ public interface CaseDao {
     void moveCopy(TstCase testCase);
     void moveUpdate(TstCase testCase);
 
-    void update(
+    Integer update(
             @Param("obj") TstCase testCasePo,
             @Param("props") List<String> props,
             @Param("projectId") Integer projectId);
 
-    void delete(@Param("pId") Integer pId,
+    Integer delete(@Param("pId") Integer pId,
                 @Param("projectId") Integer projectId);
 
 
-    void changeContentType(@Param("id") Integer id,
+    Integer changeContentType(@Param("id") Integer id,
                            @Param("contentType") String contentType,
                            @Param("projectId") Integer projectId);
 
-    void reviewResult(@Param("id") Integer id,
+    Integer reviewResult(@Param("id") Integer id,
                       @Param("result") Boolean result,
                       @Param("projectId") Integer projectId);
 
-    void updateProp(@Param("id") Integer id,
+    Integer updateProp(@Param("id") Integer id,
                     @Param("prop") String prop,
                     @Param("value") String value,
                     @Param("projectId") Integer projectId);

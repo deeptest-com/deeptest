@@ -68,6 +68,9 @@ public class EnvAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         TstEnv po = envService.save(json, user);
+        if(po == null) {
+            return authFail();
+        }
 
         ret.put("data", po);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -83,7 +86,10 @@ public class EnvAction extends BaseAction {
 
         Integer id = json.getInteger("id");
 
-        envService.delete(id, projectId);
+        Boolean result = envService.delete(id, projectId);
+        if (!result) {
+            return authFail();
+        }
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
@@ -99,7 +105,11 @@ public class EnvAction extends BaseAction {
         Integer id = json.getInteger("id");
         String act = json.getString("act");
 
-        envService.changeOrder(id, act, projectId);
+        Boolean result = envService.changeOrder(id, act, projectId);
+        if (!result) {
+            return authFail();
+        }
+
         List<TstEnv> vos = envService.list(projectId, null, false);
 
         ret.put("data", vos);

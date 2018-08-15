@@ -32,11 +32,12 @@ public class TaskAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer projectId = user.getDefaultPrjId();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer runId = json.getInteger("id");
 
-        TstTask vo = taskService.getById(runId);
+        TstTask vo = taskService.getById(runId, projectId);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -47,13 +48,14 @@ public class TaskAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> close(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer projectId = user.getDefaultPrjId();
 
 		Integer id = json.getInteger("id");
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-		taskService.closePers(id, userVo.getId());
+		taskService.closePers(id, user.getId());
 		taskService.closePlanIfAllTaskClosedPers(id);
-		TstTask vo = taskService.getById(id);
+		TstTask vo = taskService.getById(id, projectId);
 
         ret.put("data", vo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -64,11 +66,11 @@ public class TaskAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer projectId = user.getDefaultPrjId();
 
 		TstTask po = taskService.save(json, user);
-		TstTask vo = taskService.getById(po.getId());
+		TstTask vo = taskService.getById(po.getId(), projectId);
 
         optFacade.opt(WsConstant.WS_TODO, user);
 
@@ -81,11 +83,11 @@ public class TaskAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> saveCases(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer projectId = user.getDefaultPrjId();
 
 		TstTask po = taskService.saveCases(json, user);
-		TstTask caseVo = taskService.getById(po.getId());
+		TstTask caseVo = taskService.getById(po.getId(), projectId);
 
 		ret.put("data", caseVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -96,12 +98,12 @@ public class TaskAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer projectId = user.getDefaultPrjId();
 
 		Integer id = json.getInteger("id");
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-
-		taskService.delete(id, userVo.getId());
+		taskService.delete(id, projectId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

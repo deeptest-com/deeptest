@@ -16,12 +16,12 @@ public interface CustomFieldDao {
     TstCustomField getDetail(@Param("id") Integer id,
                              @Param("orgId") Integer orgId);
 
-    void save(TstCustomField vo);
-    void update(TstCustomField vo);
-    void delete(@Param("id") Integer id,
+    Integer save(TstCustomField vo);
+    Integer update(TstCustomField vo);
+    Integer delete(@Param("id") Integer id,
                 @Param("orgId") Integer orgId);
 
-    void setOrder(@Param("id")Integer id,
+    Integer setOrder(@Param("id")Integer id,
                   @Param("ordr") Integer ordr,
                   @Param("orgId") Integer orgId);
 

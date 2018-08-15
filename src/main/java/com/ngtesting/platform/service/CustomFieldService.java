@@ -11,15 +11,14 @@ public interface CustomFieldService extends BaseService {
 	TstCustomField get(Integer customFieldId, Integer orgId);
 
 	TstCustomField save(TstCustomField vo, Integer orgId);
-	boolean delete(Integer id, Integer orgId);
+	Boolean delete(Integer id, Integer orgId);
+	Boolean changeOrderPers(Integer id, String act, Integer orgId);
 
 	List<String> listApplyTo();
 
 	List<String> listType();
 
 	List<String> listFormat();
-
-	boolean changeOrderPers(Integer id, String act, Integer orgId);
 
     String getLastUnusedColumn(Integer orgId);
 

@@ -40,6 +40,9 @@
         LEFT JOIN TstUser assignee on r.assigneeId = assignee.id
 
         WHERE task.id=#{id}
+        <if test="disabledParam != null and disabledParam != ''">
+            AND task.projectId=#{projectId}
+        </if>
     </select>
 
     <select id="get" resultType="TstTask">
@@ -83,7 +86,7 @@
 
     <delete id="delete">
         UPDATE TstTask SET deleted=TRUE, userId=#{userId}, updateTime=NOW()
-        WHERE id=#{id}
+        WHERE id=#{id} AND projectId=#{projectId}
     </delete>
     <delete id="close">
         UPDATE TstTask SET status='end', userId=#{userId}, updateTime=NOW()

@@ -58,11 +58,11 @@ public class CaseStepServiceImpl extends BaseServiceImpl implements CaseStepServ
 
     @Override
     @Transactional
-    public Boolean changeOrderPers(JSONObject vo, String direction, TstUser user) {
+    public Boolean changeOrder(JSONObject vo, String direction, TstUser user) {
         Integer id = vo.getInteger("id");
-        TstCaseStep step = caseStepDao.get(id);
+        TstCaseStep curr = caseStepDao.get(id);
 
-        TstCase testCase = caseDao.get(step.getCaseId(), user.getDefaultPrjId());
+        TstCase testCase = caseDao.get(curr.getCaseId(), user.getDefaultPrjId());
 
         if (testCase == null) {
             return false;
@@ -70,16 +70,18 @@ public class CaseStepServiceImpl extends BaseServiceImpl implements CaseStepServ
 
         TstCaseStep neighbor = null;
         if ("up".equals(direction)) {
-            neighbor = caseStepDao.getPrev(step.getCaseId(), step.getOrdr());
+            neighbor = caseStepDao.getPrev(curr.getCaseId(), curr.getOrdr());
         } else if ("down".equals(direction)) {
-            neighbor = caseStepDao.getNext(step.getCaseId(), step.getOrdr());
+            neighbor = caseStepDao.getNext(curr.getCaseId(), curr.getOrdr());
         }
 
-        Integer stepOrder = step.getOrdr();
-        Integer neighborOrder = neighbor.getOrdr();
+        if (neighbor != null) {
+            Integer stepOrder = curr.getOrdr();
+            Integer neighborOrder = neighbor.getOrdr();
 
-        caseStepDao.setOrder(step.getId(), neighborOrder);
-        caseStepDao.setOrder(neighbor.getId(), stepOrder);
+            caseStepDao.setOrder(curr.getId(), neighborOrder);
+            caseStepDao.setOrder(neighbor.getId(), stepOrder);
+        }
 
         return true;
     }

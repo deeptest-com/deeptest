@@ -14,14 +14,15 @@ public interface TestTaskDao {
     List<TstTask> listByPlan(@Param("planId") Integer planId);
 
     TstTask get(@Param("id") Integer id);
-    TstTask getDetail(@Param("id") Integer id);
+    TstTask getDetail(@Param("id") Integer id,
+                      @Param("projectId") Integer projectId);
 
     List<TstCaseInTask> listCases(@Param("id") Integer id);
     List<Integer> listCaseIds(@Param("id") Integer id);
 
     void save(TstTask vo);
     void update(TstTask vo);
-    void delete(@Param("id") Integer id, @Param("userId") Integer userId);
+    void delete(@Param("id") Integer id, @Param("projectId") Integer projectId);
 
     void close(@Param("id") Integer id, @Param("userId") Integer userId);
 

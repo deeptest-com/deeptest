@@ -95,6 +95,9 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             isNew = false;
             action = Constant.CaseAct.rename;
             po = caseDao.get(id, projectId);
+            if(po == null) {
+                return null;
+            }
 
             po.setUpdateById(user.getId());
         } else {
@@ -211,7 +214,10 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         TstCase testCaseVo = JSON.parseObject(JSON.toJSONString(json), TstCase.class);
 
         testCaseVo.setUpdateById(user.getId());
-        caseDao.update(testCaseVo, genExtPropList(), projectId);
+        Integer count = caseDao.update(testCaseVo, genExtPropList(), projectId);
+        if (count == 0) {
+            return null;
+        }
 
         caseHistoryService.saveHistory(user, Constant.CaseAct.update, testCaseVo,null);
 
@@ -221,15 +227,20 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
 	@Override
     @Transactional
-	public void delete(Integer id, TstUser user) {
+	public Integer delete(Integer id, TstUser user) {
         Integer projectId = user.getDefaultPrjId();
 
-        caseDao.delete(id, projectId);
+        Integer count = caseDao.delete(id, projectId);
+        if (count == 0) {
+            return count;
+        }
 
         TstCase testCase = caseDao.get(id, null);
         caseDao.updateParentIfNeeded(testCase.getpId());
 
         caseHistoryService.saveHistory(user, Constant.CaseAct.delete, testCase,null);
+
+        return count;
 	}
 
     @Override
@@ -237,7 +248,11 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     public TstCase changeContentType(Integer id, String contentType, TstUser user) {
         Integer projectId = user.getDefaultPrjId();
 
-        caseDao.changeContentType(id, contentType, projectId);
+        Integer count = caseDao.changeContentType(id, contentType, projectId);
+        if (count == 0) {
+            return null;
+        }
+
         TstCase testCase = caseDao.getDetail(id, projectId);
         return testCase;
     }
@@ -247,7 +262,11 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     public TstCase reviewResult(Integer id, Boolean result, TstUser user) {
         Integer projectId = user.getDefaultPrjId();
 
-        caseDao.reviewResult(id, result, projectId);
+        Integer count = caseDao.reviewResult(id, result, projectId);
+        if (count == 0) {
+            return null;
+        }
+
         TstCase testCase = caseDao.getDetail(id, projectId);
         return testCase;
     }
@@ -262,7 +281,10 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         String value = json.getString("value");
         String label = json.getString("label");
 
-        caseDao.updateProp(id, prop, value, projectId);
+        Integer count = caseDao.updateProp(id, prop, value, projectId);
+        if (count == 0) {
+            return null;
+        }
 
         TstCase testCase = caseDao.getDetail(id, projectId);
         caseHistoryService.saveHistory(user, Constant.CaseAct.update, testCase,label);

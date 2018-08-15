@@ -17,13 +17,15 @@ public interface TestPlanDao {
     List<TstPlan> listByOrg(@Param("orgId") Integer orgId);
 
 
-    TstPlan get(@Param("id") Integer id);
+    TstPlan get(@Param("id") Integer id,
+                @Param("projectId") Integer projectId);
 
     void save(TstPlan vo);
 
     void update(TstPlan vo);
 
-    void delete(@Param("id") Integer id);
+    void delete(@Param("id") Integer id,
+                @Param("projectId") Integer projectId);
 
     void closePlanIfAllTaskClosed(@Param("planId") Integer planId);
 

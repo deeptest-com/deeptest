@@ -90,7 +90,7 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
             po.setUserId(task.getUserId());
             po.setAssigneeId(assignee.getId());
 
-            TstPlan plan= planDao.get(task.getPlanId());
+            TstPlan plan= planDao.get(task.getPlanId(), null);
 
             po.setStartTime(plan.getStartTime());
             po.setEndTime(plan.getEndTime());

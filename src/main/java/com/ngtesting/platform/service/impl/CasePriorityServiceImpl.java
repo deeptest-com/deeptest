@@ -5,6 +5,7 @@ import com.ngtesting.platform.model.TstCasePriority;
 import com.ngtesting.platform.service.CasePriorityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,8 +27,9 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
     }
 
     @Override
+    @Transactional
 	public TstCasePriority save(TstCasePriority vo, Integer orgId) {
-
+        vo.setOrgId(orgId);
 
         if (vo.getId() == null) {
             Integer maxOrder = casePriorityDao.getMaxOrdrNumb(orgId);
@@ -36,34 +38,41 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
             }
             vo.setOrdr(maxOrder + 10);
 
-            vo.setOrgId(orgId);
             casePriorityDao.save(vo);
         } else {
-            if (vo.getOrgId().intValue() != orgId.intValue()) {
+            Integer count = casePriorityDao.update(vo);
+            if (count == 0) {
                 return null;
             }
-            casePriorityDao.update(vo);
         }
 
         return vo;
 	}
 
 	@Override
+    @Transactional
 	public Boolean delete(Integer id, Integer orgId) {
-        casePriorityDao.delete(id, orgId);
+        Integer count = casePriorityDao.delete(id, orgId);
+        if (count == 0) {
+            return false;
+        }
 
         return true;
 	}
 
 	@Override
+    @Transactional
 	public Boolean setDefault(Integer id, Integer orgId) {
+        Integer count = casePriorityDao.setDefault(id, orgId);
+        if (count == 0) {
+            return false;
+        }
         casePriorityDao.removeDefault(orgId);
-        casePriorityDao.setDefault(id, orgId);
-
         return true;
 	}
 
 	@Override
+    @Transactional
 	public Boolean changeOrder(Integer id, String act, Integer orgId) {
         TstCasePriority curr = casePriorityDao.get(id, orgId);
         if (curr == null) {

@@ -7,14 +7,8 @@ import java.util.List;
 
 public interface ProjectRoleEntityRelationService extends BaseService {
 
-	List<TstProjectRoleEntityRelation> listRelationProjectRoleEntitys(Integer projectRoleId);
     List<TstProjectRoleEntityRelation> listByProject(Integer projectId);
-
-	TstProjectRoleEntityRelation getRelationProjectRoleEntity(Integer projectRoleId);
-    TstProjectRoleEntityRelation getByProjectAndEntityId(Integer projectId, Integer usereId);
 
     List<TstProjectRoleEntityRelation> batchSavePers(JSONObject json, Integer orgId);
     List<TstProjectRoleEntityRelation> changeRolePers(JSONObject json);
-
-    String getEntityName(TstProjectRoleEntityRelation po);
 }

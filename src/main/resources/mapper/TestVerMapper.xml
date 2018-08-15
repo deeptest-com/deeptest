@@ -18,7 +18,10 @@
 
     <select id="get" resultType="TstVer">
         SELECT * FROM TstVer o
-        WHERE o.id = #{id} AND o.projectId = #{projectId}
+        WHERE o.id = #{id}
+        <if test="projectId != null">
+            AND o.projectId=#{projectId}
+        </if>
     </select>
 
     <insert id="add" parameterType="TstVer" useGeneratedKeys="true" keyProperty="id">

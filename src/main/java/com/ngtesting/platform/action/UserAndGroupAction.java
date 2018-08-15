@@ -33,10 +33,9 @@ public class UserAndGroupAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
-		Integer orgId = json.getInteger("orgId");
 		String keywords = json.getString("keywords");
         JSONArray exceptIds = json.getJSONArray("exceptIds");
 

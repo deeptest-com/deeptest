@@ -2,7 +2,6 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.TestVerDao;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.model.TstVer;
@@ -32,19 +31,12 @@ public class TestVerServiceImpl extends BaseServiceImpl implements TestVerServic
 
     @Override
     public TstVer save(JSONObject json, TstUser user) {
-        Integer id = json.getInteger("id");
-
         TstVer vo = JSON.parseObject(JSON.toJSONString(json), TstVer.class);
+        Integer id = vo.getId();
+
         vo.setProjectId(user.getDefaultPrjId());
 
-        Constant.MsgType action;
         if (id != null) {
-            action = Constant.MsgType.update;
-
-            verDao.update(vo);
-        } else {
-            action = Constant.MsgType.create;
-
             Integer maxOrder = verDao.getMaxOrdrNumb(vo.getProjectId());
             if (maxOrder == null) {
                 maxOrder = 0;
@@ -52,19 +44,29 @@ public class TestVerServiceImpl extends BaseServiceImpl implements TestVerServic
             vo.setOrdr(maxOrder + 10);
 
             verDao.add(vo);
+        } else {
+            Integer count = verDao.update(vo);
+            if (count == 0) {
+                return null;
+            }
         }
 
         return vo;
     }
 
     @Override
-    public void delete(Integer id, Integer projectId) {
-        verDao.delete(id, projectId);
+    public Boolean delete(Integer id, Integer projectId) {
+        Integer count = verDao.delete(id, projectId);
+        if (count == 0) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     @Transactional
-    public boolean changeOrder(Integer id, String act, Integer projectId) {
+    public Boolean changeOrder(Integer id, String act, Integer projectId) {
         TstVer curr = verDao.get(id, projectId);
         if (curr == null) {
             return false;
@@ -76,14 +78,12 @@ public class TestVerServiceImpl extends BaseServiceImpl implements TestVerServic
         } else if ("down".equals(act)) {
             neighbor = verDao.getNext(curr.getOrdr(), projectId);
         }
-        if (neighbor == null) {
-            return false;
+        if (neighbor != null) {
+            Integer currOrder = curr.getOrdr();
+            Integer neighborOrder = neighbor.getOrdr();
+            verDao.setOrder(id, neighborOrder, projectId);
+            verDao.setOrder(neighbor.getId(), currOrder, projectId);
         }
-
-        Integer currOrder = curr.getOrdr();
-        Integer neighborOrder = neighbor.getOrdr();
-        verDao.setOrder(id, neighborOrder, projectId);
-        verDao.setOrder(neighbor.getId(), currOrder, projectId);
 
         return true;
     }

@@ -13,12 +13,14 @@ public interface TestSuiteDao {
 
     List<TstSuite> listForImport(@Param("projectIds") List<Integer> projectIds);
 
-    TstSuite get(@Param("id") Integer id);
+    TstSuite get(@Param("id") Integer id,
+                 @Param("projectId") Integer projectId);
     TstSuite getWithCases(@Param("id") Integer id);
 
     void save(TstSuite vo);
     void update(TstSuite vo);
-    void delete(@Param("id") Integer id);
+    void delete(@Param("id") Integer id,
+                @Param("projectId") Integer projectId);
 
     List<TstCaseInSuite> listCases(@Param("id") Integer id);
 

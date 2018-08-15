@@ -103,7 +103,10 @@ public class CasePriorityAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		casePriorityService.delete(id, orgId);
+		Boolean result = casePriorityService.delete(id, orgId);
+        if (!result) {
+            return authFail();
+        }
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -118,7 +121,11 @@ public class CasePriorityAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 		Integer id = json.getInteger("id");
 
-		casePriorityService.setDefault(id, orgId);
+		Boolean result = casePriorityService.setDefault(id, orgId);
+        if (!result) {
+            return authFail();
+        }
+
 		List<TstCasePriority> vos = casePriorityService.list(orgId);
 
         ret.put("data", vos);
@@ -137,7 +144,10 @@ public class CasePriorityAction extends BaseAction {
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-		casePriorityService.changeOrder(id, act, orgId);
+        Boolean result = casePriorityService.changeOrder(id, act, orgId);
+        if (!result) {
+            return authFail();
+        }
 
 		List<TstCasePriority> vos = casePriorityService.list(orgId);
 

@@ -38,8 +38,9 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     TestPlanDao planDao;
 
     @Override
-    public TstTask getById(Integer id) {
-        TstTask po = taskDao.getDetail(id);
+    public TstTask getById(Integer id, Integer projectId) {
+        TstTask po = taskDao.getDetail(id, projectId);
+
         TstTask vo = genVo(po);
 
         return vo;
@@ -47,23 +48,27 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 
     @Override
     @Transactional
-    public TstTask save(JSONObject json, TstUser optUser) {
+    public TstTask save(JSONObject json, TstUser user) {
         TstTask task = JSON.parseObject(JSON.toJSONString(json), TstTask.class);
-        task.setUserId(optUser.getId());
+        task.setUserId(user.getId());
 
         Constant.MsgType action = null;
-        if (task.getId() != null) {
-            action = Constant.MsgType.update;
-            taskDao.update(task);
-
-            taskDao.removeAssignees(task.getId());
-        } else {
+        if (task.getId() == null) {
             action = Constant.MsgType.create;
 
             if (task.getCaseProjectId() == null) {
                 task.setCaseProjectId(task.getProjectId());
             }
             taskDao.save(task);
+        } else {
+            if(task.getProjectId() != user.getDefaultPrjId()) {
+                return null;
+            }
+
+            action = Constant.MsgType.update;
+            taskDao.update(task);
+
+            taskDao.removeAssignees(task.getId());
         }
 
         List assignees = json.getJSONArray("assignees");
@@ -71,14 +76,14 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
 
         List<TstSuite> suites = JSON.parseObject(JSON.toJSONString(json.get("suites")), List.class);
 
-        importSuiteCasesPers(task, suites, optUser);
+        importSuiteCasesPers(task, suites, user);
 
         alertService.create(task);
-        msgService.create(task, action, optUser);
-        historyService.create(task.getProjectId(), optUser, action.msg, TstHistory.TargetType.task,
+        msgService.create(task, action, user);
+        historyService.create(task.getProjectId(), user, action.msg, TstHistory.TargetType.task,
                 task.getId(), task.getName());
 
-        TstTask ret = taskDao.getDetail(task.getId());
+        TstTask ret = taskDao.getDetail(task.getId(), null);
         return ret;
     }
 
@@ -143,8 +148,8 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     }
 
     @Override
-    public void delete(Integer id, Integer userId) {
-        taskDao.delete(id, userId);
+    public void delete(Integer id, Integer projectId) {
+        taskDao.delete(id, projectId);
     }
 
     @Override

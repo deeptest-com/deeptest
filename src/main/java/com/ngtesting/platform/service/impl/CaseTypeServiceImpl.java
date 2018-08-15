@@ -39,10 +39,10 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
             vo.setOrgId(orgId);
             caseTypeDao.save(vo);
         } else {
-            if (vo.getOrgId().intValue() != orgId.intValue()) {
+            Integer count = caseTypeDao.update(vo);
+            if (count == 0) {
                 return null;
             }
-            caseTypeDao.update(vo);
         }
 
         return vo;
@@ -50,17 +50,23 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 
 	@Override
 	public Boolean delete(Integer id, Integer orgId) {
-        caseTypeDao.delete(id, orgId);
+        Integer count = caseTypeDao.delete(id, orgId);
+        if (count == 0) {
+            return false;
+        }
 
-		return true;
+        return true;
 	}
 
 	@Override
     @Transactional
 	public Boolean setDefault(Integer id, Integer orgId) {
-        caseTypeDao.removeDefault(orgId);
-        caseTypeDao.setDefault(id, orgId);
+        Integer count = caseTypeDao.setDefault(id, orgId);
+        if (count == 0) {
+            return false;
+        }
 
+        caseTypeDao.removeDefault(orgId);
 		return true;
 	}
 

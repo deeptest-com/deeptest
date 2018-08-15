@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface TestTaskService extends BaseService {
 
-	TstTask getById(Integer caseId);
+	TstTask getById(Integer caseId, Integer projectId);
 	TstTask save(JSONObject json, TstUser optUser);
 
 	void importSuiteCasesPers(TstTask task, List<TstSuite> suites, TstUser optUser);

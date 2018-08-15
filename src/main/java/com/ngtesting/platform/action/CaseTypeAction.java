@@ -72,7 +72,6 @@ public class CaseTypeAction extends BaseAction {
 		return ret;
 	}
 
-
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -106,7 +105,10 @@ public class CaseTypeAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		caseTypeService.delete(id, orgId);
+		Boolean result = caseTypeService.delete(id, orgId);
+		if (!result) {
+			return authFail();
+		}
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -123,7 +125,10 @@ public class CaseTypeAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		caseTypeService.setDefault(id, orgId);
+        Boolean result = caseTypeService.setDefault(id, orgId);
+        if (!result) {
+            return authFail();
+        }
 
 		List<TstCaseType> vos = caseTypeService.list(orgId);
 
@@ -144,7 +149,10 @@ public class CaseTypeAction extends BaseAction {
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-		caseTypeService.changeOrder(id, act, orgId);
+        Boolean result = caseTypeService.changeOrder(id, act, orgId);
+        if (!result) {
+            return authFail();
+        }
 
 		List<TstCaseType> vos = caseTypeService.list(orgId);
 

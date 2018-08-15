@@ -11,18 +11,19 @@ public interface CasePriorityDao {
     TstCasePriority get(@Param("id") Integer id,
                         @Param("orgId") Integer orgId);
 
-    void save(TstCasePriority vo);
+    Integer save(TstCasePriority vo);
 
-    void update(TstCasePriority vo);
+    Integer update(TstCasePriority vo);
 
-    void delete(@Param("id") Integer id,
+    Integer delete(@Param("id") Integer id,
                 @Param("orgId") Integer orgId);
 
-    void setOrder(@Param("id") Integer id, @Param("ordr") Integer ordr,
-                  @Param("orgId") Integer orgId);
+    Integer setOrder(@Param("id") Integer id,
+                     @Param("ordr") Integer ordr,
+                     @Param("orgId") Integer orgId);
 
-    void setDefault(@Param("id") Integer id, @Param("orgId") Integer orgId);
-    void removeDefault(@Param("orgId") Integer orgId);
+    Integer setDefault(@Param("id") Integer id, @Param("orgId") Integer orgId);
+    Integer removeDefault(@Param("orgId") Integer orgId);
 
     TstCasePriority getPrev(@Param("ordr")Integer ordr, @Param("orgId") Integer orgId);
     TstCasePriority getNext(@Param("ordr")Integer ordr, @Param("orgId") Integer orgId);

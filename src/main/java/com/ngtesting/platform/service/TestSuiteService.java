@@ -12,22 +12,15 @@ public interface TestSuiteService extends BaseService {
 
     List<TstSuite> listForImport(Integer projectId);
 
-    TstSuite get(Integer id);
+    TstSuite get(Integer id, Integer projectId);
 
     TstSuite getWithCases(Integer id);
 
     TstSuite save(JSONObject json, TstUser optUser);
-	void delete(Integer vo, Integer userId);
-
-
+	void delete(Integer vo, Integer projectId);
 
     TstSuite saveCases(JSONObject json, TstUser optUser);
 
 	TstSuite saveCases(Integer projectId, Integer caseProjectId, Integer runId, List<Integer> ids, TstUser optUser);
-
-//  List<TstSuite> genVos(List<TstSuite> pos);
-//	TstSuite genVo(TstSuite po);
-//  TstSuite genVo(TstSuite po, Boolean withCases);
-//	TstCaseInSuite genCaseVo(TstCaseInSuite po);
 
 }

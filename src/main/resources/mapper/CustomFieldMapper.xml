@@ -36,11 +36,17 @@
     <select id="get" resultType="TstCustomField">
         SELECT * FROM TstCustomField o
 
-        WHERE o.id = #{id} AND o.orgId=#{orgId}
+        WHERE o.id = #{id}
+        <if test="orgId != null">
+            AND o.orgId=#{orgId}
+        </if>
     </select>
     <select id="getDetail" resultMap="customFieldMap">
         SELECT * FROM TstCustomField o
-        WHERE o.id = #{id} AND o.orgId=#{orgId}
+        WHERE o.id = #{id}
+        <if test="orgId != null">
+            AND o.orgId=#{orgId}
+        </if>
     </select>
 
     <insert id="save" parameterType="TstCustomField" useGeneratedKeys="true" keyProperty="id">

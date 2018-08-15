@@ -67,6 +67,9 @@
         LEFT JOIN TstVer ver ON ver.id=o.verId
 
         WHERE o.id = #{id}
+        <if test="projectId != null">
+            AND o.projectId=#{projectId}
+        </if>
     </select>
 
     <insert id="save" parameterType="TstPlan" useGeneratedKeys="true" keyProperty="id">
@@ -94,7 +97,7 @@
     <update id="delete">
         UPDATE TstPlan
         SET deleted = TRUE
-        WHERE id=#{id}
+        WHERE id=#{id} AND o.projectId=#{projectId}
     </update>
 
     <update id="closePlanIfAllTaskClosed">

@@ -55,6 +55,9 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
         String name = json.getString("name");
 
         TstCase testCase = caseDao.get(caseId, projectId);
+        if (testCase == null) {
+            return null;
+        }
 
         testCase.setUpdateById(user.getId());
 
@@ -73,15 +76,18 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
     public TstCaseInTask setResult(Integer caseInTaskId, Integer caseId, String result, String status, Integer nextId, TstUser user) {
         Integer projectId = user.getDefaultPrjId();
 
-        TstCaseInTask po = caseInTaskDao.getDetail(caseInTaskId, projectId);
+        TstCaseInTask testCase = caseInTaskDao.getDetail(caseInTaskId, projectId);
+        if (testCase == null) {
+            return null;
+        }
 
         caseInTaskDao.setResult(caseInTaskId, result, status, user.getId());
 
         saveHistory(caseId, caseInTaskId,
                 Constant.CaseAct.exe_result, user, status, result==null?"":result.trim());
 
-        taskDao.start(po.getTaskId());
-        planDao.start(po.getPlanId());
+        taskDao.start(testCase.getTaskId());
+        planDao.start(testCase.getPlanId());
 
         if (nextId != null) {
             return caseInTaskDao.getDetail(nextId, projectId);

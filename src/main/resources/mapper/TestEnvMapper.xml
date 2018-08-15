@@ -18,7 +18,10 @@
 
     <select id="get" resultType="TstEnv">
         SELECT * FROM TstEnv o
-        WHERE o.id = #{id} AND o.projectId = #{projectId}
+        WHERE o.id = #{id}
+        <if test="projectId != null">
+            AND o.projectId=#{projectId}
+        </if>
     </select>
 
     <select id="getMaxOrdrNumb" resultType="Integer">
@@ -42,7 +45,10 @@
         ordr=#{ordr},
         disabled=#{disabled},
         updateTime=NOW()
-        WHERE id=#{id} AND projectId = #{projectId}
+        WHERE id=#{id}
+        <if test="projectId != null">
+            AND o.projectId=#{projectId}
+        </if>
     </update>
 
     <update id="delete">

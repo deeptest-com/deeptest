@@ -25,7 +25,6 @@ public class CaseAttachmentServiceImpl extends BaseServiceImpl implements CaseAt
     @Transactional
     public Boolean save(Integer caseId, String name, String path, TstUser user) {
         TstCase testCase = caseDao.get(caseId, user.getDefaultPrjId());
-
         if (testCase == null) {
             return false;
         }

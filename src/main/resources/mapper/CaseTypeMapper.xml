@@ -13,7 +13,10 @@
     <select id="get" resultType="TstCaseType">
         SELECT * FROM TstCaseType o
 
-        WHERE o.id = #{id} AND o.orgId=#{orgId}
+        WHERE o.id = #{id}
+        <if test="orgId != null">
+            AND o.orgId=#{orgId}
+        </if>
     </select>
 
     <insert id="save" parameterType="TstCaseType" useGeneratedKeys="true" keyProperty="id">
@@ -25,11 +28,11 @@
 
     <update id="update" parameterType="TstCaseType">
         UPDATE TstCaseType
-        SET label=#{label},value=#{value},orgId=#{orgId},
+        SET label=#{label},value=#{value},
         disabled=#{disabled},
         updateTime=NOW()
 
-        WHERE id=#{id}
+        WHERE id=#{id} AND orgId=#{orgId}
     </update>
 
     <delete id="delete">
@@ -38,16 +41,15 @@
         WHERE id=#{id} AND orgId=#{orgId}
     </delete>
 
-    <update id="removeDefault">
-        UPDATE TstCaseType
-        SET isDefault=FALSE, updateTime=NOW()
-        WHERE orgId=#{orgId}
-    </update>
-
     <update id="setDefault">
         UPDATE TstCaseType
         SET isDefault=TRUE, updateTime=NOW()
         WHERE id=#{id} AND orgId=#{orgId}
+    </update>
+    <update id="removeDefault">
+        UPDATE TstCaseType
+        SET isDefault=FALSE, updateTime=NOW()
+        WHERE orgId=#{orgId}
     </update>
 
     <update id="setOrder">

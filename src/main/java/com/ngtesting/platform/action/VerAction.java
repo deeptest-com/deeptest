@@ -65,9 +65,12 @@ public class VerAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 		TstVer po = verService.save(json, user);
+        if(po == null) {
+            return authFail();
+        }
 
 		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -83,7 +86,10 @@ public class VerAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		verService.delete(id, projectId);
+		Boolean result = verService.delete(id, projectId);
+        if (!result) {
+            return authFail();
+        }
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -99,7 +105,11 @@ public class VerAction extends BaseAction {
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-		verService.changeOrder(id, act, projectId);
+        Boolean result = verService.changeOrder(id, act, projectId);
+        if (!result) {
+            return authFail();
+        }
+
 		List<TstVer> vos = verService.list(projectId, null, false);
 
 		ret.put("data", vos);

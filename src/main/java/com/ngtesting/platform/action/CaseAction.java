@@ -117,9 +117,9 @@ public class CaseAction extends BaseAction {
         Integer prjId = user.getDefaultPrjId();
         Integer caseId = json.getInteger("id");
 
-        TstCase vo = caseService.getDetail(caseId, prjId);
+        TstCase testCase = caseService.getDetail(caseId, prjId);
 
-        ret.put("data", vo);
+        ret.put("data", testCase);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -131,9 +131,12 @@ public class CaseAction extends BaseAction {
 
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        TstCase testCasePo = caseService.rename(json, user);
+        TstCase testCase = caseService.rename(json, user);
+        if (testCase == null) {
+            return authFail();
+        }
 
-        ret.put("data", testCasePo);
+        ret.put("data", testCase);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -144,9 +147,12 @@ public class CaseAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		TstCase vo = caseService.move(json, user);
+		TstCase testCase = caseService.move(json, user);
+        if (testCase == null) {
+            return authFail();
+        }
 
-		ret.put("data", vo);
+		ret.put("data", testCase);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -160,7 +166,10 @@ public class CaseAction extends BaseAction {
 
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-		caseService.delete(id, user);
+		Integer count = caseService.delete(id, user);
+        if (count == 0) {
+            return authFail();
+        }
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -172,9 +181,12 @@ public class CaseAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        TstCase po = caseService.update(json, user);
+        TstCase testCase = caseService.update(json, user);
+        if (testCase == null) {
+            return authFail();
+        }
 
-        ret.put("data", po);
+        ret.put("data", testCase);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -185,9 +197,12 @@ public class CaseAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-		TstCase po = caseService.saveField(json, user);
+		TstCase testCase = caseService.saveField(json, user);
+        if (testCase == null) {
+            return authFail();
+        }
 
-		ret.put("data", po);
+        ret.put("data", testCase);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -201,7 +216,10 @@ public class CaseAction extends BaseAction {
 		Integer id = json.getInteger("id");
         String contentType = json.getString("contentType");
 
-		caseService.changeContentType(id, contentType, user);
+        TstCase testCase = caseService.changeContentType(id, contentType, user);
+        if (testCase == null) {
+            return authFail();
+        }
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -216,9 +234,12 @@ public class CaseAction extends BaseAction {
 		Integer id = json.getInteger("id");
 		Boolean result = json.getBoolean("result");
 
-		TstCase po = caseService.reviewResult(id, result, user);
+		TstCase testCase = caseService.reviewResult(id, result, user);
+        if (testCase == null) {
+            return authFail();
+        }
 
-        ret.put("reviewResult", po);
+        ret.put("reviewResult", testCase);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

@@ -43,7 +43,10 @@ public class CustomFieldOptionAction extends BaseAction {
 
 		TstCustomFieldOption option = JSON.parseObject(JSON.toJSONString(json.getJSONObject("model")), TstCustomFieldOption.class);
         option.setFieldId(fieldId);
-		customFieldOptionService.save(option, orgId);
+        TstCustomFieldOption po = customFieldOptionService.save(option, orgId);
+        if(po == null) {
+            return authFail();
+        }
 
         List<TstCustomFieldOption> vos = customFieldOptionService.listVos(fieldId);
 
@@ -62,7 +65,11 @@ public class CustomFieldOptionAction extends BaseAction {
 		Integer fieldId = json.getInteger("fieldId");
 		Integer id = json.getInteger("id");
 
-		customFieldOptionService.delete(id, orgId);
+		Boolean result = customFieldOptionService.delete(id, orgId);
+        if(!result) {
+            return authFail();
+        }
+
         List<TstCustomFieldOption> vos = customFieldOptionService.listVos(fieldId);
 
 		ret.put("data", vos);
@@ -83,7 +90,11 @@ public class CustomFieldOptionAction extends BaseAction {
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-		customFieldOptionService.changeOrderPers(id, act, fieldId, orgId);
+        Boolean result = customFieldOptionService.changeOrder(id, act, fieldId, orgId);
+        if(!result) {
+            return authFail();
+        }
+
         List<TstCustomFieldOption> vos = customFieldOptionService.listVos(fieldId);
 
         ret.put("data", vos);

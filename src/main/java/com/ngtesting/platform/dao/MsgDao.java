@@ -14,7 +14,8 @@ public interface MsgDao {
     TstMsg get(@Param("id") Integer id, @Param("userId") Integer userId);
     void delete(@Param("id") Integer id, @Param("userId") Integer userId);
 
-    void markRead(@Param("id") Integer id);
+    void markRead(@Param("id") Integer id,
+                  @Param("userId") Integer userId);
 
     void markAllRead(@Param("userId") Integer userId);
 }

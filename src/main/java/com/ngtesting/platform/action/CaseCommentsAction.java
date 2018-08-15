@@ -27,7 +27,7 @@ public class CaseCommentsAction extends BaseAction {
     public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         TstCaseComments vo = commentsService.save(json, user);
         if (vo == null) {
@@ -44,7 +44,7 @@ public class CaseCommentsAction extends BaseAction {
     public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Boolean result = commentsService.delete(json.getInteger("id"), user);
         if (!result) {
             return authFail();

@@ -45,7 +45,7 @@
     <update id="markRead">
         update TstMsg msg
             set msg.isRead=true
-        WHERE msg.id=#{id}
+        WHERE msg.id=#{id} AND msg.userId = #{userId}
     </update>
     <update id="markAllRead">
         update TstMsg msg

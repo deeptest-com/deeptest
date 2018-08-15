@@ -12,7 +12,7 @@ public interface OrgDao {
 
     List<TstOrg> queryByUser(@Param("userId") Integer userId);
 
-    TstOrg get(Integer orgId);
+    TstOrg get(@Param("id") Integer id);
 
     void setDefault(@Param("orgId") Integer orgId, @Param("userId") Integer userId);
 

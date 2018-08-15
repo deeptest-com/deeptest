@@ -29,7 +29,7 @@ public class WelcomeAction extends BaseAction {
 	public Map<String, Object> test(HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         List ls = welcomeService.test();
 

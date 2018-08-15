@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.TstOrgGroupUserRelation;
 import com.ngtesting.platform.model.TstUser;
 
@@ -20,6 +21,8 @@ public interface UserService {
 
     void update(TstUser record);
 
+    TstUser modifyProp(JSONObject json);
+
     void setDefaultOrg(TstUser user, Integer orgId);
 
     void setDefaultPrj(TstUser user, Integer prjId);
@@ -29,4 +32,5 @@ public interface UserService {
     TstUser setLeftSizePers(TstUser user, Integer left, String prop);
 
     List<TstUser> getProjectUsers(Integer orgId, Integer projectId);
+
 }

@@ -32,7 +32,7 @@ public class IssueCustomFieldAction extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
 		List<TstCustomField> vos = customFieldService.listVos(orgId);
@@ -47,7 +47,7 @@ public class IssueCustomFieldAction extends BaseAction {
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
 		Integer customFieldId = json.getInteger("id");
@@ -86,7 +86,7 @@ public class IssueCustomFieldAction extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
 		TstCustomField customField = JSON.parseObject(JSON.toJSONString(json.get("model")), TstCustomField.class);
@@ -117,7 +117,7 @@ public class IssueCustomFieldAction extends BaseAction {
 	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");

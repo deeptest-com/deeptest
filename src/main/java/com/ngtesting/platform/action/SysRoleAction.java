@@ -29,7 +29,7 @@ public class SysRoleAction extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = json.getInteger("orgId");
 
 		String keywords = json.getString("keywords");
@@ -52,7 +52,7 @@ public class SysRoleAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		String accountId = req.getString("id");
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 //		SysRole po = (SysRole) roleService.getDetail(SysRole.class, Integer.valueOf(accountId));
 //		SysRole vo = roleService.genVo(po);
@@ -67,7 +67,7 @@ public class SysRoleAction extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 		Integer orgId = userVo.getDefaultOrgId();
 		SysRole vo = json.getObject("role", SysRole.class);

@@ -36,7 +36,7 @@ public class CaseInTaskAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer orgId = user.getDefaultOrgId();
         Integer projectId = user.getDefaultPrjId();
@@ -62,7 +62,7 @@ public class CaseInTaskAction extends BaseAction {
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer prjId = user.getDefaultPrjId();
 
         Integer id = json.getInteger("id");
@@ -79,7 +79,7 @@ public class CaseInTaskAction extends BaseAction {
     public Map<String, Object> rename(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         TstCaseInTask vo = caseInTaskService.rename(json, user);
 
@@ -93,7 +93,7 @@ public class CaseInTaskAction extends BaseAction {
     public Map<String, Object> setResult(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer caseInTaskId = json.getInteger("id");
         Integer caseId = json.getInteger("caseId");

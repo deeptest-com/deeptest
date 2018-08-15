@@ -39,7 +39,7 @@ public class MsgAction extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         String keywords = json.getString("keywords");
         Boolean isRead = json.getBoolean("isRead");
@@ -62,7 +62,7 @@ public class MsgAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 		msgService.delete(id, userVo.getId());
 
@@ -75,7 +75,7 @@ public class MsgAction extends BaseAction {
     public Map<String, Object> markRead(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer id = json.getInteger("id");
         msgService.markRead(id, user.getId());
@@ -91,7 +91,7 @@ public class MsgAction extends BaseAction {
     public Map<String, Object> markAllRead(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 		msgService.markAllRead(user.getId());
 		optFacade.opt(WsConstant.WS_TODO, user);

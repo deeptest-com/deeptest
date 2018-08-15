@@ -21,6 +21,10 @@ public class BaseAction {
 		return ret;
 	}
 
+	public Boolean userNotInOrg(Integer userId, Integer orgId) {
+		return authDao.userNotInOrg(userId, orgId);
+	}
+
 	public Boolean userNotInProject(Integer userId, Integer projectId) {
 		return authDao.userNotInProject(userId, projectId);
 	}

@@ -44,13 +44,15 @@ public class UserAction {
     CasePropertyService casePropertyService;
     @Autowired
     ProjectPrivilegeService projectPrivilegeService;
+    @Autowired
+    PushSettingsService pushSettingsService;
 
     @PostMapping(value = "list")
     @ResponseBody
     public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
 
         String keywords = json.getString("keywords");
@@ -72,7 +74,7 @@ public class UserAction {
     public Map<String, Object> getUsers(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
 
         Integer projectId = json.getInteger("projectId");
@@ -89,7 +91,7 @@ public class UserAction {
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
         Integer userId = json.getInteger("id");
 
@@ -115,7 +117,7 @@ public class UserAction {
     public Map<String, Object> getProfile(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
         Integer prjId = user.getDefaultPrjId();
 
@@ -133,20 +135,17 @@ public class UserAction {
 
         Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userId);
         ret.put("sysPrivileges", sysPrivileges);
+        Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(user.getId(), orgId);
+        ret.put("orgPrivileges", orgPrivileges);
 
         List<TstOrg> orgs = orgService.listByUser(userId);
         ret.put("myOrgs", orgs);
-
-        Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(user.getId(), orgId);
-        ret.put("orgPrivileges", orgPrivileges);
 
         Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
         ret.put("casePropertyMap", casePropertyMap);
 
         List<TstProjectAccessHistory> recentProjects = projectService.listRecentProject(orgId, userId);
         ret.put("recentProjects", recentProjects);
-
-//        user.setDefaultPrjId(recentProjects.size() > 0?recentProjects.getDetail(0).getPrjId(): null);
 
         Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userId, prjId, orgId);
         ret.put("prjPrivileges", prjPrivileges);
@@ -173,7 +172,7 @@ public class UserAction {
     public Map<String, Object> invite(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         TstUser vo = JSON.parseObject(JSON.toJSONString(json.get("user")), TstUser.class);
         List<TstOrgGroupUserRelation> relations = (List<TstOrgGroupUserRelation>) json.get("relations");
@@ -189,12 +188,13 @@ public class UserAction {
         return ret;
     }
 
+    // 管理员修改用户信息
     @PostMapping(value = "update")
     @ResponseBody
     public Map<String, Object> update(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
 
         TstUser vo = JSON.parseObject(JSON.toJSONString(json.get("user")), TstUser.class);
@@ -216,12 +216,31 @@ public class UserAction {
         return ret;
     }
 
+    // 用户修改某个字段
+    @RequestMapping(value = "saveInfo", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> saveInfo(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        json.put("id", user.getId());
+
+        TstUser po = userService.modifyProp(json);
+        request.getSession().setAttribute(Constant.HTTP_SESSION_USER_PROFILE, po);
+
+        pushSettingsService.pushUserSettings(po);
+
+        ret.put("data", po);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
     @PostMapping(value = "search")
     @ResponseBody
     public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer orgId = json.getInteger("orgId");
         String keywords = json.getString("keywords");
@@ -253,7 +272,7 @@ public class UserAction {
     public Map<String, Object> setLeftSize(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer left = json.getInteger("left");
         String prop = json.getString("prop");

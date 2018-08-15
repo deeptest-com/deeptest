@@ -41,8 +41,8 @@ public class AuthInterceptor implements HandlerInterceptor {
             }
 
             // 已经登录
-            if (request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY) != null
-                    || request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY) != null) {
+            if (request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE) != null
+                    || request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE) != null) {
                 return true;
             }
 
@@ -61,7 +61,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
                     TstUser user = userService.getByToken(token.trim());
                     if (user != null) {
-                        request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, user);
+                        request.getSession().setAttribute(Constant.HTTP_SESSION_USER_PROFILE, user);
                         return true;
                     }
                 }

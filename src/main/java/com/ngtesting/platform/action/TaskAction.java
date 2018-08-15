@@ -33,7 +33,7 @@ public class TaskAction extends BaseAction {
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer runId = json.getInteger("id");
 
         TstTask vo = taskService.getById(runId);
@@ -49,7 +49,7 @@ public class TaskAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		Integer id = json.getInteger("id");
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 		taskService.closePers(id, userVo.getId());
 		taskService.closePlanIfAllTaskClosedPers(id);
@@ -65,7 +65,7 @@ public class TaskAction extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 		TstTask po = taskService.save(json, user);
 		TstTask vo = taskService.getById(po.getId());
@@ -82,7 +82,7 @@ public class TaskAction extends BaseAction {
 	public Map<String, Object> saveCases(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 		TstTask po = taskService.saveCases(json, user);
 		TstTask caseVo = taskService.getById(po.getId());
@@ -99,7 +99,7 @@ public class TaskAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 		taskService.delete(id, userVo.getId());
 

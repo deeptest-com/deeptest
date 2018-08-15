@@ -34,7 +34,7 @@ public class UserAndGroupAction extends BaseAction {
 	public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 		Integer orgId = json.getInteger("orgId");
 		String keywords = json.getString("keywords");

@@ -27,8 +27,8 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
             String test = (String) httpSession.getAttribute("TEST");
 
             TstUser user = null;
-            if (httpSession.getAttribute(Constant.HTTP_SESSION_USER_KEY) != null) {
-                user = (TstUser) httpSession.getAttribute(Constant.HTTP_SESSION_USER_KEY);
+            if (httpSession.getAttribute(Constant.HTTP_SESSION_USER_PROFILE) != null) {
+                user = (TstUser) httpSession.getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
             }
 
             if (user != null) {

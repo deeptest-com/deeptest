@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 public class Constant {
+    public static final String HTTP_SESSION_USER_PROFILE = "http_session_user_profile";
+    public static final String HTTP_SESSION_USER_SETTING_SYS_PRIVILEGE = "http_session_user_setting_sys_privilege";
+    public static final String HTTP_SESSION_USER_SETTING_ORG_PRIVILEGE = "http_session_user_setting_org_privilege";
+    public static final String HTTP_SESSION_USER_SETTING_PRJ_PRIVILEGE = "http_session_user_setting_prj_privilege";
 
     // 配置项，初始化在 PropertyConfig.processProperties()
     public static String WORK_DIR;
@@ -25,10 +29,6 @@ public class Constant {
 
     // 上传目录
     public static final String FTP_UPLOAD_DIR = "upload/";
-
-    public static String GetUploadDir() {
-        return Constant.WORK_DIR + FTP_UPLOAD_DIR;
-    }
 
     public static final int PAGE_SIZE = 20;
 
@@ -54,42 +54,6 @@ public class Constant {
         }
     }
 
-    public static final String HTTP_SESSION_USER_KEY = "http_session_user";
-
-    public static final String KEY_TESTCASE_DESIGN = "TC-";
-    public static final String KEY_TESTCASE_EXE = "TE-";
-
-    public static enum TreeNodeType {
-        root("root"),
-        branch("branch"),
-        leaf("leaf");
-
-        private TreeNodeType(String textVal) {
-            this.textVal = textVal;
-        }
-
-        private String textVal;
-
-        public String toString() {
-            return textVal;
-        }
-    }
-
-    public enum AlertType {
-        run_start("run_start", 1),
-        run_end("run_end", 1);
-
-        AlertType(String code, Integer remindDay) {
-            this.code = code;
-            this.remindDay = remindDay;
-        }
-
-        public String code;
-        public Integer remindDay;
-        public String toString() {
-            return code;
-        }
-    }
     public enum MsgType {
         create("create", "创建"),
         update("update", "更新"),

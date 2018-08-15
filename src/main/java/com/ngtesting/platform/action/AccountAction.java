@@ -60,7 +60,7 @@ public class AccountAction {
         TstUser user = accountService.loginWithVerifyCode(vcode);
 
         if (user != null) {
-            request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, user);
+            request.getSession().setAttribute(Constant.HTTP_SESSION_USER_PROFILE, user);
 
             ret.put("profile", user);
             ret.put("token", user.getToken());
@@ -86,7 +86,7 @@ public class AccountAction {
         TstUser user = accountService.login(email, password, rememberMe);
 
         if (user != null) {
-            request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, user);
+            request.getSession().setAttribute(Constant.HTTP_SESSION_USER_PROFILE, user);
 
             ret.put("profile", user);
             ret.put("token", user.getToken());
@@ -103,14 +103,14 @@ public class AccountAction {
     @PostMapping("/logout")
     public Object logout(HttpServletRequest request, @RequestBody JSONObject json){
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         if (user == null) {
             ret.put("msg", "您不在登录状态");
         } else {
             Boolean result = accountService.logout(user.getEmail());
 
             if (result) {
-                request.getSession().removeAttribute(Constant.HTTP_SESSION_USER_KEY);
+                request.getSession().removeAttribute(Constant.HTTP_SESSION_USER_PROFILE);
                 ret.put("msg", "登出成功");
                 ret.put("code", Constant.RespCode.SUCCESS.getCode());
             } else {
@@ -127,7 +127,7 @@ public class AccountAction {
     public Object changePassword(HttpServletRequest request, @RequestBody JSONObject json){
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         String oldPassword = json.getString("oldPassword");
         String password = json.getString("password");
 
@@ -192,7 +192,7 @@ public class AccountAction {
         TstUser user = accountService.resetPassword(verifyCode, password);
 
         if (user != null) {
-            request.getSession().setAttribute(Constant.HTTP_SESSION_USER_KEY, user);
+            request.getSession().setAttribute(Constant.HTTP_SESSION_USER_PROFILE, user);
 
             ret.put("token", user.getToken());
             ret.put("code", Constant.RespCode.SUCCESS.getCode());

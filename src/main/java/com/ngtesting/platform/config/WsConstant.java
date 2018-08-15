@@ -1,9 +1,7 @@
 package com.ngtesting.platform.config;
 
 public final class WsConstant {
-    public static final String WS_USER_TOKEN_KEY = "user_token";
     public static final String WS_USER_KEY = "user";
-    public static final String WS_TIMESNAP = "websocket_timesnap";
 
     public static final String WS_OPEN = "ws_open";
     public static final String WS_TODO = "ws_todo";

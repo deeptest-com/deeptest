@@ -24,6 +24,10 @@ public interface UserDao {
     void save(TstUser record);
     void update(TstUser record);
 
+    void modifyProp(@Param("id") Integer id,
+                    @Param("prop") String prop,
+                    @Param("value") String value);
+
     void setDefaultOrg(@Param("id") Integer id,
                        @Param("orgId") Integer orgId,
                        @Param("orgName") String orgName);
@@ -35,5 +39,4 @@ public interface UserDao {
     void setLeftSize(TstUser user);
 
     List<TstUser> getProjectUsers(@Param("prjId") Integer prjId);
-
 }

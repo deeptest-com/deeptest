@@ -62,7 +62,7 @@ public class IssueAction extends BaseAction {
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = userVo.getDefaultOrgId();
         Integer caseId = json.getInteger("id");
 
@@ -79,7 +79,7 @@ public class IssueAction extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 //
 //		IsuIssue po = issueService.save(json, userVo);
 //		TstCase caseVo = issueService.genVo(po, true);
@@ -95,7 +95,7 @@ public class IssueAction extends BaseAction {
 	public Map<String, Object> rename(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 //		TstCase testCasePo = issueService.rename(json, userVo);
 //        issueService.updateParentIfNeededPers(testCasePo.getpId());
@@ -114,7 +114,7 @@ public class IssueAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 //		TstCase testCase = issueService.delete(id, userVo);
 //		issueService.updateParentIfNeededPers(testCase.getpId());
@@ -129,7 +129,7 @@ public class IssueAction extends BaseAction {
 	public Map<String, Object> move(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer srcId = json.getInteger("srcId");
 //        Integer parentId = issueService.getWithCasesById(srcId).getpId();
@@ -150,7 +150,7 @@ public class IssueAction extends BaseAction {
 	public Map<String, Object> saveField(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 //		TstCase po = issueService.saveField(json, userVo);
 //        TstCaseVo caseVo = issueService.genVo(po);

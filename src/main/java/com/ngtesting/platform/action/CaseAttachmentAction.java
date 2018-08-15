@@ -36,7 +36,7 @@ public class CaseAttachmentAction extends BaseAction {
 	public Map<String, Object> upload(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer caseId = json.getInteger("caseId");
 		String path = json.getString("path");
@@ -63,7 +63,7 @@ public class CaseAttachmentAction extends BaseAction {
 	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer caseId = json.getInteger("caseId");
 		Integer id = json.getInteger("id");

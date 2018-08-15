@@ -33,7 +33,7 @@ public class UploadAction extends BaseAction {
             @RequestParam("file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser TstUser = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser TstUser = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = TstUser.getDefaultOrgId();
 
 		String origName = file.getOriginalFilename();

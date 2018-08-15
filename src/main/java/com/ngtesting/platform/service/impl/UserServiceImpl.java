@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.OrgDao;
@@ -63,6 +64,18 @@ public class UserServiceImpl implements UserService {
         List<TstUser> ls = userDao.getProjectUsers(projectId);
 
         return ls;
+    }
+
+    @Override
+    public TstUser modifyProp(JSONObject json) {
+        Integer id = json.getInteger("id");
+        String prop = json.getString("prop");
+        String value = json.getString("value");
+
+        userDao.modifyProp(id, prop, value);
+
+        TstUser user = userDao.get(id);
+        return user;
     }
 
     @Override

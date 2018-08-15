@@ -34,7 +34,7 @@ public class ReportAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer id = json.getInteger("orgId");
 
@@ -57,7 +57,7 @@ public class ReportAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer projectId = json.getInteger("projectId");
         TstProject prj = projectService.get(projectId);

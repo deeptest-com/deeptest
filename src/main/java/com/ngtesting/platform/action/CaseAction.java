@@ -41,7 +41,7 @@ public class CaseAction extends BaseAction {
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer orgId = user.getDefaultOrgId();
 		Integer projectId = user.getDefaultPrjId();
@@ -64,7 +64,7 @@ public class CaseAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> queryForSuiteSelection(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 		Integer projectId = json.getInteger("projectId");
         Integer caseProjectId = json.getInteger("caseProjectId");
@@ -88,7 +88,7 @@ public class CaseAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> queryForTaskSelection(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 		Integer projectId = json.getInteger("projectId");
         Integer caseProjectId = json.getInteger("caseProjectId");
@@ -112,7 +112,7 @@ public class CaseAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer prjId = user.getDefaultPrjId();
         Integer caseId = json.getInteger("id");
@@ -129,7 +129,7 @@ public class CaseAction extends BaseAction {
     public Map<String, Object> rename(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         TstCase testCasePo = caseService.rename(json, user);
 
@@ -143,7 +143,7 @@ public class CaseAction extends BaseAction {
 	public Map<String, Object> move(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		TstCase vo = caseService.move(json, user);
 
 		ret.put("data", vo);
@@ -158,7 +158,7 @@ public class CaseAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 		caseService.delete(id, user);
 
@@ -170,7 +170,7 @@ public class CaseAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> update(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         TstCase po = caseService.update(json, user);
 
@@ -183,7 +183,7 @@ public class CaseAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> saveField(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 		TstCase po = caseService.saveField(json, user);
 
@@ -196,7 +196,7 @@ public class CaseAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> changeContentType(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 		Integer id = json.getInteger("id");
         String contentType = json.getString("contentType");
@@ -211,7 +211,7 @@ public class CaseAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> reviewResult(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
 		Integer id = json.getInteger("id");
 		Boolean result = json.getBoolean("result");
@@ -227,7 +227,7 @@ public class CaseAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> exportAll(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer projectId = json.getInteger("projectId");
 

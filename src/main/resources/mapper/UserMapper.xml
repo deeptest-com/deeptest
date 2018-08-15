@@ -71,6 +71,12 @@
         WHERE id=#{id}
     </update>
 
+    <update id="modifyProp">
+        UPDATE TstUser
+        SET ${prop} = #{value}, updateTime=NOW()
+        WHERE id=#{id}
+    </update>
+
     <update id="setDefaultOrg">
         UPDATE TstUser
         SET defaultOrgId=#{orgId}, defaultOrgName=#{orgName}

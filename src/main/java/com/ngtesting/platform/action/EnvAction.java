@@ -32,7 +32,7 @@ public class EnvAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer projectId = user.getDefaultPrjId();
 
         String keywords = json.getString("keywords");
@@ -49,7 +49,7 @@ public class EnvAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer projectId = user.getDefaultPrjId();
 
         Integer id = json.getInteger("id");
@@ -65,7 +65,7 @@ public class EnvAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         TstEnv po = envService.save(json, user);
 
@@ -78,7 +78,7 @@ public class EnvAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer projectId = user.getDefaultPrjId();
 
         Integer id = json.getInteger("id");
@@ -93,7 +93,7 @@ public class EnvAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer projectId = user.getDefaultPrjId();
 
         Integer id = json.getInteger("id");

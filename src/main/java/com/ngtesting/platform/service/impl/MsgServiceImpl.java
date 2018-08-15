@@ -55,7 +55,7 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
     @Override
     @Transactional
     public void markRead(Integer id, Integer userId) {
-        msgDao.markRead(id);
+        msgDao.markRead(id, userId);
     }
 
     @Override

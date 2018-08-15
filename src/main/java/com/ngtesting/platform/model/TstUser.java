@@ -12,8 +12,8 @@ public class TstUser extends BaseModel {
 
     private String token;
     private Date lastLoginTime;
-    private Integer leftSizeCase = 300;
-    private Integer leftSizeIssue = 200;
+    private Integer leftSizeDesign = 300;
+    private Integer leftSizeExe = 200;
 
     private Integer defaultOrgId;
     private String defaultOrgName;
@@ -137,19 +137,19 @@ public class TstUser extends BaseModel {
         this.lastLoginTime = lastLoginTime;
     }
 
-    public Integer getLeftSizeCase() {
-        return leftSizeCase;
+    public Integer getLeftSizeDesign() {
+        return leftSizeDesign;
     }
 
-    public void setLeftSizeCase(Integer leftSizeCase) {
-        this.leftSizeCase = leftSizeCase;
+    public void setLeftSizeDesign(Integer leftSizeDesign) {
+        this.leftSizeDesign = leftSizeDesign;
     }
 
-    public Integer getLeftSizeIssue() {
-        return leftSizeIssue;
+    public Integer getLeftSizeExe() {
+        return leftSizeExe;
     }
 
-    public void setLeftSizeIssue(Integer leftSizeIssue) {
-        this.leftSizeIssue = leftSizeIssue;
+    public void setLeftSizeExe(Integer leftSizeExe) {
+        this.leftSizeExe = leftSizeExe;
     }
 }

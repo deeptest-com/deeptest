@@ -90,7 +90,7 @@
 
     <update id="setLeftSize" parameterType="TstUser">
         UPDATE TstUser
-        SET leftSizeCase=#{leftSizeCase}, leftSizeIssue=#{leftSizeIssue}
+        SET leftSizeDesign=#{leftSizeDesign}, leftSizeExe=#{leftSizeExe}
         WHERE id=#{id}
     </update>
 

@@ -49,6 +49,7 @@ public class ClientAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
         Integer prjId = user.getDefaultPrjId();
+        Integer userId = user.getId();
 
         Integer orgIdNew = json.getInteger("orgId");
         Integer prjIdNew = json.getInteger("prjId");
@@ -59,8 +60,6 @@ public class ClientAction extends BaseAction {
         if (prjIdNew != null && (prjId == null || prjIdNew.longValue() != prjId.longValue())) { // prj可能为空
             projectService.viewPers(prjIdNew, user);
         }
-
-        Integer userId = user.getId();
 
         Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userId);
         ret.put("sysPrivileges", sysPrivileges);
@@ -93,7 +92,7 @@ public class ClientAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        json.put("id", user.getId());
+        json.put("id", user.getId()); // 强制设置当前用户的属性
 
         TstUser po = userService.modifyProp(json);
         request.getSession().setAttribute(Constant.HTTP_SESSION_USER_PROFILE, po);

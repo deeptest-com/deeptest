@@ -103,7 +103,7 @@ public class UserAction extends BaseAction {
         }
 
         TstUser po = userService.get(userId);
-        if (userNotInOrg(user.getId(), po.getDefaultOrgId())) {
+        if (userNotInOrg(user.getId(), po.getDefaultOrgId())) { // 获取的非当前组织用户
             return authFail();
         }
 
@@ -145,8 +145,11 @@ public class UserAction extends BaseAction {
 
         TstUser vo = JSON.parseObject(JSON.toJSONString(json.get("user")), TstUser.class);
 
-        TstUser existUser = userService.getByEmail(vo.getEmail());
+        if (userNotInOrg(vo.getId(), user.getDefaultOrgId())) {
+            return authFail();
+        }
 
+        TstUser existUser = userService.getByEmail(vo.getEmail());
         if (existUser != null && existUser.getId() != vo.getId()) {
             ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
             ret.put("msg", "邮箱已被占用");
@@ -170,7 +173,6 @@ public class UserAction extends BaseAction {
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        Integer orgId = json.getInteger("orgId");
         String keywords = json.getString("keywords");
         JSONArray exceptIds = json.getJSONArray("exceptIds");
 
@@ -185,7 +187,7 @@ public class UserAction extends BaseAction {
             }
         }
 
-        List users = userService.search(orgId, keywords, ids);
+        List users = userService.search(user.getDefaultOrgId(), keywords, ids);
 
         List<Object> vos = new ArrayList<>();
         vos.addAll(users);

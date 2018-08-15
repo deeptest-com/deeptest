@@ -19,7 +19,7 @@ public interface UserService {
 
     TstUser invitePers(TstUser user, TstUser vo, List<TstOrgGroupUserRelation> relations);
 
-    void update(TstUser record);
+    TstUser update(TstUser record);
 
     TstUser modifyProp(JSONObject json);
 

@@ -14,8 +14,8 @@ public interface UserDao {
                          @Param("keywords") String keywords,
                          @Param("exceptIds") String exceptIds);
 
-    TstUser get(Integer userId);
-    TstUser getByEmail(String nickname);
+    TstUser get(@Param("id") Integer id);
+    TstUser getByEmail(@Param("email") String email);
     TstUser getByEmailAndPassword(@Param("email") String email,
                                   @Param("password") String password);
     TstUser getByToken(@Param("token") String token);

@@ -26,14 +26,14 @@ public class WebUtils {
      */
     private static final int COOKIE_MAX_AGE = 86400;
 
-    public static void InitWebContext(HttpServletRequest request) {
+    public static void InitWebContext(HttpServletRequest request, String workDir) {
         if (Constant.WEB_ROOT == null) {
             Constant.WEB_ROOT = request.getScheme() + "://" + request.getServerName() +
                     (request.getServerPort() != 80? ":" + request.getServerPort() : "")
                     + request.getContextPath() + "/";
         }
         if (Constant.WORK_DIR == null) {
-            Constant.WORK_DIR = request.getSession().getServletContext().getRealPath("/");;
+            Constant.WORK_DIR = workDir;
         }
     }
 

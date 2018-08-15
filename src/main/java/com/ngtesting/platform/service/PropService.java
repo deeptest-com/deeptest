@@ -5,4 +5,6 @@ public interface PropService {
     public String getUrlLogin();
 
     String getUrlResetPassword();
+
+    String getWorkDir();
 }

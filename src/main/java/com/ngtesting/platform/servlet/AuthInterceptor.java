@@ -3,6 +3,7 @@ package com.ngtesting.platform.servlet;
 import com.alibaba.fastjson.JSON;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.PropService;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.utils.AuthPassport;
 import com.ngtesting.platform.utils.WebUtils;
@@ -25,12 +26,14 @@ public class AuthInterceptor implements HandlerInterceptor {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
+    private PropService propService;
+    @Autowired
     private UserService userService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        WebUtils.InitWebContext(request);
+        WebUtils.InitWebContext(request, propService.getWorkDir());
 
         if (handler.getClass().isAssignableFrom(HandlerMethod.class)) {
             // 方法上是否有身份验证注解

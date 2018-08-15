@@ -207,12 +207,13 @@ public class UserAction {
             return ret;
         }
 
-        userService.update(vo);
+        TstUser po = userService.update(vo);
 
         List<TstOrgGroupUserRelation> relations = (List<TstOrgGroupUserRelation>) json.get("relations");
         orgGroupUserRelationService.saveRelationsForUser(orgId, vo.getId(), relations);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
+        pushSettingsService.pushUserSettings(po);
         return ret;
     }
 

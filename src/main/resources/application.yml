@@ -1,7 +1,17 @@
+sys:
+  name: ngtesting
+  url:
+    login: http://localhost:4200/#/login
+    resetPassword: http://localhost:4200/#/reset-password
+  work:
+    dir: /work/ngtesting-data/
+
 server:
   port: 8080
 
 spring:
+    resources:
+      static-locations: classpath:/META-INF/resources/,classpath:/resources/, classpath:/static/, classpath:/public/, file:${sys.work.dir}
     datasource:
         name: mysql_ngtesting
         type: com.alibaba.druid.pool.DruidDataSource
@@ -55,8 +65,3 @@ mail:
     encoding: UTF-8
     username: 3193472405@qq.com
     password: dkwmlkquhjbzdgje
-sys:
-  name: ngtesting
-  url:
-    login: http://localhost:4200/#/login
-    resetPassword: http://localhost:4200/#/reset-password

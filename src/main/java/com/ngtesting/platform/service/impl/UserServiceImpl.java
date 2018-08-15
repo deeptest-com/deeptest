@@ -67,18 +67,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public TstUser modifyProp(JSONObject json) {
-        Integer id = json.getInteger("id");
-        String prop = json.getString("prop");
-        String value = json.getString("value");
-
-        userDao.modifyProp(id, prop, value);
-
-        TstUser user = userDao.get(id);
-        return user;
-    }
-
-    @Override
     public TstUser get(Integer id) {
         TstUser user = userDao.get(id);
         return user;
@@ -167,8 +155,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(TstUser record) {
-        userDao.update(record);
+    public TstUser update(TstUser vo) {
+        userDao.update(vo);
+
+        TstUser user = userDao.get(vo.getId());
+        return user;
+    }
+
+    @Override
+    public TstUser modifyProp(JSONObject json) {
+        Integer id = json.getInteger("id");
+        String prop = json.getString("prop");
+        String value = json.getString("value");
+
+        userDao.modifyProp(id, prop, value);
+
+        TstUser user = userDao.get(id);
+        return user;
     }
 
     @Override

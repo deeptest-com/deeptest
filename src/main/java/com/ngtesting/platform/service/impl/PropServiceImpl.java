@@ -12,6 +12,8 @@ import java.util.Properties;
 
 @Service
 public class PropServiceImpl implements PropService {
+    @Value("${sys.work.dir}")
+    private String workDir;
 
     @Value("${mail.smtp.username}")
     private String mailUserName;
@@ -69,5 +71,10 @@ public class PropServiceImpl implements PropService {
     @Override
     public String getUrlResetPassword() {
         return urlResetPassword;
+    }
+
+    @Override
+    public String getWorkDir() {
+        return workDir;
     }
 }

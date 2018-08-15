@@ -26,18 +26,21 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 	}
 
 	@Override
-	public TstProjectRole get(Integer roleId) {
-		return projectRoleDao.get(roleId);
+	public TstProjectRole get(Integer roleId, Integer orgId) {
+		return projectRoleDao.get(roleId, orgId);
 	}
 
 	@Override
 	public TstProjectRole save(TstProjectRole vo, Integer orgId) {
-		vo.setOrgId(orgId);
-
 		if (vo.getId() == null) {
+			vo.setOrgId(orgId);
 			vo.setCode(UUID.randomUUID().toString());
 			projectRoleDao.save(vo);
 		} else {
+			if (vo.getOrgId() != orgId) {
+				return null;
+			}
+
 			projectRoleDao.update(vo);
 		}
 
@@ -45,12 +48,10 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 	}
 
 	@Override
-	public boolean delete(Integer id) {
-//		TestProjectRoleForOrg po = (TestProjectRoleForOrg) getDetail(TestProjectRoleForOrg.class, id);
-//		po.setDeleted(true);
-//		saveOrUpdate(po);
+	public boolean delete(Integer id, Integer orgId) {
+        projectRoleDao.delete(id, orgId);
 
-		return true;
+        return true;
 	}
 
 }

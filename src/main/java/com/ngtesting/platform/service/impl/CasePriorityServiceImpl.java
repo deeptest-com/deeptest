@@ -27,7 +27,7 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 
     @Override
 	public TstCasePriority save(TstCasePriority vo, Integer orgId) {
-        vo.setOrgId(orgId);
+
 
         if (vo.getId() == null) {
             Integer maxOrder = casePriorityDao.getMaxOrdrNumb(orgId);
@@ -36,8 +36,12 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
             }
             vo.setOrdr(maxOrder + 10);
 
+            vo.setOrgId(orgId);
             casePriorityDao.save(vo);
         } else {
+            if (vo.getOrgId() != orgId) {
+                return null;
+            }
             casePriorityDao.update(vo);
         }
 

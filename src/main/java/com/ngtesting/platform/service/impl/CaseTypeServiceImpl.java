@@ -28,7 +28,6 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 
     @Override
 	public TstCaseType save(TstCaseType vo, Integer orgId) {
-        vo.setOrgId(orgId);
 
         if (vo.getId() == null) {
             Integer maxOrder = caseTypeDao.getMaxOrdrNumb(orgId);
@@ -37,8 +36,12 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
             }
             vo.setOrdr(maxOrder + 10);
 
+            vo.setOrgId(orgId);
             caseTypeDao.save(vo);
         } else {
+            if (vo.getOrgId() != orgId) {
+                return null;
+            }
             caseTypeDao.update(vo);
         }
 

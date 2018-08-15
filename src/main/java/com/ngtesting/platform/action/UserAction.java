@@ -122,7 +122,7 @@ public class UserAction extends BaseAction {
 
         TstUser vo = JSON.parseObject(JSON.toJSONString(json.get("user")), TstUser.class);
         List<TstOrgGroupUserRelation> relations = (List<TstOrgGroupUserRelation>) json.get("relations");
-        TstUser po = userService.invitePers(user, vo, relations);
+        TstUser po = userService.invite(user, vo, relations);
 
         if (po == null) {
             ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
@@ -170,7 +170,6 @@ public class UserAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         String keywords = json.getString("keywords");

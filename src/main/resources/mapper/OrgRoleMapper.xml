@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-mybatis.orgDTD Mapper 3.0EN" "http:mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
 <mapper namespace="com.ngtesting.platform.dao.OrgRoleDao" >
 
     <select id="query" resultType="TstOrgRole">
@@ -21,7 +22,7 @@
     <select id="get" resultType="TstOrgRole">
         SELECT * FROM TstOrgRole role
 
-        WHERE role.id = #{id}
+        WHERE role.id = #{id} AND role.orgId=#{orgId}
     </select>
 
     <insert id="save" parameterType="TstOrgRole" useGeneratedKeys="true" keyProperty="id">
@@ -39,5 +40,13 @@
 
         WHERE id=#{id}
     </update>
+
+    <delete id="delete" parameterType="TstOrgRole">
+        UPDATE TstOrgRole
+        disabled=TRUE,
+        updateTime=NOW()
+
+        WHERE id=#{id} AND orgId=#{orgId}
+    </delete>
 
 </mapper>

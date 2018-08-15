@@ -96,6 +96,10 @@ public class CustomFieldAction extends BaseAction {
 		List<TstCustomFieldProjectRelation> relations = (List<TstCustomFieldProjectRelation>) json.get("relations");
 
 		TstCustomField po = customFieldService.save(customField, orgId);
+        if (po == null) {
+            return authFail();
+        }
+
 		customFieldProjectRelationService.saveRelationsByField(orgId, po.getId(), relations);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -129,7 +133,7 @@ public class CustomFieldAction extends BaseAction {
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-		boolean success = customFieldService.changeOrderPers(id, act, orgId);
+		customFieldService.changeOrderPers(id, act, orgId);
 
 		List<TstCustomField> vos = customFieldService.list(orgId);
 

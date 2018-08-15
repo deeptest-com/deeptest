@@ -31,7 +31,7 @@
     <select id="get" resultType="TstProjectRole">
         SELECT * FROM TstProjectRole o
 
-        WHERE o.id=#{id}
+        WHERE o.id=#{id} AND o.orgId=#{orgId}
     </select>
 
     <insert id="save" parameterType="TstProjectRole" useGeneratedKeys="true" keyProperty="id">
@@ -49,5 +49,13 @@
 
         WHERE id=#{id}
     </update>
+
+    <delete id="delete" parameterType="TstProjectRole">
+        UPDATE TstProjectRole
+        disabled=TRUE,
+        updateTime=NOW()
+
+        WHERE id=#{id} AND orgId=#{orgId}
+    </delete>
 
 </mapper>

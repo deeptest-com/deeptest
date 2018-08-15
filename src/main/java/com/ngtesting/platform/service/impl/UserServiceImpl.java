@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public TstUser invitePers(TstUser user, TstUser vo, List<TstOrgGroupUserRelation> relations) {
+    public TstUser invite(TstUser user, TstUser vo, List<TstOrgGroupUserRelation> relations) {
         Integer orgId = user.getDefaultOrgId();
         Integer prjId = user.getDefaultPrjId();
         String orgName = user.getDefaultOrgName();

@@ -57,7 +57,7 @@ public class OrgRoleAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 		Integer orgRoleId = req.getInteger("id");
 
-        TstOrgRole po = orgRoleService.get(orgRoleId);
+        TstOrgRole po = orgRoleService.get(orgRoleId, orgId);
 
 		List<TstOrgRolePrivilegeRelation> privileges =
                 orgRolePrivilegeRelationService.listRelationsByOrgRole(orgId, orgRoleId);
@@ -86,12 +86,15 @@ public class OrgRoleAction extends BaseAction {
 
 		TstOrgRole orgRoleVo = JSON.parseObject(JSON.toJSONString(json.get("orgRole")), TstOrgRole.class);
 		TstOrgRole po = orgRoleService.save(orgRoleVo, orgId);
+		if (po == null) {
+			return authFail();
+		}
 
 		List<TstOrgRolePrivilegeRelation> privileges = (List<TstOrgRolePrivilegeRelation>) json.get("privileges");
-		boolean success = orgRolePrivilegeRelationService.saveRelationsForRole(orgId, po.getId(), privileges);
+		orgRolePrivilegeRelationService.saveRelationsForRole(orgId, po.getId(), privileges);
 
         List<TstOrgRoleUserRelation> users = (List<TstOrgRoleUserRelation>) json.get("users");
-        success = orgRoleUserRelationService.saveRelationsForRole(orgId, po.getId(), users);
+        orgRoleUserRelationService.saveRelationsForRole(orgId, po.getId(), users);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -101,8 +104,10 @@ public class OrgRoleAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = user.getDefaultOrgId();
 
-		boolean success = orgRoleService.delete(to.getInteger("id"));
+		orgRoleService.delete(to.getInteger("id"), orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

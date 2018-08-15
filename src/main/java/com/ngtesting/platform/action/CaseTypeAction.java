@@ -84,6 +84,9 @@ public class CaseTypeAction extends BaseAction {
 		TstCaseType vo = json.getObject("model", TstCaseType.class);
 
 		TstCaseType po = caseTypeService.save(vo, orgId);
+		if (po == null) {
+			return authFail();
+		}
 
 		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
 		ret.put("casePropertyMap", casePropertyMap);

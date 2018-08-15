@@ -81,6 +81,9 @@ public class CasePriorityAction extends BaseAction {
 		TstCasePriority vo = json.getObject("model", TstCasePriority.class);
 
 		TstCasePriority po = casePriorityService.save(vo, orgId);
+		if (po == null) {
+			return authFail();
+		}
 
 		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
 		ret.put("casePropertyMap", casePropertyMap);

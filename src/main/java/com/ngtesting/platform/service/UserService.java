@@ -18,7 +18,7 @@ public interface UserService {
     TstUser getByPhone(String token);
     TstUser getByEmail(String email);
 
-    TstUser invitePers(TstUser user, TstUser vo, List<TstOrgGroupUserRelation> relations);
+    TstUser invite(TstUser user, TstUser vo, List<TstOrgGroupUserRelation> relations);
 
     TstUser update(TstUser record);
 

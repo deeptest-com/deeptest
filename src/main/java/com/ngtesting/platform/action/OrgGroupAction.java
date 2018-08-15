@@ -62,7 +62,7 @@ public class OrgGroupAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 		Integer orgGroupId = json.getInteger("id");
 
-		TstOrgGroup po = orgGroupService.get(orgGroupId);
+		TstOrgGroup po = orgGroupService.get(orgGroupId, orgId);
 
 		List<TstOrgGroupUserRelation> relations = orgGroupUserService.listRelationsByGroup(orgId, orgGroupId);
 		if (orgGroupId == null) {
@@ -84,14 +84,18 @@ public class OrgGroupAction extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
 		TstOrgGroup group = JSON.parseObject(JSON.toJSONString(json.get("group")), TstOrgGroup.class);;
 		List<TstOrgGroupUserRelation> relations = (List<TstOrgGroupUserRelation>) json.get("relations");
 
 		TstOrgGroup po = orgGroupService.save(group, orgId);
-		boolean success = orgGroupUserService.saveRelationsForGroup(orgId, po.getId(), relations);
+        if (po == null) {
+            return authFail();
+        }
+
+		orgGroupUserService.saveRelationsForGroup(orgId, po.getId(), relations);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -101,10 +105,12 @@ public class OrgGroupAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject to) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
-		Integer id = to.getInteger("id");
+		Integer groupId = to.getInteger("id");
 
-		boolean success = orgGroupService.delete(id);
+		orgGroupService.delete(groupId, orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

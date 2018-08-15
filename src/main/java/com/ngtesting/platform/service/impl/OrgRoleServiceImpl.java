@@ -1,7 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.OrgRoleDao;
-import com.ngtesting.platform.model.TstOrgPrivilegeDefine;
 import com.ngtesting.platform.model.TstOrgRole;
 import com.ngtesting.platform.service.OrgRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +29,8 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
     }
 
     @Override
-    public TstOrgRole get(Integer orgRoleId) {
-        return orgRoleDao.get(orgRoleId);
+    public TstOrgRole get(Integer orgRoleId, Integer orgId) {
+        return orgRoleDao.get(orgRoleId, orgId);
     }
 
     @Override
@@ -42,6 +41,9 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
             vo.setCode(UUID.randomUUID().toString());
             orgRoleDao.save(vo);
         } else {
+            if (vo.getOrgId() != orgId) {
+                return null;
+            }
             orgRoleDao.update(vo);
         }
 
@@ -49,28 +51,10 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 	}
 
 	@Override
-	public boolean delete(Integer id) {
-//		TestOrgRole po = (TestOrgRole) getDetail(TestOrgRole.class, id);
-//		po.setDeleted(true);
-//		saveOrUpdate(po);
+	public boolean delete(Integer id, Integer orgId) {
+        orgRoleDao.delete(id, orgId);
 
 		return true;
 	}
-
-    @Override
-    public List<TstOrgPrivilegeDefine> getDefaultPrivByRoleCode(TstOrgRole.OrgRoleCode e) {
-//        TestOrgPrivilegeDefine.OrgPrivilegeCode code = TestOrgPrivilegeDefine.OrgPrivilegeCode.valueOf(e.code);
-//        DetachedCriteria dc = DetachedCriteria.forClass(TestOrgPrivilegeDefine.class);
-//        dc.add(Restrictions.eq("code", code));
-//        dc.add(Restrictions.ne("deleted", true));
-//        dc.add(Restrictions.ne("disabled", true));
-//
-//        dc.addOrder(Order.asc("id"));
-//        List<TestOrgPrivilegeDefine> ls = findAllByCriteria(dc);
-//
-//	    return ls;
-
-		return null;
-    }
 
 }

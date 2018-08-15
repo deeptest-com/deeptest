@@ -48,8 +48,6 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     @Override
     @Transactional
     public TstCustomField save(TstCustomField vo, Integer orgId) {
-        vo.setOrgId(orgId);
-
         if (vo.getId() == null) {
             Integer maxOrder = customFieldDao.getMaxOrdrNumb(orgId);
             if (maxOrder == null) {
@@ -57,11 +55,16 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
             }
             vo.setOrdr(maxOrder + 10);
 
+            vo.setOrgId(orgId);
             customFieldDao.save(vo);
             if (vo.getType().equals(TstCustomField.FieldType.dropdown)) {
                 customFieldOptionDao.saveAll(vo.getId(), vo.getOptions());
             }
         } else {
+            if (vo.getOrgId() != orgId) {
+                return null;
+            }
+
             customFieldDao.update(vo);
         }
 

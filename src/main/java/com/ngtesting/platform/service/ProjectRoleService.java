@@ -7,8 +7,8 @@ import java.util.List;
 public interface ProjectRoleService extends BaseService {
 
 	List list(Integer orgId, String keywords, Boolean disabled);
-	TstProjectRole get(Integer roleId);
+	TstProjectRole get(Integer roleId, Integer orgId);
 	TstProjectRole save(TstProjectRole vo, Integer orgId);
-	boolean delete(Integer id);
+	boolean delete(Integer id, Integer orgId);
 
 }

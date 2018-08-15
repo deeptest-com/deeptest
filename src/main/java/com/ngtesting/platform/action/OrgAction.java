@@ -54,7 +54,6 @@ public class OrgAction extends BaseAction {
 		return ret;
 	}
 
-
 	@RequestMapping(value = "get", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {

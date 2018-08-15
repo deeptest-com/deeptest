@@ -18,10 +18,10 @@ public interface OrgGroupDao {
     TstOrgGroup get(@Param("id") Integer id,
                     @Param("orgId") Integer orgId);
 
-    void save(TstOrgGroup vo);
+    Integer save(TstOrgGroup vo);
 
-    void update(TstOrgGroup vo);
+    Integer update(TstOrgGroup vo);
 
-    void delete(@Param("id") Integer id,
+    Integer delete(@Param("id") Integer id,
                 @Param("orgId") Integer orgId);
 }

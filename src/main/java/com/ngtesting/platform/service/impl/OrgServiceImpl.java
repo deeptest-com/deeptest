@@ -51,17 +51,12 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	@Override
     @Transactional
 	public TstOrg save(TstOrg vo, TstUser user) {
-		boolean isNew = vo.getId() == null;
-		if (isNew) {
+		if (vo.getId() == null) {
             vo.setDeleted(false);
             orgDao.save(vo);
 
 			orgDao.initOrg(vo.getId(), user.getId());
 		} else {
-			if (authDao.userNotInOrg(user.getId(), vo.getId())) {
-				return null;
-			}
-
             orgDao.update(vo);
         }
 

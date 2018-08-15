@@ -30,14 +30,7 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
 
     @Override
     @Transactional
-    public void delete(Integer msgId, Integer userId) {
-        msgDao.delete(msgId, userId);
-    }
-
-    @Override
-    @Transactional
     public void create(TstTask task, Constant.MsgType action, TstUser optUser) {
-
         List<Integer> ids = taskDao.listAssigneeIds(task.getId());
         for (Integer id: ids) {
             TstMsg msg = new TstMsg();
@@ -54,8 +47,16 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
 
     @Override
     @Transactional
-    public void markRead(Integer id, Integer userId) {
-        msgDao.markRead(id, userId);
+    public Boolean delete(Integer msgId, Integer userId) {
+        Integer count = msgDao.delete(msgId, userId);
+        return count > 0;
+    }
+
+    @Override
+    @Transactional
+    public Boolean markRead(Integer id, Integer userId) {
+	    Integer count = msgDao.markRead(id, userId);
+        return count > 0;
     }
 
     @Override

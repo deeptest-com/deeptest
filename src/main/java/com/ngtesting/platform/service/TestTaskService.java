@@ -16,9 +16,9 @@ public interface TestTaskService extends BaseService {
 
 	TstTask saveCases(JSONObject json, TstUser optUser);
 
-	void delete(Integer id, Integer userId);
-	void closePers(Integer id, Integer userId);
-    void closePlanIfAllTaskClosedPers(Integer planId);
+	Boolean delete(Integer id, Integer projectId);
+	Boolean close(Integer id, Integer projectId);
+    void closePlanIfAllTaskClosed(Integer planId);
 
 	List<TstTask> listByPlan(Integer id);
 

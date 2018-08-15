@@ -1,5 +1,6 @@
 package com.ngtesting.platform.action;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.bean.websocket.WsFacade;
@@ -71,9 +72,11 @@ public class SuiteAction extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer projectId = user.getDefaultPrjId();
 
 		TstSuite po = suiteService.save(json, user);
+		if (po == null) {
+		  return authFail();
+        }
 
 		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -85,9 +88,21 @@ public class SuiteAction extends BaseAction {
     public Map<String, Object> saveCases(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer projectId = user.getDefaultPrjId();
 
-        TstSuite po = suiteService.saveCases(json, user);
+        Integer projectId = json.getInteger("projectId");
+        Integer caseProjectId = json.getInteger("caseProjectId");
+        Integer suiteId = json.getInteger("suiteId");
+        List<Integer> ids = JSON.parseArray(json.getString("cases"), Integer.class);
+
+        if (userNotInProject(user.getId(), projectId) || userNotInProject(user.getId(), caseProjectId)) {
+            return authFail();
+        }
+        TstSuite suite = suiteService.get(suiteId, projectId);
+        if (suite == null) { // suite和project不匹配
+            return authFail();
+        }
+
+        TstSuite po = suiteService.saveCases(projectId, caseProjectId, suiteId, ids, user);
 
         ret.put("data", po);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -103,7 +118,10 @@ public class SuiteAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		suiteService.delete(id, projectId);
+		Boolean result = suiteService.delete(id, projectId);
+        if (!result) {
+            return authFail();
+        }
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

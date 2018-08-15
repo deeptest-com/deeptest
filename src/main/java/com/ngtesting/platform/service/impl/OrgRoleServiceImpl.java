@@ -41,10 +41,10 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
             vo.setCode(UUID.randomUUID().toString());
             orgRoleDao.save(vo);
         } else {
-            if (vo.getOrgId().intValue() != orgId.intValue()) {
+            Integer count = orgRoleDao.update(vo);
+            if (count == 0) {
                 return null;
             }
-            orgRoleDao.update(vo);
         }
 
         return vo;
@@ -52,9 +52,9 @@ public class OrgRoleServiceImpl extends BaseServiceImpl implements OrgRoleServic
 
 	@Override
 	public boolean delete(Integer id, Integer orgId) {
-        orgRoleDao.delete(id, orgId);
+        Integer count = orgRoleDao.delete(id, orgId);
 
-		return true;
+		return count > 0;
 	}
 
 }

@@ -20,11 +20,11 @@ public interface TestPlanDao {
     TstPlan get(@Param("id") Integer id,
                 @Param("projectId") Integer projectId);
 
-    void save(TstPlan vo);
+    Integer save(TstPlan vo);
 
-    void update(TstPlan vo);
+    Integer update(TstPlan vo);
 
-    void delete(@Param("id") Integer id,
+    Integer delete(@Param("id") Integer id,
                 @Param("projectId") Integer projectId);
 
     void closePlanIfAllTaskClosed(@Param("planId") Integer planId);

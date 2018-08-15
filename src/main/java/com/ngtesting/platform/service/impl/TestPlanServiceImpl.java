@@ -14,9 +14,6 @@ import java.util.List;
 
 @Service
 public class TestPlanServiceImpl extends BaseServiceImpl implements TestPlanService {
-//    @Autowired
-//    ProjectService projectService;
-
     @Autowired
     HistoryService historyService;
 
@@ -46,6 +43,7 @@ public class TestPlanServiceImpl extends BaseServiceImpl implements TestPlanServ
     @Override
     public TstPlan save(TstPlan vo, TstUser user, Integer projectId) {
         vo.setUserId(user.getId());
+        vo.setProjectId(projectId);
 
         Constant.MsgType action;
         if (vo.getId() == null) {
@@ -54,7 +52,10 @@ public class TestPlanServiceImpl extends BaseServiceImpl implements TestPlanServ
             testPlanDao.save(vo);
         } else {
             action = Constant.MsgType.update;
-            testPlanDao.update(vo);
+            Integer count = testPlanDao.update(vo);
+            if (count == 0) {
+                return null;
+            }
         }
 
         historyService.create(vo.getProjectId(), user, action.msg, TstHistory.TargetType.plan,
@@ -64,8 +65,9 @@ public class TestPlanServiceImpl extends BaseServiceImpl implements TestPlanServ
     }
 
     @Override
-    public void delete(Integer id, Integer projectId) {
-        testPlanDao.delete(id, projectId);
+    public Boolean delete(Integer id, Integer projectId) {
+        Integer count = testPlanDao.delete(id, projectId);
+        return count > 0;
     }
 
     @Override

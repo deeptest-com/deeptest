@@ -82,10 +82,10 @@
     <update id="update" parameterType="TstPlan">
         UPDATE TstPlan
         SET name=#{name}, estimate=#{estimate}, startTime=#{startTime}, endTime=#{endTime},
-        descr=#{descr}, projectId=#{projectId}, userId=#{userId}, verId=#{verId},
+        descr=#{descr}, userId=#{userId}, verId=#{verId},
         disabled=#{disabled}
 
-        WHERE id=#{id}
+        WHERE id=#{id} AND projectId=#{projectId}
     </update>
 
     <update id="start">

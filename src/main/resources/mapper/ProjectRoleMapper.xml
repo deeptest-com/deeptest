@@ -31,7 +31,10 @@
     <select id="get" resultType="TstProjectRole">
         SELECT * FROM TstProjectRole o
 
-        WHERE o.id=#{id} AND o.orgId=#{orgId}
+        WHERE o.id=#{id}
+        <if test="orgId != null">
+            AND o.orgId = #{orgId}
+        </if>
     </select>
 
     <insert id="save" parameterType="TstProjectRole" useGeneratedKeys="true" keyProperty="id">
@@ -43,11 +46,11 @@
 
     <update id="update" parameterType="TstProjectRole">
         UPDATE TstProjectRole
-        SET name=#{name},orgId=#{orgId},
+        SET name=#{name},
         disabled=#{disabled},
         updateTime=NOW()
 
-        WHERE id=#{id}
+        WHERE id=#{id} AND orgId=#{orgId}
     </update>
 
     <delete id="delete" parameterType="TstProjectRole">

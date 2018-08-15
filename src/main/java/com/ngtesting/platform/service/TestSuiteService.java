@@ -17,9 +17,7 @@ public interface TestSuiteService extends BaseService {
     TstSuite getWithCases(Integer id);
 
     TstSuite save(JSONObject json, TstUser optUser);
-	void delete(Integer vo, Integer projectId);
-
-    TstSuite saveCases(JSONObject json, TstUser optUser);
+    Boolean delete(Integer vo, Integer projectId);
 
 	TstSuite saveCases(Integer projectId, Integer caseProjectId, Integer runId, List<Integer> ids, TstUser optUser);
 

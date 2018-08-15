@@ -89,20 +89,12 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	@Override
     @Transactional
 	public TstProject save(TstProject vo, Integer orgId, TstUser user) {
-		if (vo == null) {
-			return null;
-		}
-
         boolean disableStatusChanged = false;
 		boolean isNew = vo.getId() == null;
 		if (isNew) {
             vo.setOrgId(orgId);
             projectDao.save(vo);
 		} else {
-            if (authDao.userNotInProject(user.getId(), vo.getId())) {
-                return null;
-            }
-
             TstProject old = projectDao.get(vo.getId());
             disableStatusChanged = vo.getDisabled() != old.getDisabled();
 

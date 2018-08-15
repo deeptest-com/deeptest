@@ -17,9 +17,9 @@ public interface TestSuiteDao {
                  @Param("projectId") Integer projectId);
     TstSuite getWithCases(@Param("id") Integer id);
 
-    void save(TstSuite vo);
-    void update(TstSuite vo);
-    void delete(@Param("id") Integer id,
+    Integer save(TstSuite vo);
+    Integer update(TstSuite vo);
+    Integer delete(@Param("id") Integer id,
                 @Param("projectId") Integer projectId);
 
     List<TstCaseInSuite> listCases(@Param("id") Integer id);

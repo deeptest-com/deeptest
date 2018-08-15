@@ -3,7 +3,6 @@ package com.ngtesting.platform.action;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.utils.FileUtil;
-import com.ngtesting.platform.model.TstUser;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,11 +28,8 @@ public class UploadAction extends BaseAction {
 	@ResponseBody
 	@PostMapping("/uploadSingle")
 	public Map<String, Object> uploadSingle(
-            @RequestParam("file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
+            @RequestParam("file") MultipartFile file, HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-
-		TstUser TstUser = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = TstUser.getDefaultOrgId();
 
 		String origName = file.getOriginalFilename();
 		String extName = FilenameUtils.getExtension(origName);

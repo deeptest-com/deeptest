@@ -63,10 +63,12 @@ public class OrgGroupAction extends BaseAction {
 		Integer orgGroupId = json.getInteger("id");
 
 		TstOrgGroup po = orgGroupService.get(orgGroupId, orgId);
+		if (po == null) {
+            return authFail();
+        }
 
 		List<TstOrgGroupUserRelation> relations = orgGroupUserService.listRelationsByGroup(orgId, orgGroupId);
 		if (orgGroupId == null) {
-
 			ret.put("group", new TstOrgGroup());
 	        ret.put("relations", relations);
 			ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -110,7 +112,10 @@ public class OrgGroupAction extends BaseAction {
 
 		Integer groupId = to.getInteger("id");
 
-		orgGroupService.delete(groupId, orgId);
+		Boolean result = orgGroupService.delete(groupId, orgId);
+        if (!result) {
+            return authFail();
+        }
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

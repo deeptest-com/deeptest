@@ -16,10 +16,8 @@ public interface ProjectRoleDao {
     TstProjectRole get(@Param("id") Integer roleId,
                        @Param("orgId") Integer orgId);
 
-    void save(TstProjectRole vo);
-
-    void update(TstProjectRole vo);
-
-    void delete(@Param("id") Integer roleId,
+    Integer save(TstProjectRole vo);
+    Integer update(TstProjectRole vo);
+    Integer delete(@Param("id") Integer roleId,
                 @Param("orgId") Integer orgId);
 }

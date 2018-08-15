@@ -89,7 +89,6 @@ public class PlanAction extends BaseAction {
         return ret;
     }
 
-
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -98,11 +97,12 @@ public class PlanAction extends BaseAction {
         Integer projectId = user.getDefaultPrjId();
 
         TstPlan vo = JSON.parseObject(JSON.toJSONString(json), TstPlan.class);
-        if (vo.getProjectId().intValue() != projectId) {
+
+		TstPlan po = planService.save(vo, user, projectId);
+        if (po == null) {
             return authFail();
         }
 
-		TstPlan po = planService.save(vo, user, projectId);
 		planService.genVo(po);
 
 		optFacade.opt(WsConstant.WS_TODO, user);
@@ -121,7 +121,10 @@ public class PlanAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		planService.delete(id, projectId);
+		Boolean result = planService.delete(id, projectId);
+        if (!result) {
+            return authFail();
+        }
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

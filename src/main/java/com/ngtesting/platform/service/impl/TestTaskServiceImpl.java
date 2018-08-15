@@ -40,9 +40,11 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     @Override
     public TstTask getById(Integer id, Integer projectId) {
         TstTask po = taskDao.getDetail(id, projectId);
+        if (po == null) {
+            return null;
+        }
 
         TstTask vo = genVo(po);
-
         return vo;
     }
 
@@ -51,22 +53,23 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     public TstTask save(JSONObject json, TstUser user) {
         TstTask task = JSON.parseObject(JSON.toJSONString(json), TstTask.class);
         task.setUserId(user.getId());
+        task.setProjectId(user.getDefaultPrjId());
+
+        if (task.getCaseProjectId() == null) {
+            task.setCaseProjectId(task.getProjectId());
+        }
 
         Constant.MsgType action = null;
         if (task.getId() == null) {
             action = Constant.MsgType.create;
 
-            if (task.getCaseProjectId() == null) {
-                task.setCaseProjectId(task.getProjectId());
-            }
             taskDao.save(task);
         } else {
-            if(task.getProjectId() != user.getDefaultPrjId()) {
+            action = Constant.MsgType.update;
+            Integer count = taskDao.update(task);
+            if (count == null) {
                 return null;
             }
-
-            action = Constant.MsgType.update;
-            taskDao.update(task);
 
             taskDao.removeAssignees(task.getId());
         }
@@ -148,16 +151,19 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     }
 
     @Override
-    public void delete(Integer id, Integer projectId) {
-        taskDao.delete(id, projectId);
+    public Boolean delete(Integer id, Integer projectId) {
+        Integer count = taskDao.delete(id, projectId);
+        return count > 0;
     }
 
     @Override
-    public void closePers(Integer id, Integer userId) {
-        taskDao.close(id, userId);
+    public Boolean close(Integer id, Integer projectId) {
+        Integer count = taskDao.close(id, projectId);
+        return count > 0;
     }
+
     @Override
-    public void closePlanIfAllTaskClosedPers(Integer planId) {
+    public void closePlanIfAllTaskClosed(Integer planId) {
         planDao.closePlanIfAllTaskClosed(planId);
     }
 

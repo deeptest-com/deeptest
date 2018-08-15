@@ -36,12 +36,15 @@ public class ReportAction extends BaseAction {
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        Integer id = json.getInteger("orgId");
+        Integer orgId = json.getInteger("orgId");
+        if (userNotInOrg(user.getId(), orgId)) {
+            return authFail();
+        }
 
         Map<String, List<Object>> designReport =
-                reportService.chartDesignProgressByProject(id, TstProject.ProjectType.org, 14);
+                reportService.chartDesignProgressByProject(orgId, TstProject.ProjectType.org, 14);
         Map<String, List<Object>> exeReport =
-                reportService.chartExcutionProcessByProject(id, TstProject.ProjectType.org, 14);
+                reportService.chartExcutionProcessByProject(orgId, TstProject.ProjectType.org, 14);
 
         data.put("design", designReport);
         data.put("exe", exeReport);
@@ -60,6 +63,10 @@ public class ReportAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer projectId = json.getInteger("projectId");
+        if (userNotInProject(user.getId(), projectId)) {
+            return authFail();
+        }
+
         TstProject prj = projectService.get(projectId);
 
         Map<String, List<Object>> designReport =

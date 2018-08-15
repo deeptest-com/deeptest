@@ -12,7 +12,7 @@ public interface TestPlanService extends BaseService {
 
 	TstPlan getById(Integer caseId, Integer projectId);
 	TstPlan save(TstPlan vo, TstUser optUser, Integer projectId);
-	void delete(Integer vo, Integer projectId);
+	Boolean delete(Integer vo, Integer projectId);
 
 	List<TstPlan> listByOrg(Integer orgId);
 

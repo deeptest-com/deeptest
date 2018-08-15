@@ -96,7 +96,6 @@
 
     <select id="search" resultType="TstUser">
         SELECT * FROM TstUser usr
-
         JOIN TstOrgUserRelation r ON r.orgId = #{orgId} AND r.userId = usr.id
 
         WHERE TRUE

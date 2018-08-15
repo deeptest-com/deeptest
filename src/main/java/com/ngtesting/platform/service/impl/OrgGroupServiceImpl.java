@@ -45,14 +45,15 @@ public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupServ
 
 	@Override
 	public TstOrgGroup save(TstOrgGroup vo, Integer orgId) {
+        vo.setOrgId(orgId);
+
 		if (vo.getId() == null) {
-			vo.setOrgId(orgId);
 			groupDao.save(vo);
 		} else {
-            if (vo.getOrgId().intValue() != orgId.intValue()) {
+            Integer count = groupDao.update(vo);
+            if (count == 0) {
                 return null;
             }
-            groupDao.update(vo);
         }
 
 		return vo;
@@ -60,8 +61,8 @@ public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupServ
 
 	@Override
 	public boolean delete(Integer id, Integer orgId) {
-		groupDao.delete(id, orgId);
+        Integer count = groupDao.delete(id, orgId);
 
-		return true;
+		return count > 0;
 	}
 }

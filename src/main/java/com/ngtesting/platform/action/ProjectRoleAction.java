@@ -57,15 +57,18 @@ public class ProjectRoleAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 		Integer roleId = req.getInteger("id");
 
-		Map<String, Map<String, TstProjectPrivilegeDefine>> orgPrivileges =
-				projectPrivilegeService.listPrivilegesByOrgAndProjectRole(orgId, roleId);
-
 		TstProjectRole po = null;
 		if (roleId == null) {
 			po = new TstProjectRole();
 		} else {
 			po = projectRoleService.get(roleId, orgId);
+			if (po == null) {
+                return authFail();
+            }
 		}
+
+        Map<String, Map<String, TstProjectPrivilegeDefine>> orgPrivileges =
+                projectPrivilegeService.listPrivilegesByOrgAndProjectRole(orgId, roleId);
 
         ret.put("projectRole", po);
         ret.put("projectPrivileges", orgPrivileges);
@@ -81,8 +84,8 @@ public class ProjectRoleAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		TstProjectRole projectRoleVo = JSON.parseObject(JSON.toJSONString(json.get("projectRole")), TstProjectRole.class);
-		TstProjectRole po = projectRoleService.save(projectRoleVo, orgId);
+		TstProjectRole vo = JSON.parseObject(JSON.toJSONString(json.get("projectRole")), TstProjectRole.class);
+		TstProjectRole po = projectRoleService.save(vo, orgId);
         if (po == null) {
             return authFail();
         }
@@ -107,7 +110,10 @@ public class ProjectRoleAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		projectRoleService.delete(to.getInteger("id"), orgId);
+		Boolean result = projectRoleService.delete(to.getInteger("id"), orgId);
+		if (!result) {
+            return authFail();
+        }
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

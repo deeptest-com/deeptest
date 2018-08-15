@@ -32,16 +32,16 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 
 	@Override
 	public TstProjectRole save(TstProjectRole vo, Integer orgId) {
+        vo.setOrgId(orgId);
+
 		if (vo.getId() == null) {
-			vo.setOrgId(orgId);
 			vo.setCode(UUID.randomUUID().toString());
 			projectRoleDao.save(vo);
 		} else {
-            if (vo.getOrgId().intValue() != orgId.intValue()) {
-				return null;
-			}
-
-			projectRoleDao.update(vo);
+			Integer count = projectRoleDao.update(vo);
+			if (count == 0) {
+                return null;
+            }
 		}
 
 		return vo;
@@ -49,9 +49,9 @@ public class ProjectRoleServiceImpl extends BaseServiceImpl implements ProjectRo
 
 	@Override
 	public boolean delete(Integer id, Integer orgId) {
-        projectRoleDao.delete(id, orgId);
+        Integer count = projectRoleDao.delete(id, orgId);
 
-        return true;
+        return count > 0;
 	}
 
 }

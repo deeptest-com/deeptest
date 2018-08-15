@@ -44,6 +44,24 @@ public class TaskAction extends BaseAction {
         return ret;
     }
 
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer projectId = user.getDefaultPrjId();
+
+        Integer id = json.getInteger("id");
+
+        Boolean result = taskService.delete(id, projectId);
+        if (!result) {
+            return authFail();
+        }
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
 	@RequestMapping(value = "close", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> close(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -53,8 +71,12 @@ public class TaskAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		taskService.closePers(id, user.getId());
-		taskService.closePlanIfAllTaskClosedPers(id);
+		Boolean result = taskService.close(id, projectId);
+		if (!result) {
+		    return authFail();
+        }
+
+		taskService.closePlanIfAllTaskClosed(id);
 		TstTask vo = taskService.getById(id, projectId);
 
         ret.put("data", vo);
@@ -70,6 +92,10 @@ public class TaskAction extends BaseAction {
         Integer projectId = user.getDefaultPrjId();
 
 		TstTask po = taskService.save(json, user);
+        if (po == null) {
+            return authFail();
+        }
+
 		TstTask vo = taskService.getById(po.getId(), projectId);
 
         optFacade.opt(WsConstant.WS_TODO, user);
@@ -90,21 +116,6 @@ public class TaskAction extends BaseAction {
 		TstTask caseVo = taskService.getById(po.getId(), projectId);
 
 		ret.put("data", caseVo);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
-	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer projectId = user.getDefaultPrjId();
-
-		Integer id = json.getInteger("id");
-
-		taskService.delete(id, projectId);
-
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

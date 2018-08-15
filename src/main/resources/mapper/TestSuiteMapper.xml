@@ -58,11 +58,11 @@
     <update id="update" parameterType="TstSuite">
         UPDATE TstSuite
         SET name=#{name},estimate=#{estimate},descr=#{descr},
-        projectId=#{projectId},caseProjectId=#{caseProjectId},userId=#{userId},
+        caseProjectId=#{caseProjectId},userId=#{userId},
         disabled=#{disabled},
         updateTime=NOW()
 
-        WHERE id=#{id}
+        WHERE id=#{id} AND projectId=#{projectId}
     </update>
 
     <select id="get" resultType="TstSuite">

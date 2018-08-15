@@ -64,7 +64,10 @@ public class MsgAction extends BaseAction {
 
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-		msgService.delete(id, userVo.getId());
+		Boolean result = msgService.delete(id, userVo.getId());
+		if (!result) {
+            return authFail();
+        }
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -74,11 +77,13 @@ public class MsgAction extends BaseAction {
     @ResponseBody
     public Map<String, Object> markRead(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer id = json.getInteger("id");
-        msgService.markRead(id, user.getId());
+        Boolean result = msgService.markRead(id, user.getId());
+        if (!result) {
+            return authFail();
+        }
 
         optFacade.opt(WsConstant.WS_TODO, user);
 

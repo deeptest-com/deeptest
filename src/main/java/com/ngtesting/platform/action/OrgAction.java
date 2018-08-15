@@ -107,10 +107,11 @@ public class OrgAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        TstOrg org = orgService.save(vo, user);
-        if (org == null) {
+        if (vo.getId() != null && authDao.userNotInOrg(user.getId(), vo.getId())) {
             return authFail();
         }
+
+        TstOrg org = orgService.save(vo, user);
 
         List<TstOrg> vos = orgService.list(user.getId(), "false", null);
 

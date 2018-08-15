@@ -59,52 +59,48 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
     }
 
     @Override
-    public TstSuite save(JSONObject json, TstUser optUser) {
+    public TstSuite save(JSONObject json, TstUser user) {
         TstSuite vo = JSON.parseObject(JSON.toJSONString(json), TstSuite.class);
-        vo.setUserId(optUser.getId());
+        vo.setUserId(user.getId());
+        vo.setProjectId(user.getDefaultPrjId());
 
         Constant.MsgType action;
-        if (vo.getId() != null) {
-            action = Constant.MsgType.update;
-
-            testSuiteDao.update(vo);
-        } else {
+        if (vo.getId() == null) {
             action = Constant.MsgType.create;
 
             testSuiteDao.save(vo);
+        } else {
+            action = Constant.MsgType.update;
+
+            Integer count = testSuiteDao.update(vo);
+            if (count == 0) {
+                return null;
+            }
         }
 
-        historyService.create(vo.getProjectId(), optUser, action.msg, TstHistory.TargetType.suite,
+        historyService.create(vo.getProjectId(), user, action.msg, TstHistory.TargetType.suite,
                 vo.getId(), vo.getName());
 
         return vo;
     }
 
     @Override
-    public void delete(Integer id, Integer projectId) {
-        testSuiteDao.delete(id, projectId);
+    public Boolean delete(Integer id, Integer projectId) {
+        Integer count = testSuiteDao.delete(id, projectId);
+        return count > 0;
     }
 
     @Override
-    public TstSuite saveCases(JSONObject json, TstUser optUser) {
-        Integer projectId = json.getInteger("projectId");
-        Integer caseProjectId = json.getInteger("caseProjectId");
-        Integer suiteId = json.getInteger("suiteId");
-        List<Integer> ids = JSON.parseArray(json.getString("cases"), Integer.class) ;
-
-        return saveCases(projectId, caseProjectId, suiteId, ids, optUser);
-    }
-
-    @Override
-    public TstSuite saveCases(Integer projectId, Integer caseProjectId, Integer suiteId, List<Integer> caseIds, TstUser optUser) {
-        testSuiteDao.updateSuiteProject(suiteId, projectId, caseProjectId, optUser.getId());
+    public TstSuite saveCases(Integer projectId, Integer caseProjectId, Integer suiteId,
+                              List<Integer> caseIds, TstUser user) {
+        testSuiteDao.updateSuiteProject(suiteId, projectId, caseProjectId, user.getId());
 
         String caseIdsStr = StringUtil.join(caseIds.toArray(), ",");
         testSuiteDao.addCases(suiteId, caseIdsStr);
 
         TstSuite suite = testSuiteDao.get(suiteId, projectId);
         Constant.MsgType action = Constant.MsgType.update_case;
-        historyService.create(suite.getProjectId(), optUser, action.msg, TstHistory.TargetType.task,
+        historyService.create(suite.getProjectId(), user, action.msg, TstHistory.TargetType.task,
                 suite.getId(), suite.getName());
 
         return suite;

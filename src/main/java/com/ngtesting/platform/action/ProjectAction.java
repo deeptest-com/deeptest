@@ -143,11 +143,11 @@ public class ProjectAction extends BaseAction {
         Integer userId = user.getId();
 
         TstProject vo = json.getObject("model", TstProject.class);
+        if (vo.getId() != null && authDao.userNotInProject(user.getId(), vo.getId())) {
+            return null;
+        }
 
         TstProject po = projectService.save(vo, orgId, user);
-        if (po == null) {
-            return authFail();
-        }
 
         if (TstProject.ProjectType.project.equals(po.getType())) {
             projectService.updateNameInHisotyPers(po.getId(), userId);
@@ -234,7 +234,6 @@ public class ProjectAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer projectId = json.getInteger("projectId");
-
         if (userNotInProject(user.getId(), projectId)) {
             return authFail();
         }

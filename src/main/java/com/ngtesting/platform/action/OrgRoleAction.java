@@ -57,6 +57,9 @@ public class OrgRoleAction extends BaseAction {
 		Integer orgRoleId = req.getInteger("id");
 
         TstOrgRole po = orgRoleService.get(orgRoleId, orgId);
+        if (po == null) {
+            return authFail();
+        }
 
 		List<TstOrgRolePrivilegeRelation> privileges =
                 orgRolePrivilegeRelationService.listRelationsByOrgRole(orgId, orgRoleId);
@@ -106,7 +109,10 @@ public class OrgRoleAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
 
-		orgRoleService.delete(to.getInteger("id"), orgId);
+		Boolean result = orgRoleService.delete(to.getInteger("id"), orgId);
+        if (!result) {
+            return authFail();
+        }
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

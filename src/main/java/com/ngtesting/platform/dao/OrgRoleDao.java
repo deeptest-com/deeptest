@@ -16,9 +16,9 @@ public interface OrgRoleDao {
     TstOrgRole get(@Param("id") Integer id,
                    @Param("orgId") Integer orgId);
 
-    void save(TstOrgRole vo);
-    void update(TstOrgRole vo);
+    Integer save(TstOrgRole vo);
+    Integer update(TstOrgRole vo);
 
-    void delete(@Param("id") Integer id,
+    Integer delete(@Param("id") Integer id,
                 @Param("orgId") Integer orgId);
 }

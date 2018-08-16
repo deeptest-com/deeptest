@@ -56,7 +56,13 @@ public class OrgRoleAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 		Integer orgRoleId = req.getInteger("id");
 
-        TstOrgRole po = orgRoleService.get(orgRoleId, orgId);
+		TstOrgRole po;
+		if (orgRoleId == null) {
+			po = new TstOrgRole();
+			po.setOrgId(orgId);
+		} else {
+			po = orgRoleService.get(orgRoleId, orgId);
+		}
         if (po == null) {
             return authFail();
         }

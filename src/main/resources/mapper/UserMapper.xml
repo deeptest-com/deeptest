@@ -58,10 +58,10 @@
 
     <insert id="save" parameterType="TstUser" useGeneratedKeys="true" keyProperty="id">
         insert into TstUser (email,password,nickname,phone,avatar,token,
-          leftSizeCase,leftSizeIssue,defaultOrgId,defaultOrgName,defaultPrjId,defaultPrjName,
+          leftSizeDesign,leftSizeExe,defaultOrgId,defaultOrgName,defaultPrjId,defaultPrjName,
           deleted,disabled,createTime)
         values (#{email},#{password},#{nickname},#{phone},#{avatar},#{token},
-          #{leftSizeCase},#{leftSizeIssue},#{defaultOrgId},#{defaultOrgName},#{defaultPrjId},#{defaultPrjName},
+          #{leftSizeDesign},#{leftSizeExe},#{defaultOrgId},#{defaultOrgName},#{defaultPrjId},#{defaultPrjName},
           #{deleted},#{disabled},#{createTime})
     </insert>
 

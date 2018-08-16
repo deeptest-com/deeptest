@@ -72,9 +72,7 @@
 
     <delete id="delete" parameterType="TstOrgGroup">
         UPDATE TstOrgGroup
-        disabled=TRUE,
-        updateTime=NOW()
-
+        SET deleted=TRUE, updateTime=NOW()
         WHERE id=#{id} AND orgId=#{orgId}
     </delete>
 

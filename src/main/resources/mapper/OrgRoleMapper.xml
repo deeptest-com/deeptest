@@ -10,7 +10,7 @@
         <if test="keywords != null and keywords != ''">
             AND role.name LIKE CONCAT('%','${keywords}','%' )
         </if>
-        <if test="disabled != null and disabled != ''">
+        <if test="disabled != null">
             AND role.disabled = #{disabled}
         </if>
 
@@ -45,9 +45,7 @@
 
     <delete id="delete" parameterType="TstOrgRole">
         UPDATE TstOrgRole
-        disabled=TRUE,
-        updateTime=NOW()
-
+        SET deleted=TRUE, updateTime=NOW()
         WHERE id=#{id} AND orgId=#{orgId}
     </delete>
 

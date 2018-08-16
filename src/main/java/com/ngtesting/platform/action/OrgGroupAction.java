@@ -62,8 +62,14 @@ public class OrgGroupAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 		Integer orgGroupId = json.getInteger("id");
 
-		TstOrgGroup po = orgGroupService.get(orgGroupId, orgId);
-		if (po == null) {
+		TstOrgGroup group;
+		if (orgGroupId == null) {
+			group = new TstOrgGroup();
+            group.setOrgId(orgId);
+		} else {
+			group = orgGroupService.get(orgGroupId, orgId);
+		}
+		if (group == null) {
             return authFail();
         }
 
@@ -75,7 +81,7 @@ public class OrgGroupAction extends BaseAction {
 			return ret;
 		}
 
-        ret.put("group", po);
+        ret.put("group", group);
         ret.put("relations", relations);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

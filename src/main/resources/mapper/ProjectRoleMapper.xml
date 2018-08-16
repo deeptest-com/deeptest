@@ -10,7 +10,7 @@
             <if test="keywordsParam != null and keywordsParam != ''">
                 AND o.name LIKE CONCAT('%','${keywordsParam}','%' )
             </if>
-            <if test="disabledParam != null and disabledParam != ''">
+            <if test="disabledParam != null">
                 AND o.disabled = #{disabledParam}
             </if>
             AND o.deleted != TRUE
@@ -55,9 +55,7 @@
 
     <delete id="delete" parameterType="TstProjectRole">
         UPDATE TstProjectRole
-        disabled=TRUE,
-        updateTime=NOW()
-
+        SET deleted=TRUE, updateTime=NOW()
         WHERE id=#{id} AND orgId=#{orgId}
     </delete>
 

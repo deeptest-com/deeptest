@@ -169,9 +169,9 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	}
 
     @Override
-    public void updateNameInHisotyPers(Integer projectId, Integer userId) {
-//        TstProject project = getDetail(projectId);
-//        genHistoryPers(project.getOrgId(), userId, projectId, project.getName());
+    public void updateNameInHisoty(Integer projectId, Integer userId) {
+        TstProject project = get(projectId);
+        projectDao.genHistory(project.getOrgId(), userId, projectId, project.getName());
     }
 
 	@Override

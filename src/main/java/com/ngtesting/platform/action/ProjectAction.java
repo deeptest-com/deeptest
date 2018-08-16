@@ -154,7 +154,7 @@ public class ProjectAction extends BaseAction {
         }
 
         if (TstProject.ProjectType.project.equals(po.getType())) {
-            projectService.updateNameInHisotyPers(po.getId(), userId);
+            projectService.updateNameInHisoty(po.getId(), userId);
         }
 
         pushSettingsService.pushRecentProjects(user);

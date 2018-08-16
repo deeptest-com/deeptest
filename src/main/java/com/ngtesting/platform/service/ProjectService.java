@@ -21,7 +21,7 @@ public interface ProjectService extends BaseService {
 
 	TstProject view(Integer projectId, TstUser userVo);
 
-    void updateNameInHisotyPers(Integer projectId, Integer userId);
+    void updateNameInHisoty(Integer projectId, Integer userId);
 
 	boolean isLastestProjectGroup(Integer orgId, Integer projectGroupId);
 

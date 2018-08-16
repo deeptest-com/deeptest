@@ -19,11 +19,9 @@ public interface ProjectService extends BaseService {
     TstProject save(TstProject vo, Integer orgId, TstUser userVo);
 	Boolean delete(Integer id, Integer userId);
 
-	TstProject viewPers(Integer projectId, TstUser userVo);
+	TstProject view(Integer projectId, TstUser userVo);
 
     void updateNameInHisotyPers(Integer projectId, Integer userId);
-
-	void genHistoryPers(Integer orgId, Integer userId, Integer projectId, String projectName);
 
 	boolean isLastestProjectGroup(Integer orgId, Integer projectGroupId);
 

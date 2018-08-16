@@ -58,7 +58,7 @@ public class ClientAction extends BaseAction {
             userService.setDefaultOrg(user, orgId);
         }
         if (prjIdNew != null && (prjId == null || prjIdNew.longValue() != prjId.longValue())) { // prj可能为空
-            projectService.viewPers(prjIdNew, user);
+            projectService.view(prjIdNew, user);
         }
 
         Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userId);

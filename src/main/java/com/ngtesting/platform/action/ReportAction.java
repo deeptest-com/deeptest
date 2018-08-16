@@ -63,11 +63,11 @@ public class ReportAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer projectId = json.getInteger("projectId");
-        if (userNotInProject(user.getId(), projectId)) {
+        TstProject prj = projectService.get(projectId);
+        if (prj.getType().equals(TstProject.ProjectType.project) &&
+                userNotInProject(user.getId(), projectId)) {
             return authFail();
         }
-
-        TstProject prj = projectService.get(projectId);
 
         Map<String, List<Object>> designReport =
                 reportService.chartDesignProgressByProject(projectId, prj.getType(), 14);

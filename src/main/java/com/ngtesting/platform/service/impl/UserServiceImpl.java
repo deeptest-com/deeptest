@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService {
 
         if (isNew || orgUserRelationDao.userInOrg(vo.getId(), orgId) == 0) { // 不在组织里
             orgUserRelationDao.addUserToOrg(vo.getId(), orgId);
-            projectService.viewPers(prjId, vo);
+            projectService.view(prjId, vo);
 
             orgGroupUserRelationService.saveRelationsForUser(orgId, vo.getId(), relations);
 

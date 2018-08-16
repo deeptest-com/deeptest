@@ -34,6 +34,8 @@ public class ProjectAction extends BaseAction {
 
     @Autowired
     private PushSettingsService pushSettingsService;
+    @Autowired
+    AuthService authService;
 
     @ResponseBody
     @PostMapping("/list")
@@ -61,12 +63,13 @@ public class ProjectAction extends BaseAction {
         Integer orgId = user.getDefaultOrgId();
 
         Integer projectId = json.getInteger("id");
-        if (projectId != null && userNotInProject(user.getId(), projectId)) {
-            return authFail();
-        }
 
         if (projectId != null) {
             TstProject project = projectService.get(projectId);
+            if (authService.noProjectAndProjectGroupPrivilege(user.getId(), project)) {
+                return authFail();
+            }
+
             TstProject vo = projectService.genVo(project, null);
 
             if (TstProject.ProjectType.group.equals(project.getType())) {
@@ -89,11 +92,12 @@ public class ProjectAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer projectId = json.getInteger("id");
-        if (userNotInProject(user.getId(), projectId)) {
+
+        TstProject po = projectService.get(projectId);
+        if (authService.noProjectAndProjectGroupPrivilege(user.getId(), po)) {
             return authFail();
         }
 
-        TstProject po = projectService.get(projectId);
         TstProject vo = projectService.genVo(po, null);
 
         List<TstPlan> planPos = planService.listByProject(projectId, vo.getType());
@@ -117,11 +121,11 @@ public class ProjectAction extends BaseAction {
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer projectId = json.getInteger("id");
-        if (userNotInProject(user.getId(), projectId)) {
+
+        TstProject vo = projectService.view(projectId, user);
+        if (vo == null) {
             return authFail();
         }
-
-        TstProject vo = projectService.viewPers(projectId, user);
 
         if (vo.getType().equals(TstProject.ProjectType.project)) {
             pushSettingsService.pushRecentProjects(user);
@@ -143,11 +147,11 @@ public class ProjectAction extends BaseAction {
         Integer userId = user.getId();
 
         TstProject vo = json.getObject("model", TstProject.class);
-        if (vo.getId() != null && authDao.userNotInProject(user.getId(), vo.getId())) {
-            return null;
-        }
 
         TstProject po = projectService.save(vo, orgId, user);
+        if (po == null) {
+            return authFail();
+        }
 
         if (TstProject.ProjectType.project.equals(po.getType())) {
             projectService.updateNameInHisotyPers(po.getId(), userId);
@@ -168,7 +172,8 @@ public class ProjectAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer projectId = json.getInteger("id");
-        if (userNotInProject(user.getId(), projectId)) {
+        TstProject project = projectService.get(projectId);
+        if (authService.noProjectAndProjectGroupPrivilege(user.getId(), project)) {
             return authFail();
         }
 

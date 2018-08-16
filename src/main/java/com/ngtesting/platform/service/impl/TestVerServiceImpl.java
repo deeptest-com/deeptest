@@ -36,7 +36,7 @@ public class TestVerServiceImpl extends BaseServiceImpl implements TestVerServic
 
         vo.setProjectId(user.getDefaultPrjId());
 
-        if (id != null) {
+        if (id == null) {
             Integer maxOrder = verDao.getMaxOrdrNumb(vo.getProjectId());
             if (maxOrder == null) {
                 maxOrder = 0;

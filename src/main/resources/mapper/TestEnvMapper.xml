@@ -47,7 +47,7 @@
         updateTime=NOW()
         WHERE id=#{id}
         <if test="projectId != null">
-            AND o.projectId=#{projectId}
+            AND projectId=#{projectId}
         </if>
     </update>
 

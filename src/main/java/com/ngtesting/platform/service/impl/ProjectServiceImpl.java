@@ -38,6 +38,9 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
     private UserService userService;
     @Autowired
 	ProjectPrivilegeService projectPrivilegeService;
+
+    @Autowired
+    AuthService authService;
     @Autowired
     AuthDao authDao;
 
@@ -91,11 +94,16 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	public TstProject save(TstProject vo, Integer orgId, TstUser user) {
         boolean disableStatusChanged = false;
 		boolean isNew = vo.getId() == null;
+
 		if (isNew) {
             vo.setOrgId(orgId);
             projectDao.save(vo);
 		} else {
             TstProject old = projectDao.get(vo.getId());
+            if (authService.noProjectAndProjectGroupPrivilege(user.getId(), old)) {
+                return null;
+            }
+
             disableStatusChanged = vo.getDisabled() != old.getDisabled();
 
             projectDao.update(vo);
@@ -144,13 +152,17 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
 	@Override
     @Transactional
-	public TstProject viewPers(Integer projectId, TstUser tstUser) {
+	public TstProject view(Integer projectId, TstUser user) {
 		TstProject po = get(projectId);
 
-        if (po.getType().equals(TstProject.ProjectType.project)) {
-            projectDao.genHistory(po.getOrgId(), tstUser.getId(), projectId, po.getName());
+        if (authService.noProjectAndProjectGroupPrivilege(user.getId(), po)) {
+            return null;
+        }
 
-            userService.setDefaultPrj(tstUser, projectId);
+        if (po.getType().equals(TstProject.ProjectType.project)) {
+            projectDao.genHistory(po.getOrgId(), user.getId(), projectId, po.getName());
+
+            userService.setDefaultPrj(user, projectId);
 		}
 
 		return po;
@@ -161,28 +173,6 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 //        TstProject project = getDetail(projectId);
 //        genHistoryPers(project.getOrgId(), userId, projectId, project.getName());
     }
-
-    @Override
-    public void genHistoryPers(Integer orgId, Integer userId, Integer projectId, String projectName) {
-//		DetachedCriteria dc = DetachedCriteria.forClass(TstProjectAccessHistory.class);
-//
-//		dc.add(Restrictions.eq("orgId", orgId));
-//		dc.add(Restrictions.eq("projectId", projectId));
-//		dc.add(Restrictions.eq("userId", userId));
-//		dc.add(Restrictions.eq("deleted", false));
-//		dc.add(Restrictions.eq("disabled", false));
-//
-//		TstProjectAccessHistory history;
-//		List<TstProjectAccessHistory> pos = findAllByCriteria(dc);
-//		if (pos.size() > 0) {
-//			history = pos.getDetail(0);
-//			history.setProjectName(projectName);
-//		} else {
-//			history = new TstProjectAccessHistory(orgId, userId, projectId, projectName);
-//		}
-//        history.setLastAccessTime(new Date());
-//        saveOrUpdate(history);
-	}
 
 	@Override
 	public boolean isLastestProjectGroup(Integer orgId, Integer projectGroupId) {
@@ -225,6 +215,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
         return voList;
     }
+
     @Override
     public TstProject genVo(TstProject po, Map<String, Map<String, Boolean>> privMap) {
         if (po == null) {

@@ -97,7 +97,7 @@
     <update id="delete">
         UPDATE TstPlan
         SET deleted = TRUE
-        WHERE id=#{id} AND o.projectId=#{projectId}
+        WHERE id=#{id} AND projectId=#{projectId}
     </update>
 
     <update id="closePlanIfAllTaskClosed">

@@ -61,7 +61,7 @@ public class ProjectAction extends BaseAction {
         Integer orgId = user.getDefaultOrgId();
 
         Integer projectId = json.getInteger("id");
-        if (userNotInProject(user.getId(), projectId)) {
+        if (projectId != null && userNotInProject(user.getId(), projectId)) {
             return authFail();
         }
 

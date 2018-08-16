@@ -85,7 +85,7 @@
     </update>
 
     <delete id="delete">
-        UPDATE TstTask SET deleted=TRUE, userId=#{userId}, updateTime=NOW()
+        UPDATE TstTask SET deleted=TRUE, updateTime=NOW()
         WHERE id=#{id} AND projectId=#{projectId}
     </delete>
     <delete id="close">

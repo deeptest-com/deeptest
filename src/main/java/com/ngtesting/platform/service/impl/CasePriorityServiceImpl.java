@@ -63,11 +63,12 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
 	@Override
     @Transactional
 	public Boolean setDefault(Integer id, Integer orgId) {
+        casePriorityDao.removeDefault(orgId);
+
         Integer count = casePriorityDao.setDefault(id, orgId);
         if (count == 0) {
             return false;
         }
-        casePriorityDao.removeDefault(orgId);
         return true;
 	}
 

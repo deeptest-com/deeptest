@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 
 @Controller
@@ -94,13 +91,16 @@ public class CustomFieldAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 
 		TstCustomField customField = JSON.parseObject(JSON.toJSONString(json.get("model")), TstCustomField.class);
-		List<TstCustomFieldProjectRelation> relations = (List<TstCustomFieldProjectRelation>) json.get("relations");
 
 		TstCustomField po = customFieldService.save(customField, orgId);
         if (po == null) {
             return authFail();
         }
 
+		List<TstCustomFieldProjectRelation> relations = (List<TstCustomFieldProjectRelation>) json.get("relations");
+        if (po.getGlobal()) {
+			relations = new LinkedList<>();
+		}
 		customFieldProjectRelationService.saveRelationsByField(orgId, po.getId(), relations);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

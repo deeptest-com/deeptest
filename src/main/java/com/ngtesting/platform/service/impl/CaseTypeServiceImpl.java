@@ -61,12 +61,12 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 	@Override
     @Transactional
 	public Boolean setDefault(Integer id, Integer orgId) {
+        caseTypeDao.removeDefault(orgId);
+
         Integer count = caseTypeDao.setDefault(id, orgId);
         if (count == 0) {
             return false;
         }
-
-        caseTypeDao.removeDefault(orgId);
 		return true;
 	}
 

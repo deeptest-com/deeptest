@@ -11,7 +11,7 @@
  Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 08/15/2018 20:37:36 PM
+ Date: 08/16/2018 14:58:37 PM
 */
 
 SET NAMES utf8mb4;
@@ -1344,66 +1344,6 @@ INSERT INTO `sys_nums` VALUES ('30805'), ('30806'), ('30807'), ('30808'), ('3080
 COMMIT;
 
 -- ----------------------------
---  Procedure structure for `add_cases_to_run`
--- ----------------------------
-DROP PROCEDURE IF EXISTS `add_cases_to_run`;
-delimiter ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `add_cases_to_run`(IN p_run_id  BIGINT, IN case_ids VARCHAR(10000), IN p_append  BIT)
-BEGIN
-
-declare spl VARCHAR(10000) default ','; 
-declare cnt int default 0;
-declare i int default 0;
-declare id VARCHAR(100);
-
-declare total int default 0;  
-
-
-IF p_append=false THEN
-	delete from tst_case_in_run where `run_id`=p_run_id;
-END IF;
-
-set cnt = 1+(length(case_ids) - length(replace(case_ids, spl, ''))); 
-while i < cnt do
-    set i=i+1;
-
-    SELECT reverse(substring_index( reverse(substring_index(case_ids, spl, i)), spl, 1)) into id;
-    call add_case_to_run(p_run_id, id);
-end while;
-end
- ;;
-delimiter ;
-
--- ----------------------------
---  Procedure structure for `add_cases_to_run_by_suites`
--- ----------------------------
-DROP PROCEDURE IF EXISTS `add_cases_to_run_by_suites`;
-delimiter ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `add_cases_to_run_by_suites`(IN p_run_id  BIGINT, IN suite_ids VARCHAR(10000))
-BEGIN
-
-declare spl VARCHAR(10000) default ','; 
-declare cnt int default 0;
-declare i int default 0;
-declare id VARCHAR(100);
-
-declare total int default 0;  
-declare case_ids VARCHAR(10000);
-
-set cnt = 1+(length(suite_ids) - length(replace(suite_ids, spl, ''))); 
-while i < cnt do
-    set i=i+1;
-
-    SELECT reverse(substring_index( reverse(substring_index(suite_ids, spl, i)), spl, 1)) into id;
-	select group_concat(temp.case_id) from tst_case_in_suite temp where temp.suite_id=id into case_ids;  
-
-	call add_cases_to_run(p_run_id, case_ids, true);
-end while;
-end
- ;;
-delimiter ;
-
--- ----------------------------
 --  Procedure structure for `add_cases_to_suite`
 -- ----------------------------
 DROP PROCEDURE IF EXISTS `add_cases_to_suite`;
@@ -1427,9 +1367,9 @@ declare total int default 0;
     DECLARE  _is_leaf TINYINT;
     DECLARE  _ordr INT;
 
-select projectId from tstSuite where id=_suiteId INTO _project_id;
+select projectId from TstSuite where id=_suiteId INTO _project_id;
 
-delete from tstCaseInSuite where suiteId=_suiteId;
+delete from TstCaseInSuite where suiteId=_suiteId;
 
 set cnt = 1+(length(caseIds) - length(replace(caseIds, spl, '')));
 while i < cnt do
@@ -1437,10 +1377,10 @@ while i < cnt do
 
     SELECT reverse(substring_index( reverse(substring_index(caseIds, spl, i)), spl, 1)) into id;
 
-	select cs.id, cs.name, cs.isLeaf, cs.pId, cs.ordr from tstCase cs WHERE cs.id=id into _id, _name, _is_leaf, _p_id, _ordr;
+	select cs.id, cs.name, cs.isLeaf, cs.pId, cs.ordr from TstCase cs WHERE cs.id=id into _id, _name, _is_leaf, _p_id, _ordr;
     
-	IF NOT EXISTS(select * from tstCaseInSuite temp where temp.suiteId=_suiteId and temp.caseId=id) then
-		INSERT INTO `tstCaseInSuite` (projectId, suiteId, pId, caseId, isLeaf, ordr, disabled, deleted, createTime)
+	IF NOT EXISTS(select * from TstCaseInSuite temp where temp.suiteId=_suiteId and temp.caseId=id) then
+		INSERT INTO `TstCaseInSuite` (projectId, suiteId, pId, caseId, isLeaf, ordr, disabled, deleted, createTime)
 		VALUES (_project_id, _suiteId, _p_id, _id, _is_leaf, _ordr, b'0', b'0', NOW());
 	END if;
 
@@ -1466,7 +1406,7 @@ declare total int default 0;
 
 
 IF _append=false THEN
-	delete from tstCaseInTask where `taskId`=_taskId;
+    delete from TstCaseInTask where `taskId`=_taskId;
 END IF;
 
 set cnt = 1+(length(_caseIds) - length(replace(_caseIds, spl, ''))); 
@@ -1503,54 +1443,10 @@ while i < cnt do
     set i=i+1;
 
     SELECT reverse(substring_index( reverse(substring_index(_suiteIds, spl, i)), spl, 1)) into id;
-	select group_concat(temp.caseId) from tstCaseInSuite temp where temp.suiteId=id into case_ids;  
+    select group_concat(temp.caseId) from TstCaseInSuite temp where temp.suiteId=id into case_ids;  
 
-	call add_cases_to_task(_taskId, case_ids, true);
+    call add_cases_to_task(_taskId, case_ids, true);
 end while;
-end
- ;;
-delimiter ;
-
--- ----------------------------
---  Procedure structure for `add_case_to_run`
--- ----------------------------
-DROP PROCEDURE IF EXISTS `add_case_to_run`;
-delimiter ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `add_case_to_run`(IN run_id  BIGINT, IN case_id  BIGINT)
-BEGIN
-
-    DECLARE  _id BIGINT;
-    DECLARE _project_id BIGINT;
-    DECLARE _plan_id BIGINT;
-    DECLARE _p_id BIGINT;
-
-    DECLARE  _name VARCHAR(255);
-    DECLARE  _is_leaf TINYINT;
-
-    declare done int default false;
-
-    declare cur cursor for SELECT cs.id, cs.name, cs.is_leaf, cs.p_id
-	FROM tst_case cs WHERE cs.id=case_id; 
-
-    declare continue HANDLER for not found set done = true;
-
-    select project_id, plan_id from tst_run where id=run_id INTO _project_id, _plan_id;
-
-    open cur;
-        read_loop:loop
-            fetch cur into _id, _name, _is_leaf, _p_id;
-            if done then  
-		leave read_loop; 
-            end if;
-
-	IF NOT EXISTS(select * from tst_case_in_run temp where temp.run_id=run_id and temp.case_id=case_id) then
-		INSERT INTO `tst_case_in_run` (project_id, plan_id, run_id, p_id, case_id, is_leaf, `status`, disabled, deleted, create_time, version)
-		VALUES (_project_id, _plan_id, run_id, _p_id, _id, _is_leaf, 'untest', b'0', b'0', NOW(), 0);
-	END if;
-
-        end loop;
-    close cur; 
-
 end
  ;;
 delimiter ;
@@ -1575,11 +1471,11 @@ BEGIN
     declare done int default false;
 
     declare cur cursor for SELECT cs.id, cs.name, cs.isLeaf, cs.pId, cs.ordr
-	FROM tstCase cs WHERE cs.id=_caseId; 
+	FROM TstCase cs WHERE cs.id=_caseId; 
 
     declare continue HANDLER for not found set done = true;
 
-    select projectId, planId from tstTask where id=_taskId INTO _project_id, _plan_id;
+    select projectId, planId from TstTask where id=_taskId INTO _project_id, _plan_id;
 
     open cur;
         read_loop:loop
@@ -1588,8 +1484,8 @@ BEGIN
 		leave read_loop; 
             end if;
 
-	IF NOT EXISTS(select * from tstCaseInTask temp where temp.taskId=_taskId and temp.caseId=_caseId) then
-		INSERT INTO `tstCaseInTask` (projectId, planId, taskId, pId, caseId, isLeaf, ordr, `status`, disabled, deleted, createTime)
+	IF NOT EXISTS(select * from TstCaseInTask temp where temp.taskId=_taskId and temp.caseId=_caseId) then
+		INSERT INTO `TstCaseInTask` (projectId, planId, taskId, pId, caseId, isLeaf, ordr, `status`, disabled, deleted, createTime)
 		VALUES (_project_id, _plan_id, _taskId, _p_id, _id, _is_leaf, _ordr, 'untest', b'0', b'0', NOW());
 	END if;
 
@@ -1611,71 +1507,71 @@ BEGIN
 DECLARE `before` BIGINT;
 
 IF project_type='project' THEN
-	SELECT COUNT(cs.id) numb FROM TstCase cs
-			WHERE cs.projectId=projectId AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
-			AND cs.createTime < DATE_FORMAT(adddate(CURDATE(), INTERVAL -(numb-1) DAY),'%Y-%m-%d %H:%i:%s') 
-		into `before`;
+    SELECT COUNT(cs.id) numb FROM TstCase cs
+            WHERE cs.projectId=projectId AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
+            AND cs.createTime < DATE_FORMAT(adddate(CURDATE(), INTERVAL -(numb-1) DAY),'%Y-%m-%d %H:%i:%s') 
+        into `before`;
 ELSEIF project_type='group' THEN
-	SELECT COUNT(cs.id) numb FROM TstCase cs
-			WHERE cs.projectId in (SELECT p.id from TstProject p where p.parentId = project_id 
-							AND p.deleted != true AND p.disabled != true) 
-			AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
-			AND cs.createTime < DATE_FORMAT(adddate(CURDATE(), INTERVAL -(numb-1) DAY),'%Y-%m-%d %H:%i:%s') 
-		into `before`;
+    SELECT COUNT(cs.id) numb FROM TstCase cs
+            WHERE cs.projectId in (SELECT p.id from TstProject p where p.parentId = project_id 
+                            AND p.deleted != true AND p.disabled != true) 
+            AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
+            AND cs.createTime < DATE_FORMAT(adddate(CURDATE(), INTERVAL -(numb-1) DAY),'%Y-%m-%d %H:%i:%s') 
+        into `before`;
 ELSEIF project_type='org' THEN
-	SELECT COUNT(cs.id) numb FROM TstCase cs
-			WHERE cs.projectId in (SELECT p.id from TstProject p where p.orgId = projectId 
-							AND p.deleted != true AND p.disabled != true) 
-			AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
-			AND cs.createTime < DATE_FORMAT(adddate(CURDATE(), INTERVAL -(numb-1) DAY),'%Y-%m-%d %H:%i:%s') 
-		into `before`;
+    SELECT COUNT(cs.id) numb FROM TstCase cs
+            WHERE cs.projectId in (SELECT p.id from TstProject p where p.orgId = projectId 
+                            AND p.deleted != true AND p.disabled != true) 
+            AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
+            AND cs.createTime < DATE_FORMAT(adddate(CURDATE(), INTERVAL -(numb-1) DAY),'%Y-%m-%d %H:%i:%s') 
+        into `before`;
 END IF;
 
 IF project_type='project' THEN
-	select days.date date, IFNULL(temp.numb,0) numb, `before` `sum` from 
-		(select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-			from sysNums,(select @num:=numb) t 
-			where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-			order by date) days left join 
-		(
-			SELECT COUNT(cs.id) numb, DATE_FORMAT(cs.createTime,'%Y/%m/%d') dt 
-			FROM TstCase cs 
-			WHERE cs.projectId=project_id AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
-			GROUP BY dt
-		) temp ON days.date = temp.dt
-	ORDER BY days.date;
+    select days.date date, IFNULL(temp.numb,0) numb, `before` `sum` from 
+        (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
+            from SysNums,(select @num:=numb) t 
+            where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+            order by date) days left join 
+        (
+            SELECT COUNT(cs.id) numb, DATE_FORMAT(cs.createTime,'%Y/%m/%d') dt 
+            FROM TstCase cs 
+            WHERE cs.projectId=project_id AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
+            GROUP BY dt
+        ) temp ON days.date = temp.dt
+    ORDER BY days.date;
 
 ELSEIF project_type='group' THEN
-	select days.date date, IFNULL(temp.numb,0) numb, `before` `sum` from 
-		(select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-			from sysNums,(select @num:=numb) t 
-			where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-			order by date) days left join 
-		(
-			SELECT COUNT(cs.id) numb, DATE_FORMAT(cs.createTime,'%Y/%m/%d') dt 
-			FROM tstCase cs 
-			WHERE cs.projectId in (SELECT p.id from TstProject p where p.parentId = project_id 
-							AND p.deleted != true AND p.disabled != true)  
-			AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
-			GROUP BY dt
-		) temp ON days.date = temp.dt
-	ORDER BY days.date;
+    select days.date date, IFNULL(temp.numb,0) numb, `before` `sum` from 
+        (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
+            from SysNums,(select @num:=numb) t 
+            where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+            order by date) days left join 
+        (
+            SELECT COUNT(cs.id) numb, DATE_FORMAT(cs.createTime,'%Y/%m/%d') dt 
+            FROM TstCase cs 
+            WHERE cs.projectId in (SELECT p.id from TstProject p where p.parentId = project_id 
+                            AND p.deleted != true AND p.disabled != true)  
+            AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
+            GROUP BY dt
+        ) temp ON days.date = temp.dt
+    ORDER BY days.date;
 
 ELSEIF project_type='org' THEN
-	select days.date date, IFNULL(temp.numb,0) numb, `before` `sum` from 
-		(select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-			from sysNums,(select @num:=numb) t 
-			where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-			order by date) days left join 
-		(
-			SELECT COUNT(cs.id) numb, DATE_FORMAT(cs.createTime,'%Y/%m/%d') dt 
-			FROM tstCase cs 
-			WHERE cs.projectId in (SELECT p.id from TstProject p where p.orgId = project_id 
-							AND p.deleted != true AND p.disabled != true)  
-			AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
-			GROUP BY dt
-		) temp ON days.date = temp.dt
-	ORDER BY days.date;
+    select days.date date, IFNULL(temp.numb,0) numb, `before` `sum` from 
+        (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
+            from SysNums,(select @num:=numb) t 
+            where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+            order by date) days left join 
+        (
+            SELECT COUNT(cs.id) numb, DATE_FORMAT(cs.createTime,'%Y/%m/%d') dt 
+            FROM TstCase cs 
+            WHERE cs.projectId in (SELECT p.id from TstProject p where p.orgId = project_id 
+                            AND p.deleted != true AND p.disabled != true)  
+            AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
+            GROUP BY dt
+        ) temp ON days.date = temp.dt
+    ORDER BY days.date;
 
 END IF;
 
@@ -1694,20 +1590,20 @@ BEGIN
 set @sumNumb:= 0;
 
 select days.date, temp.`status`, temp.numb, (@sumNumb := @sumNumb + temp.numb) `sum` from 
-	(select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-		from sysNums,(select @num:=_numb) t 
-		where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-		order by date) days 
-	left join 
-	(
-		SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.`status` `status` 
-		FROM tstCaseInTask csr 
-			left join tstTask task on csr.taskId=task.id
-		WHERE csr.planId=_planId and task.deleted != true AND task.disabled != true 
-			AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
-			AND csr.`status` != 'untest' 
-		GROUP BY dt, csr.`status`
-	) temp ON days.date = temp.dt
+    (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
+        from SysNums,(select @num:=_numb) t 
+        where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+        order by date) days 
+    left join 
+    (
+        SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.`status` `status` 
+        FROM TstCaseInTask csr 
+            left join TstTask task on csr.taskId=task.id
+        WHERE csr.planId=_planId and task.deleted != true AND task.disabled != true 
+            AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+            AND csr.`status` != 'untest' 
+        GROUP BY dt, csr.`status`
+    ) temp ON days.date = temp.dt
 ORDER BY days.date, temp.`status`;
 
 END
@@ -1726,22 +1622,22 @@ set @sumNumb:= 0;
 
 select days.date, usr.nickname `name`, temp.numb, (@sumNumb := @sumNumb + temp.numb) `sum` from 
 
-	(select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-		from sysNums,(select @num:=_numb) t 
-		where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-		order by date
-	) days left join (
-		SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.exeBy 
-		FROM tstCaseInTask csr 
-			left join tstTask task on csr.taskId=task.id
-		
-		WHERE csr.planId=_planId and task.deleted != true AND task.disabled != true
-			AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
-			AND csr.`status` != 'untest' 
-		GROUP BY dt, csr.exeBy
-	) temp ON days.date = temp.dt
+    (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
+        from SysNums,(select @num:=_numb) t 
+        where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+        order by date
+    ) days left join (
+        SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.exeBy 
+        FROM TstCaseInTask csr 
+            left join TstTask task on csr.taskId=task.id
+        
+        WHERE csr.planId=_planId and task.deleted != true AND task.disabled != true
+            AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+            AND csr.`status` != 'untest' 
+        GROUP BY dt, csr.exeBy
+    ) temp ON days.date = temp.dt
 
-	LEFT JOIN TstUser usr on temp.exeBy = usr.id
+    LEFT JOIN TstUser usr on temp.exeBy = usr.id
 
 ORDER BY days.date, temp.exeBy;
 
@@ -1760,51 +1656,51 @@ BEGIN
 set @sumNumb:= 0;
 
 IF project_type='project' THEN
-	select days.date date, IFNULL(temp.`status`,'null') `status`, IFNULL(temp.numb,0) numb from 
-		(select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-			from sysNums,(select @num:=numb) t 
-			where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-			order by date) days left join 
-		(
-			SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.`status` `status` 
-				FROM tstCaseInTask csr 
-				WHERE csr.projectId=project_id  
-					AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
-					AND csr.`status` != 'untest' GROUP BY dt, csr.`status`
-		) temp ON days.date = temp.dt
-	ORDER BY days.date, temp.`status`;
+    select days.date date, IFNULL(temp.`status`,'null') `status`, IFNULL(temp.numb,0) numb from 
+        (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
+            from SysNums,(select @num:=numb) t 
+            where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+            order by date) days left join 
+        (
+            SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.`status` `status` 
+                FROM TstCaseInTask csr 
+                WHERE csr.projectId=project_id  
+                    AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+                    AND csr.`status` != 'untest' GROUP BY dt, csr.`status`
+        ) temp ON days.date = temp.dt
+    ORDER BY days.date, temp.`status`;
 
 ELSEIF project_type='group' THEN
-	select days.date date, IFNULL(temp.`status`,'null') `status`, IFNULL(temp.numb,0) numb from 
-		(select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-			from sysNums,(select @num:=numb) t 
-			where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-			order by date) days left join 
-		(
-			SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.`status` `status` 
-				FROM tstCaseInTask csr 
-				WHERE csr.projectId in (SELECT p.id from TstProject p where p.parentId = project_id 
-								AND p.deleted != true AND p.disabled != true)  
-					AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
-					AND csr.`status` != 'untest' GROUP BY dt, csr.`status`
-		) temp ON days.date = temp.dt
-	ORDER BY days.date, temp.`status`;
+    select days.date date, IFNULL(temp.`status`,'null') `status`, IFNULL(temp.numb,0) numb from 
+        (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
+            from SysNums,(select @num:=numb) t 
+            where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+            order by date) days left join 
+        (
+            SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.`status` `status` 
+                FROM TstCaseInTask csr 
+                WHERE csr.projectId in (SELECT p.id from TstProject p where p.parentId = project_id 
+                                AND p.deleted != true AND p.disabled != true)  
+                    AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+                    AND csr.`status` != 'untest' GROUP BY dt, csr.`status`
+        ) temp ON days.date = temp.dt
+    ORDER BY days.date, temp.`status`;
 
 ELSEIF project_type='org' THEN
-	select days.date date, IFNULL(temp.`status`,'null') `status`, IFNULL(temp.numb,0) numb from 
-		(select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-			from sysNums,(select @num:=numb) t 
-			where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-			order by date) days left join 
-		(
-			SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.`status` `status` 
-				FROM tstCaseInTask csr 
-				WHERE csr.projectId in (SELECT p.id from TstProject p where p.orgId = project_id 
-								AND p.deleted != true AND p.disabled != true)  
-					AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
-					AND csr.`status` != 'untest' GROUP BY dt, csr.`status`
-		) temp ON days.date = temp.dt
-	ORDER BY days.date, temp.`status`;
+    select days.date date, IFNULL(temp.`status`,'null') `status`, IFNULL(temp.numb,0) numb from 
+        (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
+            from SysNums,(select @num:=numb) t 
+            where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+            order by date) days left join 
+        (
+            SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.`status` `status` 
+                FROM TstCaseInTask csr 
+                WHERE csr.projectId in (SELECT p.id from TstProject p where p.orgId = project_id 
+                                AND p.deleted != true AND p.disabled != true)  
+                    AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+                    AND csr.`status` != 'untest' GROUP BY dt, csr.`status`
+        ) temp ON days.date = temp.dt
+    ORDER BY days.date, temp.`status`;
 
 END IF;
 
@@ -1823,33 +1719,33 @@ BEGIN
 DECLARE total BIGINT;
 
 SELECT COUNT(csr.id) numb 
-	FROM tstCaseInTask csr 
-		left join tstTask task on csr.taskId=task.id 
-		
-	WHERE csr.planId=_plan_id and task.deleted != true AND task.disabled != true
-		AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE 
+    FROM TstCaseInTask csr 
+        left join TstTask task on csr.taskId=task.id 
+        
+    WHERE csr.planId=_plan_id and task.deleted != true AND task.disabled != true
+        AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE 
 into total;
 
 select days.date, temp.numb, total from
-	(select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-		from sysNums,(select @num:=_numb) t 
-		where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-		order by date) days 
-	
-	left join 
+    (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
+        from SysNums,(select @num:=_numb) t 
+        where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+        order by date) days 
+    
+    left join 
 
-	(SELECT DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, COUNT(csr.id) numb 
-		FROM tstCaseInTask csr
-			left join tstTask task on csr.taskId=task.id
-		
-		WHERE csr.planId=_plan_id and task.deleted != true AND task.disabled != true
-			AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE 
-			AND csr.`status` != 'untest'
-		GROUP BY dt 
-		ORDER BY dt) temp 
+    (SELECT DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, COUNT(csr.id) numb 
+        FROM TstCaseInTask csr
+            left join TstTask task on csr.taskId=task.id
+        
+        WHERE csr.planId=_plan_id and task.deleted != true AND task.disabled != true
+            AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE 
+            AND csr.`status` != 'untest'
+        GROUP BY dt 
+        ORDER BY dt) temp 
 
-	ON days.date = temp.dt
-	ORDER BY days.date;
+    ON days.date = temp.dt
+    ORDER BY days.date;
 
 END
  ;;
@@ -1864,33 +1760,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `chart_execution_result_by_plan`(IN 
 BEGIN
 
 select tcin.`status` status, count(tcin.id) count 
-	from tstCaseInTask tcin 
-		left join tstTask task on tcin.taskId=task.id 
-	where tcin.planId  = _planId and task.deleted != true AND task.disabled != true
-		AND tcin.deleted != true AND tcin.disabled != true  AND tcin.isLeaf=true
+    from TstCaseInTask tcin 
+        left join TstTask task on tcin.taskId=task.id 
+    where tcin.planId  = _planId and task.deleted != true AND task.disabled != true
+        AND tcin.deleted != true AND tcin.disabled != true  AND tcin.isLeaf=true
 group by tcin.`status`;
-
-END
- ;;
-delimiter ;
-
--- ----------------------------
---  Procedure structure for `close_plan_if_all_run_closed`
--- ----------------------------
-DROP PROCEDURE IF EXISTS `close_plan_if_all_run_closed`;
-delimiter ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `close_plan_if_all_run_closed`(IN plan_id  BIGINT)
-BEGIN
-
-DECLARE cnt BIGINT;
-
-select count(id) from tst_run run 
-	where run.plan_id = plan_id 
-	and run.`status` != 'end' and run.deleted!=true and run.disabled!=true into cnt;
-
-IF (cnt=0) THEN  
-    update tst_plan plan set plan.status='end' where plan.id=plan_id;
-END IF; 
 
 END
  ;;
@@ -1906,12 +1780,12 @@ BEGIN
 
 DECLARE cnt BIGINT;
 
-select count(id) from tstTask task 
-	where task.planId = plan_id 
-	and task.`status` != 'end' and task.deleted!=true and task.disabled!=true into cnt;
+select count(id) from TstTask task 
+    where task.planId = plan_id 
+    and task.`status` != 'end' and task.deleted!=true and task.disabled!=true into cnt;
 
 IF (cnt=0) THEN  
-    update tstPlan plan set plan.status='end' where plan.id=plan_id;
+    update TstPlan plan set plan.status='end' where plan.id=plan_id;
 END IF; 
 
 END
@@ -1932,37 +1806,12 @@ SET sTemp = pId;
 SET sTempChd = cast(pId as CHAR);  
 
 WHILE sTempChd is not null DO  
-	SET sTemp = concat(sTemp,',',sTempChd);  
-	SELECT group_concat(id) INTO sTempChd FROM tstCase cs where FIND_IN_SET(cs.pId,sTempChd)>0 
-		and cs.deleted!=true;  
+    SET sTemp = concat(sTemp,',',sTempChd);  
+    SELECT group_concat(id) INTO sTempChd FROM TstCase cs where FIND_IN_SET(cs.pId,sTempChd)>0 
+        and cs.deleted!=true;  
 END WHILE;  
 
-UPDATE tstCase cs SET cs.deleted=true WHERE FIND_IN_SET(cs.id, sTemp); 
-
-END
- ;;
-delimiter ;
-
--- ----------------------------
---  Procedure structure for `delete_case_in_run_and_its_children`
--- ----------------------------
-DROP PROCEDURE IF EXISTS `delete_case_in_run_and_its_children`;
-delimiter ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_case_in_run_and_its_children`(IN run_id BIGINT, IN pid BIGINT )
-BEGIN
-
-DECLARE sTemp VARCHAR(10000);  
-DECLARE sTempChd VARCHAR(10000);  
-SET sTemp = '';  
-SET sTempChd = cast(pid as CHAR);  
-
-WHILE sTempChd is not null DO  
-	SET sTemp = concat(sTemp,',',sTempChd);  
-	SELECT group_concat(case_id) INTO sTempChd FROM tst_case_in_run cs where FIND_IN_SET(cs.p_id,sTempChd)>0 
-		and run_id=run_id and cs.deleted!=true;
-END WHILE;
-
-UPDATE tst_case_in_run cs SET cs.deleted=true WHERE FIND_IN_SET(cs.case_id, sTemp)>0 and run_id=run_id;
+UPDATE TstCase cs SET cs.deleted=true WHERE FIND_IN_SET(cs.id, sTemp); 
 
 END
  ;;
@@ -1982,12 +1831,12 @@ SET sTemp = '';
 SET sTempChd = cast(pid as CHAR);  
 
 WHILE sTempChd is not null DO  
-	SET sTemp = concat(sTemp,',',sTempChd);  
-	SELECT group_concat(caseId) INTO sTempChd FROM tstCaseInTask cs where FIND_IN_SET(cs.pId,sTempChd)>0 
-		and taskId=_taskId and cs.deleted!=true;
+    SET sTemp = concat(sTemp,',',sTempChd);  
+    SELECT group_concat(caseId) INTO sTempChd FROM TstCaseInTask cs where FIND_IN_SET(cs.pId,sTempChd)>0 
+        and taskId=_taskId and cs.deleted!=true;
 END WHILE;
 
-UPDATE tstCaseInTask cs SET cs.deleted=true WHERE FIND_IN_SET(cs.caseId, sTemp)>0 and taskId=_taskId;
+UPDATE TstCaseInTask cs SET cs.deleted=true WHERE FIND_IN_SET(cs.caseId, sTemp)>0 and taskId=_taskId;
 
 END
  ;;
@@ -2030,45 +1879,18 @@ delimiter ;;
 CREATE DEFINER=`ngtesting`@`%` PROCEDURE `fix_is_leaf_issue_for_case`(IN _project_id  BIGINT)
 BEGIN
 
-
-	update tstCase cs set cs.isLeaf=true where  cs.id NOT IN   
-	(
-		select pids.pId from 
-			(select DISTINCT pId FROM tstCase 
-				where projectId=_projectId and deleted!=true and disabled!=true and pId is not null) pids
-	);
-	update tstCase cs set cs.isLeaf=false where  cs.id  IN   
-	(
-		select pids.pId from 
-			(select DISTINCT pId FROM tstCase 
-				where projectId=_project_id and deleted!=true and disabled!=true and pId is not null) pids
-	);
-
-
-END
- ;;
-delimiter ;
-
--- ----------------------------
---  Procedure structure for `fix_is_leaf_issue_in_run`
--- ----------------------------
-DROP PROCEDURE IF EXISTS `fix_is_leaf_issue_in_run`;
-delimiter ;;
-CREATE DEFINER=`ngtesting`@`%` PROCEDURE `fix_is_leaf_issue_in_run`(IN _plan_id  BIGINT)
-BEGIN
-
-	update tst_case_in_run cs set cs.is_leaf=true where  cs.case_id NOT IN   
-	(
-		select pids.p_id from 
-			(select DISTINCT p_id FROM tst_case_in_run 
-				where plan_id=_plan_id and deleted!=true and disabled!=true and p_id is not null) pids
-	);
-	update tst_case_in_run cs set cs.is_leaf=false where  cs.case_id  IN   
-	(
-		select pids.p_id from 
-			(select DISTINCT p_id FROM tst_case_in_run 
-				where plan_id=_plan_id and deleted!=true and disabled!=true and p_id is not null) pids
-	);
+    update TstCase cs set cs.isLeaf=true where  cs.id NOT IN   
+    (
+        select pids.pId from 
+            (select DISTINCT pId FROM TstCase 
+                where projectId=_projectId and deleted!=true and disabled!=true and pId is not null) pids
+    );
+    update TstCase cs set cs.isLeaf=false where  cs.id  IN   
+    (
+        select pids.pId from 
+            (select DISTINCT pId FROM TstCase 
+                where projectId=_project_id and deleted!=true and disabled!=true and pId is not null) pids
+    );
 
 END
  ;;
@@ -2082,18 +1904,18 @@ delimiter ;;
 CREATE DEFINER=`ngtesting`@`%` PROCEDURE `fix_is_leaf_issue_in_task`(IN _plan_id  BIGINT)
 BEGIN
 
-	update tstCaseInTask cs set cs.isLeaf=true where  cs.caseId NOT IN   
-	(
-		select pids.pId from 
-			(select DISTINCT pId FROM tstCaseInTask 
-				where planId=_plan_id and deleted!=true and disabled!=true and pId is not null) pids
-	);
-	update tstCaseInTask cs set cs.isLeaf=false where  cs.caseId  IN   
-	(
-		select pids.pId from 
-			(select DISTINCT pId FROM tstCaseInTask 
-				where planId=_plan_id and deleted!=true and disabled!=true and pId is not null) pids
-	);
+    update TstCaseInTask cs set cs.isLeaf=true where  cs.caseId NOT IN   
+    (
+        select pids.pId from 
+            (select DISTINCT pId FROM TstCaseInTask 
+                where planId=_plan_id and deleted!=true and disabled!=true and pId is not null) pids
+    );
+    update TstCaseInTask cs set cs.isLeaf=false where  cs.caseId  IN   
+    (
+        select pids.pId from 
+            (select DISTINCT pId FROM TstCaseInTask 
+                where planId=_plan_id and deleted!=true and disabled!=true and pId is not null) pids
+    );
 
 END
  ;;
@@ -2187,21 +2009,21 @@ BEGIN
 
 DECLARE _id BIGINT;
 
-select his.id from TstProjectAccessHistory his 
-	where his.orgId = _orgId and his.userId = _userId and his.prjId = _prjId
-into _id;
+	select his.id from TstProjectAccessHistory his 
+	    where his.orgId = _orgId and his.userId = _userId and his.prjId = _prjId
+	into _id;
 
-IF (ISNULL(_id)) THEN  
-    insert into TstProjectAccessHistory 
-	(orgId, userId, prjId, prjName, lastAccessTime) 
-    values
-	(_orgId, _userId, _prjId, _prjName, NOW());
-ELSE
-   update TstProjectAccessHistory 
-	set prjName = _prjName, lastAccessTime = NOW()
-    WHERE id = _id;
-	
-END IF;
+	IF (ISNULL(_id)) THEN  
+	    insert into TstProjectAccessHistory 
+	    (orgId, userId, prjId, prjName, lastAccessTime) 
+	    values
+	    (_orgId, _userId, _prjId, _prjName, NOW());
+	ELSE
+	   update TstProjectAccessHistory 
+	    set prjName = _prjName, lastAccessTime = NOW()
+	    WHERE id = _id;
+	    
+	END IF;
 
 END
  ;;
@@ -2216,7 +2038,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `get_days`(IN numb BIGINT)
 BEGIN
 
 select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-	from sysNums,(select @num:=numb) t 
+	from SysNums,(select @num:=numb) t 
 	where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
 	order by date;
 
@@ -2234,32 +2056,32 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `get_project_privilege_by_org_for_us
 BEGIN
 
 select CONCAT(tmp.projectId,'') projectId, define.`code`, define.action
-	from TstProjectPrivilegeDefine define
-		left join TstProjectRolePriviledgeRelation r on r.projectPrivilegeDefineId = define.id
-	 
-		INNER join
-		(select relation.projectId, relation.projectRoleId from TstProjectRoleEntityRelation relation 
-			where 
-			(
-			  (type = 'user' && relation.entityId = userId) 
-			   or (type = 'group' && 
-				relation.entityId in (
-					select grp.id from tstOrgGroup grp 
-									left join TstOrgGroupUserRelation relat on relat.orgGroupId = grp.id 
-									left join TstUser userr on relat.userId = userr.id
-									where userr.id = userId
-					UNION
-					select grp.id from tstOrgGroup grp 
-						where grp.name = '所有人' and grp.orgId = orgId)
-				)
-			)
-			and relation.orgId = orgId
-		) tmp
-	
-		on r.projectRoleId = tmp.projectRoleId
-	
-	where TRUE
-	order by tmp.projectId,  define.`code`;
+    from TstProjectPrivilegeDefine define
+        left join TstProjectRolePriviledgeRelation r on r.projectPrivilegeDefineId = define.id
+     
+        INNER join
+        (select relation.projectId, relation.projectRoleId from TstProjectRoleEntityRelation relation 
+            where 
+            (
+              (type = 'user' && relation.entityId = userId) 
+               or (type = 'group' && 
+                relation.entityId in (
+                    select grp.id from TstOrgGroup grp 
+                                    left join TstOrgGroupUserRelation relat on relat.orgGroupId = grp.id 
+                                    left join TstUser userr on relat.userId = userr.id
+                                    where userr.id = userId
+                    UNION
+                    select grp.id from TstOrgGroup grp 
+                        where grp.name = '所有人' and grp.orgId = orgId)
+                )
+            )
+            and relation.orgId = orgId
+        ) tmp
+    
+        on r.projectRoleId = tmp.projectRoleId
+    
+    where TRUE
+    order by tmp.projectId,  define.`code`;
 END
  ;;
 delimiter ;
@@ -2273,27 +2095,27 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `get_project_privilege_by_project_fo
 BEGIN
 
 select define.`code`, define.action
-	from TstProjectPrivilegeDefine define 
-	left join TstProjectRolePriviledgeRelation r on r.projectPrivilegeDefineId = define.id
-	
-	where r.projectRoleId in 
-		(select relation.projectRoleId from TstProjectRoleEntityRelation relation 
-			where 
-			(
-			  (type = 'user' && relation.entityId = user_id) 
-			   or (type = 'group' && 
-				relation.entityId in (
-					select grp.id from tstOrgGroup grp 
-									left join TstOrgGroupUserRelation relat on relat.orgGroupId = grp.id 
-									left join TstUser userr on relat.userId = userr.id
-									where userr.id = user_id
-					UNION
-					select grp.id from tstOrgGroup grp 
-						where grp.name = '所有人' and grp.orgId = org_id)
-				)
-			)
-			and relation.projectId = _project_id
-		);
+    from TstProjectPrivilegeDefine define 
+    left join TstProjectRolePriviledgeRelation r on r.projectPrivilegeDefineId = define.id
+    
+    where r.projectRoleId in 
+        (select relation.projectRoleId from TstProjectRoleEntityRelation relation 
+            where 
+            (
+              (type = 'user' && relation.entityId = user_id) 
+               or (type = 'group' && 
+                relation.entityId in (
+                    select grp.id from TstOrgGroup grp 
+                                    left join TstOrgGroupUserRelation relat on relat.orgGroupId = grp.id 
+                                    left join TstUser userr on relat.userId = userr.id
+                                    where userr.id = user_id
+                    UNION
+                    select grp.id from TstOrgGroup grp 
+                        where grp.name = '所有人' and grp.orgId = org_id)
+                )
+            )
+            and relation.projectId = _project_id
+        );
 END
  ;;
 delimiter ;
@@ -2340,19 +2162,19 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_project_users`(IN prjId BIGINT)
 BEGIN
 
-select usr.id, usr.nickname from tstUser usr
-	where usr.id in 
-	(
-		select relation1.entityId from TstProjectRoleEntityRelation relation1 
-			where relation1.type = 'user' && relation1.projectId = prjId
-		UNION
-		select relta.userId from TstOrgGroupUserRelation relta
-			where relta.orgGroupId in 
-			(
-				select relation2.entityId from TstProjectRoleEntityRelation relation2 
-					where relation2.type = 'group' && relation2.projectId = prjId
-			) 
-	);
+select usr.id, usr.nickname from TstUser usr
+    where usr.id in 
+    (
+        select relation1.entityId from TstProjectRoleEntityRelation relation1 
+            where relation1.type = 'user' && relation1.projectId = prjId
+        UNION
+        select relta.userId from TstOrgGroupUserRelation relta
+            where relta.orgGroupId in 
+            (
+                select relation2.entityId from TstProjectRoleEntityRelation relation2 
+                    where relation2.type = 'group' && relation2.projectId = prjId
+            ) 
+    );
 END
  ;;
 delimiter ;
@@ -2367,20 +2189,20 @@ BEGIN
 
 declare s int unsigned default 1;
 
-DROP TABLE IF EXISTS `sysNums`;
-CREATE TABLE IF NOT EXISTS `sysNums` (
-  `key` int(11) NOT NULL,
-  PRIMARY KEY (`key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='数字辅助表';
+    DROP TABLE IF EXISTS `SysNums`;
+    CREATE TABLE IF NOT EXISTS `SysNums` (
+      `key` int(11) NOT NULL,
+      PRIMARY KEY (`key`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='数字辅助表';
 
-truncate table sysNums;
-insert into sysNums select s;
-while s*2<=cnt do
-begin
-    insert into sysNums select `key`+s from sysNums;
-    set s=s*2;
-end;
-end while;
+    truncate table SysNums;
+    insert into SysNums select s;
+    while s*2<=cnt do
+    begin
+        insert into SysNums select `key`+s from SysNums;
+        set s=s*2;
+    end;
+    end while;
     
 END
  ;;
@@ -2397,18 +2219,18 @@ BEGIN
 declare id bigint;
 
 declare done int default false;
-declare cur cursor for select cs.id from tstCase cs WHERE cs.projectId=project_id; 
+declare cur cursor for select cs.id from TstCase cs WHERE cs.projectId=project_id; 
 declare continue HANDLER for not found set done = true;
 
 open cur;
     read_loop:loop
 
-	    fetch cur into id;
-	    if done then  
-		leave read_loop; 
-	    end if;
+        fetch cur into id;
+        if done then  
+        leave read_loop; 
+        end if;
 
-	    call update_parent_if_needed(project_id, id);
+        call update_parent_if_needed(project_id, id);
 
     end loop;
 close cur;  
@@ -2437,24 +2259,24 @@ DECLARE case_id BIGINT;
 
 DECLARE count BIGINT;
 
-select usr.nickname from tstUser usr where id=user_id into user_name;
+select usr.nickname from TstUser usr where id=user_id into user_name;
 
 insert into TstOrgUserRelation (orgId, userId) values(org_id, user_id);
 
 
 insert into TstOrgRole (code, name, orgId, disabled, deleted, createTime) values('org_admin', '组织管理员', org_id, false, false, NOW());
-select max(id) from tstOrgRole into org_role_id;
+select max(id) from TstOrgRole into org_role_id;
 insert into TstOrgRolePrivilegeRelation (orgId, orgRoleId, orgPrivilegeId) values(org_id, org_role_id, 1);
 insert into TstOrgRolePrivilegeRelation (orgId, orgRoleId, orgPrivilegeId) values(org_id, org_role_id, 3);
 
 insert into TstOrgRoleUserRelation (orgId, orgRoleId, userId) values(org_id, org_role_id, user_id);
 
 /* insert into TstOrgRole (code, name, orgId, disabled, deleted, createTime) values('site_admin', '站点管理员', org_id, false, false, NOW());
-select max(id) from tstOrgRole into org_role_id;
-insert into tstOrgRolePrivilegeRelation (orgId, orgRoleId, orgPrivilegeId) values(org_id, org_role_id, 2); */
+select max(id) from TstOrgRole into org_role_id;
+insert into TstOrgRolePrivilegeRelation (orgId, orgRoleId, orgPrivilegeId) values(org_id, org_role_id, 2); */
 
 insert into TstOrgRole (code, name, orgId, disabled, deleted, createTime) values('project_admin', '项目管理员', org_id, false, false, NOW());
-select max(id) from tstOrgRole into org_role_id;
+select max(id) from TstOrgRole into org_role_id;
 insert into TstOrgRolePrivilegeRelation (orgId, orgRoleId, orgPrivilegeId) values(org_id, org_role_id, 3);
 
 
@@ -2462,131 +2284,131 @@ insert into TstOrgGroup (name, orgId, disabled, deleted, createTime) values('所
 
 
 insert into TstCaseExeStatus (value, label, ordr, isBuildIn, isFinal, orgId, disabled, deleted, createTime) 
-		   values('untest', '未执行', 10, false, false, org_id, false, false, NOW());
+           values('untest', '未执行', 10, false, false, org_id, false, false, NOW());
 insert into TstCaseExeStatus (value, label, ordr, isBuildIn, isFinal, orgId, disabled, deleted, createTime) 
-		   values('pass', '成功', 20, false, true, org_id, false, false, NOW());
+           values('pass', '成功', 20, false, true, org_id, false, false, NOW());
 insert into TstCaseExeStatus (value, label, ordr, isBuildIn, isFinal, orgId, disabled, deleted, createTime) 
-		   values('fail', '失败', 30, false, true, org_id, false, false, NOW());
+           values('fail', '失败', 30, false, true, org_id, false, false, NOW());
 insert into TstCaseExeStatus (value, label, ordr, isBuildIn, isFinal, orgId, disabled, deleted, createTime) 
-		   values('block', '阻塞', 40, false, false, org_id, false, false, NOW());
+           values('block', '阻塞', 40, false, false, org_id, false, false, NOW());
 
 
 insert into TstCasePriority (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-		   values('high', '高', 10, false, false, org_id, false, false, NOW());
-insert into tstCasePriority (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-		   values('medium', '中', 20, false, true, org_id, false, false, NOW());
-insert into tstCasePriority (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-		   values('low', '低', 30, false, false, org_id, false, false, NOW());
+           values('high', '高', 10, false, false, org_id, false, false, NOW());
+insert into TstCasePriority (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
+           values('medium', '中', 20, false, true, org_id, false, false, NOW());
+insert into TstCasePriority (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
+           values('low', '低', 30, false, false, org_id, false, false, NOW());
 
-insert into tstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-		   values('functional', '功能', 10,     false, true, org_id, false, false, NOW());
-insert into tstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-		   values('performance', '性能', 20,    false, false, org_id, false, false, NOW());
-insert into tstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-		   values('ui', '界面', 30,          false, false, org_id, false, false, NOW());
-insert into tstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-		   values('compatibility', '兼容性', 40, false, false, org_id, false, false, NOW());
-insert into tstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-		   values('security', '安全', 50,       false, false, org_id, false, false, NOW());
-insert into tstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-		   values('automation', '自动化', 60,     false, false, org_id, false, false, NOW());
-insert into tstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-		   values('other', '其它', 70,         false, false, org_id, false, false, NOW());
+insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
+           values('functional', '功能', 10,     false, true, org_id, false, false, NOW());
+insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
+           values('performance', '性能', 20,    false, false, org_id, false, false, NOW());
+insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
+           values('ui', '界面', 30,          false, false, org_id, false, false, NOW());
+insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
+           values('compatibility', '兼容性', 40, false, false, org_id, false, false, NOW());
+insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
+           values('security', '安全', 50,       false, false, org_id, false, false, NOW());
+insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
+           values('automation', '自动化', 60,     false, false, org_id, false, false, NOW());
+insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
+           values('other', '其它', 70,         false, false, org_id, false, false, NOW());
 
 
-insert into tstProjectRole (code, name, isBuildIn, orgId, disabled, deleted, createTime) 
-		   values('test_leader', '测试主管', false, org_id, false, false, NOW());
-select max(id) from tstProjectRole into project_role_id;
+insert into TstProjectRole (code, name, isBuildIn, orgId, disabled, deleted, createTime) 
+           values('test_leader', '测试主管', false, org_id, false, false, NOW());
+select max(id) from TstProjectRole into project_role_id;
 set project_role_leader_id=project_role_id;
 
 set i=11100;
 while i<=17300 do
-	select count(id) from tstProjectPrivilegeDefine where id=i into count;
-	IF count > 0 THEN  
-	      insert into tstProjectRolePriviledgeRelation 
+    select count(id) from TstProjectPrivilegeDefine where id=i into count;
+    IF count > 0 THEN  
+          insert into TstProjectRolePriviledgeRelation 
                 ( projectPrivilegeDefineId,   projectRoleId )
-		VALUES ( i, project_role_id );
-	END IF;  
-	set i=i+100;
+        VALUES ( i, project_role_id );
+    END IF;  
+    set i=i+100;
 end while;
 
-insert into tstProjectRole (code, name, isBuildIn, orgId, disabled, deleted, createTime) 
-		   values('test_designer', '测试设计', false, org_id, false, false, NOW());
-select max(id) from tstProjectRole into project_role_id;
+insert into TstProjectRole (code, name, isBuildIn, orgId, disabled, deleted, createTime) 
+           values('test_designer', '测试设计', false, org_id, false, false, NOW());
+select max(id) from TstProjectRole into project_role_id;
 
 set i=11100;
 while i<=17300 do
-	select count(id) from tstProjectPrivilegeDefine where id=i AND id != 11200 and id != 11300 into count;
-	IF count > 0 THEN  
-	      insert into tstProjectRolePriviledgeRelation 
+    select count(id) from TstProjectPrivilegeDefine where id=i AND id != 11200 and id != 11300 into count;
+    IF count > 0 THEN  
+          insert into TstProjectRolePriviledgeRelation 
                 ( projectPrivilegeDefineId,   projectRoleId )
-		VALUES ( i, project_role_id );
-	END IF;  
-	set i=i+100;
+        VALUES ( i, project_role_id );
+    END IF;  
+    set i=i+100;
 end while;
 
-insert into tstProjectRole (code, name, isBuildIn, orgId, disabled, deleted, createTime) 
-		   values('tester', '测试执行', false, org_id, false, false, NOW());
-select max(id) from tstProjectRole into project_role_id;
+insert into TstProjectRole (code, name, isBuildIn, orgId, disabled, deleted, createTime) 
+           values('tester', '测试执行', false, org_id, false, false, NOW());
+select max(id) from TstProjectRole into project_role_id;
 
 set i=11100;
 while i<=17300 do
-	select count(id) from tstProjectPrivilegeDefine where id=i AND id != 11200 and id != 11300 AND i != 12200 into count;
-	IF count > 0 THEN  
-	      insert into tstProjectRolePriviledgeRelation 
+    select count(id) from TstProjectPrivilegeDefine where id=i AND id != 11200 and id != 11300 AND i != 12200 into count;
+    IF count > 0 THEN  
+          insert into TstProjectRolePriviledgeRelation 
                 ( projectPrivilegeDefineId,   projectRoleId )
-		VALUES ( i, project_role_id );
-	END IF;  
-	set i=i+100;
+        VALUES ( i, project_role_id );
+    END IF;  
+    set i=i+100;
 end while;
 
-insert into tstProjectRole (code, name, isBuildIn, orgId, disabled, deleted, createTime) 
-		   values('readonly', '只读用户', false, org_id, false, false, NOW());
-select max(id) from tstProjectRole into project_role_id;
+insert into TstProjectRole (code, name, isBuildIn, orgId, disabled, deleted, createTime) 
+           values('readonly', '只读用户', false, org_id, false, false, NOW());
+select max(id) from TstProjectRole into project_role_id;
 
 set i=11100;
 while i<=17300 do
-	select count(id) from tstProjectPrivilegeDefine where id=i and action = 'view' into count;
-	IF count > 0 THEN  
-	      insert into tstProjectRolePriviledgeRelation 
+    select count(id) from TstProjectPrivilegeDefine where id=i and action = 'view' into count;
+    IF count > 0 THEN  
+          insert into TstProjectRolePriviledgeRelation 
                 ( projectPrivilegeDefineId,   projectRoleId )
-		VALUES ( i, project_role_id );
-	END IF;  
-	set i=i+100;
+        VALUES ( i, project_role_id );
+    END IF;  
+    set i=i+100;
 end while;
 
 
-insert into tstProject (name, type, parentId, orgId, disabled, deleted, createTime) 
-		   values('默认项目组', 'group', NULL, org_id, false, false, NOW());
-select max(id) from tstProject into project_id;
+insert into TstProject (name, type, parentId, orgId, disabled, deleted, createTime) 
+           values('默认项目组', 'group', NULL, org_id, false, false, NOW());
+select max(id) from TstProject into project_id;
 
-insert into tstProject (name, type, parentId, orgId, disabled, deleted, createTime) 
-		   values('默认项目', 'project', project_id, org_id, false, false, NOW());
-select max(id) from tstProject into project_id;
-
-
-insert into tstHistory (projectId, entityId,  entityType, userId, disabled, deleted, createTime, title) 
-		  values(project_id, project_id, 'project', user_id, false, false, NOW(), 
-				CONCAT('用户<span class="dict">',user_name,'</span>初始化项目<span class="dict">','默认项目','</span>'));
+insert into TstProject (name, type, parentId, orgId, disabled, deleted, createTime) 
+           values('默认项目', 'project', project_id, org_id, false, false, NOW());
+select max(id) from TstProject into project_id;
 
 
-insert into tstProjectRoleEntityRelation (orgId, projectId, projectRoleId, entityId, type) 
-		   values(org_id, project_id, project_role_leader_id, user_id, 'user');
+insert into TstHistory (projectId, entityId,  entityType, userId, disabled, deleted, createTime, title) 
+          values(project_id, project_id, 'project', user_id, false, false, NOW(), 
+                CONCAT('用户<span class="dict">',user_name,'</span>初始化项目<span class="dict">','默认项目','</span>'));
 
 
-insert into tstProjectAccessHistory (orgId, prjId, userId, prjName, lastAccessTime , createTime) 
-		   values(org_id, project_id, user_id, '默认项目', NOW(), NOW());
-update tstUser set defaultPrjId = project_id where id = user_id;
+insert into TstProjectRoleEntityRelation (orgId, projectId, projectRoleId, entityId, type) 
+           values(org_id, project_id, project_role_leader_id, user_id, 'user');
 
 
-insert into tstCase (name, projectId, pId, estimate, priority, type, isLeaf, ordr, createById, contentType, disabled, deleted, createTime) 
-		   values('测试用例', project_id, null, 10, 'medium', 'functional', 0, 0, user_id, 'steps', false, false, NOW());
-select max(id) from tstCase into case_id;
-insert into tstCase (name, projectId, pId, estimate, priority, type, isLeaf, ordr, createById, contentType, disabled, deleted, createTime) 
-		   values('新特性', project_id, case_id, 10, 'medium', 'functional', 0, 0, user_id, 'steps', false, false, NOW());
-select max(id) from tstCase into case_id;
-insert into tstCase (name, projectId, pId, estimate, priority, type, isLeaf, ordr, createById, contentType, disabled, deleted, createTime) 
-		   values('新用例', project_id, case_id, 10, 'medium', 'functional', 1, 0, user_id, 'steps', false, false, NOW());
+insert into TstProjectAccessHistory (orgId, prjId, userId, prjName, lastAccessTime , createTime) 
+           values(org_id, project_id, user_id, '默认项目', NOW(), NOW());
+update TstUser set defaultPrjId = project_id where id = user_id;
+
+
+insert into TstCase (name, projectId, pId, estimate, priority, type, isLeaf, ordr, createById, contentType, disabled, deleted, createTime) 
+           values('测试用例', project_id, null, 10, 'medium', 'functional', 0, 0, user_id, 'steps', false, false, NOW());
+select max(id) from TstCase into case_id;
+insert into TstCase (name, projectId, pId, estimate, priority, type, isLeaf, ordr, createById, contentType, disabled, deleted, createTime) 
+           values('新特性', project_id, case_id, 10, 'medium', 'functional', 0, 0, user_id, 'steps', false, false, NOW());
+select max(id) from TstCase into case_id;
+insert into TstCase (name, projectId, pId, estimate, priority, type, isLeaf, ordr, createById, contentType, disabled, deleted, createTime) 
+           values('新用例', project_id, case_id, 10, 'medium', 'functional', 1, 0, user_id, 'steps', false, false, NOW());
 
 END
  ;;
@@ -2602,108 +2424,13 @@ BEGIN
 
 DECLARE org_id BIGINT;
 
+insert into TstOrg (name, disabled, deleted, createTime) values('我的组织', false, false, NOW());
+select max(id) from TstOrg into org_id;
 
-insert into tstOrg (name, disabled, deleted, createTime) values('我的组织', false, false, NOW());
-select max(id) from tstOrg into org_id;
 
-
-update tstUser usr set usr.defaultOrgId = org_id where usr.id=user_id;
+update TstUser usr set usr.defaultOrgId = org_id where usr.id=user_id;
 
 call init_org(org_id, user_id);
-
-END
- ;;
-delimiter ;
-
--- ----------------------------
---  Procedure structure for `move_node`
--- ----------------------------
-DROP PROCEDURE IF EXISTS `move_node`;
-delimiter ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `move_node`(IN node_table varchar(100), IN node_id BIGINT, IN parent_id BIGINT)
-BEGIN
-DECLARE sql_str varchar(5000);
-
-
-set sql_str = '';
-set sql_str = concat(sql_str, '  SELECT node.path into @old_path FROM  ', node_table, ' node');
-set sql_str = concat(sql_str, '     WHERE node.id = ', node_id);
-
-set @sql_str = sql_str;
-PREPARE stmt FROM @sql_str;  
-EXECUTE stmt;
-
-
-set sql_str = '';
-set sql_str = concat(sql_str, '  SELECT node.path into @node_path FROM  ', node_table, ' node');
-set sql_str = concat(sql_str, '     WHERE node.id = ', parent_id);
-
-set @sql_str = sql_str;
-PREPARE stmt FROM @sql_str;  
-EXECUTE stmt;
-
-set @node_path = concat(@node_path, parent_id, '/');
-set @child_path = concat(@node_path, node_id, '/');
-
-
-set sql_str = '';
-set sql_str = concat(sql_str, '  UPDATE ', node_table , ' SET parent_id = ' , parent_id, ',');
-set sql_str = concat(sql_str, '             path = ', '''' , @node_path, '''');
-set sql_str = concat(sql_str, '  WHERE id = ', node_id);
-
-set @sql_str = sql_str;
-PREPARE stmt FROM @sql_str;
-EXECUTE stmt;
-
-IF @old_path is null THEN 
-    set @old_path = @old_path;
-ELSE
-    set @old_path = concat(@old_path, node_id, '/');
-    
-	set sql_str = '';
-	set sql_str = concat(sql_str, '  UPDATE ', node_table);
-	set sql_str = concat(sql_str, '   SET path = REPLACE(path, ', '''', @old_path , '''', ',', '''' , @child_path, '''', ')');
-	set sql_str = concat(sql_str, '  WHERE path LIKE ', '''', @old_path, '%''');
-	
-	set @sql_str = sql_str;
-	PREPARE stmt FROM @sql_str;
-	EXECUTE stmt;
-END IF;
-
-
-set sql_str = '';
-set sql_str = concat(sql_str, '  SELECT * FROM  ', node_table, ' node');
-set sql_str = concat(sql_str, '     WHERE node.id = ', node_id);
-
-set @sql_str = sql_str;
-PREPARE stmt FROM @sql_str;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
-END
- ;;
-delimiter ;
-
--- ----------------------------
---  Procedure structure for `remove_aitask_and_its_children`
--- ----------------------------
-DROP PROCEDURE IF EXISTS `remove_aitask_and_its_children`;
-delimiter ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `remove_aitask_and_its_children`(IN _id BIGINT )
-BEGIN
-
-DECLARE sTemp VARCHAR(10000);  
-DECLARE sTempChd VARCHAR(10000);  
-SET sTemp = _id;  
-SET sTempChd = cast(_id as CHAR);  
-
-WHILE sTempChd is not null DO  
-	SET sTemp = concat(sTemp,',',sTempChd);  
-	SELECT group_concat(id) INTO sTempChd FROM ai_test_task cs where FIND_IN_SET(p_id,sTempChd)>0 
-		and cs.deleted!=true;  
-END WHILE;  
-
-UPDATE ai_test_task cs SET cs.deleted=true WHERE FIND_IN_SET(cs.id, sTemp); 
 
 END
  ;;
@@ -2723,43 +2450,14 @@ SET sTemp = _caseId;
 SET sTempChd = cast(_caseId as CHAR);  
 
 WHILE sTempChd is not null DO  
-	SET sTemp = concat(sTemp,',',sTempChd);  
-	SELECT group_concat(id) INTO sTempChd FROM tstCase cs 
-		where FIND_IN_SET(pId,sTempChd)>0 
-		and cs.projectId = _projectId
-		and cs.deleted!=true;  
+  SET sTemp = concat(sTemp,',',sTempChd);  
+  SELECT group_concat(id) INTO sTempChd FROM TstCase cs 
+    where FIND_IN_SET(pId,sTempChd)>0 
+    and cs.projectId = _projectId
+    and cs.deleted!=true;  
 END WHILE;  
 
-UPDATE tstCase cs SET cs.deleted=true WHERE FIND_IN_SET(cs.id, sTemp); 
-
-END
- ;;
-delimiter ;
-
--- ----------------------------
---  Procedure structure for `remove_case_in_run_and_its_children`
--- ----------------------------
-DROP PROCEDURE IF EXISTS `remove_case_in_run_and_its_children`;
-delimiter ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `remove_case_in_run_and_its_children`(IN _run_id BIGINT, IN _case_id BIGINT, IN _pid BIGINT)
-BEGIN
-
-DECLARE has_children INT;
-DECLARE sTemp VARCHAR(10000);  
-DECLARE sTempChd VARCHAR(10000);  
-SET sTemp = '';  
-SET sTempChd = cast(_case_id as CHAR);  
-
-WHILE sTempChd is not null DO  
-	SET sTemp = concat(sTemp,',',sTempChd);  
-	SELECT group_concat(case_id) INTO sTempChd FROM tst_case_in_run cs where FIND_IN_SET(cs.p_id,sTempChd)>0 
-		and cs.run_id=_run_id and cs.deleted!=true;
-END WHILE;
-
-UPDATE tst_case_in_run cs SET cs.deleted=true WHERE FIND_IN_SET(cs.case_id, sTemp)>0 and cs.run_id=_run_id;
-
-#SELECT COUNT(*) FROM tst_case_in_run csin WHERE csin.p_id=_pid and csin.run_id=_run_id INTO has_children;
-#UPDATE tst_case_in_run cs SET cs.deleted=true WHERE cs.case_id=_pid and cs.run_id=_run_id AND has_children;
+UPDATE TstCase cs SET cs.deleted=true WHERE FIND_IN_SET(cs.id, sTemp); 
 
 END
  ;;
@@ -2773,71 +2471,11 @@ delimiter ;;
 CREATE DEFINER=`ngtesting`@`%` PROCEDURE `remove_user_from_org`(IN _user_id BIGINT, IN _org_id BIGINT)
 BEGIN
 
-delete from tstROrgUser where userId=_user_id and orgId=_org_id;
-delete from tstROrgRoleUser where userId=_user_id and orgRoleId 
-	in (select tmp.id from tstOrgRole tmp where tmp.orgId=_org_id);
-delete from tstROrgGroupUser where userId=_user_id and orgGroupId 
-	in (select tmp.id from tstOrgGroup tmp where tmp.orgId=_org_id);
-
-END
- ;;
-delimiter ;
-
--- ----------------------------
---  Procedure structure for `update_aitask_parent_if_needed`
--- ----------------------------
-DROP PROCEDURE IF EXISTS `update_aitask_parent_if_needed`;
-delimiter ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `update_aitask_parent_if_needed`(IN _id BIGINT )
-BEGIN
-
-DECLARE is_leaf BIT;
-
-select case when (SELECT COUNT(cs.id) numb FROM ai_test_task cs
-			WHERE cs.p_id=_id AND cs.deleted != true AND cs.disabled != TRUE
-		 )=0 then 1 else 0 end is_leaf from dual
-	INTO is_leaf;
-
-UPDATE ai_test_task cs SET cs.is_leaf=is_leaf WHERE cs.id=_id AND (cs.is_leaf IS NULL OR cs.is_leaf!=is_leaf);
-
-END
- ;;
-delimiter ;
-
--- ----------------------------
---  Procedure structure for `update_case_in_run_leaf`
--- ----------------------------
-DROP PROCEDURE IF EXISTS `update_case_in_run_leaf`;
-delimiter ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `update_case_in_run_leaf`(IN _case_id BIGINT)
-BEGIN
-
-DECLARE _is_leaf BIT;
-
-select cs.isLeaf FROM tstCase cs WHERE cs.id = _case_id INTO _is_leaf;
-
-UPDATE tstCaseInRun csin SET csin.isLeaf=_is_leaf WHERE csin.caseId=_case_id;
-
-END
- ;;
-delimiter ;
-
--- ----------------------------
---  Procedure structure for `update_case_in_run_parent_if_needed`
--- ----------------------------
-DROP PROCEDURE IF EXISTS `update_case_in_run_parent_if_needed`;
-delimiter ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `update_case_in_run_parent_if_needed`(IN case_in_run_id BIGINT)
-BEGIN
-
-DECLARE is_leaf BIT;
-
-select case when (SELECT COUNT(cs.id) numb FROM tstCaseInRun cs
-			WHERE cs.pId=case_id AND cs.deleted != true AND cs.disabled != TRUE
-		 )=0 then 1 else 0 end is_leaf from dual
-	INTO is_leaf;
-
-UPDATE tstCaseInRun cs SET cs.isLeaf=is_leaf WHERE cs.id=case_id AND (cs.isLeaf IS NULL OR cs.isLeaf!=is_leaf);
+delete from TstROrgUser where userId=_user_id and orgId=_org_id;
+delete from TstROrgRoleUser where userId=_user_id and orgRoleId 
+  in (select tmp.id from TstOrgRole tmp where tmp.orgId=_org_id);
+delete from TstROrgGroupUser where userId=_user_id and orgGroupId 
+  in (select tmp.id from TstOrgGroup tmp where tmp.orgId=_org_id);
 
 END
  ;;
@@ -2853,56 +2491,12 @@ BEGIN
 
 DECLARE is_leaf BIT;
 
-select case when (SELECT COUNT(cs.id) numb FROM tstCase cs
-			WHERE cs.pId=pId AND cs.deleted != true AND cs.disabled != TRUE
-		 )=0 then 1 else 0 end is_leaf from dual
-	INTO is_leaf;
+select case when (SELECT COUNT(cs.id) numb FROM TstCase cs
+      WHERE cs.pId=pId AND cs.deleted != true AND cs.disabled != TRUE
+     )=0 then 1 else 0 end is_leaf from dual
+  INTO is_leaf;
 
-UPDATE tstCase cs SET cs.isLeaf=is_leaf WHERE cs.id=pId AND (cs.isLeaf IS NULL OR cs.isLeaf!=is_leaf);
-
-END
- ;;
-delimiter ;
-
--- ----------------------------
---  Procedure structure for `update_node`
--- ----------------------------
-DROP PROCEDURE IF EXISTS `update_node`;
-delimiter ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `update_node`(IN node_table varchar(100), IN node_id BIGINT, IN status_name varchar(100), IN status_value varchar(100))
-BEGIN
-DECLARE sql_str varchar(5000);
-
-
-set sql_str = '';
-set sql_str = concat(sql_str, '  SELECT node.path into @node_path FROM  ', node_table, ' node');
-set sql_str = concat(sql_str, '     WHERE node.id = ', node_id);
-
-set @sql_str = sql_str;
-PREPARE stmt FROM @sql_str;  
-EXECUTE stmt;
-
-set @node_path = concat(@node_path, node_id, '/');
-
-
-set sql_str = '';
-set sql_str = concat(sql_str, '  update ', node_table);
-set sql_str = concat(sql_str, '    SET ', status_name, ' = ' , status_value);
-set sql_str = concat(sql_str, '  WHERE id =', node_id, ' OR path LIKE ', '''', @node_path, '%''');
-
-set @sql_str = sql_str;
-PREPARE stmt FROM @sql_str;  
-EXECUTE stmt;
-
-
-set sql_str = '';
-set sql_str = concat(sql_str, '  SELECT * FROM  ', node_table, ' node');
-set sql_str = concat(sql_str, '     WHERE node.id = ', node_id);
-
-set @sql_str = sql_str;
-PREPARE stmt FROM @sql_str;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
+UPDATE TstCase cs SET cs.isLeaf=is_leaf WHERE cs.id=pId AND (cs.isLeaf IS NULL OR cs.isLeaf!=is_leaf);
 
 END
  ;;
@@ -2917,19 +2511,19 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `user_not_in_project`(IN _userId BIG
 BEGIN
 
 select (count(u.id) = 0) isExist 
-	from tstUser u 
-	where u.id = _userId and u.id in 
-		(
-			select relation1.entityId from TstProjectRoleEntityRelation relation1 
-				where relation1.type = 'user' && relation1.projectId = _prjId
-			UNION
-			select relta.userId from TstOrgGroupUserRelation relta
-				where relta.orgGroupId in 
-				(
-					select relation2.entityId from TstProjectRoleEntityRelation relation2 
-						where relation2.type = 'group' && relation2.projectId = _prjId
-				) 
-		);
+  from TstUser u 
+  where u.id = _userId and u.id in 
+    (
+      select relation1.entityId from TstProjectRoleEntityRelation relation1 
+        where relation1.type = 'user' && relation1.projectId = _prjId
+      UNION
+      select relta.userId from TstOrgGroupUserRelation relta
+        where relta.orgGroupId in 
+        (
+          select relation2.entityId from TstProjectRoleEntityRelation relation2 
+            where relation2.type = 'group' && relation2.projectId = _prjId
+        ) 
+    );
 END
  ;;
 delimiter ;

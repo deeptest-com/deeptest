@@ -6,8 +6,9 @@ Demo: http://47.99.102.138:8080
 
 ### Quick start
 ```bash
+Create dir "/work/ngtesting-data/" for file update
 Create a MySQL database named "ngtesting-web"
-Create MySQL user "ngtesting" with password "P2ssw0rd"
+Add MySQL user "ngtesting" with password "P2ssw0rd"
 Clone the codes and goto project root dir
 Import xdoc/ngtesting-web.sql to database
 Enter "java -jar xdoc/ngtesting-web-1.0-SNAPSHOT.jar" to run

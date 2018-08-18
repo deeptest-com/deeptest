@@ -14,7 +14,7 @@
         SELECT * FROM TstCase o
 
         WHERE o.projectId = #{projectId}
-         AND O.deleted != TRUE  AND o.disabled != TRUE
+         AND o.deleted != TRUE  AND o.disabled != TRUE
 
         ORDER BY o.pId, o.ordr
     </select>

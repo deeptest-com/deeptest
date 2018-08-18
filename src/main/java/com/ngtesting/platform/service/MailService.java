@@ -7,6 +7,8 @@ public interface MailService extends BaseService {
 	void send(String subject, String text, String toEmail);
 	void sendTemplateMail(String subject, String templateName, String toEmail, Map<String, String> map);
 
+	String getClassesPath(Class<?> cls);
+
 	String getAppPath(Class<?> cls);
 	String getFileName(String path);
 	String getFilePath();

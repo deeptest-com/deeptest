@@ -74,6 +74,11 @@ public class MailServiceImpl extends BaseServiceImpl implements MailService {
 	}
 
 	@Override
+	public String getClassesPath(Class<?> cls) {
+		return cls.getClassLoader().getResource("").getPath();
+	}
+
+	@Override
 	public String getAppPath(Class<?> cls) {
 		// 检查用户传入的参数是否为空
 		if (cls == null)
@@ -142,8 +147,8 @@ public class MailServiceImpl extends BaseServiceImpl implements MailService {
 
 	@Override
 	public String getFilePath() {
-		String path = getAppPath(MailServiceImpl.class);
-		path = path + File.separator + "mail-template" + File.separator;
+		String path = getClassesPath(MailServiceImpl.class);
+		path = path + "mail-template" + File.separator;
 		path = path.replace("\\", "/");
 		return path;
 	}

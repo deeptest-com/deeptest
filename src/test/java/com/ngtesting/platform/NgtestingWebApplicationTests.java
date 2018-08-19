@@ -1,5 +1,6 @@
 package com.ngtesting.platform;
 
+import com.ngtesting.platform.utils.FileUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.annotation.ComponentScan;
@@ -11,7 +12,7 @@ public class NgtestingWebApplicationTests {
 
 	@Test
 	public void contextLoads() {
-
+		FileUtil.CreateDirIfNeeded("/work/ngtesting-data/");
 	}
 
 }

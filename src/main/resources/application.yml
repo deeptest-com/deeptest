@@ -1,15 +1,4 @@
-sys:
-  name: ngtesting
-  work:
-    dir: /work/ngtesting-data/
 
-server:
-  port: 8080
-
-config:
-  url:
-    login: http://localhost:4200/#/login
-    resetPassword: http://localhost:4200/#/reset-password
 
 spring:
     profiles:
@@ -72,6 +61,14 @@ mail:
     encoding: UTF-8
     username: 3193472405@qq.com
     password: dkwmlkquhjbzdgje
+
+sys:
+  name: ngtesting
+  work:
+    dir: /work/ngtesting-data/
+
+server:
+  port: 8080
 
 ---
 spring:

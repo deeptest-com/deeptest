@@ -11,7 +11,7 @@ Create a MySQL database named "ngtesting-web"
 Add MySQL user "ngtesting" with password "P2ssw0rd"
 Clone the codes and goto project root dir
 Import xdoc/ngtesting-web.sql to database
-Enter "xdoc/ngtesting-web-1.0.jar start|stop|restart" to run
+Enter "xdoc/ngtesting-web-1.0.jar start" to run
 Open http://localhost:8080/test.html using Chrome 
 ```
 

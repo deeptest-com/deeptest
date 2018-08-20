@@ -1,7 +1,6 @@
 spring:
     profiles:
       active: prod
-
     resources:
       static-locations: classpath:/META-INF/resources/,classpath:/resources/, classpath:/static/, classpath:/public/, file:${sys.work.dir}
     freemarker:
@@ -64,22 +63,22 @@ sys:
   name: ngtesting
   work:
     dir: /work/ngtesting-data/
-
-server:
-  port: 8080
+  url:
+    login: http://${config.server.name}:${config.server.port}/#/login
+    resetPassword: http://${config.server.name}:${config.server.port}/#/reset-password
 
 ---
 spring:
   profiles: dev
 config:
-  url:
-    login: http://localhost:4200/#/login
-    resetPassword: http://localhost:4200/#/reset-password
+  server:
+    name: localhost
+    port: 8080
 
 ---
 spring:
   profiles: prod
 config:
-  url:
-    login: http://47.99.102.138:8080/#/login
-    resetPassword: http://47.99.102.138:8080/#/reset-password
+  server:
+    name: 47.99.102.138
+    port: 8080

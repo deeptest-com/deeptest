@@ -25,6 +25,7 @@ public interface ProjectDao {
 
     Integer isLastestProjectGroup(@Param("orgId") Integer orgId, @Param("projectGroupId") Integer projectGroupId);
 
+    List<TstProject> getProjectsByOrg(@Param("orgId") Integer orgId);
     List<TstProject> listProjectGroups(@Param("orgId") Integer orgId);
 
     void save(TstProject vo);

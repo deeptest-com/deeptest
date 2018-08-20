@@ -30,10 +30,10 @@ public class PropServiceImpl implements PropService {
     @Value("${sys.name}")
     private String sysName;
 
-    @Value("${sys.url.login}")
+    @Value("${config.url.login}")
     private String urlLogin;
 
-    @Value("${sys.url.resetPassword}")
+    @Value("${config.url.resetPassword}")
     private String urlResetPassword;
 
     @Bean

@@ -1,15 +1,20 @@
 sys:
   name: ngtesting
-  url:
-    login: http://localhost:4200/#/login
-    resetPassword: http://localhost:4200/#/reset-password
   work:
     dir: /work/ngtesting-data/
 
 server:
   port: 8080
 
+config:
+  url:
+    login: http://localhost:4200/#/login
+    resetPassword: http://localhost:4200/#/reset-password
+
 spring:
+    profiles:
+      active: prod
+
     resources:
       static-locations: classpath:/META-INF/resources/,classpath:/resources/, classpath:/static/, classpath:/public/, file:${sys.work.dir}
     freemarker:
@@ -67,3 +72,19 @@ mail:
     encoding: UTF-8
     username: 3193472405@qq.com
     password: dkwmlkquhjbzdgje
+
+---
+spring:
+  profiles: dev
+config:
+  url:
+    login: http://localhost:4200/#/login
+    resetPassword: http://localhost:4200/#/reset-password
+
+---
+spring:
+  profiles: prod
+  config:
+    url:
+      login: http://47.99.102.138:8080/#/login
+      resetPassword: http://47.99.102.138:8080/#/reset-password

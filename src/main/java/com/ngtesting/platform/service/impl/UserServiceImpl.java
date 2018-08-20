@@ -190,7 +190,9 @@ public class UserServiceImpl implements UserService {
             setDefaultPrj(user, his.getPrjId());
 
         } else {
-            setDefaultPrj(user, null);
+            List<TstProject> projects = projectDao.getProjectsByOrg(orgId);
+
+            setDefaultPrj(user, projects.get(0).getId());
         }
     }
 

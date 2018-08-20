@@ -53,6 +53,7 @@ public class CaseAction extends BaseAction {
         List<TstCustomField> customFieldList = customFieldService.listForCaseByProject(orgId, projectId);
 
         ret.put("data", ls);
+        ret.put("prjId", projectId);
         ret.put("caseTypeList", caseTypePos);
         ret.put("casePriorityList", casePriorityPos);
 		ret.put("customFields", customFieldList);

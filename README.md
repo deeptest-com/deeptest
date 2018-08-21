@@ -9,6 +9,7 @@ Demo: http://47.99.102.138:8080
 
 1. Install docker and docker-compose;
 2. Enter "docker-compose up" to launch;
+
    (First time, you may get an error caused by MySQL service not ready for web server connectting, just run Step 2 again to fix)
 3. Open http://localhost:58080/test.html using Chrome.
 

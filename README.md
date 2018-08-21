@@ -4,14 +4,14 @@ AngularJS, SockJS, SpringBoot, MyBatis, MySQL
 
 Demo: http://47.99.102.138:8080
 
-### Quick start
-##Use Docker
+## Quick start
+### Use Docker
 
 1. Install docker and docker-compose
 2. Enter "docker-compose -f docker-compose-run.yml up" to launch
 3. Open http://localhost:58080/test.html using Chrome 
 
-Use Jar
+### Use Jar
 1. Create dir "/work/ngtesting-data/" for file upload
 2. Create a MySQL database named "ngtesting-web"
 3. Add MySQL user "ngtesting" with password "P2ssw0rd"
@@ -20,21 +20,21 @@ Use Jar
 6. Enter "xdoc/ngtesting-web-1.0.jar" to run
 7. Open http://localhost:<span color="red">8080</span>/test.html using Chrome
 
-### Test Project
+## Test Project
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/project_view.jpg" width="800px" style="margin: 10px auto;">
 
-### Test Case
+## Test Case
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/case_edit.jpg" width="800px" style="margin: 10px auto;">
 
-### Test Execution
+## Test Execution
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/case_exe.jpg" width="800px" style="margin: 10px auto;">
 
-### Test Plan
+## Test Plan
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/plan_exe_result.jpg" width="800px" style="margin: 10px auto;">
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/plan_exe_progress.jpg" width="800px" style="margin: 10px auto;">
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/plan_exe_process.jpg" width="800px" style="margin: 10px auto;">
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/plan_exe_process_by_user.jpg" width="800px" style="margin: 10px auto;">
 
-### Licenses
+## Licenses
 
 All source code is licensed under the [GPLv3 License](LICENSE.md).

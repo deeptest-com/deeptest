@@ -8,7 +8,8 @@ Demo: http://47.99.102.138:8080
 1. Use Docker
 ```bash
 Install docker and docker-compose
-Enter "docker-compose -f docker-compose-run.yml up" to launch MySQL and WebServer
+Enter "docker-compose -f docker-compose-run.yml up" to launch
+Open http://localhost:<span color="red">58080</span>/test.html using Chrome 
 ```
 
 2. Use Jar

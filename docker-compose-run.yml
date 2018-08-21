@@ -1,0 +1,19 @@
+version : '2'
+services:
+  ngtesting-mysql:
+    image: registry.cn-hangzhou.aliyuncs.com/ngtesting/ngtesting-mysql:latest
+    volumes:
+      - ./src/main/docker/mysql/my.cnf:/etc/mysql/my.cnf /mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=P2ssw0rd
+    ports:
+      - "53306:3306"
+    expose:
+      - "53306"
+
+  ngtesting-web:
+    image: registry.cn-hangzhou.aliyuncs.com/ngtesting/ngtesting-web:latest
+    ports:
+      - "58080:8080"
+    links:
+      - ngtesting-mysql

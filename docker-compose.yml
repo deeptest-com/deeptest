@@ -3,7 +3,7 @@ services:
   ngtesting-mysql:
     image: ngtesting/mysql:latest
     volumes:
-      - ./src/main/docker/mysql/my.cnf:/etc/mysql/my.cnf mysql
+      - ./src/main/docker/mysql/my.cnf:/etc/mysql/my.cnf /mysql
     environment:
       - MYSQL_ROOT_PASSWORD=P2ssw0rd
     ports:

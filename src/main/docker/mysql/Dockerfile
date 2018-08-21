@@ -3,6 +3,7 @@ FROM mysql:5.7
 VOLUME my.cnf:/etc/mysql/my.cnf mysql
 
 ADD setup.sh /etc/mysql/setup.sh
+ADD database.sql /etc/mysql/database.sql
 ADD schema.sql /etc/mysql/schema.sql
 ADD privileges.sql /etc/mysql/privileges.sql
 

@@ -11,9 +11,4 @@ services:
     expose:
       - "53306"
 
-  ngtesting-web:
-    image: ngtesting/web:latest
-    ports:
-      - "8080:8080"
-    links:
-      - ngtesting-mysql
+

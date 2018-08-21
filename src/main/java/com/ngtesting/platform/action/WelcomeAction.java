@@ -34,6 +34,7 @@ public class WelcomeAction extends BaseAction {
         List ls = welcomeService.test();
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		ret.put("data", ls);
 		ret.put("msg", ls.size() > 0? "pass": "fail");
 
 		return ret;

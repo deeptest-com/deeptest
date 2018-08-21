@@ -18,7 +18,7 @@ Demo: http://47.99.102.138:8080
 4. Clone the codes and goto project root dir
 5. Import xdoc/ngtesting-web.sql to database
 6. Enter "xdoc/ngtesting-web-1.0.jar" to run
-7. Open http://localhost:<span color="red">8080</span>/test.html using Chrome
+7. Open http://localhost:8080/test.html using Chrome
 
 ## Test Project
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/project_view.jpg" width="800px" style="margin: 10px auto;">

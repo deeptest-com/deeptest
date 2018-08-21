@@ -7,18 +7,19 @@ Demo: http://47.99.102.138:8080
 ## Quick start
 ### Use Docker
 
-1. Install docker and docker-compose
-2. Enter "docker-compose -f docker-compose-run.yml up" to launch
-3. Open http://localhost:58080/test.html using Chrome 
+1. Install docker and docker-compose;
+2. Enter "docker-compose -f docker-compose-run.yml up" to launch;
+   (First time, you may get a error caused by MySQL service not ready for web server connectting, just run Step 2 again to fix)
+3. Open http://localhost:58080/test.html using Chrome.
 
 ### Use Jar
-1. Create dir "/work/ngtesting-data/" for file upload
-2. Create a MySQL database named "ngtesting-web"
-3. Add MySQL user "ngtesting" with password "P2ssw0rd"
-4. Clone the codes and goto project root dir
-5. Import xdoc/ngtesting-web.sql to database
-6. Enter "xdoc/ngtesting-web-1.0.jar" to run
-7. Open http://localhost:8080/test.html using Chrome
+1. Create dir "/work/ngtesting-data/" for file upload;
+2. Create a MySQL database named "ngtesting-web";
+3. Add MySQL user "ngtesting" with password "P2ssw0rd";
+4. Clone the codes and goto project root dir;
+5. Import xdoc/ngtesting-web.sql to database;
+6. Enter "xdoc/ngtesting-web-1.0.jar" to run;
+7. Open http://localhost:8080/test.html using Chrome.
 
 ## Test Project
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/project_view.jpg" width="800px" style="margin: 10px auto;">

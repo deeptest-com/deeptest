@@ -7,7 +7,7 @@ Demo: http://47.99.102.138:8080
 ### Quick start
 1. Use Docker
 ```bash
-Install docker and ocker-compose
+Install docker and docker-compose
 Enter "docker-compose -f docker-compose-run.yml up" to launch MySQL and WebServer
 ```
 

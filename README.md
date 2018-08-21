@@ -5,6 +5,13 @@ AngularJS, SockJS, SpringBoot, MyBatis, MySQL
 Demo: http://47.99.102.138:8080
 
 ### Quick start
+1. Use Docker
+```bash
+Install docker and ocker-compose
+Enter "docker-compose -f docker-compose-run.yml up" to launch MySQL and WebServer
+```
+
+2. Use Jar
 ```bash
 Create dir "/work/ngtesting-data/" for file upload
 Create a MySQL database named "ngtesting-web"

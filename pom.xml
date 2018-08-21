@@ -242,7 +242,7 @@
                 </executions>
 
                 <configuration>
-                    <imageName>ngtesting/web</imageName>
+                    <imageName>registry.cn-hangzhou.aliyuncs.com/ngtesting/ngtesting-web</imageName>
                     <dockerDirectory>src/main/docker</dockerDirectory>
                     <resources>
                         <resource>

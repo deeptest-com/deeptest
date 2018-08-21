@@ -4,4 +4,4 @@ ADD ngtesting-web-1.0.jar ngtesting-web.jar
 RUN sh -c 'touch /ngtesting-web.jar'
 EXPOSE 8080
 ENV JAVA_OPTS=""
-ENTRYPOINT [ "sh", "-c", "echo 'Wait for mysql lauching ...'; sleep 3; java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /ngtesting-web.jar --spring.profiles.active=docker" ]
+ENTRYPOINT [ "sh", "-c", "echo 'Wait for MySQL lauching ...'; sleep 5; java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /ngtesting-web.jar --spring.profiles.active=docker" ]

@@ -13,7 +13,7 @@ Demo: http://47.99.102.138:8080
    (First time, you may get an error caused by MySQL service not ready for web server connectting, just run Step 2 again to fix)
 3. Open http://localhost:58080/test.html using Chrome.
 
-### Use Jar
+### Use Java Jar
 1. Create dir "/work/ngtesting-data/" for file upload;
 2. Create a MySQL database named "ngtesting-web";
 3. Add MySQL user "ngtesting" with password "P2ssw0rd";

@@ -14,7 +14,7 @@ spring:
           filters: stat
           driver-class-name: com.mysql.jdbc.Driver
           #基本属性
-          url: jdbc:mysql://${config.mysql.name}:${config.mysql.port}/ngtesting-web?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
+          url: jdbc:mysql://${config.mysql.host}:${config.mysql.port}/ngtesting-web?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
           username: ngtesting
           password: P2ssw0rd
           #配置初始化大小/最小/最大
@@ -72,7 +72,7 @@ spring:
   profiles: dev
 config:
   mysql:
-    name: localhost
+    host: localhost
     port: 3306
 
 ---
@@ -80,7 +80,7 @@ spring:
   profiles: prod
 config:
   mysql:
-    name: localhost
+    host: localhost
     port: 3306
 
 ---
@@ -88,5 +88,5 @@ spring:
   profiles: docker
 config:
   mysql:
-    name: ngtesting-mysql
+    host: ngtesting-mysql
     port: 3306

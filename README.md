@@ -20,6 +20,8 @@ Demo: http://47.99.102.138:8080
 4. Clone the codes and goto project root dir;
 5. Import xdoc/ngtesting-web.sql to database;
 6. Enter "xdoc/ngtesting-web-1.0.jar" to run;
+
+   (You may change the config params in application.yml file like this: "xdoc/ngtesting-web-1.0.jar --config.mysql.host=10.0.0.10 --config.mysql.port=3306")
 7. Open http://localhost:8080/test.html using Chrome.
 
 ## Test Project

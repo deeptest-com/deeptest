@@ -64,16 +64,13 @@ sys:
   work:
     dir: /work/ngtesting-data/
   url:
-    login: http://${config.server.name}:${config.server.port}/#/login
-    resetPassword: http://${config.server.name}:${config.server.port}/#/reset-password
+    login: http://{0}#/login
+    resetPassword: http://{0}#/reset-password
 
 ---
 spring:
   profiles: dev
 config:
-  server:
-    name: 127.0.0.1
-    port: 8080
   mysql:
     name: localhost
     port: 3306
@@ -82,9 +79,6 @@ config:
 spring:
   profiles: prod
 config:
-  server:
-    name: 47.99.102.138
-    port: 8080
   mysql:
     name: localhost
     port: 3306
@@ -93,9 +87,6 @@ config:
 spring:
   profiles: docker
 config:
-  server:
-    name: 127.0.0.1
-    port: 8080
   mysql:
     name: ngtesting-mysql
     port: 3306

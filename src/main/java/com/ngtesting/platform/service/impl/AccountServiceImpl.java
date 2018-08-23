@@ -57,9 +57,6 @@ public class AccountServiceImpl implements AccountService {
             map.put("vcode", verifyCode);
 
             String url = propService.getUrlLogin();
-            if (!url.startsWith("http")) {
-                url = Constant.WEB_ROOT + url;
-            }
             map.put("url", url);
             mailService.sendTemplateMail("[\"" + sys + "\"]注册成功", "register-success.ftl",
                     user.getEmail(), map);

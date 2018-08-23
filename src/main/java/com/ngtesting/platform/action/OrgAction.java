@@ -113,11 +113,8 @@ public class OrgAction extends BaseAction {
 
         TstOrg org = orgService.save(vo, user);
 
-        List<TstOrg> vos = orgService.list(user.getId(), "false", null);
-
         pushSettingsService.pushMyOrgs(user);
 
-		ret.put("myOrgs", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -133,9 +130,15 @@ public class OrgAction extends BaseAction {
             return authFail();
         }
 
-		orgService.delete(orgId);
+		Boolean result = orgService.delete(orgId, user);
+        if (!result) {
+            ret.put("msg", "无法删除当前激活的组织");
+            ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
+        } else {
+            pushSettingsService.pushMyOrgs(user);
+            ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        }
 
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
 

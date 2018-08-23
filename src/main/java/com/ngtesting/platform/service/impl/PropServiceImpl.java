@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.service.PropService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +9,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
 import java.util.Properties;
 
 @Service
@@ -65,12 +67,12 @@ public class PropServiceImpl implements PropService {
 
     @Override
     public String getUrlLogin() {
-        return urlLogin;
+        return MessageFormat.format(urlLogin.replace("http://", ""), Constant.WEB_ROOT);
     }
 
     @Override
     public String getUrlResetPassword() {
-        return urlResetPassword;
+        return MessageFormat.format(urlResetPassword.replace("http://", ""), Constant.WEB_ROOT);
     }
 
     @Override

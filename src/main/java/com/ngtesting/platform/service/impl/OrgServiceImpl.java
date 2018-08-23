@@ -64,9 +64,12 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	}
 
 	@Override
-	public Boolean delete(Integer id) {
-		Integer count = orgDao.delete(id);
+	public Boolean delete(Integer id, TstUser user) {
+        if (user.getDefaultOrgId().intValue() == id.intValue()) {
+            return false;
+        }
 
+		Integer count = orgDao.delete(id);
 		return count > 0;
 	}
 

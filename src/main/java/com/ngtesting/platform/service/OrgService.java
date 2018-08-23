@@ -13,7 +13,7 @@ public interface OrgService extends BaseService {
 
 	TstOrg get(Integer id);
 
-	Boolean delete(Integer id);
+	Boolean delete(Integer id, TstUser user);
 
 	void genVos(List<TstOrg> pos, Integer userId);
 

@@ -1,7 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.model.TstOrg;
 import com.ngtesting.platform.model.TstProjectAccessHistory;
@@ -59,13 +58,9 @@ public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSett
         Integer userId = user.getId();
         Integer orgId = user.getDefaultOrgId();
 
-//        TstOrg org = (TstOrg)getDetail(TstOrg.class, orgId);
         Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(userId, orgId);
-        request.getSession().setAttribute(Constant.HTTP_SESSION_USER_SETTING_ORG_PRIVILEGE, orgPrivileges);
 
         Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
-
-//        ret.put("org", org);
 
         ret.put("orgPrivileges", orgPrivileges);
 

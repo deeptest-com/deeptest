@@ -65,7 +65,6 @@ public class ClientAction extends BaseAction {
         ret.put("sysPrivileges", sysPrivileges);
         Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(user.getId(), orgId);
         ret.put("orgPrivileges", orgPrivileges);
-        request.getSession().setAttribute(Constant.HTTP_SESSION_USER_SETTING_ORG_PRIVILEGE, orgPrivileges);
 
         List<TstOrg> orgs = orgService.listByUser(userId);
         ret.put("myOrgs", orgs);

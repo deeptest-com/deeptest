@@ -88,6 +88,13 @@
         WHERE id=#{id}
     </update>
 
+    <update id="setDefaultOrgPrjToNullForDelete">
+        UPDATE TstUser
+        SET defaultOrgId=NULL, defaultOrgName=NULL,
+            defaultPrjId=NULL, defaultPrjName=NULL
+        WHERE defaultOrgId=#{orgId}
+    </update>
+
     <update id="setLeftSize" parameterType="TstUser">
         UPDATE TstUser
         SET leftSizeDesign=#{leftSizeDesign}, leftSizeExe=#{leftSizeExe}

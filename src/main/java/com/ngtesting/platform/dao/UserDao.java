@@ -39,4 +39,6 @@ public interface UserDao {
     void setLeftSize(TstUser user);
 
     List<TstUser> getProjectUsers(@Param("prjId") Integer prjId);
+
+    void setDefaultOrgPrjToNullForDelete(@Param("orgId") Integer orgId);
 }

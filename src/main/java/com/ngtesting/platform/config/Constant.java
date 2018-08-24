@@ -7,9 +7,6 @@ import java.util.Map;
 
 public class Constant {
     public static final String HTTP_SESSION_USER_PROFILE = "http_session_user_profile";
-    public static final String HTTP_SESSION_USER_SETTING_SYS_PRIVILEGE = "http_session_user_setting_sys_privilege";
-    public static final String HTTP_SESSION_USER_SETTING_ORG_PRIVILEGE = "http_session_user_setting_org_privilege";
-    public static final String HTTP_SESSION_USER_SETTING_PRJ_PRIVILEGE = "http_session_user_setting_prj_privilege";
 
     // 配置项，初始化在 PropertyConfig.processProperties()
     public static String WORK_DIR;

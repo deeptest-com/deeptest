@@ -3,8 +3,8 @@ package com.ngtesting.platform.service;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.TstOrgGroupUserRelation;
 import com.ngtesting.platform.model.TstUser;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface UserService {
@@ -26,6 +26,9 @@ public interface UserService {
 
     void setDefaultOrg(TstUser user, Integer orgId);
 
+    @Transactional
+    void setEmptyOrg(TstUser user, Integer orgId);
+
     void setDefaultPrj(TstUser user, Integer prjId);
 
     List<TstUser> search(Integer orgId, String keywords, String exceptIds);
@@ -34,4 +37,5 @@ public interface UserService {
 
     List<TstUser> getProjectUsers(Integer orgId, Integer projectId);
 
+    void setDefaultOrgPrjToNullForDelete(Integer orgId);
 }

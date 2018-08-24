@@ -242,6 +242,10 @@
                                         <include name="*.jar"/>
                                     </fileset>
                                 </copy>
+                                <exec executable="chmod">
+                                    <arg value="+x" />
+                                    <arg value="${project.basedir}/xdoc/${project.build.finalName}.jar" />
+                                </exec>
                             </tasks>
                         </configuration>
                     </execution>

@@ -131,14 +131,14 @@ public class OrgAction extends BaseAction {
         }
 
 		Boolean result = orgService.delete(orgId, user);
-        if (!result) {
-            ret.put("msg", "无法删除当前激活的组织");
-            ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
-        } else {
-            pushSettingsService.pushMyOrgs(user);
-            ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        }
+        if (result && orgId.intValue() == user.getDefaultOrgId().intValue()) {
+            userService.setEmptyOrg(user, orgId);
 
+            pushSettingsService.pushMyOrgs(user);
+            pushSettingsService.pushOrgSettings(user, request);
+            pushSettingsService.pushRecentProjects(user);
+        }
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
 

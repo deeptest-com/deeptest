@@ -33,7 +33,8 @@
 
     <select id="getDetail" resultMap="caseInTaskMap">
         SELECT cs.id id, cs.*, o.id entityId,
-          o.id entityId, o.pId pId, o.isLeaf isLeaf, o.status status, o.result result, o.ordr ordr
+          o.id entityId, o.pId pId, o.isLeaf isLeaf, o.status status, o.result result, o.ordr ordr,
+          o.planId planId, o.taskId taskId
 
         FROM TstCaseInTask o
         JOIN TstCase cs ON o.caseId = cs.id
@@ -56,6 +57,7 @@
 
     <resultMap id="caseInTaskMap" type="TstCaseInTask" autoMapping="true">
         <id column="id" property="id"/>
+
         <id column="caseInTaskId" property="caseInTaskId"/>
 
         <collection property="steps" select="com.ngtesting.platform.dao.CaseStepDao.listByCaseId"

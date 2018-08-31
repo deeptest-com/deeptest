@@ -9,6 +9,7 @@ import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.dao.UserDao;
 import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.*;
+import com.ngtesting.platform.utils.PasswordEncoder;
 import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -111,13 +112,18 @@ public class UserServiceImpl implements UserService {
         } else {
             isNew = true;
             vo.setDefaultOrgId(orgId);
-            vo.setPassword(StringUtil.RandomString(6));
             vo.setAvatar("upload/sample/user/avatar.png");
 
             vo.setDefaultOrgId(orgId);
             vo.setDefaultPrjId(prjId);
             vo.setDefaultOrgName(orgName);
             vo.setDefaultPrjName(prjName);
+
+            String salt = PasswordEncoder.genSalt();
+            PasswordEncoder passwordEncoder = new  PasswordEncoder(salt);
+
+            user.setTemp(salt);
+            user.setPassword(passwordEncoder.encodePassword(StringUtil.RandomString(6)));
 
             userDao.save(vo);
         }

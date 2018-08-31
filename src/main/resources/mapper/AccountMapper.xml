@@ -3,10 +3,10 @@
 <mapper namespace="com.ngtesting.platform.dao.AccountDao" >
 
     <insert id="register" parameterType="TstUser" useGeneratedKeys="true" keyProperty="id">
-        insert into TstUser (email,password,nickname,phone,avatar,token,
+        insert into TstUser (email,password,nickname,phone,avatar,token,salt,
           leftSizeDesign,leftSizeExe,defaultOrgId,defaultPrjId,
           deleted,disabled,createTime)
-        values (#{email},#{password},#{nickname},#{phone},#{avatar},#{token},
+        values (#{email},#{password},#{nickname},#{phone},#{avatar},#{token},#{temp},
           #{leftSizeDesign},#{leftSizeExe},#{defaultOrgId},#{defaultPrjId},
           #{deleted},#{disabled},#{createTime})
     </insert>

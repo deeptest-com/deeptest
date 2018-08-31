@@ -56,11 +56,17 @@
         LIMIT 1;
     </select>
 
+    <select id="getSalt" resultType="String">
+        SELECT salt FROM TstUser WHERE id = #{id}
+        AND disabled != TRUE AND deleted != TRUE
+        LIMIT 1;
+    </select>
+
     <insert id="save" parameterType="TstUser" useGeneratedKeys="true" keyProperty="id">
-        insert into TstUser (email,password,nickname,phone,avatar,token,
+        insert into TstUser (email,password,nickname,phone,avatar,token,salt,
           leftSizeDesign,leftSizeExe,defaultOrgId,defaultOrgName,defaultPrjId,defaultPrjName,
           deleted,disabled,createTime)
-        values (#{email},#{password},#{nickname},#{phone},#{avatar},#{token},
+        values (#{email},#{password},#{nickname},#{phone},#{avatar},#{token},#{temp},
           #{leftSizeDesign},#{leftSizeExe},#{defaultOrgId},#{defaultOrgName},#{defaultPrjId},#{defaultPrjName},
           #{deleted},#{disabled},#{createTime})
     </insert>

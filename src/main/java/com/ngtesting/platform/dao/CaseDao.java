@@ -29,16 +29,19 @@ public interface CaseDao {
 
     Integer changeContentType(@Param("id") Integer id,
                            @Param("contentType") String contentType,
-                           @Param("projectId") Integer projectId);
+                           @Param("projectId") Integer projectId,
+                              @Param("updateById") Integer updateById);
 
     Integer reviewResult(@Param("id") Integer id,
                       @Param("result") Boolean result,
-                      @Param("projectId") Integer projectId);
+                      @Param("projectId") Integer projectId,
+                         @Param("updateById") Integer updateById);
 
     Integer updateProp(@Param("id") Integer id,
                     @Param("prop") String prop,
                     @Param("value") String value,
-                    @Param("projectId") Integer projectId);
+                    @Param("projectId") Integer projectId,
+                       @Param("updateById") Integer updateById);
 
     void updateParentIfNeeded(@Param("pId") Integer pId);
     List<TstCase> getChildren(@Param("id") Integer id);

@@ -71,36 +71,37 @@
 
     <update id="changeContentType">
         UPDATE TstCase
-        SET contentType=#{contentType}
+        SET contentType=#{contentType},updateById=#{updateById},updateTime=NOW()
         WHERE id=#{id} AND projectId=#{projectId}
     </update>
 
     <update id="reviewResult">
         UPDATE TstCase
-        SET reviewResult=#{result}
+        SET reviewResult=#{result},updateById=#{updateById},updateTime=NOW()
         WHERE id=#{id} AND projectId=#{projectId}
     </update>
 
     <update id="updateProp">
         UPDATE TstCase
-        SET ${prop} = '${value}'
+        SET ${prop} = '${value}',updateById=#{updateById},updateTime=NOW()
         WHERE id=#{id} AND projectId=#{projectId}
     </update>
 
     <update id="moveUpdate">
         update TstCase c
-        set c.pId = #{pId}, c.ordr = #{ordr}
+        set c.pId = #{pId}, c.ordr = #{ordr},
+        c.updateById=#{updateById}, c.updateTime=NOW()
         where c.id=#{id}
     </update>
     <insert id="moveCopy" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
         insert into TstCase
         (name,priority,type,contentType,estimate,isLeaf,ordr,pId,
         projectId,createById,
-        createTime,deleted,disabled)
+        createTime,updateTime,deleted,disabled)
         values
         (#{name},#{priority},#{type},#{contentType},#{estimate},#{isLeaf},#{ordr},#{pId},
         #{projectId},#{createById},
-        NOW(),FALSE,FALSE)
+        NOW(),NULL,FALSE,FALSE)
     </insert>
 
     <update id="updateParentIfNeeded">

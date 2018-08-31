@@ -10,6 +10,7 @@ public class TstUser extends BaseModel {
     private String phone;
     private String avatar = "upload/sample/user/avatar.png";
 
+    private String temp;
     private String token;
     private Date lastLoginTime;
     private Integer leftSizeDesign = 300;
@@ -24,6 +25,14 @@ public class TstUser extends BaseModel {
     private Boolean selecting;
 
     private String type = "user";
+
+    public String getTemp() {
+        return temp;
+    }
+
+    public void setTemp(String temp) {
+        this.temp = temp;
+    }
 
     public Integer getDefaultOrgId() {
         return defaultOrgId;

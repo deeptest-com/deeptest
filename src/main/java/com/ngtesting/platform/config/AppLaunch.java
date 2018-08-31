@@ -13,6 +13,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.MultipartResolver;
 
+import javax.annotation.PostConstruct;
+import java.util.Date;
+import java.util.TimeZone;
+
 @EnableAutoConfiguration(exclude = {MultipartAutoConfiguration.class})
 
 @SpringBootApplication
@@ -30,6 +34,12 @@ public class AppLaunch {
     public MultipartResolver multipartResolver() {
         CustomMultipartResolver customMultipartResolver = new CustomMultipartResolver();
         return customMultipartResolver;
+    }
+
+    @PostConstruct
+    void setDefaultTimezone() {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        System.out.println(new Date().toString());
     }
 
 }

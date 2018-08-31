@@ -111,7 +111,6 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
             po.setProjectId(projectId);
             po.setCreateById(user.getId());
-            po.setCreateTime(new Date());
             action = Constant.CaseAct.create;
         }
         po.setName(name);
@@ -159,12 +158,12 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             testCase = new TstCase();
             BeanUtilEx.copyProperties(src, testCase);
             testCase.setId(null);
-            testCase.setCreateTime(new Date());
-            testCase.setUpdateTime(null);
+
+            testCase.setCreateById(user.getId());
         } else {
             action = Constant.CaseAct.move;
-
             testCase = src;
+            testCase.setUpdateById(user.getId());
         }
 
         if ("inner".equals(moveType)) {
@@ -248,7 +247,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     public TstCase changeContentType(Integer id, String contentType, TstUser user) {
         Integer projectId = user.getDefaultPrjId();
 
-        Integer count = caseDao.changeContentType(id, contentType, projectId);
+        Integer count = caseDao.changeContentType(id, contentType, projectId, user.getId());
         if (count == 0) {
             return null;
         }
@@ -262,7 +261,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     public TstCase reviewResult(Integer id, Boolean result, TstUser user) {
         Integer projectId = user.getDefaultPrjId();
 
-        Integer count = caseDao.reviewResult(id, result, projectId);
+        Integer count = caseDao.reviewResult(id, result, projectId, user.getId());
         if (count == 0) {
             return null;
         }
@@ -281,7 +280,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         String value = json.getString("value");
         String label = json.getString("label");
 
-        Integer count = caseDao.updateProp(id, prop, value, projectId);
+        Integer count = caseDao.updateProp(id, prop, value, projectId, user.getId());
         if (count == 0) {
             return null;
         }

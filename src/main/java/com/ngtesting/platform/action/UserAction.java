@@ -126,7 +126,7 @@ public class UserAction extends BaseAction {
 
         if (po == null) {
             ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
-            ret.put("msg", "邮箱已加入当期组织");
+            ret.put("msg", "邮箱已加入当前组织");
             return ret;
         }
 

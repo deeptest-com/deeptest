@@ -7,7 +7,7 @@ public class BaseModel implements Serializable {
     protected Integer id;
 
     protected Date createTime = new Date();
-    protected Date updateTime = new Date();
+    protected Date updateTime;
     protected Boolean deleted = Boolean.FALSE;
     protected Boolean disabled = Boolean.FALSE;
     protected Integer version;

@@ -10,6 +10,7 @@ import com.ngtesting.platform.service.AccountService;
 import com.ngtesting.platform.service.AccountVerifyCodeService;
 import com.ngtesting.platform.service.MailService;
 import com.ngtesting.platform.service.PropService;
+import com.ngtesting.platform.utils.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,12 @@ public class AccountServiceImpl implements AccountService {
         if (existUser != null) {
             return null;
         }
+
+        String salt = PasswordEncoder.genSalt();
+        PasswordEncoder passwordEncoder = new  PasswordEncoder(salt);
+
+        user.setTemp(salt);
+        user.setPassword(passwordEncoder.encodePassword(user.getPassword()));
 
         accountDao.register(user);
         TstUser po = userDao.get(user.getId());
@@ -90,9 +97,18 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public TstUser login(String email, String password, Boolean rememberMe) {
-        TstUser user = userDao.getByEmailAndPassword(email, password);
+        TstUser user = userDao.getByEmail(email);
         if (user == null) {
-            return user;
+            return null;
+        }
+
+        String salt = userDao.getSalt(user.getId());
+        String passwdInDb = user.getPassword();
+
+        PasswordEncoder passwordEncoder = new  PasswordEncoder(salt);
+        Boolean pass = passwordEncoder.checkPassword(passwdInDb, password);
+        if (!pass) {
+            return null;
         }
 
         String newToken = UUID.randomUUID().toString();
@@ -112,7 +128,13 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public Boolean changePassword(Integer userId, String oldPassword, String password) {
-        Integer matched = accountDao.changePassword(userId, oldPassword, password);
+        String salt = userDao.getSalt(userId);
+
+        PasswordEncoder passwordEncoder = new PasswordEncoder(salt);
+        String oldPasswdInDb = passwordEncoder.encodePassword(oldPassword);
+        String passwdInDb = passwordEncoder.encodePassword(password);
+
+        Integer matched = accountDao.changePassword(userId, oldPasswdInDb, passwdInDb);
         return matched > 0;
     }
 
@@ -164,8 +186,14 @@ public class AccountServiceImpl implements AccountService {
         String newToken = UUID.randomUUID().toString();
         user.setToken(newToken);
         user.setPassword(password);
-        accountDao.resetPassword(user);
 
+        String salt = userDao.getSalt(user.getId());
+
+        PasswordEncoder passwordEncoder = new PasswordEncoder(salt);
+        String passwdInDb = passwordEncoder.encodePassword(password);
+        user.setPassword(passwdInDb);
+
+        accountDao.resetPassword(user);
         return user;
     }
 

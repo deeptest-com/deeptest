@@ -9,6 +9,8 @@ public interface TestVerDao {
     List<TstVer> query(@Param("projectId") Integer projectId,
                        @Param("keywords") String keywords,
                        @Param("disabled") Boolean disabled);
+    List<TstVer> listLastest(@Param("projectId") Integer projectId);
+
     TstVer get(@Param("id") Integer id,
                @Param("projectId") Integer projectId);
 
@@ -26,5 +28,4 @@ public interface TestVerDao {
                    @Param("projectId") Integer projectId);
     TstVer getNext(@Param("ordr") Integer ordr,
                    @Param("projectId") Integer projectId);
-
 }

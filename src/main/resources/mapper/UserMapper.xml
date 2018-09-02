@@ -29,7 +29,23 @@
     </select>
 
     <select id="getProjectUsers" resultType="TstUser">
-        { call get_project_users(#{prjId,mode=IN,jdbcType=INTEGER}) }
+        select usr.id, usr.nickname from TstUser usr
+        where usr.id in
+        (
+            select relation1.entityId from TstProjectRoleEntityRelation relation1
+                where relation1.type = 'user' AND relation1.projectId = #{prjId}
+            UNION
+            select relta.userId from TstOrgGroupUserRelation relta
+                where relta.orgGroupId in
+                (
+                    select relation2.entityId from TstProjectRoleEntityRelation relation2
+                        where relation2.type = 'group' AND relation2.projectId = #{prjId}
+                )
+        )
+        ORDER by usr.id ASC
+        <if test="numb != null">
+            LIMIT 10
+        </if>
     </select>
 
     <select id="get" parameterType="int" resultType="TstUser">

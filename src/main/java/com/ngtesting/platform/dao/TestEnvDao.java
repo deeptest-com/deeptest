@@ -9,6 +9,9 @@ public interface TestEnvDao {
     List<TstEnv> query(@Param("projectId") Integer projectId,
                        @Param("keywords") String keywords,
                        @Param("disabled") Boolean disabled);
+
+    List<TstEnv> listLastest(@Param("projectId") Integer projectId);
+
     TstEnv get(@Param("id") Integer id,
                @Param("projectId") Integer projectId);
 

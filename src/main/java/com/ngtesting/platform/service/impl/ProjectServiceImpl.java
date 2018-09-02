@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.AuthDao;
 import com.ngtesting.platform.dao.ProjectDao;
+import com.ngtesting.platform.dao.ProjectPrivilegeDao;
 import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstProjectAccessHistory;
@@ -29,6 +30,8 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	HistoryService historyService;
 	@Autowired
 	private ProjectDao projectDao;
+    @Autowired
+    private ProjectPrivilegeDao projectPrivilegeDao;
 //	@Autowired
 //	private UserDao userDao;
     @Autowired
@@ -47,7 +50,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	@Override
 	public List<TstProject> list(Integer orgId, Integer userId, String keywords, Boolean disabled) {
 		Map<String, Map<String, Boolean>> privMap = new HashMap();
-        List<Map<String, String>> projectPrivs = projectDao.getProjectPrivilegeByOrgForUser(userId, orgId);
+        List<Map<String, String>> projectPrivs = projectPrivilegeDao.listByOrgProjectsForUser(userId, orgId);
         for (Map<String, String> map : projectPrivs) {
 		    if (privMap.get(map.get("projectId")) == null) {
 		        String prjId = map.get("projectId");
@@ -88,6 +91,24 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
 		return po;
 	}
+
+    @Override
+    public TstProject getWithPrivs(Integer id, Integer userId) {
+        if (id == null) {
+            return null;
+        }
+        TstProject po = projectDao.get(id);
+        Map<String, Boolean> privMap = new HashMap();
+        List<Map<String, String>> projectPrivs = projectPrivilegeDao.listByProjectForUser(
+                userId, id, po.getOrgId());
+        for (Map<String, String> map : projectPrivs) {
+            String str = map.get("code") + "-" + map.get("action");
+            privMap.put(str, true);
+        }
+        po.setPrivs(privMap);
+
+        return po;
+    }
 
 	@Override
     @Transactional

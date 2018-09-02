@@ -2,6 +2,9 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.dao.TestEnvDao;
+import com.ngtesting.platform.dao.TestVerDao;
+import com.ngtesting.platform.dao.UserDao;
 import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,13 @@ public class ProjectAction extends BaseAction {
     private TestPlanService planService;
     @Autowired
     private HistoryService historyService;
+
+    @Autowired
+    private UserDao userDao;
+    @Autowired
+    TestVerDao verDao;
+    @Autowired
+    TestEnvDao envDao;
 
     @Autowired
     private ProjectRoleService projectRoleService;
@@ -90,26 +100,31 @@ public class ProjectAction extends BaseAction {
     public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-
+        Integer orgId = user.getDefaultOrgId();
         Integer projectId = json.getInteger("id");
 
-        TstProject po = projectService.get(projectId);
+        TstProject po = projectService.getWithPrivs(projectId, user.getId());
         if (authService.noProjectAndProjectGroupPrivilege(user.getId(), po)) {
             return authFail();
         }
 
-        TstProject vo = projectService.genVo(po, null);
-
-        List<TstPlan> planPos = planService.listByProject(projectId, vo.getType());
+        List<TstPlan> planPos = planService.listByProject(projectId, po.getType());
         planService.genVos(planPos);
 
-        List<TstHistory> historyPos = historyService.listByProject(projectId, vo.getType());
+        List<TstHistory> historyPos = historyService.listByProject(projectId, po.getType());
         Map<String, List<TstHistory>> historyVos = historyService.genVosByDate(historyPos);
 
+        List<TstVer> vers = verDao.listLastest(projectId);
+        List<TstEnv> envs = envDao.listLastest(projectId);
+        List<TstUser> users = userDao.getProjectUsers(projectId, 10);
+
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        ret.put("project", vo);
+        ret.put("project", po);
         ret.put("plans", planPos);
         ret.put("histories", historyVos);
+        ret.put("vers", vers);
+        ret.put("envs", envs);
+        ret.put("users", users);
 
         return ret;
     }

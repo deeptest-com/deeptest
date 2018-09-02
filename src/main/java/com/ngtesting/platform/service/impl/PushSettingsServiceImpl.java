@@ -11,7 +11,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +49,7 @@ public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSett
     }
 
     @Override
-    public void pushOrgSettings(TstUser user, HttpServletRequest request) {
+    public void pushOrgSettings(TstUser user) {
         Map<String, Object> ret = new HashMap<>();
         ret.put("code", 1);
         ret.put("type", WsConstant.WS_ORG_SETTINGS);

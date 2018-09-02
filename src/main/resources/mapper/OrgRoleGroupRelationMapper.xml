@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.OrgRoleGroupRelationDao" >
+
+    <select id="query" resultType="TstOrgRoleGroupRelation">
+        SELECT * FROM TstOrgRoleGroupRelation o WHERE o.orgId=#{orgId}
+        <if test="roleId != null">
+            AND o.orgRoleId = #{roleId}
+        </if>
+        <if test="groupId != null">
+            AND o.groupId = #{groupId}
+        </if>
+        ORDER BY o.groupId ASC
+    </select>
+
+    <delete id="removeAllRolesForGroup">
+        DELETE FROM TstOrgRoleGroupRelation
+        WHERE orgId=#{orgId} AND groupId=#{groupId}
+    </delete>
+    <delete id="removeAllGroupsForRole">
+        DELETE FROM TstOrgRoleGroupRelation
+        WHERE orgId=#{orgId} AND orgRoleId=#{roleId}
+    </delete>
+
+    <insert id="saveRelations">
+        insert into TstOrgRoleGroupRelation (orgId,orgRoleId,groupId)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.orgId},#{item.orgRoleId}, #{item.groupId})
+        </foreach>
+    </insert>
+
+</mapper>

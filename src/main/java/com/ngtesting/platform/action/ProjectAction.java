@@ -2,9 +2,6 @@ package com.ngtesting.platform.action;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.dao.TestEnvDao;
-import com.ngtesting.platform.dao.TestVerDao;
-import com.ngtesting.platform.dao.UserDao;
 import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +26,6 @@ public class ProjectAction extends BaseAction {
     private TestPlanService planService;
     @Autowired
     private HistoryService historyService;
-
-    @Autowired
-    private UserDao userDao;
-    @Autowired
-    TestVerDao verDao;
-    @Autowired
-    TestEnvDao envDao;
 
     @Autowired
     private ProjectRoleService projectRoleService;
@@ -114,17 +104,10 @@ public class ProjectAction extends BaseAction {
         List<TstHistory> historyPos = historyService.listByProject(projectId, po.getType());
         Map<String, List<TstHistory>> historyVos = historyService.genVosByDate(historyPos);
 
-        List<TstVer> vers = verDao.listLastest(projectId);
-        List<TstEnv> envs = envDao.listLastest(projectId);
-        List<TstUser> users = userDao.getProjectUsers(projectId, 10);
-
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         ret.put("project", po);
         ret.put("plans", planPos);
         ret.put("histories", historyVos);
-        ret.put("vers", vers);
-        ret.put("envs", envs);
-        ret.put("users", users);
 
         return ret;
     }

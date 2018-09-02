@@ -3,8 +3,9 @@ package com.ngtesting.platform.action;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.bean.websocket.WsFacade;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.dao.TestEnvDao;
 import com.ngtesting.platform.model.TstEnv;
+import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.TestEnvService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,6 +28,8 @@ public class EnvAction extends BaseAction {
 
 	@Autowired
 	TestEnvService envService;
+    @Autowired
+    TestEnvDao envDao;
 
     @RequestMapping(value = "list", method = RequestMethod.POST)
     @ResponseBody
@@ -41,6 +44,20 @@ public class EnvAction extends BaseAction {
         List<TstEnv> ls = envService.list(projectId, keywords, disabled);
 
         ret.put("data", ls);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @RequestMapping(value = "listLastest", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> listLastest(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer projectId = user.getDefaultPrjId();
+
+        List<TstEnv> envs = envDao.listLastest(projectId);
+
+        ret.put("data", envs);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

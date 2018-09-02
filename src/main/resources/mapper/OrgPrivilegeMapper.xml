@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-mybatis.orgDTD Mapper 3.0EN" "http:mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
 <mapper namespace="com.ngtesting.platform.dao.OrgPrivilegeDao" >
 
     <select id="listAllOrgPrivileges" resultType="TstOrgPrivilegeDefine">
@@ -12,10 +13,24 @@
         SELECT priv.code,priv.name from TstOrgPrivilegeDefine priv
 
         join TstOrgRolePrivilegeRelation r_role_priv ON r_role_priv.orgPrivilegeId=priv.id
-        join TstOrgRoleUserRelation r_role_user ON r_role_user.orgRoleId=r_role_priv.orgRoleId
-        join TstOrgRole org_role ON r_role_user.orgRoleId=org_role.id
 
-        where r_role_user.userId = #{userId} AND org_role.orgId=#{orgId}
+        where r_role_priv.orgRoleId
+          IN (
+                SELECT r_role_user.orgRoleId
+                  from TstOrgRoleUserRelation r_role_user
+                where r_role_user.userId = ${userId}
+                  AND r_role_user.orgId = ${orgId}
+
+                UNION
+
+                SELECT r_role_group.orgRoleId
+                  from TstOrgRoleGroupRelation r_role_group
+                  JOIN TstOrgGroupUserRelation r_group_user ON r_group_user.orgGroupId = r_role_group.groupId
+
+                WHERE r_group_user.userId = ${userId}
+                  AND r_group_user.orgId = ${orgId}
+              )
+
         AND priv.deleted != true and priv.disabled!= true
         order by priv.id asc
     </select>

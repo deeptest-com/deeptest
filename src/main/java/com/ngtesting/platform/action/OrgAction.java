@@ -112,6 +112,11 @@ public class OrgAction extends BaseAction {
         }
 
         TstOrg org = orgService.save(vo, user);
+        if (user.getDefaultOrgId().intValue() == org.getId().intValue() &&
+                !user.getDefaultOrgName().equals(org.getName())) {
+            user.setDefaultOrgName(org.getName());
+            pushSettingsService.pushOrgSettings(user);
+        }
 
         pushSettingsService.pushMyOrgs(user);
 
@@ -135,7 +140,7 @@ public class OrgAction extends BaseAction {
             userService.setEmptyOrg(user, orgId);
 
             pushSettingsService.pushMyOrgs(user);
-            pushSettingsService.pushOrgSettings(user, request);
+            pushSettingsService.pushOrgSettings(user);
             pushSettingsService.pushRecentProjects(user);
         }
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -155,7 +160,7 @@ public class OrgAction extends BaseAction {
 
 		userService.setDefaultOrg(user, orgId);
 
-		pushSettingsService.pushOrgSettings(user, request);
+		pushSettingsService.pushOrgSettings(user);
 		pushSettingsService.pushRecentProjects(user);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -178,7 +183,7 @@ public class OrgAction extends BaseAction {
         }
 
 		userService.setDefaultOrg(user, orgId);
-		pushSettingsService.pushOrgSettings(user, request);
+		pushSettingsService.pushOrgSettings(user);
 		pushSettingsService.pushRecentProjects(user);
 
         List<TstOrg> vos = orgService.list(user.getId(), keywords, disabled);

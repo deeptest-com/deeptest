@@ -16,7 +16,9 @@ public interface ProjectService extends BaseService {
 
 	TstProject get(Integer id);
 
-    TstProject save(TstProject vo, Integer orgId, TstUser userVo);
+	TstProject getWithPrivs(Integer id, Integer userId);
+
+	TstProject save(TstProject vo, Integer orgId, TstUser userVo);
 	Boolean delete(Integer id, Integer userId);
 
 	TstProject view(Integer projectId, TstUser userVo);

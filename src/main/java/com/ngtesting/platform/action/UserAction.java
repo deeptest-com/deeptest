@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.dao.UserDao;
 import com.ngtesting.platform.model.TstOrgGroupUserRelation;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.*;
@@ -24,6 +25,8 @@ import java.util.Map;
 public class UserAction extends BaseAction {
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserDao userDao;
 
     @Autowired
     private OrgService orgService;
@@ -62,6 +65,21 @@ public class UserAction extends BaseAction {
         List<TstUser> users = userService.list(orgId, keywords, disabled, pageNum, pageSize);
 
         ret.put("total", page.getTotal());
+        ret.put("data", users);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @PostMapping(value = "listLastest")
+    @ResponseBody
+    public Map<String, Object> listLastest(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer projectId = user.getDefaultPrjId();
+
+        List<TstUser> users = userDao.getProjectUsers(projectId, 10);
+
         ret.put("data", users);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

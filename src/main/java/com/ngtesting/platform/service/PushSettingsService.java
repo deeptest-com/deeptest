@@ -2,7 +2,6 @@ package com.ngtesting.platform.service;
 
 import com.ngtesting.platform.model.TstUser;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 public interface PushSettingsService extends BaseService {
@@ -10,7 +9,7 @@ public interface PushSettingsService extends BaseService {
 
     void pushMyOrgs(TstUser user);
 
-    void pushOrgSettings(TstUser user, HttpServletRequest request);
+    void pushOrgSettings(TstUser user);
 
     void pushRecentProjects(TstUser user);
 

@@ -2,6 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.ProjectPrivilegeDao" >
 
+    <select id="listByOrgProjectsForUser" resultType="Map" useCache="false" statementType="CALLABLE">
+        { call get_project_privilege_by_org_for_user(#{userId,mode=IN,jdbcType=INTEGER},#{orgId,mode=IN,jdbcType=INTEGER}) }
+    </select>
+
     <select id="listByProjectForUser" resultType="Map">
         { call get_project_privilege_by_project_for_user(
                #{userId,mode=IN,jdbcType=INTEGER},

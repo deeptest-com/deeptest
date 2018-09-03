@@ -90,24 +90,22 @@ public class ProjectAction extends BaseAction {
     public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-
+        Integer orgId = user.getDefaultOrgId();
         Integer projectId = json.getInteger("id");
 
-        TstProject po = projectService.get(projectId);
+        TstProject po = projectService.getWithPrivs(projectId, user.getId());
         if (authService.noProjectAndProjectGroupPrivilege(user.getId(), po)) {
             return authFail();
         }
 
-        TstProject vo = projectService.genVo(po, null);
-
-        List<TstPlan> planPos = planService.listByProject(projectId, vo.getType());
+        List<TstPlan> planPos = planService.listByProject(projectId, po.getType());
         planService.genVos(planPos);
 
-        List<TstHistory> historyPos = historyService.listByProject(projectId, vo.getType());
+        List<TstHistory> historyPos = historyService.listByProject(projectId, po.getType());
         Map<String, List<TstHistory>> historyVos = historyService.genVosByDate(historyPos);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        ret.put("project", vo);
+        ret.put("project", po);
         ret.put("plans", planPos);
         ret.put("histories", historyVos);
 

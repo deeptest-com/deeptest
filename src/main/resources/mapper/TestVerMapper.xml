@@ -16,6 +16,15 @@
         ORDER BY o.ordr ASC
     </select>
 
+    <select id="listLastest" resultType="TstVer">
+        SELECT * FROM TstVer o
+        WHERE o.projectId = #{projectId}
+        AND o.deleted != TRUE
+        AND o.disabled != TRUE
+
+        ORDER BY o.createTime DESC LIMIT 10
+    </select>
+
     <select id="get" resultType="TstVer">
         SELECT * FROM TstVer o
         WHERE o.id = #{id}

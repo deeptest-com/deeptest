@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.service.OrgRoleGroupRelationService;
 import com.ngtesting.platform.service.OrgRolePrivilegeRelationService;
 import com.ngtesting.platform.service.OrgRoleService;
 import com.ngtesting.platform.service.OrgRoleUserRelationService;
@@ -29,6 +30,8 @@ public class OrgRoleAction extends BaseAction {
     OrgRolePrivilegeRelationService orgRolePrivilegeRelationService;
     @Autowired
     OrgRoleUserRelationService orgRoleUserRelationService;
+	@Autowired
+	OrgRoleGroupRelationService orgRoleGroupRelationService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
@@ -71,6 +74,8 @@ public class OrgRoleAction extends BaseAction {
                 orgRolePrivilegeRelationService.listRelationsByOrgRole(orgId, orgRoleId);
         List<TstOrgRoleUserRelation> users =
                 orgRoleUserRelationService.listRelationsByOrgRole(orgId, orgRoleId);
+//		List<TstOrgRoleGroupRelation> groups =
+//				orgRoleGroupRelationService.listRelationsByOrgRole(orgId, orgRoleId);
 
 		if (orgRoleId == null) {
 			ret.put("orgRole", new TstOrgRole());
@@ -80,6 +85,7 @@ public class OrgRoleAction extends BaseAction {
 
         ret.put("privileges", privileges);
         ret.put("users", users);
+//		ret.put("groups", groups);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
 	}
@@ -103,6 +109,9 @@ public class OrgRoleAction extends BaseAction {
 
         List<TstOrgRoleUserRelation> users = (List<TstOrgRoleUserRelation>) json.get("users");
         orgRoleUserRelationService.saveRelationsForRole(orgId, po.getId(), users);
+
+//		List<TstOrgRoleGroupRelation> groups = (List<TstOrgRoleGroupRelation>) json.get("groups");
+//		orgRoleGroupRelationService.saveRelationsForRole(orgId, po.getId(), groups);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

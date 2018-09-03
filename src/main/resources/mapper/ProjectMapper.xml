@@ -28,10 +28,6 @@
         ORDER BY c.id
     </select>
 
-    <select id="getProjectPrivilegeByOrgForUser" resultType="Map" useCache="false" statementType="CALLABLE">
-        { call get_project_privilege_by_org_for_user(#{userId,mode=IN,jdbcType=INTEGER},#{orgId,mode=IN,jdbcType=INTEGER}) }
-    </select>
-
     <select id="get" parameterType="Integer" resultType="TstProject">
         SELECT * FROM TstProject p WHERE p.id = #{id}
     </select>

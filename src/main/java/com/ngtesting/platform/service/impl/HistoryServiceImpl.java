@@ -6,13 +6,12 @@ import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.HistoryService;
+import com.ngtesting.platform.utils.DateUtil;
 import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class HistoryServiceImpl extends BaseServiceImpl implements HistoryService {
@@ -69,14 +68,14 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
 	@Override
 	public Map<String, List<TstHistory>> genVosByDate(List<TstHistory> historyPos) {
 		Map<String, List<TstHistory>> map = new LinkedHashMap();
-//		for(TstHistory his: historyPos) {
-//            Date createDate = his.getCreateTime();
-//            String date = DateUtils.FormatDate(createDate, "yyyy-MM-dd");
-//            if (!map.containsKey(date)) {
-//                map.put(date, new LinkedList());
-//            }
-//            map.getDetail(date).add(genVo(his));
-//		}
+		for(TstHistory his: historyPos) {
+			Date createDate = his.getCreateTime();
+			String date = DateUtil.FormatDate(createDate, "yyyy-MM-dd");
+			if (!map.containsKey(date)) {
+				map.put(date, new LinkedList());
+			}
+			map.get(date).add(his);
+		}
 		return map;
 	}
 

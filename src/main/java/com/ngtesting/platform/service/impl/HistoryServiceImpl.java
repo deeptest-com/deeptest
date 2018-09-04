@@ -69,12 +69,14 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
 	public Map<String, List<TstHistory>> genVosByDate(List<TstHistory> historyPos) {
 		Map<String, List<TstHistory>> map = new LinkedHashMap();
 		for(TstHistory his: historyPos) {
-            Date createDate = his.getCreateTime();
-            String date = DateUtil.FormatDate(createDate, "yyyy-MM-dd");
-            if (!map.containsKey(date)) {
-                map.put(date, new LinkedList());
-            }
-            map.get(date).add(his);
+
+		Date createDate = his.getCreateTime();
+		String date = DateUtil.FormatDate(createDate, "yyyy-MM-dd");
+		if (!map.containsKey(date)) {
+			map.put(date, new LinkedList());
+		}
+		map.get(date).add(his);
+
 		}
 		return map;
 	}

@@ -1,6 +1,6 @@
 FROM java:8
 VOLUME /tmp
-ADD ngtesting-web-1.0.jar ngtesting-web.jar
+ADD ngtesting-web-*.jar ngtesting-web.jar
 RUN sh -c 'touch /ngtesting-web.jar'
 EXPOSE 8080
 ENV JAVA_OPTS=""

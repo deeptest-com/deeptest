@@ -12,6 +12,7 @@ Demo: http://47.99.102.138:8080
 3. Goto project dir, Enter "docker-compose up" to launch.
 
    (First time, you may get an error caused by MySQL service not ready for web server connectting, just run Step 2 again to fix)
+   (Once you create and start containers by using "docker-compose up" command, next time you should use "docker-compose start|stop" to avoid to re-init the data again)
 4. Open http://localhost:58080/test.html using Chrome.
 
 ### Use Java Jar

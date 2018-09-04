@@ -1,7 +1,7 @@
 version : '2'
 services:
   ngtesting-mysql:
-    image: registry.cn-hangzhou.aliyuncs.com/ngtesting/ngtesting-mysql:latest
+    image: registry.cn-hangzhou.aliyuncs.com/ngtesting/ngtesting-mysql:1.0.10
     volumes:
       - ./src/main/docker/mysql/my.cnf:/etc/mysql/my.cnf /mysql
     environment:
@@ -12,7 +12,7 @@ services:
       - "53306"
 
   ngtesting-web:
-    image: registry.cn-hangzhou.aliyuncs.com/ngtesting/ngtesting-web:latest
+    image: registry.cn-hangzhou.aliyuncs.com/ngtesting/ngtesting-web:1.0.10
     ports:
       - "58080:8080"
     links:

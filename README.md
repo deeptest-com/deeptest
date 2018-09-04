@@ -13,7 +13,7 @@ Demo: http://47.99.102.138:8080
 
    First time, you may get an error caused by MySQL service not ready for web server connectting, just run Step 2 again to fix
    
-   **Once you create and start containers by using "docker-compose up" command, next time you should use "docker-compose start|stop" to avoid to re-init the data again**
+   **Once you create and start containers by using "docker-compose up" command, next time you should use "docker-compose start|stop" to avoid to docker-compose re-creating the container after the remote image changed, which will cause data-losing**
 4. Open http://localhost:58080/test.html using Chrome.
 
 ### Use Java Jar

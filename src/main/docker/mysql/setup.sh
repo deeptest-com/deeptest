@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 echo `service mysql status`
 
@@ -10,6 +9,8 @@ echo `service mysql status`
 
 count=`mysql -ungtesting -pP2ssw0rd -e "show databases" | grep ngtesting`
 echo "count=$count"
+
+set -e
 
 if [ "$count" != "" ]; then
     echo "数据已初始化，退出"

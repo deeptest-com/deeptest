@@ -11,8 +11,9 @@ Demo: http://47.99.102.138:8080
 2. Run "git clone -b branch-1.0.x https://github.com/aaronchen2k/ngtesting-platform.git" or download codes from https://github.com/aaronchen2k/ngtesting-platform/archive/branch-1.0.x.zip;
 3. Goto project dir, Enter "docker-compose up" to launch.
 
-   (First time, you may get an error caused by MySQL service not ready for web server connectting, just run Step 2 again to fix)
-   (Once you create and start containers by using "docker-compose up" command, next time you should use "docker-compose start|stop" to avoid to re-init the data again)
+   First time, you may get an error caused by MySQL service not ready for web server connectting, just run Step 2 again to fix
+   
+   **Once you create and start containers by using "docker-compose up" command, next time you should use "docker-compose start|stop" to avoid to re-init the data again**
 4. Open http://localhost:58080/test.html using Chrome.
 
 ### Use Java Jar
@@ -23,7 +24,7 @@ Demo: http://47.99.102.138:8080
 5. Import "src/main/docker/mysql/schema.sql" to database;
 6. In project dir, enter command "xdoc/ngtesting-web-1.0.jar“ to run this executable jar;
 
-   (You may change the config params in application.yml file like this: "xdoc/ngtesting-web-1.0.jar --config.mysql.host=10.0.0.10 --config.mysql.port=3306")
+   You may change the config params in application.yml file like this: "xdoc/ngtesting-web-1.0.jar --config.mysql.host=10.0.0.10 --config.mysql.port=3306"
 7. Open http://localhost:8080/test.html using Chrome.
 
 ## Test Project

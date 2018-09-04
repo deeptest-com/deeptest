@@ -8,7 +8,7 @@ Demo: http://47.99.102.138:8080
 ### Use Docker
 
 1. Install docker and docker-compose;
-2. Run "git clone -b branch-1.0.x https://github.com/aaronchen2k/ngtesting-platform.git" or download codes from https://github.com/aaronchen2k/ngtesting-platform/archive/branch-1.0.x.zip;
+2. Run "git clone -b branch-1.0.x https://github.com/aaronchen2k/ngtesting-platform.git" to clone or download codes from https://github.com/aaronchen2k/ngtesting-platform/archive/branch-1.0.x.zip;
 3. Goto project dir, Enter "docker-compose up" to launch.
 
    First time, you may get an error caused by MySQL service not ready for web server connectting, just run Step 2 again to fix.
@@ -20,7 +20,7 @@ Demo: http://47.99.102.138:8080
 1. Create dir "/work/ngtesting-data/" for file upload;
 2. Create a MySQL database named "ngtesting-web";
 3. Add MySQL user "ngtesting" with password "P2ssw0rd";
-4. Run "git clone -b branch-1.0.x https://github.com/aaronchen2k/ngtesting-platform.git" or download codes from https://github.com/aaronchen2k/ngtesting-platform/archive/branch-1.0.x.zip;
+4. Run "git clone -b branch-1.0.x https://github.com/aaronchen2k/ngtesting-platform.git" to clone or download codes from https://github.com/aaronchen2k/ngtesting-platform/archive/branch-1.0.x.zip;
 5. Import "src/main/docker/mysql/schema.sql" to database;
 6. In project dir, enter command "xdoc/ngtesting-web-1.0.jar“ to run this executable jar;
 

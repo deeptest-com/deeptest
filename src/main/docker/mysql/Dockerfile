@@ -1,6 +1,6 @@
 FROM mysql:5.7
 
-VOLUME my.cnf:/etc/mysql/my.cnf /mysql
+VOLUME my.cnf:/etc/mysql/conf.d/mysql.cnf mysql
 
 ADD setup.sh /etc/mysql/setup.sh
 ADD database.sql /etc/mysql/database.sql

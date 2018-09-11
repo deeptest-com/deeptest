@@ -9,7 +9,7 @@ Demo: http://47.99.102.138:8080
 
 1. Install docker and docker-compose;
 2. Download file from https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/docker-compose.yml ;
-3. Enter "docker-compose up" to launch.
+3. In same dir, enter "docker-compose up" to launch.
 
    First time, you may get an error caused by MySQL service not ready for web server connectting, just run Step 3 again to fix.
    

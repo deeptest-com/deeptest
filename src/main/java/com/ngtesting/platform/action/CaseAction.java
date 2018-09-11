@@ -257,9 +257,9 @@ public class CaseAction extends BaseAction {
             return authFail();
         }
 
-//		String excelPath = caseService.export(projectId);
-//		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-//		ret.put("excelPath", excelPath);
+		String excelPath = caseService.export(projectId);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		ret.put("excelPath", excelPath);
 
         return ret;
     }

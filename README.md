@@ -8,10 +8,10 @@ Demo: http://47.99.102.138:8080
 ### Use Docker
 
 1. Install docker and docker-compose;
-2. Run "git clone -b branch-1.0.x https://github.com/aaronchen2k/ngtesting-platform.git" to clone or download codes from https://github.com/aaronchen2k/ngtesting-platform/archive/branch-1.0.x.zip;
-3. Goto project dir, Enter "docker-compose up" to launch.
+2. Download file from https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/docker-compose.yml ;
+3. Enter "docker-compose up" to launch.
 
-   First time, you may get an error caused by MySQL service not ready for web server connectting, just run Step 2 again to fix.
+   First time, you may get an error caused by MySQL service not ready for web server connectting, just run Step 3 again to fix.
    
    **Once you create and start containers by using "docker-compose up" command, next time you should use "docker-compose start|stop" to avoid to docker-compose re-creating the container after the remote image changed, which will cause data-losing.**
 4. Open http://localhost:58080/test.html using Chrome.

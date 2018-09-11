@@ -12,7 +12,7 @@ public interface AccountDao {
     void login(@Param("id") Integer id, @Param("token") String token, @Param("lastLoginTime") Date lastLoginTime);
     Integer logout(@Param("email") String email);
 
-    void initUser(Integer userId);
+    void initUser(@Param("userId") Integer userId, @Param("orgName") String orgName);
 
     Integer changePassword(@Param("userId") Integer userId,
                         @Param("oldPassword") String oldPassword,

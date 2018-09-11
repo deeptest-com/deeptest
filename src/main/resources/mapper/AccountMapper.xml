@@ -26,8 +26,8 @@
         WHERE email=#{email}
     </update>
 
-    <select id="initUser" parameterType="INTEGER" useCache="false" statementType="CALLABLE">
-        { call init_user(#{userId,mode=IN,jdbcType=INTEGER}) }
+    <select id="initUser" useCache="false" statementType="CALLABLE">
+        { call init_user(#{userId,mode=IN,jdbcType=INTEGER}, #{orgName,mode=IN,jdbcType=VARCHAR}) }
     </select>
 
     <update id="changePassword" parameterType="TstCaseType">

@@ -21,14 +21,14 @@
 
     <insert id="save" parameterType="TstCaseType" useGeneratedKeys="true" keyProperty="id">
         insert into TstCaseType
-        (label,value,orgId,ordr,isDefault,deleted,disabled,createTime)
+        (label,value,descr,orgId,ordr,isDefault,deleted,disabled,createTime)
         values
-        (#{label},#{value},#{orgId},#{ordr},#{isDefault},FALSE,FALSE,NOW())
+        (#{label},#{value},#{descr},#{orgId},#{ordr},#{isDefault},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="TstCaseType">
         UPDATE TstCaseType
-        SET label=#{label},value=#{value},
+        SET label=#{label},value=#{value},descr=#{descr},
         disabled=#{disabled},
         updateTime=NOW()
 

@@ -127,6 +127,7 @@ public class UserServiceImpl implements UserService {
             user.setTemp(salt);
             user.setPassword(passwordEncoder.encodePassword(StringUtil.RandomString(6)));
 
+
             userDao.save(vo);
         }
 

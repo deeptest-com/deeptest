@@ -3,10 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.dao.OrgDao;
-import com.ngtesting.platform.dao.OrgUserRelationDao;
-import com.ngtesting.platform.dao.ProjectDao;
-import com.ngtesting.platform.dao.UserDao;
+import com.ngtesting.platform.dao.*;
 import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.*;
 import com.ngtesting.platform.utils.PasswordEncoder;
@@ -31,7 +28,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private OrgUserRelationDao orgUserRelationDao;
     @Autowired
+    private ProjectRoleEntityRelationDao projectRoleEntityRelationDao;
+
+    @Autowired
     private ProjectDao projectDao;
+    @Autowired
+    private ProjectRoleDao projectRoleDao;
     @Autowired
     private UserDao userDao;
 
@@ -130,6 +132,10 @@ public class UserServiceImpl implements UserService {
 
         if (isNew || orgUserRelationDao.userInOrg(vo.getId(), orgId) == 0) { // 不在组织里
             orgUserRelationDao.addUserToOrg(vo.getId(), orgId);
+
+            Integer projectRoleId = projectRoleDao.getRoleByCode(orgId, "test_designer").getId();
+            projectRoleEntityRelationDao.addRole(orgId, prjId, projectRoleId, vo.getId(), "user");
+
             projectService.view(prjId, vo);
 
             orgGroupUserRelationService.saveRelationsForUser(orgId, vo.getId(), relations);

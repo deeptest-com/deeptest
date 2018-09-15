@@ -20,7 +20,7 @@ Demo: http://47.99.102.138:8080
 1. Create dir "/work/ngtesting-data/" for file upload;
 2. Create a MySQL database named "ngtesting-web";
 3. Add MySQL user "ngtesting" with password "P2ssw0rd";
-4. Run "git clone -b branch-1.0.x https://github.com/aaronchen2k/ngtesting-platform.git" to clone or download codes from https://github.com/aaronchen2k/ngtesting-platform/archive/branch-1.0.x.zip;
+4. Run "git clone https://github.com/aaronchen2k/ngtesting-platform.git";
 5. Import "src/main/docker/mysql/schema.sql" to database;
 6. In project dir, enter command "xdoc/ngtesting-web-1.0.jar“ to run this executable jar;
 

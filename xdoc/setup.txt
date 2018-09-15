@@ -1,0 +1,6 @@
+cd src/main/docker/mysql
+docker build -t registry.cn-hangzhou.aliyuncs.com/ngtesting/ngtesting-mysql:1.0.10 .
+docker push registry.cn-hangzhou.aliyuncs.com/ngtesting/ngtesting-mysql:1.0.10
+
+cd ../../../../
+mvn clean verify

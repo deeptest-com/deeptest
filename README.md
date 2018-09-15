@@ -22,9 +22,9 @@ Demo: http://47.99.102.138:8080
 3. Add MySQL user "ngtesting" with password "P2ssw0rd";
 4. Run "git clone https://github.com/aaronchen2k/ngtesting-platform.git";
 5. Import "src/main/docker/mysql/schema.sql" to database;
-6. In project dir, enter command "xdoc/ngtesting-web-1.0.jar“ to run this executable jar;
+6. In project dir, enter command "xdoc/ngtesting-web-1.*.jar" to run;
 
-   You may change the config params in application.yml file like this: "xdoc/ngtesting-web-1.0.jar --config.mysql.host=10.0.0.10 --config.mysql.port=3306".
+   You may change the config params in application.yml file like this: "xdoc/ngtesting-web-1.*.jar --config.mysql.host=10.0.0.10 --config.mysql.port=3306".
 7. Open http://localhost:8080/test.html using Chrome.
 
 ## Test Project

@@ -2,7 +2,7 @@ spring:
     profiles:
       active: prod
     resources:
-      static-locations: classpath:/META-INF/resources/,classpath:/resources/, classpath:/static/, classpath:/public/, file:${sys.work.dir}
+      static-locations: classpath:/META-INF/resources/,classpath:/resources/, classpath:/static/, classpath:/public/, file:${sys.work.dir}, file:${sys.work.my-mind-test}
     freemarker:
       template-loader-path: classpath:/mail-template/
     datasource:
@@ -63,6 +63,7 @@ sys:
   name: ngtesting
   work:
     dir: /work/ngtesting-data/
+    my-mind-test: /Users/aaron/dev/project
   url:
     login: http://{0}#/login
     resetPassword: http://{0}#/reset-password

@@ -89,7 +89,7 @@
     </update>
 
     <select id="listCaseIds" resultType="int">
-        SELECT o.id
+        SELECT o.caseId
         FROM TstCaseInSuite o
 
         WHERE o.suiteId=#{id}

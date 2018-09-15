@@ -11,7 +11,7 @@
  Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 09/03/2018 15:33:13 PM
+ Date: 09/15/2018 14:22:47 PM
 */
 
 SET NAMES utf8mb4;
@@ -36,9 +36,9 @@ CREATE TABLE `IsuAttachment` (
   PRIMARY KEY (`id`),
   KEY `FK_5km3w701l0ckc79d6dl71auw` (`issueId`),
   KEY `FK_j705hrf8uusgq7nxvtuc6nvx5` (`userId`),
-  CONSTRAINT `FK_5km3w701l0ckc79d6dl71auw` FOREIGN KEY (`issueId`) REFERENCES `IsuIssue` (`id`),
-  CONSTRAINT `FK_j705hrf8uusgq7nxvtuc6nvx5` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_5km3w701l0ckc79d6dl71auw` FOREIGN KEY (`issueId`) REFERENCES `isuissue` (`id`),
+  CONSTRAINT `FK_j705hrf8uusgq7nxvtuc6nvx5` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `IsuComments`
@@ -57,15 +57,41 @@ CREATE TABLE `IsuComments` (
   PRIMARY KEY (`id`),
   KEY `FK_dhkk8l46ybsojeoshbnc1iaqs` (`issueId`),
   KEY `FK_2nxss8uw9dwjuh9gup03g2335` (`userId`),
-  CONSTRAINT `FK_2nxss8uw9dwjuh9gup03g2335` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
-  CONSTRAINT `FK_dhkk8l46ybsojeoshbnc1iaqs` FOREIGN KEY (`issueId`) REFERENCES `IsuIssue` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_2nxss8uw9dwjuh9gup03g2335` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
+  CONSTRAINT `FK_dhkk8l46ybsojeoshbnc1iaqs` FOREIGN KEY (`issueId`) REFERENCES `isuissue` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `IsuCustomField`
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuCustomField`;
 CREATE TABLE `IsuCustomField` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) DEFAULT NULL,
+  `label` varchar(255) DEFAULT NULL,
+  `descr` varchar(255) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `format` varchar(255) DEFAULT NULL,
+  `rows` int(11) DEFAULT NULL,
+  `myColumn` varchar(255) DEFAULT NULL,
+  `global` bit(1) DEFAULT NULL,
+  `required` bit(1) DEFAULT NULL,
+  `ordr` int(11) DEFAULT NULL,
+  `orgId` bigint(20) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`orgId`),
+  CONSTRAINT `isucustomfield_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuCustomFieldDefine`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuCustomFieldDefine`;
+CREATE TABLE `IsuCustomFieldDefine` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `code` varchar(255) DEFAULT NULL,
   `label` varchar(255) DEFAULT NULL,
@@ -86,8 +112,8 @@ CREATE TABLE `IsuCustomField` (
   `deleted` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`orgId`),
-  CONSTRAINT `FK_ro4ivq1br0vdteycd9ri6fr62` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_ro4ivq1br0vdteycd9ri6fr62` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `IsuCustomFieldOption`
@@ -106,8 +132,28 @@ CREATE TABLE `IsuCustomFieldOption` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_1yiovndo2my1nj8ub95o8yp6` (`fieldId`),
-  CONSTRAINT `FK_1yiovndo2my1nj8ub95o8yp6` FOREIGN KEY (`fieldId`) REFERENCES `IsuCustomField` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `fk_isucustomfieldoption_ibfk_1` FOREIGN KEY (`fieldId`) REFERENCES `IsuCustomField` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuCustomFieldOptionDefine`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuCustomFieldOptionDefine`;
+CREATE TABLE `IsuCustomFieldOptionDefine` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `label` varchar(255) DEFAULT NULL,
+  `descr` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
+  `ordr` int(11) DEFAULT NULL,
+  `fieldId` bigint(20) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_1yiovndo2my1nj8ub95o8yp6` (`fieldId`),
+  CONSTRAINT `FK_1yiovndo2my1nj8ub95o8yp6` FOREIGN KEY (`fieldId`) REFERENCES `isucustomfielddefine` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `IsuCustomFieldProjectRelation`
@@ -121,6 +167,38 @@ CREATE TABLE `IsuCustomFieldProjectRelation` (
   CONSTRAINT `FK_pp4i15wk5vi3abtusv8vyeq2h` FOREIGN KEY (`customFieldId`) REFERENCES `IsuCustomField` (`id`),
   CONSTRAINT `FK_rtujogn8761o0m2e2pmi6rsr6` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Table structure for `IsuCustomFieldSolution`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuCustomFieldSolution`;
+CREATE TABLE `IsuCustomFieldSolution` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `descr` varchar(255) DEFAULT NULL,
+  `orgId` bigint(20) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`orgId`),
+  CONSTRAINT `fk_isucustomfieldsolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuCustomFieldSolutionToField`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuCustomFieldSolutionToField`;
+CREATE TABLE `IsuCustomFieldSolutionToField` (
+  `solutionId` bigint(20) DEFAULT NULL,
+  `fieldId` bigint(20) DEFAULT NULL,
+  KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`solutionId`),
+  KEY `solutionId` (`solutionId`),
+  KEY `fieldId` (`fieldId`),
+  CONSTRAINT `fk_isucustomfieldsolutiontofield_fieldid` FOREIGN KEY (`fieldId`) REFERENCES `IsuCustomField` (`id`),
+  CONSTRAINT `fk_isucustomfieldsolutiontofield_ibfk_1` FOREIGN KEY (`solutionId`) REFERENCES `IsuCustomFieldSolution` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `IsuDocument`
@@ -142,9 +220,9 @@ CREATE TABLE `IsuDocument` (
   PRIMARY KEY (`id`),
   KEY `FK_a1lgb1l61iljqw3qjm07lnxo` (`issueId`),
   KEY `FK_7p0pjbn3kgcu2hhwk0u9j5mv2` (`userId`),
-  CONSTRAINT `FK_7p0pjbn3kgcu2hhwk0u9j5mv2` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
-  CONSTRAINT `FK_a1lgb1l61iljqw3qjm07lnxo` FOREIGN KEY (`issueId`) REFERENCES `IsuIssue` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_7p0pjbn3kgcu2hhwk0u9j5mv2` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
+  CONSTRAINT `FK_a1lgb1l61iljqw3qjm07lnxo` FOREIGN KEY (`issueId`) REFERENCES `isuissue` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `IsuHistory`
@@ -161,8 +239,8 @@ CREATE TABLE `IsuHistory` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_8cp2wymy81uq5vi58woofpq2f` (`issueId`),
-  CONSTRAINT `FK_8cp2wymy81uq5vi58woofpq2f` FOREIGN KEY (`issueId`) REFERENCES `IsuIssue` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_8cp2wymy81uq5vi58woofpq2f` FOREIGN KEY (`issueId`) REFERENCES `isuissue` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `IsuIssue`
@@ -182,8 +260,175 @@ CREATE TABLE `IsuIssue` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_749574hr3f54gdlo4hrc6dquc` (`projectId`),
-  CONSTRAINT `FK_749574hr3f54gdlo4hrc6dquc` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_749574hr3f54gdlo4hrc6dquc` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuLink`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuLink`;
+CREATE TABLE `IsuLink` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `orgId` bigint(20) DEFAULT NULL,
+  `projectId` bigint(20) DEFAULT NULL,
+  `caseId` bigint(20) DEFAULT NULL,
+  `issueId` bigint(20) DEFAULT NULL,
+  `disabled` bigint(20) DEFAULT NULL,
+  `deleted` bigint(20) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `orgId` (`orgId`),
+  KEY `projectId` (`projectId`),
+  KEY `caseId` (`caseId`),
+  KEY `issueId` (`issueId`),
+  CONSTRAINT `fk_isulink_caseid` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`),
+  CONSTRAINT `fk_isulink_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
+  CONSTRAINT `fk_isulink_issueid` FOREIGN KEY (`issueId`) REFERENCES `IsuIssue` (`id`),
+  CONSTRAINT `fk_isulink_projectid` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuNotification`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuNotification`;
+CREATE TABLE `IsuNotification` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `orgId` bigint(20) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `orgId` (`orgId`),
+  CONSTRAINT `isunotification_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuNotificationDefine`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuNotificationDefine`;
+CREATE TABLE `IsuNotificationDefine` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `orgId` bigint(20) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `orgId` (`orgId`),
+  CONSTRAINT `isunotificationdefine_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuNotificationToProjectRelation`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuNotificationToProjectRelation`;
+CREATE TABLE `IsuNotificationToProjectRelation` (
+  `orgId` bigint(20) DEFAULT NULL,
+  `projectId` bigint(20) DEFAULT NULL,
+  `solutionId` bigint(20) DEFAULT NULL,
+  KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
+  KEY `projectId` (`projectId`),
+  KEY `solutionId` (`solutionId`),
+  CONSTRAINT `isunotificationtoprojectrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`),
+  CONSTRAINT `isunotificationtoprojectrelation_ibfk_2` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
+  CONSTRAINT `isunotificationtoprojectrelation_ibfk_3` FOREIGN KEY (`solutionId`) REFERENCES `IsuNotification` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuPage`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuPage`;
+CREATE TABLE `IsuPage` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `orgId` bigint(20) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `orgId` (`orgId`),
+  CONSTRAINT `fk_isupage_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuPageDefine`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuPageDefine`;
+CREATE TABLE `IsuPageDefine` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuPageSolution`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuPageSolution`;
+CREATE TABLE `IsuPageSolution` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `orgId` bigint(20) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
+  CONSTRAINT `fk_isupagesolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuPageSolutionToPageRelation`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuPageSolutionToPageRelation`;
+CREATE TABLE `IsuPageSolutionToPageRelation` (
+  `pageId` bigint(20) DEFAULT NULL,
+  `pageSolutionId` bigint(20) DEFAULT NULL,
+  KEY `projectId` (`pageId`),
+  KEY `projectId_2` (`pageId`),
+  KEY `projectId_3` (`pageId`),
+  KEY `projectId_4` (`pageId`),
+  KEY `prioritySolutionId` (`pageSolutionId`),
+  KEY `pageId` (`pageId`),
+  KEY `pageSolutionId` (`pageSolutionId`),
+  CONSTRAINT `fk_isupagesolutiontopagerelation_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `IsuPage` (`id`),
+  CONSTRAINT `fk_isupagesolutiontopagerelation_ibfk_3` FOREIGN KEY (`pageSolutionId`) REFERENCES `IsuPageSolution` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuPageSolutionToProjectRelation`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuPageSolutionToProjectRelation`;
+CREATE TABLE `IsuPageSolutionToProjectRelation` (
+  `orgId` bigint(20) DEFAULT NULL,
+  `projectId` bigint(1) DEFAULT NULL,
+  `solutionId` bigint(20) DEFAULT NULL,
+  KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
+  KEY `projectId` (`projectId`),
+  KEY `projectId_2` (`projectId`),
+  KEY `projectId_3` (`projectId`),
+  KEY `projectId_4` (`projectId`),
+  KEY `prioritySolutionId` (`solutionId`),
+  CONSTRAINT `fk_isupagesolutiontoprojectrel_projectid` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
+  CONSTRAINT `fk_isupagesolutiontoprojectrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
+  CONSTRAINT `fk_isupagesolutiontoprojectrelation_solutionid` FOREIGN KEY (`solutionId`) REFERENCES `IsuPageSolution` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `IsuPriority`
@@ -193,7 +438,40 @@ CREATE TABLE `IsuPriority` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `ordr` int(11) DEFAULT NULL,
+  `orgId` bigint(20) DEFAULT NULL,
+  `solutionId` bigint(20) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `orgId` (`orgId`),
+  CONSTRAINT `fk_issu_priority_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuPriorityDefine`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuPriorityDefine`;
+CREATE TABLE `IsuPriorityDefine` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuPrioritySolution`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuPrioritySolution`;
+CREATE TABLE `IsuPrioritySolution` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
   `orgId` bigint(20) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
@@ -201,8 +479,24 @@ CREATE TABLE `IsuPriority` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
-  CONSTRAINT `FK_pgvna94k4ldleev7wjusoe5w5` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `fk_isuprioritysolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuPrioritySolutionToProjectRelation`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuPrioritySolutionToProjectRelation`;
+CREATE TABLE `IsuPrioritySolutionToProjectRelation` (
+  `orgId` bigint(20) DEFAULT NULL,
+  `projectId` bigint(20) DEFAULT NULL,
+  `solutionId` bigint(20) DEFAULT NULL,
+  KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
+  KEY `projectId` (`projectId`),
+  KEY `solutionId` (`solutionId`),
+  CONSTRAINT `fk_isuprioritysolutiontoprojectrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`),
+  CONSTRAINT `fk_isuprioritysolutiontoprojectrelation_projectid` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
+  CONSTRAINT `fk_isuprioritysolutiontoprojectrelation_solutionid` FOREIGN KEY (`solutionId`) REFERENCES `IsuPrioritySolution` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `IsuQuery`
@@ -220,8 +514,26 @@ CREATE TABLE `IsuQuery` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_ajxhx3sfebovfyy5kcg74q88e` (`projectId`),
-  CONSTRAINT `FK_ajxhx3sfebovfyy5kcg74q88e` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_ajxhx3sfebovfyy5kcg74q88e` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuQueryDefine`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuQueryDefine`;
+CREATE TABLE `IsuQueryDefine` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `orgId` bigint(20) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `orgId` (`orgId`),
+  CONSTRAINT `isuquerydefine_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `IsuStatus`
@@ -232,7 +544,8 @@ CREATE TABLE `IsuStatus` (
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
+  `orgId` bigint(20) DEFAULT NULL,
+  `categoryId` bigint(20) DEFAULT NULL,
   `startTime` datetime DEFAULT NULL,
   `endTime` datetime DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
@@ -240,9 +553,46 @@ CREATE TABLE `IsuStatus` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `FK_jakioowaasj09sqr9d376dl9u` (`projectId`),
-  CONSTRAINT `FK_jakioowaasj09sqr9d376dl9u` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  KEY `FK_jakioowaasj09sqr9d376dl9u` (`orgId`),
+  KEY `isu_status_categoryid` (`categoryId`) USING BTREE,
+  CONSTRAINT `fk_isu_status_categoryid` FOREIGN KEY (`categoryId`) REFERENCES `IsuStatusCategoryDefine` (`id`),
+  CONSTRAINT `isustatus_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuStatusCategoryDefine`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuStatusCategoryDefine`;
+CREATE TABLE `IsuStatusCategoryDefine` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `ordr` int(11) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuStatusDefine`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuStatusDefine`;
+CREATE TABLE `IsuStatusDefine` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `categoryId` bigint(20) DEFAULT NULL,
+  `ordr` int(11) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `categoryId` (`categoryId`),
+  CONSTRAINT `fk_isu_status_define_categoryid` FOREIGN KEY (`categoryId`) REFERENCES `IsuStatusCategoryDefine` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `IsuStatusTransition`
@@ -272,18 +622,82 @@ CREATE TABLE `IsuType` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `ordr` int(11) DEFAULT NULL,
-  `startTime` datetime DEFAULT NULL,
-  `endTime` datetime DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
+  `orgId` bigint(20) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `FK_tckina8pm41gvju9xfmqcqo7k` (`projectId`),
-  CONSTRAINT `FK_tckina8pm41gvju9xfmqcqo7k` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  KEY `orgId` (`orgId`),
+  CONSTRAINT `fk_isu_type_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuTypeDefine`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuTypeDefine`;
+CREATE TABLE `IsuTypeDefine` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuTypeSolution`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuTypeSolution`;
+CREATE TABLE `IsuTypeSolution` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `orgId` bigint(20) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
+  CONSTRAINT `fk_isutypesolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuTypeSolutionToProjectRelation`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuTypeSolutionToProjectRelation`;
+CREATE TABLE `IsuTypeSolutionToProjectRelation` (
+  `orgId` bigint(20) DEFAULT NULL,
+  `projectId` bigint(20) DEFAULT NULL,
+  `solutionId` bigint(20) DEFAULT NULL,
+  KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
+  KEY `projectId` (`projectId`),
+  KEY `solutionId` (`solutionId`),
+  KEY `projectId_2` (`projectId`),
+  KEY `solutionId_2` (`solutionId`),
+  CONSTRAINT `fk_isutypesolutiontoprojectrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`),
+  CONSTRAINT `fk_isutypesolutiontoprojectrelation_projectid` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
+  CONSTRAINT `fk_isutypesolutiontoprojectrelation_solutionid` FOREIGN KEY (`solutionId`) REFERENCES `IsuTypeSolution` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuTypeSolutionToTypeRelation`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuTypeSolutionToTypeRelation`;
+CREATE TABLE `IsuTypeSolutionToTypeRelation` (
+  `typeId` bigint(20) DEFAULT NULL,
+  `solutionId` bigint(20) DEFAULT NULL,
+  KEY `projectId` (`typeId`),
+  KEY `solutionId` (`solutionId`),
+  KEY `projectId_2` (`typeId`),
+  KEY `solutionId_2` (`solutionId`),
+  KEY `typeId` (`typeId`),
+  CONSTRAINT `fk_isutypesolutiontotyperelation_ibfk_2` FOREIGN KEY (`typeId`) REFERENCES `IsuType` (`id`),
+  CONSTRAINT `fk_isutypesolutiontotyperelation_ibfk_3` FOREIGN KEY (`solutionId`) REFERENCES `IsuTypeSolution` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `IsuWorkflow`
@@ -293,17 +707,31 @@ CREATE TABLE `IsuWorkflow` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `startTime` datetime DEFAULT NULL,
-  `endTime` datetime DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
+  `orgId` bigint(20) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `FK_42yjv4ki9jm2ppkx819t2ega5` (`projectId`),
-  CONSTRAINT `FK_42yjv4ki9jm2ppkx819t2ega5` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  KEY `FK_42yjv4ki9jm2ppkx819t2ega5` (`orgId`),
+  CONSTRAINT `FK_42yjv4ki9jm2ppkx819t2ega5` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuWorkflowProjectRelation`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuWorkflowProjectRelation`;
+CREATE TABLE `IsuWorkflowProjectRelation` (
+  `orgId` int(11) DEFAULT NULL,
+  `projectId` bigint(20) NOT NULL,
+  `workflowId` bigint(20) NOT NULL,
+  PRIMARY KEY (`workflowId`,`projectId`),
+  KEY `FK_rtujogn8761o0m2e2pmi6rsr6` (`projectId`),
+  KEY `workflowId` (`workflowId`),
+  CONSTRAINT `fk_isuworkflowprojectrelation_ibfk_1` FOREIGN KEY (`workflowId`) REFERENCES `isucustomfielddefine` (`id`),
+  CONSTRAINT `fk_isuworkflowprojectrelation_ibfk_2` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`),
+  CONSTRAINT `fk_isuworkflowprojectrelation_ibfk_3` FOREIGN KEY (`workflowId`) REFERENCES `IsuWorkflow` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `SysNums`
@@ -366,8 +794,8 @@ CREATE TABLE `SysRolePrivilegeRelation` (
   `privilegeId` bigint(20) NOT NULL,
   PRIMARY KEY (`roleId`,`privilegeId`),
   KEY `FK_ky9ghoogn9iib4917xa0588ii` (`privilegeId`),
-  CONSTRAINT `FK_ky9ghoogn9iib4917xa0588ii` FOREIGN KEY (`privilegeId`) REFERENCES `SysPrivilege` (`id`),
-  CONSTRAINT `FK_lafbrqm6tk3v0aj5wjan1afic` FOREIGN KEY (`roleId`) REFERENCES `SysRole` (`id`)
+  CONSTRAINT `FK_ky9ghoogn9iib4917xa0588ii` FOREIGN KEY (`privilegeId`) REFERENCES `sysprivilege` (`id`),
+  CONSTRAINT `FK_lafbrqm6tk3v0aj5wjan1afic` FOREIGN KEY (`roleId`) REFERENCES `sysrole` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -379,8 +807,8 @@ CREATE TABLE `SysRoleUserRelation` (
   `userId` bigint(20) NOT NULL,
   PRIMARY KEY (`roleId`,`userId`),
   KEY `FK_mp7eccpmrmommtiomo2hx94kq` (`userId`),
-  CONSTRAINT `FK_lnrx0pwvcwvfat4wno6ym36rk` FOREIGN KEY (`roleId`) REFERENCES `SysRole` (`id`),
-  CONSTRAINT `FK_mp7eccpmrmommtiomo2hx94kq` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
+  CONSTRAINT `FK_lnrx0pwvcwvfat4wno6ym36rk` FOREIGN KEY (`roleId`) REFERENCES `sysrole` (`id`),
+  CONSTRAINT `FK_mp7eccpmrmommtiomo2hx94kq` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -428,9 +856,9 @@ CREATE TABLE `TstAlert` (
   PRIMARY KEY (`id`),
   KEY `FK_r8m7ykej6x9fpp4d52sq3y8x8` (`assigneeId`),
   KEY `FK_b4fbqud01ub7bqahljyyux0ss` (`userId`),
-  CONSTRAINT `FK_b4fbqud01ub7bqahljyyux0ss` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
-  CONSTRAINT `FK_r8m7ykej6x9fpp4d52sq3y8x8` FOREIGN KEY (`assigneeId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_b4fbqud01ub7bqahljyyux0ss` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
+  CONSTRAINT `FK_r8m7ykej6x9fpp4d52sq3y8x8` FOREIGN KEY (`assigneeId`) REFERENCES `tstuser` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCase`
@@ -480,17 +908,10 @@ CREATE TABLE `TstCase` (
   KEY `FK_4paqpejxxg65icpu7asf9btow` (`createById`),
   KEY `FK_le8suo2xxbcr036yaiivwkqn0` (`projectId`),
   KEY `FK_f3mtkmff26truvxmm897u8oeu` (`updateById`),
-  CONSTRAINT `FK_4paqpejxxg65icpu7asf9btow` FOREIGN KEY (`createById`) REFERENCES `TstUser` (`id`),
-  CONSTRAINT `FK_f3mtkmff26truvxmm897u8oeu` FOREIGN KEY (`updateById`) REFERENCES `TstUser` (`id`),
-  CONSTRAINT `FK_le8suo2xxbcr036yaiivwkqn0` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2853 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
---  Records of `TstCase`
--- ----------------------------
-BEGIN;
-INSERT INTO `TstCase` VALUES ('2850', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '187', '102', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-08-18 11:18:44', null), ('2851', '新特性', null, null, 'steps', '10', '2850', b'0', '0', 'functional', 'medium', null, '187', '102', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-08-18 11:18:44', null), ('2852', '新用例', null, null, 'steps', '10', '2851', b'1', '0', 'functional', 'medium', null, '187', '102', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-08-18 11:18:44', null);
-COMMIT;
+  CONSTRAINT `FK_4paqpejxxg65icpu7asf9btow` FOREIGN KEY (`createById`) REFERENCES `tstuser` (`id`),
+  CONSTRAINT `FK_f3mtkmff26truvxmm897u8oeu` FOREIGN KEY (`updateById`) REFERENCES `tstuser` (`id`),
+  CONSTRAINT `FK_le8suo2xxbcr036yaiivwkqn0` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3079 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCaseAttachment`
@@ -512,9 +933,9 @@ CREATE TABLE `TstCaseAttachment` (
   PRIMARY KEY (`id`),
   KEY `FK_hubkj6m012dpsarrjmh3160sv` (`caseId`),
   KEY `FK_ajcsto1d9eupd3476t861vhxp` (`userId`),
-  CONSTRAINT `FK_ajcsto1d9eupd3476t861vhxp` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
-  CONSTRAINT `FK_hubkj6m012dpsarrjmh3160sv` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_ajcsto1d9eupd3476t861vhxp` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
+  CONSTRAINT `FK_hubkj6m012dpsarrjmh3160sv` FOREIGN KEY (`caseId`) REFERENCES `tstcase` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `TstCaseComments`
@@ -533,9 +954,9 @@ CREATE TABLE `TstCaseComments` (
   PRIMARY KEY (`id`),
   KEY `FK_f1r5t3p8vgi1iiq2v0wle7erj` (`caseId`),
   KEY `FK_d4d1t72y6wkb41bbpkdrk26sv` (`userId`),
-  CONSTRAINT `FK_d4d1t72y6wkb41bbpkdrk26sv` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
-  CONSTRAINT `FK_f1r5t3p8vgi1iiq2v0wle7erj` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_d4d1t72y6wkb41bbpkdrk26sv` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
+  CONSTRAINT `FK_f1r5t3p8vgi1iiq2v0wle7erj` FOREIGN KEY (`caseId`) REFERENCES `tstcase` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCaseExeStatus`
@@ -556,15 +977,8 @@ CREATE TABLE `TstCaseExeStatus` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_o4l4xg65y069b0ai5cgbfm175` (`orgid`),
-  CONSTRAINT `FK_o4l4xg65y069b0ai5cgbfm175` FOREIGN KEY (`orgid`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=361 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
---  Records of `TstCaseExeStatus`
--- ----------------------------
-BEGIN;
-INSERT INTO `TstCaseExeStatus` VALUES ('357', 'untest', '未执行', null, '10', b'0', b'0', '90', b'0', b'0', '2018-08-18 11:18:44', null), ('358', 'pass', '成功', null, '20', b'0', b'1', '90', b'0', b'0', '2018-08-18 11:18:44', null), ('359', 'fail', '失败', null, '30', b'0', b'1', '90', b'0', b'0', '2018-08-18 11:18:44', null), ('360', 'block', '阻塞', null, '40', b'0', b'0', '90', b'0', b'0', '2018-08-18 11:18:44', null);
-COMMIT;
+  CONSTRAINT `FK_o4l4xg65y069b0ai5cgbfm175` FOREIGN KEY (`orgid`) REFERENCES `tstorg` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=641 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCaseHistory`
@@ -581,8 +995,8 @@ CREATE TABLE `TstCaseHistory` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_8yss1awno54uahftbyi1wb2j8` (`caseId`),
-  CONSTRAINT `FK_8yss1awno54uahftbyi1wb2j8` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_8yss1awno54uahftbyi1wb2j8` FOREIGN KEY (`caseId`) REFERENCES `tstcase` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `TstCaseInSuite`
@@ -606,11 +1020,11 @@ CREATE TABLE `TstCaseInSuite` (
   KEY `FK_fi05leklixq7on505rmm9s2l0` (`projectId`),
   KEY `FK_8gf9d9lm7v3m0dekplcrqgi9e` (`suiteId`),
   KEY `FK_e3cf797mcxhrsy48npuytxkj2` (`caseId`),
-  CONSTRAINT `FK_8gf9d9lm7v3m0dekplcrqgi9e` FOREIGN KEY (`suiteId`) REFERENCES `TstSuite` (`id`),
-  CONSTRAINT `FK_e3cf797mcxhrsy48npuytxkj2` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`),
-  CONSTRAINT `FK_fi05leklixq7on505rmm9s2l0` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
-  CONSTRAINT `FK_siekg4jjehvbdcasn7vry9j2f` FOREIGN KEY (`createBy`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_8gf9d9lm7v3m0dekplcrqgi9e` FOREIGN KEY (`suiteId`) REFERENCES `tstsuite` (`id`),
+  CONSTRAINT `FK_e3cf797mcxhrsy48npuytxkj2` FOREIGN KEY (`caseId`) REFERENCES `tstcase` (`id`),
+  CONSTRAINT `FK_fi05leklixq7on505rmm9s2l0` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`),
+  CONSTRAINT `FK_siekg4jjehvbdcasn7vry9j2f` FOREIGN KEY (`createBy`) REFERENCES `tstuser` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=99 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `TstCaseInTask`
@@ -641,13 +1055,13 @@ CREATE TABLE `TstCaseInTask` (
   KEY `FK_a5ciawwux8s8mj63h2h7rkdok` (`projectId`),
   KEY `FK_8d38nl2cbd2ve2srlqrcur3qn` (`taskId`),
   KEY `FK_mwbiov88r7ppt8x9yunxr18pu` (`caseId`),
-  CONSTRAINT `FK_5c4a6hwvan7sqsskn6wvebkpc` FOREIGN KEY (`exeBy`) REFERENCES `TstUser` (`id`),
-  CONSTRAINT `FK_8d38nl2cbd2ve2srlqrcur3qn` FOREIGN KEY (`taskId`) REFERENCES `TstTask` (`id`),
-  CONSTRAINT `FK_a5ciawwux8s8mj63h2h7rkdok` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
-  CONSTRAINT `FK_ahth2x2i7j9loamqyg3jcwfu6` FOREIGN KEY (`createBy`) REFERENCES `TstUser` (`id`),
-  CONSTRAINT `FK_avls2r88tnl837rhiw01wtyma` FOREIGN KEY (`planId`) REFERENCES `TstPlan` (`id`),
-  CONSTRAINT `FK_mwbiov88r7ppt8x9yunxr18pu` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_5c4a6hwvan7sqsskn6wvebkpc` FOREIGN KEY (`exeBy`) REFERENCES `tstuser` (`id`),
+  CONSTRAINT `FK_8d38nl2cbd2ve2srlqrcur3qn` FOREIGN KEY (`taskId`) REFERENCES `tsttask` (`id`),
+  CONSTRAINT `FK_a5ciawwux8s8mj63h2h7rkdok` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`),
+  CONSTRAINT `FK_ahth2x2i7j9loamqyg3jcwfu6` FOREIGN KEY (`createBy`) REFERENCES `tstuser` (`id`),
+  CONSTRAINT `FK_avls2r88tnl837rhiw01wtyma` FOREIGN KEY (`planId`) REFERENCES `tstplan` (`id`),
+  CONSTRAINT `FK_mwbiov88r7ppt8x9yunxr18pu` FOREIGN KEY (`caseId`) REFERENCES `tstcase` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=189 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCaseInTaskHistory`
@@ -667,8 +1081,8 @@ CREATE TABLE `TstCaseInTaskHistory` (
   KEY `FK_2lnolfm4dnqgr5dh1d8qkfr2n` (`caseId`),
   KEY `caseInTaskId` (`caseInTaskId`),
   CONSTRAINT `fk_caseId` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`),
-  CONSTRAINT `fk_caseInTaskId` FOREIGN KEY (`caseInTaskId`) REFERENCES `TstCaseInTask` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `fk_caseInTaskId` FOREIGN KEY (`caseInTaskId`) REFERENCES `TstCaseInTask` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `TstCasePriority`
@@ -689,15 +1103,8 @@ CREATE TABLE `TstCasePriority` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_d8r4hkhobybms74u4vk43thj9` (`orgid`),
-  CONSTRAINT `FK_d8r4hkhobybms74u4vk43thj9` FOREIGN KEY (`orgid`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=248 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
---  Records of `TstCasePriority`
--- ----------------------------
-BEGIN;
-INSERT INTO `TstCasePriority` VALUES ('245', 'high', '高', null, '10', b'0', b'0', '90', b'0', b'0', '2018-08-18 11:18:44', null), ('246', 'medium', '中', null, '20', b'0', b'1', '90', b'0', b'0', '2018-08-18 11:18:44', null), ('247', 'low', '低', null, '30', b'0', b'0', '90', b'0', b'0', '2018-08-18 11:18:44', null);
-COMMIT;
+  CONSTRAINT `FK_d8r4hkhobybms74u4vk43thj9` FOREIGN KEY (`orgid`) REFERENCES `tstorg` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=462 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCaseStep`
@@ -715,8 +1122,8 @@ CREATE TABLE `TstCaseStep` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_s8hj2viu2jtj1iwf4pgu789hi` (`caseId`),
-  CONSTRAINT `FK_s8hj2viu2jtj1iwf4pgu789hi` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_s8hj2viu2jtj1iwf4pgu789hi` FOREIGN KEY (`caseId`) REFERENCES `tstcase` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCaseType`
@@ -737,15 +1144,8 @@ CREATE TABLE `TstCaseType` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_rqs9hiykm6kk5w8rewcy1uvy7` (`orgId`),
-  CONSTRAINT `FK_rqs9hiykm6kk5w8rewcy1uvy7` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=565 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
---  Records of `TstCaseType`
--- ----------------------------
-BEGIN;
-INSERT INTO `TstCaseType` VALUES ('558', 'functional', '功能', null, '10', b'0', b'1', '90', b'0', b'0', '2018-08-18 11:18:44', null), ('559', 'performance', '性能', null, '20', b'0', b'0', '90', b'0', b'0', '2018-08-18 11:18:44', null), ('560', 'ui', '界面', null, '30', b'0', b'0', '90', b'0', b'0', '2018-08-18 11:18:44', null), ('561', 'compatibility', '兼容性', null, '40', b'0', b'0', '90', b'0', b'0', '2018-08-18 11:18:44', null), ('562', 'security', '安全', null, '50', b'0', b'0', '90', b'0', b'0', '2018-08-18 11:18:44', null), ('563', 'automation', '自动化', null, '60', b'0', b'0', '90', b'0', b'0', '2018-08-18 11:18:44', null), ('564', 'other', '其它', null, '70', b'0', b'0', '90', b'0', b'0', '2018-08-18 11:18:44', null);
-COMMIT;
+  CONSTRAINT `FK_rqs9hiykm6kk5w8rewcy1uvy7` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1059 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCustomField`
@@ -772,8 +1172,8 @@ CREATE TABLE `TstCustomField` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_b1o40efa19tleean59bgg59jm` (`orgId`),
-  CONSTRAINT `FK_b1o40efa19tleean59bgg59jm` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_b1o40efa19tleean59bgg59jm` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCustomFieldOption`
@@ -792,8 +1192,8 @@ CREATE TABLE `TstCustomFieldOption` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_9x13nia3eij6tb613asglg0er` (`fieldId`),
-  CONSTRAINT `FK_9x13nia3eij6tb613asglg0er` FOREIGN KEY (`fieldId`) REFERENCES `TstCustomField` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_9x13nia3eij6tb613asglg0er` FOREIGN KEY (`fieldId`) REFERENCES `tstcustomfield` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `TstCustomFieldProjectRelation`
@@ -807,8 +1207,8 @@ CREATE TABLE `TstCustomFieldProjectRelation` (
   `projectType` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`customFieldId`,`projectId`),
   KEY `FK_5y5g3wjodtyxm3lpmmd04foy5` (`projectId`),
-  CONSTRAINT `FK_5y5g3wjodtyxm3lpmmd04foy5` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
-  CONSTRAINT `FK_bo12oks940a30cyxlt39kiijc` FOREIGN KEY (`customFieldId`) REFERENCES `TstCustomField` (`id`)
+  CONSTRAINT `FK_5y5g3wjodtyxm3lpmmd04foy5` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`),
+  CONSTRAINT `FK_bo12oks940a30cyxlt39kiijc` FOREIGN KEY (`customFieldId`) REFERENCES `tstcustomfield` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -830,7 +1230,7 @@ CREATE TABLE `TstDocument` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_qqrnh8bqskjk1r56gflpm52yx` (`userId`),
-  CONSTRAINT `FK_qqrnh8bqskjk1r56gflpm52yx` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
+  CONSTRAINT `FK_qqrnh8bqskjk1r56gflpm52yx` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -867,8 +1267,8 @@ CREATE TABLE `TstEnv` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_afu6qfm7329uojw4i8j0gaskf` (`projectId`),
-  CONSTRAINT `FK_afu6qfm7329uojw4i8j0gaskf` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_afu6qfm7329uojw4i8j0gaskf` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `TstHistory`
@@ -891,16 +1291,9 @@ CREATE TABLE `TstHistory` (
   PRIMARY KEY (`id`),
   KEY `FK_j9m2m7ijlp9j2184nv0yiln9u` (`projectId`),
   KEY `FK_m4yjkr3nwc5y1fcjj1ke08xie` (`userId`),
-  CONSTRAINT `FK_j9m2m7ijlp9j2184nv0yiln9u` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
-  CONSTRAINT `FK_m4yjkr3nwc5y1fcjj1ke08xie` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=568 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
---  Records of `TstHistory`
--- ----------------------------
-BEGIN;
-INSERT INTO `TstHistory` VALUES ('567', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '187', '187', '102', b'0', b'0', '2018-08-18 11:18:44', null);
-COMMIT;
+  CONSTRAINT `FK_j9m2m7ijlp9j2184nv0yiln9u` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`),
+  CONSTRAINT `FK_m4yjkr3nwc5y1fcjj1ke08xie` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=683 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstMsg`
@@ -917,8 +1310,8 @@ CREATE TABLE `TstMsg` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_h4g997qkpu00h24f9ppqa4g2k` (`userId`),
-  CONSTRAINT `FK_h4g997qkpu00h24f9ppqa4g2k` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_h4g997qkpu00h24f9ppqa4g2k` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstOrg`
@@ -933,14 +1326,7 @@ CREATE TABLE `TstOrg` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
---  Records of `TstOrg`
--- ----------------------------
-BEGIN;
-INSERT INTO `TstOrg` VALUES ('90', '我的组织', null, b'0', b'0', '2018-08-18 11:18:44', null);
-COMMIT;
+) ENGINE=InnoDB AUTO_INCREMENT=161 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstOrgGroup`
@@ -957,15 +1343,8 @@ CREATE TABLE `TstOrgGroup` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_dlddwakgodocwt7n7abndkhtg` (`orgId`),
-  CONSTRAINT `FK_dlddwakgodocwt7n7abndkhtg` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=119 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
---  Records of `TstOrgGroup`
--- ----------------------------
-BEGIN;
-INSERT INTO `TstOrgGroup` VALUES ('118', '所有人', null, '90', b'0', b'0', '2018-08-18 11:18:44', null);
-COMMIT;
+  CONSTRAINT `FK_dlddwakgodocwt7n7abndkhtg` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=192 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstOrgGroupUserRelation`
@@ -979,8 +1358,8 @@ CREATE TABLE `TstOrgGroupUserRelation` (
   `userName` varchar(255) DEFAULT NULL,
   KEY `FK_oioog5ixo3vky1n5qhr55mjr6` (`orgGroupId`),
   KEY `FK_96e8mkbgy9qly15goqecnson6` (`userId`),
-  CONSTRAINT `FK_96e8mkbgy9qly15goqecnson6` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
-  CONSTRAINT `FK_oioog5ixo3vky1n5qhr55mjr6` FOREIGN KEY (`orgGroupId`) REFERENCES `TstOrgGroup` (`id`)
+  CONSTRAINT `FK_96e8mkbgy9qly15goqecnson6` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
+  CONSTRAINT `FK_oioog5ixo3vky1n5qhr55mjr6` FOREIGN KEY (`orgGroupId`) REFERENCES `tstorggroup` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1003,7 +1382,7 @@ CREATE TABLE `TstOrgPrivilegeDefine` (
 --  Records of `TstOrgPrivilegeDefine`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstOrgPrivilegeDefine` VALUES ('1', 'org-admin', '管理公司', null, b'0', b'0', '2017-04-05 09:39:15', '2017-04-05 09:39:20'), ('2', 'site-admin', '管理站点', null, b'1', b'1', '2017-04-05 09:39:15', '2017-04-05 09:39:20'), ('3', 'project-admin', '管理项目', null, b'0', b'0', '2017-04-05 09:39:15', '2017-04-05 09:39:20');
+INSERT INTO `TstOrgPrivilegeDefine` VALUES ('1', 'org-admin', '管理组织', null, b'0', b'0', '2017-04-05 09:39:15', '2017-04-05 09:39:20'), ('2', 'site-admin', '管理站点', null, b'1', b'1', '2017-04-05 09:39:15', '2017-04-05 09:39:20'), ('3', 'project-admin', '管理项目', null, b'0', b'0', '2017-04-05 09:39:15', '2017-04-05 09:39:20');
 COMMIT;
 
 -- ----------------------------
@@ -1022,15 +1401,22 @@ CREATE TABLE `TstOrgRole` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_q5g6x4w1pwr5ur4iwbg17nr9u` (`orgId`),
-  CONSTRAINT `FK_q5g6x4w1pwr5ur4iwbg17nr9u` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=341 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_q5g6x4w1pwr5ur4iwbg17nr9u` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=481 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
---  Records of `TstOrgRole`
+--  Table structure for `TstOrgRoleGroupRelation`
 -- ----------------------------
-BEGIN;
-INSERT INTO `TstOrgRole` VALUES ('338', '组织管理员', 'org_admin', null, '90', b'0', b'0', '2018-08-18 11:18:44', null), ('339', '项目管理员', 'project_admin', null, '90', b'0', b'0', '2018-08-18 11:18:44', null);
-COMMIT;
+DROP TABLE IF EXISTS `TstOrgRoleGroupRelation`;
+CREATE TABLE `TstOrgRoleGroupRelation` (
+  `orgRoleId` bigint(20) NOT NULL,
+  `groupId` bigint(20) NOT NULL,
+  `orgId` bigint(20) NOT NULL,
+  PRIMARY KEY (`orgRoleId`,`groupId`,`orgId`),
+  KEY `FK_h6d5c2yfeaqitn4jb3fvkjtw6` (`groupId`),
+  CONSTRAINT `tstorgrolegrouprelation_ibfk_1` FOREIGN KEY (`orgRoleId`) REFERENCES `tstorgrole` (`id`),
+  CONSTRAINT `tstorgrolegrouprelation_ibfk_2` FOREIGN KEY (`groupId`) REFERENCES `TstOrgGroup` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstOrgRolePrivilegeRelation`
@@ -1042,16 +1428,9 @@ CREATE TABLE `TstOrgRolePrivilegeRelation` (
   `orgPrivilegeId` bigint(20) NOT NULL,
   PRIMARY KEY (`orgRoleId`,`orgPrivilegeId`,`orgId`),
   KEY `FK_xrf0fqbnodxio07iqvttce72` (`orgPrivilegeId`),
-  CONSTRAINT `FK_6kbys90ljdfp5dp7w5nb4d5ru` FOREIGN KEY (`orgRoleId`) REFERENCES `TstOrgRole` (`id`),
+  CONSTRAINT `FK_6kbys90ljdfp5dp7w5nb4d5ru` FOREIGN KEY (`orgRoleId`) REFERENCES `tstorgrole` (`id`),
   CONSTRAINT `FK_xrf0fqbnodxio07iqvttce72` FOREIGN KEY (`orgPrivilegeId`) REFERENCES `TstOrgPrivilegeDefine` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
---  Records of `TstOrgRolePrivilegeRelation`
--- ----------------------------
-BEGIN;
-INSERT INTO `TstOrgRolePrivilegeRelation` VALUES ('90', '338', '1'), ('90', '338', '3'), ('90', '339', '3');
-COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstOrgRoleUserRelation`
@@ -1063,16 +1442,9 @@ CREATE TABLE `TstOrgRoleUserRelation` (
   `orgId` bigint(20) NOT NULL,
   PRIMARY KEY (`orgRoleId`,`userId`,`orgId`),
   KEY `FK_h6d5c2yfeaqitn4jb3fvkjtw6` (`userId`),
-  CONSTRAINT `FK_8cbhgbqt91ctmnw35ibtyofqg` FOREIGN KEY (`orgRoleId`) REFERENCES `TstOrgRole` (`id`),
-  CONSTRAINT `FK_h6d5c2yfeaqitn4jb3fvkjtw6` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
+  CONSTRAINT `FK_8cbhgbqt91ctmnw35ibtyofqg` FOREIGN KEY (`orgRoleId`) REFERENCES `tstorgrole` (`id`),
+  CONSTRAINT `FK_h6d5c2yfeaqitn4jb3fvkjtw6` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
---  Records of `TstOrgRoleUserRelation`
--- ----------------------------
-BEGIN;
-INSERT INTO `TstOrgRoleUserRelation` VALUES ('338', '102', '90');
-COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstOrgUserRelation`
@@ -1083,16 +1455,9 @@ CREATE TABLE `TstOrgUserRelation` (
   `userId` bigint(20) NOT NULL,
   PRIMARY KEY (`orgId`,`userId`),
   KEY `FK_dbrrq8bxgx5npl0wxialit7i2` (`userId`),
-  CONSTRAINT `FK_28gcxu8p61i0lao8unkaq5c6c` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
-  CONSTRAINT `FK_dbrrq8bxgx5npl0wxialit7i2` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
+  CONSTRAINT `FK_28gcxu8p61i0lao8unkaq5c6c` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`),
+  CONSTRAINT `FK_dbrrq8bxgx5npl0wxialit7i2` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
---  Records of `TstOrgUserRelation`
--- ----------------------------
-BEGIN;
-INSERT INTO `TstOrgUserRelation` VALUES ('90', '102');
-COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstPlan`
@@ -1118,10 +1483,10 @@ CREATE TABLE `TstPlan` (
   KEY `FK_te991npw8lxmrtmt2gcjolimr` (`projectId`),
   KEY `FK_pc89p4era2bchkg4ulsv1gv7l` (`envId`),
   KEY `FK_299h646hfdb07s239a6juu55k` (`verId`),
-  CONSTRAINT `FK_299h646hfdb07s239a6juu55k` FOREIGN KEY (`verId`) REFERENCES `TstVer` (`id`),
-  CONSTRAINT `FK_pc89p4era2bchkg4ulsv1gv7l` FOREIGN KEY (`envId`) REFERENCES `TstVer` (`id`),
-  CONSTRAINT `FK_te991npw8lxmrtmt2gcjolimr` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_299h646hfdb07s239a6juu55k` FOREIGN KEY (`verId`) REFERENCES `tstver` (`id`),
+  CONSTRAINT `FK_pc89p4era2bchkg4ulsv1gv7l` FOREIGN KEY (`envId`) REFERENCES `tstver` (`id`),
+  CONSTRAINT `FK_te991npw8lxmrtmt2gcjolimr` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstProject`
@@ -1143,16 +1508,9 @@ CREATE TABLE `TstProject` (
   PRIMARY KEY (`id`),
   KEY `FK_avuusthsgk7g68bm0kiq6dix0` (`orgId`),
   KEY `FK_rm5uawwl53dtse1l5qhwci30v` (`parentId`),
-  CONSTRAINT `FK_avuusthsgk7g68bm0kiq6dix0` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
-  CONSTRAINT `FK_rm5uawwl53dtse1l5qhwci30v` FOREIGN KEY (`parentId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=188 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
---  Records of `TstProject`
--- ----------------------------
-BEGIN;
-INSERT INTO `TstProject` VALUES ('186', '默认项目组', null, 'group', null, null, '90', null, b'0', b'0', '2018-08-18 11:18:44', null), ('187', '默认项目', null, 'project', null, null, '90', '186', b'0', b'0', '2018-08-18 11:18:44', null);
-COMMIT;
+  CONSTRAINT `FK_avuusthsgk7g68bm0kiq6dix0` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`),
+  CONSTRAINT `FK_rm5uawwl53dtse1l5qhwci30v` FOREIGN KEY (`parentId`) REFERENCES `tstproject` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=330 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstProjectAccessHistory`
@@ -1171,17 +1529,10 @@ CREATE TABLE `TstProjectAccessHistory` (
   KEY `FK_hv9vkb26yw1fluyh6thwh230h` (`prjId`),
   KEY `FK_dpcrx83ysgtel2eua0856xfk3` (`userId`),
   KEY `FK_l0ifd62wftf6w81779j64rfmc` (`orgId`),
-  CONSTRAINT `FK_dpcrx83ysgtel2eua0856xfk3` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
-  CONSTRAINT `FK_hv9vkb26yw1fluyh6thwh230h` FOREIGN KEY (`prjId`) REFERENCES `TstProject` (`id`),
-  CONSTRAINT `FK_l0ifd62wftf6w81779j64rfmc` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
---  Records of `TstProjectAccessHistory`
--- ----------------------------
-BEGIN;
-INSERT INTO `TstProjectAccessHistory` VALUES ('102', '2018-08-18 11:18:44', '90', '187', '默认项目', '102', '2018-08-18 11:18:44', null);
-COMMIT;
+  CONSTRAINT `FK_dpcrx83ysgtel2eua0856xfk3` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
+  CONSTRAINT `FK_hv9vkb26yw1fluyh6thwh230h` FOREIGN KEY (`prjId`) REFERENCES `tstproject` (`id`),
+  CONSTRAINT `FK_l0ifd62wftf6w81779j64rfmc` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=177 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstProjectPrivilegeDefine`
@@ -1225,15 +1576,8 @@ CREATE TABLE `TstProjectRole` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_8eokjbtquljjgjahh7y0l0la6` (`orgId`),
-  CONSTRAINT `FK_8eokjbtquljjgjahh7y0l0la6` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=316 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
---  Records of `TstProjectRole`
--- ----------------------------
-BEGIN;
-INSERT INTO `TstProjectRole` VALUES ('312', 'test_leader', '测试主管', null, b'0', '90', b'0', b'0', '2018-08-18 11:18:44', null), ('313', 'test_designer', '测试设计', null, b'0', '90', b'0', b'0', '2018-08-18 11:18:44', null), ('314', 'tester', '测试执行', null, b'0', '90', b'0', b'0', '2018-08-18 11:18:44', null), ('315', 'readonly', '只读用户', null, b'0', '90', b'0', b'0', '2018-08-18 11:18:44', null);
-COMMIT;
+  CONSTRAINT `FK_8eokjbtquljjgjahh7y0l0la6` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=597 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstProjectRoleEntityRelation`
@@ -1246,15 +1590,8 @@ CREATE TABLE `TstProjectRoleEntityRelation` (
   `projectRoleId` bigint(20) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   KEY `FK_e507ln5a5bxon2uyrs3b06bv8` (`projectRoleId`),
-  CONSTRAINT `FK_e507ln5a5bxon2uyrs3b06bv8` FOREIGN KEY (`projectRoleId`) REFERENCES `TstProjectRole` (`id`)
+  CONSTRAINT `FK_e507ln5a5bxon2uyrs3b06bv8` FOREIGN KEY (`projectRoleId`) REFERENCES `tstprojectrole` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
---  Records of `TstProjectRoleEntityRelation`
--- ----------------------------
-BEGIN;
-INSERT INTO `TstProjectRoleEntityRelation` VALUES ('102', '90', '187', '312', 'user');
-COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstProjectRolePriviledgeRelation`
@@ -1267,15 +1604,8 @@ CREATE TABLE `TstProjectRolePriviledgeRelation` (
   KEY `FK_6aiwgve7unve9rcj15v8woxyl` (`projectPrivilegeDefineId`),
   KEY `FK_orqtwmqhjn4bih5y6pd5fla59` (`projectRoleId`),
   CONSTRAINT `FK_6aiwgve7unve9rcj15v8woxyl` FOREIGN KEY (`projectPrivilegeDefineId`) REFERENCES `TstProjectPrivilegeDefine` (`id`),
-  CONSTRAINT `FK_orqtwmqhjn4bih5y6pd5fla59` FOREIGN KEY (`projectRoleId`) REFERENCES `TstProjectRole` (`id`)
+  CONSTRAINT `FK_orqtwmqhjn4bih5y6pd5fla59` FOREIGN KEY (`projectRoleId`) REFERENCES `tstprojectrole` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
---  Records of `TstProjectRolePriviledgeRelation`
--- ----------------------------
-BEGIN;
-INSERT INTO `TstProjectRolePriviledgeRelation` VALUES ('11100', '312', null), ('11200', '312', null), ('11300', '312', null), ('12100', '312', null), ('12200', '312', null), ('12300', '312', null), ('13100', '312', null), ('13200', '312', null), ('13300', '312', null), ('14100', '312', null), ('14200', '312', null), ('14300', '312', null), ('15100', '312', null), ('15200', '312', null), ('15300', '312', null), ('16100', '312', null), ('16200', '312', null), ('16300', '312', null), ('16400', '312', null), ('17100', '312', null), ('17200', '312', null), ('17300', '312', null), ('11100', '313', null), ('12100', '313', null), ('12200', '313', null), ('12300', '313', null), ('13100', '313', null), ('13200', '313', null), ('13300', '313', null), ('14100', '313', null), ('14200', '313', null), ('14300', '313', null), ('15100', '313', null), ('15200', '313', null), ('15300', '313', null), ('16100', '313', null), ('16200', '313', null), ('16300', '313', null), ('16400', '313', null), ('17100', '313', null), ('17200', '313', null), ('17300', '313', null), ('11100', '314', null), ('12100', '314', null), ('12300', '314', null), ('13100', '314', null), ('13200', '314', null), ('13300', '314', null), ('14100', '314', null), ('14200', '314', null), ('14300', '314', null), ('15100', '314', null), ('15200', '314', null), ('15300', '314', null), ('16100', '314', null), ('16200', '314', null), ('16300', '314', null), ('16400', '314', null), ('17100', '314', null), ('17200', '314', null), ('17300', '314', null), ('11100', '315', null), ('12100', '315', null), ('13100', '315', null), ('14100', '315', null), ('15100', '315', null), ('16100', '315', null), ('17100', '315', null);
-COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstSuite`
@@ -1298,10 +1628,10 @@ CREATE TABLE `TstSuite` (
   KEY `FK_bof1daqokqea3o5yfdlreg8jy` (`projectId`),
   KEY `FK_1r4cd0cr11rrevb0x5sj7w2pv` (`userId`),
   KEY `FK_gam83w6tee7evc846fh0kqvq0` (`caseProjectId`),
-  CONSTRAINT `FK_1r4cd0cr11rrevb0x5sj7w2pv` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
-  CONSTRAINT `FK_bof1daqokqea3o5yfdlreg8jy` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
-  CONSTRAINT `FK_gam83w6tee7evc846fh0kqvq0` FOREIGN KEY (`caseProjectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_1r4cd0cr11rrevb0x5sj7w2pv` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
+  CONSTRAINT `FK_bof1daqokqea3o5yfdlreg8jy` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`),
+  CONSTRAINT `FK_gam83w6tee7evc846fh0kqvq0` FOREIGN KEY (`caseProjectId`) REFERENCES `tstproject` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `TstTask`
@@ -1328,12 +1658,12 @@ CREATE TABLE `TstTask` (
   KEY `FK_iog5lfy5gnd0uccm0wgrlqcsd` (`userId`),
   KEY `FK_iokmiyvqpbqi8uo8d8nq985fw` (`envId`),
   KEY `FK_fymnl68rmtbhmw3jcg66qfdes` (`caseProjectId`),
-  CONSTRAINT `FK_3r1a8t5vxesj07c4kd5odc77y` FOREIGN KEY (`planId`) REFERENCES `TstPlan` (`id`),
-  CONSTRAINT `FK_3yir1yvenq7mrnx44l4falpcq` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
-  CONSTRAINT `FK_fymnl68rmtbhmw3jcg66qfdes` FOREIGN KEY (`caseProjectId`) REFERENCES `TstProject` (`id`),
-  CONSTRAINT `FK_iog5lfy5gnd0uccm0wgrlqcsd` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
-  CONSTRAINT `FK_iokmiyvqpbqi8uo8d8nq985fw` FOREIGN KEY (`envId`) REFERENCES `TstEnv` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_3r1a8t5vxesj07c4kd5odc77y` FOREIGN KEY (`planId`) REFERENCES `tstplan` (`id`),
+  CONSTRAINT `FK_3yir1yvenq7mrnx44l4falpcq` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`),
+  CONSTRAINT `FK_fymnl68rmtbhmw3jcg66qfdes` FOREIGN KEY (`caseProjectId`) REFERENCES `tstproject` (`id`),
+  CONSTRAINT `FK_iog5lfy5gnd0uccm0wgrlqcsd` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
+  CONSTRAINT `FK_iokmiyvqpbqi8uo8d8nq985fw` FOREIGN KEY (`envId`) REFERENCES `tstver` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstTaskAssigneeRelation`
@@ -1344,9 +1674,9 @@ CREATE TABLE `TstTaskAssigneeRelation` (
   `assigneeId` bigint(20) NOT NULL,
   PRIMARY KEY (`taskId`,`assigneeId`),
   KEY `FK_l3ro39r8ji2hhaueh6flq6ict` (`assigneeId`),
-  CONSTRAINT `FK_ddk65svfjm6yq59yxb2n29pr0` FOREIGN KEY (`taskId`) REFERENCES `TstTask` (`id`),
-  CONSTRAINT `FK_l3ro39r8ji2hhaueh6flq6ict` FOREIGN KEY (`assigneeId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_ddk65svfjm6yq59yxb2n29pr0` FOREIGN KEY (`taskId`) REFERENCES `tsttask` (`id`),
+  CONSTRAINT `FK_l3ro39r8ji2hhaueh6flq6ict` FOREIGN KEY (`assigneeId`) REFERENCES `tstuser` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `TstThread`
@@ -1364,8 +1694,8 @@ CREATE TABLE `TstThread` (
   PRIMARY KEY (`id`),
   KEY `FK_hn7m54nygknarx9v1jn4phx81` (`authorId`),
   KEY `FK_mw7px95alyw1wrmwhlp96fbu5` (`parentId`),
-  CONSTRAINT `FK_hn7m54nygknarx9v1jn4phx81` FOREIGN KEY (`authorId`) REFERENCES `TstUser` (`id`),
-  CONSTRAINT `FK_mw7px95alyw1wrmwhlp96fbu5` FOREIGN KEY (`parentId`) REFERENCES `TstThread` (`id`)
+  CONSTRAINT `FK_hn7m54nygknarx9v1jn4phx81` FOREIGN KEY (`authorId`) REFERENCES `tstuser` (`id`),
+  CONSTRAINT `FK_mw7px95alyw1wrmwhlp96fbu5` FOREIGN KEY (`parentId`) REFERENCES `tstthread` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1379,29 +1709,22 @@ CREATE TABLE `TstUser` (
   `password` varchar(255) DEFAULT NULL,
   `phone` varchar(255) DEFAULT NULL,
   `avatar` varchar(255) DEFAULT NULL,
-  `token` varchar(255) DEFAULT NULL,
-  `salt` varchar(255) DEFAULT NULL,
-  `verifyCode` varchar(255) DEFAULT NULL,
   `defaultOrgId` bigint(20) DEFAULT NULL,
+  `defaultOrgName` varchar(255) DEFAULT NULL,
   `defaultPrjId` bigint(20) DEFAULT NULL,
+  `defaultPrjName` varchar(255) DEFAULT NULL,
+  `salt` varchar(255) DEFAULT NULL,
+  `token` varchar(255) DEFAULT NULL,
+  `verifyCode` varchar(255) DEFAULT NULL,
   `lastLoginTime` datetime DEFAULT NULL,
   `leftSizeDesign` int(11) DEFAULT NULL,
   `leftSizeExe` int(11) DEFAULT NULL,
-  `defaultOrgName` varchar(255) DEFAULT NULL,
-  `defaultPrjName` varchar(255) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
---  Records of `TstUser`
--- ----------------------------
-BEGIN;
-INSERT INTO `TstUser` VALUES ('102', '462826@qq.com', 'Aaron Chen', '111111', '11111111111', 'upload/sample/user/avatar.png', null, null, null, '90', '187', null, '300', '200', null, null, b'0', b'0', '2018-08-18 11:18:45', null);
-COMMIT;
+) ENGINE=InnoDB AUTO_INCREMENT=154 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstUserVerifyCode`
@@ -1417,14 +1740,7 @@ CREATE TABLE `TstUserVerifyCode` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
---  Records of `TstUserVerifyCode`
--- ----------------------------
-BEGIN;
-INSERT INTO `TstUserVerifyCode` VALUES ('34', 'ee3d3e820fbe4fe1a3eff48a53cecf6f', '2018-08-18 11:28:45', '102', b'0', b'0', '2018-08-18 11:18:45', null);
-COMMIT;
+) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstVer`
@@ -1446,8 +1762,8 @@ CREATE TABLE `TstVer` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_thypvsn70njcdpm9jiv13eu9p` (`projectId`),
-  CONSTRAINT `FK_thypvsn70njcdpm9jiv13eu9p` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_thypvsn70njcdpm9jiv13eu9p` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Procedure structure for `add_cases_to_suite`
@@ -2437,18 +2753,17 @@ delimiter ;
 -- ----------------------------
 DROP PROCEDURE IF EXISTS `init_user`;
 delimiter ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `init_user`(IN user_id  BIGINT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `init_user`(IN userId  BIGINT,  IN  orgName VARCHAR(1000))
 BEGIN
 
-DECLARE org_id BIGINT;
+DECLARE orgId BIGINT;
 
-insert into TstOrg (name, disabled, deleted, createTime) values('我的组织', false, false, NOW());
-select max(id) from TstOrg into org_id;
+insert into TstOrg (name, disabled, deleted, createTime) values(orgName, false, false, NOW());
+select max(id) from TstOrg into orgId;
 
+update TstUser usr set usr.defaultOrgId = orgId, usr.defaultOrgName = orgName where usr.id=userId;
 
-update TstUser usr set usr.defaultOrgId = org_id, usr.defaultOrgName = '我的组织' where usr.id=user_id;
-
-call init_org(org_id, user_id);
+call init_org(orgId, userId);
 
 END
  ;;

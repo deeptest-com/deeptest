@@ -4,3 +4,6 @@ docker push registry.cn-hangzhou.aliyuncs.com/ngtesting/ngtesting-mysql:1.0.10
 
 cd ../../../../
 mvn clean verify
+
+scp dev/project/ngtesting-web/target/ngtesting-web-1.0.10.jar aaron@47.99.102.138:/home/aaron/dev/deploy
+nohup ./ngtesting-web-1.0.10.jar restart &

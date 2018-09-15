@@ -5,13 +5,13 @@
  Source Server Type    : MySQL
  Source Server Version : 50714
  Source Host           : localhost
- Source Database       : ngtesting-test
+ Source Database       : ngtesting-web
 
  Target Server Type    : MySQL
  Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 09/15/2018 14:22:47 PM
+ Date: 09/15/2018 16:36:00 PM
 */
 
 SET NAMES utf8mb4;
@@ -36,8 +36,8 @@ CREATE TABLE `IsuAttachment` (
   PRIMARY KEY (`id`),
   KEY `FK_5km3w701l0ckc79d6dl71auw` (`issueId`),
   KEY `FK_j705hrf8uusgq7nxvtuc6nvx5` (`userId`),
-  CONSTRAINT `FK_5km3w701l0ckc79d6dl71auw` FOREIGN KEY (`issueId`) REFERENCES `isuissue` (`id`),
-  CONSTRAINT `FK_j705hrf8uusgq7nxvtuc6nvx5` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`)
+  CONSTRAINT `FK_5km3w701l0ckc79d6dl71auw` FOREIGN KEY (`issueId`) REFERENCES `IsuIssue` (`id`),
+  CONSTRAINT `FK_j705hrf8uusgq7nxvtuc6nvx5` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -57,8 +57,8 @@ CREATE TABLE `IsuComments` (
   PRIMARY KEY (`id`),
   KEY `FK_dhkk8l46ybsojeoshbnc1iaqs` (`issueId`),
   KEY `FK_2nxss8uw9dwjuh9gup03g2335` (`userId`),
-  CONSTRAINT `FK_2nxss8uw9dwjuh9gup03g2335` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
-  CONSTRAINT `FK_dhkk8l46ybsojeoshbnc1iaqs` FOREIGN KEY (`issueId`) REFERENCES `isuissue` (`id`)
+  CONSTRAINT `FK_2nxss8uw9dwjuh9gup03g2335` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
+  CONSTRAINT `FK_dhkk8l46ybsojeoshbnc1iaqs` FOREIGN KEY (`issueId`) REFERENCES `IsuIssue` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -84,7 +84,7 @@ CREATE TABLE `IsuCustomField` (
   `deleted` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`orgId`),
-  CONSTRAINT `isucustomfield_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+  CONSTRAINT `isucustomfield_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -112,7 +112,7 @@ CREATE TABLE `IsuCustomFieldDefine` (
   `deleted` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`orgId`),
-  CONSTRAINT `FK_ro4ivq1br0vdteycd9ri6fr62` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+  CONSTRAINT `FK_ro4ivq1br0vdteycd9ri6fr62` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -156,19 +156,6 @@ CREATE TABLE `IsuCustomFieldOptionDefine` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `IsuCustomFieldProjectRelation`
--- ----------------------------
-DROP TABLE IF EXISTS `IsuCustomFieldProjectRelation`;
-CREATE TABLE `IsuCustomFieldProjectRelation` (
-  `customFieldId` bigint(20) NOT NULL,
-  `projectId` bigint(20) NOT NULL,
-  PRIMARY KEY (`customFieldId`,`projectId`),
-  KEY `FK_rtujogn8761o0m2e2pmi6rsr6` (`projectId`),
-  CONSTRAINT `FK_pp4i15wk5vi3abtusv8vyeq2h` FOREIGN KEY (`customFieldId`) REFERENCES `IsuCustomField` (`id`),
-  CONSTRAINT `FK_rtujogn8761o0m2e2pmi6rsr6` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
 --  Table structure for `IsuCustomFieldSolution`
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuCustomFieldSolution`;
@@ -183,7 +170,7 @@ CREATE TABLE `IsuCustomFieldSolution` (
   `deleted` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`orgId`),
-  CONSTRAINT `fk_isucustomfieldsolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+  CONSTRAINT `fk_isucustomfieldsolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -198,6 +185,23 @@ CREATE TABLE `IsuCustomFieldSolutionToField` (
   KEY `fieldId` (`fieldId`),
   CONSTRAINT `fk_isucustomfieldsolutiontofield_fieldid` FOREIGN KEY (`fieldId`) REFERENCES `IsuCustomField` (`id`),
   CONSTRAINT `fk_isucustomfieldsolutiontofield_ibfk_1` FOREIGN KEY (`solutionId`) REFERENCES `IsuCustomFieldSolution` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuCustomFieldSolutionToProjectRelation`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuCustomFieldSolutionToProjectRelation`;
+CREATE TABLE `IsuCustomFieldSolutionToProjectRelation` (
+  `solutionId` bigint(20) NOT NULL,
+  `orgId` bigint(20) DEFAULT NULL,
+  `projectId` bigint(20) NOT NULL,
+  PRIMARY KEY (`solutionId`,`projectId`),
+  KEY `FK_rtujogn8761o0m2e2pmi6rsr6` (`projectId`),
+  KEY `orgId` (`orgId`),
+  KEY `customFieldId` (`solutionId`) USING BTREE,
+  CONSTRAINT `FK_IsuCustomFieldSolutionToProjectRelation_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
+  CONSTRAINT `FK_pp4i15wk5vi3abtusv8vyeq2h` FOREIGN KEY (`solutionId`) REFERENCES `IsuCustomFieldSolution` (`id`),
+  CONSTRAINT `FK_rtujogn8761o0m2e2pmi6rsr6` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -220,7 +224,7 @@ CREATE TABLE `IsuDocument` (
   PRIMARY KEY (`id`),
   KEY `FK_a1lgb1l61iljqw3qjm07lnxo` (`issueId`),
   KEY `FK_7p0pjbn3kgcu2hhwk0u9j5mv2` (`userId`),
-  CONSTRAINT `FK_7p0pjbn3kgcu2hhwk0u9j5mv2` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
+  CONSTRAINT `FK_7p0pjbn3kgcu2hhwk0u9j5mv2` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_a1lgb1l61iljqw3qjm07lnxo` FOREIGN KEY (`issueId`) REFERENCES `isuissue` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -260,7 +264,7 @@ CREATE TABLE `IsuIssue` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_749574hr3f54gdlo4hrc6dquc` (`projectId`),
-  CONSTRAINT `FK_749574hr3f54gdlo4hrc6dquc` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`)
+  CONSTRAINT `FK_749574hr3f54gdlo4hrc6dquc` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -337,7 +341,7 @@ CREATE TABLE `IsuNotificationToProjectRelation` (
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   KEY `projectId` (`projectId`),
   KEY `solutionId` (`solutionId`),
-  CONSTRAINT `isunotificationtoprojectrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`),
+  CONSTRAINT `isunotificationtoprojectrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
   CONSTRAINT `isunotificationtoprojectrelation_ibfk_2` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `isunotificationtoprojectrelation_ibfk_3` FOREIGN KEY (`solutionId`) REFERENCES `IsuNotification` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -390,7 +394,7 @@ CREATE TABLE `IsuPageSolution` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
-  CONSTRAINT `fk_isupagesolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+  CONSTRAINT `fk_isupagesolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -479,7 +483,7 @@ CREATE TABLE `IsuPrioritySolution` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
-  CONSTRAINT `fk_isuprioritysolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+  CONSTRAINT `fk_isuprioritysolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -493,7 +497,7 @@ CREATE TABLE `IsuPrioritySolutionToProjectRelation` (
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   KEY `projectId` (`projectId`),
   KEY `solutionId` (`solutionId`),
-  CONSTRAINT `fk_isuprioritysolutiontoprojectrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`),
+  CONSTRAINT `fk_isuprioritysolutiontoprojectrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
   CONSTRAINT `fk_isuprioritysolutiontoprojectrelation_projectid` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `fk_isuprioritysolutiontoprojectrelation_solutionid` FOREIGN KEY (`solutionId`) REFERENCES `IsuPrioritySolution` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -514,7 +518,7 @@ CREATE TABLE `IsuQuery` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_ajxhx3sfebovfyy5kcg74q88e` (`projectId`),
-  CONSTRAINT `FK_ajxhx3sfebovfyy5kcg74q88e` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`)
+  CONSTRAINT `FK_ajxhx3sfebovfyy5kcg74q88e` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -595,26 +599,6 @@ CREATE TABLE `IsuStatusDefine` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `IsuStatusTransition`
--- ----------------------------
-DROP TABLE IF EXISTS `IsuStatusTransition`;
-CREATE TABLE `IsuStatusTransition` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `action` varchar(255) DEFAULT NULL,
-  `src` tinyblob,
-  `dict` tinyblob,
-  `ordr` int(11) DEFAULT NULL,
-  `workflowId` bigint(20) DEFAULT NULL,
-  `disabled` bit(1) DEFAULT NULL,
-  `deleted` bit(1) DEFAULT NULL,
-  `createTime` datetime DEFAULT NULL,
-  `updateTime` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK_mfggiko5519ygenwn1sf93u5f` (`workflowId`),
-  CONSTRAINT `FK_mfggiko5519ygenwn1sf93u5f` FOREIGN KEY (`workflowId`) REFERENCES `IsuWorkflow` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
 --  Table structure for `IsuType`
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuType`;
@@ -662,7 +646,7 @@ CREATE TABLE `IsuTypeSolution` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
-  CONSTRAINT `fk_isutypesolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+  CONSTRAINT `fk_isutypesolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -678,7 +662,7 @@ CREATE TABLE `IsuTypeSolutionToProjectRelation` (
   KEY `solutionId` (`solutionId`),
   KEY `projectId_2` (`projectId`),
   KEY `solutionId_2` (`solutionId`),
-  CONSTRAINT `fk_isutypesolutiontoprojectrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`),
+  CONSTRAINT `fk_isutypesolutiontoprojectrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
   CONSTRAINT `fk_isutypesolutiontoprojectrelation_projectid` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `fk_isutypesolutiontoprojectrelation_solutionid` FOREIGN KEY (`solutionId`) REFERENCES `IsuTypeSolution` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -729,8 +713,38 @@ CREATE TABLE `IsuWorkflowProjectRelation` (
   KEY `FK_rtujogn8761o0m2e2pmi6rsr6` (`projectId`),
   KEY `workflowId` (`workflowId`),
   CONSTRAINT `fk_isuworkflowprojectrelation_ibfk_1` FOREIGN KEY (`workflowId`) REFERENCES `isucustomfielddefine` (`id`),
-  CONSTRAINT `fk_isuworkflowprojectrelation_ibfk_2` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`),
+  CONSTRAINT `fk_isuworkflowprojectrelation_ibfk_2` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `fk_isuworkflowprojectrelation_ibfk_3` FOREIGN KEY (`workflowId`) REFERENCES `IsuWorkflow` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuWorkflowTransition`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuWorkflowTransition`;
+CREATE TABLE `IsuWorkflowTransition` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `actionName` varchar(255) DEFAULT NULL,
+  `actionPageId` bigint(20) DEFAULT NULL,
+  `actionPageName` varchar(255) DEFAULT NULL,
+  `srcStatusId` bigint(20) DEFAULT NULL,
+  `srcStatusName` varchar(255) DEFAULT NULL,
+  `dictStatusId` bigint(20) DEFAULT NULL,
+  `dictStatusName` varchar(255) DEFAULT NULL,
+  `ordr` int(11) DEFAULT NULL,
+  `workflowId` bigint(20) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_mfggiko5519ygenwn1sf93u5f` (`workflowId`),
+  KEY `srcStatusId` (`srcStatusId`),
+  KEY `dictStatusId` (`dictStatusId`),
+  KEY `actionPageId` (`actionPageId`),
+  CONSTRAINT `FK_mfggiko5519ygenwn1sf93u5f` FOREIGN KEY (`workflowId`) REFERENCES `isuworkflow` (`id`),
+  CONSTRAINT `fk_isu_workflowtran_src` FOREIGN KEY (`srcStatusId`) REFERENCES `IsuStatus` (`id`),
+  CONSTRAINT `isuworkflowtransition_ibfk_1` FOREIGN KEY (`dictStatusId`) REFERENCES `IsuStatus` (`id`),
+  CONSTRAINT `isuworkflowtransition_ibfk_2` FOREIGN KEY (`actionPageId`) REFERENCES `IsuPage` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -808,7 +822,7 @@ CREATE TABLE `SysRoleUserRelation` (
   PRIMARY KEY (`roleId`,`userId`),
   KEY `FK_mp7eccpmrmommtiomo2hx94kq` (`userId`),
   CONSTRAINT `FK_lnrx0pwvcwvfat4wno6ym36rk` FOREIGN KEY (`roleId`) REFERENCES `sysrole` (`id`),
-  CONSTRAINT `FK_mp7eccpmrmommtiomo2hx94kq` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`)
+  CONSTRAINT `FK_mp7eccpmrmommtiomo2hx94kq` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -856,8 +870,8 @@ CREATE TABLE `TstAlert` (
   PRIMARY KEY (`id`),
   KEY `FK_r8m7ykej6x9fpp4d52sq3y8x8` (`assigneeId`),
   KEY `FK_b4fbqud01ub7bqahljyyux0ss` (`userId`),
-  CONSTRAINT `FK_b4fbqud01ub7bqahljyyux0ss` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
-  CONSTRAINT `FK_r8m7ykej6x9fpp4d52sq3y8x8` FOREIGN KEY (`assigneeId`) REFERENCES `tstuser` (`id`)
+  CONSTRAINT `FK_b4fbqud01ub7bqahljyyux0ss` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
+  CONSTRAINT `FK_r8m7ykej6x9fpp4d52sq3y8x8` FOREIGN KEY (`assigneeId`) REFERENCES `TstUser` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -908,9 +922,9 @@ CREATE TABLE `TstCase` (
   KEY `FK_4paqpejxxg65icpu7asf9btow` (`createById`),
   KEY `FK_le8suo2xxbcr036yaiivwkqn0` (`projectId`),
   KEY `FK_f3mtkmff26truvxmm897u8oeu` (`updateById`),
-  CONSTRAINT `FK_4paqpejxxg65icpu7asf9btow` FOREIGN KEY (`createById`) REFERENCES `tstuser` (`id`),
-  CONSTRAINT `FK_f3mtkmff26truvxmm897u8oeu` FOREIGN KEY (`updateById`) REFERENCES `tstuser` (`id`),
-  CONSTRAINT `FK_le8suo2xxbcr036yaiivwkqn0` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`)
+  CONSTRAINT `FK_4paqpejxxg65icpu7asf9btow` FOREIGN KEY (`createById`) REFERENCES `TstUser` (`id`),
+  CONSTRAINT `FK_f3mtkmff26truvxmm897u8oeu` FOREIGN KEY (`updateById`) REFERENCES `TstUser` (`id`),
+  CONSTRAINT `FK_le8suo2xxbcr036yaiivwkqn0` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3079 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -933,8 +947,8 @@ CREATE TABLE `TstCaseAttachment` (
   PRIMARY KEY (`id`),
   KEY `FK_hubkj6m012dpsarrjmh3160sv` (`caseId`),
   KEY `FK_ajcsto1d9eupd3476t861vhxp` (`userId`),
-  CONSTRAINT `FK_ajcsto1d9eupd3476t861vhxp` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
-  CONSTRAINT `FK_hubkj6m012dpsarrjmh3160sv` FOREIGN KEY (`caseId`) REFERENCES `tstcase` (`id`)
+  CONSTRAINT `FK_ajcsto1d9eupd3476t861vhxp` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
+  CONSTRAINT `FK_hubkj6m012dpsarrjmh3160sv` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -954,8 +968,8 @@ CREATE TABLE `TstCaseComments` (
   PRIMARY KEY (`id`),
   KEY `FK_f1r5t3p8vgi1iiq2v0wle7erj` (`caseId`),
   KEY `FK_d4d1t72y6wkb41bbpkdrk26sv` (`userId`),
-  CONSTRAINT `FK_d4d1t72y6wkb41bbpkdrk26sv` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
-  CONSTRAINT `FK_f1r5t3p8vgi1iiq2v0wle7erj` FOREIGN KEY (`caseId`) REFERENCES `tstcase` (`id`)
+  CONSTRAINT `FK_d4d1t72y6wkb41bbpkdrk26sv` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
+  CONSTRAINT `FK_f1r5t3p8vgi1iiq2v0wle7erj` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -977,7 +991,7 @@ CREATE TABLE `TstCaseExeStatus` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_o4l4xg65y069b0ai5cgbfm175` (`orgid`),
-  CONSTRAINT `FK_o4l4xg65y069b0ai5cgbfm175` FOREIGN KEY (`orgid`) REFERENCES `tstorg` (`id`)
+  CONSTRAINT `FK_o4l4xg65y069b0ai5cgbfm175` FOREIGN KEY (`orgid`) REFERENCES `TstOrg` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=641 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -995,7 +1009,7 @@ CREATE TABLE `TstCaseHistory` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_8yss1awno54uahftbyi1wb2j8` (`caseId`),
-  CONSTRAINT `FK_8yss1awno54uahftbyi1wb2j8` FOREIGN KEY (`caseId`) REFERENCES `tstcase` (`id`)
+  CONSTRAINT `FK_8yss1awno54uahftbyi1wb2j8` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -1020,10 +1034,10 @@ CREATE TABLE `TstCaseInSuite` (
   KEY `FK_fi05leklixq7on505rmm9s2l0` (`projectId`),
   KEY `FK_8gf9d9lm7v3m0dekplcrqgi9e` (`suiteId`),
   KEY `FK_e3cf797mcxhrsy48npuytxkj2` (`caseId`),
-  CONSTRAINT `FK_8gf9d9lm7v3m0dekplcrqgi9e` FOREIGN KEY (`suiteId`) REFERENCES `tstsuite` (`id`),
-  CONSTRAINT `FK_e3cf797mcxhrsy48npuytxkj2` FOREIGN KEY (`caseId`) REFERENCES `tstcase` (`id`),
-  CONSTRAINT `FK_fi05leklixq7on505rmm9s2l0` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`),
-  CONSTRAINT `FK_siekg4jjehvbdcasn7vry9j2f` FOREIGN KEY (`createBy`) REFERENCES `tstuser` (`id`)
+  CONSTRAINT `FK_8gf9d9lm7v3m0dekplcrqgi9e` FOREIGN KEY (`suiteId`) REFERENCES `TstSuite` (`id`),
+  CONSTRAINT `FK_e3cf797mcxhrsy48npuytxkj2` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`),
+  CONSTRAINT `FK_fi05leklixq7on505rmm9s2l0` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
+  CONSTRAINT `FK_siekg4jjehvbdcasn7vry9j2f` FOREIGN KEY (`createBy`) REFERENCES `TstUser` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=99 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -1055,12 +1069,12 @@ CREATE TABLE `TstCaseInTask` (
   KEY `FK_a5ciawwux8s8mj63h2h7rkdok` (`projectId`),
   KEY `FK_8d38nl2cbd2ve2srlqrcur3qn` (`taskId`),
   KEY `FK_mwbiov88r7ppt8x9yunxr18pu` (`caseId`),
-  CONSTRAINT `FK_5c4a6hwvan7sqsskn6wvebkpc` FOREIGN KEY (`exeBy`) REFERENCES `tstuser` (`id`),
-  CONSTRAINT `FK_8d38nl2cbd2ve2srlqrcur3qn` FOREIGN KEY (`taskId`) REFERENCES `tsttask` (`id`),
-  CONSTRAINT `FK_a5ciawwux8s8mj63h2h7rkdok` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`),
-  CONSTRAINT `FK_ahth2x2i7j9loamqyg3jcwfu6` FOREIGN KEY (`createBy`) REFERENCES `tstuser` (`id`),
-  CONSTRAINT `FK_avls2r88tnl837rhiw01wtyma` FOREIGN KEY (`planId`) REFERENCES `tstplan` (`id`),
-  CONSTRAINT `FK_mwbiov88r7ppt8x9yunxr18pu` FOREIGN KEY (`caseId`) REFERENCES `tstcase` (`id`)
+  CONSTRAINT `FK_5c4a6hwvan7sqsskn6wvebkpc` FOREIGN KEY (`exeBy`) REFERENCES `TstUser` (`id`),
+  CONSTRAINT `FK_8d38nl2cbd2ve2srlqrcur3qn` FOREIGN KEY (`taskId`) REFERENCES `TstTask` (`id`),
+  CONSTRAINT `FK_a5ciawwux8s8mj63h2h7rkdok` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
+  CONSTRAINT `FK_ahth2x2i7j9loamqyg3jcwfu6` FOREIGN KEY (`createBy`) REFERENCES `TstUser` (`id`),
+  CONSTRAINT `FK_avls2r88tnl837rhiw01wtyma` FOREIGN KEY (`planId`) REFERENCES `TstPlan` (`id`),
+  CONSTRAINT `FK_mwbiov88r7ppt8x9yunxr18pu` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=189 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1103,7 +1117,7 @@ CREATE TABLE `TstCasePriority` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_d8r4hkhobybms74u4vk43thj9` (`orgid`),
-  CONSTRAINT `FK_d8r4hkhobybms74u4vk43thj9` FOREIGN KEY (`orgid`) REFERENCES `tstorg` (`id`)
+  CONSTRAINT `FK_d8r4hkhobybms74u4vk43thj9` FOREIGN KEY (`orgid`) REFERENCES `TstOrg` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=462 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1122,7 +1136,7 @@ CREATE TABLE `TstCaseStep` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_s8hj2viu2jtj1iwf4pgu789hi` (`caseId`),
-  CONSTRAINT `FK_s8hj2viu2jtj1iwf4pgu789hi` FOREIGN KEY (`caseId`) REFERENCES `tstcase` (`id`)
+  CONSTRAINT `FK_s8hj2viu2jtj1iwf4pgu789hi` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1144,7 +1158,7 @@ CREATE TABLE `TstCaseType` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_rqs9hiykm6kk5w8rewcy1uvy7` (`orgId`),
-  CONSTRAINT `FK_rqs9hiykm6kk5w8rewcy1uvy7` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+  CONSTRAINT `FK_rqs9hiykm6kk5w8rewcy1uvy7` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1059 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1172,7 +1186,7 @@ CREATE TABLE `TstCustomField` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_b1o40efa19tleean59bgg59jm` (`orgId`),
-  CONSTRAINT `FK_b1o40efa19tleean59bgg59jm` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+  CONSTRAINT `FK_b1o40efa19tleean59bgg59jm` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1192,7 +1206,7 @@ CREATE TABLE `TstCustomFieldOption` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_9x13nia3eij6tb613asglg0er` (`fieldId`),
-  CONSTRAINT `FK_9x13nia3eij6tb613asglg0er` FOREIGN KEY (`fieldId`) REFERENCES `tstcustomfield` (`id`)
+  CONSTRAINT `FK_9x13nia3eij6tb613asglg0er` FOREIGN KEY (`fieldId`) REFERENCES `TstCustomField` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -1207,8 +1221,8 @@ CREATE TABLE `TstCustomFieldProjectRelation` (
   `projectType` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`customFieldId`,`projectId`),
   KEY `FK_5y5g3wjodtyxm3lpmmd04foy5` (`projectId`),
-  CONSTRAINT `FK_5y5g3wjodtyxm3lpmmd04foy5` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`),
-  CONSTRAINT `FK_bo12oks940a30cyxlt39kiijc` FOREIGN KEY (`customFieldId`) REFERENCES `tstcustomfield` (`id`)
+  CONSTRAINT `FK_5y5g3wjodtyxm3lpmmd04foy5` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
+  CONSTRAINT `FK_bo12oks940a30cyxlt39kiijc` FOREIGN KEY (`customFieldId`) REFERENCES `TstCustomField` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1230,7 +1244,7 @@ CREATE TABLE `TstDocument` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_qqrnh8bqskjk1r56gflpm52yx` (`userId`),
-  CONSTRAINT `FK_qqrnh8bqskjk1r56gflpm52yx` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`)
+  CONSTRAINT `FK_qqrnh8bqskjk1r56gflpm52yx` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1267,7 +1281,7 @@ CREATE TABLE `TstEnv` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_afu6qfm7329uojw4i8j0gaskf` (`projectId`),
-  CONSTRAINT `FK_afu6qfm7329uojw4i8j0gaskf` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`)
+  CONSTRAINT `FK_afu6qfm7329uojw4i8j0gaskf` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -1291,8 +1305,8 @@ CREATE TABLE `TstHistory` (
   PRIMARY KEY (`id`),
   KEY `FK_j9m2m7ijlp9j2184nv0yiln9u` (`projectId`),
   KEY `FK_m4yjkr3nwc5y1fcjj1ke08xie` (`userId`),
-  CONSTRAINT `FK_j9m2m7ijlp9j2184nv0yiln9u` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`),
-  CONSTRAINT `FK_m4yjkr3nwc5y1fcjj1ke08xie` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`)
+  CONSTRAINT `FK_j9m2m7ijlp9j2184nv0yiln9u` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
+  CONSTRAINT `FK_m4yjkr3nwc5y1fcjj1ke08xie` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=683 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1310,7 +1324,7 @@ CREATE TABLE `TstMsg` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_h4g997qkpu00h24f9ppqa4g2k` (`userId`),
-  CONSTRAINT `FK_h4g997qkpu00h24f9ppqa4g2k` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`)
+  CONSTRAINT `FK_h4g997qkpu00h24f9ppqa4g2k` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1343,7 +1357,7 @@ CREATE TABLE `TstOrgGroup` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_dlddwakgodocwt7n7abndkhtg` (`orgId`),
-  CONSTRAINT `FK_dlddwakgodocwt7n7abndkhtg` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+  CONSTRAINT `FK_dlddwakgodocwt7n7abndkhtg` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=192 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1358,8 +1372,8 @@ CREATE TABLE `TstOrgGroupUserRelation` (
   `userName` varchar(255) DEFAULT NULL,
   KEY `FK_oioog5ixo3vky1n5qhr55mjr6` (`orgGroupId`),
   KEY `FK_96e8mkbgy9qly15goqecnson6` (`userId`),
-  CONSTRAINT `FK_96e8mkbgy9qly15goqecnson6` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
-  CONSTRAINT `FK_oioog5ixo3vky1n5qhr55mjr6` FOREIGN KEY (`orgGroupId`) REFERENCES `tstorggroup` (`id`)
+  CONSTRAINT `FK_96e8mkbgy9qly15goqecnson6` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
+  CONSTRAINT `FK_oioog5ixo3vky1n5qhr55mjr6` FOREIGN KEY (`orgGroupId`) REFERENCES `TstOrgGroup` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1401,7 +1415,7 @@ CREATE TABLE `TstOrgRole` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_q5g6x4w1pwr5ur4iwbg17nr9u` (`orgId`),
-  CONSTRAINT `FK_q5g6x4w1pwr5ur4iwbg17nr9u` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+  CONSTRAINT `FK_q5g6x4w1pwr5ur4iwbg17nr9u` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=481 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1414,8 +1428,8 @@ CREATE TABLE `TstOrgRoleGroupRelation` (
   `orgId` bigint(20) NOT NULL,
   PRIMARY KEY (`orgRoleId`,`groupId`,`orgId`),
   KEY `FK_h6d5c2yfeaqitn4jb3fvkjtw6` (`groupId`),
-  CONSTRAINT `tstorgrolegrouprelation_ibfk_1` FOREIGN KEY (`orgRoleId`) REFERENCES `tstorgrole` (`id`),
-  CONSTRAINT `tstorgrolegrouprelation_ibfk_2` FOREIGN KEY (`groupId`) REFERENCES `TstOrgGroup` (`id`)
+  CONSTRAINT `TstOrgRoleGroupRelation_ibfk_1` FOREIGN KEY (`orgRoleId`) REFERENCES `TstOrgRole` (`id`),
+  CONSTRAINT `TstOrgRolegroupRelation_ibfk_2` FOREIGN KEY (`groupId`) REFERENCES `TstOrgGroup` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1428,7 +1442,7 @@ CREATE TABLE `TstOrgRolePrivilegeRelation` (
   `orgPrivilegeId` bigint(20) NOT NULL,
   PRIMARY KEY (`orgRoleId`,`orgPrivilegeId`,`orgId`),
   KEY `FK_xrf0fqbnodxio07iqvttce72` (`orgPrivilegeId`),
-  CONSTRAINT `FK_6kbys90ljdfp5dp7w5nb4d5ru` FOREIGN KEY (`orgRoleId`) REFERENCES `tstorgrole` (`id`),
+  CONSTRAINT `FK_6kbys90ljdfp5dp7w5nb4d5ru` FOREIGN KEY (`orgRoleId`) REFERENCES `TstOrgRole` (`id`),
   CONSTRAINT `FK_xrf0fqbnodxio07iqvttce72` FOREIGN KEY (`orgPrivilegeId`) REFERENCES `TstOrgPrivilegeDefine` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
@@ -1442,8 +1456,8 @@ CREATE TABLE `TstOrgRoleUserRelation` (
   `orgId` bigint(20) NOT NULL,
   PRIMARY KEY (`orgRoleId`,`userId`,`orgId`),
   KEY `FK_h6d5c2yfeaqitn4jb3fvkjtw6` (`userId`),
-  CONSTRAINT `FK_8cbhgbqt91ctmnw35ibtyofqg` FOREIGN KEY (`orgRoleId`) REFERENCES `tstorgrole` (`id`),
-  CONSTRAINT `FK_h6d5c2yfeaqitn4jb3fvkjtw6` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`)
+  CONSTRAINT `FK_8cbhgbqt91ctmnw35ibtyofqg` FOREIGN KEY (`orgRoleId`) REFERENCES `TstOrgRole` (`id`),
+  CONSTRAINT `FK_h6d5c2yfeaqitn4jb3fvkjtw6` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1455,8 +1469,8 @@ CREATE TABLE `TstOrgUserRelation` (
   `userId` bigint(20) NOT NULL,
   PRIMARY KEY (`orgId`,`userId`),
   KEY `FK_dbrrq8bxgx5npl0wxialit7i2` (`userId`),
-  CONSTRAINT `FK_28gcxu8p61i0lao8unkaq5c6c` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`),
-  CONSTRAINT `FK_dbrrq8bxgx5npl0wxialit7i2` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`)
+  CONSTRAINT `FK_28gcxu8p61i0lao8unkaq5c6c` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
+  CONSTRAINT `FK_dbrrq8bxgx5npl0wxialit7i2` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1483,9 +1497,9 @@ CREATE TABLE `TstPlan` (
   KEY `FK_te991npw8lxmrtmt2gcjolimr` (`projectId`),
   KEY `FK_pc89p4era2bchkg4ulsv1gv7l` (`envId`),
   KEY `FK_299h646hfdb07s239a6juu55k` (`verId`),
-  CONSTRAINT `FK_299h646hfdb07s239a6juu55k` FOREIGN KEY (`verId`) REFERENCES `tstver` (`id`),
-  CONSTRAINT `FK_pc89p4era2bchkg4ulsv1gv7l` FOREIGN KEY (`envId`) REFERENCES `tstver` (`id`),
-  CONSTRAINT `FK_te991npw8lxmrtmt2gcjolimr` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`)
+  CONSTRAINT `FK_299h646hfdb07s239a6juu55k` FOREIGN KEY (`verId`) REFERENCES `TstVer` (`id`),
+  CONSTRAINT `FK_pc89p4era2bchkg4ulsv1gv7l` FOREIGN KEY (`envId`) REFERENCES `TstVer` (`id`),
+  CONSTRAINT `FK_te991npw8lxmrtmt2gcjolimr` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1508,8 +1522,8 @@ CREATE TABLE `TstProject` (
   PRIMARY KEY (`id`),
   KEY `FK_avuusthsgk7g68bm0kiq6dix0` (`orgId`),
   KEY `FK_rm5uawwl53dtse1l5qhwci30v` (`parentId`),
-  CONSTRAINT `FK_avuusthsgk7g68bm0kiq6dix0` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`),
-  CONSTRAINT `FK_rm5uawwl53dtse1l5qhwci30v` FOREIGN KEY (`parentId`) REFERENCES `tstproject` (`id`)
+  CONSTRAINT `FK_avuusthsgk7g68bm0kiq6dix0` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
+  CONSTRAINT `FK_rm5uawwl53dtse1l5qhwci30v` FOREIGN KEY (`parentId`) REFERENCES `TstProject` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=330 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1529,9 +1543,9 @@ CREATE TABLE `TstProjectAccessHistory` (
   KEY `FK_hv9vkb26yw1fluyh6thwh230h` (`prjId`),
   KEY `FK_dpcrx83ysgtel2eua0856xfk3` (`userId`),
   KEY `FK_l0ifd62wftf6w81779j64rfmc` (`orgId`),
-  CONSTRAINT `FK_dpcrx83ysgtel2eua0856xfk3` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
-  CONSTRAINT `FK_hv9vkb26yw1fluyh6thwh230h` FOREIGN KEY (`prjId`) REFERENCES `tstproject` (`id`),
-  CONSTRAINT `FK_l0ifd62wftf6w81779j64rfmc` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+  CONSTRAINT `FK_dpcrx83ysgtel2eua0856xfk3` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
+  CONSTRAINT `FK_hv9vkb26yw1fluyh6thwh230h` FOREIGN KEY (`prjId`) REFERENCES `TstProject` (`id`),
+  CONSTRAINT `FK_l0ifd62wftf6w81779j64rfmc` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=177 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1576,7 +1590,7 @@ CREATE TABLE `TstProjectRole` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_8eokjbtquljjgjahh7y0l0la6` (`orgId`),
-  CONSTRAINT `FK_8eokjbtquljjgjahh7y0l0la6` FOREIGN KEY (`orgId`) REFERENCES `tstorg` (`id`)
+  CONSTRAINT `FK_8eokjbtquljjgjahh7y0l0la6` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=597 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1590,7 +1604,7 @@ CREATE TABLE `TstProjectRoleEntityRelation` (
   `projectRoleId` bigint(20) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   KEY `FK_e507ln5a5bxon2uyrs3b06bv8` (`projectRoleId`),
-  CONSTRAINT `FK_e507ln5a5bxon2uyrs3b06bv8` FOREIGN KEY (`projectRoleId`) REFERENCES `tstprojectrole` (`id`)
+  CONSTRAINT `FK_e507ln5a5bxon2uyrs3b06bv8` FOREIGN KEY (`projectRoleId`) REFERENCES `TstProjectRole` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1604,7 +1618,7 @@ CREATE TABLE `TstProjectRolePriviledgeRelation` (
   KEY `FK_6aiwgve7unve9rcj15v8woxyl` (`projectPrivilegeDefineId`),
   KEY `FK_orqtwmqhjn4bih5y6pd5fla59` (`projectRoleId`),
   CONSTRAINT `FK_6aiwgve7unve9rcj15v8woxyl` FOREIGN KEY (`projectPrivilegeDefineId`) REFERENCES `TstProjectPrivilegeDefine` (`id`),
-  CONSTRAINT `FK_orqtwmqhjn4bih5y6pd5fla59` FOREIGN KEY (`projectRoleId`) REFERENCES `tstprojectrole` (`id`)
+  CONSTRAINT `FK_orqtwmqhjn4bih5y6pd5fla59` FOREIGN KEY (`projectRoleId`) REFERENCES `TstProjectRole` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1628,9 +1642,9 @@ CREATE TABLE `TstSuite` (
   KEY `FK_bof1daqokqea3o5yfdlreg8jy` (`projectId`),
   KEY `FK_1r4cd0cr11rrevb0x5sj7w2pv` (`userId`),
   KEY `FK_gam83w6tee7evc846fh0kqvq0` (`caseProjectId`),
-  CONSTRAINT `FK_1r4cd0cr11rrevb0x5sj7w2pv` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
-  CONSTRAINT `FK_bof1daqokqea3o5yfdlreg8jy` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`),
-  CONSTRAINT `FK_gam83w6tee7evc846fh0kqvq0` FOREIGN KEY (`caseProjectId`) REFERENCES `tstproject` (`id`)
+  CONSTRAINT `FK_1r4cd0cr11rrevb0x5sj7w2pv` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
+  CONSTRAINT `FK_bof1daqokqea3o5yfdlreg8jy` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
+  CONSTRAINT `FK_gam83w6tee7evc846fh0kqvq0` FOREIGN KEY (`caseProjectId`) REFERENCES `TstProject` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -1658,11 +1672,11 @@ CREATE TABLE `TstTask` (
   KEY `FK_iog5lfy5gnd0uccm0wgrlqcsd` (`userId`),
   KEY `FK_iokmiyvqpbqi8uo8d8nq985fw` (`envId`),
   KEY `FK_fymnl68rmtbhmw3jcg66qfdes` (`caseProjectId`),
-  CONSTRAINT `FK_3r1a8t5vxesj07c4kd5odc77y` FOREIGN KEY (`planId`) REFERENCES `tstplan` (`id`),
-  CONSTRAINT `FK_3yir1yvenq7mrnx44l4falpcq` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`),
-  CONSTRAINT `FK_fymnl68rmtbhmw3jcg66qfdes` FOREIGN KEY (`caseProjectId`) REFERENCES `tstproject` (`id`),
-  CONSTRAINT `FK_iog5lfy5gnd0uccm0wgrlqcsd` FOREIGN KEY (`userId`) REFERENCES `tstuser` (`id`),
-  CONSTRAINT `FK_iokmiyvqpbqi8uo8d8nq985fw` FOREIGN KEY (`envId`) REFERENCES `tstver` (`id`)
+  CONSTRAINT `FK_3r1a8t5vxesj07c4kd5odc77y` FOREIGN KEY (`planId`) REFERENCES `TstPlan` (`id`),
+  CONSTRAINT `FK_3yir1yvenq7mrnx44l4falpcq` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
+  CONSTRAINT `FK_fymnl68rmtbhmw3jcg66qfdes` FOREIGN KEY (`caseProjectId`) REFERENCES `TstProject` (`id`),
+  CONSTRAINT `FK_iog5lfy5gnd0uccm0wgrlqcsd` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
+  CONSTRAINT `FK_iokmiyvqpbqi8uo8d8nq985fw` FOREIGN KEY (`envId`) REFERENCES `TstVer` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1674,8 +1688,8 @@ CREATE TABLE `TstTaskAssigneeRelation` (
   `assigneeId` bigint(20) NOT NULL,
   PRIMARY KEY (`taskId`,`assigneeId`),
   KEY `FK_l3ro39r8ji2hhaueh6flq6ict` (`assigneeId`),
-  CONSTRAINT `FK_ddk65svfjm6yq59yxb2n29pr0` FOREIGN KEY (`taskId`) REFERENCES `tsttask` (`id`),
-  CONSTRAINT `FK_l3ro39r8ji2hhaueh6flq6ict` FOREIGN KEY (`assigneeId`) REFERENCES `tstuser` (`id`)
+  CONSTRAINT `FK_ddk65svfjm6yq59yxb2n29pr0` FOREIGN KEY (`taskId`) REFERENCES `TstTask` (`id`),
+  CONSTRAINT `FK_l3ro39r8ji2hhaueh6flq6ict` FOREIGN KEY (`assigneeId`) REFERENCES `TstUser` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -1694,8 +1708,8 @@ CREATE TABLE `TstThread` (
   PRIMARY KEY (`id`),
   KEY `FK_hn7m54nygknarx9v1jn4phx81` (`authorId`),
   KEY `FK_mw7px95alyw1wrmwhlp96fbu5` (`parentId`),
-  CONSTRAINT `FK_hn7m54nygknarx9v1jn4phx81` FOREIGN KEY (`authorId`) REFERENCES `tstuser` (`id`),
-  CONSTRAINT `FK_mw7px95alyw1wrmwhlp96fbu5` FOREIGN KEY (`parentId`) REFERENCES `tstthread` (`id`)
+  CONSTRAINT `FK_hn7m54nygknarx9v1jn4phx81` FOREIGN KEY (`authorId`) REFERENCES `TstUser` (`id`),
+  CONSTRAINT `FK_mw7px95alyw1wrmwhlp96fbu5` FOREIGN KEY (`parentId`) REFERENCES `TstThread` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -1762,7 +1776,7 @@ CREATE TABLE `TstVer` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_thypvsn70njcdpm9jiv13eu9p` (`projectId`),
-  CONSTRAINT `FK_thypvsn70njcdpm9jiv13eu9p` FOREIGN KEY (`projectId`) REFERENCES `tstproject` (`id`)
+  CONSTRAINT `FK_thypvsn70njcdpm9jiv13eu9p` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -1774,12 +1788,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `add_cases_to_suite`(IN _suiteId  BI
     DETERMINISTIC
 BEGIN
 
-declare spl VARCHAR(10000) default ','; 
-declare cnt int default 0;
-declare i int default 0;
-declare id VARCHAR(100);
+    declare spl VARCHAR(10000) default ',';
+    declare cnt int default 0;
+    declare i int default 0;
+    declare id VARCHAR(100);
 
-declare total int default 0;  
+    declare total int default 0;
 
     DECLARE  _id BIGINT;
     DECLARE _project_id BIGINT;
@@ -1789,25 +1803,25 @@ declare total int default 0;
     DECLARE  _is_leaf TINYINT;
     DECLARE  _ordr INT;
 
-select projectId from TstSuite where id=_suiteId INTO _project_id;
+    select projectId from TstSuite where id=_suiteId INTO _project_id;
 
-delete from TstCaseInSuite where suiteId=_suiteId;
+    delete from TstCaseInSuite where suiteId=_suiteId;
 
-set cnt = 1+(length(caseIds) - length(replace(caseIds, spl, '')));
-while i < cnt do
-    set i=i+1;
+    set cnt = 1+(length(caseIds) - length(replace(caseIds, spl, '')));
+    while i < cnt do
+      set i=i+1;
 
-    SELECT reverse(substring_index( reverse(substring_index(caseIds, spl, i)), spl, 1)) into id;
+      SELECT reverse(substring_index( reverse(substring_index(caseIds, spl, i)), spl, 1)) into id;
 
-	select cs.id, cs.name, cs.isLeaf, cs.pId, cs.ordr from TstCase cs WHERE cs.id=id into _id, _name, _is_leaf, _p_id, _ordr;
-    
-	IF NOT EXISTS(select * from TstCaseInSuite temp where temp.suiteId=_suiteId and temp.caseId=id) then
-		INSERT INTO `TstCaseInSuite` (projectId, suiteId, pId, caseId, isLeaf, ordr, disabled, deleted, createTime)
-		VALUES (_project_id, _suiteId, _p_id, _id, _is_leaf, _ordr, b'0', b'0', NOW());
-	END if;
+      select cs.id, cs.name, cs.isLeaf, cs.pId, cs.ordr from TstCase cs WHERE cs.id=id into _id, _name, _is_leaf, _p_id, _ordr;
 
-end while;
-end
+      IF NOT EXISTS(select * from TstCaseInSuite temp where temp.suiteId=_suiteId and temp.caseId=id) then
+        INSERT INTO `TstCaseInSuite` (projectId, suiteId, pId, caseId, isLeaf, ordr, disabled, deleted, createTime)
+        VALUES (_project_id, _suiteId, _p_id, _id, _is_leaf, _ordr, b'0', b'0', NOW());
+      END if;
+
+    end while;
+  end
  ;;
 delimiter ;
 
@@ -1819,26 +1833,26 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `add_cases_to_task`(IN _taskId  BIGINT, IN _caseIds VARCHAR(10000), IN _append  BIT)
 BEGIN
 
-declare spl VARCHAR(10000) default ','; 
-declare cnt int default 0;
-declare i int default 0;
-declare id VARCHAR(100);
+    declare spl VARCHAR(10000) default ',';
+    declare cnt int default 0;
+    declare i int default 0;
+    declare id VARCHAR(100);
 
-declare total int default 0;  
+    declare total int default 0;
 
 
-IF _append=false THEN
-    delete from TstCaseInTask where `taskId`=_taskId;
-END IF;
+    IF _append=false THEN
+      delete from TstCaseInTask where `taskId`=_taskId;
+    END IF;
 
-set cnt = 1+(length(_caseIds) - length(replace(_caseIds, spl, ''))); 
-while i < cnt do
-    set i=i+1;
+    set cnt = 1+(length(_caseIds) - length(replace(_caseIds, spl, '')));
+    while i < cnt do
+      set i=i+1;
 
-    SELECT reverse(substring_index( reverse(substring_index(_caseIds, spl, i)), spl, 1)) into id;
-    call add_case_to_task(_taskId, id);
-end while;
-end
+      SELECT reverse(substring_index( reverse(substring_index(_caseIds, spl, i)), spl, 1)) into id;
+      call add_case_to_task(_taskId, id);
+    end while;
+  end
  ;;
 delimiter ;
 
@@ -1850,26 +1864,26 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `add_cases_to_task_by_suites`(IN _taskId  BIGINT, IN _suiteIds VARCHAR(10000))
 BEGIN
 
-declare spl VARCHAR(10000) default ','; 
-declare cnt int default 0;
-declare i int default 0;
-declare id VARCHAR(100);
+    declare spl VARCHAR(10000) default ',';
+    declare cnt int default 0;
+    declare i int default 0;
+    declare id VARCHAR(100);
 
-declare total int default 0;  
-declare case_ids VARCHAR(10000);
+    declare total int default 0;
+    declare case_ids VARCHAR(10000);
 
-DELETE FROM TstCaseInTask where taskId = _taskId;
+    DELETE FROM TstCaseInTask where taskId = _taskId;
 
-set cnt = 1+(length(_suiteIds) - length(replace(_suiteIds, spl, ''))); 
-while i < cnt do
-    set i=i+1;
+    set cnt = 1+(length(_suiteIds) - length(replace(_suiteIds, spl, '')));
+    while i < cnt do
+      set i=i+1;
 
-    SELECT reverse(substring_index( reverse(substring_index(_suiteIds, spl, i)), spl, 1)) into id;
-    select group_concat(temp.caseId) from TstCaseInSuite temp where temp.suiteId=id into case_ids;  
+      SELECT reverse(substring_index( reverse(substring_index(_suiteIds, spl, i)), spl, 1)) into id;
+      select group_concat(temp.caseId) from TstCaseInSuite temp where temp.suiteId=id into case_ids;
 
-    call add_cases_to_task(_taskId, case_ids, true);
-end while;
-end
+      call add_cases_to_task(_taskId, case_ids, true);
+    end while;
+  end
  ;;
 delimiter ;
 
@@ -1893,28 +1907,28 @@ BEGIN
     declare done int default false;
 
     declare cur cursor for SELECT cs.id, cs.name, cs.isLeaf, cs.pId, cs.ordr
-	FROM TstCase cs WHERE cs.id=_caseId; 
+                           FROM TstCase cs WHERE cs.id=_caseId;
 
     declare continue HANDLER for not found set done = true;
 
     select projectId, planId from TstTask where id=_taskId INTO _project_id, _plan_id;
 
     open cur;
-        read_loop:loop
-            fetch cur into _id, _name, _is_leaf, _p_id, _ordr;
-            if done then  
-		leave read_loop; 
-            end if;
+    read_loop:loop
+      fetch cur into _id, _name, _is_leaf, _p_id, _ordr;
+      if done then
+        leave read_loop;
+      end if;
 
-	IF NOT EXISTS(select * from TstCaseInTask temp where temp.taskId=_taskId and temp.caseId=_caseId) then
-		INSERT INTO `TstCaseInTask` (projectId, planId, taskId, pId, caseId, isLeaf, ordr, `status`, disabled, deleted, createTime)
-		VALUES (_project_id, _plan_id, _taskId, _p_id, _id, _is_leaf, _ordr, 'untest', b'0', b'0', NOW());
-	END if;
+      IF NOT EXISTS(select * from TstCaseInTask temp where temp.taskId=_taskId and temp.caseId=_caseId) then
+        INSERT INTO `TstCaseInTask` (projectId, planId, taskId, pId, caseId, isLeaf, ordr, `status`, disabled, deleted, createTime)
+        VALUES (_project_id, _plan_id, _taskId, _p_id, _id, _is_leaf, _ordr, 'untest', b'0', b'0', NOW());
+      END if;
 
-        end loop;
-    close cur; 
+    end loop;
+    close cur;
 
-end
+  end
  ;;
 delimiter ;
 
@@ -1926,78 +1940,78 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `chart_design_progress_by_project`(IN project_id BIGINT, IN project_type VARCHAR(100), IN numb BIGINT)
 BEGIN
 
-DECLARE `before` BIGINT;
+    DECLARE `before` BIGINT;
 
-IF project_type='project' THEN
-    SELECT COUNT(cs.id) numb FROM TstCase cs
-            WHERE cs.projectId=projectId AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
-            AND cs.createTime < DATE_FORMAT(adddate(CURDATE(), INTERVAL -(numb-1) DAY),'%Y-%m-%d %H:%i:%s') 
-        into `before`;
-ELSEIF project_type='group' THEN
-    SELECT COUNT(cs.id) numb FROM TstCase cs
-            WHERE cs.projectId in (SELECT p.id from TstProject p where p.parentId = project_id 
-                            AND p.deleted != true AND p.disabled != true) 
+    IF project_type='project' THEN
+      SELECT COUNT(cs.id) numb FROM TstCase cs
+      WHERE cs.projectId=projectId AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
+            AND cs.createTime < DATE_FORMAT(adddate(CURDATE(), INTERVAL -(numb-1) DAY),'%Y-%m-%d %H:%i:%s')
+      into `before`;
+    ELSEIF project_type='group' THEN
+      SELECT COUNT(cs.id) numb FROM TstCase cs
+      WHERE cs.projectId in (SELECT p.id from TstProject p where p.parentId = project_id
+                                                                 AND p.deleted != true AND p.disabled != true)
             AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
-            AND cs.createTime < DATE_FORMAT(adddate(CURDATE(), INTERVAL -(numb-1) DAY),'%Y-%m-%d %H:%i:%s') 
-        into `before`;
-ELSEIF project_type='org' THEN
-    SELECT COUNT(cs.id) numb FROM TstCase cs
-            WHERE cs.projectId in (SELECT p.id from TstProject p where p.orgId = projectId 
-                            AND p.deleted != true AND p.disabled != true) 
+            AND cs.createTime < DATE_FORMAT(adddate(CURDATE(), INTERVAL -(numb-1) DAY),'%Y-%m-%d %H:%i:%s')
+      into `before`;
+    ELSEIF project_type='org' THEN
+      SELECT COUNT(cs.id) numb FROM TstCase cs
+      WHERE cs.projectId in (SELECT p.id from TstProject p where p.orgId = projectId
+                                                                 AND p.deleted != true AND p.disabled != true)
             AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
-            AND cs.createTime < DATE_FORMAT(adddate(CURDATE(), INTERVAL -(numb-1) DAY),'%Y-%m-%d %H:%i:%s') 
-        into `before`;
-END IF;
+            AND cs.createTime < DATE_FORMAT(adddate(CURDATE(), INTERVAL -(numb-1) DAY),'%Y-%m-%d %H:%i:%s')
+      into `before`;
+    END IF;
 
-IF project_type='project' THEN
-    select days.date date, IFNULL(temp.numb,0) numb, `before` `sum` from 
+    IF project_type='project' THEN
+      select days.date date, IFNULL(temp.numb,0) numb, `before` `sum` from
         (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-            from SysNums,(select @num:=numb) t 
-            where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-            order by date) days left join 
+         from SysNums,(select @num:=numb) t
+         where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+         order by date) days left join
         (
-            SELECT COUNT(cs.id) numb, DATE_FORMAT(cs.createTime,'%Y/%m/%d') dt 
-            FROM TstCase cs 
-            WHERE cs.projectId=project_id AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
-            GROUP BY dt
+          SELECT COUNT(cs.id) numb, DATE_FORMAT(cs.createTime,'%Y/%m/%d') dt
+          FROM TstCase cs
+          WHERE cs.projectId=project_id AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
+          GROUP BY dt
         ) temp ON days.date = temp.dt
-    ORDER BY days.date;
+      ORDER BY days.date;
 
-ELSEIF project_type='group' THEN
-    select days.date date, IFNULL(temp.numb,0) numb, `before` `sum` from 
+    ELSEIF project_type='group' THEN
+      select days.date date, IFNULL(temp.numb,0) numb, `before` `sum` from
         (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-            from SysNums,(select @num:=numb) t 
-            where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-            order by date) days left join 
+         from SysNums,(select @num:=numb) t
+         where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+         order by date) days left join
         (
-            SELECT COUNT(cs.id) numb, DATE_FORMAT(cs.createTime,'%Y/%m/%d') dt 
-            FROM TstCase cs 
-            WHERE cs.projectId in (SELECT p.id from TstProject p where p.parentId = project_id 
-                            AND p.deleted != true AND p.disabled != true)  
-            AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
-            GROUP BY dt
+          SELECT COUNT(cs.id) numb, DATE_FORMAT(cs.createTime,'%Y/%m/%d') dt
+          FROM TstCase cs
+          WHERE cs.projectId in (SELECT p.id from TstProject p where p.parentId = project_id
+                                                                     AND p.deleted != true AND p.disabled != true)
+                AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
+          GROUP BY dt
         ) temp ON days.date = temp.dt
-    ORDER BY days.date;
+      ORDER BY days.date;
 
-ELSEIF project_type='org' THEN
-    select days.date date, IFNULL(temp.numb,0) numb, `before` `sum` from 
+    ELSEIF project_type='org' THEN
+      select days.date date, IFNULL(temp.numb,0) numb, `before` `sum` from
         (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-            from SysNums,(select @num:=numb) t 
-            where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-            order by date) days left join 
+         from SysNums,(select @num:=numb) t
+         where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+         order by date) days left join
         (
-            SELECT COUNT(cs.id) numb, DATE_FORMAT(cs.createTime,'%Y/%m/%d') dt 
-            FROM TstCase cs 
-            WHERE cs.projectId in (SELECT p.id from TstProject p where p.orgId = project_id 
-                            AND p.deleted != true AND p.disabled != true)  
-            AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
-            GROUP BY dt
+          SELECT COUNT(cs.id) numb, DATE_FORMAT(cs.createTime,'%Y/%m/%d') dt
+          FROM TstCase cs
+          WHERE cs.projectId in (SELECT p.id from TstProject p where p.orgId = project_id
+                                                                     AND p.deleted != true AND p.disabled != true)
+                AND cs.isLeaf=true AND cs.deleted != true AND cs.disabled != true
+          GROUP BY dt
         ) temp ON days.date = temp.dt
-    ORDER BY days.date;
+      ORDER BY days.date;
 
-END IF;
+    END IF;
 
-END
+  END
  ;;
 delimiter ;
 
@@ -2009,26 +2023,26 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `chart_execution_process_by_plan`(IN _planId BIGINT, IN _numb BIGINT)
 BEGIN
 
-set @sumNumb:= 0;
+    set @sumNumb:= 0;
 
-select days.date, temp.`status`, temp.numb, (@sumNumb := @sumNumb + temp.numb) `sum` from 
-    (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-        from SysNums,(select @num:=_numb) t 
-        where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-        order by date) days 
-    left join 
-    (
-        SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.`status` `status` 
-        FROM TstCaseInTask csr 
-            left join TstTask task on csr.taskId=task.id
-        WHERE csr.planId=_planId and task.deleted != true AND task.disabled != true 
-            AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
-            AND csr.`status` != 'untest' 
+    select days.date, temp.`status`, temp.numb, (@sumNumb := @sumNumb + temp.numb) `sum` from
+      (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
+       from SysNums,(select @num:=_numb) t
+       where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+       order by date) days
+      left join
+      (
+        SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.`status` `status`
+        FROM TstCaseInTask csr
+          left join TstTask task on csr.taskId=task.id
+        WHERE csr.planId=_planId and task.deleted != true AND task.disabled != true
+              AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+              AND csr.`status` != 'untest'
         GROUP BY dt, csr.`status`
-    ) temp ON days.date = temp.dt
-ORDER BY days.date, temp.`status`;
+      ) temp ON days.date = temp.dt
+    ORDER BY days.date, temp.`status`;
 
-END
+  END
  ;;
 delimiter ;
 
@@ -2040,30 +2054,30 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `chart_execution_process_by_plan_user`(IN _planId BIGINT, IN _numb BIGINT)
 BEGIN
 
-set @sumNumb:= 0;
+    set @sumNumb:= 0;
 
-select days.date, usr.nickname `name`, temp.numb, (@sumNumb := @sumNumb + temp.numb) `sum` from 
+    select days.date, usr.nickname `name`, temp.numb, (@sumNumb := @sumNumb + temp.numb) `sum` from
 
-    (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-        from SysNums,(select @num:=_numb) t 
-        where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-        order by date
-    ) days left join (
-        SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.exeBy 
-        FROM TstCaseInTask csr 
-            left join TstTask task on csr.taskId=task.id
-        
-        WHERE csr.planId=_planId and task.deleted != true AND task.disabled != true
-            AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
-            AND csr.`status` != 'untest' 
-        GROUP BY dt, csr.exeBy
-    ) temp ON days.date = temp.dt
+      (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
+       from SysNums,(select @num:=_numb) t
+       where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+       order by date
+      ) days left join (
+                         SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.exeBy
+                         FROM TstCaseInTask csr
+                           left join TstTask task on csr.taskId=task.id
 
-    LEFT JOIN TstUser usr on temp.exeBy = usr.id
+                         WHERE csr.planId=_planId and task.deleted != true AND task.disabled != true
+                               AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+                               AND csr.`status` != 'untest'
+                         GROUP BY dt, csr.exeBy
+                       ) temp ON days.date = temp.dt
 
-ORDER BY days.date, temp.exeBy;
+      LEFT JOIN TstUser usr on temp.exeBy = usr.id
 
-END
+    ORDER BY days.date, temp.exeBy;
+
+  END
  ;;
 delimiter ;
 
@@ -2075,81 +2089,81 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `chart_execution_process_by_project`(IN project_id BIGINT, IN project_type VARCHAR(100), IN numb BIGINT)
 BEGIN
 
-set @sumNumb:= 0;
+    set @sumNumb:= 0;
 
-IF project_type='project' THEN
-    select days.date date, IFNULL(temp.`status`,'null') `status`, IFNULL(temp.numb,0) numb 
-	from 
+    IF project_type='project' THEN
+      select days.date date, IFNULL(temp.`status`,'null') `status`, IFNULL(temp.numb,0) numb
+      from
         (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-            from SysNums,(select @num:=numb) t 
-            where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-            order by date) days 
-	left join 
+         from SysNums,(select @num:=numb) t
+         where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+         order by date) days
+        left join
         (
-            SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.`status` `status` 
-                FROM TstCaseInTask csr 
-		JOIN TstPlan plan on csr.planId = plan.id
-		JOIN TstTask task on csr.taskId = task.id
+          SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.`status` `status`
+          FROM TstCaseInTask csr
+            JOIN TstPlan plan on csr.planId = plan.id
+            JOIN TstTask task on csr.taskId = task.id
 
-                WHERE csr.projectId=project_id  
-                    AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
-                    AND csr.`status` != 'untest' 
-		    AND plan.deleted != true AND task.deleted != true
-		GROUP BY dt, csr.`status`
+          WHERE csr.projectId=project_id
+                AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+                AND csr.`status` != 'untest'
+                AND plan.deleted != true AND task.deleted != true
+          GROUP BY dt, csr.`status`
         ) temp ON days.date = temp.dt
-		
-     ORDER BY days.date, temp.`status`;
 
-ELSEIF project_type='group' THEN
-    select days.date date, IFNULL(temp.`status`,'null') `status`, IFNULL(temp.numb,0) numb from 
+      ORDER BY days.date, temp.`status`;
+
+    ELSEIF project_type='group' THEN
+      select days.date date, IFNULL(temp.`status`,'null') `status`, IFNULL(temp.numb,0) numb from
         (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-            from SysNums,(select @num:=numb) t 
-            where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-            order by date) days 
-	left join 
+         from SysNums,(select @num:=numb) t
+         where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+         order by date) days
+        left join
         (
-            SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.`status` `status` 
-                FROM TstCaseInTask csr 
-		JOIN TstPlan plan on csr.planId = plan.id
-		JOIN TstTask task on csr.taskId = task.id
+          SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.`status` `status`
+          FROM TstCaseInTask csr
+            JOIN TstPlan plan on csr.planId = plan.id
+            JOIN TstTask task on csr.taskId = task.id
 
-                WHERE csr.projectId in (SELECT p.id from TstProject p where p.parentId = project_id 
-                                AND p.deleted != true AND p.disabled != true)  
-                    AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
-                    AND csr.`status` != 'untest' 
-		    AND plan.deleted != true AND task.deleted != true
-		GROUP BY dt, csr.`status`
+          WHERE csr.projectId in (SELECT p.id from TstProject p where p.parentId = project_id
+                                                                      AND p.deleted != true AND p.disabled != true)
+                AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+                AND csr.`status` != 'untest'
+                AND plan.deleted != true AND task.deleted != true
+          GROUP BY dt, csr.`status`
         ) temp ON days.date = temp.dt
-    
-     ORDER BY days.date, temp.`status`;
 
-ELSEIF project_type='org' THEN
-    select days.date date, IFNULL(temp.`status`,'null') `status`, IFNULL(temp.numb,0) numb from 
+      ORDER BY days.date, temp.`status`;
+
+    ELSEIF project_type='org' THEN
+      select days.date date, IFNULL(temp.`status`,'null') `status`, IFNULL(temp.numb,0) numb from
         (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-            from SysNums,(select @num:=numb) t 
-            where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-            order by date) days 
-	left join 
+         from SysNums,(select @num:=numb) t
+         where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+         order by date) days
+        left join
         (
-            SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.`status` `status` 
-                FROM TstCaseInTask csr 
-		JOIN TstPlan plan on csr.planId = plan.id
-		JOIN TstTask task on csr.taskId = task.id
+          SELECT COUNT(csr.id) numb, DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, csr.`status` `status`
+          FROM TstCaseInTask csr
+            JOIN TstPlan plan on csr.planId = plan.id
+            JOIN TstTask task on csr.taskId = task.id
 
-                WHERE csr.projectId in (SELECT p.id from TstProject p where p.orgId = project_id 
-                                AND p.deleted != true AND p.disabled != true)  
-                    AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
-                    AND csr.`status` != 'untest' 
-		    AND plan.deleted != true AND task.deleted != TRUE
+          WHERE csr.projectId in (SELECT p.id from TstProject p where p.orgId = project_id
+                                                                      AND p.deleted != true AND p.disabled != true)
+                AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+                AND csr.`status` != 'untest'
+                AND plan.deleted != true AND task.deleted != TRUE
 
-	    GROUP BY dt, csr.`status`
+          GROUP BY dt, csr.`status`
         ) temp ON days.date = temp.dt
-    
-    ORDER BY days.date, temp.`status`;
 
-END IF;
+      ORDER BY days.date, temp.`status`;
 
-END
+    END IF;
+
+  END
  ;;
 delimiter ;
 
@@ -2161,38 +2175,38 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `chart_execution_progress_by_plan`(IN _plan_id BIGINT, IN _numb BIGINT)
 BEGIN
 
-DECLARE total BIGINT;
+    DECLARE total BIGINT;
 
-SELECT COUNT(csr.id) numb 
-    FROM TstCaseInTask csr 
-        left join TstTask task on csr.taskId=task.id 
-        
+    SELECT COUNT(csr.id) numb
+    FROM TstCaseInTask csr
+      left join TstTask task on csr.taskId=task.id
+
     WHERE csr.planId=_plan_id and task.deleted != true AND task.disabled != true
-        AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE 
-into total;
+          AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+    into total;
 
-select days.date, temp.numb, total from
-    (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-        from SysNums,(select @num:=_numb) t 
-        where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-        order by date) days 
-    
-    left join 
+    select days.date, temp.numb, total from
+      (select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
+       from SysNums,(select @num:=_numb) t
+       where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+       order by date) days
 
-    (SELECT DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, COUNT(csr.id) numb 
-        FROM TstCaseInTask csr
-            left join TstTask task on csr.taskId=task.id
-        
-        WHERE csr.planId=_plan_id and task.deleted != true AND task.disabled != true
-            AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE 
-            AND csr.`status` != 'untest'
-        GROUP BY dt 
-        ORDER BY dt) temp 
+      left join
 
-    ON days.date = temp.dt
+      (SELECT DATE_FORMAT(csr.exeTime,'%Y/%m/%d') dt, COUNT(csr.id) numb
+       FROM TstCaseInTask csr
+         left join TstTask task on csr.taskId=task.id
+
+       WHERE csr.planId=_plan_id and task.deleted != true AND task.disabled != true
+             AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+             AND csr.`status` != 'untest'
+       GROUP BY dt
+       ORDER BY dt) temp
+
+        ON days.date = temp.dt
     ORDER BY days.date;
 
-END
+  END
  ;;
 delimiter ;
 
@@ -2204,14 +2218,14 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `chart_execution_result_by_plan`(IN _planId BIGINT)
 BEGIN
 
-select tcin.`status` status, count(tcin.id) count 
-    from TstCaseInTask tcin 
-        left join TstTask task on tcin.taskId=task.id 
+    select tcin.`status` status, count(tcin.id) count
+    from TstCaseInTask tcin
+      left join TstTask task on tcin.taskId=task.id
     where tcin.planId  = _planId and task.deleted != true AND task.disabled != true
-        AND tcin.deleted != true AND tcin.disabled != true  AND tcin.isLeaf=true
-group by tcin.`status`;
+          AND tcin.deleted != true AND tcin.disabled != true  AND tcin.isLeaf=true
+    group by tcin.`status`;
 
-END
+  END
  ;;
 delimiter ;
 
@@ -2223,17 +2237,17 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `close_plan_if_all_task_closed`(IN plan_id  BIGINT)
 BEGIN
 
-DECLARE cnt BIGINT;
+    DECLARE cnt BIGINT;
 
-select count(id) from TstTask task 
-    where task.planId = plan_id 
-    and task.`status` != 'end' and task.deleted!=true and task.disabled!=true into cnt;
+    select count(id) from TstTask task
+    where task.planId = plan_id
+          and task.`status` != 'end' and task.deleted!=true and task.disabled!=true into cnt;
 
-IF (cnt=0) THEN  
-    update TstPlan plan set plan.status='end' where plan.id=plan_id;
-END IF; 
+    IF (cnt=0) THEN
+      update TstPlan plan set plan.status='end' where plan.id=plan_id;
+    END IF;
 
-END
+  END
  ;;
 delimiter ;
 
@@ -2245,20 +2259,20 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_case_and_its_children`(IN pId BIGINT )
 BEGIN
 
-DECLARE sTemp VARCHAR(10000);  
-DECLARE sTempChd VARCHAR(10000);  
-SET sTemp = pId;  
-SET sTempChd = cast(pId as CHAR);  
+    DECLARE sTemp VARCHAR(10000);
+    DECLARE sTempChd VARCHAR(10000);
+    SET sTemp = pId;
+    SET sTempChd = cast(pId as CHAR);
 
-WHILE sTempChd is not null DO  
-    SET sTemp = concat(sTemp,',',sTempChd);  
-    SELECT group_concat(id) INTO sTempChd FROM TstCase cs where FIND_IN_SET(cs.pId,sTempChd)>0 
-        and cs.deleted!=true;  
-END WHILE;  
+    WHILE sTempChd is not null DO
+      SET sTemp = concat(sTemp,',',sTempChd);
+      SELECT group_concat(id) INTO sTempChd FROM TstCase cs where FIND_IN_SET(cs.pId,sTempChd)>0
+                                                                  and cs.deleted!=true;
+    END WHILE;
 
-UPDATE TstCase cs SET cs.deleted=true WHERE FIND_IN_SET(cs.id, sTemp); 
+    UPDATE TstCase cs SET cs.deleted=true WHERE FIND_IN_SET(cs.id, sTemp);
 
-END
+  END
  ;;
 delimiter ;
 
@@ -2270,20 +2284,20 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_case_in_task_and_its_children`(IN _taskId BIGINT, IN pid BIGINT )
 BEGIN
 
-DECLARE sTemp VARCHAR(10000);  
-DECLARE sTempChd VARCHAR(10000);  
-SET sTemp = '';  
-SET sTempChd = cast(pid as CHAR);  
+    DECLARE sTemp VARCHAR(10000);
+    DECLARE sTempChd VARCHAR(10000);
+    SET sTemp = '';
+    SET sTempChd = cast(pid as CHAR);
 
-WHILE sTempChd is not null DO  
-    SET sTemp = concat(sTemp,',',sTempChd);  
-    SELECT group_concat(caseId) INTO sTempChd FROM TstCaseInTask cs where FIND_IN_SET(cs.pId,sTempChd)>0 
-        and taskId=_taskId and cs.deleted!=true;
-END WHILE;
+    WHILE sTempChd is not null DO
+      SET sTemp = concat(sTemp,',',sTempChd);
+      SELECT group_concat(caseId) INTO sTempChd FROM TstCaseInTask cs where FIND_IN_SET(cs.pId,sTempChd)>0
+                                                                            and taskId=_taskId and cs.deleted!=true;
+    END WHILE;
 
-UPDATE TstCaseInTask cs SET cs.deleted=true WHERE FIND_IN_SET(cs.caseId, sTemp)>0 and taskId=_taskId;
+    UPDATE TstCaseInTask cs SET cs.deleted=true WHERE FIND_IN_SET(cs.caseId, sTemp)>0 and taskId=_taskId;
 
-END
+  END
  ;;
 delimiter ;
 
@@ -2294,25 +2308,25 @@ DROP PROCEDURE IF EXISTS `delete_dict`;
 delimiter ;;
 CREATE DEFINER=`ngtesting`@`%` PROCEDURE `delete_dict`()
 BEGIN
-declare done int default 0;
-declare cate VARCHAR(1000);
+    declare done int default 0;
+    declare cate VARCHAR(1000);
 
-declare categoryCur cursor for select DISTINCT category from ai_dict;
+    declare categoryCur cursor for select DISTINCT category from ai_dict;
 
-declare continue handler for not FOUND set done = 1;
+    declare continue handler for not FOUND set done = 1;
 
-open categoryCur;
+    open categoryCur;
 
-REPEAT
+    REPEAT
 
-fetch categoryCur into cate;
-if not done THEN 
-	insert into aiDictCopy select * from aiDict where  aiDict.category=cate LIMIT 1010;
-end if;
-until done end repeat;
+      fetch categoryCur into cate;
+      if not done THEN
+        insert into aiDictCopy select * from aiDict where  aiDict.category=cate LIMIT 1010;
+      end if;
+    until done end repeat;
 
-close categoryCur;
-END
+    close categoryCur;
+  END
  ;;
 delimiter ;
 
@@ -2324,20 +2338,20 @@ delimiter ;;
 CREATE DEFINER=`ngtesting`@`%` PROCEDURE `fix_is_leaf_issue_for_case`(IN _project_id  BIGINT)
 BEGIN
 
-    update TstCase cs set cs.isLeaf=true where  cs.id NOT IN   
-    (
-        select pids.pId from 
-            (select DISTINCT pId FROM TstCase 
-                where projectId=_projectId and deleted!=true and disabled!=true and pId is not null) pids
-    );
-    update TstCase cs set cs.isLeaf=false where  cs.id  IN   
-    (
-        select pids.pId from 
-            (select DISTINCT pId FROM TstCase 
-                where projectId=_project_id and deleted!=true and disabled!=true and pId is not null) pids
-    );
+    update TstCase cs set cs.isLeaf=true where  cs.id NOT IN
+                                                (
+                                                  select pids.pId from
+                                                    (select DISTINCT pId FROM TstCase
+                                                    where projectId=_projectId and deleted!=true and disabled!=true and pId is not null) pids
+                                                );
+    update TstCase cs set cs.isLeaf=false where  cs.id  IN
+                                                 (
+                                                   select pids.pId from
+                                                     (select DISTINCT pId FROM TstCase
+                                                     where projectId=_project_id and deleted!=true and disabled!=true and pId is not null) pids
+                                                 );
 
-END
+  END
  ;;
 delimiter ;
 
@@ -2349,20 +2363,20 @@ delimiter ;;
 CREATE DEFINER=`ngtesting`@`%` PROCEDURE `fix_is_leaf_issue_in_task`(IN _plan_id  BIGINT)
 BEGIN
 
-    update TstCaseInTask cs set cs.isLeaf=true where  cs.caseId NOT IN   
-    (
-        select pids.pId from 
-            (select DISTINCT pId FROM TstCaseInTask 
-                where planId=_plan_id and deleted!=true and disabled!=true and pId is not null) pids
-    );
-    update TstCaseInTask cs set cs.isLeaf=false where  cs.caseId  IN   
-    (
-        select pids.pId from 
-            (select DISTINCT pId FROM TstCaseInTask 
-                where planId=_plan_id and deleted!=true and disabled!=true and pId is not null) pids
-    );
+    update TstCaseInTask cs set cs.isLeaf=true where  cs.caseId NOT IN
+                                                      (
+                                                        select pids.pId from
+                                                          (select DISTINCT pId FROM TstCaseInTask
+                                                          where planId=_plan_id and deleted!=true and disabled!=true and pId is not null) pids
+                                                      );
+    update TstCaseInTask cs set cs.isLeaf=false where  cs.caseId  IN
+                                                       (
+                                                         select pids.pId from
+                                                           (select DISTINCT pId FROM TstCaseInTask
+                                                           where planId=_plan_id and deleted!=true and disabled!=true and pId is not null) pids
+                                                       );
 
-END
+  END
  ;;
 delimiter ;
 
@@ -2375,25 +2389,25 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `gen_project_access_history`(IN _org
     DETERMINISTIC
 BEGIN
 
-DECLARE _id BIGINT;
+    DECLARE _id BIGINT;
 
-	select his.id from TstProjectAccessHistory his 
-	    where his.orgId = _orgId and his.userId = _userId and his.prjId = _prjId
-	into _id;
+    select his.id from TstProjectAccessHistory his
+    where his.orgId = _orgId and his.userId = _userId and his.prjId = _prjId
+    into _id;
 
-	IF (ISNULL(_id)) THEN  
-	    insert into TstProjectAccessHistory 
-	    (orgId, userId, prjId, prjName, lastAccessTime) 
-	    values
-	    (_orgId, _userId, _prjId, _prjName, NOW());
-	ELSE
-	   update TstProjectAccessHistory 
-	    set prjName = _prjName, lastAccessTime = NOW()
-	    WHERE id = _id;
-	    
-	END IF;
+    IF (ISNULL(_id)) THEN
+      insert into TstProjectAccessHistory
+      (orgId, userId, prjId, prjName, lastAccessTime)
+      values
+        (_orgId, _userId, _prjId, _prjName, NOW());
+    ELSE
+      update TstProjectAccessHistory
+      set prjName = _prjName, lastAccessTime = NOW()
+      WHERE id = _id;
 
-END
+    END IF;
+
+  END
  ;;
 delimiter ;
 
@@ -2405,12 +2419,12 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_days`(IN numb BIGINT)
 BEGIN
 
-select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
-	from SysNums,(select @num:=numb) t 
-	where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
-	order by date;
+    select @num:=@num-1, date_format(adddate(CURDATE(), INTERVAL -@num DAY),'%Y/%m/%d') as date
+    from SysNums,(select @num:=numb) t
+    where adddate(CURDATE(), INTERVAL -@num DAY) <= date_format(curdate(),'%Y/%m/%d') and @num > 0
+    order by date;
 
-END
+  END
  ;;
 delimiter ;
 
@@ -2423,34 +2437,34 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `get_project_privilege_by_org_for_us
     DETERMINISTIC
 BEGIN
 
-select CONCAT(tmp.projectId,'') projectId, define.`code`, define.action
+    select CONCAT(tmp.projectId,'') projectId, define.`code`, define.action
     from TstProjectPrivilegeDefine define
-        left join TstProjectRolePriviledgeRelation r on r.projectPrivilegeDefineId = define.id
-     
-        INNER join
-        (select relation.projectId, relation.projectRoleId from TstProjectRoleEntityRelation relation 
-            where 
-            (
-              (type = 'user' && relation.entityId = userId) 
-               or (type = 'group' && 
-                relation.entityId in (
-                    select grp.id from TstOrgGroup grp 
-                                    left join TstOrgGroupUserRelation relat on relat.orgGroupId = grp.id 
-                                    left join TstUser userr on relat.userId = userr.id
-                                    where userr.id = userId
-                    UNION
-                    select grp.id from TstOrgGroup grp 
-                        where grp.name = '所有人' and grp.orgId = orgId)
-                )
-            )
-            and relation.orgId = orgId
-        ) tmp
-    
+      left join TstProjectRolePriviledgeRelation r on r.projectPrivilegeDefineId = define.id
+
+      INNER join
+      (select relation.projectId, relation.projectRoleId from TstProjectRoleEntityRelation relation
+      where
+        (
+          (type = 'user' && relation.entityId = userId)
+          or (type = 'group' &&
+              relation.entityId in (
+                select grp.id from TstOrgGroup grp
+                  left join TstOrgGroupUserRelation relat on relat.orgGroupId = grp.id
+                  left join TstUser userr on relat.userId = userr.id
+                where userr.id = userId
+                UNION
+                select grp.id from TstOrgGroup grp
+                where grp.name = '所有人' and grp.orgId = orgId)
+          )
+        )
+        and relation.orgId = orgId
+      ) tmp
+
         on r.projectRoleId = tmp.projectRoleId
-    
+
     where TRUE
     order by tmp.projectId,  define.`code`;
-END
+  END
  ;;
 delimiter ;
 
@@ -2462,29 +2476,29 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_project_privilege_by_project_for_user`(IN user_id  BIGINT, IN _project_id BIGINT, IN org_id BIGINT)
 BEGIN
 
-select define.`code`, define.action
-    from TstProjectPrivilegeDefine define 
-    left join TstProjectRolePriviledgeRelation r on r.projectPrivilegeDefineId = define.id
-    
-    where r.projectRoleId in 
-        (select relation.projectRoleId from TstProjectRoleEntityRelation relation 
-            where 
+    select define.`code`, define.action
+    from TstProjectPrivilegeDefine define
+      left join TstProjectRolePriviledgeRelation r on r.projectPrivilegeDefineId = define.id
+
+    where r.projectRoleId in
+          (select relation.projectRoleId from TstProjectRoleEntityRelation relation
+          where
             (
-              (type = 'user' && relation.entityId = user_id) 
-               or (type = 'group' && 
-                relation.entityId in (
-                    select grp.id from TstOrgGroup grp 
-                                    left join TstOrgGroupUserRelation relat on relat.orgGroupId = grp.id 
-                                    left join TstUser userr on relat.userId = userr.id
-                                    where userr.id = user_id
+              (type = 'user' && relation.entityId = user_id)
+              or (type = 'group' &&
+                  relation.entityId in (
+                    select grp.id from TstOrgGroup grp
+                      left join TstOrgGroupUserRelation relat on relat.orgGroupId = grp.id
+                      left join TstUser userr on relat.userId = userr.id
+                    where userr.id = user_id
                     UNION
-                    select grp.id from TstOrgGroup grp 
-                        where grp.name = '所有人' and grp.orgId = org_id)
-                )
+                    select grp.id from TstOrgGroup grp
+                    where grp.name = '所有人' and grp.orgId = org_id)
+              )
             )
             and relation.projectId = _project_id
-        );
-END
+          );
+  END
  ;;
 delimiter ;
 
@@ -2496,20 +2510,20 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_project_users`(IN prjId BIGINT)
 BEGIN
 
-select usr.id, usr.nickname from TstUser usr
-    where usr.id in 
-    (
-        select relation1.entityId from TstProjectRoleEntityRelation relation1 
+    select usr.id, usr.nickname from TstUser usr
+    where usr.id in
+          (
+            select relation1.entityId from TstProjectRoleEntityRelation relation1
             where relation1.type = 'user' && relation1.projectId = prjId
-        UNION
-        select relta.userId from TstOrgGroupUserRelation relta
-            where relta.orgGroupId in 
-            (
-                select relation2.entityId from TstProjectRoleEntityRelation relation2 
+            UNION
+            select relta.userId from TstOrgGroupUserRelation relta
+            where relta.orgGroupId in
+                  (
+                    select relation2.entityId from TstProjectRoleEntityRelation relation2
                     where relation2.type = 'group' && relation2.projectId = prjId
-            ) 
-    );
-END
+                  )
+          );
+  END
  ;;
 delimiter ;
 
@@ -2521,7 +2535,7 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `init_nums`(IN cnt BIGINT)
 BEGIN
 
-declare s int unsigned default 1;
+    declare s int unsigned default 1;
 
     DROP TABLE IF EXISTS `SysNums`;
     CREATE TABLE IF NOT EXISTS `SysNums` (
@@ -2532,13 +2546,13 @@ declare s int unsigned default 1;
     truncate table SysNums;
     insert into SysNums select s;
     while s*2<=cnt do
-    begin
+      begin
         insert into SysNums select `key`+s from SysNums;
         set s=s*2;
-    end;
+      end;
     end while;
-    
-END
+
+  END
  ;;
 delimiter ;
 
@@ -2550,26 +2564,26 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `init_old_case_data`(IN project_id  BIGINT )
 BEGIN
 
-declare id bigint;
+    declare id bigint;
 
-declare done int default false;
-declare cur cursor for select cs.id from TstCase cs WHERE cs.projectId=project_id; 
-declare continue HANDLER for not found set done = true;
+    declare done int default false;
+    declare cur cursor for select cs.id from TstCase cs WHERE cs.projectId=project_id;
+    declare continue HANDLER for not found set done = true;
 
-open cur;
+    open cur;
     read_loop:loop
 
-        fetch cur into id;
-        if done then  
-        leave read_loop; 
-        end if;
+      fetch cur into id;
+      if done then
+        leave read_loop;
+      end if;
 
-        call update_parent_if_needed(project_id, id);
+      call update_parent_if_needed(project_id, id);
 
     end loop;
-close cur;  
+    close cur;
 
-END
+  END
  ;;
 delimiter ;
 
@@ -2581,170 +2595,170 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `init_org`(IN org_id  BIGINT,IN user_id  BIGINT)
 BEGIN
 
-DECLARE i BIGINT;
+    DECLARE i BIGINT;
 
-DECLARE user_name VARCHAR(255);
-DECLARE org_role_id BIGINT;
-DECLARE org_group_id BIGINT;
-DECLARE project_role_id BIGINT;
-DECLARE project_role_leader_id BIGINT;
-DECLARE project_id BIGINT;
-DECLARE case_id BIGINT;
+    DECLARE user_name VARCHAR(255);
+    DECLARE org_role_id BIGINT;
+    DECLARE org_group_id BIGINT;
+    DECLARE project_role_id BIGINT;
+    DECLARE project_role_leader_id BIGINT;
+    DECLARE project_id BIGINT;
+    DECLARE case_id BIGINT;
 
-DECLARE count BIGINT;
+    DECLARE count BIGINT;
 
-select usr.nickname from TstUser usr where id=user_id into user_name;
+    select usr.nickname from TstUser usr where id=user_id into user_name;
 
-insert into TstOrgUserRelation (orgId, userId) values(org_id, user_id);
-
-
-insert into TstOrgRole (code, name, orgId, disabled, deleted, createTime) values('org_admin', '组织管理员', org_id, false, false, NOW());
-select max(id) from TstOrgRole into org_role_id;
-insert into TstOrgRolePrivilegeRelation (orgId, orgRoleId, orgPrivilegeId) values(org_id, org_role_id, 1);
-insert into TstOrgRolePrivilegeRelation (orgId, orgRoleId, orgPrivilegeId) values(org_id, org_role_id, 3);
-
-insert into TstOrgRoleUserRelation (orgId, orgRoleId, userId) values(org_id, org_role_id, user_id);
-
-/* insert into TstOrgRole (code, name, orgId, disabled, deleted, createTime) values('site_admin', '站点管理员', org_id, false, false, NOW());
-select max(id) from TstOrgRole into org_role_id;
-insert into TstOrgRolePrivilegeRelation (orgId, orgRoleId, orgPrivilegeId) values(org_id, org_role_id, 2); */
-
-insert into TstOrgRole (code, name, orgId, disabled, deleted, createTime) values('project_admin', '项目管理员', org_id, false, false, NOW());
-select max(id) from TstOrgRole into org_role_id;
-insert into TstOrgRolePrivilegeRelation (orgId, orgRoleId, orgPrivilegeId) values(org_id, org_role_id, 3);
+    insert into TstOrgUserRelation (orgId, userId) values(org_id, user_id);
 
 
-insert into TstOrgGroup (name, orgId, disabled, deleted, createTime) values('所有人', org_id, false, false, NOW());
+    insert into TstOrgRole (code, name, orgId, disabled, deleted, createTime) values('org_admin', '组织管理员', org_id, false, false, NOW());
+    select max(id) from TstOrgRole into org_role_id;
+    insert into TstOrgRolePrivilegeRelation (orgId, orgRoleId, orgPrivilegeId) values(org_id, org_role_id, 1);
+    insert into TstOrgRolePrivilegeRelation (orgId, orgRoleId, orgPrivilegeId) values(org_id, org_role_id, 3);
+
+    insert into TstOrgRoleUserRelation (orgId, orgRoleId, userId) values(org_id, org_role_id, user_id);
+
+    /* insert into TstOrgRole (code, name, orgId, disabled, deleted, createTime) values('site_admin', '站点管理员', org_id, false, false, NOW());
+    select max(id) from TstOrgRole into org_role_id;
+    insert into TstOrgRolePrivilegeRelation (orgId, orgRoleId, orgPrivilegeId) values(org_id, org_role_id, 2); */
+
+    insert into TstOrgRole (code, name, orgId, disabled, deleted, createTime) values('project_admin', '项目管理员', org_id, false, false, NOW());
+    select max(id) from TstOrgRole into org_role_id;
+    insert into TstOrgRolePrivilegeRelation (orgId, orgRoleId, orgPrivilegeId) values(org_id, org_role_id, 3);
 
 
-insert into TstCaseExeStatus (value, label, ordr, isBuildIn, isFinal, orgId, disabled, deleted, createTime) 
-           values('untest', '未执行', 10, false, false, org_id, false, false, NOW());
-insert into TstCaseExeStatus (value, label, ordr, isBuildIn, isFinal, orgId, disabled, deleted, createTime) 
-           values('pass', '成功', 20, false, true, org_id, false, false, NOW());
-insert into TstCaseExeStatus (value, label, ordr, isBuildIn, isFinal, orgId, disabled, deleted, createTime) 
-           values('fail', '失败', 30, false, true, org_id, false, false, NOW());
-insert into TstCaseExeStatus (value, label, ordr, isBuildIn, isFinal, orgId, disabled, deleted, createTime) 
-           values('block', '阻塞', 40, false, false, org_id, false, false, NOW());
+    insert into TstOrgGroup (name, orgId, disabled, deleted, createTime) values('所有人', org_id, false, false, NOW());
 
 
-insert into TstCasePriority (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-           values('high', '高', 10, false, false, org_id, false, false, NOW());
-insert into TstCasePriority (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-           values('medium', '中', 20, false, true, org_id, false, false, NOW());
-insert into TstCasePriority (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-           values('low', '低', 30, false, false, org_id, false, false, NOW());
-
-insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-           values('functional', '功能', 10,     false, true, org_id, false, false, NOW());
-insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-           values('performance', '性能', 20,    false, false, org_id, false, false, NOW());
-insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-           values('ui', '界面', 30,          false, false, org_id, false, false, NOW());
-insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-           values('compatibility', '兼容性', 40, false, false, org_id, false, false, NOW());
-insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-           values('security', '安全', 50,       false, false, org_id, false, false, NOW());
-insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-           values('automation', '自动化', 60,     false, false, org_id, false, false, NOW());
-insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime) 
-           values('other', '其它', 70,         false, false, org_id, false, false, NOW());
+    insert into TstCaseExeStatus (value, label, ordr, isBuildIn, isFinal, orgId, disabled, deleted, createTime)
+    values('untest', '未执行', 10, false, false, org_id, false, false, NOW());
+    insert into TstCaseExeStatus (value, label, ordr, isBuildIn, isFinal, orgId, disabled, deleted, createTime)
+    values('pass', '成功', 20, false, true, org_id, false, false, NOW());
+    insert into TstCaseExeStatus (value, label, ordr, isBuildIn, isFinal, orgId, disabled, deleted, createTime)
+    values('fail', '失败', 30, false, true, org_id, false, false, NOW());
+    insert into TstCaseExeStatus (value, label, ordr, isBuildIn, isFinal, orgId, disabled, deleted, createTime)
+    values('block', '阻塞', 40, false, false, org_id, false, false, NOW());
 
 
-insert into TstProjectRole (code, name, isBuildIn, orgId, disabled, deleted, createTime) 
-           values('test_leader', '测试主管', false, org_id, false, false, NOW());
-select max(id) from TstProjectRole into project_role_id;
-set project_role_leader_id=project_role_id;
+    insert into TstCasePriority (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime)
+    values('high', '高', 10, false, false, org_id, false, false, NOW());
+    insert into TstCasePriority (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime)
+    values('medium', '中', 20, false, true, org_id, false, false, NOW());
+    insert into TstCasePriority (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime)
+    values('low', '低', 30, false, false, org_id, false, false, NOW());
 
-set i=11100;
-while i<=17300 do
-    select count(id) from TstProjectPrivilegeDefine where id=i into count;
-    IF count > 0 THEN  
-          insert into TstProjectRolePriviledgeRelation 
-                ( projectPrivilegeDefineId,   projectRoleId )
+    insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime)
+    values('functional', '功能', 10,     false, true, org_id, false, false, NOW());
+    insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime)
+    values('performance', '性能', 20,    false, false, org_id, false, false, NOW());
+    insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime)
+    values('ui', '界面', 30,          false, false, org_id, false, false, NOW());
+    insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime)
+    values('compatibility', '兼容性', 40, false, false, org_id, false, false, NOW());
+    insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime)
+    values('security', '安全', 50,       false, false, org_id, false, false, NOW());
+    insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime)
+    values('automation', '自动化', 60,     false, false, org_id, false, false, NOW());
+    insert into TstCaseType (value, label, ordr, isBuildIn, isDefault, orgId, disabled, deleted, createTime)
+    values('other', '其它', 70,         false, false, org_id, false, false, NOW());
+
+
+    insert into TstProjectRole (code, name, isBuildIn, orgId, disabled, deleted, createTime)
+    values('test_leader', '测试主管', false, org_id, false, false, NOW());
+    select max(id) from TstProjectRole into project_role_id;
+    set project_role_leader_id=project_role_id;
+
+    set i=11100;
+    while i<=17300 do
+      select count(id) from TstProjectPrivilegeDefine where id=i into count;
+      IF count > 0 THEN
+        insert into TstProjectRolePriviledgeRelation
+        ( projectPrivilegeDefineId,   projectRoleId )
         VALUES ( i, project_role_id );
-    END IF;  
-    set i=i+100;
-end while;
+      END IF;
+      set i=i+100;
+    end while;
 
-insert into TstProjectRole (code, name, isBuildIn, orgId, disabled, deleted, createTime) 
-           values('test_designer', '测试设计', false, org_id, false, false, NOW());
-select max(id) from TstProjectRole into project_role_id;
+    insert into TstProjectRole (code, name, isBuildIn, orgId, disabled, deleted, createTime)
+    values('test_designer', '测试设计', false, org_id, false, false, NOW());
+    select max(id) from TstProjectRole into project_role_id;
 
-set i=11100;
-while i<=17300 do
-    select count(id) from TstProjectPrivilegeDefine where id=i AND id != 11200 and id != 11300 into count;
-    IF count > 0 THEN  
-          insert into TstProjectRolePriviledgeRelation 
-                ( projectPrivilegeDefineId,   projectRoleId )
+    set i=11100;
+    while i<=17300 do
+      select count(id) from TstProjectPrivilegeDefine where id=i AND id != 11200 and id != 11300 into count;
+      IF count > 0 THEN
+        insert into TstProjectRolePriviledgeRelation
+        ( projectPrivilegeDefineId,   projectRoleId )
         VALUES ( i, project_role_id );
-    END IF;  
-    set i=i+100;
-end while;
+      END IF;
+      set i=i+100;
+    end while;
 
-insert into TstProjectRole (code, name, isBuildIn, orgId, disabled, deleted, createTime) 
-           values('tester', '测试执行', false, org_id, false, false, NOW());
-select max(id) from TstProjectRole into project_role_id;
+    insert into TstProjectRole (code, name, isBuildIn, orgId, disabled, deleted, createTime)
+    values('tester', '测试执行', false, org_id, false, false, NOW());
+    select max(id) from TstProjectRole into project_role_id;
 
-set i=11100;
-while i<=17300 do
-    select count(id) from TstProjectPrivilegeDefine where id=i AND id != 11200 and id != 11300 AND i != 12200 into count;
-    IF count > 0 THEN  
-          insert into TstProjectRolePriviledgeRelation 
-                ( projectPrivilegeDefineId,   projectRoleId )
+    set i=11100;
+    while i<=17300 do
+      select count(id) from TstProjectPrivilegeDefine where id=i AND id != 11200 and id != 11300 AND i != 12200 into count;
+      IF count > 0 THEN
+        insert into TstProjectRolePriviledgeRelation
+        ( projectPrivilegeDefineId,   projectRoleId )
         VALUES ( i, project_role_id );
-    END IF;  
-    set i=i+100;
-end while;
+      END IF;
+      set i=i+100;
+    end while;
 
-insert into TstProjectRole (code, name, isBuildIn, orgId, disabled, deleted, createTime) 
-           values('readonly', '只读用户', false, org_id, false, false, NOW());
-select max(id) from TstProjectRole into project_role_id;
+    insert into TstProjectRole (code, name, isBuildIn, orgId, disabled, deleted, createTime)
+    values('readonly', '只读用户', false, org_id, false, false, NOW());
+    select max(id) from TstProjectRole into project_role_id;
 
-set i=11100;
-while i<=17300 do
-    select count(id) from TstProjectPrivilegeDefine where id=i and action = 'view' into count;
-    IF count > 0 THEN  
-          insert into TstProjectRolePriviledgeRelation 
-                ( projectPrivilegeDefineId,   projectRoleId )
+    set i=11100;
+    while i<=17300 do
+      select count(id) from TstProjectPrivilegeDefine where id=i and action = 'view' into count;
+      IF count > 0 THEN
+        insert into TstProjectRolePriviledgeRelation
+        ( projectPrivilegeDefineId,   projectRoleId )
         VALUES ( i, project_role_id );
-    END IF;  
-    set i=i+100;
-end while;
+      END IF;
+      set i=i+100;
+    end while;
 
 
-insert into TstProject (name, type, parentId, orgId, disabled, deleted, createTime) 
-           values('默认项目组', 'group', NULL, org_id, false, false, NOW());
-select max(id) from TstProject into project_id;
+    insert into TstProject (name, type, parentId, orgId, disabled, deleted, createTime)
+    values('默认项目组', 'group', NULL, org_id, false, false, NOW());
+    select max(id) from TstProject into project_id;
 
-insert into TstProject (name, type, parentId, orgId, disabled, deleted, createTime) 
-           values('默认项目', 'project', project_id, org_id, false, false, NOW());
-select max(id) from TstProject into project_id;
-
-
-insert into TstHistory (projectId, entityId,  entityType, userId, disabled, deleted, createTime, title) 
-          values(project_id, project_id, 'project', user_id, false, false, NOW(), 
-                CONCAT('用户<span class="dict">',user_name,'</span>初始化项目<span class="dict">','默认项目','</span>'));
+    insert into TstProject (name, type, parentId, orgId, disabled, deleted, createTime)
+    values('默认项目', 'project', project_id, org_id, false, false, NOW());
+    select max(id) from TstProject into project_id;
 
 
-insert into TstProjectRoleEntityRelation (orgId, projectId, projectRoleId, entityId, type) 
-           values(org_id, project_id, project_role_leader_id, user_id, 'user');
+    insert into TstHistory (projectId, entityId,  entityType, userId, disabled, deleted, createTime, title)
+    values(project_id, project_id, 'project', user_id, false, false, NOW(),
+           CONCAT('用户<span class="dict">',user_name,'</span>初始化项目<span class="dict">','默认项目','</span>'));
 
 
-insert into TstProjectAccessHistory (orgId, prjId, userId, prjName, lastAccessTime , createTime) 
-           values(org_id, project_id, user_id, '默认项目', NOW(), NOW());
-update TstUser set defaultPrjId = project_id, defaultPrjName = '默认项目' where id = user_id;
+    insert into TstProjectRoleEntityRelation (orgId, projectId, projectRoleId, entityId, type)
+    values(org_id, project_id, project_role_leader_id, user_id, 'user');
 
 
-insert into TstCase (name, projectId, pId, estimate, priority, type, isLeaf, ordr, createById, contentType, disabled, deleted, createTime) 
-           values('测试用例', project_id, null, 10, 'medium', 'functional', 0, 0, user_id, 'steps', false, false, NOW());
-select max(id) from TstCase into case_id;
-insert into TstCase (name, projectId, pId, estimate, priority, type, isLeaf, ordr, createById, contentType, disabled, deleted, createTime) 
-           values('新特性', project_id, case_id, 10, 'medium', 'functional', 0, 0, user_id, 'steps', false, false, NOW());
-select max(id) from TstCase into case_id;
-insert into TstCase (name, projectId, pId, estimate, priority, type, isLeaf, ordr, createById, contentType, disabled, deleted, createTime) 
-           values('新用例', project_id, case_id, 10, 'medium', 'functional', 1, 0, user_id, 'steps', false, false, NOW());
+    insert into TstProjectAccessHistory (orgId, prjId, userId, prjName, lastAccessTime , createTime)
+    values(org_id, project_id, user_id, '默认项目', NOW(), NOW());
+    update TstUser set defaultPrjId = project_id, defaultPrjName = '默认项目' where id = user_id;
 
-END
+
+    insert into TstCase (name, projectId, pId, estimate, priority, type, isLeaf, ordr, createById, contentType, disabled, deleted, createTime)
+    values('测试用例', project_id, null, 10, 'medium', 'functional', 0, 0, user_id, 'steps', false, false, NOW());
+    select max(id) from TstCase into case_id;
+    insert into TstCase (name, projectId, pId, estimate, priority, type, isLeaf, ordr, createById, contentType, disabled, deleted, createTime)
+    values('新特性', project_id, case_id, 10, 'medium', 'functional', 0, 0, user_id, 'steps', false, false, NOW());
+    select max(id) from TstCase into case_id;
+    insert into TstCase (name, projectId, pId, estimate, priority, type, isLeaf, ordr, createById, contentType, disabled, deleted, createTime)
+    values('新用例', project_id, case_id, 10, 'medium', 'functional', 1, 0, user_id, 'steps', false, false, NOW());
+
+  END
  ;;
 delimiter ;
 
@@ -2756,16 +2770,16 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `init_user`(IN userId  BIGINT,  IN  orgName VARCHAR(1000))
 BEGIN
 
-DECLARE orgId BIGINT;
+    DECLARE orgId BIGINT;
 
-insert into TstOrg (name, disabled, deleted, createTime) values(orgName, false, false, NOW());
-select max(id) from TstOrg into orgId;
+    insert into TstOrg (name, disabled, deleted, createTime) values(orgName, false, false, NOW());
+    select max(id) from TstOrg into orgId;
 
-update TstUser usr set usr.defaultOrgId = orgId, usr.defaultOrgName = orgName where usr.id=userId;
+    update TstUser usr set usr.defaultOrgId = orgId, usr.defaultOrgName = orgName where usr.id=userId;
 
-call init_org(orgId, userId);
+    call init_org(orgId, userId);
 
-END
+  END
  ;;
 delimiter ;
 
@@ -2777,22 +2791,22 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `remove_case_and_its_children`(IN _caseId BIGINT, IN _projectId BIGINT)
 BEGIN
 
-DECLARE sTemp VARCHAR(10000);  
-DECLARE sTempChd VARCHAR(10000);  
-SET sTemp = _caseId;  
-SET sTempChd = cast(_caseId as CHAR);  
+    DECLARE sTemp VARCHAR(10000);
+    DECLARE sTempChd VARCHAR(10000);
+    SET sTemp = _caseId;
+    SET sTempChd = cast(_caseId as CHAR);
 
-WHILE sTempChd is not null DO  
-  SET sTemp = concat(sTemp,',',sTempChd);  
-  SELECT group_concat(id) INTO sTempChd FROM TstCase cs 
-    where FIND_IN_SET(pId,sTempChd)>0 
-    and cs.projectId = _projectId
-    and cs.deleted!=true;  
-END WHILE;  
+    WHILE sTempChd is not null DO
+      SET sTemp = concat(sTemp,',',sTempChd);
+      SELECT group_concat(id) INTO sTempChd FROM TstCase cs
+      where FIND_IN_SET(pId,sTempChd)>0
+            and cs.projectId = _projectId
+            and cs.deleted!=true;
+    END WHILE;
 
-UPDATE TstCase cs SET cs.deleted=true WHERE FIND_IN_SET(cs.id, sTemp); 
+    UPDATE TstCase cs SET cs.deleted=true WHERE FIND_IN_SET(cs.id, sTemp);
 
-END
+  END
  ;;
 delimiter ;
 
@@ -2804,13 +2818,13 @@ delimiter ;;
 CREATE DEFINER=`ngtesting`@`%` PROCEDURE `remove_user_from_org`(IN _user_id BIGINT, IN _org_id BIGINT)
 BEGIN
 
-delete from TstROrgUser where userId=_user_id and orgId=_org_id;
-delete from TstROrgRoleUser where userId=_user_id and orgRoleId 
-  in (select tmp.id from TstOrgRole tmp where tmp.orgId=_org_id);
-delete from TstROrgGroupUser where userId=_user_id and orgGroupId 
-  in (select tmp.id from TstOrgGroup tmp where tmp.orgId=_org_id);
+    delete from TstROrgUser where userId=_user_id and orgId=_org_id;
+    delete from TstROrgRoleUser where userId=_user_id and orgRoleId
+                                                          in (select tmp.id from TstOrgRole tmp where tmp.orgId=_org_id);
+    delete from TstROrgGroupUser where userId=_user_id and orgGroupId
+                                                           in (select tmp.id from TstOrgGroup tmp where tmp.orgId=_org_id);
 
-END
+  END
  ;;
 delimiter ;
 
@@ -2822,16 +2836,16 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_case_parent_if_needed`(IN pId BIGINT )
 BEGIN
 
-DECLARE is_leaf BIT;
+    DECLARE is_leaf BIT;
 
-select case when (SELECT COUNT(cs.id) numb FROM TstCase cs
-      WHERE cs.pId=pId AND cs.deleted != true AND cs.disabled != TRUE
-     )=0 then 1 else 0 end is_leaf from dual
-  INTO is_leaf;
+    select case when (SELECT COUNT(cs.id) numb FROM TstCase cs
+    WHERE cs.pId=pId AND cs.deleted != true AND cs.disabled != TRUE
+                     )=0 then 1 else 0 end is_leaf from dual
+    INTO is_leaf;
 
-UPDATE TstCase cs SET cs.isLeaf=is_leaf WHERE cs.id=pId AND (cs.isLeaf IS NULL OR cs.isLeaf!=is_leaf);
+    UPDATE TstCase cs SET cs.isLeaf=is_leaf WHERE cs.id=pId AND (cs.isLeaf IS NULL OR cs.isLeaf!=is_leaf);
 
-END
+  END
  ;;
 delimiter ;
 
@@ -2843,21 +2857,21 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `user_not_in_project`(IN _userId BIGINT, IN _prjId BIGINT)
 BEGIN
 
-select (count(u.id) = 0) isExist 
-  from TstUser u 
-  where u.id = _userId and u.id in 
-    (
-      select relation1.entityId from TstProjectRoleEntityRelation relation1 
-        where relation1.type = 'user' && relation1.projectId = _prjId
-      UNION
-      select relta.userId from TstOrgGroupUserRelation relta
-        where relta.orgGroupId in 
-        (
-          select relation2.entityId from TstProjectRoleEntityRelation relation2 
-            where relation2.type = 'group' && relation2.projectId = _prjId
-        ) 
-    );
-END
+    select (count(u.id) = 0) isExist
+    from TstUser u
+    where u.id = _userId and u.id in
+                             (
+                               select relation1.entityId from TstProjectRoleEntityRelation relation1
+                               where relation1.type = 'user' && relation1.projectId = _prjId
+                               UNION
+                               select relta.userId from TstOrgGroupUserRelation relta
+                               where relta.orgGroupId in
+                                     (
+                                       select relation2.entityId from TstProjectRoleEntityRelation relation2
+                                       where relation2.type = 'group' && relation2.projectId = _prjId
+                                     )
+                             );
+  END
  ;;
 delimiter ;
 
@@ -2867,9 +2881,9 @@ delimiter ;
 DROP FUNCTION IF EXISTS `fn_calc_length`;
 delimiter ;;
 CREATE DEFINER=`root`@`localhost` FUNCTION `fn_calc_length`(str varchar(200), splitstr varchar(5)) RETURNS varchar(300) CHARSET utf8
-BEGIN  
-    RETURN length(str) - length(replace(str, splitstr, '')) + 1; 
-END
+BEGIN
+    RETURN length(str) - length(replace(str, splitstr, '')) + 1;
+  END
  ;;
 delimiter ;
 

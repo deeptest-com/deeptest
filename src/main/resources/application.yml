@@ -91,3 +91,11 @@ config:
   mysql:
     host: ngtesting-mysql
     port: 3306
+
+---
+spring:
+  profiles: aliyun-db
+config:
+  mysql:
+    host: 47.99.102.138
+    port: 3306

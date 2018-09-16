@@ -5,13 +5,13 @@
  Source Server Type    : MySQL
  Source Server Version : 50714
  Source Host           : localhost
- Source Database       : ngtesting-web
+ Source Database       : ngtesting-test
 
  Target Server Type    : MySQL
  Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 09/15/2018 16:36:00 PM
+ Date: 09/16/2018 08:40:41 AM
 */
 
 SET NAMES utf8mb4;
@@ -1570,7 +1570,7 @@ CREATE TABLE `TstProjectPrivilegeDefine` (
 --  Records of `TstProjectPrivilegeDefine`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstProjectPrivilegeDefine` VALUES ('11100', 'project', '项目', 'view', '查看', null, b'0', b'0', '2017-12-26 10:11:16', '2017-12-26 10:11:18'), ('11200', 'project', '项目', 'maintain', '维护', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('11300', 'project', '项目', 'delete', '删除', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('12100', 'test_case', '测试用例', 'view', '查看', null, b'0', b'0', '2017-12-26 10:11:16', '2017-12-26 10:11:18'), ('12200', 'test_case', '测试用例', 'maintain', '维护', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('12300', 'test_case', '测试用例', 'delete', '删除', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('13100', 'test_suite', '测试集', 'view', '查看', null, b'0', b'0', '2017-12-26 10:18:29', '2017-12-26 10:18:38'), ('13200', 'test_suite', '测试集', 'maintain', '维护', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('13300', 'test_suite', '测试集', 'delete', '删除', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('14100', 'test_plan', '执行计划', 'view', '查看', null, b'0', b'0', '2017-12-26 10:13:08', '2017-12-26 10:13:11'), ('14200', 'test_plan', '执行计划', 'maintain', '维护', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('14300', 'test_plan', '执行计划', 'delete', '删除', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('15100', 'test_task', '测试任务', 'view', '查看', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('15200', 'test_task', '测试任务', 'exe', '执行', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('15300', 'test_task', '测试任务', 'close', '关闭', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('16100', 'auto_task', '自动化任务', 'view', '查看', null, b'0', b'0', '2018-05-03 17:03:01', '2018-05-03 17:03:08'), ('16200', 'auto_task', '自动化任务', 'maintain', '维护', null, b'0', b'0', '2018-05-03 17:03:01', '2018-05-03 17:03:08'), ('16300', 'auto_task', '自动化任务', 'exe', '执行', null, b'0', b'0', '2018-05-03 17:03:01', '2018-05-03 17:03:08'), ('16400', 'auto_task', '自动化任务', 'delete', '删除', null, b'0', b'0', '2018-05-03 17:03:01', '2018-05-03 17:03:08'), ('17100', 'issue', '问题', 'view', '查看', null, b'0', b'0', '2018-05-03 17:03:01', '2018-05-03 17:03:08'), ('17200', 'issue', '问题', 'maintain', '维护', null, b'0', b'0', '2018-05-03 17:03:01', '2018-05-03 17:03:08'), ('17300', 'issue', '问题', 'delete', '删除', null, b'0', b'0', '2018-05-03 17:03:01', '2018-05-03 17:03:08');
+INSERT INTO `TstProjectPrivilegeDefine` VALUES ('11100', 'project', '项目', 'view', '查看', null, b'0', b'0', '2017-12-26 10:11:16', '2017-12-26 10:11:18'), ('11200', 'project', '项目', 'maintain', '维护', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('11300', 'project', '项目', 'delete', '删除', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('12100', 'test_case', '测试用例', 'view', '查看', null, b'0', b'0', '2017-12-26 10:11:16', '2017-12-26 10:11:18'), ('12200', 'test_case', '测试用例', 'maintain', '维护', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('12300', 'test_case', '测试用例', 'delete', '删除', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('12400', 'test_case', '测试用例', 'review', '评审', null, b'0', b'0', '2018-09-16 08:15:23', '2018-09-16 08:15:26'), ('13100', 'test_suite', '测试集', 'view', '查看', null, b'0', b'0', '2017-12-26 10:18:29', '2017-12-26 10:18:38'), ('13200', 'test_suite', '测试集', 'maintain', '维护', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('13300', 'test_suite', '测试集', 'delete', '删除', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('14100', 'test_plan', '执行计划', 'view', '查看', null, b'0', b'0', '2017-12-26 10:13:08', '2017-12-26 10:13:11'), ('14200', 'test_plan', '执行计划', 'maintain', '维护', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('14300', 'test_plan', '执行计划', 'delete', '删除', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('15100', 'test_task', '测试任务', 'view', '查看', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('15200', 'test_task', '测试任务', 'exe', '执行', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('15300', 'test_task', '测试任务', 'close', '关闭', null, b'0', b'0', '2017-04-05 11:52:26', '2017-04-05 11:52:28'), ('16100', 'auto_task', '自动化任务', 'view', '查看', null, b'0', b'0', '2018-05-03 17:03:01', '2018-05-03 17:03:08'), ('16200', 'auto_task', '自动化任务', 'maintain', '维护', null, b'0', b'0', '2018-05-03 17:03:01', '2018-05-03 17:03:08'), ('16300', 'auto_task', '自动化任务', 'exe', '执行', null, b'0', b'0', '2018-05-03 17:03:01', '2018-05-03 17:03:08'), ('16400', 'auto_task', '自动化任务', 'delete', '删除', null, b'0', b'0', '2018-05-03 17:03:01', '2018-05-03 17:03:08'), ('17100', 'issue', '问题', 'view', '查看', null, b'0', b'0', '2018-05-03 17:03:01', '2018-05-03 17:03:08'), ('17200', 'issue', '问题', 'maintain', '维护', null, b'0', b'0', '2018-05-03 17:03:01', '2018-05-03 17:03:08'), ('17300', 'issue', '问题', 'delete', '删除', null, b'0', b'0', '2018-05-03 17:03:01', '2018-05-03 17:03:08');
 COMMIT;
 
 -- ----------------------------
@@ -2686,7 +2686,8 @@ BEGIN
 
     set i=11100;
     while i<=17300 do
-      select count(id) from TstProjectPrivilegeDefine where id=i AND id != 11200 and id != 11300 into count;
+      select count(id) from TstProjectPrivilegeDefine 
+		where id=i AND id != 11200 and id != 11300 and id != 12400 into count;
       IF count > 0 THEN
         insert into TstProjectRolePriviledgeRelation
         ( projectPrivilegeDefineId,   projectRoleId )
@@ -2701,7 +2702,8 @@ BEGIN
 
     set i=11100;
     while i<=17300 do
-      select count(id) from TstProjectPrivilegeDefine where id=i AND id != 11200 and id != 11300 AND i != 12200 into count;
+      select count(id) from TstProjectPrivilegeDefine 
+		where id=i AND id != 11200 and id != 11300 AND id != 12200 and id != 12400 into count;
       IF count > 0 THEN
         insert into TstProjectRolePriviledgeRelation
         ( projectPrivilegeDefineId,   projectRoleId )

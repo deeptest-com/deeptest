@@ -29,19 +29,18 @@ Demo: http://47.99.102.138:8080
 
 ## Test Project
 ![project_view](xdoc/capture/project_view.jpg)
-<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/project_view.jpg" width="800px" style="margin: 10px auto;">
 
 ## Test Case
-<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/case_edit.jpg" width="800px" style="margin: 10px auto;">
+![project_view](xdoc/capture/case_edit.jpg)
 
 ## Test Execution
-<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/case_exe.jpg" width="800px" style="margin: 10px auto;">
+![project_view](xdoc/capture/case_exe.jpg)
 
 ## Test Plan
-<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/plan_exe_result.jpg" width="800px" style="margin: 10px auto;">
-<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/plan_exe_progress.jpg" width="800px" style="margin: 10px auto;">
-<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/plan_exe_process.jpg" width="800px" style="margin: 10px auto;">
-<img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/plan_exe_process_by_user.jpg" width="800px" style="margin: 10px auto;">
+![project_view](xdoc/capture/plan_exe_result.jpg)
+![project_view](xdoc/capture/plan_exe_progress.jpg)
+![project_view](xdoc/capture/plan_exe_process.jpg)
+![project_view](xdoc/capture/plan_exe_process_by_user.jpg)
 
 ## Licenses
 

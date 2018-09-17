@@ -28,6 +28,7 @@ Demo: http://47.99.102.138:8080
 7. Open http://localhost:8080/test.html using Chrome.
 
 ## Test Project
+![project_view](xdoc/capture/project_view.jpg)
 <img src="https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/xdoc/capture/project_view.jpg" width="800px" style="margin: 10px auto;">
 
 ## Test Case

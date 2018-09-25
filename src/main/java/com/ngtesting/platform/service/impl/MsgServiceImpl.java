@@ -36,7 +36,7 @@ public class MsgServiceImpl extends BaseServiceImpl implements MsgService {
             TstMsg msg = new TstMsg();
 
             msg.setTitle("用户" + StringUtil.highlightDict(optUser.getNickname()) + action.msg
-                    + "测试集" + StringUtil.highlightDict(task.getName()));
+                    + "任务" + StringUtil.highlightDict(task.getName()));
 
             msg.setUserId(optUser.getId());
 

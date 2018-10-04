@@ -9,9 +9,9 @@ public class IsuQuery extends BaseModel {
     private String priority;
     private Boolean isDefault;
     private Integer displayOrder;
-    private Long orgId;
-	private Long prjId;
-	private Long userId;
+    private Integer orgId;
+	private Integer prjId;
+	private Integer userId;
 
 	public String getCode() {
 		return code;
@@ -43,10 +43,10 @@ public class IsuQuery extends BaseModel {
 	public void setDisplayOrder(Integer displayOrder) {
 		this.displayOrder = displayOrder;
 	}
-	public Long getOrgId() {
+	public Integer getOrgId() {
 		return orgId;
 	}
-	public void setOrgId(Long orgId) {
+	public void setOrgId(Integer orgId) {
 		this.orgId = orgId;
 	}
 	public String getDescr() {
@@ -64,19 +64,19 @@ public class IsuQuery extends BaseModel {
 		isDefault = aDefault;
 	}
 
-	public Long getPrjId() {
+	public Integer getPrjId() {
 		return prjId;
 	}
 
-	public void setPrjId(Long prjId) {
+	public void setPrjId(Integer prjId) {
 		this.prjId = prjId;
 	}
 
-	public Long getUserId() {
+	public Integer getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
 }

@@ -25,9 +25,9 @@ public class TstScheduleItem extends BaseModel {
 
     private String itemType;
 
-    private Long eventId;
-    private Long sessionId;
-//    private Long guestId;
+    private Integer eventId;
+    private Integer sessionId;
+//    private Integer guestId;
 
     private List<TstScheduleItem> children = new LinkedList<TstScheduleItem>();
 
@@ -76,22 +76,22 @@ public class TstScheduleItem extends BaseModel {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Long getEventId() {
+	public Integer getEventId() {
 		return eventId;
 	}
-	public void setEventId(Long eventId) {
+	public void setEventId(Integer eventId) {
 		this.eventId = eventId;
 	}
-	public Long getSessionId() {
+	public Integer getSessionId() {
 		return sessionId;
 	}
-	public void setSessionId(Long sessionId) {
+	public void setSessionId(Integer sessionId) {
 		this.sessionId = sessionId;
 	}
-//	public Long getGuestId() {
+//	public Integer getGuestId() {
 //		return guestId;
 //	}
-//	public void setGuestId(Long guestId) {
+//	public void setGuestId(Integer guestId) {
 //		this.guestId = guestId;
 //	}
 	public Date getStartDatetime() {

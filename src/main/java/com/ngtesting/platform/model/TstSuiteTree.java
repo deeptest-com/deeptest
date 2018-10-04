@@ -6,26 +6,26 @@ import java.util.LinkedHashSet;
 public class TstSuiteTree implements Serializable {
 	private static final long serialVersionUID = 1375843844627636495L;
 
-	private Long id;
+	private Integer id;
 	private String value;
-	private Long pid;
+	private Integer pid;
 
 	private String type;
 
 	LinkedHashSet<TstSuiteTree> children = new LinkedHashSet<TstSuiteTree>();
 
-    public TstSuiteTree(Long id, String value, String type, Long pid) {
+    public TstSuiteTree(Integer id, String value, String type, Integer pid) {
 		this.id = id;
 		this.value = value;
 		this.type = type;
 		this.pid = pid;
 	}
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -45,11 +45,11 @@ public class TstSuiteTree implements Serializable {
 		this.value = value;
 	}
 
-	public Long getPid() {
+	public Integer getPid() {
 		return pid;
 	}
 
-	public void setPid(Long pid) {
+	public void setPid(Integer pid) {
 		this.pid = pid;
 	}
 

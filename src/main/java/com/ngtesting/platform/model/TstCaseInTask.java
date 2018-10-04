@@ -178,7 +178,7 @@ public class TstCaseInTask extends BaseModel {
 		return updateBy;
 	}
 
-	public void setUpdateBy(Long Integer) {
+	public void setUpdateBy(Integer updateBy) {
 		this.updateBy = updateBy;
 	}
 
@@ -428,10 +428,6 @@ public class TstCaseInTask extends BaseModel {
 
 	public void setAttachments(List<TstCaseAttachment> attachments) {
 		this.attachments = attachments;
-	}
-
-	public void setUpdateBy(Integer updateBy) {
-		this.updateBy = updateBy;
 	}
 
 	public Date getExeTime() {

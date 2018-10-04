@@ -16,7 +16,7 @@ public class TstReport extends BaseModel {
 
 	private String descr;
 
-	private Long projectId;
+	private Integer projectId;
 
     public String getName() {
         return name;
@@ -66,11 +66,11 @@ public class TstReport extends BaseModel {
         this.descr = descr;
     }
 
-    public Long getProjectId() {
+    public Integer getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(Long projectId) {
+    public void setProjectId(Integer projectId) {
         this.projectId = projectId;
     }
 

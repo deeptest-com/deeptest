@@ -8,8 +8,8 @@ public class IsuDocument extends BaseModel {
     private String descr;
     private String uri;
     private String type;
-    private Long issueId;
-    private Long authorId;
+    private Integer issueId;
+    private Integer authorId;
 
 	public String getDescr() {
 		return descr;
@@ -30,10 +30,10 @@ public class IsuDocument extends BaseModel {
 		this.type = type;
 	}
 
-	public Long getAuthorId() {
+	public Integer getAuthorId() {
 		return authorId;
 	}
-	public void setAuthorId(Long authorId) {
+	public void setAuthorId(Integer authorId) {
 		this.authorId = authorId;
 	}
 	public String getTitle() {
@@ -43,11 +43,11 @@ public class IsuDocument extends BaseModel {
 		this.title = title;
 	}
 
-    public Long getIssueId() {
+    public Integer getIssueId() {
         return issueId;
     }
 
-    public void setIssueId(Long issueId) {
+    public void setIssueId(Integer issueId) {
         this.issueId = issueId;
     }
 }

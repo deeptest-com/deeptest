@@ -8,8 +8,8 @@ public class Document extends BaseModel {
     private String descr;
     private String uri;
     private String type;
-    private Long eventId;
-    private Long authorId;
+    private Integer eventId;
+    private Integer authorId;
 
 	public static enum DocType {
 		file("file"),
@@ -46,16 +46,16 @@ public class Document extends BaseModel {
 	public void setType(String type) {
 		this.type = type;
 	}
-	public Long getEventId() {
+	public Integer getEventId() {
 		return eventId;
 	}
-	public void setEventId(Long eventId) {
+	public void setEventId(Integer eventId) {
 		this.eventId = eventId;
 	}
-	public Long getAuthorId() {
+	public Integer getAuthorId() {
 		return authorId;
 	}
-	public void setAuthorId(Long authorId) {
+	public void setAuthorId(Integer authorId) {
 		this.authorId = authorId;
 	}
 	public String getTitle() {

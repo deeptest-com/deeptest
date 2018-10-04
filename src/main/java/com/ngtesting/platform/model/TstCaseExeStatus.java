@@ -10,7 +10,7 @@ public class TstCaseExeStatus extends BaseModel {
     private Integer displayOrder;
     private Boolean isFinal;
     private Boolean isBuildIn = false;
-    private Long orgId;
+    private Integer orgId;
 
 	public String getLabel() {
 		return label;
@@ -52,10 +52,10 @@ public class TstCaseExeStatus extends BaseModel {
 	public void setIsBuildIn(Boolean isBuildIn) {
 		this.isBuildIn = isBuildIn;
 	}
-	public Long getOrgId() {
+	public Integer getOrgId() {
 		return orgId;
 	}
-	public void setOrgId(Long orgId) {
+	public void setOrgId(Integer orgId) {
 		this.orgId = orgId;
 	}
 

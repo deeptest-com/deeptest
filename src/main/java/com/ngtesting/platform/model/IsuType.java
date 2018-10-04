@@ -8,7 +8,7 @@ public class IsuType extends BaseModel {
     private String descr;
     private Integer displayOrder;
     private Boolean isBuildIn = false;
-    private Long orgId;
+    private Integer orgId;
 
 	public String getLabel() {
 		return label;
@@ -52,10 +52,10 @@ public class IsuType extends BaseModel {
 	public void setIsBuildIn(Boolean isBuildIn) {
 		this.isBuildIn = isBuildIn;
 	}
-	public Long getOrgId() {
+	public Integer getOrgId() {
 		return orgId;
 	}
-	public void setOrgId(Long orgId) {
+	public void setOrgId(Integer orgId) {
 		this.orgId = orgId;
 	}
 

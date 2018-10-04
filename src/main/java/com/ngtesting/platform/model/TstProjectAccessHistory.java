@@ -4,7 +4,7 @@ import java.util.Date;
 
 
 public class TstProjectAccessHistory extends BaseModel {
-	private static final Long serialVersionUID = -5963995629184890598L;
+	private static final long serialVersionUID = -5963995629184890598L;
 
 	private Date lastAccessTime;
 

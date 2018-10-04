@@ -1,7 +1,7 @@
 package com.ngtesting.platform.model;
 
 public class TstHistory extends BaseModel {
-    private static final Long serialVersionUID = -6418363700406245211L;
+    private static final long serialVersionUID = -6418363700406245211L;
 
     private String title;
     private String descr;

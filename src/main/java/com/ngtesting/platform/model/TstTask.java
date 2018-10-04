@@ -25,7 +25,7 @@ public class TstTask extends BaseModel {
 
     private Integer userId;
     private String userName;
-    private Long envId;
+    private Integer envId;
     private String envName;
 
     public TstTask() {
@@ -88,11 +88,11 @@ public class TstTask extends BaseModel {
         this.caseProjectName = caseProjectName;
     }
 
-    public Long getEnvId() {
+    public Integer getEnvId() {
         return envId;
     }
 
-    public void setEnvId(Long envId) {
+    public void setEnvId(Integer envId) {
         this.envId = envId;
     }
 

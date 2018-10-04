@@ -165,8 +165,16 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	}
 
 	@Override
-	public Boolean delete(Integer id, Integer userId) {
-        projectDao.delete(id, userId);
+	public Boolean delete(Integer id, TstUser user) {
+        projectDao.delete(id, user.getId());
+
+        List<TstProjectAccessHistory> recentProjects = listRecentProject(
+                user.getDefaultOrgId(), user.getId());
+        if (recentProjects.size() > 0) {
+            view(recentProjects.get(0).getPrjId(), user);
+        } else {
+            userService.setEmptyPrj(user, id);
+        }
 
 		return true;
 	}

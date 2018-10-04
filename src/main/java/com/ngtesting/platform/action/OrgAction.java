@@ -112,9 +112,13 @@ public class OrgAction extends BaseAction {
         }
 
         TstOrg org = orgService.save(vo, user);
-        if (user.getDefaultOrgId().intValue() == org.getId().intValue() &&
-                !user.getDefaultOrgName().equals(org.getName())) {
-            user.setDefaultOrgName(org.getName());
+
+        if (user.getDefaultOrgId() == null) { // 首个组织
+            userService.setDefaultOrg(user, org.getId());
+            pushSettingsService.pushOrgSettings(user);
+        } else if (user.getDefaultOrgId().intValue() == org.getId().intValue() &&
+                !org.getName().equals(user.getDefaultOrgName())) { // 修改组织名称
+            user.setDefaultOrgName(vo.getName());
             pushSettingsService.pushOrgSettings(user);
         }
 
@@ -135,8 +139,9 @@ public class OrgAction extends BaseAction {
             return authFail();
         }
 
+        Integer currOrgId = user.getDefaultOrgId();
 		Boolean result = orgService.delete(orgId, user);
-        if (result && orgId.intValue() == user.getDefaultOrgId().intValue()) {
+        if (result && currOrgId != null && orgId.intValue() == currOrgId.intValue()) {
             userService.setEmptyOrg(user, orgId);
 
             pushSettingsService.pushMyOrgs(user);

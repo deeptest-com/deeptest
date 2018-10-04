@@ -43,7 +43,10 @@ public interface UserDao {
     List<TstUser> getProjectUsers(@Param("prjId") Integer prjId, @Param("numb") Integer numb);
 
     void setDefaultOrgPrjToNullForDelete(@Param("orgId") Integer orgId);
+    void setDefaultPrjToNullForDelete(@Param("prjId") Integer prjId);
 
     void removeFromOrg(@Param("userId") Integer userId,
                        @Param("orgId") Integer orgId);
+
+
 }

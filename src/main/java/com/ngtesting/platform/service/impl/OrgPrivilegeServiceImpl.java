@@ -24,9 +24,12 @@ public class OrgPrivilegeServiceImpl extends BaseServiceImpl implements OrgPrivi
 
     @Override
     public Map<String, Boolean> listByUser(Integer userId, Integer orgId) {
-        List<TstOrgPrivilegeDefine> ls = orgPrivilegeDao.listByUser(orgId, userId);
-
         Map<String, Boolean> map = new HashMap();
+        if (orgId == null) {
+            return map;
+        }
+
+        List<TstOrgPrivilegeDefine> ls = orgPrivilegeDao.listByUser(orgId, userId);
         for (TstOrgPrivilegeDefine priv: ls) {
             map.put(priv.getCode().toString(), true);
         }

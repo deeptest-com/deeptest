@@ -116,6 +116,11 @@
             defaultPrjId=NULL, defaultPrjName=NULL
         WHERE defaultOrgId=#{orgId}
     </update>
+    <update id="setDefaultPrjToNullForDelete">
+        UPDATE TstUser
+        SET defaultPrjId=NULL, defaultPrjName=NULL
+        WHERE defaultPrjId=#{prjId}
+    </update>
 
     <update id="setLeftSize" parameterType="TstUser">
         UPDATE TstUser

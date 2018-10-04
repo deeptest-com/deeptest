@@ -70,11 +70,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void setDefaultOrgPrjToNullForDelete(Integer orgId) {
-        userDao.setDefaultOrgPrjToNullForDelete(orgId);
-    }
-
-    @Override
     public Boolean removeFromOrg(Integer userId, Integer orgId) {
         userDao.removeFromOrg(userId, orgId);
         return true;
@@ -215,20 +210,29 @@ public class UserServiceImpl implements UserService {
 
         } else {
             List<TstProject> projects = projectDao.getProjectsByOrg(orgId);
-            setDefaultPrj(user, projects.get(0).getId());
+            if (projects.size() > 0) {
+                setDefaultPrj(user, projects.get(0).getId());
+            }
         }
     }
 
     @Override
     @Transactional
     public void setEmptyOrg(TstUser user, Integer orgId) {
-        setDefaultOrgPrjToNullForDelete(orgId);
+        userDao.setDefaultOrgPrjToNullForDelete(orgId);
 
-//        userDao.setDefaultOrg(user.getId(), null, null);
         user.setDefaultOrgId(null);
         user.setDefaultOrgName(null);
 
-//        userDao.setDefaultPrj(user.getId(), null, null);
+        user.setDefaultPrjId(null);
+        user.setDefaultPrjName(null);
+    }
+
+    @Override
+    @Transactional
+    public void setEmptyPrj(TstUser user, Integer prjId) {
+        userDao.setDefaultPrjToNullForDelete(prjId);
+
         user.setDefaultPrjId(null);
         user.setDefaultPrjName(null);
     }

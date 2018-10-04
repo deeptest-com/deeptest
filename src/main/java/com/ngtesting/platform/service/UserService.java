@@ -29,6 +29,9 @@ public interface UserService {
     @Transactional
     void setEmptyOrg(TstUser user, Integer orgId);
 
+    @Transactional
+    void setEmptyPrj(TstUser user, Integer prjId);
+
     void setDefaultPrj(TstUser user, Integer prjId);
 
     List<TstUser> search(Integer orgId, String keywords, String exceptIds);
@@ -36,8 +39,6 @@ public interface UserService {
     TstUser setLeftSizePers(TstUser user, Integer left, String prop);
 
     List<TstUser> getProjectUsers(Integer orgId, Integer projectId);
-
-    void setDefaultOrgPrjToNullForDelete(Integer orgId);
 
     Boolean removeFromOrg(Integer userId, Integer orgId);
 }

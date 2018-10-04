@@ -1,8 +1,8 @@
 package com.ngtesting.platform.model;
 
-public class IsuStatus extends BaseModel {
+public class IsuStatusCategory extends BaseModel {
+	private static final long serialVersionUID = -3974051187772599821L;
 
-	private static final long serialVersionUID = 1657004478821957505L;
 	private String label;
 	private String code;
     private String descr;

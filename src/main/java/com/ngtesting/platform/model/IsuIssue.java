@@ -11,14 +11,14 @@ public class IsuIssue extends BaseModel {
 
     private Integer projectId;
 
-    private Integer isuTypeId;
-    private String isuTypeName;
+    private Integer typeId;
+    private String typeName;
 
-    private Integer isuStatusId;
-    private String isuStatusName;
+    private Integer statusId;
+    private String statusName;
 
-    private Integer isuPriorityId;
-    private String isuPriorityName;
+    private Integer priorityId;
+    private String priorityName;
 
     private Integer creatorId;
     private String creatorName;

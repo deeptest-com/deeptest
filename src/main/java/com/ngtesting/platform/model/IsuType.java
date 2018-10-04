@@ -4,7 +4,7 @@ public class IsuType extends BaseModel {
 	private static final long serialVersionUID = -2904250132388811594L;
 
 	private String label;
-	private String value;
+	private String code;
     private String descr;
     private Integer displayOrder;
     private Boolean isBuildIn = false;
@@ -18,15 +18,23 @@ public class IsuType extends BaseModel {
 		this.label = label;
 	}
 
-	public String getValue() {
-		return value;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-	public String getDescr() {
+    public Boolean getBuildIn() {
+        return isBuildIn;
+    }
+
+    public void setBuildIn(Boolean buildIn) {
+        isBuildIn = buildIn;
+    }
+
+    public String getDescr() {
 		return descr;
 	}
 	public void setDescr(String descr) {

@@ -74,8 +74,8 @@ public class OrgRoleAction extends BaseAction {
                 orgRolePrivilegeRelationService.listRelationsByOrgRole(orgId, orgRoleId);
         List<TstOrgRoleUserRelation> users =
                 orgRoleUserRelationService.listRelationsByOrgRole(orgId, orgRoleId);
-//		List<TstOrgRoleGroupRelation> groups =
-//				orgRoleGroupRelationService.listRelationsByOrgRole(orgId, orgRoleId);
+		List<TstOrgRoleGroupRelation> groups =
+				orgRoleGroupRelationService.listRelationsByOrgRole(orgId, orgRoleId);
 
 		if (orgRoleId == null) {
 			ret.put("orgRole", new TstOrgRole());
@@ -85,7 +85,7 @@ public class OrgRoleAction extends BaseAction {
 
         ret.put("privileges", privileges);
         ret.put("users", users);
-//		ret.put("groups", groups);
+		ret.put("groups", groups);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
 	}
@@ -110,8 +110,8 @@ public class OrgRoleAction extends BaseAction {
         List<TstOrgRoleUserRelation> users = (List<TstOrgRoleUserRelation>) json.get("users");
         orgRoleUserRelationService.saveRelationsForRole(orgId, po.getId(), users);
 
-//		List<TstOrgRoleGroupRelation> groups = (List<TstOrgRoleGroupRelation>) json.get("groups");
-//		orgRoleGroupRelationService.saveRelationsForRole(orgId, po.getId(), groups);
+		List<TstOrgRoleGroupRelation> groups = (List<TstOrgRoleGroupRelation>) json.get("groups");
+		orgRoleGroupRelationService.saveRelationsForRole(orgId, po.getId(), groups);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

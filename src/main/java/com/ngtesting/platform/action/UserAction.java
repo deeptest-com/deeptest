@@ -214,4 +214,23 @@ public class UserAction extends BaseAction {
         return ret;
     }
 
+    @PostMapping(value = "removeFromOrg")
+    @ResponseBody
+    public Map<String, Object> removeFromOrg(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+
+        Integer userId = json.getInteger("userId");
+        Integer orgId = json.getInteger("orgId");
+
+        if (userNotInOrg(user.getId(), orgId)) {
+            return authFail();
+        }
+
+        Boolean result = userService.removeFromOrg(userId, orgId);
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
 }

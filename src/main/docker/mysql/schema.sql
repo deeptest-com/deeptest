@@ -11,7 +11,7 @@
  Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 09/16/2018 08:40:41 AM
+ Date: 10/04/2018 10:21:19 AM
 */
 
 SET NAMES utf8mb4;
@@ -104,7 +104,6 @@ CREATE TABLE `IsuCustomFieldDefine` (
   `required` bit(1) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
   `buildIn` bit(1) DEFAULT NULL,
-  `applyTo` varchar(255) DEFAULT NULL,
   `orgId` bigint(20) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
@@ -113,7 +112,7 @@ CREATE TABLE `IsuCustomFieldDefine` (
   PRIMARY KEY (`id`),
   KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`orgId`),
   CONSTRAINT `FK_ro4ivq1br0vdteycd9ri6fr62` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10201 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `IsuCustomFieldOption`
@@ -142,6 +141,7 @@ DROP TABLE IF EXISTS `IsuCustomFieldOptionDefine`;
 CREATE TABLE `IsuCustomFieldOptionDefine` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `label` varchar(255) DEFAULT NULL,
+  `code` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
@@ -319,6 +319,7 @@ DROP TABLE IF EXISTS `IsuNotificationDefine`;
 CREATE TABLE `IsuNotificationDefine` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
+  `code` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `orgId` bigint(20) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
@@ -371,6 +372,7 @@ DROP TABLE IF EXISTS `IsuPageDefine`;
 CREATE TABLE `IsuPageDefine` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
+  `code` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
@@ -460,6 +462,7 @@ DROP TABLE IF EXISTS `IsuPriorityDefine`;
 CREATE TABLE `IsuPriorityDefine` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
+  `code` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
@@ -509,6 +512,7 @@ DROP TABLE IF EXISTS `IsuQuery`;
 CREATE TABLE `IsuQuery` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
+  `tql` varchar(1000) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
   `projectId` bigint(20) DEFAULT NULL,
@@ -528,6 +532,8 @@ DROP TABLE IF EXISTS `IsuQueryDefine`;
 CREATE TABLE `IsuQueryDefine` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
+  `code` varchar(255) DEFAULT NULL,
+  `tql` varchar(1000) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `orgId` bigint(20) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
@@ -586,6 +592,7 @@ DROP TABLE IF EXISTS `IsuStatusDefine`;
 CREATE TABLE `IsuStatusDefine` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
+  `code` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `categoryId` bigint(20) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
@@ -623,6 +630,7 @@ DROP TABLE IF EXISTS `IsuTypeDefine`;
 CREATE TABLE `IsuTypeDefine` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
+  `code` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
@@ -872,7 +880,7 @@ CREATE TABLE `TstAlert` (
   KEY `FK_b4fbqud01ub7bqahljyyux0ss` (`userId`),
   CONSTRAINT `FK_b4fbqud01ub7bqahljyyux0ss` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_r8m7ykej6x9fpp4d52sq3y8x8` FOREIGN KEY (`assigneeId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCase`
@@ -925,7 +933,7 @@ CREATE TABLE `TstCase` (
   CONSTRAINT `FK_4paqpejxxg65icpu7asf9btow` FOREIGN KEY (`createById`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_f3mtkmff26truvxmm897u8oeu` FOREIGN KEY (`updateById`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_le8suo2xxbcr036yaiivwkqn0` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3079 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=3103 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCaseAttachment`
@@ -949,7 +957,7 @@ CREATE TABLE `TstCaseAttachment` (
   KEY `FK_ajcsto1d9eupd3476t861vhxp` (`userId`),
   CONSTRAINT `FK_ajcsto1d9eupd3476t861vhxp` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_hubkj6m012dpsarrjmh3160sv` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `TstCaseComments`
@@ -970,7 +978,7 @@ CREATE TABLE `TstCaseComments` (
   KEY `FK_d4d1t72y6wkb41bbpkdrk26sv` (`userId`),
   CONSTRAINT `FK_d4d1t72y6wkb41bbpkdrk26sv` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_f1r5t3p8vgi1iiq2v0wle7erj` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCaseExeStatus`
@@ -992,7 +1000,7 @@ CREATE TABLE `TstCaseExeStatus` (
   PRIMARY KEY (`id`),
   KEY `FK_o4l4xg65y069b0ai5cgbfm175` (`orgid`),
   CONSTRAINT `FK_o4l4xg65y069b0ai5cgbfm175` FOREIGN KEY (`orgid`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=641 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=657 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCaseHistory`
@@ -1010,7 +1018,7 @@ CREATE TABLE `TstCaseHistory` (
   PRIMARY KEY (`id`),
   KEY `FK_8yss1awno54uahftbyi1wb2j8` (`caseId`),
   CONSTRAINT `FK_8yss1awno54uahftbyi1wb2j8` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `TstCaseInSuite`
@@ -1038,7 +1046,7 @@ CREATE TABLE `TstCaseInSuite` (
   CONSTRAINT `FK_e3cf797mcxhrsy48npuytxkj2` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`),
   CONSTRAINT `FK_fi05leklixq7on505rmm9s2l0` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_siekg4jjehvbdcasn7vry9j2f` FOREIGN KEY (`createBy`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=99 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `TstCaseInTask`
@@ -1075,7 +1083,7 @@ CREATE TABLE `TstCaseInTask` (
   CONSTRAINT `FK_ahth2x2i7j9loamqyg3jcwfu6` FOREIGN KEY (`createBy`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_avls2r88tnl837rhiw01wtyma` FOREIGN KEY (`planId`) REFERENCES `TstPlan` (`id`),
   CONSTRAINT `FK_mwbiov88r7ppt8x9yunxr18pu` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=189 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=192 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCaseInTaskHistory`
@@ -1096,7 +1104,7 @@ CREATE TABLE `TstCaseInTaskHistory` (
   KEY `caseInTaskId` (`caseInTaskId`),
   CONSTRAINT `fk_caseId` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`),
   CONSTRAINT `fk_caseInTaskId` FOREIGN KEY (`caseInTaskId`) REFERENCES `TstCaseInTask` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `TstCasePriority`
@@ -1118,7 +1126,7 @@ CREATE TABLE `TstCasePriority` (
   PRIMARY KEY (`id`),
   KEY `FK_d8r4hkhobybms74u4vk43thj9` (`orgid`),
   CONSTRAINT `FK_d8r4hkhobybms74u4vk43thj9` FOREIGN KEY (`orgid`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=462 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=474 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCaseStep`
@@ -1137,7 +1145,7 @@ CREATE TABLE `TstCaseStep` (
   PRIMARY KEY (`id`),
   KEY `FK_s8hj2viu2jtj1iwf4pgu789hi` (`caseId`),
   CONSTRAINT `FK_s8hj2viu2jtj1iwf4pgu789hi` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCaseType`
@@ -1159,7 +1167,7 @@ CREATE TABLE `TstCaseType` (
   PRIMARY KEY (`id`),
   KEY `FK_rqs9hiykm6kk5w8rewcy1uvy7` (`orgId`),
   CONSTRAINT `FK_rqs9hiykm6kk5w8rewcy1uvy7` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1059 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=1087 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCustomField`
@@ -1171,11 +1179,11 @@ CREATE TABLE `TstCustomField` (
   `label` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
-  `applyTo` varchar(255) DEFAULT NULL,
   `format` varchar(255) DEFAULT NULL,
   `rows` int(11) DEFAULT NULL,
   `global` bit(1) DEFAULT NULL,
   `myColumn` varchar(255) DEFAULT NULL,
+  `applyTo` varchar(255) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
   `required` bit(1) DEFAULT NULL,
   `buildIn` bit(1) DEFAULT NULL,
@@ -1187,7 +1195,7 @@ CREATE TABLE `TstCustomField` (
   PRIMARY KEY (`id`),
   KEY `FK_b1o40efa19tleean59bgg59jm` (`orgId`),
   CONSTRAINT `FK_b1o40efa19tleean59bgg59jm` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCustomFieldOption`
@@ -1207,7 +1215,7 @@ CREATE TABLE `TstCustomFieldOption` (
   PRIMARY KEY (`id`),
   KEY `FK_9x13nia3eij6tb613asglg0er` (`fieldId`),
   CONSTRAINT `FK_9x13nia3eij6tb613asglg0er` FOREIGN KEY (`fieldId`) REFERENCES `TstCustomField` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `TstCustomFieldProjectRelation`
@@ -1282,7 +1290,7 @@ CREATE TABLE `TstEnv` (
   PRIMARY KEY (`id`),
   KEY `FK_afu6qfm7329uojw4i8j0gaskf` (`projectId`),
   CONSTRAINT `FK_afu6qfm7329uojw4i8j0gaskf` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `TstHistory`
@@ -1307,7 +1315,7 @@ CREATE TABLE `TstHistory` (
   KEY `FK_m4yjkr3nwc5y1fcjj1ke08xie` (`userId`),
   CONSTRAINT `FK_j9m2m7ijlp9j2184nv0yiln9u` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_m4yjkr3nwc5y1fcjj1ke08xie` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=683 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=701 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstMsg`
@@ -1325,7 +1333,7 @@ CREATE TABLE `TstMsg` (
   PRIMARY KEY (`id`),
   KEY `FK_h4g997qkpu00h24f9ppqa4g2k` (`userId`),
   CONSTRAINT `FK_h4g997qkpu00h24f9ppqa4g2k` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstOrg`
@@ -1340,7 +1348,7 @@ CREATE TABLE `TstOrg` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=161 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=165 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstOrgGroup`
@@ -1358,7 +1366,7 @@ CREATE TABLE `TstOrgGroup` (
   PRIMARY KEY (`id`),
   KEY `FK_dlddwakgodocwt7n7abndkhtg` (`orgId`),
   CONSTRAINT `FK_dlddwakgodocwt7n7abndkhtg` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=192 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=197 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstOrgGroupUserRelation`
@@ -1416,7 +1424,7 @@ CREATE TABLE `TstOrgRole` (
   PRIMARY KEY (`id`),
   KEY `FK_q5g6x4w1pwr5ur4iwbg17nr9u` (`orgId`),
   CONSTRAINT `FK_q5g6x4w1pwr5ur4iwbg17nr9u` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=481 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=489 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstOrgRoleGroupRelation`
@@ -1500,7 +1508,7 @@ CREATE TABLE `TstPlan` (
   CONSTRAINT `FK_299h646hfdb07s239a6juu55k` FOREIGN KEY (`verId`) REFERENCES `TstVer` (`id`),
   CONSTRAINT `FK_pc89p4era2bchkg4ulsv1gv7l` FOREIGN KEY (`envId`) REFERENCES `TstVer` (`id`),
   CONSTRAINT `FK_te991npw8lxmrtmt2gcjolimr` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstProject`
@@ -1524,7 +1532,7 @@ CREATE TABLE `TstProject` (
   KEY `FK_rm5uawwl53dtse1l5qhwci30v` (`parentId`),
   CONSTRAINT `FK_avuusthsgk7g68bm0kiq6dix0` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
   CONSTRAINT `FK_rm5uawwl53dtse1l5qhwci30v` FOREIGN KEY (`parentId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=330 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=342 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstProjectAccessHistory`
@@ -1546,7 +1554,7 @@ CREATE TABLE `TstProjectAccessHistory` (
   CONSTRAINT `FK_dpcrx83ysgtel2eua0856xfk3` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_hv9vkb26yw1fluyh6thwh230h` FOREIGN KEY (`prjId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_l0ifd62wftf6w81779j64rfmc` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=177 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=189 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstProjectPrivilegeDefine`
@@ -1591,7 +1599,7 @@ CREATE TABLE `TstProjectRole` (
   PRIMARY KEY (`id`),
   KEY `FK_8eokjbtquljjgjahh7y0l0la6` (`orgId`),
   CONSTRAINT `FK_8eokjbtquljjgjahh7y0l0la6` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=597 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=613 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstProjectRoleEntityRelation`
@@ -1645,7 +1653,7 @@ CREATE TABLE `TstSuite` (
   CONSTRAINT `FK_1r4cd0cr11rrevb0x5sj7w2pv` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_bof1daqokqea3o5yfdlreg8jy` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_gam83w6tee7evc846fh0kqvq0` FOREIGN KEY (`caseProjectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `TstTask`
@@ -1677,7 +1685,7 @@ CREATE TABLE `TstTask` (
   CONSTRAINT `FK_fymnl68rmtbhmw3jcg66qfdes` FOREIGN KEY (`caseProjectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_iog5lfy5gnd0uccm0wgrlqcsd` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_iokmiyvqpbqi8uo8d8nq985fw` FOREIGN KEY (`envId`) REFERENCES `TstVer` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstTaskAssigneeRelation`
@@ -1738,7 +1746,7 @@ CREATE TABLE `TstUser` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=154 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=162 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstUserVerifyCode`
@@ -1754,7 +1762,7 @@ CREATE TABLE `TstUserVerifyCode` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstVer`
@@ -1777,7 +1785,7 @@ CREATE TABLE `TstVer` (
   PRIMARY KEY (`id`),
   KEY `FK_thypvsn70njcdpm9jiv13eu9p` (`projectId`),
   CONSTRAINT `FK_thypvsn70njcdpm9jiv13eu9p` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Procedure structure for `add_cases_to_suite`
@@ -2820,10 +2828,10 @@ delimiter ;;
 CREATE DEFINER=`ngtesting`@`%` PROCEDURE `remove_user_from_org`(IN _user_id BIGINT, IN _org_id BIGINT)
 BEGIN
 
-    delete from TstROrgUser where userId=_user_id and orgId=_org_id;
-    delete from TstROrgRoleUser where userId=_user_id and orgRoleId
+    delete from TstOrgUserRelation where userId=_user_id and orgId=_org_id;
+    delete from TstOrgRoleUserRelation where userId=_user_id and orgRoleId
                                                           in (select tmp.id from TstOrgRole tmp where tmp.orgId=_org_id);
-    delete from TstROrgGroupUser where userId=_user_id and orgGroupId
+    delete from TstOrgGroupUserRelation where userId=_user_id and orgGroupId
                                                            in (select tmp.id from TstOrgGroup tmp where tmp.orgId=_org_id);
 
   END

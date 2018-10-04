@@ -177,6 +177,10 @@ public class ProjectAction extends BaseAction {
 
         projectService.delete(projectId, user.getId());
 
+        List<TstProjectAccessHistory> recentProjects = projectService.listRecentProject(
+                user.getDefaultOrgId(), user.getId());
+        projectService.view(recentProjects.get(0).getPrjId(), user);
+
         pushSettingsService.pushRecentProjects(user);
         pushSettingsService.pushPrjSettings(user);
 

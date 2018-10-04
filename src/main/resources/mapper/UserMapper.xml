@@ -144,4 +144,11 @@
         ORDER BY usr.id ASC
     </select>
 
+    <delete id="removeFromOrg">
+      { call remove_user_from_org(
+                #{userId,mode=IN,jdbcType=INTEGER},
+                #{orgId,mode=IN,jdbcType=INTEGER}
+             ) }
+    </delete>
+
 </mapper>

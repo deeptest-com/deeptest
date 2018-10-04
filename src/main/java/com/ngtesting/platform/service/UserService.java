@@ -38,4 +38,6 @@ public interface UserService {
     List<TstUser> getProjectUsers(Integer orgId, Integer projectId);
 
     void setDefaultOrgPrjToNullForDelete(Integer orgId);
+
+    Boolean removeFromOrg(Integer userId, Integer orgId);
 }

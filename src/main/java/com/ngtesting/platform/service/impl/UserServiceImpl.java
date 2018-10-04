@@ -75,6 +75,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Boolean removeFromOrg(Integer userId, Integer orgId) {
+        userDao.removeFromOrg(userId, orgId);
+        return true;
+    }
+
+    @Override
     public TstUser get(Integer id) {
         TstUser user = userDao.get(id);
         return user;

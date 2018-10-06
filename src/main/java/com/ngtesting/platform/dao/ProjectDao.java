@@ -27,6 +27,11 @@ public interface ProjectDao {
     void save(TstProject vo);
     void update(TstProject vo);
 
+    void setDefault(@Param("id") Integer id,
+                       @Param("prjId") Integer prjId,
+                       @Param("prjName") String prjName);
+    void setUserDefaultPrjToNullForDelete(@Param("prjId") Integer prjId);
+
     void enable(@Param("id") Integer id);
     void enableChildren(@Param("id") Integer id);
     void disableChildren(@Param("id") Integer id);

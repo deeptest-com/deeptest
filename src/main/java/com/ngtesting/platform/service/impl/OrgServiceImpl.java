@@ -2,11 +2,14 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.AuthDao;
 import com.ngtesting.platform.dao.OrgDao;
+import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.dao.UserDao;
 import com.ngtesting.platform.model.TstOrg;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.OrgPrivilegeService;
 import com.ngtesting.platform.service.OrgService;
+import com.ngtesting.platform.service.ProjectService;
+import com.ngtesting.platform.service.PushSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +21,13 @@ import java.util.Map;
 public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	@Autowired
     OrgPrivilegeService orgRolePrivilegeService;
+    @Autowired
+    PushSettingsService pushSettingsService;
+
+    @Autowired
+    private ProjectService projectService;
+    @Autowired
+    private ProjectDao projectDao;
 
 	@Autowired
 	private OrgDao orgDao;
@@ -65,9 +75,53 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 
 	@Override
 	public Boolean delete(Integer id, TstUser user) {
+        Integer currOrgId = user.getDefaultOrgId();
+
 		Integer count = orgDao.delete(id);
-		return count > 0;
+
+		if (count > 0) {
+            setUserDefaultOrgPrjToNullForDelete(id);
+
+            if (currOrgId != null && id.intValue() == currOrgId.intValue()) { // 当前组织被删了
+                changeDefaultOrg(user, null);
+            }
+
+            return true;
+        }
+
+        pushSettingsService.pushMyOrgs(user);
+
+        return false;
 	}
+
+    @Override
+    @Transactional
+    public void changeDefaultOrg(TstUser user, Integer orgId) {
+	    if (orgId == null) {
+            user.setDefaultOrgId(null);
+            user.setDefaultOrgName(null);
+
+            pushSettingsService.pushOrgSettings(user);
+
+            projectService.changeDefaultPrj(user, null);
+            return;
+        }
+
+        TstOrg org = orgDao.get(orgId);
+        orgDao.setDefault(user.getId(), orgId, org.getName());
+        user.setDefaultOrgId(orgId);
+        user.setDefaultOrgName(org.getName());
+
+        projectService.changeToAnotherPrj(user);
+
+        pushSettingsService.pushOrgSettings(user);
+    }
+
+    @Override
+    @Transactional
+    public void setUserDefaultOrgPrjToNullForDelete(Integer orgId) {
+        orgDao.setDefaultOrgPrjToNullForDelete(orgId);
+    }
 
 	@Override
 	public void genVos(List<TstOrg> pos, Integer userId) {

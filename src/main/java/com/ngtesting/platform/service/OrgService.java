@@ -15,8 +15,10 @@ public interface OrgService extends BaseService {
 
 	Boolean delete(Integer id, TstUser user);
 
-	void genVos(List<TstOrg> pos, Integer userId);
+	void changeDefaultOrg(TstUser user, Integer orgId);
+    void setUserDefaultOrgPrjToNullForDelete(Integer orgId);
+
+    void genVos(List<TstOrg> pos, Integer userId);
 
     TstOrg save(TstOrg vo, TstUser user);
-
 }

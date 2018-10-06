@@ -30,20 +30,9 @@ public interface UserDao {
                     @Param("prop") String prop,
                     @Param("value") String value);
 
-    void setDefaultOrg(@Param("id") Integer id,
-                       @Param("orgId") Integer orgId,
-                       @Param("orgName") String orgName);
-
-    void setDefaultPrj(@Param("id") Integer id,
-                       @Param("prjId") Integer prjId,
-                       @Param("prjName") String prjName);
-
     void setLeftSize(TstUser user);
 
     List<TstUser> getProjectUsers(@Param("prjId") Integer prjId, @Param("numb") Integer numb);
-
-    void setDefaultOrgPrjToNullForDelete(@Param("orgId") Integer orgId);
-    void setDefaultPrjToNullForDelete(@Param("prjId") Integer prjId);
 
     void removeFromOrg(@Param("userId") Integer userId,
                        @Param("orgId") Integer orgId);

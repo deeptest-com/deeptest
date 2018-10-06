@@ -31,9 +31,9 @@
     </select>
 
     <update id="setDefault">
-        UPDATE TstOrg
-        SET defaultPrjId=#{prjId}, defaultPrjName=#{prjName}
-        WHERE userId=#{id}
+        UPDATE TstUser
+        SET defaultOrgId=#{orgId}, defaultOrgName=#{orgName}
+        WHERE id=#{id}
     </update>
 
     <insert id="save" parameterType="TstOrg" useGeneratedKeys="true" keyProperty="id">
@@ -53,6 +53,13 @@
         SET deleted=TRUE
         WHERE id=#{id}
     </delete>
+
+    <update id="setUserDefaultOrgPrjToNullForDelete">
+        UPDATE TstUser
+        SET defaultOrgId=NULL, defaultOrgName=NULL,
+        defaultPrjId=NULL, defaultPrjName=NULL
+        WHERE defaultOrgId=#{orgId}
+    </update>
 
     <insert id="initOrg">
         { call init_org(

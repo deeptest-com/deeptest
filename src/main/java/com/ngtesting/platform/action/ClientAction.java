@@ -33,7 +33,7 @@ public class ClientAction extends BaseAction {
     @Autowired
     SysPrivilegeService sysPrivilegeService;
     @Autowired
-    OrgPrivilegeService orgRolePrivilegeService;
+    OrgPrivilegeService orgPrivilegeService;
     @Autowired
     CasePropertyService casePropertyService;
     @Autowired
@@ -54,17 +54,20 @@ public class ClientAction extends BaseAction {
         Integer orgIdNew = json.getInteger("orgId");
         Integer prjIdNew = json.getInteger("prjId");
 
+        // 前端上下文变了
         if (orgIdNew != null && orgIdNew.longValue() != orgId.longValue()) { // org不能为空
-            userService.setDefaultOrg(user, orgId);
+            orgService.changeDefaultOrg(user, orgId);
         }
         if (prjIdNew != null && (prjId == null || prjIdNew.longValue() != prjId.longValue())) { // prj可能为空
-            projectService.view(prjIdNew, user);
+            projectService.changeDefaultPrj(user, prjIdNew);
         }
 
         Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userId);
         ret.put("sysPrivileges", sysPrivileges);
-        Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(user.getId(), orgId);
+        Map<String, Boolean> orgPrivileges = orgPrivilegeService.listByUser(user.getId(), orgId);
         ret.put("orgPrivileges", orgPrivileges);
+        Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userId, prjId, orgId);
+        ret.put("prjPrivileges", prjPrivileges);
 
         List<TstOrg> orgs = orgService.listByUser(userId);
         ret.put("myOrgs", orgs);
@@ -74,9 +77,6 @@ public class ClientAction extends BaseAction {
 
         List<TstProjectAccessHistory> recentProjects = projectService.listRecentProject(orgId, userId);
         ret.put("recentProjects", recentProjects);
-
-        Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userId, prjId, orgId);
-        ret.put("prjPrivileges", prjPrivileges);
 
         ret.put("profile", user);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

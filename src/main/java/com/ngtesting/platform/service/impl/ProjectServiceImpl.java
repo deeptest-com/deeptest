@@ -47,6 +47,9 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
     @Autowired
     AuthDao authDao;
 
+    @Autowired
+    private PushSettingsService pushSettingsService;
+
 	@Override
 	public List<TstProject> list(Integer orgId, Integer userId, String keywords, Boolean disabled) {
 		Map<String, Map<String, Boolean>> privMap = new HashMap();
@@ -161,27 +164,70 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
             projectDao.disableChildren(vo.getId());
 		}
 
+        Integer currPrjId = user.getDefaultPrjId();
+        if (currPrjId != null && vo.getId().intValue() == currPrjId.intValue()) { // 当前项目被修改
+            pushSettingsService.pushPrjSettings(user);
+        }
+
+        pushSettingsService.pushRecentProjects(user);
+
 		return vo;
 	}
 
 	@Override
 	public Boolean delete(Integer id, TstUser user) {
+        Integer currPrjId = user.getDefaultPrjId();
+
         projectDao.delete(id, user.getId());
 
-        List<TstProjectAccessHistory> recentProjects = listRecentProject(
-                user.getDefaultOrgId(), user.getId());
-        if (recentProjects.size() > 0) {
-            view(recentProjects.get(0).getPrjId(), user);
-        } else {
-            userService.setEmptyPrj(user, id);
+        if (currPrjId != null && id.intValue() == currPrjId.intValue()) { // 当前项目被删了
+            changeToAnotherPrj(user);
         }
+
+        pushSettingsService.pushRecentProjects(user);
 
 		return true;
 	}
 
+    @Override
+    public void setUserDefaultPrjToNullForDelete(Integer id) {
+        projectDao.setUserDefaultPrjToNullForDelete(id);
+    }
+
+    @Override
+    @Transactional
+    public void changeToAnotherPrj(TstUser user) {
+        List<TstProjectAccessHistory> recentProjects = listRecentProject(user.getDefaultOrgId(),
+                user.getId());
+        if (recentProjects.size() > 0) { // 有历史
+            TstProjectAccessHistory his = recentProjects.get(0);
+            changeDefaultPrj(user, his.getPrjId());
+        } else {
+            List<TstProject> projects = projectDao.getProjectsByOrg(user.getDefaultOrgId());
+            if (projects.size() > 0) { // 有项目
+                changeDefaultPrj(user, projects.get(0).getId());
+            } else { // 无项目
+                changeDefaultPrj(user, null);
+            }
+        }
+    }
+
 	@Override
     @Transactional
-	public TstProject view(Integer projectId, TstUser user) {
+	public TstProject changeDefaultPrj(TstUser user, Integer projectId) {
+	    if (projectId == null) {
+            setUserDefaultPrjToNullForDelete(projectId);
+            projectDao.setDefault(user.getId(), null, null);
+
+            user.setDefaultPrjId(null);
+            user.setDefaultPrjName(null);
+
+            pushSettingsService.pushRecentProjects(user);
+            pushSettingsService.pushPrjSettings(user);
+
+            return null;
+        }
+
 		TstProject po = get(projectId);
 
         if (authService.noProjectAndProjectGroupPrivilege(user.getId(), po)) {
@@ -191,7 +237,13 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
         if (po.getType().equals(TstProject.ProjectType.project)) {
             projectDao.genHistory(po.getOrgId(), user.getId(), projectId, po.getName());
 
-            userService.setDefaultPrj(user, projectId);
+            projectDao.setDefault(user.getId(), projectId, po.getName());
+
+            user.setDefaultPrjId(projectId);
+            user.setDefaultPrjName(po.getName());
+
+            pushSettingsService.pushRecentProjects(user);
+            pushSettingsService.pushPrjSettings(user);
 		}
 
 		return po;

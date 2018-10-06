@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class IsuCustomField extends BaseModel {
-
 	private static final long serialVersionUID = 1279085732086560549L;
+
 	private String code;
     private String label;
     private String myColumn;

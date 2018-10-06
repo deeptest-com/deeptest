@@ -113,30 +113,6 @@ public class ProjectAction extends BaseAction {
     }
 
     @ResponseBody
-    @PostMapping("/change")
-    public Map<String, Object> change(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer projectId = json.getInteger("id");
-
-        TstProject vo = projectService.view(projectId, user);
-        if (vo == null) {
-            return authFail();
-        }
-
-        if (vo.getType().equals(TstProject.ProjectType.project)) {
-            pushSettingsService.pushRecentProjects(user);
-            pushSettingsService.pushPrjSettings(user);
-        }
-
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        ret.put("data", vo);
-
-        return ret;
-    }
-
-    @ResponseBody
     @PostMapping("/save")
     public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -154,9 +130,6 @@ public class ProjectAction extends BaseAction {
         if (TstProject.ProjectType.project.equals(po.getType())) {
             projectService.updateNameInHisoty(po.getId(), userId);
         }
-
-        pushSettingsService.pushRecentProjects(user);
-        pushSettingsService.pushPrjSettings(user);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -177,10 +150,27 @@ public class ProjectAction extends BaseAction {
 
         projectService.delete(projectId, user);
 
-        pushSettingsService.pushRecentProjects(user);
-        pushSettingsService.pushPrjSettings(user);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    // 来源于前端上下文的变化
+    @ResponseBody
+    @PostMapping("/change")
+    public Map<String, Object> change(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer projectId = json.getInteger("id");
+
+        TstProject vo = projectService.changeDefaultPrj(user, projectId);
+        if (vo == null) {
+            return authFail();
+        }
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        ret.put("data", vo);
+
         return ret;
     }
 

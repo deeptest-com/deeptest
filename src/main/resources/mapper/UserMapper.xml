@@ -99,29 +99,6 @@
         WHERE id=#{id}
     </update>
 
-    <update id="setDefaultOrg">
-        UPDATE TstUser
-        SET defaultOrgId=#{orgId}, defaultOrgName=#{orgName}
-        WHERE id=#{id}
-    </update>
-    <update id="setDefaultPrj">
-        UPDATE TstUser
-        SET defaultPrjId=#{prjId}, defaultPrjName=#{prjName}
-        WHERE id=#{id}
-    </update>
-
-    <update id="setDefaultOrgPrjToNullForDelete">
-        UPDATE TstUser
-        SET defaultOrgId=NULL, defaultOrgName=NULL,
-            defaultPrjId=NULL, defaultPrjName=NULL
-        WHERE defaultOrgId=#{orgId}
-    </update>
-    <update id="setDefaultPrjToNullForDelete">
-        UPDATE TstUser
-        SET defaultPrjId=NULL, defaultPrjName=NULL
-        WHERE defaultPrjId=#{prjId}
-    </update>
-
     <update id="setLeftSize" parameterType="TstUser">
         UPDATE TstUser
         SET leftSizeDesign=#{leftSizeDesign}, leftSizeExe=#{leftSizeExe}

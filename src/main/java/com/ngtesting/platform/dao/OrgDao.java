@@ -21,5 +21,10 @@ public interface OrgDao {
     void save(TstOrg vo);
     void update(TstOrg vo);
 
+    void setDefault(@Param("id") Integer id,
+                       @Param("orgId") Integer orgId,
+                       @Param("orgName") String orgName);
+    void setDefaultOrgPrjToNullForDelete(@Param("orgId") Integer orgId);
+
     Integer delete(@Param("id") Integer id);
 }

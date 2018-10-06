@@ -132,6 +132,17 @@
         WHERE parentId=#{id}
     </update>
 
+    <update id="setDefault">
+        UPDATE TstUser
+        SET defaultPrjId=#{prjId}, defaultPrjName=#{prjName}
+        WHERE id=#{id}
+    </update>
+    <update id="setUserDefaultPrjToNullForDelete">
+        UPDATE TstUser
+        SET defaultPrjId=NULL, defaultPrjName=NULL
+        WHERE defaultPrjId=#{prjId}
+    </update>
+
     <resultMap id="projectMaps" type="TstProject" autoMapping="true">
         <id column="id" property="id"/>
 

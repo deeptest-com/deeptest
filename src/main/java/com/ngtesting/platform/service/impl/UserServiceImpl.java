@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService {
             Integer projectRoleId = projectRoleDao.getRoleByCode(orgId, "test_designer").getId();
             projectRoleEntityRelationDao.addRole(orgId, prjId, projectRoleId, vo.getId(), "user");
 
-            projectService.view(prjId, vo);
+            projectService.changeDefaultPrj(vo, prjId);
 
             orgGroupUserRelationService.saveRelationsForUser(orgId, vo.getId(), relations);
 
@@ -193,65 +193,6 @@ public class UserServiceImpl implements UserService {
 
         TstUser user = userDao.get(id);
         return user;
-    }
-
-    @Override
-    @Transactional
-    public void setDefaultOrg(TstUser user, Integer orgId) {
-        TstOrg org = orgDao.get(orgId);
-        userDao.setDefaultOrg(user.getId(), orgId, org.getName());
-        user.setDefaultOrgId(orgId);
-        user.setDefaultOrgName(org.getName());
-
-        List<TstProjectAccessHistory> recentProjects = projectService.listRecentProject(orgId, user.getId());
-        if (recentProjects.size() > 0) {
-            TstProjectAccessHistory his = recentProjects.get(0);
-            setDefaultPrj(user, his.getPrjId());
-
-        } else {
-            List<TstProject> projects = projectDao.getProjectsByOrg(orgId);
-            if (projects.size() > 0) {
-                setDefaultPrj(user, projects.get(0).getId());
-            }
-        }
-    }
-
-    @Override
-    @Transactional
-    public void setEmptyOrg(TstUser user, Integer orgId) {
-        userDao.setDefaultOrgPrjToNullForDelete(orgId);
-
-        user.setDefaultOrgId(null);
-        user.setDefaultOrgName(null);
-
-        user.setDefaultPrjId(null);
-        user.setDefaultPrjName(null);
-    }
-
-    @Override
-    @Transactional
-    public void setEmptyPrj(TstUser user, Integer prjId) {
-        userDao.setDefaultPrjToNullForDelete(prjId);
-
-        user.setDefaultPrjId(null);
-        user.setDefaultPrjName(null);
-    }
-
-    @Override
-    @Transactional
-    public void setDefaultPrj(TstUser user, Integer prjId) {
-        if (prjId != null) {
-            TstProject prj = projectDao.get(prjId);
-            userDao.setDefaultPrj(user.getId(), prjId, prj.getName());
-
-            user.setDefaultPrjId(prjId);
-            user.setDefaultPrjName(prj.getName());
-        } else {
-            userDao.setDefaultPrj(user.getId(), null, null);
-
-            user.setDefaultPrjId(null);
-            user.setDefaultPrjName(null);
-        }
     }
 
     @Override

@@ -127,10 +127,6 @@ public class ProjectAction extends BaseAction {
             return authFail();
         }
 
-        if (TstProject.ProjectType.project.equals(po.getType())) {
-            projectService.updateNameInHisoty(po.getId(), userId);
-        }
-
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

@@ -1,11 +1,9 @@
 package com.ngtesting.platform.service.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.AuthDao;
 import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.dao.ProjectPrivilegeDao;
-import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstProjectAccessHistory;
 import com.ngtesting.platform.model.TstUser;
@@ -138,14 +136,19 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
                     "test_leader", user.getId());
             caseService.createSample(vo.getId(), user);
         }
-        if(TstProject.ProjectType.project.equals(vo.getType())) {
-            historyService.create(vo.getId(), user,
-                    isNew? Constant.MsgType.create.msg: Constant.MsgType.create.update.msg,
-                    TstHistory.TargetType.project, vo.getId(), vo.getName());
+
+        if (TstProject.ProjectType.project.equals(vo.getType())) {
+            updateNameInHisoty(vo.getId(), user.getId());
         }
 
-		if (disableStatusChanged) {
+//        设置为默认项目？
+//        if(TstProject.ProjectType.project.equals(vo.getType())) {
+//            historyService.create(vo.getId(), user,
+//                    isNew? Constant.MsgType.create.msg: Constant.MsgType.create.update.msg,
+//                    TstHistory.TargetType.project, vo.getId(), vo.getName());
+//        }
 
+		if (disableStatusChanged) {
             // 项目被启用
             if (!vo.getDisabled()) {
                 if (vo.getType().equals(TstProject.ProjectType.project)) {

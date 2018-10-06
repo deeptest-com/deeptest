@@ -144,29 +144,28 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
                     TstHistory.TargetType.project, vo.getId(), vo.getName());
         }
 
-		if (!disableStatusChanged) {
-			return vo;
-		}
+		if (disableStatusChanged) {
 
-		// 项目被启用
-		if (!vo.getDisabled()) {
-			if (vo.getType().equals(TstProject.ProjectType.project)) {
-				// 启用父
-				projectDao.enable(vo.getParentId());
-			} else {
-				// 启用子
-                projectDao.enableChildren(vo.getId());
-			}
-		}
+            // 项目被启用
+            if (!vo.getDisabled()) {
+                if (vo.getType().equals(TstProject.ProjectType.project)) {
+                    // 启用父
+                    projectDao.enable(vo.getParentId());
+                } else {
+                    // 启用子
+                    projectDao.enableChildren(vo.getId());
+                }
+            }
 
-		// 项目组被归档，归档子项目
-		if (vo.getDisabled() && vo.getType().equals(TstProject.ProjectType.group)) {
-            projectDao.disableChildren(vo.getId());
-		}
+            // 项目组被归档，归档子项目
+            if (vo.getDisabled() && vo.getType().equals(TstProject.ProjectType.group)) {
+                projectDao.disableChildren(vo.getId());
+            }
 
-        Integer currPrjId = user.getDefaultPrjId();
-        if (currPrjId != null && vo.getId().intValue() == currPrjId.intValue()) { // 当前项目被修改
-            pushSettingsService.pushPrjSettings(user);
+            Integer currPrjId = user.getDefaultPrjId();
+            if (currPrjId != null && vo.getId().intValue() == currPrjId.intValue()) { // 当前项目被修改
+                pushSettingsService.pushPrjSettings(user);
+            }
         }
 
         pushSettingsService.pushRecentProjects(user);

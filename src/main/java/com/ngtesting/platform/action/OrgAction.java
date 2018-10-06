@@ -116,12 +116,10 @@ public class OrgAction extends BaseAction {
         if (user.getDefaultOrgId() == null) { // 首个组织
             orgService.changeDefaultOrg(user, org.getId());
         } else if (user.getDefaultOrgId().intValue() == org.getId().intValue() &&
-                !org.getName().equals(user.getDefaultOrgName())) { // 修改组织名称
+                !org.getName().equals(user.getDefaultOrgName())) { // 修改当前组织名称
             user.setDefaultOrgName(vo.getName());
             pushSettingsService.pushOrgSettings(user);
         }
-
-        pushSettingsService.pushMyOrgs(user);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

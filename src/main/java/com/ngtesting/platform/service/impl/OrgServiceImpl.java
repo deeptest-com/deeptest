@@ -70,6 +70,8 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
             orgDao.update(vo);
         }
 
+        pushSettingsService.pushMyOrgs(user);
+
 		return vo;
 	}
 

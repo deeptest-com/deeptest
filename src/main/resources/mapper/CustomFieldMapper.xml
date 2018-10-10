@@ -11,7 +11,7 @@
     </select>
 
     <select id="listForCaseByProject" resultMap="customFieldMap">
-        (SELECT o.id, o.code, o.label, o.myColumn, o.descr, o.applyTo, o.type,
+        (SELECT o.id, o.label, o.myColumn, o.descr, o.applyTo, o.type,
           o.rows, o.format, o.ordr, o.required
 
         FROM TstCustomField o
@@ -22,7 +22,7 @@
 
         UNION
 
-        (SELECT o.id, o.code, o.label, o.myColumn, o.descr, o.applyTo, o.type,
+        (SELECT o.id, o.label, o.myColumn, o.descr, o.applyTo, o.type,
           o.rows, o.format, o.ordr, o.required
 
         FROM TstCustomField o
@@ -51,10 +51,10 @@
 
     <insert id="save" parameterType="TstCustomField" useGeneratedKeys="true" keyProperty="id">
         insert into TstCustomField
-        (label,code,myColumn,descr,applyTo,`type`,`rows`,format,required,`global`,
+        (label,myColumn,descr,applyTo,`type`,`rows`,format,required,`global`,
           orgId,ordr,buildIn,deleted,disabled,createTime)
         values
-        (#{label},#{code},#{myColumn},#{descr},#{applyTo},#{type},#{rows},#{format},#{required},#{global},
+        (#{label},#{myColumn},#{descr},#{applyTo},#{type},#{rows},#{format},#{required},#{global},
           #{orgId},#{ordr},#{buildIn},FALSE,FALSE,NOW())
     </insert>
 

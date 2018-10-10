@@ -56,7 +56,7 @@ public class CustomFieldAction extends BaseAction {
 		if (id == null) {
 			vo = new TstCustomField();
 			vo.setMyColumn(customFieldService.getLastUnusedColumn(orgId));
-			vo.setCode(UUID.randomUUID().toString());
+//			vo.setCode(UUID.randomUUID().toString());
 		} else {
 			vo = customFieldService.get(id, orgId);
 		}

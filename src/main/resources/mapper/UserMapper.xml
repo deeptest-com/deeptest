@@ -49,14 +49,26 @@
     </select>
 
     <select id="get" parameterType="int" resultType="TstUser">
-        SELECT * FROM TstUser WHERE id = #{id}
-    </select>
+        SELECT usr.*,
+          s.leftSizeDesign leftSizeDesign, s.leftSizeExe leftSizeExe
+        FROM TstUser usr
+        JOIN TstUserSettings s ON s.userId = usr.id
 
+        WHERE usr.id = #{id}
+    </select>
     <select id="getByEmail" parameterType="string" resultType="TstUser">
-        SELECT * FROM TstUser WHERE email = #{email}
-        AND disabled != TRUE AND deleted != TRUE
+        SELECT usr.*,
+          s.leftSizeDesign leftSizeDesign, s.leftSizeExe leftSizeExe
+
+        FROM TstUser usr
+        JOIN TstUserSettings s ON s.userId = usr.id
+
+        WHERE usr.email = #{email}
+        AND usr.disabled != TRUE AND usr.deleted != TRUE
+
         LIMIT 1;
     </select>
+
     <select id="getByEmailAndPassword" resultType="TstUser">
         SELECT * FROM TstUser WHERE email = #{email} AND password=#{password} LIMIT 1;
     </select>
@@ -80,11 +92,15 @@
 
     <insert id="save" parameterType="TstUser" useGeneratedKeys="true" keyProperty="id">
         insert into TstUser (email,password,nickname,phone,avatar,token,salt,
-          leftSizeDesign,leftSizeExe,defaultOrgId,defaultOrgName,defaultPrjId,defaultPrjName,
+          defaultOrgId,defaultOrgName,defaultPrjId,defaultPrjName,
           deleted,disabled,createTime)
         values (#{email},#{password},#{nickname},#{phone},#{avatar},#{token},#{temp},
-          #{leftSizeDesign},#{leftSizeExe},#{defaultOrgId},#{defaultOrgName},#{defaultPrjId},#{defaultPrjName},
+          #{defaultOrgId},#{defaultOrgName},#{defaultPrjId},#{defaultPrjName},
           #{deleted},#{disabled},#{createTime})
+    </insert>
+    <insert id="saveSettings" parameterType="TstUser">
+        insert into TstUserSettings (leftSizeDesign,leftSizeExe,userId)
+        values (#{leftSizeDesign},#{leftSizeExe},#{id})
     </insert>
 
     <update id="update" parameterType="TstUser">
@@ -100,9 +116,9 @@
     </update>
 
     <update id="setLeftSize" parameterType="TstUser">
-        UPDATE TstUser
+        UPDATE TstUserSettings
         SET leftSizeDesign=#{leftSizeDesign}, leftSizeExe=#{leftSizeExe}
-        WHERE id=#{id}
+        WHERE userId=#{id}
     </update>
 
     <select id="search" resultType="TstUser">

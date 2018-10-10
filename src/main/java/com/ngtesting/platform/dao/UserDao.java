@@ -24,6 +24,7 @@ public interface UserDao {
     String getSalt(@Param("id") Integer id);
 
     void save(TstUser record);
+    void saveSettings(TstUser record);
     void update(TstUser record);
 
     void modifyProp(@Param("id") Integer id,
@@ -36,6 +37,5 @@ public interface UserDao {
 
     void removeFromOrg(@Param("userId") Integer userId,
                        @Param("orgId") Integer orgId);
-
 
 }

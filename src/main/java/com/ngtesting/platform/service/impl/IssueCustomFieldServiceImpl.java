@@ -315,7 +315,7 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
 
     @Override
     public void initPo(TstCustomField po, TstCustomField vo) {
-        po.setCode(vo.getCode());
+//        po.setCode(vo.getCode());
         po.setMyColumn(vo.getMyColumn());
         po.setLabel(vo.getLabel());
         po.setDescr(vo.getDescr());

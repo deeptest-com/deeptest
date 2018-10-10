@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.IsuFilterDao" >
+
+    <select id="query" resultType="TstAlert">
+        SELECT * FROM TstAlert o
+
+        WHERE o.userId=#{userId}
+        <if test="isRead != null">
+            AND o.isRead = #{isRead}
+        </if>
+        AND o.deleted != true AND o.disabled != true
+        ORDER BY o.createTime DESC
+    </select>
+
+    <select id="scanAlerts" resultType="TstAlert">
+        <![CDATA[
+        SELECT o.entityName name, u.nickname userName, u.Avatar userAvatar,
+                                a.nickname assigneeName, a.Avatar assigneeAvatar, o.*
+        FROM TstAlert o LEFT JOIN TstUser u on o.userId=u.id LEFT JOIN TstUser a on o.assigneeId=a.id
+        WHERE o.assigneeId=#{userId}
+        AND (
+                (o.startTime IS NOT null AND o.startTime >= #{startTimeOfToday} AND o.startTime <= #{endTimeOfToday})
+                  OR
+                (o.endTime IS NOT null AND o.endTime >= #{startTimeOfToday} AND o.endTime <= #{endTimeOfToday})
+              )
+        AND o.isRead = false
+        AND o.deleted != true AND o.disabled != true
+        ORDER BY o.startTime ASC
+        ]]>
+    </select>
+
+    <insert id="create" parameterType="TstAlert" useGeneratedKeys="true" keyProperty="id">
+        insert into TstAlert
+          (`type`,title,userId,assigneeId,entityId,startTime,endTime,isRead,isSent,
+            deleted,disabled,createTime)
+        values
+          ( #{type},#{title},#{userId},#{assigneeId},#{entityId},#{startTime},#{endTime},FALSE ,FALSE,
+            FALSE,FALSE,NOW() )
+    </insert>
+
+    <update id="markAllRead">
+        update TstAlert alert
+        set alert.isRead=true
+
+        where alert.id IN ( ${ids} ) AND alert.assigneeId = #{userId}
+
+        AND alert.isRead != true
+        AND alert.deleted != true AND alert.disabled != true
+    </update>
+
+    <delete id="removeOldIfNeeded">
+        DELETE FROM TstAlert
+        WHERE `type` = 'task'
+        AND entityId = #{taskId}
+        AND assigneeId IN (
+            <foreach collection="assignees" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        )
+    </delete>
+
+</mapper>

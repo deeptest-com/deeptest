@@ -128,8 +128,9 @@ public class UserServiceImpl implements UserService {
             user.setTemp(salt);
             user.setPassword(passwordEncoder.encodePassword(StringUtil.RandomString(6)));
 
-
             userDao.save(vo);
+
+            userDao.saveSettings(vo);
         }
 
         if (isNew || orgUserRelationDao.userInOrg(vo.getId(), orgId) == 0) { // 不在组织里

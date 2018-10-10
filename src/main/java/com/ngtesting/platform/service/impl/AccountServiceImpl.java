@@ -51,6 +51,8 @@ public class AccountServiceImpl implements AccountService {
         user.setPassword(passwordEncoder.encodePassword(user.getPassword()));
 
         accountDao.register(user);
+        userDao.saveSettings(user);
+
         TstUser po = userDao.get(user.getId());
 
         if (po != null) {

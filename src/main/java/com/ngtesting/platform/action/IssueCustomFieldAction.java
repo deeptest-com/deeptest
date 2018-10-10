@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 
 @Controller
@@ -56,7 +55,7 @@ public class IssueCustomFieldAction extends BaseAction {
 		if (customFieldId == null) {
 			vo = new TstCustomField();
 			vo.setMyColumn(customFieldService.getLastUnusedColumn(orgId));
-			vo.setCode(UUID.randomUUID().toString());
+//			vo.setCode(UUID.randomUUID().toString());
 		} else {
 			vo = customFieldService.get(customFieldId);
 		}

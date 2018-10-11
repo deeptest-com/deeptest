@@ -20,7 +20,9 @@ public class Constant {
             "http://localhost:4200",
             "http://lab.dui.ai/",
             "http://116.62.17.31");
-    public static final String API_PATH_CLIENT = "/api/client/v1/";
+    public static final String API_PATH = "/api/v1/";
+    public static final String API_PATH_CLIENT = API_PATH + "client/";
+    public static final String API_PATH_ADMIN = API_PATH + "admin/";
 
     public static final String API_PACKAGE_FOR_CLIENT = "com.ngtesting.platform.action";
 

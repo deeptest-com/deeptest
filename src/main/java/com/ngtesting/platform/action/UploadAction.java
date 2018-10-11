@@ -20,7 +20,7 @@ import java.util.UUID;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "/")
+@RequestMapping(Constant.API_PATH + "/")
 public class UploadAction extends BaseAction {
 	@Autowired
 	UserService userService;

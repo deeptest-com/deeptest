@@ -20,7 +20,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint(Constant.API_PATH_CLIENT + "/websocket")
+        registry.addEndpoint(Constant.API_PATH + "/websocket")
                 .addInterceptors(new HttpHandshakeInterceptor())
                 .setAllowedOrigins("*")
                 .withSockJS();

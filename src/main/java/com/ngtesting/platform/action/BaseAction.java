@@ -14,11 +14,8 @@ public class BaseAction {
     @Autowired
     AuthDao authDao;
 
-	public Map<String, Object> authFail() {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		ret.put("code", Constant.RespCode.AUTH_FAIL.getCode());
-		ret.put("msg", "权限不足");
-		return ret;
+	public Boolean hasNoOrgAdminPriviledge(Integer userId, Integer orgId) {
+		return authDao.userNotInOrg(userId, orgId);
 	}
 
 	public Boolean userNotInOrg(Integer userId, Integer orgId) {
@@ -28,5 +25,19 @@ public class BaseAction {
 	public Boolean userNotInProject(Integer userId, Integer projectId) {
 		return authDao.userNotInProject(userId, projectId);
 	}
+
+	public Map<String, Object> authFail() {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		ret.put("code", Constant.RespCode.AUTH_FAIL.getCode());
+		ret.put("msg", "权限不足");
+		return ret;
+	}
+
+    public Map<String, Object> bizFail() {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
+        ret.put("msg", "业务处理错误");
+        return ret;
+    }
 
 }

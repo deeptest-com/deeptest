@@ -51,12 +51,12 @@ public class ProjectRoleAdmin extends BaseAction {
 
 	@RequestMapping(value = "get", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject req) {
+	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
-		Integer roleId = req.getInteger("id");
+		Integer roleId = json.getInteger("id");
 
 		TstProjectRole po = null;
 		if (roleId == null) {
@@ -106,12 +106,14 @@ public class ProjectRoleAdmin extends BaseAction {
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject to) {
+	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		Boolean result = projectRoleService.delete(to.getInteger("id"), orgId);
+		Integer roleId = json.getInteger("id");
+
+		Boolean result = projectRoleService.delete(roleId, orgId);
 		if (!result) { // 当对象不是默认org的，结果会返回false
             return authFail();
         }

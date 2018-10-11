@@ -113,12 +113,12 @@ public class OrgGroupAdmin extends BaseAction {
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject to) {
+	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = user.getDefaultOrgId();
 
-		Integer groupId = to.getInteger("id");
+		Integer groupId = json.getInteger("id");
 
 		Boolean result = orgGroupService.delete(groupId, orgId);
         if (!result) { // 当对象不是默认org的，结果会返回false

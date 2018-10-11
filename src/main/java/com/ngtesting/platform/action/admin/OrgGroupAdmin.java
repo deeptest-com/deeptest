@@ -46,7 +46,8 @@ public class OrgGroupAdmin extends BaseAction {
 		Integer pageSize = json.getInteger("pageSize");
 
 		Page page = PageHelper.startPage(pageNum, pageSize);
-		List<TstOrgGroup> groups = orgGroupService.listByPage(orgId, keywords, disabled, pageNum, pageSize);
+		List<TstOrgGroup> groups = // 总是取当前用户的org，不需要再鉴权
+				orgGroupService.listByPage(orgId, keywords, disabled, pageNum, pageSize);
 
 		ret.put("total", page.getTotal());
         ret.put("data", groups);
@@ -70,7 +71,7 @@ public class OrgGroupAdmin extends BaseAction {
 		} else {
 			group = orgGroupService.get(orgGroupId, orgId);
 		}
-		if (group == null) {
+		if (group == null) { // 当对象不是默认org的，此处为空
             return authFail();
         }
 
@@ -100,7 +101,7 @@ public class OrgGroupAdmin extends BaseAction {
 		List<TstOrgGroupUserRelation> relations = (List<TstOrgGroupUserRelation>) json.get("relations");
 
 		TstOrgGroup po = orgGroupService.save(group, orgId);
-        if (po == null) {
+        if (po == null) { // 当对象不是默认org的，update的结果会返回空
             return authFail();
         }
 
@@ -120,7 +121,7 @@ public class OrgGroupAdmin extends BaseAction {
 		Integer groupId = to.getInteger("id");
 
 		Boolean result = orgGroupService.delete(groupId, orgId);
-        if (!result) {
+        if (!result) { // 当对象不是默认org的，结果会返回false
             return authFail();
         }
 

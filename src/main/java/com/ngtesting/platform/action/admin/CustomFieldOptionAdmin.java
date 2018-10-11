@@ -4,11 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.dao.CustomFieldDao;
 import com.ngtesting.platform.model.TstCustomFieldOption;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.CustomFieldOptionService;
-import com.ngtesting.platform.service.CustomFieldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,10 +23,6 @@ import java.util.Map;
 @Controller
 @RequestMapping(Constant.API_PATH_CLIENT + "custom_field_option/")
 public class CustomFieldOptionAdmin extends BaseAction {
-    @Autowired
-    CustomFieldDao customFieldDao;
-    @Autowired
-    CustomFieldService customFieldService;
 	@Autowired
     CustomFieldOptionService customFieldOptionService;
 
@@ -45,9 +39,9 @@ public class CustomFieldOptionAdmin extends BaseAction {
 		TstCustomFieldOption option = JSON.parseObject(JSON.toJSONString(json.getJSONObject("model")), TstCustomFieldOption.class);
         option.setFieldId(fieldId);
         TstCustomFieldOption po = customFieldOptionService.save(option, orgId);
-        if(po == null) {
-            return authFail();
-        }
+		if (po == null) { // 当所属fieldId不是默认org的，结果会返回空
+			return authFail();
+		}
 
         List<TstCustomFieldOption> vos = customFieldOptionService.listVos(fieldId);
 
@@ -67,7 +61,7 @@ public class CustomFieldOptionAdmin extends BaseAction {
 		Integer id = json.getInteger("id");
 
 		Boolean result = customFieldOptionService.delete(id, orgId);
-        if(!result) {
+        if(!result) {  // 当找不到option对象、或option所属fieldId不是默认org的，结果会返回空
             return authFail();
         }
 
@@ -92,7 +86,7 @@ public class CustomFieldOptionAdmin extends BaseAction {
 		String act = json.getString("act");
 
         Boolean result = customFieldOptionService.changeOrder(id, act, fieldId, orgId);
-        if(!result) {
+        if(!result) { // 当找不到option对象、或option所属fieldId不是默认org的，结果会返回空
             return authFail();
         }
 

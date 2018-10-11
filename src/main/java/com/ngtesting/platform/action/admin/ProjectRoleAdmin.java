@@ -42,7 +42,7 @@ public class ProjectRoleAdmin extends BaseAction {
 		String keywords = json.getString("keywords");
 		Boolean disabled = json.getBoolean("disabled");
 
-		List<TstProjectRole> vos = projectRoleService.list(orgId, keywords, disabled);
+		List<TstProjectRole> vos = projectRoleService.list(orgId, keywords, disabled); // 总是取当前用户的org，不需要再鉴权
 
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -63,7 +63,7 @@ public class ProjectRoleAdmin extends BaseAction {
 			po = new TstProjectRole();
 		} else {
 			po = projectRoleService.get(roleId, orgId);
-			if (po == null) {
+			if (po == null) { // 当对象不是默认org的，此处为空
                 return authFail();
             }
 		}
@@ -87,7 +87,7 @@ public class ProjectRoleAdmin extends BaseAction {
 
 		TstProjectRole vo = JSON.parseObject(JSON.toJSONString(json.get("projectRole")), TstProjectRole.class);
 		TstProjectRole po = projectRoleService.save(vo, orgId);
-        if (po == null) {
+        if (po == null) { // 当对象不是默认org的，update的结果会返回空
             return authFail();
         }
 
@@ -112,7 +112,7 @@ public class ProjectRoleAdmin extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 
 		Boolean result = projectRoleService.delete(to.getInteger("id"), orgId);
-		if (!result) {
+		if (!result) { // 当对象不是默认org的，结果会返回false
             return authFail();
         }
 

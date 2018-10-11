@@ -41,16 +41,17 @@
         WHERE id=#{id} AND orgId=#{orgId}
     </delete>
 
-    <update id="setDefault">
-        UPDATE TstCasePriority
-        SET isDefault=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
-    </update>
     <update id="removeDefault">
         UPDATE TstCasePriority
         SET isDefault=FALSE, updateTime=NOW()
         WHERE orgId=#{orgId}
     </update>
+    <update id="setDefault">
+        UPDATE TstCasePriority
+        SET isDefault=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND orgId=#{orgId}
+    </update>
+
     <update id="setOrder">
         UPDATE TstCasePriority
         SET ordr=#{ordr}, updateTime=NOW()

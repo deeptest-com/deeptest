@@ -22,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-
 @Controller
 @RequestMapping(Constant.API_PATH_ADMIN + "custom_field/")
 public class CustomFieldAdmin extends BaseAction {
@@ -39,7 +38,7 @@ public class CustomFieldAdmin extends BaseAction {
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = user.getDefaultOrgId();
 
-		List<TstCustomField> vos = customFieldService.list(orgId);
+		List<TstCustomField> vos = customFieldService.list(orgId); // 总是取当前活动org的，不需要再鉴权
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		ret.put("data", vos);
@@ -63,6 +62,10 @@ public class CustomFieldAdmin extends BaseAction {
 //			vo.setCode(UUID.randomUUID().toString());
 		} else {
 			vo = customFieldService.get(id, orgId);
+		}
+
+		if (vo == null) { // 当对象不是默认org的，此处为空
+			return authFail();
 		}
 
 		if (vo.getMyColumn() == null) {
@@ -97,7 +100,7 @@ public class CustomFieldAdmin extends BaseAction {
 		TstCustomField customField = JSON.parseObject(JSON.toJSONString(json.get("model")), TstCustomField.class);
 
 		TstCustomField po = customFieldService.save(customField, orgId);
-        if (po == null) {
+        if (po == null) { // 当对象不是默认org的，update的结果会返回空
             return authFail();
         }
 
@@ -122,7 +125,7 @@ public class CustomFieldAdmin extends BaseAction {
 		Integer id = json.getInteger("id");
 
 		Boolean result = customFieldService.delete(id, orgId);
-        if (!result) {
+        if (!result) { // 当对象不是默认org的，结果会返回false
             return authFail();
         }
 
@@ -142,7 +145,7 @@ public class CustomFieldAdmin extends BaseAction {
 		String act = json.getString("act");
 
         Boolean result = customFieldService.changeOrderPers(id, act, orgId);
-        if (!result) {
+        if (!result) { // 当对象不是默认org的，结果会返回false
             return authFail();
         }
 

@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface ProjectRoleDao {
-    List<TstProjectRole> list(@Param("orgId") Integer orgId,
+    List<TstProjectRole> query(@Param("orgId") Integer orgId,
                               @Param("keywordsParam") String keywords,
                               @Param("disabledParam") Boolean disabled);
 

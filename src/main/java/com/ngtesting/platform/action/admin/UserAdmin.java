@@ -46,7 +46,7 @@ public class UserAdmin extends BaseAction {
         Integer pageSize = json.getInteger("pageSize");
 
         Page page = PageHelper.startPage(pageNum, pageSize);
-        List<TstUser> users = userService.list(orgId, keywords, disabled, pageNum, pageSize);
+        List<TstUser> users = userService.list(orgId, keywords, disabled, pageNum, pageSize); // 总是取当前用户的org，不需要再鉴权
 
         ret.put("total", page.getTotal());
         ret.put("data", users);
@@ -72,10 +72,11 @@ public class UserAdmin extends BaseAction {
             return ret;
         }
 
-        TstUser po = userService.get(userId);
-        if (userNotInOrg(user.getId(), po.getDefaultOrgId())) { // 获取的非当前组织用户
+        if (userNotInOrg(userId, orgId)) { // 用户不属于当前组织
             return authFail();
         }
+
+        TstUser po = userService.get(userId);
 
         ret.put("user", po);
         ret.put("relations", relations);
@@ -115,7 +116,7 @@ public class UserAdmin extends BaseAction {
 
         TstUser vo = JSON.parseObject(JSON.toJSONString(json.get("user")), TstUser.class);
 
-        if (userNotInOrg(vo.getId(), user.getDefaultOrgId())) {
+        if (userNotInOrg(vo.getId(), orgId)) { // 用户不属于当前组织
             return authFail();
         }
 
@@ -145,7 +146,7 @@ public class UserAdmin extends BaseAction {
         Integer userId = json.getInteger("userId");
         Integer orgId = json.getInteger("orgId");
 
-        if (userNotInOrg(user.getId(), orgId)) {
+        if (userNotInOrg(userId, orgId)) { // 用户不属于当前组织
             return authFail();
         }
 

@@ -15,7 +15,7 @@ public class BaseAction {
     AuthDao authDao;
 
 	public Boolean hasNoOrgAdminPriviledge(Integer userId, Integer orgId) {
-		return authDao.userNotInOrg(userId, orgId);
+		return !authService.hasOrgAdminPrivilege(userId, orgId);
 	}
 
 	public Boolean userNotInOrg(Integer userId, Integer orgId) {

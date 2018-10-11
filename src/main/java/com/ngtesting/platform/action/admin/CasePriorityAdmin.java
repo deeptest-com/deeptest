@@ -42,7 +42,7 @@ public class CasePriorityAdmin extends BaseAction {
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = user.getDefaultOrgId();
 
-		List<TstCasePriority> vos = casePriorityService.list(orgId);
+		List<TstCasePriority> vos = casePriorityService.list(orgId); // 总是取当前活动org的，不需要再鉴权
 
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -66,6 +66,10 @@ public class CasePriorityAdmin extends BaseAction {
 			po = casePriorityService.get(id, orgId);
 		}
 
+		if (po == null) { // 当对象不是默认org的，此处为空
+			return authFail();
+		}
+
 		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -82,7 +86,7 @@ public class CasePriorityAdmin extends BaseAction {
 		TstCasePriority vo = json.getObject("model", TstCasePriority.class);
 
 		TstCasePriority po = casePriorityService.save(vo, orgId);
-		if (po == null) {
+		if (po == null) { // 当对象不是默认org的，update的结果会返回空
 			return authFail();
 		}
 
@@ -105,7 +109,7 @@ public class CasePriorityAdmin extends BaseAction {
 		Integer id = json.getInteger("id");
 
 		Boolean result = casePriorityService.delete(id, orgId);
-        if (!result) {
+        if (!result) { // 当对象不是默认org的，结果会返回false
             return authFail();
         }
 
@@ -123,7 +127,7 @@ public class CasePriorityAdmin extends BaseAction {
 		Integer id = json.getInteger("id");
 
 		Boolean result = casePriorityService.setDefault(id, orgId);
-        if (!result) {
+        if (!result) { // 当对象不是默认org的，结果会返回false
             return authFail();
         }
 
@@ -146,7 +150,7 @@ public class CasePriorityAdmin extends BaseAction {
 		String act = json.getString("act");
 
         Boolean result = casePriorityService.changeOrder(id, act, orgId);
-        if (!result) {
+        if (!result) { // 当对象不是默认org的，结果会返回false
             return authFail();
         }
 

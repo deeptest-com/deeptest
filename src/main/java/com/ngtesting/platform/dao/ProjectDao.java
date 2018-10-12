@@ -5,11 +5,14 @@ import com.ngtesting.platform.model.TstProjectAccessHistory;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ProjectDao {
     List<TstProject> query(@Param("orgId") Integer orgId,
                            @Param("keywordsParam") String keywordsParam,
                            @Param("disabledParam") Boolean disabledParam);
+
+    List<Map<String, String>> queryIdAndName(@Param("orgId") Integer orgId);
 
     TstProject get(@Param("id") Integer id);
     void delete(@Param("id") Integer id, @Param("userId") Integer userId);

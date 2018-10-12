@@ -51,10 +51,10 @@ public class IsuJqlServiceImpl extends BaseServiceImpl implements IsuJqlService 
         SqlQueryResult sqlQueryResult = isuJqlBuildService.buildSqlQuery(jql);
         // TODO: 执行查询
 
-        List<IsuJqlFilter> filters = isuJqlFilterService.buildUiFilters(jql);
+        List<IsuJqlFilter> filters = isuJqlFilterService.buildUiFilters(jql, orgId, projectId);
 
         result.put("result", null);
-        result.put("jql", jql);
+        result.put("jql", JSON.parseObject(jql));
         result.put("filters", filters);
 
         return result;

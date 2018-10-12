@@ -6,12 +6,11 @@ import com.ngtesting.platform.vo.IsuJqlFilter;
 import java.util.List;
 
 public interface IsuJqlFilterService extends BaseService {
+    List<IsuJqlFilter> buildUiFilters(String jql, Integer orgId, Integer projectId);
 
-    IsuJqlFilter buildFilter(String name);
+    IsuJqlFilter buildFilter(String name, Integer orgId, Integer projectId);
 
-    IsuJqlFilter buildProjectFilter();
-
-    List<IsuJqlFilter> buildUiFilters(String jql);
+    IsuJqlFilter buildProjectFilter(Integer orgId);
 
     void iterateRuleName(JsonRule rule, List<String> out);
 }

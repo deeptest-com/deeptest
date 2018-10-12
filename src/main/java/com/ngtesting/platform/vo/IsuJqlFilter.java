@@ -2,6 +2,7 @@ package com.ngtesting.platform.vo;
 
 
 import java.util.List;
+import java.util.Map;
 
 public class IsuJqlFilter {
     private static final long serialVersionUID = -5923944030125754321L;
@@ -10,12 +11,13 @@ public class IsuJqlFilter {
     String label;
     String type;
     String input;
-    List<String> values;
+    Map values;
     List<String> operators;
 
-    public IsuJqlFilter(String id, String label) {
+    public IsuJqlFilter(String id, String label, Map values) {
         this.id = id;
         this.label = label;
+        this.values = values;
     }
 
     public String getId() {
@@ -50,11 +52,11 @@ public class IsuJqlFilter {
         this.input = input;
     }
 
-    public List<String> getValues() {
+    public Map getValues() {
         return values;
     }
 
-    public void setValues(List<String> values) {
+    public void setValues(Map values) {
         this.values = values;
     }
 

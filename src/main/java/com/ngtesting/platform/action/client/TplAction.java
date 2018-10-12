@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 @Controller
 @RequestMapping(Constant.API_PATH_CLIENT + "tql/")
 public class TplAction extends BaseAction {

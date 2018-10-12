@@ -202,6 +202,11 @@
             <version>3.17</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.itfsw</groupId>
+            <artifactId>QueryBuilder</artifactId>
+            <version>1.0.2</version>
+        </dependency>
     </dependencies>
 
     <build>

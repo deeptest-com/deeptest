@@ -14,5 +14,27 @@ public interface IsuJqlFilterService extends BaseService {
 
     IsuJqlFilter buildTypeFilter(Integer orgId, Integer projectId);
 
+    IsuJqlFilter buildStatusFilter(Integer orgId, Integer projectId);
+
+    IsuJqlFilter buildPriorityFilter(Integer orgId, Integer projectId);
+
+    IsuJqlFilter buildAssigneeFilter(Integer orgId, Integer projectId);
+
+    IsuJqlFilter buildCreatorFilter(Integer orgId, Integer projectId);
+
+    IsuJqlFilter buildReporterFilter(Integer orgId, Integer projectId);
+
+    IsuJqlFilter buildEnvFilter(Integer orgId, Integer projectId);
+
+    IsuJqlFilter buildVerFilter(Integer orgId, Integer projectId);
+
+    IsuJqlFilter buildResolutionFilter(Integer orgId, Integer projectId);
+
+    IsuJqlFilter buildDueTimeFilter(Integer orgId, Integer projectId);
+
+    IsuJqlFilter buildResolveTimeFilter(Integer orgId, Integer projectId);
+
+    IsuJqlFilter buildCommentsFilter(Integer orgId, Integer projectId);
+
     void iterateRuleName(JsonRule rule, List<String> out);
 }

@@ -1,6 +1,8 @@
 package com.ngtesting.platform.vo;
 
 
+import com.ngtesting.platform.config.ConstantIssue;
+
 import java.util.List;
 import java.util.Map;
 
@@ -9,19 +11,36 @@ public class IsuJqlFilter {
 
     String id;
     String label;
-    String type;
-    String input;
+    ConstantIssue.IssueFilterType type;
+    ConstantIssue.IssueFilterInput input;
     Map values;
     List<String> operators;
 
-    public IsuJqlFilter(String id, String label, String type, String input, Map values, List<String> operators) {
+    public IsuJqlFilter(String id, String label,
+                        ConstantIssue.IssueFilterType type, ConstantIssue.IssueFilterInput input) {
         this.id = id;
         this.label = label;
         this.type = type;
         this.input = input;
-        this.values = values;
 
-        this.operators = operators;
+        if (ConstantIssue.IssueFilterInput.string.equals(type)) {
+            this.operators = ConstantIssue.OperatorsForString;
+        } else if (ConstantIssue.IssueFilterInput.date.equals(type)) {
+            this.operators = ConstantIssue.OperatorsForDate;
+        }
+    }
+
+    public IsuJqlFilter(String id, String label,
+                        ConstantIssue.IssueFilterType type, ConstantIssue.IssueFilterInput input, Map values) {
+        this.id = id;
+        this.label = label;
+        this.type = type;
+        this.input = input;
+
+        this.values = values;
+        if (ConstantIssue.IssueFilterInput.select.equals(type)) {
+            this.operators = ConstantIssue.OperatorsForSelect;
+        }
     }
 
     public String getId() {
@@ -40,19 +59,19 @@ public class IsuJqlFilter {
         this.label = label;
     }
 
-    public String getType() {
+    public ConstantIssue.IssueFilterType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ConstantIssue.IssueFilterType type) {
         this.type = type;
     }
 
-    public String getInput() {
+    public ConstantIssue.IssueFilterInput getInput() {
         return input;
     }
 
-    public void setInput(String input) {
+    public void setInput(ConstantIssue.IssueFilterInput input) {
         this.input = input;
     }
 

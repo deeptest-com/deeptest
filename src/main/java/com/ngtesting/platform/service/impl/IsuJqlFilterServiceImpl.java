@@ -36,13 +36,13 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
         List<String> filterNameArr = new LinkedList<>();
         iterateRuleName(rule, filterNameArr);
 
-        for (String name : ConstantIssue.Filters.keySet()) {
+        for (String name : ConstantIssue.IssueFilters.keySet()) {
             IsuJqlFilter f = buildFilter(name, orgId, projectId);
             filtes.add(f);
         }
 
         for (String name : filterNameArr) {
-            if (ConstantIssue.Filters.keySet().contains(name)) {
+            if (ConstantIssue.IssueFilters.keySet().contains(name)) {
                 continue;
             }
             IsuJqlFilter f = buildFilter(name, orgId, projectId);
@@ -59,6 +59,30 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
                 return buildProjectFilter(orgId);
             case "type":
                 return buildTypeFilter(orgId, projectId);
+            case "status":
+                return buildStatusFilter(orgId, projectId);
+            case "priority":
+                return buildPriorityFilter(orgId, projectId);
+            case "assignee":
+                return buildAssigneeFilter(orgId, projectId);
+
+            case "creator":
+                return buildCreatorFilter(orgId, projectId);
+            case "reporter":
+                return buildReporterFilter(orgId, projectId);
+
+            case "ver":
+                return buildVerFilter(orgId, projectId);
+            case "env":
+                return buildEnvFilter(orgId, projectId);
+            case "resolution":
+                return buildResolutionFilter(orgId, projectId);
+            case "dueTime":
+                return buildDueTimeFilter(orgId, projectId);
+            case "resolveTime":
+                return buildResolveTimeFilter(orgId, projectId);
+            case "comments":
+                return buildCommentsFilter(orgId, projectId);
             default:
                 return null;
         }
@@ -73,8 +97,8 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
             values.put(prj.get("id"), prj.get("name"));
         }
 
-        IsuJqlFilter f = new IsuJqlFilter(
-                "project", "项目","integer", "select",  values, ConstantIssue.Operators);
+        IsuJqlFilter f = new IsuJqlFilter("project", "项目",
+                ConstantIssue.IssueFilterType.integer, ConstantIssue.IssueFilterInput.select,  values);
         return f;
     }
 
@@ -84,8 +108,129 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
 
-        IsuJqlFilter f = new IsuJqlFilter(
-                "type", "类型", "integer", "select",  values, ConstantIssue.Operators);
+        IsuJqlFilter f = new IsuJqlFilter("type", "类型",
+                ConstantIssue.IssueFilterType.integer, ConstantIssue.IssueFilterInput.select,  values);
+        return f;
+    }
+
+    @Override
+    public IsuJqlFilter buildStatusFilter(Integer orgId, Integer projectId) {
+        Map<String, String> values = new HashMap<>();
+        values.put("1", "issue"); // TODO: 从数据库获取
+        values.put("2", "task");
+
+        IsuJqlFilter f = new IsuJqlFilter("status", "状态",
+                ConstantIssue.IssueFilterType.integer, ConstantIssue.IssueFilterInput.select,  values);
+        return f;
+    }
+
+    @Override
+    public IsuJqlFilter buildPriorityFilter(Integer orgId, Integer projectId) {
+        Map<String, String> values = new HashMap<>();
+        values.put("1", "issue"); // TODO: 从数据库获取
+        values.put("2", "task");
+
+        IsuJqlFilter f = new IsuJqlFilter("priority", "优先级",
+                ConstantIssue.IssueFilterType.integer, ConstantIssue.IssueFilterInput.select,  values);
+        return f;
+    }
+
+    @Override
+    public IsuJqlFilter buildAssigneeFilter(Integer orgId, Integer projectId) {
+        Map<String, String> values = new HashMap<>();
+        values.put("1", "issue"); // TODO: 从数据库获取
+        values.put("2", "task");
+
+        IsuJqlFilter f = new IsuJqlFilter("assignee", "经办人",
+                ConstantIssue.IssueFilterType.integer, ConstantIssue.IssueFilterInput.select,  values);
+        return f;
+    }
+
+    @Override
+    public IsuJqlFilter buildCreatorFilter(Integer orgId, Integer projectId) {
+        Map<String, String> values = new HashMap<>();
+        values.put("1", "issue"); // TODO: 从数据库获取
+        values.put("2", "task");
+
+        IsuJqlFilter f = new IsuJqlFilter("creator", "创建人",
+                ConstantIssue.IssueFilterType.integer, ConstantIssue.IssueFilterInput.select,  values);
+        return f;
+    }
+
+    @Override
+    public IsuJqlFilter buildReporterFilter(Integer orgId, Integer projectId) {
+        Map<String, String> values = new HashMap<>();
+        values.put("1", "issue"); // TODO: 从数据库获取
+        values.put("2", "task");
+
+        IsuJqlFilter f = new IsuJqlFilter("reporter", "报告人",
+                ConstantIssue.IssueFilterType.integer, ConstantIssue.IssueFilterInput.select,  values);
+        return f;
+    }
+
+    @Override
+    public IsuJqlFilter buildVerFilter(Integer orgId, Integer projectId) {
+        Map<String, String> values = new HashMap<>();
+        values.put("1", "issue"); // TODO: 从数据库获取
+        values.put("2", "task");
+
+        IsuJqlFilter f = new IsuJqlFilter("ver", "版本",
+                ConstantIssue.IssueFilterType.integer, ConstantIssue.IssueFilterInput.select,  values);
+        return f;
+    }
+
+    @Override
+    public IsuJqlFilter buildEnvFilter(Integer orgId, Integer projectId) {
+        Map<String, String> values = new HashMap<>();
+        values.put("1", "issue"); // TODO: 从数据库获取
+        values.put("2", "task");
+
+        IsuJqlFilter f = new IsuJqlFilter("env", "环境",
+                ConstantIssue.IssueFilterType.integer, ConstantIssue.IssueFilterInput.select,  values);
+        return f;
+    }
+
+    @Override
+    public IsuJqlFilter buildResolutionFilter(Integer orgId, Integer projectId) {
+        Map<String, String> values = new HashMap<>();
+        values.put("1", "issue"); // TODO: 从数据库获取
+        values.put("2", "task");
+
+        IsuJqlFilter f = new IsuJqlFilter("resolution", "解决结果",
+                ConstantIssue.IssueFilterType.integer, ConstantIssue.IssueFilterInput.select,  values);
+        return f;
+    }
+
+    @Override
+    public IsuJqlFilter buildDueTimeFilter(Integer orgId, Integer projectId) {
+        Map<String, String> values = new HashMap<>();
+        values.put("1", "issue"); // TODO: 从数据库获取
+        values.put("2", "task");
+
+        IsuJqlFilter f = new IsuJqlFilter("dueTime", "截止日期",
+                ConstantIssue.IssueFilterType.date, ConstantIssue.IssueFilterInput.date);
+        return f;
+    }
+
+    @Override
+    public IsuJqlFilter buildResolveTimeFilter(Integer orgId, Integer projectId) {
+        Map<String, String> values = new HashMap<>();
+        values.put("1", "issue"); // TODO: 从数据库获取
+        values.put("2", "task");
+
+        IsuJqlFilter f = new IsuJqlFilter("resolveTime", "解决时间",
+                ConstantIssue.IssueFilterType.date, ConstantIssue.IssueFilterInput.date);
+        return f;
+    }
+
+    @Override
+    public IsuJqlFilter buildCommentsFilter(Integer orgId, Integer projectId) {
+        Map<String, String> values = new HashMap<>();
+        values.put("1", "issue"); // TODO: 从数据库获取
+        values.put("2", "task");
+
+        IsuJqlFilter f = new IsuJqlFilter("comments", "注释",
+                ConstantIssue.IssueFilterType.string, ConstantIssue.IssueFilterInput.string);
         return f;
     }
 

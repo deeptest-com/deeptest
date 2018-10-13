@@ -40,8 +40,8 @@ public class IsuIssue extends BaseModel {
     private Integer assigneeId;
     private String assigneeName;
 
-	private List<IsuAttachment> attachments = new LinkedList<>();
     private List<IsuComments> comments = new LinkedList<>();
+	private List<IsuAttachment> attachments = new LinkedList<>();
     private List<IsuHistory> histories = new LinkedList<>();
 
     public String getTitle() {

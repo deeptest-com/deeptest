@@ -25,6 +25,8 @@ import java.util.Map;
 public class IsuJqlServiceImpl extends BaseServiceImpl implements IsuJqlService {
     Log logger = LogFactory.getLog(IsuJqlServiceImpl.class);
 
+    public static String[] defaultFilters = new String[] {"project", };
+
     @Autowired
     IsuJqlBuildService isuJqlBuildService;
 
@@ -67,7 +69,6 @@ public class IsuJqlServiceImpl extends BaseServiceImpl implements IsuJqlService 
         JsonRule projectRule = isuJqlBuildService.genJsonRule(
                 "project", "projectId", "select", projectId.toString(),
                 EnumOperator.EQUAL, EnumRuleType.INTEGER);
-
         ret.getRules().add(projectRule);
 
         return JSON.toJSONString(ret);

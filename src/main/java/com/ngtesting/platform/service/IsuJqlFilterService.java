@@ -12,5 +12,7 @@ public interface IsuJqlFilterService extends BaseService {
 
     IsuJqlFilter buildProjectFilter(Integer orgId);
 
+    IsuJqlFilter buildTypeFilter(Integer orgId, Integer projectId);
+
     void iterateRuleName(JsonRule rule, List<String> out);
 }

@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.itfsw.query.builder.support.model.JsonRule;
+import com.ngtesting.platform.config.ConstantIssue;
 import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.service.IsuJqlFilterService;
 import com.ngtesting.platform.service.ProjectService;
@@ -35,7 +36,15 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
         List<String> filterNameArr = new LinkedList<>();
         iterateRuleName(rule, filterNameArr);
 
+        for (String name : ConstantIssue.IssueFilters.keySet()) {
+            IsuJqlFilter f = buildFilter(name, orgId, projectId);
+            filtes.add(f);
+        }
+
         for (String name : filterNameArr) {
+            if (ConstantIssue.IssueFilters.keySet().contains(name)) {
+                continue;
+            }
             IsuJqlFilter f = buildFilter(name, orgId, projectId);
             filtes.add(f);
         }
@@ -45,12 +54,14 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
 
     @Override
     public IsuJqlFilter buildFilter(String name, Integer orgId, Integer projectId) {
-        IsuJqlFilter f = null;
-        if (name.equals("project")) {
-            f = buildProjectFilter(orgId);
+        switch(name){
+            case "project":
+                return buildProjectFilter(orgId);
+            case "type":
+                return buildTypeFilter(orgId, projectId);
+            default:
+                return null;
         }
-
-        return f;
     }
 
     @Override
@@ -63,6 +74,16 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
         }
 
         IsuJqlFilter f = new IsuJqlFilter("project", "项目", values);
+        return f;
+    }
+
+    @Override
+    public IsuJqlFilter buildTypeFilter(Integer orgId, Integer projectId) {
+        Map<String, String> values = new HashMap<>();
+        values.put("1", "issue"); // TODO: 从数据库获取
+        values.put("2", "task");
+
+        IsuJqlFilter f = new IsuJqlFilter("type", "类型", values);
         return f;
     }
 

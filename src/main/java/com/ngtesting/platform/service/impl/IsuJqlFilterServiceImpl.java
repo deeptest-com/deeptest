@@ -36,13 +36,13 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
         List<String> filterNameArr = new LinkedList<>();
         iterateRuleName(rule, filterNameArr);
 
-        for (String name : ConstantIssue.IssueFilters.keySet()) {
+        for (String name : ConstantIssue.Filters.keySet()) {
             IsuJqlFilter f = buildFilter(name, orgId, projectId);
             filtes.add(f);
         }
 
         for (String name : filterNameArr) {
-            if (ConstantIssue.IssueFilters.keySet().contains(name)) {
+            if (ConstantIssue.Filters.keySet().contains(name)) {
                 continue;
             }
             IsuJqlFilter f = buildFilter(name, orgId, projectId);
@@ -73,7 +73,8 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
             values.put(prj.get("id"), prj.get("name"));
         }
 
-        IsuJqlFilter f = new IsuJqlFilter("project", "项目", values);
+        IsuJqlFilter f = new IsuJqlFilter(
+                "project", "项目","integer", "select",  values, ConstantIssue.Operators);
         return f;
     }
 
@@ -83,7 +84,8 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
 
-        IsuJqlFilter f = new IsuJqlFilter("type", "类型", values);
+        IsuJqlFilter f = new IsuJqlFilter(
+                "type", "类型", "integer", "select",  values, ConstantIssue.Operators);
         return f;
     }
 

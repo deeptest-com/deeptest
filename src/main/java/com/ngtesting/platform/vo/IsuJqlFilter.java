@@ -14,10 +14,14 @@ public class IsuJqlFilter {
     Map values;
     List<String> operators;
 
-    public IsuJqlFilter(String id, String label, Map values) {
+    public IsuJqlFilter(String id, String label, String type, String input, Map values, List<String> operators) {
         this.id = id;
         this.label = label;
+        this.type = type;
+        this.input = input;
         this.values = values;
+
+        this.operators = operators;
     }
 
     public String getId() {

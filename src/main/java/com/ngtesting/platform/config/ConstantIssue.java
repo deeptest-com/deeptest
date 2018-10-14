@@ -1,13 +1,13 @@
 package com.ngtesting.platform.config;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ConstantIssue {
 
-    public static Map<String, Boolean> IssueFilters = new HashMap() {{
+    public static Map<String, Boolean> IssueFilters = new LinkedHashMap() {{
         put("project", true);
         put("type", true);
         put("status", true);

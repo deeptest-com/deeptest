@@ -12,10 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFilterService {
@@ -104,7 +101,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
 
     @Override
     public IsuJqlFilter buildTypeFilter(Integer orgId, Integer projectId) {
-        Map<String, String> values = new HashMap<>();
+        Map<String, String> values = new LinkedHashMap();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
 
@@ -115,7 +112,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
 
     @Override
     public IsuJqlFilter buildStatusFilter(Integer orgId, Integer projectId) {
-        Map<String, String> values = new HashMap<>();
+        Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
 
@@ -126,7 +123,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
 
     @Override
     public IsuJqlFilter buildPriorityFilter(Integer orgId, Integer projectId) {
-        Map<String, String> values = new HashMap<>();
+        Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
 
@@ -137,7 +134,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
 
     @Override
     public IsuJqlFilter buildAssigneeFilter(Integer orgId, Integer projectId) {
-        Map<String, String> values = new HashMap<>();
+        Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
 
@@ -148,7 +145,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
 
     @Override
     public IsuJqlFilter buildCreatorFilter(Integer orgId, Integer projectId) {
-        Map<String, String> values = new HashMap<>();
+        Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
 
@@ -159,7 +156,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
 
     @Override
     public IsuJqlFilter buildReporterFilter(Integer orgId, Integer projectId) {
-        Map<String, String> values = new HashMap<>();
+        Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
 
@@ -170,7 +167,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
 
     @Override
     public IsuJqlFilter buildVerFilter(Integer orgId, Integer projectId) {
-        Map<String, String> values = new HashMap<>();
+        Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
 
@@ -181,7 +178,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
 
     @Override
     public IsuJqlFilter buildEnvFilter(Integer orgId, Integer projectId) {
-        Map<String, String> values = new HashMap<>();
+        Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
 
@@ -192,7 +189,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
 
     @Override
     public IsuJqlFilter buildResolutionFilter(Integer orgId, Integer projectId) {
-        Map<String, String> values = new HashMap<>();
+        Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
 
@@ -203,7 +200,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
 
     @Override
     public IsuJqlFilter buildDueTimeFilter(Integer orgId, Integer projectId) {
-        Map<String, String> values = new HashMap<>();
+        Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
 
@@ -214,7 +211,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
 
     @Override
     public IsuJqlFilter buildResolveTimeFilter(Integer orgId, Integer projectId) {
-        Map<String, String> values = new HashMap<>();
+        Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
 
@@ -225,7 +222,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
 
     @Override
     public IsuJqlFilter buildCommentsFilter(Integer orgId, Integer projectId) {
-        Map<String, String> values = new HashMap<>();
+        Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
 

@@ -210,6 +210,8 @@ public class UserServiceImpl implements UserService {
             user.setLeftSizeDesign(left);
         } else if ("exe".equals(prop)) {
             user.setLeftSizeExe(left);
+        } else if ("issue".equals(prop)) {
+            user.setLeftSizeIssue(left);
         }
 
         userDao.setLeftSize(user);

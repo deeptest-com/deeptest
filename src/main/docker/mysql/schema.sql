@@ -5,13 +5,13 @@
  Source Server Type    : MySQL
  Source Server Version : 50714
  Source Host           : localhost
- Source Database       : ngtesting-test
+ Source Database       : ngtesting-web
 
  Target Server Type    : MySQL
  Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 10/04/2018 10:21:19 AM
+ Date: 10/15/2018 17:35:12 PM
 */
 
 SET NAMES utf8mb4;
@@ -22,13 +22,13 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuAttachment`;
 CREATE TABLE `IsuAttachment` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
   `uri` varchar(255) DEFAULT NULL,
   `descr` varchar(10000) DEFAULT NULL,
   `docType` varchar(255) DEFAULT NULL,
-  `issueId` bigint(20) DEFAULT NULL,
-  `userId` bigint(20) DEFAULT NULL,
+  `issueId` int(11) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -45,11 +45,11 @@ CREATE TABLE `IsuAttachment` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuComments`;
 CREATE TABLE `IsuComments` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `summary` varchar(255) DEFAULT NULL,
   `content` varchar(255) DEFAULT NULL,
-  `issueId` bigint(20) DEFAULT NULL,
-  `userId` bigint(20) DEFAULT NULL,
+  `issueId` int(11) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
@@ -66,18 +66,17 @@ CREATE TABLE `IsuComments` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuCustomField`;
 CREATE TABLE `IsuCustomField` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `code` varchar(255) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `label` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
+  `myColumn` varchar(255) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   `format` varchar(255) DEFAULT NULL,
   `rows` int(11) DEFAULT NULL,
-  `myColumn` varchar(255) DEFAULT NULL,
   `global` bit(1) DEFAULT NULL,
   `required` bit(1) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
@@ -85,14 +84,21 @@ CREATE TABLE `IsuCustomField` (
   PRIMARY KEY (`id`),
   KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`orgId`),
   CONSTRAINT `isucustomfield_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuCustomField`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuCustomField` VALUES ('1', '字段01', '', 'prop01', 'string', 'plain_text', '3', b'1', b'1', '10', '4', '2018-10-10 11:12:26', '2018-10-10 11:12:28', b'0', b'0');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `IsuCustomFieldDefine`
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuCustomFieldDefine`;
 CREATE TABLE `IsuCustomFieldDefine` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `code` varchar(255) DEFAULT NULL,
   `label` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
@@ -104,7 +110,7 @@ CREATE TABLE `IsuCustomFieldDefine` (
   `required` bit(1) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
   `buildIn` bit(1) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
@@ -112,19 +118,19 @@ CREATE TABLE `IsuCustomFieldDefine` (
   PRIMARY KEY (`id`),
   KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`orgId`),
   CONSTRAINT `FK_ro4ivq1br0vdteycd9ri6fr62` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10201 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `IsuCustomFieldOption`
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuCustomFieldOption`;
 CREATE TABLE `IsuCustomFieldOption` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `label` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
-  `fieldId` bigint(20) DEFAULT NULL,
+  `fieldId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -139,13 +145,13 @@ CREATE TABLE `IsuCustomFieldOption` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuCustomFieldOptionDefine`;
 CREATE TABLE `IsuCustomFieldOptionDefine` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `label` varchar(255) DEFAULT NULL,
   `code` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
-  `fieldId` bigint(20) DEFAULT NULL,
+  `fieldId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -160,10 +166,10 @@ CREATE TABLE `IsuCustomFieldOptionDefine` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuCustomFieldSolution`;
 CREATE TABLE `IsuCustomFieldSolution` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
@@ -178,8 +184,8 @@ CREATE TABLE `IsuCustomFieldSolution` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuCustomFieldSolutionToField`;
 CREATE TABLE `IsuCustomFieldSolutionToField` (
-  `solutionId` bigint(20) DEFAULT NULL,
-  `fieldId` bigint(20) DEFAULT NULL,
+  `solutionId` int(11) DEFAULT NULL,
+  `fieldId` int(11) DEFAULT NULL,
   KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`solutionId`),
   KEY `solutionId` (`solutionId`),
   KEY `fieldId` (`fieldId`),
@@ -192,9 +198,9 @@ CREATE TABLE `IsuCustomFieldSolutionToField` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuCustomFieldSolutionToProjectRelation`;
 CREATE TABLE `IsuCustomFieldSolutionToProjectRelation` (
-  `solutionId` bigint(20) NOT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
-  `projectId` bigint(20) NOT NULL,
+  `solutionId` int(11) NOT NULL,
+  `orgId` int(11) DEFAULT NULL,
+  `projectId` int(11) NOT NULL,
   PRIMARY KEY (`solutionId`,`projectId`),
   KEY `FK_rtujogn8761o0m2e2pmi6rsr6` (`projectId`),
   KEY `orgId` (`orgId`),
@@ -209,7 +215,7 @@ CREATE TABLE `IsuCustomFieldSolutionToProjectRelation` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuDocument`;
 CREATE TABLE `IsuDocument` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `createTime` datetime DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
@@ -217,10 +223,10 @@ CREATE TABLE `IsuDocument` (
   `version` int(11) DEFAULT NULL,
   `descr` varchar(10000) DEFAULT NULL,
   `docType` varchar(255) DEFAULT NULL,
-  `issueId` bigint(20) DEFAULT NULL,
+  `issueId` int(11) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
   `uri` varchar(255) DEFAULT NULL,
-  `userId` bigint(20) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_a1lgb1l61iljqw3qjm07lnxo` (`issueId`),
   KEY `FK_7p0pjbn3kgcu2hhwk0u9j5mv2` (`userId`),
@@ -233,10 +239,10 @@ CREATE TABLE `IsuDocument` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuHistory`;
 CREATE TABLE `IsuHistory` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `issueId` bigint(20) DEFAULT NULL,
+  `issueId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -251,13 +257,13 @@ CREATE TABLE `IsuHistory` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuIssue`;
 CREATE TABLE `IsuIssue` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
   `startTime` datetime DEFAULT NULL,
   `endTime` datetime DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -272,15 +278,15 @@ CREATE TABLE `IsuIssue` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuLink`;
 CREATE TABLE `IsuLink` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
-  `caseId` bigint(20) DEFAULT NULL,
-  `issueId` bigint(20) DEFAULT NULL,
-  `disabled` bigint(20) DEFAULT NULL,
-  `deleted` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
+  `caseId` int(11) DEFAULT NULL,
+  `issueId` int(11) DEFAULT NULL,
+  `disabled` int(11) DEFAULT NULL,
+  `deleted` int(11) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -299,10 +305,10 @@ CREATE TABLE `IsuLink` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuNotification`;
 CREATE TABLE `IsuNotification` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -317,11 +323,11 @@ CREATE TABLE `IsuNotification` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuNotificationDefine`;
 CREATE TABLE `IsuNotificationDefine` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `code` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -336,9 +342,9 @@ CREATE TABLE `IsuNotificationDefine` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuNotificationToProjectRelation`;
 CREATE TABLE `IsuNotificationToProjectRelation` (
-  `orgId` bigint(20) DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
-  `solutionId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
+  `solutionId` int(11) DEFAULT NULL,
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   KEY `projectId` (`projectId`),
   KEY `solutionId` (`solutionId`),
@@ -352,10 +358,10 @@ CREATE TABLE `IsuNotificationToProjectRelation` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuPage`;
 CREATE TABLE `IsuPage` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -370,7 +376,7 @@ CREATE TABLE `IsuPage` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuPageDefine`;
 CREATE TABLE `IsuPageDefine` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `code` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
@@ -386,10 +392,10 @@ CREATE TABLE `IsuPageDefine` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuPageSolution`;
 CREATE TABLE `IsuPageSolution` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -404,8 +410,8 @@ CREATE TABLE `IsuPageSolution` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuPageSolutionToPageRelation`;
 CREATE TABLE `IsuPageSolutionToPageRelation` (
-  `pageId` bigint(20) DEFAULT NULL,
-  `pageSolutionId` bigint(20) DEFAULT NULL,
+  `pageId` int(11) DEFAULT NULL,
+  `pageSolutionId` int(11) DEFAULT NULL,
   KEY `projectId` (`pageId`),
   KEY `projectId_2` (`pageId`),
   KEY `projectId_3` (`pageId`),
@@ -418,34 +424,15 @@ CREATE TABLE `IsuPageSolutionToPageRelation` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `IsuPageSolutionToProjectRelation`
--- ----------------------------
-DROP TABLE IF EXISTS `IsuPageSolutionToProjectRelation`;
-CREATE TABLE `IsuPageSolutionToProjectRelation` (
-  `orgId` bigint(20) DEFAULT NULL,
-  `projectId` bigint(1) DEFAULT NULL,
-  `solutionId` bigint(20) DEFAULT NULL,
-  KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
-  KEY `projectId` (`projectId`),
-  KEY `projectId_2` (`projectId`),
-  KEY `projectId_3` (`projectId`),
-  KEY `projectId_4` (`projectId`),
-  KEY `prioritySolutionId` (`solutionId`),
-  CONSTRAINT `fk_isupagesolutiontoprojectrel_projectid` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
-  CONSTRAINT `fk_isupagesolutiontoprojectrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
-  CONSTRAINT `fk_isupagesolutiontoprojectrelation_solutionid` FOREIGN KEY (`solutionId`) REFERENCES `IsuPageSolution` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
 --  Table structure for `IsuPriority`
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuPriority`;
 CREATE TABLE `IsuPriority` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
-  `solutionId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
+  `solutionId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -460,7 +447,7 @@ CREATE TABLE `IsuPriority` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuPriorityDefine`;
 CREATE TABLE `IsuPriorityDefine` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `code` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
@@ -476,10 +463,10 @@ CREATE TABLE `IsuPriorityDefine` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuPrioritySolution`;
 CREATE TABLE `IsuPrioritySolution` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -494,9 +481,9 @@ CREATE TABLE `IsuPrioritySolution` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuPrioritySolutionToProjectRelation`;
 CREATE TABLE `IsuPrioritySolutionToProjectRelation` (
-  `orgId` bigint(20) DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
-  `solutionId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
+  `solutionId` int(11) DEFAULT NULL,
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   KEY `projectId` (`projectId`),
   KEY `solutionId` (`solutionId`),
@@ -510,12 +497,12 @@ CREATE TABLE `IsuPrioritySolutionToProjectRelation` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuQuery`;
 CREATE TABLE `IsuQuery` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `tql` varchar(1000) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -530,12 +517,12 @@ CREATE TABLE `IsuQuery` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuQueryDefine`;
 CREATE TABLE `IsuQueryDefine` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `code` varchar(255) DEFAULT NULL,
   `tql` varchar(1000) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -550,12 +537,12 @@ CREATE TABLE `IsuQueryDefine` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuStatus`;
 CREATE TABLE `IsuStatus` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
-  `categoryId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
+  `categoryId` int(11) DEFAULT NULL,
   `startTime` datetime DEFAULT NULL,
   `endTime` datetime DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
@@ -574,7 +561,7 @@ CREATE TABLE `IsuStatus` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuStatusCategoryDefine`;
 CREATE TABLE `IsuStatusCategoryDefine` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
@@ -590,11 +577,11 @@ CREATE TABLE `IsuStatusCategoryDefine` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuStatusDefine`;
 CREATE TABLE `IsuStatusDefine` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `code` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `categoryId` bigint(20) DEFAULT NULL,
+  `categoryId` int(11) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
@@ -610,10 +597,10 @@ CREATE TABLE `IsuStatusDefine` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuType`;
 CREATE TABLE `IsuType` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -628,7 +615,7 @@ CREATE TABLE `IsuType` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuTypeDefine`;
 CREATE TABLE `IsuTypeDefine` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `code` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
@@ -644,10 +631,10 @@ CREATE TABLE `IsuTypeDefine` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuTypeSolution`;
 CREATE TABLE `IsuTypeSolution` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -662,9 +649,9 @@ CREATE TABLE `IsuTypeSolution` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuTypeSolutionToProjectRelation`;
 CREATE TABLE `IsuTypeSolutionToProjectRelation` (
-  `orgId` bigint(20) DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
-  `solutionId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
+  `solutionId` int(11) DEFAULT NULL,
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   KEY `projectId` (`projectId`),
   KEY `solutionId` (`solutionId`),
@@ -680,8 +667,8 @@ CREATE TABLE `IsuTypeSolutionToProjectRelation` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuTypeSolutionToTypeRelation`;
 CREATE TABLE `IsuTypeSolutionToTypeRelation` (
-  `typeId` bigint(20) DEFAULT NULL,
-  `solutionId` bigint(20) DEFAULT NULL,
+  `typeId` int(11) DEFAULT NULL,
+  `solutionId` int(11) DEFAULT NULL,
   KEY `projectId` (`typeId`),
   KEY `solutionId` (`solutionId`),
   KEY `projectId_2` (`typeId`),
@@ -696,10 +683,10 @@ CREATE TABLE `IsuTypeSolutionToTypeRelation` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuWorkflow`;
 CREATE TABLE `IsuWorkflow` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
@@ -715,8 +702,8 @@ CREATE TABLE `IsuWorkflow` (
 DROP TABLE IF EXISTS `IsuWorkflowProjectRelation`;
 CREATE TABLE `IsuWorkflowProjectRelation` (
   `orgId` int(11) DEFAULT NULL,
-  `projectId` bigint(20) NOT NULL,
-  `workflowId` bigint(20) NOT NULL,
+  `projectId` int(11) NOT NULL,
+  `workflowId` int(11) NOT NULL,
   PRIMARY KEY (`workflowId`,`projectId`),
   KEY `FK_rtujogn8761o0m2e2pmi6rsr6` (`projectId`),
   KEY `workflowId` (`workflowId`),
@@ -730,16 +717,16 @@ CREATE TABLE `IsuWorkflowProjectRelation` (
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuWorkflowTransition`;
 CREATE TABLE `IsuWorkflowTransition` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `actionName` varchar(255) DEFAULT NULL,
-  `actionPageId` bigint(20) DEFAULT NULL,
+  `actionPageId` int(11) DEFAULT NULL,
   `actionPageName` varchar(255) DEFAULT NULL,
-  `srcStatusId` bigint(20) DEFAULT NULL,
+  `srcStatusId` int(11) DEFAULT NULL,
   `srcStatusName` varchar(255) DEFAULT NULL,
-  `dictStatusId` bigint(20) DEFAULT NULL,
+  `dictStatusId` int(11) DEFAULT NULL,
   `dictStatusName` varchar(255) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
-  `workflowId` bigint(20) DEFAULT NULL,
+  `workflowId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -781,7 +768,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `SysPrivilege`;
 CREATE TABLE `SysPrivilege` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `code` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
@@ -797,7 +784,7 @@ CREATE TABLE `SysPrivilege` (
 -- ----------------------------
 DROP TABLE IF EXISTS `SysRole`;
 CREATE TABLE `SysRole` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
@@ -812,8 +799,8 @@ CREATE TABLE `SysRole` (
 -- ----------------------------
 DROP TABLE IF EXISTS `SysRolePrivilegeRelation`;
 CREATE TABLE `SysRolePrivilegeRelation` (
-  `roleId` bigint(20) NOT NULL,
-  `privilegeId` bigint(20) NOT NULL,
+  `roleId` int(11) NOT NULL,
+  `privilegeId` int(11) NOT NULL,
   PRIMARY KEY (`roleId`,`privilegeId`),
   KEY `FK_ky9ghoogn9iib4917xa0588ii` (`privilegeId`),
   CONSTRAINT `FK_ky9ghoogn9iib4917xa0588ii` FOREIGN KEY (`privilegeId`) REFERENCES `sysprivilege` (`id`),
@@ -825,8 +812,8 @@ CREATE TABLE `SysRolePrivilegeRelation` (
 -- ----------------------------
 DROP TABLE IF EXISTS `SysRoleUserRelation`;
 CREATE TABLE `SysRoleUserRelation` (
-  `roleId` bigint(20) NOT NULL,
-  `userId` bigint(20) NOT NULL,
+  `roleId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
   PRIMARY KEY (`roleId`,`userId`),
   KEY `FK_mp7eccpmrmommtiomo2hx94kq` (`userId`),
   CONSTRAINT `FK_lnrx0pwvcwvfat4wno6ym36rk` FOREIGN KEY (`roleId`) REFERENCES `sysrole` (`id`),
@@ -838,7 +825,7 @@ CREATE TABLE `SysRoleUserRelation` (
 -- ----------------------------
 DROP TABLE IF EXISTS `SysUser`;
 CREATE TABLE `SysUser` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
@@ -858,19 +845,19 @@ CREATE TABLE `SysUser` (
 -- ----------------------------
 DROP TABLE IF EXISTS `TstAlert`;
 CREATE TABLE `TstAlert` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(10000) DEFAULT NULL,
   `uri` varchar(255) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   `status` varchar(255) DEFAULT NULL,
   `startTime` datetime DEFAULT NULL,
   `endTime` datetime DEFAULT NULL,
-  `entityId` bigint(20) DEFAULT NULL,
+  `entityId` int(11) DEFAULT NULL,
   `entityName` varchar(255) DEFAULT NULL,
   `isRead` bit(1) DEFAULT NULL,
   `isSent` bit(1) DEFAULT NULL,
-  `assigneeId` bigint(20) DEFAULT NULL,
-  `userId` bigint(20) DEFAULT NULL,
+  `assigneeId` int(11) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -880,28 +867,35 @@ CREATE TABLE `TstAlert` (
   KEY `FK_b4fbqud01ub7bqahljyyux0ss` (`userId`),
   CONSTRAINT `FK_b4fbqud01ub7bqahljyyux0ss` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_r8m7ykej6x9fpp4d52sq3y8x8` FOREIGN KEY (`assigneeId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstAlert`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstAlert` VALUES ('1', 'ssdf', null, 'task', null, null, null, '1', null, b'0', b'0', '8', '8', b'0', b'0', '2018-10-15 17:14:28', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstCase`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstCase`;
 CREATE TABLE `TstCase` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `content` varchar(10000) DEFAULT NULL,
   `objective` varchar(1000) DEFAULT NULL,
   `contentType` varchar(255) DEFAULT NULL,
   `estimate` int(11) DEFAULT NULL,
-  `pId` bigint(20) DEFAULT NULL,
+  `pId` int(11) DEFAULT NULL,
   `isLeaf` bit(1) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   `priority` varchar(255) DEFAULT NULL,
   `reviewResult` bit(1) DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
-  `createById` bigint(20) DEFAULT NULL,
-  `updateById` bigint(20) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
+  `createById` int(11) DEFAULT NULL,
+  `updateById` int(11) DEFAULT NULL,
   `prop01` varchar(255) DEFAULT NULL,
   `prop02` varchar(255) DEFAULT NULL,
   `prop03` varchar(255) DEFAULT NULL,
@@ -933,21 +927,28 @@ CREATE TABLE `TstCase` (
   CONSTRAINT `FK_4paqpejxxg65icpu7asf9btow` FOREIGN KEY (`createById`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_f3mtkmff26truvxmm897u8oeu` FOREIGN KEY (`updateById`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_le8suo2xxbcr036yaiivwkqn0` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3103 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstCase`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstCase` VALUES ('1', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '343', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 11:37:43', null), ('2', '新特性', null, null, 'steps', '10', '1', b'0', '0', 'functional', 'medium', null, '343', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 11:37:43', null), ('3', '新用例', null, null, 'steps', '10', '2', b'1', '0', 'functional', 'medium', null, '343', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 11:37:43', null), ('4', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '345', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:20:35', null), ('5', '新特性', null, null, 'steps', '10', '4', b'0', '0', 'functional', 'medium', null, '345', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:20:35', null), ('6', '新用例', null, null, 'steps', '10', '5', b'1', '0', 'functional', 'medium', null, '345', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:20:35', null), ('7', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '346', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:27:38', null), ('8', '新特性', null, null, 'steps', '10', '7', b'0', '0', 'functional', 'medium', null, '346', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:27:38', null), ('9', '新用例', null, null, 'steps', '10', '8', b'1', '0', 'functional', 'medium', null, '346', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:27:38', null), ('10', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '348', '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:01:39', null), ('11', '新特性', null, null, 'steps', '10', '10', b'0', '0', 'functional', 'medium', null, '348', '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:01:39', null), ('12', '新用例', null, null, 'steps', '10', '11', b'1', '0', 'functional', 'medium', null, '348', '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:01:39', null), ('13', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '350', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:07:47', null), ('14', '新特性', null, null, 'steps', '10', '13', b'0', '0', 'functional', 'medium', null, '350', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:07:47', null), ('15', '新用例', null, null, 'steps', '10', '14', b'1', '0', 'functional', 'medium', null, '350', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:07:47', null), ('16', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '352', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:22:06', null), ('17', '新特性', null, null, 'steps', '10', '16', b'0', '0', 'functional', 'medium', null, '352', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:22:06', null), ('18', '新用例2', null, null, 'steps', '10', '17', b'0', '0', 'functional', 'medium', null, '352', '8', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:22:06', '2018-10-15 17:12:32'), ('19', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '354', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:24:17', null), ('20', '新特性', null, null, 'steps', '10', '19', b'0', '0', 'functional', 'medium', null, '354', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:24:17', null), ('21', '新用例', null, null, 'steps', '10', '20', b'1', '0', 'functional', 'medium', null, '354', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:24:17', null), ('22', '新用例2', null, null, 'steps', '10', '18', b'1', '1', 'functional', 'medium', null, '352', '8', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-15 17:13:23', '2018-10-15 17:14:46'), ('23', '新用例', null, null, 'steps', '10', '18', b'1', '2', 'functional', 'medium', b'1', '352', '8', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-15 17:13:28', '2018-10-15 17:15:01');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstCaseAttachment`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstCaseAttachment`;
 CREATE TABLE `TstCaseAttachment` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
   `uri` varchar(255) DEFAULT NULL,
   `descr` varchar(10000) DEFAULT NULL,
   `docType` varchar(255) DEFAULT NULL,
-  `caseId` bigint(20) DEFAULT NULL,
-  `userId` bigint(20) DEFAULT NULL,
+  `caseId` int(11) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
@@ -964,11 +965,11 @@ CREATE TABLE `TstCaseAttachment` (
 -- ----------------------------
 DROP TABLE IF EXISTS `TstCaseComments`;
 CREATE TABLE `TstCaseComments` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `summary` varchar(255) DEFAULT NULL,
   `content` varchar(255) DEFAULT NULL,
-  `caseId` bigint(20) DEFAULT NULL,
-  `userId` bigint(20) DEFAULT NULL,
+  `caseId` int(11) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
@@ -978,21 +979,28 @@ CREATE TABLE `TstCaseComments` (
   KEY `FK_d4d1t72y6wkb41bbpkdrk26sv` (`userId`),
   CONSTRAINT `FK_d4d1t72y6wkb41bbpkdrk26sv` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_f1r5t3p8vgi1iiq2v0wle7erj` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstCaseComments`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstCaseComments` VALUES ('1', '评审通过', null, '23', '8', '2018-10-15 17:14:07', '2018-10-15 17:14:07', b'0', b'0');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstCaseExeStatus`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstCaseExeStatus`;
 CREATE TABLE `TstCaseExeStatus` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `value` varchar(255) DEFAULT NULL,
   `label` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
   `isBuildIn` bit(1) DEFAULT NULL,
   `isFinal` bit(1) DEFAULT NULL,
-  `orgid` bigint(20) DEFAULT NULL,
+  `orgid` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1000,17 +1008,24 @@ CREATE TABLE `TstCaseExeStatus` (
   PRIMARY KEY (`id`),
   KEY `FK_o4l4xg65y069b0ai5cgbfm175` (`orgid`),
   CONSTRAINT `FK_o4l4xg65y069b0ai5cgbfm175` FOREIGN KEY (`orgid`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=657 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstCaseExeStatus`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstCaseExeStatus` VALUES ('1', 'untest', '未执行', null, '10', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', 'pass', '成功', null, '20', b'0', b'1', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('3', 'fail', '失败', null, '30', b'0', b'1', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('4', 'block', '阻塞', null, '40', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('5', 'untest', '未执行', null, '10', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('6', 'pass', '成功', null, '20', b'0', b'1', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('7', 'fail', '失败', null, '30', b'0', b'1', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('8', 'block', '阻塞', null, '40', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('9', 'untest', '未执行', null, '10', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('10', 'pass', '成功', null, '20', b'0', b'1', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('11', 'fail', '失败', null, '30', b'0', b'1', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('12', 'block', '阻塞', null, '40', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('13', 'untest', '未执行', null, '10', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('14', 'pass', '成功', null, '20', b'0', b'1', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('15', 'fail', '失败', null, '30', b'0', b'1', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('16', 'block', '阻塞', null, '40', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('17', 'untest', '未执行', null, '10', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('18', 'pass', '成功', null, '20', b'0', b'1', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('19', 'fail', '失败', null, '30', b'0', b'1', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('20', 'block', '阻塞', null, '40', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('21', 'untest', '未执行', null, '10', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('22', 'pass', '成功', null, '20', b'0', b'1', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('23', 'fail', '失败', null, '30', b'0', b'1', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('24', 'block', '阻塞', null, '40', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstCaseHistory`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstCaseHistory`;
 CREATE TABLE `TstCaseHistory` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `caseId` bigint(20) DEFAULT NULL,
+  `caseId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1018,23 +1033,30 @@ CREATE TABLE `TstCaseHistory` (
   PRIMARY KEY (`id`),
   KEY `FK_8yss1awno54uahftbyi1wb2j8` (`caseId`),
   CONSTRAINT `FK_8yss1awno54uahftbyi1wb2j8` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `TstCaseHistory`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstCaseHistory` VALUES ('1', '用户<span class=\"dict\">Aaron Chen</span>创建', null, '8', b'0', b'0', '2018-10-06 14:27:37', null), ('2', '用户<span class=\"dict\">Aaron Chen</span>创建', null, '9', b'0', b'0', '2018-10-06 14:27:37', null), ('3', '用户<span class=\"dict\">Aaron Chen2</span>更新', null, '18', b'0', b'0', '2018-10-15 17:12:32', null), ('4', '用户<span class=\"dict\">Aaron Chen2</span>创建', null, '22', b'0', b'0', '2018-10-15 17:13:23', null), ('5', '用户<span class=\"dict\">Aaron Chen2</span>创建', null, '23', b'0', b'0', '2018-10-15 17:13:28', null), ('6', '用户<span class=\"dict\">Aaron Chen2</span>更新', null, '23', b'0', b'0', '2018-10-15 17:13:32', null), ('7', '用户<span class=\"dict\">Aaron Chen2</span>更新', null, '22', b'0', b'0', '2018-10-15 17:14:46', null), ('8', '用户<span class=\"dict\">Aaron Chen2</span>更新', null, '23', b'0', b'0', '2018-10-15 17:15:01', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstCaseInSuite`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstCaseInSuite`;
 CREATE TABLE `TstCaseInSuite` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `caseId` bigint(20) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `caseId` int(11) DEFAULT NULL,
   `isLeaf` bit(1) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
-  `pId` bigint(20) DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
-  `suiteId` bigint(20) DEFAULT NULL,
+  `pId` int(11) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
+  `suiteId` int(11) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
-  `createBy` bigint(20) DEFAULT NULL,
+  `createBy` int(11) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1053,21 +1075,21 @@ CREATE TABLE `TstCaseInSuite` (
 -- ----------------------------
 DROP TABLE IF EXISTS `TstCaseInTask`;
 CREATE TABLE `TstCaseInTask` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `caseId` bigint(20) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `caseId` int(11) DEFAULT NULL,
   `isLeaf` bit(1) DEFAULT NULL,
-  `pId` bigint(20) DEFAULT NULL,
+  `pId` int(11) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
-  `exeBy` bigint(20) DEFAULT NULL,
+  `exeBy` int(11) DEFAULT NULL,
   `exeTime` datetime DEFAULT NULL,
   `status` varchar(255) DEFAULT NULL,
   `result` varchar(255) DEFAULT NULL,
-  `planId` bigint(20) DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
-  `taskId` bigint(20) DEFAULT NULL,
+  `planId` int(11) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
+  `taskId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
-  `createBy` bigint(20) DEFAULT NULL,
+  `createBy` int(11) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1083,18 +1105,25 @@ CREATE TABLE `TstCaseInTask` (
   CONSTRAINT `FK_ahth2x2i7j9loamqyg3jcwfu6` FOREIGN KEY (`createBy`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_avls2r88tnl837rhiw01wtyma` FOREIGN KEY (`planId`) REFERENCES `TstPlan` (`id`),
   CONSTRAINT `FK_mwbiov88r7ppt8x9yunxr18pu` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=192 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstCaseInTask`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstCaseInTask` VALUES ('1', '16', b'0', null, '0', null, null, 'untest', null, '1', '352', '1', b'0', b'0', null, '2018-10-15 17:14:34', null), ('2', '17', b'0', '16', '0', null, null, 'untest', null, '1', '352', '1', b'0', b'0', null, '2018-10-15 17:14:34', null), ('3', '18', b'0', '17', '0', null, null, 'untest', null, '1', '352', '1', b'0', b'0', null, '2018-10-15 17:14:34', null), ('4', '22', b'1', '18', '1', '8', '2018-10-15 17:14:51', 'fail', null, '1', '352', '1', b'0', b'0', null, '2018-10-15 17:14:34', null), ('5', '23', b'1', '18', '2', '8', '2018-10-15 17:14:53', 'block', null, '1', '352', '1', b'0', b'0', null, '2018-10-15 17:14:34', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstCaseInTaskHistory`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstCaseInTaskHistory`;
 CREATE TABLE `TstCaseInTaskHistory` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `caseId` bigint(20) DEFAULT NULL,
-  `caseInTaskId` bigint(20) DEFAULT NULL,
+  `caseId` int(11) DEFAULT NULL,
+  `caseInTaskId` int(11) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1104,21 +1133,28 @@ CREATE TABLE `TstCaseInTaskHistory` (
   KEY `caseInTaskId` (`caseInTaskId`),
   CONSTRAINT `fk_caseId` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`),
   CONSTRAINT `fk_caseInTaskId` FOREIGN KEY (`caseInTaskId`) REFERENCES `TstCaseInTask` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `TstCaseInTaskHistory`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstCaseInTaskHistory` VALUES ('1', '用户<span class=\"dict\">Aaron Chen2</span>标注执行结果为\"失败\"', null, '22', '4', b'0', b'0', '2018-10-15 17:14:51', null), ('2', '用户<span class=\"dict\">Aaron Chen2</span>标注执行结果为\"阻塞\"', null, '23', '5', b'0', b'0', '2018-10-15 17:14:53', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstCasePriority`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstCasePriority`;
 CREATE TABLE `TstCasePriority` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `value` varchar(255) DEFAULT NULL,
   `label` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
   `isBuildIn` bit(1) DEFAULT NULL,
   `isDefault` bit(1) DEFAULT NULL,
-  `orgid` bigint(20) DEFAULT NULL,
+  `orgid` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1126,18 +1162,25 @@ CREATE TABLE `TstCasePriority` (
   PRIMARY KEY (`id`),
   KEY `FK_d8r4hkhobybms74u4vk43thj9` (`orgid`),
   CONSTRAINT `FK_d8r4hkhobybms74u4vk43thj9` FOREIGN KEY (`orgid`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=474 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstCasePriority`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstCasePriority` VALUES ('1', 'high', '高', null, '10', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', 'medium', '中', null, '20', b'0', b'1', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('3', 'low', '低', null, '30', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('4', 'high', '高', null, '10', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('5', 'medium', '中', null, '20', b'0', b'1', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('6', 'low', '低', null, '30', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('7', 'high', '高', null, '10', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('8', 'medium', '中', null, '20', b'0', b'1', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('9', 'low', '低', null, '30', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('10', 'high', '高', null, '10', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('11', 'medium', '中', null, '20', b'0', b'1', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('12', 'low', '低', null, '30', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('13', 'high', '高', null, '10', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('14', 'medium', '中', null, '20', b'0', b'1', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('15', 'low', '低', null, '30', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('16', 'high', '高', null, '10', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('17', 'medium', '中', null, '20', b'0', b'1', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('18', 'low', '低', null, '30', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstCaseStep`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstCaseStep`;
 CREATE TABLE `TstCaseStep` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `opt` varchar(10000) DEFAULT NULL,
   `expect` varchar(10000) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
-  `caseId` bigint(20) DEFAULT NULL,
+  `caseId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1152,14 +1195,14 @@ CREATE TABLE `TstCaseStep` (
 -- ----------------------------
 DROP TABLE IF EXISTS `TstCaseType`;
 CREATE TABLE `TstCaseType` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `value` varchar(255) DEFAULT NULL,
   `label` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
   `isBuildIn` bit(1) DEFAULT NULL,
   `isDefault` bit(1) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1167,27 +1210,33 @@ CREATE TABLE `TstCaseType` (
   PRIMARY KEY (`id`),
   KEY `FK_rqs9hiykm6kk5w8rewcy1uvy7` (`orgId`),
   CONSTRAINT `FK_rqs9hiykm6kk5w8rewcy1uvy7` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1087 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstCaseType`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstCaseType` VALUES ('1', 'functional', '功能', null, '10', b'0', b'1', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', 'performance', '性能', null, '20', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('3', 'ui', '界面', null, '30', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('4', 'compatibility', '兼容性', null, '40', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('5', 'security', '安全', null, '50', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('6', 'automation', '自动化', null, '60', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('7', 'other', '其它', null, '70', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('8', 'functional', '功能', null, '10', b'0', b'1', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('9', 'performance', '性能', null, '20', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('10', 'ui', '界面', null, '30', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('11', 'compatibility', '兼容性', null, '40', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('12', 'security', '安全', null, '50', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('13', 'automation', '自动化', null, '60', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('14', 'other', '其它', null, '70', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('15', 'functional', '功能', null, '10', b'0', b'1', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('16', 'performance', '性能', null, '20', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('17', 'ui', '界面', null, '30', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('18', 'compatibility', '兼容性', null, '40', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('19', 'security', '安全', null, '50', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('20', 'automation', '自动化', null, '60', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('21', 'other', '其它', null, '70', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('22', 'functional', '功能', null, '10', b'0', b'1', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('23', 'performance', '性能', null, '20', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('24', 'ui', '界面', null, '30', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('25', 'compatibility', '兼容性', null, '40', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('26', 'security', '安全', null, '50', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('27', 'automation', '自动化', null, '60', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('28', 'other', '其它', null, '70', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('29', 'functional', '功能', null, '10', b'0', b'1', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('30', 'performance', '性能', null, '20', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('31', 'ui', '界面', null, '30', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('32', 'compatibility', '兼容性', null, '40', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('33', 'security', '安全', null, '50', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('34', 'automation', '自动化', null, '60', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('35', 'other', '其它', null, '70', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('36', 'functional', '功能', null, '10', b'0', b'1', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('37', 'performance', '性能', null, '20', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('38', 'ui', '界面', null, '30', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('39', 'compatibility', '兼容性', null, '40', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('40', 'security', '安全', null, '50', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('41', 'automation', '自动化', null, '60', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('42', 'other', '其它', null, '70', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstCustomField`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstCustomField`;
 CREATE TABLE `TstCustomField` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `code` varchar(255) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `label` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
+  `myColumn` varchar(255) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   `format` varchar(255) DEFAULT NULL,
   `rows` int(11) DEFAULT NULL,
   `global` bit(1) DEFAULT NULL,
-  `myColumn` varchar(255) DEFAULT NULL,
   `applyTo` varchar(255) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
   `required` bit(1) DEFAULT NULL,
   `buildIn` bit(1) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1198,16 +1247,23 @@ CREATE TABLE `TstCustomField` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+--  Records of `TstCustomField`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstCustomField` VALUES ('1', '字段01', null, 'prop01', 'string', 'plain_text', '3', b'1', 'test_case', '10', null, b'0', '4', b'0', b'0', '2018-10-10 11:05:33', null);
+COMMIT;
+
+-- ----------------------------
 --  Table structure for `TstCustomFieldOption`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstCustomFieldOption`;
 CREATE TABLE `TstCustomFieldOption` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `label` varchar(255) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
-  `fieldId` bigint(20) DEFAULT NULL,
+  `fieldId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1222,9 +1278,9 @@ CREATE TABLE `TstCustomFieldOption` (
 -- ----------------------------
 DROP TABLE IF EXISTS `TstCustomFieldProjectRelation`;
 CREATE TABLE `TstCustomFieldProjectRelation` (
-  `customFieldId` bigint(20) NOT NULL,
-  `projectId` bigint(20) NOT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `customFieldId` int(11) NOT NULL,
+  `projectId` int(11) NOT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `projectName` varchar(255) DEFAULT NULL,
   `projectType` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`customFieldId`,`projectId`),
@@ -1238,14 +1294,14 @@ CREATE TABLE `TstCustomFieldProjectRelation` (
 -- ----------------------------
 DROP TABLE IF EXISTS `TstDocument`;
 CREATE TABLE `TstDocument` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
   `version` int(11) DEFAULT NULL,
   `descr` varchar(10000) DEFAULT NULL,
   `uri` varchar(255) DEFAULT NULL,
   `doc_type` varchar(255) DEFAULT NULL,
-  `eventId` bigint(20) DEFAULT NULL,
-  `userId` bigint(20) DEFAULT NULL,
+  `eventId` int(11) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1260,7 +1316,7 @@ CREATE TABLE `TstDocument` (
 -- ----------------------------
 DROP TABLE IF EXISTS `TstEmail`;
 CREATE TABLE `TstEmail` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `subject` varchar(255) DEFAULT NULL,
   `content` varchar(10000) DEFAULT NULL,
   `mailTo` varchar(255) DEFAULT NULL,
@@ -1277,12 +1333,12 @@ CREATE TABLE `TstEmail` (
 -- ----------------------------
 DROP TABLE IF EXISTS `TstEnv`;
 CREATE TABLE `TstEnv` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `closed` bit(1) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1297,15 +1353,15 @@ CREATE TABLE `TstEnv` (
 -- ----------------------------
 DROP TABLE IF EXISTS `TstHistory`;
 CREATE TABLE `TstHistory` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
   `msg` varchar(10000) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `uri` varchar(255) DEFAULT NULL,
   `entityType` varchar(255) DEFAULT NULL,
-  `entityId` bigint(20) DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
-  `userId` bigint(20) DEFAULT NULL,
+  `entityId` int(11) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1315,17 +1371,24 @@ CREATE TABLE `TstHistory` (
   KEY `FK_m4yjkr3nwc5y1fcjj1ke08xie` (`userId`),
   CONSTRAINT `FK_j9m2m7ijlp9j2184nv0yiln9u` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_m4yjkr3nwc5y1fcjj1ke08xie` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=701 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstHistory`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstHistory` VALUES ('1', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '343', '343', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '345', '345', '1', b'0', b'0', '2018-10-06 14:20:35', null), ('3', '用户<span class=\"dict\">Aaron Chen</span>创建项目<span class=\"dict\">Prj01</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:27:37', null), ('4', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj0111</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:30:35', null), ('5', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj01</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:30:58', null), ('6', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj0133</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:38:48', null), ('7', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj013344</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:39:47', null), ('8', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj01</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:41:36', null), ('9', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj012</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:42:05', null), ('10', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj0124444</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:43:05', null), ('11', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '348', '348', '4', b'0', b'0', '2018-10-08 11:01:39', null), ('12', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '350', '350', '8', b'0', b'0', '2018-10-08 11:07:47', null), ('13', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '352', '352', '8', b'0', b'0', '2018-10-11 10:22:06', null), ('14', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '354', '354', '8', b'0', b'0', '2018-10-11 10:24:17', null), ('15', '用户<span class=\"dict\">Aaron Chen2</span>创建计划<span class=\"dict\">sdfdsf</span>', null, null, null, 'plan', '1', '352', '8', b'0', b'0', '2018-10-15 17:14:28', null), ('16', '用户<span class=\"dict\">Aaron Chen2</span>创建测试任务<span class=\"dict\">ssdf</span>', null, null, null, 'task', '1', '352', '8', b'0', b'0', '2018-10-15 17:14:28', null), ('17', '用户<span class=\"dict\">Aaron Chen2</span>更新用例为测试任务<span class=\"dict\">ssdf</span>', null, null, null, 'task', '1', '352', '8', b'0', b'0', '2018-10-15 17:14:34', null), ('18', '用户<span class=\"dict\">Aaron Chen2</span>更新计划<span class=\"dict\">sdfdsf</span>', null, null, null, 'plan', '1', '352', '8', b'0', b'0', '2018-10-15 17:14:35', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstMsg`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstMsg`;
 CREATE TABLE `TstMsg` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
   `isRead` bit(1) DEFAULT NULL,
-  `userId` bigint(20) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1333,14 +1396,21 @@ CREATE TABLE `TstMsg` (
   PRIMARY KEY (`id`),
   KEY `FK_h4g997qkpu00h24f9ppqa4g2k` (`userId`),
   CONSTRAINT `FK_h4g997qkpu00h24f9ppqa4g2k` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstMsg`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstMsg` VALUES ('1', '用户<span class=\"dict\">Aaron Chen2</span>创建任务<span class=\"dict\">ssdf</span>', b'0', '8', b'0', b'0', '2018-10-15 17:14:28', null), ('2', '用户<span class=\"dict\">Aaron Chen2</span>更新用例为任务<span class=\"dict\">ssdf</span>', b'0', '8', b'0', b'0', '2018-10-15 17:14:34', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstOrg`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstOrg`;
 CREATE TABLE `TstOrg` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `website` varchar(255) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
@@ -1348,17 +1418,24 @@ CREATE TABLE `TstOrg` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=165 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstOrg`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstOrg` VALUES ('1', 'Aaron Chen的组织', null, b'0', b'0', '2018-10-06 11:37:43', null), ('2', 'Org0112', null, b'0', b'0', '2018-10-06 14:20:36', null), ('3', 'Aaron Chen的组织', null, b'0', b'0', '2018-10-08 11:01:39', null), ('4', 'Aaron Chen的组织', null, b'0', b'0', '2018-10-08 11:07:47', null), ('5', 'test', null, b'0', b'0', '2018-10-11 10:22:07', null), ('6', 'test2', null, b'0', b'0', '2018-10-11 10:24:18', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstOrgGroup`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstOrgGroup`;
 CREATE TABLE `TstOrgGroup` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1366,17 +1443,24 @@ CREATE TABLE `TstOrgGroup` (
   PRIMARY KEY (`id`),
   KEY `FK_dlddwakgodocwt7n7abndkhtg` (`orgId`),
   CONSTRAINT `FK_dlddwakgodocwt7n7abndkhtg` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=197 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstOrgGroup`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstOrgGroup` VALUES ('1', '所有人', null, '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', '所有人', null, '2', b'0', b'0', '2018-10-06 14:20:35', null), ('3', '所有人', null, '3', b'0', b'0', '2018-10-08 11:01:39', null), ('4', '所有人', null, '4', b'0', b'0', '2018-10-08 11:07:47', null), ('5', '所有人', null, '5', b'0', b'0', '2018-10-11 10:22:06', null), ('6', '所有人', null, '6', b'0', b'0', '2018-10-11 10:24:17', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstOrgGroupUserRelation`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstOrgGroupUserRelation`;
 CREATE TABLE `TstOrgGroupUserRelation` (
-  `orgId` bigint(20) DEFAULT NULL,
-  `orgGroupId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
+  `orgGroupId` int(11) DEFAULT NULL,
   `orgGroupName` varchar(255) DEFAULT NULL,
-  `userId` bigint(20) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
   `userName` varchar(255) DEFAULT NULL,
   KEY `FK_oioog5ixo3vky1n5qhr55mjr6` (`orgGroupId`),
   KEY `FK_96e8mkbgy9qly15goqecnson6` (`userId`),
@@ -1389,7 +1473,7 @@ CREATE TABLE `TstOrgGroupUserRelation` (
 -- ----------------------------
 DROP TABLE IF EXISTS `TstOrgPrivilegeDefine`;
 CREATE TABLE `TstOrgPrivilegeDefine` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `code` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
@@ -1412,11 +1496,11 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `TstOrgRole`;
 CREATE TABLE `TstOrgRole` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `code` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1424,16 +1508,23 @@ CREATE TABLE `TstOrgRole` (
   PRIMARY KEY (`id`),
   KEY `FK_q5g6x4w1pwr5ur4iwbg17nr9u` (`orgId`),
   CONSTRAINT `FK_q5g6x4w1pwr5ur4iwbg17nr9u` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=489 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstOrgRole`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstOrgRole` VALUES ('1', '组织管理员', 'org_admin', null, '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', '项目管理员', 'project_admin', null, '1', b'0', b'0', '2018-10-06 11:37:43', '2018-10-06 11:43:37'), ('3', '组织管理员', 'org_admin', null, '2', b'0', b'0', '2018-10-06 14:20:35', null), ('4', '项目管理员', 'project_admin', null, '2', b'0', b'0', '2018-10-06 14:20:35', null), ('5', '组织管理员', 'org_admin', null, '3', b'0', b'0', '2018-10-08 11:01:39', null), ('6', '项目管理员', 'project_admin', null, '3', b'0', b'0', '2018-10-08 11:01:39', null), ('7', '组织管理员', 'org_admin', null, '4', b'0', b'0', '2018-10-08 11:07:47', null), ('8', '项目管理员', 'project_admin', null, '4', b'0', b'0', '2018-10-08 11:07:47', null), ('9', '组织管理员', 'org_admin', null, '5', b'0', b'0', '2018-10-11 10:22:06', null), ('10', '项目管理员', 'project_admin', null, '5', b'0', b'0', '2018-10-11 10:22:06', null), ('11', '组织管理员', 'org_admin', null, '6', b'0', b'0', '2018-10-11 10:24:17', null), ('12', '项目管理员', 'project_admin', null, '6', b'0', b'0', '2018-10-11 10:24:17', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstOrgRoleGroupRelation`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstOrgRoleGroupRelation`;
 CREATE TABLE `TstOrgRoleGroupRelation` (
-  `orgRoleId` bigint(20) NOT NULL,
-  `groupId` bigint(20) NOT NULL,
-  `orgId` bigint(20) NOT NULL,
+  `orgRoleId` int(11) NOT NULL,
+  `groupId` int(11) NOT NULL,
+  `orgId` int(11) NOT NULL,
   PRIMARY KEY (`orgRoleId`,`groupId`,`orgId`),
   KEY `FK_h6d5c2yfeaqitn4jb3fvkjtw6` (`groupId`),
   CONSTRAINT `TstOrgRoleGroupRelation_ibfk_1` FOREIGN KEY (`orgRoleId`) REFERENCES `TstOrgRole` (`id`),
@@ -1445,9 +1536,9 @@ CREATE TABLE `TstOrgRoleGroupRelation` (
 -- ----------------------------
 DROP TABLE IF EXISTS `TstOrgRolePrivilegeRelation`;
 CREATE TABLE `TstOrgRolePrivilegeRelation` (
-  `orgId` bigint(20) NOT NULL,
-  `orgRoleId` bigint(20) NOT NULL,
-  `orgPrivilegeId` bigint(20) NOT NULL,
+  `orgId` int(11) NOT NULL,
+  `orgRoleId` int(11) NOT NULL,
+  `orgPrivilegeId` int(11) NOT NULL,
   PRIMARY KEY (`orgRoleId`,`orgPrivilegeId`,`orgId`),
   KEY `FK_xrf0fqbnodxio07iqvttce72` (`orgPrivilegeId`),
   CONSTRAINT `FK_6kbys90ljdfp5dp7w5nb4d5ru` FOREIGN KEY (`orgRoleId`) REFERENCES `TstOrgRole` (`id`),
@@ -1455,13 +1546,20 @@ CREATE TABLE `TstOrgRolePrivilegeRelation` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+--  Records of `TstOrgRolePrivilegeRelation`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstOrgRolePrivilegeRelation` VALUES ('1', '1', '1'), ('2', '3', '1'), ('3', '5', '1'), ('4', '7', '1'), ('5', '9', '1'), ('6', '11', '1'), ('1', '1', '3'), ('1', '2', '3'), ('2', '3', '3'), ('2', '4', '3'), ('3', '5', '3'), ('3', '6', '3'), ('4', '7', '3'), ('4', '8', '3'), ('5', '9', '3'), ('5', '10', '3'), ('6', '11', '3'), ('6', '12', '3');
+COMMIT;
+
+-- ----------------------------
 --  Table structure for `TstOrgRoleUserRelation`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstOrgRoleUserRelation`;
 CREATE TABLE `TstOrgRoleUserRelation` (
-  `orgRoleId` bigint(20) NOT NULL,
-  `userId` bigint(20) NOT NULL,
-  `orgId` bigint(20) NOT NULL,
+  `orgRoleId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
+  `orgId` int(11) NOT NULL,
   PRIMARY KEY (`orgRoleId`,`userId`,`orgId`),
   KEY `FK_h6d5c2yfeaqitn4jb3fvkjtw6` (`userId`),
   CONSTRAINT `FK_8cbhgbqt91ctmnw35ibtyofqg` FOREIGN KEY (`orgRoleId`) REFERENCES `TstOrgRole` (`id`),
@@ -1469,12 +1567,19 @@ CREATE TABLE `TstOrgRoleUserRelation` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+--  Records of `TstOrgRoleUserRelation`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstOrgRoleUserRelation` VALUES ('1', '1', '1'), ('3', '1', '2'), ('2', '3', '1'), ('5', '4', '3'), ('7', '8', '4'), ('9', '8', '5'), ('11', '8', '6');
+COMMIT;
+
+-- ----------------------------
 --  Table structure for `TstOrgUserRelation`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstOrgUserRelation`;
 CREATE TABLE `TstOrgUserRelation` (
-  `orgId` bigint(20) NOT NULL,
-  `userId` bigint(20) NOT NULL,
+  `orgId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
   PRIMARY KEY (`orgId`,`userId`),
   KEY `FK_dbrrq8bxgx5npl0wxialit7i2` (`userId`),
   CONSTRAINT `FK_28gcxu8p61i0lao8unkaq5c6c` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
@@ -1482,21 +1587,28 @@ CREATE TABLE `TstOrgUserRelation` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+--  Records of `TstOrgUserRelation`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstOrgUserRelation` VALUES ('1', '1'), ('2', '1'), ('1', '2'), ('1', '3'), ('3', '4'), ('4', '8'), ('5', '8'), ('6', '8');
+COMMIT;
+
+-- ----------------------------
 --  Table structure for `TstPlan`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstPlan`;
 CREATE TABLE `TstPlan` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `estimate` int(11) DEFAULT NULL,
   `startTime` datetime DEFAULT NULL,
   `endTime` datetime DEFAULT NULL,
   `status` varchar(255) DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
-  `envId` bigint(20) DEFAULT NULL,
-  `verId` bigint(20) DEFAULT NULL,
-  `userId` bigint(20) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
+  `envId` int(11) DEFAULT NULL,
+  `verId` int(11) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1508,21 +1620,28 @@ CREATE TABLE `TstPlan` (
   CONSTRAINT `FK_299h646hfdb07s239a6juu55k` FOREIGN KEY (`verId`) REFERENCES `TstVer` (`id`),
   CONSTRAINT `FK_pc89p4era2bchkg4ulsv1gv7l` FOREIGN KEY (`envId`) REFERENCES `TstVer` (`id`),
   CONSTRAINT `FK_te991npw8lxmrtmt2gcjolimr` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstPlan`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstPlan` VALUES ('1', 'sdfdsf', null, null, null, null, 'in_progress', '352', null, null, '8', b'0', b'0', '2018-10-15 17:14:18', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstProject`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstProject`;
 CREATE TABLE `TstProject` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   `ord` int(11) DEFAULT NULL,
   `lastAccessTime` datetime DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
-  `parentId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
+  `parentId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1532,19 +1651,26 @@ CREATE TABLE `TstProject` (
   KEY `FK_rm5uawwl53dtse1l5qhwci30v` (`parentId`),
   CONSTRAINT `FK_avuusthsgk7g68bm0kiq6dix0` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
   CONSTRAINT `FK_rm5uawwl53dtse1l5qhwci30v` FOREIGN KEY (`parentId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=342 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=355 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstProject`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstProject` VALUES ('342', '默认项目组', null, 'group', null, null, '1', null, b'0', b'0', '2018-10-06 11:37:43', null), ('343', '默认项目', null, 'project', null, null, '1', '342', b'0', b'0', '2018-10-06 11:37:43', null), ('344', '默认项目组', null, 'group', null, null, '2', null, b'0', b'0', '2018-10-06 14:20:35', null), ('345', '默认项目', null, 'project', null, null, '2', '344', b'0', b'0', '2018-10-06 14:20:35', null), ('346', 'Prj01', null, 'project', null, null, '2', '344', b'0', b'0', '2018-10-06 14:27:38', null), ('347', '默认项目组', null, 'group', null, null, '3', null, b'0', b'0', '2018-10-08 11:01:39', null), ('348', '默认项目', null, 'project', null, null, '3', '347', b'0', b'0', '2018-10-08 11:01:39', null), ('349', '默认项目组', null, 'group', null, null, '4', null, b'0', b'0', '2018-10-08 11:07:47', null), ('350', '默认项目', null, 'project', null, null, '4', '349', b'0', b'0', '2018-10-08 11:07:47', null), ('351', '默认项目组', null, 'group', null, null, '5', null, b'0', b'0', '2018-10-11 10:22:06', null), ('352', '默认项目', null, 'project', null, null, '5', '351', b'0', b'0', '2018-10-11 10:22:06', null), ('353', '默认项目组', null, 'group', null, null, '6', null, b'0', b'0', '2018-10-11 10:24:17', null), ('354', '默认项目', null, 'project', null, null, '6', '353', b'0', b'0', '2018-10-11 10:24:17', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstProjectAccessHistory`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstProjectAccessHistory`;
 CREATE TABLE `TstProjectAccessHistory` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `lastAccessTime` datetime DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
-  `prjId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
+  `prjId` int(11) DEFAULT NULL,
   `prjName` varchar(255) DEFAULT NULL,
-  `userId` bigint(20) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1554,14 +1680,21 @@ CREATE TABLE `TstProjectAccessHistory` (
   CONSTRAINT `FK_dpcrx83ysgtel2eua0856xfk3` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_hv9vkb26yw1fluyh6thwh230h` FOREIGN KEY (`prjId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_l0ifd62wftf6w81779j64rfmc` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=189 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstProjectAccessHistory`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstProjectAccessHistory` VALUES ('1', '2018-10-06 14:27:42', '1', '343', '默认项目', '1', '2018-10-06 11:37:43', null), ('2', '2018-10-06 11:38:57', '1', '343', '默认项目', '2', null, null), ('3', '2018-10-06 11:41:33', '1', '343', '默认项目', '3', null, null), ('4', '2018-10-08 10:55:10', '2', '345', '默认项目', '1', '2018-10-06 14:20:35', null), ('5', '2018-10-06 14:46:59', '2', '346', 'Prj01', '1', null, null), ('6', '2018-10-08 11:01:39', '3', '348', '默认项目', '4', '2018-10-08 11:01:39', null), ('7', '2018-10-15 17:05:07', '4', '350', '默认项目', '8', '2018-10-08 11:07:47', null), ('8', '2018-10-15 17:34:14', '5', '352', '默认项目', '8', '2018-10-11 10:22:06', null), ('9', '2018-10-11 10:24:17', '6', '354', '默认项目', '8', '2018-10-11 10:24:17', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstProjectPrivilegeDefine`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstProjectPrivilegeDefine`;
 CREATE TABLE `TstProjectPrivilegeDefine` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `code` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `action` varchar(255) DEFAULT NULL,
@@ -1586,12 +1719,12 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `TstProjectRole`;
 CREATE TABLE `TstProjectRole` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `code` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
   `isBuildIn` bit(1) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1599,30 +1732,44 @@ CREATE TABLE `TstProjectRole` (
   PRIMARY KEY (`id`),
   KEY `FK_8eokjbtquljjgjahh7y0l0la6` (`orgId`),
   CONSTRAINT `FK_8eokjbtquljjgjahh7y0l0la6` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=613 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstProjectRole`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstProjectRole` VALUES ('1', 'test_leader', '测试主管', null, b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', 'test_designer', '测试设计', null, b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('3', 'tester', '测试执行', null, b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('4', 'readonly', '只读用户', null, b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('5', 'test_leader', '测试主管', null, b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('6', 'test_designer', '测试设计', null, b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('7', 'tester', '测试执行', null, b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('8', 'readonly', '只读用户', null, b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('9', 'test_leader', '测试主管', null, b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('10', 'test_designer', '测试设计', null, b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('11', 'tester', '测试执行', null, b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('12', 'readonly', '只读用户', null, b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('13', 'test_leader', '测试主管', null, b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('14', 'test_designer', '测试设计', null, b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('15', 'tester', '测试执行', null, b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('16', 'readonly', '只读用户', null, b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('17', 'test_leader', '测试主管', null, b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('18', 'test_designer', '测试设计', null, b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('19', 'tester', '测试执行', null, b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('20', 'readonly', '只读用户', null, b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('21', 'test_leader', '测试主管', null, b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('22', 'test_designer', '测试设计', null, b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('23', 'tester', '测试执行', null, b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('24', 'readonly', '只读用户', null, b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstProjectRoleEntityRelation`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstProjectRoleEntityRelation`;
 CREATE TABLE `TstProjectRoleEntityRelation` (
-  `entityId` bigint(20) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
-  `projectRoleId` bigint(20) DEFAULT NULL,
+  `entityId` int(11) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
+  `projectRoleId` int(11) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   KEY `FK_e507ln5a5bxon2uyrs3b06bv8` (`projectRoleId`),
   CONSTRAINT `FK_e507ln5a5bxon2uyrs3b06bv8` FOREIGN KEY (`projectRoleId`) REFERENCES `TstProjectRole` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+--  Records of `TstProjectRoleEntityRelation`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstProjectRoleEntityRelation` VALUES ('1', '1', '343', '1', 'user'), ('2', '1', '343', '2', 'user'), ('3', '1', '343', '2', 'user'), ('1', '2', '345', '5', 'user'), ('1', '2', '346', '5', 'user'), ('4', '3', '348', '9', 'user'), ('8', '4', '350', '13', 'user'), ('8', '5', '352', '17', 'user'), ('8', '6', '354', '21', 'user');
+COMMIT;
+
+-- ----------------------------
 --  Table structure for `TstProjectRolePriviledgeRelation`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstProjectRolePriviledgeRelation`;
 CREATE TABLE `TstProjectRolePriviledgeRelation` (
-  `projectPrivilegeDefineId` bigint(20) DEFAULT NULL,
-  `projectRoleId` bigint(20) DEFAULT NULL,
-  `orgId` bigint(20) DEFAULT NULL,
+  `projectPrivilegeDefineId` int(11) DEFAULT NULL,
+  `projectRoleId` int(11) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   KEY `FK_6aiwgve7unve9rcj15v8woxyl` (`projectPrivilegeDefineId`),
   KEY `FK_orqtwmqhjn4bih5y6pd5fla59` (`projectRoleId`),
   CONSTRAINT `FK_6aiwgve7unve9rcj15v8woxyl` FOREIGN KEY (`projectPrivilegeDefineId`) REFERENCES `TstProjectPrivilegeDefine` (`id`),
@@ -1630,18 +1777,25 @@ CREATE TABLE `TstProjectRolePriviledgeRelation` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+--  Records of `TstProjectRolePriviledgeRelation`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstProjectRolePriviledgeRelation` VALUES ('11100', '1', null), ('11200', '1', null), ('11300', '1', null), ('12100', '1', null), ('12200', '1', null), ('12300', '1', null), ('12400', '1', null), ('13100', '1', null), ('13200', '1', null), ('13300', '1', null), ('14100', '1', null), ('14200', '1', null), ('14300', '1', null), ('15100', '1', null), ('15200', '1', null), ('15300', '1', null), ('16100', '1', null), ('16200', '1', null), ('16300', '1', null), ('16400', '1', null), ('17100', '1', null), ('17200', '1', null), ('17300', '1', null), ('11100', '2', null), ('12100', '2', null), ('12200', '2', null), ('12300', '2', null), ('13100', '2', null), ('13200', '2', null), ('13300', '2', null), ('14100', '2', null), ('14200', '2', null), ('14300', '2', null), ('15100', '2', null), ('15200', '2', null), ('15300', '2', null), ('16100', '2', null), ('16200', '2', null), ('16300', '2', null), ('16400', '2', null), ('17100', '2', null), ('17200', '2', null), ('17300', '2', null), ('11100', '3', null), ('12100', '3', null), ('12300', '3', null), ('13100', '3', null), ('13200', '3', null), ('13300', '3', null), ('14100', '3', null), ('14200', '3', null), ('14300', '3', null), ('15100', '3', null), ('15200', '3', null), ('15300', '3', null), ('16100', '3', null), ('16200', '3', null), ('16300', '3', null), ('16400', '3', null), ('17100', '3', null), ('17200', '3', null), ('17300', '3', null), ('11100', '4', null), ('12100', '4', null), ('13100', '4', null), ('14100', '4', null), ('15100', '4', null), ('16100', '4', null), ('17100', '4', null), ('11100', '5', null), ('11200', '5', null), ('11300', '5', null), ('12100', '5', null), ('12200', '5', null), ('12300', '5', null), ('12400', '5', null), ('13100', '5', null), ('13200', '5', null), ('13300', '5', null), ('14100', '5', null), ('14200', '5', null), ('14300', '5', null), ('15100', '5', null), ('15200', '5', null), ('15300', '5', null), ('16100', '5', null), ('16200', '5', null), ('16300', '5', null), ('16400', '5', null), ('17100', '5', null), ('17200', '5', null), ('17300', '5', null), ('11100', '6', null), ('12100', '6', null), ('12200', '6', null), ('12300', '6', null), ('13100', '6', null), ('13200', '6', null), ('13300', '6', null), ('14100', '6', null), ('14200', '6', null), ('14300', '6', null), ('15100', '6', null), ('15200', '6', null), ('15300', '6', null), ('16100', '6', null), ('16200', '6', null), ('16300', '6', null), ('16400', '6', null), ('17100', '6', null), ('17200', '6', null), ('17300', '6', null), ('11100', '7', null), ('12100', '7', null), ('12300', '7', null), ('13100', '7', null), ('13200', '7', null), ('13300', '7', null), ('14100', '7', null), ('14200', '7', null), ('14300', '7', null), ('15100', '7', null), ('15200', '7', null), ('15300', '7', null), ('16100', '7', null), ('16200', '7', null), ('16300', '7', null), ('16400', '7', null), ('17100', '7', null), ('17200', '7', null), ('17300', '7', null), ('11100', '8', null), ('12100', '8', null), ('13100', '8', null), ('14100', '8', null), ('15100', '8', null), ('16100', '8', null), ('17100', '8', null), ('11100', '9', null), ('11200', '9', null), ('11300', '9', null), ('12100', '9', null), ('12200', '9', null), ('12300', '9', null), ('12400', '9', null), ('13100', '9', null), ('13200', '9', null), ('13300', '9', null), ('14100', '9', null), ('14200', '9', null), ('14300', '9', null), ('15100', '9', null), ('15200', '9', null), ('15300', '9', null), ('16100', '9', null), ('16200', '9', null), ('16300', '9', null), ('16400', '9', null), ('17100', '9', null), ('17200', '9', null), ('17300', '9', null), ('11100', '10', null), ('12100', '10', null), ('12200', '10', null), ('12300', '10', null), ('13100', '10', null), ('13200', '10', null), ('13300', '10', null), ('14100', '10', null), ('14200', '10', null), ('14300', '10', null), ('15100', '10', null), ('15200', '10', null), ('15300', '10', null), ('16100', '10', null), ('16200', '10', null), ('16300', '10', null), ('16400', '10', null), ('17100', '10', null), ('17200', '10', null), ('17300', '10', null), ('11100', '11', null), ('12100', '11', null), ('12300', '11', null), ('13100', '11', null), ('13200', '11', null), ('13300', '11', null), ('14100', '11', null), ('14200', '11', null), ('14300', '11', null), ('15100', '11', null), ('15200', '11', null), ('15300', '11', null), ('16100', '11', null), ('16200', '11', null), ('16300', '11', null), ('16400', '11', null), ('17100', '11', null), ('17200', '11', null), ('17300', '11', null), ('11100', '12', null), ('12100', '12', null), ('13100', '12', null), ('14100', '12', null), ('15100', '12', null), ('16100', '12', null), ('17100', '12', null), ('11100', '13', null), ('11200', '13', null), ('11300', '13', null), ('12100', '13', null), ('12200', '13', null), ('12300', '13', null), ('12400', '13', null), ('13100', '13', null), ('13200', '13', null), ('13300', '13', null), ('14100', '13', null), ('14200', '13', null), ('14300', '13', null), ('15100', '13', null), ('15200', '13', null), ('15300', '13', null), ('16100', '13', null), ('16200', '13', null), ('16300', '13', null), ('16400', '13', null), ('17100', '13', null), ('17200', '13', null), ('17300', '13', null), ('11100', '14', null), ('12100', '14', null), ('12200', '14', null), ('12300', '14', null), ('13100', '14', null), ('13200', '14', null), ('13300', '14', null), ('14100', '14', null), ('14200', '14', null), ('14300', '14', null), ('15100', '14', null), ('15200', '14', null), ('15300', '14', null), ('16100', '14', null), ('16200', '14', null), ('16300', '14', null), ('16400', '14', null), ('17100', '14', null), ('17200', '14', null), ('17300', '14', null), ('11100', '15', null), ('12100', '15', null), ('12300', '15', null), ('13100', '15', null), ('13200', '15', null), ('13300', '15', null), ('14100', '15', null), ('14200', '15', null), ('14300', '15', null), ('15100', '15', null), ('15200', '15', null), ('15300', '15', null), ('16100', '15', null), ('16200', '15', null), ('16300', '15', null), ('16400', '15', null), ('17100', '15', null), ('17200', '15', null), ('17300', '15', null), ('11100', '16', null), ('12100', '16', null), ('13100', '16', null), ('14100', '16', null), ('15100', '16', null), ('16100', '16', null), ('17100', '16', null), ('11100', '17', null), ('11200', '17', null), ('11300', '17', null), ('12100', '17', null), ('12200', '17', null), ('12300', '17', null), ('12400', '17', null), ('13100', '17', null), ('13200', '17', null), ('13300', '17', null), ('14100', '17', null), ('14200', '17', null), ('14300', '17', null), ('15100', '17', null), ('15200', '17', null), ('15300', '17', null), ('16100', '17', null), ('16200', '17', null), ('16300', '17', null), ('16400', '17', null), ('17100', '17', null), ('17200', '17', null), ('17300', '17', null), ('11100', '18', null), ('12100', '18', null), ('12200', '18', null), ('12300', '18', null), ('13100', '18', null), ('13200', '18', null), ('13300', '18', null), ('14100', '18', null), ('14200', '18', null), ('14300', '18', null), ('15100', '18', null), ('15200', '18', null), ('15300', '18', null), ('16100', '18', null), ('16200', '18', null), ('16300', '18', null), ('16400', '18', null), ('17100', '18', null), ('17200', '18', null), ('17300', '18', null), ('11100', '19', null), ('12100', '19', null), ('12300', '19', null), ('13100', '19', null), ('13200', '19', null), ('13300', '19', null), ('14100', '19', null), ('14200', '19', null), ('14300', '19', null), ('15100', '19', null), ('15200', '19', null), ('15300', '19', null), ('16100', '19', null), ('16200', '19', null), ('16300', '19', null), ('16400', '19', null), ('17100', '19', null), ('17200', '19', null), ('17300', '19', null), ('11100', '20', null), ('12100', '20', null), ('13100', '20', null), ('14100', '20', null), ('15100', '20', null), ('16100', '20', null), ('17100', '20', null), ('11100', '21', null), ('11200', '21', null), ('11300', '21', null), ('12100', '21', null), ('12200', '21', null), ('12300', '21', null), ('12400', '21', null), ('13100', '21', null), ('13200', '21', null), ('13300', '21', null), ('14100', '21', null), ('14200', '21', null), ('14300', '21', null), ('15100', '21', null), ('15200', '21', null), ('15300', '21', null), ('16100', '21', null), ('16200', '21', null), ('16300', '21', null), ('16400', '21', null), ('17100', '21', null), ('17200', '21', null), ('17300', '21', null), ('11100', '22', null), ('12100', '22', null), ('12200', '22', null), ('12300', '22', null), ('13100', '22', null), ('13200', '22', null), ('13300', '22', null), ('14100', '22', null), ('14200', '22', null), ('14300', '22', null), ('15100', '22', null), ('15200', '22', null), ('15300', '22', null), ('16100', '22', null), ('16200', '22', null), ('16300', '22', null), ('16400', '22', null), ('17100', '22', null), ('17200', '22', null), ('17300', '22', null), ('11100', '23', null), ('12100', '23', null), ('12300', '23', null), ('13100', '23', null), ('13200', '23', null), ('13300', '23', null), ('14100', '23', null), ('14200', '23', null), ('14300', '23', null), ('15100', '23', null), ('15200', '23', null), ('15300', '23', null), ('16100', '23', null), ('16200', '23', null), ('16300', '23', null), ('16400', '23', null), ('17100', '23', null), ('17200', '23', null), ('17300', '23', null), ('11100', '24', null), ('12100', '24', null), ('13100', '24', null), ('14100', '24', null), ('15100', '24', null), ('16100', '24', null), ('17100', '24', null);
+COMMIT;
+
+-- ----------------------------
 --  Table structure for `TstSuite`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstSuite`;
 CREATE TABLE `TstSuite` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `estimate` int(11) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
-  `userId` bigint(20) DEFAULT NULL,
-  `caseProjectId` bigint(20) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
+  `caseProjectId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1660,16 +1814,16 @@ CREATE TABLE `TstSuite` (
 -- ----------------------------
 DROP TABLE IF EXISTS `TstTask`;
 CREATE TABLE `TstTask` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `estimate` int(11) DEFAULT NULL,
   `status` varchar(255) DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
-  `caseProjectId` bigint(20) DEFAULT NULL,
-  `planId` bigint(20) DEFAULT NULL,
-  `userId` bigint(20) DEFAULT NULL,
-  `envId` bigint(20) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
+  `caseProjectId` int(11) DEFAULT NULL,
+  `planId` int(11) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
+  `envId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1685,15 +1839,22 @@ CREATE TABLE `TstTask` (
   CONSTRAINT `FK_fymnl68rmtbhmw3jcg66qfdes` FOREIGN KEY (`caseProjectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_iog5lfy5gnd0uccm0wgrlqcsd` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_iokmiyvqpbqi8uo8d8nq985fw` FOREIGN KEY (`envId`) REFERENCES `TstVer` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstTask`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstTask` VALUES ('1', 'ssdf', null, null, 'in_progress', '352', '352', '1', '8', null, b'0', b'0', '2018-10-15 17:14:28', '2018-10-15 17:14:34');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstTaskAssigneeRelation`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstTaskAssigneeRelation`;
 CREATE TABLE `TstTaskAssigneeRelation` (
-  `taskId` bigint(20) NOT NULL,
-  `assigneeId` bigint(20) NOT NULL,
+  `taskId` int(11) NOT NULL,
+  `assigneeId` int(11) NOT NULL,
   PRIMARY KEY (`taskId`,`assigneeId`),
   KEY `FK_l3ro39r8ji2hhaueh6flq6ict` (`assigneeId`),
   CONSTRAINT `FK_ddk65svfjm6yq59yxb2n29pr0` FOREIGN KEY (`taskId`) REFERENCES `TstTask` (`id`),
@@ -1701,14 +1862,21 @@ CREATE TABLE `TstTaskAssigneeRelation` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
+--  Records of `TstTaskAssigneeRelation`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstTaskAssigneeRelation` VALUES ('1', '8');
+COMMIT;
+
+-- ----------------------------
 --  Table structure for `TstThread`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstThread`;
 CREATE TABLE `TstThread` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `content` varchar(10000) DEFAULT NULL,
-  `authorId` bigint(20) DEFAULT NULL,
-  `parentId` bigint(20) DEFAULT NULL,
+  `authorId` int(11) DEFAULT NULL,
+  `parentId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -1725,51 +1893,84 @@ CREATE TABLE `TstThread` (
 -- ----------------------------
 DROP TABLE IF EXISTS `TstUser`;
 CREATE TABLE `TstUser` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(255) DEFAULT NULL,
   `nickname` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `phone` varchar(255) DEFAULT NULL,
   `avatar` varchar(255) DEFAULT NULL,
-  `defaultOrgId` bigint(20) DEFAULT NULL,
+  `defaultOrgId` int(11) DEFAULT NULL,
   `defaultOrgName` varchar(255) DEFAULT NULL,
-  `defaultPrjId` bigint(20) DEFAULT NULL,
+  `defaultPrjId` int(11) DEFAULT NULL,
   `defaultPrjName` varchar(255) DEFAULT NULL,
   `salt` varchar(255) DEFAULT NULL,
   `token` varchar(255) DEFAULT NULL,
   `verifyCode` varchar(255) DEFAULT NULL,
   `lastLoginTime` datetime DEFAULT NULL,
-  `leftSizeDesign` int(11) DEFAULT NULL,
-  `leftSizeExe` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=162 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstUser`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstUser` VALUES ('1', '4628262@qq.com', 'Aaron Chen', '98207a1da8b40358f62997c3afa658f5', '11111111111', 'upload/sample/user/avatar.png', '2', 'Org01', '345', '默认项目', '[B@337bbf93', '74ce484b-e9ff-43d3-87e7-e157061b32e2', null, '2018-10-06 14:20:14', b'0', b'0', '2018-10-06 11:37:43', '2018-10-06 11:43:43'), ('2', 'qi.chen2@ngtesting.com', 'qi.chen2', '96e79218965eb72c92a549dd5a330112', null, 'upload/sample/user/avatar.png', '1', 'Aaron Chen的组织', '343', '默认项目', null, 'd20d9bec-5e32-49ac-a42a-57156e69b9fa', null, '2018-10-06 11:39:28', b'0', b'0', '2018-10-06 11:38:57', '2018-10-06 11:39:28'), ('3', 'qi.chen2@ngtesting.com', 'qi.chen', '96e79218965eb72c92a549dd5a330112', null, 'upload/sample/user/avatar.png', '1', 'Aaron Chen的组织', '343', '默认项目', null, '52b4775d-940e-4406-96d3-f92e1b50019f', null, '2018-10-06 11:44:07', b'0', b'0', '2018-10-06 11:41:33', '2018-10-06 11:42:39'), ('4', '4628263@qq.com', 'Aaron Chen', 'd1fd432ac3c6a39aa58d41a688a676d6', '11111111111', 'upload/sample/user/avatar.png', '3', 'Aaron Chen的组织', '348', '默认项目', '[B@26e909d0', '', null, '2018-10-08 11:02:21', b'0', b'0', '2018-10-08 10:58:58', '2018-10-08 11:04:38'), ('5', '462826ds@qq.com', 'Aaron Chen', 'f33511307b9977ca38d2eb7a50b41173', '11111111111', 'upload/sample/user/avatar.png', null, null, null, null, '[B@6363bec9', null, null, null, b'0', b'0', '2018-10-08 10:59:40', null), ('6', '46282644@qq.com', 'Aaron Chen', '2bded372fa2c96a2bd1601d5c596e889', '11111111111', 'upload/sample/user/avatar.png', null, null, null, null, '[B@63eaaf31', null, null, null, b'0', b'0', '2018-10-08 11:00:15', null), ('7', '46282dsfds6@qq.com', 'Aaron Chen', '3479b842f19de1a04fe9547218929afe', '11111111111', 'upload/sample/user/avatar.png', null, null, null, null, '[B@403a1f33', '0aab3c3c-4fcf-4d8e-96b6-59f20ff44832', null, '2018-10-08 11:04:46', b'0', b'0', '2018-10-08 11:01:25', null), ('8', '462826@qq.com', 'Aaron Chen2', '71f8a2865666635b2db9adbf41e98d72', '11111111111', 'upload/data/20181011/a7589774-c143-41d5-8844-c0ac3ba0a33c.jpg', '5', 'test', '352', '默认项目', '[B@9ed6207', '84c28df0-0ca4-4073-a7de-dfe94ab39e7a', null, '2018-10-12 20:17:16', b'0', b'0', '2018-10-08 11:07:44', '2018-10-11 23:11:26');
+COMMIT;
+
+-- ----------------------------
+--  Table structure for `TstUserSettings`
+-- ----------------------------
+DROP TABLE IF EXISTS `TstUserSettings`;
+CREATE TABLE `TstUserSettings` (
+  `leftSizeDesign` int(11) DEFAULT NULL,
+  `leftSizeExe` int(11) DEFAULT NULL,
+  `leftSizeIssue` int(11) DEFAULT NULL,
+  `tql` varchar(5000) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
+  KEY `userId` (`userId`),
+  CONSTRAINT `fk_userid` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstUserSettings`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstUserSettings` VALUES ('463', '200', null, null, '4'), ('300', '200', null, null, '5'), ('300', '200', null, null, '6'), ('300', '200', null, null, '7'), ('300', '200', '445', null, '8');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstUserVerifyCode`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstUserVerifyCode`;
 CREATE TABLE `TstUserVerifyCode` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `code` varchar(255) DEFAULT NULL,
   `expireTime` datetime DEFAULT NULL,
-  `refId` bigint(20) DEFAULT NULL,
+  `refId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstUserVerifyCode`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstUserVerifyCode` VALUES ('1', 'c401de6062e147c48e1ab67421330d6f', '2018-10-06 11:47:44', '1', b'1', b'1', '2018-10-06 11:37:44', '2018-10-06 11:38:02'), ('2', 'e3cbaca2ef5a4e8c9b37db38359c3cfa', '2018-10-06 11:48:57', '2', b'1', b'1', '2018-10-06 11:38:57', '2018-10-06 11:39:28'), ('3', '0b7e98f4a9614a1285f02bc41b707929', '2018-10-06 11:51:33', '3', b'1', b'1', '2018-10-06 11:41:33', '2018-10-06 11:41:50'), ('4', '10a0596a2c38463f89a0af1caf19d8a4', '2018-10-08 11:11:41', '4', b'1', b'1', '2018-10-08 11:01:41', '2018-10-08 11:02:21'), ('5', '6d1e3d756cce4eb988da5de1c61423b7', '2018-10-08 11:17:47', '8', b'1', b'1', '2018-10-08 11:07:47', '2018-10-08 11:08:30'), ('6', '60025c8fdb1a48c7bed5c088d4378a46', '2018-10-08 11:20:34', '8', b'1', b'1', '2018-10-08 11:10:34', '2018-10-08 11:11:26');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstVer`
 -- ----------------------------
 DROP TABLE IF EXISTS `TstVer`;
 CREATE TABLE `TstVer` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `status` varchar(255) DEFAULT NULL,
@@ -1777,7 +1978,7 @@ CREATE TABLE `TstVer` (
   `endTime` datetime DEFAULT NULL,
   `closed` bit(1) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
-  `projectId` bigint(20) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,

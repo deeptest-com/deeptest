@@ -34,17 +34,20 @@ public class IsuJqlServiceImpl extends BaseServiceImpl implements IsuJqlService 
     IsuTqlDao isuTqlDao;
 
     @Override
-    public List<IsuIssue> query(String jql, Integer orgId, Integer projectId) {
+    public List<IsuIssue> query(JsonRule rule, Integer orgId, Integer projectId) {
         List<IsuIssue> result = new LinkedList<>();
-
-        SqlQueryResult sqlQueryResult = isuJqlBuildService.buildSqlQuery(jql);
-        // TODO: 执行查询
+        if (rule.getRules().size() > 0) {
+            SqlQueryResult sqlQueryResult = isuJqlBuildService.buildSqlQuery(JSON.toJSONString(rule));
+            // TODO: 执行查询
+        } else {
+            // TODO: 空查询
+        }
 
         return result;
     }
 
     @Override
-    public String buildDefaultJql(Integer orgId, Integer projectId) {
+    public JsonRule buildDefaultJql(Integer orgId, Integer projectId) {
         JsonRule ret = isuJqlBuildService.genJsonRuleRoot();
 
         JsonRule projectRule = isuJqlBuildService.genJsonRule(
@@ -52,7 +55,7 @@ public class IsuJqlServiceImpl extends BaseServiceImpl implements IsuJqlService 
                 EnumOperator.EQUAL, EnumRuleType.INTEGER);
         ret.getRules().add(projectRule);
 
-        return JSON.toJSONString(ret);
+        return ret;
     }
 
 }

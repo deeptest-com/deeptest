@@ -6,7 +6,7 @@ import com.ngtesting.platform.vo.IsuJqlFilter;
 import java.util.List;
 
 public interface IsuJqlFilterService extends BaseService {
-    List<IsuJqlFilter> buildUiFilters(String jql, Integer orgId, Integer projectId);
+    List<IsuJqlFilter> buildUiFilters(JsonRule jql, Integer orgId, Integer projectId);
 
     IsuJqlFilter buildFilter(String name, Integer orgId, Integer projectId, Boolean display);
 

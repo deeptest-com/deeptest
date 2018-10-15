@@ -1,6 +1,5 @@
 package com.ngtesting.platform.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.itfsw.query.builder.support.model.JsonRule;
 import com.ngtesting.platform.config.ConstantIssue;
 import com.ngtesting.platform.dao.ProjectDao;
@@ -25,10 +24,8 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
     ProjectDao projectDao;
 
     @Override
-    public List<IsuJqlFilter> buildUiFilters(String jql, Integer orgId, Integer projectId) {
+    public List<IsuJqlFilter> buildUiFilters(JsonRule rule, Integer orgId, Integer projectId) {
         List<IsuJqlFilter> filtes = new LinkedList<>();
-
-        JsonRule rule = JSON.parseObject(jql, JsonRule.class);
 
         List<String> filterNameArr = new LinkedList<>();
 //        iterateRuleName(rule, filterNameArr);

@@ -15,6 +15,7 @@ public class TstUser extends BaseModel {
     private Date lastLoginTime;
     private Integer leftSizeDesign = 300;
     private Integer leftSizeExe = 200;
+    private Integer leftSizeIssue = 300;
 
     private Integer defaultOrgId;
     private String defaultOrgName;
@@ -25,6 +26,14 @@ public class TstUser extends BaseModel {
     private Boolean selecting;
 
     private String type = "user";
+
+    public Integer getLeftSizeIssue() {
+        return leftSizeIssue;
+    }
+
+    public void setLeftSizeIssue(Integer leftSizeIssue) {
+        this.leftSizeIssue = leftSizeIssue;
+    }
 
     public String getTemp() {
         return temp;

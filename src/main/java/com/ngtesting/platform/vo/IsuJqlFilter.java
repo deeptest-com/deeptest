@@ -15,13 +15,15 @@ public class IsuJqlFilter {
     ConstantIssue.IssueFilterInput input;
     Map values;
     List<String> operators;
+    Boolean display;
 
     public IsuJqlFilter(String id, String label,
-                        ConstantIssue.IssueFilterType type, ConstantIssue.IssueFilterInput input) {
+                        ConstantIssue.IssueFilterType type, ConstantIssue.IssueFilterInput input, Boolean display) {
         this.id = id;
         this.label = label;
         this.type = type;
         this.input = input;
+        this.display = display;
 
         if (ConstantIssue.IssueFilterInput.string.equals(type)) {
             this.operators = ConstantIssue.OperatorsForString;
@@ -31,15 +33,20 @@ public class IsuJqlFilter {
     }
 
     public IsuJqlFilter(String id, String label,
-                        ConstantIssue.IssueFilterType type, ConstantIssue.IssueFilterInput input, Map values) {
+                        ConstantIssue.IssueFilterType type, ConstantIssue.IssueFilterInput input, Map values, Boolean display) {
         this.id = id;
         this.label = label;
         this.type = type;
         this.input = input;
+        this.display = display;
 
         this.values = values;
-        if (ConstantIssue.IssueFilterInput.select.equals(type)) {
+        if (ConstantIssue.IssueFilterInput.string.equals(input)) {
+            this.operators = ConstantIssue.OperatorsForString;
+        } else if (ConstantIssue.IssueFilterInput.select.equals(input)) {
             this.operators = ConstantIssue.OperatorsForSelect;
+        } else if (ConstantIssue.IssueFilterInput.date.equals(input)) {
+            this.operators = ConstantIssue.OperatorsForDate;
         }
     }
 

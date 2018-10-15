@@ -48,7 +48,7 @@ public class IsuJqlServiceImpl extends BaseServiceImpl implements IsuJqlService 
         JsonRule ret = isuJqlBuildService.genJsonRuleRoot();
 
         JsonRule projectRule = isuJqlBuildService.genJsonRule(
-                "project", "projectId", "select", projectId.toString(),
+                "projectId", "projectId", "select", projectId.toString(),
                 EnumOperator.EQUAL, EnumRuleType.INTEGER);
         ret.getRules().add(projectRule);
 

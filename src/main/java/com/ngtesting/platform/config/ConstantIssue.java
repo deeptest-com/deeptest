@@ -8,18 +8,18 @@ import java.util.Map;
 public class ConstantIssue {
 
     public static Map<String, Boolean> IssueFilters = new LinkedHashMap() {{
-        put("project", true);
-        put("type", true);
-        put("status", true);
-        put("priority", true);
-        put("assignee", true);
+        put("projectId", true);
+        put("typeId", true);
+        put("statusId", true);
+        put("priorityId", true);
+        put("assigneeId", true);
 
-        put("creator", false);
-        put("reporter", false);
+        put("creatorId", false);
+        put("reporterId", false);
 
-        put("ver", false);
-        put("env", false);
-        put("resolution", false);
+        put("verId", false);
+        put("envId", false);
+        put("resolutionId", false);
         put("dueTime", false);
         put("resolveTime", false);
         put("comments", false);

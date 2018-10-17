@@ -97,4 +97,12 @@ public class IsuJqlFilter {
     public void setOperators(List<String> operators) {
         this.operators = operators;
     }
+
+    public Boolean getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(Boolean display) {
+        this.display = display;
+    }
 }

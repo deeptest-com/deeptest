@@ -28,12 +28,16 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
         List<IsuJqlFilter> filtes = new LinkedList<>();
 
         List<String> filterNameArr = new LinkedList<>();
-//        iterateRuleName(rule, filterNameArr);
+        iterateRuleName(rule, filterNameArr);
 
         int i = 0;
         for (String name : ConstantIssue.IssueFilters.keySet()) {
-            IsuJqlFilter f = buildFilter(name, orgId, projectId, i < 5);
-            filtes.add(f);
+            Boolean filterEnable = i++ < 5 || filterNameArr.contains(name);
+
+            IsuJqlFilter f = buildFilter(name, orgId, projectId, filterEnable);
+            if (f != null) {
+                filtes.add(f);
+            }
         }
 
 //        for (String name : filterNameArr) {
@@ -50,27 +54,27 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
     @Override
     public IsuJqlFilter buildFilter(String name, Integer orgId, Integer projectId, Boolean display) {
         switch(name){
-            case "project":
+            case "projectId":
                 return buildProjectFilter(orgId, display);
-            case "type":
+            case "typeId":
                 return buildTypeFilter(orgId, projectId, display);
-            case "status":
+            case "statusId":
                 return buildStatusFilter(orgId, projectId, display);
-            case "priority":
+            case "priorityId":
                 return buildPriorityFilter(orgId, projectId, display);
-            case "assignee":
+            case "assigneeId":
                 return buildAssigneeFilter(orgId, projectId, display);
 
-            case "creator":
+            case "creatorId":
                 return buildCreatorFilter(orgId, projectId, display);
-            case "reporter":
+            case "reporterId":
                 return buildReporterFilter(orgId, projectId, display);
 
-            case "ver":
+            case "verId":
                 return buildVerFilter(orgId, projectId, display);
-            case "env":
+            case "envId":
                 return buildEnvFilter(orgId, projectId, display);
-            case "resolution":
+            case "resolutionId":
                 return buildResolutionFilter(orgId, projectId, display);
             case "dueTime":
                 return buildDueTimeFilter(orgId, projectId, display);

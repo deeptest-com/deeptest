@@ -45,17 +45,17 @@ public class TplAction extends BaseAction {
         Boolean init = json.getBoolean("init");
 
         JsonRule rule;
-        if (!json.getJSONObject("jql").containsKey("condition")) {
+        if (!json.getJSONObject("rule").containsKey("condition")) {
             rule = isuJqlService.buildDefaultJql(orgId, projectId);
         } else {
-            rule = json.getObject("jql", JsonRule.class);
+            rule = json.getObject("rule", JsonRule.class);
         }
 
         List<IsuIssue> data = isuJqlService.query(rule, orgId, projectId);
 
         if (init) {
             List<IsuJqlFilter> filters = isuJqlFilterService.buildUiFilters(rule, orgId, projectId);
-            ret.put("jql", rule);
+            ret.put("rule", rule);
             ret.put("filters", filters);
         }
 

@@ -205,6 +205,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public TstUser setIssueView(TstUser user, String issueView) {
+        user.setIssueView(issueView);
+        userDao.setIssueView(user);
+        return user;
+    }
+
+    @Override
     public TstUser setLeftSizePers(TstUser user, Integer left, String prop) {
         if ("design".equals(prop)) {
             user.setLeftSizeDesign(left);

@@ -3,6 +3,7 @@ package com.ngtesting.platform.model;
 import java.util.Date;
 
 public class TstUser extends BaseModel {
+    private static final long serialVersionUID = 8137369995938797198L;
 
     private String email;
     private String password;
@@ -16,6 +17,8 @@ public class TstUser extends BaseModel {
     private Integer leftSizeDesign = 300;
     private Integer leftSizeExe = 200;
     private Integer leftSizeIssue = 300;
+
+    private String issueView = "table";
 
     private Integer defaultOrgId;
     private String defaultOrgName;
@@ -169,5 +172,13 @@ public class TstUser extends BaseModel {
 
     public void setLeftSizeExe(Integer leftSizeExe) {
         this.leftSizeExe = leftSizeExe;
+    }
+
+    public String getIssueView() {
+        return issueView;
+    }
+
+    public void setIssueView(String issueView) {
+        this.issueView = issueView;
     }
 }

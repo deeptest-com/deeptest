@@ -31,11 +31,11 @@ public interface UserDao {
                     @Param("prop") String prop,
                     @Param("value") String value);
 
+    void setIssueView(TstUser user);
     void setLeftSize(TstUser user);
 
     List<TstUser> getProjectUsers(@Param("prjId") Integer prjId, @Param("numb") Integer numb);
 
     void removeFromOrg(@Param("userId") Integer userId,
                        @Param("orgId") Integer orgId);
-
 }

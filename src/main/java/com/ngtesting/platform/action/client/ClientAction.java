@@ -118,4 +118,20 @@ public class ClientAction extends BaseAction {
         return ret;
     }
 
+    @PostMapping(value = "setIssueView")
+    @ResponseBody
+    public Map<String, Object> setIssueView(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+
+        String issueView = json.getString("issueView");
+
+        user = userService.setIssueView(user, issueView);
+
+        ret.put("data", user);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
 }

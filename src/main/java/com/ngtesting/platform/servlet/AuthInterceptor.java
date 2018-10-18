@@ -47,8 +47,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             }
 
             // 已经登录
-            if (request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE) != null
-                    || request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE) != null) {
+            if (request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE) != null) {
                 return true;
             }
 

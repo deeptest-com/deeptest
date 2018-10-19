@@ -61,6 +61,7 @@ public class TplAction extends BaseAction {
             List<IsuJqlFilter> filters = isuJqlFilterService.buildUiFilters(rule, orgId, projectId);
             ret.put("rule", rule);
             ret.put("filters", filters);
+            ret.put("columns", filters);
         }
 
         ret.put("total", page.getTotal());

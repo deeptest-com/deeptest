@@ -1,6 +1,8 @@
 package com.ngtesting.platform.vo;
 
-public class HeartBeat {
+import java.io.Serializable;
+
+public class HeartBeat implements Serializable {
 
     private Long deviceId = 0L;
 

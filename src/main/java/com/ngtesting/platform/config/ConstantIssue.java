@@ -7,6 +7,24 @@ import java.util.Map;
 
 public class ConstantIssue {
 
+    public static Map<String, String> IssueColumns = new LinkedHashMap() {{
+        put("title", "标题");
+        put("type", "类型");
+        put("status", "状态");
+        put("priority", "优先级");
+        put("assignee", "经办人");
+
+        put("creator", "创家人");
+        put("reporter", "报告人");
+
+        put("ver", "版本");
+        put("env", "环境");
+        put("resolution", "解决结果");
+        put("dueTime", "到期时间");
+        put("resolveTime", "解决时间");
+        put("project", "项目");
+    }};
+
     public static Map<String, Boolean> IssueFilters = new LinkedHashMap() {{
         put("projectId", true);
         put("typeId", true);

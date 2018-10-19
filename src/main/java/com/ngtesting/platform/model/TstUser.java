@@ -19,6 +19,7 @@ public class TstUser extends BaseModel {
     private Integer leftSizeIssue = 300;
 
     private String issueView = "table";
+    private String issueColumns = "";
 
     private Integer defaultOrgId;
     private String defaultOrgName;
@@ -180,5 +181,13 @@ public class TstUser extends BaseModel {
 
     public void setIssueView(String issueView) {
         this.issueView = issueView;
+    }
+
+    public String getIssueColumns() {
+        return issueColumns;
+    }
+
+    public void setIssueColumns(String issueColumns) {
+        this.issueColumns = issueColumns;
     }
 }

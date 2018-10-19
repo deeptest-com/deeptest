@@ -3,7 +3,8 @@ package com.ngtesting.platform.action.client;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.model.IsuIssue;
+import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -31,30 +31,6 @@ public class IssueAction extends BaseAction {
     CasePriorityService casePriorityService;
 	@Autowired
     CustomFieldService customFieldService;
-
-
-	@RequestMapping(value = "query", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-        Integer orgId = json.getInteger("orgId");
-		Integer projectId = json.getInteger("projectId");
-
-		List<IsuIssue> ls = issueService.queryByProject(projectId);
-        issueService.genVos(ls);
-
-//        List<TstCaseType> caseTypePos = caseTypeService.list(orgId);
-//        List<TstCasePriority> casePriorityPos = casePriorityService.list(orgId);
-//        List<TstCustomField> customFieldList = customFieldService.listForCaseByProject(orgId, projectId);
-
-        ret.put("data", ls);
-//        ret.put("caseTypeList", caseTypePos);
-//        ret.put("casePriorityList", casePriorityPos);
-//		ret.put("customFields", customFieldList);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
 
     @RequestMapping(value = "get", method = RequestMethod.POST)
     @ResponseBody

@@ -58,7 +58,8 @@
     </select>
     <select id="getByEmail" parameterType="string" resultType="TstUser">
         SELECT usr.*,
-          s.leftSizeDesign leftSizeDesign, s.leftSizeExe leftSizeExe, s.issueView issueView
+          s.leftSizeDesign leftSizeDesign, s.leftSizeExe leftSizeExe, s.issueView issueView,
+          s.issueColumns issueColumns
 
         FROM TstUser usr
         JOIN TstUserSettings s ON s.userId = usr.id
@@ -75,7 +76,8 @@
 
     <select id="getByToken" resultType="TstUser">
         SELECT usr.*,
-          s.leftSizeDesign leftSizeDesign, s.leftSizeExe leftSizeExe, s.issueView issueView
+          s.leftSizeDesign leftSizeDesign, s.leftSizeExe leftSizeExe, s.issueView issueView,
+          s.issueColumns issueColumns
 
         FROM TstUser usr
         JOIN TstUserSettings s ON s.userId = usr.id
@@ -123,13 +125,20 @@
 
     <update id="setLeftSize" parameterType="TstUser">
         UPDATE TstUserSettings
-        SET leftSizeDesign=#{leftSizeDesign}, leftSizeExe=#{leftSizeExe}, leftSizeIssue=#{leftSizeIssue}
+        SET leftSizeDesign=#{leftSizeDesign}, leftSizeExe=#{leftSizeExe}, leftSizeIssue=#{leftSizeIssue},
+          s.issueColumns issueColumns
+
         WHERE userId=#{id}
     </update>
     <update id="setIssueView" parameterType="TstUser">
         UPDATE TstUserSettings
         SET issueView=#{issueView}
         WHERE userId=#{id}
+    </update>
+    <update id="saveIssueColumns">
+        UPDATE TstUserSettings
+        SET issueColumns=#{issueColumns}
+        WHERE userId=#{userId}
     </update>
 
     <select id="search" resultType="TstUser">

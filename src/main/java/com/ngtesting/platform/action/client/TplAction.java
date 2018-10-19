@@ -10,6 +10,8 @@ import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.IsuJqlFilterService;
 import com.ngtesting.platform.service.IsuJqlService;
+import com.ngtesting.platform.service.UserService;
+import com.ngtesting.platform.vo.IsuJqlColumn;
 import com.ngtesting.platform.vo.IsuJqlFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,6 +36,8 @@ public class TplAction extends BaseAction {
     IsuJqlService isuJqlService;
     @Autowired
     IsuJqlFilterService isuJqlFilterService;
+    @Autowired
+    UserService userService;
 
 	@RequestMapping(value = "query", method = RequestMethod.POST)
 	@ResponseBody
@@ -55,13 +59,15 @@ public class TplAction extends BaseAction {
         }
 
         com.github.pagehelper.Page page = PageHelper.startPage(pageNum, pageSize);
-        List<IsuIssue> data = isuJqlService.query(rule, orgId, projectId);
+        List<IsuIssue> data = isuJqlService.query(rule, user.getIssueColumns(), orgId, projectId);
 
         if (init) {
             List<IsuJqlFilter> filters = isuJqlFilterService.buildUiFilters(rule, orgId, projectId);
+            List<IsuJqlColumn> columns = isuJqlService.buildDefaultColumns(user);
+
             ret.put("rule", rule);
             ret.put("filters", filters);
-            ret.put("columns", filters);
+            ret.put("columns", columns);
         }
 
         ret.put("total", page.getTotal());
@@ -69,5 +75,22 @@ public class TplAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+
+    @RequestMapping(value = "changeColumns", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> changeColumns(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = user.getDefaultOrgId();
+        Integer projectId = user.getDefaultPrjId();
+
+        String columnsStr = json.getString("columns");
+
+        userService.saveIssueColumns(columnsStr, user);
+        user.setIssueColumns(columnsStr);
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
 
 }

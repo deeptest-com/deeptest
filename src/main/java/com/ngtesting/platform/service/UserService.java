@@ -31,4 +31,6 @@ public interface UserService {
     List<TstUser> getProjectUsers(Integer orgId, Integer projectId);
 
     Boolean removeFromOrg(Integer userId, Integer orgId);
+
+    void saveIssueColumns(String columnsStr, TstUser user);
 }

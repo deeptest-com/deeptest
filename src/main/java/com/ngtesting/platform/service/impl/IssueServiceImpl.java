@@ -18,7 +18,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
     IssueDao issueDao;
 
 	@Override
-	public List<IsuIssue> queryByProject(Integer projectId) {
+	public List<IsuIssue> queryByProject(Integer projectId, String columns) {
         List<IsuIssue> ls = issueDao.queryByProject(projectId);
 
         genVos(ls);
@@ -26,7 +26,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
 	}
 
     @Override
-    public List<IsuIssue> queryByJql(String sql) {
+    public List<IsuIssue> queryByJql(String sql, String columns) {
 	    String sqlStr = "" + sql;
         logger.info(sqlStr);
 

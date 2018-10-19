@@ -225,4 +225,9 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Override
+    public void saveIssueColumns(String columnsStr, TstUser user) {
+        userDao.saveIssueColumns(columnsStr, user.getId());
+    }
+
 }

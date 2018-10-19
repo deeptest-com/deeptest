@@ -2,11 +2,6 @@ package com.ngtesting.platform.vo;
 
 import java.io.Serializable;
 
-/**
- * 返回json结果封装工具类
- *
- * @author zhangzhi
- */
 public class JsonResult implements Serializable {
 
     private static final long serialVersionUID = 7311737007568787224L;

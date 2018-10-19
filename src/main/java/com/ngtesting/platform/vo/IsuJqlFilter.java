@@ -3,10 +3,11 @@ package com.ngtesting.platform.vo;
 
 import com.ngtesting.platform.config.ConstantIssue;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class IsuJqlFilter {
+public class IsuJqlFilter implements Serializable {
     private static final long serialVersionUID = -5923944030125754321L;
 
     String id;

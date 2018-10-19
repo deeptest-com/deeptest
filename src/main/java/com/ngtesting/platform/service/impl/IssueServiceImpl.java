@@ -1,45 +1,59 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.model.TstCase;
+import com.ngtesting.platform.dao.IssueDao;
+import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.service.IssueService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
-//    @Autowired
-//    CaseCommentsService caseCommentsService;
+    Log logger = LogFactory.getLog(IssueServiceImpl.class);
+
+    @Autowired
+    IssueDao issueDao;
 
 	@Override
-	public List<TstCase> query(Integer projectId) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstCase.class);
-//
-//        if (projectId != null) {
-//        	dc.add(Restrictions.eq("projectId", projectId));
-//        }
-//
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//
-//		dc.addOrder(Order.asc("pId"));
-//        dc.addOrder(Order.asc("ordr"));
-//
-//        List<TstCase> ls = findAllByCriteria(dc);
-//
-//        return ls;
+	public List<IsuIssue> queryByProject(Integer projectId) {
+        List<IsuIssue> ls = issueDao.queryByProject(projectId);
 
-        return null;
+        genVos(ls);
+        return ls;
 	}
 
     @Override
-	public TstCase getById(Integer caseId) {
+    public List<IsuIssue> queryByJql(String sql) {
+	    String sqlStr = "" + sql;
+        logger.info(sqlStr);
+
+        List<IsuIssue> ls = issueDao.queryBySql(sql);
+        return ls;
+    }
+
+    @Override
+	public IsuIssue getById(Integer caseId) {
 //		TstCase po = (TstCase) getDetail(TstCase.class, caseId);
 //		TstCase vo = genVo(po, true);
 //
 //		return vo;
 
         return null;
+	}
+
+	@Override
+	public void genVos(List<IsuIssue> pos) {
+		for (IsuIssue po: pos) {
+			genVo(po);
+		}
+	}
+
+	@Override
+	public void genVo(IsuIssue po) {
+
 	}
 
 }

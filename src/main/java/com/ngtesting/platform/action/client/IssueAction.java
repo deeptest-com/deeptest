@@ -41,19 +41,17 @@ public class IssueAction extends BaseAction {
         Integer orgId = json.getInteger("orgId");
 		Integer projectId = json.getInteger("projectId");
 
-		List<TstCase> ls = issueService.query(projectId);
-//        List<TstCase> vos = issueService.genVos(ls, false);
+		List<IsuIssue> ls = issueService.queryByProject(projectId);
+        issueService.genVos(ls);
 
-        List<TstCaseType> caseTypePos = caseTypeService.list(orgId);
+//        List<TstCaseType> caseTypePos = caseTypeService.list(orgId);
+//        List<TstCasePriority> casePriorityPos = casePriorityService.list(orgId);
+//        List<TstCustomField> customFieldList = customFieldService.listForCaseByProject(orgId, projectId);
 
-        List<TstCasePriority> casePriorityPos = casePriorityService.list(orgId);
-
-        List<TstCustomField> customFieldList = customFieldService.listForCaseByProject(orgId, projectId);
-
-//        ret.put("data", vos);
-        ret.put("caseTypeList", caseTypePos);
-        ret.put("casePriorityList", casePriorityPos);
-		ret.put("customFields", customFieldList);
+        ret.put("data", ls);
+//        ret.put("caseTypeList", caseTypePos);
+//        ret.put("casePriorityList", casePriorityPos);
+//		ret.put("customFields", customFieldList);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -67,7 +65,7 @@ public class IssueAction extends BaseAction {
         Integer orgId = userVo.getDefaultOrgId();
         Integer caseId = json.getInteger("id");
 
-		TstCase vo = issueService.getById(caseId);
+		IsuIssue vo = issueService.getById(caseId);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

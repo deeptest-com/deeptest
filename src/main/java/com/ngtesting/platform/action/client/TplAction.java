@@ -1,6 +1,7 @@
 package com.ngtesting.platform.action.client;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
 import com.itfsw.query.builder.support.model.JsonRule;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.bean.websocket.WsFacade;
@@ -42,6 +43,8 @@ public class TplAction extends BaseAction {
 		Integer orgId = user.getDefaultOrgId();
         Integer projectId = user.getDefaultPrjId();
 
+        Integer pageNum = json.getInteger("page");
+        Integer pageSize = json.getInteger("pageSize");
         Boolean init = json.getBoolean("init");
 
         JsonRule rule;
@@ -51,6 +54,7 @@ public class TplAction extends BaseAction {
             rule = json.getObject("rule", JsonRule.class);
         }
 
+        com.github.pagehelper.Page page = PageHelper.startPage(pageNum, pageSize);
         List<IsuIssue> data = isuJqlService.query(rule, orgId, projectId);
 
         if (init) {
@@ -59,6 +63,7 @@ public class TplAction extends BaseAction {
             ret.put("filters", filters);
         }
 
+        ret.put("total", page.getTotal());
         ret.put("data", data);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

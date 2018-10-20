@@ -8,6 +8,7 @@ import com.ngtesting.platform.bean.websocket.WsFacade;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.IsuJqlColumnService;
 import com.ngtesting.platform.service.IsuJqlFilterService;
 import com.ngtesting.platform.service.IsuJqlService;
 import com.ngtesting.platform.service.UserService;
@@ -37,6 +38,8 @@ public class TplAction extends BaseAction {
     @Autowired
     IsuJqlFilterService isuJqlFilterService;
     @Autowired
+    IsuJqlColumnService isuJqlColumnService;
+    @Autowired
     UserService userService;
 
 	@RequestMapping(value = "query", method = RequestMethod.POST)
@@ -63,7 +66,7 @@ public class TplAction extends BaseAction {
 
         if (init) {
             List<IsuJqlFilter> filters = isuJqlFilterService.buildUiFilters(rule, orgId, projectId);
-            List<IsuJqlColumn> columns = isuJqlService.buildDefaultColumns(user);
+            List<IsuJqlColumn> columns = isuJqlColumnService.loadColumns(user);
 
             ret.put("rule", rule);
             ret.put("filters", filters);
@@ -81,13 +84,10 @@ public class TplAction extends BaseAction {
     public Map<String, Object> changeColumns(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = user.getDefaultOrgId();
-        Integer projectId = user.getDefaultPrjId();
 
         String columnsStr = json.getString("columns");
 
         userService.saveIssueColumns(columnsStr, user);
-        user.setIssueColumns(columnsStr);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

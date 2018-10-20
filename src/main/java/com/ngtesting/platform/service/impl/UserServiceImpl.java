@@ -227,6 +227,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void saveIssueColumns(String columnsStr, TstUser user) {
+        user.setIssueColumns(columnsStr);
         userDao.saveIssueColumns(columnsStr, user.getId());
     }
 

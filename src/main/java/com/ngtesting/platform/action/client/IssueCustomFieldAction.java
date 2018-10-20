@@ -93,7 +93,7 @@ public class IssueCustomFieldAction extends BaseAction {
 //		List<TestProjectVo> projects = (List<TestProjectVo>) json.getDetail("relations");
 //
 //		TstCustomField po = customFieldService.save(customField, orgId);
-//		boolean success = customFieldService.saveRelationsByField(po.getId(), projects);
+//		boolean success = customFieldService.saveRelationsByField(po.getCode(), projects);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

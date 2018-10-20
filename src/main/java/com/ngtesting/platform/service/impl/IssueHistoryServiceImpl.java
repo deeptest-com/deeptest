@@ -53,7 +53,7 @@ public class IssueHistoryServiceImpl extends BaseServiceImpl implements IssueHis
 //        history.setProjectId(projectId);
 //        history.setEntityId(entityId);
 //        history.setEntityType(entityType);
-//        history.setUserId(optUser.getId());
+//        history.setUserId(optUser.getCode());
 //        saveOrUpdate(history);
 
         return history;

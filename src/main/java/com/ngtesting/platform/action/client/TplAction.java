@@ -63,7 +63,7 @@ public class TplAction extends BaseAction {
         }
 
         if (StringUtils.isEmpty(user.getIssueColumns())) {
-            isuJqlColumnService.buildDefault(user);
+            isuJqlColumnService.buildDefaultColStr(user);
         }
 
         com.github.pagehelper.Page page = PageHelper.startPage(pageNum, pageSize);

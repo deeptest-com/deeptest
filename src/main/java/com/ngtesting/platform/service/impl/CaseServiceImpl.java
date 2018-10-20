@@ -439,7 +439,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 //        List<TestCase> pos = findAllByCriteria(dc);
 //        for (TestCase testCase : pos) {
 //            if (topId == null) {
-//                topId = testCase.getId();
+//                topId = testCase.getCode();
 //            }
 //            rowCount = writeTestCase(testCase, sheet, topId, rowCount, level, cellStyle);
 //        }
@@ -533,10 +533,10 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 //                resultCell.setCellValue(step.getExpect());
 //            }
 //        } else {
-//            List chridren = getChildren(testCase.getId());
+//            List chridren = getChildren(testCase.getCode());
 //            if (chridren.size() > 0) {
 //                level.incrementAndGet();
-//                for (TestCase child : getChildren(testCase.getId())) {
+//                for (TestCase child : getChildren(testCase.getCode())) {
 //                    rowCount = writeTestCase(child, sheet, topId, rowCount, level, cellStyle);
 //                }
 //            }

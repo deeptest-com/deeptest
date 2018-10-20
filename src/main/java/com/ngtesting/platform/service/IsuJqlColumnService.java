@@ -9,5 +9,5 @@ public interface IsuJqlColumnService extends BaseService {
 
     List<IsuJqlColumn> loadColumns(TstUser user);
 
-    String buildDefault(TstUser user);
+    String buildDefaultColStr(TstUser user);
 }

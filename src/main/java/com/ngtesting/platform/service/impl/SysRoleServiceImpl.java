@@ -37,8 +37,8 @@ public class SysRoleServiceImpl extends BaseServiceImpl implements SysRoleServic
 //		}
 //
 //		SysRole po = new SysRole();
-//		if (vo.getId() != null) {
-//			po = (SysRole) getDetail(SysRole.class, vo.getId());
+//		if (vo.getCode() != null) {
+//			po = (SysRole) getDetail(SysRole.class, vo.getCode());
 //		}
 //
 //		po.setName(vo.getName());

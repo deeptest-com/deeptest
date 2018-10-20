@@ -11,15 +11,17 @@ import java.util.Map;
 public class AdviceAction extends BaseAction {
 
     @ResponseBody
-    @ExceptionHandler(value = Exception.class)
-    public Map errorHandler(Exception ex) {
-        return bizFail();
+    @ExceptionHandler(value = AuthException.class)
+    public Map authErrorHandler(AuthException ex) {
+        ex.printStackTrace();
+        return authFail();
     }
 
     @ResponseBody
-    @ExceptionHandler(value = AuthException.class)
-    public Map authErrorHandler(AuthException ex) {
-        return authFail();
+    @ExceptionHandler(value = Exception.class)
+    public Map errorHandler(Exception ex) {
+        ex.printStackTrace();
+        return bizFail();
     }
 
 }

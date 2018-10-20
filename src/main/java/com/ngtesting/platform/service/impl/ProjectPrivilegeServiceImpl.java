@@ -59,7 +59,7 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
                     po1.setSelected(true);
                     po1.setSelecting(true);
 
-//            		Integer relationId = po2.getId();
+//            		Integer relationId = po2.getCode();
 //            		vo.setRelationId(relationId);
             	}
         	}

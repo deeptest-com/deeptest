@@ -15,15 +15,15 @@ public class IssueCommentsServiceImpl extends BaseServiceImpl implements IssueCo
 //
 //        TestCaseComments po = new TestCaseComments();
 //
-//        if (vo.getId() != null) {
-//            po = (TestCaseComments)getDetail(TestCaseComments.class, vo.getId());
+//        if (vo.getCode() != null) {
+//            po = (TestCaseComments)getDetail(TestCaseComments.class, vo.getCode());
 //        } else {
-//            po.setId(null);
+//            po.setCode(null);
 //        }
 //        po.setSummary(vo.getSummary());
 //        po.setContent(vo.getContent());
 //        po.setTestCaseId(vo.getTestCaseId());
-//        po.setUserId(TstUser.getId());
+//        po.setUserId(TstUser.getCode());
 //        po.setChangeTime(new Date());
 //        saveOrUpdate(po);
 //

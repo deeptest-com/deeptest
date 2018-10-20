@@ -93,8 +93,8 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
 //        }
 //
 //        TstCustomField po;
-//        if (vo.getId() != null) {
-//            po = (TstCustomField) getDetail(TstCustomField.class, vo.getId());
+//        if (vo.getCode() != null) {
+//            po = (TstCustomField) getDetail(TstCustomField.class, vo.getCode());
 //        } else {
 //            po = new TstCustomField();
 //        }
@@ -109,7 +109,7 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
 //
 //        po.setOrgId(orgId);
 //
-//        if (vo.getId() == null) {
+//        if (vo.getCode() == null) {
 //            String hql = "select max(ordr) from TstCustomField";
 //            Integer maxOrder = (Integer) getByHQL(hql);
 //            if (maxOrder == null) {
@@ -211,7 +211,7 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
 //            vo.setSelected(false);
 //            vo.setSelecting(false);
 //            for (TstProject item : projectsForField) {
-//                if (po1.getId().longValue() == item.getId().longValue()) {
+//                if (po1.getCode().longValue() == item.getCode().longValue()) {
 //                    vo.setSelected(true);
 //                    vo.setSelecting(true);
 //                }
@@ -222,7 +222,7 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
 //                TstProject childVo = projectService.genVo(child, null);
 //
 //                for (TstProject item : projectsForField) {
-//                    if (child.getId().longValue() == item.getId().longValue()) {
+//                    if (child.getCode().longValue() == item.getCode().longValue()) {
 //                        childVo.setSelected(true);
 //                        childVo.setSelecting(true);
 //                    }
@@ -249,7 +249,7 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
 //        for (Object obj : projects) {
 //            TstProject vo = JSON.parseObject(JSON.toJSONString(obj), TstProject.class);
 //            if (vo.getSelecting() != vo.getSelected()) { // 变化了
-//                TstProject project = (TstProject) getDetail(TstProject.class, vo.getId());
+//                TstProject project = (TstProject) getDetail(TstProject.class, vo.getCode());
 //
 //                if (vo.getSelecting() && !projectSet.contains(project)) { // 勾选
 //                    projectSet.add(project);

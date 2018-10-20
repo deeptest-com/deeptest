@@ -1,8 +1,11 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.config.ConstantIssue;
+import com.ngtesting.platform.dao.IsuFieldDefineDao;
+import com.ngtesting.platform.model.IsuFieldDefine;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.*;
+import com.ngtesting.platform.service.IsuJqlColumnService;
+import com.ngtesting.platform.service.UserService;
 import com.ngtesting.platform.vo.IsuJqlColumn;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,35 +23,33 @@ import java.util.List;
 public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlColumnService {
     Log logger = LogFactory.getLog(IsuJqlColumnServiceImpl.class);
 
-    public static String[] defaultFilters = new String[] {"project", };
-
-    @Autowired
-    IsuJqlBuildService isuJqlBuildService;
-    @Autowired
-    IssueService issueService;
-
-    @Autowired
-    IsuJqlFilterService isuJqlFilterService;
-
     @Autowired
     UserService userService;
+
+    @Autowired
+    IsuFieldDefineDao isuFieldDefineDao;
 
     @Override
     @Transactional
     public List<IsuJqlColumn> loadColumns(TstUser user) {
         String columnsStr = user.getIssueColumns();
         if (StringUtils.isEmpty(columnsStr)) {
-            columnsStr = buildDefault(user);
+            columnsStr = buildDefaultColStr(user);
         }
 
         List<String> ls = new ArrayList<>(Arrays.asList(columnsStr.split(",")));
-        List<IsuJqlColumn> cols = new LinkedList<>();
+        List<IsuJqlColumn> vos = new LinkedList<>();
 
+        List<IsuFieldDefine> cols = isuFieldDefineDao.listColumns();
         int i = 0;
-        for (String[] arr : ConstantIssue.IssueColumns) {
+        for (IsuFieldDefine col : cols) {
+            String code = col.getCode();
+            String label = col.getLabel();
+            ConstantIssue.IssueFilterType type = col.getType();
+
             Boolean enable;
             if (ls.size() > 0) {
-                if (ls.contains(arr[0])) {
+                if (ls.contains(code)) {
                     enable = true;
                 } else {
                     enable = false;
@@ -57,26 +58,28 @@ public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlCo
                 enable = i++ < 5;
             }
 
-            IsuJqlColumn col = new IsuJqlColumn();
-            col.setId(arr[0]);
-            col.setLabel(arr[1]);
-            col.setType(ConstantIssue.IssueFilterType.valueOf(arr[2]));
+            IsuJqlColumn vo = new IsuJqlColumn();
+            vo.setCode(code);
+            vo.setLabel(label);
+            vo.setType(type);
 
-            col.setDisplay(enable);
+            vo.setDisplay(enable);
 
-            cols.add(col);
+            vos.add(vo);
         }
 
-        return cols;
+        return vos;
     }
 
     @Override
     @Transactional
-    public String buildDefault(TstUser user) {
+    public String buildDefaultColStr(TstUser user) {
         String ret = "";
+
+        List<IsuFieldDefine> cols = isuFieldDefineDao.listColumns();
         int i = 0;
-        for (String[] arr : ConstantIssue.IssueColumns) {
-            String id = arr[0];
+        for (IsuFieldDefine col : cols) {
+            String code = col.getCode();
 
             if (i++ > 4) {
                 break;
@@ -85,7 +88,7 @@ public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlCo
             if (!StringUtils.isEmpty(ret)) {
                 ret += ",";
             }
-            ret += id;
+            ret += code;
         }
 
         userService.saveIssueColumns(ret, user);

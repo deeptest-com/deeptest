@@ -2,6 +2,7 @@ package com.ngtesting.platform.vo;
 
 
 import com.ngtesting.platform.config.ConstantIssue;
+import com.ngtesting.platform.model.IsuFieldDefine;
 
 import java.io.Serializable;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.Map;
 public class IsuJqlFilter implements Serializable {
     private static final long serialVersionUID = -5923944030125754321L;
 
-    String id;
+    String code;
     String label;
     ConstantIssue.IssueFilterType type;
     ConstantIssue.IssueFilterInput input;
@@ -18,13 +19,12 @@ public class IsuJqlFilter implements Serializable {
     List<String> operators;
     Boolean display;
 
-    public IsuJqlFilter(String id, String label,
-                        ConstantIssue.IssueFilterType type, ConstantIssue.IssueFilterInput input, Boolean display) {
-        this.id = id;
-        this.label = label;
-        this.type = type;
-        this.input = input;
-        this.display = display;
+    public IsuJqlFilter(IsuFieldDefine field) {
+        this.code = field.getCode();
+        this.label = field.getLabel();
+        this.type = field.getType();
+        this.input = field.getInput();
+        this.display = field.getDefaultShowInFilters();
 
         if (ConstantIssue.IssueFilterInput.string.equals(type)) {
             this.operators = ConstantIssue.OperatorsForString;
@@ -33,13 +33,12 @@ public class IsuJqlFilter implements Serializable {
         }
     }
 
-    public IsuJqlFilter(String id, String label,
-                        ConstantIssue.IssueFilterType type, ConstantIssue.IssueFilterInput input, Map values, Boolean display) {
-        this.id = id;
-        this.label = label;
-        this.type = type;
-        this.input = input;
-        this.display = display;
+    public IsuJqlFilter(IsuFieldDefine field, Map values) {
+        this.code = field.getCode();
+        this.label = field.getLabel();
+        this.type = field.getType();
+        this.input = field.getInput();
+        this.display = field.getDefaultShowInFilters();
 
         this.values = values;
         if (ConstantIssue.IssueFilterInput.string.equals(input)) {
@@ -51,12 +50,12 @@ public class IsuJqlFilter implements Serializable {
         }
     }
 
-    public String getId() {
-        return id;
+    public String getCode() {
+        return code;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getLabel() {

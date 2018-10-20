@@ -5,45 +5,7 @@ import java.util.List;
 
 public class ConstantIssue {
 
-    public static String[][] IssueColumns =
-            {
-                    {"title", "标题", "string"},
-                    {"typeId", "类型", "string"},
-                    {"statusId", "状态", "string"},
-                    {"priorityId", "优先级", "string"},
-                    {"assigneeId", "经办人", "string"},
-
-                    {"creatorId", "创家人", "string"},
-                    {"reporterId", "报告人", "string"},
-
-                    {"verId", "版本", "string"},
-                    {"envId", "环境", "string"},
-                    {"resolution", "解决结果", "string"},
-                    {"dueTime", "到期时间", "date"},
-                    {"resolveTime", "解决时间", "date"},
-                    {"projectId", "项目", "string"}
-            };
-
-    public static String[][] IssueFilters =
-            {
-                    {"projectId", "项目"},
-                    {"typeId", "类型"},
-                    {"statusId", "状态"},
-                    {"priorityId", "优先级"},
-                    {"assigneeId", "经办人"},
-
-                    {"creatorId", "创建人"},
-                    {"reporterId", "报告人"},
-
-                    {"verId", "版本"},
-                    {"envId", "环境"},
-                    {"resolutionId", "解决结果"},
-                    {"dueTime", "到期时间"},
-                    {"resolveTime", "解决时间"},
-                    {"comments", "注释"}
-            };
-
-    public static enum IssueFilterInput {
+    public enum IssueFilterInput {
         string("string"),
         select("select"),
         radio("radio"),
@@ -60,13 +22,13 @@ public class ConstantIssue {
         }
     }
 
-    public static enum IssueFilterType {
+    public enum IssueFilterType {
         integer("integer"),
         doubl("doubl"),
         string("string"),
         date("date");
 
-        private IssueFilterType(String textVal) {
+        IssueFilterType(String textVal) {
             this.textVal = textVal;
         }
 

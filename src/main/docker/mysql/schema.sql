@@ -11,7 +11,7 @@
  Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 10/15/2018 17:35:12 PM
+ Date: 10/20/2018 18:57:23 PM
 */
 
 SET NAMES utf8mb4;
@@ -235,6 +235,30 @@ CREATE TABLE `IsuDocument` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
+--  Table structure for `IsuFieldDefine`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuFieldDefine`;
+CREATE TABLE `IsuFieldDefine` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) DEFAULT NULL,
+  `label` varchar(255) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `input` varchar(255) DEFAULT NULL,
+  `defaultShowInFilters` bit(1) DEFAULT NULL,
+  `filterOrdr` int(11) DEFAULT NULL,
+  `defaultShowInColumns` bit(1) DEFAULT NULL,
+  `columnOrdr` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuFieldDefine`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuFieldDefine` VALUES ('1', 'title', '标题', 'string', 'string', null, null, b'1', '10100'), ('2', 'projectId', '项目', 'string', 'select', b'1', '10100', b'0', '11300'), ('3', 'typeId', '类型', 'string', 'select', b'1', '10200', b'1', '10200'), ('4', 'statusId', '状态', 'string', 'select', b'1', '10300', b'1', '10300'), ('5', 'priorityId', '优先级', 'string', 'select', b'1', '10400', b'1', '10400'), ('6', 'assigneeId', '经办人', 'string', 'select', b'1', '10500', b'1', '10500'), ('7', 'creatorId', '创建人', 'string', 'select', b'0', '10600', b'0', '10600'), ('8', 'reporterId', '报告人', 'string', 'select', b'0', '10700', b'0', '10700'), ('9', 'verId', '版本', 'string', 'select', b'0', '10800', b'0', '10800'), ('10', 'envId', '环境', 'string', 'select', b'0', '10900', b'0', '10900'), ('11', 'resolutionId', '解决结果', 'string', 'string', b'0', '11000', b'0', '11000'), ('12', 'dueTime', '截止时间', 'date', 'string', b'0', '11100', b'0', '11100'), ('13', 'resolveTime', '解决时间', 'date', 'string', b'0', '11200', b'0', '11200'), ('14', 'comments', '注释', 'string', 'string', b'0', '11300', null, null);
+COMMIT;
+
+-- ----------------------------
 --  Table structure for `IsuHistory`
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuHistory`;
@@ -258,20 +282,44 @@ CREATE TABLE `IsuHistory` (
 DROP TABLE IF EXISTS `IsuIssue`;
 CREATE TABLE `IsuIssue` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
+  `title` varchar(500) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
-  `ordr` int(11) DEFAULT NULL,
-  `startTime` datetime DEFAULT NULL,
-  `endTime` datetime DEFAULT NULL,
   `projectId` int(11) DEFAULT NULL,
-  `disabled` bit(1) DEFAULT NULL,
-  `deleted` bit(1) DEFAULT NULL,
+  `projectName` varchar(255) DEFAULT NULL,
+  `typeId` int(11) DEFAULT NULL,
+  `typeName` varchar(255) DEFAULT NULL,
+  `statusId` int(11) DEFAULT NULL,
+  `statusName` varchar(255) DEFAULT NULL,
+  `priorityId` int(11) DEFAULT NULL,
+  `priorityName` varchar(255) DEFAULT NULL,
+  `assigneeId` int(11) DEFAULT NULL,
+  `assigneeName` varchar(255) DEFAULT NULL,
+  `creatorId` int(11) DEFAULT NULL,
+  `creatorName` varchar(255) DEFAULT NULL,
+  `reporterId` int(11) DEFAULT NULL,
+  `reporterName` varchar(255) DEFAULT NULL,
+  `verId` int(11) DEFAULT NULL,
+  `verName` varchar(255) DEFAULT NULL,
+  `envId` int(11) DEFAULT NULL,
+  `envName` varchar(255) DEFAULT NULL,
+  `resolution` varchar(1000) DEFAULT NULL,
+  `dueTime` datetime DEFAULT NULL,
+  `resolveTime` datetime DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_749574hr3f54gdlo4hrc6dquc` (`projectId`),
   CONSTRAINT `FK_749574hr3f54gdlo4hrc6dquc` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuIssue`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuIssue` VALUES ('1', '缺陷4', '描述', '352', '项目', null, '缺陷', null, '打开', null, '高', null, 'Aaron', null, '陈琦', null, '小琦', null, '版本1.0', null, '测试环境', '解决结果', '2018-10-20 12:22:46', '2018-10-20 12:22:48', '2018-10-19 09:45:26', '2018-10-19 09:45:28', b'0', b'0'), ('4', '缺陷4', '描述', '352', '项目', null, '缺陷', null, '打开', null, '高', null, 'Aaron', null, '陈琦', null, '小琦', null, '版本1.0', null, '测试环境', '解决结果', '2018-10-20 12:22:46', '2018-10-20 12:22:48', '2018-10-19 09:45:26', '2018-10-19 09:45:28', b'0', b'0');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `IsuLink`
@@ -933,7 +981,7 @@ CREATE TABLE `TstCase` (
 --  Records of `TstCase`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstCase` VALUES ('1', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '343', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 11:37:43', null), ('2', '新特性', null, null, 'steps', '10', '1', b'0', '0', 'functional', 'medium', null, '343', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 11:37:43', null), ('3', '新用例', null, null, 'steps', '10', '2', b'1', '0', 'functional', 'medium', null, '343', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 11:37:43', null), ('4', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '345', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:20:35', null), ('5', '新特性', null, null, 'steps', '10', '4', b'0', '0', 'functional', 'medium', null, '345', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:20:35', null), ('6', '新用例', null, null, 'steps', '10', '5', b'1', '0', 'functional', 'medium', null, '345', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:20:35', null), ('7', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '346', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:27:38', null), ('8', '新特性', null, null, 'steps', '10', '7', b'0', '0', 'functional', 'medium', null, '346', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:27:38', null), ('9', '新用例', null, null, 'steps', '10', '8', b'1', '0', 'functional', 'medium', null, '346', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:27:38', null), ('10', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '348', '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:01:39', null), ('11', '新特性', null, null, 'steps', '10', '10', b'0', '0', 'functional', 'medium', null, '348', '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:01:39', null), ('12', '新用例', null, null, 'steps', '10', '11', b'1', '0', 'functional', 'medium', null, '348', '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:01:39', null), ('13', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '350', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:07:47', null), ('14', '新特性', null, null, 'steps', '10', '13', b'0', '0', 'functional', 'medium', null, '350', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:07:47', null), ('15', '新用例', null, null, 'steps', '10', '14', b'1', '0', 'functional', 'medium', null, '350', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:07:47', null), ('16', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '352', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:22:06', null), ('17', '新特性', null, null, 'steps', '10', '16', b'0', '0', 'functional', 'medium', null, '352', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:22:06', null), ('18', '新用例2', null, null, 'steps', '10', '17', b'0', '0', 'functional', 'medium', null, '352', '8', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:22:06', '2018-10-15 17:12:32'), ('19', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '354', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:24:17', null), ('20', '新特性', null, null, 'steps', '10', '19', b'0', '0', 'functional', 'medium', null, '354', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:24:17', null), ('21', '新用例', null, null, 'steps', '10', '20', b'1', '0', 'functional', 'medium', null, '354', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:24:17', null), ('22', '新用例2', null, null, 'steps', '10', '18', b'1', '1', 'functional', 'medium', null, '352', '8', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-15 17:13:23', '2018-10-15 17:14:46'), ('23', '新用例', null, null, 'steps', '10', '18', b'1', '2', 'functional', 'medium', b'1', '352', '8', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-15 17:13:28', '2018-10-15 17:15:01');
+INSERT INTO `TstCase` VALUES ('1', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '343', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 11:37:43', null), ('2', '新特性', null, null, 'steps', '10', '1', b'0', '0', 'functional', 'medium', null, '343', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 11:37:43', null), ('3', '新用例', null, null, 'steps', '10', '2', b'1', '0', 'functional', 'medium', null, '343', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 11:37:43', null), ('4', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '345', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:20:35', null), ('5', '新特性', null, null, 'steps', '10', '4', b'0', '0', 'functional', 'medium', null, '345', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:20:35', null), ('6', '新用例', null, null, 'steps', '10', '5', b'1', '0', 'functional', 'medium', null, '345', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:20:35', null), ('7', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '346', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:27:38', null), ('8', '新特性', null, null, 'steps', '10', '7', b'0', '0', 'functional', 'medium', null, '346', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:27:38', null), ('9', '新用例', null, null, 'steps', '10', '8', b'1', '0', 'functional', 'medium', null, '346', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:27:38', null), ('10', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '348', '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:01:39', null), ('11', '新特性', null, null, 'steps', '10', '10', b'0', '0', 'functional', 'medium', null, '348', '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:01:39', null), ('12', '新用例', null, null, 'steps', '10', '11', b'1', '0', 'functional', 'medium', null, '348', '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:01:39', null), ('13', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '350', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:07:47', null), ('14', '新特性', null, null, 'steps', '10', '13', b'0', '0', 'functional', 'medium', null, '350', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:07:47', null), ('15', '新用例', null, null, 'steps', '10', '14', b'1', '0', 'functional', 'medium', null, '350', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:07:47', null), ('16', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '352', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:22:06', null), ('17', '新特性', null, null, 'steps', '10', '16', b'0', '0', 'functional', 'medium', null, '352', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:22:06', null), ('18', '新用例2', null, null, 'steps', '10', '17', b'0', '0', 'functional', 'medium', null, '352', '8', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:22:06', '2018-10-15 17:12:32'), ('19', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '354', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:24:17', null), ('20', '新特性', null, null, 'steps', '10', '19', b'0', '0', 'functional', 'medium', null, '354', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:24:17', null), ('21', '新用例', null, null, 'steps', '10', '20', b'1', '0', 'functional', 'medium', null, '354', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:24:17', null), ('22', '新用例2', null, null, 'richText', '10', '18', b'1', '1', 'functional', 'medium', null, '352', '8', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-15 17:13:23', '2018-10-15 17:42:14'), ('23', '新用例', null, null, 'steps', '10', '18', b'1', '2', 'functional', 'medium', b'1', '352', '8', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-15 17:13:28', '2018-10-15 17:15:01');
 COMMIT;
 
 -- ----------------------------
@@ -1686,7 +1734,7 @@ CREATE TABLE `TstProjectAccessHistory` (
 --  Records of `TstProjectAccessHistory`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstProjectAccessHistory` VALUES ('1', '2018-10-06 14:27:42', '1', '343', '默认项目', '1', '2018-10-06 11:37:43', null), ('2', '2018-10-06 11:38:57', '1', '343', '默认项目', '2', null, null), ('3', '2018-10-06 11:41:33', '1', '343', '默认项目', '3', null, null), ('4', '2018-10-08 10:55:10', '2', '345', '默认项目', '1', '2018-10-06 14:20:35', null), ('5', '2018-10-06 14:46:59', '2', '346', 'Prj01', '1', null, null), ('6', '2018-10-08 11:01:39', '3', '348', '默认项目', '4', '2018-10-08 11:01:39', null), ('7', '2018-10-15 17:05:07', '4', '350', '默认项目', '8', '2018-10-08 11:07:47', null), ('8', '2018-10-15 17:34:14', '5', '352', '默认项目', '8', '2018-10-11 10:22:06', null), ('9', '2018-10-11 10:24:17', '6', '354', '默认项目', '8', '2018-10-11 10:24:17', null);
+INSERT INTO `TstProjectAccessHistory` VALUES ('1', '2018-10-06 14:27:42', '1', '343', '默认项目', '1', '2018-10-06 11:37:43', null), ('2', '2018-10-06 11:38:57', '1', '343', '默认项目', '2', null, null), ('3', '2018-10-06 11:41:33', '1', '343', '默认项目', '3', null, null), ('4', '2018-10-08 10:55:10', '2', '345', '默认项目', '1', '2018-10-06 14:20:35', null), ('5', '2018-10-06 14:46:59', '2', '346', 'Prj01', '1', null, null), ('6', '2018-10-08 11:01:39', '3', '348', '默认项目', '4', '2018-10-08 11:01:39', null), ('7', '2018-10-15 17:05:07', '4', '350', '默认项目', '8', '2018-10-08 11:07:47', null), ('8', '2018-10-20 18:54:44', '5', '352', '默认项目', '8', '2018-10-11 10:22:06', null), ('9', '2018-10-11 10:24:17', '6', '354', '默认项目', '8', '2018-10-11 10:24:17', null);
 COMMIT;
 
 -- ----------------------------
@@ -1918,7 +1966,7 @@ CREATE TABLE `TstUser` (
 --  Records of `TstUser`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstUser` VALUES ('1', '4628262@qq.com', 'Aaron Chen', '98207a1da8b40358f62997c3afa658f5', '11111111111', 'upload/sample/user/avatar.png', '2', 'Org01', '345', '默认项目', '[B@337bbf93', '74ce484b-e9ff-43d3-87e7-e157061b32e2', null, '2018-10-06 14:20:14', b'0', b'0', '2018-10-06 11:37:43', '2018-10-06 11:43:43'), ('2', 'qi.chen2@ngtesting.com', 'qi.chen2', '96e79218965eb72c92a549dd5a330112', null, 'upload/sample/user/avatar.png', '1', 'Aaron Chen的组织', '343', '默认项目', null, 'd20d9bec-5e32-49ac-a42a-57156e69b9fa', null, '2018-10-06 11:39:28', b'0', b'0', '2018-10-06 11:38:57', '2018-10-06 11:39:28'), ('3', 'qi.chen2@ngtesting.com', 'qi.chen', '96e79218965eb72c92a549dd5a330112', null, 'upload/sample/user/avatar.png', '1', 'Aaron Chen的组织', '343', '默认项目', null, '52b4775d-940e-4406-96d3-f92e1b50019f', null, '2018-10-06 11:44:07', b'0', b'0', '2018-10-06 11:41:33', '2018-10-06 11:42:39'), ('4', '4628263@qq.com', 'Aaron Chen', 'd1fd432ac3c6a39aa58d41a688a676d6', '11111111111', 'upload/sample/user/avatar.png', '3', 'Aaron Chen的组织', '348', '默认项目', '[B@26e909d0', '', null, '2018-10-08 11:02:21', b'0', b'0', '2018-10-08 10:58:58', '2018-10-08 11:04:38'), ('5', '462826ds@qq.com', 'Aaron Chen', 'f33511307b9977ca38d2eb7a50b41173', '11111111111', 'upload/sample/user/avatar.png', null, null, null, null, '[B@6363bec9', null, null, null, b'0', b'0', '2018-10-08 10:59:40', null), ('6', '46282644@qq.com', 'Aaron Chen', '2bded372fa2c96a2bd1601d5c596e889', '11111111111', 'upload/sample/user/avatar.png', null, null, null, null, '[B@63eaaf31', null, null, null, b'0', b'0', '2018-10-08 11:00:15', null), ('7', '46282dsfds6@qq.com', 'Aaron Chen', '3479b842f19de1a04fe9547218929afe', '11111111111', 'upload/sample/user/avatar.png', null, null, null, null, '[B@403a1f33', '0aab3c3c-4fcf-4d8e-96b6-59f20ff44832', null, '2018-10-08 11:04:46', b'0', b'0', '2018-10-08 11:01:25', null), ('8', '462826@qq.com', 'Aaron Chen2', '71f8a2865666635b2db9adbf41e98d72', '11111111111', 'upload/data/20181011/a7589774-c143-41d5-8844-c0ac3ba0a33c.jpg', '5', 'test', '352', '默认项目', '[B@9ed6207', '84c28df0-0ca4-4073-a7de-dfe94ab39e7a', null, '2018-10-12 20:17:16', b'0', b'0', '2018-10-08 11:07:44', '2018-10-11 23:11:26');
+INSERT INTO `TstUser` VALUES ('1', '4628262@qq.com', 'Aaron Chen', '98207a1da8b40358f62997c3afa658f5', '11111111111', 'upload/sample/user/avatar.png', '2', 'Org01', '345', '默认项目', '[B@337bbf93', '74ce484b-e9ff-43d3-87e7-e157061b32e2', null, '2018-10-06 14:20:14', b'0', b'0', '2018-10-06 11:37:43', '2018-10-06 11:43:43'), ('2', 'qi.chen2@ngtesting.com', 'qi.chen2', '96e79218965eb72c92a549dd5a330112', null, 'upload/sample/user/avatar.png', '1', 'Aaron Chen的组织', '343', '默认项目', null, 'd20d9bec-5e32-49ac-a42a-57156e69b9fa', null, '2018-10-06 11:39:28', b'0', b'0', '2018-10-06 11:38:57', '2018-10-06 11:39:28'), ('3', 'qi.chen2@ngtesting.com', 'qi.chen', '96e79218965eb72c92a549dd5a330112', null, 'upload/sample/user/avatar.png', '1', 'Aaron Chen的组织', '343', '默认项目', null, '52b4775d-940e-4406-96d3-f92e1b50019f', null, '2018-10-06 11:44:07', b'0', b'0', '2018-10-06 11:41:33', '2018-10-06 11:42:39'), ('4', '4628263@qq.com', 'Aaron Chen', 'd1fd432ac3c6a39aa58d41a688a676d6', '11111111111', 'upload/sample/user/avatar.png', '3', 'Aaron Chen的组织', '348', '默认项目', '[B@26e909d0', '', null, '2018-10-08 11:02:21', b'0', b'0', '2018-10-08 10:58:58', '2018-10-08 11:04:38'), ('5', '462826ds@qq.com', 'Aaron Chen', 'f33511307b9977ca38d2eb7a50b41173', '11111111111', 'upload/sample/user/avatar.png', null, null, null, null, '[B@6363bec9', null, null, null, b'0', b'0', '2018-10-08 10:59:40', null), ('6', '46282644@qq.com', 'Aaron Chen', '2bded372fa2c96a2bd1601d5c596e889', '11111111111', 'upload/sample/user/avatar.png', null, null, null, null, '[B@63eaaf31', null, null, null, b'0', b'0', '2018-10-08 11:00:15', null), ('7', '46282dsfds6@qq.com', 'Aaron Chen', '3479b842f19de1a04fe9547218929afe', '11111111111', 'upload/sample/user/avatar.png', null, null, null, null, '[B@403a1f33', '0aab3c3c-4fcf-4d8e-96b6-59f20ff44832', null, '2018-10-08 11:04:46', b'0', b'0', '2018-10-08 11:01:25', null), ('8', '462826@qq.com', 'Aaron Chen2', '71f8a2865666635b2db9adbf41e98d72', '11111111111', 'upload/data/20181011/a7589774-c143-41d5-8844-c0ac3ba0a33c.jpg', '5', 'test', '352', '默认项目', '[B@9ed6207', '16bd2729-4ca0-4b13-8a66-267a2fb7f281', null, '2018-10-20 18:56:58', b'0', b'0', '2018-10-08 11:07:44', '2018-10-20 18:56:42');
 COMMIT;
 
 -- ----------------------------
@@ -1929,8 +1977,11 @@ CREATE TABLE `TstUserSettings` (
   `leftSizeDesign` int(11) DEFAULT NULL,
   `leftSizeExe` int(11) DEFAULT NULL,
   `leftSizeIssue` int(11) DEFAULT NULL,
+  `issueView` varchar(255) DEFAULT NULL,
+  `issueColumns` varchar(1000) DEFAULT NULL,
   `tql` varchar(5000) DEFAULT NULL,
-  `userId` int(11) DEFAULT NULL,
+  `userId` int(11) NOT NULL,
+  PRIMARY KEY (`userId`),
   KEY `userId` (`userId`),
   CONSTRAINT `fk_userid` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
@@ -1939,7 +1990,7 @@ CREATE TABLE `TstUserSettings` (
 --  Records of `TstUserSettings`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstUserSettings` VALUES ('463', '200', null, null, '4'), ('300', '200', null, null, '5'), ('300', '200', null, null, '6'), ('300', '200', null, null, '7'), ('300', '200', '445', null, '8');
+INSERT INTO `TstUserSettings` VALUES ('463', '200', null, null, null, null, '4'), ('300', '200', null, null, null, null, '5'), ('300', '200', null, null, null, null, '6'), ('300', '200', null, null, null, null, '7'), ('425', '200', '361', 'table', 'title,typeId,statusId,priorityId,assigneeId,creatorId', null, '8');
 COMMIT;
 
 -- ----------------------------

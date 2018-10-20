@@ -40,8 +40,8 @@ public class IssueQueryServiceImpl extends BaseServiceImpl implements IssueQuery
 //		}
 //
 //		TstCasePriority po;
-//		if (vo.getId() != null) {
-//			po = (TstCasePriority) getDetail(TstCasePriority.class, vo.getId());
+//		if (vo.getCode() != null) {
+//			po = (TstCasePriority) getDetail(TstCasePriority.class, vo.getCode());
 //		} else {
 //			po = new TstCasePriority();
 //		}
@@ -50,7 +50,7 @@ public class IssueQueryServiceImpl extends BaseServiceImpl implements IssueQuery
 //
 //		po.setOrgId(orgId);
 //
-//		if (vo.getId() == null) {
+//		if (vo.getCode() == null) {
 //			po.setCode(UUID.randomUUID().toString());
 //
 //			String hql = "select max(displayOrder) from TstCasePriority pri where pri.orgId=?";
@@ -77,7 +77,7 @@ public class IssueQueryServiceImpl extends BaseServiceImpl implements IssueQuery
 	public boolean setDefaultPers(Integer id, Integer orgId) {
 //		List<TstCasePriority> ls = list(orgId);
 //		for (TstCasePriority priority : ls) {
-//			if (priority.getId().longValue() == id.longValue()) {
+//			if (priority.getCode().longValue() == id.longValue()) {
 //				priority.setIsDefault(true);
 //				saveOrUpdate(priority);
 //			} else if (priority.getIsDefault() != null && priority.getIsDefault()) {

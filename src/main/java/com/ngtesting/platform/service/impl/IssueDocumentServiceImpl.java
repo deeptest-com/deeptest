@@ -38,8 +38,8 @@ public class IssueDocumentServiceImpl extends BaseServiceImpl implements IssueDo
 //		}
 //
 //		Document po = new Document();
-//		if (vo.getId() != null) {
-//			po = (Document) getDetail(Document.class, vo.getId());
+//		if (vo.getCode() != null) {
+//			po = (Document) getDetail(Document.class, vo.getCode());
 //		}
 //
 //		po.setEventId(vo.getEventId());

@@ -41,7 +41,7 @@ public class IssueCommentsAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
 
 //        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//        commentsService.delete(json.getInteger("id"), userVo.getId());
+//        commentsService.delete(json.getInteger("id"), userVo.getCode());
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

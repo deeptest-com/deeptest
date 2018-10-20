@@ -34,14 +34,14 @@ public class IssueCustomFieldOptionServiceImpl extends BaseServiceImpl implement
 //        }
 //
 //        TestCustomFieldOption po;
-//        if (vo.getId() != null) {
-//            po = (TestCustomFieldOption) getDetail(TestCustomFieldOption.class, vo.getId());
+//        if (vo.getCode() != null) {
+//            po = (TestCustomFieldOption) getDetail(TestCustomFieldOption.class, vo.getCode());
 //        } else {
 //            po = new TestCustomFieldOption();
 //        }
 //        BeanUtilEx.copyProperties(po, vo);
 //
-//        if (vo.getId() == null) {
+//        if (vo.getCode() == null) {
 //            String hql = "select max(ordr) from TestCustomFieldOption opt where opt.fieldId = ?";
 //            Object obj = getByHQL(hql, vo.getFieldId());
 //            Integer maxOrder = obj!=null?(Integer) getByHQL(hql, vo.getFieldId()): 10;

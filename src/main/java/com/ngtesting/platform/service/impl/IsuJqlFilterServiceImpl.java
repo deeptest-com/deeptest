@@ -31,10 +31,12 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
         iterateRuleName(rule, filterNameArr);
 
         int i = 0;
-        for (String id : ConstantIssue.IssueFilters.keySet()) {
+        for (String[] arr : ConstantIssue.IssueFilters) {
+            String id = arr[0];
+            String label = arr[1];
+
             Boolean filterEnable = i++ < 5 || filterNameArr.contains(id);
 
-            String label = ConstantIssue.IssueFilters.get(id);
             IsuJqlFilter f = buildFilter(id, label, orgId, projectId, filterEnable);
             if (f != null) {
                 filtes.add(f);

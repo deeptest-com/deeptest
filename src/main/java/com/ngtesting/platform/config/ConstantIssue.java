@@ -1,47 +1,47 @@
 package com.ngtesting.platform.config;
 
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ConstantIssue {
 
-    public static Map<String, String> IssueColumns = new LinkedHashMap() {{
-        put("title", "标题");
-        put("typeId", "类型");
-        put("statusId", "状态");
-        put("priorityId", "优先级");
-        put("assigneeId", "经办人");
+    public static String[][] IssueColumns =
+            {
+                    {"title", "标题", "string"},
+                    {"typeId", "类型", "string"},
+                    {"statusId", "状态", "string"},
+                    {"priorityId", "优先级", "string"},
+                    {"assigneeId", "经办人", "string"},
 
-        put("creatorId", "创家人");
-        put("reporterId", "报告人");
+                    {"creatorId", "创家人", "string"},
+                    {"reporterId", "报告人", "string"},
 
-        put("verId", "版本");
-        put("envId", "环境");
-        put("resolution", "解决结果");
-        put("dueTime", "到期时间");
-        put("resolveTime", "解决时间");
-        put("projectId", "项目");
-    }};
+                    {"verId", "版本", "string"},
+                    {"envId", "环境", "string"},
+                    {"resolution", "解决结果", "string"},
+                    {"dueTime", "到期时间", "date"},
+                    {"resolveTime", "解决时间", "date"},
+                    {"projectId", "项目", "string"}
+            };
 
-    public static Map<String, String> IssueFilters = new LinkedHashMap() {{
-        put("projectId", "项目");
-        put("typeId", "类型");
-        put("statusId", "状态");
-        put("priorityId", "优先级");
-        put("assigneeId", "经办人");
+    public static String[][] IssueFilters =
+            {
+                    {"projectId", "项目"},
+                    {"typeId", "类型"},
+                    {"statusId", "状态"},
+                    {"priorityId", "优先级"},
+                    {"assigneeId", "经办人"},
 
-        put("creatorId", "创建人");
-        put("reporterId", "报告人");
+                    {"creatorId", "创建人"},
+                    {"reporterId", "报告人"},
 
-        put("verId", "版本");
-        put("envId", "环境");
-        put("resolutionId", "解决结果");
-        put("dueTime", "到期时间");
-        put("resolveTime", "解决时间");
-        put("comments", "注释");
-    }};
+                    {"verId", "版本"},
+                    {"envId", "环境"},
+                    {"resolutionId", "解决结果"},
+                    {"dueTime", "到期时间"},
+                    {"resolveTime", "解决时间"},
+                    {"comments", "注释"}
+            };
 
     public static enum IssueFilterInput {
         string("string"),
@@ -54,6 +54,7 @@ public class ConstantIssue {
         }
 
         private String textVal;
+
         public String toString() {
             return textVal;
         }
@@ -70,6 +71,7 @@ public class ConstantIssue {
         }
 
         private String textVal;
+
         public String toString() {
             return textVal;
         }

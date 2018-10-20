@@ -45,10 +45,10 @@ public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlCo
         List<IsuJqlColumn> cols = new LinkedList<>();
 
         int i = 0;
-        for (String id : ConstantIssue.IssueColumns.keySet()) {
+        for (String[] arr : ConstantIssue.IssueColumns) {
             Boolean enable;
             if (ls.size() > 0) {
-                if (ls.contains(id)) {
+                if (ls.contains(arr[0])) {
                     enable = true;
                 } else {
                     enable = false;
@@ -58,8 +58,10 @@ public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlCo
             }
 
             IsuJqlColumn col = new IsuJqlColumn();
-            col.setLabel(ConstantIssue.IssueColumns.get(id));
-            col.setId(id);
+            col.setId(arr[0]);
+            col.setLabel(arr[1]);
+            col.setType(ConstantIssue.IssueFilterType.valueOf(arr[2]));
+
             col.setDisplay(enable);
 
             cols.add(col);
@@ -73,7 +75,9 @@ public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlCo
     public String buildDefault(TstUser user) {
         String ret = "";
         int i = 0;
-        for (String id : ConstantIssue.IssueColumns.keySet()) {
+        for (String[] arr : ConstantIssue.IssueColumns) {
+            String id = arr[0];
+
             if (i++ > 4) {
                 break;
             }

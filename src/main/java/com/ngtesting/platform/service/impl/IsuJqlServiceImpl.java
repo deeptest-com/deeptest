@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class IsuJqlServiceImpl extends BaseServiceImpl implements IsuJqlService {
@@ -38,12 +40,23 @@ public class IsuJqlServiceImpl extends BaseServiceImpl implements IsuJqlService 
     @Override
     public List<IsuIssue> query(JsonRule rule, String columns, Integer orgId, Integer projectId) {
         List<IsuIssue> result;
+
+        String conditions;
         if (rule.getRules().size() > 0) {
             SqlQueryResult sqlQueryResult = isuJqlBuildService.buildSqlQuery(JSON.toJSONString(rule));
-            result = issueService.queryByJql(sqlQueryResult.getQuery(true), columns);
+            conditions = sqlQueryResult.getQuery(true);
         } else {
-            result = issueService.queryByProject(projectId, columns);
+            conditions = "projectId = " + projectId;
         }
+
+        String reg = "[^,]*Id";
+
+        Pattern r = Pattern.compile(reg);
+        Matcher m = r.matcher(columns);
+        columns = m.replaceAll("$0,$0Name").replaceAll("IdName","Name");
+        logger.info("ReplaceAll: " + columns);
+
+        result = isuTqlDao.query(conditions, columns);
 
         return result;
     }

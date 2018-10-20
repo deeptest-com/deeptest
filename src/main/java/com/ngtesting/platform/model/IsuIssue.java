@@ -11,6 +11,7 @@ public class IsuIssue extends BaseModel {
     private String discr;
 
     private Integer projectId;
+    private String projectName;
 
     private Integer typeId;
     private String typeName;
@@ -250,5 +251,13 @@ public class IsuIssue extends BaseModel {
 
     public void setHistories(List<IsuHistory> histories) {
         this.histories = histories;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 }

@@ -17,23 +17,6 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
     @Autowired
     IssueDao issueDao;
 
-	@Override
-	public List<IsuIssue> queryByProject(Integer projectId, String columns) {
-        List<IsuIssue> ls = issueDao.queryByProject(projectId);
-
-        genVos(ls);
-        return ls;
-	}
-
-    @Override
-    public List<IsuIssue> queryByJql(String sql, String columns) {
-	    String sqlStr = "" + sql;
-        logger.info(sqlStr);
-
-        List<IsuIssue> ls = issueDao.queryBySql(sql);
-        return ls;
-    }
-
     @Override
 	public IsuIssue getById(Integer caseId) {
 //		TstCase po = (TstCase) getDetail(TstCase.class, caseId);

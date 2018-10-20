@@ -8,33 +8,33 @@ import java.util.List;
 public interface IsuJqlFilterService extends BaseService {
     List<IsuJqlFilter> buildUiFilters(JsonRule jql, Integer orgId, Integer projectId);
 
-    IsuJqlFilter buildFilter(String name, Integer orgId, Integer projectId, Boolean display);
+    IsuJqlFilter buildFilter(String id, String label, Integer orgId, Integer projectId, Boolean display);
 
-    IsuJqlFilter buildProjectFilter(Integer orgId, Boolean display);
+    IsuJqlFilter buildProjectFilter(String id, String label, Integer orgId, Boolean display);
 
-    IsuJqlFilter buildTypeFilter(Integer orgId, Integer projectId, Boolean display);
+    IsuJqlFilter buildTypeFilter(String id, String label, Integer orgId, Integer projectId, Boolean display);
 
-    IsuJqlFilter buildStatusFilter(Integer orgId, Integer projectId, Boolean display);
+    IsuJqlFilter buildStatusFilter(String id, String label, Integer orgId, Integer projectId, Boolean display);
 
-    IsuJqlFilter buildPriorityFilter(Integer orgId, Integer projectId, Boolean display);
+    IsuJqlFilter buildPriorityFilter(String id, String label, Integer orgId, Integer projectId, Boolean display);
 
-    IsuJqlFilter buildAssigneeFilter(Integer orgId, Integer projectId, Boolean display);
+    IsuJqlFilter buildAssigneeFilter(String id, String label, Integer orgId, Integer projectId, Boolean display);
 
-    IsuJqlFilter buildCreatorFilter(Integer orgId, Integer projectId, Boolean display);
+    IsuJqlFilter buildCreatorFilter(String id, String label, Integer orgId, Integer projectId, Boolean display);
 
-    IsuJqlFilter buildReporterFilter(Integer orgId, Integer projectId, Boolean display);
+    IsuJqlFilter buildReporterFilter(String id, String label, Integer orgId, Integer projectId, Boolean display);
 
-    IsuJqlFilter buildEnvFilter(Integer orgId, Integer projectId, Boolean display);
+    IsuJqlFilter buildEnvFilter(String id, String label, Integer orgId, Integer projectId, Boolean display);
 
-    IsuJqlFilter buildVerFilter(Integer orgId, Integer projectId, Boolean display);
+    IsuJqlFilter buildVerFilter(String id, String label, Integer orgId, Integer projectId, Boolean display);
 
-    IsuJqlFilter buildResolutionFilter(Integer orgId, Integer projectId, Boolean display);
+    IsuJqlFilter buildResolutionFilter(String id, String label, Integer orgId, Integer projectId, Boolean display);
 
-    IsuJqlFilter buildDueTimeFilter(Integer orgId, Integer projectId, Boolean display);
+    IsuJqlFilter buildDueTimeFilter(String id, String label, Integer orgId, Integer projectId, Boolean display);
 
-    IsuJqlFilter buildResolveTimeFilter(Integer orgId, Integer projectId, Boolean display);
+    IsuJqlFilter buildResolveTimeFilter(String id, String label, Integer orgId, Integer projectId, Boolean display);
 
-    IsuJqlFilter buildCommentsFilter(Integer orgId, Integer projectId, Boolean display);
+    IsuJqlFilter buildCommentsFilter(String id, String label, Integer orgId, Integer projectId, Boolean display);
 
     void iterateRuleName(JsonRule rule, List<String> out);
 }

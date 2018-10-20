@@ -9,38 +9,38 @@ public class ConstantIssue {
 
     public static Map<String, String> IssueColumns = new LinkedHashMap() {{
         put("title", "标题");
-        put("type", "类型");
-        put("status", "状态");
-        put("priority", "优先级");
-        put("assignee", "经办人");
+        put("typeId", "类型");
+        put("statusId", "状态");
+        put("priorityId", "优先级");
+        put("assigneeId", "经办人");
 
-        put("creator", "创家人");
-        put("reporter", "报告人");
+        put("creatorId", "创家人");
+        put("reporterId", "报告人");
 
-        put("ver", "版本");
-        put("env", "环境");
+        put("verId", "版本");
+        put("envId", "环境");
         put("resolution", "解决结果");
         put("dueTime", "到期时间");
         put("resolveTime", "解决时间");
-        put("project", "项目");
+        put("projectId", "项目");
     }};
 
-    public static Map<String, Boolean> IssueFilters = new LinkedHashMap() {{
-        put("projectId", true);
-        put("typeId", true);
-        put("statusId", true);
-        put("priorityId", true);
-        put("assigneeId", true);
+    public static Map<String, String> IssueFilters = new LinkedHashMap() {{
+        put("projectId", "项目");
+        put("typeId", "类型");
+        put("statusId", "状态");
+        put("priorityId", "优先级");
+        put("assigneeId", "经办人");
 
-        put("creatorId", false);
-        put("reporterId", false);
+        put("creatorId", "创建人");
+        put("reporterId", "报告人");
 
-        put("verId", false);
-        put("envId", false);
-        put("resolutionId", false);
-        put("dueTime", false);
-        put("resolveTime", false);
-        put("comments", false);
+        put("verId", "版本");
+        put("envId", "环境");
+        put("resolutionId", "解决结果");
+        put("dueTime", "到期时间");
+        put("resolveTime", "解决时间");
+        put("comments", "注释");
     }};
 
     public static enum IssueFilterInput {

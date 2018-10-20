@@ -1,10 +1,10 @@
 package com.ngtesting.platform.dao;
 
-import com.ngtesting.platform.model.TstAlert;
+import com.ngtesting.platform.model.IsuIssue;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 public interface IsuTqlDao {
-    List<TstAlert> query(@Param("userId") Integer userId, @Param("isRead") Boolean isRead);
+    List<IsuIssue> query(@Param("conditions") String conditions, @Param("columns") String columns);
 }

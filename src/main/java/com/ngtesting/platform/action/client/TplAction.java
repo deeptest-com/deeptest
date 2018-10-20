@@ -16,6 +16,7 @@ import com.ngtesting.platform.vo.IsuJqlColumn;
 import com.ngtesting.platform.vo.IsuJqlFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -59,6 +60,10 @@ public class TplAction extends BaseAction {
             rule = isuJqlService.buildDefaultJql(orgId, projectId);
         } else {
             rule = json.getObject("rule", JsonRule.class);
+        }
+
+        if (StringUtils.isEmpty(user.getIssueColumns())) {
+            isuJqlColumnService.buildDefault(user);
         }
 
         com.github.pagehelper.Page page = PageHelper.startPage(pageNum, pageSize);

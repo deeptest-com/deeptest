@@ -31,7 +31,7 @@ public class IssueTypeAction extends BaseAction {
     IssueTypeService typeService;
 
 	@Autowired
-    IssuePropertyService propertyService;
+	IssuePropertyService issuePropertyService;
 
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
@@ -56,54 +56,63 @@ public class IssueTypeAction extends BaseAction {
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//
-//		Integer id = json.getInteger("id");
-//		if (id == null) {
-//			ret.put("data", new CaseTypeVo());
-//			ret.put("code", Constant.RespCode.SUCCESS.getCode());
-//			return ret;
-//		}
-//
-//		TstCaseType po = (TstCaseType) propertyService.getDetail(TstCaseType.class, id);
-//		CaseTypeVo vo = typeService.genVo(po);
-//		ret.put("data", vo);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
 
+		Integer id = json.getInteger("id");
+		IsuType po;
+		if (id == null) {
+			po = new IsuType();
+		} else {
+			po = typeService.get(id, orgId);
+		}
+
+		if (po == null) { // 当对象不是默认org的，此处为空
+			return authFail();
+		}
+
+		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//		Integer orgId = userVo.getDefaultOrgId();
-//
-//		CaseTypeVo vo = json.getObject("model", CaseTypeVo.class);
-//
-//		TstCaseType po = typeService.save(vo, orgId);
-//		CaseTypeVo projectVo = typeService.genVo(po);
-//
-//		Map<String,Map<String,String>> casePropertyMap = propertyService.getMap(orgId);
-//		ret.put("casePropertyMap", casePropertyMap);
-//
-//        ret.put("data", projectVo);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
+		IsuType vo = json.getObject("model", IsuType.class);
+
+		IsuType po = typeService.save(vo, orgId);
+		if (po == null) {	// 当对象不是默认org的，update的结果会返回空
+			return authFail();
+		}
+
+		Map<String,Map<String,String>> casePropertyMap = issuePropertyService.getMap(orgId);
+		ret.put("casePropertyMap", casePropertyMap);
+
+		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
 		Integer id = json.getInteger("id");
 
-//		typeService.delete(id);
+		Boolean result = typeService.delete(id, orgId);
+		if (!result) { // 当对象不是默认org的，结果会返回false
+			return authFail();
+		}
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -115,36 +124,43 @@ public class IssueTypeAction extends BaseAction {
 	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//		Integer orgId = userVo.getDefaultOrgId();
-//		Integer id = json.getInteger("id");
-//
-//		boolean success = typeService.setDefault(id, orgId);
-//
-//		List<CaseTypeVo> vos = typeService.listVos(orgId);
-//
-//        ret.put("data", vos);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
+		Integer id = json.getInteger("id");
+
+		Boolean result = typeService.setDefault(id, orgId);
+		if (!result) { // 当对象不是默认org的，结果会返回false
+			return authFail();
+		}
+
+		List<IsuType> vos = typeService.list(orgId);
+
+		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;
 	}
-
 
 	@RequestMapping(value = "changeOrder", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//		Integer orgId = userVo.getDefaultOrgId();
-//		Integer id = json.getInteger("id");
-//		String act = json.getString("act");
-//
-//		boolean success = typeService.changeOrder(id, act, orgId);
-//
-//		List<CaseTypeVo> vos = typeService.listVos(orgId);
-//
-//        ret.put("data", vos);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
+
+		Integer id = json.getInteger("id");
+		String act = json.getString("act");
+
+		Boolean result = typeService.changeOrder(id, act, orgId);
+		if (!result) { // 当对象不是默认org的，结果会返回false
+			return authFail();
+		}
+
+		List<IsuType> vos = typeService.list(orgId);
+
+		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;

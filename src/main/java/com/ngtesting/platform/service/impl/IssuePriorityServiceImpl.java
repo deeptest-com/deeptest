@@ -1,117 +1,99 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.model.TstCasePriority;
+import com.ngtesting.platform.dao.IssuePriorityDao;
+import com.ngtesting.platform.model.IsuPriority;
 import com.ngtesting.platform.service.IssuePriorityService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 public class IssuePriorityServiceImpl extends BaseServiceImpl implements IssuePriorityService {
-	@Override
-	public List<TstCasePriority> list(Integer orgId) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstCasePriority.class);
-//
-//        dc.add(Restrictions.eq("orgId", orgId));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//
-//        dc.addOrder(Order.asc("displayOrder"));
-//        List ls = findAllByCriteria(dc);
-//
-//		return ls;
 
-		return null;
-	}
-	@Override
-	public List<TstCasePriority> listVos(Integer orgId) {
-//        List ls = list(orgId);
-//
-//        List<TstCasePriority> vos = genVos(ls);
-//		return vos;
+	@Autowired
+    IssuePriorityDao issuePriorityDao;
 
-		return null;
+	@Override
+	public List<IsuPriority> list(Integer orgId) {
+		List<IsuPriority> ls = issuePriorityDao.list(orgId);
+
+		return ls;
 	}
 
 	@Override
-	public TstCasePriority save(TstCasePriority vo, Integer orgId) {
-//		if (vo == null) {
-//			return null;
-//		}
-//
-//		TstCasePriority po;
-//		if (vo.getCode() != null) {
-//			po = (TstCasePriority) getDetail(TstCasePriority.class, vo.getCode());
-//		} else {
-//			po = new TstCasePriority();
-//		}
-//
-//		BeanUtilEx.copyProperties(po, vo);
-//
-//		po.setOrgId(orgId);
-//
-//		if (vo.getCode() == null) {
-//			po.setCode(UUID.randomUUID().toString());
-//
-//			String hql = "select max(displayOrder) from TstCasePriority pri where pri.orgId=?";
-//			Integer maxOrder = (Integer) getByHQL(hql, orgId);
-//	        po.setDisplayOrder(maxOrder + 10);
-//		}
-//
-//		saveOrUpdate(po);
-//		return po;
-
-		return null;
+	public IsuPriority get(Integer id, Integer orgId) {
+		return issuePriorityDao.get(id, orgId);
 	}
 
 	@Override
-	public boolean delete(Integer id) {
-//		TstCasePriority po = (TstCasePriority) getDetail(TstCasePriority.class, id);
-//		po.setDeleted(true);
-//		saveOrUpdate(po);
+	public IsuPriority save(IsuPriority vo, Integer orgId) {
+
+		if (vo.getId() == null) {
+			Integer maxOrder = issuePriorityDao.getMaxOrdrNumb(orgId);
+			if (maxOrder == null) {
+				maxOrder = 0;
+			}
+			vo.setOrdr(maxOrder + 10);
+
+			vo.setOrgId(orgId);
+			issuePriorityDao.save(vo);
+		} else {
+			Integer count = issuePriorityDao.update(vo);
+			if (count == 0) {
+				return null;
+			}
+		}
+
+		return vo;
+	}
+
+	@Override
+	public Boolean delete(Integer id, Integer orgId) {
+		Integer count = issuePriorityDao.delete(id, orgId);
+		if (count == 0) {
+			return false;
+		}
 
 		return true;
 	}
 
 	@Override
-	public boolean setDefaultPers(Integer id, Integer orgId) {
-//		List<TstCasePriority> ls = list(orgId);
-//		for (TstCasePriority priority : ls) {
-//			if (priority.getCode().longValue() == id.longValue()) {
-//				priority.setIsDefault(true);
-//				saveOrUpdate(priority);
-//			} else if (priority.getIsDefault() != null && priority.getIsDefault()) {
-//				priority.setIsDefault(false);
-//				saveOrUpdate(priority);
-//			}
-//		}
+	@Transactional
+	public Boolean setDefault(Integer id, Integer orgId) {
+		issuePriorityDao.removeDefault(orgId);
 
+		Integer count = issuePriorityDao.setDefault(id, orgId);
+		if (count == 0) {
+			return false;
+		}
 		return true;
 	}
 
 	@Override
-	public boolean changeOrderPers(Integer id, String act, Integer orgId) {
-//		TstCasePriority type = (TstCasePriority) getDetail(TstCasePriority.class, id);
-//
-//        String hql = "from TstCasePriority tp where where tp.orgId=? and tp.deleted = false and tp.disabled = false ";
-//        if ("up".equals(act)) {
-//        	hql += "and tp.displayOrder < ? order by displayOrder desc";
-//        } else if ("down".equals(act)) {
-//        	hql += "and tp.displayOrder > ? order by displayOrder asc";
-//        } else {
-//        	return false;
-//        }
-//
-//        TstCasePriority neighbor = (TstCasePriority) getDao().findFirstByHQL(hql, orgId, type.getDisplayOrder());
-//
-//        Integer order = type.getDisplayOrder();
-//        type.setDisplayOrder(neighbor.getDisplayOrder());
-//        neighbor.setDisplayOrder(order);
-//
-//        saveOrUpdate(type);
-//        saveOrUpdate(neighbor);
+	@Transactional
+	public Boolean changeOrder(Integer id, String act, Integer orgId) {
+		IsuPriority curr = issuePriorityDao.get(id, orgId);
+		if (curr == null) {
+			return false;
+		}
+
+		IsuPriority neighbor = null;
+		if ("up".equals(act)) {
+			neighbor = issuePriorityDao.getPrev(curr.getOrdr(), orgId);
+		} else if ("down".equals(act)) {
+			neighbor = issuePriorityDao.getNext(curr.getOrdr(), orgId);
+		}
+		if (neighbor == null) {
+			return false;
+		}
+
+		Integer currOrder = curr.getOrdr();
+		Integer neighborOrder = neighbor.getOrdr();
+		issuePriorityDao.setOrder(id, neighborOrder, orgId);
+		issuePriorityDao.setOrder(neighbor.getId(), currOrder, orgId);
 
 		return true;
 	}
-
 }

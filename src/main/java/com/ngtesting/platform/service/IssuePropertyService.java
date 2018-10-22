@@ -4,12 +4,13 @@ import java.util.Map;
 
 public interface IssuePropertyService extends BaseService {
 
+	Map<String,Map<String,String>> getMap(Integer orgId);
 
-	Map<String,Map<String,String>> getMap(Long orgId);
+	Map<String,String> getPriorityMap(Integer orgId);
 
-	Map<String,String> getPriorityMap(Long orgId);
+	Map<String,String> getTypeMap(Integer orgId);
 
-	Map<String,String> getTypeMap(Long orgId);
+	Map<String,String> getStatusMap(Integer orgId);
 
-	Map<String,String> getExeStatusMap(Long orgId);
+	Map<String,String> getResolutionsMap(Integer orgId);
 }

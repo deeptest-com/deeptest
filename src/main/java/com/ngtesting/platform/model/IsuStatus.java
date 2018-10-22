@@ -4,14 +4,24 @@ public class IsuStatus extends BaseModel {
 
 	private static final long serialVersionUID = 1657004478821957505L;
 	private String label;
-	private String code;
+	private String value;
     private String descr;
-    private Integer displayOrder;
+    private Integer ordr;
+
+    private Boolean isDefault = false;
     private Boolean isFinal;
     private Boolean isBuildIn = false;
     private Integer orgId;
 
-	public String getLabel() {
+    public Boolean getDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(Boolean aDefault) {
+        isDefault = aDefault;
+    }
+
+    public String getLabel() {
 		return label;
 	}
 
@@ -19,15 +29,15 @@ public class IsuStatus extends BaseModel {
 		this.label = label;
 	}
 
-	public String getCode() {
-		return code;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-	public Boolean getFinal() {
+    public Boolean getFinal() {
 		return isFinal;
 	}
 
@@ -49,12 +59,15 @@ public class IsuStatus extends BaseModel {
 	public void setDescr(String descr) {
 		this.descr = descr;
 	}
-	public Integer getDisplayOrder() {
-		return displayOrder;
+
+	public Integer getOrdr() {
+		return ordr;
 	}
-	public void setDisplayOrder(Integer displayOrder) {
-		this.displayOrder = displayOrder;
+
+	public void setOrdr(Integer ordr) {
+		this.ordr = ordr;
 	}
+
 	public Boolean getIsFinal() {
 		return isFinal;
 	}

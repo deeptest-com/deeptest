@@ -3,6 +3,9 @@ package com.ngtesting.platform.action.admin;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.model.IsuStatus;
+import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.IssuePropertyService;
 import com.ngtesting.platform.service.IssueStatusService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -24,20 +28,22 @@ public class IssueStatusAction extends BaseAction {
 	private static final Log log = LogFactory.getLog(IssueStatusAction.class);
 
 	@Autowired
-    IssueStatusService statusService;
+	IssueStatusService issueStatusService;
 
+	@Autowired
+	IssuePropertyService issuePropertyService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//		Integer orgId = userVo.getDefaultOrgId();
-//
-//		List<CaseExeStatusVo> vos = statusService.listVos(orgId);
-//
-//        ret.put("data", vos);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
+		List<IsuStatus> vos = issueStatusService.list(orgId);
+
+		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;
@@ -49,72 +55,111 @@ public class IssueStatusAction extends BaseAction {
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//
-//		Integer id = json.getInteger("id");
-//		if (id == null) {
-//			ret.put("data", new CaseExeStatusVo());
-//			ret.put("code", Constant.RespCode.SUCCESS.getCode());
-//			return ret;
-//		}
-//
-//		TstCaseExeStatus po = (TstCaseExeStatus) statusService.getDetail(TstCaseExeStatus.class, id);
-//		CaseExeStatusVo vo = statusService.genVo(po);
-//		ret.put("data", vo);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
 
+		Integer id = json.getInteger("id");
+		IsuStatus po;
+		if (id == null) {
+			po = new IsuStatus();
+		} else {
+			po = issueStatusService.get(id, orgId);
+		}
+
+		if (po == null) { // 当对象不是默认org的，此处为空
+			return authFail();
+		}
+
+		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//		Integer orgId = userVo.getDefaultOrgId();
-//
-//		CaseExeStatusVo vo = json.getObject("model", CaseExeStatusVo.class);
-//
-//		TstCaseExeStatus po = statusService.save(vo, orgId);
-//		CaseExeStatusVo projectVo = statusService.genVo(po);
-//
-//        ret.put("data", projectVo);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
+		IsuStatus vo = json.getObject("model", IsuStatus.class);
+
+		IsuStatus po = issueStatusService.save(vo, orgId);
+		if (po == null) {    // 当对象不是默认org的，update的结果会返回空
+			return authFail();
+		}
+
+		Map<String, Map<String, String>> casePropertyMap = issuePropertyService.getMap(orgId);
+		ret.put("casePropertyMap", casePropertyMap);
+
+		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
 		Integer id = json.getInteger("id");
 
-//		statusService.delete(id);
+		Boolean result = issueStatusService.delete(id, orgId);
+		if (!result) { // 当对象不是默认org的，结果会返回false
+			return authFail();
+		}
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
 
 
+	@RequestMapping(value = "setDefault", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
+		Integer id = json.getInteger("id");
+
+		Boolean result = issueStatusService.setDefault(id, orgId);
+		if (!result) { // 当对象不是默认org的，结果会返回false
+			return authFail();
+		}
+
+		List<IsuStatus> vos = issueStatusService.list(orgId);
+
+		ret.put("data", vos);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+
+		return ret;
+	}
+
 	@RequestMapping(value = "changeOrder", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//		Integer orgId = userVo.getDefaultOrgId();
-//		Integer id = json.getInteger("id");
-//		String act = json.getString("act");
-//
-//		boolean success = statusService.changeOrder(id, act);
-//
-//		List<CaseExeStatusVo> vos = statusService.listVos(orgId);
-//
-//        ret.put("data", vos);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
+
+		Integer id = json.getInteger("id");
+		String act = json.getString("act");
+
+		Boolean result = issueStatusService.changeOrder(id, act, orgId);
+		if (!result) { // 当对象不是默认org的，结果会返回false
+			return authFail();
+		}
+
+		List<IsuStatus> vos = issueStatusService.list(orgId);
+
+		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;

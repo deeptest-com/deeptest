@@ -4,28 +4,12 @@ public class IsuResolution extends BaseModel {
 	private static final long serialVersionUID = 4118180732729567467L;
 
 	private String label;
-	private String code;
+	private String value;
 
 	private String descr;
-    private Boolean isDefault;
-    private Integer displayOrder;
-    private Integer orgId;
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public Boolean getDefault() {
-		return isDefault;
-	}
-
-	public void setDefault(Boolean aDefault) {
-		isDefault = aDefault;
-	}
+	private Boolean isDefault;
+	private Integer ordr;
+	private Integer orgId;
 
 	public String getLabel() {
 		return label;
@@ -35,18 +19,30 @@ public class IsuResolution extends BaseModel {
 		this.label = label;
 	}
 
-	public Boolean getIsDefault() {
-		return isDefault;
+	public String getValue() {
+		return value;
 	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	public Boolean getIsDefault() {
+		return this.isDefault;
+	}
+
 	public void setIsDefault(Boolean isDefault) {
 		this.isDefault = isDefault;
 	}
-	public Integer getDisplayOrder() {
-		return displayOrder;
+
+	public Integer getOrdr() {
+		return ordr;
 	}
-	public void setDisplayOrder(Integer displayOrder) {
-		this.displayOrder = displayOrder;
+
+	public void setOrdr(Integer ordr) {
+		this.ordr = ordr;
 	}
+
 	public Integer getOrgId() {
 		return orgId;
 	}

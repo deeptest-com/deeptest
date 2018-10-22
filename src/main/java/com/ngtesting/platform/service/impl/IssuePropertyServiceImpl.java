@@ -1,87 +1,88 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.dao.IssuePriorityDao;
+import com.ngtesting.platform.dao.IssueResolutionDao;
+import com.ngtesting.platform.dao.IssueStatusDao;
+import com.ngtesting.platform.dao.IssueTypeDao;
+import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.IssuePropertyService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class IssuePropertyServiceImpl extends BaseServiceImpl implements IssuePropertyService {
+	@Autowired
+	IssuePriorityDao issuePriorityDao;
+
+	@Autowired
+	IssueTypeDao issueTypeDao;
+
+	@Autowired
+	IssueStatusDao issueStatusDao;
+
+	@Autowired
+	IssueResolutionDao issueResolutionDao;
+
 	@Override
-	public Map<String,Map<String,String>> getMap(Long orgId) {
-		Map<String,String> priorityMap = getPriorityMap(orgId);
+	public Map<String,Map<String,String>> getMap(Integer orgId) {
 		Map<String,String> typeMap = getTypeMap(orgId);
-		Map<String,String> exeStatusMap = getExeStatusMap(orgId);
+		Map<String,String> priorityMap = getPriorityMap(orgId);
+		Map<String,String> exeStatusMap = getStatusMap(orgId);
 
 		Map map = new LinkedHashMap();
-		map.put("priority", priorityMap);
 		map.put("type", typeMap);
+		map.put("priority", priorityMap);
 		map.put("status", exeStatusMap);
 
 		return map;
 	}
 
 	@Override
-	public Map<String,String> getPriorityMap(Long orgId) {
-//		DetachedCriteria dc = DetachedCriteria.forClass(TestCasePriority.class);
-//
-//		dc.add(Restrictions.eq("orgId", orgId));
-//		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//
-//		dc.addOrder(Order.asc("displayOrder"));
-//		List<TestCasePriority> ls = findAllByCriteria(dc);
-//
-//		Map<String,String> map = new LinkedHashMap();
-//		for (TestCasePriority item : ls) {
-//			map.put(item.getCode(), item.getName());
-//		}
-//
-//		return map;
+	public Map<String,String> getPriorityMap(Integer orgId) {
+		List<IsuPriority> ls = issuePriorityDao.list(orgId);
 
-		return null;
+		Map<String,String> map = new LinkedHashMap();
+		for (IsuPriority item : ls) {
+			map.put(item.getValue(), item.getLabel());
+		}
+
+		return map;
 	}
 
 	@Override
-	public Map<String,String> getTypeMap(Long orgId) {
-//		DetachedCriteria dc = DetachedCriteria.forClass(TestCaseType.class);
-//
-//		dc.add(Restrictions.eq("orgId", orgId));
-//		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//
-//		dc.addOrder(Order.asc("displayOrder"));
-//		List<TestCaseType> ls = findAllByCriteria(dc);
-//
-//		Map<String,String> map = new LinkedHashMap();
-//		for (TestCaseType item : ls) {
-//			map.put(item.getCode(), item.getName());
-//		}
-//
-//		return map;
+	public Map<String,String> getTypeMap(Integer orgId) {
+		List<IsuType> ls = issueTypeDao.list(orgId);
+		Map<String,String> map = new LinkedHashMap();
+		for (IsuType item : ls) {
+			map.put(item.getValue(), item.getLabel());
+		}
 
-		return null;
+		return map;
 	}
 
 	@Override
-	public Map<String,String> getExeStatusMap(Long orgId) {
-//		DetachedCriteria dc = DetachedCriteria.forClass(TestCaseExeStatus.class);
-//
-//		dc.add(Restrictions.eq("orgId", orgId));
-//		dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//		dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//
-//		dc.addOrder(Order.asc("displayOrder"));
-//		List<TestCaseExeStatus> ls = findAllByCriteria(dc);
-//
-//		Map<String,String> map = new LinkedHashMap();
-//		for (TestCaseExeStatus item : ls) {
-//			map.put(item.getCode(), item.getName());
-//		}
-//
-//		return map;
+	public Map<String,String> getStatusMap(Integer orgId) {
+		List<IsuStatus> ls = issueStatusDao.list(orgId);
+		Map<String,String> map = new LinkedHashMap();
+		for (IsuStatus item : ls) {
+			map.put(item.getValue(), item.getLabel());
+		}
 
-		return null;
+		return map;
+	}
+
+	@Override
+	public Map<String, String> getResolutionsMap(Integer orgId) {
+		List<IsuResolution> ls = issueResolutionDao.list(orgId);
+		Map<String,String> map = new LinkedHashMap();
+		for (IsuResolution item : ls) {
+			map.put(item.getValue(), item.getLabel());
+		}
+
+		return map;
 	}
 }

@@ -3,10 +3,11 @@ package com.ngtesting.platform.action.admin;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.TstCasePriority;
+import com.ngtesting.platform.model.IsuPriority;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.CasePriorityService;
-import com.ngtesting.platform.service.CasePropertyService;
+import com.ngtesting.platform.service.IssuePriorityService;
+import com.ngtesting.platform.service.IssuePropertyService;
+import com.ngtesting.platform.service.IssueTypeService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +29,10 @@ public class IssuePriorityAction extends BaseAction {
 	private static final Log log = LogFactory.getLog(CasePriorityAdmin.class);
 
 	@Autowired
-    CasePriorityService casePriorityService;
+	IssuePriorityService issuePriorityService;
 
 	@Autowired
-    CasePropertyService casePropertyService;
+	IssuePropertyService issuePropertyService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
@@ -41,13 +42,14 @@ public class IssuePriorityAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		List<TstCasePriority> vos = casePriorityService.list(orgId);
+		List<IsuPriority> vos = issuePriorityService.list(orgId);
 
-        ret.put("data", vos);
+		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;
 	}
+
 
 	@RequestMapping(value = "get", method = RequestMethod.POST)
 	@ResponseBody
@@ -55,18 +57,21 @@ public class IssuePriorityAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
+		IsuPriority po;
 		if (id == null) {
-			ret.put("data", new TstCasePriority());
-			ret.put("code", Constant.RespCode.SUCCESS.getCode());
-			return ret;
+			po = new IsuPriority();
+		} else {
+			po = issuePriorityService.get(id, orgId);
 		}
 
-//		TstCasePriority po = (TstCasePriority) casePriorityService.getDetail(TstCasePriority.class, id);
-//		TstCasePriority vo = casePriorityService.genVo(po);
-//		ret.put("data", vo);
+		if (po == null) { // 当对象不是默认org的，此处为空
+			return authFail();
+		}
 
+		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -79,15 +84,17 @@ public class IssuePriorityAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-//		CasePriorityVo vo = json.getObject("model", CasePriorityVo.class);
-//
-//		TstCasePriority po = casePriorityService.save(vo, orgId);
-//		CasePriorityVo projectVo = casePriorityService.genVo(po);
+		IsuPriority vo = json.getObject("model", IsuPriority.class);
 
-		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
+		IsuPriority po = issuePriorityService.save(vo, orgId);
+		if (po == null) {    // 当对象不是默认org的，update的结果会返回空
+			return authFail();
+		}
+
+		Map<String, Map<String, String>> casePropertyMap = issuePropertyService.getMap(orgId);
 		ret.put("casePropertyMap", casePropertyMap);
 
-//        ret.put("data", projectVo);
+		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -97,13 +104,20 @@ public class IssuePriorityAction extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-//		Integer id = json.getInteger("id");
-//
-//		casePriorityService.delete(id, orgId);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
+		Integer id = json.getInteger("id");
+
+		Boolean result = issuePriorityService.delete(id, orgId);
+		if (!result) { // 当对象不是默认org的，结果会返回false
+			return authFail();
+		}
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+
 
 	@RequestMapping(value = "setDefault", method = RequestMethod.POST)
 	@ResponseBody
@@ -112,12 +126,17 @@ public class IssuePriorityAction extends BaseAction {
 
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
+
 		Integer id = json.getInteger("id");
 
-		boolean success = casePriorityService.setDefault(id, orgId);
-//		List<CasePriorityVo> vos = casePriorityService.listVos(orgId);
-//
-//        ret.put("data", vos);
+		Boolean result = issuePriorityService.setDefault(id, orgId);
+		if (!result) { // 当对象不是默认org的，结果会返回false
+			return authFail();
+		}
+
+		List<IsuPriority> vos = issuePriorityService.list(orgId);
+
+		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;
@@ -128,16 +147,20 @@ public class IssuePriorityAction extends BaseAction {
 	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
+
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-		boolean success = casePriorityService.changeOrder(id, act, orgId);
+		Boolean result = issuePriorityService.changeOrder(id, act, orgId);
+		if (!result) { // 当对象不是默认org的，结果会返回false
+			return authFail();
+		}
 
-//		List<CasePriorityVo> vos = casePriorityService.listVos(orgId);
-//
-//        ret.put("data", vos);
+		List<IsuPriority> vos = issuePriorityService.list(orgId);
+
+		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;

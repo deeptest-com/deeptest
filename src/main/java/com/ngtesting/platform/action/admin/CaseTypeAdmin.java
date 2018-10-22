@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 
 @Controller
@@ -62,7 +61,6 @@ public class CaseTypeAdmin extends BaseAction {
 		TstCaseType po;
 		if (id == null) {
 			po = new TstCaseType();
-            po.setValue(UUID.randomUUID().toString());
 		} else {
 			po = caseTypeService.get(id, orgId);
 		}

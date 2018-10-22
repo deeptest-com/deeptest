@@ -4,8 +4,8 @@
 
     <select id="list" resultType="IsuPriority">
         SELECT * FROM IsuPriority o
-
         WHERE o.orgId=#{orgId}
+
         AND o.disabled!=TRUE AND o.deleted!=TRUE
         ORDER BY ordr ASC
     </select>

@@ -7,7 +7,7 @@ public class TstCaseExeStatus extends BaseModel {
 	private String value;
 
     private String descr;
-    private Integer displayOrder;
+    private Integer ordr;
     private Boolean isFinal;
     private Boolean isBuildIn = false;
     private Integer orgId;
@@ -34,12 +34,31 @@ public class TstCaseExeStatus extends BaseModel {
 	public void setDescr(String descr) {
 		this.descr = descr;
 	}
-	public Integer getDisplayOrder() {
-		return displayOrder;
+
+	public Integer getOrdr() {
+		return ordr;
 	}
-	public void setDisplayOrder(Integer displayOrder) {
-		this.displayOrder = displayOrder;
+
+	public void setOrdr(Integer ordr) {
+		this.ordr = ordr;
 	}
+
+	public Boolean getFinal() {
+		return isFinal;
+	}
+
+	public void setFinal(Boolean aFinal) {
+		isFinal = aFinal;
+	}
+
+	public Boolean getBuildIn() {
+		return isBuildIn;
+	}
+
+	public void setBuildIn(Boolean buildIn) {
+		isBuildIn = buildIn;
+	}
+
 	public Boolean getIsFinal() {
 		return isFinal;
 	}

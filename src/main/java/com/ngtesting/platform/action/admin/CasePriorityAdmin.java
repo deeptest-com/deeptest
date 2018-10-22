@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 
 @Controller
@@ -61,7 +60,6 @@ public class CasePriorityAdmin extends BaseAction {
 		TstCasePriority po;
 		if (id == null) {
 			po = new TstCasePriority();
-			po.setValue(UUID.randomUUID().toString());
 		} else {
 			po = casePriorityService.get(id, orgId);
 		}

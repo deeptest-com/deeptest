@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.IssueTypeDao" >
+
+    <select id="list" resultType="IsuType">
+        SELECT * FROM IsuType o
+        WHERE o.orgId=#{orgId}
+
+        AND o.disabled!=TRUE AND o.deleted!=TRUE
+        ORDER BY ordr ASC
+    </select>
+
+    <select id="get" resultType="IsuType">
+        SELECT * FROM IsuType o
+
+        WHERE o.id = #{id}
+        <if test="orgId != null">
+            AND o.orgId=#{orgId}
+        </if>
+    </select>
+
+    <insert id="save" parameterType="IsuType" useGeneratedKeys="true" keyProperty="id">
+        insert into IsuType
+        (label,value,descr,orgId,ordr,isDefault,deleted,disabled,createTime)
+        values
+        (#{label},#{value},#{descr},#{orgId},#{ordr},#{isDefault},FALSE,FALSE,NOW())
+    </insert>
+
+    <update id="update" parameterType="IsuType">
+        UPDATE IsuType
+        SET label=#{label},value=#{value},descr=#{descr},
+        disabled=#{disabled},
+        updateTime=NOW()
+
+        WHERE id=#{id} AND orgId=#{orgId}
+    </update>
+
+    <delete id="delete">
+        UPDATE IsuType
+        SET disabled=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND orgId=#{orgId}
+    </delete>
+
+    <update id="removeDefault">
+        UPDATE IsuType
+        SET isDefault=FALSE, updateTime=NOW()
+        WHERE orgId=#{orgId}
+    </update>
+    <update id="setDefault">
+        UPDATE IsuType
+        SET isDefault=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND orgId=#{orgId}
+    </update>
+
+    <update id="setOrder">
+        UPDATE IsuType
+        SET ordr=#{ordr}, updateTime=NOW()
+        WHERE id=#{id} AND orgId=#{orgId}
+    </update>
+
+    <select id="getPrev" resultType="IsuType">
+        <![CDATA[
+            SELECT * FROM IsuType o
+            WHERE o.ordr < #{ordr} AND o.orgId = #{orgId}
+            AND o.deleted != TRUE
+            ORDER BY o.ordr DESC LIMIT 1
+        ]]>
+    </select>
+
+    <select id="getNext" resultType="IsuType">
+        <![CDATA[
+            SELECT * FROM IsuType o
+            WHERE o.ordr > #{ordr} AND o.orgId = #{orgId}
+            AND o.deleted != TRUE
+            ORDER BY o.ordr ASC LIMIT 1
+        ]]>
+    </select>
+
+    <select id="getMaxOrdrNumb" resultType="Integer">
+        select max(ordr) from IsuType o
+        where o.orgId=#{orgId}
+        and o.deleted != true
+        and o.disabled != true
+    </select>
+
+</mapper>

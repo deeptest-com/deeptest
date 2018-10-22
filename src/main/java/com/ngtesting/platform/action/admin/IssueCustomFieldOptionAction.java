@@ -1,4 +1,4 @@
-package com.ngtesting.platform.action.client;
+package com.ngtesting.platform.action.admin;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "issue_custom_field_option/")
+@RequestMapping(Constant.API_PATH_ADMIN + "issue_custom_field_option/")
 public class IssueCustomFieldOptionAction extends BaseAction {
 	@Autowired
     IssueCustomFieldOptionService customFieldOptionService;

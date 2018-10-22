@@ -1,9 +1,10 @@
-package com.ngtesting.platform.action.client;
+package com.ngtesting.platform.action.admin;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
-import com.ngtesting.platform.action.admin.CaseTypeAdmin;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.model.IsuType;
+import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.IssuePropertyService;
 import com.ngtesting.platform.service.IssueTypeService;
 import org.apache.commons.logging.Log;
@@ -17,11 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "issue_type/")
+@RequestMapping(Constant.API_PATH_ADMIN + "issue_type/")
 public class IssueTypeAction extends BaseAction {
 	private static final Log log = LogFactory.getLog(CaseTypeAdmin.class);
 
@@ -37,14 +39,12 @@ public class IssueTypeAction extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//		Integer orgId = userVo.getDefaultOrgId();
-//
-//		List<CaseTypeVo> vos = typeService.listVos(orgId);
-//
-//		Map<String,Map<String,String>> casePropertyMap = propertyService.getMap(orgId);
-//
-//        ret.put("data", vos);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
+		List<IsuType> vos = typeService.list(orgId);
+
+        ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;

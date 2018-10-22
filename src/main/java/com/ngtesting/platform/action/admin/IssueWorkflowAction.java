@@ -1,9 +1,10 @@
-package com.ngtesting.platform.action.client;
+package com.ngtesting.platform.action.admin;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.service.IssueStatusService;
+import com.ngtesting.platform.service.CasePropertyService;
+import com.ngtesting.platform.service.IssueWorkflowService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,15 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "issue_status/")
-public class IssueStatusAction extends BaseAction {
-	private static final Log log = LogFactory.getLog(IssueStatusAction.class);
+@RequestMapping(Constant.API_PATH_ADMIN + "issue_workflow/")
+public class IssueWorkflowAction extends BaseAction {
+	private static final Log log = LogFactory.getLog(CaseTypeAdmin.class);
 
 	@Autowired
-    IssueStatusService statusService;
+    IssueWorkflowService issueWorkflowService;
 
+	@Autowired
+    CasePropertyService casePropertyService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
@@ -35,14 +38,15 @@ public class IssueStatusAction extends BaseAction {
 //		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 //		Integer orgId = userVo.getDefaultOrgId();
 //
-//		List<CaseExeStatusVo> vos = statusService.listVos(orgId);
+//		List<CaseTypeVo> vos = issueWorkflowService.listVos(orgId);
+//
+//		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
 //
 //        ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;
 	}
-
 
 	@RequestMapping(value = "get", method = RequestMethod.POST)
 	@ResponseBody
@@ -53,19 +57,18 @@ public class IssueStatusAction extends BaseAction {
 //
 //		Integer id = json.getInteger("id");
 //		if (id == null) {
-//			ret.put("data", new CaseExeStatusVo());
+//			ret.put("data", new CaseTypeVo());
 //			ret.put("code", Constant.RespCode.SUCCESS.getCode());
 //			return ret;
 //		}
 //
-//		TstCaseExeStatus po = (TstCaseExeStatus) statusService.getDetail(TstCaseExeStatus.class, id);
-//		CaseExeStatusVo vo = statusService.genVo(po);
+//		TstCaseType po = (TstCaseType) issueWorkflowService.getDetail(TstCaseType.class, id);
+//		CaseTypeVo vo = issueWorkflowService.genVo(po);
 //		ret.put("data", vo);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
@@ -75,16 +78,18 @@ public class IssueStatusAction extends BaseAction {
 //		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
 //		Integer orgId = userVo.getDefaultOrgId();
 //
-//		CaseExeStatusVo vo = json.getObject("model", CaseExeStatusVo.class);
+//		CaseTypeVo vo = json.getObject("model", CaseTypeVo.class);
 //
-//		TstCaseExeStatus po = statusService.save(vo, orgId);
-//		CaseExeStatusVo projectVo = statusService.genVo(po);
+//		TstCaseType po = issueWorkflowService.save(vo, orgId);
+//		CaseTypeVo projectVo = issueWorkflowService.genVo(po);
+//
+//		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
+//		ret.put("casePropertyMap", casePropertyMap);
 //
 //        ret.put("data", projectVo);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
-
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
@@ -93,12 +98,30 @@ public class IssueStatusAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-//		statusService.delete(id);
+//		issueWorkflowService.delete(id);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
 
+	@RequestMapping(value = "setDefault", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
+//		Integer orgId = userVo.getDefaultOrgId();
+//		Integer id = json.getInteger("id");
+//
+//		boolean success = issueWorkflowService.setDefault(id, orgId);
+//
+//		List<CaseTypeVo> vos = issueWorkflowService.listVos(orgId);
+//
+//        ret.put("data", vos);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+
+		return ret;
+	}
 
 	@RequestMapping(value = "changeOrder", method = RequestMethod.POST)
 	@ResponseBody
@@ -110,13 +133,14 @@ public class IssueStatusAction extends BaseAction {
 //		Integer id = json.getInteger("id");
 //		String act = json.getString("act");
 //
-//		boolean success = statusService.changeOrder(id, act);
+//		boolean success = issueWorkflowService.changeOrder(id, act, orgId);
 //
-//		List<CaseExeStatusVo> vos = statusService.listVos(orgId);
+//		List<CaseTypeVo> vos = issueWorkflowService.listVos(orgId);
 //
 //        ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;
 	}
+
 }

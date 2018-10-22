@@ -22,6 +22,13 @@ public class IssueStatusServiceImpl extends BaseServiceImpl implements IssueStat
     }
 
     @Override
+    public List<IsuStatus> list(Integer orgId, Integer prjId) {
+        List<IsuStatus> ls = issueStatusDao.list(orgId);
+
+        return ls;
+    }
+
+    @Override
     public IsuStatus get(Integer id, Integer orgId) {
         return issueStatusDao.get(id, orgId);
     }

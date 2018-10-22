@@ -9,6 +9,8 @@ public interface IssueTypeService extends BaseService {
 
     List<IsuType> list(Integer orgId);
 
+    List<IsuType> list(Integer orgId, Integer prjId);
+
     IsuType get(Integer id, Integer orgId);
 
     IsuType save(IsuType vo, Integer orgId);

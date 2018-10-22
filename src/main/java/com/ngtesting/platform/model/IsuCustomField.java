@@ -14,7 +14,7 @@ public class IsuCustomField extends BaseModel {
     private String applyTo;
     private String type;
 
-	private List<TstCustomFieldOption> optionVos = new LinkedList<>();
+	private List<IsuCustomFieldOption> options = new LinkedList<>();
 
     private Integer rows = 3;
 
@@ -24,13 +24,59 @@ public class IsuCustomField extends BaseModel {
     private Boolean buildIn = false;
 
     private Integer ordr;
+    private Integer orgId;
 
-    public List<TstCustomFieldOption> getOptionVos() {
-        return optionVos;
+	public static enum FieldType {
+		string("string"),
+		number("number"),
+		dropdown("dropdown"),
+		text("text");
+
+//    	url("url"),
+//
+//    	radio("radio"),
+//    	checkbox("checkbox"),
+//
+//
+//    	multi_select("multi_select"),
+//
+//    	date("date"),
+//
+//    	user("user"),
+//    	version("version"),
+//    	step("step"),
+//    	result("result");
+
+		private FieldType(String textVal) {
+			this.textVal = textVal;
+		}
+
+		private String textVal;
+		public String toString() {
+			return textVal;
+		}
+	}
+
+    public static enum FieldFormat {
+        plain_text("plain_text");
+//        rich_text("rich_text");
+
+        private FieldFormat(String textVal) {
+            this.textVal = textVal;
+        }
+
+        private String textVal;
+        public String toString() {
+            return textVal;
+        }
     }
 
-    public void setOptionVos(List<TstCustomFieldOption> optionVos) {
-        this.optionVos = optionVos;
+    public List<IsuCustomFieldOption> getOptions() {
+        return options;
+    }
+
+    public void setOptions(List<IsuCustomFieldOption> options) {
+        this.options = options;
     }
 
     public Boolean getRequired() {
@@ -129,5 +175,11 @@ public class IsuCustomField extends BaseModel {
 		this.ordr = ordr;
 	}
 
+    public Integer getOrgId() {
+        return orgId;
+    }
 
+    public void setOrgId(Integer orgId) {
+        this.orgId = orgId;
+    }
 }

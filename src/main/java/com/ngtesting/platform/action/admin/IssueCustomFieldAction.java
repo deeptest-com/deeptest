@@ -4,8 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.TstCustomField;
-import com.ngtesting.platform.model.TstProject;
+import com.ngtesting.platform.model.IsuCustomField;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.IssueCustomFieldService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,7 @@ public class IssueCustomFieldAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		List<TstCustomField> vos = customFieldService.listVos(orgId);
+		List<IsuCustomField> vos = customFieldService.list(orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		ret.put("data", vos);
@@ -52,13 +51,11 @@ public class IssueCustomFieldAction extends BaseAction {
 
 		Integer customFieldId = json.getInteger("id");
 
-		TstCustomField vo = null;
+		IsuCustomField vo = null;
 		if (customFieldId == null) {
-			vo = new TstCustomField();
-			vo.setMyColumn(customFieldService.getLastUnusedColumn(orgId));
-//			vo.setCode(UUID.randomUUID().toString());
+			vo = new IsuCustomField();
 		} else {
-			vo = customFieldService.get(customFieldId);
+			vo = customFieldService.get(customFieldId, orgId);
 		}
 
 		if (vo.getMyColumn() == null) {
@@ -66,16 +63,12 @@ public class IssueCustomFieldAction extends BaseAction {
             ret.put("msg", "自定义字段不能超过20个");
         }
 
-		List<String> applyToList = customFieldService.listApplyTo();
 		List<String> typeList = customFieldService.listType();
 		List<String> formatList = customFieldService.listFormat();
-		List<TstProject> projectList = customFieldService.listProjectsForField(orgId, customFieldId);
 
         ret.put("data", vo);
-        ret.put("applyToList", applyToList);
         ret.put("typeList", typeList);
         ret.put("formatList", formatList);
-        ret.put("projects", projectList);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -89,10 +82,10 @@ public class IssueCustomFieldAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		TstCustomField customField = JSON.parseObject(JSON.toJSONString(json.get("model")), TstCustomField.class);
+		IsuCustomField customField = JSON.parseObject(JSON.toJSONString(json.get("model")), IsuCustomField.class);
 //		List<TestProjectVo> projects = (List<TestProjectVo>) json.getDetail("relations");
 //
-//		TstCustomField po = customFieldService.save(customField, orgId);
+//		IsuCustomField po = customFieldService.save(customField, orgId);
 //		boolean success = customFieldService.saveRelationsByField(po.getCode(), projects);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -104,9 +97,12 @@ public class IssueCustomFieldAction extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
 		Integer id = json.getInteger("id");
 
-		boolean success = customFieldService.delete(id);
+		boolean success = customFieldService.delete(id, orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -122,9 +118,9 @@ public class IssueCustomFieldAction extends BaseAction {
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-		boolean success = customFieldService.changeOrderPers(id, act);
+		boolean success = customFieldService.changeOrderPers(id, act, orgId);
 
-		List<TstCustomField> vos = customFieldService.listVos(orgId);
+		List<IsuCustomField> vos = customFieldService.list(orgId);
 
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

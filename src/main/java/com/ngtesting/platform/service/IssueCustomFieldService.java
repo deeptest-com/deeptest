@@ -1,38 +1,26 @@
 package com.ngtesting.platform.service;
 
-import com.ngtesting.platform.model.TstCustomField;
-import com.ngtesting.platform.model.TstProject;
+import com.ngtesting.platform.model.IsuCustomField;
 
 import java.util.List;
 
 public interface IssueCustomFieldService extends BaseService {
-	List<TstCustomField> list(Integer orgId);
-	List<TstCustomField> listForCaseByOrg(Integer orgId);
-    List<TstCustomField> listForCaseByProject(Integer orgId, Integer projectId);
 
-	TstCustomField save(TstCustomField vo, Integer orgId);
-	boolean delete(Integer id);
+    List<IsuCustomField> list(Integer orgId);
 
-	List<TstCustomField> genVos(List<TstCustomField> pos);
-	TstCustomField genVo(TstCustomField po);
+    List<IsuCustomField> list(Integer orgId, Integer projectId);
 
-	List<TstCustomField> listVos(Integer orgId);
+    IsuCustomField get(Integer id, Integer orgId);
 
-	List<String> listApplyTo();
+    IsuCustomField save(IsuCustomField vo, Integer orgId);
 
-	List<String> listType();
+    Boolean delete(Integer id, Integer orgId);
 
-	List<String> listFormat();
-
-	boolean changeOrderPers(Integer id, String act);
-
-	List<TstProject> listProjectsForField(Integer orgId, Integer fieldId);
-
-	boolean saveRelationsProjects(Integer id, List<TstProject> projects);
-
-	void initPo(TstCustomField po, TstCustomField vo);
+    Boolean changeOrderPers(Integer id, String act, Integer orgId);
 
     String getLastUnusedColumn(Integer orgId);
 
-    TstCustomField get(Integer customFieldId);
+    List<String> listType();
+
+    List<String> listFormat();
 }

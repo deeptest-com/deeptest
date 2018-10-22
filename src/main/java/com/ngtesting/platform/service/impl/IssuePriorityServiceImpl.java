@@ -22,6 +22,13 @@ public class IssuePriorityServiceImpl extends BaseServiceImpl implements IssuePr
 		return ls;
 	}
 
+    @Override
+    public List<IsuPriority> list(Integer orgId, Integer prjId) {
+        List<IsuPriority> ls = issuePriorityDao.list(orgId);
+
+        return ls;
+    }
+
 	@Override
 	public IsuPriority get(Integer id, Integer orgId) {
 		return issuePriorityDao.get(id, orgId);

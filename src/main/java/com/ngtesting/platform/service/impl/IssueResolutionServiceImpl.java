@@ -3,7 +3,6 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.IssueResolutionDao;
 import com.ngtesting.platform.model.IsuResolution;
-import com.ngtesting.platform.model.IsuResolution;
 import com.ngtesting.platform.service.IssueResolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +17,13 @@ public class IssueResolutionServiceImpl extends BaseServiceImpl implements Issue
 
     @Override
     public List<IsuResolution> list(Integer orgId) {
+        List<IsuResolution> ls = issueResolutionDao.list(orgId);
+
+        return ls;
+    }
+
+    @Override
+    public List<IsuResolution> list(Integer orgId, Integer prjId) {
         List<IsuResolution> ls = issueResolutionDao.list(orgId);
 
         return ls;

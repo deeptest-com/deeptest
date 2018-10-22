@@ -23,6 +23,13 @@ public class IssueTypeServiceImpl extends BaseServiceImpl implements IssueTypeSe
     }
 
     @Override
+    public List<IsuType> list(Integer orgId, Integer prjId) {
+        List<IsuType> ls = issueTypeDao.list(orgId);
+
+        return ls;
+    }
+
+    @Override
     public IsuType get(Integer id, Integer orgId) {
         return issueTypeDao.get(id, orgId);
     }

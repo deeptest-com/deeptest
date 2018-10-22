@@ -8,7 +8,9 @@ import java.util.List;
 public interface IssuePriorityService extends BaseService {
 	List<IsuPriority> list(Integer orgId);
 
-	IsuPriority get(Integer id, Integer orgId);
+    List<IsuPriority> list(Integer orgId, Integer prjId);
+
+    IsuPriority get(Integer id, Integer orgId);
 
 	IsuPriority save(IsuPriority vo, Integer orgId);
 

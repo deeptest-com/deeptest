@@ -31,12 +31,14 @@ public class IssuePropertyServiceImpl extends BaseServiceImpl implements IssuePr
 	public Map<String,Map<String,String>> getMap(Integer orgId) {
 		Map<String,String> typeMap = getTypeMap(orgId);
 		Map<String,String> priorityMap = getPriorityMap(orgId);
-		Map<String,String> exeStatusMap = getStatusMap(orgId);
+		Map<String,String> statusMap = getStatusMap(orgId);
+        Map<String,String> resolutionMap = getResolutionsMap(orgId);
 
 		Map map = new LinkedHashMap();
 		map.put("type", typeMap);
 		map.put("priority", priorityMap);
-		map.put("status", exeStatusMap);
+		map.put("status", statusMap);
+        map.put("resolution", resolutionMap);
 
 		return map;
 	}

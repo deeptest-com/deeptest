@@ -1,4 +1,5 @@
 # Next Generation Testing Tools
+有兴趣请加微信, Wechat: 462826
 
 AngularJS, SockJS, SpringBoot, MyBatis, MySQL
 

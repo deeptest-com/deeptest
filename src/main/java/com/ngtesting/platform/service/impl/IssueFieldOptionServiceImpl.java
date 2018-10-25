@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Service
-public class IssueCustomFieldOptionServiceImpl extends BaseServiceImpl implements IssueCustomFieldOptionService {
+public class IssueFieldOptionServiceImpl extends BaseServiceImpl implements IssueCustomFieldOptionService {
 
     @Override
     public List<TstCustomFieldOption> listVos(Integer fieldId) {

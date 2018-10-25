@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.config.ConstantIssue;
-import com.ngtesting.platform.dao.IsuFieldDefineDao;
+import com.ngtesting.platform.dao.IssueFieldDao;
 import com.ngtesting.platform.model.IsuFieldDefine;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.IsuJqlColumnService;
@@ -27,7 +27,7 @@ public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlCo
     UserService userService;
 
     @Autowired
-    IsuFieldDefineDao isuFieldDefineDao;
+    IssueFieldDao fieldDao;
 
     @Override
     @Transactional
@@ -40,7 +40,7 @@ public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlCo
         List<String> ls = new ArrayList<>(Arrays.asList(columnsStr.split(",")));
         List<IsuJqlColumn> vos = new LinkedList<>();
 
-        List<IsuFieldDefine> cols = isuFieldDefineDao.listColumns();
+        List<IsuFieldDefine> cols = fieldDao.listFileds();
         int i = 0;
         for (IsuFieldDefine col : cols) {
             String code = col.getCode();
@@ -76,7 +76,7 @@ public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlCo
     public String buildDefaultColStr(TstUser user) {
         String ret = "";
 
-        List<IsuFieldDefine> cols = isuFieldDefineDao.listColumns();
+        List<IsuFieldDefine> cols = fieldDao.listFileds();
         int i = 0;
         for (IsuFieldDefine col : cols) {
             String code = col.getCode();

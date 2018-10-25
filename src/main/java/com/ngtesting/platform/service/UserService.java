@@ -33,4 +33,6 @@ public interface UserService {
     Boolean removeFromOrg(Integer userId, Integer orgId);
 
     void saveIssueColumns(String columnsStr, TstUser user);
+
+    void saveIssueFields(String fieldStr, TstUser user);
 }

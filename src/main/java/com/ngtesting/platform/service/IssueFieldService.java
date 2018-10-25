@@ -3,9 +3,8 @@ package com.ngtesting.platform.service;
 import java.util.List;
 import java.util.Map;
 
-public interface IssuePropertyService extends BaseService {
-
-	Map<String,List> getProps(Integer orgId);
+public interface IssueFieldService extends BaseService {
+    Map<String,List> getProps(Integer orgId);
 
 	Map<String,Map<String,String>> getMap(Integer orgId);
 

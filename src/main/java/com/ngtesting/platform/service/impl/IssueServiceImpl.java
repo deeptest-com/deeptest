@@ -18,13 +18,11 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
     IssueDao issueDao;
 
     @Override
-	public IsuIssue getById(Integer caseId) {
-//		TstCase po = (TstCase) getDetail(TstCase.class, caseId);
-//		TstCase vo = genVo(po, true);
-//
-//		return vo;
+	public IsuIssue get(Integer caseId, Integer orgId) {
+		IsuIssue po = issueDao.get(caseId, orgId);
+		genVo(po);
 
-        return null;
+		return po;
 	}
 
 	@Override

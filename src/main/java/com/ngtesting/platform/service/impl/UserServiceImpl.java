@@ -231,4 +231,10 @@ public class UserServiceImpl implements UserService {
         userDao.saveIssueColumns(columnsStr, user.getId());
     }
 
+    @Override
+    public void saveIssueFields(String fieldStr, TstUser user) {
+        user.setIssueFileds(fieldStr);
+        userDao.saveIssueFields(fieldStr, user.getId());
+    }
+
 }

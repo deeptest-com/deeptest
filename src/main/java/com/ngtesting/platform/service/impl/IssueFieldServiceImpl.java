@@ -1,11 +1,12 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.dao.IssuePriorityDao;
-import com.ngtesting.platform.dao.IssueResolutionDao;
-import com.ngtesting.platform.dao.IssueStatusDao;
-import com.ngtesting.platform.dao.IssueTypeDao;
-import com.ngtesting.platform.model.*;
-import com.ngtesting.platform.service.IssuePropertyService;
+import com.ngtesting.platform.dao.*;
+import com.ngtesting.platform.model.IsuPriority;
+import com.ngtesting.platform.model.IsuResolution;
+import com.ngtesting.platform.model.IsuStatus;
+import com.ngtesting.platform.model.IsuType;
+import com.ngtesting.platform.service.IssueFieldService;
+import com.ngtesting.platform.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,13 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class IssuePropertyServiceImpl extends BaseServiceImpl implements IssuePropertyService {
+public class IssueFieldServiceImpl extends BaseServiceImpl implements IssueFieldService {
+    @Autowired
+    UserService userService;
+
+	@Autowired
+    IssueFieldDao fieldDao;
+
 	@Autowired
 	IssuePriorityDao issuePriorityDao;
 
@@ -34,7 +41,6 @@ public class IssuePropertyServiceImpl extends BaseServiceImpl implements IssuePr
         List<IsuStatus> statuses = issueStatusDao.list(orgId);
         List<IsuPriority> priorities = issuePriorityDao.list(orgId);
         List<IsuResolution> resolutions = issueResolutionDao.list(orgId);
-
 
         Map map = new LinkedHashMap();
         map.put("types", types);
@@ -105,4 +111,5 @@ public class IssuePropertyServiceImpl extends BaseServiceImpl implements IssuePr
 
 		return map;
 	}
+
 }

@@ -20,6 +20,7 @@ public class TstUser extends BaseModel {
 
     private String issueView = "table";
     private String issueColumns = "";
+    private String issueFileds = "";
 
     private Integer defaultOrgId;
     private String defaultOrgName;
@@ -189,5 +190,13 @@ public class TstUser extends BaseModel {
 
     public void setIssueColumns(String issueColumns) {
         this.issueColumns = issueColumns;
+    }
+
+    public String getIssueFileds() {
+        return issueFileds;
+    }
+
+    public void setIssueFileds(String issueFileds) {
+        this.issueFileds = issueFileds;
     }
 }

@@ -21,8 +21,8 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_ADMIN + "issue_custom_field/")
-public class IssueCustomFieldAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_ADMIN + "issue_page/")
+public class IssuePageAction extends BaseAction {
 	@Autowired
     IssueCustomFieldService customFieldService;
 

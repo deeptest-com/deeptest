@@ -4,8 +4,7 @@ import com.ngtesting.platform.model.IsuFieldDefine;
 
 import java.util.List;
 
-public interface IsuFieldDefineDao {
+public interface IssueFieldDao {
     List<IsuFieldDefine> listFilters();
-
-    List<IsuFieldDefine> listColumns();
+    List<IsuFieldDefine> listFileds();
 }

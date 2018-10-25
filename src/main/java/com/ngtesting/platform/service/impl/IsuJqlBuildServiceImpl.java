@@ -7,7 +7,7 @@ import com.itfsw.query.builder.support.model.enums.EnumCondition;
 import com.itfsw.query.builder.support.model.enums.EnumOperator;
 import com.itfsw.query.builder.support.model.enums.EnumRuleType;
 import com.itfsw.query.builder.support.model.result.SqlQueryResult;
-import com.ngtesting.platform.dao.IsuTqlDao;
+import com.ngtesting.platform.dao.IssueTqlDao;
 import com.ngtesting.platform.service.IsuJqlBuildService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,7 +23,7 @@ public class IsuJqlBuildServiceImpl extends BaseServiceImpl implements IsuJqlBui
     Log logger = LogFactory.getLog(IsuJqlBuildServiceImpl.class);
 
     @Autowired
-    IsuTqlDao isuTqlDao;
+    IssueTqlDao isuTqlDao;
 
     @Override
     public JsonRule genJsonRule(String id, String field, String input, String val,

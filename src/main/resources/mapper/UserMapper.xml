@@ -140,6 +140,11 @@
         SET issueColumns=#{issueColumns}
         WHERE userId=#{userId}
     </update>
+    <update id="saveIssueFields">
+        UPDATE TstUserSettings
+        SET issueFields=#{issueFields}
+        WHERE userId=#{userId}
+    </update>
 
     <select id="search" resultType="TstUser">
         SELECT * FROM TstUser usr

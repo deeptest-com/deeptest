@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.itfsw.query.builder.support.model.JsonRule;
-import com.ngtesting.platform.dao.IsuFieldDefineDao;
+import com.ngtesting.platform.dao.IssueFieldDao;
 import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.model.IsuFieldDefine;
 import com.ngtesting.platform.service.IsuJqlFilterService;
@@ -25,7 +25,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
     ProjectDao projectDao;
 
     @Autowired
-    IsuFieldDefineDao isuFieldDefineDao;
+    IssueFieldDao isuFieldDefineDao;
 
     @Override
     public List<IsuJqlFilter> buildUiFilters(JsonRule rule, Integer orgId, Integer projectId) {
@@ -90,7 +90,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
     }
 
     @Override
-    public IsuJqlFilter buildProjectFilter(IsuFieldDefine field,  Integer orgId) {
+    public IsuJqlFilter buildProjectFilter(IsuFieldDefine field, Integer orgId) {
         List<Map<String, String>> projects = projectDao.queryIdAndName(orgId);
 
         Map<String, String> values = new HashMap<>();
@@ -103,7 +103,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
     }
 
     @Override
-    public IsuJqlFilter buildTypeFilter(IsuFieldDefine field,  Integer orgId, Integer projectId) {
+    public IsuJqlFilter buildTypeFilter(IsuFieldDefine field, Integer orgId, Integer projectId) {
         Map<String, String> values = new LinkedHashMap();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
@@ -113,7 +113,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
     }
 
     @Override
-    public IsuJqlFilter buildStatusFilter(IsuFieldDefine field,  Integer orgId, Integer projectId) {
+    public IsuJqlFilter buildStatusFilter(IsuFieldDefine field, Integer orgId, Integer projectId) {
         Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
@@ -123,7 +123,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
     }
 
     @Override
-    public IsuJqlFilter buildPriorityFilter(IsuFieldDefine field,  Integer orgId, Integer projectId) {
+    public IsuJqlFilter buildPriorityFilter(IsuFieldDefine field, Integer orgId, Integer projectId) {
         Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
@@ -133,7 +133,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
     }
 
     @Override
-    public IsuJqlFilter buildAssigneeFilter(IsuFieldDefine field,  Integer orgId, Integer projectId) {
+    public IsuJqlFilter buildAssigneeFilter(IsuFieldDefine field, Integer orgId, Integer projectId) {
         Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
@@ -143,7 +143,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
     }
 
     @Override
-    public IsuJqlFilter buildCreatorFilter(IsuFieldDefine field,  Integer orgId, Integer projectId) {
+    public IsuJqlFilter buildCreatorFilter(IsuFieldDefine field, Integer orgId, Integer projectId) {
         Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
@@ -153,7 +153,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
     }
 
     @Override
-    public IsuJqlFilter buildReporterFilter(IsuFieldDefine field,  Integer orgId, Integer projectId) {
+    public IsuJqlFilter buildReporterFilter(IsuFieldDefine field, Integer orgId, Integer projectId) {
         Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
@@ -163,7 +163,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
     }
 
     @Override
-    public IsuJqlFilter buildVerFilter(IsuFieldDefine field,  Integer orgId, Integer projectId) {
+    public IsuJqlFilter buildVerFilter(IsuFieldDefine field, Integer orgId, Integer projectId) {
         Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
@@ -173,7 +173,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
     }
 
     @Override
-    public IsuJqlFilter buildEnvFilter(IsuFieldDefine field,  Integer orgId, Integer projectId) {
+    public IsuJqlFilter buildEnvFilter(IsuFieldDefine field, Integer orgId, Integer projectId) {
         Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
@@ -183,7 +183,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
     }
 
     @Override
-    public IsuJqlFilter buildResolutionFilter(IsuFieldDefine field,  Integer orgId, Integer projectId) {
+    public IsuJqlFilter buildResolutionFilter(IsuFieldDefine field, Integer orgId, Integer projectId) {
         Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
@@ -193,7 +193,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
     }
 
     @Override
-    public IsuJqlFilter buildDueTimeFilter(IsuFieldDefine field,  Integer orgId, Integer projectId) {
+    public IsuJqlFilter buildDueTimeFilter(IsuFieldDefine field, Integer orgId, Integer projectId) {
         Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
@@ -203,7 +203,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
     }
 
     @Override
-    public IsuJqlFilter buildResolveTimeFilter(IsuFieldDefine field,  Integer orgId, Integer projectId) {
+    public IsuJqlFilter buildResolveTimeFilter(IsuFieldDefine field, Integer orgId, Integer projectId) {
         Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");
@@ -213,7 +213,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
     }
 
     @Override
-    public IsuJqlFilter buildCommentsFilter(IsuFieldDefine field,  Integer orgId, Integer projectId) {
+    public IsuJqlFilter buildCommentsFilter(IsuFieldDefine field, Integer orgId, Integer projectId) {
         Map<String, String> values = new LinkedHashMap<>();
         values.put("1", "issue"); // TODO: 从数据库获取
         values.put("2", "task");

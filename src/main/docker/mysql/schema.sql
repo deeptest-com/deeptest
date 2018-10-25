@@ -2946,7 +2946,7 @@ BEGIN
 
     set i=11100;
     while i<=17300 do
-      select count(id) from TstProjectPrivilegeDefine 
+      select count(id) from TstProjectPrivilegeDefine
 		where id=i AND id != 11200 and id != 11300 and id != 12400 into count;
       IF count > 0 THEN
         insert into TstProjectRolePriviledgeRelation
@@ -2962,7 +2962,7 @@ BEGIN
 
     set i=11100;
     while i<=17300 do
-      select count(id) from TstProjectPrivilegeDefine 
+      select count(id) from TstProjectPrivilegeDefine
 		where id=i AND id != 11200 and id != 11300 AND id != 12200 and id != 12400 into count;
       IF count > 0 THEN
         insert into TstProjectRolePriviledgeRelation

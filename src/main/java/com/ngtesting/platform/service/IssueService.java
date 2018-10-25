@@ -5,7 +5,7 @@ import com.ngtesting.platform.model.IsuIssue;
 import java.util.List;
 
 public interface IssueService extends BaseService {
-	IsuIssue getById(Integer id);
+	IsuIssue get(Integer id, Integer orgId);
 
 	void genVos(List<IsuIssue> pos);
 

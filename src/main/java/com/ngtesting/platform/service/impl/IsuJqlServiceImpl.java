@@ -5,7 +5,7 @@ import com.itfsw.query.builder.support.model.JsonRule;
 import com.itfsw.query.builder.support.model.enums.EnumOperator;
 import com.itfsw.query.builder.support.model.enums.EnumRuleType;
 import com.itfsw.query.builder.support.model.result.SqlQueryResult;
-import com.ngtesting.platform.dao.IsuTqlDao;
+import com.ngtesting.platform.dao.IssueTqlDao;
 import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.service.IssueService;
 import com.ngtesting.platform.service.IsuJqlBuildService;
@@ -35,7 +35,7 @@ public class IsuJqlServiceImpl extends BaseServiceImpl implements IsuJqlService 
     IsuJqlFilterService isuJqlFilterService;
 
     @Autowired
-    IsuTqlDao isuTqlDao;
+    IssueTqlDao isuTqlDao;
 
     @Override
     public List<IsuIssue> query(JsonRule rule, String columns, Integer orgId, Integer projectId) {

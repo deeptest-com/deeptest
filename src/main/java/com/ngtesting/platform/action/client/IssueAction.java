@@ -3,7 +3,8 @@ package com.ngtesting.platform.action.client;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.model.IsuIssue;
+import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -25,6 +25,10 @@ public class IssueAction extends BaseAction {
     ProjectService projectService;
 	@Autowired
     IssueService issueService;
+    @Autowired
+    IssueFieldService fieldService;
+    @Autowired
+    IssuePropertyService propertyService;
 
     @Autowired
     IssueTypeService typeService;
@@ -42,25 +46,18 @@ public class IssueAction extends BaseAction {
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = userVo.getDefaultOrgId();
-        Integer prjId = userVo.getDefaultPrjId();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = user.getDefaultOrgId();
+        Integer prjId = user.getDefaultPrjId();
         Integer caseId = json.getInteger("id");
 
-		IsuIssue vo = issueService.getById(caseId);
-
-		List<IsuType> types = typeService.list(orgId, prjId);
-		List<IsuPriority> priorities = priorityService.list(orgId, prjId);
-		List<IsuStatus> statuses = statusService.list(orgId, prjId);
-        List<IsuResolution> resolutions = resolutionService.list(orgId, prjId);
-        List<IsuCustomField> fields = customFieldService.list(orgId, prjId);
+		IsuIssue vo = issueService.get(caseId, orgId);
+//        List<IsuField> fields = fieldService.list(user);
+        Map propMap = propertyService.getProps(orgId);
 
         ret.put("data", vo);
-        ret.put("types", types);
-        ret.put("priorities", priorities);
-        ret.put("statuses", statuses);
-        ret.put("resolutions", resolutions);
-        ret.put("fields", fields);
+//        ret.put("fields", fields);
+        ret.put("propMap", propMap);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

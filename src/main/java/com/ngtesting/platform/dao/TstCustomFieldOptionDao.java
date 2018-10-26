@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface CustomFieldOptionDao {
+public interface TstCustomFieldOptionDao {
     List<TstCustomFieldOption> listByFieldId(@Param("fieldId") Integer fieldId);
     TstCustomFieldOption get(@Param("id") Integer id);
 

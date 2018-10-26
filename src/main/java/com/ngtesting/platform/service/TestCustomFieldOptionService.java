@@ -4,7 +4,7 @@ import com.ngtesting.platform.model.TstCustomFieldOption;
 
 import java.util.List;
 
-public interface CustomFieldOptionService extends BaseService {
+public interface TestCustomFieldOptionService extends BaseService {
     List<TstCustomFieldOption> listVos(Integer fieldId);
     TstCustomFieldOption save(TstCustomFieldOption option, Integer orgId);
     Boolean delete(Integer id, Integer orgId);

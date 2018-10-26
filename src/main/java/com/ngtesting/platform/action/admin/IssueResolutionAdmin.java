@@ -3,10 +3,10 @@ package com.ngtesting.platform.action.admin;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.IsuPriority;
+import com.ngtesting.platform.model.IsuResolution;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.IssuePriorityService;
 import com.ngtesting.platform.service.IssuePropertyService;
+import com.ngtesting.platform.service.IssueResolutionService;
 import com.ngtesting.platform.service.IssueTypeService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,12 +24,12 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_ADMIN + "issue_priority/")
-public class IssuePriorityAction extends BaseAction {
-	private static final Log log = LogFactory.getLog(CasePriorityAdmin.class);
+@RequestMapping(Constant.API_PATH_ADMIN + "issue_resolution/")
+public class IssueResolutionAdmin extends BaseAction {
+	private static final Log log = LogFactory.getLog(CaseTypeAdmin.class);
 
 	@Autowired
-	IssuePriorityService issuePriorityService;
+	IssueResolutionService issueResolutionService;
 
 	@Autowired
 	IssuePropertyService issuePropertyService;
@@ -42,7 +42,7 @@ public class IssuePriorityAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		List<IsuPriority> vos = issuePriorityService.list(orgId);
+		List<IsuResolution> vos = issueResolutionService.list(orgId);
 
 		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -60,11 +60,11 @@ public class IssuePriorityAction extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
-		IsuPriority po;
+		IsuResolution po;
 		if (id == null) {
-			po = new IsuPriority();
+			po = new IsuResolution();
 		} else {
-			po = issuePriorityService.get(id, orgId);
+			po = issueResolutionService.get(id, orgId);
 		}
 
 		if (po == null) { // 当对象不是默认org的，此处为空
@@ -84,9 +84,9 @@ public class IssuePriorityAction extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		IsuPriority vo = json.getObject("model", IsuPriority.class);
+		IsuResolution vo = json.getObject("model", IsuResolution.class);
 
-		IsuPriority po = issuePriorityService.save(vo, orgId);
+		IsuResolution po = issueResolutionService.save(vo, orgId);
 		if (po == null) {    // 当对象不是默认org的，update的结果会返回空
 			return authFail();
 		}
@@ -109,7 +109,7 @@ public class IssuePriorityAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		Boolean result = issuePriorityService.delete(id, orgId);
+		Boolean result = issueResolutionService.delete(id, orgId);
 		if (!result) { // 当对象不是默认org的，结果会返回false
 			return authFail();
 		}
@@ -129,12 +129,12 @@ public class IssuePriorityAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		Boolean result = issuePriorityService.setDefault(id, orgId);
+		Boolean result = issueResolutionService.setDefault(id, orgId);
 		if (!result) { // 当对象不是默认org的，结果会返回false
 			return authFail();
 		}
 
-		List<IsuPriority> vos = issuePriorityService.list(orgId);
+		List<IsuResolution> vos = issueResolutionService.list(orgId);
 
 		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -153,12 +153,12 @@ public class IssuePriorityAction extends BaseAction {
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-		Boolean result = issuePriorityService.changeOrder(id, act, orgId);
+		Boolean result = issueResolutionService.changeOrder(id, act, orgId);
 		if (!result) { // 当对象不是默认org的，结果会返回false
 			return authFail();
 		}
 
-		List<IsuPriority> vos = issuePriorityService.list(orgId);
+		List<IsuResolution> vos = issueResolutionService.list(orgId);
 
 		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

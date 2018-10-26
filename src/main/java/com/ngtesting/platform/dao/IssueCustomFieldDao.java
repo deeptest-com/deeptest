@@ -7,8 +7,6 @@ import java.util.List;
 
 public interface IssueCustomFieldDao {
     List<IsuCustomField> list(@Param("orgId") Integer orgId);
-    List<IsuCustomField> list(@Param("orgId") Integer orgId,
-                                              @Param("projectId") Integer projectId);
 
     IsuCustomField get(@Param("id") Integer id,
                        @Param("orgId") Integer orgId);

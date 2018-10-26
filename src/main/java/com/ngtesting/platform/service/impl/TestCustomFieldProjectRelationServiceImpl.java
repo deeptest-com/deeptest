@@ -1,11 +1,11 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.ngtesting.platform.dao.CustomFieldProjectRelationDao;
+import com.ngtesting.platform.dao.TstCustomFieldProjectRelationDao;
 import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.model.TstCustomFieldProjectRelation;
 import com.ngtesting.platform.model.TstProject;
-import com.ngtesting.platform.service.CustomFieldProjectRelationService;
+import com.ngtesting.platform.service.TestCustomFieldProjectRelationService;
 import com.ngtesting.platform.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,9 +14,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Service
-public class CustomFieldProjectRelationServiceImpl extends BaseServiceImpl implements CustomFieldProjectRelationService {
+public class TestCustomFieldProjectRelationServiceImpl extends BaseServiceImpl implements TestCustomFieldProjectRelationService {
     @Autowired
-    CustomFieldProjectRelationDao customFieldProjectRelationDao;
+    TstCustomFieldProjectRelationDao customFieldProjectRelationDao;
     @Autowired
     ProjectDao projectDao;
     @Autowired

@@ -8,8 +8,6 @@ public interface IssueCustomFieldService extends BaseService {
 
     List<IsuCustomField> list(Integer orgId);
 
-    List<IsuCustomField> list(Integer orgId, Integer projectId);
-
     IsuCustomField get(Integer id, Integer orgId);
 
     IsuCustomField save(IsuCustomField vo, Integer orgId);

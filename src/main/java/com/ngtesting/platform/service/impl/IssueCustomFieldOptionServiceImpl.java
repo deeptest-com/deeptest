@@ -1,31 +1,31 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.dao.CustomFieldDao;
-import com.ngtesting.platform.dao.CustomFieldOptionDao;
-import com.ngtesting.platform.model.TstCustomField;
-import com.ngtesting.platform.model.TstCustomFieldOption;
-import com.ngtesting.platform.service.CustomFieldOptionService;
+import com.ngtesting.platform.dao.IssueCustomFieldDao;
+import com.ngtesting.platform.dao.IssueCustomFieldOptionDao;
+import com.ngtesting.platform.model.IsuCustomField;
+import com.ngtesting.platform.model.IsuCustomFieldOption;
+import com.ngtesting.platform.service.IssueCustomFieldOptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class CustomFieldOptionServiceImpl extends BaseServiceImpl implements CustomFieldOptionService {
+public class IssueCustomFieldOptionServiceImpl extends BaseServiceImpl implements IssueCustomFieldOptionService {
     @Autowired
-    CustomFieldOptionDao customFieldOptionDao;
+    IssueCustomFieldOptionDao customFieldOptionDao;
     @Autowired
-    CustomFieldDao customFieldDao;
+    IssueCustomFieldDao customFieldDao;
 
     @Override
-    public List<TstCustomFieldOption> listVos(Integer fieldId) {
-        List<TstCustomFieldOption> ls = customFieldOptionDao.listByFieldId(fieldId);
+    public List<IsuCustomFieldOption> listVos(Integer fieldId) {
+        List<IsuCustomFieldOption> ls = customFieldOptionDao.listByFieldId(fieldId);
         return ls;
     }
 
     @Override
-    public TstCustomFieldOption save(TstCustomFieldOption vo, Integer orgId) {
-        TstCustomField field = customFieldDao.get(vo.getFieldId(), orgId);
+    public IsuCustomFieldOption save(IsuCustomFieldOption vo, Integer orgId) {
+        IsuCustomField field = customFieldDao.get(vo.getFieldId(), orgId);
         if (field == null) {
             return null;
         }
@@ -47,12 +47,12 @@ public class CustomFieldOptionServiceImpl extends BaseServiceImpl implements Cus
 
     @Override
     public Boolean delete(Integer id, Integer orgId) {
-        TstCustomFieldOption option = customFieldOptionDao.get(id);
+        IsuCustomFieldOption option = customFieldOptionDao.get(id);
         if (option == null) {
             return false;
         }
 
-        TstCustomField field = customFieldDao.get(option.getFieldId(), orgId);
+        IsuCustomField field = customFieldDao.get(option.getFieldId(), orgId);
         if (field == null) {
             return false;
         }
@@ -63,17 +63,17 @@ public class CustomFieldOptionServiceImpl extends BaseServiceImpl implements Cus
 
     @Override
     public Boolean changeOrder(Integer id, String act, Integer fieldId, Integer orgId) {
-        TstCustomFieldOption curr = customFieldOptionDao.get(id);
+        IsuCustomFieldOption curr = customFieldOptionDao.get(id);
         if (curr == null) {
             return false;
         }
 
-        TstCustomField field = customFieldDao.get(curr.getFieldId(), orgId);
+        IsuCustomField field = customFieldDao.get(curr.getFieldId(), orgId);
         if (field == null) {
             return false;
         }
 
-        TstCustomFieldOption neighbor = null;
+        IsuCustomFieldOption neighbor = null;
         if ("up".equals(act)) {
             neighbor = customFieldOptionDao.getPrev(curr.getOrdr(), fieldId);
         } else if ("down".equals(act)) {

@@ -8,7 +8,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.model.TstMsg;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.CustomFieldService;
+import com.ngtesting.platform.service.TestCustomFieldService;
 import com.ngtesting.platform.service.MsgService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,7 +33,7 @@ public class MsgAction extends BaseAction {
     MsgService msgService;
 
     @Autowired
-    CustomFieldService customFieldService;
+    TestCustomFieldService customFieldService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody

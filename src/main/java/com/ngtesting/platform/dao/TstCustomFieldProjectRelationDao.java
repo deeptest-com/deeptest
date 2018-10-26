@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface CustomFieldProjectRelationDao {
+public interface TstCustomFieldProjectRelationDao {
     List<TstCustomFieldProjectRelation> query(@Param("orgId") Integer orgId,
                                               @Param("fieldId") Integer fieldId);
 

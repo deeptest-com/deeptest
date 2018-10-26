@@ -24,8 +24,8 @@ import java.util.Map;
 
 @Controller
 @RequestMapping(Constant.API_PATH_ADMIN + "issue_status/")
-public class IssueStatusAction extends BaseAction {
-	private static final Log log = LogFactory.getLog(IssueStatusAction.class);
+public class IssueStatusAdmin extends BaseAction {
+	private static final Log log = LogFactory.getLog(IssueStatusAdmin.class);
 
 	@Autowired
 	IssueStatusService issueStatusService;

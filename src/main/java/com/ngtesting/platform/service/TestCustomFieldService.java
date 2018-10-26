@@ -4,7 +4,7 @@ import com.ngtesting.platform.model.TstCustomField;
 
 import java.util.List;
 
-public interface CustomFieldService extends BaseService {
+public interface TestCustomFieldService extends BaseService {
 	List<TstCustomField> list(Integer orgId);
     List<TstCustomField> listForCaseByProject(Integer orgId, Integer projectId);
 

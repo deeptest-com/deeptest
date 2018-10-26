@@ -34,7 +34,7 @@ public class CaseAction extends BaseAction {
     @Autowired
     CasePriorityService casePriorityService;
 	@Autowired
-    CustomFieldService customFieldService;
+    TestCustomFieldService customFieldService;
 
 
 	@RequestMapping(value = "query", method = RequestMethod.POST)

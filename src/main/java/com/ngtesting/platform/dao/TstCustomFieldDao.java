@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface CustomFieldDao {
+public interface TstCustomFieldDao {
     List<TstCustomField> list(@Param("orgId") Integer orgId);
     List<TstCustomField> listForCaseByProject(@Param("orgId")Integer orgId,
                                               @Param("projectId")Integer projectId,

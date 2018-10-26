@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.TstCustomFieldOptionDao" >
+
+    <insert id="save" parameterType="TstCustomFieldOption" useGeneratedKeys="true" keyProperty="id">
+        insert into TstCustomFieldOption
+        (label,value,ordr,fieldId,
+        createTime,deleted,disabled)
+        values
+        (#{label},#{value},#{ordr},#{fieldId},
+        NOW(),FALSE,FALSE)
+    </insert>
+    <insert id="saveAll">
+        insert into TstCustomFieldOption
+        (label,value,ordr,fieldId,
+        createTime,deleted,disabled)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.label},#{item.value}, #{item.ordr}, #{fieldId},
+            NOW(),FALSE,FALSE)
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE TstCustomFieldOption
+        SET label =#{label},value=#{value},updateTime=NOW()
+        where id = #{id}
+    </update>
+    <update id="delete">
+        UPDATE TstCustomFieldOption
+        SET deleted = TRUE
+        where id = #{id}
+    </update>
+
+    <select id="getMaxOrder" resultType="int">
+        SELECT max(o.ordr) FROM TstCustomFieldOption o
+
+        WHERE o.fieldId=#{fieldId}
+        AND o.deleted != true AND o.disabled != true
+    </select>
+
+    <select id="listByFieldId" resultType="TstCustomFieldOption">
+        SELECT o.* FROM TstCustomFieldOption o
+
+        WHERE o.fieldId = #{fieldId}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.ordr ASC
+    </select>
+    <select id="get" resultType="TstCustomFieldOption">
+        SELECT o.* FROM TstCustomFieldOption o
+
+        WHERE o.id = #{id}
+    </select>
+
+    <select id="getByFieldId" resultMap="optionMap">
+        SELECT o.* FROM TstCustomFieldOption o
+
+        WHERE o.fieldId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.ordr ASC
+    </select>
+
+    <select id="getPrev" resultType="TstCustomFieldOption">
+        <![CDATA[
+            SELECT * FROM TstCustomFieldOption o
+            WHERE o.ordr < #{ordr} AND o.fieldId = #{fieldId}
+            AND o.deleted != TRUE
+            ORDER BY o.ordr DESC LIMIT 1
+        ]]>
+    </select>
+
+    <select id="getNext" resultType="TstCustomFieldOption">
+        <![CDATA[
+            SELECT * FROM TstCustomFieldOption o
+            WHERE o.ordr > #{ordr} AND o.fieldId = #{fieldId}
+            AND o.deleted != TRUE
+            ORDER BY o.ordr ASC LIMIT 1
+        ]]>
+    </select>
+
+    <update id="setOrder">
+        UPDATE TstCustomFieldOption
+        SET ordr=#{ordr}, updateTime=NOW()
+        WHERE id=#{id}
+    </update>
+
+    <resultMap id="optionMap" type="TstCustomFieldOption" autoMapping="true">
+        <id column="id" property="id"/>
+        <id column="label" property="label"/>
+        <id column="value" property="value"/>
+        <id column="ordr" property="ordr"/>
+    </resultMap>
+
+</mapper>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.CustomFieldDao" >
+<mapper namespace="com.ngtesting.platform.dao.TstCustomFieldDao" >
 
     <select id="list" resultType="TstCustomField">
         SELECT * FROM TstCustomField o
@@ -119,7 +119,7 @@
     <resultMap id="customFieldMap" type="TstCustomField" autoMapping="true">
         <id column="id" property="id"/>
 
-        <collection property="options" select="com.ngtesting.platform.dao.CustomFieldOptionDao.getByFieldId"
+        <collection property="options" select="com.ngtesting.platform.dao.TstCustomFieldOptionDao.getByFieldId"
                     column="{id=id}">
         </collection>
     </resultMap>

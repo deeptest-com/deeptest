@@ -6,7 +6,7 @@ import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstCustomFieldOption;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.CustomFieldOptionService;
+import com.ngtesting.platform.service.TestCustomFieldOptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,10 +21,10 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "custom_field_option/")
-public class CustomFieldOptionAdmin extends BaseAction {
+@RequestMapping(Constant.API_PATH_ADMIN + "test_custom_field_option/")
+public class TestCustomFieldOptionAdmin extends BaseAction {
 	@Autowired
-    CustomFieldOptionService customFieldOptionService;
+	TestCustomFieldOptionService customFieldOptionService;
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody

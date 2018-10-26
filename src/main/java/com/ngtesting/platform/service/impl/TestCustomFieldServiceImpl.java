@@ -1,10 +1,10 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.dao.CustomFieldDao;
-import com.ngtesting.platform.dao.CustomFieldOptionDao;
+import com.ngtesting.platform.dao.TstCustomFieldDao;
+import com.ngtesting.platform.dao.TstCustomFieldOptionDao;
 import com.ngtesting.platform.model.TstCustomField;
-import com.ngtesting.platform.service.CustomFieldOptionService;
-import com.ngtesting.platform.service.CustomFieldService;
+import com.ngtesting.platform.service.TestCustomFieldOptionService;
+import com.ngtesting.platform.service.TestCustomFieldService;
 import com.ngtesting.platform.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,16 +14,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Service
-public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFieldService {
+public class TestCustomFieldServiceImpl extends BaseServiceImpl implements TestCustomFieldService {
     @Autowired
-    CustomFieldDao customFieldDao;
+    TstCustomFieldDao customFieldDao;
     @Autowired
-    CustomFieldOptionDao customFieldOptionDao;
+    TstCustomFieldOptionDao customFieldOptionDao;
 
     @Autowired
     ProjectService projectService;
     @Autowired
-    CustomFieldOptionService customFieldOptionService;
+    TestCustomFieldOptionService customFieldOptionService;
 
     @Override
     public List<TstCustomField> list(Integer orgId) {

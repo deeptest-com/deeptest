@@ -21,7 +21,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping(Constant.API_PATH_ADMIN + "issue_workflow/")
-public class IssueWorkflowAction extends BaseAction {
+public class IssueWorkflowAdmin extends BaseAction {
 	private static final Log log = LogFactory.getLog(CaseTypeAdmin.class);
 
 	@Autowired

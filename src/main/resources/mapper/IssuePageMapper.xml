@@ -1,7 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IssueFieldDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssuePageDao" >
 
+    <select id="list" resultMap="issuePageMap">
+        SELECT task.*,
+        usr.nickname userName,
+        project.name projectName,
+        caseProject.name caseProjectName,
+        env.name envName
 
+        FROM TstTask task
+
+        JOIN TstUser usr ON task.userId = usr.id
+        JOIN TstProject project ON task.projectId = project.id
+        LEFT JOIN TstProject caseProject ON task.caseProjectId = caseProject.id
+        LEFT JOIN TstEnv env ON task.envId = env.id
+
+        WHERE task.planId=#{planId}
+        AND task.deleted != TRUE AND task.disabled != TRUE
+        ORDER BY task.createTime ASC
+    </select>
+
+    <resultMap id="issuePageMap" type="IsuPage" autoMapping="true">
+        <id column="id" property="id"/>
+
+        <collection property="assignees" select="listAssigneesByTaskId"
+                    column="{id=id}">
+        </collection>
+    </resultMap>
 
 </mapper>

@@ -5,11 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuCustomField;
-import com.ngtesting.platform.model.IsuPage;
-import com.ngtesting.platform.model.IsuPageSolution;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.IssuePageService;
-import com.ngtesting.platform.service.IssuePageSolutionService;
+import com.ngtesting.platform.service.IssueCustomFieldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,13 +21,10 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_ADMIN + "issue_page/")
-public class IssuePageAdmin extends BaseAction {
+@RequestMapping(Constant.API_PATH_ADMIN + "issue_solution/")
+public class IssuePageSolutionAdmin extends BaseAction {
 	@Autowired
-	IssuePageService pageService;
-
-	@Autowired
-	IssuePageSolutionService pageSolutionService;
+    IssueCustomFieldService customFieldService;
 
 	@RequestMapping(value = "load", method = RequestMethod.POST)
 	@ResponseBody
@@ -40,12 +34,10 @@ public class IssuePageAdmin extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		List<IsuPage> pages = pageService.list(orgId);
-		List<IsuPageSolution> solutions = pageSolutionService.list(orgId);
+		List<IsuCustomField> vos = customFieldService.list(orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		ret.put("pages", pages);
-        ret.put("solutions", solutions);
+		ret.put("data", vos);
 		return ret;
 	}
 
@@ -59,7 +51,24 @@ public class IssuePageAdmin extends BaseAction {
 
 		Integer customFieldId = json.getInteger("id");
 
+		IsuCustomField vo = null;
+		if (customFieldId == null) {
+			vo = new IsuCustomField();
+		} else {
+			vo = customFieldService.get(customFieldId, orgId);
+		}
 
+		if (vo.getMyColumn() == null) {
+            ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
+            ret.put("msg", "自定义字段不能超过20个");
+        }
+
+		List<String> typeList = customFieldService.listType();
+		List<String> formatList = customFieldService.listFormat();
+
+        ret.put("data", vo);
+        ret.put("typeList", typeList);
+        ret.put("formatList", formatList);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -93,7 +102,7 @@ public class IssuePageAdmin extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-//		boolean success = customFieldService.delete(id, orgId);
+		boolean success = customFieldService.delete(id, orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -109,11 +118,11 @@ public class IssuePageAdmin extends BaseAction {
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-//		boolean success = customFieldService.changeOrderPers(id, act, orgId);
-//
-//		List<IsuCustomField> vos = customFieldService.list(orgId);
+		boolean success = customFieldService.changeOrderPers(id, act, orgId);
 
-//        ret.put("data", vos);
+		List<IsuCustomField> vos = customFieldService.list(orgId);
+
+        ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;

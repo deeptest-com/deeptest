@@ -2,6 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.IssuePageSolutionDao" >
 
+    <select id="list" resultType="IsuPageSolution">
+        SELECT IsuPageSolution.*
 
+        FROM IsuPageSolution solution
+
+        WHERE solution.orgId=#{orgId}
+        AND solution.deleted != TRUE AND solution.disabled != TRUE
+        ORDER BY task.createTime ASC
+    </select>
 
 </mapper>

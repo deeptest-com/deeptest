@@ -12,7 +12,7 @@ public class IsuPage extends BaseModel {
     private Integer ordr;
     private Integer orgId;
 
-    List<IsuPageTab> elements = new LinkedList();
+    List<IsuPageTab> tabs = new LinkedList();
 
     public String getName() {
         return name;
@@ -46,4 +46,11 @@ public class IsuPage extends BaseModel {
         this.orgId = orgId;
     }
 
+    public List<IsuPageTab> getTabs() {
+        return tabs;
+    }
+
+    public void setTabs(List<IsuPageTab> tabs) {
+        this.tabs = tabs;
+    }
 }

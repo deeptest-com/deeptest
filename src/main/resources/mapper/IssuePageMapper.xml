@@ -3,28 +3,45 @@
 <mapper namespace="com.ngtesting.platform.dao.IssuePageDao" >
 
     <select id="list" resultMap="issuePageMap">
-        SELECT task.*,
-        usr.nickname userName,
-        project.name projectName,
-        caseProject.name caseProjectName,
-        env.name envName
+        SELECT o.*
 
-        FROM TstTask task
+        FROM IsuPage page
 
-        JOIN TstUser usr ON task.userId = usr.id
-        JOIN TstProject project ON task.projectId = project.id
-        LEFT JOIN TstProject caseProject ON task.caseProjectId = caseProject.id
-        LEFT JOIN TstEnv env ON task.envId = env.id
+        WHERE page.orgId=#{orgId}
+        AND page.deleted != TRUE AND page.disabled != TRUE
+        ORDER BY page.createTime ASC
+    </select>
 
-        WHERE task.planId=#{planId}
-        AND task.deleted != TRUE AND task.disabled != TRUE
-        ORDER BY task.createTime ASC
+    <select id="listTabByPageId" parameterType="Map" resultMap="issuePageTabMap">
+        SELECT o.* FROM IsuPageTab o
+
+        WHERE r.pageId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.ordr ASC
+    </select>
+
+    <select id="listTabByPageId" parameterType="Map" resultType="IsuPageElement">
+        SELECT o.* FROM IsuPageElement o
+
+        WHERE r.tabId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.ordr ASC
     </select>
 
     <resultMap id="issuePageMap" type="IsuPage" autoMapping="true">
         <id column="id" property="id"/>
 
-        <collection property="assignees" select="listAssigneesByTaskId"
+        <collection property="tabs" select="listTabByPageId"
+                    column="{id=id}">
+        </collection>
+    </resultMap>
+
+    <resultMap id="issuePageTabMap" type="IsuPage" autoMapping="true">
+        <id column="id" property="id"/>
+
+        <collection property="elements" select="listElementByTabId"
                     column="{id=id}">
         </collection>
     </resultMap>

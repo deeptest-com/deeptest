@@ -8,6 +8,7 @@ public class IsuPageTab extends BaseModel {
 
     private String name;
     private String descr;
+    private Integer pageId;
 
     private Integer ordr;
     private Integer orgId;
@@ -52,5 +53,13 @@ public class IsuPageTab extends BaseModel {
 
     public void setElements(List<IsuPageElement> elements) {
         this.elements = elements;
+    }
+
+    public Integer getPageId() {
+        return pageId;
+    }
+
+    public void setPageId(Integer pageId) {
+        this.pageId = pageId;
     }
 }

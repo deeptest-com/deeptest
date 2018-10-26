@@ -7,6 +7,9 @@ public class IsuPageElement extends BaseModel {
     private String fieldName;
     private Integer ordr;
 
+    private Integer tabId;
+    private Integer pageId;
+
     private Integer orgId;
 
     public Integer getFieldId() {
@@ -39,5 +42,21 @@ public class IsuPageElement extends BaseModel {
 
     public void setOrgId(Integer orgId) {
         this.orgId = orgId;
+    }
+
+    public Integer getTabId() {
+        return tabId;
+    }
+
+    public void setTabId(Integer tabId) {
+        this.tabId = tabId;
+    }
+
+    public Integer getPageId() {
+        return pageId;
+    }
+
+    public void setPageId(Integer pageId) {
+        this.pageId = pageId;
     }
 }

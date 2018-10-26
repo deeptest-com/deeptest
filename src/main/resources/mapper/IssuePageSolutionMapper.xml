@@ -3,13 +3,13 @@
 <mapper namespace="com.ngtesting.platform.dao.IssuePageSolutionDao" >
 
     <select id="list" resultType="IsuPageSolution">
-        SELECT IsuPageSolution.*
+        SELECT solution.*
 
         FROM IsuPageSolution solution
 
         WHERE solution.orgId=#{orgId}
         AND solution.deleted != TRUE AND solution.disabled != TRUE
-        ORDER BY task.createTime ASC
+        ORDER BY solution.createTime ASC
     </select>
 
 </mapper>

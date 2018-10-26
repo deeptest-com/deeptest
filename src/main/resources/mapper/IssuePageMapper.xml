@@ -3,7 +3,7 @@
 <mapper namespace="com.ngtesting.platform.dao.IssuePageDao" >
 
     <select id="list" resultMap="issuePageMap">
-        SELECT o.*
+        SELECT page.*
 
         FROM IsuPage page
 
@@ -15,16 +15,16 @@
     <select id="listTabByPageId" parameterType="Map" resultMap="issuePageTabMap">
         SELECT o.* FROM IsuPageTab o
 
-        WHERE r.pageId = #{id}
+        WHERE o.pageId = #{id}
         AND o.deleted != true AND o.disabled != true
 
         ORDER BY o.ordr ASC
     </select>
 
-    <select id="listTabByPageId" parameterType="Map" resultType="IsuPageElement">
+    <select id="listElementByTabId" parameterType="Map" resultType="IsuPageElement">
         SELECT o.* FROM IsuPageElement o
 
-        WHERE r.tabId = #{id}
+        WHERE o.tabId = #{id}
         AND o.deleted != true AND o.disabled != true
 
         ORDER BY o.ordr ASC

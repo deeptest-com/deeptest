@@ -5,30 +5,57 @@ import java.util.List;
 
 public class ConstantIssue {
 
-    public enum IssueFilterInput {
-        string("string"),
-        select("select"),
-        radio("radio"),
-        date("date");
+    public static enum TextFormat {
+        plain_text("plain_text");
+//        rich_text("rich_text");
 
-        private IssueFilterInput(String textVal) {
+        private TextFormat(String textVal) {
             this.textVal = textVal;
         }
 
         private String textVal;
-
         public String toString() {
             return textVal;
         }
     }
 
-    public enum IssueFilterType {
+    public static enum IssueInput {
+        string("string"),
+        number("number"),
+        dropdown("dropdown"),
+        text("text"),
+        date("date");
+
+//    	url("url"),
+//
+//    	radio("radio"),
+//    	checkbox("checkbox"),
+//
+//
+//    	multi_select("multi_select"),
+//
+//    	user("user"),
+//    	version("version"),
+//    	step("step"),
+//    	result("result");
+
+        private IssueInput(String textVal) {
+            this.textVal = textVal;
+        }
+
+        private String textVal;
+        public String toString() {
+            return textVal;
+        }
+    }
+
+    public enum IssueType {
         integer("integer"),
         doubl("doubl"),
         string("string"),
         date("date");
 
-        IssueFilterType(String textVal) {
+        IssueType(String textVal) {
             this.textVal = textVal;
         }
 

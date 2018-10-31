@@ -4,14 +4,13 @@ package com.ngtesting.platform.model;
 import com.ngtesting.platform.config.ConstantIssue;
 
 public class IsuFieldDefine extends BaseModel {
-
 	private static final long serialVersionUID = 8734289343612127207L;
 
 	private String code;
 	private String label;
 
-	private ConstantIssue.IssueFilterType type;
-	private ConstantIssue.IssueFilterInput input;
+	private ConstantIssue.IssueType type;
+	private ConstantIssue.IssueInput input;
 
 	private Boolean defaultShowInFilters;
 	private Integer filterOrdr;
@@ -35,19 +34,19 @@ public class IsuFieldDefine extends BaseModel {
 		this.label = label;
 	}
 
-	public ConstantIssue.IssueFilterType getType() {
+	public ConstantIssue.IssueType getType() {
 		return type;
 	}
 
-	public void setType(ConstantIssue.IssueFilterType type) {
+	public void setType(ConstantIssue.IssueType type) {
 		this.type = type;
 	}
 
-	public ConstantIssue.IssueFilterInput getInput() {
+	public ConstantIssue.IssueInput getInput() {
 		return input;
 	}
 
-	public void setInput(ConstantIssue.IssueFilterInput input) {
+	public void setInput(ConstantIssue.IssueInput input) {
 		this.input = input;
 	}
 

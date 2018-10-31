@@ -6,7 +6,7 @@ import java.util.List;
 public class TstCustomField extends BaseModel {
 	private static final long serialVersionUID = -2071266644244632484L;
 
-//    private String code;
+    private String code;
     private String label;
     private String myColumn;
 
@@ -197,4 +197,12 @@ public class TstCustomField extends BaseModel {
     public void setOrgId(Integer orgId) {
         this.orgId = orgId;
     }
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 }

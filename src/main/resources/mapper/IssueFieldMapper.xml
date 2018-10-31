@@ -2,16 +2,38 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.IssueFieldDao" >
 
-<select id="listFilters" resultType="IsuFieldDefine">
-    SELECT * FROM IsuFieldDefine
-    WHERE defaultShowInFilters IS NOT NULL
-    ORDER BY filterOrdr ASC
-</select>
+    <select id="listDefaultFilter" resultType="IsuFieldDefine">
+        SELECT * FROM IsuFieldDefine
+        WHERE defaultShowInFilters IS NOT NULL
+        ORDER BY filterOrdr ASC
+    </select>
 
-<select id="listFileds" resultType="IsuFieldDefine">
-    SELECT * FROM IsuFieldDefine
-    WHERE defaultShowInColumns IS NOT NULL
-    ORDER BY columnOrdr ASC
-</select>
+    <select id="listDefaultField" resultType="IsuFieldDefine">
+        SELECT * FROM IsuFieldDefine
+        WHERE defaultShowInColumns IS NOT NULL
+        ORDER BY columnOrdr ASC
+    </select>
+
+    <select id="listOrgField" resultType="IsuField">
+        (SELECT fieldDefine.id, fieldDefine.code, fieldDefine.label, fieldDefine.type, fieldDefine.input,
+          fieldDefine.columnOrdr ordr
+
+        FROM IsuFieldDefine fieldDefine
+        ORDER BY fieldDefine.columnOrdr ASC)
+
+        UNION
+
+        (SELECT customField.id, customField.myColumn code, customField.label, customField.type, customField.input,
+          customField.ordr
+
+        FROM IsuCustomField customField
+
+        WHERE orgId = #{orgId}
+        ORDER BY customField.ordr ASC)
+    </select>
+
+    <select id="listOrgFieldDetail" resultType="IsuField">
+
+    </select>
 
 </mapper>

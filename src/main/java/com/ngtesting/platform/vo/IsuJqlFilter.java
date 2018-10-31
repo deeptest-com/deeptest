@@ -13,8 +13,8 @@ public class IsuJqlFilter implements Serializable {
 
     String code;
     String label;
-    ConstantIssue.IssueFilterType type;
-    ConstantIssue.IssueFilterInput input;
+    ConstantIssue.IssueType type;
+    ConstantIssue.IssueInput input;
     Map values;
     List<String> operators;
     Boolean display;
@@ -26,9 +26,9 @@ public class IsuJqlFilter implements Serializable {
         this.input = field.getInput();
         this.display = field.getDefaultShowInFilters();
 
-        if (ConstantIssue.IssueFilterInput.string.equals(type)) {
+        if (ConstantIssue.IssueInput.string.equals(type)) {
             this.operators = ConstantIssue.OperatorsForString;
-        } else if (ConstantIssue.IssueFilterInput.date.equals(type)) {
+        } else if (ConstantIssue.IssueInput.date.equals(type)) {
             this.operators = ConstantIssue.OperatorsForDate;
         }
     }
@@ -41,11 +41,11 @@ public class IsuJqlFilter implements Serializable {
         this.display = field.getDefaultShowInFilters();
 
         this.values = values;
-        if (ConstantIssue.IssueFilterInput.string.equals(input)) {
+        if (ConstantIssue.IssueInput.string.equals(input)) {
             this.operators = ConstantIssue.OperatorsForString;
-        } else if (ConstantIssue.IssueFilterInput.select.equals(input)) {
+        } else if (ConstantIssue.IssueInput.dropdown.equals(input)) {
             this.operators = ConstantIssue.OperatorsForSelect;
-        } else if (ConstantIssue.IssueFilterInput.date.equals(input)) {
+        } else if (ConstantIssue.IssueInput.date.equals(input)) {
             this.operators = ConstantIssue.OperatorsForDate;
         }
     }
@@ -66,19 +66,19 @@ public class IsuJqlFilter implements Serializable {
         this.label = label;
     }
 
-    public ConstantIssue.IssueFilterType getType() {
+    public ConstantIssue.IssueType getType() {
         return type;
     }
 
-    public void setType(ConstantIssue.IssueFilterType type) {
+    public void setType(ConstantIssue.IssueType type) {
         this.type = type;
     }
 
-    public ConstantIssue.IssueFilterInput getInput() {
+    public ConstantIssue.IssueInput getInput() {
         return input;
     }
 
-    public void setInput(ConstantIssue.IssueFilterInput input) {
+    public void setInput(ConstantIssue.IssueInput input) {
         this.input = input;
     }
 

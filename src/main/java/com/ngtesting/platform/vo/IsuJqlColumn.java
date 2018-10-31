@@ -11,7 +11,7 @@ public class IsuJqlColumn implements Serializable {
 	private String code;
 	private String label;
 	private Boolean display;
-	ConstantIssue.IssueFilterType type;
+	ConstantIssue.IssueType type;
 
     public String getCode() {
         return code;
@@ -37,11 +37,11 @@ public class IsuJqlColumn implements Serializable {
 		this.display = display;
 	}
 
-	public ConstantIssue.IssueFilterType getType() {
+	public ConstantIssue.IssueType getType() {
 		return type;
 	}
 
-	public void setType(ConstantIssue.IssueFilterType type) {
+	public void setType(ConstantIssue.IssueType type) {
 		this.type = type;
 	}
 }

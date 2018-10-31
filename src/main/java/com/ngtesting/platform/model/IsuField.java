@@ -1,4 +1,4 @@
-package com.ngtesting.platform.vo;
+package com.ngtesting.platform.model;
 
 
 import com.ngtesting.platform.config.ConstantIssue;
@@ -11,9 +11,11 @@ public class IsuField implements Serializable {
 
 	private String code;
 	private String label;
-	private Boolean display;
-	ConstantIssue.IssueFilterType type;
-    ConstantIssue.IssueFilterInput input;
+	ConstantIssue.IssueType type;
+    ConstantIssue.IssueInput input;
+    private Integer ordr;
+
+    private Boolean display;
 
     public String getCode() {
         return code;
@@ -39,19 +41,27 @@ public class IsuField implements Serializable {
 		this.display = display;
 	}
 
-    public ConstantIssue.IssueFilterType getType() {
+    public ConstantIssue.IssueType getType() {
         return type;
     }
 
-    public void setType(ConstantIssue.IssueFilterType type) {
+    public void setType(ConstantIssue.IssueType type) {
         this.type = type;
     }
 
-    public ConstantIssue.IssueFilterInput getInput() {
+    public ConstantIssue.IssueInput getInput() {
         return input;
     }
 
-    public void setInput(ConstantIssue.IssueFilterInput input) {
+    public void setInput(ConstantIssue.IssueInput input) {
         this.input = input;
+    }
+
+    public Integer getOrdr() {
+        return ordr;
+    }
+
+    public void setOrdr(Integer ordr) {
+        this.ordr = ordr;
     }
 }

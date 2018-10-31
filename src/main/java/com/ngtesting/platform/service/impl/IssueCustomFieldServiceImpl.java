@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.config.ConstantIssue;
 import com.ngtesting.platform.dao.IssueCustomFieldDao;
 import com.ngtesting.platform.dao.IssueCustomFieldOptionDao;
 import com.ngtesting.platform.model.IsuCustomField;
@@ -50,7 +51,7 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
             vo.setOrdr(maxOrder + 10);
 
             customFieldDao.save(vo);
-            if (vo.getType().equals(IsuCustomField.FieldType.dropdown)) {
+            if (vo.getType().equals(ConstantIssue.IssueInput.dropdown)) {
                 customFieldOptionDao.saveAll(vo.getId(), vo.getOptions());
             }
         } else {
@@ -117,7 +118,7 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
     @Override
     public List<String> listType() {
         List<String> ls = new LinkedList<String>();
-        for (IsuCustomField.FieldType item : IsuCustomField.FieldType.values()) {
+        for (ConstantIssue.IssueInput item : ConstantIssue.IssueInput.values()) {
             ls.add(item.toString());
         }
         return ls;
@@ -126,7 +127,7 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
     @Override
     public List<String> listFormat() {
         List<String> ls = new LinkedList();
-        for (IsuCustomField.FieldFormat item : IsuCustomField.FieldFormat.values()) {
+        for (ConstantIssue.TextFormat item : ConstantIssue.TextFormat.values()) {
             ls.add(item.toString());
         }
         return ls;

@@ -6,7 +6,7 @@ import java.util.List;
 public class IsuPageTab extends BaseModel {
     private static final long serialVersionUID = -3446493515026238121L;
 
-    private String name;
+    private String name = "默认";
     private String descr;
     private Integer pageId;
 

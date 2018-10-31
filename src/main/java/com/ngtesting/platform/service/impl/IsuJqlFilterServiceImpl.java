@@ -34,7 +34,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
         List<String> filterNameArr = new LinkedList<>();
         iterateRuleName(rule, filterNameArr);
 
-        List<IsuFieldDefine> fields = isuFieldDefineDao.listFilters();
+        List<IsuFieldDefine> fields = isuFieldDefineDao.listDefaultFilter();
         int i = 0;
         for (IsuFieldDefine field : fields) {
             String code = field.getCode();

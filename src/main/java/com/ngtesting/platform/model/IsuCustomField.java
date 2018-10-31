@@ -1,5 +1,7 @@
 package com.ngtesting.platform.model;
 
+import com.ngtesting.platform.config.ConstantIssue;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,66 +12,22 @@ public class IsuCustomField extends BaseModel {
     private String label;
     private String myColumn;
 
+    ConstantIssue.IssueType type;
+    ConstantIssue.IssueInput input;
+
     private String descr;
-    private String applyTo;
-    private String type;
 
 	private List<IsuCustomFieldOption> options = new LinkedList<>();
 
     private Integer rows = 3;
 
-    private String format = "plain_text";
+    private ConstantIssue.TextFormat textFormat = ConstantIssue.TextFormat.plain_text;
     private Boolean required;
     private Boolean global = true;
     private Boolean buildIn = false;
 
     private Integer ordr;
     private Integer orgId;
-
-	public static enum FieldType {
-		string("string"),
-		number("number"),
-		dropdown("dropdown"),
-		text("text");
-
-//    	url("url"),
-//
-//    	radio("radio"),
-//    	checkbox("checkbox"),
-//
-//
-//    	multi_select("multi_select"),
-//
-//    	date("date"),
-//
-//    	user("user"),
-//    	version("version"),
-//    	step("step"),
-//    	result("result");
-
-		private FieldType(String textVal) {
-			this.textVal = textVal;
-		}
-
-		private String textVal;
-		public String toString() {
-			return textVal;
-		}
-	}
-
-    public static enum FieldFormat {
-        plain_text("plain_text");
-//        rich_text("rich_text");
-
-        private FieldFormat(String textVal) {
-            this.textVal = textVal;
-        }
-
-        private String textVal;
-        public String toString() {
-            return textVal;
-        }
-    }
 
     public List<IsuCustomFieldOption> getOptions() {
         return options;
@@ -135,20 +93,12 @@ public class IsuCustomField extends BaseModel {
 		this.descr = descr;
 	}
 
-	public String getType() {
+	public ConstantIssue.IssueType getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(ConstantIssue.IssueType type) {
 		this.type = type;
-	}
-
-    public String getApplyTo() {
-		return applyTo;
-	}
-
-	public void setApplyTo(String applyTo) {
-		this.applyTo = applyTo;
 	}
 
 	public Integer getRows() {
@@ -159,15 +109,15 @@ public class IsuCustomField extends BaseModel {
 		this.rows = rows;
 	}
 
-	public String getFormat() {
-		return format;
-	}
+    public ConstantIssue.TextFormat getTextFormat() {
+        return textFormat;
+    }
 
-	public void setFormat(String format) {
-		this.format = format;
-	}
+    public void setTextFormat(ConstantIssue.TextFormat textFormat) {
+        this.textFormat = textFormat;
+    }
 
-	public Integer getOrdr() {
+    public Integer getOrdr() {
 		return ordr;
 	}
 
@@ -181,5 +131,13 @@ public class IsuCustomField extends BaseModel {
 
     public void setOrgId(Integer orgId) {
         this.orgId = orgId;
+    }
+
+    public ConstantIssue.IssueInput getInput() {
+        return input;
+    }
+
+    public void setInput(ConstantIssue.IssueInput input) {
+        this.input = input;
     }
 }

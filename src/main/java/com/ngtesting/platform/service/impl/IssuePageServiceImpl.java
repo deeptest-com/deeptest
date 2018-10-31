@@ -24,4 +24,9 @@ public class IssuePageServiceImpl extends BaseServiceImpl implements IssuePageSe
     public List<IsuPage> list(Integer orgId) {
         return pageDao.list(orgId);
     }
+
+    @Override
+    public IsuPage get(Integer pageId, Integer orgId) {
+        return pageDao.get(pageId, orgId);
+    }
 }

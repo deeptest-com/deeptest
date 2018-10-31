@@ -40,12 +40,12 @@ public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlCo
         List<String> ls = new ArrayList<>(Arrays.asList(columnsStr.split(",")));
         List<IsuJqlColumn> vos = new LinkedList<>();
 
-        List<IsuFieldDefine> cols = fieldDao.listFileds();
+        List<IsuFieldDefine> cols = fieldDao.listDefaultField();
         int i = 0;
         for (IsuFieldDefine col : cols) {
             String code = col.getCode();
             String label = col.getLabel();
-            ConstantIssue.IssueFilterType type = col.getType();
+            ConstantIssue.IssueType type = col.getType();
 
             Boolean enable;
             if (ls.size() > 0) {
@@ -76,7 +76,7 @@ public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlCo
     public String buildDefaultColStr(TstUser user) {
         String ret = "";
 
-        List<IsuFieldDefine> cols = fieldDao.listFileds();
+        List<IsuFieldDefine> cols = fieldDao.listDefaultField();
         int i = 0;
         for (IsuFieldDefine col : cols) {
             String code = col.getCode();

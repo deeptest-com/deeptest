@@ -100,12 +100,10 @@ public class IssuePageAdmin extends BaseAction {
 
         pageService.addTab(tab);
 
-        IsuPage page = pageService.get(tab.getPageId(), orgId);
         List<IsuField> fields = fieldDao.listOrgField(orgId);
 
-        ret.put("page", page);
+        ret.put("tab", tab);
         ret.put("fields", fields);
-        ret.put("currTabId", tab.getId());
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

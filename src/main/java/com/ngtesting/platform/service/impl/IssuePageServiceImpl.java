@@ -71,4 +71,9 @@ public class IssuePageServiceImpl extends BaseServiceImpl implements IssuePageSe
     public void addField(IsuPageElement element) {
         pageDao.addField(element);
     }
+
+    @Override
+    public IsuPageTab getTab(Integer tabId, Integer orgId) {
+        return pageDao.getTab(tabId, orgId);
+    }
 }

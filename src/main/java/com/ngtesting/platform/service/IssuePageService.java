@@ -19,4 +19,6 @@ public interface IssuePageService extends BaseService {
     void addTab(IsuPageTab tab);
 
     void addField(IsuPageElement element);
+
+    IsuPageTab getTab(Integer tabId, Integer orgId);
 }

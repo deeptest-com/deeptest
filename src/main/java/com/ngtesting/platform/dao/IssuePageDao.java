@@ -24,4 +24,6 @@ public interface IssuePageDao {
     void addTab(IsuPageTab tab);
 
     void addField(IsuPageElement element);
+
+    IsuPageTab getTab(@Param("tabId") Integer tabId, @Param("orgId") Integer orgId);
 }

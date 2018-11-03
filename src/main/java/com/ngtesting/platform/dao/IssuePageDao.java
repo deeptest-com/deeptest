@@ -1,6 +1,8 @@
 package com.ngtesting.platform.dao;
 
 import com.ngtesting.platform.model.IsuPage;
+import com.ngtesting.platform.model.IsuPageElement;
+import com.ngtesting.platform.model.IsuPageTab;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -18,4 +20,8 @@ public interface IssuePageDao {
     Integer delete(@Param("id") Integer id, @Param("orgId") Integer orgId);
 
     void saveDefaultTab(@Param("pageId") Integer pageId, @Param("orgId") Integer orgId);
+
+    void addTab(IsuPageTab tab);
+
+    void addField(IsuPageElement element);
 }

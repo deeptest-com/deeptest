@@ -64,6 +64,20 @@
         WHERE id=#{id} AND orgId=#{orgId}
     </delete>
 
+    <insert id="addTab" useGeneratedKeys="true" keyProperty="id">
+        insert into IsuPageTab
+        (name, pageId, orgId, deleted, disabled, createTime)
+        values
+        (#{name}, #{pageId}, #{orgId}, FALSE, FALSE, NOW())
+    </insert>
+
+    <insert id="addField" useGeneratedKeys="true" keyProperty="id">
+        insert into IsuPageElement
+        (code, label, type, input, ordr, fieldId, pageId, orgId, deleted, disabled, createTime)
+        values
+        (#{code}, #{label}, #{type}, #{input}, #{fieldId}, #{ordr}, #{pageId}, #{orgId}, FALSE, FALSE, NOW())
+    </insert>
+
     <resultMap id="issuePageMap" type="IsuPage" autoMapping="true">
         <id column="id" property="id"/>
 

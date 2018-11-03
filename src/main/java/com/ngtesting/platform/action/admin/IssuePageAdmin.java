@@ -63,13 +63,53 @@ public class IssuePageAdmin extends BaseAction {
 			page = pageService.get(pageId, orgId);
 		}
 
-        List<IsuField> fields = fieldDao.listOrgField(orgId);
-
 		ret.put("page", page);
-        ret.put("fields", fields);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+
+    @RequestMapping(value = "getDetail", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> getDetail(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = userVo.getDefaultOrgId();
+
+        Integer pageId = json.getInteger("id");
+        IsuPage page = pageService.get(pageId, orgId);
+
+        List<IsuField> fields = fieldDao.listOrgField(orgId);
+
+        ret.put("page", page);
+        ret.put("fields", fields);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @RequestMapping(value = "addTab", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> addTab(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = userVo.getDefaultOrgId();
+
+        IsuPageTab tab = JSON.parseObject(JSON.toJSONString(json), IsuPageTab.class);
+        tab.setOrgId(orgId);
+
+        pageService.addTab(tab);
+
+        IsuPage page = pageService.get(tab.getPageId(), orgId);
+        List<IsuField> fields = fieldDao.listOrgField(orgId);
+
+        ret.put("page", page);
+        ret.put("fields", fields);
+        ret.put("currTabId", tab.getId());
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
 
     @RequestMapping(value = "addField", method = RequestMethod.POST)
     @ResponseBody
@@ -79,8 +119,16 @@ public class IssuePageAdmin extends BaseAction {
         TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = userVo.getDefaultOrgId();
 
-        Integer tabId = json.getInteger("tabId");
-		Integer fieldId = json.getInteger("fieldId");
+        IsuPageElement elem = JSON.parseObject(JSON.toJSONString(json), IsuPageElement.class);
+        elem.setOrgId(orgId);
+
+        pageService.addField(elem);
+
+        IsuPage page = pageService.get(elem.getPageId(), orgId);
+        List<IsuField> fields = fieldDao.listOrgField(orgId);
+
+        ret.put("page", page);
+        ret.put("fields", fields);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

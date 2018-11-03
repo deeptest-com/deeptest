@@ -3,10 +3,14 @@ package com.ngtesting.platform.model;
 public class IsuPageElement extends BaseModel {
     private static final long serialVersionUID = 8715160448820762150L;
 
-    private Integer fieldId;
-    private String fieldName;
+    private String code;
+    private String label;
+    private String type;
+    private String input;
+
     private Integer ordr;
 
+    private Integer fieldId;
     private Integer tabId;
     private Integer pageId;
 
@@ -18,14 +22,6 @@ public class IsuPageElement extends BaseModel {
 
     public void setFieldId(Integer fieldId) {
         this.fieldId = fieldId;
-    }
-
-    public String getFieldName() {
-        return fieldName;
-    }
-
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
     }
 
     public Integer getOrdr() {
@@ -58,5 +54,37 @@ public class IsuPageElement extends BaseModel {
 
     public void setPageId(Integer pageId) {
         this.pageId = pageId;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getInput() {
+        return input;
+    }
+
+    public void setInput(String input) {
+        this.input = input;
     }
 }

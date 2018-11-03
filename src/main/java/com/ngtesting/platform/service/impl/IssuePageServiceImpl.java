@@ -3,6 +3,8 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.dao.IssuePageDao;
 import com.ngtesting.platform.dao.IssuePageSolutionDao;
 import com.ngtesting.platform.model.IsuPage;
+import com.ngtesting.platform.model.IsuPageElement;
+import com.ngtesting.platform.model.IsuPageTab;
 import com.ngtesting.platform.service.IssuePageService;
 import com.ngtesting.platform.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,5 +60,15 @@ public class IssuePageServiceImpl extends BaseServiceImpl implements IssuePageSe
         }
 
         return true;
+    }
+
+    @Override
+    public void addTab(IsuPageTab tab) {
+        pageDao.addTab(tab);
+    }
+
+    @Override
+    public void addField(IsuPageElement element) {
+        pageDao.addField(element);
     }
 }

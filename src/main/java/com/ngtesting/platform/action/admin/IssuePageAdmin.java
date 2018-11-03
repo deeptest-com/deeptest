@@ -71,6 +71,21 @@ public class IssuePageAdmin extends BaseAction {
 		return ret;
 	}
 
+    @RequestMapping(value = "addField", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> addField(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = userVo.getDefaultOrgId();
+
+        Integer tabId = json.getInteger("tabId");
+        IsuField field = JSON.parseObject(JSON.toJSONString(json.get("field")), IsuField.class);
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {

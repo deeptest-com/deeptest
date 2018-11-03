@@ -3,8 +3,6 @@
 
 AngularJS, SockJS, SpringBoot, MyBatis, MySQL
 
-Demo: http://47.99.102.138:8080
-
 ## Quick start
 ### Use Docker
 
@@ -43,7 +41,7 @@ Demo: http://47.99.102.138:8080
 ![project_view](xdoc/capture/plan_exe_process.jpg)
 ![project_view](xdoc/capture/plan_exe_process_by_user.jpg)
 
-## Test Plan
+## Issue Query
 ![issue_query](xdoc/capture/issue_query.jpg)
 
 ## Licenses

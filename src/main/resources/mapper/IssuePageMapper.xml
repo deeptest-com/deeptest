@@ -30,14 +30,39 @@
         ORDER BY o.ordr ASC
     </select>
 
-    <select id="get" resultType="issuePageMap">
+    <select id="get" resultMap="issuePageMap">
         SELECT o.* FROM IsuPage o
 
         WHERE o.id = #{id} AND orgId = #{orgId}
         AND o.deleted != true AND o.disabled != true
-
-        ORDER BY o.ordr ASC
     </select>
+
+    <insert id="save" parameterType="IsuPage" useGeneratedKeys="true" keyProperty="id">
+        insert into IsuPage
+        (name, orgId, deleted, disabled, createTime)
+        values
+        (#{name}, #{orgId}, FALSE, FALSE, NOW())
+    </insert>
+
+    <insert id="saveDefaultTab" useGeneratedKeys="true" keyProperty="id">
+        insert into IsuPageTab
+        (name, pageId, orgId, deleted, disabled, createTime)
+        values
+        ('默认标签', #{pageId}, #{orgId}, FALSE, FALSE, NOW())
+    </insert>
+
+    <update id="update" parameterType="IsuPage">
+        UPDATE IsuPage
+        SET name=#{name}, updateTime=NOW()
+
+        WHERE id=#{id} AND orgId=#{orgId}
+    </update>
+
+    <delete id="delete">
+        UPDATE IsuPage
+        SET disabled=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND orgId=#{orgId}
+    </delete>
 
     <resultMap id="issuePageMap" type="IsuPage" autoMapping="true">
         <id column="id" property="id"/>
@@ -47,7 +72,7 @@
         </collection>
     </resultMap>
 
-    <resultMap id="issuePageTabMap" type="IsuPage" autoMapping="true">
+    <resultMap id="issuePageTabMap" type="IsuPageTab" autoMapping="true">
         <id column="id" property="id"/>
 
         <collection property="elements" select="listElementByTabId"

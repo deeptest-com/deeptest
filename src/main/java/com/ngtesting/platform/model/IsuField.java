@@ -9,10 +9,11 @@ public class IsuField implements Serializable {
 
 	private static final long serialVersionUID = 3168995179136496564L;
 
+    private Integer id;
 	private String code;
 	private String label;
-	ConstantIssue.IssueType type;
-    ConstantIssue.IssueInput input;
+    private ConstantIssue.IssueType type;
+    private ConstantIssue.IssueInput input;
     private Integer ordr;
 
     private Boolean display;
@@ -63,5 +64,13 @@ public class IsuField implements Serializable {
 
     public void setOrdr(Integer ordr) {
         this.ordr = ordr;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

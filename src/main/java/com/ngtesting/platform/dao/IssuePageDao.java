@@ -10,4 +10,12 @@ public interface IssuePageDao {
     List<IsuPage> list(Integer orgId);
 
     IsuPage get(@Param("id") Integer id, @Param("orgId") Integer orgId);
+
+    void save(IsuPage vo);
+
+    Integer update(IsuPage vo);
+
+    Integer delete(@Param("id") Integer id, @Param("orgId") Integer orgId);
+
+    void saveDefaultTab(@Param("pageId") Integer pageId, @Param("orgId") Integer orgId);
 }

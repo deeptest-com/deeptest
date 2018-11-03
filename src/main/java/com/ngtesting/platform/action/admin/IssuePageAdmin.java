@@ -80,7 +80,7 @@ public class IssuePageAdmin extends BaseAction {
         Integer orgId = userVo.getDefaultOrgId();
 
         Integer tabId = json.getInteger("tabId");
-        IsuField field = JSON.parseObject(JSON.toJSONString(json.get("field")), IsuField.class);
+		Integer fieldId = json.getInteger("fieldId");
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
@@ -94,11 +94,15 @@ public class IssuePageAdmin extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		IsuCustomField customField = JSON.parseObject(JSON.toJSONString(json.get("model")), IsuCustomField.class);
-//		List<TestProjectVo> projects = (List<TestProjectVo>) json.getDetail("relations");
-//
-//		IsuCustomField po = customFieldService.save(customField, orgId);
-//		boolean success = customFieldService.saveRelationsByField(po.getCode(), projects);
+		IsuPage page = JSON.parseObject(JSON.toJSONString(json), IsuPage.class);
+        pageService.save(page, orgId);
+
+		page = pageService.get(page.getId(), orgId);
+
+		List<IsuField> fields = fieldDao.listOrgField(orgId);
+
+		ret.put("page", page);
+        ret.put("fields", fields);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -114,7 +118,7 @@ public class IssuePageAdmin extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-//		boolean success = customFieldService.delete(id, orgId);
+		boolean success = pageService.delete(id, orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

@@ -9,4 +9,8 @@ public interface IssuePageService extends BaseService {
     List<IsuPage> list(Integer orgId);
 
     IsuPage get(Integer pageId, Integer orgId);
+
+    IsuPage save(IsuPage page, Integer orgId);
+
+    boolean delete(Integer id, Integer orgId);
 }

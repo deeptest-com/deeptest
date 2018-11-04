@@ -80,9 +80,9 @@
 
     <insert id="addField" parameterType="IsuPageElement" useGeneratedKeys="true" keyProperty="id">
         insert into IsuPageElement
-        (code, label, `type`, `input`, fieldId, `tabId`, pageId, orgId, ordr, deleted, disabled, createTime)
+        (`key`, code, label, `type`, `input`, fieldId, `tabId`, pageId, orgId, ordr, deleted, disabled, createTime)
         values
-        (#{code}, #{label}, #{type}, #{input}, #{fieldId}, #{tabId}, #{pageId}, #{orgId}, #{ordr}, FALSE, FALSE, NOW())
+        (#{key}, #{code}, #{label}, #{type}, #{input}, #{fieldId}, #{tabId}, #{pageId}, #{orgId}, #{ordr}, FALSE, FALSE, NOW())
     </insert>
 
     <resultMap id="issuePageMap" type="IsuPage" autoMapping="true">

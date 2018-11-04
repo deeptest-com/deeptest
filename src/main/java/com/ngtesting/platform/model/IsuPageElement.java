@@ -8,6 +8,8 @@ public class IsuPageElement extends BaseModel {
     private String type;
     private String input;
 
+    private String key;
+
     private Integer ordr;
 
     private Integer fieldId;
@@ -86,5 +88,13 @@ public class IsuPageElement extends BaseModel {
 
     public void setInput(String input) {
         this.input = input;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

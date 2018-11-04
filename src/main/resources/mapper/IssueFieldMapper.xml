@@ -15,21 +15,27 @@
     </select>
 
     <select id="listOrgField" resultType="IsuField">
-        (SELECT fieldDefine.id, fieldDefine.code, fieldDefine.label, fieldDefine.type, fieldDefine.input,
-          fieldDefine.columnOrdr ordr
+        SELECT fields.*
+        FROM ( (SELECT CONCAT('sys-', fieldDefine.id) `key`, fieldDefine.id, fieldDefine.code, fieldDefine.label, fieldDefine.type, fieldDefine.input,
+              fieldDefine.columnOrdr ordr
 
-        FROM IsuFieldDefine fieldDefine
-        ORDER BY fieldDefine.columnOrdr ASC)
+            FROM IsuFieldDefine fieldDefine
+            ORDER BY fieldDefine.columnOrdr ASC)
 
-        UNION
+            UNION
 
-        (SELECT customField.id, customField.myColumn code, customField.label, customField.type, customField.input,
-          customField.ordr
+            (SELECT CONCAT('cust-', customField.id) `key`, customField.id, customField.myColumn code, customField.label, customField.type, customField.input,
+              customField.ordr
 
-        FROM IsuCustomField customField
+            FROM IsuCustomField customField
 
-        WHERE orgId = #{orgId}
-        ORDER BY customField.ordr ASC)
+            WHERE orgId = #{orgId}
+            ORDER BY customField.ordr ASC)
+        ) fields
+        WHERE fields.key
+        NOT IN (
+          SELECT elem.key FROM IsuPageElement elem WHERE elem.tabId = #{tabId}
+        )
     </select>
 
     <select id="listOrgFieldDetail" resultType="IsuField">

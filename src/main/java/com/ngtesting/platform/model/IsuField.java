@@ -12,6 +12,7 @@ public class IsuField implements Serializable {
     private Integer id;
 	private String code;
 	private String label;
+    private String key;
     private ConstantIssue.IssueType type;
     private ConstantIssue.IssueInput input;
     private Integer ordr;
@@ -72,5 +73,13 @@ public class IsuField implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

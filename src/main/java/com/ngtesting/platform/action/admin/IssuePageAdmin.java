@@ -79,7 +79,9 @@ public class IssuePageAdmin extends BaseAction {
         Integer pageId = json.getInteger("id");
         IsuPage page = pageService.get(pageId, orgId);
 
-        List<IsuField> fields = fieldDao.listOrgField(orgId);
+        IsuPageTab tab = page.getTabs().get(0);
+
+        List<IsuField> fields = fieldDao.listOrgField(orgId, tab.getId());
 
         ret.put("page", page);
         ret.put("fields", fields);
@@ -100,7 +102,28 @@ public class IssuePageAdmin extends BaseAction {
 
         pageService.addTab(tab);
 
-        List<IsuField> fields = fieldDao.listOrgField(orgId);
+        List<IsuField> fields = fieldDao.listOrgField(orgId, tab.getId());
+
+        ret.put("tab", tab);
+        ret.put("fields", fields);
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @RequestMapping(value = "getTab", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> getTab(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = userVo.getDefaultOrgId();
+
+        Integer tabId = json.getInteger("id");
+
+        IsuPageTab tab = pageService.getTab(tabId, orgId);
+
+        List<IsuField> fields = fieldDao.listOrgField(orgId, tab.getId());
 
         ret.put("tab", tab);
         ret.put("fields", fields);
@@ -123,7 +146,7 @@ public class IssuePageAdmin extends BaseAction {
         pageService.addField(elem);
 
         IsuPageTab tab = pageService.getTab(elem.getTabId(), orgId);
-        List<IsuField> fields = fieldDao.listOrgField(orgId);
+        List<IsuField> fields = fieldDao.listOrgField(orgId, elem.getTabId());
 
         ret.put("tab", tab);
         ret.put("fields", fields);
@@ -144,8 +167,9 @@ public class IssuePageAdmin extends BaseAction {
         pageService.save(page, orgId);
 
 		page = pageService.get(page.getId(), orgId);
+        IsuPageTab tab = page.getTabs().get(0);
 
-		List<IsuField> fields = fieldDao.listOrgField(orgId);
+		List<IsuField> fields = fieldDao.listOrgField(orgId, tab.getId());
 
 		ret.put("page", page);
         ret.put("fields", fields);

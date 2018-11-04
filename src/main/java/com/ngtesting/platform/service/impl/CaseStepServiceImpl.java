@@ -34,7 +34,6 @@ public class CaseStepServiceImpl extends BaseServiceImpl implements CaseStepServ
         } else {
             step.setId(null);
             caseStepDao.save(step);
-            caseStepDao.moveOthersDown(step.getCaseId(), step.getId(), step.getOrdr());
         }
 
         return step;

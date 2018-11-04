@@ -26,4 +26,6 @@ public interface IssuePageDao {
     void addField(IsuPageElement element);
 
     IsuPageTab getTab(@Param("tabId") Integer tabId, @Param("orgId") Integer orgId);
+
+    Integer getMaxFieldOrdr(Integer tabId);
 }

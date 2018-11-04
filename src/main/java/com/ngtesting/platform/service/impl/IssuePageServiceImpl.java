@@ -69,6 +69,9 @@ public class IssuePageServiceImpl extends BaseServiceImpl implements IssuePageSe
 
     @Override
     public void addField(IsuPageElement element) {
+        Integer maxOrder = pageDao.getMaxFieldOrdr(element.getTabId());
+        maxOrder = maxOrder == null? 0: maxOrder;
+        element.setOrdr(maxOrder + 1);
         pageDao.addField(element);
     }
 

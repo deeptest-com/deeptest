@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.IssuePageTabDao" >
+
+    <insert id="add" parameterType="IsuPageTab" useGeneratedKeys="true" keyProperty="id">
+        insert into IsuPageTab
+        (name, pageId, orgId, deleted, disabled, createTime)
+        values
+        (#{name}, #{pageId}, #{orgId}, FALSE, FALSE, NOW())
+    </insert>
+
+    <select id="get" resultMap="issuePageTabMap">
+        SELECT o.* FROM IsuPageTab o
+
+        WHERE o.id = #{tabId} AND orgId = #{orgId}
+        AND o.deleted != true AND o.disabled != true
+    </select>
+
+    <delete id="remove">
+        UPDATE IsuPageTab
+        SET deleted=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND orgId=#{orgId}
+    </delete>
+
+    <select id="listTabByPageId" parameterType="Map" resultMap="issuePageTabMap">
+        SELECT o.* FROM IsuPageTab o
+
+        WHERE o.pageId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.ordr ASC
+    </select>
+
+    <resultMap id="issuePageTabMap" type="IsuPageTab" autoMapping="true">
+        <id column="id" property="id"/>
+
+        <collection property="elements" select="com.ngtesting.platform.dao.IssuePageElementDao.listElementByTabId"
+                    column="{id=id}">
+        </collection>
+    </resultMap>
+
+</mapper>

@@ -1,5 +1,7 @@
 package com.ngtesting.platform.service;
 
+import com.ngtesting.platform.model.IsuField;
+
 import java.util.List;
 import java.util.Map;
 
@@ -15,4 +17,6 @@ public interface IssueFieldService extends BaseService {
 	Map<String,String> getStatusMap(Integer orgId);
 
 	Map<String,String> getResolutionsMap(Integer orgId);
+
+    List<IsuField> listOrgField(Integer orgId, Integer tabId);
 }

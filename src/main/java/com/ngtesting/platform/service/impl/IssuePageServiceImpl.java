@@ -1,7 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.IssuePageDao;
-import com.ngtesting.platform.dao.IssuePageSolutionDao;
 import com.ngtesting.platform.model.IsuPage;
 import com.ngtesting.platform.model.IsuPageElement;
 import com.ngtesting.platform.model.IsuPageTab;
@@ -20,8 +19,6 @@ public class IssuePageServiceImpl extends BaseServiceImpl implements IssuePageSe
 
 	@Autowired
     IssuePageDao pageDao;
-    @Autowired
-    IssuePageSolutionDao pageSolutionDao;
 
     @Override
     public List<IsuPage> list(Integer orgId) {
@@ -62,21 +59,4 @@ public class IssuePageServiceImpl extends BaseServiceImpl implements IssuePageSe
         return true;
     }
 
-    @Override
-    public void addTab(IsuPageTab tab) {
-        pageDao.addTab(tab);
-    }
-
-    @Override
-    public void addField(IsuPageElement element) {
-        Integer maxOrder = pageDao.getMaxFieldOrdr(element.getTabId());
-        maxOrder = maxOrder == null? 0: maxOrder;
-        element.setOrdr(maxOrder + 1);
-        pageDao.addField(element);
-    }
-
-    @Override
-    public IsuPageTab getTab(Integer tabId, Integer orgId) {
-        return pageDao.getTab(tabId, orgId);
-    }
 }

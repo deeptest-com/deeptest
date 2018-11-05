@@ -4,8 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.dao.IssueFieldDao;
-import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.model.IsuField;
+import com.ngtesting.platform.model.IsuPage;
+import com.ngtesting.platform.model.IsuPageTab;
+import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.IssueFieldService;
 import com.ngtesting.platform.service.IssuePageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,7 +30,7 @@ public class IssuePageAdmin extends BaseAction {
 	IssuePageService pageService;
 
     @Autowired
-    IssueFieldDao fieldDao;
+    IssueFieldService fieldService;
 
 	@RequestMapping(value = "load", method = RequestMethod.POST)
 	@ResponseBody
@@ -81,76 +84,10 @@ public class IssuePageAdmin extends BaseAction {
 
         IsuPageTab tab = page.getTabs().get(0);
 
-        List<IsuField> fields = fieldDao.listOrgField(orgId, tab.getId());
+        List<IsuField> fields = fieldService.listOrgField(orgId, tab.getId());
 
         ret.put("page", page);
         ret.put("fields", fields);
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
-    @RequestMapping(value = "addTab", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> addTab(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = userVo.getDefaultOrgId();
-
-        IsuPageTab tab = JSON.parseObject(JSON.toJSONString(json), IsuPageTab.class);
-        tab.setOrgId(orgId);
-
-        pageService.addTab(tab);
-
-        List<IsuField> fields = fieldDao.listOrgField(orgId, tab.getId());
-
-        ret.put("tab", tab);
-        ret.put("fields", fields);
-
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
-    @RequestMapping(value = "getTab", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> getTab(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = userVo.getDefaultOrgId();
-
-        Integer tabId = json.getInteger("id");
-
-        IsuPageTab tab = pageService.getTab(tabId, orgId);
-
-        List<IsuField> fields = fieldDao.listOrgField(orgId, tab.getId());
-
-        ret.put("tab", tab);
-        ret.put("fields", fields);
-
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
-    @RequestMapping(value = "addField", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> addField(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = userVo.getDefaultOrgId();
-
-        IsuPageElement elem = JSON.parseObject(JSON.toJSONString(json), IsuPageElement.class);
-        elem.setOrgId(orgId);
-
-        pageService.addField(elem);
-
-        IsuPageTab tab = pageService.getTab(elem.getTabId(), orgId);
-        List<IsuField> fields = fieldDao.listOrgField(orgId, elem.getTabId());
-
-        ret.put("tab", tab);
-        ret.put("fields", fields);
-
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -169,7 +106,7 @@ public class IssuePageAdmin extends BaseAction {
 		page = pageService.get(page.getId(), orgId);
         IsuPageTab tab = page.getTabs().get(0);
 
-		List<IsuField> fields = fieldDao.listOrgField(orgId, tab.getId());
+		List<IsuField> fields = fieldService.listOrgField(orgId, tab.getId());
 
 		ret.put("page", page);
         ret.put("fields", fields);
@@ -191,26 +128,6 @@ public class IssuePageAdmin extends BaseAction {
 		boolean success = pageService.delete(id, orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
-	@RequestMapping(value = "changeOrder", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
-		Integer id = json.getInteger("id");
-		String act = json.getString("act");
-
-//		boolean success = customFieldService.changeOrderPers(id, act, orgId);
-//
-//		List<IsuCustomField> vos = customFieldService.list(orgId);
-
-//        ret.put("data", vos);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-
 		return ret;
 	}
 

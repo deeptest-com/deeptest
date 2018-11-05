@@ -1,10 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.*;
-import com.ngtesting.platform.model.IsuPriority;
-import com.ngtesting.platform.model.IsuResolution;
-import com.ngtesting.platform.model.IsuStatus;
-import com.ngtesting.platform.model.IsuType;
+import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.IssueFieldService;
 import com.ngtesting.platform.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,6 +107,11 @@ public class IssueFieldServiceImpl extends BaseServiceImpl implements IssueField
 		}
 
 		return map;
+	}
+
+	@Override
+	public List<IsuField> listOrgField(Integer orgId, Integer tabId) {
+		return fieldDao.listOrgField(orgId, tabId);
 	}
 
 }

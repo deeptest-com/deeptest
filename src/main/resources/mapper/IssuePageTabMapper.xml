@@ -22,6 +22,12 @@
         WHERE id=#{id} AND orgId=#{orgId}
     </delete>
 
+    <select id="getFieldNumb" resultType="Integer">
+        SELECT COUNT(o.id) FROM IsuPageElement o
+        WHERE o.tabId = #{tabId}
+        AND o.deleted != true AND o.disabled != true
+    </select>
+
     <select id="listTabByPageId" parameterType="Map" resultMap="issuePageTabMap">
         SELECT o.* FROM IsuPageTab o
 

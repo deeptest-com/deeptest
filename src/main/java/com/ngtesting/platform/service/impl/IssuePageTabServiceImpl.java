@@ -24,11 +24,13 @@ public class IssuePageTabServiceImpl extends BaseServiceImpl implements IssuePag
 
     @Override
     public boolean remove(Integer id, Integer orgId) {
-        Integer count = tabDao.remove(id, orgId);
+        Integer count = tabDao.getFieldNumb(orgId);
         if (count == 0) {
             return false;
         }
 
-        return true;
+        count = tabDao.remove(id, orgId);
+
+        return count > 0;
     }
 }

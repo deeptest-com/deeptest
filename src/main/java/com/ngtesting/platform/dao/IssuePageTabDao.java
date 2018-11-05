@@ -12,4 +12,5 @@ public interface IssuePageTabDao {
     Integer remove(@Param("id") Integer id, @Param("orgId") Integer orgId);
     Integer getMaxTabOrdr(Integer tabId);
 
+    Integer getFieldNumb(@Param("tabId") Integer tabId);
 }

@@ -91,6 +91,12 @@ public class IssuePageTabAdmin extends BaseAction {
         Integer currTabId = json.getInteger("currTabId");
 
         boolean success = tabService.remove(id, orgId);
+        if (!success) {
+            ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
+            ret.put("msg", "不能删除最后一个标签");
+
+            return ret;
+        }
 
         IsuPage page = pageService.get(pageId, orgId);
 

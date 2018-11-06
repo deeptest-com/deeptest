@@ -20,24 +20,14 @@ public class ConstantIssue {
     }
 
     public static enum IssueInput {
-        string("string"),
-        number("number"),
-        dropdown("dropdown"),
         text("text"),
+        textarea("textarea"),
+        dropdown("dropdown"),
         date("date");
 
-//    	url("url"),
-//
 //    	radio("radio"),
 //    	checkbox("checkbox"),
-//
-//
 //    	multi_select("multi_select"),
-//
-//    	user("user"),
-//    	version("version"),
-//    	step("step"),
-//    	result("result");
 
         private IssueInput(String textVal) {
             this.textVal = textVal;
@@ -51,7 +41,7 @@ public class ConstantIssue {
 
     public enum IssueType {
         integer("integer"),
-        doubl("doubl"),
+        floatt("floatt"),
         string("string"),
         date("date");
 
@@ -69,7 +59,7 @@ public class ConstantIssue {
     public static List<String> OperatorsForSelect =
             Arrays.asList("equal", "not_equal", "in", "not_in", "is_null", "is_not_null");
 
-    public static List<String> OperatorsForString =
+    public static List<String> OperatorsForText =
             Arrays.asList("equal", "not_equal", "in", "not_in", "begins_with", "not_begins_with",
                     "contains", "not_contains", "ends_with", "not_ends_with",
                     "is_empty", "is_not_empty", "is_null", "is_not_null");

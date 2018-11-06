@@ -90,7 +90,7 @@ public class IssuePageTabAdmin extends BaseAction {
         Integer pageId = json.getInteger("pageId");
         Integer currTabId = json.getInteger("currTabId");
 
-        boolean success = tabService.remove(id, orgId);
+        boolean success = tabService.remove(id, pageId, orgId);
         if (!success) {
             ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
             ret.put("msg", "不能删除最后一个标签");
@@ -108,6 +108,22 @@ public class IssuePageTabAdmin extends BaseAction {
         }
 
         ret.put("page", page);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @RequestMapping(value = "updateName", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> updateName(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = userVo.getDefaultOrgId();
+
+        IsuPageTab tab = JSON.parseObject(JSON.toJSONString(json), IsuPageTab.class);
+
+        tabService.updateName(tab);
+
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

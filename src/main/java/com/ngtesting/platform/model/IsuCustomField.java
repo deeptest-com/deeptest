@@ -14,6 +14,7 @@ public class IsuCustomField extends BaseModel {
 
     ConstantIssue.IssueType type;
     ConstantIssue.IssueInput input;
+//    private Boolean fullLine;
 
     private String descr;
 
@@ -140,4 +141,12 @@ public class IsuCustomField extends BaseModel {
     public void setInput(ConstantIssue.IssueInput input) {
         this.input = input;
     }
+
+//    public Boolean getFullLine() {
+//        return fullLine;
+//    }
+//
+//    public void setFullLine(Boolean fullLine) {
+//        this.fullLine = fullLine;
+//    }
 }

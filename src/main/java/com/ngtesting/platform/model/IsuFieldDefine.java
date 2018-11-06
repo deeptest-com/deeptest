@@ -18,6 +18,10 @@ public class IsuFieldDefine extends BaseModel {
 	private Boolean defaultShowInColumns;
 	private Integer columnOrdr;
 
+	private Boolean defaultShowInPage;
+	private Integer elemOrdr;
+    private Boolean fullLine;
+
 	public String getCode() {
 		return code;
 	}
@@ -81,4 +85,28 @@ public class IsuFieldDefine extends BaseModel {
 	public void setColumnOrdr(Integer columnOrdr) {
 		this.columnOrdr = columnOrdr;
 	}
+
+    public Boolean getDefaultShowInPage() {
+        return defaultShowInPage;
+    }
+
+    public void setDefaultShowInPage(Boolean defaultShowInPage) {
+        this.defaultShowInPage = defaultShowInPage;
+    }
+
+    public Integer getElemOrdr() {
+        return elemOrdr;
+    }
+
+    public void setElemOrdr(Integer elemOrdr) {
+        this.elemOrdr = elemOrdr;
+    }
+
+    public Boolean getFullLine() {
+        return fullLine;
+    }
+
+    public void setFullLine(Boolean fullLine) {
+        this.fullLine = fullLine;
+    }
 }

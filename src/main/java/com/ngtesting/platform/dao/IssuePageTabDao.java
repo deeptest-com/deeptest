@@ -6,11 +6,10 @@ import org.apache.ibatis.annotations.Param;
 public interface IssuePageTabDao {
 
     void add(IsuPageTab tab);
-
     IsuPageTab get(@Param("tabId") Integer tabId, @Param("orgId") Integer orgId);
-
+    void updateName(IsuPageTab tab);
     Integer remove(@Param("id") Integer id, @Param("orgId") Integer orgId);
-    Integer getMaxTabOrdr(Integer tabId);
 
-    Integer getFieldNumb(@Param("tabId") Integer tabId);
+    Integer getMaxTabOrdr(Integer tabId);
+    Integer countByPageId(@Param("pageId") Integer pageId);
 }

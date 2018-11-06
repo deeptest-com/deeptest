@@ -22,9 +22,15 @@
         WHERE id=#{id} AND orgId=#{orgId}
     </delete>
 
-    <select id="getFieldNumb" resultType="Integer">
-        SELECT COUNT(o.id) FROM IsuPageElement o
-        WHERE o.tabId = #{tabId}
+    <update id="updateName" parameterType="IsuPageTab">
+        UPDATE IsuPageTab
+        SET name = #{name}
+        WHERE id = #{id}
+    </update>
+
+    <select id="countByPageId" resultType="Integer">
+        SELECT COUNT(o.id) FROM IsuPageTab o
+        WHERE o.pageId = #{pageId}
         AND o.deleted != true AND o.disabled != true
     </select>
 

@@ -8,5 +8,7 @@ public interface IssuePageTabService extends BaseService {
 
     IsuPageTab get(Integer tabId, Integer orgId);
 
-    boolean remove(Integer id, Integer orgId);
+    boolean remove(Integer id, Integer pageId, Integer orgId);
+
+    void updateName(IsuPageTab tab);
 }

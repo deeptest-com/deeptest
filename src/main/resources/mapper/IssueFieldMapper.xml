@@ -16,15 +16,18 @@
 
     <select id="listOrgField" resultType="IsuField">
         SELECT fields.*
-        FROM ( (SELECT CONCAT('sys-', fieldDefine.id) `key`, fieldDefine.id, fieldDefine.code, fieldDefine.label, fieldDefine.type, fieldDefine.input,
+        FROM ( (SELECT CONCAT('sys-', fieldDefine.id) `key`, fieldDefine.id, fieldDefine.code, fieldDefine.label,
+              fieldDefine.type, fieldDefine.input, fieldDefine.fullLine,
               fieldDefine.columnOrdr ordr
 
             FROM IsuFieldDefine fieldDefine
-            ORDER BY fieldDefine.columnOrdr ASC)
+            WHERE fieldDefine.defaultShowInPage IS NOT null
+            ORDER BY fieldDefine.elemOrdr ASC)
 
             UNION
 
-            (SELECT CONCAT('cust-', customField.id) `key`, customField.id, customField.myColumn code, customField.label, customField.type, customField.input,
+            (SELECT CONCAT('cust-', customField.id) `key`, customField.id, customField.myColumn code, customField.label,
+              customField.type, customField.input, false AS fullLine,
               customField.ordr
 
             FROM IsuCustomField customField

@@ -26,8 +26,8 @@ public class IsuJqlFilter implements Serializable {
         this.input = field.getInput();
         this.display = field.getDefaultShowInFilters();
 
-        if (ConstantIssue.IssueInput.string.equals(type)) {
-            this.operators = ConstantIssue.OperatorsForString;
+        if (ConstantIssue.IssueInput.text.equals(type)) {
+            this.operators = ConstantIssue.OperatorsForText;
         } else if (ConstantIssue.IssueInput.date.equals(type)) {
             this.operators = ConstantIssue.OperatorsForDate;
         }
@@ -41,8 +41,8 @@ public class IsuJqlFilter implements Serializable {
         this.display = field.getDefaultShowInFilters();
 
         this.values = values;
-        if (ConstantIssue.IssueInput.string.equals(input)) {
-            this.operators = ConstantIssue.OperatorsForString;
+        if (ConstantIssue.IssueInput.text.equals(input)) {
+            this.operators = ConstantIssue.OperatorsForText;
         } else if (ConstantIssue.IssueInput.dropdown.equals(input)) {
             this.operators = ConstantIssue.OperatorsForSelect;
         } else if (ConstantIssue.IssueInput.date.equals(input)) {

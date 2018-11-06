@@ -16,6 +16,7 @@ public class IsuField implements Serializable {
     private ConstantIssue.IssueType type;
     private ConstantIssue.IssueInput input;
     private Integer ordr;
+    private Boolean fullLine;
 
     private Boolean display;
 
@@ -81,5 +82,13 @@ public class IsuField implements Serializable {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public Boolean getFullLine() {
+        return fullLine;
+    }
+
+    public void setFullLine(Boolean fullLine) {
+        this.fullLine = fullLine;
     }
 }

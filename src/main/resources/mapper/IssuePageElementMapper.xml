@@ -18,12 +18,6 @@
     </update>
 
     <update id="saveOrdrs">
-        <!-- <foreach collection="maps" item="map" separator=";">
-            UPDATE IsuPageElement
-            SET ordr=#{map.ordr}
-            WHERE id=#{map.id} AND orgId=#{orgId}
-        </foreach> -->
-
        UPDATE IsuPageElement
         SET ordr =
             CASE id
@@ -31,10 +25,22 @@
                     WHEN #{map.id} THEN #{map.ordr}
                 </foreach>
             END
-        WHERE id IN (
+        WHERE tabId=#{tabId} AND orgId=#{orgId}
+          AND id IN (
             <foreach collection="maps" item="map" separator=",">
                 #{map.id}
             </foreach>
+        )
+    </update>
+
+    <update id="removeOthers">
+        DELETE FROM IsuPageElement
+
+        WHERE tabId=#{tabId} AND orgId=#{orgId}
+        AND id NOT IN (
+        <foreach collection="maps" item="map" separator=",">
+            #{map.id}
+        </foreach>
         )
     </update>
 

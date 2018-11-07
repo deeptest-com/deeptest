@@ -57,7 +57,7 @@
 
         FROM IsuCustomField customField
 
-        WHERE id = #{id} AND orgId = #{orgId}
+        WHERE id = #{id}
     </select>
 
 </mapper>

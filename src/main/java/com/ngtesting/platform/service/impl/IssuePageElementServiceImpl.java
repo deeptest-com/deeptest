@@ -28,12 +28,13 @@ public class IssuePageElementServiceImpl extends BaseServiceImpl implements Issu
     @Override
     @Transactional
     public void saveAll(Integer orgId, Integer pageId, Integer tabId, List<Map> maps) {
+        elementDao.removeOthers(maps, tabId, orgId);
 
-        int ordr = 10;
+        int ordr = 1;
         for (Map map: maps) {
             map.put("ordr", ordr++);
 
-            String id = map.get("id").toString();
+            Object id = map.get("id");
             String key = map.get("key").toString();
 
             if (id == null) {
@@ -41,14 +42,15 @@ public class IssuePageElementServiceImpl extends BaseServiceImpl implements Issu
 
                 IsuPageElement elm = new IsuPageElement(field.getCode(), field.getLabel(),
                         field.getType(), field.getInput(), field.getFullLine(), field.getRequired(),
-                        field.getKey(), field.getFieldId(), tabId, pageId, orgId);
+                        field.getKey(), field.getFieldId(), tabId, pageId, orgId, ordr);
 
                 elementDao.save(elm);
+                map.put("id", elm.getId().toString());
             }
         }
 
         long start = new Date().getTime();
-        elementDao.saveOrdrs(maps, orgId);
+        elementDao.saveOrdrs(maps, tabId, orgId);
         long end = new Date().getTime();
 
         logger.info("Update ordrs for " + maps.size() + " records spend " + (end - start) + " milliseconds");

@@ -25,8 +25,8 @@ public class IsuPageElement extends BaseModel {
     public IsuPageElement(){}
     public IsuPageElement(String code, String label, ConstantIssue.IssueType type,
                           ConstantIssue.IssueInput input, Boolean fullLine, Boolean required,
-                          String key, Integer fieldId,
-                          Integer tabId, Integer pageId, Integer orgId) {
+                          String key, Integer fieldId, Integer tabId, Integer pageId, Integer orgId,
+                          Integer ordr) {
         this.code = code;
         this.label = label;
         this.type = type.toString();
@@ -38,6 +38,7 @@ public class IsuPageElement extends BaseModel {
         this.tabId = tabId;
         this.pageId = pageId;
         this.orgId = orgId;
+        this.ordr = ordr;
     }
 
     public Integer getFieldId() {

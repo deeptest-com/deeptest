@@ -15,7 +15,12 @@ public interface IssuePageElementDao {
                     @Param("orgId") Integer orgId);
 
     void saveOrdrs(@Param("maps") List<Map> maps,
+                   @Param("tabId") Integer tabId,
                    @Param("orgId") Integer orgId);
+
+    void removeOthers(@Param("maps") List<Map> maps,
+                      @Param("tabId") Integer tabId,
+                      @Param("orgId") Integer orgId);
 
 //    void add(IsuPageElement element);
 //    Integer remove(@Param("id") Integer id, @Param("orgId") Integer orgId);

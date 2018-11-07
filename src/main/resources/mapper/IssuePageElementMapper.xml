@@ -17,6 +17,27 @@
         WHERE id=#{id} AND orgId=#{orgId}
     </update>
 
+    <update id="saveOrdrs">
+        <!-- <foreach collection="maps" item="map" separator=";">
+            UPDATE IsuPageElement
+            SET ordr=#{map.ordr}
+            WHERE id=#{map.id} AND orgId=#{orgId}
+        </foreach> -->
+
+       UPDATE IsuPageElement
+        SET ordr =
+            CASE id
+                <foreach collection="maps" item="map">
+                    WHEN #{map.id} THEN #{map.ordr}
+                </foreach>
+            END
+        WHERE id IN (
+            <foreach collection="maps" item="map" separator=",">
+                #{map.id}
+            </foreach>
+        )
+    </update>
+
 <!--    <insert id="add" parameterType="IsuPageElement" useGeneratedKeys="true" keyProperty="id">
         insert into IsuPageElement
         (`key`, code, label, `type`, `input`, fieldId, `tabId`, pageId, orgId, ordr, deleted, disabled, createTime)

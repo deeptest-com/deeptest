@@ -1,6 +1,6 @@
 package com.ngtesting.platform.action.admin;
 
-import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
@@ -45,9 +45,9 @@ public class IssuePageElementAdmin extends BaseAction {
 
         Integer pageId = json.getInteger("pageId");
         Integer tabId = json.getInteger("tabId");
-        JSONArray jsonArr = json.getJSONArray("elems");
+        List<Map> maps = JSON.parseArray(json.getJSONArray("elems").toJSONString(), Map.class) ;
 
-        elementService.saveAll(orgId, pageId, tabId, jsonArr);
+        elementService.saveAll(orgId, pageId, tabId, maps);
 
 		IsuPageTab tab = tabService.get(tabId, orgId);
 		List<IsuField> fields = fieldService.listOrgField(orgId, tabId);

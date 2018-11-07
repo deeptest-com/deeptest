@@ -1,10 +1,11 @@
 package com.ngtesting.platform.service;
 
-import com.alibaba.fastjson.JSONArray;
+import java.util.List;
+import java.util.Map;
 
 public interface IssuePageElementService extends BaseService {
 
-    void saveAll(Integer orgId, Integer pageId, Integer tabId, JSONArray jsonArr);
+    void saveAll(Integer orgId, Integer pageId, Integer tabId, List<Map> jsonArr);
 
     void updateProp(String id, String prop, String val, Integer orgId);
 

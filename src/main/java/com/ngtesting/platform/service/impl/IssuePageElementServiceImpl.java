@@ -1,18 +1,23 @@
 package com.ngtesting.platform.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.dao.IssuePageElementDao;
 import com.ngtesting.platform.model.IsuField;
 import com.ngtesting.platform.model.IsuPageElement;
 import com.ngtesting.platform.service.IssueFieldService;
 import com.ngtesting.platform.service.IssuePageElementService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class IssuePageElementServiceImpl extends BaseServiceImpl implements IssuePageElementService {
+    Log logger = LogFactory.getLog(IsuJqlColumnServiceImpl.class);
 
 	@Autowired
     IssuePageElementDao elementDao;
@@ -22,12 +27,14 @@ public class IssuePageElementServiceImpl extends BaseServiceImpl implements Issu
 
     @Override
     @Transactional
-    public void saveAll(Integer orgId, Integer pageId, Integer tabId, JSONArray jsonArr) {
-        for (Object obj: jsonArr) {
-            JSONObject json = (JSONObject) obj;
+    public void saveAll(Integer orgId, Integer pageId, Integer tabId, List<Map> maps) {
 
-            Integer id = json.getInteger("id");
-            String key = json.getString("key");
+        int ordr = 10;
+        for (Map map: maps) {
+            map.put("ordr", ordr++);
+
+            String id = map.get("id").toString();
+            String key = map.get("key").toString();
 
             if (id == null) {
                 IsuField field = fieldService.getField(key);
@@ -39,6 +46,12 @@ public class IssuePageElementServiceImpl extends BaseServiceImpl implements Issu
                 elementDao.save(elm);
             }
         }
+
+        long start = new Date().getTime();
+        elementDao.saveOrdrs(maps, orgId);
+        long end = new Date().getTime();
+
+        logger.info("Update ordrs for " + maps.size() + " records spend " + (end - start) + " milliseconds");
     }
 
     @Override

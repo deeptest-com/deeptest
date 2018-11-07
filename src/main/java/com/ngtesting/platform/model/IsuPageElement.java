@@ -1,5 +1,7 @@
 package com.ngtesting.platform.model;
 
+import com.ngtesting.platform.config.ConstantIssue;
+
 public class IsuPageElement extends BaseModel {
     private static final long serialVersionUID = 8715160448820762150L;
 
@@ -7,6 +9,8 @@ public class IsuPageElement extends BaseModel {
     private String label;
     private String type;
     private String input;
+    private Boolean fullLine;
+    private Boolean required;
 
     private String key;
 
@@ -17,6 +21,24 @@ public class IsuPageElement extends BaseModel {
     private Integer pageId;
 
     private Integer orgId;
+
+    public IsuPageElement(){}
+    public IsuPageElement(String code, String label, ConstantIssue.IssueType type,
+                          ConstantIssue.IssueInput input, Boolean fullLine, Boolean required,
+                          String key, Integer fieldId,
+                          Integer tabId, Integer pageId, Integer orgId) {
+        this.code = code;
+        this.label = label;
+        this.type = type.toString();
+        this.input = input.toString();
+        this.fullLine = fullLine;
+        this.required = required;
+        this.key = key;
+        this.fieldId = fieldId;
+        this.tabId = tabId;
+        this.pageId = pageId;
+        this.orgId = orgId;
+    }
 
     public Integer getFieldId() {
         return fieldId;
@@ -96,5 +118,21 @@ public class IsuPageElement extends BaseModel {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public Boolean getFullLine() {
+        return fullLine;
+    }
+
+    public void setFullLine(Boolean fullLine) {
+        this.fullLine = fullLine;
+    }
+
+    public Boolean getRequired() {
+        return required;
+    }
+
+    public void setRequired(Boolean required) {
+        this.required = required;
     }
 }

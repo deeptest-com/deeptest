@@ -19,6 +19,9 @@ public class IssueFieldServiceImpl extends BaseServiceImpl implements IssueField
 	@Autowired
     IssueFieldDao fieldDao;
 
+    @Autowired
+    IssueCustomFieldDao customFieldDao;
+
 	@Autowired
 	IssuePriorityDao issuePriorityDao;
 
@@ -111,7 +114,23 @@ public class IssueFieldServiceImpl extends BaseServiceImpl implements IssueField
 
 	@Override
 	public List<IsuField> listOrgField(Integer orgId, Integer tabId) {
-		return fieldDao.listOrgField(orgId, tabId);
+    	return fieldDao.listOrgField(orgId, tabId);
+	}
+
+	@Override
+	public IsuField getField(String key) {
+    	String[] arr = key.split("-");
+    	String src = arr[0];
+    	Integer id = Integer.valueOf(arr[1]);
+
+    	IsuField field = null;
+    	if ("sys".equals(src)) {
+            field = fieldDao.getSysField(id);
+		} else if ("cust".equals(src)) {
+            field = fieldDao.getCustField(id);
+		}
+
+		return field;
 	}
 
 }

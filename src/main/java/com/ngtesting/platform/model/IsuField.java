@@ -9,7 +9,7 @@ public class IsuField implements Serializable {
 
 	private static final long serialVersionUID = 3168995179136496564L;
 
-    private Integer id;
+    private Integer fieldId;
 	private String code;
 	private String label;
     private String key;
@@ -17,6 +17,7 @@ public class IsuField implements Serializable {
     private ConstantIssue.IssueInput input;
     private Integer ordr;
     private Boolean fullLine;
+    private Boolean required;
 
     private Boolean display;
 
@@ -68,12 +69,12 @@ public class IsuField implements Serializable {
         this.ordr = ordr;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getFieldId() {
+        return fieldId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setFieldId(Integer fieldId) {
+        this.fieldId = fieldId;
     }
 
     public String getKey() {
@@ -90,5 +91,13 @@ public class IsuField implements Serializable {
 
     public void setFullLine(Boolean fullLine) {
         this.fullLine = fullLine;
+    }
+
+    public Boolean getRequired() {
+        return required;
+    }
+
+    public void setRequired(Boolean required) {
+        this.required = required;
     }
 }

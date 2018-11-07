@@ -1,9 +1,13 @@
 package com.ngtesting.platform.service;
 
-import com.ngtesting.platform.model.IsuPageElement;
+import com.alibaba.fastjson.JSONArray;
 
 public interface IssuePageElementService extends BaseService {
-    void add(IsuPageElement element);
 
-    boolean remove(Integer id, Integer orgId);
+    void saveAll(Integer orgId, Integer pageId, Integer tabId, JSONArray jsonArr);
+
+    void updateProp(String id, String prop, String val, Integer orgId);
+
+//    void add(IsuPageElement element);
+//    boolean remove(Integer id, Integer orgId);
 }

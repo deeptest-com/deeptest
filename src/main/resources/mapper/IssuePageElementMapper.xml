@@ -2,7 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.IssuePageElementDao" >
 
-    <insert id="add" parameterType="IsuPageElement" useGeneratedKeys="true" keyProperty="id">
+    <insert id="save" parameterType="IsuPageElement" useGeneratedKeys="true" keyProperty="id">
+        insert into IsuPageElement
+        (`key`, code, label, `type`, `input`, fullLine, required,
+          fieldId, `tabId`, pageId, orgId, ordr, deleted, disabled, createTime)
+        values
+        (#{key}, #{code}, #{label}, #{type}, #{input}, #{fullLine}, #{required},
+          #{fieldId}, #{tabId}, #{pageId}, #{orgId}, #{ordr}, FALSE, FALSE, NOW())
+    </insert>
+
+    <update id="updateProp">
+        UPDATE IsuPageElement
+        SET ${prop}=${val}
+        WHERE id=#{id} AND orgId=#{orgId}
+    </update>
+
+<!--    <insert id="add" parameterType="IsuPageElement" useGeneratedKeys="true" keyProperty="id">
         insert into IsuPageElement
         (`key`, code, label, `type`, `input`, fieldId, `tabId`, pageId, orgId, ordr, deleted, disabled, createTime)
         values
@@ -29,6 +44,6 @@
         AND o.deleted != true AND o.disabled != true
 
         ORDER BY o.ordr ASC
-    </select>
+    </select>-->
 
 </mapper>

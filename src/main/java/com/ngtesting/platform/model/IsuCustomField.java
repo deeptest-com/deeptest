@@ -11,10 +11,10 @@ public class IsuCustomField extends BaseModel {
 	private String code;
     private String label;
     private String myColumn;
+    private Boolean required = false;
 
     ConstantIssue.IssueType type;
     ConstantIssue.IssueInput input;
-//    private Boolean fullLine;
 
     private String descr;
 
@@ -23,7 +23,6 @@ public class IsuCustomField extends BaseModel {
     private Integer rows = 3;
 
     private ConstantIssue.TextFormat textFormat = ConstantIssue.TextFormat.plain_text;
-    private Boolean required;
     private Boolean global = true;
     private Boolean buildIn = false;
 
@@ -142,11 +141,4 @@ public class IsuCustomField extends BaseModel {
         this.input = input;
     }
 
-//    public Boolean getFullLine() {
-//        return fullLine;
-//    }
-//
-//    public void setFullLine(Boolean fullLine) {
-//        this.fullLine = fullLine;
-//    }
 }

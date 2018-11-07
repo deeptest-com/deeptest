@@ -19,4 +19,6 @@ public interface IssueFieldService extends BaseService {
 	Map<String,String> getResolutionsMap(Integer orgId);
 
     List<IsuField> listOrgField(Integer orgId, Integer tabId);
+
+    IsuField getField(String key);
 }

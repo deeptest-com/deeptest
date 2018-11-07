@@ -28,10 +28,10 @@
 
     <insert id="save" parameterType="IsuCustomField" useGeneratedKeys="true" keyProperty="id">
         insert into IsuCustomField
-        (label,myColumn,descr,`type`,`rows`,format,
+        (label,myColumn,required,descr,`type`,`rows`,format,
         orgId,ordr,deleted,disabled,createTime)
         values
-        (#{label},#{myColumn},#{descr},#{type},#{rows},#{format},
+        (#{label},#{myColumn},#{required},#{descr},#{type},#{rows},#{format},
         #{orgId},#{ordr},FALSE,FALSE,NOW())
     </insert>
 

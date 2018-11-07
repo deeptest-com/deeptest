@@ -16,8 +16,8 @@
 
     <select id="listOrgField" resultType="IsuField">
         SELECT fields.*
-        FROM ( (SELECT CONCAT('sys-', fieldDefine.id) `key`, fieldDefine.id, fieldDefine.code, fieldDefine.label,
-              fieldDefine.type, fieldDefine.input, fieldDefine.fullLine,
+        FROM ( (SELECT CONCAT('sys-', fieldDefine.id) `key`, fieldDefine.id fieldId, fieldDefine.code, fieldDefine.label,
+              fieldDefine.type, fieldDefine.input, fieldDefine.fullLine, fieldDefine.required,
               fieldDefine.columnOrdr ordr
 
             FROM IsuFieldDefine fieldDefine
@@ -26,8 +26,8 @@
 
             UNION
 
-            (SELECT CONCAT('cust-', customField.id) `key`, customField.id, customField.myColumn code, customField.label,
-              customField.type, customField.input, false AS fullLine,
+            (SELECT CONCAT('cust-', customField.id) `key`, customField.id fieldId, customField.myColumn code, customField.label,
+              customField.type, customField.input, false AS fullLine, customField.required,
               customField.ordr
 
             FROM IsuCustomField customField
@@ -41,8 +41,23 @@
         )
     </select>
 
-    <select id="listOrgFieldDetail" resultType="IsuField">
+    <select id="getSysField" resultType="IsuField">
+        SELECT CONCAT('sys-', fieldDefine.id) `key`, fieldDefine.id fieldId, fieldDefine.code, fieldDefine.label,
+          fieldDefine.type, fieldDefine.input, fieldDefine.fullLine, fieldDefine.required,
+          fieldDefine.columnOrdr ordr
 
+        FROM IsuFieldDefine fieldDefine
+        WHERE id = #{id} AND fieldDefine.defaultShowInPage IS NOT null
+    </select>
+
+    <select id="getCustField" resultType="IsuField">
+        SELECT CONCAT('cust-', customField.id) `key`, customField.id fieldId, customField.myColumn code, customField.label,
+          customField.type, customField.input, false AS fullLine, customField.required,
+          customField.ordr
+
+        FROM IsuCustomField customField
+
+        WHERE id = #{id} AND orgId = #{orgId}
     </select>
 
 </mapper>

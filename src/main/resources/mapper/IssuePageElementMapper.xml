@@ -44,6 +44,15 @@
         )
     </update>
 
+    <select id="listElementByTabId" parameterType="Map" resultType="IsuPageElement">
+        SELECT o.* FROM IsuPageElement o
+
+        WHERE o.tabId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.ordr ASC
+    </select>
+
 <!--    <insert id="add" parameterType="IsuPageElement" useGeneratedKeys="true" keyProperty="id">
         insert into IsuPageElement
         (`key`, code, label, `type`, `input`, fieldId, `tabId`, pageId, orgId, ordr, deleted, disabled, createTime)
@@ -64,13 +73,6 @@
         WHERE id=#{id} AND orgId=#{orgId}
     </delete>
 
-    <select id="listElementByTabId" parameterType="Map" resultType="IsuPageElement">
-        SELECT o.* FROM IsuPageElement o
-
-        WHERE o.tabId = #{id}
-        AND o.deleted != true AND o.disabled != true
-
-        ORDER BY o.ordr ASC
-    </select>-->
+   -->
 
 </mapper>

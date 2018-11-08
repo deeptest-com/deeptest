@@ -56,6 +56,22 @@ public class ConstantIssue {
         }
     }
 
+    public static enum IssueOpt {
+        create("create"),
+        edit("edit"),
+        view("view");
+
+        IssueOpt(String textVal) {
+            this.textVal = textVal;
+        }
+
+        private String textVal;
+
+        public String toString() {
+            return textVal;
+        }
+    }
+
     public static List<String> OperatorsForSelect =
             Arrays.asList("equal", "not_equal", "in", "not_in", "is_null", "is_not_null");
 

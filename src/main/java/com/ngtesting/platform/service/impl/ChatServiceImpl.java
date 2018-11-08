@@ -19,7 +19,7 @@ public class ChatServiceImpl extends BaseServiceImpl implements ChatService {
 //        dc.addOrder(Order.asc("id"));
 //        Page listByPage = findPage(dc, 0, 10);
 //
-//        return listByPage.getItems();
+//        return listByPage.getItemsMap();
 
 		return null;
 	}

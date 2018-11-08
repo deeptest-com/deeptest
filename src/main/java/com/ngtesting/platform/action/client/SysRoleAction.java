@@ -39,7 +39,7 @@ public class SysRoleAction extends BaseAction {
 		int pageSize = json.getInteger("pageSize") == null? Constant.PAGE_SIZE: json.getInteger("pageSize");
 
 		Page pageData = roleService.listByPage(orgId, keywords, disabled, page, pageSize);
-//		List<SysRole> vos = roleService.genVos(pageData.getItems());
+//		List<SysRole> vos = roleService.genVos(pageData.getItemsMap());
 
 		ret.put("collectionSize", pageData.getTotal());
 //        ret.put("data", vos);

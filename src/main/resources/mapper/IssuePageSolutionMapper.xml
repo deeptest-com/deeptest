@@ -19,6 +19,14 @@
         AND o.deleted != true AND o.disabled != true
     </select>
 
+    <select id="getItems" resultType="IsuPageSolutionItem">
+        SELECT o.* FROM IsuPageSolutionItem o
+
+        WHERE o.pageSolutionId = #{pageSolutionId} AND orgId = #{orgId}
+        AND o.deleted != true AND o.disabled != true
+        ORDER BY o.id ASC;
+    </select>
+
     <insert id="save" parameterType="IsuPageSolution" useGeneratedKeys="true" keyProperty="id">
         insert into IsuPageSolution
         (name, orgId, deleted, disabled, createTime)

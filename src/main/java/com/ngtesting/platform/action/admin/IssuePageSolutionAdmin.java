@@ -4,7 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.model.IsuPage;
+import com.ngtesting.platform.model.IsuPageSolution;
+import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.IssuePageService;
 import com.ngtesting.platform.service.IssuePageSolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +25,8 @@ import java.util.Map;
 @Controller
 @RequestMapping(Constant.API_PATH_ADMIN + "issue_page_solution/")
 public class IssuePageSolutionAdmin extends BaseAction {
+    @Autowired
+    IssuePageService pageService;
 	@Autowired
     IssuePageSolutionService pageSolutionService;
 
@@ -57,6 +62,28 @@ public class IssuePageSolutionAdmin extends BaseAction {
 		}
 
 		ret.put("solution", solution);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@RequestMapping(value = "getConfig", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> getConfig(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
+		Integer solutionId = json.getInteger("id");
+
+        IsuPageSolution solution = pageSolutionService.get(solutionId, orgId);
+        Map itemMap = pageSolutionService.getItemsMap(solutionId, orgId);
+
+        List<IsuPage> pages = pageService.list(orgId);
+
+		ret.put("solution", solution);
+        ret.put("itemMap", itemMap);
+        ret.put("pages", pages);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

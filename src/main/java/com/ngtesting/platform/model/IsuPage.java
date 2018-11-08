@@ -7,8 +7,8 @@ public class IsuPage extends BaseModel {
     private static final long serialVersionUID = 8715160448820762150L;
 
     private String name;
-
     private Integer orgId;
+    private Boolean isDefault = false;
 
     List<IsuPageTab> tabs = new LinkedList();
 
@@ -34,5 +34,13 @@ public class IsuPage extends BaseModel {
 
     public void setTabs(List<IsuPageTab> tabs) {
         this.tabs = tabs;
+    }
+
+    public Boolean getDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(Boolean aDefault) {
+        isDefault = aDefault;
     }
 }

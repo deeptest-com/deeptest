@@ -8,7 +8,7 @@ public class IsuPriority extends BaseModel {
 	private String value;
 
 	private String descr;
-	private Boolean isDefault;
+	private Boolean isDefault = false;
 	private Integer ordr;
 	private Integer orgId;
 

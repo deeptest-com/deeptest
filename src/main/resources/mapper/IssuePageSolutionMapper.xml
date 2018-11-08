@@ -20,10 +20,15 @@
     </select>
 
     <select id="getItems" resultType="IsuPageSolutionItem">
-        SELECT o.* FROM IsuPageSolutionItem o
+        SELECT o.*, type.label issueTypeName, page.name issuePageName
 
-        WHERE o.pageSolutionId = #{pageSolutionId} AND orgId = #{orgId}
-        AND o.deleted != true AND o.disabled != true
+        FROM IsuPageSolutionItem o
+        JOIN IsuType type ON type.id = o.issueTypeId
+        JOIN IsuPage page ON page.id = o.issuePageId
+
+        WHERE o.pageSolutionId = #{pageSolutionId} AND o.orgId = #{orgId}
+          AND o.deleted != true AND o.disabled != true
+
         ORDER BY o.id ASC;
     </select>
 

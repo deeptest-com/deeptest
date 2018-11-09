@@ -20,7 +20,9 @@ public class IsuFieldDefine extends BaseModel {
 
 	private Boolean defaultShowInPage;
 	private Integer elemOrdr;
-    private Boolean fullLine;
+	private Boolean readonly;
+
+	private Boolean fullLine;
 
 	public String getCode() {
 		return code;
@@ -109,4 +111,12 @@ public class IsuFieldDefine extends BaseModel {
     public void setFullLine(Boolean fullLine) {
         this.fullLine = fullLine;
     }
+
+	public Boolean getReadonly() {
+		return readonly;
+	}
+
+	public void setReadonly(Boolean readonly) {
+		this.readonly = readonly;
+	}
 }

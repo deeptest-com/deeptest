@@ -16,23 +16,25 @@
 
     <select id="listOrgField" resultType="IsuField">
         SELECT fields.*
-        FROM ( (SELECT CONCAT('sys-', fieldDefine.id) `key`, fieldDefine.id fieldId, fieldDefine.code, fieldDefine.label,
-              fieldDefine.type, fieldDefine.input, fieldDefine.fullLine, fieldDefine.required,
-              fieldDefine.columnOrdr ordr
+        FROM ( (SELECT CONCAT('sys-', field.id) `key`, field.id fieldId, field.code, field.label,
+              field.type, field.input, field.fullLine, field.required,
+              field.columnOrdr ordr
 
-            FROM IsuFieldDefine fieldDefine
-            WHERE fieldDefine.defaultShowInPage IS NOT null
-            ORDER BY fieldDefine.elemOrdr ASC)
+            FROM IsuField field
+
+            WHERE field.orgId = #{orgId} AND field.disabled!=true AND field.deleted!=true
+
+            ORDER BY field.elemOrdr ASC)
 
             UNION
 
-            (SELECT CONCAT('cust-', customField.id) `key`, customField.id fieldId, customField.myColumn code, customField.label,
+            (SELECT CONCAT('cust-', customField.id) `key`, customField.id fieldId, customField.colCode code, customField.label,
               customField.type, customField.input, false AS fullLine, customField.required,
               customField.ordr
 
             FROM IsuCustomField customField
 
-            WHERE orgId = #{orgId}
+            WHERE orgId = #{orgId} AND customField.disabled!=true AND customField.deleted!=true
             ORDER BY customField.ordr ASC)
         ) fields
         WHERE fields.key

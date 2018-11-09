@@ -53,7 +53,7 @@ public class IssueCustomFieldAdmin extends BaseAction {
         IsuCustomField vo = null;
         if (id == null) {
             vo = new IsuCustomField();
-            vo.setMyColumn(customFieldService.getLastUnusedColumn(orgId));
+            vo.setColCode(customFieldService.getLastUnusedColumn(orgId));
         } else {
             vo = customFieldService.get(id, orgId);
         }
@@ -62,7 +62,7 @@ public class IssueCustomFieldAdmin extends BaseAction {
             return authFail();
         }
 
-        if (vo.getMyColumn() == null) {
+        if (vo.getColCode() == null) {
             ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
             ret.put("msg", "自定义字段不能超过20个");
         }

@@ -18,6 +18,7 @@ public class IsuField implements Serializable {
     private Integer ordr;
     private Boolean fullLine;
     private Boolean required;
+    private Boolean readonly;
 
     private Boolean display;
 
@@ -99,5 +100,13 @@ public class IsuField implements Serializable {
 
     public void setRequired(Boolean required) {
         this.required = required;
+    }
+
+    public Boolean getReadonly() {
+        return readonly;
+    }
+
+    public void setReadonly(Boolean readonly) {
+        this.readonly = readonly;
     }
 }

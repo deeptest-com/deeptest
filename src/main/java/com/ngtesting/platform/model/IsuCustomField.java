@@ -8,13 +8,13 @@ import java.util.List;
 public class IsuCustomField extends BaseModel {
 	private static final long serialVersionUID = 1279085732086560549L;
 
-	private String code;
+    private String colCode;
     private String label;
-    private String myColumn;
     private Boolean required = false;
 
     ConstantIssue.IssueType type;
     ConstantIssue.IssueInput input;
+    private ConstantIssue.TextFormat textFormat = ConstantIssue.TextFormat.plain_text;
 
     private String descr;
 
@@ -22,7 +22,6 @@ public class IsuCustomField extends BaseModel {
 
     private Integer rows = 3;
 
-    private ConstantIssue.TextFormat textFormat = ConstantIssue.TextFormat.plain_text;
     private Boolean global = true;
     private Boolean buildIn = false;
 
@@ -61,12 +60,12 @@ public class IsuCustomField extends BaseModel {
         this.buildIn = buildIn;
     }
 
-    public String getMyColumn() {
-        return myColumn;
+    public String getColCode() {
+        return colCode;
     }
 
-    public void setMyColumn(String myColumn) {
-        this.myColumn = myColumn;
+    public void setColCode(String colCode) {
+        this.colCode = colCode;
     }
 
     public String getLabel() {
@@ -77,13 +76,6 @@ public class IsuCustomField extends BaseModel {
 		this.label = label;
 	}
 
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
 
 	public String getDescr() {
 		return descr;

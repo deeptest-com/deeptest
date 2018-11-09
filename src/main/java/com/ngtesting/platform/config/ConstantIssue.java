@@ -22,9 +22,9 @@ public class ConstantIssue {
     public static enum IssueInput {
         text("text"),
         textarea("textarea"),
-        dropdown("dropdown"),
-        date("date");
+        date("date"),
 
+        dropdown("dropdown");
 //    	radio("radio"),
 //    	checkbox("checkbox"),
 //    	multi_select("multi_select"),

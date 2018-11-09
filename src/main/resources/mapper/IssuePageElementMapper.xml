@@ -4,10 +4,10 @@
 
     <insert id="save" parameterType="IsuPageElement" useGeneratedKeys="true" keyProperty="id">
         insert into IsuPageElement
-        (`key`, code, label, `type`, `input`, fullLine, required,
+        (`key`, code, label, `type`, `input`, fullLine, required, readonly,
           fieldId, `tabId`, pageId, orgId, ordr, deleted, disabled, createTime)
         values
-        (#{key}, #{code}, #{label}, #{type}, #{input}, #{fullLine}, #{required},
+        (#{key}, #{code}, #{label}, #{type}, #{input}, #{fullLine}, #{required}, #{readonly},
           #{fieldId}, #{tabId}, #{pageId}, #{orgId}, #{ordr}, FALSE, FALSE, NOW())
     </insert>
 

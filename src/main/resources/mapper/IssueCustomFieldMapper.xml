@@ -28,10 +28,10 @@
 
     <insert id="save" parameterType="IsuCustomField" useGeneratedKeys="true" keyProperty="id">
         insert into IsuCustomField
-        (label,myColumn,required,descr,`type`,`rows`,format,
+        (label,colCode,required,descr,`type`,`rows`,format,
         orgId,ordr,deleted,disabled,createTime)
         values
-        (#{label},#{myColumn},#{required},#{descr},#{type},#{rows},#{format},
+        (#{label},#{colCode},#{required},#{descr},#{type},#{rows},#{format},
         #{orgId},#{ordr},FALSE,FALSE,NOW())
     </insert>
 
@@ -77,12 +77,12 @@
 
 
     <select id="getLastUnusedColumn" resultType="String">
-        select cf.myColumn from IsuCustomField cf
+        select cf.colCode from IsuCustomField cf
 
         where cf.orgId = #{orgId}
         and cf.deleted != TRUE and cf.disabled != TRUE
 
-        order by cf.myColumn asc
+        order by cf.colCode asc
     </select>
 
     <select id="getMaxOrdrNumb" resultType="Integer">

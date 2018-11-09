@@ -8,7 +8,7 @@ public class TstCustomField extends BaseModel {
 
     private String code;
     private String label;
-    private String myColumn;
+    private String colCode;
 
     private String descr;
     private FieldApplyTo applyTo = FieldApplyTo.test_case;
@@ -118,12 +118,12 @@ public class TstCustomField extends BaseModel {
         this.buildIn = buildIn;
     }
 
-    public String getMyColumn() {
-        return myColumn;
+    public String getColCode() {
+        return colCode;
     }
 
-    public void setMyColumn(String myColumn) {
-        this.myColumn = myColumn;
+    public void setColCode(String colCode) {
+        this.colCode = colCode;
     }
 
     public String getLabel() {

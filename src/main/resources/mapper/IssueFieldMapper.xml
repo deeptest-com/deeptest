@@ -53,7 +53,7 @@
     </select>
 
     <select id="getCustField" resultType="IsuField">
-        SELECT CONCAT('cust-', customField.id) `key`, customField.id fieldId, customField.myColumn code, customField.label,
+        SELECT CONCAT('cust-', customField.id) `key`, customField.id fieldId, customField.colCode code, customField.label,
           customField.type, customField.input, false AS fullLine, customField.required,
           customField.ordr
 

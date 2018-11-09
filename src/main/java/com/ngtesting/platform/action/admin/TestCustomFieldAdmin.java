@@ -58,7 +58,7 @@ public class TestCustomFieldAdmin extends BaseAction {
 		TstCustomField vo = null;
 		if (id == null) {
 			vo = new TstCustomField();
-			vo.setMyColumn(customFieldService.getLastUnusedColumn(orgId));
+			vo.setColCode(customFieldService.getLastUnusedColumn(orgId));
 //			vo.setCode(UUID.randomUUID().toString());
 		} else {
 			vo = customFieldService.get(id, orgId);
@@ -68,7 +68,7 @@ public class TestCustomFieldAdmin extends BaseAction {
 			return authFail();
 		}
 
-		if (vo.getMyColumn() == null) {
+		if (vo.getColCode() == null) {
             ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
             ret.put("msg", "自定义字段不能超过20个");
         }

@@ -11,7 +11,7 @@
     </select>
 
     <select id="listForCaseByProject" resultMap="customFieldMap">
-        (SELECT o.id, o.label, o.myColumn, o.descr, o.applyTo, o.type,
+        (SELECT o.id, o.label, o.colCode, o.descr, o.applyTo, o.type,
           o.rows, o.format, o.ordr, o.required
 
         FROM TstCustomField o
@@ -22,7 +22,7 @@
 
         UNION
 
-        (SELECT o.id, o.label, o.myColumn, o.descr, o.applyTo, o.type,
+        (SELECT o.id, o.label, o.colCode, o.descr, o.applyTo, o.type,
           o.rows, o.format, o.ordr, o.required
 
         FROM TstCustomField o
@@ -51,10 +51,10 @@
 
     <insert id="save" parameterType="TstCustomField" useGeneratedKeys="true" keyProperty="id">
         insert into TstCustomField
-        (label,myColumn,descr,applyTo,`type`,`rows`,format,required,`global`,
+        (label,colCode,descr,applyTo,`type`,`rows`,format,required,`global`,
           orgId,ordr,buildIn,deleted,disabled,createTime)
         values
-        (#{label},#{myColumn},#{descr},#{applyTo},#{type},#{rows},#{format},#{required},#{global},
+        (#{label},#{colCode},#{descr},#{applyTo},#{type},#{rows},#{format},#{required},#{global},
           #{orgId},#{ordr},#{buildIn},FALSE,FALSE,NOW())
     </insert>
 
@@ -101,12 +101,12 @@
 
 
     <select id="getLastUnusedColumn" resultType="String">
-        select cf.myColumn from TstCustomField cf
+        select cf.colCode from TstCustomField cf
 
         where cf.orgId = #{orgId}
         and cf.deleted != TRUE and cf.disabled != TRUE
 
-        order by cf.myColumn asc
+        order by cf.colCode asc
     </select>
 
     <select id="getMaxOrdrNumb" resultType="Integer">

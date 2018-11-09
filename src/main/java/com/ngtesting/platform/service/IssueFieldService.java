@@ -20,5 +20,5 @@ public interface IssueFieldService extends BaseService {
 
     List<IsuField> listOrgField(Integer orgId, Integer tabId);
 
-    IsuField getField(String key);
+    IsuField getField(String key, Integer orgId);
 }

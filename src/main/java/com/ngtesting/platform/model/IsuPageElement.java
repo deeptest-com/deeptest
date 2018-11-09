@@ -11,6 +11,7 @@ public class IsuPageElement extends BaseModel {
     private String input;
     private Boolean fullLine;
     private Boolean required;
+    private Boolean readonly;
 
     private String key;
 
@@ -24,7 +25,7 @@ public class IsuPageElement extends BaseModel {
 
     public IsuPageElement(){}
     public IsuPageElement(String code, String label, ConstantIssue.IssueType type,
-                          ConstantIssue.IssueInput input, Boolean fullLine, Boolean required,
+                          ConstantIssue.IssueInput input, Boolean fullLine, Boolean required, Boolean readonly,
                           String key, Integer fieldId, Integer tabId, Integer pageId, Integer orgId,
                           Integer ordr) {
         this.code = code;
@@ -33,12 +34,21 @@ public class IsuPageElement extends BaseModel {
         this.input = input.toString();
         this.fullLine = fullLine;
         this.required = required;
+        this.readonly = readonly;
         this.key = key;
         this.fieldId = fieldId;
         this.tabId = tabId;
         this.pageId = pageId;
         this.orgId = orgId;
         this.ordr = ordr;
+    }
+
+    public Boolean getReadonly() {
+        return readonly;
+    }
+
+    public void setReadonly(Boolean readonly) {
+        this.readonly = readonly;
     }
 
     public Integer getFieldId() {

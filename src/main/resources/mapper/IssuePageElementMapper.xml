@@ -33,16 +33,18 @@
         )
     </update>
 
-    <update id="removeOthers">
+    <delete id="removeOthers">
         DELETE FROM IsuPageElement
 
         WHERE tabId=#{tabId} AND orgId=#{orgId}
-        AND id NOT IN (
-        <foreach collection="maps" item="map" separator=",">
-            #{map.id}
-        </foreach>
-        )
-    </update>
+
+        <if test="maps.size > 0">
+            AND id NOT IN
+            <foreach collection="maps" item="map" separator="," open="(" close=")">
+                #{map.id}
+            </foreach>
+        </if>
+    </delete>
 
     <select id="listElementByTabId" parameterType="Map" resultType="IsuPageElement">
         SELECT o.* FROM IsuPageElement o

@@ -17,7 +17,7 @@
     <select id="listOrgField" resultType="IsuField">
         SELECT fields.*
         FROM ( (SELECT CONCAT('sys-', field.id) `key`, field.id fieldId, field.code, field.label,
-              field.type, field.input, field.fullLine, field.required,
+              field.type, field.input, field.fullLine, field.required, field.readonly,
               field.columnOrdr ordr
 
             FROM IsuField field
@@ -29,7 +29,7 @@
             UNION
 
             (SELECT CONCAT('cust-', customField.id) `key`, customField.id fieldId, customField.colCode code, customField.label,
-              customField.type, customField.input, false AS fullLine, customField.required,
+              customField.type, customField.input, false AS fullLine, customField.required, customField.readonly,
               customField.ordr
 
             FROM IsuCustomField customField
@@ -44,22 +44,22 @@
     </select>
 
     <select id="getSysField" resultType="IsuField">
-        SELECT CONCAT('sys-', fieldDefine.id) `key`, fieldDefine.id fieldId, fieldDefine.code, fieldDefine.label,
-          fieldDefine.type, fieldDefine.input, fieldDefine.fullLine, fieldDefine.required,
-          fieldDefine.columnOrdr ordr
+        SELECT CONCAT('sys-', field.id) `key`, field.id fieldId, field.code, field.label,
+          field.type, field.input, field.fullLine, field.required, field.readonly,
+          field.columnOrdr ordr
 
-        FROM IsuFieldDefine fieldDefine
-        WHERE id = #{id} AND fieldDefine.defaultShowInPage IS NOT null
+        FROM Isufield field
+        WHERE id = #{id} AND orgId = #{orgId} AND field.defaultShowInPage IS NOT null
     </select>
 
     <select id="getCustField" resultType="IsuField">
         SELECT CONCAT('cust-', customField.id) `key`, customField.id fieldId, customField.colCode code, customField.label,
-          customField.type, customField.input, false AS fullLine, customField.required,
+          customField.type, customField.input, false AS fullLine, customField.required, customField.readonly,
           customField.ordr
 
         FROM IsuCustomField customField
 
-        WHERE id = #{id}
+        WHERE id = #{id} AND orgId = #{orgId}
     </select>
 
 </mapper>

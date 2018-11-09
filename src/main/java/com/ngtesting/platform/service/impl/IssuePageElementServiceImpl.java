@@ -30,30 +30,33 @@ public class IssuePageElementServiceImpl extends BaseServiceImpl implements Issu
     public void saveAll(Integer orgId, Integer pageId, Integer tabId, List<Map> maps) {
         elementDao.removeOthers(maps, tabId, orgId);
 
-        int ordr = 1;
-        for (Map map: maps) {
-            map.put("ordr", ordr++);
+        if (maps.size() > 0) {
+            int ordr = 1;
+            for (Map map: maps) {
+                map.put("ordr", ordr++);
 
-            Object id = map.get("id");
-            String key = map.get("key").toString();
+                Object id = map.get("id");
+                String key = map.get("key").toString();
 
-            if (id == null) {
-                IsuField field = fieldService.getField(key);
+                if (id == null) {
+                    IsuField field = fieldService.getField(key, orgId);
 
-                IsuPageElement elm = new IsuPageElement(field.getCode(), field.getLabel(),
-                        field.getType(), field.getInput(), field.getFullLine(), field.getRequired(),
-                        field.getKey(), field.getFieldId(), tabId, pageId, orgId, ordr);
+                    IsuPageElement elm = new IsuPageElement(field.getCode(), field.getLabel(),
+                            field.getType(), field.getInput(),
+                            field.getFullLine(), field.getRequired(), field.getReadonly(),
+                            field.getKey(), field.getFieldId(), tabId, pageId, orgId, ordr);
 
-                elementDao.save(elm);
-                map.put("id", elm.getId().toString());
+                    elementDao.save(elm);
+                    map.put("id", elm.getId().toString());
+                }
             }
+
+            long start = new Date().getTime();
+            elementDao.saveOrdrs(maps, tabId, orgId);
+            long end = new Date().getTime();
+
+            logger.info("Update ordrs for " + maps.size() + " records spend " + (end - start) + " milliseconds");
         }
-
-        long start = new Date().getTime();
-        elementDao.saveOrdrs(maps, tabId, orgId);
-        long end = new Date().getTime();
-
-        logger.info("Update ordrs for " + maps.size() + " records spend " + (end - start) + " milliseconds");
     }
 
     @Override

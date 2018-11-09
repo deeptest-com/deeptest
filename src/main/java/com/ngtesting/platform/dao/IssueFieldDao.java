@@ -12,6 +12,6 @@ public interface IssueFieldDao {
 
     List<IsuField> listOrgField(@Param("orgId") Integer orgId, @Param("tabId") Integer tabId);
 
-    IsuField getSysField(Integer id);
-    IsuField getCustField(Integer id);
+    IsuField getSysField(@Param("id") Integer id, @Param("orgId") Integer orgId);
+    IsuField getCustField(@Param("id") Integer id, @Param("orgId") Integer orgId);
 }

@@ -118,16 +118,16 @@ public class IssueFieldServiceImpl extends BaseServiceImpl implements IssueField
 	}
 
 	@Override
-	public IsuField getField(String key) {
+	public IsuField getField(String key, Integer orgId) {
     	String[] arr = key.split("-");
     	String src = arr[0];
     	Integer id = Integer.valueOf(arr[1]);
 
     	IsuField field = null;
     	if ("sys".equals(src)) {
-            field = fieldDao.getSysField(id);
+            field = fieldDao.getSysField(id, orgId);
 		} else if ("cust".equals(src)) {
-            field = fieldDao.getCustField(id);
+            field = fieldDao.getCustField(id, orgId);
 		}
 
 		return field;

@@ -11,6 +11,7 @@ public class IsuCustomField extends BaseModel {
     private String colCode;
     private String label;
     private Boolean required = false;
+    private Boolean readonly = false;
 
     ConstantIssue.IssueType type;
     ConstantIssue.IssueInput input;
@@ -133,4 +134,11 @@ public class IsuCustomField extends BaseModel {
         this.input = input;
     }
 
+    public Boolean getReadonly() {
+        return readonly;
+    }
+
+    public void setReadonly(Boolean readonly) {
+        this.readonly = readonly;
+    }
 }

@@ -11,7 +11,7 @@
  Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 10/20/2018 18:57:23 PM
+ Date: 11/12/2018 20:33:17 PM
 */
 
 SET NAMES utf8mb4;
@@ -67,15 +67,17 @@ CREATE TABLE `IsuComments` (
 DROP TABLE IF EXISTS `IsuCustomField`;
 CREATE TABLE `IsuCustomField` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `label` varchar(255) DEFAULT NULL,
-  `descr` varchar(255) DEFAULT NULL,
   `colCode` varchar(255) DEFAULT NULL,
+  `label` varchar(255) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
-  `format` varchar(255) DEFAULT NULL,
+  `input` varchar(255) DEFAULT NULL,
+  `textFormat` varchar(255) DEFAULT NULL,
   `rows` int(11) DEFAULT NULL,
-  `global` bit(1) DEFAULT NULL,
   `required` bit(1) DEFAULT NULL,
+  `readonly` bit(1) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
+  `descr` varchar(255) DEFAULT NULL,
+  `isBuildIn` bit(1) DEFAULT NULL,
   `orgId` int(11) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
@@ -84,13 +86,13 @@ CREATE TABLE `IsuCustomField` (
   PRIMARY KEY (`id`),
   KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`orgId`),
   CONSTRAINT `isucustomfield_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuCustomField`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuCustomField` VALUES ('1', '字段01', '', 'prop01', 'string', 'plain_text', '3', b'1', b'1', '10', '4', '2018-10-10 11:12:26', '2018-10-10 11:12:28', b'0', b'0');
+INSERT INTO `IsuCustomField` VALUES ('4', 'severity', '严重级别', 'integer', 'dropdown', null, null, b'0', null, '1', null, b'1', '11', '2018-11-09 12:53:47', null, b'0', b'0'), ('5', 'severity', '严重级别', 'integer', 'dropdown', null, null, b'0', null, '1', null, b'1', '12', '2018-11-09 13:04:58', null, b'0', b'0'), ('6', 'severity', '严重级别', 'integer', 'dropdown', null, null, b'0', null, '1', null, b'1', '13', '2018-11-09 13:19:05', null, b'0', b'0');
 COMMIT;
 
 -- ----------------------------
@@ -99,26 +101,29 @@ COMMIT;
 DROP TABLE IF EXISTS `IsuCustomFieldDefine`;
 CREATE TABLE `IsuCustomFieldDefine` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `code` varchar(255) DEFAULT NULL,
-  `label` varchar(255) DEFAULT NULL,
-  `descr` varchar(255) DEFAULT NULL,
-  `type` varchar(255) DEFAULT NULL,
-  `format` varchar(255) DEFAULT NULL,
-  `rows` int(11) DEFAULT NULL,
   `colCode` varchar(255) DEFAULT NULL,
-  `global` bit(1) DEFAULT NULL,
+  `label` varchar(255) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `input` varchar(255) DEFAULT NULL,
+  `textFormat` varchar(255) DEFAULT NULL,
+  `rows` int(11) DEFAULT NULL,
   `required` bit(1) DEFAULT NULL,
+  `readonly` bit(11) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
-  `buildIn` bit(1) DEFAULT NULL,
-  `orgId` int(11) DEFAULT NULL,
+  `descr` varchar(255) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`orgId`),
-  CONSTRAINT `FK_ro4ivq1br0vdteycd9ri6fr62` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuCustomFieldDefine`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuCustomFieldDefine` VALUES ('1', 'severity', '严重级别', 'integer', 'dropdown', null, null, b'0', null, '1', null, '2018-11-09 12:06:02', null, b'0', b'0');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `IsuCustomFieldOption`
@@ -130,6 +135,8 @@ CREATE TABLE `IsuCustomFieldOption` (
   `descr` varchar(255) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
+  `isDefault` bit(1) DEFAULT NULL,
+  `isBuildIn` bit(1) DEFAULT NULL,
   `fieldId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
@@ -138,7 +145,14 @@ CREATE TABLE `IsuCustomFieldOption` (
   PRIMARY KEY (`id`),
   KEY `FK_1yiovndo2my1nj8ub95o8yp6` (`fieldId`),
   CONSTRAINT `fk_isucustomfieldoption_ibfk_1` FOREIGN KEY (`fieldId`) REFERENCES `IsuCustomField` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuCustomFieldOption`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuCustomFieldOption` VALUES ('2', '阻塞', null, 'block', '1', b'0', b'1', '4', b'0', b'0', '2018-11-09 13:01:51', null), ('3', '紧急', null, 'critical', '2', b'0', b'1', '4', b'0', b'0', '2018-11-09 13:01:51', null), ('4', '重要', null, 'major', '3', b'0', b'1', '4', b'0', b'0', '2018-11-09 13:01:51', null), ('5', '一般', null, 'normal', '4', b'1', b'1', '4', b'0', b'0', '2018-11-09 13:01:51', null), ('6', '细微', null, 'minor', '5', b'0', b'1', '4', b'0', b'0', '2018-11-09 13:01:51', null), ('9', '阻塞', null, 'block', '1', b'0', b'1', '5', b'0', b'0', '2018-11-09 13:04:58', null), ('10', '紧急', null, 'critical', '2', b'0', b'1', '5', b'0', b'0', '2018-11-09 13:04:58', null), ('11', '重要', null, 'major', '3', b'0', b'1', '5', b'0', b'0', '2018-11-09 13:04:58', null), ('12', '一般', null, 'normal', '4', b'1', b'1', '5', b'0', b'0', '2018-11-09 13:04:58', null), ('13', '细微', null, 'minor', '5', b'0', b'1', '5', b'0', b'0', '2018-11-09 13:04:58', null), ('16', '阻塞', null, 'block', '1', b'0', b'1', '6', b'0', b'0', '2018-11-09 13:19:05', null), ('17', '紧急', null, 'critical', '2', b'0', b'1', '6', b'0', b'0', '2018-11-09 13:19:05', null), ('18', '重要', null, 'major', '3', b'0', b'1', '6', b'0', b'0', '2018-11-09 13:19:05', null), ('19', '一般', null, 'normal', '4', b'1', b'1', '6', b'0', b'0', '2018-11-09 13:19:05', null), ('20', '细微', null, 'minor', '5', b'0', b'1', '6', b'0', b'0', '2018-11-09 13:19:05', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `IsuCustomFieldOptionDefine`
@@ -147,10 +161,10 @@ DROP TABLE IF EXISTS `IsuCustomFieldOptionDefine`;
 CREATE TABLE `IsuCustomFieldOptionDefine` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `label` varchar(255) DEFAULT NULL,
-  `code` varchar(255) DEFAULT NULL,
-  `descr` varchar(255) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL,
+  `descr` varchar(255) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
+  `isDefault` bit(1) DEFAULT NULL,
   `fieldId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
@@ -159,7 +173,14 @@ CREATE TABLE `IsuCustomFieldOptionDefine` (
   PRIMARY KEY (`id`),
   KEY `FK_1yiovndo2my1nj8ub95o8yp6` (`fieldId`),
   CONSTRAINT `FK_1yiovndo2my1nj8ub95o8yp6` FOREIGN KEY (`fieldId`) REFERENCES `isucustomfielddefine` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuCustomFieldOptionDefine`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuCustomFieldOptionDefine` VALUES ('1', '阻塞', 'block', null, '1', b'0', '1', b'0', b'0', '2018-11-09 12:49:25', null), ('2', '紧急', 'critical', null, '2', b'0', '1', b'0', b'0', '2018-11-09 12:49:28', null), ('3', '重要', 'major', null, '3', b'0', '1', b'0', b'0', '2018-11-09 12:49:31', null), ('4', '一般', 'normal', null, '4', b'1', '1', b'0', b'0', '2018-11-09 12:49:33', null), ('5', '细微', 'minor', null, '5', b'0', '1', b'0', b'0', '2018-11-09 12:49:36', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `IsuCustomFieldSolution`
@@ -235,6 +256,41 @@ CREATE TABLE `IsuDocument` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
+--  Table structure for `IsuField`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuField`;
+CREATE TABLE `IsuField` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) DEFAULT NULL,
+  `label` varchar(255) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `input` varchar(255) DEFAULT NULL,
+  `fullLine` bit(1) DEFAULT NULL,
+  `required` bit(1) DEFAULT NULL,
+  `defaultShowInFilters` bit(1) DEFAULT NULL,
+  `filterOrdr` int(11) DEFAULT NULL,
+  `defaultShowInColumns` bit(1) DEFAULT NULL,
+  `columnOrdr` int(11) DEFAULT NULL,
+  `defaultShowInPage` bit(1) DEFAULT NULL,
+  `elemOrdr` int(11) DEFAULT NULL,
+  `readonly` bit(1) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
+  `isBuildIn` bit(1) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=421 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuField`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuField` VALUES ('211', 'title', '标题', 'string', 'text', b'1', b'1', null, null, null, null, b'1', '10100', null, '8', b'1', null, null, '2018-11-08 20:29:04', null), ('212', 'typeId', '类型', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10200', null, '8', b'1', null, null, '2018-11-08 20:29:04', null), ('213', 'statusId', '状态', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '10300', null, '8', b'1', null, null, '2018-11-08 20:29:04', null), ('214', 'priorityId', '优先级', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10400', null, '8', b'1', null, null, '2018-11-08 20:29:04', null), ('215', 'assigneeId', '经办人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10500', null, '8', b'1', null, null, '2018-11-08 20:29:04', null), ('216', 'creatorId', '创建人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '11200', null, '8', b'1', null, null, '2018-11-08 20:29:04', null), ('217', 'reporterId', '报告人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '10800', null, '8', b'1', null, null, '2018-11-08 20:29:04', null), ('218', 'verId', '版本', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10600', null, '8', b'1', null, null, '2018-11-08 20:29:04', null), ('219', 'envId', '环境', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10700', null, '8', b'1', null, null, '2018-11-08 20:29:04', null), ('220', 'resolutionId', '解决结果', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '11000', null, '8', b'1', null, null, '2018-11-08 20:29:04', null), ('221', 'dueTime', '截止时间', 'date', 'date', b'0', b'0', null, null, null, null, b'0', '10900', null, '8', b'1', null, null, '2018-11-08 20:29:04', null), ('222', 'resolveTime', '解决时间', 'date', 'date', b'0', b'0', null, null, null, null, b'0', '11100', null, '8', b'1', null, null, '2018-11-08 20:29:04', null), ('346', 'title', '标题', 'string', 'text', b'1', b'1', null, null, null, null, b'1', '10100', null, '9', b'1', null, null, '2018-11-08 21:00:37', null), ('347', 'typeId', '类型', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10200', null, '9', b'1', null, null, '2018-11-08 21:00:37', null), ('348', 'statusId', '状态', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '10300', null, '9', b'1', null, null, '2018-11-08 21:00:37', null), ('349', 'priorityId', '优先级', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10400', null, '9', b'1', null, null, '2018-11-08 21:00:37', null), ('350', 'assigneeId', '经办人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10500', null, '9', b'1', null, null, '2018-11-08 21:00:37', null), ('351', 'creatorId', '创建人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '11200', null, '9', b'1', null, null, '2018-11-08 21:00:37', null), ('352', 'reporterId', '报告人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '10800', null, '9', b'1', null, null, '2018-11-08 21:00:37', null), ('353', 'verId', '版本', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10600', null, '9', b'1', null, null, '2018-11-08 21:00:37', null), ('354', 'envId', '环境', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10700', null, '9', b'1', null, null, '2018-11-08 21:00:37', null), ('355', 'resolutionId', '解决结果', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '11000', null, '9', b'1', null, null, '2018-11-08 21:00:37', null), ('356', 'dueTime', '截止时间', 'date', 'date', b'0', b'0', null, null, null, null, b'0', '10900', null, '9', b'1', null, null, '2018-11-08 21:00:37', null), ('357', 'resolveTime', '解决时间', 'date', 'date', b'0', b'0', null, null, null, null, b'0', '11100', null, '9', b'1', null, null, '2018-11-08 21:00:37', null), ('376', 'title', '标题', 'string', 'text', b'1', b'1', null, null, null, null, b'1', '10100', b'0', '11', b'1', null, null, '2018-11-09 12:53:47', null), ('377', 'typeId', '类型', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10200', b'0', '11', b'1', null, null, '2018-11-09 12:53:47', null), ('378', 'statusId', '状态', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '10300', b'0', '11', b'1', null, null, '2018-11-09 12:53:47', null), ('379', 'priorityId', '优先级', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10400', b'0', '11', b'1', null, null, '2018-11-09 12:53:47', null), ('380', 'assigneeId', '经办人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10500', b'0', '11', b'1', null, null, '2018-11-09 12:53:47', null), ('381', 'creatorId', '创建人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '11200', b'1', '11', b'1', null, null, '2018-11-09 12:53:47', null), ('382', 'reporterId', '报告人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '10800', b'0', '11', b'1', null, null, '2018-11-09 12:53:47', null), ('383', 'verId', '版本', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10600', b'0', '11', b'1', null, null, '2018-11-09 12:53:47', null), ('384', 'envId', '环境', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10700', b'0', '11', b'1', null, null, '2018-11-09 12:53:47', null), ('385', 'resolutionId', '解决结果', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '11000', b'0', '11', b'1', null, null, '2018-11-09 12:53:47', null), ('386', 'dueTime', '截止时间', 'date', 'date', b'0', b'0', null, null, null, null, b'0', '10900', b'0', '11', b'1', null, null, '2018-11-09 12:53:47', null), ('387', 'resolveTime', '解决时间', 'date', 'date', b'0', b'0', null, null, null, null, b'0', '11100', b'0', '11', b'1', null, null, '2018-11-09 12:53:47', null), ('391', 'title', '标题', 'string', 'text', b'1', b'1', null, null, null, null, b'1', '10100', b'0', '12', b'1', null, null, '2018-11-09 13:04:58', null), ('392', 'typeId', '类型', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10200', b'0', '12', b'1', null, null, '2018-11-09 13:04:58', null), ('393', 'statusId', '状态', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '10300', b'0', '12', b'1', null, null, '2018-11-09 13:04:58', null), ('394', 'priorityId', '优先级', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10400', b'0', '12', b'1', null, null, '2018-11-09 13:04:58', null), ('395', 'assigneeId', '经办人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10500', b'0', '12', b'1', null, null, '2018-11-09 13:04:58', null), ('396', 'creatorId', '创建人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '11200', b'1', '12', b'1', null, null, '2018-11-09 13:04:58', null), ('397', 'reporterId', '报告人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '10800', b'0', '12', b'1', null, null, '2018-11-09 13:04:58', null), ('398', 'verId', '版本', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10600', b'0', '12', b'1', null, null, '2018-11-09 13:04:58', null), ('399', 'envId', '环境', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10700', b'0', '12', b'1', null, null, '2018-11-09 13:04:58', null), ('400', 'resolutionId', '解决结果', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '11000', b'0', '12', b'1', null, null, '2018-11-09 13:04:58', null), ('401', 'dueTime', '截止时间', 'date', 'date', b'0', b'0', null, null, null, null, b'0', '10900', b'0', '12', b'1', null, null, '2018-11-09 13:04:58', null), ('402', 'resolveTime', '解决时间', 'date', 'date', b'0', b'0', null, null, null, null, b'0', '11100', b'0', '12', b'1', null, null, '2018-11-09 13:04:58', null), ('406', 'title', '标题', 'string', 'text', b'1', b'1', null, null, null, null, b'1', '10100', b'0', '13', b'1', b'0', b'0', '2018-11-09 13:19:05', null), ('407', 'typeId', '类型', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10200', b'0', '13', b'1', b'0', b'0', '2018-11-09 13:19:05', null), ('408', 'statusId', '状态', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '10300', b'0', '13', b'1', b'0', b'0', '2018-11-09 13:19:05', null), ('409', 'priorityId', '优先级', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10400', b'0', '13', b'1', b'0', b'0', '2018-11-09 13:19:05', null), ('410', 'assigneeId', '经办人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10500', b'0', '13', b'1', b'0', b'0', '2018-11-09 13:19:05', null), ('411', 'creatorId', '创建人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '11200', b'1', '13', b'1', b'0', b'0', '2018-11-09 13:19:05', null), ('412', 'reporterId', '报告人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '10800', b'0', '13', b'1', b'0', b'0', '2018-11-09 13:19:05', null), ('413', 'verId', '版本', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10600', b'0', '13', b'1', b'0', b'0', '2018-11-09 13:19:05', null), ('414', 'envId', '环境', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10700', b'0', '13', b'1', b'0', b'0', '2018-11-09 13:19:05', null), ('415', 'resolutionId', '解决结果', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '11000', b'0', '13', b'1', b'0', b'0', '2018-11-09 13:19:05', null), ('416', 'dueTime', '截止时间', 'date', 'date', b'0', b'0', null, null, null, null, b'0', '10900', b'0', '13', b'1', b'0', b'0', '2018-11-09 13:19:05', null), ('417', 'resolveTime', '解决时间', 'date', 'date', b'0', b'0', null, null, null, null, b'0', '11100', b'0', '13', b'1', b'0', b'0', '2018-11-09 13:19:05', null);
+COMMIT;
+
+-- ----------------------------
 --  Table structure for `IsuFieldDefine`
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuFieldDefine`;
@@ -248,14 +304,23 @@ CREATE TABLE `IsuFieldDefine` (
   `filterOrdr` int(11) DEFAULT NULL,
   `defaultShowInColumns` bit(1) DEFAULT NULL,
   `columnOrdr` int(11) DEFAULT NULL,
+  `defaultShowInPage` bit(1) DEFAULT NULL,
+  `elemOrdr` int(11) DEFAULT NULL,
+  `readonly` bit(1) DEFAULT NULL,
+  `fullLine` bit(1) DEFAULT NULL,
+  `required` bit(1) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuFieldDefine`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuFieldDefine` VALUES ('1', 'title', '标题', 'string', 'string', null, null, b'1', '10100'), ('2', 'projectId', '项目', 'string', 'select', b'1', '10100', b'0', '11300'), ('3', 'typeId', '类型', 'string', 'select', b'1', '10200', b'1', '10200'), ('4', 'statusId', '状态', 'string', 'select', b'1', '10300', b'1', '10300'), ('5', 'priorityId', '优先级', 'string', 'select', b'1', '10400', b'1', '10400'), ('6', 'assigneeId', '经办人', 'string', 'select', b'1', '10500', b'1', '10500'), ('7', 'creatorId', '创建人', 'string', 'select', b'0', '10600', b'0', '10600'), ('8', 'reporterId', '报告人', 'string', 'select', b'0', '10700', b'0', '10700'), ('9', 'verId', '版本', 'string', 'select', b'0', '10800', b'0', '10800'), ('10', 'envId', '环境', 'string', 'select', b'0', '10900', b'0', '10900'), ('11', 'resolutionId', '解决结果', 'string', 'string', b'0', '11000', b'0', '11000'), ('12', 'dueTime', '截止时间', 'date', 'string', b'0', '11100', b'0', '11100'), ('13', 'resolveTime', '解决时间', 'date', 'string', b'0', '11200', b'0', '11200'), ('14', 'comments', '注释', 'string', 'string', b'0', '11300', null, null);
+INSERT INTO `IsuFieldDefine` VALUES ('1', 'title', '标题', 'string', 'text', null, null, b'1', '10100', b'1', '10100', b'0', b'1', b'1', b'0', b'0', '2018-11-09 13:18:24', null), ('2', 'projectId', '项目', 'integer', 'dropdown', b'1', '10100', b'0', '11300', null, null, b'0', null, null, b'0', b'0', '2018-11-09 13:18:24', null), ('3', 'typeId', '类型', 'integer', 'dropdown', b'1', '10200', b'1', '10200', b'1', '10200', b'0', b'0', b'0', b'0', b'0', '2018-11-09 13:18:24', null), ('4', 'statusId', '状态', 'integer', 'dropdown', b'1', '10300', b'1', '10300', b'0', '10300', b'0', b'0', b'0', b'0', b'0', '2018-11-09 13:18:24', null), ('5', 'priorityId', '优先级', 'integer', 'dropdown', b'1', '10400', b'1', '10400', b'1', '10400', b'0', b'0', b'0', b'0', b'0', '2018-11-09 13:18:24', null), ('6', 'assigneeId', '经办人', 'integer', 'dropdown', b'1', '10500', b'1', '10500', b'1', '10500', b'0', b'0', b'0', b'0', b'0', '2018-11-09 13:18:24', null), ('7', 'creatorId', '创建人', 'integer', 'dropdown', b'0', '10600', b'0', '10600', b'0', '11200', b'1', b'0', b'0', b'0', b'0', '2018-11-09 13:18:24', null), ('8', 'reporterId', '报告人', 'integer', 'dropdown', b'0', '10700', b'0', '10700', b'0', '10800', b'0', b'0', b'0', b'0', b'0', '2018-11-09 13:18:24', null), ('9', 'verId', '版本', 'integer', 'dropdown', b'0', '10800', b'0', '10800', b'1', '10600', b'0', b'0', b'0', b'0', b'0', '2018-11-09 13:18:24', null), ('10', 'envId', '环境', 'integer', 'dropdown', b'0', '10900', b'0', '10900', b'1', '10700', b'0', b'0', b'0', b'0', b'0', '2018-11-09 13:18:24', null), ('11', 'resolutionId', '解决结果', 'integer', 'dropdown', b'0', '11000', b'0', '11000', b'0', '11000', b'0', b'0', b'0', b'0', b'0', '2018-11-09 13:18:24', null), ('12', 'dueTime', '截止时间', 'date', 'date', b'0', '11100', b'0', '11100', b'0', '10900', b'0', b'0', b'0', b'0', b'0', '2018-11-09 13:18:24', null), ('13', 'resolveTime', '解决时间', 'date', 'date', b'0', '11200', b'0', '11200', b'0', '11100', b'0', b'0', b'0', b'0', b'0', '2018-11-09 13:18:24', null), ('14', 'comments', '注释', 'string', 'textarea', b'0', '11300', null, null, null, null, null, null, null, b'0', b'0', '2018-11-09 13:18:24', null);
 COMMIT;
 
 -- ----------------------------
@@ -284,6 +349,7 @@ CREATE TABLE `IsuIssue` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(500) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `projectId` int(11) DEFAULT NULL,
   `projectName` varchar(255) DEFAULT NULL,
   `typeId` int(11) DEFAULT NULL,
@@ -298,11 +364,12 @@ CREATE TABLE `IsuIssue` (
   `creatorName` varchar(255) DEFAULT NULL,
   `reporterId` int(11) DEFAULT NULL,
   `reporterName` varchar(255) DEFAULT NULL,
+  `resolutionId` int(11) DEFAULT NULL,
+  `resolutionName` varchar(1000) DEFAULT NULL,
   `verId` int(11) DEFAULT NULL,
   `verName` varchar(255) DEFAULT NULL,
   `envId` int(11) DEFAULT NULL,
   `envName` varchar(255) DEFAULT NULL,
-  `resolution` varchar(1000) DEFAULT NULL,
   `dueTime` datetime DEFAULT NULL,
   `resolveTime` datetime DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -318,7 +385,7 @@ CREATE TABLE `IsuIssue` (
 --  Records of `IsuIssue`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuIssue` VALUES ('1', '缺陷4', '描述', '352', '项目', null, '缺陷', null, '打开', null, '高', null, 'Aaron', null, '陈琦', null, '小琦', null, '版本1.0', null, '测试环境', '解决结果', '2018-10-20 12:22:46', '2018-10-20 12:22:48', '2018-10-19 09:45:26', '2018-10-19 09:45:28', b'0', b'0'), ('4', '缺陷4', '描述', '352', '项目', null, '缺陷', null, '打开', null, '高', null, 'Aaron', null, '陈琦', null, '小琦', null, '版本1.0', null, '测试环境', '解决结果', '2018-10-20 12:22:46', '2018-10-20 12:22:48', '2018-10-19 09:45:26', '2018-10-19 09:45:28', b'0', b'0');
+INSERT INTO `IsuIssue` VALUES ('1', '缺陷4', '描述', '5', '352', '项目', null, '缺陷', null, '打开', null, '高', null, 'Aaron', null, '陈琦', null, '小琦', null, '解决结果', null, '版本1.0', null, '测试环境', '2018-10-20 12:22:46', '2018-10-20 12:22:48', '2018-10-19 09:45:26', '2018-10-19 09:45:28', b'0', b'0'), ('4', '缺陷4', '描述', '5', '352', '项目', null, '缺陷', null, '打开', null, '高', null, 'Aaron', null, '陈琦', null, '小琦', null, '解决结果', null, '版本1.0', null, '测试环境', '2018-10-20 12:22:46', '2018-10-20 12:22:48', '2018-10-19 09:45:26', '2018-10-19 09:45:28', b'0', b'0');
 COMMIT;
 
 -- ----------------------------
@@ -386,22 +453,6 @@ CREATE TABLE `IsuNotificationDefine` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `IsuNotificationToProjectRelation`
--- ----------------------------
-DROP TABLE IF EXISTS `IsuNotificationToProjectRelation`;
-CREATE TABLE `IsuNotificationToProjectRelation` (
-  `orgId` int(11) DEFAULT NULL,
-  `projectId` int(11) DEFAULT NULL,
-  `solutionId` int(11) DEFAULT NULL,
-  KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
-  KEY `projectId` (`projectId`),
-  KEY `solutionId` (`solutionId`),
-  CONSTRAINT `isunotificationtoprojectrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
-  CONSTRAINT `isunotificationtoprojectrelation_ibfk_2` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
-  CONSTRAINT `isunotificationtoprojectrelation_ibfk_3` FOREIGN KEY (`solutionId`) REFERENCES `IsuNotification` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
 --  Table structure for `IsuPage`
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuPage`;
@@ -410,6 +461,7 @@ CREATE TABLE `IsuPage` (
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `orgId` int(11) DEFAULT NULL,
+  `isDefault` bit(1) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -417,23 +469,49 @@ CREATE TABLE `IsuPage` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `fk_isupage_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `IsuPageDefine`
+--  Records of `IsuPage`
 -- ----------------------------
-DROP TABLE IF EXISTS `IsuPageDefine`;
-CREATE TABLE `IsuPageDefine` (
+BEGIN;
+INSERT INTO `IsuPage` VALUES ('1', 'dfsdf111', null, '5', null, b'1', b'0', '2018-11-03 10:51:10', '2018-11-07 22:08:31'), ('2', 'dfsf2', null, '5', null, b'1', b'0', '2018-11-03 10:51:10', '2018-11-03 11:01:03'), ('3', '是打发', null, '5', null, b'1', b'0', '2018-11-03 10:51:28', '2018-11-03 11:01:06'), ('4', '是打发', null, '5', null, b'1', b'0', '2018-11-03 10:52:51', '2018-11-03 11:01:08'), ('5', '是打发', null, '5', null, b'1', b'0', '2018-11-03 10:53:31', '2018-11-03 11:01:29'), ('6', '是打发', null, '5', null, b'1', b'0', '2018-11-03 10:55:35', '2018-11-03 11:01:11'), ('7', 'sdfs王二', null, '5', null, b'1', b'0', '2018-11-03 11:17:53', '2018-11-03 11:25:05'), ('8', 'sdf', null, '5', null, b'1', b'0', '2018-11-03 11:25:08', '2018-11-03 11:30:00'), ('9', 'sdf', null, '5', null, b'1', b'0', '2018-11-03 11:26:04', '2018-11-03 11:30:05'), ('10', 'sdf', null, '5', null, b'1', b'0', '2018-11-03 11:27:12', '2018-11-03 11:30:03'), ('11', 'sdf', null, '5', null, b'1', b'0', '2018-11-03 11:29:54', '2018-11-03 11:30:08'), ('12', 'sdfsdf', null, '5', null, b'0', b'0', '2018-11-03 11:30:11', '2018-11-05 21:09:45'), ('13', 'sdfsdf', null, '5', null, b'0', b'0', '2018-11-07 17:26:41', null), ('28', '默认界面', null, '8', b'1', b'0', b'0', '2018-11-08 20:29:04', null), ('37', '默认界面', null, '9', b'1', b'0', b'0', '2018-11-08 21:00:37', null), ('38', '默认界面', null, '11', b'1', b'0', b'0', '2018-11-09 12:53:47', null), ('39', '默认界面', null, '12', b'1', b'0', b'0', '2018-11-09 13:04:58', null), ('40', '默认界面', null, '13', b'1', b'0', b'0', '2018-11-09 13:19:05', null);
+COMMIT;
+
+-- ----------------------------
+--  Table structure for `IsuPageElement`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuPageElement`;
+CREATE TABLE `IsuPageElement` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
   `code` varchar(255) DEFAULT NULL,
-  `descr` varchar(1000) DEFAULT NULL,
+  `label` varchar(255) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `input` varchar(255) DEFAULT NULL,
+  `fullLine` bit(1) DEFAULT NULL,
+  `required` bit(1) DEFAULT NULL,
+  `key` varchar(255) DEFAULT NULL,
+  `fieldId` int(11) DEFAULT NULL,
+  `tabId` int(11) DEFAULT NULL,
+  `pageId` int(11) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
+  `ordr` int(11) DEFAULT NULL,
+  `readonly` bit(1) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`),
+  KEY `orgId` (`orgId`),
+  CONSTRAINT `isupageelement_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=192 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuPageElement`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuPageElement` VALUES ('164', 'title', '标题', 'string', 'text', b'1', b'1', 'sys-376', '376', '58', '58', '11', '10100', b'0', b'0', b'0', '2018-11-09 12:53:47', null), ('165', 'typeId', '类型', 'integer', 'dropdown', b'0', b'0', 'sys-377', '377', '58', '58', '11', '10200', b'0', b'0', b'0', '2018-11-09 12:53:47', null), ('166', 'priorityId', '优先级', 'integer', 'dropdown', b'0', b'0', 'sys-379', '379', '58', '58', '11', '10400', b'0', b'0', b'0', '2018-11-09 12:53:47', null), ('167', 'assigneeId', '经办人', 'integer', 'dropdown', b'0', b'0', 'sys-380', '380', '58', '58', '11', '10500', b'0', b'0', b'0', '2018-11-09 12:53:47', null), ('168', 'verId', '版本', 'integer', 'dropdown', b'0', b'0', 'sys-383', '383', '58', '58', '11', '10600', b'0', b'0', b'0', '2018-11-09 12:53:47', null), ('169', 'envId', '环境', 'integer', 'dropdown', b'0', b'0', 'sys-384', '384', '58', '58', '11', '10700', b'0', b'0', b'0', '2018-11-09 12:53:47', null), ('171', 'title', '标题', 'string', 'text', b'1', b'1', 'sys-391', '391', '59', '59', '12', '10100', b'0', b'0', b'0', '2018-11-09 13:04:58', null), ('172', 'typeId', '类型', 'integer', 'dropdown', b'0', b'0', 'sys-392', '392', '59', '59', '12', '10200', b'0', b'0', b'0', '2018-11-09 13:04:58', null), ('173', 'priorityId', '优先级', 'integer', 'dropdown', b'0', b'0', 'sys-394', '394', '59', '59', '12', '10400', b'0', b'0', b'0', '2018-11-09 13:04:58', null), ('174', 'assigneeId', '经办人', 'integer', 'dropdown', b'0', b'0', 'sys-395', '395', '59', '59', '12', '10500', b'0', b'0', b'0', '2018-11-09 13:04:58', null), ('175', 'verId', '版本', 'integer', 'dropdown', b'0', b'0', 'sys-398', '398', '59', '59', '12', '10600', b'0', b'0', b'0', '2018-11-09 13:04:58', null), ('176', 'envId', '环境', 'integer', 'dropdown', b'0', b'0', 'sys-399', '399', '59', '59', '12', '10700', b'0', b'0', b'0', '2018-11-09 13:04:58', null), ('191', 'creatorId', '创建人', 'integer', 'dropdown', b'0', b'0', 'sys-411', '411', '60', '40', '13', '1', b'1', b'0', b'0', '2018-11-09 16:43:12', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `IsuPageSolution`
@@ -451,25 +529,66 @@ CREATE TABLE `IsuPageSolution` (
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   CONSTRAINT `fk_isupagesolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `IsuPageSolutionToPageRelation`
+--  Records of `IsuPageSolution`
 -- ----------------------------
-DROP TABLE IF EXISTS `IsuPageSolutionToPageRelation`;
-CREATE TABLE `IsuPageSolutionToPageRelation` (
-  `pageId` int(11) DEFAULT NULL,
+BEGIN;
+INSERT INTO `IsuPageSolution` VALUES ('1', 'dfsdf2222', null, '5', b'0', b'0', '2018-11-07 21:50:05', '2018-11-07 22:09:39'), ('2', 'sdfdsf', null, '5', b'1', b'0', '2018-11-07 21:53:28', '2018-11-08 17:23:16'), ('3', 'sdf', null, '5', b'1', b'0', '2018-11-07 21:54:18', '2018-11-08 17:22:32'), ('4', 'sdfdsf', null, '5', b'1', b'0', '2018-11-07 21:55:40', '2018-11-08 17:22:29'), ('10', '默认界面方案', null, '9', b'0', b'0', '2018-11-08 21:00:37', null), ('11', '默认界面方案', null, '11', b'0', b'0', '2018-11-09 12:53:47', null), ('12', '默认界面方案', null, '12', b'0', b'0', '2018-11-09 13:04:58', null), ('13', '默认界面方案', null, '13', b'0', b'0', '2018-11-09 13:19:05', null);
+COMMIT;
+
+-- ----------------------------
+--  Table structure for `IsuPageSolutionItem`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuPageSolutionItem`;
+CREATE TABLE `IsuPageSolutionItem` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `issueTypeId` int(11) DEFAULT NULL,
+  `opt` varchar(255) DEFAULT NULL,
+  `issuePageId` int(11) DEFAULT NULL,
   `pageSolutionId` int(11) DEFAULT NULL,
-  KEY `projectId` (`pageId`),
-  KEY `projectId_2` (`pageId`),
-  KEY `projectId_3` (`pageId`),
-  KEY `projectId_4` (`pageId`),
-  KEY `prioritySolutionId` (`pageSolutionId`),
-  KEY `pageId` (`pageId`),
-  KEY `pageSolutionId` (`pageSolutionId`),
-  CONSTRAINT `fk_isupagesolutiontopagerelation_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `IsuPage` (`id`),
-  CONSTRAINT `fk_isupagesolutiontopagerelation_ibfk_3` FOREIGN KEY (`pageSolutionId`) REFERENCES `IsuPageSolution` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `orgId` int(11) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuPageSolutionItem`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuPageSolutionItem` VALUES ('7', '101', 'create', '37', '10', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('8', '101', 'edit', '37', '10', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('9', '101', 'view', '37', '10', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('10', '102', 'create', '37', '10', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('11', '102', 'edit', '37', '10', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('12', '102', 'view', '37', '10', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('13', '107', 'create', '38', '11', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('14', '107', 'edit', '38', '11', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('15', '107', 'view', '38', '11', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('16', '108', 'create', '38', '11', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('17', '108', 'edit', '38', '11', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('18', '108', 'view', '38', '11', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('19', '110', 'create', '39', '12', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('20', '110', 'edit', '39', '12', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('21', '110', 'view', '39', '12', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('22', '111', 'create', '39', '12', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('23', '111', 'edit', '39', '12', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('24', '111', 'view', '39', '12', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('25', '113', 'create', '40', '13', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('26', '113', 'edit', '40', '13', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('27', '113', 'view', '40', '13', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('28', '114', 'create', '40', '13', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('29', '114', 'edit', '40', '13', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('30', '114', 'view', '40', '13', '13', b'0', b'0', '2018-11-09 13:19:05', null);
+COMMIT;
+
+-- ----------------------------
+--  Table structure for `IsuPageTab`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuPageTab`;
+CREATE TABLE `IsuPageTab` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `pageId` int(11) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
+  `ordr` int(11) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `orgId` (`orgId`),
+  CONSTRAINT `isupagetab_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuPageTab`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuPageTab` VALUES ('1', '默认标签', null, '9', '5', null, b'0', b'0', '2018-11-03 11:26:04', null), ('2', '默认标签', null, '10', '5', null, b'0', b'0', '2018-11-03 11:27:12', null), ('3', '默认标签', null, '11', '5', null, b'0', b'0', '2018-11-03 11:29:54', null), ('4', '默认标签', null, '12', '5', null, b'0', b'1', '2018-11-03 11:30:11', '2018-11-05 10:40:46'), ('5', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-03 12:08:15', null), ('6', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-03 12:10:05', null), ('7', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-03 12:11:08', null), ('8', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-03 12:11:11', null), ('9', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-03 12:11:24', null), ('10', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-03 12:11:34', null), ('11', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-03 13:00:02', null), ('12', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-03 13:02:08', null), ('13', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-03 13:02:39', null), ('14', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-03 13:02:47', null), ('15', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-03 13:03:39', null), ('16', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-03 13:04:08', '2018-11-05 10:28:25'), ('17', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-03 13:05:11', '2018-11-05 10:40:58'), ('18', '新标签2', null, '12', '5', null, b'0', b'1', '2018-11-04 10:31:48', '2018-11-05 21:06:56'), ('19', '新标签sf', null, '12', '5', null, b'0', b'1', '2018-11-05 16:26:45', '2018-11-05 16:35:48'), ('20', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-05 16:27:49', '2018-11-05 16:35:43'), ('21', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-05 16:38:18', '2018-11-05 21:06:26'), ('22', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-05 16:39:10', '2018-11-05 21:06:29'), ('23', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-05 16:40:44', '2018-11-05 21:06:54'), ('24', '新标签', null, '12', '5', null, b'0', b'0', '2018-11-05 21:06:48', null), ('25', 'iu  h', null, '12', '5', null, b'0', b'1', '2018-11-05 21:09:34', '2018-11-06 15:25:44'), ('26', '默认标签', null, '12', '5', null, b'0', b'1', '2018-11-06 15:15:17', '2018-11-07 22:15:21'), ('27', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-07 17:19:57', '2018-11-07 22:15:18'), ('28', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-07 17:20:26', '2018-11-07 22:15:16'), ('29', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-07 17:25:27', '2018-11-07 22:15:12'), ('30', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-07 17:26:23', '2018-11-07 22:15:05'), ('31', '新标签', null, '12', '5', null, b'0', b'1', '2018-11-07 17:26:30', '2018-11-07 22:15:09'), ('32', '默认标签', null, '13', '5', null, b'0', b'0', '2018-11-07 17:26:41', null), ('33', '新标签', null, '13', '5', null, b'0', b'0', '2018-11-07 17:32:58', null), ('48', '默认标签', null, '28', '8', '1', b'0', b'0', '2018-11-08 20:29:04', null), ('57', '默认标签', null, '37', '9', '1', b'0', b'0', '2018-11-08 21:00:37', null), ('58', '默认标签', null, '38', '11', '1', b'0', b'0', '2018-11-09 12:53:47', null), ('59', '默认标签', null, '39', '12', '1', b'0', b'0', '2018-11-09 13:04:58', null), ('60', '默认标签', null, '40', '13', '1', b'0', b'0', '2018-11-09 13:19:05', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `IsuPriority`
@@ -477,10 +596,13 @@ CREATE TABLE `IsuPageSolutionToPageRelation` (
 DROP TABLE IF EXISTS `IsuPriority`;
 CREATE TABLE `IsuPriority` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
+  `label` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
+  `isDefault` bit(1) DEFAULT NULL,
+  `isBuildIn` bit(1) DEFAULT NULL,
+  `ordr` int(11) DEFAULT NULL,
   `orgId` int(11) DEFAULT NULL,
-  `solutionId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -488,7 +610,14 @@ CREATE TABLE `IsuPriority` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `fk_issu_priority_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuPriority`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuPriority` VALUES ('1', 'sdf', 'sdf', null, b'1', null, '10', '5', b'0', b'0', '2018-10-22 12:10:53', '2018-10-22 12:10:55'), ('9', '紧急', 'urgent', null, b'0', b'1', '1', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('10', '高', 'high', null, b'0', b'1', '2', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('11', '中', 'medium', null, b'0', b'1', '3', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('12', '低', 'low', null, b'1', b'1', '4', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('16', '紧急', 'urgent', null, b'0', b'1', '1', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('17', '高', 'high', null, b'0', b'1', '2', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('18', '中', 'medium', null, b'0', b'1', '3', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('19', '低', 'low', null, b'1', b'1', '4', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('23', '紧急', 'urgent', null, b'0', b'1', '1', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('24', '高', 'high', null, b'0', b'1', '2', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('25', '中', 'medium', null, b'0', b'1', '3', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('26', '低', 'low', null, b'1', b'1', '4', '13', b'0', b'0', '2018-11-09 13:19:05', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `IsuPriorityDefine`
@@ -496,15 +625,24 @@ CREATE TABLE `IsuPriority` (
 DROP TABLE IF EXISTS `IsuPriorityDefine`;
 CREATE TABLE `IsuPriorityDefine` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  `code` varchar(255) DEFAULT NULL,
+  `label` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
+  `ordr` int(11) DEFAULT NULL,
+  `isDefault` bit(1) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuPriorityDefine`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuPriorityDefine` VALUES ('1', '紧急', 'urgent', null, '1', b'0', b'0', b'0', '2018-11-09 11:28:35', null), ('2', '高', 'high', null, '2', b'0', b'0', b'0', '2018-11-09 11:28:39', null), ('3', '中', 'medium', null, '3', b'0', b'0', b'0', '2018-11-09 11:28:42', null), ('4', '低', 'low', null, '4', b'1', b'0', b'0', '2018-11-09 11:28:45', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `IsuPrioritySolution`
@@ -515,6 +653,8 @@ CREATE TABLE `IsuPrioritySolution` (
   `name` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `orgId` int(11) DEFAULT NULL,
+  `isDefault` bit(1) DEFAULT NULL,
+  `isBuildIn` bit(1) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -522,22 +662,29 @@ CREATE TABLE `IsuPrioritySolution` (
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   CONSTRAINT `fk_isuprioritysolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `IsuPrioritySolutionToProjectRelation`
+--  Records of `IsuPrioritySolution`
 -- ----------------------------
-DROP TABLE IF EXISTS `IsuPrioritySolutionToProjectRelation`;
-CREATE TABLE `IsuPrioritySolutionToProjectRelation` (
-  `orgId` int(11) DEFAULT NULL,
-  `projectId` int(11) DEFAULT NULL,
+BEGIN;
+INSERT INTO `IsuPrioritySolution` VALUES ('1', '是的范德萨发', null, '13', null, null, b'0', b'0', '2018-11-12 20:01:54', '2018-11-12 20:10:05');
+COMMIT;
+
+-- ----------------------------
+--  Table structure for `IsuPrioritySolutionItem`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuPrioritySolutionItem`;
+CREATE TABLE `IsuPrioritySolutionItem` (
+  `priorityId` int(11) DEFAULT NULL,
   `solutionId` int(11) DEFAULT NULL,
-  KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
-  KEY `projectId` (`projectId`),
+  `orgId` int(11) DEFAULT NULL,
   KEY `solutionId` (`solutionId`),
-  CONSTRAINT `fk_isuprioritysolutiontoprojectrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
-  CONSTRAINT `fk_isuprioritysolutiontoprojectrelation_projectid` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
-  CONSTRAINT `fk_isuprioritysolutiontoprojectrelation_solutionid` FOREIGN KEY (`solutionId`) REFERENCES `IsuPrioritySolution` (`id`)
+  KEY `typeId` (`priorityId`),
+  KEY `orgId` (`orgId`) USING BTREE,
+  CONSTRAINT `isuprioritysolutionitem_ibfk_1` FOREIGN KEY (`priorityId`) REFERENCES `IsuPriority` (`id`),
+  CONSTRAINT `isuprioritysolutionitem_ibfk_2` FOREIGN KEY (`solutionId`) REFERENCES `IsuPrioritySolution` (`id`),
+  CONSTRAINT `isuprioritysolutionitem_ibfk_3` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -581,16 +728,150 @@ CREATE TABLE `IsuQueryDefine` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
+--  Table structure for `IsuResolution`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuResolution`;
+CREATE TABLE `IsuResolution` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `label` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `ordr` int(11) DEFAULT NULL,
+  `isDefault` bit(1) DEFAULT NULL,
+  `isBuildIn` bit(1) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_jakioowaasj09sqr9d376dl9u` (`orgId`),
+  CONSTRAINT `isuresolution_ibfk_2` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuResolution`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuResolution` VALUES ('1', 'sdf2', 'sdf2', null, '10', b'1', null, '5', b'0', b'0', '2018-10-22 12:11:50', '2018-10-22 12:12:00');
+COMMIT;
+
+-- ----------------------------
+--  Table structure for `IsuResolutionDefine`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuResolutionDefine`;
+CREATE TABLE `IsuResolutionDefine` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `label` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `ordr` int(11) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  `isDefault` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuSeverity`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuSeverity`;
+CREATE TABLE `IsuSeverity` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `label` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `isDefault` bit(1) DEFAULT NULL,
+  `isBuildIn` bit(1) DEFAULT NULL,
+  `ordr` int(11) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `orgId` (`orgId`),
+  CONSTRAINT `isuseverity_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuSeverityDefine`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuSeverityDefine`;
+CREATE TABLE `IsuSeverityDefine` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `label` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `ordr` int(11) DEFAULT NULL,
+  `isDefault` bit(1) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuSeverityDefine`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuSeverityDefine` VALUES ('1', '阻塞', 'block', null, '1', b'0', b'0', b'0', '2018-11-09 11:28:35', null), ('2', '紧急', 'critical', null, '2', b'0', b'0', b'0', '2018-11-09 11:28:39', null), ('3', '重要', 'major', null, '3', b'0', b'0', b'0', '2018-11-09 11:28:42', null), ('4', '一般', 'normal', null, '4', b'1', b'0', b'0', '2018-11-09 11:42:21', null), ('5', '细微', 'minor', null, '5', b'0', b'0', b'0', '2018-11-09 11:28:45', null);
+COMMIT;
+
+-- ----------------------------
+--  Table structure for `IsuSeveritySolution`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuSeveritySolution`;
+CREATE TABLE `IsuSeveritySolution` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `descr` varchar(1000) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
+  `isDefault` bit(1) DEFAULT NULL,
+  `isBuildIn` bit(1) DEFAULT NULL,
+  `disabled` bit(1) DEFAULT NULL,
+  `deleted` bit(1) DEFAULT NULL,
+  `createTime` datetime DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
+  CONSTRAINT `isuseveritysolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `IsuSeveritySolutionItem`
+-- ----------------------------
+DROP TABLE IF EXISTS `IsuSeveritySolutionItem`;
+CREATE TABLE `IsuSeveritySolutionItem` (
+  `priorityId` int(11) DEFAULT NULL,
+  `solutionId` int(11) DEFAULT NULL,
+  KEY `projectId` (`priorityId`),
+  KEY `solutionId` (`solutionId`),
+  KEY `projectId_2` (`priorityId`),
+  KEY `solutionId_2` (`solutionId`),
+  KEY `typeId` (`priorityId`),
+  CONSTRAINT `isuseveritysolutionitem_ibfk_1` FOREIGN KEY (`priorityId`) REFERENCES `IsuPriority` (`id`),
+  CONSTRAINT `isuseveritysolutionitem_ibfk_2` FOREIGN KEY (`solutionId`) REFERENCES `IsuPrioritySolution` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
 --  Table structure for `IsuStatus`
 -- ----------------------------
 DROP TABLE IF EXISTS `IsuStatus`;
 CREATE TABLE `IsuStatus` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
+  `label` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
   `orgId` int(11) DEFAULT NULL,
   `categoryId` int(11) DEFAULT NULL,
+  `isDefault` bit(1) DEFAULT NULL,
+  `isFinal` bit(1) DEFAULT NULL,
+  `isBuildIn` bit(1) DEFAULT NULL,
   `startTime` datetime DEFAULT NULL,
   `endTime` datetime DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
@@ -602,7 +883,14 @@ CREATE TABLE `IsuStatus` (
   KEY `isu_status_categoryid` (`categoryId`) USING BTREE,
   CONSTRAINT `fk_isu_status_categoryid` FOREIGN KEY (`categoryId`) REFERENCES `IsuStatusCategoryDefine` (`id`),
   CONSTRAINT `isustatus_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuStatus`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuStatus` VALUES ('1', 'dsf', 'dsf', 'sdf', '20', '5', null, b'0', b'1', null, null, null, b'0', b'0', '2018-10-22 12:02:45', '2018-10-22 12:09:03'), ('2', 'sdf', 'sdf', null, '10', '5', null, b'0', null, null, null, null, b'0', b'0', '2018-10-22 12:03:57', '2018-10-22 12:09:03'), ('3', 'sdf', 'sdf', null, '30', '5', null, b'0', null, null, null, null, b'0', b'0', '2018-10-22 12:04:54', null), ('4', 'sdf', 'sdf', null, '40', '5', null, b'0', null, null, null, null, b'0', b'0', '2018-10-22 12:05:40', null), ('5', 'sdf', 'sdf', '333', '50', '5', null, b'0', null, null, null, null, b'0', b'0', '2018-10-22 12:05:51', null), ('13', '打开', 'open', null, '1', '11', null, b'1', b'0', b'1', null, null, b'0', b'0', '2018-11-09 12:53:47', null), ('14', '解决', 'Resolved', null, '2', '11', null, b'0', b'0', b'1', null, null, b'0', b'0', '2018-11-09 12:53:47', null), ('15', '关闭', 'Closed', null, '3', '11', null, b'0', b'1', b'1', null, null, b'0', b'0', '2018-11-09 12:53:47', null), ('16', '重新打开', 'Reopen', null, '4', '11', null, b'0', b'0', b'1', null, null, b'0', b'0', '2018-11-09 12:53:47', null), ('17', '挂起', 'Suspend', null, '5', '11', null, b'0', b'1', b'1', null, null, b'0', b'0', '2018-11-09 12:53:47', null), ('20', '打开', 'open', null, '1', '12', null, b'1', b'0', b'1', null, null, b'0', b'0', '2018-11-09 13:04:58', null), ('21', '解决', 'Resolved', null, '2', '12', null, b'0', b'0', b'1', null, null, b'0', b'0', '2018-11-09 13:04:58', null), ('22', '关闭', 'Closed', null, '3', '12', null, b'0', b'1', b'1', null, null, b'0', b'0', '2018-11-09 13:04:58', null), ('23', '重新打开', 'Reopen', null, '4', '12', null, b'0', b'0', b'1', null, null, b'0', b'0', '2018-11-09 13:04:58', null), ('24', '挂起', 'Suspend', null, '5', '12', null, b'0', b'1', b'1', null, null, b'0', b'0', '2018-11-09 13:04:58', null), ('27', '打开', 'open', null, '1', '13', null, b'1', b'0', b'1', null, null, b'0', b'0', '2018-11-09 13:19:05', null), ('28', '解决', 'Resolved', null, '2', '13', null, b'0', b'0', b'1', null, null, b'0', b'0', '2018-11-09 13:19:05', null), ('29', '关闭', 'Closed', null, '3', '13', null, b'0', b'1', b'1', null, null, b'0', b'0', '2018-11-09 13:19:05', null), ('30', '重新打开', 'Reopen', null, '4', '13', null, b'0', b'0', b'1', null, null, b'0', b'0', '2018-11-09 13:19:05', null), ('31', '挂起', 'Suspend', null, '5', '13', null, b'0', b'1', b'1', null, null, b'0', b'0', '2018-11-09 13:19:05', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `IsuStatusCategoryDefine`
@@ -626,9 +914,11 @@ CREATE TABLE `IsuStatusCategoryDefine` (
 DROP TABLE IF EXISTS `IsuStatusDefine`;
 CREATE TABLE `IsuStatusDefine` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  `code` varchar(255) DEFAULT NULL,
+  `label` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
+  `isDefault` bit(1) DEFAULT NULL,
+  `isFinal` bit(1) DEFAULT NULL,
   `categoryId` int(11) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
@@ -638,7 +928,14 @@ CREATE TABLE `IsuStatusDefine` (
   PRIMARY KEY (`id`),
   KEY `categoryId` (`categoryId`),
   CONSTRAINT `fk_isu_status_define_categoryid` FOREIGN KEY (`categoryId`) REFERENCES `IsuStatusCategoryDefine` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuStatusDefine`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuStatusDefine` VALUES ('1', '打开', 'open', null, b'1', b'0', null, '1', b'0', b'0', '2018-11-09 11:13:04', null), ('2', '解决', 'Resolved', null, b'0', b'0', null, '2', b'0', b'0', '2018-11-09 11:16:37', null), ('3', '关闭', 'Closed', null, b'0', b'1', null, '3', b'0', b'0', '2018-11-09 11:16:40', null), ('4', '重新打开', 'Reopen', null, b'0', b'0', null, '4', b'0', b'0', '2018-11-09 11:16:43', null), ('5', '挂起', 'Suspend', null, b'0', b'1', null, '5', b'0', b'0', '2018-11-09 11:16:46', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `IsuType`
@@ -646,9 +943,13 @@ CREATE TABLE `IsuStatusDefine` (
 DROP TABLE IF EXISTS `IsuType`;
 CREATE TABLE `IsuType` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
+  `label` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
+  `ordr` varchar(255) DEFAULT NULL,
   `orgId` int(11) DEFAULT NULL,
+  `isBuildIn` bit(1) DEFAULT NULL,
+  `isDefault` bit(1) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -656,7 +957,14 @@ CREATE TABLE `IsuType` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `fk_isu_type_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuType`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuType` VALUES ('1', 'uu', 'sdf3', '3', '10', '5', null, b'1', b'0', b'0', '2018-10-22 11:34:48', '2018-10-22 11:35:19'), ('74', 'defect', '缺陷', null, '1', '8', b'1', null, b'0', b'0', '2018-11-08 20:29:04', null), ('75', 'todo', '待办事项', null, '2', '8', b'1', null, b'0', b'0', '2018-11-08 20:29:04', null), ('101', 'defect', '缺陷', null, '1', '9', b'1', null, b'0', b'0', '2018-11-08 21:00:37', null), ('102', 'todo', '待办事项', null, '2', '9', b'1', null, b'0', b'0', '2018-11-08 21:00:37', null), ('107', 'defect', '缺陷', null, '1', '11', b'1', null, b'0', b'0', '2018-11-09 12:53:47', null), ('108', 'todo', '待办事项', null, '2', '11', b'1', null, b'0', b'0', '2018-11-09 12:53:47', null), ('110', 'defect', '缺陷', null, '1', '12', b'1', null, b'0', b'0', '2018-11-09 13:04:58', null), ('111', 'todo', '待办事项', null, '2', '12', b'1', null, b'0', b'0', '2018-11-09 13:04:58', null), ('113', 'defect', '缺陷', null, '1', '13', b'1', null, b'0', b'0', '2018-11-09 13:19:05', null), ('114', 'todo', '待办事项', null, '2', '13', b'1', null, b'0', b'0', '2018-11-09 13:19:05', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `IsuTypeDefine`
@@ -664,15 +972,24 @@ CREATE TABLE `IsuType` (
 DROP TABLE IF EXISTS `IsuTypeDefine`;
 CREATE TABLE `IsuTypeDefine` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  `code` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
+  `label` varchar(255) DEFAULT NULL,
   `descr` varchar(1000) DEFAULT NULL,
+  `ordr` int(11) DEFAULT NULL,
+  `isDefault` bit(1) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuTypeDefine`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuTypeDefine` VALUES ('1', 'defect', '缺陷', null, '1', null, b'0', b'0', '2018-11-08 17:50:39', null), ('2', 'todo', '待办事项', null, '2', null, b'0', b'0', '2018-11-08 17:54:24', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `IsuTypeSolution`
@@ -690,41 +1007,37 @@ CREATE TABLE `IsuTypeSolution` (
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   CONSTRAINT `fk_isutypesolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `IsuTypeSolutionToProjectRelation`
+--  Records of `IsuTypeSolution`
 -- ----------------------------
-DROP TABLE IF EXISTS `IsuTypeSolutionToProjectRelation`;
-CREATE TABLE `IsuTypeSolutionToProjectRelation` (
-  `orgId` int(11) DEFAULT NULL,
-  `projectId` int(11) DEFAULT NULL,
-  `solutionId` int(11) DEFAULT NULL,
-  KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
-  KEY `projectId` (`projectId`),
-  KEY `solutionId` (`solutionId`),
-  KEY `projectId_2` (`projectId`),
-  KEY `solutionId_2` (`solutionId`),
-  CONSTRAINT `fk_isutypesolutiontoprojectrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
-  CONSTRAINT `fk_isutypesolutiontoprojectrelation_projectid` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
-  CONSTRAINT `fk_isutypesolutiontoprojectrelation_solutionid` FOREIGN KEY (`solutionId`) REFERENCES `IsuTypeSolution` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+BEGIN;
+INSERT INTO `IsuTypeSolution` VALUES ('1', 'SDF21', null, '13', b'0', b'0', '2018-11-12 17:11:23', '2018-11-12 17:43:41'), ('2', 'SDF', null, '13', b'1', b'0', '2018-11-12 17:11:44', '2018-11-12 17:43:37');
+COMMIT;
 
 -- ----------------------------
---  Table structure for `IsuTypeSolutionToTypeRelation`
+--  Table structure for `IsuTypeSolutionItem`
 -- ----------------------------
-DROP TABLE IF EXISTS `IsuTypeSolutionToTypeRelation`;
-CREATE TABLE `IsuTypeSolutionToTypeRelation` (
+DROP TABLE IF EXISTS `IsuTypeSolutionItem`;
+CREATE TABLE `IsuTypeSolutionItem` (
   `typeId` int(11) DEFAULT NULL,
   `solutionId` int(11) DEFAULT NULL,
-  KEY `projectId` (`typeId`),
+  `orgId` int(11) DEFAULT NULL,
   KEY `solutionId` (`solutionId`),
-  KEY `projectId_2` (`typeId`),
-  KEY `solutionId_2` (`solutionId`),
   KEY `typeId` (`typeId`),
-  CONSTRAINT `fk_isutypesolutiontotyperelation_ibfk_2` FOREIGN KEY (`typeId`) REFERENCES `IsuType` (`id`),
-  CONSTRAINT `fk_isutypesolutiontotyperelation_ibfk_3` FOREIGN KEY (`solutionId`) REFERENCES `IsuTypeSolution` (`id`)
+  KEY `orgId` (`orgId`) USING BTREE,
+  CONSTRAINT `isutypesolutionitem_ibfk_1` FOREIGN KEY (`typeId`) REFERENCES `IsuType` (`id`),
+  CONSTRAINT `isutypesolutionitem_ibfk_2` FOREIGN KEY (`solutionId`) REFERENCES `IsuTypeSolution` (`id`),
+  CONSTRAINT `isutypesolutionitem_ibfk_3` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuTypeSolutionItem`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuTypeSolutionItem` VALUES ('113', '1', '13'), ('114', '1', '13');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `IsuWorkflow`
@@ -745,19 +1058,22 @@ CREATE TABLE `IsuWorkflow` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `IsuWorkflowProjectRelation`
+--  Table structure for `IsuWorkflowProjectIsuTypeRelation`
 -- ----------------------------
-DROP TABLE IF EXISTS `IsuWorkflowProjectRelation`;
-CREATE TABLE `IsuWorkflowProjectRelation` (
+DROP TABLE IF EXISTS `IsuWorkflowProjectIsuTypeRelation`;
+CREATE TABLE `IsuWorkflowProjectIsuTypeRelation` (
   `orgId` int(11) DEFAULT NULL,
   `projectId` int(11) NOT NULL,
   `workflowId` int(11) NOT NULL,
-  PRIMARY KEY (`workflowId`,`projectId`),
+  `isuTypeId` int(11) NOT NULL,
+  PRIMARY KEY (`workflowId`,`projectId`,`isuTypeId`),
   KEY `FK_rtujogn8761o0m2e2pmi6rsr6` (`projectId`),
   KEY `workflowId` (`workflowId`),
+  KEY `isuTypeId` (`isuTypeId`) USING BTREE,
   CONSTRAINT `fk_isuworkflowprojectrelation_ibfk_1` FOREIGN KEY (`workflowId`) REFERENCES `isucustomfielddefine` (`id`),
   CONSTRAINT `fk_isuworkflowprojectrelation_ibfk_2` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
-  CONSTRAINT `fk_isuworkflowprojectrelation_ibfk_3` FOREIGN KEY (`workflowId`) REFERENCES `IsuWorkflow` (`id`)
+  CONSTRAINT `fk_isuworkflowprojectrelation_ibfk_3` FOREIGN KEY (`workflowId`) REFERENCES `IsuWorkflow` (`id`),
+  CONSTRAINT `fk_isuworkflowprojectrelation_ibfk_4` FOREIGN KEY (`isuTypeId`) REFERENCES `IsuType` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -975,13 +1291,13 @@ CREATE TABLE `TstCase` (
   CONSTRAINT `FK_4paqpejxxg65icpu7asf9btow` FOREIGN KEY (`createById`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_f3mtkmff26truvxmm897u8oeu` FOREIGN KEY (`updateById`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_le8suo2xxbcr036yaiivwkqn0` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=159 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstCase`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstCase` VALUES ('1', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '343', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 11:37:43', null), ('2', '新特性', null, null, 'steps', '10', '1', b'0', '0', 'functional', 'medium', null, '343', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 11:37:43', null), ('3', '新用例', null, null, 'steps', '10', '2', b'1', '0', 'functional', 'medium', null, '343', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 11:37:43', null), ('4', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '345', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:20:35', null), ('5', '新特性', null, null, 'steps', '10', '4', b'0', '0', 'functional', 'medium', null, '345', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:20:35', null), ('6', '新用例', null, null, 'steps', '10', '5', b'1', '0', 'functional', 'medium', null, '345', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:20:35', null), ('7', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '346', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:27:38', null), ('8', '新特性', null, null, 'steps', '10', '7', b'0', '0', 'functional', 'medium', null, '346', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:27:38', null), ('9', '新用例', null, null, 'steps', '10', '8', b'1', '0', 'functional', 'medium', null, '346', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:27:38', null), ('10', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '348', '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:01:39', null), ('11', '新特性', null, null, 'steps', '10', '10', b'0', '0', 'functional', 'medium', null, '348', '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:01:39', null), ('12', '新用例', null, null, 'steps', '10', '11', b'1', '0', 'functional', 'medium', null, '348', '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:01:39', null), ('13', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '350', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:07:47', null), ('14', '新特性', null, null, 'steps', '10', '13', b'0', '0', 'functional', 'medium', null, '350', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:07:47', null), ('15', '新用例', null, null, 'steps', '10', '14', b'1', '0', 'functional', 'medium', null, '350', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:07:47', null), ('16', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '352', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:22:06', null), ('17', '新特性', null, null, 'steps', '10', '16', b'0', '0', 'functional', 'medium', null, '352', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:22:06', null), ('18', '新用例2', null, null, 'steps', '10', '17', b'0', '0', 'functional', 'medium', null, '352', '8', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:22:06', '2018-10-15 17:12:32'), ('19', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '354', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:24:17', null), ('20', '新特性', null, null, 'steps', '10', '19', b'0', '0', 'functional', 'medium', null, '354', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:24:17', null), ('21', '新用例', null, null, 'steps', '10', '20', b'1', '0', 'functional', 'medium', null, '354', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:24:17', null), ('22', '新用例2', null, null, 'richText', '10', '18', b'1', '1', 'functional', 'medium', null, '352', '8', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-15 17:13:23', '2018-10-15 17:42:14'), ('23', '新用例', null, null, 'steps', '10', '18', b'1', '2', 'functional', 'medium', b'1', '352', '8', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-15 17:13:28', '2018-10-15 17:15:01');
+INSERT INTO `TstCase` VALUES ('1', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '343', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 11:37:43', null), ('2', '新特性', null, null, 'steps', '10', '1', b'0', '0', 'functional', 'medium', null, '343', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 11:37:43', null), ('3', '新用例', null, null, 'steps', '10', '2', b'1', '0', 'functional', 'medium', null, '343', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 11:37:43', null), ('4', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '345', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:20:35', null), ('5', '新特性', null, null, 'steps', '10', '4', b'0', '0', 'functional', 'medium', null, '345', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:20:35', null), ('6', '新用例', null, null, 'steps', '10', '5', b'1', '0', 'functional', 'medium', null, '345', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:20:35', null), ('7', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '346', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:27:38', null), ('8', '新特性', null, null, 'steps', '10', '7', b'0', '0', 'functional', 'medium', null, '346', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:27:38', null), ('9', '新用例', null, null, 'steps', '10', '8', b'1', '0', 'functional', 'medium', null, '346', '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-06 14:27:38', null), ('10', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '348', '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:01:39', null), ('11', '新特性', null, null, 'steps', '10', '10', b'0', '0', 'functional', 'medium', null, '348', '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:01:39', null), ('12', '新用例', null, null, 'steps', '10', '11', b'1', '0', 'functional', 'medium', null, '348', '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:01:39', null), ('13', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '350', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:07:47', null), ('14', '新特性', null, null, 'steps', '10', '13', b'0', '0', 'functional', 'medium', null, '350', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:07:47', null), ('15', '新用例', null, null, 'steps', '10', '14', b'1', '0', 'functional', 'medium', null, '350', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-08 11:07:47', null), ('16', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '352', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:22:06', null), ('17', '新特性', null, null, 'steps', '10', '16', b'0', '0', 'functional', 'medium', null, '352', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:22:06', null), ('18', '新用例2', null, null, 'steps', '10', '17', b'0', '0', 'functional', 'medium', null, '352', '8', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:22:06', '2018-10-15 17:12:32'), ('19', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '354', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:24:17', null), ('20', '新特性', null, null, 'steps', '10', '19', b'0', '0', 'functional', 'medium', null, '354', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:24:17', null), ('21', '新用例', null, null, 'steps', '10', '20', b'1', '0', 'functional', 'medium', null, '354', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-11 10:24:17', null), ('22', '新用例2', null, null, 'steps', '10', '18', b'1', '1', 'functional', 'medium', null, '352', '8', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-15 17:13:23', '2018-11-04 18:33:04'), ('23', '新用例', null, null, 'steps', '10', '18', b'1', '2', 'functional', 'medium', b'1', '352', '8', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-10-15 17:13:28', '2018-10-15 17:15:01'), ('24', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '355', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-08 19:50:26', null), ('25', '新特性', null, null, 'steps', '10', '24', b'0', '0', 'functional', 'medium', null, '355', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-08 19:50:26', null), ('26', '新用例', null, null, 'steps', '10', '25', b'1', '0', 'functional', 'medium', null, '355', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-08 19:50:26', null), ('117', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '417', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-08 20:29:04', null), ('118', '新特性', null, null, 'steps', '10', '117', b'0', '0', 'functional', 'medium', null, '417', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-08 20:29:04', null), ('119', '新用例', null, null, 'steps', '10', '118', b'1', '0', 'functional', 'medium', null, '417', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-08 20:29:04', null), ('144', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '435', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-08 21:00:37', null), ('145', '新特性', null, null, 'steps', '10', '144', b'0', '0', 'functional', 'medium', null, '435', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-08 21:00:37', null), ('146', '新用例', null, null, 'steps', '10', '145', b'1', '0', 'functional', 'medium', null, '435', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-08 21:00:37', null), ('150', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '439', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-09 12:53:47', null), ('151', '新特性', null, null, 'steps', '10', '150', b'0', '0', 'functional', 'medium', null, '439', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-09 12:53:47', null), ('152', '新用例', null, null, 'steps', '10', '151', b'1', '0', 'functional', 'medium', null, '439', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-09 12:53:47', null), ('153', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '441', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-09 13:04:58', null), ('154', '新特性', null, null, 'steps', '10', '153', b'0', '0', 'functional', 'medium', null, '441', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-09 13:04:58', null), ('155', '新用例', null, null, 'steps', '10', '154', b'1', '0', 'functional', 'medium', null, '441', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-09 13:04:58', null), ('156', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '443', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-09 13:19:05', null), ('157', '新特性', null, null, 'steps', '10', '156', b'0', '0', 'functional', 'medium', null, '443', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-09 13:19:05', null), ('158', '新用例', null, null, 'steps', '10', '157', b'1', '0', 'functional', 'medium', null, '443', '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-11-09 13:19:05', null);
 COMMIT;
 
 -- ----------------------------
@@ -1056,13 +1372,13 @@ CREATE TABLE `TstCaseExeStatus` (
   PRIMARY KEY (`id`),
   KEY `FK_o4l4xg65y069b0ai5cgbfm175` (`orgid`),
   CONSTRAINT `FK_o4l4xg65y069b0ai5cgbfm175` FOREIGN KEY (`orgid`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=201 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstCaseExeStatus`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstCaseExeStatus` VALUES ('1', 'untest', '未执行', null, '10', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', 'pass', '成功', null, '20', b'0', b'1', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('3', 'fail', '失败', null, '30', b'0', b'1', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('4', 'block', '阻塞', null, '40', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('5', 'untest', '未执行', null, '10', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('6', 'pass', '成功', null, '20', b'0', b'1', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('7', 'fail', '失败', null, '30', b'0', b'1', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('8', 'block', '阻塞', null, '40', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('9', 'untest', '未执行', null, '10', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('10', 'pass', '成功', null, '20', b'0', b'1', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('11', 'fail', '失败', null, '30', b'0', b'1', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('12', 'block', '阻塞', null, '40', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('13', 'untest', '未执行', null, '10', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('14', 'pass', '成功', null, '20', b'0', b'1', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('15', 'fail', '失败', null, '30', b'0', b'1', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('16', 'block', '阻塞', null, '40', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('17', 'untest', '未执行', null, '10', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('18', 'pass', '成功', null, '20', b'0', b'1', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('19', 'fail', '失败', null, '30', b'0', b'1', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('20', 'block', '阻塞', null, '40', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('21', 'untest', '未执行', null, '10', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('22', 'pass', '成功', null, '20', b'0', b'1', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('23', 'fail', '失败', null, '30', b'0', b'1', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('24', 'block', '阻塞', null, '40', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null);
+INSERT INTO `TstCaseExeStatus` VALUES ('1', 'untest', '未执行', null, '10', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', 'pass', '成功', null, '20', b'0', b'1', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('3', 'fail', '失败', null, '30', b'0', b'1', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('4', 'block', '阻塞', null, '40', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('5', 'untest', '未执行', null, '10', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('6', 'pass', '成功', null, '20', b'0', b'1', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('7', 'fail', '失败', null, '30', b'0', b'1', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('8', 'block', '阻塞', null, '40', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('9', 'untest', '未执行', null, '10', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('10', 'pass', '成功', null, '20', b'0', b'1', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('11', 'fail', '失败', null, '30', b'0', b'1', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('12', 'block', '阻塞', null, '40', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('13', 'untest', '未执行', null, '10', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('14', 'pass', '成功', null, '20', b'0', b'1', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('15', 'fail', '失败', null, '30', b'0', b'1', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('16', 'block', '阻塞', null, '40', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('17', 'untest', '未执行', null, '10', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('18', 'pass', '成功', null, '20', b'0', b'1', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('19', 'fail', '失败', null, '30', b'0', b'1', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('20', 'block', '阻塞', null, '40', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('21', 'untest', '未执行', null, '10', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('22', 'pass', '成功', null, '20', b'0', b'1', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('23', 'fail', '失败', null, '30', b'0', b'1', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('24', 'block', '阻塞', null, '40', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('145', 'untest', '未执行', null, '10', b'0', b'0', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('146', 'pass', '成功', null, '20', b'0', b'1', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('147', 'fail', '失败', null, '30', b'0', b'1', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('148', 'block', '阻塞', null, '40', b'0', b'0', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('181', 'untest', '未执行', null, '10', b'0', b'0', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('182', 'pass', '成功', null, '20', b'0', b'1', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('183', 'fail', '失败', null, '30', b'0', b'1', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('184', 'block', '阻塞', null, '40', b'0', b'0', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('189', 'untest', '未执行', null, '10', b'0', b'0', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('190', 'pass', '成功', null, '20', b'0', b'1', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('191', 'fail', '失败', null, '30', b'0', b'1', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('192', 'block', '阻塞', null, '40', b'0', b'0', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('193', 'untest', '未执行', null, '10', b'0', b'0', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('194', 'pass', '成功', null, '20', b'0', b'1', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('195', 'fail', '失败', null, '30', b'0', b'1', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('196', 'block', '阻塞', null, '40', b'0', b'0', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('197', 'untest', '未执行', null, '10', b'0', b'0', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('198', 'pass', '成功', null, '20', b'0', b'1', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('199', 'fail', '失败', null, '30', b'0', b'1', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('200', 'block', '阻塞', null, '40', b'0', b'0', '13', b'0', b'0', '2018-11-09 13:19:05', null);
 COMMIT;
 
 -- ----------------------------
@@ -1081,13 +1397,13 @@ CREATE TABLE `TstCaseHistory` (
   PRIMARY KEY (`id`),
   KEY `FK_8yss1awno54uahftbyi1wb2j8` (`caseId`),
   CONSTRAINT `FK_8yss1awno54uahftbyi1wb2j8` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `TstCaseHistory`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstCaseHistory` VALUES ('1', '用户<span class=\"dict\">Aaron Chen</span>创建', null, '8', b'0', b'0', '2018-10-06 14:27:37', null), ('2', '用户<span class=\"dict\">Aaron Chen</span>创建', null, '9', b'0', b'0', '2018-10-06 14:27:37', null), ('3', '用户<span class=\"dict\">Aaron Chen2</span>更新', null, '18', b'0', b'0', '2018-10-15 17:12:32', null), ('4', '用户<span class=\"dict\">Aaron Chen2</span>创建', null, '22', b'0', b'0', '2018-10-15 17:13:23', null), ('5', '用户<span class=\"dict\">Aaron Chen2</span>创建', null, '23', b'0', b'0', '2018-10-15 17:13:28', null), ('6', '用户<span class=\"dict\">Aaron Chen2</span>更新', null, '23', b'0', b'0', '2018-10-15 17:13:32', null), ('7', '用户<span class=\"dict\">Aaron Chen2</span>更新', null, '22', b'0', b'0', '2018-10-15 17:14:46', null), ('8', '用户<span class=\"dict\">Aaron Chen2</span>更新', null, '23', b'0', b'0', '2018-10-15 17:15:01', null);
+INSERT INTO `TstCaseHistory` VALUES ('1', '用户<span class=\"dict\">Aaron Chen</span>创建', null, '8', b'0', b'0', '2018-10-06 14:27:37', null), ('2', '用户<span class=\"dict\">Aaron Chen</span>创建', null, '9', b'0', b'0', '2018-10-06 14:27:37', null), ('3', '用户<span class=\"dict\">Aaron Chen2</span>更新', null, '18', b'0', b'0', '2018-10-15 17:12:32', null), ('4', '用户<span class=\"dict\">Aaron Chen2</span>创建', null, '22', b'0', b'0', '2018-10-15 17:13:23', null), ('5', '用户<span class=\"dict\">Aaron Chen2</span>创建', null, '23', b'0', b'0', '2018-10-15 17:13:28', null), ('6', '用户<span class=\"dict\">Aaron Chen2</span>更新', null, '23', b'0', b'0', '2018-10-15 17:13:32', null), ('7', '用户<span class=\"dict\">Aaron Chen2</span>更新', null, '22', b'0', b'0', '2018-10-15 17:14:46', null), ('8', '用户<span class=\"dict\">Aaron Chen2</span>更新', null, '23', b'0', b'0', '2018-10-15 17:15:01', null), ('9', '用户<span class=\"dict\">Aaron Chen2</span>创建', null, '25', b'0', b'0', '2018-11-08 19:50:26', null), ('10', '用户<span class=\"dict\">Aaron Chen2</span>创建', null, '26', b'0', b'0', '2018-11-08 19:50:26', null);
 COMMIT;
 
 -- ----------------------------
@@ -1210,13 +1526,13 @@ CREATE TABLE `TstCasePriority` (
   PRIMARY KEY (`id`),
   KEY `FK_d8r4hkhobybms74u4vk43thj9` (`orgid`),
   CONSTRAINT `FK_d8r4hkhobybms74u4vk43thj9` FOREIGN KEY (`orgid`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=153 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstCasePriority`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstCasePriority` VALUES ('1', 'high', '高', null, '10', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', 'medium', '中', null, '20', b'0', b'1', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('3', 'low', '低', null, '30', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('4', 'high', '高', null, '10', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('5', 'medium', '中', null, '20', b'0', b'1', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('6', 'low', '低', null, '30', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('7', 'high', '高', null, '10', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('8', 'medium', '中', null, '20', b'0', b'1', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('9', 'low', '低', null, '30', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('10', 'high', '高', null, '10', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('11', 'medium', '中', null, '20', b'0', b'1', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('12', 'low', '低', null, '30', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('13', 'high', '高', null, '10', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('14', 'medium', '中', null, '20', b'0', b'1', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('15', 'low', '低', null, '30', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('16', 'high', '高', null, '10', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('17', 'medium', '中', null, '20', b'0', b'1', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('18', 'low', '低', null, '30', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null);
+INSERT INTO `TstCasePriority` VALUES ('1', 'high', '高', null, '10', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', 'medium', '中', null, '20', b'0', b'1', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('3', 'low', '低', null, '30', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('4', 'high', '高', null, '10', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('5', 'medium', '中', null, '20', b'0', b'1', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('6', 'low', '低', null, '30', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('7', 'high', '高', null, '10', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('8', 'medium', '中', null, '20', b'0', b'1', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('9', 'low', '低', null, '30', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('10', 'high', '高', null, '10', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('11', 'medium', '中', null, '20', b'0', b'1', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('12', 'low', '低', null, '30', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('13', 'high', '高', null, '10', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('14', 'medium', '中', null, '20', b'0', b'1', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('15', 'low', '低', null, '30', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('16', 'high', '高', null, '10', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('17', 'medium', '中', null, '20', b'0', b'1', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('18', 'low', '低', null, '30', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('19', 'dsf', 'sdf', null, '40', null, null, '5', b'0', b'0', '2018-10-22 11:31:55', null), ('20', 'sdf', 'dsf', null, '50', null, null, '5', b'0', b'0', '2018-10-22 11:32:20', null), ('111', 'high', '高', null, '10', b'0', b'0', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('112', 'medium', '中', null, '20', b'0', b'1', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('113', 'low', '低', null, '30', b'0', b'0', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('138', 'high', '高', null, '10', b'0', b'0', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('139', 'medium', '中', null, '20', b'0', b'1', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('140', 'low', '低', null, '30', b'0', b'0', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('144', 'high', '高', null, '10', b'0', b'0', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('145', 'medium', '中', null, '20', b'0', b'1', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('146', 'low', '低', null, '30', b'0', b'0', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('147', 'high', '高', null, '10', b'0', b'0', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('148', 'medium', '中', null, '20', b'0', b'1', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('149', 'low', '低', null, '30', b'0', b'0', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('150', 'high', '高', null, '10', b'0', b'0', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('151', 'medium', '中', null, '20', b'0', b'1', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('152', 'low', '低', null, '30', b'0', b'0', '13', b'0', b'0', '2018-11-09 13:19:05', null);
 COMMIT;
 
 -- ----------------------------
@@ -1236,7 +1552,14 @@ CREATE TABLE `TstCaseStep` (
   PRIMARY KEY (`id`),
   KEY `FK_s8hj2viu2jtj1iwf4pgu789hi` (`caseId`),
   CONSTRAINT `FK_s8hj2viu2jtj1iwf4pgu789hi` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstCaseStep`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstCaseStep` VALUES ('1', 'sdf', 'sdf', '2', '22', b'0', b'0', '2018-11-04 18:33:19', null), ('2', '33', '33', '1', '22', b'0', b'0', '2018-11-04 18:33:26', null), ('3', '555', '555', '3', '22', b'0', b'0', '2018-11-04 18:34:29', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstCaseType`
@@ -1258,13 +1581,13 @@ CREATE TABLE `TstCaseType` (
   PRIMARY KEY (`id`),
   KEY `FK_rqs9hiykm6kk5w8rewcy1uvy7` (`orgId`),
   CONSTRAINT `FK_rqs9hiykm6kk5w8rewcy1uvy7` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=353 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstCaseType`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstCaseType` VALUES ('1', 'functional', '功能', null, '10', b'0', b'1', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', 'performance', '性能', null, '20', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('3', 'ui', '界面', null, '30', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('4', 'compatibility', '兼容性', null, '40', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('5', 'security', '安全', null, '50', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('6', 'automation', '自动化', null, '60', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('7', 'other', '其它', null, '70', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('8', 'functional', '功能', null, '10', b'0', b'1', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('9', 'performance', '性能', null, '20', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('10', 'ui', '界面', null, '30', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('11', 'compatibility', '兼容性', null, '40', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('12', 'security', '安全', null, '50', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('13', 'automation', '自动化', null, '60', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('14', 'other', '其它', null, '70', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('15', 'functional', '功能', null, '10', b'0', b'1', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('16', 'performance', '性能', null, '20', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('17', 'ui', '界面', null, '30', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('18', 'compatibility', '兼容性', null, '40', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('19', 'security', '安全', null, '50', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('20', 'automation', '自动化', null, '60', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('21', 'other', '其它', null, '70', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('22', 'functional', '功能', null, '10', b'0', b'1', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('23', 'performance', '性能', null, '20', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('24', 'ui', '界面', null, '30', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('25', 'compatibility', '兼容性', null, '40', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('26', 'security', '安全', null, '50', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('27', 'automation', '自动化', null, '60', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('28', 'other', '其它', null, '70', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('29', 'functional', '功能', null, '10', b'0', b'1', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('30', 'performance', '性能', null, '20', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('31', 'ui', '界面', null, '30', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('32', 'compatibility', '兼容性', null, '40', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('33', 'security', '安全', null, '50', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('34', 'automation', '自动化', null, '60', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('35', 'other', '其它', null, '70', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('36', 'functional', '功能', null, '10', b'0', b'1', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('37', 'performance', '性能', null, '20', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('38', 'ui', '界面', null, '30', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('39', 'compatibility', '兼容性', null, '40', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('40', 'security', '安全', null, '50', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('41', 'automation', '自动化', null, '60', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('42', 'other', '其它', null, '70', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null);
+INSERT INTO `TstCaseType` VALUES ('1', 'functional', '功能', null, '10', b'0', b'1', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', 'performance', '性能', null, '20', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('3', 'ui', '界面', null, '30', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('4', 'compatibility', '兼容性', null, '40', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('5', 'security', '安全', null, '50', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('6', 'automation', '自动化', null, '60', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('7', 'other', '其它', null, '70', b'0', b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('8', 'functional', '功能', null, '10', b'0', b'1', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('9', 'performance', '性能', null, '20', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('10', 'ui', '界面', null, '30', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('11', 'compatibility', '兼容性', null, '40', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('12', 'security', '安全', null, '50', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('13', 'automation', '自动化', null, '60', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('14', 'other', '其它', null, '70', b'0', b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('15', 'functional', '功能', null, '10', b'0', b'1', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('16', 'performance', '性能', null, '20', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('17', 'ui', '界面', null, '30', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('18', 'compatibility', '兼容性', null, '40', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('19', 'security', '安全', null, '50', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('20', 'automation', '自动化', null, '60', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('21', 'other', '其它', null, '70', b'0', b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('22', 'functional', '功能', null, '10', b'0', b'1', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('23', 'performance', '性能', null, '20', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('24', 'ui', '界面', null, '30', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('25', 'compatibility', '兼容性', null, '40', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('26', 'security', '安全', null, '50', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('27', 'automation', '自动化', null, '60', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('28', 'other', '其它', null, '70', b'0', b'0', '4', b'0', b'0', '2018-10-08 11:07:47', '2018-10-12 07:21:33'), ('29', 'functional', '功能', null, '10', b'0', b'1', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('30', 'performance', '性能', null, '20', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('31', 'ui', '界面', null, '30', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('32', 'compatibility', '兼容性', null, '40', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('33', 'security', '安全', null, '50', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('34', 'automation', '自动化', null, '60', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('35', 'other', '其它', null, '70', b'0', b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('36', 'functional', '功能', null, '10', b'0', b'1', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('37', 'performance', '性能', null, '20', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('38', 'ui', '界面', null, '30', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('39', 'compatibility', '兼容性', null, '40', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('40', 'security', '安全', null, '50', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('41', 'automation', '自动化', null, '60', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('42', 'other', '其它', null, '70', b'0', b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('43', '1d429a80-99c4-49dc-b081-09bf2980f5c8', 'sdf', null, '80', null, b'0', '5', b'0', b'0', '2018-10-22 11:25:25', null), ('44', 'sdf', 'sdf', null, '90', null, b'0', '5', b'0', b'0', '2018-10-22 11:32:08', null), ('255', 'functional', '功能', null, '10', b'0', b'1', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('256', 'performance', '性能', null, '20', b'0', b'0', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('257', 'ui', '界面', null, '30', b'0', b'0', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('258', 'compatibility', '兼容性', null, '40', b'0', b'0', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('259', 'security', '安全', null, '50', b'0', b'0', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('260', 'automation', '自动化', null, '60', b'0', b'0', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('261', 'other', '其它', null, '70', b'0', b'0', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('318', 'functional', '功能', null, '10', b'0', b'1', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('319', 'performance', '性能', null, '20', b'0', b'0', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('320', 'ui', '界面', null, '30', b'0', b'0', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('321', 'compatibility', '兼容性', null, '40', b'0', b'0', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('322', 'security', '安全', null, '50', b'0', b'0', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('323', 'automation', '自动化', null, '60', b'0', b'0', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('324', 'other', '其它', null, '70', b'0', b'0', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('332', 'functional', '功能', null, '10', b'0', b'1', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('333', 'performance', '性能', null, '20', b'0', b'0', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('334', 'ui', '界面', null, '30', b'0', b'0', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('335', 'compatibility', '兼容性', null, '40', b'0', b'0', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('336', 'security', '安全', null, '50', b'0', b'0', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('337', 'automation', '自动化', null, '60', b'0', b'0', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('338', 'other', '其它', null, '70', b'0', b'0', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('339', 'functional', '功能', null, '10', b'0', b'1', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('340', 'performance', '性能', null, '20', b'0', b'0', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('341', 'ui', '界面', null, '30', b'0', b'0', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('342', 'compatibility', '兼容性', null, '40', b'0', b'0', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('343', 'security', '安全', null, '50', b'0', b'0', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('344', 'automation', '自动化', null, '60', b'0', b'0', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('345', 'other', '其它', null, '70', b'0', b'0', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('346', 'functional', '功能', null, '10', b'0', b'1', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('347', 'performance', '性能', null, '20', b'0', b'0', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('348', 'ui', '界面', null, '30', b'0', b'0', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('349', 'compatibility', '兼容性', null, '40', b'0', b'0', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('350', 'security', '安全', null, '50', b'0', b'0', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('351', 'automation', '自动化', null, '60', b'0', b'0', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('352', 'other', '其它', null, '70', b'0', b'0', '13', b'0', b'0', '2018-11-09 13:19:05', null);
 COMMIT;
 
 -- ----------------------------
@@ -1275,7 +1598,7 @@ CREATE TABLE `TstCustomField` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `label` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
-  `colCode` varchar(255) DEFAULT NULL,
+  `myColumn` varchar(255) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   `format` varchar(255) DEFAULT NULL,
   `rows` int(11) DEFAULT NULL,
@@ -1292,13 +1615,13 @@ CREATE TABLE `TstCustomField` (
   PRIMARY KEY (`id`),
   KEY `FK_b1o40efa19tleean59bgg59jm` (`orgId`),
   CONSTRAINT `FK_b1o40efa19tleean59bgg59jm` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstCustomField`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstCustomField` VALUES ('1', '字段01', null, 'prop01', 'string', 'plain_text', '3', b'1', 'test_case', '10', null, b'0', '4', b'0', b'0', '2018-10-10 11:05:33', null);
+INSERT INTO `TstCustomField` VALUES ('1', '字段01', null, 'prop01', 'string', 'plain_text', '3', b'1', 'test_case', '10', null, b'0', '4', b'0', b'0', '2018-10-10 11:05:33', null), ('2', 'dsf', null, 'prop01', 'string', 'plain_text', '3', b'1', 'test_case', '10', null, b'0', '5', b'0', b'0', '2018-10-25 19:25:52', null), ('3', '第三方', null, 'prop02', 'number', 'plain_text', '3', b'1', 'test_case', '20', null, b'0', '5', b'0', b'0', '2018-10-25 19:48:28', null);
 COMMIT;
 
 -- ----------------------------
@@ -1319,7 +1642,14 @@ CREATE TABLE `TstCustomFieldOption` (
   PRIMARY KEY (`id`),
   KEY `FK_9x13nia3eij6tb613asglg0er` (`fieldId`),
   CONSTRAINT `FK_9x13nia3eij6tb613asglg0er` FOREIGN KEY (`fieldId`) REFERENCES `TstCustomField` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `TstCustomFieldOption`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstCustomFieldOption` VALUES ('1', '1', '1', null, '10', '2', b'0', b'0', '2018-10-26 10:31:42', null), ('2', '1', '1', null, '20', '2', b'0', b'0', '2018-10-26 10:32:39', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstCustomFieldProjectRelation`
@@ -1419,13 +1749,13 @@ CREATE TABLE `TstHistory` (
   KEY `FK_m4yjkr3nwc5y1fcjj1ke08xie` (`userId`),
   CONSTRAINT `FK_j9m2m7ijlp9j2184nv0yiln9u` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_m4yjkr3nwc5y1fcjj1ke08xie` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstHistory`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstHistory` VALUES ('1', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '343', '343', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '345', '345', '1', b'0', b'0', '2018-10-06 14:20:35', null), ('3', '用户<span class=\"dict\">Aaron Chen</span>创建项目<span class=\"dict\">Prj01</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:27:37', null), ('4', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj0111</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:30:35', null), ('5', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj01</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:30:58', null), ('6', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj0133</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:38:48', null), ('7', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj013344</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:39:47', null), ('8', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj01</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:41:36', null), ('9', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj012</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:42:05', null), ('10', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj0124444</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:43:05', null), ('11', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '348', '348', '4', b'0', b'0', '2018-10-08 11:01:39', null), ('12', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '350', '350', '8', b'0', b'0', '2018-10-08 11:07:47', null), ('13', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '352', '352', '8', b'0', b'0', '2018-10-11 10:22:06', null), ('14', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '354', '354', '8', b'0', b'0', '2018-10-11 10:24:17', null), ('15', '用户<span class=\"dict\">Aaron Chen2</span>创建计划<span class=\"dict\">sdfdsf</span>', null, null, null, 'plan', '1', '352', '8', b'0', b'0', '2018-10-15 17:14:28', null), ('16', '用户<span class=\"dict\">Aaron Chen2</span>创建测试任务<span class=\"dict\">ssdf</span>', null, null, null, 'task', '1', '352', '8', b'0', b'0', '2018-10-15 17:14:28', null), ('17', '用户<span class=\"dict\">Aaron Chen2</span>更新用例为测试任务<span class=\"dict\">ssdf</span>', null, null, null, 'task', '1', '352', '8', b'0', b'0', '2018-10-15 17:14:34', null), ('18', '用户<span class=\"dict\">Aaron Chen2</span>更新计划<span class=\"dict\">sdfdsf</span>', null, null, null, 'plan', '1', '352', '8', b'0', b'0', '2018-10-15 17:14:35', null);
+INSERT INTO `TstHistory` VALUES ('1', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '343', '343', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '345', '345', '1', b'0', b'0', '2018-10-06 14:20:35', null), ('3', '用户<span class=\"dict\">Aaron Chen</span>创建项目<span class=\"dict\">Prj01</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:27:37', null), ('4', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj0111</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:30:35', null), ('5', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj01</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:30:58', null), ('6', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj0133</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:38:48', null), ('7', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj013344</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:39:47', null), ('8', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj01</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:41:36', null), ('9', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj012</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:42:05', null), ('10', '用户<span class=\"dict\">Aaron Chen</span>更新项目<span class=\"dict\">Prj0124444</span>', null, null, null, 'project', '346', '346', '1', b'0', b'0', '2018-10-06 14:43:05', null), ('11', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '348', '348', '4', b'0', b'0', '2018-10-08 11:01:39', null), ('12', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '350', '350', '8', b'0', b'0', '2018-10-08 11:07:47', null), ('13', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '352', '352', '8', b'0', b'0', '2018-10-11 10:22:06', null), ('14', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '354', '354', '8', b'0', b'0', '2018-10-11 10:24:17', null), ('15', '用户<span class=\"dict\">Aaron Chen2</span>创建计划<span class=\"dict\">sdfdsf</span>', null, null, null, 'plan', '1', '352', '8', b'0', b'0', '2018-10-15 17:14:28', null), ('16', '用户<span class=\"dict\">Aaron Chen2</span>创建测试任务<span class=\"dict\">ssdf</span>', null, null, null, 'task', '1', '352', '8', b'0', b'0', '2018-10-15 17:14:28', null), ('17', '用户<span class=\"dict\">Aaron Chen2</span>更新用例为测试任务<span class=\"dict\">ssdf</span>', null, null, null, 'task', '1', '352', '8', b'0', b'0', '2018-10-15 17:14:34', null), ('18', '用户<span class=\"dict\">Aaron Chen2</span>更新计划<span class=\"dict\">sdfdsf</span>', null, null, null, 'plan', '1', '352', '8', b'0', b'0', '2018-10-15 17:14:35', null), ('49', '用户<span class=\"dict\">Aaron Chen2</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '417', '417', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('58', '用户<span class=\"dict\">Aaron Chen2</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '435', '435', '8', b'0', b'0', '2018-11-08 21:00:37', null), ('60', '用户<span class=\"dict\">Aaron Chen2</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '439', '439', '8', b'0', b'0', '2018-11-09 12:53:47', null), ('61', '用户<span class=\"dict\">Aaron Chen2</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '441', '441', '8', b'0', b'0', '2018-11-09 13:04:58', null), ('62', '用户<span class=\"dict\">Aaron Chen2</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '443', '443', '8', b'0', b'0', '2018-11-09 13:19:05', null);
 COMMIT;
 
 -- ----------------------------
@@ -1466,13 +1796,13 @@ CREATE TABLE `TstOrg` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstOrg`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstOrg` VALUES ('1', 'Aaron Chen的组织', null, b'0', b'0', '2018-10-06 11:37:43', null), ('2', 'Org0112', null, b'0', b'0', '2018-10-06 14:20:36', null), ('3', 'Aaron Chen的组织', null, b'0', b'0', '2018-10-08 11:01:39', null), ('4', 'Aaron Chen的组织', null, b'0', b'0', '2018-10-08 11:07:47', null), ('5', 'test', null, b'0', b'0', '2018-10-11 10:22:07', null), ('6', 'test2', null, b'0', b'0', '2018-10-11 10:24:18', null);
+INSERT INTO `TstOrg` VALUES ('1', 'Aaron Chen的组织', null, b'0', b'0', '2018-10-06 11:37:43', null), ('2', 'Org0112', null, b'0', b'0', '2018-10-06 14:20:36', null), ('3', 'Aaron Chen的组织', null, b'0', b'0', '2018-10-08 11:01:39', null), ('4', 'Aaron Chen的组织', null, b'0', b'0', '2018-10-08 11:07:47', null), ('5', 'test', null, b'0', b'0', '2018-10-11 10:22:07', null), ('6', 'test2', null, b'0', b'0', '2018-10-11 10:24:18', null), ('7', '的是非得失', null, b'0', b'0', '2018-11-08 19:53:27', null), ('8', '组织01', null, b'0', b'0', '2018-11-08 20:29:05', null), ('9', '组织02', null, b'0', b'0', '2018-11-08 21:00:37', null), ('11', '组织03', null, b'0', b'0', '2018-11-09 12:53:47', null), ('12', '组织04', null, b'0', b'0', '2018-11-09 13:04:59', null), ('13', 'ORG05', null, b'0', b'0', '2018-11-09 13:19:05', null);
 COMMIT;
 
 -- ----------------------------
@@ -1491,13 +1821,13 @@ CREATE TABLE `TstOrgGroup` (
   PRIMARY KEY (`id`),
   KEY `FK_dlddwakgodocwt7n7abndkhtg` (`orgId`),
   CONSTRAINT `FK_dlddwakgodocwt7n7abndkhtg` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstOrgGroup`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstOrgGroup` VALUES ('1', '所有人', null, '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', '所有人', null, '2', b'0', b'0', '2018-10-06 14:20:35', null), ('3', '所有人', null, '3', b'0', b'0', '2018-10-08 11:01:39', null), ('4', '所有人', null, '4', b'0', b'0', '2018-10-08 11:07:47', null), ('5', '所有人', null, '5', b'0', b'0', '2018-10-11 10:22:06', null), ('6', '所有人', null, '6', b'0', b'0', '2018-10-11 10:24:17', null);
+INSERT INTO `TstOrgGroup` VALUES ('1', '所有人', null, '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', '所有人', null, '2', b'0', b'0', '2018-10-06 14:20:35', null), ('3', '所有人', null, '3', b'0', b'0', '2018-10-08 11:01:39', null), ('4', '所有人', null, '4', b'0', b'0', '2018-10-08 11:07:47', null), ('5', '所有人', null, '5', b'0', b'0', '2018-10-11 10:22:06', null), ('6', '所有人', null, '6', b'0', b'0', '2018-10-11 10:24:17', null), ('37', '所有人', null, '8', b'0', b'0', '2018-11-08 20:29:04', null), ('46', '所有人', null, '9', b'0', b'0', '2018-11-08 21:00:37', null), ('48', '所有人', null, '11', b'0', b'0', '2018-11-09 12:53:47', null), ('49', '所有人', null, '12', b'0', b'0', '2018-11-09 13:04:58', null), ('50', '所有人', null, '13', b'0', b'0', '2018-11-09 13:19:05', null);
 COMMIT;
 
 -- ----------------------------
@@ -1556,13 +1886,13 @@ CREATE TABLE `TstOrgRole` (
   PRIMARY KEY (`id`),
   KEY `FK_q5g6x4w1pwr5ur4iwbg17nr9u` (`orgId`),
   CONSTRAINT `FK_q5g6x4w1pwr5ur4iwbg17nr9u` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstOrgRole`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstOrgRole` VALUES ('1', '组织管理员', 'org_admin', null, '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', '项目管理员', 'project_admin', null, '1', b'0', b'0', '2018-10-06 11:37:43', '2018-10-06 11:43:37'), ('3', '组织管理员', 'org_admin', null, '2', b'0', b'0', '2018-10-06 14:20:35', null), ('4', '项目管理员', 'project_admin', null, '2', b'0', b'0', '2018-10-06 14:20:35', null), ('5', '组织管理员', 'org_admin', null, '3', b'0', b'0', '2018-10-08 11:01:39', null), ('6', '项目管理员', 'project_admin', null, '3', b'0', b'0', '2018-10-08 11:01:39', null), ('7', '组织管理员', 'org_admin', null, '4', b'0', b'0', '2018-10-08 11:07:47', null), ('8', '项目管理员', 'project_admin', null, '4', b'0', b'0', '2018-10-08 11:07:47', null), ('9', '组织管理员', 'org_admin', null, '5', b'0', b'0', '2018-10-11 10:22:06', null), ('10', '项目管理员', 'project_admin', null, '5', b'0', b'0', '2018-10-11 10:22:06', null), ('11', '组织管理员', 'org_admin', null, '6', b'0', b'0', '2018-10-11 10:24:17', null), ('12', '项目管理员', 'project_admin', null, '6', b'0', b'0', '2018-10-11 10:24:17', null);
+INSERT INTO `TstOrgRole` VALUES ('1', '组织管理员', 'org_admin', null, '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', '项目管理员', 'project_admin', null, '1', b'0', b'0', '2018-10-06 11:37:43', '2018-10-06 11:43:37'), ('3', '组织管理员', 'org_admin', null, '2', b'0', b'0', '2018-10-06 14:20:35', null), ('4', '项目管理员', 'project_admin', null, '2', b'0', b'0', '2018-10-06 14:20:35', null), ('5', '组织管理员', 'org_admin', null, '3', b'0', b'0', '2018-10-08 11:01:39', null), ('6', '项目管理员', 'project_admin', null, '3', b'0', b'0', '2018-10-08 11:01:39', null), ('7', '组织管理员', 'org_admin', null, '4', b'0', b'0', '2018-10-08 11:07:47', null), ('8', '项目管理员', 'project_admin', null, '4', b'0', b'0', '2018-10-08 11:07:47', null), ('9', '组织管理员', 'org_admin', null, '5', b'0', b'0', '2018-10-11 10:22:06', null), ('10', '项目管理员', 'project_admin', null, '5', b'0', b'0', '2018-10-11 10:22:06', null), ('11', '组织管理员', 'org_admin', null, '6', b'0', b'0', '2018-10-11 10:24:17', null), ('12', '项目管理员', 'project_admin', null, '6', b'0', b'0', '2018-10-11 10:24:17', null), ('73', '组织管理员', 'org_admin', null, '8', b'0', b'0', '2018-11-08 20:29:04', null), ('74', '项目管理员', 'project_admin', null, '8', b'0', b'0', '2018-11-08 20:29:04', null), ('91', '组织管理员', 'org_admin', null, '9', b'0', b'0', '2018-11-08 21:00:37', null), ('92', '项目管理员', 'project_admin', null, '9', b'0', b'0', '2018-11-08 21:00:37', null), ('95', '组织管理员', 'org_admin', null, '11', b'0', b'0', '2018-11-09 12:53:47', null), ('96', '项目管理员', 'project_admin', null, '11', b'0', b'0', '2018-11-09 12:53:47', null), ('97', '组织管理员', 'org_admin', null, '12', b'0', b'0', '2018-11-09 13:04:58', null), ('98', '项目管理员', 'project_admin', null, '12', b'0', b'0', '2018-11-09 13:04:58', null), ('99', '组织管理员', 'org_admin', null, '13', b'0', b'0', '2018-11-09 13:19:05', null), ('100', '项目管理员', 'project_admin', null, '13', b'0', b'0', '2018-11-09 13:19:05', null);
 COMMIT;
 
 -- ----------------------------
@@ -1597,7 +1927,7 @@ CREATE TABLE `TstOrgRolePrivilegeRelation` (
 --  Records of `TstOrgRolePrivilegeRelation`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstOrgRolePrivilegeRelation` VALUES ('1', '1', '1'), ('2', '3', '1'), ('3', '5', '1'), ('4', '7', '1'), ('5', '9', '1'), ('6', '11', '1'), ('1', '1', '3'), ('1', '2', '3'), ('2', '3', '3'), ('2', '4', '3'), ('3', '5', '3'), ('3', '6', '3'), ('4', '7', '3'), ('4', '8', '3'), ('5', '9', '3'), ('5', '10', '3'), ('6', '11', '3'), ('6', '12', '3');
+INSERT INTO `TstOrgRolePrivilegeRelation` VALUES ('1', '1', '1'), ('2', '3', '1'), ('3', '5', '1'), ('4', '7', '1'), ('5', '9', '1'), ('6', '11', '1'), ('8', '73', '1'), ('9', '91', '1'), ('11', '95', '1'), ('12', '97', '1'), ('13', '99', '1'), ('1', '1', '3'), ('1', '2', '3'), ('2', '3', '3'), ('2', '4', '3'), ('3', '5', '3'), ('3', '6', '3'), ('4', '7', '3'), ('4', '8', '3'), ('5', '9', '3'), ('5', '10', '3'), ('6', '11', '3'), ('6', '12', '3'), ('8', '73', '3'), ('8', '74', '3'), ('9', '91', '3'), ('9', '92', '3'), ('11', '95', '3'), ('11', '96', '3'), ('12', '97', '3'), ('12', '98', '3'), ('13', '99', '3'), ('13', '100', '3');
 COMMIT;
 
 -- ----------------------------
@@ -1618,7 +1948,7 @@ CREATE TABLE `TstOrgRoleUserRelation` (
 --  Records of `TstOrgRoleUserRelation`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstOrgRoleUserRelation` VALUES ('1', '1', '1'), ('3', '1', '2'), ('2', '3', '1'), ('5', '4', '3'), ('7', '8', '4'), ('9', '8', '5'), ('11', '8', '6');
+INSERT INTO `TstOrgRoleUserRelation` VALUES ('1', '1', '1'), ('3', '1', '2'), ('2', '3', '1'), ('5', '4', '3'), ('7', '8', '4'), ('9', '8', '5'), ('11', '8', '6'), ('73', '8', '8'), ('91', '8', '9'), ('95', '8', '11'), ('97', '8', '12'), ('99', '8', '13');
 COMMIT;
 
 -- ----------------------------
@@ -1638,7 +1968,7 @@ CREATE TABLE `TstOrgUserRelation` (
 --  Records of `TstOrgUserRelation`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstOrgUserRelation` VALUES ('1', '1'), ('2', '1'), ('1', '2'), ('1', '3'), ('3', '4'), ('4', '8'), ('5', '8'), ('6', '8');
+INSERT INTO `TstOrgUserRelation` VALUES ('1', '1'), ('2', '1'), ('1', '2'), ('1', '3'), ('3', '4'), ('4', '8'), ('5', '8'), ('6', '8'), ('8', '8'), ('9', '8'), ('11', '8'), ('12', '8'), ('13', '8');
 COMMIT;
 
 -- ----------------------------
@@ -1699,13 +2029,13 @@ CREATE TABLE `TstProject` (
   KEY `FK_rm5uawwl53dtse1l5qhwci30v` (`parentId`),
   CONSTRAINT `FK_avuusthsgk7g68bm0kiq6dix0` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
   CONSTRAINT `FK_rm5uawwl53dtse1l5qhwci30v` FOREIGN KEY (`parentId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=355 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=444 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstProject`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstProject` VALUES ('342', '默认项目组', null, 'group', null, null, '1', null, b'0', b'0', '2018-10-06 11:37:43', null), ('343', '默认项目', null, 'project', null, null, '1', '342', b'0', b'0', '2018-10-06 11:37:43', null), ('344', '默认项目组', null, 'group', null, null, '2', null, b'0', b'0', '2018-10-06 14:20:35', null), ('345', '默认项目', null, 'project', null, null, '2', '344', b'0', b'0', '2018-10-06 14:20:35', null), ('346', 'Prj01', null, 'project', null, null, '2', '344', b'0', b'0', '2018-10-06 14:27:38', null), ('347', '默认项目组', null, 'group', null, null, '3', null, b'0', b'0', '2018-10-08 11:01:39', null), ('348', '默认项目', null, 'project', null, null, '3', '347', b'0', b'0', '2018-10-08 11:01:39', null), ('349', '默认项目组', null, 'group', null, null, '4', null, b'0', b'0', '2018-10-08 11:07:47', null), ('350', '默认项目', null, 'project', null, null, '4', '349', b'0', b'0', '2018-10-08 11:07:47', null), ('351', '默认项目组', null, 'group', null, null, '5', null, b'0', b'0', '2018-10-11 10:22:06', null), ('352', '默认项目', null, 'project', null, null, '5', '351', b'0', b'0', '2018-10-11 10:22:06', null), ('353', '默认项目组', null, 'group', null, null, '6', null, b'0', b'0', '2018-10-11 10:24:17', null), ('354', '默认项目', null, 'project', null, null, '6', '353', b'0', b'0', '2018-10-11 10:24:17', null);
+INSERT INTO `TstProject` VALUES ('342', '默认项目组', null, 'group', null, null, '1', null, b'0', b'0', '2018-10-06 11:37:43', null), ('343', '默认项目', null, 'project', null, null, '1', '342', b'0', b'0', '2018-10-06 11:37:43', null), ('344', '默认项目组', null, 'group', null, null, '2', null, b'0', b'0', '2018-10-06 14:20:35', null), ('345', '默认项目', null, 'project', null, null, '2', '344', b'0', b'0', '2018-10-06 14:20:35', null), ('346', 'Prj01', null, 'project', null, null, '2', '344', b'0', b'0', '2018-10-06 14:27:38', null), ('347', '默认项目组', null, 'group', null, null, '3', null, b'0', b'0', '2018-10-08 11:01:39', null), ('348', '默认项目', null, 'project', null, null, '3', '347', b'0', b'0', '2018-10-08 11:01:39', null), ('349', '默认项目组', null, 'group', null, null, '4', null, b'0', b'0', '2018-10-08 11:07:47', null), ('350', '默认项目', null, 'project', null, null, '4', '349', b'0', b'0', '2018-10-08 11:07:47', null), ('351', '默认项目组', null, 'group', null, null, '5', null, b'0', b'0', '2018-10-11 10:22:06', null), ('352', '默认项目', null, 'project', null, null, '5', '351', b'0', b'0', '2018-10-11 10:22:06', null), ('353', '默认项目组', null, 'group', null, null, '6', null, b'0', b'0', '2018-10-11 10:24:17', null), ('354', '默认项目', null, 'project', null, null, '6', '353', b'0', b'0', '2018-10-11 10:24:17', null), ('355', '项目01', null, 'project', null, null, '5', '351', b'0', b'0', '2018-11-08 19:50:26', null), ('416', '默认项目组', null, 'group', null, null, '8', null, b'0', b'0', '2018-11-08 20:29:04', null), ('417', '默认项目', null, 'project', null, null, '8', '416', b'0', b'0', '2018-11-08 20:29:04', null), ('434', '默认项目组', null, 'group', null, null, '9', null, b'0', b'0', '2018-11-08 21:00:37', null), ('435', '默认项目', null, 'project', null, null, '9', '434', b'0', b'0', '2018-11-08 21:00:37', null), ('438', '默认项目组', null, 'group', null, null, '11', null, b'0', b'0', '2018-11-09 12:53:47', null), ('439', '默认项目', null, 'project', null, null, '11', '438', b'0', b'0', '2018-11-09 12:53:47', null), ('440', '默认项目组', null, 'group', null, null, '12', null, b'0', b'0', '2018-11-09 13:04:58', null), ('441', '默认项目', null, 'project', null, null, '12', '440', b'0', b'0', '2018-11-09 13:04:58', null), ('442', '默认项目组', null, 'group', null, null, '13', null, b'0', b'0', '2018-11-09 13:19:05', null), ('443', '默认项目', null, 'project', null, null, '13', '442', b'0', b'0', '2018-11-09 13:19:05', null);
 COMMIT;
 
 -- ----------------------------
@@ -1728,13 +2058,13 @@ CREATE TABLE `TstProjectAccessHistory` (
   CONSTRAINT `FK_dpcrx83ysgtel2eua0856xfk3` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_hv9vkb26yw1fluyh6thwh230h` FOREIGN KEY (`prjId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_l0ifd62wftf6w81779j64rfmc` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstProjectAccessHistory`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstProjectAccessHistory` VALUES ('1', '2018-10-06 14:27:42', '1', '343', '默认项目', '1', '2018-10-06 11:37:43', null), ('2', '2018-10-06 11:38:57', '1', '343', '默认项目', '2', null, null), ('3', '2018-10-06 11:41:33', '1', '343', '默认项目', '3', null, null), ('4', '2018-10-08 10:55:10', '2', '345', '默认项目', '1', '2018-10-06 14:20:35', null), ('5', '2018-10-06 14:46:59', '2', '346', 'Prj01', '1', null, null), ('6', '2018-10-08 11:01:39', '3', '348', '默认项目', '4', '2018-10-08 11:01:39', null), ('7', '2018-10-15 17:05:07', '4', '350', '默认项目', '8', '2018-10-08 11:07:47', null), ('8', '2018-10-20 18:54:44', '5', '352', '默认项目', '8', '2018-10-11 10:22:06', null), ('9', '2018-10-11 10:24:17', '6', '354', '默认项目', '8', '2018-10-11 10:24:17', null);
+INSERT INTO `TstProjectAccessHistory` VALUES ('1', '2018-10-06 14:27:42', '1', '343', '默认项目', '1', '2018-10-06 11:37:43', null), ('2', '2018-10-06 11:38:57', '1', '343', '默认项目', '2', null, null), ('3', '2018-10-06 11:41:33', '1', '343', '默认项目', '3', null, null), ('4', '2018-10-08 10:55:10', '2', '345', '默认项目', '1', '2018-10-06 14:20:35', null), ('5', '2018-10-06 14:46:59', '2', '346', 'Prj01', '1', null, null), ('6', '2018-10-08 11:01:39', '3', '348', '默认项目', '4', '2018-10-08 11:01:39', null), ('7', '2018-10-15 17:05:07', '4', '350', '默认项目', '8', '2018-10-08 11:07:47', null), ('8', '2018-11-07 16:53:08', '5', '352', '默认项目', '8', '2018-10-11 10:22:06', null), ('9', '2018-10-11 10:24:17', '6', '354', '默认项目', '8', '2018-10-11 10:24:17', null), ('10', '2018-11-08 19:50:26', '5', '355', '项目01', '8', null, null), ('41', '2018-11-08 20:30:40', '8', '417', '默认项目', '8', '2018-11-08 20:29:04', null), ('50', '2018-11-08 21:01:03', '9', '435', '默认项目', '8', '2018-11-08 21:00:37', null), ('52', '2018-11-09 12:53:47', '11', '439', '默认项目', '8', '2018-11-09 12:53:47', null), ('53', '2018-11-09 13:13:36', '12', '441', '默认项目', '8', '2018-11-09 13:04:58', null), ('54', '2018-11-09 13:19:08', '13', '443', '默认项目', '8', '2018-11-09 13:19:05', null);
 COMMIT;
 
 -- ----------------------------
@@ -1780,13 +2110,13 @@ CREATE TABLE `TstProjectRole` (
   PRIMARY KEY (`id`),
   KEY `FK_8eokjbtquljjgjahh7y0l0la6` (`orgId`),
   CONSTRAINT `FK_8eokjbtquljjgjahh7y0l0la6` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=201 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstProjectRole`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstProjectRole` VALUES ('1', 'test_leader', '测试主管', null, b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', 'test_designer', '测试设计', null, b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('3', 'tester', '测试执行', null, b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('4', 'readonly', '只读用户', null, b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('5', 'test_leader', '测试主管', null, b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('6', 'test_designer', '测试设计', null, b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('7', 'tester', '测试执行', null, b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('8', 'readonly', '只读用户', null, b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('9', 'test_leader', '测试主管', null, b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('10', 'test_designer', '测试设计', null, b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('11', 'tester', '测试执行', null, b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('12', 'readonly', '只读用户', null, b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('13', 'test_leader', '测试主管', null, b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('14', 'test_designer', '测试设计', null, b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('15', 'tester', '测试执行', null, b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('16', 'readonly', '只读用户', null, b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('17', 'test_leader', '测试主管', null, b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('18', 'test_designer', '测试设计', null, b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('19', 'tester', '测试执行', null, b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('20', 'readonly', '只读用户', null, b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('21', 'test_leader', '测试主管', null, b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('22', 'test_designer', '测试设计', null, b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('23', 'tester', '测试执行', null, b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('24', 'readonly', '只读用户', null, b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null);
+INSERT INTO `TstProjectRole` VALUES ('1', 'test_leader', '测试主管', null, b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('2', 'test_designer', '测试设计', null, b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('3', 'tester', '测试执行', null, b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('4', 'readonly', '只读用户', null, b'0', '1', b'0', b'0', '2018-10-06 11:37:43', null), ('5', 'test_leader', '测试主管', null, b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('6', 'test_designer', '测试设计', null, b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('7', 'tester', '测试执行', null, b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('8', 'readonly', '只读用户', null, b'0', '2', b'0', b'0', '2018-10-06 14:20:35', null), ('9', 'test_leader', '测试主管', null, b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('10', 'test_designer', '测试设计', null, b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('11', 'tester', '测试执行', null, b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('12', 'readonly', '只读用户', null, b'0', '3', b'0', b'0', '2018-10-08 11:01:39', null), ('13', 'test_leader', '测试主管', null, b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('14', 'test_designer', '测试设计', null, b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('15', 'tester', '测试执行', null, b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('16', 'readonly', '只读用户', null, b'0', '4', b'0', b'0', '2018-10-08 11:07:47', null), ('17', 'test_leader', '测试主管', null, b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('18', 'test_designer', '测试设计', null, b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('19', 'tester', '测试执行', null, b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('20', 'readonly', '只读用户', null, b'0', '5', b'0', b'0', '2018-10-11 10:22:06', null), ('21', 'test_leader', '测试主管', null, b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('22', 'test_designer', '测试设计', null, b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('23', 'tester', '测试执行', null, b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('24', 'readonly', '只读用户', null, b'0', '6', b'0', b'0', '2018-10-11 10:24:17', null), ('145', 'test_leader', '测试主管', null, b'0', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('146', 'test_designer', '测试设计', null, b'0', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('147', 'tester', '测试执行', null, b'0', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('148', 'readonly', '只读用户', null, b'0', '8', b'0', b'0', '2018-11-08 20:29:04', null), ('181', 'test_leader', '测试主管', null, b'0', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('182', 'test_designer', '测试设计', null, b'0', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('183', 'tester', '测试执行', null, b'0', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('184', 'readonly', '只读用户', null, b'0', '9', b'0', b'0', '2018-11-08 21:00:37', null), ('189', 'test_leader', '测试主管', null, b'0', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('190', 'test_designer', '测试设计', null, b'0', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('191', 'tester', '测试执行', null, b'0', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('192', 'readonly', '只读用户', null, b'0', '11', b'0', b'0', '2018-11-09 12:53:47', null), ('193', 'test_leader', '测试主管', null, b'0', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('194', 'test_designer', '测试设计', null, b'0', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('195', 'tester', '测试执行', null, b'0', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('196', 'readonly', '只读用户', null, b'0', '12', b'0', b'0', '2018-11-09 13:04:58', null), ('197', 'test_leader', '测试主管', null, b'0', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('198', 'test_designer', '测试设计', null, b'0', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('199', 'tester', '测试执行', null, b'0', '13', b'0', b'0', '2018-11-09 13:19:05', null), ('200', 'readonly', '只读用户', null, b'0', '13', b'0', b'0', '2018-11-09 13:19:05', null);
 COMMIT;
 
 -- ----------------------------
@@ -1807,7 +2137,7 @@ CREATE TABLE `TstProjectRoleEntityRelation` (
 --  Records of `TstProjectRoleEntityRelation`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstProjectRoleEntityRelation` VALUES ('1', '1', '343', '1', 'user'), ('2', '1', '343', '2', 'user'), ('3', '1', '343', '2', 'user'), ('1', '2', '345', '5', 'user'), ('1', '2', '346', '5', 'user'), ('4', '3', '348', '9', 'user'), ('8', '4', '350', '13', 'user'), ('8', '5', '352', '17', 'user'), ('8', '6', '354', '21', 'user');
+INSERT INTO `TstProjectRoleEntityRelation` VALUES ('1', '1', '343', '1', 'user'), ('2', '1', '343', '2', 'user'), ('3', '1', '343', '2', 'user'), ('1', '2', '345', '5', 'user'), ('1', '2', '346', '5', 'user'), ('4', '3', '348', '9', 'user'), ('8', '4', '350', '13', 'user'), ('8', '5', '352', '17', 'user'), ('8', '6', '354', '21', 'user'), ('8', '5', '355', '17', 'user'), ('8', '8', '417', '145', 'user'), ('8', '9', '435', '181', 'user'), ('8', '11', '439', '189', 'user'), ('8', '12', '441', '193', 'user'), ('8', '13', '443', '197', 'user');
 COMMIT;
 
 -- ----------------------------
@@ -1828,7 +2158,7 @@ CREATE TABLE `TstProjectRolePriviledgeRelation` (
 --  Records of `TstProjectRolePriviledgeRelation`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstProjectRolePriviledgeRelation` VALUES ('11100', '1', null), ('11200', '1', null), ('11300', '1', null), ('12100', '1', null), ('12200', '1', null), ('12300', '1', null), ('12400', '1', null), ('13100', '1', null), ('13200', '1', null), ('13300', '1', null), ('14100', '1', null), ('14200', '1', null), ('14300', '1', null), ('15100', '1', null), ('15200', '1', null), ('15300', '1', null), ('16100', '1', null), ('16200', '1', null), ('16300', '1', null), ('16400', '1', null), ('17100', '1', null), ('17200', '1', null), ('17300', '1', null), ('11100', '2', null), ('12100', '2', null), ('12200', '2', null), ('12300', '2', null), ('13100', '2', null), ('13200', '2', null), ('13300', '2', null), ('14100', '2', null), ('14200', '2', null), ('14300', '2', null), ('15100', '2', null), ('15200', '2', null), ('15300', '2', null), ('16100', '2', null), ('16200', '2', null), ('16300', '2', null), ('16400', '2', null), ('17100', '2', null), ('17200', '2', null), ('17300', '2', null), ('11100', '3', null), ('12100', '3', null), ('12300', '3', null), ('13100', '3', null), ('13200', '3', null), ('13300', '3', null), ('14100', '3', null), ('14200', '3', null), ('14300', '3', null), ('15100', '3', null), ('15200', '3', null), ('15300', '3', null), ('16100', '3', null), ('16200', '3', null), ('16300', '3', null), ('16400', '3', null), ('17100', '3', null), ('17200', '3', null), ('17300', '3', null), ('11100', '4', null), ('12100', '4', null), ('13100', '4', null), ('14100', '4', null), ('15100', '4', null), ('16100', '4', null), ('17100', '4', null), ('11100', '5', null), ('11200', '5', null), ('11300', '5', null), ('12100', '5', null), ('12200', '5', null), ('12300', '5', null), ('12400', '5', null), ('13100', '5', null), ('13200', '5', null), ('13300', '5', null), ('14100', '5', null), ('14200', '5', null), ('14300', '5', null), ('15100', '5', null), ('15200', '5', null), ('15300', '5', null), ('16100', '5', null), ('16200', '5', null), ('16300', '5', null), ('16400', '5', null), ('17100', '5', null), ('17200', '5', null), ('17300', '5', null), ('11100', '6', null), ('12100', '6', null), ('12200', '6', null), ('12300', '6', null), ('13100', '6', null), ('13200', '6', null), ('13300', '6', null), ('14100', '6', null), ('14200', '6', null), ('14300', '6', null), ('15100', '6', null), ('15200', '6', null), ('15300', '6', null), ('16100', '6', null), ('16200', '6', null), ('16300', '6', null), ('16400', '6', null), ('17100', '6', null), ('17200', '6', null), ('17300', '6', null), ('11100', '7', null), ('12100', '7', null), ('12300', '7', null), ('13100', '7', null), ('13200', '7', null), ('13300', '7', null), ('14100', '7', null), ('14200', '7', null), ('14300', '7', null), ('15100', '7', null), ('15200', '7', null), ('15300', '7', null), ('16100', '7', null), ('16200', '7', null), ('16300', '7', null), ('16400', '7', null), ('17100', '7', null), ('17200', '7', null), ('17300', '7', null), ('11100', '8', null), ('12100', '8', null), ('13100', '8', null), ('14100', '8', null), ('15100', '8', null), ('16100', '8', null), ('17100', '8', null), ('11100', '9', null), ('11200', '9', null), ('11300', '9', null), ('12100', '9', null), ('12200', '9', null), ('12300', '9', null), ('12400', '9', null), ('13100', '9', null), ('13200', '9', null), ('13300', '9', null), ('14100', '9', null), ('14200', '9', null), ('14300', '9', null), ('15100', '9', null), ('15200', '9', null), ('15300', '9', null), ('16100', '9', null), ('16200', '9', null), ('16300', '9', null), ('16400', '9', null), ('17100', '9', null), ('17200', '9', null), ('17300', '9', null), ('11100', '10', null), ('12100', '10', null), ('12200', '10', null), ('12300', '10', null), ('13100', '10', null), ('13200', '10', null), ('13300', '10', null), ('14100', '10', null), ('14200', '10', null), ('14300', '10', null), ('15100', '10', null), ('15200', '10', null), ('15300', '10', null), ('16100', '10', null), ('16200', '10', null), ('16300', '10', null), ('16400', '10', null), ('17100', '10', null), ('17200', '10', null), ('17300', '10', null), ('11100', '11', null), ('12100', '11', null), ('12300', '11', null), ('13100', '11', null), ('13200', '11', null), ('13300', '11', null), ('14100', '11', null), ('14200', '11', null), ('14300', '11', null), ('15100', '11', null), ('15200', '11', null), ('15300', '11', null), ('16100', '11', null), ('16200', '11', null), ('16300', '11', null), ('16400', '11', null), ('17100', '11', null), ('17200', '11', null), ('17300', '11', null), ('11100', '12', null), ('12100', '12', null), ('13100', '12', null), ('14100', '12', null), ('15100', '12', null), ('16100', '12', null), ('17100', '12', null), ('11100', '13', null), ('11200', '13', null), ('11300', '13', null), ('12100', '13', null), ('12200', '13', null), ('12300', '13', null), ('12400', '13', null), ('13100', '13', null), ('13200', '13', null), ('13300', '13', null), ('14100', '13', null), ('14200', '13', null), ('14300', '13', null), ('15100', '13', null), ('15200', '13', null), ('15300', '13', null), ('16100', '13', null), ('16200', '13', null), ('16300', '13', null), ('16400', '13', null), ('17100', '13', null), ('17200', '13', null), ('17300', '13', null), ('11100', '14', null), ('12100', '14', null), ('12200', '14', null), ('12300', '14', null), ('13100', '14', null), ('13200', '14', null), ('13300', '14', null), ('14100', '14', null), ('14200', '14', null), ('14300', '14', null), ('15100', '14', null), ('15200', '14', null), ('15300', '14', null), ('16100', '14', null), ('16200', '14', null), ('16300', '14', null), ('16400', '14', null), ('17100', '14', null), ('17200', '14', null), ('17300', '14', null), ('11100', '15', null), ('12100', '15', null), ('12300', '15', null), ('13100', '15', null), ('13200', '15', null), ('13300', '15', null), ('14100', '15', null), ('14200', '15', null), ('14300', '15', null), ('15100', '15', null), ('15200', '15', null), ('15300', '15', null), ('16100', '15', null), ('16200', '15', null), ('16300', '15', null), ('16400', '15', null), ('17100', '15', null), ('17200', '15', null), ('17300', '15', null), ('11100', '16', null), ('12100', '16', null), ('13100', '16', null), ('14100', '16', null), ('15100', '16', null), ('16100', '16', null), ('17100', '16', null), ('11100', '17', null), ('11200', '17', null), ('11300', '17', null), ('12100', '17', null), ('12200', '17', null), ('12300', '17', null), ('12400', '17', null), ('13100', '17', null), ('13200', '17', null), ('13300', '17', null), ('14100', '17', null), ('14200', '17', null), ('14300', '17', null), ('15100', '17', null), ('15200', '17', null), ('15300', '17', null), ('16100', '17', null), ('16200', '17', null), ('16300', '17', null), ('16400', '17', null), ('17100', '17', null), ('17200', '17', null), ('17300', '17', null), ('11100', '18', null), ('12100', '18', null), ('12200', '18', null), ('12300', '18', null), ('13100', '18', null), ('13200', '18', null), ('13300', '18', null), ('14100', '18', null), ('14200', '18', null), ('14300', '18', null), ('15100', '18', null), ('15200', '18', null), ('15300', '18', null), ('16100', '18', null), ('16200', '18', null), ('16300', '18', null), ('16400', '18', null), ('17100', '18', null), ('17200', '18', null), ('17300', '18', null), ('11100', '19', null), ('12100', '19', null), ('12300', '19', null), ('13100', '19', null), ('13200', '19', null), ('13300', '19', null), ('14100', '19', null), ('14200', '19', null), ('14300', '19', null), ('15100', '19', null), ('15200', '19', null), ('15300', '19', null), ('16100', '19', null), ('16200', '19', null), ('16300', '19', null), ('16400', '19', null), ('17100', '19', null), ('17200', '19', null), ('17300', '19', null), ('11100', '20', null), ('12100', '20', null), ('13100', '20', null), ('14100', '20', null), ('15100', '20', null), ('16100', '20', null), ('17100', '20', null), ('11100', '21', null), ('11200', '21', null), ('11300', '21', null), ('12100', '21', null), ('12200', '21', null), ('12300', '21', null), ('12400', '21', null), ('13100', '21', null), ('13200', '21', null), ('13300', '21', null), ('14100', '21', null), ('14200', '21', null), ('14300', '21', null), ('15100', '21', null), ('15200', '21', null), ('15300', '21', null), ('16100', '21', null), ('16200', '21', null), ('16300', '21', null), ('16400', '21', null), ('17100', '21', null), ('17200', '21', null), ('17300', '21', null), ('11100', '22', null), ('12100', '22', null), ('12200', '22', null), ('12300', '22', null), ('13100', '22', null), ('13200', '22', null), ('13300', '22', null), ('14100', '22', null), ('14200', '22', null), ('14300', '22', null), ('15100', '22', null), ('15200', '22', null), ('15300', '22', null), ('16100', '22', null), ('16200', '22', null), ('16300', '22', null), ('16400', '22', null), ('17100', '22', null), ('17200', '22', null), ('17300', '22', null), ('11100', '23', null), ('12100', '23', null), ('12300', '23', null), ('13100', '23', null), ('13200', '23', null), ('13300', '23', null), ('14100', '23', null), ('14200', '23', null), ('14300', '23', null), ('15100', '23', null), ('15200', '23', null), ('15300', '23', null), ('16100', '23', null), ('16200', '23', null), ('16300', '23', null), ('16400', '23', null), ('17100', '23', null), ('17200', '23', null), ('17300', '23', null), ('11100', '24', null), ('12100', '24', null), ('13100', '24', null), ('14100', '24', null), ('15100', '24', null), ('16100', '24', null), ('17100', '24', null);
+INSERT INTO `TstProjectRolePriviledgeRelation` VALUES ('11100', '1', null), ('11200', '1', null), ('11300', '1', null), ('12100', '1', null), ('12200', '1', null), ('12300', '1', null), ('12400', '1', null), ('13100', '1', null), ('13200', '1', null), ('13300', '1', null), ('14100', '1', null), ('14200', '1', null), ('14300', '1', null), ('15100', '1', null), ('15200', '1', null), ('15300', '1', null), ('16100', '1', null), ('16200', '1', null), ('16300', '1', null), ('16400', '1', null), ('17100', '1', null), ('17200', '1', null), ('17300', '1', null), ('11100', '2', null), ('12100', '2', null), ('12200', '2', null), ('12300', '2', null), ('13100', '2', null), ('13200', '2', null), ('13300', '2', null), ('14100', '2', null), ('14200', '2', null), ('14300', '2', null), ('15100', '2', null), ('15200', '2', null), ('15300', '2', null), ('16100', '2', null), ('16200', '2', null), ('16300', '2', null), ('16400', '2', null), ('17100', '2', null), ('17200', '2', null), ('17300', '2', null), ('11100', '3', null), ('12100', '3', null), ('12300', '3', null), ('13100', '3', null), ('13200', '3', null), ('13300', '3', null), ('14100', '3', null), ('14200', '3', null), ('14300', '3', null), ('15100', '3', null), ('15200', '3', null), ('15300', '3', null), ('16100', '3', null), ('16200', '3', null), ('16300', '3', null), ('16400', '3', null), ('17100', '3', null), ('17200', '3', null), ('17300', '3', null), ('11100', '4', null), ('12100', '4', null), ('13100', '4', null), ('14100', '4', null), ('15100', '4', null), ('16100', '4', null), ('17100', '4', null), ('11100', '5', null), ('11200', '5', null), ('11300', '5', null), ('12100', '5', null), ('12200', '5', null), ('12300', '5', null), ('12400', '5', null), ('13100', '5', null), ('13200', '5', null), ('13300', '5', null), ('14100', '5', null), ('14200', '5', null), ('14300', '5', null), ('15100', '5', null), ('15200', '5', null), ('15300', '5', null), ('16100', '5', null), ('16200', '5', null), ('16300', '5', null), ('16400', '5', null), ('17100', '5', null), ('17200', '5', null), ('17300', '5', null), ('11100', '6', null), ('12100', '6', null), ('12200', '6', null), ('12300', '6', null), ('13100', '6', null), ('13200', '6', null), ('13300', '6', null), ('14100', '6', null), ('14200', '6', null), ('14300', '6', null), ('15100', '6', null), ('15200', '6', null), ('15300', '6', null), ('16100', '6', null), ('16200', '6', null), ('16300', '6', null), ('16400', '6', null), ('17100', '6', null), ('17200', '6', null), ('17300', '6', null), ('11100', '7', null), ('12100', '7', null), ('12300', '7', null), ('13100', '7', null), ('13200', '7', null), ('13300', '7', null), ('14100', '7', null), ('14200', '7', null), ('14300', '7', null), ('15100', '7', null), ('15200', '7', null), ('15300', '7', null), ('16100', '7', null), ('16200', '7', null), ('16300', '7', null), ('16400', '7', null), ('17100', '7', null), ('17200', '7', null), ('17300', '7', null), ('11100', '8', null), ('12100', '8', null), ('13100', '8', null), ('14100', '8', null), ('15100', '8', null), ('16100', '8', null), ('17100', '8', null), ('11100', '9', null), ('11200', '9', null), ('11300', '9', null), ('12100', '9', null), ('12200', '9', null), ('12300', '9', null), ('12400', '9', null), ('13100', '9', null), ('13200', '9', null), ('13300', '9', null), ('14100', '9', null), ('14200', '9', null), ('14300', '9', null), ('15100', '9', null), ('15200', '9', null), ('15300', '9', null), ('16100', '9', null), ('16200', '9', null), ('16300', '9', null), ('16400', '9', null), ('17100', '9', null), ('17200', '9', null), ('17300', '9', null), ('11100', '10', null), ('12100', '10', null), ('12200', '10', null), ('12300', '10', null), ('13100', '10', null), ('13200', '10', null), ('13300', '10', null), ('14100', '10', null), ('14200', '10', null), ('14300', '10', null), ('15100', '10', null), ('15200', '10', null), ('15300', '10', null), ('16100', '10', null), ('16200', '10', null), ('16300', '10', null), ('16400', '10', null), ('17100', '10', null), ('17200', '10', null), ('17300', '10', null), ('11100', '11', null), ('12100', '11', null), ('12300', '11', null), ('13100', '11', null), ('13200', '11', null), ('13300', '11', null), ('14100', '11', null), ('14200', '11', null), ('14300', '11', null), ('15100', '11', null), ('15200', '11', null), ('15300', '11', null), ('16100', '11', null), ('16200', '11', null), ('16300', '11', null), ('16400', '11', null), ('17100', '11', null), ('17200', '11', null), ('17300', '11', null), ('11100', '12', null), ('12100', '12', null), ('13100', '12', null), ('14100', '12', null), ('15100', '12', null), ('16100', '12', null), ('17100', '12', null), ('11100', '13', null), ('11200', '13', null), ('11300', '13', null), ('12100', '13', null), ('12200', '13', null), ('12300', '13', null), ('12400', '13', null), ('13100', '13', null), ('13200', '13', null), ('13300', '13', null), ('14100', '13', null), ('14200', '13', null), ('14300', '13', null), ('15100', '13', null), ('15200', '13', null), ('15300', '13', null), ('16100', '13', null), ('16200', '13', null), ('16300', '13', null), ('16400', '13', null), ('17100', '13', null), ('17200', '13', null), ('17300', '13', null), ('11100', '14', null), ('12100', '14', null), ('12200', '14', null), ('12300', '14', null), ('13100', '14', null), ('13200', '14', null), ('13300', '14', null), ('14100', '14', null), ('14200', '14', null), ('14300', '14', null), ('15100', '14', null), ('15200', '14', null), ('15300', '14', null), ('16100', '14', null), ('16200', '14', null), ('16300', '14', null), ('16400', '14', null), ('17100', '14', null), ('17200', '14', null), ('17300', '14', null), ('11100', '15', null), ('12100', '15', null), ('12300', '15', null), ('13100', '15', null), ('13200', '15', null), ('13300', '15', null), ('14100', '15', null), ('14200', '15', null), ('14300', '15', null), ('15100', '15', null), ('15200', '15', null), ('15300', '15', null), ('16100', '15', null), ('16200', '15', null), ('16300', '15', null), ('16400', '15', null), ('17100', '15', null), ('17200', '15', null), ('17300', '15', null), ('11100', '16', null), ('12100', '16', null), ('13100', '16', null), ('14100', '16', null), ('15100', '16', null), ('16100', '16', null), ('17100', '16', null), ('11100', '17', null), ('11200', '17', null), ('11300', '17', null), ('12100', '17', null), ('12200', '17', null), ('12300', '17', null), ('12400', '17', null), ('13100', '17', null), ('13200', '17', null), ('13300', '17', null), ('14100', '17', null), ('14200', '17', null), ('14300', '17', null), ('15100', '17', null), ('15200', '17', null), ('15300', '17', null), ('16100', '17', null), ('16200', '17', null), ('16300', '17', null), ('16400', '17', null), ('17100', '17', null), ('17200', '17', null), ('17300', '17', null), ('11100', '18', null), ('12100', '18', null), ('12200', '18', null), ('12300', '18', null), ('13100', '18', null), ('13200', '18', null), ('13300', '18', null), ('14100', '18', null), ('14200', '18', null), ('14300', '18', null), ('15100', '18', null), ('15200', '18', null), ('15300', '18', null), ('16100', '18', null), ('16200', '18', null), ('16300', '18', null), ('16400', '18', null), ('17100', '18', null), ('17200', '18', null), ('17300', '18', null), ('11100', '19', null), ('12100', '19', null), ('12300', '19', null), ('13100', '19', null), ('13200', '19', null), ('13300', '19', null), ('14100', '19', null), ('14200', '19', null), ('14300', '19', null), ('15100', '19', null), ('15200', '19', null), ('15300', '19', null), ('16100', '19', null), ('16200', '19', null), ('16300', '19', null), ('16400', '19', null), ('17100', '19', null), ('17200', '19', null), ('17300', '19', null), ('11100', '20', null), ('12100', '20', null), ('13100', '20', null), ('14100', '20', null), ('15100', '20', null), ('16100', '20', null), ('17100', '20', null), ('11100', '21', null), ('11200', '21', null), ('11300', '21', null), ('12100', '21', null), ('12200', '21', null), ('12300', '21', null), ('12400', '21', null), ('13100', '21', null), ('13200', '21', null), ('13300', '21', null), ('14100', '21', null), ('14200', '21', null), ('14300', '21', null), ('15100', '21', null), ('15200', '21', null), ('15300', '21', null), ('16100', '21', null), ('16200', '21', null), ('16300', '21', null), ('16400', '21', null), ('17100', '21', null), ('17200', '21', null), ('17300', '21', null), ('11100', '22', null), ('12100', '22', null), ('12200', '22', null), ('12300', '22', null), ('13100', '22', null), ('13200', '22', null), ('13300', '22', null), ('14100', '22', null), ('14200', '22', null), ('14300', '22', null), ('15100', '22', null), ('15200', '22', null), ('15300', '22', null), ('16100', '22', null), ('16200', '22', null), ('16300', '22', null), ('16400', '22', null), ('17100', '22', null), ('17200', '22', null), ('17300', '22', null), ('11100', '23', null), ('12100', '23', null), ('12300', '23', null), ('13100', '23', null), ('13200', '23', null), ('13300', '23', null), ('14100', '23', null), ('14200', '23', null), ('14300', '23', null), ('15100', '23', null), ('15200', '23', null), ('15300', '23', null), ('16100', '23', null), ('16200', '23', null), ('16300', '23', null), ('16400', '23', null), ('17100', '23', null), ('17200', '23', null), ('17300', '23', null), ('11100', '24', null), ('12100', '24', null), ('13100', '24', null), ('14100', '24', null), ('15100', '24', null), ('16100', '24', null), ('17100', '24', null), ('11100', '145', null), ('11200', '145', null), ('11300', '145', null), ('12100', '145', null), ('12200', '145', null), ('12300', '145', null), ('12400', '145', null), ('13100', '145', null), ('13200', '145', null), ('13300', '145', null), ('14100', '145', null), ('14200', '145', null), ('14300', '145', null), ('15100', '145', null), ('15200', '145', null), ('15300', '145', null), ('16100', '145', null), ('16200', '145', null), ('16300', '145', null), ('16400', '145', null), ('17100', '145', null), ('17200', '145', null), ('17300', '145', null), ('11100', '146', null), ('12100', '146', null), ('12200', '146', null), ('12300', '146', null), ('13100', '146', null), ('13200', '146', null), ('13300', '146', null), ('14100', '146', null), ('14200', '146', null), ('14300', '146', null), ('15100', '146', null), ('15200', '146', null), ('15300', '146', null), ('16100', '146', null), ('16200', '146', null), ('16300', '146', null), ('16400', '146', null), ('17100', '146', null), ('17200', '146', null), ('17300', '146', null), ('11100', '147', null), ('12100', '147', null), ('12300', '147', null), ('13100', '147', null), ('13200', '147', null), ('13300', '147', null), ('14100', '147', null), ('14200', '147', null), ('14300', '147', null), ('15100', '147', null), ('15200', '147', null), ('15300', '147', null), ('16100', '147', null), ('16200', '147', null), ('16300', '147', null), ('16400', '147', null), ('17100', '147', null), ('17200', '147', null), ('17300', '147', null), ('11100', '148', null), ('12100', '148', null), ('13100', '148', null), ('14100', '148', null), ('15100', '148', null), ('16100', '148', null), ('17100', '148', null), ('11100', '181', null), ('11200', '181', null), ('11300', '181', null), ('12100', '181', null), ('12200', '181', null), ('12300', '181', null), ('12400', '181', null), ('13100', '181', null), ('13200', '181', null), ('13300', '181', null), ('14100', '181', null), ('14200', '181', null), ('14300', '181', null), ('15100', '181', null), ('15200', '181', null), ('15300', '181', null), ('16100', '181', null), ('16200', '181', null), ('16300', '181', null), ('16400', '181', null), ('17100', '181', null), ('17200', '181', null), ('17300', '181', null), ('11100', '182', null), ('12100', '182', null), ('12200', '182', null), ('12300', '182', null), ('13100', '182', null), ('13200', '182', null), ('13300', '182', null), ('14100', '182', null), ('14200', '182', null), ('14300', '182', null), ('15100', '182', null), ('15200', '182', null), ('15300', '182', null), ('16100', '182', null), ('16200', '182', null), ('16300', '182', null), ('16400', '182', null), ('17100', '182', null), ('17200', '182', null), ('17300', '182', null), ('11100', '183', null), ('12100', '183', null), ('12300', '183', null), ('13100', '183', null), ('13200', '183', null), ('13300', '183', null), ('14100', '183', null), ('14200', '183', null), ('14300', '183', null), ('15100', '183', null), ('15200', '183', null), ('15300', '183', null), ('16100', '183', null), ('16200', '183', null), ('16300', '183', null), ('16400', '183', null), ('17100', '183', null), ('17200', '183', null), ('17300', '183', null), ('11100', '184', null), ('12100', '184', null), ('13100', '184', null), ('14100', '184', null), ('15100', '184', null), ('16100', '184', null), ('17100', '184', null), ('11100', '189', null), ('11200', '189', null), ('11300', '189', null), ('12100', '189', null), ('12200', '189', null), ('12300', '189', null), ('12400', '189', null), ('13100', '189', null), ('13200', '189', null), ('13300', '189', null), ('14100', '189', null), ('14200', '189', null), ('14300', '189', null), ('15100', '189', null), ('15200', '189', null), ('15300', '189', null), ('16100', '189', null), ('16200', '189', null), ('16300', '189', null), ('16400', '189', null), ('17100', '189', null), ('17200', '189', null), ('17300', '189', null), ('11100', '190', null), ('12100', '190', null), ('12200', '190', null), ('12300', '190', null), ('13100', '190', null), ('13200', '190', null), ('13300', '190', null), ('14100', '190', null), ('14200', '190', null), ('14300', '190', null), ('15100', '190', null), ('15200', '190', null), ('15300', '190', null), ('16100', '190', null), ('16200', '190', null), ('16300', '190', null), ('16400', '190', null), ('17100', '190', null), ('17200', '190', null), ('17300', '190', null), ('11100', '191', null), ('12100', '191', null), ('12300', '191', null), ('13100', '191', null), ('13200', '191', null), ('13300', '191', null), ('14100', '191', null), ('14200', '191', null), ('14300', '191', null), ('15100', '191', null), ('15200', '191', null), ('15300', '191', null), ('16100', '191', null), ('16200', '191', null), ('16300', '191', null), ('16400', '191', null), ('17100', '191', null), ('17200', '191', null), ('17300', '191', null), ('11100', '192', null), ('12100', '192', null), ('13100', '192', null), ('14100', '192', null), ('15100', '192', null), ('16100', '192', null), ('17100', '192', null), ('11100', '193', null), ('11200', '193', null), ('11300', '193', null), ('12100', '193', null), ('12200', '193', null), ('12300', '193', null), ('12400', '193', null), ('13100', '193', null), ('13200', '193', null), ('13300', '193', null), ('14100', '193', null), ('14200', '193', null), ('14300', '193', null), ('15100', '193', null), ('15200', '193', null), ('15300', '193', null), ('16100', '193', null), ('16200', '193', null), ('16300', '193', null), ('16400', '193', null), ('17100', '193', null), ('17200', '193', null), ('17300', '193', null), ('11100', '194', null), ('12100', '194', null), ('12200', '194', null), ('12300', '194', null), ('13100', '194', null), ('13200', '194', null), ('13300', '194', null), ('14100', '194', null), ('14200', '194', null), ('14300', '194', null), ('15100', '194', null), ('15200', '194', null), ('15300', '194', null), ('16100', '194', null), ('16200', '194', null), ('16300', '194', null), ('16400', '194', null), ('17100', '194', null), ('17200', '194', null), ('17300', '194', null), ('11100', '195', null), ('12100', '195', null), ('12300', '195', null), ('13100', '195', null), ('13200', '195', null), ('13300', '195', null), ('14100', '195', null), ('14200', '195', null), ('14300', '195', null), ('15100', '195', null), ('15200', '195', null), ('15300', '195', null), ('16100', '195', null), ('16200', '195', null), ('16300', '195', null), ('16400', '195', null), ('17100', '195', null), ('17200', '195', null), ('17300', '195', null), ('11100', '196', null), ('12100', '196', null), ('13100', '196', null), ('14100', '196', null), ('15100', '196', null), ('16100', '196', null), ('17100', '196', null), ('11100', '197', null), ('11200', '197', null), ('11300', '197', null), ('12100', '197', null), ('12200', '197', null), ('12300', '197', null), ('12400', '197', null), ('13100', '197', null), ('13200', '197', null), ('13300', '197', null), ('14100', '197', null), ('14200', '197', null), ('14300', '197', null), ('15100', '197', null), ('15200', '197', null), ('15300', '197', null), ('16100', '197', null), ('16200', '197', null), ('16300', '197', null), ('16400', '197', null), ('17100', '197', null), ('17200', '197', null), ('17300', '197', null), ('11100', '198', null), ('12100', '198', null), ('12200', '198', null), ('12300', '198', null), ('13100', '198', null), ('13200', '198', null), ('13300', '198', null), ('14100', '198', null), ('14200', '198', null), ('14300', '198', null), ('15100', '198', null), ('15200', '198', null), ('15300', '198', null), ('16100', '198', null), ('16200', '198', null), ('16300', '198', null), ('16400', '198', null), ('17100', '198', null), ('17200', '198', null), ('17300', '198', null), ('11100', '199', null), ('12100', '199', null), ('12300', '199', null), ('13100', '199', null), ('13200', '199', null), ('13300', '199', null), ('14100', '199', null), ('14200', '199', null), ('14300', '199', null), ('15100', '199', null), ('15200', '199', null), ('15300', '199', null), ('16100', '199', null), ('16200', '199', null), ('16300', '199', null), ('16400', '199', null), ('17100', '199', null), ('17200', '199', null), ('17300', '199', null), ('11100', '200', null), ('12100', '200', null), ('13100', '200', null), ('14100', '200', null), ('15100', '200', null), ('16100', '200', null), ('17100', '200', null);
 COMMIT;
 
 -- ----------------------------
@@ -1966,7 +2296,7 @@ CREATE TABLE `TstUser` (
 --  Records of `TstUser`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstUser` VALUES ('1', '4628262@qq.com', 'Aaron Chen', '98207a1da8b40358f62997c3afa658f5', '11111111111', 'upload/sample/user/avatar.png', '2', 'Org01', '345', '默认项目', '[B@337bbf93', '74ce484b-e9ff-43d3-87e7-e157061b32e2', null, '2018-10-06 14:20:14', b'0', b'0', '2018-10-06 11:37:43', '2018-10-06 11:43:43'), ('2', 'qi.chen2@ngtesting.com', 'qi.chen2', '96e79218965eb72c92a549dd5a330112', null, 'upload/sample/user/avatar.png', '1', 'Aaron Chen的组织', '343', '默认项目', null, 'd20d9bec-5e32-49ac-a42a-57156e69b9fa', null, '2018-10-06 11:39:28', b'0', b'0', '2018-10-06 11:38:57', '2018-10-06 11:39:28'), ('3', 'qi.chen2@ngtesting.com', 'qi.chen', '96e79218965eb72c92a549dd5a330112', null, 'upload/sample/user/avatar.png', '1', 'Aaron Chen的组织', '343', '默认项目', null, '52b4775d-940e-4406-96d3-f92e1b50019f', null, '2018-10-06 11:44:07', b'0', b'0', '2018-10-06 11:41:33', '2018-10-06 11:42:39'), ('4', '4628263@qq.com', 'Aaron Chen', 'd1fd432ac3c6a39aa58d41a688a676d6', '11111111111', 'upload/sample/user/avatar.png', '3', 'Aaron Chen的组织', '348', '默认项目', '[B@26e909d0', '', null, '2018-10-08 11:02:21', b'0', b'0', '2018-10-08 10:58:58', '2018-10-08 11:04:38'), ('5', '462826ds@qq.com', 'Aaron Chen', 'f33511307b9977ca38d2eb7a50b41173', '11111111111', 'upload/sample/user/avatar.png', null, null, null, null, '[B@6363bec9', null, null, null, b'0', b'0', '2018-10-08 10:59:40', null), ('6', '46282644@qq.com', 'Aaron Chen', '2bded372fa2c96a2bd1601d5c596e889', '11111111111', 'upload/sample/user/avatar.png', null, null, null, null, '[B@63eaaf31', null, null, null, b'0', b'0', '2018-10-08 11:00:15', null), ('7', '46282dsfds6@qq.com', 'Aaron Chen', '3479b842f19de1a04fe9547218929afe', '11111111111', 'upload/sample/user/avatar.png', null, null, null, null, '[B@403a1f33', '0aab3c3c-4fcf-4d8e-96b6-59f20ff44832', null, '2018-10-08 11:04:46', b'0', b'0', '2018-10-08 11:01:25', null), ('8', '462826@qq.com', 'Aaron Chen2', '71f8a2865666635b2db9adbf41e98d72', '11111111111', 'upload/data/20181011/a7589774-c143-41d5-8844-c0ac3ba0a33c.jpg', '5', 'test', '352', '默认项目', '[B@9ed6207', '16bd2729-4ca0-4b13-8a66-267a2fb7f281', null, '2018-10-20 18:56:58', b'0', b'0', '2018-10-08 11:07:44', '2018-10-20 18:56:42');
+INSERT INTO `TstUser` VALUES ('1', '4628262@qq.com', 'Aaron Chen', '98207a1da8b40358f62997c3afa658f5', '11111111111', 'upload/sample/user/avatar.png', '2', 'Org01', '345', '默认项目', '[B@337bbf93', '74ce484b-e9ff-43d3-87e7-e157061b32e2', null, '2018-10-06 14:20:14', b'0', b'0', '2018-10-06 11:37:43', '2018-10-06 11:43:43'), ('2', 'qi.chen2@ngtesting.com', 'qi.chen2', '96e79218965eb72c92a549dd5a330112', null, 'upload/sample/user/avatar.png', '1', 'Aaron Chen的组织', '343', '默认项目', null, 'd20d9bec-5e32-49ac-a42a-57156e69b9fa', null, '2018-10-06 11:39:28', b'0', b'0', '2018-10-06 11:38:57', '2018-10-06 11:39:28'), ('3', 'qi.chen2@ngtesting.com', 'qi.chen', '96e79218965eb72c92a549dd5a330112', null, 'upload/sample/user/avatar.png', '1', 'Aaron Chen的组织', '343', '默认项目', null, '52b4775d-940e-4406-96d3-f92e1b50019f', null, '2018-10-06 11:44:07', b'0', b'0', '2018-10-06 11:41:33', '2018-10-06 11:42:39'), ('4', '4628263@qq.com', 'Aaron Chen', 'd1fd432ac3c6a39aa58d41a688a676d6', '11111111111', 'upload/sample/user/avatar.png', '3', 'Aaron Chen的组织', '348', '默认项目', '[B@26e909d0', '', null, '2018-10-08 11:02:21', b'0', b'0', '2018-10-08 10:58:58', '2018-10-08 11:04:38'), ('5', '462826ds@qq.com', 'Aaron Chen', 'f33511307b9977ca38d2eb7a50b41173', '11111111111', 'upload/sample/user/avatar.png', null, null, null, null, '[B@6363bec9', null, null, null, b'0', b'0', '2018-10-08 10:59:40', null), ('6', '46282644@qq.com', 'Aaron Chen', '2bded372fa2c96a2bd1601d5c596e889', '11111111111', 'upload/sample/user/avatar.png', null, null, null, null, '[B@63eaaf31', null, null, null, b'0', b'0', '2018-10-08 11:00:15', null), ('7', '46282dsfds6@qq.com', 'Aaron Chen', '3479b842f19de1a04fe9547218929afe', '11111111111', 'upload/sample/user/avatar.png', null, null, null, null, '[B@403a1f33', '0aab3c3c-4fcf-4d8e-96b6-59f20ff44832', null, '2018-10-08 11:04:46', b'0', b'0', '2018-10-08 11:01:25', null), ('8', '462826@qq.com', 'Aaron Chen2', '71f8a2865666635b2db9adbf41e98d72', '11111111111', 'upload/data/20181011/a7589774-c143-41d5-8844-c0ac3ba0a33c.jpg', '13', 'ORG05', '443', '默认项目', '[B@9ed6207', '41a2a040-4a0a-4833-8356-5f24a7d367f7', null, '2018-11-12 19:52:46', b'0', b'0', '2018-10-08 11:07:44', '2018-10-20 19:00:12');
 COMMIT;
 
 -- ----------------------------
@@ -1979,6 +2309,7 @@ CREATE TABLE `TstUserSettings` (
   `leftSizeIssue` int(11) DEFAULT NULL,
   `issueView` varchar(255) DEFAULT NULL,
   `issueColumns` varchar(1000) DEFAULT NULL,
+  `issueFields` varchar(1000) DEFAULT NULL,
   `tql` varchar(5000) DEFAULT NULL,
   `userId` int(11) NOT NULL,
   PRIMARY KEY (`userId`),
@@ -1990,7 +2321,7 @@ CREATE TABLE `TstUserSettings` (
 --  Records of `TstUserSettings`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstUserSettings` VALUES ('463', '200', null, null, null, null, '4'), ('300', '200', null, null, null, null, '5'), ('300', '200', null, null, null, null, '6'), ('300', '200', null, null, null, null, '7'), ('425', '200', '361', 'table', 'title,typeId,statusId,priorityId,assigneeId,creatorId', null, '8');
+INSERT INTO `TstUserSettings` VALUES ('463', '200', null, null, null, null, null, '4'), ('300', '200', null, null, null, null, null, '5'), ('300', '200', null, null, null, null, null, '6'), ('300', '200', null, null, null, null, null, '7'), ('425', '200', '361', 'table', 'title,priorityId,assigneeId,creatorId,reporterId', 'title,typeId,statusId,priorityId,assigneeId', null, '8');
 COMMIT;
 
 -- ----------------------------
@@ -2865,6 +3196,10 @@ BEGIN
     DECLARE project_id BIGINT;
     DECLARE case_id BIGINT;
 
+    DECLARE issue_page_id BIGINT;
+    DECLARE issue_tab_id BIGINT;
+    DECLARE issue_page_solution_id BIGINT;
+
     DECLARE count BIGINT;
 
     select usr.nickname from TstUser usr where id=user_id into user_name;
@@ -2946,7 +3281,7 @@ BEGIN
 
     set i=11100;
     while i<=17300 do
-      select count(id) from TstProjectPrivilegeDefine
+      select count(id) from TstProjectPrivilegeDefine 
 		where id=i AND id != 11200 and id != 11300 and id != 12400 into count;
       IF count > 0 THEN
         insert into TstProjectRolePriviledgeRelation
@@ -2962,7 +3297,7 @@ BEGIN
 
     set i=11100;
     while i<=17300 do
-      select count(id) from TstProjectPrivilegeDefine
+      select count(id) from TstProjectPrivilegeDefine 
 		where id=i AND id != 11200 and id != 11300 AND id != 12200 and id != 12400 into count;
       IF count > 0 THEN
         insert into TstProjectRolePriviledgeRelation
@@ -3020,7 +3355,138 @@ BEGIN
     insert into TstCase (name, projectId, pId, estimate, priority, type, isLeaf, ordr, createById, contentType, disabled, deleted, createTime)
     values('新用例', project_id, case_id, 10, 'medium', 'functional', 1, 0, user_id, 'steps', false, false, NOW());
 
+    -- 初始化问题属性
+    insert into IsuType(`value`,label,ordr,orgId,isDefault,isBuildIn,disabled,deleted,createTime) 
+		select d.`value`,d.label,d.ordr,org_id,d.isDefault,true,d.disabled,d.deleted,NOW() from IsuTypeDefine d;
+
+    insert into IsuStatus(`value`,label,categoryId,ordr,orgId,isDefault,isFinal,isBuildIn,disabled,deleted,createTime) 
+		select d.`value`,d.label,categoryId,d.ordr,org_id,d.isDefault,isFinal,true,d.disabled,d.deleted,NOW() from IsuStatusDefine d;
+
+    insert into IsuPriority(`value`,label,ordr,orgId,isDefault,isBuildIn,disabled,deleted,createTime) 
+		select d.`value`,d.label,d.ordr,org_id,d.isDefault,true,d.disabled,d.deleted,NOW() from IsuPriorityDefine d;
+
+    insert into IsuResolution(`value`,label,ordr,orgId,isDefault,isBuildIn,disabled,deleted,createTime) 
+		select d.`value`,d.label,d.ordr,org_id,d.isDefault,true,d.disabled,d.deleted,NOW() from IsuResolutionDefine d;
+
+    insert into IsuField(`code`,label,type,input,defaultShowInPage,elemOrdr,readonly,fullLine,required,orgId,isBuildIn,disabled,deleted,createTime) 
+	select d.`code`,d.label,d.type,d.input,defaultShowInPage,d.elemOrdr,d.readonly,d.fullLine,d.required,org_id,true,d.disabled,d.deleted,NOW() 
+		from IsuFieldDefine d where d.defaultShowInPage IS NOT NULL;
+
+    -- 初始化问题自定义属性
+    insert into IsuCustomField(colCode,label,type,input,textFormat,rows,required,
+		ordr,orgId,isBuildIn,disabled,deleted,createTime) 
+	select d.colCode,d.label,d.type,d.input,d.textFormat,d.rows,d.required,
+		d.ordr,org_id,true,d.disabled,d.deleted,NOW() from IsuCustomFieldDefine d;
+
+    call init_org_issue_custom_field_option(org_id);
+
+    -- 初始化问题页面
+    insert into IsuPage(name,orgId,isDefault,disabled,deleted,createTime) values ('默认界面', org_id, true,FALSE,FALSE,NOW());
+    select max(id) from IsuPage into issue_page_id;
+    
+    insert into IsuPageTab(name,pageId,orgId,ordr,disabled,deleted,createTime) 
+		values ('默认标签', issue_page_id, org_id, 1,FALSE,FALSE,NOW());
+    select max(id) from IsuPageTab into issue_tab_id;
+	
+    insert into IsuPageElement(code,label,type,input,fullLine,required,
+		ordr,readonly,`key`,fieldId,tabId,pageId,orgId,
+		disabled,deleted,createTime)
+	SELECT f.code,f.label,f.type,f.input,f.fullLine,f.required,
+		f.elemOrdr,f.readonly,CONCAT('sys-', f.id),f.id,issue_tab_id,issue_tab_id,org_id,
+		false,false,NOW()
+	    from IsuField f where f.orgId = org_id and f.defaultShowInPage;
+
+    insert into IsuPageSolution(name,orgId,disabled,deleted,createTime) 
+		values ('默认界面方案', org_id,FALSE,FALSE,NOW());
+    select max(id) from IsuPageSolution into issue_page_solution_id;
+
+    call init_org_issue_page_solution_item(issue_page_id, issue_page_solution_id, org_id);
+
   END
+ ;;
+delimiter ;
+
+-- ----------------------------
+--  Procedure structure for `init_org_issue_custom_field_option`
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `init_org_issue_custom_field_option`;
+delimiter ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `init_org_issue_custom_field_option`(IN org_id  BIGINT)
+BEGIN
+
+	DECLARE  no_more_record INT DEFAULT 0;
+
+	DECLARE  issue_custom_field_define_id BIGINT;
+
+	DECLARE  issue_custom_field_id BIGINT;
+	DECLARE  issue_custom_field_input VARCHAR(255);
+	DECLARE  issue_custom_field_colcode VARCHAR(255);
+
+	DECLARE  cur_record CURSOR FOR   SELECT id, colCode, input from IsuCustomField where orgId = org_id;
+	DECLARE  CONTINUE HANDLER FOR NOT FOUND  SET  no_more_record = 1;
+
+	OPEN  cur_record;
+	FETCH  cur_record INTO issue_custom_field_id, issue_custom_field_colcode, issue_custom_field_input;
+
+	WHILE no_more_record != 1 DO
+
+	   if (issue_custom_field_input='dropdown'||issue_custom_field_input='radio'
+		||issue_custom_field_input='checkbox'||issue_custom_field_input='multi_select') then 
+
+		   select id from IsuCustomFieldDefine WHERE colCode=issue_custom_field_colcode 
+			into issue_custom_field_define_id;
+	    
+	           insert into IsuCustomFieldOption(label,value,ordr,fieldId,
+				isDefault,isBuildIn,disabled,deleted,createTime) 
+			select d.label,d.value,d.ordr,issue_custom_field_id,
+				isDefault,true,d.disabled,d.deleted,NOW() from IsuCustomFieldOptionDefine d
+			   where d.fieldId = issue_custom_field_define_id;
+
+	   end if;
+
+	FETCH  cur_record INTO issue_custom_field_id, issue_custom_field_input, issue_custom_field_colcode;
+
+	END WHILE;
+	CLOSE  cur_record;
+	
+END
+ ;;
+delimiter ;
+
+-- ----------------------------
+--  Procedure structure for `init_org_issue_page_solution_item`
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `init_org_issue_page_solution_item`;
+delimiter ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `init_org_issue_page_solution_item`(IN issue_page_id  BIGINT,IN issue_page_solution_id  BIGINT,IN org_id  BIGINT)
+    DETERMINISTIC
+BEGIN
+
+	DECLARE  no_more_record INT DEFAULT 0;
+	DECLARE  issue_type_id BIGINT;
+	DECLARE  cur_record CURSOR FOR   SELECT id from IsuType where orgId = org_id;
+	DECLARE  CONTINUE HANDLER FOR NOT FOUND  SET  no_more_record = 1;
+
+	OPEN  cur_record;
+	FETCH  cur_record INTO issue_type_id;
+
+	WHILE no_more_record != 1 DO
+
+		insert into IsuPageSolutionItem(issueTypeId,opt,issuePageId,pageSolutionId,orgId,disabled,deleted,createTime) 
+			values (issue_type_id, 'create',issue_page_id,issue_page_solution_id,org_id, FALSE,FALSE,NOW());
+
+		insert into IsuPageSolutionItem(issueTypeId,opt,issuePageId,pageSolutionId,orgId,disabled,deleted,createTime) 
+			values (issue_type_id, 'edit',issue_page_id, issue_page_solution_id,org_id,FALSE,FALSE,NOW());
+
+		insert into IsuPageSolutionItem(issueTypeId,opt,issuePageId,pageSolutionId,orgId,disabled,deleted,createTime) 
+			values (issue_type_id, 'view',issue_page_id, issue_page_solution_id,org_id, FALSE,FALSE,NOW());
+
+		FETCH  cur_record INTO issue_type_id;
+
+	END WHILE;
+	CLOSE  cur_record;
+	
+END
  ;;
 delimiter ;
 

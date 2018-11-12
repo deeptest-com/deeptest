@@ -11,7 +11,7 @@
  Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 11/12/2018 20:33:17 PM
+ Date: 11/12/2018 21:28:08 PM
 */
 
 SET NAMES utf8mb4;
@@ -662,13 +662,13 @@ CREATE TABLE `IsuPrioritySolution` (
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   CONSTRAINT `fk_isuprioritysolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuPrioritySolution`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuPrioritySolution` VALUES ('1', '是的范德萨发', null, '13', null, null, b'0', b'0', '2018-11-12 20:01:54', '2018-11-12 20:10:05');
+INSERT INTO `IsuPrioritySolution` VALUES ('1', '是的范德萨发', null, '13', null, null, b'0', b'0', '2018-11-12 20:01:54', '2018-11-12 20:10:05'), ('2', '新问题类型方案', null, '13', null, null, b'0', b'0', '2018-11-12 21:08:54', '2018-11-12 21:08:56');
 COMMIT;
 
 -- ----------------------------
@@ -686,6 +686,13 @@ CREATE TABLE `IsuPrioritySolutionItem` (
   CONSTRAINT `isuprioritysolutionitem_ibfk_2` FOREIGN KEY (`solutionId`) REFERENCES `IsuPrioritySolution` (`id`),
   CONSTRAINT `isuprioritysolutionitem_ibfk_3` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `IsuPrioritySolutionItem`
+-- ----------------------------
+BEGIN;
+INSERT INTO `IsuPrioritySolutionItem` VALUES ('23', null, '13'), ('24', null, '13'), ('25', null, '13'), ('26', null, '13'), ('23', '2', '13');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `IsuQuery`
@@ -1007,13 +1014,13 @@ CREATE TABLE `IsuTypeSolution` (
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   CONSTRAINT `fk_isutypesolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuTypeSolution`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuTypeSolution` VALUES ('1', 'SDF21', null, '13', b'0', b'0', '2018-11-12 17:11:23', '2018-11-12 17:43:41'), ('2', 'SDF', null, '13', b'1', b'0', '2018-11-12 17:11:44', '2018-11-12 17:43:37');
+INSERT INTO `IsuTypeSolution` VALUES ('1', 'SDF21', null, '13', b'0', b'0', '2018-11-12 17:11:23', '2018-11-12 17:43:41'), ('2', 'SDF', null, '13', b'1', b'0', '2018-11-12 17:11:44', '2018-11-12 17:43:37'), ('3', '新问题类型方案', null, '13', b'0', b'0', '2018-11-12 21:08:42', '2018-11-12 21:08:47');
 COMMIT;
 
 -- ----------------------------
@@ -1036,7 +1043,7 @@ CREATE TABLE `IsuTypeSolutionItem` (
 --  Records of `IsuTypeSolutionItem`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuTypeSolutionItem` VALUES ('113', '1', '13'), ('114', '1', '13');
+INSERT INTO `IsuTypeSolutionItem` VALUES ('113', '1', '13'), ('114', '1', '13'), ('113', null, '13'), ('114', null, '13'), ('113', null, '13'), ('113', null, '13'), ('114', null, '13'), ('113', null, '13'), ('114', null, '13'), ('113', null, '13'), ('113', '3', '13'), ('114', '3', '13');
 COMMIT;
 
 -- ----------------------------
@@ -1598,7 +1605,7 @@ CREATE TABLE `TstCustomField` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `label` varchar(255) DEFAULT NULL,
   `descr` varchar(255) DEFAULT NULL,
-  `myColumn` varchar(255) DEFAULT NULL,
+  `colCode` varchar(255) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   `format` varchar(255) DEFAULT NULL,
   `rows` int(11) DEFAULT NULL,
@@ -2064,7 +2071,7 @@ CREATE TABLE `TstProjectAccessHistory` (
 --  Records of `TstProjectAccessHistory`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstProjectAccessHistory` VALUES ('1', '2018-10-06 14:27:42', '1', '343', '默认项目', '1', '2018-10-06 11:37:43', null), ('2', '2018-10-06 11:38:57', '1', '343', '默认项目', '2', null, null), ('3', '2018-10-06 11:41:33', '1', '343', '默认项目', '3', null, null), ('4', '2018-10-08 10:55:10', '2', '345', '默认项目', '1', '2018-10-06 14:20:35', null), ('5', '2018-10-06 14:46:59', '2', '346', 'Prj01', '1', null, null), ('6', '2018-10-08 11:01:39', '3', '348', '默认项目', '4', '2018-10-08 11:01:39', null), ('7', '2018-10-15 17:05:07', '4', '350', '默认项目', '8', '2018-10-08 11:07:47', null), ('8', '2018-11-07 16:53:08', '5', '352', '默认项目', '8', '2018-10-11 10:22:06', null), ('9', '2018-10-11 10:24:17', '6', '354', '默认项目', '8', '2018-10-11 10:24:17', null), ('10', '2018-11-08 19:50:26', '5', '355', '项目01', '8', null, null), ('41', '2018-11-08 20:30:40', '8', '417', '默认项目', '8', '2018-11-08 20:29:04', null), ('50', '2018-11-08 21:01:03', '9', '435', '默认项目', '8', '2018-11-08 21:00:37', null), ('52', '2018-11-09 12:53:47', '11', '439', '默认项目', '8', '2018-11-09 12:53:47', null), ('53', '2018-11-09 13:13:36', '12', '441', '默认项目', '8', '2018-11-09 13:04:58', null), ('54', '2018-11-09 13:19:08', '13', '443', '默认项目', '8', '2018-11-09 13:19:05', null);
+INSERT INTO `TstProjectAccessHistory` VALUES ('1', '2018-10-06 14:27:42', '1', '343', '默认项目', '1', '2018-10-06 11:37:43', null), ('2', '2018-10-06 11:38:57', '1', '343', '默认项目', '2', null, null), ('3', '2018-10-06 11:41:33', '1', '343', '默认项目', '3', null, null), ('4', '2018-10-08 10:55:10', '2', '345', '默认项目', '1', '2018-10-06 14:20:35', null), ('5', '2018-10-06 14:46:59', '2', '346', 'Prj01', '1', null, null), ('6', '2018-10-08 11:01:39', '3', '348', '默认项目', '4', '2018-10-08 11:01:39', null), ('7', '2018-10-15 17:05:07', '4', '350', '默认项目', '8', '2018-10-08 11:07:47', null), ('8', '2018-11-07 16:53:08', '5', '352', '默认项目', '8', '2018-10-11 10:22:06', null), ('9', '2018-10-11 10:24:17', '6', '354', '默认项目', '8', '2018-10-11 10:24:17', null), ('10', '2018-11-08 19:50:26', '5', '355', '项目01', '8', null, null), ('41', '2018-11-08 20:30:40', '8', '417', '默认项目', '8', '2018-11-08 20:29:04', null), ('50', '2018-11-08 21:01:03', '9', '435', '默认项目', '8', '2018-11-08 21:00:37', null), ('52', '2018-11-09 12:53:47', '11', '439', '默认项目', '8', '2018-11-09 12:53:47', null), ('53', '2018-11-09 13:13:36', '12', '441', '默认项目', '8', '2018-11-09 13:04:58', null), ('54', '2018-11-12 21:27:12', '13', '443', '默认项目', '8', '2018-11-09 13:19:05', null);
 COMMIT;
 
 -- ----------------------------

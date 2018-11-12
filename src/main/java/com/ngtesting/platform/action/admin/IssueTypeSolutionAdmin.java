@@ -110,6 +110,13 @@ public class IssueTypeSolutionAdmin extends BaseAction {
         Integer typeId = json.getInteger("typeId");
         Integer solutionId = json.getInteger("solutionId");
 
+        if (solutionId == null) {
+            IsuTypeSolution vo = new IsuTypeSolution("新问题类型方案");
+            IsuTypeSolution po = solutionService.save(vo, orgId);
+
+            solutionId = po.getId();
+        }
+
         solutionService.addType(typeId, solutionId, orgId);
 
         IsuTypeSolution po = solutionService.getDetail(solutionId, orgId);
@@ -152,6 +159,13 @@ public class IssueTypeSolutionAdmin extends BaseAction {
         Integer orgId = userVo.getDefaultOrgId();
 
         Integer solutionId = json.getInteger("solutionId");
+
+        if (solutionId == null) {
+            IsuTypeSolution vo = new IsuTypeSolution("新问题类型方案");
+            IsuTypeSolution po = solutionService.save(vo, orgId);
+
+            solutionId = po.getId();
+        }
 
         solutionService.addAll(solutionId, orgId);
 

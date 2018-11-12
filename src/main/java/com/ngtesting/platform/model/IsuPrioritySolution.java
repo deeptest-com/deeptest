@@ -14,7 +14,14 @@ public class IsuPrioritySolution extends BaseModel {
 
     private List<IsuPriority> items = new LinkedList<>();
 
-	public String getName() {
+    public IsuPrioritySolution() {
+
+    }
+    public IsuPrioritySolution(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
 		return name;
 	}
 

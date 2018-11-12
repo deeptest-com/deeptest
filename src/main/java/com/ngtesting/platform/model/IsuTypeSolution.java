@@ -14,6 +14,13 @@ public class IsuTypeSolution extends BaseModel {
 
     private List<IsuType> items = new LinkedList<>();
 
+    public IsuTypeSolution() {
+
+    }
+    public IsuTypeSolution(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }

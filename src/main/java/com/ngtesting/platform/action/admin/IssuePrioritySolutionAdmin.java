@@ -129,6 +129,13 @@ public class IssuePrioritySolutionAdmin extends BaseAction {
 		Integer priorityId = json.getInteger("priorityId");
 		Integer solutionId = json.getInteger("solutionId");
 
+        if (solutionId == null) {
+            IsuPrioritySolution vo = new IsuPrioritySolution("新问题类型方案");
+            IsuPrioritySolution po = solutionService.save(vo, orgId);
+
+            solutionId = po.getId();
+        }
+
 		solutionService.addPriority(priorityId, solutionId, orgId);
 
 		IsuPrioritySolution po = solutionService.getDetail(solutionId, orgId);
@@ -171,6 +178,13 @@ public class IssuePrioritySolutionAdmin extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 
 		Integer solutionId = json.getInteger("solutionId");
+
+        if (solutionId == null) {
+            IsuPrioritySolution vo = new IsuPrioritySolution("新问题优先级方案");
+            IsuPrioritySolution po = solutionService.save(vo, orgId);
+
+            solutionId = po.getId();
+        }
 
 		solutionService.addAll(solutionId, orgId);
 

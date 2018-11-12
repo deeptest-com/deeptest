@@ -1,13 +1,4 @@
-cd src/main/docker/mysql
-docker build -t registry.cn-hangzhou.aliyuncs.com/ngtesting/ngtesting-mysql:1.0.10 .
-docker push registry.cn-hangzhou.aliyuncs.com/ngtesting/ngtesting-mysql:1.0.10
-
-
-
 mvn clean verify
+
 scp target/ngtesting-web-1.0.10.jar aaron@47.99.102.138:/home/aaron/dev/deploy
 
-
-
-pkill java
-nohup ./ngtesting-web-1.0.10.jar &

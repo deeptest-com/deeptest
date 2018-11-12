@@ -1,5 +1,8 @@
 package com.ngtesting.platform.model;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class IsuPrioritySolution extends BaseModel {
 
 	private static final long serialVersionUID = 1038763093908219933L;
@@ -8,6 +11,8 @@ public class IsuPrioritySolution extends BaseModel {
 	private String descr;
 	private Boolean isDefault = false;
 	private Integer orgId;
+
+    private List<IsuPriority> items = new LinkedList<>();
 
 	public String getName() {
 		return name;
@@ -38,4 +43,11 @@ public class IsuPrioritySolution extends BaseModel {
 		this.descr = descr;
 	}
 
+    public List<IsuPriority> getItems() {
+        return items;
+    }
+
+    public void setItems(List<IsuPriority> items) {
+        this.items = items;
+    }
 }

@@ -12,7 +12,7 @@
 
     <select id="listBySolutionId" resultType="IsuPriority" parameterType="Map">
         SELECT * FROM IsuPriority o
-        JOIN IsuPrioritySolutionItem r ON r.typeId = o.id
+        JOIN IsuPrioritySolutionItem r ON r.priorityId = o.id
         WHERE r.solutionId = #{solutionId}
           AND o.orgId=#{orgId}
 
@@ -26,7 +26,7 @@
         WHERE o.orgId=#{orgId}
          AND o.id NOT IN (
           SELECT tmp.id FROM IsuPriority tmp
-          JOIN IsuPrioritySolutionItem r ON r.typeId = tmp.id
+          JOIN IsuPrioritySolutionItem r ON r.priorityId = tmp.id
           WHERE r.solutionId = #{solutionId} AND tmp.orgId=#{orgId}
         )
 

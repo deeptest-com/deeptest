@@ -70,8 +70,11 @@ public class IssuePrioritySolutionAdmin extends BaseAction {
 		if (po == null) { // 当对象不是默认org的，此处为空
 			return authFail();
 		}
+        List<IsuPriority> otherItems = priorityService.listNotInSolution(id, orgId);
 
-		ret.put("data", po);
+        ret.put("data", po);
+        ret.put("otherItems", otherItems);
+
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

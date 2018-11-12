@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IsuPrioritySolutionDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssuePrioritySolutionDao" >
 
     <select id="list" resultType="IsuPrioritySolution">
         SELECT * FROM IsuPrioritySolution o
@@ -11,6 +11,15 @@
     </select>
 
     <select id="get" resultType="IsuPrioritySolution">
+        SELECT * FROM IsuPrioritySolution o
+
+        WHERE o.id = #{id}
+        <if test="orgId != null">
+            AND o.orgId=#{orgId}
+        </if>
+    </select>
+
+    <select id="getDetail" resultMap="isuPrioritySolutionMap">
         SELECT * FROM IsuPrioritySolution o
 
         WHERE o.id = #{id}
@@ -40,5 +49,41 @@
         SET disabled=TRUE, updateTime=NOW()
         WHERE id=#{id} AND orgId=#{orgId}
     </delete>
+
+    <insert id="addType">
+        insert into IsuPrioritySolutionItem
+        (priorityId,solutionId,orgId)
+        values
+        ( #{priorityId}, #{solutionId}, #{orgId} );
+    </insert>
+
+    <delete id="removeType">
+        DELETE FROM IsuPrioritySolutionItem
+        WHERE priorityId=#{priorityId}
+          AND solutionId=#{solutionId}
+          AND orgId=#{orgId}
+    </delete>
+
+    <insert id="addAll">
+        insert into IsuPrioritySolutionItem
+        (priorityId,solutionId,orgId)
+        values
+        <foreach collection="priorities" item="item" separator=",">
+            ( #{item.id}, #{solutionId}, #{orgId} )
+        </foreach>
+    </insert>
+
+    <delete id="removeAll">
+        DELETE FROM IsuPrioritySolutionItem
+        WHERE solutionId=#{solutionId} AND orgId=#{orgId}
+    </delete>
+
+    <resultMap id="isuPrioritySolutionMap" type="IsuPrioritySolution" autoMapping="true">
+        <id column="id" property="id"/>
+
+        <collection property="items" select="com.ngtesting.platform.dao.IssuePriorityDao.listBySolutionId"
+                    column="{solutionId=id},{orgId=orgId}">
+        </collection>
+    </resultMap>
 
 </mapper>

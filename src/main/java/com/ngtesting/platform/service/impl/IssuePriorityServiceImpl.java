@@ -30,6 +30,11 @@ public class IssuePriorityServiceImpl extends BaseServiceImpl implements IssuePr
     }
 
 	@Override
+	public List<IsuPriority> listNotInSolution(Integer solutionId, Integer orgId) {
+        return issuePriorityDao.listNotInSolution(solutionId, orgId);
+	}
+
+	@Override
 	public IsuPriority get(Integer id, Integer orgId) {
 		return issuePriorityDao.get(id, orgId);
 	}

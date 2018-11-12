@@ -33,7 +33,6 @@ public class IssueTypeAdmin extends BaseAction {
 	@Autowired
 	IssuePropertyService issuePropertyService;
 
-
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {

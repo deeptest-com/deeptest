@@ -1,7 +1,9 @@
 package com.ngtesting.platform.service.impl;
 
 
+import com.ngtesting.platform.dao.IssueTypeDao;
 import com.ngtesting.platform.dao.IssueTypeSolutionDao;
+import com.ngtesting.platform.model.IsuType;
 import com.ngtesting.platform.model.IsuTypeSolution;
 import com.ngtesting.platform.service.IssueTypeSolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,9 @@ public class IssueTypeSolutionServiceImpl extends BaseServiceImpl implements Iss
     @Autowired
     IssueTypeSolutionDao solutionDao;
 
+    @Autowired
+    IssueTypeDao typeDao;
+
     @Override
     public List<IsuTypeSolution> list(Integer orgId) {
         List<IsuTypeSolution> ls = solutionDao.list(orgId);
@@ -22,15 +27,13 @@ public class IssueTypeSolutionServiceImpl extends BaseServiceImpl implements Iss
     }
 
     @Override
-    public List<IsuTypeSolution> list(Integer orgId, Integer prjId) {
-        List<IsuTypeSolution> ls = solutionDao.list(orgId);
-
-        return ls;
+    public IsuTypeSolution get(Integer id, Integer orgId) {
+        return solutionDao.get(id, orgId);
     }
 
     @Override
-    public IsuTypeSolution get(Integer id, Integer orgId) {
-        return solutionDao.get(id, orgId);
+    public IsuTypeSolution getDetail(Integer id, Integer orgId) {
+        return solutionDao.getDetail(id, orgId);
     }
 
     @Override
@@ -52,6 +55,48 @@ public class IssueTypeSolutionServiceImpl extends BaseServiceImpl implements Iss
     @Override
     public Boolean delete(Integer id, Integer orgId) {
         Integer count = solutionDao.delete(id, orgId);
+        if (count == 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public Boolean addType(Integer typeId, Integer solutionId, Integer orgId) {
+        Integer count = solutionDao.addType(typeId, solutionId, orgId);
+        if (count == 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public Boolean removeType(Integer typeId, Integer solutionId, Integer orgId) {
+        Integer count = solutionDao.removeType(typeId, solutionId, orgId);
+        if (count == 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public Boolean addAll(Integer solutionId, Integer orgId) {
+        List<IsuType> types = typeDao.listNotInSolution(solutionId, orgId);
+
+        Integer count = solutionDao.addAll(types, solutionId, orgId);
+        if (count == 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public Boolean removeAll(Integer solutionId, Integer orgId) {
+        Integer count = solutionDao.removeAll(solutionId, orgId);
         if (count == 0) {
             return false;
         }

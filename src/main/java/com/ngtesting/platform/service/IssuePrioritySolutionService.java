@@ -10,8 +10,15 @@ public interface IssuePrioritySolutionService extends BaseService {
     List<IsuPrioritySolution> list(Integer orgId, Integer prjId);
 
     IsuPrioritySolution get(Integer id, Integer orgId);
+    IsuPrioritySolution getDetail(Integer solutionId, Integer orgId);
 
 	IsuPrioritySolution save(IsuPrioritySolution vo, Integer orgId);
 
 	Boolean delete(Integer id, Integer orgId);
+
+	Boolean addPriority(Integer priorityId, Integer solutionId, Integer orgId);
+	Boolean removePriority(Integer priorityId, Integer solutionId, Integer orgId);
+
+	Boolean addAll(Integer solutionId, Integer orgId);
+	Boolean removeAll(Integer solutionId, Integer orgId);
 }

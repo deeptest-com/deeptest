@@ -10,6 +10,30 @@
         ORDER BY ordr ASC
     </select>
 
+    <select id="listBySolutionId" resultType="IsuPriority" parameterType="Map">
+        SELECT * FROM IsuPriority o
+        JOIN IsuPrioritySolutionItem r ON r.typeId = o.id
+        WHERE r.solutionId = #{solutionId}
+          AND o.orgId=#{orgId}
+
+        AND o.disabled!=TRUE AND o.deleted!=TRUE
+        ORDER BY o.ordr ASC
+    </select>
+
+    <select id="listNotInSolution" resultType="IsuPriority" parameterType="Map">
+        SELECT * FROM IsuPriority o
+
+        WHERE o.orgId=#{orgId}
+         AND o.id NOT IN (
+          SELECT tmp.id FROM IsuPriority tmp
+          JOIN IsuPrioritySolutionItem r ON r.typeId = tmp.id
+          WHERE r.solutionId = #{solutionId} AND tmp.orgId=#{orgId}
+        )
+
+        AND o.disabled!=TRUE AND o.deleted!=TRUE
+        ORDER BY ordr ASC
+    </select>
+
     <select id="get" resultType="IsuPriority">
         SELECT * FROM IsuPriority o
 

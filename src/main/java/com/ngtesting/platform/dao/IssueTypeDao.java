@@ -8,6 +8,12 @@ import java.util.List;
 public interface IssueTypeDao {
     List<IsuType> list(@Param("orgId") Integer orgId);
 
+    List<IsuType> listBySolutionId(@Param("solutionId") Integer solutionId,
+                                   @Param("orgId") Integer orgId);
+
+    List<IsuType> listNotInSolution(@Param("solutionId") Integer solutionId,
+                                    @Param("orgId") Integer orgId);
+
     IsuType get(@Param("id") Integer id,
                     @Param("orgId") Integer orgId);
 

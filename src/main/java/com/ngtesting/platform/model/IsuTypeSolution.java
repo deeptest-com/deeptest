@@ -1,5 +1,8 @@
 package com.ngtesting.platform.model;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class IsuTypeSolution extends BaseModel {
     private static final long serialVersionUID = 7219897125483066915L;
 
@@ -8,6 +11,8 @@ public class IsuTypeSolution extends BaseModel {
     private String descr;
     private Boolean isDefault = false;
     private Integer orgId;
+
+    private List<IsuType> items = new LinkedList<>();
 
     public String getName() {
         return name;
@@ -38,4 +43,11 @@ public class IsuTypeSolution extends BaseModel {
         this.descr = descr;
     }
 
+    public List<IsuType> getItems() {
+        return items;
+    }
+
+    public void setItems(List<IsuType> items) {
+        this.items = items;
+    }
 }

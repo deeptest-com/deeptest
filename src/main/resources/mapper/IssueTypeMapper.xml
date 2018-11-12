@@ -9,6 +9,29 @@
         AND o.disabled!=TRUE AND o.deleted!=TRUE
         ORDER BY ordr ASC
     </select>
+    <select id="listBySolutionId" resultType="IsuType" parameterType="Map">
+        SELECT * FROM IsuType o
+        JOIN IsuTypeSolutionItem r ON r.typeId = o.id
+        WHERE r.solutionId = #{solutionId}
+          AND o.orgId=#{orgId}
+
+        AND o.disabled!=TRUE AND o.deleted!=TRUE
+        ORDER BY o.ordr ASC
+    </select>
+
+    <select id="listNotInSolution" resultType="IsuType" parameterType="Map">
+        SELECT * FROM IsuType o
+
+        WHERE o.orgId=#{orgId}
+         AND o.id NOT IN (
+          SELECT tmp.id FROM IsuType tmp
+          JOIN IsuTypeSolutionItem r ON r.typeId = tmp.id
+          WHERE r.solutionId = #{solutionId} AND tmp.orgId=#{orgId}
+        )
+
+        AND o.disabled!=TRUE AND o.deleted!=TRUE
+        ORDER BY ordr ASC
+    </select>
 
     <select id="get" resultType="IsuType">
         SELECT * FROM IsuType o

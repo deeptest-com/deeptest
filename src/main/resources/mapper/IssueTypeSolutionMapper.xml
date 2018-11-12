@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IsuTypeSolutionDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssueTypeSolutionDao" >
 
     <select id="list" resultType="IsuTypeSolution">
         SELECT * FROM IsuTypeSolution o
         WHERE o.orgId=#{orgId}
 
         AND o.disabled!=TRUE AND o.deleted!=TRUE
-        ORDER BY ordr ASC
+        ORDER BY id ASC
     </select>
 
     <select id="get" resultType="IsuTypeSolution">
@@ -18,17 +18,25 @@
             AND o.orgId=#{orgId}
         </if>
     </select>
+    <select id="getDetail" resultMap="isuTypeSolutionMap">
+        SELECT * FROM IsuTypeSolution o
+
+        WHERE o.id = #{id}
+        <if test="orgId != null">
+            AND o.orgId=#{orgId}
+        </if>
+    </select>
 
     <insert id="save" parameterType="IsuTypeSolution" useGeneratedKeys="true" keyProperty="id">
         insert into IsuTypeSolution
-        (label,value,descr,orgId,deleted,disabled,createTime)
+        (name,orgId,deleted,disabled,createTime)
         values
-        (#{label},#{value},#{descr},#{orgId},FALSE,FALSE,NOW())
+        (#{name},#{orgId},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="IsuTypeSolution">
         UPDATE IsuTypeSolution
-        SET label=#{label},value=#{value},descr=#{descr},
+        SET name=#{name},
         disabled=#{disabled},
         updateTime=NOW()
 
@@ -40,5 +48,41 @@
         SET disabled=TRUE, updateTime=NOW()
         WHERE id=#{id} AND orgId=#{orgId}
     </delete>
+
+    <insert id="addType">
+        insert into IsuTypeSolutionItem
+        (typeId,solutionId,orgId)
+        values
+        ( #{typeId}, #{solutionId}, #{orgId} );
+    </insert>
+
+    <delete id="removeType">
+        DELETE FROM IsuTypeSolutionItem
+        WHERE typeId=#{typeId}
+          AND solutionId=#{solutionId}
+          AND orgId=#{orgId}
+    </delete>
+
+    <insert id="addAll">
+        insert into IsuTypeSolutionItem
+        (typeId,solutionId,orgId)
+        values
+        <foreach collection="types" item="item" separator=",">
+            ( #{item.id}, #{solutionId}, #{orgId} )
+        </foreach>
+    </insert>
+
+    <delete id="removeAll">
+        DELETE FROM IsuTypeSolutionItem
+        WHERE solutionId=#{solutionId} AND orgId=#{orgId}
+    </delete>
+
+    <resultMap id="isuTypeSolutionMap" type="IsuTypeSolution" autoMapping="true">
+        <id column="id" property="id"/>
+
+        <collection property="items" select="com.ngtesting.platform.dao.IssueTypeDao.listBySolutionId"
+                    column="{solutionId=id},{orgId=orgId}">
+        </collection>
+    </resultMap>
 
 </mapper>

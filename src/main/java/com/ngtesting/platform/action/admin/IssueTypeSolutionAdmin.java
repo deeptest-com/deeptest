@@ -6,6 +6,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuType;
 import com.ngtesting.platform.model.IsuTypeSolution;
 import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.IssueTypeService;
 import com.ngtesting.platform.service.IssueTypeSolutionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,6 +30,9 @@ public class IssueTypeSolutionAdmin extends BaseAction {
 
 	@Autowired
     IssueTypeSolutionService solutionService;
+
+	@Autowired
+	IssueTypeService typeService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
@@ -60,14 +64,17 @@ public class IssueTypeSolutionAdmin extends BaseAction {
 		if (id == null) {
 			po = new IsuTypeSolution();
 		} else {
-			po = solutionService.get(id, orgId);
+			po = solutionService.getDetail(id, orgId);
 		}
 
 		if (po == null) { // 当对象不是默认org的，此处为空
 			return authFail();
 		}
 
+		List<IsuType> otherItems = typeService.listNotInSolution(id, orgId);
+
 		ret.put("data", po);
+		ret.put("otherItems", otherItems);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -92,23 +99,90 @@ public class IssueTypeSolutionAdmin extends BaseAction {
 		return ret;
 	}
 
-	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
+	@RequestMapping(value = "addType", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> addType(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = userVo.getDefaultOrgId();
 
-		Integer id = json.getInteger("id");
+        Integer typeId = json.getInteger("typeId");
+        Integer solutionId = json.getInteger("solutionId");
 
-		Boolean result = solutionService.delete(id, orgId);
-		if (!result) { // 当对象不是默认org的，结果会返回false
-			return authFail();
-		}
+        solutionService.addType(typeId, solutionId, orgId);
 
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
+        IsuTypeSolution po = solutionService.getDetail(solutionId, orgId);
+        List<IsuType> otherItems = typeService.listNotInSolution(solutionId, orgId);
+
+        ret.put("data", po);
+        ret.put("otherItems", otherItems);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @RequestMapping(value = "removeType", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> removeType(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = userVo.getDefaultOrgId();
+
+        Integer typeId = json.getInteger("typeId");
+        Integer solutionId = json.getInteger("solutionId");
+
+        solutionService.removeType(typeId, solutionId, orgId);
+
+        IsuTypeSolution po = solutionService.getDetail(solutionId, orgId);
+        List<IsuType> otherItems = typeService.listNotInSolution(solutionId, orgId);
+
+        ret.put("data", po);
+        ret.put("otherItems", otherItems);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @RequestMapping(value = "addAll", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> addAll(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = userVo.getDefaultOrgId();
+
+        Integer solutionId = json.getInteger("solutionId");
+
+        solutionService.addAll(solutionId, orgId);
+
+        IsuTypeSolution po = solutionService.getDetail(solutionId, orgId);
+        List<IsuType> otherItems = typeService.listNotInSolution(solutionId, orgId);
+
+        ret.put("data", po);
+        ret.put("otherItems", otherItems);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @RequestMapping(value = "removeAll", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> removeAll(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = userVo.getDefaultOrgId();
+
+        Integer solutionId = json.getInteger("solutionId");
+
+        solutionService.removeAll(solutionId, orgId);
+
+        IsuTypeSolution po = solutionService.getDetail(solutionId, orgId);
+        List<IsuType> otherItems = typeService.listNotInSolution(solutionId, orgId);
+
+        ret.put("data", po);
+        ret.put("otherItems", otherItems);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
 
 }

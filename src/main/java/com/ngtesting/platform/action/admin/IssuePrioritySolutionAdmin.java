@@ -3,8 +3,10 @@ package com.ngtesting.platform.action.admin;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.model.IsuPriority;
 import com.ngtesting.platform.model.IsuPrioritySolution;
 import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.IssuePriorityService;
 import com.ngtesting.platform.service.IssuePrioritySolutionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,6 +30,9 @@ public class IssuePrioritySolutionAdmin extends BaseAction {
 
 	@Autowired
 	IssuePrioritySolutionService solutionService;
+
+	@Autowired
+	IssuePriorityService priorityService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
@@ -106,6 +111,92 @@ public class IssuePrioritySolutionAdmin extends BaseAction {
 			return authFail();
 		}
 
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@RequestMapping(value = "addPriority", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> addPriority(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
+		Integer priorityId = json.getInteger("priorityId");
+		Integer solutionId = json.getInteger("solutionId");
+
+		solutionService.addPriority(priorityId, solutionId, orgId);
+
+		IsuPrioritySolution po = solutionService.getDetail(solutionId, orgId);
+		List<IsuPriority> otherItems = priorityService.listNotInSolution(solutionId, orgId);
+
+		ret.put("data", po);
+		ret.put("otherItems", otherItems);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@RequestMapping(value = "removePriority", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> removePriority(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
+		Integer priorityId = json.getInteger("priorityId");
+		Integer solutionId = json.getInteger("solutionId");
+
+		solutionService.removePriority(priorityId, solutionId, orgId);
+
+        IsuPrioritySolution po = solutionService.getDetail(solutionId, orgId);
+        List<IsuPriority> otherItems = priorityService.listNotInSolution(solutionId, orgId);
+
+		ret.put("data", po);
+		ret.put("otherItems", otherItems);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@RequestMapping(value = "addAll", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> addAll(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
+		Integer solutionId = json.getInteger("solutionId");
+
+		solutionService.addAll(solutionId, orgId);
+
+		IsuPrioritySolution po = solutionService.getDetail(solutionId, orgId);
+		List<IsuPriority> otherItems = priorityService.listNotInSolution(solutionId, orgId);
+
+		ret.put("data", po);
+		ret.put("otherItems", otherItems);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@RequestMapping(value = "removeAll", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> removeAll(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
+		Integer solutionId = json.getInteger("solutionId");
+
+		solutionService.removeAll(solutionId, orgId);
+
+		IsuPrioritySolution po = solutionService.getDetail(solutionId, orgId);
+		List<IsuPriority> otherItems = priorityService.listNotInSolution(solutionId, orgId);
+
+		ret.put("data", po);
+		ret.put("otherItems", otherItems);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

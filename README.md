@@ -1,6 +1,8 @@
 # Next Generation Testing Tools
 有兴趣请加微信, Wechat: 462826
 
+DEMO: http://139.224.8.129:58080
+
 AngularJS, SockJS, SpringBoot, MyBatis, MySQL
 
 ## Quick start

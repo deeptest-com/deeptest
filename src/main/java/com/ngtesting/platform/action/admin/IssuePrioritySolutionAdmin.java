@@ -64,7 +64,7 @@ public class IssuePrioritySolutionAdmin extends BaseAction {
 		if (id == null) {
 			po = new IsuPrioritySolution();
 		} else {
-			po = solutionService.get(id, orgId);
+			po = solutionService.getDetail(id, orgId);
 		}
 
 		if (po == null) { // 当对象不是默认org的，此处为空

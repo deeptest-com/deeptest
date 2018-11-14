@@ -46,7 +46,6 @@ public class IssueTypeServiceImpl extends BaseServiceImpl implements IssueTypeSe
 
     @Override
     public IsuType save(IsuType vo, Integer orgId) {
-
         if (vo.getId() == null) {
             Integer maxOrder = issueTypeDao.getMaxOrdrNumb(orgId);
             if (maxOrder == null) {

@@ -11,7 +11,22 @@ public class IsuStatus extends BaseModel {
     private Boolean isDefault = false;
     private Boolean isFinal;
     private Boolean isBuildIn = false;
+
+	private Integer categoryId;
+	private String categoryName;
     private Integer orgId;
+
+    private Boolean selected;
+
+    @Override
+    public boolean equals(Object obj) {
+        IsuStatus s = (IsuStatus)obj;
+        return this.getId().intValue() == s.getId().intValue();
+    }
+    @Override
+    public int hashCode() {
+        return this.id;
+    }
 
     public Boolean getDefault() {
         return isDefault;
@@ -86,5 +101,29 @@ public class IsuStatus extends BaseModel {
 	public void setOrgId(Integer orgId) {
 		this.orgId = orgId;
 	}
+
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public Boolean getSelected() {
+        return selected;
+    }
+
+    public void setSelected(Boolean selected) {
+        this.selected = selected;
+    }
 
 }

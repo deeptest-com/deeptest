@@ -3,7 +3,9 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueStatusDao" >
 
     <select id="list" resultType="IsuStatus">
-        SELECT * FROM IsuStatus o
+        SELECT o.*, c.label categoryName FROM IsuStatus o
+        JOIN IsuStatusCategoryDefine c ON o.categoryId=c.id
+
         WHERE o.orgId=#{orgId}
 
         AND o.disabled!=TRUE AND o.deleted!=TRUE
@@ -11,7 +13,9 @@
     </select>
 
     <select id="get" resultType="IsuStatus">
-        SELECT * FROM IsuStatus o
+        SELECT o.*, c.label categoryName FROM IsuStatus o
+
+        JOIN IsuStatusCategoryDefine c ON o.categoryId=c.id
 
         WHERE o.id = #{id}
         <if test="orgId != null">

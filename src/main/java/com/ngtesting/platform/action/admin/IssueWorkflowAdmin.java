@@ -3,7 +3,10 @@ package com.ngtesting.platform.action.admin;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.service.CasePropertyService;
+import com.ngtesting.platform.model.IsuStatus;
+import com.ngtesting.platform.model.IsuWorkflow;
+import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.IssueStatusService;
 import com.ngtesting.platform.service.IssueWorkflowService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -28,21 +32,19 @@ public class IssueWorkflowAdmin extends BaseAction {
     IssueWorkflowService issueWorkflowService;
 
 	@Autowired
-    CasePropertyService casePropertyService;
+    IssueStatusService statusService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//		Integer orgId = userVo.getDefaultOrgId();
-//
-//		List<CaseTypeVo> vos = issueWorkflowService.listVos(orgId);
-//
-//		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
-//
-//        ret.put("data", vos);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
+		List<IsuWorkflow> vos = issueWorkflowService.list(orgId);
+
+        ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;
@@ -53,19 +55,22 @@ public class IssueWorkflowAdmin extends BaseAction {
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//
-//		Integer id = json.getInteger("id");
-//		if (id == null) {
-//			ret.put("data", new CaseTypeVo());
-//			ret.put("code", Constant.RespCode.SUCCESS.getCode());
-//			return ret;
-//		}
-//
-//		TstCaseType po = (TstCaseType) issueWorkflowService.getDetail(TstCaseType.class, id);
-//		CaseTypeVo vo = issueWorkflowService.genVo(po);
-//		ret.put("data", vo);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
 
+		Integer id = json.getInteger("id");
+		if (id == null) {
+			ret.put("data", new IsuWorkflow());
+			ret.put("code", Constant.RespCode.SUCCESS.getCode());
+			return ret;
+		}
+
+		IsuWorkflow vo = issueWorkflowService.get(id, orgId);
+
+		List<IsuStatus> statuses = issueWorkflowService.listStatus(vo, orgId);
+
+		ret.put("data", vo);
+        ret.put("statuses", statuses);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -75,18 +80,15 @@ public class IssueWorkflowAdmin extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//		Integer orgId = userVo.getDefaultOrgId();
-//
-//		CaseTypeVo vo = json.getObject("model", CaseTypeVo.class);
-//
-//		TstCaseType po = issueWorkflowService.save(vo, orgId);
-//		CaseTypeVo projectVo = issueWorkflowService.genVo(po);
-//
-//		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
-//		ret.put("casePropertyMap", casePropertyMap);
-//
-//        ret.put("data", projectVo);
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
+        IsuWorkflow vo = json.getObject("model", IsuWorkflow.class);
+        List<Integer> statusIds = json.getObject("statusIds", List.class);
+
+        IsuWorkflow po = issueWorkflowService.save(vo, statusIds, orgId);
+
+        ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

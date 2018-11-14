@@ -8,8 +8,6 @@ import java.util.List;
 public interface IssueStatusService extends BaseService {
     List<IsuStatus> list(Integer orgId);
 
-    List<IsuStatus> list(Integer orgId, Integer prjId);
-
     IsuStatus get(Integer id, Integer orgId);
 
     IsuStatus save(IsuStatus vo, Integer orgId);

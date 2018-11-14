@@ -2,8 +2,10 @@ package com.ngtesting.platform.service;
 
 import com.ngtesting.platform.model.IsuStatus;
 import com.ngtesting.platform.model.IsuWorkflow;
+import com.ngtesting.platform.model.IsuWorkflowTransition;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IssueWorkflowService extends BaseService {
     List<IsuWorkflow> list(Integer orgId);
@@ -14,4 +16,6 @@ public interface IssueWorkflowService extends BaseService {
     List<IsuStatus> listStatusForEdit(Integer id, Integer orgId);
 
     List<IsuStatus> listStatusForDesign(Integer id);
+
+    Map<String, IsuWorkflowTransition> getTransitionMap(Integer id);
 }

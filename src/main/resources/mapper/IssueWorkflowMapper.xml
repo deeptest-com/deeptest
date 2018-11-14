@@ -62,4 +62,11 @@
         AND o.deleted != true AND o.disabled != true
     </select>
 
+    <select id="listTransition" resultType="IsuWorkflowTransition">
+        SELECT o.* FROM IsuWorkflowTransition o
+
+        WHERE o.workflowId = #{workflowId}
+        AND o.deleted != true AND o.disabled != true
+    </select>
+
 </mapper>

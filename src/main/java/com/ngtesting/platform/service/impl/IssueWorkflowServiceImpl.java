@@ -4,6 +4,7 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.dao.IssueWorkflowDao;
 import com.ngtesting.platform.model.IsuStatus;
 import com.ngtesting.platform.model.IsuWorkflow;
+import com.ngtesting.platform.model.IsuWorkflowTransition;
 import com.ngtesting.platform.service.IssueStatusService;
 import com.ngtesting.platform.service.IssueWorkflowService;
 import org.apache.commons.lang3.StringUtils;
@@ -11,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class IssueWorkflowServiceImpl extends BaseServiceImpl implements IssueWorkflowService {
@@ -78,5 +81,17 @@ public class IssueWorkflowServiceImpl extends BaseServiceImpl implements IssueWo
         List<IsuStatus> statuses = workflowDao.listStatus(id);
 
         return statuses;
+    }
+
+    @Override
+    public Map<String, IsuWorkflowTransition> getTransitionMap(Integer id) {
+        List<IsuWorkflowTransition> trans = workflowDao.listTransition(id);
+
+        Map<String, IsuWorkflowTransition> map = new HashMap<>();
+        for (IsuWorkflowTransition tran : trans) {
+            map.put(tran.getSrcStatusId() + "-" + tran.getDictStatusId(), tran);
+        }
+
+        return map;
     }
 }

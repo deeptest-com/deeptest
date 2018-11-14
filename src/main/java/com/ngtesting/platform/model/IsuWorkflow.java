@@ -14,13 +14,13 @@ public class IsuWorkflow extends BaseModel {
     private Boolean isBuildIn = false;
     private Integer orgId;
 
-	private List<IsuStatusTransition> statusTransitions = new LinkedList<>();
+	private List<IsuWorkflowTransition> statusTransitions = new LinkedList<>();
 
-	public List<IsuStatusTransition> getStatusTransitions() {
+	public List<IsuWorkflowTransition> getStatusTransitions() {
 		return statusTransitions;
 	}
 
-	public void setStatusTransitions(List<IsuStatusTransition> statusTransitions) {
+	public void setStatusTransitions(List<IsuWorkflowTransition> statusTransitions) {
 		this.statusTransitions = statusTransitions;
 	}
 

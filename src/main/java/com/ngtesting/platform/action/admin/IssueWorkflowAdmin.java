@@ -5,6 +5,7 @@ import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuStatus;
 import com.ngtesting.platform.model.IsuWorkflow;
+import com.ngtesting.platform.model.IsuWorkflowTransition;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.IssueStatusService;
 import com.ngtesting.platform.service.IssueWorkflowService;
@@ -92,9 +93,11 @@ public class IssueWorkflowAdmin extends BaseAction {
 
         IsuWorkflow vo = issueWorkflowService.get(id, orgId);
         List<IsuStatus> statuses = issueWorkflowService.listStatusForDesign(id);
+        Map<String, IsuWorkflowTransition> tranMap = issueWorkflowService.getTransitionMap(id);
 
         ret.put("data", vo);
         ret.put("statuses", statuses);
+        ret.put("tranMap", tranMap);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

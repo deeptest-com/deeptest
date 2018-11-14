@@ -67,13 +67,37 @@ public class IssueWorkflowAdmin extends BaseAction {
 
 		IsuWorkflow vo = issueWorkflowService.get(id, orgId);
 
-		List<IsuStatus> statuses = issueWorkflowService.listStatus(vo, orgId);
+		List<IsuStatus> statuses = issueWorkflowService.listStatusForEdit(vo.getId(), orgId);
 
 		ret.put("data", vo);
         ret.put("statuses", statuses);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+
+    @RequestMapping(value = "design", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> design(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = userVo.getDefaultOrgId();
+
+        Integer id = json.getInteger("id");
+        if (id == null) {
+            ret.put("data", new IsuWorkflow());
+            ret.put("code", Constant.RespCode.SUCCESS.getCode());
+            return ret;
+        }
+
+        IsuWorkflow vo = issueWorkflowService.get(id, orgId);
+        List<IsuStatus> statuses = issueWorkflowService.listStatusForDesign(id);
+
+        ret.put("data", vo);
+        ret.put("statuses", statuses);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody

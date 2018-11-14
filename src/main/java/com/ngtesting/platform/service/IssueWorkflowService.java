@@ -11,5 +11,7 @@ public interface IssueWorkflowService extends BaseService {
 
     IsuWorkflow save(IsuWorkflow vo, List<Integer> statusIds, Integer orgId);
 
-    List<IsuStatus> listStatus(IsuWorkflow po, Integer orgId);
+    List<IsuStatus> listStatusForEdit(Integer id, Integer orgId);
+
+    List<IsuStatus> listStatusForDesign(Integer id);
 }

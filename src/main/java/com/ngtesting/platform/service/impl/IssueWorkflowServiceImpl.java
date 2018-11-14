@@ -58,9 +58,9 @@ public class IssueWorkflowServiceImpl extends BaseServiceImpl implements IssueWo
     }
 
     @Override
-    public List<IsuStatus> listStatus(IsuWorkflow po, Integer orgId) {
+    public List<IsuStatus> listStatusForEdit(Integer id, Integer orgId) {
         List<IsuStatus> all = statusService.list(orgId);
-        List<IsuStatus> statuses = workflowDao.listStatus(po.getId());
+        List<IsuStatus> statuses = workflowDao.listStatus(id);
 
         for (IsuStatus status : all) {
             if (statuses.contains(status)) {
@@ -71,5 +71,12 @@ public class IssueWorkflowServiceImpl extends BaseServiceImpl implements IssueWo
         }
 
         return all;
+    }
+
+    @Override
+    public List<IsuStatus> listStatusForDesign(Integer id) {
+        List<IsuStatus> statuses = workflowDao.listStatus(id);
+
+        return statuses;
     }
 }

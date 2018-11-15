@@ -46,9 +46,19 @@ public class IssueWorkflowTransitionAdmin extends BaseAction {
         Integer orgId = userVo.getDefaultOrgId();
 
         Integer id = json.getInteger("id");
+        Integer srcStatusId = json.getInteger("srcStatusId");
+        Integer dictStatusId = json.getInteger("dictStatusId");
+
+        IsuWorkflowTransition tran;
+        if (id != null) {
+            tran = transitionService.get(id, orgId);
+        } else {
+            tran = transitionService.emptyObject(srcStatusId, dictStatusId, orgId);
+        }
 
         List<TstProjectRole> projectRoles = transitionService.listProjectRoles(id, orgId);
 
+        ret.put("data", tran);
         ret.put("projectRoles", projectRoles);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

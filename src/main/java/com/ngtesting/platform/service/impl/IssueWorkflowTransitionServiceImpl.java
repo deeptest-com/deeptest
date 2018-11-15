@@ -37,6 +37,16 @@ public class IssueWorkflowTransitionServiceImpl extends BaseServiceImpl implemen
     }
 
     @Override
+    public IsuWorkflowTransition get(Integer id, Integer orgId) {
+        return transitionDao.get(id, orgId);
+    }
+
+    @Override
+    public IsuWorkflowTransition emptyObject(Integer srcStatusId, Integer dictStatusId, Integer orgId) {
+        return transitionDao.emptyObject(srcStatusId, dictStatusId, orgId);
+    }
+
+    @Override
     public IsuWorkflowTransition save(IsuWorkflowTransition tran, List<Integer> projectRoleIds, Integer orgId) {
         if (tran.getId() == null) {
             tran.setOrgId(orgId);
@@ -55,4 +65,5 @@ public class IssueWorkflowTransitionServiceImpl extends BaseServiceImpl implemen
     public void delete(Integer id, Integer orgId) {
         transitionDao.delete(id, orgId);
     }
+
 }

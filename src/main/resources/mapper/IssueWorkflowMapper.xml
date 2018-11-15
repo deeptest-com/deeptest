@@ -62,13 +62,4 @@
         AND o.deleted != true AND o.disabled != true
     </select>
 
-    <select id="listTransition" resultType="IsuWorkflowTransition">
-        SELECT o.*, src.label srcStatusName, dict.label dictStatusName FROM IsuWorkflowTransition o
-        JOIN IsuStatus src ON o.srcStatusId=src.id
-        JOIN IsuStatus dict ON o.dictStatusId=dict.id
-
-        WHERE o.workflowId = #{workflowId}
-        AND o.deleted != true AND o.disabled != true
-    </select>
-
 </mapper>

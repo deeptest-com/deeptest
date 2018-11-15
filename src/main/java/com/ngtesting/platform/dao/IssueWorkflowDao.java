@@ -2,7 +2,6 @@ package com.ngtesting.platform.dao;
 
 import com.ngtesting.platform.model.IsuStatus;
 import com.ngtesting.platform.model.IsuWorkflow;
-import com.ngtesting.platform.model.IsuWorkflowTransition;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -31,6 +30,4 @@ public interface IssueWorkflowDao {
     void saveStatuses(@Param("workflowId") Integer workflowId,
                       @Param("statusIds") List<Integer> statusIds,
                       @Param("orgId") Integer orgId);
-
-    List<IsuWorkflowTransition> listTransition(@Param("workflowId") Integer id);
 }

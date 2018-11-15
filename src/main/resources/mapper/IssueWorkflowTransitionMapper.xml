@@ -2,12 +2,29 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.IssueWorkflowTransitionDao" >
 
-    <select id="listProjectRoleId" resultType="Integer">
-        SELECT o.projectRoleId FROM IsuWorkflowTransitionProjectRoleRelation o
-        WHERE o.workflowTransitionId = #{id}
-          AND o.orgId=#{orgId}
+    <select id="listTransition" resultType="IsuWorkflowTransition">
+        SELECT o.*, src.label srcStatusName, dict.label dictStatusName FROM IsuWorkflowTransition o
+        JOIN IsuStatus src ON o.srcStatusId=src.id
+        JOIN IsuStatus dict ON o.dictStatusId=dict.id
 
-        ORDER BY o.id ASC
+        WHERE o.workflowId = #{workflowId}
+        AND o.deleted != true AND o.disabled != true
+    </select>
+
+    <select id="get" resultType="IsuWorkflowTransition">
+        SELECT o.*, src.label srcStatusName, dict.label dictStatusName FROM IsuWorkflowTransition o
+        JOIN IsuStatus src ON o.srcStatusId=src.id
+        JOIN IsuStatus dict ON o.dictStatusId=dict.id
+
+        WHERE o.id = #{id}
+        AND o.orgId=#{orgId}
+    </select>
+
+    <select id="emptyObject" resultType="IsuWorkflowTransition">
+        SELECT t1.label srcStatusName, t2.label dictStatusName from
+
+        (SELECT label from IsuStatus where id=#{srcStatusId} AND orgId=#{orgId} ) t1,
+        (SELECT label FROM IsuStatus where id=#{dictStatusId} AND orgId=#{orgId} ) t2
     </select>
 
     <insert id="save" parameterType="IsuWorkflowTransition" useGeneratedKeys="true" keyProperty="id">
@@ -30,5 +47,13 @@
 
         WHERE id=#{id} AND orgId=#{orgId}
     </delete>
+
+    <select id="listProjectRoleId" resultType="Integer">
+        SELECT o.projectRoleId FROM IsuWorkflowTransitionProjectRoleRelation o
+        WHERE o.workflowTransitionId = #{id}
+          AND o.orgId=#{orgId}
+
+        ORDER BY o.id ASC
+    </select>
 
 </mapper>

@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 
 import com.ngtesting.platform.dao.IssueWorkflowDao;
+import com.ngtesting.platform.dao.IssueWorkflowTransitionDao;
 import com.ngtesting.platform.model.IsuStatus;
 import com.ngtesting.platform.model.IsuWorkflow;
 import com.ngtesting.platform.model.IsuWorkflowTransition;
@@ -20,6 +21,8 @@ import java.util.Map;
 public class IssueWorkflowServiceImpl extends BaseServiceImpl implements IssueWorkflowService {
     @Autowired
     IssueWorkflowDao workflowDao;
+    @Autowired
+    IssueWorkflowTransitionDao transitionDao;
 
     @Autowired
     IssueStatusService statusService;
@@ -85,7 +88,7 @@ public class IssueWorkflowServiceImpl extends BaseServiceImpl implements IssueWo
 
     @Override
     public Map<String, IsuWorkflowTransition> getTransitionMap(Integer id) {
-        List<IsuWorkflowTransition> trans = workflowDao.listTransition(id);
+        List<IsuWorkflowTransition> trans = transitionDao.listTransition(id);
 
         Map<String, IsuWorkflowTransition> map = new HashMap<>();
         for (IsuWorkflowTransition tran : trans) {

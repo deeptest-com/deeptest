@@ -4,8 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuWorkflowTransition;
+import com.ngtesting.platform.model.TstProjectRole;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.*;
+import com.ngtesting.platform.service.IssueWorkflowService;
+import com.ngtesting.platform.service.IssueWorkflowTransitionService;
+import com.ngtesting.platform.service.ProjectRoleService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,23 @@ public class IssueWorkflowTransitionAdmin extends BaseAction {
 
     @Autowired
     ProjectRoleService projectRoleService;
+
+    @RequestMapping(value = "get", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = userVo.getDefaultOrgId();
+
+        Integer id = json.getInteger("id");
+
+        List<TstProjectRole> projectRoles = transitionService.listProjectRoles(id, orgId);
+
+        ret.put("projectRoles", projectRoles);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody

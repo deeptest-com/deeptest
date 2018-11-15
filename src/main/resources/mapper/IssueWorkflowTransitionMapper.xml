@@ -2,6 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.IssueWorkflowTransitionDao" >
 
+    <select id="listProjectRoleId" resultType="Integer">
+        SELECT o.projectRoleId FROM IsuWorkflowTransitionProjectRoleRelation o
+        WHERE o.workflowTransitionId = #{id}
+          AND o.orgId=#{orgId}
+
+        ORDER BY o.id ASC
+    </select>
+
     <insert id="save" parameterType="IsuWorkflowTransition" useGeneratedKeys="true" keyProperty="id">
         insert into IsuWorkflowTransition
         (name, actionPageId, srcStatusId, dictStatusId, workflowId, orgId, deleted, disabled, createTime)

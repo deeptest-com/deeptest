@@ -2,7 +2,9 @@ package com.ngtesting.platform.service.impl;
 
 
 import com.ngtesting.platform.dao.IssueWorkflowTransitionDao;
+import com.ngtesting.platform.dao.ProjectRoleDao;
 import com.ngtesting.platform.model.IsuWorkflowTransition;
+import com.ngtesting.platform.model.TstProjectRole;
 import com.ngtesting.platform.service.IssueStatusService;
 import com.ngtesting.platform.service.IssueWorkflowTransitionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,22 @@ public class IssueWorkflowTransitionServiceImpl extends BaseServiceImpl implemen
 
     @Autowired
     IssueStatusService statusService;
+    @Autowired
+    ProjectRoleDao projectRoleDao;
+
+    @Override
+    public List<TstProjectRole> listProjectRoles(Integer id, Integer orgId) {
+        List<TstProjectRole> allRoles = projectRoleDao.query(orgId, null, null);
+        List<Integer> roleIds = transitionDao.listProjectRoleId(id, orgId);
+
+        for (TstProjectRole role : allRoles) {
+            if (roleIds.contains(role.getId())) {
+                role.setSelected(true);
+            }
+        }
+
+        return allRoles;
+    }
 
     @Override
     public IsuWorkflowTransition save(IsuWorkflowTransition tran, List<Integer> projectRoleIds, Integer orgId) {

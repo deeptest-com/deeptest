@@ -10,6 +10,8 @@ public class TstProjectRole extends BaseModel {
 
     private Integer orgId;
 
+	private Boolean selected;
+
 	public String getCode() {
 		return code;
 	}
@@ -42,4 +44,11 @@ public class TstProjectRole extends BaseModel {
 		this.descr = descr;
 	}
 
+	public Boolean getSelected() {
+		return selected;
+	}
+
+	public void setSelected(Boolean selected) {
+		this.selected = selected;
+	}
 }

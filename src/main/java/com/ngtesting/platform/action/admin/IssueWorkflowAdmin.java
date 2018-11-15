@@ -99,14 +99,12 @@ public class IssueWorkflowAdmin extends BaseAction {
         Map<String, IsuWorkflowTransition> tranMap = issueWorkflowService.getTransitionMap(id);
 
         List<IsuPage> pages = pageService.list(orgId);
-        List<TstProjectRole> projectRoles = projectRoleService.list(orgId, null, null);
 
         ret.put("data", vo);
         ret.put("statuses", statuses);
         ret.put("tranMap", tranMap);
 
         ret.put("pages", pages);
-        ret.put("projectRoles", projectRoles);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

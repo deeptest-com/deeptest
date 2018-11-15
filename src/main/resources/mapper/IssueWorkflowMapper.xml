@@ -40,13 +40,13 @@
     </delete>
 
     <delete id="removeStatuses">
-        DELETE FROM IsuWorkflowToStatus
+        DELETE FROM IsuWorkflowStatusRelation
         WHERE statusId NOT IN ( ${statusIds} )
           AND workflowId=#{workflowId} AND orgId=#{orgId}
     </delete>
 
     <insert id="saveStatuses">
-        insert into IsuWorkflowToStatus
+        insert into IsuWorkflowStatusRelation
         (orgId,workflowId,statusId)
         values
         <foreach collection="statusIds" item="item" separator=",">
@@ -56,14 +56,16 @@
 
     <select id="listStatus" resultType="IsuStatus">
         SELECT o.* FROM IsuStatus o
-        JOIN IsuWorkflowToStatus r ON o.id=r.statusId
+        JOIN IsuWorkflowStatusRelation r ON o.id=r.statusId
 
         WHERE r.workflowId = #{id}
         AND o.deleted != true AND o.disabled != true
     </select>
 
     <select id="listTransition" resultType="IsuWorkflowTransition">
-        SELECT o.* FROM IsuWorkflowTransition o
+        SELECT o.*, src.label srcStatusName, dict.label dictStatusName FROM IsuWorkflowTransition o
+        JOIN IsuStatus src ON o.srcStatusId=src.id
+        JOIN IsuStatus dict ON o.dictStatusId=dict.id
 
         WHERE o.workflowId = #{workflowId}
         AND o.deleted != true AND o.disabled != true

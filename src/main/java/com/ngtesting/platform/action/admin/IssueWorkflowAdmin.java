@@ -3,12 +3,11 @@ package com.ngtesting.platform.action.admin;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.IsuStatus;
-import com.ngtesting.platform.model.IsuWorkflow;
-import com.ngtesting.platform.model.IsuWorkflowTransition;
-import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.service.IssuePageService;
 import com.ngtesting.platform.service.IssueStatusService;
 import com.ngtesting.platform.service.IssueWorkflowService;
+import com.ngtesting.platform.service.ProjectRoleService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +30,13 @@ public class IssueWorkflowAdmin extends BaseAction {
 
 	@Autowired
     IssueWorkflowService issueWorkflowService;
-
 	@Autowired
     IssueStatusService statusService;
+
+    @Autowired
+    IssuePageService pageService;
+    @Autowired
+    ProjectRoleService projectRoleService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
@@ -95,9 +98,15 @@ public class IssueWorkflowAdmin extends BaseAction {
         List<IsuStatus> statuses = issueWorkflowService.listStatusForDesign(id);
         Map<String, IsuWorkflowTransition> tranMap = issueWorkflowService.getTransitionMap(id);
 
+        List<IsuPage> pages = pageService.list(orgId);
+        List<TstProjectRole> projectRoles = projectRoleService.list(orgId, null, null);
+
         ret.put("data", vo);
         ret.put("statuses", statuses);
         ret.put("tranMap", tranMap);
+
+        ret.put("pages", pages);
+        ret.put("projectRoles", projectRoles);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

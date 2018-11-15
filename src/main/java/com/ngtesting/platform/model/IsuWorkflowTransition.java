@@ -3,18 +3,24 @@ package com.ngtesting.platform.model;
 public class IsuWorkflowTransition extends BaseModel {
 	private static final long serialVersionUID = 595122500409917470L;
 
+    String name;
+    Integer actionPageId;
+    String actionPageName;
+
     String srcStatusId;
     String srcStatusName;
     String dictStatusId;
     String dictStatusName;
 
-    String actionName;
-    Integer actionPageId;
-    String actionPageName;
-
     Integer workflowId;
 
     Integer orgId;
+
+    public IsuWorkflowTransition(){}
+
+    public IsuWorkflowTransition(Integer workflowId, Integer srcId, Integer dictId) {
+        super();
+    }
 
     public String getSrcStatusId() {
         return srcStatusId;
@@ -48,12 +54,12 @@ public class IsuWorkflowTransition extends BaseModel {
         this.dictStatusName = dictStatusName;
     }
 
-    public String getActionName() {
-        return actionName;
+    public String getName() {
+        return name;
     }
 
-    public void setActionName(String actionName) {
-        this.actionName = actionName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Integer getActionPageId() {

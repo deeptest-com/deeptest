@@ -201,17 +201,17 @@ CREATE TABLE `IsuCustomFieldSolution` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `IsuCustomFieldSolutionToField`
+--  Table structure for `IsuCustomFieldSolutionFieldRelation`
 -- ----------------------------
-DROP TABLE IF EXISTS `IsuCustomFieldSolutionToField`;
-CREATE TABLE `IsuCustomFieldSolutionToField` (
+DROP TABLE IF EXISTS `IsuCustomFieldSolutionFieldRelation`;
+CREATE TABLE `IsuCustomFieldSolutionFieldRelation` (
   `solutionId` int(11) DEFAULT NULL,
   `fieldId` int(11) DEFAULT NULL,
   KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`solutionId`),
   KEY `solutionId` (`solutionId`),
   KEY `fieldId` (`fieldId`),
-  CONSTRAINT `fk_isucustomfieldsolutiontofield_fieldid` FOREIGN KEY (`fieldId`) REFERENCES `IsuCustomField` (`id`),
-  CONSTRAINT `fk_isucustomfieldsolutiontofield_ibfk_1` FOREIGN KEY (`solutionId`) REFERENCES `IsuCustomFieldSolution` (`id`)
+  CONSTRAINT `fk_IsuCustomFieldSolutionFieldRelation_fieldid` FOREIGN KEY (`fieldId`) REFERENCES `IsuCustomField` (`id`),
+  CONSTRAINT `fk_IsuCustomFieldSolutionFieldRelation_ibfk_1` FOREIGN KEY (`solutionId`) REFERENCES `IsuCustomFieldSolution` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.IssueWorkflowTransitionDao" >
+
+    <insert id="save" parameterType="IsuWorkflowTransition" useGeneratedKeys="true" keyProperty="id">
+        insert into IsuWorkflowTransition
+        (name, actionPageId, srcStatusId, dictStatusId, workflowId, orgId, deleted, disabled, createTime)
+        values
+        (#{name}, #{actionPageId}, #{srcStatusId}, #{dictStatusId}, #{workflowId}, #{orgId}, FALSE, FALSE, NOW())
+    </insert>
+
+    <update id="update" parameterType="IsuWorkflowTransition">
+        UPDATE IsuWorkflowTransition
+        SET name=#{name}, actionPageId=#{actionPageId}, srcStatusId=#{srcStatusId}, dictStatusId=#{dictStatusId},
+        updateTime=NOW()
+
+        WHERE id=#{id} AND workflowId=#{workflowId} AND orgId=#{orgId}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM IsuWorkflowTransition
+
+        WHERE id=#{id} AND orgId=#{orgId}
+    </delete>
+
+</mapper>

@@ -48,7 +48,7 @@ AngularJS, SockJS, SpringBoot, MyBatis, MySQL
 ![issue_page_design](xdoc/capture/issue_page_design.jpg)
 
 ## Issue Workflow Design
-![issue_workflow_design](xdoc/capture/issue_page_design.jpg)
+![issue_workflow_design](xdoc/capture/issue_workflow_design.jpg)
 
 ## Licenses
 

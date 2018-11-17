@@ -40,11 +40,15 @@ AngularJS, SockJS, SpringBoot, MyBatis, MySQL
 ## Test Plan
 ![project_view](xdoc/capture/plan_exe_result.jpg)
 ![project_view](xdoc/capture/plan_exe_progress.jpg)
-![project_view](xdoc/capture/plan_exe_process.jpg)
-![project_view](xdoc/capture/plan_exe_process_by_user.jpg)
 
 ## Issue Query
 ![issue_query](xdoc/capture/issue_query.jpg)
+
+## Issue Page Design
+![issue_page_design](xdoc/capture/issue_page_design.jpg)
+
+## Issue Workflow Design
+![issue_workflow_design](xdoc/capture/issue_page_design.jpg)
 
 ## Licenses
 

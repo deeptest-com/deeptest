@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.ngtesting.platform.config.WsConstant;
+import com.ngtesting.platform.model.IsuQuery;
 import com.ngtesting.platform.model.TstOrg;
 import com.ngtesting.platform.model.TstProjectAccessHistory;
 import com.ngtesting.platform.model.TstUser;
@@ -29,6 +30,9 @@ public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSett
     ProjectPrivilegeService projectPrivilegeService;
     @Autowired
     CasePropertyService casePropertyService;
+
+    @Autowired
+    private IssueQueryService issueQueryService;
 
     @Autowired
     OrgService orgService;
@@ -87,6 +91,18 @@ public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSett
         Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userId, prjId, orgId);
         ret.put("prjPrivileges", prjPrivileges);
         ret.put("prjName", user.getDefaultPrjName());
+
+        sendMsg(user, ret);
+    }
+
+    @Override
+    public void pushRecentQueries(TstUser user) {
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("code", 1);
+        ret.put("type", WsConstant.WS_RECENT_QUERIES);
+
+        List<IsuQuery> pos = issueQueryService.listRecentQuery(user.getDefaultOrgId(), user.getId());
+        ret.put("recentQueries", pos);
 
         sendMsg(user, ret);
     }

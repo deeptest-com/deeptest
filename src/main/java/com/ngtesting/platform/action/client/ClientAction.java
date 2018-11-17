@@ -3,6 +3,7 @@ package com.ngtesting.platform.action.client;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.model.IsuQuery;
 import com.ngtesting.platform.model.TstOrg;
 import com.ngtesting.platform.model.TstProjectAccessHistory;
 import com.ngtesting.platform.model.TstUser;
@@ -27,6 +28,9 @@ public class ClientAction extends BaseAction {
 
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private IssueQueryService issueQueryService;
 
     @Autowired
     SysPrivilegeService sysPrivilegeService;
@@ -75,6 +79,9 @@ public class ClientAction extends BaseAction {
 
         List<TstProjectAccessHistory> recentProjects = projectService.listRecentProject(orgId, userId);
         ret.put("recentProjects", recentProjects);
+
+        List<IsuQuery> recentQueries = issueQueryService.listRecentQuery(orgId, userId);
+        ret.put("recentQueries", recentQueries);
 
         ret.put("profile", user);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

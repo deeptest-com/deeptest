@@ -13,6 +13,8 @@ public final class WsConstant {
     public static final String WS_RECENT_PROJECTS = "ws_recent_projects";
     public static final String WS_PRJ_SETTINGS = "ws_prj_settings";
 
+    public static final String WS_RECENT_QUERIES = "ws_recent_queries";
+
     public static final String WS_OPT_ENTER_CHAT_ROOM = "ws_opt_enter_chat_room";
     public static final String WS_OPT_CHAT = "ws_opt_chat";
 

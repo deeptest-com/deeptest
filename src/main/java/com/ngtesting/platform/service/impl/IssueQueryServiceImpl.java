@@ -1,117 +1,78 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.model.TstCasePriority;
+import com.alibaba.fastjson.JSON;
+import com.itfsw.query.builder.support.model.JsonRule;
+import com.ngtesting.platform.dao.IssueQueryDao;
+import com.ngtesting.platform.model.IsuQuery;
+import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.IssueQueryService;
+import com.ngtesting.platform.service.PushSettingsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class IssueQueryServiceImpl extends BaseServiceImpl implements IssueQueryService {
-	@Override
-	public List<TstCasePriority> list(Integer orgId) {
-//        DetachedCriteria dc = DetachedCriteria.forClass(TstCasePriority.class);
-//
-//        dc.add(Restrictions.eq("orgId", orgId));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//
-//        dc.addOrder(Order.asc("displayOrder"));
-//        List ls = findAllByCriteria(dc);
-//
-//		return ls;
+    @Autowired
+    PushSettingsService pushSettingsService;
 
-		return null;
-	}
-	@Override
-	public List<TstCasePriority> listVos(Integer orgId) {
-//        List ls = list(orgId);
-//
-//        List<TstCasePriority> vos = genVos(ls);
-//		return vos;
-
-        return null;
-	}
+	@Autowired
+	IssueQueryDao queryDao;
 
 	@Override
-	public TstCasePriority save(TstCasePriority vo, Integer orgId) {
-//		if (vo == null) {
-//			return null;
-//		}
-//
-//		TstCasePriority po;
-//		if (vo.getCode() != null) {
-//			po = (TstCasePriority) getDetail(TstCasePriority.class, vo.getCode());
-//		} else {
-//			po = new TstCasePriority();
-//		}
-//
-//		BeanUtilEx.copyProperties(po, vo);
-//
-//		po.setOrgId(orgId);
-//
-//		if (vo.getCode() == null) {
-//			po.setCode(UUID.randomUUID().toString());
-//
-//			String hql = "select max(displayOrder) from TstCasePriority pri where pri.orgId=?";
-//			Integer maxOrder = (Integer) getByHQL(hql, orgId);
-//	        po.setDisplayOrder(maxOrder + 10);
-//		}
-//
-//		saveOrUpdate(po);
-//		return po;
-
-		return null;
+	public List<IsuQuery> list(Integer orgId, Integer userId, String keywords) {
+        return queryDao.list(orgId, userId, keywords);
 	}
 
-	@Override
-	public boolean delete(Integer id) {
-//		TstCasePriority po = (TstCasePriority) getDetail(TstCasePriority.class, id);
-//		po.setDeleted(true);
-//		saveOrUpdate(po);
+    @Override
+    public List<IsuQuery> listRecentQuery(Integer orgId, Integer userId) {
+        return queryDao.listRecentQuery(orgId, userId);
+    }
 
-		return true;
+    @Override
+    public IsuQuery get(Integer queryId, Integer userId) {
+        return queryDao.get(queryId, userId);
+    }
+
+    @Override
+	public IsuQuery save(String queryName, JsonRule rule, TstUser user) {
+		IsuQuery query = new IsuQuery();
+        query.setName(queryName);
+        query.setRule(JSON.toJSONString(rule));
+
+		query.setProjectId(user.getDefaultPrjId());
+		query.setOrgId(user.getDefaultOrgId());
+		query.setUserId(user.getId());
+
+		queryDao.save(query);
+
+        pushSettingsService.pushRecentQueries(user);
+		return query;
 	}
 
-	@Override
-	public boolean setDefaultPers(Integer id, Integer orgId) {
-//		List<TstCasePriority> ls = list(orgId);
-//		for (TstCasePriority priority : ls) {
-//			if (priority.getCode().longValue() == id.longValue()) {
-//				priority.setIsDefault(true);
-//				saveOrUpdate(priority);
-//			} else if (priority.getIsDefault() != null && priority.getIsDefault()) {
-//				priority.setIsDefault(false);
-//				saveOrUpdate(priority);
-//			}
-//		}
+    @Override
+    public Integer update(IsuQuery vo, TstUser user) {
+	    Integer count = queryDao.update(vo, user.getId());
+        pushSettingsService.pushRecentQueries(user);
 
-		return true;
+        return count;
+    }
+
+    @Override
+	public Integer delete(Integer id, TstUser user) {
+        Integer count = queryDao.delete(id, user.getId());
+        pushSettingsService.pushRecentQueries(user);
+
+        return count;
 	}
 
-	@Override
-	public boolean changeOrderPers(Integer id, String act, Integer orgId) {
-//		TstCasePriority type = (TstCasePriority) getDetail(TstCasePriority.class, id);
-//
-//        String hql = "from TstCasePriority tp where where tp.orgId=? and tp.deleted = false and tp.disabled = false ";
-//        if ("up".equals(act)) {
-//        	hql += "and tp.displayOrder < ? order by displayOrder desc";
-//        } else if ("down".equals(act)) {
-//        	hql += "and tp.displayOrder > ? order by displayOrder asc";
-//        } else {
-//        	return false;
-//        }
-//
-//        TstCasePriority neighbor = (TstCasePriority) getDao().findFirstByHQL(hql, orgId, type.getDisplayOrder());
-//
-//        Integer order = type.getDisplayOrder();
-//        type.setDisplayOrder(neighbor.getDisplayOrder());
-//        neighbor.setDisplayOrder(order);
-//
-//        saveOrUpdate(type);
-//        saveOrUpdate(neighbor);
+    @Override
+    public Integer updateUseTime(IsuQuery query, TstUser user) {
+        Integer count = queryDao.updateUseTime(query);
+        pushSettingsService.pushRecentQueries(user);
 
-		return true;
-	}
+        return count;
+    }
 
 }

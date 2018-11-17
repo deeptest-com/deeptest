@@ -1,82 +1,72 @@
 package com.ngtesting.platform.model;
 
+import java.util.Date;
+
 public class IsuQuery extends BaseModel {
 
 	private static final long serialVersionUID = 5819657933820222077L;
-	private String code;
 	private String name;
+	private String rule;
 	private String descr;
-    private String priority;
-    private Boolean isDefault;
-    private Integer displayOrder;
+    private Date useTime;
+
     private Integer orgId;
-	private Integer prjId;
+	private Integer projectId;
 	private Integer userId;
 
-	public String getCode() {
-		return code;
+	public String getRule() {
+		return rule;
 	}
-	public void setCode(String code) {
-		this.code = code;
+
+	public void setRule(String rule) {
+		this.rule = rule;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getPriority() {
-		return priority;
-	}
-	public void setPriority(String priority) {
-		this.priority = priority;
-	}
-	public Boolean getIsDefault() {
-		return isDefault;
-	}
-	public void setIsDefault(Boolean isDefault) {
-		this.isDefault = isDefault;
-	}
-	public Integer getDisplayOrder() {
-		return displayOrder;
-	}
-	public void setDisplayOrder(Integer displayOrder) {
-		this.displayOrder = displayOrder;
-	}
-	public Integer getOrgId() {
-		return orgId;
-	}
-	public void setOrgId(Integer orgId) {
-		this.orgId = orgId;
-	}
+
 	public String getDescr() {
 		return descr;
 	}
+
 	public void setDescr(String descr) {
 		this.descr = descr;
 	}
 
-	public Boolean getDefault() {
-		return isDefault;
+	public Integer getOrgId() {
+		return orgId;
 	}
 
-	public void setDefault(Boolean aDefault) {
-		isDefault = aDefault;
+	public void setOrgId(Integer orgId) {
+		this.orgId = orgId;
 	}
 
-	public Integer getPrjId() {
-		return prjId;
-	}
+    public Integer getProjectId() {
+        return projectId;
+    }
 
-	public void setPrjId(Integer prjId) {
-		this.prjId = prjId;
-	}
+    public void setProjectId(Integer projectId) {
+        this.projectId = projectId;
+    }
 
-	public Integer getUserId() {
+    public Integer getUserId() {
 		return userId;
 	}
 
 	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
+
+    public Date getUseTime() {
+        return useTime;
+    }
+
+    public void setUseTime(Date useTime) {
+        this.useTime = useTime;
+    }
 }

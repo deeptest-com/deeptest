@@ -15,5 +15,8 @@ public interface PushSettingsService extends BaseService {
 
     void pushPrjSettings(TstUser user);
 
+    void pushRecentQueries(TstUser user);
+
     void sendMsg(TstUser user, Map ret);
+
 }

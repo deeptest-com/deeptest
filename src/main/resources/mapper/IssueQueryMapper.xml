@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.IssueQueryDao" >
+
+    <select id="list" resultType="IsuQuery">
+        SELECT * FROM IsuQuery o
+        WHERE o.orgId=#{orgId} AND userId=#{userId}
+
+        <if test="keywords != null and keywords != ''">
+            AND o.name LIKE CONCAT('%','${keywords}','%' )
+        </if>
+
+        AND o.disabled!=TRUE AND o.deleted!=TRUE
+        ORDER BY o.createTime ASC
+    </select>
+
+    <select id="listRecentQuery" resultType="IsuQuery">
+        SELECT * FROM IsuQuery o
+        WHERE o.orgId=#{orgId} AND userId=#{userId}
+
+        AND o.disabled!=TRUE AND o.deleted!=TRUE
+        ORDER BY useTime DESC  LIMIT 6
+    </select>
+
+    <select id="get" resultType="IsuQuery">
+        SELECT * FROM IsuQuery o
+
+        WHERE o.id = #{id}
+        <if test="userId != null">
+            AND o.userId=#{userId}
+        </if>
+    </select>
+
+    <insert id="save" parameterType="IsuQuery" useGeneratedKeys="true" keyProperty="id">
+        insert into IsuQuery
+        (name,rule,descr,projectId,orgId,userId,deleted,disabled,useTime,createTime)
+        values
+        (#{name},#{rule},#{descr},#{projectId},#{orgId},#{userId},FALSE,FALSE,NOW(),NOW())
+    </insert>
+
+    <update id="update">
+        UPDATE IsuQuery
+        SET name=#{model.name}, updateTime=NOW()
+
+        WHERE id=#{model.id} AND userId=#{userId}
+    </update>
+
+    <update id="updateUseTime">
+        UPDATE IsuQuery
+        SET useTime=NOW(), updateTime=NOW()
+
+        WHERE id=#{id}
+    </update>
+
+    <delete id="delete">
+        UPDATE IsuQuery
+        SET disabled=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND userId=#{userId}
+    </delete>
+
+</mapper>

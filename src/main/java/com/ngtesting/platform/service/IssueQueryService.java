@@ -1,20 +1,20 @@
 package com.ngtesting.platform.service;
 
-import com.ngtesting.platform.model.TstCasePriority;
+import com.itfsw.query.builder.support.model.JsonRule;
+import com.ngtesting.platform.model.IsuQuery;
+import com.ngtesting.platform.model.TstUser;
 
 import java.util.List;
 
 public interface IssueQueryService extends BaseService {
-	List<TstCasePriority> list(Integer orgId);
+	List<IsuQuery> list(Integer orgId, Integer userId, String keywords);
+	List<IsuQuery> listRecentQuery(Integer orgId, Integer userId);
 
-	TstCasePriority save(TstCasePriority vo, Integer orgId);
-	boolean delete(Integer id);
+	IsuQuery get(Integer queryId, Integer id);
 
-	boolean setDefaultPers(Integer id, Integer orgId);
+	IsuQuery save(String queryName, JsonRule rule, TstUser user);
+	Integer update(IsuQuery vo, TstUser user);
+    Integer delete(Integer id, TstUser user);
 
-	List<TstCasePriority> listVos(Integer orgId);
-
-	boolean changeOrderPers(Integer id, String act, Integer orgId);
-
-//    void createDefaultBasicDataPers(Integer id);
+    Integer updateUseTime(IsuQuery query, TstUser user);
 }

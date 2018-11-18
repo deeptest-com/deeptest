@@ -27,14 +27,6 @@ public class ProjectAction extends BaseAction {
     private TestPlanService planService;
     @Autowired
     private HistoryService historyService;
-
-    @Autowired
-    private ProjectRoleService projectRoleService;
-    @Autowired
-    private ProjectRoleEntityRelationService projectRoleEntityRelationService;
-
-    @Autowired
-    private PushSettingsService pushSettingsService;
     @Autowired
     AuthService authService;
 
@@ -53,6 +45,27 @@ public class ProjectAction extends BaseAction {
         ret.put("data", vos);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
+        return ret;
+    }
+
+    @ResponseBody
+    @PostMapping("/get")
+    public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+
+        Integer projectId = json.getInteger("id");
+
+        if (projectId != null) {
+            TstProject project = projectService.get(projectId);
+            if (authService.noProjectAndProjectGroupPrivilege(user.getId(), project)) {
+                return authFail();
+            }
+
+            ret.put("data", project);
+        }
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
 
@@ -168,72 +181,6 @@ public class ProjectAction extends BaseAction {
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         ret.put("data", vo);
 
-        return ret;
-    }
-
-    @ResponseBody
-    @PostMapping("/getUsers")
-    public Map<String, Object> getUsers(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = user.getDefaultOrgId();
-
-        Integer projectId = json.getInteger("id");
-        if (userNotInProject(user.getId(), projectId)) {
-            return authFail();
-        }
-
-        List<TstProjectRole> projectRoles = projectRoleService.list(orgId, null, null);
-
-        List<TstProjectRoleEntityRelation> entityInRoles = projectRoleEntityRelationService.listByProject(projectId);
-
-        ret.put("projectRoles", projectRoles);
-        ret.put("entityInRoles", entityInRoles);
-
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
-    @PostMapping(value = "saveMembers")
-    @ResponseBody
-    public Map<String, Object> saveMembers(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = user.getDefaultOrgId();
-
-        Integer projectId = json.getInteger("projectId");
-        if (userNotInProject(user.getId(), projectId)) {
-            return authFail();
-        }
-
-        List<TstProjectRoleEntityRelation> entityInRoles = projectRoleEntityRelationService.batchSavePers(json, orgId);
-
-        TstProject project = projectService.get(projectId);
-        historyService.create(projectId, user, Constant.MsgType.update.msg,
-                TstHistory.TargetType.project_member, projectId, project.getName());
-
-        ret.put("entityInRoles", entityInRoles);
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
-    @PostMapping(value = "changeRole")
-    @ResponseBody
-    public Map<String, Object> changeRole(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-
-        Integer projectId = json.getInteger("projectId");
-        if (userNotInProject(user.getId(), projectId)) {
-            return authFail();
-        }
-
-        List<TstProjectRoleEntityRelation> entityInRoles = projectRoleEntityRelationService.changeRolePers(json);
-
-        pushSettingsService.pushPrjSettings(user);
-
-        ret.put("entityInRoles", entityInRoles);
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
 

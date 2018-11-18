@@ -22,8 +22,8 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "ver/")
-public class VerAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_CLIENT + "module/")
+public class ProjectModuleAction extends BaseAction {
 	@Autowired
 	private WsFacade optFacade;
 
@@ -37,7 +37,8 @@ public class VerAction extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer projectId = user.getDefaultPrjId();
+
+		Integer projectId = json.getInteger("id");
 
 		String keywords = json.getString("keywords");
 		Boolean disabled = json.getBoolean("disabled");

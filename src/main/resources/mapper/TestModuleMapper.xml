@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.TestModuleDao" >
+
+    <select id="query" resultType="TstModule">
+        SELECT * FROM TstModule o WHERE TRUE
+        <if test="keywords != null and keywords != ''">
+            AND o.name LIKE CONCAT('%','${keywords}','%' )
+        </if>
+        <if test="disabled != null">
+            AND o.disabled = #{disabled}
+        </if>
+        AND o.projectId = #{projectId}
+        AND o.deleted != TRUE
+
+        ORDER BY o.ordr ASC
+    </select>
+
+    <select id="listLastest" resultType="TstModule">
+        SELECT * FROM TstModule o
+        WHERE o.projectId = #{projectId}
+        AND o.deleted != TRUE
+        AND o.disabled != TRUE
+
+        ORDER BY o.createTime DESC LIMIT 10
+    </select>
+
+    <select id="get" resultType="TstModule">
+        SELECT * FROM TstModule o
+        WHERE o.id = #{id}
+        <if test="projectId != null">
+            AND o.projectId=#{projectId}
+        </if>
+    </select>
+
+    <insert id="add" parameterType="TstModule" useGeneratedKeys="true" keyProperty="id">
+        insert into TstModule
+          (name,startTime,endTime,descr,projectId,ordr,deleted,disabled,createTime)
+        values
+          (#{name},#{startTime},#{endTime},#{descr},#{projectId},#{ordr},FALSE,FALSE,NOW())
+    </insert>
+
+    <update id="update" parameterType="TstModule">
+        UPDATE TstModule
+        SET name=#{name},
+            startTime=#{startTime}, endTime=#{endTime},
+            descr=#{descr},
+            ordr=#{ordr},
+            disabled=#{disabled},
+            updateTime=NOW()
+        WHERE id=#{id} AND projectId = #{projectId}
+    </update>
+
+    <update id="delete">
+        UPDATE TstModule
+        SET deleted=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND projectId = #{projectId}
+    </update>
+
+    <update id="setOrder">
+        UPDATE TstModule
+        SET ordr=#{ordr}, updateTime=NOW()
+        WHERE id=#{id} AND projectId = #{projectId}
+    </update>
+
+    <select id="getMaxOrdrNumb" resultType="Integer">
+        select max(ordr) from TstModule tp
+        where tp.projectId=#{projectId}
+        and tp.deleted != true
+        and tp.disabled != true
+    </select>
+
+    <select id="getPrev" resultType="TstModule">
+        <![CDATA[
+            SELECT * FROM TstModule o
+            WHERE o.ordr < #{ordr} AND o.projectId = #{projectId}
+            AND o.deleted != TRUE
+            ORDER BY o.ordr DESC LIMIT 1
+        ]]>
+    </select>
+
+    <select id="getNext" resultType="TstModule">
+        <![CDATA[
+            SELECT * FROM TstModule o
+            WHERE o.ordr > #{ordr} AND o.projectId = #{projectId}
+            AND o.deleted != TRUE
+            ORDER BY o.ordr ASC LIMIT 1
+        ]]>
+    </select>
+
+</mapper>

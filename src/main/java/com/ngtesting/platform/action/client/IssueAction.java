@@ -49,13 +49,23 @@ public class IssueAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
         Integer prjId = user.getDefaultPrjId();
-        Integer caseId = json.getInteger("id");
 
-		IsuIssue vo = issueService.get(caseId, orgId);
+		Integer id = json.getInteger("id");
+		IsuIssue po;
+		if (id == null) {
+			po = new IsuIssue();
+		} else {
+			po = issueService.get(id, orgId);
+		}
+
+		if (po == null) { // 当对象不是默认org的，此处为空
+			return authFail();
+		}
+
 //        List<IsuField> fields = fieldService.list(user);
         Map propMap = propertyService.getProps(orgId);
 
-        ret.put("data", vo);
+        ret.put("data", po);
 //        ret.put("fields", fields);
         ret.put("propMap", propMap);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

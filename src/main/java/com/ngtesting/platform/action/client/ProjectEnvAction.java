@@ -23,7 +23,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping(Constant.API_PATH_CLIENT + "env/")
-public class EnvAction extends BaseAction {
+public class ProjectEnvAction extends BaseAction {
 	@Autowired
 	private WsFacade optFacade;
 
@@ -37,7 +37,8 @@ public class EnvAction extends BaseAction {
     public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer projectId = user.getDefaultPrjId();
+
+        Integer projectId = json.getInteger("id");
 
         String keywords = json.getString("keywords");
         Boolean disabled = json.getBoolean("disabled");

@@ -10,12 +10,10 @@ import com.ngtesting.platform.model.TstCaseStep;
 import com.ngtesting.platform.service.CaseExportService;
 import com.ngtesting.platform.service.CaseHistoryService;
 import com.ngtesting.platform.utils.FileUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class CaseExportServiceImpl extends BaseServiceImpl implements CaseExportService {
@@ -63,14 +60,20 @@ public class CaseExportServiceImpl extends BaseServiceImpl implements CaseExport
 
         Integer topId = null;
         Integer rowCount = 0;
-        AtomicInteger level = new AtomicInteger(0);
 
         XSSFCellStyle cellStyle = wb.createCellStyle();
+        XSSFCellStyle stepStyle = wb.createCellStyle();
+
         Font fontStyle = wb.createFont();
 //        fontStyle.setBold(true); // 加粗
         fontStyle.setFontName("黑体"); // 字体
-        fontStyle.setFontHeightInPoints((short) 15); // 大小
+        fontStyle.setFontHeightInPoints((short) 13); // 大小
         cellStyle.setFont(fontStyle);
+
+        Font fontStyle2 = wb.createFont();
+        ((XSSFFont) fontStyle2).setColor(IndexedColors.BLUE.getIndex());
+        fontStyle2.setFontHeightInPoints((short) 13); // 大小
+        stepStyle.setFont(fontStyle2);
 
 //        cellStyle.setBorderBottom(BorderStyle.THIN);
 //        cellStyle.setBorderLeft(BorderStyle.THIN);
@@ -86,7 +89,7 @@ public class CaseExportServiceImpl extends BaseServiceImpl implements CaseExport
             if (topId == null) {
                 topId = testCase.getId();
             }
-            rowCount = writeTestCase(testCase, sheet, topId, rowCount, level, cellStyle);
+            rowCount = writeTestCase(testCase, sheet, rowCount, cellStyle, stepStyle);
         }
 
         try {
@@ -119,6 +122,7 @@ public class CaseExportServiceImpl extends BaseServiceImpl implements CaseExport
 
         idCell.setCellStyle(cellStyle);
         titleCell.setCellStyle(cellStyle);
+
         typeCell.setCellStyle(cellStyle);
         priorityCell.setCellStyle(cellStyle);
         estimateCell.setCellStyle(cellStyle);
@@ -128,11 +132,14 @@ public class CaseExportServiceImpl extends BaseServiceImpl implements CaseExport
     }
 
     @Override
-    public Integer writeTestCase(TstCase testCase, Sheet sheet, Integer topId, Integer rowCount,
-                                 AtomicInteger level, XSSFCellStyle cellStyle) {
-        if (testCase.getpId() != null && testCase.getpId().longValue() == topId.longValue()) {
-            level.set(1);
-        }
+    public Integer writeTestCase(TstCase testCase, Sheet sheet, Integer rowCount,
+                                 XSSFCellStyle cellStyle, XSSFCellStyle stepStyle) {
+        Integer ind = testCase.getLevel();
+        XSSFCellStyle indentionStyle = (XSSFCellStyle)cellStyle.clone();
+        indentionStyle.setIndention(ind.shortValue());
+
+        stepStyle = (XSSFCellStyle)stepStyle.clone();
+        stepStyle.setIndention(ind.shortValue());
 
         Row row = sheet.createRow(rowCount++);
         int cellCount = 0;
@@ -143,8 +150,9 @@ public class CaseExportServiceImpl extends BaseServiceImpl implements CaseExport
         Cell estimateCell = row.createCell(cellCount++);
         Cell objectiveCell = row.createCell(cellCount++);
 
-        idCell.setCellValue(level.toString());
+        idCell.setCellValue(testCase.getLevel());
         titleCell.setCellValue(testCase.getName());
+
         if (testCase.getLeaf()) {
             typeCell.setCellValue(testCase.getType());
             priorityCell.setCellValue(testCase.getPriority());
@@ -153,7 +161,8 @@ public class CaseExportServiceImpl extends BaseServiceImpl implements CaseExport
         }
 
         idCell.setCellStyle(cellStyle);
-        titleCell.setCellStyle(cellStyle);
+        titleCell.setCellStyle(indentionStyle);
+
         if (testCase.getLeaf()) {
             typeCell.setCellStyle(cellStyle);
             priorityCell.setCellStyle(cellStyle);
@@ -172,10 +181,15 @@ public class CaseExportServiceImpl extends BaseServiceImpl implements CaseExport
                 Cell resultCell = stepRow.createCell(cellCount++);
 
                 ordrCell.setCellValue(step.getOrdr());
+
                 optCell.setCellValue(step.getOpt());
+                optCell.setCellStyle(stepStyle);
+
                 resultCell.setCellValue(step.getExpect());
+                resultCell.setCellStyle(stepStyle);
             }
         }
+
         return rowCount;
     }
 
@@ -209,7 +223,7 @@ public class CaseExportServiceImpl extends BaseServiceImpl implements CaseExport
                     sortedList.add(entity);
                     List<TstCase> tmpList = pMap.remove(entity.getId());
                     if (null != tmpList) {
-                        setLevel(queue, entity.getLevel() + 1);
+                        setLevel(tmpList, entity.getLevel() + 1);
                         queue.addAll(0, tmpList); // 将子节点插在下一个兄弟节点前
                     }
                 }

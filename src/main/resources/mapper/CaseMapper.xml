@@ -184,8 +184,6 @@
             o.projectId =#{projectId}
         AND o.deleted != TRUE
         AND o.disabled != TRUE
-        ORDER BY
-            o.pId,
-            o.ordr;
+        ORDER BY o.pId, o.ordr,s.ordr;
     </select>
 </mapper>

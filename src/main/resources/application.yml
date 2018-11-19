@@ -17,7 +17,7 @@ spring:
           filters: stat
           driver-class-name: com.mysql.jdbc.Driver
           #基本属性
-          url: jdbc:mysql://${config.mysql.host}:${config.mysql.port}/ngtesting-web?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
+          url: jdbc:mysql://${config.mysql.host}:${config.mysql.port}/ngtesting-web?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&noAccessToProcedureBodies=true
           username: ngtesting
           password: P2ssw0rd
           #配置初始化大小/最小/最大

@@ -8,6 +8,7 @@ import java.util.List;
 public interface CaseDao {
     void create(TstCase testCase);
     List<TstCase> query(@Param("projectId") Integer projectId);
+    List<TstCase> queryCaseStepInfoByPrj(@Param("projectId") Integer projectId);
 
     TstCase get(@Param("id") Integer id, @Param("prjId") Integer prjId);
     TstCase getDetail(@Param("id") Integer id, @Param("prjId") Integer prjId);
@@ -55,4 +56,6 @@ public interface CaseDao {
     void addOrderForNextCases(@Param("srcId") Integer srcId,
                               @Param("targetOrdr") Integer targetOrdr,
                               @Param("targetPid") Integer targetPid);
+
+
 }

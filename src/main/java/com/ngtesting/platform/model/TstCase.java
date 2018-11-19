@@ -51,6 +51,8 @@ public class TstCase extends BaseModel {
 	private String prop19;
 	private String prop20;
 
+	private Integer level;
+
     public static enum CaseContentType {
         steps("steps"),
         richText("richText");
@@ -419,5 +421,13 @@ public class TstCase extends BaseModel {
 
 	public void setSteps(List<TstCaseStep> steps) {
 		this.steps = steps;
+	}
+
+	public Integer getLevel() {
+		return level;
+	}
+
+	public void setLevel(Integer level) {
+		this.level = level;
 	}
 }

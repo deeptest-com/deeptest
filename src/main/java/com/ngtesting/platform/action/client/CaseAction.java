@@ -30,6 +30,8 @@ public class CaseAction extends BaseAction {
 	@Autowired
     CaseService caseService;
     @Autowired
+    CaseExportService caseExportService;
+    @Autowired
     CaseTypeService caseTypeService;
     @Autowired
     CasePriorityService casePriorityService;
@@ -252,13 +254,9 @@ public class CaseAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        Integer projectId = json.getInteger("projectId");
+        Integer projectId = user.getDefaultPrjId();
 
-        if (userNotInProject(user.getId(), projectId)) {
-            return authFail();
-        }
-
-		String excelPath = caseService.export(projectId);
+		String excelPath = caseExportService.export(projectId);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		ret.put("excelPath", excelPath);
 

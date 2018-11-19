@@ -157,8 +157,8 @@
     </resultMap>
 
 
-    <resultMap id="queryCaseStepInfoByPrjMap" type="TstCase">
-        <!--<id column="id" property="id" jdbcType="VARCHAR"/>-->
+    <resultMap id="queryCaseWithStepInfoByPrjMap" type="TstCase">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
         <result column="type" property="type" jdbcType="VARCHAR"/>
         <result column="isLeaf" property="isLeaf" jdbcType="INTEGER" />
@@ -173,27 +173,17 @@
         </collection>
     </resultMap>
 
-    <select id="queryCaseStepInfoByPrj" resultMap="queryCaseStepInfoByPrjMap">
+    <select id="queryCaseWithStepInfoByPrj" resultMap="queryCaseWithStepInfoByPrjMap">
         SELECT
-	    o.name,o.type,o.isLeaf,o.pId,s.ordr,s.opt,s.expect,s.caseId
+	        o.id,o.name,o.type,o.isLeaf,o.pId,
+	        s.ordr,s.opt,s.expect,s.caseId
         FROM
             TstCase o
-        LEFT JOIN tstcasestep s ON o.id = s.caseId
+        LEFT JOIN TstCaseStep s ON o.id = s.caseId
         WHERE
             o.projectId =#{projectId}
         AND o.deleted != TRUE
         AND o.disabled != TRUE
-        AND o.id NOT IN (
-                        SELECT DISTINCT
-                            pId
-                        FROM
-                            TstCase
-                        WHERE
-                            deleted != TRUE
-                        AND disabled != TRUE
-                        AND pId IS NOT NULL
-                        AND projectId=#{projectId}
-        )
         ORDER BY
             o.pId,
             o.ordr;

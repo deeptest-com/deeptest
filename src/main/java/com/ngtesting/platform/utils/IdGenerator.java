@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gradle.internal.id;
+package com.ngtesting.platform.utils;
 
 /**
  * Generates a sequence of unique ids of type T. Implementations must be thread-safe.

@@ -3,11 +3,8 @@ package com.ngtesting.platform.service;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.TstCase;
 import com.ngtesting.platform.model.TstUser;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public interface CaseService extends BaseService {
 	List<TstCase> query(Integer projectId);
@@ -35,13 +32,6 @@ public interface CaseService extends BaseService {
 	boolean cloneStepsAndChildrenPers(TstCase testcase, TstCase src);
 	void loadNodeTree(TstCase po);
 	Integer getChildMaxOrderNumb(Integer parentId);
-
-	String export(Integer projectId);
-
-	Integer writeHeader(Sheet sheet, Integer rowCount, XSSFCellStyle cellStyle);
-
-	Integer writeTestCase(TstCase testCase, Sheet sheet, Long topId, Integer rowCount,
-						  AtomicInteger level, XSSFCellStyle cellStyle);
 
 	void genVos(List<TstCase> pos, List<Integer> selectIds);
 

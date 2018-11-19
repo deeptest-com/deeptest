@@ -1,0 +1,37 @@
+用户登录：
+	可以用HttpClient请求 http://localhost:8080/api/v1/client/account/login {"rememberMe":true,"email":"462826@qq.com","password":"111111"}
+	返回结果中有个token字段，下次请求中将token放在http头里，JS的例子为：
+        const headers = new Headers({ 'Content-Type': 'application/json',
+                'token': CONSTANT.TOKEN });
+
+测试用例：
+	SQL语句：
+	insert into TstCase (name,priority,type,contentType,estimate,isLeaf,ordr,pId, projectId,createById, createTime,deleted,disabled) values (?,?,?,?,?,?,?,?, ?,?, NOW(),FALSE,FALSE) 
+
+	参数样例: 
+	用例名称(String), medium(String), functional(String), steps(String), 10(Integer), true(Boolean), 1(Integer), 184(Integer), 461(Integer), 17(Integer)
+
+	参数说明：
+	name：用例名称
+	priority：优先级
+	type：用例类型
+	contentType：内容类型，分步骤steps和富文本richText
+	estimate：耗时，你先写10
+	isLeaf：是否是叶节点，true或者false
+	ordr：在父文件夹里的顺序
+	pId：父节点Id
+	projectId：项目Id
+	createById：用户Id
+	createTime：创建时间
+	deleted：false
+	disabled：false
+
+	项目Id和用户Id参考 com.ngtesting.platform.action.client.CaseAction的rename方法
+	TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+
+	项目Id：Integer projectId = user.getDefaultPrjId();
+	用户Id：Integer userId = user.getId();
+
+测试步骤：
+	直接调这个接口
+	http://localhost:8080/api/v1/client/case_step/save {"ordr":1,"opt":"步骤文本","expect":"期望结果文本","caseId":189}

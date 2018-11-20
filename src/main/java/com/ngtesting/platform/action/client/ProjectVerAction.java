@@ -108,17 +108,23 @@ public class ProjectVerAction extends BaseAction {
 	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer projectId = user.getDefaultPrjId();
+        Integer projectId = json.getInteger("projectId");
+        if (userNotInProject(user.getId(), projectId)) {
+            return authFail();
+        }
 
-		Integer id = json.getInteger("id");
-		String act = json.getString("act");
+        Integer id = json.getInteger("id");
+        String act = json.getString("act");
+
+        String keywords = json.getString("keywords");
+        Boolean disabled = json.getBoolean("disabled");
 
         Boolean result = verService.changeOrder(id, act, projectId);
         if (!result) {
             return authFail();
         }
 
-		List<TstVer> vos = verService.list(projectId, null, false);
+		List<TstVer> vos = verService.list(projectId, keywords, disabled);
 
 		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

@@ -1,6 +1,5 @@
 package com.ngtesting.platform.service.impl;
 
-import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.dao.OrgGroupDao;
 import com.ngtesting.platform.model.TstOrgGroup;
 import com.ngtesting.platform.service.OrgGroupService;
@@ -23,8 +22,8 @@ public class OrgGroupServiceImpl extends BaseServiceImpl implements OrgGroupServ
 	}
 
 	@Override
-	public List<TstOrgGroup> search(Integer orgId, String keywords, String exceptIds) {
-        PageHelper.startPage(0, 20);
+	public List<TstOrgGroup> search(Integer orgId, String keywords,  List<Integer> exceptIds) {
+//        PageHelper.startPage(0, 20);
         List<TstOrgGroup> groups = groupDao.search(orgId, keywords, exceptIds);
 
 		return groups;

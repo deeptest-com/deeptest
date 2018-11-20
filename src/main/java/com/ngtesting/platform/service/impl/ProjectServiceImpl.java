@@ -214,9 +214,15 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
         }
     }
 
+    @Override
+    @Transactional
+    public TstProject changeDefaultPrj(TstUser user, Integer projectId) {
+	    return changeDefaultPrj(user, projectId, true);
+    }
+
 	@Override
     @Transactional
-	public TstProject changeDefaultPrj(TstUser user, Integer projectId) {
+	public TstProject changeDefaultPrj(TstUser user, Integer projectId, Boolean pushMsg) {
 	    if (projectId == null) {
             setUserDefaultPrjToNullForDelete(projectId);
             projectDao.setDefault(user.getId(), null, null);
@@ -244,8 +250,10 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
             user.setDefaultPrjId(projectId);
             user.setDefaultPrjName(po.getName());
 
-            pushSettingsService.pushRecentProjects(user);
-            pushSettingsService.pushPrjSettings(user);
+            if (pushMsg) {
+                pushSettingsService.pushRecentProjects(user);
+                pushSettingsService.pushPrjSettings(user);
+            }
 		}
 
 		return po;

@@ -22,6 +22,9 @@ public interface ProjectService extends BaseService {
 	TstProject save(TstProject vo, Integer orgId, TstUser userVo);
 	Boolean delete(Integer id, TstUser user);
 
+    @Transactional
+    TstProject changeDefaultPrj(TstUser user, Integer projectId, Boolean pushMsg);
+
     void updateNameInHisoty(Integer projectId, Integer userId);
 
     void setUserDefaultPrjToNullForDelete(Integer id);

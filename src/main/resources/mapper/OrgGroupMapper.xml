@@ -25,8 +25,12 @@
         <if test="keywords != null and keywords != ''">
             AND grp.name LIKE CONCAT('%','${keywords}','%' )
         </if>
-        <if test="exceptIds != null and exceptIds != ''">
-            AND grp.id NOT IN #{exceptIds}
+
+        <if test="exceptIds.size > 0">
+            AND grp.id NOT IN
+            <foreach collection="exceptIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
         </if>
 
         AND grp.deleted != TRUE

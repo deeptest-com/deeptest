@@ -1,6 +1,5 @@
 package com.ngtesting.platform.action.client;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
@@ -67,20 +66,9 @@ public class UserAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         String keywords = json.getString("keywords");
-        JSONArray exceptIds = json.getJSONArray("exceptIds");
+        List<Integer> exceptIds = json.getObject("exceptIds", List.class);
 
-        String ids = "";
-        if (exceptIds != null && exceptIds.size() > 0) {
-            int i = 0;
-            for (Object item : exceptIds.toArray()) {
-                if (i++ > 0) {
-                    ids += ",";
-                }
-                ids += item.toString();
-            }
-        }
-
-        List users = userService.search(user.getDefaultOrgId(), keywords, ids);
+        List users = userService.search(user.getDefaultOrgId(), keywords, exceptIds);
 
         List<Object> vos = new ArrayList<>();
         vos.addAll(users);

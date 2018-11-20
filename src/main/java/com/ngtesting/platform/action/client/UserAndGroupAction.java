@@ -1,6 +1,5 @@
 package com.ngtesting.platform.action.client;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
@@ -38,21 +37,11 @@ public class UserAndGroupAction extends BaseAction {
 		Integer orgId = user.getDefaultOrgId();
 
 		String keywords = json.getString("keywords");
-        JSONArray exceptIds = json.getJSONArray("exceptIds");
+        List<Integer> exceptUserIds = json.getObject("exceptUserIds", List.class);
+		List<Integer> exceptGroupIds = json.getObject("exceptGroupIds", List.class);
 
-		String ids = "";
-		if (exceptIds != null && exceptIds.size() > 0) {
-			int i = 0;
-			for (Object item : exceptIds.toArray()) {
-				if (i++ > 0) {
-					ids += ",";
-				}
-				ids += item.toString();
-			}
-		}
-
-		List users = userService.search(orgId, keywords, ids);
-		List groups = orgGroupService.search(orgId, keywords, ids);
+		List users = userService.search(orgId, keywords, exceptUserIds);
+		List groups = orgGroupService.search(orgId, keywords, exceptGroupIds);
 
 		List<Object> vos = new ArrayList<>();
 		vos.addAll(users);

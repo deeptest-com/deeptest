@@ -1,7 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.*;
 import com.ngtesting.platform.model.TstOrgGroupUserRelation;
@@ -140,7 +139,7 @@ public class UserServiceImpl implements UserService {
             Integer projectRoleId = projectRoleDao.getRoleByCode(orgId, "test_designer").getId();
             projectRoleEntityRelationDao.addRole(orgId, prjId, projectRoleId, vo.getId(), "user");
 
-            projectService.changeDefaultPrj(vo, prjId);
+            projectService.changeDefaultPrj(vo, prjId, false);
 
             orgGroupUserRelationService.saveRelationsForUser(orgId, vo.getId(), relations);
 
@@ -198,8 +197,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<TstUser> search(Integer orgId, String keywords, String exceptIds) {
-        PageHelper.startPage(0, 20);
+    public List<TstUser> search(Integer orgId, String keywords,  List<Integer> exceptIds) {
+//        PageHelper.startPage(0, 20);
         List<TstUser> users = userDao.search(orgId, keywords, exceptIds);
 
         return users;

@@ -12,7 +12,7 @@ public interface OrgGroupDao {
 
     List<TstOrgGroup> search(@Param("orgId") Integer orgId,
                              @Param("keywords") String keywords,
-                             @Param("exceptIds") String exceptIds);
+                             @Param("exceptIds")  List<Integer> exceptIds);
     List<TstOrgGroup> list(@Param("orgId") Integer orgId);
 
     TstOrgGroup get(@Param("id") Integer id,

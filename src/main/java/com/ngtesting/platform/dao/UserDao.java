@@ -12,7 +12,7 @@ public interface UserDao {
 
     List<TstUser> search(@Param("orgId") Integer orgId,
                          @Param("keywords") String keywords,
-                         @Param("exceptIds") String exceptIds);
+                         @Param("exceptIds")  List<Integer> exceptIds);
 
     TstUser get(@Param("id") Integer id);
     TstUser getByEmail(@Param("email") String email);

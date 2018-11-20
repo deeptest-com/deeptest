@@ -1,4 +1,4 @@
 mvn clean verify
 
-scp target/ngtesting-web-1.0.10.jar aaron@47.99.102.138:/home/aaron/dev/deploy
-
+docker rm -f `docker ps -a -q`
+docker rmi `docker images -q`

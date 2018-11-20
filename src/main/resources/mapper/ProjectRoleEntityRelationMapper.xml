@@ -41,4 +41,9 @@
         WHERE projectId=#{projectId} AND entityId=#{entityId}
     </update>
 
+    <delete id="remove">
+        DELETE FROM TstProjectRoleEntityRelation
+        WHERE projectId=#{projectId} AND type=#{type} AND entityId=#{entityId}
+    </delete>
+
 </mapper>

@@ -26,7 +26,7 @@
             AND grp.name LIKE CONCAT('%','${keywords}','%' )
         </if>
 
-        <if test="exceptIds.size > 0">
+        <if test="exceptIds != null and exceptIds.size > 0">
             AND grp.id NOT IN
             <foreach collection="exceptIds" item="item" separator="," open="(" close=")">
                 #{item}
@@ -60,9 +60,9 @@
 
     <insert id="save" parameterType="TstOrgGroup" useGeneratedKeys="true" keyProperty="id">
         insert into TstOrgGroup
-          (name,orgId,deleted,disabled,createTime)
+          (name,orgId,isBuildIn,deleted,disabled,createTime)
         values
-          (#{name},#{orgId},FALSE,FALSE,NOW())
+          (#{name},#{orgId},#{isBuildIn},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="TstOrgGroup">

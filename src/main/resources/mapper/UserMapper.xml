@@ -158,7 +158,7 @@
               OR usr.phone LIKE CONCAT('%','${keywords}','%' )
             )
         </if>
-        <if test="exceptIds.size > 0">
+        <if test="exceptIds != null and exceptIds.size > 0">
             AND usr.id NOT IN
             <foreach collection="exceptIds" item="item" separator="," open="(" close=")">
                 #{item}

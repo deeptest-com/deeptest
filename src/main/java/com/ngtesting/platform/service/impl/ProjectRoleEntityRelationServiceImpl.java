@@ -64,4 +64,11 @@ public class ProjectRoleEntityRelationServiceImpl extends BaseServiceImpl implem
         return listByProject(projectId);
     }
 
+    @Override
+    public List<TstProjectRoleEntityRelation> remove(Integer projectId, String type, Integer entityId) {
+        projectRoleEntityRelationDao.remove(projectId, type, entityId);
+
+        return listByProject(projectId);
+    }
+
 }

@@ -104,4 +104,28 @@ public class ProjectMemberAction extends BaseAction {
         return ret;
     }
 
+    @PostMapping(value = "remove")
+    @ResponseBody
+    public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+
+        Integer projectId = json.getInteger("projectId");
+        String type = json.getString("type");
+        Integer entityId = json.getInteger("entityId");
+
+        if (userNotInProject(user.getId(), projectId)) {
+            return authFail();
+        }
+
+        List<TstProjectRoleEntityRelation> entityInRoles =
+                projectRoleEntityRelationService.remove(projectId, type, entityId);
+
+        pushSettingsService.pushPrjSettings(user);
+
+        ret.put("entityInRoles", entityInRoles);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
 }

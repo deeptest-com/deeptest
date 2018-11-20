@@ -15,17 +15,17 @@ import java.util.List;
 @Service
 public class TestModuleServiceImpl extends BaseServiceImpl implements TestModuleService {
     @Autowired
-    TestModuleDao verDao;
+    TestModuleDao moduleDao;
 
     @Override
     public List<TstModule> list(Integer projectId, String keywords, Boolean disabled) {
-        List<TstModule> ls = verDao.query(projectId, keywords, disabled);
+        List<TstModule> ls = moduleDao.query(projectId, keywords, disabled);
         return ls;
     }
 
     @Override
     public TstModule getById(Integer id, Integer projectId) {
-        TstModule po = verDao.get(id, projectId);
+        TstModule po = moduleDao.get(id, projectId);
         return po;
     }
 
@@ -37,15 +37,15 @@ public class TestModuleServiceImpl extends BaseServiceImpl implements TestModule
         vo.setProjectId(user.getDefaultPrjId());
 
         if (id == null) {
-            Integer maxOrder = verDao.getMaxOrdrNumb(vo.getProjectId());
+            Integer maxOrder = moduleDao.getMaxOrdrNumb(vo.getProjectId());
             if (maxOrder == null) {
                 maxOrder = 0;
             }
             vo.setOrdr(maxOrder + 10);
 
-            verDao.add(vo);
+            moduleDao.add(vo);
         } else {
-            Integer count = verDao.update(vo);
+            Integer count = moduleDao.update(vo);
             if (count == 0) {
                 return null;
             }
@@ -56,7 +56,7 @@ public class TestModuleServiceImpl extends BaseServiceImpl implements TestModule
 
     @Override
     public Boolean delete(Integer id, Integer projectId) {
-        Integer count = verDao.delete(id, projectId);
+        Integer count = moduleDao.delete(id, projectId);
         if (count == 0) {
             return false;
         }
@@ -67,22 +67,22 @@ public class TestModuleServiceImpl extends BaseServiceImpl implements TestModule
     @Override
     @Transactional
     public Boolean changeOrder(Integer id, String act, Integer projectId) {
-        TstModule curr = verDao.get(id, projectId);
+        TstModule curr = moduleDao.get(id, projectId);
         if (curr == null) {
             return false;
         }
 
         TstModule neighbor = null;
         if ("up".equals(act)) {
-            neighbor = verDao.getPrev(curr.getOrdr(), projectId);
+            neighbor = moduleDao.getPrev(curr.getOrdr(), projectId);
         } else if ("down".equals(act)) {
-            neighbor = verDao.getNext(curr.getOrdr(), projectId);
+            neighbor = moduleDao.getNext(curr.getOrdr(), projectId);
         }
         if (neighbor != null) {
             Integer currOrder = curr.getOrdr();
             Integer neighborOrder = neighbor.getOrdr();
-            verDao.setOrder(id, neighborOrder, projectId);
-            verDao.setOrder(neighbor.getId(), currOrder, projectId);
+            moduleDao.setOrder(id, neighborOrder, projectId);
+            moduleDao.setOrder(neighbor.getId(), currOrder, projectId);
         }
 
         return true;

@@ -35,15 +35,14 @@
 
     <insert id="add" parameterType="TstModule" useGeneratedKeys="true" keyProperty="id">
         insert into TstModule
-          (name,startTime,endTime,descr,projectId,ordr,deleted,disabled,createTime)
+          (name,descr,projectId,ordr,deleted,disabled,createTime)
         values
-          (#{name},#{startTime},#{endTime},#{descr},#{projectId},#{ordr},FALSE,FALSE,NOW())
+          (#{name},#{descr},#{projectId},#{ordr},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="TstModule">
         UPDATE TstModule
         SET name=#{name},
-            startTime=#{startTime}, endTime=#{endTime},
             descr=#{descr},
             ordr=#{ordr},
             disabled=#{disabled},

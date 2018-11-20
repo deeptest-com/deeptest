@@ -45,7 +45,7 @@ public class ProjectMemberAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
 
-        Integer projectId = json.getInteger("id");
+        Integer projectId = json.getInteger("projectId");
         if (userNotInProject(user.getId(), projectId)) {
             return authFail();
         }

@@ -4,5 +4,5 @@ import com.ngtesting.platform.model.IsuTypeSolution;
 import org.apache.ibatis.annotations.Param;
 
 public interface ProjectConfigDao {
-    IsuTypeSolution getTypeSolution(@Param("projectId") Integer projectId);
+
 }

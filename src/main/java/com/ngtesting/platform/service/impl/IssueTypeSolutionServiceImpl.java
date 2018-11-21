@@ -107,7 +107,7 @@ public class IssueTypeSolutionServiceImpl extends BaseServiceImpl implements Iss
     // For Project
     @Override
     public IsuTypeSolution getByProject(Integer projectId, Integer orgId) {
-        return null;
+        return solutionDao.getByProject(projectId, orgId);
     }
 
 }

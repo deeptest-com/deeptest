@@ -85,7 +85,11 @@
         </collection>
     </resultMap>
 
-
     <!-- For Project -->
+    <select id="getByProject" resultType="IsuTypeSolution">
+        SELECT * FROM IsuTypeSolution o
+        JOIN TstProject p ON p.issueTypeSolutionId=o.id
+        WHERE p.id = #{projectId} AND o.orgId = #{orgId}
+    </select>
 
 </mapper>

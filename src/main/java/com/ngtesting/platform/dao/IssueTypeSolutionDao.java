@@ -35,4 +35,8 @@ public interface IssueTypeSolutionDao {
 
     Integer removeAll(@Param("solutionId") Integer solutionId,
                       @Param("orgId") Integer orgId);
+
+    // For Project
+    IsuTypeSolution getByProject(@Param("projectId") Integer projectId,
+                                 @Param("orgId") Integer orgId);
 }

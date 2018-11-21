@@ -5,15 +5,15 @@ import com.ngtesting.platform.config.ConstantIssue;
 public class IsuPageSolutionItem extends BaseModel {
     private static final long serialVersionUID = -3872162780544592329L;
 
-    private Integer issueTypeId;
-    private String issueTypeName;
+    private Integer typeId;
+    private String typeName;
 
     private ConstantIssue.IssueOpt opt;
 
-    private Integer issuePageId;
-    private String issuePageName;
+    private Integer pageId;
+    private String pageName;
 
-    private Integer pageSolutionId;
+    private Integer solutionId;
     private Integer orgId;
 
     public Integer getOrgId() {
@@ -32,43 +32,43 @@ public class IsuPageSolutionItem extends BaseModel {
         this.opt = opt;
     }
 
-    public Integer getIssueTypeId() {
-        return issueTypeId;
+    public Integer getPageId() {
+        return pageId;
     }
 
-    public void setIssueTypeId(Integer issueTypeId) {
-        this.issueTypeId = issueTypeId;
+    public void setPageId(Integer pageId) {
+        this.pageId = pageId;
     }
 
-    public Integer getIssuePageId() {
-        return issuePageId;
+    public String getPageName() {
+        return pageName;
     }
 
-    public void setIssuePageId(Integer issuePageId) {
-        this.issuePageId = issuePageId;
+    public void setPageName(String pageName) {
+        this.pageName = pageName;
     }
 
-    public Integer getPageSolutionId() {
-        return pageSolutionId;
+    public Integer getSolutionId() {
+        return solutionId;
     }
 
-    public void setPageSolutionId(Integer pageSolutionId) {
-        this.pageSolutionId = pageSolutionId;
+    public void setSolutionId(Integer solutionId) {
+        this.solutionId = solutionId;
     }
 
-    public String getIssueTypeName() {
-        return issueTypeName;
+    public Integer getTypeId() {
+        return typeId;
     }
 
-    public void setIssueTypeName(String issueTypeName) {
-        this.issueTypeName = issueTypeName;
+    public void setTypeId(Integer typeId) {
+        this.typeId = typeId;
     }
 
-    public String getIssuePageName() {
-        return issuePageName;
+    public String getTypeName() {
+        return typeName;
     }
 
-    public void setIssuePageName(String issuePageName) {
-        this.issuePageName = issuePageName;
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 }

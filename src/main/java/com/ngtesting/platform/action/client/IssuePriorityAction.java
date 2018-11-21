@@ -1,12 +1,12 @@
-package com.ngtesting.platform.action.admin;
+package com.ngtesting.platform.action.client;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
+import com.ngtesting.platform.action.admin.CasePriorityAdmin;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.IsuType;
+import com.ngtesting.platform.model.IsuPriority;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.IssuePropertyService;
-import com.ngtesting.platform.service.IssueTypeService;
+import com.ngtesting.platform.service.IssuePriorityService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +23,12 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_ADMIN + "issue_type/")
-public class IssueTypeAdmin extends BaseAction {
-	private static final Log log = LogFactory.getLog(CaseTypeAdmin.class);
+@RequestMapping(Constant.API_PATH_CLIENT + "issue_priority/")
+public class IssuePriorityAction extends BaseAction {
+	private static final Log log = LogFactory.getLog(CasePriorityAdmin.class);
 
 	@Autowired
-    IssueTypeService typeService;
-
-	@Autowired
-	IssuePropertyService issuePropertyService;
+	IssuePriorityService issuePriorityService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
@@ -41,9 +38,9 @@ public class IssueTypeAdmin extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		List<IsuType> vos = typeService.list(orgId);
+		List<IsuPriority> vos = issuePriorityService.list(orgId);
 
-        ret.put("data", vos);
+		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;
@@ -59,11 +56,11 @@ public class IssueTypeAdmin extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
-		IsuType po;
+		IsuPriority po;
 		if (id == null) {
-			po = new IsuType();
+			po = new IsuPriority();
 		} else {
-			po = typeService.get(id, orgId);
+			po = issuePriorityService.get(id, orgId);
 		}
 
 		if (po == null) { // 当对象不是默认org的，此处为空
@@ -83,10 +80,10 @@ public class IssueTypeAdmin extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		IsuType vo = json.getObject("model", IsuType.class);
+		IsuPriority vo = json.getObject("model", IsuPriority.class);
 
-		IsuType po = typeService.save(vo, orgId);
-		if (po == null) {	// 当对象不是默认org的，update的结果会返回空
+		IsuPriority po = issuePriorityService.save(vo, orgId);
+		if (po == null) {    // 当对象不是默认org的，update的结果会返回空
 			return authFail();
 		}
 
@@ -105,7 +102,7 @@ public class IssueTypeAdmin extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		Boolean result = typeService.delete(id, orgId);
+		Boolean result = issuePriorityService.delete(id, orgId);
 		if (!result) { // 当对象不是默认org的，结果会返回false
 			return authFail();
 		}
@@ -125,12 +122,12 @@ public class IssueTypeAdmin extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		Boolean result = typeService.setDefault(id, orgId);
+		Boolean result = issuePriorityService.setDefault(id, orgId);
 		if (!result) { // 当对象不是默认org的，结果会返回false
 			return authFail();
 		}
 
-		List<IsuType> vos = typeService.list(orgId);
+		List<IsuPriority> vos = issuePriorityService.list(orgId);
 
 		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -149,17 +146,16 @@ public class IssueTypeAdmin extends BaseAction {
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
-		Boolean result = typeService.changeOrder(id, act, orgId);
+		Boolean result = issuePriorityService.changeOrder(id, act, orgId);
 		if (!result) { // 当对象不是默认org的，结果会返回false
 			return authFail();
 		}
 
-		List<IsuType> vos = typeService.list(orgId);
+		List<IsuPriority> vos = issuePriorityService.list(orgId);
 
 		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;
 	}
-
 }

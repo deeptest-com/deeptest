@@ -19,19 +19,6 @@
         AND o.deleted != true AND o.disabled != true
     </select>
 
-    <select id="getItems" resultType="IsuPageSolutionItem">
-        SELECT o.*, type.label issueTypeName, page.name issuePageName
-
-        FROM IsuPageSolutionItem o
-        JOIN IsuType type ON type.id = o.issueTypeId
-        JOIN IsuPage page ON page.id = o.issuePageId
-
-        WHERE o.pageSolutionId = #{pageSolutionId} AND o.orgId = #{orgId}
-          AND o.deleted != true AND o.disabled != true
-
-        ORDER BY o.id ASC;
-    </select>
-
     <insert id="save" parameterType="IsuPageSolution" useGeneratedKeys="true" keyProperty="id">
         insert into IsuPageSolution
         (name, orgId, deleted, disabled, createTime)
@@ -51,5 +38,37 @@
         SET disabled=TRUE, updateTime=NOW()
         WHERE id=#{id} AND orgId=#{orgId}
     </delete>
+
+    <select id="getItems" resultType="IsuPageSolutionItem">
+        SELECT o.*, type.label typeName, page.name pageName
+
+        FROM IsuPageSolutionItem o
+        JOIN IsuType type ON type.id = o.typeId
+        JOIN IsuPage page ON page.id = o.pageId
+
+        WHERE o.solutionId = #{solutionId} AND o.orgId = #{orgId}
+
+        ORDER BY o.id ASC;
+    </select>
+
+    <update id="changeItem">
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) from IsuPageSolutionItem
+            where typeId=#{typeId} AND opt=#{opt}
+            AND solutionId=#{solutionId} AND orgId=#{orgId}
+        </selectKey>
+        <if test="count > 0">
+            update IsuPageSolutionItem
+              set pageId = #{pageId}
+            where typeId=#{typeId} AND opt=#{opt}
+              AND solutionId=#{solutionId} AND orgId=#{orgId}
+        </if>
+        <if test="count == 0">
+            insert into IsuPageSolutionItem
+            (typeId, opt, pageId, solutionId, orgId)
+            values
+            (#{typeId}, #{opt}, #{pageId}, #{solutionId}, #{orgId})
+        </if>
+    </update>
 
 </mapper>

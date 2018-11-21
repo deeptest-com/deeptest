@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.IssueWorkflowSolutionDao" >
+
+    <select id="list" resultType="IsuWorkflowSolution">
+        SELECT solution.*
+
+        FROM IsuWorkflowSolution solution
+
+        WHERE solution.orgId=#{orgId}
+        AND solution.deleted != TRUE AND solution.disabled != TRUE
+        ORDER BY solution.createTime ASC
+    </select>
+
+    <select id="get" resultType="IsuWorkflowSolution">
+        SELECT o.* FROM IsuWorkflowSolution o
+
+        WHERE o.id = #{id} AND orgId = #{orgId}
+        AND o.deleted != true AND o.disabled != true
+    </select>
+
+    <insert id="save" parameterType="IsuWorkflowSolution" useGeneratedKeys="true" keyProperty="id">
+        insert into IsuWorkflowSolution
+        (name, orgId, deleted, disabled, createTime)
+        values
+        (#{name}, #{orgId}, FALSE, FALSE, NOW())
+    </insert>
+
+    <update id="update" parameterType="IsuWorkflowSolution">
+        UPDATE IsuWorkflowSolution
+        SET name=#{name}, updateTime=NOW()
+
+        WHERE id=#{id} AND orgId=#{orgId}
+    </update>
+
+    <delete id="delete">
+        UPDATE IsuWorkflowSolution
+        SET disabled=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND orgId=#{orgId}
+    </delete>
+
+    <select id="getItems" resultType="IsuWorkflowSolutionItem">
+        SELECT o.*, type.label typeName, workflow.name workflowName
+
+        FROM IsuWorkflowSolutionItem o
+        JOIN IsuType type ON type.id = o.typeId
+        JOIN IsuWorkflow workflow ON workflow.id = o.workflowId
+
+        WHERE o.solutionId = #{solutionId} AND o.orgId = #{orgId}
+
+        ORDER BY o.id ASC;
+    </select>
+
+    <update id="changeItem">
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) from IsuWorkflowSolutionItem
+            where typeId=#{typeId} AND solutionId=#{solutionId} AND orgId=#{orgId}
+        </selectKey>
+        <if test="count > 0">
+            update IsuWorkflowSolutionItem
+            set workflowId = #{workflowId}
+            where typeId=#{typeId} AND solutionId=#{solutionId} AND orgId=#{orgId}
+        </if>
+        <if test="count == 0">
+            insert into IsuWorkflowSolutionItem
+              (typeId, workflowId, solutionId, orgId)
+            values
+              (#{typeId}, #{workflowId}, #{solutionId}, #{orgId})
+        </if>
+    </update>
+
+</mapper>

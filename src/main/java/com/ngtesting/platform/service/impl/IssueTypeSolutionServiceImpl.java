@@ -104,4 +104,10 @@ public class IssueTypeSolutionServiceImpl extends BaseServiceImpl implements Iss
         return true;
     }
 
+    // For Project
+    @Override
+    public IsuTypeSolution getByProject(Integer projectId, Integer orgId) {
+        return null;
+    }
+
 }

@@ -15,6 +15,12 @@ public class TstProject extends BaseModel {
 
     private Integer parentId;
     private ProjectType type;
+
+	private Integer issueTypeSolutionId;
+	private Integer issuePrioritySolutionId;
+	private Integer issuePageSolutionId;
+	private Integer issueWorkflowSolutionId;
+
     private Integer childrenNumb;
 
 	private Boolean isLastestProjectGroup;
@@ -115,5 +121,37 @@ public class TstProject extends BaseModel {
 
     public void setChildren(List<TstProject> children) {
         this.children = children;
+    }
+
+    public Integer getIssueTypeSolutionId() {
+        return issueTypeSolutionId;
+    }
+
+    public void setIssueTypeSolutionId(Integer issueTypeSolutionId) {
+        this.issueTypeSolutionId = issueTypeSolutionId;
+    }
+
+    public Integer getIssuePrioritySolutionId() {
+        return issuePrioritySolutionId;
+    }
+
+    public void setIssuePrioritySolutionId(Integer issuePrioritySolutionId) {
+        this.issuePrioritySolutionId = issuePrioritySolutionId;
+    }
+
+    public Integer getIssuePageSolutionId() {
+        return issuePageSolutionId;
+    }
+
+    public void setIssuePageSolutionId(Integer issuePageSolutionId) {
+        this.issuePageSolutionId = issuePageSolutionId;
+    }
+
+    public Integer getIssueWorkflowSolutionId() {
+        return issueWorkflowSolutionId;
+    }
+
+    public void setIssueWorkflowSolutionId(Integer issueWorkflowSolutionId) {
+        this.issueWorkflowSolutionId = issueWorkflowSolutionId;
     }
 }

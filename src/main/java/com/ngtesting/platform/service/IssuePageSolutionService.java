@@ -15,4 +15,6 @@ public interface IssuePageSolutionService extends BaseService {
     IsuPageSolution save(IsuPageSolution vo, Integer orgId);
 
     boolean delete(Integer id, Integer orgId);
+
+    boolean changeItem(Integer typeId, String opt, Integer pageId, Integer solutionId, Integer orgId);
 }

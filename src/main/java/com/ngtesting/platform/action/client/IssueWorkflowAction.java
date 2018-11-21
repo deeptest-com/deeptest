@@ -1,7 +1,8 @@
-package com.ngtesting.platform.action.admin;
+package com.ngtesting.platform.action.client;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
+import com.ngtesting.platform.action.admin.CaseTypeAdmin;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.IssuePageService;
@@ -24,8 +25,8 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_ADMIN + "issue_workflow/")
-public class IssueWorkflowAdmin extends BaseAction {
+@RequestMapping(Constant.API_PATH_CLIENT + "issue_workflow/")
+public class IssueWorkflowAction extends BaseAction {
 	private static final Log log = LogFactory.getLog(CaseTypeAdmin.class);
 
 	@Autowired
@@ -63,13 +64,13 @@ public class IssueWorkflowAdmin extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
-
-		IsuWorkflow vo;
 		if (id == null) {
-			vo = new IsuWorkflow();
-		} else {
-			vo = issueWorkflowService.get(id, orgId);
+			ret.put("data", new IsuWorkflow());
+			ret.put("code", Constant.RespCode.SUCCESS.getCode());
+			return ret;
 		}
+
+		IsuWorkflow vo = issueWorkflowService.get(id, orgId);
 
 		List<IsuStatus> statuses = issueWorkflowService.listStatusForEdit(vo.getId(), orgId);
 

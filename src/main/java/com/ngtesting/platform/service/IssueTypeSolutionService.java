@@ -20,4 +20,7 @@ public interface IssueTypeSolutionService extends BaseService {
 
     Boolean addAll(Integer solutionId, Integer orgId);
     Boolean removeAll(Integer solutionId, Integer orgId);
+
+    // For Project
+    IsuTypeSolution getByProject(Integer projectId, Integer orgId);
 }

@@ -4,11 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.IsuPage;
-import com.ngtesting.platform.model.IsuPageSolution;
+import com.ngtesting.platform.model.IsuWorkflow;
+import com.ngtesting.platform.model.IsuWorkflowSolution;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.IssuePageService;
-import com.ngtesting.platform.service.IssuePageSolutionService;
+import com.ngtesting.platform.service.IssueWorkflowService;
+import com.ngtesting.platform.service.IssueWorkflowSolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,22 +23,22 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_ADMIN + "issue_page_solution/")
-public class IssuePageSolutionAdmin extends BaseAction {
+@RequestMapping(Constant.API_PATH_ADMIN + "issue_workflow_solution/")
+public class IssueWorkflowSolutionAdmin extends BaseAction {
     @Autowired
-    IssuePageService pageService;
+    IssueWorkflowService workflowService;
 	@Autowired
-    IssuePageSolutionService pageSolutionService;
+    IssueWorkflowSolutionService workflowSolutionService;
 
 	@RequestMapping(value = "load", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> load(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
+		Map<String, Object> ret = new HashMap();
 
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		List<IsuPageSolution> vos = pageSolutionService.list(orgId);
+		List<IsuWorkflowSolution> vos = workflowSolutionService.list(orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		ret.put("solutions", vos);
@@ -54,11 +54,11 @@ public class IssuePageSolutionAdmin extends BaseAction {
 		Integer orgId = userVo.getDefaultOrgId();
 
 		Integer solutionId = json.getInteger("id");
-		IsuPageSolution solution = null;
+		IsuWorkflowSolution solution = null;
 		if (solutionId == null) {
-			solution = new IsuPageSolution();
+			solution = new IsuWorkflowSolution();
 		} else {
-			solution = pageSolutionService.get(solutionId, orgId);
+			solution = workflowSolutionService.get(solutionId, orgId);
 		}
 
 		ret.put("solution", solution);
@@ -76,14 +76,14 @@ public class IssuePageSolutionAdmin extends BaseAction {
 
 		Integer solutionId = json.getInteger("id");
 
-        IsuPageSolution solution = pageSolutionService.get(solutionId, orgId);
-        Map itemMap = pageSolutionService.getItemsMap(solutionId, orgId);
+        IsuWorkflowSolution solution = workflowSolutionService.get(solutionId, orgId);
+        Map itemMap = workflowSolutionService.getItemsMap(solutionId, orgId);
 
-        List<IsuPage> pages = pageService.list(orgId);
+        List<IsuWorkflow> workflows = workflowService.list(orgId);
 
 		ret.put("solution", solution);
         ret.put("itemMap", itemMap);
-        ret.put("pages", pages);
+        ret.put("workflows", workflows);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
@@ -96,8 +96,8 @@ public class IssuePageSolutionAdmin extends BaseAction {
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		IsuPageSolution vo = JSON.parseObject(JSON.toJSONString(json), IsuPageSolution.class);
-		pageSolutionService.save(vo, orgId);
+		IsuWorkflowSolution vo = JSON.parseObject(JSON.toJSONString(json), IsuWorkflowSolution.class);
+		workflowSolutionService.save(vo, orgId);
 
 		ret.put("solution", vo);
 
@@ -115,7 +115,7 @@ public class IssuePageSolutionAdmin extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		boolean success = pageSolutionService.delete(id, orgId);
+		boolean success = workflowSolutionService.delete(id, orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
@@ -131,19 +131,18 @@ public class IssuePageSolutionAdmin extends BaseAction {
 
 		Integer solutionId = json.getInteger("solutionId");
 		Integer typeId = json.getInteger("type");
-		String opt = json.getString("opt");
-		Integer pageId = json.getInteger("page");
+		Integer workflowId = json.getInteger("workflow");
 
-		boolean success = pageSolutionService.changeItem(typeId, opt, pageId, solutionId, orgId);
+		boolean success = workflowSolutionService.changeItem(typeId, workflowId, solutionId, orgId);
 
-		IsuPageSolution solution = pageSolutionService.get(solutionId, orgId);
-		Map itemMap = pageSolutionService.getItemsMap(solutionId, orgId);
+        IsuWorkflowSolution solution = workflowSolutionService.get(solutionId, orgId);
+        Map itemMap = workflowSolutionService.getItemsMap(solutionId, orgId);
 
-		List<IsuPage> pages = pageService.list(orgId);
+        List<IsuWorkflow> workflows = workflowService.list(orgId);
 
-		ret.put("solution", solution);
-		ret.put("itemMap", itemMap);
-		ret.put("pages", pages);
+        ret.put("solution", solution);
+        ret.put("itemMap", itemMap);
+        ret.put("workflows", workflows);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

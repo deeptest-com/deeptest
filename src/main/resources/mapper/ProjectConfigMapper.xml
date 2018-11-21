@@ -2,8 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.ProjectConfigDao" >
 
-    <select id="get" parameterType="Integer" resultType="TstProject">
-        SELECT * FROM TstProject p WHERE p.id = #{id}
+    <select id="getTypeSolution" resultType="IsuTypeSolution">
+        SELECT * FROM IsuTypeSolution o
+        JOIN TstProject p ON p.issueTypeSolutionId=o.id
+        WHERE p.id = #{projectId}
     </select>
 
 </mapper>

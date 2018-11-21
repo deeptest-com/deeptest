@@ -36,12 +36,12 @@ public class IssuePageSolutionServiceImpl extends BaseServiceImpl implements Iss
 
         Map<String, Map<String, String>> map = new LinkedHashMap<>();
         for (IsuPageSolutionItem item : items) {
-            String typeKey = item.getIssueTypeId() + "-" + item.getIssueTypeName();
+            String typeKey = item.getTypeId() + "-" + item.getTypeName();
             if (!map.containsKey(typeKey)) {
                 map.put(typeKey, new LinkedHashMap<>());
             }
 
-            String pageKey = item.getIssuePageId() + "-" + item.getIssuePageName();
+            String pageKey = item.getPageId() + "-" + item.getPageName();
             map.get(typeKey).put(item.getOpt().toString(), pageKey);
         }
 
@@ -72,5 +72,11 @@ public class IssuePageSolutionServiceImpl extends BaseServiceImpl implements Iss
         }
 
         return true;
+    }
+
+    @Override
+    public boolean changeItem(Integer typeId, String opt, Integer pageId, Integer solutionId, Integer orgId) {
+        Integer count = pageSolutionDao.changeItem(typeId, opt, pageId, solutionId, orgId);
+        return count > 0;
     }
 }

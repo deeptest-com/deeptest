@@ -12,13 +12,18 @@ public interface IssuePageSolutionDao {
 
     IsuPageSolution get(@Param("id") Integer id, @Param("orgId") Integer orgId);
 
-    List<IsuPageSolutionItem> getItems(@Param("pageSolutionId") Integer pageSolutionId,
-                                       @Param("orgId") Integer orgId);
-
     void save(IsuPageSolution vo);
 
     Integer update(IsuPageSolution vo);
 
     Integer delete(@Param("id") Integer id, @Param("orgId") Integer orgId);
 
+    List<IsuPageSolutionItem> getItems(@Param("solutionId") Integer solutionId,
+                                       @Param("orgId") Integer orgId);
+
+    Integer changeItem(@Param("typeId") Integer typeId,
+                        @Param("opt") String opt,
+                        @Param("pageId") Integer pageId,
+                        @Param("solutionId") Integer solutionId,
+                        @Param("orgId") Integer orgId);
 }

@@ -15,6 +15,8 @@ public interface IssueTypeSolutionService extends BaseService {
 
     Boolean delete(Integer id, Integer orgId);
 
+    Boolean setDefault(Integer id, Integer orgId);
+
     Boolean addType(Integer typeId, Integer solutionId, Integer orgId);
     Boolean removeType(Integer typeId, Integer solutionId, Integer orgId);
 
@@ -23,4 +25,5 @@ public interface IssueTypeSolutionService extends BaseService {
 
     // For Project
     IsuTypeSolution getByProject(Integer projectId, Integer orgId);
+    void setByProject(Integer solutionId, Integer projectId, Integer orgId);
 }

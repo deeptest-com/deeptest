@@ -7,6 +7,7 @@ import com.ngtesting.platform.service.IssuePageSolutionService;
 import com.ngtesting.platform.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -77,6 +78,15 @@ public class IssuePageSolutionServiceImpl extends BaseServiceImpl implements Iss
     @Override
     public boolean changeItem(Integer typeId, String opt, Integer pageId, Integer solutionId, Integer orgId) {
         Integer count = pageSolutionDao.changeItem(typeId, opt, pageId, solutionId, orgId);
+        return count > 0;
+    }
+
+    @Override
+    @Transactional
+    public Boolean setDefault(Integer id, Integer orgId) {
+        pageSolutionDao.removeDefault(orgId);
+
+        Integer count = pageSolutionDao.setDefault(id, orgId);
         return count > 0;
     }
 }

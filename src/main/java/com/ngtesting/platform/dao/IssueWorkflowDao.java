@@ -17,6 +17,10 @@ public interface IssueWorkflowDao {
     Integer delete(@Param("id") Integer id,
                    @Param("orgId") Integer orgId);
 
+    Integer removeDefault(@Param("orgId") Integer orgId);
+    Integer setDefault(@Param("id") Integer id,
+                       @Param("orgId") Integer orgId);
+
     List<IsuStatus> listStatus(@Param("id") Integer id);
 
     void removeTransitions(@Param("workflowId") Integer workflowId,

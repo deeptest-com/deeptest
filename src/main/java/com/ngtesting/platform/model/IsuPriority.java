@@ -9,6 +9,7 @@ public class IsuPriority extends BaseModel {
 
 	private String descr;
 	private Boolean isDefault = false;
+	private Boolean isBuildIn = false;
 	private Integer ordr;
 	private Integer orgId;
 
@@ -26,14 +27,6 @@ public class IsuPriority extends BaseModel {
 
 	public void setValue(String value) {
 		this.value = value;
-	}
-
-	public Boolean getIsDefault() {
-		return this.isDefault;
-	}
-
-	public void setIsDefault(Boolean isDefault) {
-		this.isDefault = isDefault;
 	}
 
 	public Integer getOrdr() {
@@ -57,4 +50,19 @@ public class IsuPriority extends BaseModel {
 		this.descr = descr;
 	}
 
+	public Boolean getDefault() {
+		return isDefault;
+	}
+
+	public void setDefault(Boolean aDefault) {
+		isDefault = aDefault;
+	}
+
+	public Boolean getBuildIn() {
+		return isBuildIn;
+	}
+
+	public void setBuildIn(Boolean buildIn) {
+		isBuildIn = buildIn;
+	}
 }

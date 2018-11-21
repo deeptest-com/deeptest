@@ -30,9 +30,9 @@
 
     <insert id="save" parameterType="IsuPrioritySolution" useGeneratedKeys="true" keyProperty="id">
         insert into IsuPrioritySolution
-        (name,orgId,deleted,disabled,createTime)
+        (name,orgId, isDefault, isBuildIn,deleted,disabled,createTime)
         values
-        (#{name},#{orgId},FALSE,FALSE,NOW())
+        (#{name},#{orgId}, #{isDefault}, #{isBuildIn}, FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="IsuPrioritySolution">
@@ -49,6 +49,17 @@
         SET disabled=TRUE, updateTime=NOW()
         WHERE id=#{id} AND orgId=#{orgId}
     </delete>
+
+    <update id="removeDefault">
+        UPDATE IsuPrioritySolution
+        SET isDefault=FALSE, updateTime=NOW()
+        WHERE orgId=#{orgId}
+    </update>
+    <update id="setDefault">
+        UPDATE IsuPrioritySolution
+        SET isDefault=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND orgId=#{orgId}
+    </update>
 
     <insert id="addPriority">
         insert into IsuPrioritySolutionItem

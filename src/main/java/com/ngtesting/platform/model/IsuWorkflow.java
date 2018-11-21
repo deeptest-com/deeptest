@@ -11,7 +11,8 @@ public class IsuWorkflow extends BaseModel {
     private String descr;
     private Integer displayOrder;
     private Boolean isFinal;
-    private Boolean isBuildIn = false;
+	private Boolean isDefault = false;
+	private Boolean isBuildIn = false;
     private Integer orgId;
 
 	private List<IsuWorkflowTransition> statusTransitions = new LinkedList<>();
@@ -48,18 +49,9 @@ public class IsuWorkflow extends BaseModel {
 	public void setDisplayOrder(Integer displayOrder) {
 		this.displayOrder = displayOrder;
 	}
-	public Boolean getIsFinal() {
-		return isFinal;
-	}
-	public void setIsFinal(Boolean isFinal) {
-		this.isFinal = isFinal;
-	}
-	public Boolean getIsBuildIn() {
-		return isBuildIn;
-	}
-	public void setIsBuildIn(Boolean isBuildIn) {
-		this.isBuildIn = isBuildIn;
-	}
+
+
+
 	public Integer getOrgId() {
 		return orgId;
 	}
@@ -67,4 +59,27 @@ public class IsuWorkflow extends BaseModel {
 		this.orgId = orgId;
 	}
 
+	public Boolean getFinal() {
+		return isFinal;
+	}
+
+	public void setFinal(Boolean aFinal) {
+		isFinal = aFinal;
+	}
+
+	public Boolean getDefault() {
+		return isDefault;
+	}
+
+	public void setDefault(Boolean aDefault) {
+		isDefault = aDefault;
+	}
+
+	public Boolean getBuildIn() {
+		return isBuildIn;
+	}
+
+	public void setBuildIn(Boolean buildIn) {
+		isBuildIn = buildIn;
+	}
 }

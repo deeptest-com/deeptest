@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.IsuField;
-import com.ngtesting.platform.model.IsuPage;
-import com.ngtesting.platform.model.IsuPageTab;
-import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.IssueFieldService;
 import com.ngtesting.platform.service.IssuePageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,6 +125,29 @@ public class IssuePageAdmin extends BaseAction {
 		boolean success = pageService.delete(id, orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		return ret;
+	}
+
+	@RequestMapping(value = "setDefault", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = userVo.getDefaultOrgId();
+
+		Integer id = json.getInteger("id");
+
+		Boolean result = pageService.setDefault(id, orgId);
+		if (!result) { // 当对象不是默认org的，结果会返回false
+			return authFail();
+		}
+
+        List<IsuPage> pages = pageService.list(orgId);
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        ret.put("pages", pages);
+
 		return ret;
 	}
 

@@ -7,7 +7,7 @@
         WHERE o.orgId=#{orgId}
 
         AND o.disabled!=TRUE AND o.deleted!=TRUE
-        ORDER BY ordr ASC
+        ORDER BY o.ordr ASC
     </select>
     <select id="listBySolutionId" resultType="IsuType" parameterType="Map">
         SELECT * FROM IsuType o
@@ -44,9 +44,9 @@
 
     <insert id="save" parameterType="IsuType" useGeneratedKeys="true" keyProperty="id">
         insert into IsuType
-        (label,value,descr,orgId,ordr,isDefault,deleted,disabled,createTime)
+        (label,value,descr,orgId,ordr, isDefault, isBuildIn,deleted,disabled,createTime)
         values
-        (#{label},#{value},#{descr},#{orgId},#{ordr},#{isDefault},FALSE,FALSE,NOW())
+        (#{label},#{value},#{descr},#{orgId},#{ordr}, #{isDefault}, #{isBuildIn},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="IsuType">

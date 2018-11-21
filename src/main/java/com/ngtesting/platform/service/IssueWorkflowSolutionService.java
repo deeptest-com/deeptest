@@ -17,4 +17,6 @@ public interface IssueWorkflowSolutionService extends BaseService {
     boolean delete(Integer id, Integer orgId);
 
     boolean changeItem(Integer typeId, Integer workflowId, Integer solutionId, Integer orgId);
+
+    Boolean setDefault(Integer id, Integer orgId);
 }

@@ -59,4 +59,13 @@ public class IssuePageServiceImpl extends BaseServiceImpl implements IssuePageSe
         return true;
     }
 
+    @Override
+    @Transactional
+    public Boolean setDefault(Integer id, Integer orgId) {
+        pageDao.removeDefault(orgId);
+
+        Integer count = pageDao.setDefault(id, orgId);
+        return count > 0;
+    }
+
 }

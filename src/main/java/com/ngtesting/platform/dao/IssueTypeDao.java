@@ -26,6 +26,7 @@ public interface IssueTypeDao {
     Integer removeDefault(@Param("orgId") Integer orgId);
     Integer setDefault(@Param("id") Integer id,
                        @Param("orgId") Integer orgId);
+
     Integer setOrder(@Param("id") Integer id,
                      @Param("ordr") Integer ordr,
                      @Param("orgId") Integer orgId);

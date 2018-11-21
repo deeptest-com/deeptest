@@ -18,4 +18,6 @@ public interface IssueWorkflowService extends BaseService {
     List<IsuStatus> listStatusForDesign(Integer id);
 
     Map<String, IsuWorkflowTransition> getTransitionMap(Integer id);
+
+    Boolean setDefault(Integer id, Integer orgId);
 }

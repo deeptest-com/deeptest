@@ -140,43 +140,27 @@ public class IssueWorkflowAdmin extends BaseAction {
 		return ret;
 	}
 
-	@RequestMapping(value = "setDefault", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
+    @RequestMapping(value = "setDefault", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
 
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//		Integer orgId = userVo.getDefaultOrgId();
-//		Integer id = json.getInteger("id");
-//
-//		boolean success = issueWorkflowService.setDefault(id, orgId);
-//
-//		List<CaseTypeVo> vos = issueWorkflowService.listVos(orgId);
-//
-//        ret.put("data", vos);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = userVo.getDefaultOrgId();
 
-		return ret;
-	}
+        Integer id = json.getInteger("id");
 
-	@RequestMapping(value = "changeOrder", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
+        Boolean result = issueWorkflowService.setDefault(id, orgId);
+        if (!result) { // 当对象不是默认org的，结果会返回false
+            return authFail();
+        }
 
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//		Integer orgId = userVo.getDefaultOrgId();
-//		Integer id = json.getInteger("id");
-//		String act = json.getString("act");
-//
-//		boolean success = issueWorkflowService.changeOrder(id, act, orgId);
-//
-//		List<CaseTypeVo> vos = issueWorkflowService.listVos(orgId);
-//
-//        ret.put("data", vos);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        List<IsuWorkflow> vos = issueWorkflowService.list(orgId);
 
-		return ret;
-	}
+        ret.put("data", vos);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+
+        return ret;
+    }
 
 }

@@ -68,11 +68,7 @@ public class IssueTypeServiceImpl extends BaseServiceImpl implements IssueTypeSe
     @Override
     public Boolean delete(Integer id, Integer orgId) {
         Integer count = issueTypeDao.delete(id, orgId);
-        if (count == 0) {
-            return false;
-        }
-
-        return true;
+        return count > 0;
     }
 
     @Override
@@ -81,10 +77,7 @@ public class IssueTypeServiceImpl extends BaseServiceImpl implements IssueTypeSe
         issueTypeDao.removeDefault(orgId);
 
         Integer count = issueTypeDao.setDefault(id, orgId);
-        if (count == 0) {
-            return false;
-        }
-        return true;
+        return count > 0;
     }
 
     @Override

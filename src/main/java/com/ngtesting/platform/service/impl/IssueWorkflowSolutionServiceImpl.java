@@ -7,6 +7,7 @@ import com.ngtesting.platform.service.IssueWorkflowSolutionService;
 import com.ngtesting.platform.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -69,6 +70,15 @@ public class IssueWorkflowSolutionServiceImpl extends BaseServiceImpl implements
         }
 
         return true;
+    }
+
+    @Override
+    @Transactional
+    public Boolean setDefault(Integer id, Integer orgId) {
+        workflowSolutionDao.removeDefault(orgId);
+
+        Integer count = workflowSolutionDao.setDefault(id, orgId);
+        return count > 0;
     }
 
     @Override

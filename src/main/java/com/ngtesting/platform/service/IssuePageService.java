@@ -14,4 +14,5 @@ public interface IssuePageService extends BaseService {
 
     boolean delete(Integer id, Integer orgId);
 
+    Boolean setDefault(Integer id, Integer orgId);
 }

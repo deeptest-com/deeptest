@@ -7,7 +7,7 @@
         WHERE o.orgId=#{orgId}
 
         AND o.disabled!=TRUE AND o.deleted!=TRUE
-        ORDER BY ordr ASC
+        ORDER BY o.ordr ASC
     </select>
 
     <select id="listBySolutionId" resultType="IsuPriority" parameterType="Map">
@@ -45,9 +45,9 @@
 
     <insert id="save" parameterType="IsuPriority" useGeneratedKeys="true" keyProperty="id">
         insert into IsuPriority
-        (label,value,descr,orgId,ordr,isDefault,deleted,disabled,createTime)
+        (label,value,descr,orgId, isDefault, isBuildIn,ordr,deleted,disabled,createTime)
         values
-        (#{label},#{value},#{descr},#{orgId},#{ordr},#{isDefault},FALSE,FALSE,NOW())
+        (#{label},#{value},#{descr},#{orgId}, #{isDefault}, #{isBuildIn},#{ordr},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="IsuPriority">

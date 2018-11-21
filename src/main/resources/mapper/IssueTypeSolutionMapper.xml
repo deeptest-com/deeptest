@@ -29,9 +29,9 @@
 
     <insert id="save" parameterType="IsuTypeSolution" useGeneratedKeys="true" keyProperty="id">
         insert into IsuTypeSolution
-        (name,orgId,deleted,disabled,createTime)
+        (name,orgId, isDefault, isBuildIn,deleted,disabled,createTime)
         values
-        (#{name},#{orgId},FALSE,FALSE,NOW())
+        (#{name},#{orgId}, #{isDefault}, #{isBuildIn},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="IsuTypeSolution">
@@ -43,11 +43,22 @@
         WHERE id=#{id} AND orgId=#{orgId}
     </update>
 
-    <delete id="delete">
+    <update id="delete">
         UPDATE IsuTypeSolution
         SET disabled=TRUE, updateTime=NOW()
         WHERE id=#{id} AND orgId=#{orgId}
-    </delete>
+    </update>
+
+    <update id="removeDefault">
+        UPDATE IsuTypeSolution
+        SET isDefault=FALSE, updateTime=NOW()
+        WHERE orgId=#{orgId}
+    </update>
+    <update id="setDefault">
+        UPDATE IsuTypeSolution
+        SET isDefault=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND orgId=#{orgId}
+    </update>
 
     <insert id="addType">
         insert into IsuTypeSolutionItem
@@ -86,10 +97,17 @@
     </resultMap>
 
     <!-- For Project -->
-    <select id="getByProject" resultType="IsuTypeSolution">
+    <select id="getByProject" resultMap="isuTypeSolutionMap">
         SELECT * FROM IsuTypeSolution o
         JOIN TstProject p ON p.issueTypeSolutionId=o.id
         WHERE p.id = #{projectId} AND o.orgId = #{orgId}
     </select>
+    <update id="setByProject">
+        UPDATE TstProject
+        SET issueTypeSolutionId=#{solutionId},
+        updateTime=NOW()
+
+        WHERE id=#{projectId} AND orgId=#{orgId}
+    </update>
 
 </mapper>

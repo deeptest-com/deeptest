@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.model.IsuType;
 import com.ngtesting.platform.model.IsuWorkflow;
 import com.ngtesting.platform.model.IsuWorkflowSolution;
 import com.ngtesting.platform.model.TstUser;
@@ -147,5 +148,28 @@ public class IssueWorkflowSolutionAdmin extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+
+    @RequestMapping(value = "setDefault", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = userVo.getDefaultOrgId();
+
+        Integer id = json.getInteger("id");
+
+        Boolean result = workflowSolutionService.setDefault(id, orgId);
+        if (!result) { // 当对象不是默认org的，结果会返回false
+            return authFail();
+        }
+
+        List<IsuWorkflowSolution> vos = workflowSolutionService.list(orgId);
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        ret.put("solutions", vos);
+
+        return ret;
+    }
 
 }

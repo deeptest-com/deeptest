@@ -10,6 +10,7 @@ public class IsuTypeSolution extends BaseModel {
 
     private String descr;
     private Boolean isDefault = false;
+    private Boolean isBuildIn = false;
     private Integer orgId;
 
     private List<IsuType> items = new LinkedList<>();
@@ -56,5 +57,13 @@ public class IsuTypeSolution extends BaseModel {
 
     public void setItems(List<IsuType> items) {
         this.items = items;
+    }
+
+    public Boolean getBuildIn() {
+        return isBuildIn;
+    }
+
+    public void setBuildIn(Boolean buildIn) {
+        isBuildIn = buildIn;
     }
 }

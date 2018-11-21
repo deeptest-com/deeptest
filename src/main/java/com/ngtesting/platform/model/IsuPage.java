@@ -9,6 +9,7 @@ public class IsuPage extends BaseModel {
     private String name;
     private Integer orgId;
     private Boolean isDefault = false;
+    private Boolean isBuildIn = false;
 
     List<IsuPageTab> tabs = new LinkedList();
 
@@ -42,5 +43,13 @@ public class IsuPage extends BaseModel {
 
     public void setDefault(Boolean aDefault) {
         isDefault = aDefault;
+    }
+
+    public Boolean getBuildIn() {
+        return isBuildIn;
+    }
+
+    public void setBuildIn(Boolean buildIn) {
+        isBuildIn = buildIn;
     }
 }

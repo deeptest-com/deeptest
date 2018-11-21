@@ -64,6 +64,15 @@ public class IssueWorkflowServiceImpl extends BaseServiceImpl implements IssueWo
     }
 
     @Override
+    @Transactional
+    public Boolean setDefault(Integer id, Integer orgId) {
+        workflowDao.removeDefault(orgId);
+
+        Integer count = workflowDao.setDefault(id, orgId);
+        return count > 0;
+    }
+
+    @Override
     public List<IsuStatus> listStatusForEdit(Integer id, Integer orgId) {
         List<IsuStatus> all = statusService.list(orgId);
         List<IsuStatus> statuses = workflowDao.listStatus(id);

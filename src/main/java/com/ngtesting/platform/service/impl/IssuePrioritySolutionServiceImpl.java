@@ -110,4 +110,12 @@ public class IssuePrioritySolutionServiceImpl extends BaseServiceImpl implements
 		return true;
 	}
 
+	@Override
+	public Boolean setDefault(Integer id, Integer orgId) {
+		solutionDao.removeDefault(orgId);
+
+		Integer count = solutionDao.setDefault(id, orgId);
+		return count > 0;
+	}
+
 }

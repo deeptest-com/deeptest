@@ -110,7 +110,6 @@ public class IssuePriorityAdmin extends BaseAction {
 		return ret;
 	}
 
-
 	@RequestMapping(value = "setDefault", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {

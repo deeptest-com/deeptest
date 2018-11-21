@@ -50,20 +50,26 @@ public class IssueTypeAction extends BaseAction {
 		return ret;
 	}
 
-	@RequestMapping(value = "save", method = RequestMethod.POST)
+	@RequestMapping(value = "setByProject", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> setByProject(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-//		IsuType vo = json.getObject("model", IsuType.class);
-//
-//		IsuType po = solutionService.save(vo, orgId);
-//
-//		ret.put("data", po);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        Integer solutionId = json.getInteger("solutionId");
+        Integer projectId = json.getInteger("projectId");
+
+        solutionService.setByProject(solutionId, projectId, orgId);
+
+        IsuTypeSolution solution = solutionService.getByProject(projectId, orgId);
+        List<IsuTypeSolution> solutions = solutionService.list(orgId);
+
+        ret.put("model", solution);
+        ret.put("models", solutions);
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
 

@@ -21,9 +21,9 @@
 
     <insert id="save" parameterType="IsuPage" useGeneratedKeys="true" keyProperty="id">
         insert into IsuPage
-        (name, orgId, deleted, disabled, createTime)
+        (name, orgId, isDefault, isBuildIn, deleted, disabled, createTime)
         values
-        (#{name}, #{orgId}, FALSE, FALSE, NOW())
+        (#{name}, #{orgId}, #{isDefault}, #{isBuildIn}, FALSE, FALSE, NOW())
     </insert>
 
     <insert id="saveDefaultTab" useGeneratedKeys="true" keyProperty="id">
@@ -45,6 +45,17 @@
         SET disabled=TRUE, updateTime=NOW()
         WHERE id=#{id} AND orgId=#{orgId}
     </delete>
+
+    <update id="removeDefault">
+        UPDATE IsuPage
+        SET isDefault=FALSE, updateTime=NOW()
+        WHERE orgId=#{orgId}
+    </update>
+    <update id="setDefault">
+        UPDATE IsuPage
+        SET isDefault=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND orgId=#{orgId}
+    </update>
 
     <resultMap id="issuePageMap" type="IsuPage" autoMapping="true">
         <id column="id" property="id"/>

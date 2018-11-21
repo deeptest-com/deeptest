@@ -10,6 +10,7 @@ public class IsuPrioritySolution extends BaseModel {
 
 	private String descr;
 	private Boolean isDefault = false;
+	private Boolean isBuildIn = false;
 	private Integer orgId;
 
     private List<IsuPriority> items = new LinkedList<>();
@@ -57,4 +58,12 @@ public class IsuPrioritySolution extends BaseModel {
     public void setItems(List<IsuPriority> items) {
         this.items = items;
     }
+
+	public Boolean getBuildIn() {
+		return isBuildIn;
+	}
+
+	public void setBuildIn(Boolean buildIn) {
+		isBuildIn = buildIn;
+	}
 }

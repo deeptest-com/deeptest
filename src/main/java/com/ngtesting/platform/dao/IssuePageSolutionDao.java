@@ -26,4 +26,8 @@ public interface IssuePageSolutionDao {
                         @Param("pageId") Integer pageId,
                         @Param("solutionId") Integer solutionId,
                         @Param("orgId") Integer orgId);
+
+    Integer removeDefault(@Param("orgId") Integer orgId);
+    Integer setDefault(@Param("id") Integer id,
+                       @Param("orgId") Integer orgId);
 }

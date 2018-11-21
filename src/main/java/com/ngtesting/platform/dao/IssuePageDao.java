@@ -28,4 +28,8 @@ public interface IssuePageDao {
     IsuPageTab getTab(@Param("tabId") Integer tabId, @Param("orgId") Integer orgId);
 
     Integer getMaxFieldOrdr(Integer tabId);
+
+    Integer removeDefault(@Param("orgId") Integer orgId);
+    Integer setDefault(@Param("id") Integer id,
+                       @Param("orgId") Integer orgId);
 }

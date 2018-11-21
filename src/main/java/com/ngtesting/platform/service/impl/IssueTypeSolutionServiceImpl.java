@@ -55,31 +55,19 @@ public class IssueTypeSolutionServiceImpl extends BaseServiceImpl implements Iss
     @Override
     public Boolean delete(Integer id, Integer orgId) {
         Integer count = solutionDao.delete(id, orgId);
-        if (count == 0) {
-            return false;
-        }
-
-        return true;
+        return count > 0;
     }
 
     @Override
     public Boolean addType(Integer typeId, Integer solutionId, Integer orgId) {
         Integer count = solutionDao.addType(typeId, solutionId, orgId);
-        if (count == 0) {
-            return false;
-        }
-
-        return true;
+        return count > 0;
     }
 
     @Override
     public Boolean removeType(Integer typeId, Integer solutionId, Integer orgId) {
         Integer count = solutionDao.removeType(typeId, solutionId, orgId);
-        if (count == 0) {
-            return false;
-        }
-
-        return true;
+        return count > 0;
     }
 
     @Override
@@ -87,27 +75,32 @@ public class IssueTypeSolutionServiceImpl extends BaseServiceImpl implements Iss
         List<IsuType> types = typeDao.listNotInSolution(solutionId, orgId);
 
         Integer count = solutionDao.addAll(types, solutionId, orgId);
-        if (count == 0) {
-            return false;
-        }
-
-        return true;
+        return count > 0;
     }
 
     @Override
     public Boolean removeAll(Integer solutionId, Integer orgId) {
         Integer count = solutionDao.removeAll(solutionId, orgId);
-        if (count == 0) {
-            return false;
-        }
-
-        return true;
+        return count > 0;
     }
 
     // For Project
     @Override
     public IsuTypeSolution getByProject(Integer projectId, Integer orgId) {
         return solutionDao.getByProject(projectId, orgId);
+    }
+
+    @Override
+    public void setByProject(Integer solutionId, Integer projectId, Integer orgId) {
+        solutionDao.setByProject(solutionId, projectId, orgId);
+    }
+
+    @Override
+    public Boolean setDefault(Integer id, Integer orgId) {
+        solutionDao.removeDefault(orgId);
+
+        Integer count = solutionDao.setDefault(id, orgId);
+        return count > 0;
     }
 
 }

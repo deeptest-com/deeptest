@@ -199,4 +199,43 @@ public class IssueTypeSolutionAdmin extends BaseAction {
         return ret;
     }
 
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = userVo.getDefaultOrgId();
+
+        Integer id = json.getInteger("id");
+
+        solutionService.delete(id, orgId);
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @RequestMapping(value = "setDefault", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = userVo.getDefaultOrgId();
+
+        Integer id = json.getInteger("id");
+
+        Boolean result = solutionService.setDefault(id, orgId);
+        if (!result) { // 当对象不是默认org的，结果会返回false
+            return authFail();
+        }
+
+        List<IsuTypeSolution> vos = solutionService.list(orgId);
+
+        ret.put("data", vos);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+
+        return ret;
+    }
+
 }

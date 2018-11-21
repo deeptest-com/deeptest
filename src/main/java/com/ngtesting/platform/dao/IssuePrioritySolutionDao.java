@@ -1,7 +1,7 @@
 package com.ngtesting.platform.dao;
 
-import com.ngtesting.platform.model.IsuPrioritySolution;
 import com.ngtesting.platform.model.IsuPriority;
+import com.ngtesting.platform.model.IsuPrioritySolution;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -35,4 +35,8 @@ public interface IssuePrioritySolutionDao {
 
     Integer removeAll(@Param("solutionId") Integer solutionId,
                       @Param("orgId") Integer orgId);
+
+    Integer removeDefault(@Param("orgId") Integer orgId);
+    Integer setDefault(@Param("id") Integer id,
+                       @Param("orgId") Integer orgId);
 }

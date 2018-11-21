@@ -98,7 +98,7 @@
     </resultMap>
 
     <!-- For Project -->
-    <select id="getByProject" resultMap="isuTypeSolutionMap">
+    <select id="getByProject" resultMap="isuPrioritySolutionMap">
         SELECT * FROM IsuPrioritySolution o
         JOIN TstProject p ON p.issuePrioritySolutionId=o.id
         WHERE p.id = #{projectId} AND o.orgId = #{orgId}

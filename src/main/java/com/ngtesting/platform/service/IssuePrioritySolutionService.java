@@ -22,5 +22,10 @@ public interface IssuePrioritySolutionService extends BaseService {
 	Boolean addAll(Integer solutionId, Integer orgId);
 	Boolean removeAll(Integer solutionId, Integer orgId);
 
-    Boolean setDefault(Integer id, Integer orgId);
+	// For Project
+	IsuPrioritySolution getByProject(Integer projectId, Integer orgId);
+
+	void setByProject(Integer solutionId, Integer projectId, Integer orgId);
+
+	Boolean setDefault(Integer id, Integer orgId);
 }

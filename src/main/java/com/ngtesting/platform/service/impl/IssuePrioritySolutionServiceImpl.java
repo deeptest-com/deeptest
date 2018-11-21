@@ -4,6 +4,7 @@ import com.ngtesting.platform.dao.IssuePriorityDao;
 import com.ngtesting.platform.dao.IssuePrioritySolutionDao;
 import com.ngtesting.platform.model.IsuPriority;
 import com.ngtesting.platform.model.IsuPrioritySolution;
+import com.ngtesting.platform.model.IsuTypeSolution;
 import com.ngtesting.platform.service.IssuePrioritySolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,6 +69,14 @@ public class IssuePrioritySolutionServiceImpl extends BaseServiceImpl implements
 		return true;
 	}
 
+    @Override
+    public Boolean setDefault(Integer id, Integer orgId) {
+        solutionDao.removeDefault(orgId);
+
+        Integer count = solutionDao.setDefault(id, orgId);
+        return count > 0;
+    }
+
 	@Override
 	public Boolean addPriority(Integer priorityId, Integer solutionId, Integer orgId) {
 		Integer count = solutionDao.addPriority(priorityId, solutionId, orgId);
@@ -110,12 +119,15 @@ public class IssuePrioritySolutionServiceImpl extends BaseServiceImpl implements
 		return true;
 	}
 
+	// For Project
 	@Override
-	public Boolean setDefault(Integer id, Integer orgId) {
-		solutionDao.removeDefault(orgId);
+	public IsuPrioritySolution getByProject(Integer projectId, Integer orgId) {
+		return solutionDao.getByProject(projectId, orgId);
+	}
 
-		Integer count = solutionDao.setDefault(id, orgId);
-		return count > 0;
+	@Override
+	public void setByProject(Integer solutionId, Integer projectId, Integer orgId) {
+		solutionDao.setByProject(solutionId, projectId, orgId);
 	}
 
 }

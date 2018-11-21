@@ -97,4 +97,18 @@
         </collection>
     </resultMap>
 
+    <!-- For Project -->
+    <select id="getByProject" resultMap="isuTypeSolutionMap">
+        SELECT * FROM IsuPrioritySolution o
+        JOIN TstProject p ON p.issuePrioritySolutionId=o.id
+        WHERE p.id = #{projectId} AND o.orgId = #{orgId}
+    </select>
+    <update id="setByProject">
+        UPDATE TstProject
+        SET issuePrioritySolutionId=#{solutionId},
+        updateTime=NOW()
+
+        WHERE id=#{projectId} AND orgId=#{orgId}
+    </update>
+
 </mapper>

@@ -6,7 +6,7 @@ import com.ngtesting.platform.action.admin.CasePriorityAdmin;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuPrioritySolution;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.IssuePrioritySolutionService;
+import com.ngtesting.platform.service.intf.IssuePrioritySolutionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

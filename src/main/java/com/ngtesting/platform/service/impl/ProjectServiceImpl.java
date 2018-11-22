@@ -7,7 +7,7 @@ import com.ngtesting.platform.dao.ProjectPrivilegeDao;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstProjectAccessHistory;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.*;
+import com.ngtesting.platform.service.intf.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	private static final Log log = LogFactory.getLog(ProjectServiceImpl.class);
 
     @Autowired
-	HistoryService historyService;
+    HistoryService historyService;
 	@Autowired
 	private ProjectDao projectDao;
     @Autowired
@@ -38,7 +38,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
     @Autowired
     private UserService userService;
     @Autowired
-	ProjectPrivilegeService projectPrivilegeService;
+    ProjectPrivilegeService projectPrivilegeService;
 
     @Autowired
     AuthService authService;

@@ -4,7 +4,7 @@ import com.ngtesting.platform.dao.TstCustomFieldDao;
 import com.ngtesting.platform.dao.TstCustomFieldOptionDao;
 import com.ngtesting.platform.model.TstCustomField;
 import com.ngtesting.platform.model.TstCustomFieldOption;
-import com.ngtesting.platform.service.TestCustomFieldOptionService;
+import com.ngtesting.platform.service.intf.TestCustomFieldOptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

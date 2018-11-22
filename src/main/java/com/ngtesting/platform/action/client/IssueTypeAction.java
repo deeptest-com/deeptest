@@ -6,7 +6,7 @@ import com.ngtesting.platform.action.admin.CaseTypeAdmin;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuTypeSolution;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.IssueTypeSolutionService;
+import com.ngtesting.platform.service.intf.IssueTypeSolutionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

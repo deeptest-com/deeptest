@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.WelcomeDao;
 import com.ngtesting.platform.model.SysNums;
-import com.ngtesting.platform.service.WelcomeService;
+import com.ngtesting.platform.service.intf.WelcomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

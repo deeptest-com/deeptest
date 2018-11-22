@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.Document;
-import com.ngtesting.platform.service.IssueDocumentService;
+import com.ngtesting.platform.service.intf.IssueDocumentService;
 import com.ngtesting.platform.utils.BeanUtilEx;
 import com.ngtesting.platform.vo.Page;
 import org.springframework.stereotype.Service;

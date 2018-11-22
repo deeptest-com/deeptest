@@ -6,7 +6,7 @@ import com.ngtesting.platform.bean.websocket.WsFacade;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstModule;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.TestModuleService;
+import com.ngtesting.platform.service.intf.TestModuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;

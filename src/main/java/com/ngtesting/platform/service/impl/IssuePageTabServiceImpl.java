@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.IssuePageTabDao;
 import com.ngtesting.platform.model.IsuPageTab;
-import com.ngtesting.platform.service.IssuePageTabService;
+import com.ngtesting.platform.service.intf.IssuePageTabService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

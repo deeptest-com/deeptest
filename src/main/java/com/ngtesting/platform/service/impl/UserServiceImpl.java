@@ -5,7 +5,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.*;
 import com.ngtesting.platform.model.TstOrgGroupUserRelation;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.*;
+import com.ngtesting.platform.service.intf.*;
 import com.ngtesting.platform.utils.PasswordEncoder;
 import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;

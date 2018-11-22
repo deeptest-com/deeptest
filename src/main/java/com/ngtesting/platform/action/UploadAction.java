@@ -1,7 +1,7 @@
 package com.ngtesting.platform.action;
 
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.service.UserService;
+import com.ngtesting.platform.service.intf.UserService;
 import com.ngtesting.platform.utils.FileUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;

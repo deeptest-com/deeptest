@@ -3,7 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.TestReportDao;
 import com.ngtesting.platform.model.TstProject;
-import com.ngtesting.platform.service.TestReportService;
+import com.ngtesting.platform.service.intf.TestReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

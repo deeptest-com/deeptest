@@ -3,7 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.TstCaseComments;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.IssueCommentsService;
+import com.ngtesting.platform.service.intf.IssueCommentsService;
 import org.springframework.stereotype.Service;
 
 @Service

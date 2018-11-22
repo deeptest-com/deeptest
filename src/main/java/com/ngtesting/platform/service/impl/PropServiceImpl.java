@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.service.PropService;
+import com.ngtesting.platform.service.intf.PropService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.mail.SimpleMailMessage;

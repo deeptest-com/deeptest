@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.CasePriorityDao;
 import com.ngtesting.platform.model.TstCasePriority;
-import com.ngtesting.platform.service.CasePriorityService;
+import com.ngtesting.platform.service.intf.CasePriorityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

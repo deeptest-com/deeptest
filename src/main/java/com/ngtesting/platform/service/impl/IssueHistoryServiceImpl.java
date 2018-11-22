@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.IssueHistoryService;
+import com.ngtesting.platform.service.intf.IssueHistoryService;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;

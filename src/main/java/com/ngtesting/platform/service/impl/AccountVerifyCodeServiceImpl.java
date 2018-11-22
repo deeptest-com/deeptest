@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.AccountVerifyCodeDao;
-import com.ngtesting.platform.service.AccountVerifyCodeService;
+import com.ngtesting.platform.service.intf.AccountVerifyCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

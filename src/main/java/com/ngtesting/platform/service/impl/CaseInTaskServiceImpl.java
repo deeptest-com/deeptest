@@ -7,9 +7,10 @@ import com.ngtesting.platform.model.TstCase;
 import com.ngtesting.platform.model.TstCaseInTask;
 import com.ngtesting.platform.model.TstCaseInTaskHistory;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.CaseHistoryService;
-import com.ngtesting.platform.service.CaseInTaskService;
+import com.ngtesting.platform.service.intf.CaseHistoryService;
+import com.ngtesting.platform.service.intf.CaseInTaskService;
 import com.ngtesting.platform.utils.StringUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,7 +104,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
 
         String msg = "用户" + StringUtil.highlightDict(user.getNickname()) + action
                 + "为\"" + Constant.ExeStatus.get(status) + "\"";
-        if (!StringUtil.IsEmpty(result)) {
+        if (!StringUtils.isEmpty(result)) {
             msg += ", 结果内容：" + result;
         }
 

@@ -6,7 +6,7 @@ import com.ngtesting.platform.model.TstAlert;
 import com.ngtesting.platform.model.TstPlan;
 import com.ngtesting.platform.model.TstTask;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.AlertService;
+import com.ngtesting.platform.service.intf.AlertService;
 import com.ngtesting.platform.utils.DateUtil;
 import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;

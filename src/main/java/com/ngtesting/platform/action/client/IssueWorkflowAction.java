@@ -2,13 +2,10 @@ package com.ngtesting.platform.action.client;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
-import com.ngtesting.platform.action.admin.CaseTypeAdmin;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.*;
-import com.ngtesting.platform.service.IssuePageService;
-import com.ngtesting.platform.service.IssueStatusService;
-import com.ngtesting.platform.service.IssueWorkflowService;
-import com.ngtesting.platform.service.ProjectRoleService;
+import com.ngtesting.platform.model.IsuWorkflowSolution;
+import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.intf.IssueWorkflowSolutionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,156 +24,54 @@ import java.util.Map;
 @Controller
 @RequestMapping(Constant.API_PATH_CLIENT + "issue_workflow/")
 public class IssueWorkflowAction extends BaseAction {
-	private static final Log log = LogFactory.getLog(CaseTypeAdmin.class);
+	private static final Log log = LogFactory.getLog(IssueWorkflowAction.class);
 
 	@Autowired
-    IssueWorkflowService issueWorkflowService;
-	@Autowired
-    IssueStatusService statusService;
+	IssueWorkflowSolutionService solutionService;
 
-    @Autowired
-    IssuePageService pageService;
-    @Autowired
-    ProjectRoleService projectRoleService;
-
-	@RequestMapping(value = "list", method = RequestMethod.POST)
+	@RequestMapping(value = "getByProject", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> getByProject(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		List<IsuWorkflow> vos = issueWorkflowService.list(orgId);
+		Integer projectId = json.getInteger("projectId");
 
-        ret.put("data", vos);
+		IsuWorkflowSolution solution = solutionService.getByProject(projectId, orgId);
+		List<IsuWorkflowSolution> solutions = solutionService.list(orgId);
+
+		Map itemMap = solutionService.getItemsMap(solution.getId(), orgId);
+
+		ret.put("model", solution);
+		ret.put("models", solutions);
+		ret.put("itemMap", itemMap);
+
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-
 		return ret;
 	}
 
-	@RequestMapping(value = "get", method = RequestMethod.POST)
+	@RequestMapping(value = "setByProject", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> setByProject(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
 
-		Integer id = json.getInteger("id");
-		if (id == null) {
-			ret.put("data", new IsuWorkflow());
-			ret.put("code", Constant.RespCode.SUCCESS.getCode());
-			return ret;
-		}
+		Integer solutionId = json.getInteger("solutionId");
+		Integer projectId = json.getInteger("projectId");
 
-		IsuWorkflow vo = issueWorkflowService.get(id, orgId);
+		solutionService.setByProject(solutionId, projectId, orgId);
 
-		List<IsuStatus> statuses = issueWorkflowService.listStatusForEdit(vo.getId(), orgId);
+		IsuWorkflowSolution solution = solutionService.getByProject(projectId, orgId);
+		List<IsuWorkflowSolution> solutions = solutionService.list(orgId);
 
-		ret.put("data", vo);
-        ret.put("statuses", statuses);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
-    @RequestMapping(value = "design", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> design(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = userVo.getDefaultOrgId();
-
-        Integer id = json.getInteger("id");
-        if (id == null) {
-            ret.put("data", new IsuWorkflow());
-            ret.put("code", Constant.RespCode.SUCCESS.getCode());
-            return ret;
-        }
-
-        IsuWorkflow vo = issueWorkflowService.get(id, orgId);
-        List<IsuStatus> statuses = issueWorkflowService.listStatusForDesign(id);
-        Map<String, IsuWorkflowTransition> tranMap = issueWorkflowService.getTransitionMap(id);
-
-        List<IsuPage> pages = pageService.list(orgId);
-
-        ret.put("data", vo);
-        ret.put("statuses", statuses);
-        ret.put("tranMap", tranMap);
-
-        ret.put("pages", pages);
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
-	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
-
-        IsuWorkflow vo = json.getObject("model", IsuWorkflow.class);
-        List<Integer> statusIds = json.getObject("statusIds", List.class);
-
-        IsuWorkflow po = issueWorkflowService.save(vo, statusIds, orgId);
-
-        ret.put("data", po);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
-	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-		Integer id = json.getInteger("id");
-
-//		issueWorkflowService.delete(id);
+		ret.put("model", solution);
+		ret.put("models", solutions);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
-	@RequestMapping(value = "setDefault", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//		Integer orgId = userVo.getDefaultOrgId();
-//		Integer id = json.getInteger("id");
-//
-//		boolean success = issueWorkflowService.setDefault(id, orgId);
-//
-//		List<CaseTypeVo> vos = issueWorkflowService.listVos(orgId);
-//
-//        ret.put("data", vos);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-
-		return ret;
-	}
-
-	@RequestMapping(value = "changeOrder", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_KEY);
-//		Integer orgId = userVo.getDefaultOrgId();
-//		Integer id = json.getInteger("id");
-//		String act = json.getString("act");
-//
-//		boolean success = issueWorkflowService.changeOrder(id, act, orgId);
-//
-//		List<CaseTypeVo> vos = issueWorkflowService.listVos(orgId);
-//
-//        ret.put("data", vos);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-
 		return ret;
 	}
 

@@ -3,7 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.dao.IssueFilterDao;
 import com.ngtesting.platform.dao.UserDao;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.IsuFilterService;
+import com.ngtesting.platform.service.intf.IsuFilterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

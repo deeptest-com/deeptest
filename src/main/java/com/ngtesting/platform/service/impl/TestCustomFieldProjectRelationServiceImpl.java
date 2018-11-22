@@ -5,8 +5,8 @@ import com.ngtesting.platform.dao.TstCustomFieldProjectRelationDao;
 import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.model.TstCustomFieldProjectRelation;
 import com.ngtesting.platform.model.TstProject;
-import com.ngtesting.platform.service.TestCustomFieldProjectRelationService;
-import com.ngtesting.platform.service.ProjectService;
+import com.ngtesting.platform.service.intf.TestCustomFieldProjectRelationService;
+import com.ngtesting.platform.service.intf.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

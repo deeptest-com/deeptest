@@ -1,6 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.service.MailService;
+import com.ngtesting.platform.service.intf.MailService;
 import com.ngtesting.platform.utils.StringUtil;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.TemplateLoader;

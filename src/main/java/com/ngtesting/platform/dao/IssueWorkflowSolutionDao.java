@@ -29,4 +29,12 @@ public interface IssueWorkflowSolutionDao {
                        @Param("workflowId") Integer workflowId,
                        @Param("solutionId") Integer solutionId,
                        @Param("orgId") Integer orgId);
+
+    // For Project
+    IsuWorkflowSolution getByProject(@Param("projectId") Integer projectId,
+                                     @Param("orgId") Integer orgId);
+
+    void setByProject(@Param("solutionId") Integer solutionId,
+                      @Param("projectId") Integer projectId,
+                      @Param("orgId") Integer orgId);
 }

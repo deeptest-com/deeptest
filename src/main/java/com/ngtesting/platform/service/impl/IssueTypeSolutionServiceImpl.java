@@ -5,7 +5,7 @@ import com.ngtesting.platform.dao.IssueTypeDao;
 import com.ngtesting.platform.dao.IssueTypeSolutionDao;
 import com.ngtesting.platform.model.IsuType;
 import com.ngtesting.platform.model.IsuTypeSolution;
-import com.ngtesting.platform.service.IssueTypeSolutionService;
+import com.ngtesting.platform.service.intf.IssueTypeSolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

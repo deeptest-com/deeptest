@@ -7,7 +7,7 @@ import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuQuery;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.IssueQueryService;
+import com.ngtesting.platform.service.intf.IssueQueryService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

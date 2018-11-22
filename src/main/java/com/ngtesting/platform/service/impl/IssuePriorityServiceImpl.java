@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.IssuePriorityDao;
 import com.ngtesting.platform.model.IsuPriority;
-import com.ngtesting.platform.service.IssuePriorityService;
+import com.ngtesting.platform.service.intf.IssuePriorityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -3,7 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.dao.ProjectRoleEntityRelationDao;
 import com.ngtesting.platform.model.TstProjectRoleEntityRelation;
-import com.ngtesting.platform.service.ProjectRoleEntityRelationService;
+import com.ngtesting.platform.service.intf.ProjectRoleEntityRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

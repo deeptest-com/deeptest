@@ -5,7 +5,7 @@ import com.ngtesting.platform.dao.HistoryDao;
 import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.HistoryService;
+import com.ngtesting.platform.service.intf.HistoryService;
 import com.ngtesting.platform.utils.DateUtil;
 import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;

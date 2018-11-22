@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.dao.TestModuleDao;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.model.TstModule;
-import com.ngtesting.platform.service.TestModuleService;
+import com.ngtesting.platform.service.intf.TestModuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

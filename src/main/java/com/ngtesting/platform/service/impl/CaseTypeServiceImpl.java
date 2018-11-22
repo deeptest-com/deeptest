@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.CaseTypeDao;
 import com.ngtesting.platform.model.TstCaseType;
-import com.ngtesting.platform.service.CaseTypeService;
+import com.ngtesting.platform.service.intf.CaseTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

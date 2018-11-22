@@ -4,8 +4,7 @@ import com.ngtesting.platform.dao.IssuePriorityDao;
 import com.ngtesting.platform.dao.IssuePrioritySolutionDao;
 import com.ngtesting.platform.model.IsuPriority;
 import com.ngtesting.platform.model.IsuPrioritySolution;
-import com.ngtesting.platform.model.IsuTypeSolution;
-import com.ngtesting.platform.service.IssuePrioritySolutionService;
+import com.ngtesting.platform.service.intf.IssuePrioritySolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

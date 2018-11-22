@@ -5,7 +5,8 @@ import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstOrg;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.*;
+import com.ngtesting.platform.service.intf.OrgService;
+import com.ngtesting.platform.service.intf.PushSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,10 +24,10 @@ import java.util.Map;
 @RequestMapping(Constant.API_PATH_ADMIN + "org/")
 public class OrgAdmin extends BaseAction {
 	@Autowired
-    OrgService orgService;
+	OrgService orgService;
 
 	@Autowired
-    PushSettingsService pushSettingsService;
+	PushSettingsService pushSettingsService;
 
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)

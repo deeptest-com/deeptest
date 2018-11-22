@@ -80,4 +80,18 @@
         </if>
     </update>
 
+    <!-- For Project -->
+    <select id="getByProject" resultType="IsuWorkflowSolution">
+        SELECT * FROM IsuWorkflowSolution o
+        JOIN TstProject p ON p.issueWorkflowSolutionId=o.id
+        WHERE p.id = #{projectId} AND o.orgId = #{orgId}
+    </select>
+    <update id="setByProject">
+        UPDATE TstProject
+        SET issueWorkflowSolutionId=#{solutionId},
+        updateTime=NOW()
+
+        WHERE id=#{projectId} AND orgId=#{orgId}
+    </update>
+
 </mapper>

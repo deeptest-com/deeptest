@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.OrgGroupDao;
 import com.ngtesting.platform.model.TstOrgGroup;
-import com.ngtesting.platform.service.OrgGroupService;
+import com.ngtesting.platform.service.intf.OrgGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

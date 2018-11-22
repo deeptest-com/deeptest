@@ -6,7 +6,7 @@ import com.ngtesting.platform.dao.TestTaskDao;
 import com.ngtesting.platform.model.TstMsg;
 import com.ngtesting.platform.model.TstTask;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.MsgService;
+import com.ngtesting.platform.service.intf.MsgService;
 import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

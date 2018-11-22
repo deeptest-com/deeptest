@@ -2,7 +2,7 @@ package com.ngtesting.platform.action;
 
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.AuthDao;
-import com.ngtesting.platform.service.AuthService;
+import com.ngtesting.platform.service.intf.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;

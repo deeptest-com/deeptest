@@ -5,7 +5,7 @@ import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuPriority;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.IssuePriorityService;
+import com.ngtesting.platform.service.intf.IssuePriorityService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

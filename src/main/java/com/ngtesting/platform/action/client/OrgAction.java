@@ -7,7 +7,9 @@ import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstOrg;
 import com.ngtesting.platform.model.TstPlan;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.*;
+import com.ngtesting.platform.service.intf.HistoryService;
+import com.ngtesting.platform.service.intf.OrgService;
+import com.ngtesting.platform.service.intf.TestPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +30,7 @@ public class OrgAction extends BaseAction {
     OrgService orgService;
 
 	@Autowired
-	TestPlanService planService;
+    TestPlanService planService;
 	@Autowired
     HistoryService historyService;
 

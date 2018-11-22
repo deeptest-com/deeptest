@@ -3,8 +3,8 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.dao.IssuePageSolutionDao;
 import com.ngtesting.platform.model.IsuPageSolution;
 import com.ngtesting.platform.model.IsuPageSolutionItem;
-import com.ngtesting.platform.service.IssuePageSolutionService;
-import com.ngtesting.platform.service.UserService;
+import com.ngtesting.platform.service.intf.IssuePageSolutionService;
+import com.ngtesting.platform.service.intf.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,5 +88,16 @@ public class IssuePageSolutionServiceImpl extends BaseServiceImpl implements Iss
 
         Integer count = pageSolutionDao.setDefault(id, orgId);
         return count > 0;
+    }
+
+    // For Project
+    @Override
+    public IsuPageSolution getByProject(Integer projectId, Integer orgId) {
+        return pageSolutionDao.getByProject(projectId, orgId);
+    }
+
+    @Override
+    public void setByProject(Integer solutionId, Integer projectId, Integer orgId) {
+        pageSolutionDao.setByProject(solutionId, projectId, orgId);
     }
 }

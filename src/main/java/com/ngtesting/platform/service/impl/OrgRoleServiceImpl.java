@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.OrgRoleDao;
 import com.ngtesting.platform.model.TstOrgRole;
-import com.ngtesting.platform.service.OrgRoleService;
+import com.ngtesting.platform.service.intf.OrgRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

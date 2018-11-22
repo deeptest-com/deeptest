@@ -2,8 +2,8 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.*;
 import com.ngtesting.platform.model.*;
-import com.ngtesting.platform.service.IssueFieldService;
-import com.ngtesting.platform.service.UserService;
+import com.ngtesting.platform.service.intf.IssueFieldService;
+import com.ngtesting.platform.service.intf.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

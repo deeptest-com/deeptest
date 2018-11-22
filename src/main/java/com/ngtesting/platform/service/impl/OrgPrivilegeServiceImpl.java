@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.OrgPrivilegeDao;
 import com.ngtesting.platform.model.TstOrgPrivilegeDefine;
-import com.ngtesting.platform.service.OrgPrivilegeService;
+import com.ngtesting.platform.service.intf.OrgPrivilegeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

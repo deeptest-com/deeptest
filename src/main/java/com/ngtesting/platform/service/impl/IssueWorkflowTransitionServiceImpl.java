@@ -5,8 +5,8 @@ import com.ngtesting.platform.dao.IssueWorkflowTransitionDao;
 import com.ngtesting.platform.dao.ProjectRoleDao;
 import com.ngtesting.platform.model.IsuWorkflowTransition;
 import com.ngtesting.platform.model.TstProjectRole;
-import com.ngtesting.platform.service.IssueStatusService;
-import com.ngtesting.platform.service.IssueWorkflowTransitionService;
+import com.ngtesting.platform.service.intf.IssueStatusService;
+import com.ngtesting.platform.service.intf.IssueWorkflowTransitionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

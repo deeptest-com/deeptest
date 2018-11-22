@@ -5,9 +5,9 @@ import com.ngtesting.platform.dao.OrgRoleGroupRelationDao;
 import com.ngtesting.platform.model.TstOrgGroup;
 import com.ngtesting.platform.model.TstOrgRole;
 import com.ngtesting.platform.model.TstOrgRoleGroupRelation;
-import com.ngtesting.platform.service.OrgGroupService;
-import com.ngtesting.platform.service.OrgRoleGroupRelationService;
-import com.ngtesting.platform.service.OrgRoleService;
+import com.ngtesting.platform.service.intf.OrgGroupService;
+import com.ngtesting.platform.service.intf.OrgRoleGroupRelationService;
+import com.ngtesting.platform.service.intf.OrgRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

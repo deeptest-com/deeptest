@@ -5,7 +5,7 @@ import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.SysRole;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.SysRoleService;
+import com.ngtesting.platform.service.intf.SysRoleService;
 import com.ngtesting.platform.vo.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

@@ -6,7 +6,7 @@ import com.ngtesting.platform.dao.CaseTypeDao;
 import com.ngtesting.platform.model.TstCaseExeStatus;
 import com.ngtesting.platform.model.TstCasePriority;
 import com.ngtesting.platform.model.TstCaseType;
-import com.ngtesting.platform.service.CasePropertyService;
+import com.ngtesting.platform.service.intf.CasePropertyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

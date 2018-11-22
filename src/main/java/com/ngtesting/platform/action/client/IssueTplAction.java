@@ -8,7 +8,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.model.IsuQuery;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.*;
+import com.ngtesting.platform.service.intf.*;
 import com.ngtesting.platform.vo.IsuJqlColumn;
 import com.ngtesting.platform.vo.IsuJqlFilter;
 import org.springframework.beans.factory.annotation.Autowired;

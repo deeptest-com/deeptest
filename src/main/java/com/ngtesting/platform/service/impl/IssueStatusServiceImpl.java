@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.IssueStatusDao;
 import com.ngtesting.platform.model.IsuStatus;
-import com.ngtesting.platform.service.IssueStatusService;
+import com.ngtesting.platform.service.intf.IssueStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

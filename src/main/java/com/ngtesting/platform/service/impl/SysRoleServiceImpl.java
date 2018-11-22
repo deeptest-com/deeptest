@@ -1,7 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.model.SysRole;
-import com.ngtesting.platform.service.SysRoleService;
+import com.ngtesting.platform.service.intf.SysRoleService;
 import com.ngtesting.platform.vo.Page;
 import org.springframework.stereotype.Service;
 

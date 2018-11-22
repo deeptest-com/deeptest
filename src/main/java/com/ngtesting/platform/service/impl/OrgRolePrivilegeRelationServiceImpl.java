@@ -5,9 +5,9 @@ import com.ngtesting.platform.dao.OrgRolePrivilegeRelationDao;
 import com.ngtesting.platform.model.TstOrgPrivilegeDefine;
 import com.ngtesting.platform.model.TstOrgRole;
 import com.ngtesting.platform.model.TstOrgRolePrivilegeRelation;
-import com.ngtesting.platform.service.OrgPrivilegeService;
-import com.ngtesting.platform.service.OrgRolePrivilegeRelationService;
-import com.ngtesting.platform.service.OrgRoleService;
+import com.ngtesting.platform.service.intf.OrgPrivilegeService;
+import com.ngtesting.platform.service.intf.OrgRolePrivilegeRelationService;
+import com.ngtesting.platform.service.intf.OrgRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

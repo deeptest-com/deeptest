@@ -2,7 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.IssueDao;
 import com.ngtesting.platform.model.IsuIssue;
-import com.ngtesting.platform.service.IssueService;
+import com.ngtesting.platform.service.intf.IssueService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

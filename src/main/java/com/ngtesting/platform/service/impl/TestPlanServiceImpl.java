@@ -4,9 +4,9 @@ import com.github.pagehelper.PageHelper;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.TestPlanDao;
 import com.ngtesting.platform.model.*;
-import com.ngtesting.platform.service.HistoryService;
-import com.ngtesting.platform.service.TestPlanService;
-import com.ngtesting.platform.service.TestTaskService;
+import com.ngtesting.platform.service.intf.HistoryService;
+import com.ngtesting.platform.service.intf.TestPlanService;
+import com.ngtesting.platform.service.intf.TestTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

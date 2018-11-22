@@ -6,7 +6,7 @@ import com.ngtesting.platform.dao.UserDao;
 import com.ngtesting.platform.model.TstCase;
 import com.ngtesting.platform.model.TstCaseHistory;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.CaseHistoryService;
+import com.ngtesting.platform.service.intf.CaseHistoryService;
 import com.ngtesting.platform.utils.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

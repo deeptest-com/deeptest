@@ -3,7 +3,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.IssueResolutionDao;
 import com.ngtesting.platform.model.IsuResolution;
-import com.ngtesting.platform.service.IssueResolutionService;
+import com.ngtesting.platform.service.intf.IssueResolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

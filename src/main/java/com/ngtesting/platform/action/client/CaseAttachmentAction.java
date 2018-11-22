@@ -8,7 +8,7 @@ import com.ngtesting.platform.dao.CaseHistoryDao;
 import com.ngtesting.platform.model.TstCaseAttachment;
 import com.ngtesting.platform.model.TstCaseHistory;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.CaseAttachmentService;
+import com.ngtesting.platform.service.intf.CaseAttachmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;

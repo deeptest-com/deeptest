@@ -8,7 +8,7 @@ import com.itfsw.query.builder.support.model.enums.EnumOperator;
 import com.itfsw.query.builder.support.model.enums.EnumRuleType;
 import com.itfsw.query.builder.support.model.result.SqlQueryResult;
 import com.ngtesting.platform.dao.IssueTqlDao;
-import com.ngtesting.platform.service.IsuJqlBuildService;
+import com.ngtesting.platform.service.intf.IsuJqlBuildService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

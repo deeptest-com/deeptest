@@ -8,8 +8,8 @@ import com.ngtesting.platform.dao.ProjectRolePrivilegeRelationDao;
 import com.ngtesting.platform.model.TstProjectPrivilegeDefine;
 import com.ngtesting.platform.model.TstProjectRole;
 import com.ngtesting.platform.model.TstProjectRolePriviledgeRelation;
-import com.ngtesting.platform.service.OrgPrivilegeService;
-import com.ngtesting.platform.service.ProjectPrivilegeService;
+import com.ngtesting.platform.service.intf.OrgPrivilegeService;
+import com.ngtesting.platform.service.intf.ProjectPrivilegeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

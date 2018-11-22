@@ -3,7 +3,7 @@ package com.ngtesting.platform.config;
 import com.ngtesting.platform.dao.AuthDao;
 import com.ngtesting.platform.exception.AuthException;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.AuthService;
+import com.ngtesting.platform.service.intf.AuthService;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;

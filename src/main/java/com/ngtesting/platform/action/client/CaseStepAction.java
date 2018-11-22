@@ -5,7 +5,7 @@ import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstCaseStep;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.CaseStepService;
+import com.ngtesting.platform.service.intf.CaseStepService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;

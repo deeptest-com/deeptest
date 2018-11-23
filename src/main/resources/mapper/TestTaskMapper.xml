@@ -7,7 +7,7 @@
           usr.nickname userName,
           project.name projectName,
           caseProject.name caseProjectName,
-          env.name envName
+          env.label envName
 
         FROM TstTask task
 
@@ -26,7 +26,7 @@
         usr.nickname userName,
         project.name projectName,
         caseProject.name caseProjectName,
-        env.name envName,
+        env.label envName,
         assignee.id assigneeId, assignee.nickname assigneeNickname, assignee.avatar assigneeAvatar
 
         FROM TstTask task

@@ -3,7 +3,7 @@
 <mapper namespace="com.ngtesting.platform.dao.TestPlanDao" >
 
     <select id="query" resultType="TstPlan">
-        SELECT o.*, usr.nickname userName, prj.name projectName, ver.name verName
+        SELECT o.*, usr.nickname userName, prj.name projectName, ver.label verName
         FROM TstPlan o
 
         JOIN TstUser usr ON usr.id=o.userId
@@ -26,7 +26,7 @@
     <select id="listByProject" resultType="TstPlan">
         SELECT o.*,
           p.id projectId, p.name projectName,
-          v.id verId, v.name verName
+          v.id verId, v.label verName
 
         FROM TstPlan o
 
@@ -39,7 +39,7 @@
     </select>
 
     <select id="listByProjectGroup" resultType="TstPlan">
-        SELECT o.*, p.name projectName, v.name verName FROM TstPlan o
+        SELECT o.*, p.name projectName, v.label verName FROM TstPlan o
         JOIN TstProject p ON o.projectId=p.id
         LEFT JOIN TstVer v ON o.verId=v.id
 
@@ -49,7 +49,7 @@
     </select>
 
     <select id="listByOrg" resultType="TstPlan">
-        SELECT o.*, p.name projectName, v.name verName FROM TstPlan o
+        SELECT o.*, p.name projectName, v.label verName FROM TstPlan o
         JOIN TstProject p ON o.projectId=p.id
         LEFT JOIN TstVer v ON o.verId=v.id
 
@@ -59,7 +59,7 @@
     </select>
 
     <select id="get" resultType="TstPlan">
-        SELECT o.*, usr.nickname userName, prj.name projectName, ver.name verName
+        SELECT o.*, usr.nickname userName, prj.name projectName, ver.label verName
         FROM TstPlan o
 
         JOIN TstUser usr ON usr.id=o.userId

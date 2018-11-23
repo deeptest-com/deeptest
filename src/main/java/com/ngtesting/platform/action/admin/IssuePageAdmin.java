@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.service.intf.IssueDynamicFormService;
 import com.ngtesting.platform.service.intf.IssueFieldService;
 import com.ngtesting.platform.service.intf.IssuePageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ public class IssuePageAdmin extends BaseAction {
 
     @Autowired
     IssueFieldService fieldService;
+    @Autowired
+    IssueDynamicFormService dynamicFormService;
 
 	@RequestMapping(value = "load", method = RequestMethod.POST)
 	@ResponseBody
@@ -81,10 +84,13 @@ public class IssuePageAdmin extends BaseAction {
 
         IsuPageTab tab = page.getTabs().get(0);
 
-        List<IsuField> fields = fieldService.listOrgField(orgId, tab.getId());
+        List<IsuField> fields = dynamicFormService.listTabNotUsedField(orgId, tab.getId());
+        Map<String, Object> issuePropMap = dynamicFormService.fetchOrgField(orgId);
 
         ret.put("page", page);
         ret.put("fields", fields);
+        ret.put("issuePropMap", issuePropMap);
+
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -103,7 +109,7 @@ public class IssuePageAdmin extends BaseAction {
 		page = pageService.get(page.getId(), orgId);
         IsuPageTab tab = page.getTabs().get(0);
 
-		List<IsuField> fields = fieldService.listOrgField(orgId, tab.getId());
+		List<IsuField> fields = dynamicFormService.listTabNotUsedField(orgId, tab.getId());
 
 		ret.put("page", page);
         ret.put("fields", fields);

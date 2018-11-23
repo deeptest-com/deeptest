@@ -8,6 +8,7 @@ import com.ngtesting.platform.model.IsuField;
 import com.ngtesting.platform.model.IsuPage;
 import com.ngtesting.platform.model.IsuPageTab;
 import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.intf.IssueDynamicFormService;
 import com.ngtesting.platform.service.intf.IssueFieldService;
 import com.ngtesting.platform.service.intf.IssuePageService;
 import com.ngtesting.platform.service.intf.IssuePageTabService;
@@ -34,6 +35,8 @@ public class IssuePageTabAdmin extends BaseAction {
 
     @Autowired
     IssueFieldService fieldService;
+    @Autowired
+    IssueDynamicFormService dynamicFormService;
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
     @ResponseBody
@@ -48,7 +51,7 @@ public class IssuePageTabAdmin extends BaseAction {
 
         tabService.add(tab);
 
-        List<IsuField> fields = fieldService.listOrgField(orgId, tab.getId());
+        List<IsuField> fields = dynamicFormService.listTabNotUsedField(orgId, tab.getId());
 
         ret.put("tab", tab);
         ret.put("fields", fields);
@@ -68,8 +71,7 @@ public class IssuePageTabAdmin extends BaseAction {
         Integer tabId = json.getInteger("id");
 
         IsuPageTab tab = tabService.get(tabId, orgId);
-
-        List<IsuField> fields = fieldService.listOrgField(orgId, tab.getId());
+        List<IsuField> fields = dynamicFormService.listTabNotUsedField(orgId, tab.getId());
 
         ret.put("tab", tab);
         ret.put("fields", fields);
@@ -103,7 +105,7 @@ public class IssuePageTabAdmin extends BaseAction {
         IsuPageTab tab;
         if (currTabId.intValue() == id.intValue()) {
             tab = page.getTabs().get(0);
-            List<IsuField> fields = fieldService.listOrgField(orgId, tab.getId());
+            List<IsuField> fields = dynamicFormService.listTabNotUsedField(orgId, tab.getId());
             ret.put("fields", fields);
         }
 

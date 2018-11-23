@@ -2,6 +2,10 @@ package com.ngtesting.platform.model;
 
 import com.ngtesting.platform.config.ConstantIssue;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 public class IsuPageElement extends BaseModel {
     private static final long serialVersionUID = 8715160448820762150L;
 
@@ -14,6 +18,7 @@ public class IsuPageElement extends BaseModel {
     private Boolean readonly;
 
     private String key;
+    private List<Map> options = new LinkedList<>();
 
     private Integer ordr;
 
@@ -145,5 +150,13 @@ public class IsuPageElement extends BaseModel {
 
     public void setRequired(Boolean required) {
         this.required = required;
+    }
+
+    public List<Map> getOptions() {
+        return options;
+    }
+
+    public void setOptions(List<Map> options) {
+        this.options = options;
     }
 }

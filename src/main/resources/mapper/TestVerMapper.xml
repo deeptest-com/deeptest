@@ -35,9 +35,9 @@
 
     <insert id="add" parameterType="TstVer" useGeneratedKeys="true" keyProperty="id">
         insert into TstVer
-          (name,startTime,endTime,descr,projectId,ordr,deleted,disabled,createTime)
+          (name,startTime,endTime,descr,projectId,orgId,ordr,deleted,disabled,createTime)
         values
-          (#{name},#{startTime},#{endTime},#{descr},#{projectId},#{ordr},FALSE,FALSE,NOW())
+          (#{name},#{startTime},#{endTime},#{descr},#{projectId},#{orgId},#{ordr},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="TstVer">

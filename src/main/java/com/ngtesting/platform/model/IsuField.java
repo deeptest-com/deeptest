@@ -4,6 +4,9 @@ package com.ngtesting.platform.model;
 import com.ngtesting.platform.config.ConstantIssue;
 
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class IsuField implements Serializable {
 
@@ -21,6 +24,8 @@ public class IsuField implements Serializable {
     private Boolean readonly;
 
     private Boolean display;
+
+    private List<Map> options = new LinkedList<>();
 
     public String getCode() {
         return code;
@@ -108,5 +113,13 @@ public class IsuField implements Serializable {
 
     public void setReadonly(Boolean readonly) {
         this.readonly = readonly;
+    }
+
+    public List<Map> getOptions() {
+        return options;
+    }
+
+    public void setOptions(List<Map> options) {
+        this.options = options;
     }
 }

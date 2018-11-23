@@ -42,9 +42,9 @@
 
     <insert id="add" parameterType="TstEnv" useGeneratedKeys="true" keyProperty="id">
         insert into TstEnv
-        (name,descr,projectId,ordr,deleted,disabled,createTime)
+        (name,descr,projectId,orgId,ordr,deleted,disabled,createTime)
         values
-        (#{name},#{descr},#{projectId},#{ordr},FALSE,FALSE,NOW())
+        (#{name},#{descr},#{projectId},#{orgId},#{ordr},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="TstEnv">

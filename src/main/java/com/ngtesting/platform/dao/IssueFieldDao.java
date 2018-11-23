@@ -10,8 +10,6 @@ public interface IssueFieldDao {
     List<IsuFieldDefine> listDefaultFilter();
     List<IsuFieldDefine> listDefaultField();
 
-    List<IsuField> listOrgField(@Param("orgId") Integer orgId, @Param("tabId") Integer tabId);
-
     IsuField getSysField(@Param("id") Integer id, @Param("orgId") Integer orgId);
     IsuField getCustField(@Param("id") Integer id, @Param("orgId") Integer orgId);
 }

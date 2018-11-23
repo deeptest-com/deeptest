@@ -37,6 +37,7 @@ public class TestEnvServiceImpl extends BaseServiceImpl implements TestEnvServic
         Integer id = vo.getId();
 
         vo.setProjectId(user.getDefaultPrjId());
+        vo.setOrgId(user.getDefaultOrgId());
 
         if (id == null) {
             Integer maxOrder = envDao.getMaxOrdrNumb(vo.getProjectId());

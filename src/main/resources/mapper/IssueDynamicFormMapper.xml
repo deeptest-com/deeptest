@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.IssueDynamicFormDao" >
+
+
+    <select id="listTabNotUsedField" resultType="Map">
+        <include refid="fetch">
+            <property name="orgId" value="${orgId}"/>
+        </include>
+        AND fields.key NOT IN (
+          SELECT elem.key FROM IsuPageElement elem WHERE elem.tabId = #{tabId}
+        )
+    </select>
+
+    <select id="fetchOrgField" resultMap="fieldMap">
+        <include refid="fetch">
+            <property name="orgId" value="${orgId}"/>
+        </include>
+    </select>
+
+    <select id="fetchOptions" resultMap="optionMap">
+        <if test="optionTable == null or optionTable == 'TstUser'">
+            SELECT NULL;
+        </if>
+        <if test="optionTable != null">
+            SELECT tb.*, '${code}', '${optionTable}'
+            FROM ${optionTable} AS tb
+            WHERE TRUE
+            <if test="optionTable != 'TstUser'">
+                AND tb.orgId = #{orgId}
+            </if>
+        </if>
+    </select>
+
+    <resultMap id="fieldMap" type="Map" autoMapping="true">
+        <discriminator column="inputCatagory" jdbcType="VARCHAR" javaType="String">
+            <case value="notSelect" resultType="Map"/>
+            <case value="canSelect" resultMap="fieldMapCanSelect"/>
+        </discriminator>
+    </resultMap>
+
+    <resultMap id="fieldMapCanSelect" type="Map" autoMapping="true">
+        <id column="fieldId" property="fieldId"/>
+        <id column="code" property="code"/>
+        <id column="optionTable" property="optionTable"/>
+        <id column="orgId" property="orgId"/>
+
+        <collection property="options" select="fetchOptions"
+                    column="{id=fieldId}, {code=code}, {orgId=orgId}, {optionTable=optionTable}">
+        </collection>
+    </resultMap>
+
+    <resultMap id="optionMap" type="Map">
+    </resultMap>
+
+    <sql id="fetch">
+        SELECT fields.*, dict.table optionTable,
+        CASE fields.input WHEN 'dropdown' THEN 'canSelect' ELSE 'notSelect' END inputCatagory
+
+        FROM ( (SELECT CONCAT('sys-', field.id) `key`, field.id fieldId, field.code, field.label,
+        field.type, field.input, field.fullLine, field.required, field.readonly,
+        field.columnOrdr ordr, field.orgId
+
+        FROM IsuField field
+
+        WHERE field.orgId = #{orgId} AND field.disabled!=true AND field.deleted!=true
+
+        ORDER BY field.elemOrdr ASC)
+
+        UNION
+
+        (SELECT CONCAT('cust-', customField.id) `key`, customField.id fieldId, customField.colCode code, customField.label,
+        customField.type, customField.input, customField.fullLine, customField.required, customField.readonly,
+        customField.ordr, customField.orgId
+
+        FROM IsuCustomField customField
+
+        WHERE orgId = #{orgId} AND customField.disabled!=true AND customField.deleted!=true
+        ORDER BY customField.ordr ASC)
+        ) fields LEFT JOIN IsuFieldCodeToTableDefine dict ON fields.code = dict.code
+        WHERE TRUE
+    </sql>
+</mapper>

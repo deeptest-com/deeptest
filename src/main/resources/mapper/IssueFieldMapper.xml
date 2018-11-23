@@ -14,35 +14,6 @@
         ORDER BY columnOrdr ASC
     </select>
 
-    <select id="listOrgField" resultType="IsuField">
-        SELECT fields.*
-        FROM ( (SELECT CONCAT('sys-', field.id) `key`, field.id fieldId, field.code, field.label,
-              field.type, field.input, field.fullLine, field.required, field.readonly,
-              field.columnOrdr ordr
-
-            FROM IsuField field
-
-            WHERE field.orgId = #{orgId} AND field.disabled!=true AND field.deleted!=true
-
-            ORDER BY field.elemOrdr ASC)
-
-            UNION
-
-            (SELECT CONCAT('cust-', customField.id) `key`, customField.id fieldId, customField.colCode code, customField.label,
-              customField.type, customField.input, false AS fullLine, customField.required, customField.readonly,
-              customField.ordr
-
-            FROM IsuCustomField customField
-
-            WHERE orgId = #{orgId} AND customField.disabled!=true AND customField.deleted!=true
-            ORDER BY customField.ordr ASC)
-        ) fields
-        WHERE fields.key
-        NOT IN (
-          SELECT elem.key FROM IsuPageElement elem WHERE elem.tabId = #{tabId}
-        )
-    </select>
-
     <select id="getSysField" resultType="IsuField">
         SELECT CONCAT('sys-', field.id) `key`, field.id fieldId, field.code, field.label,
           field.type, field.input, field.fullLine, field.required, field.readonly,

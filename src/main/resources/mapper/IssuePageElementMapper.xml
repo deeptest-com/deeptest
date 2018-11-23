@@ -55,26 +55,4 @@
         ORDER BY o.ordr ASC
     </select>
 
-<!--    <insert id="add" parameterType="IsuPageElement" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuPageElement
-        (`key`, code, label, `type`, `input`, fieldId, `tabId`, pageId, orgId, ordr, deleted, disabled, createTime)
-        values
-        (#{key}, #{code}, #{label}, #{type}, #{input}, #{fieldId}, #{tabId}, #{pageId}, #{orgId}, #{ordr}, FALSE, FALSE, NOW())
-    </insert>
-
-    <select id="getMaxFieldOrdr" resultType="Integer">
-        select max(ordr) from IsuPageElement o
-        where o.tabId=#{tabId}
-        and o.deleted != true
-        and o.disabled != true
-    </select>
-
-    <delete id="remove">
-        UPDATE IsuPageElement
-        SET deleted=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
-    </delete>
-
-   -->
-
 </mapper>

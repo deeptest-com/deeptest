@@ -1,16 +1,24 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.IssuePageTabDao;
+import com.ngtesting.platform.model.IsuPageElement;
 import com.ngtesting.platform.model.IsuPageTab;
+import com.ngtesting.platform.service.intf.IssueDynamicFormService;
 import com.ngtesting.platform.service.intf.IssuePageTabService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class IssuePageTabServiceImpl extends BaseServiceImpl implements IssuePageTabService {
 
 	@Autowired
     IssuePageTabDao tabDao;
+
+    @Autowired
+    IssueDynamicFormService dynamicFormService;
 
     @Override
     public void add(IsuPageTab tab) {
@@ -19,7 +27,9 @@ public class IssuePageTabServiceImpl extends BaseServiceImpl implements IssuePag
 
     @Override
     public IsuPageTab get(Integer tabId, Integer orgId) {
-        return tabDao.get(tabId, orgId);
+        IsuPageTab tab = tabDao.get(tabId, orgId);
+
+        return tab;
     }
 
     @Override

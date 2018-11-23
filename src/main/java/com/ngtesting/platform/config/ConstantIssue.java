@@ -1,7 +1,9 @@
 package com.ngtesting.platform.config;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ConstantIssue {
 
@@ -14,6 +16,7 @@ public class ConstantIssue {
         }
 
         private String textVal;
+
         public String toString() {
             return textVal;
         }
@@ -34,6 +37,7 @@ public class ConstantIssue {
         }
 
         private String textVal;
+
         public String toString() {
             return textVal;
         }

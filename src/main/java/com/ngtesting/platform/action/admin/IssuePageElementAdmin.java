@@ -7,6 +7,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuField;
 import com.ngtesting.platform.model.IsuPageTab;
 import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.intf.IssueDynamicFormService;
 import com.ngtesting.platform.service.intf.IssueFieldService;
 import com.ngtesting.platform.service.intf.IssuePageElementService;
 import com.ngtesting.platform.service.intf.IssuePageTabService;
@@ -34,6 +35,8 @@ public class IssuePageElementAdmin extends BaseAction {
 
     @Autowired
 	IssueFieldService fieldService;
+    @Autowired
+    IssueDynamicFormService dynamicFormService;
 
 	@RequestMapping(value = "saveAll", method = RequestMethod.POST)
 	@ResponseBody
@@ -50,7 +53,7 @@ public class IssuePageElementAdmin extends BaseAction {
         elementService.saveAll(orgId, pageId, tabId, maps);
 
 		IsuPageTab tab = tabService.get(tabId, orgId);
-		List<IsuField> fields = fieldService.listOrgField(orgId, tabId);
+		List<IsuField> fields = dynamicFormService.listTabNotUsedField(orgId, tabId);
 
 		ret.put("tab", tab);
 		ret.put("fields", fields);
@@ -76,69 +79,5 @@ public class IssuePageElementAdmin extends BaseAction {
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
-
-//    @RequestMapping(value = "add", method = RequestMethod.POST)
-//    @ResponseBody
-//    public Map<String, Object> add(HttpServletRequest request, @RequestBody JSONObject json) {
-//        Map<String, Object> ret = new HashMap<String, Object>();
-//
-//        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-//        Integer orgId = userVo.getDefaultOrgId();
-//
-//        IsuPageElement elem = JSON.parseObject(JSON.toJSONString(json), IsuPageElement.class);
-//        elem.setOrgId(orgId);
-//
-//		elementService.add(elem);
-//
-//        IsuPageTab tab = tabService.get(elem.getTabId(), orgId);
-//        List<IsuField> fields = fieldService.listOrgField(orgId, elem.getTabId());
-//
-//        ret.put("tab", tab);
-//        ret.put("fields", fields);
-//
-//        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-//        return ret;
-//    }
-//
-//	@RequestMapping(value = "remove", method = RequestMethod.POST)
-//	@ResponseBody
-//	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject json) {
-//		Map<String, Object> ret = new HashMap<String, Object>();
-//
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-//		Integer orgId = userVo.getDefaultOrgId();
-//
-//		Integer id = json.getInteger("id");
-//        Integer tabId = json.getInteger("tabId");
-//
-//		boolean success = elementService.remove(id, orgId);
-//        IsuPageTab tab = tabService.get(tabId, orgId);
-//        List<IsuField> fields = fieldService.listOrgField(orgId, tabId);
-//
-//        ret.put("tab", tab);
-//        ret.put("fields", fields);
-//		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-//		return ret;
-//	}
-//
-//	@RequestMapping(value = "changeOrder", method = RequestMethod.POST)
-//	@ResponseBody
-//	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
-//		Map<String, Object> ret = new HashMap<String, Object>();
-//
-//		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-//		Integer orgId = userVo.getDefaultOrgId();
-//		Integer id = json.getInteger("id");
-//		String act = json.getString("act");
-//
-////		boolean success = customFieldService.changeOrderPers(id, act, orgId);
-////
-////		List<IsuCustomField> vos = customFieldService.list(orgId);
-//
-////        ret.put("data", vos);
-//		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-//
-//		return ret;
-//	}
 
 }

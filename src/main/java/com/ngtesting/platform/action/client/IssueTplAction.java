@@ -39,6 +39,8 @@ public class IssueTplAction extends BaseAction {
     IssueQueryService issueQueryService;
     @Autowired
     UserService userService;
+    @Autowired
+    IssueDynamicFormService dynamicFormService;
 
 	@RequestMapping(value = "query", method = RequestMethod.POST)
 	@ResponseBody
@@ -71,10 +73,12 @@ public class IssueTplAction extends BaseAction {
         if (init) {
             List<IsuJqlFilter> filters = isuJqlFilterService.buildUiFilters(rule, orgId, projectId);
             List<IsuJqlColumn> columns = isuJqlColumnService.loadColumns(user);
+            Map<String, Object> issuePropMap = dynamicFormService.fetchOrgField(orgId);
 
             ret.put("rule", rule);
             ret.put("filters", filters);
             ret.put("columns", columns);
+            ret.put("issuePropMap", issuePropMap);
         }
 
         ret.put("total", page.getTotal());
@@ -119,9 +123,11 @@ public class IssueTplAction extends BaseAction {
         if (init) {
             List<IsuJqlFilter> filters = isuJqlFilterService.buildUiFilters(rule, orgId, projectId);
             List<IsuJqlColumn> columns = isuJqlColumnService.loadColumns(user);
+            Map<String, Object> issuePropMap = dynamicFormService.fetchOrgField(orgId);
 
             ret.put("filters", filters);
             ret.put("columns", columns);
+            ret.put("issuePropMap", issuePropMap);
         }
 
         issueQueryService.updateUseTime(query, user);

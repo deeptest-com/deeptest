@@ -20,9 +20,9 @@
 
     <select id="fetchOptions" resultMap="optionMap">
         <if test="optionTable == null or optionTable == 'TstUser'">
-            SELECT NULL;
+            SELECT * FROM SysEmpty WHERE FALSE;
         </if>
-        <if test="optionTable != null">
+        <if test="optionTable != null and optionTable != 'TstUser'">
             SELECT tb.*, '${code}', '${optionTable}'
             FROM ${optionTable} AS tb
             WHERE TRUE

@@ -21,19 +21,22 @@
     <select id="fetchOptions" resultMap="optionMap">
         <choose>
             <when test="optionTable == null">
-                SELECT * FROM SysEmpty WHERE FALSE;
+                <include refid="fetchCustormFields">
+                    <property name="fieldId" value="${fieldId}"/>
+                    <property name="orgId" value="${orgId}"/>
+                </include>
             </when>
             <when test="optionTable == 'TstUser'">
-                SELECT * FROM SysEmpty WHERE FALSE;
+                <include refid="fetchUsers">
+                    <property name="orgId" value="${orgId}"/>
+                </include>
             </when>
             <otherwise>
-                SELECT tb.id, tb.label, '${code}' fieldCode, '${optionTable}' optionTable
-                FROM ${optionTable} AS tb
-                WHERE TRUE
-                <if test="optionTable != 'TstUser'">
-                    AND tb.orgId = #{orgId}
-                </if>
-                order by tb.ordr
+                <include refid="fetchSysFieldOptions">
+                    <property name="optionTable" value="${optionTable}"/>
+                    <property name="code" value="${code}"/>
+                    <property name="orgId" value="${orgId}"/>
+                </include>
             </otherwise>
         </choose>
     </select>
@@ -52,7 +55,7 @@
         <id column="orgId" property="orgId"/>
 
         <collection property="options" select="fetchOptions"
-                    column="{id=fieldId}, {code=code}, {orgId=orgId}, {optionTable=optionTable}">
+                    column="{fieldId=fieldId}, {code=code}, {optionTable=optionTable}, {orgId=orgId}">
         </collection>
     </resultMap>
 
@@ -85,5 +88,21 @@
         ORDER BY customField.ordr ASC)
         ) fields LEFT JOIN IsuFieldCodeToTableDefine dict ON fields.code = dict.code
         WHERE TRUE
+    </sql>
+
+    <sql id="fetchCustormFields">
+        SELECT * FROM SysEmpty WHERE FALSE;
+    </sql>
+    <sql id="fetchUsers">
+        SELECT * FROM SysEmpty WHERE FALSE;
+    </sql>
+    <sql id="fetchSysFieldOptions">
+        SELECT tb.id, tb.label, '${code}' fieldCode, '${optionTable}' optionTable
+        FROM ${optionTable} AS tb
+        WHERE TRUE
+        <if test="optionTable != 'TstUser'">
+            AND tb.orgId = #{orgId}
+        </if>
+        ORDER BY tb.ordr
     </sql>
 </mapper>

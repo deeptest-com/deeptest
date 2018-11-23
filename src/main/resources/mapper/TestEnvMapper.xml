@@ -5,7 +5,7 @@
     <select id="query" resultType="TstEnv">
         SELECT * FROM TstEnv o WHERE TRUE
         <if test="keywords != null and keywords != ''">
-            AND o.name LIKE CONCAT('%','${keywords}','%' )
+            AND o.label LIKE CONCAT('%','${keywords}','%' )
         </if>
         <if test="disabled != null">
             AND o.disabled = #{disabled}
@@ -42,14 +42,14 @@
 
     <insert id="add" parameterType="TstEnv" useGeneratedKeys="true" keyProperty="id">
         insert into TstEnv
-        (name,descr,projectId,orgId,ordr,deleted,disabled,createTime)
+        (label,descr,projectId,orgId,ordr,deleted,disabled,createTime)
         values
-        (#{name},#{descr},#{projectId},#{orgId},#{ordr},FALSE,FALSE,NOW())
+        (#{label},#{descr},#{projectId},#{orgId},#{ordr},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="TstEnv">
         UPDATE TstEnv
-        SET name=#{name},
+        SET label=#{label},
         descr=#{descr},
         ordr=#{ordr},
         disabled=#{disabled},

@@ -19,17 +19,23 @@
     </select>
 
     <select id="fetchOptions" resultMap="optionMap">
-        <if test="optionTable == null or optionTable == 'TstUser'">
-            SELECT * FROM SysEmpty WHERE FALSE;
-        </if>
-        <if test="optionTable != null and optionTable != 'TstUser'">
-            SELECT tb.*, '${code}', '${optionTable}'
-            FROM ${optionTable} AS tb
-            WHERE TRUE
-            <if test="optionTable != 'TstUser'">
-                AND tb.orgId = #{orgId}
-            </if>
-        </if>
+        <choose>
+            <when test="optionTable == null">
+                SELECT * FROM SysEmpty WHERE FALSE;
+            </when>
+            <when test="optionTable == 'TstUser'">
+                SELECT * FROM SysEmpty WHERE FALSE;
+            </when>
+            <otherwise>
+                SELECT tb.id, tb.label, '${code}' fieldCode, '${optionTable}' optionTable
+                FROM ${optionTable} AS tb
+                WHERE TRUE
+                <if test="optionTable != 'TstUser'">
+                    AND tb.orgId = #{orgId}
+                </if>
+                order by tb.ordr
+            </otherwise>
+        </choose>
     </select>
 
     <resultMap id="fieldMap" type="Map" autoMapping="true">

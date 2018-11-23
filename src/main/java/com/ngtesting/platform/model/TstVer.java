@@ -5,7 +5,7 @@ import java.util.Date;
 public class TstVer extends BaseModel {
     private static final long serialVersionUID = 6989572574245991239L;
 
-    private String name;
+    private String label;
 
     protected Date startTime;
     protected Date endTime;
@@ -16,12 +16,12 @@ public class TstVer extends BaseModel {
 
     private Integer ordr;
 
-    public String getName() {
-        return name;
+    public String getLabel() {
+        return label;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public Date getStartTime() {

@@ -5,7 +5,7 @@
     <select id="query" resultType="TstVer">
         SELECT * FROM TstVer o WHERE TRUE
         <if test="keywords != null and keywords != ''">
-            AND o.name LIKE CONCAT('%','${keywords}','%' )
+            AND o.label LIKE CONCAT('%','${keywords}','%' )
         </if>
         <if test="disabled != null">
             AND o.disabled = #{disabled}
@@ -35,14 +35,14 @@
 
     <insert id="add" parameterType="TstVer" useGeneratedKeys="true" keyProperty="id">
         insert into TstVer
-          (name,startTime,endTime,descr,projectId,orgId,ordr,deleted,disabled,createTime)
+          (label,startTime,endTime,descr,projectId,orgId,ordr,deleted,disabled,createTime)
         values
-          (#{name},#{startTime},#{endTime},#{descr},#{projectId},#{orgId},#{ordr},FALSE,FALSE,NOW())
+          (#{label},#{startTime},#{endTime},#{descr},#{projectId},#{orgId},#{ordr},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="TstVer">
         UPDATE TstVer
-        SET name=#{name},
+        SET label=#{label},
             startTime=#{startTime}, endTime=#{endTime},
             descr=#{descr},
             ordr=#{ordr},

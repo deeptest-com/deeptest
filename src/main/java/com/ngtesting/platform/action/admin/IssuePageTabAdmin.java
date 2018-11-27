@@ -45,13 +45,14 @@ public class IssuePageTabAdmin extends BaseAction {
 
         TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = userVo.getDefaultOrgId();
+        Integer projectId = userVo.getDefaultPrjId();
 
         IsuPageTab tab = JSON.parseObject(JSON.toJSONString(json), IsuPageTab.class);
         tab.setOrgId(orgId);
 
         tabService.add(tab);
 
-        List<IsuField> fields = dynamicFormService.listTabNotUsedField(orgId, tab.getId());
+        List<IsuField> fields = dynamicFormService.listTabNotUsedField(tab.getId(), projectId, orgId);
 
         ret.put("tab", tab);
         ret.put("fields", fields);
@@ -67,11 +68,12 @@ public class IssuePageTabAdmin extends BaseAction {
 
         TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = userVo.getDefaultOrgId();
+        Integer projectId = userVo.getDefaultPrjId();
 
         Integer tabId = json.getInteger("id");
 
         IsuPageTab tab = tabService.get(tabId, orgId);
-        List<IsuField> fields = dynamicFormService.listTabNotUsedField(orgId, tab.getId());
+        List<IsuField> fields = dynamicFormService.listTabNotUsedField(tab.getId(), projectId, orgId);
 
         ret.put("tab", tab);
         ret.put("fields", fields);
@@ -87,6 +89,7 @@ public class IssuePageTabAdmin extends BaseAction {
 
         TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = userVo.getDefaultOrgId();
+        Integer projectId = userVo.getDefaultPrjId();
 
         Integer id = json.getInteger("id");
         Integer pageId = json.getInteger("pageId");
@@ -105,7 +108,7 @@ public class IssuePageTabAdmin extends BaseAction {
         IsuPageTab tab;
         if (currTabId.intValue() == id.intValue()) {
             tab = page.getTabs().get(0);
-            List<IsuField> fields = dynamicFormService.listTabNotUsedField(orgId, tab.getId());
+            List<IsuField> fields = dynamicFormService.listTabNotUsedField(tab.getId(), projectId, orgId);
             ret.put("fields", fields);
         }
 

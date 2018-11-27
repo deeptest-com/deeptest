@@ -19,6 +19,7 @@ public interface IssueCustomFieldService extends BaseService {
     String getLastUnusedColumn(Integer orgId);
 
     List<String> listType();
+    List<String> listInput();
 
     List<String> listFormat();
 }

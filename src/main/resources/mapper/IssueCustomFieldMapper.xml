@@ -28,16 +28,16 @@
 
     <insert id="save" parameterType="IsuCustomField" useGeneratedKeys="true" keyProperty="id">
         insert into IsuCustomField
-        (label,colCode,required,descr,`type`,`rows`,format,
-        orgId,ordr,deleted,disabled,createTime)
+        (label,colCode,required,descr,`type`,`input`,`rows`,textFormat,
+        orgId,ordr,isBuildIn, readonly, fullLine, deleted,disabled,createTime)
         values
-        (#{label},#{colCode},#{required},#{descr},#{type},#{rows},#{format},
-        #{orgId},#{ordr},FALSE,FALSE,NOW())
+        (#{label},#{colCode},#{required},#{descr},#{type},#{input},#{rows},#{textFormat},
+        #{orgId},#{ordr}, #{isBuildIn}, #{readonly}, #{fullLine}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="IsuCustomField">
         UPDATE IsuCustomField
-        SET label=#{label},descr=#{descr},type=#{type},rows=#{rows}, format=#{format},
+        SET label=#{label},descr=#{descr},`type`=#{type},`input`=#{input},rows=#{rows}, textFormat=#{textFormat},
 
         orgId=#{orgId},
         disabled=#{disabled}, updateTime=NOW()

@@ -41,6 +41,10 @@ public class IsuIssue extends BaseModel {
     private Integer assigneeId;
     private String assigneeName;
 
+    private List<IsuComments> comments = new LinkedList<>();
+    private List<IsuAttachment> attachments = new LinkedList<>();
+    private List<IsuHistory> histories = new LinkedList<>();
+
     private String prop01;
     private String prop02;
     private String prop03;
@@ -65,9 +69,17 @@ public class IsuIssue extends BaseModel {
     private String prop19;
     private String prop20;
 
-    private List<IsuComments> comments = new LinkedList<>();
-	private List<IsuAttachment> attachments = new LinkedList<>();
-    private List<IsuHistory> histories = new LinkedList<>();
+    private String prop21;
+    private String prop22;
+    private String prop23;
+    private String prop24;
+    private String prop25;
+
+    private String prop26;
+    private String prop27;
+    private String prop28;
+    private String prop29;
+    private String prop30;
 
     public String getTitle() {
         return title;
@@ -443,5 +455,85 @@ public class IsuIssue extends BaseModel {
 
     public void setProp20(String prop20) {
         this.prop20 = prop20;
+    }
+
+    public String getProp21() {
+        return prop21;
+    }
+
+    public void setProp21(String prop21) {
+        this.prop21 = prop21;
+    }
+
+    public String getProp22() {
+        return prop22;
+    }
+
+    public void setProp22(String prop22) {
+        this.prop22 = prop22;
+    }
+
+    public String getProp23() {
+        return prop23;
+    }
+
+    public void setProp23(String prop23) {
+        this.prop23 = prop23;
+    }
+
+    public String getProp24() {
+        return prop24;
+    }
+
+    public void setProp24(String prop24) {
+        this.prop24 = prop24;
+    }
+
+    public String getProp25() {
+        return prop25;
+    }
+
+    public void setProp25(String prop25) {
+        this.prop25 = prop25;
+    }
+
+    public String getProp26() {
+        return prop26;
+    }
+
+    public void setProp26(String prop26) {
+        this.prop26 = prop26;
+    }
+
+    public String getProp27() {
+        return prop27;
+    }
+
+    public void setProp27(String prop27) {
+        this.prop27 = prop27;
+    }
+
+    public String getProp28() {
+        return prop28;
+    }
+
+    public void setProp28(String prop28) {
+        this.prop28 = prop28;
+    }
+
+    public String getProp29() {
+        return prop29;
+    }
+
+    public void setProp29(String prop29) {
+        this.prop29 = prop29;
+    }
+
+    public String getProp30() {
+        return prop30;
+    }
+
+    public void setProp30(String prop30) {
+        this.prop30 = prop30;
     }
 }

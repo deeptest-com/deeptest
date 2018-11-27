@@ -78,14 +78,15 @@ public class IssuePageAdmin extends BaseAction {
 
         TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = userVo.getDefaultOrgId();
+		Integer projectId = userVo.getDefaultPrjId();
 
         Integer pageId = json.getInteger("id");
         IsuPage page = pageService.get(pageId, orgId);
 
         IsuPageTab tab = page.getTabs().get(0);
 
-        List<IsuField> fields = dynamicFormService.listTabNotUsedField(orgId, tab.getId());
-        Map<String, Object> issuePropMap = dynamicFormService.fetchOrgField(orgId);
+        List<IsuField> fields = dynamicFormService.listTabNotUsedField(tab.getId(), projectId, orgId);
+        Map<String, Object> issuePropMap = dynamicFormService.fetchOrgField(orgId, projectId);
 
         ret.put("page", page);
         ret.put("fields", fields);
@@ -102,6 +103,7 @@ public class IssuePageAdmin extends BaseAction {
 
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
+		Integer projectId = userVo.getDefaultPrjId();
 
 		IsuPage page = JSON.parseObject(JSON.toJSONString(json), IsuPage.class);
         pageService.save(page, orgId);
@@ -109,7 +111,7 @@ public class IssuePageAdmin extends BaseAction {
 		page = pageService.get(page.getId(), orgId);
         IsuPageTab tab = page.getTabs().get(0);
 
-		List<IsuField> fields = dynamicFormService.listTabNotUsedField(orgId, tab.getId());
+		List<IsuField> fields = dynamicFormService.listTabNotUsedField(tab.getId(), orgId, projectId);
 
 		ret.put("page", page);
         ret.put("fields", fields);

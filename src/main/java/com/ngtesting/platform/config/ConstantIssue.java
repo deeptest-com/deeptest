@@ -1,10 +1,5 @@
 package com.ngtesting.platform.config;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class ConstantIssue {
 
     public static enum TextFormat {
@@ -24,13 +19,12 @@ public class ConstantIssue {
 
     public static enum IssueInput {
         text("text"),
+        number("number"),
         textarea("textarea"),
-        date("date"),
 
-        dropdown("dropdown");
-//    	radio("radio"),
-//    	checkbox("checkbox"),
-//    	multi_select("multi_select"),
+        radio("radio"),
+    	checkbox("checkbox"),
+    	dropdown("dropdown");
 
         private IssueInput(String textVal) {
             this.textVal = textVal;
@@ -44,10 +38,13 @@ public class ConstantIssue {
     }
 
     public enum IssueType {
-        integer("integer"),
-        floatt("floatt"),
         string("string"),
-        date("date");
+        integer("integer"),
+        doublee("doublee"),
+        date("date"),
+        time("time"),
+        datetime("datetime"),
+        booleann("booleann");
 
         IssueType(String textVal) {
             this.textVal = textVal;
@@ -76,16 +73,16 @@ public class ConstantIssue {
         }
     }
 
-    public static List<String> OperatorsForSelect =
-            Arrays.asList("equal", "not_equal", "in", "not_in", "is_null", "is_not_null");
-
-    public static List<String> OperatorsForText =
-            Arrays.asList("equal", "not_equal", "in", "not_in", "begins_with", "not_begins_with",
-                    "contains", "not_contains", "ends_with", "not_ends_with",
-                    "is_empty", "is_not_empty", "is_null", "is_not_null");
-
-    public static List<String> OperatorsForDate =
-            Arrays.asList("equal", "not_equal", "in", "not_in",
-                    "less", "less_or_equal", "equal", "greater", "greater_or_equal",
-                    "between", "not_between", "is_null", "is_not_null");
+//    public static List<String> OperatorsForSelect =
+//            Arrays.asList("equal", "not_equal", "in", "not_in", "is_null", "is_not_null");
+//
+//    public static List<String> OperatorsForText =
+//            Arrays.asList("equal", "not_equal", "in", "not_in", "begins_with", "not_begins_with",
+//                    "contains", "not_contains", "ends_with", "not_ends_with",
+//                    "is_empty", "is_not_empty", "is_null", "is_not_null");
+//
+//    public static List<String> OperatorsForDate =
+//            Arrays.asList("equal", "not_equal", "in", "not_in",
+//                    "less", "less_or_equal", "equal", "greater", "greater_or_equal",
+//                    "between", "not_between", "is_null", "is_not_null");
 }

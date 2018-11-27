@@ -17,6 +17,12 @@
         WHERE id=#{id} AND orgId=#{orgId}
     </update>
 
+    <update id="updateFromCustomField">
+        UPDATE IsuPageElement
+        SET code=#{colCode}, label=#{label}, `type`=#{type}, `input`=#{input}
+        WHERE `key`=CONCAT('cust-', #{id}) AND orgId=#{orgId}
+    </update>
+
     <update id="saveOrdrs">
        UPDATE IsuPageElement
         SET ordr =

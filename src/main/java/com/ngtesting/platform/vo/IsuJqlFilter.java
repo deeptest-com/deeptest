@@ -26,11 +26,11 @@ public class IsuJqlFilter implements Serializable {
         this.input = field.getInput();
         this.display = field.getDefaultShowInFilters();
 
-        if (ConstantIssue.IssueInput.text.equals(type)) {
-            this.operators = ConstantIssue.OperatorsForText;
-        } else if (ConstantIssue.IssueInput.date.equals(type)) {
-            this.operators = ConstantIssue.OperatorsForDate;
-        }
+//        if (ConstantIssue.IssueInput.string.equals(type)) {
+//            this.operators = ConstantIssue.OperatorsForText;
+//        } else if (ConstantIssue.IssueInput.date.equals(type)) {
+//            this.operators = ConstantIssue.OperatorsForDate;
+//        }
     }
 
     public IsuJqlFilter(IsuFieldDefine field, Map values) {
@@ -41,13 +41,13 @@ public class IsuJqlFilter implements Serializable {
         this.display = field.getDefaultShowInFilters();
 
         this.values = values;
-        if (ConstantIssue.IssueInput.text.equals(input)) {
-            this.operators = ConstantIssue.OperatorsForText;
-        } else if (ConstantIssue.IssueInput.dropdown.equals(input)) {
-            this.operators = ConstantIssue.OperatorsForSelect;
-        } else if (ConstantIssue.IssueInput.date.equals(input)) {
-            this.operators = ConstantIssue.OperatorsForDate;
-        }
+//        if (ConstantIssue.IssueInput.string.equals(input)) {
+//            this.operators = ConstantIssue.OperatorsForText;
+//        } else if (ConstantIssue.IssueInput.dropdown.equals(input)) {
+//            this.operators = ConstantIssue.OperatorsForSelect;
+//        } else if (ConstantIssue.IssueInput.date.equals(input)) {
+//            this.operators = ConstantIssue.OperatorsForDate;
+//        }
     }
 
     public String getCode() {

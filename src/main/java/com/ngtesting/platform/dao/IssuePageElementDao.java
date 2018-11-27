@@ -1,5 +1,6 @@
 package com.ngtesting.platform.dao;
 
+import com.ngtesting.platform.model.IsuCustomField;
 import com.ngtesting.platform.model.IsuPageElement;
 import org.apache.ibatis.annotations.Param;
 
@@ -13,6 +14,8 @@ public interface IssuePageElementDao {
                     @Param("prop") String prop,
                     @Param("val") String val,
                     @Param("orgId") Integer orgId);
+
+    void updateFromCustomField(IsuCustomField vo);
 
     void saveOrdrs(@Param("maps") List<Map> maps,
                    @Param("tabId") Integer tabId,

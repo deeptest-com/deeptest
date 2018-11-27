@@ -25,6 +25,8 @@ public interface IssueCustomFieldDao {
     List<String> getLastUnusedColumn(@Param("orgId") Integer orgId);
     Integer getMaxOrdrNumb(@Param("orgId") Integer orgId);
 
-    IsuCustomField getPrev(@Param("ordr") Integer ordr, @Param("orgId") Integer orgId);
-    IsuCustomField getNext(@Param("ordr") Integer ordr, @Param("orgId") Integer orgId);
+    IsuCustomField getPrev(@Param("ordr") Integer ordr,
+                           @Param("orgId") Integer orgId);
+    IsuCustomField getNext(@Param("ordr") Integer ordr,
+                           @Param("orgId") Integer orgId);
 }

@@ -2,10 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.IssueDynamicFormDao" >
 
-
     <select id="listTabNotUsedField" resultType="Map">
         <include refid="fetch">
             <property name="orgId" value="${orgId}"/>
+            <property name="projectId" value="${projectId}"/>
         </include>
         AND fields.key NOT IN (
           SELECT elem.key FROM IsuPageElement elem WHERE elem.tabId = #{tabId}
@@ -15,6 +15,7 @@
     <select id="fetchOrgField" resultMap="fieldMap">
         <include refid="fetch">
             <property name="orgId" value="${orgId}"/>
+            <property name="projectId" value="${projectId}"/>
         </include>
     </select>
 
@@ -24,11 +25,13 @@
                 <include refid="fetchCustormFields">
                     <property name="fieldId" value="${fieldId}"/>
                     <property name="orgId" value="${orgId}"/>
+                    <property name="projectId" value="${projectId}"/>
                 </include>
             </when>
             <when test="optionTable == 'TstUser'">
                 <include refid="fetchUsers">
                     <property name="orgId" value="${orgId}"/>
+                    <property name="projectId" value="${projectId}"/>
                 </include>
             </when>
             <otherwise>
@@ -36,6 +39,7 @@
                     <property name="optionTable" value="${optionTable}"/>
                     <property name="code" value="${code}"/>
                     <property name="orgId" value="${orgId}"/>
+                    <property name="projectId" value="${projectId}"/>
                 </include>
             </otherwise>
         </choose>
@@ -53,9 +57,11 @@
         <id column="code" property="code"/>
         <id column="optionTable" property="optionTable"/>
         <id column="orgId" property="orgId"/>
+        <id column="projectId" property="projectId"/>
 
         <collection property="options" select="fetchOptions"
-                    column="{fieldId=fieldId}, {code=code}, {optionTable=optionTable}, {orgId=orgId}">
+                    column="{fieldId=fieldId}, {code=code}, {optionTable=optionTable},
+                            {orgId=orgId}, {projectId=projectId}">
         </collection>
     </resultMap>
 
@@ -63,39 +69,64 @@
     </resultMap>
 
     <sql id="fetch">
-        SELECT fields.*, dict.table optionTable,
+        SELECT fields.*, dict.table optionTable, '${projectId}' projectId,
         CASE fields.input WHEN 'dropdown' THEN 'canSelect' ELSE 'notSelect' END inputCatagory
 
-        FROM ( (SELECT CONCAT('sys-', field.id) `key`, field.id fieldId, field.code, field.label,
-        field.type, field.input, field.fullLine, field.required, field.readonly,
-        field.columnOrdr ordr, field.orgId
+        FROM (
+          (SELECT CONCAT('sys-', field.id) `key`, field.id fieldId, field.code, field.label,
+            field.type, field.input, field.fullLine, field.required, field.readonly,
+            field.columnOrdr ordr, field.orgId
 
-        FROM IsuField field
+            FROM IsuField field
 
-        WHERE field.orgId = #{orgId} AND field.disabled!=true AND field.deleted!=true
+            WHERE field.orgId = #{orgId} AND field.disabled!=true AND field.deleted!=true
 
-        ORDER BY field.elemOrdr ASC)
+            ORDER BY field.elemOrdr ASC
+          )
 
-        UNION
+          UNION
 
-        (SELECT CONCAT('cust-', customField.id) `key`, customField.id fieldId, customField.colCode code, customField.label,
-        customField.type, customField.input, customField.fullLine, customField.required, customField.readonly,
-        customField.ordr, customField.orgId
+          (SELECT CONCAT('cust-', customField.id) `key`, customField.id fieldId, customField.colCode code, customField.label,
+            customField.type, customField.input, customField.fullLine, customField.required, customField.readonly,
+            customField.ordr, customField.orgId
 
-        FROM IsuCustomField customField
+            FROM IsuCustomField customField
 
-        WHERE orgId = #{orgId} AND customField.disabled!=true AND customField.deleted!=true
-        ORDER BY customField.ordr ASC)
-        ) fields LEFT JOIN IsuFieldCodeToTableDefine dict ON fields.code = dict.code
+            WHERE orgId = #{orgId} AND customField.disabled!=true AND customField.deleted!=true
+            ORDER BY customField.ordr ASC
+          )
+        ) fields
+
+        LEFT JOIN IsuFieldCodeToTableDefine dict ON fields.code = dict.code
         WHERE TRUE
     </sql>
 
     <sql id="fetchCustormFields">
-        SELECT * FROM SysEmpty WHERE FALSE;
+        SELECT opt.id, opt.label, opt.value FROM IsuCustomFieldOption opt
+        WHERE opt.fieldId=#{fieldId}
+        AND opt.disabled!=true AND opt.deleted!=true
+        ORDER BY opt.ordr;
     </sql>
+
     <sql id="fetchUsers">
-        SELECT * FROM SysEmpty WHERE FALSE;
+        select usr.id, usr.nickname label from TstUser usr
+        where usr.id in
+        (
+            select relation1.entityId from TstProjectRoleEntityRelation relation1
+              where relation1.type = 'user' AND relation1.projectId = #{projectId}
+
+            UNION
+
+            select relta.userId from TstOrgGroupUserRelation relta
+              where relta.orgGroupId in
+                (
+                  select relation2.entityId from TstProjectRoleEntityRelation relation2
+                  where relation2.type = 'group' AND relation2.projectId = #{projectId}
+                )
+        )
+        ORDER by usr.nickname ASC
     </sql>
+
     <sql id="fetchSysFieldOptions">
         SELECT tb.id, tb.label, '${code}' fieldCode, '${optionTable}' optionTable
         FROM ${optionTable} AS tb

@@ -45,6 +45,7 @@ public class IssuePageElementAdmin extends BaseAction {
 
 		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = userVo.getDefaultOrgId();
+        Integer projectId = userVo.getDefaultPrjId();
 
         Integer pageId = json.getInteger("pageId");
         Integer tabId = json.getInteger("tabId");
@@ -53,7 +54,7 @@ public class IssuePageElementAdmin extends BaseAction {
         elementService.saveAll(orgId, pageId, tabId, maps);
 
 		IsuPageTab tab = tabService.get(tabId, orgId);
-		List<IsuField> fields = dynamicFormService.listTabNotUsedField(orgId, tabId);
+		List<IsuField> fields = dynamicFormService.listTabNotUsedField(tabId, projectId, orgId);
 
 		ret.put("tab", tab);
 		ret.put("fields", fields);

@@ -68,10 +68,12 @@ public class IssueCustomFieldAdmin extends BaseAction {
         }
 
         List<String> typeList = customFieldService.listType();
+        List<String> inputList = customFieldService.listInput();
         List<String> formatList = customFieldService.listFormat();
 
         ret.put("data", vo);
         ret.put("typeList", typeList);
+        ret.put("inputList", inputList);
         ret.put("formatList", formatList);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

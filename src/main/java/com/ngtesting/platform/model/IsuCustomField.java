@@ -12,6 +12,8 @@ public class IsuCustomField extends BaseModel {
     private String label;
     private Boolean required = false;
     private Boolean readonly = false;
+    private Boolean isBuildIn = false;
+    private Boolean fullLine = false;
 
     ConstantIssue.IssueType type;
     ConstantIssue.IssueInput input;
@@ -22,9 +24,6 @@ public class IsuCustomField extends BaseModel {
 	private List<IsuCustomFieldOption> options = new LinkedList<>();
 
     private Integer rows = 3;
-
-    private Boolean global = true;
-    private Boolean buildIn = false;
 
     private Integer ordr;
     private Integer orgId;
@@ -45,20 +44,12 @@ public class IsuCustomField extends BaseModel {
         this.required = required;
     }
 
-    public Boolean getGlobal() {
-        return global;
-    }
-
-    public void setGlobal(Boolean global) {
-        this.global = global;
-    }
-
     public Boolean getBuildIn() {
-        return buildIn;
+        return isBuildIn;
     }
 
     public void setBuildIn(Boolean buildIn) {
-        this.buildIn = buildIn;
+        isBuildIn = buildIn;
     }
 
     public String getColCode() {

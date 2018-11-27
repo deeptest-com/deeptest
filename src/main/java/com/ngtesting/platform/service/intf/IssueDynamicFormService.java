@@ -6,6 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface IssueDynamicFormService extends BaseService {
-  List<IsuField> listTabNotUsedField(Integer orgId, Integer tabId);
-  Map<String, Object> fetchOrgField(Integer orgId);
+  List<IsuField> listTabNotUsedField(Integer orgId, Integer projectId, Integer tabId);
+  Map<String, Object> fetchOrgField(Integer orgId, Integer projectId);
 }

@@ -3,6 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.config.ConstantIssue;
 import com.ngtesting.platform.dao.IssueCustomFieldDao;
 import com.ngtesting.platform.dao.IssueCustomFieldOptionDao;
+import com.ngtesting.platform.dao.IssuePageElementDao;
 import com.ngtesting.platform.model.IsuCustomField;
 import com.ngtesting.platform.service.intf.IssueCustomFieldService;
 import com.ngtesting.platform.service.intf.ProjectService;
@@ -20,6 +21,9 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
     IssueCustomFieldDao customFieldDao;
     @Autowired
     IssueCustomFieldOptionDao customFieldOptionDao;
+
+    @Autowired
+    IssuePageElementDao elementDao;
 
     @Autowired
     ProjectService projectService;
@@ -51,7 +55,9 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
             vo.setOrdr(maxOrder + 10);
 
             customFieldDao.save(vo);
-            if (vo.getType().equals(ConstantIssue.IssueInput.dropdown)) {
+            if (vo.getType().equals(ConstantIssue.IssueInput.dropdown)
+                    || vo.getType().equals(ConstantIssue.IssueInput.radio)
+                    || vo.getType().equals(ConstantIssue.IssueInput.checkbox)) {
                 customFieldOptionDao.saveAll(vo.getId(), vo.getOptions());
             }
         } else {
@@ -59,6 +65,8 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
             if (count == 0) {
                 return null;
             }
+
+            elementDao.updateFromCustomField(vo);
         }
 
         return vo;
@@ -117,6 +125,15 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
 
     @Override
     public List<String> listType() {
+        List<String> ls = new LinkedList<String>();
+        for (ConstantIssue.IssueType item : ConstantIssue.IssueType.values()) {
+            ls.add(item.toString());
+        }
+        return ls;
+    }
+
+    @Override
+    public List<String> listInput() {
         List<String> ls = new LinkedList<String>();
         for (ConstantIssue.IssueInput item : ConstantIssue.IssueInput.values()) {
             ls.add(item.toString());

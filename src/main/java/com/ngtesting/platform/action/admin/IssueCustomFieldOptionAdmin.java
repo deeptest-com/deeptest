@@ -46,6 +46,8 @@ public class IssueCustomFieldOptionAdmin extends BaseAction {
 
             customFieldService.save(customField, orgId);
             fieldId = customField.getId();
+
+            ret.put("field", customField);
         }
 
 		IsuCustomFieldOption option = JSON.parseObject(JSON.toJSONString(json.getJSONObject("model")), IsuCustomFieldOption.class);

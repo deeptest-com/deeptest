@@ -22,9 +22,9 @@ public class ConstantIssue {
         number("number"),
         textarea("textarea"),
 
+        dropdown("dropdown"),
         radio("radio"),
     	checkbox("checkbox"),
-    	dropdown("dropdown"),
 
         date("date");
 

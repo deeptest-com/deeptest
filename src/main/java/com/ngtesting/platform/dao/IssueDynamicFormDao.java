@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface IssueDynamicFormDao {
-    List<IsuField> listTabNotUsedField(@Param("orgId") Integer orgId,
-                                       @Param("projectId") Integer projectId,
-                                       @Param("tabId") Integer tabId);
+    List<IsuField> listNotUsedField(@Param("orgId") Integer orgId,
+                                    @Param("projectId") Integer projectId,
+                                    @Param("pageId") Integer pageId);
 
     List<Map> fetchOrgField(@Param("orgId") Integer orgId,
                             @Param("projectId") Integer projectId);

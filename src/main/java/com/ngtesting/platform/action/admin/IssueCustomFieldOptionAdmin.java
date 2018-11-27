@@ -41,7 +41,7 @@ public class IssueCustomFieldOptionAdmin extends BaseAction {
 
 		Integer fieldId = json.getInteger("fieldId");
 
-		if (fieldId == null) { // 新字段
+		if (fieldId == null) { // 未保存字段
             IsuCustomField customField = JSON.parseObject(JSON.toJSONString(json.get("field")), IsuCustomField.class);
 
             customFieldService.save(customField, orgId);

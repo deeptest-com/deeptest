@@ -23,7 +23,6 @@ public class IsuPageElement extends BaseModel {
     private Integer ordr;
 
     private Integer fieldId;
-    private Integer tabId;
     private Integer pageId;
 
     private Integer orgId;
@@ -31,7 +30,7 @@ public class IsuPageElement extends BaseModel {
     public IsuPageElement(){}
     public IsuPageElement(String code, String label, ConstantIssue.IssueType type,
                           ConstantIssue.IssueInput input, Boolean fullLine, Boolean required, Boolean readonly,
-                          String key, Integer fieldId, Integer tabId, Integer pageId, Integer orgId,
+                          String key, Integer fieldId, Integer pageId, Integer orgId,
                           Integer ordr) {
         this.code = code;
         this.label = label;
@@ -42,7 +41,6 @@ public class IsuPageElement extends BaseModel {
         this.readonly = readonly;
         this.key = key;
         this.fieldId = fieldId;
-        this.tabId = tabId;
         this.pageId = pageId;
         this.orgId = orgId;
         this.ordr = ordr;
@@ -78,14 +76,6 @@ public class IsuPageElement extends BaseModel {
 
     public void setOrgId(Integer orgId) {
         this.orgId = orgId;
-    }
-
-    public Integer getTabId() {
-        return tabId;
-    }
-
-    public void setTabId(Integer tabId) {
-        this.tabId = tabId;
     }
 
     public Integer getPageId() {

@@ -5,12 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuField;
-import com.ngtesting.platform.model.IsuPageTab;
+import com.ngtesting.platform.model.IsuPage;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueDynamicFormService;
 import com.ngtesting.platform.service.intf.IssueFieldService;
 import com.ngtesting.platform.service.intf.IssuePageElementService;
-import com.ngtesting.platform.service.intf.IssuePageTabService;
+import com.ngtesting.platform.service.intf.IssuePageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,7 +29,7 @@ import java.util.Map;
 public class IssuePageElementAdmin extends BaseAction {
 
 	@Autowired
-	IssuePageTabService tabService;
+    IssuePageService pageService;
 	@Autowired
 	IssuePageElementService elementService;
 
@@ -48,15 +48,14 @@ public class IssuePageElementAdmin extends BaseAction {
         Integer projectId = userVo.getDefaultPrjId();
 
         Integer pageId = json.getInteger("pageId");
-        Integer tabId = json.getInteger("tabId");
         List<Map> maps = JSON.parseArray(json.getJSONArray("elems").toJSONString(), Map.class) ;
 
-        elementService.saveAll(orgId, pageId, tabId, maps);
+        elementService.saveAll(orgId, pageId, maps);
 
-		IsuPageTab tab = tabService.get(tabId, orgId);
-		List<IsuField> fields = dynamicFormService.listTabNotUsedField(tabId, projectId, orgId);
+		IsuPage page = pageService.get(pageId, orgId);
+		List<IsuField> fields = dynamicFormService.listNotUsedField(orgId, projectId, pageId);
 
-		ret.put("tab", tab);
+		ret.put("page", page);
 		ret.put("fields", fields);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

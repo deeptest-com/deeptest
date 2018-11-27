@@ -3,12 +3,10 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.dao.IssueDynamicFormDao;
 import com.ngtesting.platform.model.IsuField;
 import com.ngtesting.platform.service.intf.IssueDynamicFormService;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,8 +16,8 @@ public class IssueDynamicFormServiceImpl extends BaseServiceImpl implements Issu
     IssueDynamicFormDao dynamicFormDao;
 
     @Override
-    public List<IsuField> listTabNotUsedField(Integer orgId, Integer projectId, Integer tabId) {
-        List<IsuField> fields = dynamicFormDao.listTabNotUsedField(tabId, projectId, orgId);
+    public List<IsuField> listNotUsedField(Integer orgId, Integer projectId, Integer pageId) {
+        List<IsuField> fields = dynamicFormDao.listNotUsedField(orgId, projectId, pageId);
 
         return fields;
     }

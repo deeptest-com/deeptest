@@ -5,10 +5,10 @@
     <insert id="save" parameterType="IsuPageElement" useGeneratedKeys="true" keyProperty="id">
         insert into IsuPageElement
         (`key`, code, label, `type`, `input`, fullLine, required, readonly,
-          fieldId, `tabId`, pageId, orgId, ordr, deleted, disabled, createTime)
+          fieldId, pageId, orgId, ordr, deleted, disabled, createTime)
         values
         (#{key}, #{code}, #{label}, #{type}, #{input}, #{fullLine}, #{required}, #{readonly},
-          #{fieldId}, #{tabId}, #{pageId}, #{orgId}, #{ordr}, FALSE, FALSE, NOW())
+          #{fieldId}, #{pageId}, #{orgId}, #{ordr}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="updateProp">
@@ -31,7 +31,7 @@
                     WHEN #{map.id} THEN #{map.ordr}
                 </foreach>
             END
-        WHERE tabId=#{tabId} AND orgId=#{orgId}
+        WHERE pageId=#{pageId} AND orgId=#{orgId}
           AND id IN (
             <foreach collection="maps" item="map" separator=",">
                 #{map.id}
@@ -42,7 +42,7 @@
     <delete id="removeOthers">
         DELETE FROM IsuPageElement
 
-        WHERE tabId=#{tabId} AND orgId=#{orgId}
+        WHERE pageId=#{pageId} AND orgId=#{orgId}
 
         <if test="maps.size > 0">
             AND id NOT IN
@@ -52,10 +52,10 @@
         </if>
     </delete>
 
-    <select id="listElementByTabId" parameterType="Map" resultType="IsuPageElement">
+    <select id="listElementByPageId" parameterType="Map" resultType="IsuPageElement">
         SELECT o.* FROM IsuPageElement o
 
-        WHERE o.tabId = #{id}
+        WHERE o.pageId = #{id}
         AND o.deleted != true AND o.disabled != true
 
         ORDER BY o.ordr ASC

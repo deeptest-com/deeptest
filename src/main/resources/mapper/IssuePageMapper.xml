@@ -26,13 +26,6 @@
         (#{name}, #{orgId}, #{isDefault}, #{isBuildIn}, FALSE, FALSE, NOW())
     </insert>
 
-    <insert id="saveDefaultTab" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuPageTab
-        (name, pageId, orgId, deleted, disabled, createTime)
-        values
-        ('默认标签', #{pageId}, #{orgId}, FALSE, FALSE, NOW())
-    </insert>
-
     <update id="update" parameterType="IsuPage">
         UPDATE IsuPage
         SET name=#{name}, updateTime=NOW()
@@ -60,7 +53,7 @@
     <resultMap id="issuePageMap" type="IsuPage" autoMapping="true">
         <id column="id" property="id"/>
 
-        <collection property="tabs" select="com.ngtesting.platform.dao.IssuePageTabDao.listTabByPageId"
+        <collection property="elements" select="com.ngtesting.platform.dao.IssuePageElementDao.listElementByPageId"
                     column="{id=id}">
         </collection>
     </resultMap>

@@ -27,8 +27,8 @@ public class IssuePageElementServiceImpl extends BaseServiceImpl implements Issu
 
     @Override
     @Transactional
-    public void saveAll(Integer orgId, Integer pageId, Integer tabId, List<Map> maps) {
-        elementDao.removeOthers(maps, tabId, orgId);
+    public void saveAll(Integer orgId, Integer pageId, List<Map> maps) {
+        elementDao.removeOthers(maps, pageId, orgId);
 
         if (maps.size() > 0) {
             int ordr = 1;
@@ -44,7 +44,7 @@ public class IssuePageElementServiceImpl extends BaseServiceImpl implements Issu
                     IsuPageElement elm = new IsuPageElement(field.getCode(), field.getLabel(),
                             field.getType(), field.getInput(),
                             field.getFullLine(), field.getRequired(), field.getReadonly(),
-                            field.getKey(), field.getFieldId(), tabId, pageId, orgId, ordr);
+                            field.getKey(), field.getFieldId(), pageId, orgId, ordr);
 
                     elementDao.save(elm);
                     map.put("id", elm.getId().toString());
@@ -52,7 +52,7 @@ public class IssuePageElementServiceImpl extends BaseServiceImpl implements Issu
             }
 
             long start = new Date().getTime();
-            elementDao.saveOrdrs(maps, tabId, orgId);
+            elementDao.saveOrdrs(maps, pageId, orgId);
             long end = new Date().getTime();
 
             logger.info("Update ordrs for " + maps.size() + " records spend " + (end - start) + " milliseconds");

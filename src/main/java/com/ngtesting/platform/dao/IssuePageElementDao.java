@@ -18,14 +18,10 @@ public interface IssuePageElementDao {
     void updateFromCustomField(IsuCustomField vo);
 
     void saveOrdrs(@Param("maps") List<Map> maps,
-                   @Param("tabId") Integer tabId,
+                   @Param("pageId") Integer pageId,
                    @Param("orgId") Integer orgId);
 
     void removeOthers(@Param("maps") List<Map> maps,
-                      @Param("tabId") Integer tabId,
+                      @Param("pageId") Integer pageId,
                       @Param("orgId") Integer orgId);
-
-//    void add(IsuPageElement element);
-//    Integer remove(@Param("id") Integer id, @Param("orgId") Integer orgId);
-//    Integer getMaxFieldOrdr(Integer tabId);
 }

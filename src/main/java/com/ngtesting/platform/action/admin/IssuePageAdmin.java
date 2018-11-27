@@ -59,9 +59,6 @@ public class IssuePageAdmin extends BaseAction {
 		IsuPage page = null;
 		if (pageId == null) {
 			page = new IsuPage();
-            IsuPageTab tab = new IsuPageTab();
-            tab.setId(-1);
-            page.getTabs().add(tab);
 		} else {
 			page = pageService.get(pageId, orgId);
 		}
@@ -83,9 +80,7 @@ public class IssuePageAdmin extends BaseAction {
         Integer pageId = json.getInteger("id");
         IsuPage page = pageService.get(pageId, orgId);
 
-        IsuPageTab tab = page.getTabs().get(0);
-
-        List<IsuField> fields = dynamicFormService.listTabNotUsedField(tab.getId(), projectId, orgId);
+        List<IsuField> fields = dynamicFormService.listNotUsedField(orgId, projectId, pageId);
         Map<String, Object> issuePropMap = dynamicFormService.fetchOrgField(orgId, projectId);
 
         ret.put("page", page);
@@ -109,9 +104,8 @@ public class IssuePageAdmin extends BaseAction {
         pageService.save(page, orgId);
 
 		page = pageService.get(page.getId(), orgId);
-        IsuPageTab tab = page.getTabs().get(0);
 
-		List<IsuField> fields = dynamicFormService.listTabNotUsedField(tab.getId(), orgId, projectId);
+		List<IsuField> fields = dynamicFormService.listNotUsedField(orgId, projectId, page.getId());
 
 		ret.put("page", page);
         ret.put("fields", fields);

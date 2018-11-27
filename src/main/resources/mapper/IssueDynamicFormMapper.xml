@@ -2,13 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.IssueDynamicFormDao" >
 
-    <select id="listTabNotUsedField" resultType="Map">
+    <select id="listNotUsedField" resultType="Map">
         <include refid="fetch">
             <property name="orgId" value="${orgId}"/>
             <property name="projectId" value="${projectId}"/>
         </include>
         AND fields.key NOT IN (
-          SELECT elem.key FROM IsuPageElement elem WHERE elem.tabId = #{tabId}
+          SELECT elem.key FROM IsuPageElement elem WHERE elem.pageId = #{pageId}
         )
     </select>
 

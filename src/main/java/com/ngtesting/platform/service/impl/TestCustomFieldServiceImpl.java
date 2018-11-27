@@ -58,9 +58,9 @@ public class TestCustomFieldServiceImpl extends BaseServiceImpl implements TestC
             vo.setOrdr(maxOrder + 10);
 
             customFieldDao.save(vo);
-            if (vo.getType().equals(TstCustomField.FieldType.dropdown)) {
-                customFieldOptionDao.saveAll(vo.getId(), vo.getOptions());
-            }
+//            if (vo.getType().equals(TstCustomField.FieldType.dropdown)) {
+//                customFieldOptionDao.saveAll(vo.getId(), vo.getOptions());
+//            }
         } else {
             Integer count = customFieldDao.update(vo);
             if (count == 0) {

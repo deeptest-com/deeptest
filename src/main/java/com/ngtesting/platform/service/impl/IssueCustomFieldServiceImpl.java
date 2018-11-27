@@ -55,11 +55,11 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
             vo.setOrdr(maxOrder + 10);
 
             customFieldDao.save(vo);
-            if (vo.getType().equals(ConstantIssue.IssueInput.dropdown)
-                    || vo.getType().equals(ConstantIssue.IssueInput.radio)
-                    || vo.getType().equals(ConstantIssue.IssueInput.checkbox)) {
-                customFieldOptionDao.saveAll(vo.getId(), vo.getOptions());
-            }
+//            if (vo.getInput().equals(ConstantIssue.IssueInput.dropdown)
+//                    || vo.getInput().equals(ConstantIssue.IssueInput.radio)
+//                    || vo.getInput().equals(ConstantIssue.IssueInput.checkbox)) {
+//                customFieldOptionDao.saveAll(vo.getId(), vo.getOptions());
+//            }
         } else {
             Integer count = customFieldDao.update(vo);
             if (count == 0) {

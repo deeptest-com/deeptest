@@ -28,22 +28,22 @@
 
     <insert id="save" parameterType="IsuCustomFieldOption" useGeneratedKeys="true" keyProperty="id">
         insert into IsuCustomFieldOption
-        (label,value,ordr,fieldId,isDefault,
-        createTime,deleted,disabled)
+        (label,value,ordr,fieldId,isDefault,isBuildIn,
+          createTime,deleted,disabled)
         values
-        (#{label},#{value},#{ordr},#{fieldId},#{isDefault},
-        NOW(),FALSE,FALSE)
+        (#{label},#{value},#{ordr},#{fieldId},#{isDefault},#{isBuildIn},
+          NOW(),FALSE,FALSE)
     </insert>
-    <insert id="saveAll">
+<!--    <insert id="saveAll">
         insert into IsuCustomFieldOption
-        (label,value,ordr,fieldId,isDefault,
+        (label,value,ordr,fieldId,isDefault,isBuildIn,
         createTime,deleted,disabled)
         values
         <foreach collection="list" item="item" separator=",">
-            (#{item.label},#{item.value}, #{item.ordr}, #{fieldId},#{isDefault},
+            (#{item.label},#{item.value}, #{item.ordr}, #{fieldId},#{item.isDefault},#{item.isBuildIn},
             NOW(),FALSE,FALSE)
         </foreach>
-    </insert>
+    </insert>-->
 
     <update id="update">
         UPDATE IsuCustomFieldOption

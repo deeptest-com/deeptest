@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.model.TstCustomField;
 import com.ngtesting.platform.model.TstCustomFieldOption;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.TestCustomFieldOptionService;
+import com.ngtesting.platform.service.intf.TestCustomFieldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +28,9 @@ public class TestCustomFieldOptionAdmin extends BaseAction {
 	@Autowired
 	TestCustomFieldOptionService customFieldOptionService;
 
+	@Autowired
+	TestCustomFieldService customFieldService;
+
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -35,6 +40,13 @@ public class TestCustomFieldOptionAdmin extends BaseAction {
 		Integer orgId = user.getDefaultOrgId();
 
 		Integer fieldId = json.getInteger("fieldId");
+
+		if (fieldId == null) { // 新字段
+			TstCustomField customField = JSON.parseObject(JSON.toJSONString(json.get("field")), TstCustomField.class);
+
+			customFieldService.save(customField, orgId);
+			fieldId = customField.getId();
+		}
 
 		TstCustomFieldOption option = JSON.parseObject(JSON.toJSONString(json.getJSONObject("model")), TstCustomFieldOption.class);
         option.setFieldId(fieldId);

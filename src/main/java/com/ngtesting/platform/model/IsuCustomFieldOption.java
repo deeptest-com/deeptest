@@ -9,6 +9,7 @@ public class IsuCustomFieldOption extends BaseModel {
 	private Integer ordr;
 	private Integer fieldId;
 	private Boolean isDefault = false;
+    private Boolean isBuildIn = false;
 
 	public Integer getFieldId() {
 		return fieldId;
@@ -57,4 +58,12 @@ public class IsuCustomFieldOption extends BaseModel {
 	public void setDefault(Boolean aDefault) {
 		isDefault = aDefault;
 	}
+
+    public Boolean getBuildIn() {
+        return isBuildIn;
+    }
+
+    public void setBuildIn(Boolean buildIn) {
+        isBuildIn = buildIn;
+    }
 }

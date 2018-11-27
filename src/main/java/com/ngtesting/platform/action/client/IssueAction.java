@@ -4,8 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuIssue;
+import com.ngtesting.platform.model.IsuPage;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.*;
+import com.ngtesting.platform.service.intf.IssueDynamicFormService;
+import com.ngtesting.platform.service.intf.IssueFieldService;
+import com.ngtesting.platform.service.intf.IssueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,24 +25,11 @@ import java.util.Map;
 @RequestMapping(Constant.API_PATH_CLIENT + "issue/")
 public class IssueAction extends BaseAction {
 	@Autowired
-    ProjectService projectService;
-	@Autowired
     IssueService issueService;
     @Autowired
     IssueFieldService fieldService;
-    @Autowired
-    IssuePropertyService propertyService;
-
-    @Autowired
-    IssueTypeService typeService;
-    @Autowired
-    IssuePriorityService priorityService;
-    @Autowired
-    IssueStatusService statusService;
-    @Autowired
-    IssueResolutionService resolutionService;
 	@Autowired
-    IssueCustomFieldService customFieldService;
+	IssueDynamicFormService dynamicFormService;
 
     @RequestMapping(value = "get", method = RequestMethod.POST)
     @ResponseBody
@@ -50,8 +40,10 @@ public class IssueAction extends BaseAction {
         Integer orgId = user.getDefaultOrgId();
         Integer prjId = user.getDefaultPrjId();
 
+        String opt = json.getString("opt");
 		Integer id = json.getInteger("id");
 		IsuIssue po;
+
 		if (id == null) {
 			po = new IsuIssue();
 		} else {
@@ -62,12 +54,13 @@ public class IssueAction extends BaseAction {
 			return authFail();
 		}
 
-//        List<IsuField> fields = fieldService.list(user);
-        Map propMap = propertyService.getProps(orgId);
+        IsuPage page = issueService.getPage(orgId, prjId, opt);
+
+        Map<String, Object> issuePropMap = dynamicFormService.fetchOrgField(orgId, prjId);
 
         ret.put("data", po);
-//        ret.put("fields", fields);
-        ret.put("propMap", propMap);
+        ret.put("page", page);
+        ret.put("issuePropMap", issuePropMap);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

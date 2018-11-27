@@ -60,7 +60,7 @@ public class TestCustomFieldOptionAdmin extends BaseAction {
 		Integer fieldId = json.getInteger("fieldId");
 		Integer id = json.getInteger("id");
 
-		Boolean result = customFieldOptionService.delete(id, orgId);
+		Boolean result = customFieldOptionService.delete(id, fieldId, orgId);
         if(!result) {  // 当找不到option对象、或option所属fieldId不是默认org的，结果会返回空
             return authFail();
         }
@@ -93,6 +93,26 @@ public class TestCustomFieldOptionAdmin extends BaseAction {
         List<TstCustomFieldOption> vos = customFieldOptionService.listVos(fieldId);
 
         ret.put("data", vos);
+		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+
+		return ret;
+	}
+
+	@RequestMapping(value = "setDefault", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
+
+		Integer fieldId = json.getInteger("fieldId");
+		Integer id = json.getInteger("id");
+
+		customFieldOptionService.setDefault(id, fieldId, orgId);  // 涵盖项目设置WS推送消息
+
+		List<TstCustomFieldOption> vos = customFieldOptionService.listVos(fieldId);
+
+		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
 		return ret;

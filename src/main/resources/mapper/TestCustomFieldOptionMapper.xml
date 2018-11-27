@@ -2,6 +2,30 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.TstCustomFieldOptionDao" >
 
+    <select id="listByFieldId" resultType="TstCustomFieldOption">
+        SELECT o.* FROM TstCustomFieldOption o
+
+        WHERE o.fieldId = #{fieldId}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.ordr ASC
+    </select>
+    <select id="get" resultType="TstCustomFieldOption">
+        SELECT o.* FROM TstCustomFieldOption o
+        left join TstCustomField f ON o.fieldId=f.id
+
+        WHERE o.id = #{id} AND f.id=#{fieldId} AND f.orgId=#{orgId}
+    </select>
+
+    <select id="getByFieldId" resultMap="optionMap">
+        SELECT o.* FROM TstCustomFieldOption o
+
+        WHERE o.fieldId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.ordr ASC
+    </select>
+
     <insert id="save" parameterType="TstCustomFieldOption" useGeneratedKeys="true" keyProperty="id">
         insert into TstCustomFieldOption
         (label,value,ordr,fieldId,
@@ -39,29 +63,6 @@
         AND o.deleted != true AND o.disabled != true
     </select>
 
-    <select id="listByFieldId" resultType="TstCustomFieldOption">
-        SELECT o.* FROM TstCustomFieldOption o
-
-        WHERE o.fieldId = #{fieldId}
-        AND o.deleted != true AND o.disabled != true
-
-        ORDER BY o.ordr ASC
-    </select>
-    <select id="get" resultType="TstCustomFieldOption">
-        SELECT o.* FROM TstCustomFieldOption o
-
-        WHERE o.id = #{id}
-    </select>
-
-    <select id="getByFieldId" resultMap="optionMap">
-        SELECT o.* FROM TstCustomFieldOption o
-
-        WHERE o.fieldId = #{id}
-        AND o.deleted != true AND o.disabled != true
-
-        ORDER BY o.ordr ASC
-    </select>
-
     <select id="getPrev" resultType="TstCustomFieldOption">
         <![CDATA[
             SELECT * FROM TstCustomFieldOption o
@@ -84,6 +85,17 @@
         UPDATE TstCustomFieldOption
         SET ordr=#{ordr}, updateTime=NOW()
         WHERE id=#{id}
+    </update>
+
+    <update id="setDefault">
+        UPDATE TstCustomFieldOption
+        SET isDefault=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND fieldId=#{fieldId}
+    </update>
+    <update id="removeDefault">
+        UPDATE TstCustomFieldOption
+        SET isDefault=FALSE, updateTime=NOW()
+        WHERE fieldId=#{fieldId}
     </update>
 
     <resultMap id="optionMap" type="TstCustomFieldOption" autoMapping="true">

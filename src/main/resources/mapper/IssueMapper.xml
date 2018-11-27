@@ -8,4 +8,25 @@
             AND o.orgId=#{orgId}
         </if>
     </select>
+
+    <select id="getProjectDefaultPages" resultType="Map">
+        SELECT psi.opt, psi.pageId FROM IsuPageSolutionItem psi
+
+        JOIN IsuPageSolution ps ON psi.solutionId=ps.id
+
+        JOIN TstProject prj ON prj.issuePageSolutionId=ps.id
+
+        WHERE psi.typeId=#{typeId} AND prj.id=#{prjId}
+    </select>
+
+    <select id="getProjectDefaultType" resultType="IsuType">
+        SELECT t.* FROM IsuType t
+        JOIN IsuTypeSolutionItem tsi ON tsi.typeId=t.id
+        JOIN IsuTypeSolution ts ON tsi.solutionId=ts.id
+
+        JOIN TstProject prj ON prj.issueTypeSolutionId=ts.id
+
+        WHERE t.isDefault IS TRUE AND t.orgId = #{orgId} AND prj.id=#{prjId}
+    </select>
+
 </mapper>

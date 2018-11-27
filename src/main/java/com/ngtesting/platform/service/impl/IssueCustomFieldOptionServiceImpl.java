@@ -7,6 +7,7 @@ import com.ngtesting.platform.model.IsuCustomFieldOption;
 import com.ngtesting.platform.service.intf.IssueCustomFieldOptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -46,14 +47,9 @@ public class IssueCustomFieldOptionServiceImpl extends BaseServiceImpl implement
     }
 
     @Override
-    public Boolean delete(Integer id, Integer orgId) {
-        IsuCustomFieldOption option = customFieldOptionDao.get(id);
+    public Boolean delete(Integer id, Integer fieldId, Integer orgId) {
+        IsuCustomFieldOption option = customFieldOptionDao.get(id, fieldId, orgId);
         if (option == null) {
-            return false;
-        }
-
-        IsuCustomField field = customFieldDao.get(option.getFieldId(), orgId);
-        if (field == null) {
             return false;
         }
 
@@ -63,7 +59,7 @@ public class IssueCustomFieldOptionServiceImpl extends BaseServiceImpl implement
 
     @Override
     public Boolean changeOrder(Integer id, String act, Integer fieldId, Integer orgId) {
-        IsuCustomFieldOption curr = customFieldOptionDao.get(id);
+        IsuCustomFieldOption curr = customFieldOptionDao.get(id, fieldId, orgId);
         if (curr == null) {
             return false;
         }
@@ -91,4 +87,25 @@ public class IssueCustomFieldOptionServiceImpl extends BaseServiceImpl implement
 
         return true;
     }
+
+    @Override
+    @Transactional
+    public Boolean setDefault(Integer id, Integer fieldId, Integer orgId) {
+        IsuCustomFieldOption option = customFieldOptionDao.get(id, fieldId, orgId);
+        if (option == null) {
+            return false;
+        }
+
+        Integer count = customFieldOptionDao.removeDefault(fieldId);
+        count = customFieldOptionDao.setDefault(id, fieldId);
+
+        return count > 0;
+    }
+
+    @Override
+    @Transactional
+    public IsuCustomFieldOption get(Integer id, Integer fieldId, Integer orgId) {
+        return customFieldOptionDao.get(id, fieldId, orgId);
+    }
+
 }

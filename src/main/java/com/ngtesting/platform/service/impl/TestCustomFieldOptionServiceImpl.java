@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.TstCustomFieldDao;
 import com.ngtesting.platform.dao.TstCustomFieldOptionDao;
+import com.ngtesting.platform.model.IsuCustomFieldOption;
 import com.ngtesting.platform.model.TstCustomField;
 import com.ngtesting.platform.model.TstCustomFieldOption;
 import com.ngtesting.platform.service.intf.TestCustomFieldOptionService;
@@ -46,8 +47,8 @@ public class TestCustomFieldOptionServiceImpl extends BaseServiceImpl implements
     }
 
     @Override
-    public Boolean delete(Integer id, Integer orgId) {
-        TstCustomFieldOption option = customFieldOptionDao.get(id);
+    public Boolean delete(Integer id, Integer fieldId, Integer orgId) {
+        TstCustomFieldOption option = customFieldOptionDao.get(id, fieldId, orgId);
         if (option == null) {
             return false;
         }
@@ -63,7 +64,7 @@ public class TestCustomFieldOptionServiceImpl extends BaseServiceImpl implements
 
     @Override
     public Boolean changeOrder(Integer id, String act, Integer fieldId, Integer orgId) {
-        TstCustomFieldOption curr = customFieldOptionDao.get(id);
+        TstCustomFieldOption curr = customFieldOptionDao.get(id, fieldId, orgId);
         if (curr == null) {
             return false;
         }
@@ -90,5 +91,18 @@ public class TestCustomFieldOptionServiceImpl extends BaseServiceImpl implements
         customFieldOptionDao.setOrder(neighbor.getId(), currOrder);
 
         return true;
+    }
+
+    @Override
+    public Boolean setDefault(Integer id, Integer fieldId, Integer orgId) {
+        TstCustomFieldOption option = customFieldOptionDao.get(id, fieldId, orgId);
+        if (option == null) {
+            return false;
+        }
+
+        Integer count = customFieldOptionDao.removeDefault(fieldId);
+        count = customFieldOptionDao.setDefault(id, fieldId);
+
+        return count > 0;
     }
 }

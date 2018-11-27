@@ -8,6 +8,7 @@ public class IsuCustomFieldOption extends BaseModel {
 	private String descr;
 	private Integer ordr;
 	private Integer fieldId;
+	private Boolean isDefault = false;
 
 	public Integer getFieldId() {
 		return fieldId;
@@ -48,4 +49,12 @@ public class IsuCustomFieldOption extends BaseModel {
     public void setOrdr(Integer ordr) {
         this.ordr = ordr;
     }
+
+	public Boolean getDefault() {
+		return isDefault;
+	}
+
+	public void setDefault(Boolean aDefault) {
+		isDefault = aDefault;
+	}
 }

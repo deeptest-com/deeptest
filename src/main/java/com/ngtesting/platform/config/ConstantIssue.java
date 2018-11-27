@@ -24,7 +24,9 @@ public class ConstantIssue {
 
         radio("radio"),
     	checkbox("checkbox"),
-    	dropdown("dropdown");
+    	dropdown("dropdown"),
+
+        date("date");
 
         private IssueInput(String textVal) {
             this.textVal = textVal;

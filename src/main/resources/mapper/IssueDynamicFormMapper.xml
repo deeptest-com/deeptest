@@ -102,7 +102,7 @@
     </sql>
 
     <sql id="fetchCustormFields">
-        SELECT opt.id, opt.label, opt.value FROM IsuCustomFieldOption opt
+        SELECT opt.id, opt.label, opt.value, opt.isDefault FROM IsuCustomFieldOption opt
         WHERE opt.fieldId=#{fieldId}
         AND opt.disabled!=true AND opt.deleted!=true
         ORDER BY opt.ordr;
@@ -128,7 +128,7 @@
     </sql>
 
     <sql id="fetchSysFieldOptions">
-        SELECT tb.id, tb.label, '${code}' fieldCode, '${optionTable}' optionTable
+        SELECT tb.id, tb.label, tb.isDefault, '${code}' fieldCode, '${optionTable}' optionTable
         FROM ${optionTable} AS tb
         WHERE TRUE
         <if test="optionTable != 'TstUser'">

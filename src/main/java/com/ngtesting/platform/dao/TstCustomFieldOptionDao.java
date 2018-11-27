@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface TstCustomFieldOptionDao {
     List<TstCustomFieldOption> listByFieldId(@Param("fieldId") Integer fieldId);
-    TstCustomFieldOption get(@Param("id") Integer id);
+    TstCustomFieldOption get(@Param("id") Integer id,
+                             @Param("fieldId") Integer fieldId,
+                             @Param("orgId") Integer orgId);
 
     void save(TstCustomFieldOption vo);
     void saveAll(@Param("fieldId") Integer fieldId, @Param("list") List<TstCustomFieldOption> options);
@@ -17,6 +19,10 @@ public interface TstCustomFieldOptionDao {
 
     void setOrder(@Param("id") Integer id,
                   @Param("ordr") Integer ordr);
+
+    Integer setDefault(@Param("id") Integer id,
+                       @Param("fieldId") Integer fieldId);
+    Integer removeDefault(@Param("fieldId") Integer fieldId);
 
     TstCustomFieldOption getPrev(@Param("ordr") Integer ordr,
                                  @Param("fieldId") Integer fieldId);

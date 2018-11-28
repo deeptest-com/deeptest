@@ -1,64 +1,6 @@
 package com.ngtesting.platform.config;
 
 public class ConstantIssue {
-
-    public static enum TextFormat {
-        plain_text("plain_text");
-//        rich_text("rich_text");
-
-        private TextFormat(String textVal) {
-            this.textVal = textVal;
-        }
-
-        private String textVal;
-
-        public String toString() {
-            return textVal;
-        }
-    }
-
-    public static enum IssueInput {
-        text("text"),
-        number("number"),
-        textarea("textarea"),
-
-        dropdown("dropdown"),
-        radio("radio"),
-    	checkbox("checkbox"),
-
-        date("date");
-
-        private IssueInput(String textVal) {
-            this.textVal = textVal;
-        }
-
-        private String textVal;
-
-        public String toString() {
-            return textVal;
-        }
-    }
-
-    public enum IssueType {
-        string("string"),
-        integer("integer"),
-        doublee("doublee"),
-        date("date"),
-        time("time"),
-        datetime("datetime"),
-        booleann("booleann");
-
-        IssueType(String textVal) {
-            this.textVal = textVal;
-        }
-
-        private String textVal;
-
-        public String toString() {
-            return textVal;
-        }
-    }
-
     public static enum IssueOpt {
         create("create"),
         edit("edit"),
@@ -87,4 +29,19 @@ public class ConstantIssue {
 //            Arrays.asList("equal", "not_equal", "in", "not_in",
 //                    "less", "less_or_equal", "equal", "greater", "greater_or_equal",
 //                    "between", "not_between", "is_null", "is_not_null");
+
+    public static enum TextFormat {
+        plain_text("plain_text");
+//        rich_text("rich_text");
+
+        private TextFormat(String textVal) {
+            this.textVal = textVal;
+        }
+
+        private String textVal;
+
+        public String toString() {
+            return textVal;
+        }
+    }
 }

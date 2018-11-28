@@ -33,4 +33,38 @@
         WHERE id = #{id} AND orgId = #{orgId}
     </select>
 
+    <select id="listInput" resultType="Map">
+        SELECT o.id, o.label, o.value
+        FROM IsuFieldIputDefine o
+        ORDER BY o.ordr
+    </select>
+    <select id="listType" resultType="Map">
+        SELECT o.id, o.label, o.value
+        FROM IsuFieldTypeDefine o
+        ORDER BY o.ordr
+    </select>
+
+    <select id="fetchInputMap" resultMap="inputMap">
+        SELECT o.id, o.label, o.value
+        FROM IsuFieldIputDefine o
+        ORDER BY o.ordr
+    </select>
+    <select id="listFieldTypeByInput" resultType="Map">
+        SELECT o.id, o.label, o.value
+        FROM IsuFieldTypeDefine o
+        JOIN IsuFieldInputTypeRelation r ON o.value = r.typeValue
+
+        WHERE r.inputValue = #{value}
+
+        ORDER BY o.ordr
+    </select>
+
+    <resultMap id="inputMap" type="Map" autoMapping="true">
+        <id column="value" property="value"/>
+
+        <collection property="types" select="listFieldTypeByInput"
+                    column="{value=value}">
+        </collection>
+    </resultMap>
+
 </mapper>

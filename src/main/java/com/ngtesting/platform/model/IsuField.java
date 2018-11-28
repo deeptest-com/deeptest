@@ -1,8 +1,6 @@
 package com.ngtesting.platform.model;
 
 
-import com.ngtesting.platform.config.ConstantIssue;
-
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,8 +14,8 @@ public class IsuField implements Serializable {
 	private String code;
 	private String label;
     private String key;
-    private ConstantIssue.IssueType type;
-    private ConstantIssue.IssueInput input;
+    private String type;
+    private String input;
     private Integer ordr;
     private Boolean fullLine;
     private Boolean required;
@@ -51,19 +49,19 @@ public class IsuField implements Serializable {
 		this.display = display;
 	}
 
-    public ConstantIssue.IssueType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(ConstantIssue.IssueType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
-    public ConstantIssue.IssueInput getInput() {
+    public String getInput() {
         return input;
     }
 
-    public void setInput(ConstantIssue.IssueInput input) {
+    public void setInput(String input) {
         this.input = input;
     }
 

@@ -1,7 +1,5 @@
 package com.ngtesting.platform.model;
 
-import com.ngtesting.platform.config.ConstantIssue;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -28,14 +26,14 @@ public class IsuPageElement extends BaseModel {
     private Integer orgId;
 
     public IsuPageElement(){}
-    public IsuPageElement(String code, String label, ConstantIssue.IssueType type,
-                          ConstantIssue.IssueInput input, Boolean fullLine, Boolean required, Boolean readonly,
+    public IsuPageElement(String code, String label, String type,
+                          String input, Boolean fullLine, Boolean required, Boolean readonly,
                           String key, Integer fieldId, Integer pageId, Integer orgId,
                           Integer ordr) {
         this.code = code;
         this.label = label;
-        this.type = type.toString();
-        this.input = input.toString();
+        this.type = type;
+        this.input = input;
         this.fullLine = fullLine;
         this.required = required;
         this.readonly = readonly;

@@ -45,7 +45,7 @@ public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlCo
         for (IsuFieldDefine col : cols) {
             String code = col.getCode();
             String label = col.getLabel();
-            ConstantIssue.IssueType type = col.getType();
+            String type = col.getType();
 
             Boolean enable;
             if (ls.size() > 0) {

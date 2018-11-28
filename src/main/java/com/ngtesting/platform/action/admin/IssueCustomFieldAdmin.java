@@ -35,8 +35,13 @@ public class IssueCustomFieldAdmin extends BaseAction {
 
         List<IsuCustomField> vos = customFieldService.list(orgId); // 总是取当前活动org的，不需要再鉴权
 
+        Map inputMap = customFieldService.inputMap();
+        Map typeMap = customFieldService.typeMap();
+
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         ret.put("data", vos);
+        ret.put("inputMap", inputMap);
+        ret.put("typeMap", typeMap);
         return ret;
     }
 
@@ -49,6 +54,9 @@ public class IssueCustomFieldAdmin extends BaseAction {
         Integer orgId = user.getDefaultOrgId();
 
         Integer id = json.getInteger("id");
+
+        Map<String, Map> inputMap = customFieldService.fetchInputMap();
+        List<String> formatList = customFieldService.listFormat();
 
         IsuCustomField vo = null;
         if (id == null) {
@@ -67,13 +75,8 @@ public class IssueCustomFieldAdmin extends BaseAction {
             ret.put("msg", "自定义字段不能超过20个");
         }
 
-        List<String> typeList = customFieldService.listType();
-        List<String> inputList = customFieldService.listInput();
-        List<String> formatList = customFieldService.listFormat();
-
         ret.put("data", vo);
-        ret.put("typeList", typeList);
-        ret.put("inputList", inputList);
+        ret.put("inputMap", inputMap);
         ret.put("formatList", formatList);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

@@ -3,6 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.config.ConstantIssue;
 import com.ngtesting.platform.dao.IssueCustomFieldDao;
 import com.ngtesting.platform.dao.IssueCustomFieldOptionDao;
+import com.ngtesting.platform.dao.IssueFieldDao;
 import com.ngtesting.platform.dao.IssuePageElementDao;
 import com.ngtesting.platform.model.IsuCustomField;
 import com.ngtesting.platform.service.intf.IssueCustomFieldService;
@@ -12,11 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements IssueCustomFieldService {
+    @Autowired
+    IssueFieldDao fieldDao;
+
     @Autowired
     IssueCustomFieldDao customFieldDao;
     @Autowired
@@ -124,21 +130,37 @@ public class IssueCustomFieldServiceImpl extends BaseServiceImpl implements Issu
     }
 
     @Override
-    public List<String> listType() {
-        List<String> ls = new LinkedList<String>();
-        for (ConstantIssue.IssueType item : ConstantIssue.IssueType.values()) {
-            ls.add(item.toString());
+    public Map<String, Map> fetchInputMap() {
+        List<Map> inputs = fieldDao.fetchInputMap();
+
+        Map<String, Map> ret = new LinkedHashMap<>();
+        for (Map<String, Object> input : inputs) {
+            ret.put(input.get("value").toString(), input);
         }
-        return ls;
+
+        return ret;
     }
 
     @Override
-    public List<String> listInput() {
-        List<String> ls = new LinkedList<String>();
-        for (ConstantIssue.IssueInput item : ConstantIssue.IssueInput.values()) {
-            ls.add(item.toString());
+    public Map inputMap() {
+        List<Map> ls = fieldDao.listInput();
+
+        Map<String, String> ret = new LinkedHashMap<>();
+        for (Map<String, String> input : ls) {
+            ret.put(input.get("value"), input.get("label"));
         }
-        return ls;
+        return ret;
+    }
+
+    @Override
+    public Map typeMap() {
+        List<Map> ls = fieldDao.listType();
+
+        Map<String, String> ret = new LinkedHashMap<>();
+        for (Map<String, String> input : ls) {
+            ret.put(input.get("value"), input.get("label"));
+        }
+        return ret;
     }
 
     @Override

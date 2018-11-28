@@ -3,6 +3,7 @@ package com.ngtesting.platform.service.intf;
 import com.ngtesting.platform.model.IsuCustomField;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IssueCustomFieldService extends BaseService {
 
@@ -18,8 +19,11 @@ public interface IssueCustomFieldService extends BaseService {
 
     String getLastUnusedColumn(Integer orgId);
 
-    List<String> listType();
-    List<String> listInput();
+    Map<String, Map> fetchInputMap();
+
+    Map inputMap();
+
+    Map typeMap();
 
     List<String> listFormat();
 }

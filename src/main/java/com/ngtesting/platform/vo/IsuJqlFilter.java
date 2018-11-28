@@ -1,7 +1,6 @@
 package com.ngtesting.platform.vo;
 
 
-import com.ngtesting.platform.config.ConstantIssue;
 import com.ngtesting.platform.model.IsuFieldDefine;
 
 import java.io.Serializable;
@@ -13,8 +12,8 @@ public class IsuJqlFilter implements Serializable {
 
     String code;
     String label;
-    ConstantIssue.IssueType type;
-    ConstantIssue.IssueInput input;
+    String type;
+    String input;
     Map values;
     List<String> operators;
     Boolean display;
@@ -66,19 +65,19 @@ public class IsuJqlFilter implements Serializable {
         this.label = label;
     }
 
-    public ConstantIssue.IssueType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(ConstantIssue.IssueType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
-    public ConstantIssue.IssueInput getInput() {
+    public String getInput() {
         return input;
     }
 
-    public void setInput(ConstantIssue.IssueInput input) {
+    public void setInput(String input) {
         this.input = input;
     }
 

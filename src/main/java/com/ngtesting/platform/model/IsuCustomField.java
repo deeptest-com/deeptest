@@ -15,8 +15,8 @@ public class IsuCustomField extends BaseModel {
     private Boolean isBuildIn = false;
     private Boolean fullLine = false;
 
-    ConstantIssue.IssueType type;
-    ConstantIssue.IssueInput input;
+    private String type;
+    private String input;
     private ConstantIssue.TextFormat textFormat = ConstantIssue.TextFormat.plain_text;
 
     private String descr;
@@ -77,11 +77,11 @@ public class IsuCustomField extends BaseModel {
 		this.descr = descr;
 	}
 
-	public ConstantIssue.IssueType getType() {
+	public String getType() {
 		return type;
 	}
 
-	public void setType(ConstantIssue.IssueType type) {
+	public void setType(String type) {
 		this.type = type;
 	}
 
@@ -117,11 +117,11 @@ public class IsuCustomField extends BaseModel {
         this.orgId = orgId;
     }
 
-    public ConstantIssue.IssueInput getInput() {
+    public String getInput() {
         return input;
     }
 
-    public void setInput(ConstantIssue.IssueInput input) {
+    public void setInput(String input) {
         this.input = input;
     }
 

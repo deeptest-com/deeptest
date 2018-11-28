@@ -1,8 +1,6 @@
 package com.ngtesting.platform.vo;
 
 
-import com.ngtesting.platform.config.ConstantIssue;
-
 import java.io.Serializable;
 
 public class IsuJqlColumn implements Serializable {
@@ -11,7 +9,7 @@ public class IsuJqlColumn implements Serializable {
 	private String code;
 	private String label;
 	private Boolean display;
-	ConstantIssue.IssueType type;
+	private String type;
 
     public String getCode() {
         return code;
@@ -37,11 +35,11 @@ public class IsuJqlColumn implements Serializable {
 		this.display = display;
 	}
 
-	public ConstantIssue.IssueType getType() {
+	public String getType() {
 		return type;
 	}
 
-	public void setType(ConstantIssue.IssueType type) {
+	public void setType(String type) {
 		this.type = type;
 	}
 }

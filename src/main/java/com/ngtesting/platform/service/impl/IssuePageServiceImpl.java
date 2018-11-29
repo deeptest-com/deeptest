@@ -35,8 +35,6 @@ public class IssuePageServiceImpl extends BaseServiceImpl implements IssuePageSe
 
             vo.setOrgId(orgId);
             pageDao.save(vo);
-
-            pageDao.saveDefaultTab(vo.getId(), orgId);
         } else {
             Integer count = pageDao.update(vo);
             if (count == 0) {

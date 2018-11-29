@@ -38,9 +38,8 @@
     <update id="update" parameterType="IsuCustomField">
         UPDATE IsuCustomField
         SET label=#{label},descr=#{descr},`type`=#{type},`input`=#{input},rows=#{rows}, textFormat=#{textFormat},
-
-        orgId=#{orgId},
-        disabled=#{disabled}, updateTime=NOW()
+        fullLine=#{fullLine},
+        orgId=#{orgId}, disabled=#{disabled}, updateTime=NOW()
 
         WHERE id=#{id} AND orgId=#{orgId}
     </update>

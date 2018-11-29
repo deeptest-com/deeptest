@@ -10,6 +10,7 @@
         AND fields.key NOT IN (
           SELECT elem.key FROM IsuPageElement elem WHERE elem.pageId = #{pageId}
         )
+        ORDER BY fields.ordr;
     </select>
 
     <select id="fetchOrgField" resultMap="fieldMap">

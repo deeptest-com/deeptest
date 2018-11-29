@@ -132,4 +132,12 @@ public class IsuCustomField extends BaseModel {
     public void setReadonly(Boolean readonly) {
         this.readonly = readonly;
     }
+
+    public Boolean getFullLine() {
+        return fullLine;
+    }
+
+    public void setFullLine(Boolean fullLine) {
+        this.fullLine = fullLine;
+    }
 }

@@ -18,8 +18,6 @@ public interface IssuePageDao {
 
     Integer delete(@Param("id") Integer id, @Param("orgId") Integer orgId);
 
-    void saveDefaultTab(@Param("pageId") Integer pageId, @Param("orgId") Integer orgId);
-
     void addField(IsuPageElement element);
 
     Integer getMaxFieldOrdr(Integer tabId);

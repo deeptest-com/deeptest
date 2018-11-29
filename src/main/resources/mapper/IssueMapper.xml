@@ -29,4 +29,26 @@
         WHERE t.isDefault IS TRUE AND t.orgId = #{orgId} AND prj.id=#{prjId}
     </select>
 
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        insert into IsuIssue
+        (label,value,descr,orgId,ordr, isDefault, isBuildIn,deleted,disabled,createTime)
+        values
+        (#{label},#{value},#{descr},#{orgId},#{ordr}, #{isDefault}, #{isBuildIn},FALSE,FALSE,NOW())
+    </insert>
+
+    <update id="update">
+        UPDATE IsuIssue
+        SET label=#{label},value=#{value},descr=#{descr},
+        disabled=#{disabled},
+        updateTime=NOW()
+
+        WHERE id=#{id} AND orgId=#{orgId}
+    </update>
+
+    <delete id="delete">
+        UPDATE IsuIssue
+        SET disabled=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND orgId=#{orgId}
+    </delete>
+
 </mapper>

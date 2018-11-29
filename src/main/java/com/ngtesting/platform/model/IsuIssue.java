@@ -41,6 +41,9 @@ public class IsuIssue extends BaseModel {
     private Integer assigneeId;
     private String assigneeName;
 
+    private Integer orgId;
+    private Integer prjId;
+
     private List<IsuComments> comments = new LinkedList<>();
     private List<IsuAttachment> attachments = new LinkedList<>();
     private List<IsuHistory> histories = new LinkedList<>();
@@ -535,5 +538,21 @@ public class IsuIssue extends BaseModel {
 
     public void setProp30(String prop30) {
         this.prop30 = prop30;
+    }
+
+    public Integer getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(Integer orgId) {
+        this.orgId = orgId;
+    }
+
+    public Integer getPrjId() {
+        return prjId;
+    }
+
+    public void setPrjId(Integer prjId) {
+        this.prjId = prjId;
     }
 }

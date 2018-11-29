@@ -2,9 +2,8 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.IssueDao;
 import com.ngtesting.platform.dao.IssuePageDao;
-import com.ngtesting.platform.model.IsuIssue;
-import com.ngtesting.platform.model.IsuPage;
-import com.ngtesting.platform.model.IsuType;
+import com.ngtesting.platform.dao.IssuePageElementDao;
+import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.intf.IssueService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,6 +23,8 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
 
 	@Autowired
 	IssuePageDao pageDao;
+    @Autowired
+    IssuePageElementDao pageElementDao;
 
     @Override
 	public IsuIssue get(Integer caseId, Integer orgId) {
@@ -56,6 +57,25 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
             ret.put(map.get("opt").toString(), Integer.valueOf(map.get("pageId").toString()));
         }
         return ret;
+    }
+
+    @Override
+    public IsuIssue save(IsuIssue issue, Integer pageId, TstUser user) {
+        List<IsuPageElement> elems = pageElementDao.listElementByPageId(pageId);
+
+//        if (issue.getId() == null) {
+//            issue.setOrgId(user.getDefaultOrgId());
+//            issue.setPrjId(user.getDefaultPrjId());
+//
+//            issueDao.save(issue, elems);
+//        } else {
+//            Integer count = issueDao.update(issue, elems);
+//            if (count == 0) {
+//                return null;
+//            }
+//        }
+
+        return issue;
     }
 
 }

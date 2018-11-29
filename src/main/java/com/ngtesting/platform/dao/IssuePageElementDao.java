@@ -24,4 +24,6 @@ public interface IssuePageElementDao {
     void removeOthers(@Param("maps") List<Map> maps,
                       @Param("pageId") Integer pageId,
                       @Param("orgId") Integer orgId);
+
+    List<IsuPageElement> listElementByPageId(@Param("id") Integer id);
 }

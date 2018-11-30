@@ -90,14 +90,14 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         int i = 0;
         for (IsuPageElement elem : elems) {
             String code = elem.getCode();
-            Object param = issue.get(code);
+
             switch(elem.getInput()){
                 case "date":
-                    params.add(param!=null?DateUtil.GetUTCTime(param.toString()): null);
+                    params.add(issue.get(code)!=null?issue.getDate(code): null);
                     break;
 
                 default:
-                    params.add(param);
+                    params.add(issue.get(code));
                     break;
             }
         }

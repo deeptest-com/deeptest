@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.intf;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.model.IsuPage;
 import com.ngtesting.platform.model.IsuType;
@@ -15,5 +16,5 @@ public interface IssueService extends BaseService {
 
     Map<String, Integer> getProjectDefaultPages(Integer orgId, Integer prjId, Integer typeId);
 
-    IsuIssue save(IsuIssue issue, Integer pageId, TstUser user);
+    IsuIssue save(JSONObject issue, Integer pageId, TstUser user);
 }

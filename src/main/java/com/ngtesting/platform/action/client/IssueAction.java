@@ -1,6 +1,5 @@
 package com.ngtesting.platform.action.client;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
@@ -74,9 +73,9 @@ public class IssueAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer pageId = json.getInteger("pageId");
-        IsuIssue issue = JSON.parseObject(JSON.toJSONString(json.getJSONObject("issue")), IsuIssue.class);
+        JSONObject issue = json.getJSONObject("issue");
 
-		IsuIssue po = issueService.save(issue, pageId, user);
+        IsuIssue po = issueService.save(issue, pageId, user);
 
 		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

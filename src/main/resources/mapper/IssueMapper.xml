@@ -9,6 +9,44 @@
         </if>
     </select>
 
+    <select id="getByUuid" resultType="IsuIssue">
+        SELECT * FROM IsuIssue o
+        WHERE o.uuid = #{uuid}
+        AND o.orgId=#{orgId}
+    </select>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        insert into IsuIssue
+        (
+            <foreach collection="elems" item="item" separator=",">
+                ${item.code}
+            </foreach>
+            , orgId, projectId, uuid, createTime
+        )
+        values
+        (
+            <foreach collection="params" item="item" separator=",">
+                #{item}
+            </foreach>
+            , NOW()
+        );
+    </insert>
+
+    <update id="update">
+        UPDATE IsuIssue
+        SET label=#{label},value=#{value},descr=#{descr},
+        disabled=#{disabled},
+        updateTime=NOW()
+
+        WHERE id=#{id} AND orgId=#{orgId}
+    </update>
+
+    <delete id="delete">
+        UPDATE IsuIssue
+        SET disabled=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND orgId=#{orgId}
+    </delete>
+
     <select id="getProjectDefaultPages" resultType="Map">
         SELECT psi.opt, psi.pageId FROM IsuPageSolutionItem psi
 
@@ -28,27 +66,5 @@
 
         WHERE t.isDefault IS TRUE AND t.orgId = #{orgId} AND prj.id=#{prjId}
     </select>
-
-    <insert id="save" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuIssue
-        (label,value,descr,orgId,ordr, isDefault, isBuildIn,deleted,disabled,createTime)
-        values
-        (#{label},#{value},#{descr},#{orgId},#{ordr}, #{isDefault}, #{isBuildIn},FALSE,FALSE,NOW())
-    </insert>
-
-    <update id="update">
-        UPDATE IsuIssue
-        SET label=#{label},value=#{value},descr=#{descr},
-        disabled=#{disabled},
-        updateTime=NOW()
-
-        WHERE id=#{id} AND orgId=#{orgId}
-    </update>
-
-    <delete id="delete">
-        UPDATE IsuIssue
-        SET disabled=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
-    </delete>
 
 </mapper>

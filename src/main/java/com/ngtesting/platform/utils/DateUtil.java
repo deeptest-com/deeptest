@@ -935,4 +935,21 @@ public class DateUtil {
         return calendar.getTime();
     }
 
+    public static Date GetUTCTime(String str) {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+//        df.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        Date dt = null;
+        try {
+            dt = df.parse(str);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return dt;
+    }
+
+
+
+
 }

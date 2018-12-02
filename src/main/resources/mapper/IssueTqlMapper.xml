@@ -6,7 +6,15 @@
         SELECT id, ${columns} FROM IsuIssue
         WHERE ${conditions}
         AND deleted != true AND disabled != true
-        ORDER BY createTime DESC
+
+        ORDER BY
+        <if test="orderBy != null">
+            <foreach collection="orderBy" item="ordr" index="key" separator="," close=",">
+                #{key} #{ordr}
+            </foreach>
+        </if>
+
+         createTime DESC
     </select>
 
 </mapper>

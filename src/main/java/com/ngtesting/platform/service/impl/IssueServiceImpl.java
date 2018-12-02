@@ -66,25 +66,37 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         List<IsuPageElement> elems = pageElementDao.listElementByPageId(pageId);
 
         IsuIssue po = null;
-        List<Object> params = new LinkedList<>();
-        if (issue.getInteger("id") == null) {
-            issue.put("orgId", user.getDefaultOrgId());
-            issue.put("prjId", user.getDefaultPrjId());
+        issue.put("orgId", user.getDefaultOrgId());
+        issue.put("prjId", user.getDefaultPrjId());
 
-            String uuid = UUID.randomUUID().toString().replace("-", "");
-            issue.put("uuid", uuid);
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+        issue.put("uuid", uuid);
 
-            params = genParams(issue, elems);
-            Integer count = issueDao.save(elems, params);
-            if (count > 0) {
-                po = issueDao.getByUuid(uuid, user.getDefaultOrgId());
-            }
+        List<Object> params = genParams(issue, elems, true);
+        Integer count = issueDao.save(elems, params);
+        if (count > 0) {
+            po = issueDao.getByUuid(uuid, user.getDefaultOrgId());
         }
 
         return po;
     }
 
-    public List genParams(JSONObject issue, List<IsuPageElement> elems) {
+    @Override
+    public IsuIssue update(JSONObject issue, Integer pageId, TstUser user) {
+        List<IsuPageElement> elems = pageElementDao.listElementByPageId(pageId);
+
+        IsuIssue po = null;
+        List<Object> params = genParams(issue, elems, false);
+        Integer count = issueDao.update(elems, params,
+                issue.getInteger("id"), user.getDefaultOrgId());
+        if (count > 0) {
+            po = issueDao.getByUuid(issue.getString("uuid"), user.getDefaultOrgId());
+        }
+
+        return po;
+    }
+
+    public List genParams(JSONObject issue, List<IsuPageElement> elems, Boolean init) {
         List<Object> params = new LinkedList<>();
 
         int i = 0;
@@ -102,9 +114,11 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
             }
         }
 
-        params.add(issue.getInteger("orgId"));
-        params.add(issue.getInteger("prjId"));
-        params.add(issue.getString("uuid"));
+        if (init) {
+            params.add(issue.getInteger("orgId"));
+            params.add(issue.getInteger("prjId"));
+            params.add(issue.getString("uuid"));
+        }
 
         return params;
     }

@@ -1,6 +1,8 @@
 package com.ngtesting.platform.action.client;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 import com.github.pagehelper.PageHelper;
 import com.itfsw.query.builder.support.model.JsonRule;
 import com.ngtesting.platform.action.BaseAction;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,16 +62,17 @@ public class IssueTplAction extends BaseAction {
             rule = isuJqlService.buildDefaultJql(orgId, projectId);
         } else {
             rule = json.getObject("rule", JsonRule.class);
-
-//            queryService.save(rule, user);
         }
 
         if (StringUtils.isEmpty(user.getIssueColumns())) {
             isuJqlColumnService.buildDefaultColStr(user);
         }
 
+        LinkedHashMap<String, String> orderBy = JSON.parseObject(json.getString("orderBy"),
+                LinkedHashMap.class, Feature.OrderedField);
+
         com.github.pagehelper.Page page = PageHelper.startPage(pageNum, pageSize);
-        List<IsuIssue> data = isuJqlService.query(rule, user.getIssueColumns(), orgId, projectId);
+        List<IsuIssue> data = isuJqlService.query(rule, user.getIssueColumns(), orderBy, orgId, projectId);
 
         if (init) {
             List<IsuJqlFilter> filters = isuJqlFilterService.buildUiFilters(rule, orgId, projectId);
@@ -103,6 +107,7 @@ public class IssueTplAction extends BaseAction {
 
         IsuQuery query = issueQueryService.get(queryId, user.getId());
         String ruleString = query == null? null: query.getRule();
+        String orderByString = query == null? null: query.getOrderBy();
 
         JsonRule rule;
         if (ruleString == null) {
@@ -111,12 +116,19 @@ public class IssueTplAction extends BaseAction {
             rule = JSONObject.parseObject(ruleString, JsonRule.class);
         }
 
+        LinkedHashMap<String, String> orderBy;
+        if (orderByString == null) {
+            orderBy = null;
+        } else {
+            orderBy = JSON.parseObject(orderByString, LinkedHashMap.class, Feature.OrderedField);
+        }
+
         if (StringUtils.isEmpty(user.getIssueColumns())) {
             isuJqlColumnService.buildDefaultColStr(user);
         }
 
         com.github.pagehelper.Page page = PageHelper.startPage(pageNum, pageSize);
-        List<IsuIssue> data = isuJqlService.query(rule, user.getIssueColumns(), orgId, projectId);
+        List<IsuIssue> data = isuJqlService.query(rule, user.getIssueColumns(), orderBy, orgId, projectId);
 
         ret.put("rule", rule);
 

@@ -31,30 +31,72 @@ public class IssueAction extends BaseAction {
 	@Autowired
 	IssueDynamicFormService dynamicFormService;
 
-    @RequestMapping(value = "get", method = RequestMethod.POST)
+    @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
+    public Map<String, Object> create(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
         Integer prjId = user.getDefaultPrjId();
 
-        String opt = json.getString("opt");
-		Integer id = json.getInteger("id");
-		IsuIssue po;
+		IsuIssue po = new IsuIssue();
 
-		if (id == null) {
-			po = new IsuIssue();
-		} else {
-			po = issueService.get(id, orgId);
-		}
+        IsuPage page = issueService.getPage(orgId, prjId, "create");
 
-		if (po == null) { // 当对象不是默认org的，此处为空
-			return authFail();
-		}
+        Map<String, Object> issuePropMap = dynamicFormService.fetchOrgField(orgId, prjId);
 
-        IsuPage page = issueService.getPage(orgId, prjId, opt);
+        ret.put("data", po);
+        ret.put("page", page);
+        ret.put("issuePropMap", issuePropMap);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @RequestMapping(value = "edit", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> edit(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = user.getDefaultOrgId();
+        Integer prjId = user.getDefaultPrjId();
+
+        Integer id = json.getInteger("id");
+        IsuIssue po = issueService.get(id, orgId);
+
+        if (po == null) { // 当对象不是默认org的，此处为空
+            return authFail();
+        }
+
+        IsuPage page = issueService.getPage(orgId, prjId, "edit");
+
+        Map<String, Object> issuePropMap = dynamicFormService.fetchOrgField(orgId, prjId);
+
+        ret.put("data", po);
+        ret.put("page", page);
+        ret.put("issuePropMap", issuePropMap);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @RequestMapping(value = "view", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = user.getDefaultOrgId();
+        Integer prjId = user.getDefaultPrjId();
+
+        Integer id = json.getInteger("id");
+        IsuIssue po = issueService.get(id, orgId);
+
+        if (po == null) { // 当对象不是默认org的，此处为空
+            return authFail();
+        }
+
+        IsuPage page = issueService.getPage(orgId, prjId, "view");
 
         Map<String, Object> issuePropMap = dynamicFormService.fetchOrgField(orgId, prjId);
 
@@ -77,10 +119,27 @@ public class IssueAction extends BaseAction {
 
         IsuIssue po = issueService.save(issue, pageId, user);
 
-		ret.put("data", po);
+		ret.put("id", po.getId());
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> update(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+
+        Integer pageId = json.getInteger("pageId");
+        JSONObject issue = json.getJSONObject("issue");
+
+        IsuIssue po = issueService.update(issue, pageId, user);
+
+        ret.put("data", po);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody

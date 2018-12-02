@@ -1,6 +1,5 @@
 package com.ngtesting.platform.dao;
 
-import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.model.IsuPageElement;
 import com.ngtesting.platform.model.IsuType;
@@ -10,15 +9,18 @@ import java.util.List;
 import java.util.Map;
 
 public interface IssueDao {
-    IsuIssue get(@Param("id") Integer id, @Param("orgId") Integer orgId);
+    IsuIssue get(@Param("id") Integer id,
+                 @Param("orgId") Integer orgId);
     IsuIssue getByUuid(@Param("uuid") String uuid,
                        @Param("orgId") Integer orgId);
 
     Integer save(@Param("elems") List<IsuPageElement> elems,
                  @Param("params") List<Object> params);
 
-    Integer update(@Param("issue") JSONObject issue,
-                   @Param("elems") List<IsuPageElement> elems);
+    Integer update(@Param("elems") List<IsuPageElement> elems,
+                   @Param("params") List<Object> params,
+                   @Param("id") Integer id,
+                   @Param("orgId") Integer orgId);
 
     Integer delete(@Param("id") Integer id,
                    @Param("orgId") Integer orgId);

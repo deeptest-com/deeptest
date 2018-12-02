@@ -7,6 +7,7 @@ public class IsuQuery extends BaseModel {
 	private static final long serialVersionUID = 5819657933820222077L;
 	private String name;
 	private String rule;
+	private String orderBy;
 	private String descr;
     private Date useTime;
 
@@ -69,4 +70,11 @@ public class IsuQuery extends BaseModel {
     public void setUseTime(Date useTime) {
         this.useTime = useTime;
     }
+
+	public String getOrderBy() {
+		return orderBy;
+	}
+	public void setOrderBy(String orderBy) {
+		this.orderBy = orderBy;
+	}
 }

@@ -12,6 +12,8 @@ public interface IssueService extends BaseService {
 	IsuIssue get(Integer id, Integer orgId);
 	IsuPage getPage(Integer orgId, Integer prjId, String opt);
 
+    IsuIssue update(JSONObject issue, Integer pageId, TstUser user);
+
     IsuType getProjectDefaultType(Integer orgId, Integer prjId);
 
     Map<String, Integer> getProjectDefaultPages(Integer orgId, Integer prjId, Integer typeId);

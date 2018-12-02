@@ -31,6 +31,8 @@ public class IsuIssue extends BaseModel {
     private Integer resolutionId;
     private String resolutionName;
 
+    private String resolutionDescr;
+
     private Date dueTime;
     private Date resolveTime;
 
@@ -43,6 +45,8 @@ public class IsuIssue extends BaseModel {
 
     private Integer orgId;
     private Integer prjId;
+
+    private String uuid;
 
     private List<IsuComments> comments = new LinkedList<>();
     private List<IsuAttachment> attachments = new LinkedList<>();
@@ -554,5 +558,21 @@ public class IsuIssue extends BaseModel {
 
     public void setPrjId(Integer prjId) {
         this.prjId = prjId;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getResolutionDescr() {
+        return resolutionDescr;
+    }
+
+    public void setResolutionDescr(String resolutionDescr) {
+        this.resolutionDescr = resolutionDescr;
     }
 }

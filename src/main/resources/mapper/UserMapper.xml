@@ -125,8 +125,7 @@
 
     <update id="setLeftSize" parameterType="TstUser">
         UPDATE TstUserSettings
-        SET leftSizeDesign=#{leftSizeDesign}, leftSizeExe=#{leftSizeExe}, leftSizeIssue=#{leftSizeIssue},
-          s.issueColumns issueColumns
+        SET leftSizeDesign=#{leftSizeDesign}, leftSizeExe=#{leftSizeExe}, leftSizeIssue=#{leftSizeIssue}
 
         WHERE userId=#{id}
     </update>

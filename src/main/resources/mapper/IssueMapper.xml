@@ -21,22 +21,23 @@
             <foreach collection="elems" item="item" separator=",">
                 ${item.code}
             </foreach>
-            , orgId, projectId, uuid, createTime
+            , orgId, projectId, uuid, createTime, disabled, deleted
         )
         values
         (
             <foreach collection="params" item="item" separator=",">
                 #{item}
             </foreach>
-            , NOW()
+            , NOW(), false, false
         );
     </insert>
 
     <update id="update">
         UPDATE IsuIssue
-        SET label=#{label},value=#{value},descr=#{descr},
-        disabled=#{disabled},
-        updateTime=NOW()
+        SET
+        <foreach collection="elems" item="item" index="indx" separator=",">
+             ${item.code} = #{params[${indx}]}
+        </foreach>
 
         WHERE id=#{id} AND orgId=#{orgId}
     </update>

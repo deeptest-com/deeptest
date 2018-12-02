@@ -16,8 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,7 +38,7 @@ public class IsuJqlServiceImpl extends BaseServiceImpl implements IsuJqlService 
     IssueTqlDao isuTqlDao;
 
     @Override
-    public List<IsuIssue> query(JsonRule rule, String columns, LinkedHashMap<String, String> orderBy, Integer orgId, Integer projectId) {
+    public List<IsuIssue> query(JsonRule rule, String columns, List<Map<String, String>> orderBy, Integer orgId, Integer projectId) {
         List<IsuIssue> result;
 
         String conditions;
@@ -72,6 +71,22 @@ public class IsuJqlServiceImpl extends BaseServiceImpl implements IsuJqlService 
         ret.getRules().add(projectRule);
 
         return ret;
+    }
+
+    @Override
+    public List<Map<String, String>> buildDefaultOrderBy() {
+        List<Map<String, String>> ls = new LinkedList<>();
+        Map map = new HashMap();
+        map.put("key", "id");
+        map.put("val", "asc");
+        ls.add(map);
+
+        map = new HashMap();
+        map.put("key", "createTime");
+        map.put("val", "asc");
+        ls.add(map);
+
+        return ls;
     }
 
 }

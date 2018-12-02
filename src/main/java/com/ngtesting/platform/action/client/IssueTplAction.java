@@ -2,7 +2,6 @@ package com.ngtesting.platform.action.client;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
 import com.github.pagehelper.PageHelper;
 import com.itfsw.query.builder.support.model.JsonRule;
 import com.ngtesting.platform.action.BaseAction;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -68,8 +66,12 @@ public class IssueTplAction extends BaseAction {
             isuJqlColumnService.buildDefaultColStr(user);
         }
 
-        LinkedHashMap<String, String> orderBy = JSON.parseObject(json.getString("orderBy"),
-                LinkedHashMap.class, Feature.OrderedField);
+        List<Map<String, String>> orderBy;
+        if (json.getJSONArray("orderBy") == null) {
+            orderBy = isuJqlService.buildDefaultOrderBy();
+        } else {
+            orderBy = json.getObject("orderBy", List.class);
+        }
 
         com.github.pagehelper.Page page = PageHelper.startPage(pageNum, pageSize);
         List<IsuIssue> data = isuJqlService.query(rule, user.getIssueColumns(), orderBy, orgId, projectId);
@@ -82,6 +84,8 @@ public class IssueTplAction extends BaseAction {
             ret.put("rule", rule);
             ret.put("filters", filters);
             ret.put("columns", columns);
+            ret.put("orderBy", orderBy);
+
             ret.put("issuePropMap", issuePropMap);
         }
 
@@ -116,11 +120,11 @@ public class IssueTplAction extends BaseAction {
             rule = JSONObject.parseObject(ruleString, JsonRule.class);
         }
 
-        LinkedHashMap<String, String> orderBy;
+        List<Map<String, String>> orderBy;
         if (orderByString == null) {
             orderBy = null;
         } else {
-            orderBy = JSON.parseObject(orderByString, LinkedHashMap.class, Feature.OrderedField);
+            orderBy = JSON.parseObject(orderByString, List.class);
         }
 
         if (StringUtils.isEmpty(user.getIssueColumns())) {

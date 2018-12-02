@@ -9,8 +9,8 @@
 
         ORDER BY
         <if test="orderBy != null">
-            <foreach collection="orderBy" item="ordr" index="key" separator="," close=",">
-                #{key} #{ordr}
+            <foreach collection="orderBy" item="item" separator="," close=",">
+                #{item.key} #{item.val}
             </foreach>
         </if>
 

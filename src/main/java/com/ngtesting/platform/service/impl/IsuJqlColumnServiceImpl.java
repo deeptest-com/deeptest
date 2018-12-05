@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlColumnService {
@@ -41,31 +38,27 @@ public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlCo
         List<IsuJqlColumn> vos = new LinkedList<>();
 
         List<IsuFieldDefine> cols = fieldDao.listDefaultField();
-        int i = 0;
-        for (IsuFieldDefine col : cols) {
-            String code = col.getCode();
-            String label = col.getLabel();
-            String type = col.getType();
 
-            Boolean enable;
-            if (ls.size() > 0) {
-                if (ls.contains(code)) {
-                    enable = true;
-                } else {
-                    enable = false;
-                }
-            } else {
-                enable = i++ < 5;
+        if (ls.size() > 0) {
+            Map<String, IsuFieldDefine> map = new HashMap<>();
+            for (IsuFieldDefine col : cols) {
+                map.put(col.getCode(), col);
             }
 
-            IsuJqlColumn vo = new IsuJqlColumn();
-            vo.setCode(code);
-            vo.setLabel(label);
-            vo.setType(type);
+            for (String colCode : ls) {
+                IsuFieldDefine col = map.get(colCode);
+                IsuJqlColumn vo = new IsuJqlColumn(col.getCode(), col.getLabel(), col.getType(), true);
 
-            vo.setDisplay(enable);
+                vos.add(vo);
+            }
+        } else {
+            int i = 0;
+            for (IsuFieldDefine col : cols) {
+                Boolean display = i++ < 5;
+                IsuJqlColumn vo = new IsuJqlColumn(col.getCode(), col.getLabel(), col.getType(), display);
 
-            vos.add(vo);
+                vos.add(vo);
+            }
         }
 
         return vos;

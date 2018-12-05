@@ -24,8 +24,6 @@ import java.util.Map;
 public class CaseAction extends BaseAction {
 	@Autowired
     ProjectService projectService;
-	@Autowired
-	ProjectDao projectDao;
 
 	@Autowired
     CaseService caseService;
@@ -36,8 +34,10 @@ public class CaseAction extends BaseAction {
     @Autowired
     CasePriorityService casePriorityService;
 	@Autowired
-    TestCustomFieldService customFieldService;
+    CustomFieldService customFieldService;
 
+    @Autowired
+    ProjectDao projectDao;
 
 	@RequestMapping(value = "query", method = RequestMethod.POST)
 	@ResponseBody
@@ -53,7 +53,7 @@ public class CaseAction extends BaseAction {
 
         List<TstCaseType> caseTypePos = caseTypeService.list(orgId);
         List<TstCasePriority> casePriorityPos = casePriorityService.list(orgId);
-        List<TstCustomField> customFieldList = customFieldService.listForCaseByProject(orgId, projectId);
+        List<CustomField> customFieldList = customFieldService.listForCaseByProject(orgId);
 
         ret.put("data", ls);
         ret.put("prjId", projectId);

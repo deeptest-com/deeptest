@@ -7,14 +7,13 @@
         WHERE ${conditions}
         AND deleted != true AND disabled != true
 
-        ORDER BY
         <if test="orderBy != null">
-            <foreach collection="orderBy" item="item" separator="," close=",">
-                #{item.key} #{item.val}
+            ORDER BY
+
+            <foreach collection="orderBy" item="item" separator=",">
+                ${item.key} ${item.val}
             </foreach>
         </if>
-
-         createTime DESC
     </select>
 
 </mapper>

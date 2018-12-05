@@ -31,7 +31,7 @@ public class CaseInTaskAction extends BaseAction {
     @Autowired
     CasePriorityService casePriorityService;
     @Autowired
-    TestCustomFieldService customFieldService;
+    CustomFieldService customFieldService;
 
     @RequestMapping(value = "query", method = RequestMethod.POST)
     @ResponseBody
@@ -48,7 +48,7 @@ public class CaseInTaskAction extends BaseAction {
 
         List<TstCaseType> caseTypePos = caseTypeService.list(orgId);
         List<TstCasePriority> casePriorityPos = casePriorityService.list(orgId);
-        List<TstCustomField> customFieldList = customFieldService.listForCaseByProject(orgId, projectId);
+        List<CustomField> customFieldList = customFieldService.listForCaseByProject(orgId);
 
         ret.put("data", vos);
         ret.put("caseTypeList", caseTypePos);

@@ -67,7 +67,7 @@ public class IssueTplAction extends BaseAction {
         }
 
         List<Map<String, String>> orderBy;
-        if (json.getJSONArray("orderBy") == null) {
+        if (json.getJSONArray("orderBy") == null || json.getJSONArray("orderBy").size() == 0) {
             orderBy = isuJqlService.buildDefaultOrderBy();
         } else {
             orderBy = json.getObject("orderBy", List.class);

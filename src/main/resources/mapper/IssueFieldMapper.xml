@@ -28,31 +28,31 @@
           customField.type, customField.input, customField.fullLine, customField.required, customField.readonly,
           customField.ordr
 
-        FROM IsuCustomField customField
+        FROM CustomField customField
 
         WHERE id = #{id} AND orgId = #{orgId}
     </select>
 
     <select id="listInput" resultType="Map">
         SELECT o.id, o.label, o.value
-        FROM IsuFieldIputDefine o
+        FROM CustomFieldIputDefine o
         ORDER BY o.ordr
     </select>
     <select id="listType" resultType="Map">
         SELECT o.id, o.label, o.value
-        FROM IsuFieldTypeDefine o
+        FROM CustomFieldTypeDefine o
         ORDER BY o.ordr
     </select>
 
     <select id="fetchInputMap" resultMap="inputMap">
         SELECT o.id, o.label, o.value
-        FROM IsuFieldIputDefine o
+        FROM CustomFieldIputDefine o
         ORDER BY o.ordr
     </select>
     <select id="listFieldTypeByInput" resultType="Map">
         SELECT o.id, o.label, o.value
-        FROM IsuFieldTypeDefine o
-        JOIN IsuFieldInputTypeRelation r ON o.value = r.typeValue
+        FROM CustomFieldTypeDefine o
+        JOIN CustomFieldInputTypeRelation r ON o.value = r.typeValue
 
         WHERE r.inputValue = #{value}
 

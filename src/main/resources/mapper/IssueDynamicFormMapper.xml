@@ -91,9 +91,10 @@
             customField.type, customField.input, customField.fullLine, customField.required, customField.readonly,
             customField.ordr, customField.orgId
 
-            FROM IsuCustomField customField
+            FROM CustomField customField
 
-            WHERE orgId = #{orgId} AND customField.disabled!=true AND customField.deleted!=true
+            WHERE customField.orgId = #{orgId} AND customField.applyTo = 'issue'
+                AND customField.disabled!=true AND customField.deleted!=true
             ORDER BY customField.ordr ASC
           )
         ) fields
@@ -103,7 +104,7 @@
     </sql>
 
     <sql id="fetchCustormFields">
-        SELECT opt.id, opt.label, opt.value, opt.isDefault FROM IsuCustomFieldOption opt
+        SELECT opt.id, opt.label, opt.value, opt.isDefault FROM CustomFieldOption opt
         WHERE opt.fieldId=#{fieldId}
         AND opt.disabled!=true AND opt.deleted!=true
         ORDER BY opt.ordr;

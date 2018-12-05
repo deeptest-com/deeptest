@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.CustomFieldOptionDao" >
+
+    <select id="listByFieldId" resultType="CustomFieldOption">
+        SELECT o.* FROM CustomFieldOption o
+
+        WHERE o.fieldId = #{fieldId}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.ordr ASC
+    </select>
+    <select id="get" resultType="CustomFieldOption">
+        SELECT o.* FROM CustomFieldOption o
+        left join CustomField f ON o.fieldId=f.id
+
+        WHERE o.id = #{id} AND f.id=#{fieldId} AND f.orgId=#{orgId}
+    </select>
+
+    <select id="getByFieldId" resultMap="optionMap">
+        SELECT o.* FROM CustomFieldOption o
+
+        WHERE o.fieldId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.ordr ASC
+    </select>
+
+    <insert id="save" parameterType="CustomFieldOption" useGeneratedKeys="true" keyProperty="id">
+        insert into CustomFieldOption
+        (label,value,ordr,fieldId,isDefault,isBuildIn,
+          createTime,deleted,disabled)
+        values
+        (#{label},#{value},#{ordr},#{fieldId},#{isDefault},#{isBuildIn},
+          NOW(),FALSE,FALSE)
+    </insert>
+<!--    <insert id="saveAll">
+        insert into CustomFieldOption
+        (label,value,ordr,fieldId,isDefault,isBuildIn,
+        createTime,deleted,disabled)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.label},#{item.value}, #{item.ordr}, #{fieldId},#{item.isDefault},#{item.isBuildIn},
+            NOW(),FALSE,FALSE)
+        </foreach>
+    </insert>-->
+
+    <update id="update">
+        UPDATE CustomFieldOption
+        SET label =#{label}, value=#{value}, isDefault=#{isDefault}, updateTime=NOW()
+        where id = #{id}
+    </update>
+    <update id="delete">
+        UPDATE CustomFieldOption
+        SET deleted = TRUE
+        where id = #{id}
+    </update>
+
+    <select id="getMaxOrder" resultType="int">
+        SELECT max(o.ordr) FROM CustomFieldOption o
+
+        WHERE o.fieldId=#{fieldId}
+        AND o.deleted != true AND o.disabled != true
+    </select>
+
+    <select id="getPrev" resultType="CustomFieldOption">
+        <![CDATA[
+            SELECT * FROM CustomFieldOption o
+            WHERE o.ordr < #{ordr} AND o.fieldId = #{fieldId}
+            AND o.deleted != TRUE
+            ORDER BY o.ordr DESC LIMIT 1
+        ]]>
+    </select>
+
+    <select id="getNext" resultType="CustomFieldOption">
+        <![CDATA[
+            SELECT * FROM CustomFieldOption o
+            WHERE o.ordr > #{ordr} AND o.fieldId = #{fieldId}
+            AND o.deleted != TRUE
+            ORDER BY o.ordr ASC LIMIT 1
+        ]]>
+    </select>
+
+    <update id="setOrder">
+        UPDATE CustomFieldOption
+        SET ordr=#{ordr}, updateTime=NOW()
+        WHERE id=#{id}
+    </update>
+
+    <update id="setDefault">
+        UPDATE CustomFieldOption
+        SET isDefault=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND fieldId=#{fieldId}
+    </update>
+    <update id="removeDefault">
+        UPDATE CustomFieldOption
+        SET isDefault=FALSE, updateTime=NOW()
+        WHERE fieldId=#{fieldId}
+    </update>
+
+    <resultMap id="optionMap" type="CustomFieldOption" autoMapping="true">
+        <id column="id" property="id"/>
+        <id column="label" property="label"/>
+        <id column="value" property="value"/>
+        <id column="ordr" property="ordr"/>
+    </resultMap>
+
+</mapper>

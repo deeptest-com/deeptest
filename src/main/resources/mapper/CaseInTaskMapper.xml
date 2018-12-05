@@ -3,8 +3,8 @@
 <mapper namespace="com.ngtesting.platform.dao.CaseInTaskDao" >
 
     <select id="query" resultType="TstCaseInTask">
-        SELECT cs.name name, cs.id id,
-          o.id entityId, o.pId pId, o.isLeaf isLeaf, o.ordr ordr
+        SELECT cs.id id, cs.name name, cs.type `type`,
+          o.id entityId, o.pId pId, o.isLeaf isLeaf, o.status status, o.ordr ordr
 
         FROM TstCaseInTask o
         JOIN TstCase cs ON o.caseId = cs.id
@@ -19,8 +19,8 @@
     </select>
 
     <select id="get" resultType="TstCaseInTask">
-        SELECT cs.id id, cs.name name,
-          o.id entityId, o.pId pId, o.isLeaf isLeaf, o.ordr ordr
+        SELECT cs.id id, cs.name name, cs.type `type`,
+        o.id entityId, o.pId pId, o.isLeaf isLeaf, o.status status, o.ordr ordr
 
         FROM TstCaseInTask o
         JOIN TstCase cs ON o.caseId = cs.id
@@ -33,7 +33,7 @@
 
     <select id="getDetail" resultMap="caseInTaskMap">
         SELECT cs.id id, cs.*, o.id entityId,
-          o.id entityId, o.pId pId, o.isLeaf isLeaf, o.status status, o.result result, o.ordr ordr,
+          o.pId pId, o.isLeaf isLeaf, o.status status, o.result result, o.ordr ordr,
           o.planId planId, o.taskId taskId
 
         FROM TstCaseInTask o

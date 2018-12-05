@@ -11,7 +11,16 @@ public class IsuJqlColumn implements Serializable {
 	private Boolean display;
 	private String type;
 
-    public String getCode() {
+	public IsuJqlColumn() {
+	}
+	public IsuJqlColumn(String code, String label, String type, Boolean display) {
+		this.code = code;
+		this.label = label;
+		this.type = type;
+		this.display = display;
+	}
+
+	public String getCode() {
         return code;
     }
 

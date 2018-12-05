@@ -18,7 +18,7 @@ public class IssueFieldServiceImpl extends BaseServiceImpl implements IssueField
     IssueFieldDao fieldDao;
 
 //    @Autowired
-//    IssueCustomFieldDao customFieldDao;
+//    CustomFieldDao customFieldDao;
 //
 //	@Autowired
 //	IssuePriorityDao issuePriorityDao;

@@ -23,7 +23,7 @@
     <select id="fetchOptions" resultMap="optionMap">
         <choose>
             <when test="optionTable == null">
-                <include refid="fetchCustormFields">
+                <include refid="fetchCustomFieldOptions">
                     <property name="fieldId" value="${fieldId}"/>
                     <property name="orgId" value="${orgId}"/>
                     <property name="projectId" value="${projectId}"/>
@@ -38,7 +38,7 @@
             <otherwise>
                 <include refid="fetchSysFieldOptions">
                     <property name="optionTable" value="${optionTable}"/>
-                    <property name="code" value="${code}"/>
+                    <property name="colCode" value="${colCode}"/>
                     <property name="orgId" value="${orgId}"/>
                     <property name="projectId" value="${projectId}"/>
                 </include>
@@ -55,13 +55,13 @@
 
     <resultMap id="fieldMapCanSelect" type="Map" autoMapping="true">
         <id column="fieldId" property="fieldId"/>
-        <id column="code" property="code"/>
+        <id column="colCode" property="colCode"/>
         <id column="optionTable" property="optionTable"/>
         <id column="orgId" property="orgId"/>
         <id column="projectId" property="projectId"/>
 
         <collection property="options" select="fetchOptions"
-                    column="{fieldId=fieldId}, {code=code}, {optionTable=optionTable},
+                    column="{fieldId=fieldId}, {colCode=colCode}, {optionTable=optionTable},
                             {orgId=orgId}, {projectId=projectId}">
         </collection>
     </resultMap>
@@ -74,8 +74,8 @@
         CASE fields.input WHEN 'dropdown' THEN 'canSelect' ELSE 'notSelect' END inputCatagory
 
         FROM (
-          (SELECT CONCAT('sys-', field.id) `key`, field.id fieldId, field.code, field.label,
-            field.type, field.input, field.fullLine, field.required, field.readonly,
+          (SELECT CONCAT('sys-', field.id) `key`, field.id fieldId, field.colCode, field.label,
+            field.type, field.input, field.fullLine, field.required, field.readonly, true isBuildIn,
             field.columnOrdr ordr, field.orgId
 
             FROM IsuField field
@@ -87,8 +87,9 @@
 
           UNION
 
-          (SELECT CONCAT('cust-', customField.id) `key`, customField.id fieldId, customField.colCode code, customField.label,
-            customField.type, customField.input, customField.fullLine, customField.required, customField.readonly,
+          (SELECT CONCAT('cust-', customField.id) `key`, customField.id fieldId, customField.colCode, customField.label,
+            customField.type, customField.input,
+            customField.fullLine, customField.required, customField.readonly, false isBuildIn,
             customField.ordr, customField.orgId
 
             FROM CustomField customField
@@ -99,12 +100,13 @@
           )
         ) fields
 
-        LEFT JOIN IsuFieldCodeToTableDefine dict ON fields.code = dict.code
+        LEFT JOIN IsuFieldCodeToTableDefine dict ON fields.colCode = dict.colCode
         WHERE TRUE
     </sql>
 
-    <sql id="fetchCustormFields">
-        SELECT opt.id, opt.label, opt.value, opt.isDefault FROM CustomFieldOption opt
+    <sql id="fetchCustomFieldOptions">
+        SELECT opt.id, opt.label, opt.value, opt.isDefault
+        FROM CustomFieldOption opt
         WHERE opt.fieldId=#{fieldId}
         AND opt.disabled!=true AND opt.deleted!=true
         ORDER BY opt.ordr;

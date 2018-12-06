@@ -30,6 +30,7 @@ public class IssuePageElementServiceImpl extends BaseServiceImpl implements Issu
     public void saveAll(Integer orgId, Integer pageId, List<Map> maps) {
         elementDao.removeOthers(maps, pageId, orgId);
 
+        // TODO: 批量保存
         if (maps.size() > 0) {
             int ordr = 1;
             for (Map map: maps) {
@@ -41,9 +42,9 @@ public class IssuePageElementServiceImpl extends BaseServiceImpl implements Issu
                 if (id == null) {
                     IsuField field = fieldService.getField(key, orgId);
 
-                    IsuPageElement elm = new IsuPageElement(field.getCode(), field.getLabel(),
+                    IsuPageElement elm = new IsuPageElement(field.getColCode(), field.getLabel(),
                             field.getType(), field.getInput(),
-                            field.getFullLine(), field.getRequired(), field.getReadonly(),
+                            field.getFullLine(), field.getRequired(), field.getReadonly(), field.getBuildIn(),
                             field.getKey(), field.getFieldId(), pageId, orgId, ordr);
 
                     elementDao.save(elm);

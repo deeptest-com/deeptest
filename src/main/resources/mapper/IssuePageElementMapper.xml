@@ -4,10 +4,10 @@
 
     <insert id="save" parameterType="IsuPageElement" useGeneratedKeys="true" keyProperty="id">
         insert into IsuPageElement
-        (`key`, code, label, `type`, `input`, fullLine, required, readonly,
+        (`key`, colCode, label, `type`, `input`, fullLine, required, readonly, isBuildIn,
           fieldId, pageId, orgId, ordr, deleted, disabled, createTime)
         values
-        (#{key}, #{code}, #{label}, #{type}, #{input}, #{fullLine}, #{required}, #{readonly},
+        (#{key}, #{colCode}, #{label}, #{type}, #{input}, #{fullLine}, #{required}, #{readonly}, #{isBuildIn},
           #{fieldId}, #{pageId}, #{orgId}, #{ordr}, FALSE, FALSE, NOW())
     </insert>
 
@@ -19,7 +19,7 @@
 
     <update id="updateFromCustomField">
         UPDATE IsuPageElement
-        SET code=#{colCode}, label=#{label}, `type`=#{type}, `input`=#{input}
+        SET colCode=#{colCode}, label=#{label}, `type`=#{type}, `input`=#{input}
         WHERE `key`=CONCAT('cust-', #{id}) AND orgId=#{orgId}
     </update>
 

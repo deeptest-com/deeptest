@@ -101,7 +101,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
 
         int i = 0;
         for (IsuPageElement elem : elems) {
-            String code = elem.getCode();
+            String code = elem.getColCode();
 
             switch(elem.getInput()){
                 case "date":

@@ -11,7 +11,7 @@ public class IsuField implements Serializable {
 	private static final long serialVersionUID = 3168995179136496564L;
 
     private Integer fieldId;
-	private String code;
+	private String colCode;
 	private String label;
     private String key;
     private String type;
@@ -20,18 +20,11 @@ public class IsuField implements Serializable {
     private Boolean fullLine;
     private Boolean required;
     private Boolean readonly;
+    private Boolean isBuildIn;
 
     private Boolean display;
 
     private List<Map> options = new LinkedList<>();
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
 
     public String getLabel() {
 		return label;
@@ -119,5 +112,21 @@ public class IsuField implements Serializable {
 
     public void setOptions(List<Map> options) {
         this.options = options;
+    }
+
+    public String getColCode() {
+        return colCode;
+    }
+
+    public void setColCode(String colCode) {
+        this.colCode = colCode;
+    }
+
+    public Boolean getBuildIn() {
+        return isBuildIn;
+    }
+
+    public void setBuildIn(Boolean buildIn) {
+        isBuildIn = buildIn;
     }
 }

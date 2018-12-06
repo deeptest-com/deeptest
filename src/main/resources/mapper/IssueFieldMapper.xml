@@ -15,8 +15,8 @@
     </select>
 
     <select id="getSysField" resultType="IsuField">
-        SELECT CONCAT('sys-', field.id) `key`, field.id fieldId, field.code, field.label,
-          field.type, field.input, field.fullLine, field.required, field.readonly,
+        SELECT CONCAT('sys-', field.id) `key`, field.id fieldId, field.colCode, field.label,
+          field.type, field.input, field.fullLine, field.required, field.readonly, true isBuildIn,
           field.columnOrdr ordr
 
         FROM Isufield field
@@ -24,8 +24,9 @@
     </select>
 
     <select id="getCustField" resultType="IsuField">
-        SELECT CONCAT('cust-', customField.id) `key`, customField.id fieldId, customField.colCode code, customField.label,
-          customField.type, customField.input, customField.fullLine, customField.required, customField.readonly,
+        SELECT CONCAT('cust-', customField.id) `key`, customField.id fieldId, customField.colCode, customField.label,
+          customField.type, customField.input,
+          customField.fullLine, customField.required, customField.readonly, false isBuildIn,
           customField.ordr
 
         FROM CustomField customField

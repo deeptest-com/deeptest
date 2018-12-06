@@ -19,7 +19,7 @@
         insert into IsuIssue
         (
             <foreach collection="elems" item="item" separator=",">
-                ${item.code}
+                ${item.colCode}
             </foreach>
             , orgId, projectId, uuid, createTime, disabled, deleted
         )
@@ -36,7 +36,7 @@
         UPDATE IsuIssue
         SET
         <foreach collection="elems" item="item" index="indx" separator=",">
-             ${item.code} = #{params[${indx}]}
+             ${item.colCode} = #{params[${indx}]}
         </foreach>
 
         WHERE id=#{id} AND orgId=#{orgId}

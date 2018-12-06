@@ -7,13 +7,14 @@ import java.util.Map;
 public class IsuPageElement extends BaseModel {
     private static final long serialVersionUID = 8715160448820762150L;
 
-    private String code;
+    private String colCode;
     private String label;
     private String type;
     private String input;
     private Boolean fullLine;
     private Boolean required;
     private Boolean readonly;
+    private Boolean isBuildIn;
 
     private String key;
     private List<Map> options = new LinkedList<>();
@@ -26,17 +27,18 @@ public class IsuPageElement extends BaseModel {
     private Integer orgId;
 
     public IsuPageElement(){}
-    public IsuPageElement(String code, String label, String type,
-                          String input, Boolean fullLine, Boolean required, Boolean readonly,
+    public IsuPageElement(String colCode, String label, String type,
+                          String input, Boolean fullLine, Boolean required, Boolean readonly, Boolean isBuildIn,
                           String key, Integer fieldId, Integer pageId, Integer orgId,
                           Integer ordr) {
-        this.code = code;
+        this.colCode = colCode;
         this.label = label;
         this.type = type;
         this.input = input;
         this.fullLine = fullLine;
         this.required = required;
         this.readonly = readonly;
+        this.isBuildIn = isBuildIn;
         this.key = key;
         this.fieldId = fieldId;
         this.pageId = pageId;
@@ -84,12 +86,12 @@ public class IsuPageElement extends BaseModel {
         this.pageId = pageId;
     }
 
-    public String getCode() {
-        return code;
+    public String getColCode() {
+        return colCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setColCode(String colCode) {
+        this.colCode = colCode;
     }
 
     public String getLabel() {
@@ -146,5 +148,13 @@ public class IsuPageElement extends BaseModel {
 
     public void setOptions(List<Map> options) {
         this.options = options;
+    }
+
+    public Boolean getBuildIn() {
+        return isBuildIn;
+    }
+
+    public void setBuildIn(Boolean buildIn) {
+        isBuildIn = buildIn;
     }
 }

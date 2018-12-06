@@ -29,7 +29,7 @@ public class IssueDynamicFormServiceImpl extends BaseServiceImpl implements Issu
         List<Map> fields = dynamicFormDao.fetchOrgField(orgId, projectId);
 
         for (Map field : fields) {
-            map.put(field.get("code").toString(), field.get("options"));
+            map.put(field.get("colCode").toString(), field.get("options"));
         }
 
         return map;

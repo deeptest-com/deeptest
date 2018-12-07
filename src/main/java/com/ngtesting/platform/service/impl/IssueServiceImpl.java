@@ -51,7 +51,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
 
         IsuIssue po = null;
         issue.put("orgId", user.getDefaultOrgId());
-        issue.put("prjId", user.getDefaultPrjId());
+        issue.put("projectId", user.getDefaultPrjId());
 
         String uuid = UUID.randomUUID().toString().replace("-", "");
         issue.put("uuid", uuid);

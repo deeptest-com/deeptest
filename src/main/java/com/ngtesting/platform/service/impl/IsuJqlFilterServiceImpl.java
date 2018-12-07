@@ -37,7 +37,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
         List<IsuFieldDefine> fields = isuFieldDefineDao.listDefaultFilter();
         int i = 0;
         for (IsuFieldDefine field : fields) {
-            String code = field.getCode();
+            String code = field.getColCode();
 
             Boolean filterEnable = filterNameArr.contains(code);
             if (filterEnable) {
@@ -55,7 +55,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
 
     @Override
     public IsuJqlFilter buildFilter(IsuFieldDefine field, Integer orgId, Integer projectId) {
-        switch(field.getCode()){
+        switch(field.getColCode()){
             case "projectId":
                 return buildProjectFilter(field, orgId);
             case "typeId":

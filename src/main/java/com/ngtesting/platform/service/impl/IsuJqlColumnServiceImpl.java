@@ -6,6 +6,7 @@ import com.ngtesting.platform.model.IsuFieldDefine;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IsuJqlColumnService;
 import com.ngtesting.platform.service.intf.UserService;
+import com.ngtesting.platform.utils.StringUtil;
 import com.ngtesting.platform.vo.IsuJqlColumn;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,7 +31,7 @@ public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlCo
     @Transactional
     public List<IsuJqlColumn> loadColumns(TstUser user) {
         String columnsStr = user.getIssueColumns();
-        if (StringUtils.isEmpty(columnsStr)) {
+        if (StringUtils.isEmpty(columnsStr) || columnsStr.indexOf("null") > -1) {
             columnsStr = buildDefaultColStr(user);
         }
 
@@ -42,12 +43,13 @@ public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlCo
         if (ls.size() > 0) {
             Map<String, IsuFieldDefine> map = new HashMap<>();
             for (IsuFieldDefine col : cols) {
-                map.put(col.getCode(), col);
+                map.put(col.getColCode(), col);
             }
 
             for (String colCode : ls) {
+                if (StringUtil.isEmpty(colCode) || "null".equals(colCode)) continue;
                 IsuFieldDefine col = map.get(colCode);
-                IsuJqlColumn vo = new IsuJqlColumn(col.getCode(), col.getLabel(), col.getType(), true);
+                IsuJqlColumn vo = new IsuJqlColumn(col.getColCode(), col.getLabel(), col.getType(), true);
 
                 vos.add(vo);
             }
@@ -55,7 +57,7 @@ public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlCo
             int i = 0;
             for (IsuFieldDefine col : cols) {
                 Boolean display = i++ < 5;
-                IsuJqlColumn vo = new IsuJqlColumn(col.getCode(), col.getLabel(), col.getType(), display);
+                IsuJqlColumn vo = new IsuJqlColumn(col.getColCode(), col.getLabel(), col.getType(), display);
 
                 vos.add(vo);
             }
@@ -72,7 +74,7 @@ public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlCo
         List<IsuFieldDefine> cols = fieldDao.listDefaultField();
         int i = 0;
         for (IsuFieldDefine col : cols) {
-            String code = col.getCode();
+            String code = col.getColCode();
 
             if (i++ > 4) {
                 break;

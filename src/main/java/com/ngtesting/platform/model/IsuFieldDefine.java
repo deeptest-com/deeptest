@@ -4,7 +4,7 @@ package com.ngtesting.platform.model;
 public class IsuFieldDefine extends BaseModel {
 	private static final long serialVersionUID = 8734289343612127207L;
 
-	private String code;
+	private String colCode;
 	private String label;
 
 	private String type;
@@ -22,12 +22,12 @@ public class IsuFieldDefine extends BaseModel {
 
 	private Boolean fullLine;
 
-	public String getCode() {
-		return code;
+	public String getColCode() {
+		return colCode;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setColCode(String colCode) {
+		this.colCode = colCode;
 	}
 
 	public String getLabel() {

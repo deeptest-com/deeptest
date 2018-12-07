@@ -19,7 +19,7 @@ public class IsuJqlFilter implements Serializable {
     Boolean display;
 
     public IsuJqlFilter(IsuFieldDefine field) {
-        this.code = field.getCode();
+        this.code = field.getColCode();
         this.label = field.getLabel();
         this.type = field.getType();
         this.input = field.getInput();
@@ -33,7 +33,7 @@ public class IsuJqlFilter implements Serializable {
     }
 
     public IsuJqlFilter(IsuFieldDefine field, Map values) {
-        this.code = field.getCode();
+        this.code = field.getColCode();
         this.label = field.getLabel();
         this.type = field.getType();
         this.input = field.getInput();

@@ -27,6 +27,7 @@ public interface CustomFieldDao {
                      @Param("orgId") Integer orgId);
 
     List<String> getLastUnusedColumn(@Param("orgId") Integer orgId);
+
     Integer getMaxOrdrNumb(@Param("orgId") Integer orgId,
                            @Param("applyTo") String applyTo);
 

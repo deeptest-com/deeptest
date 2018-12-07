@@ -2,7 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.IssueDao" >
     <select id="get" resultType="IsuIssue">
-        SELECT * FROM IsuIssue o
+        SELECT o.*, ext.* FROM IsuIssue o
+        JOIN IsuIssueExt ext ON o.id = ext.pid
         WHERE o.id = #{id}
         <if test="orgId != null">
             AND o.orgId=#{orgId}
@@ -10,7 +11,7 @@
     </select>
 
     <select id="getByUuid" resultType="IsuIssue">
-        SELECT * FROM IsuIssue o
+        SELECT o.* FROM IsuIssue o
         WHERE o.uuid = #{uuid}
         AND o.orgId=#{orgId}
     </select>
@@ -21,7 +22,7 @@
             <foreach collection="elems" item="item" separator=",">
                 ${item.colCode}
             </foreach>
-            , orgId, projectId, uuid, createTime, disabled, deleted
+            , createTime, disabled, deleted
         )
         values
         (
@@ -32,14 +33,42 @@
         );
     </insert>
 
+    <insert id="saveExt">
+        insert into IsuIssueExt
+        (pid
+          <if test="params.size > 0">,
+            <foreach collection="elems" item="item" separator=",">
+                ${item.colCode}
+            </foreach>
+          </if>
+        )
+        values
+        (#{id}
+          <if test="params.size > 0">,
+            <foreach collection="params" item="item" separator=",">
+                #{item}
+            </foreach>
+          </if>
+        );
+    </insert>
+
     <update id="update">
         UPDATE IsuIssue
         SET
-        <foreach collection="elems" item="item" index="indx" separator=",">
-             ${item.colCode} = #{params[${indx}]}
-        </foreach>
-
+            <foreach collection="elems" item="item" index="indx" separator=",">
+                 ${item.colCode} = #{params[${indx}]}
+            </foreach>
         WHERE id=#{id} AND orgId=#{orgId}
+    </update>
+
+    <update id="updateExt">
+        UPDATE IsuIssueExt
+        SET
+            <foreach collection="elems" item="item" index="indx" separator=",">
+                ${item.colCode} = #{params[${indx}]}
+            </foreach>
+
+        WHERE pid=#{id}
     </update>
 
     <delete id="delete">

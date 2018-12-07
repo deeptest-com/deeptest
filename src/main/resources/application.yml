@@ -8,6 +8,9 @@ spring:
       static-locations: classpath:/META-INF/resources/,classpath:/resources/, classpath:/static/, classpath:/public/, file:${sys.work.dir}, file:${sys.work.my-mind-test}
     freemarker:
       template-loader-path: classpath:/mail-template/
+
+    jackson:
+      time-zone: GMT+8
     datasource:
         name: mysql_ngtesting
         type: com.alibaba.druid.pool.DruidDataSource

@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -42,28 +43,11 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
 		return page;
 	}
 
-//    @Override
-//    public JSONObject save(JSONObject issue, Integer pageId, TstUser user) {
-//        List<IsuPageElement> elems = pageElementDao.listElementByPageId(pageId);
-//
-//        if (issue.getInteger("id") == null) {
-////            issue.setOrgId(user.getDefaultOrgId());
-////            issue.setPrjId(user.getDefaultPrjId());
-//
-//            issueDao.save(issue, elems);
-//        } else {
-//            Integer count = issueDao.update(issue, elems);
-//            if (count == 0) {
-//                return null;
-//            }
-//        }
-//
-//        return issue;
-//    }
-
     @Override
+    @Transactional
     public IsuIssue save(JSONObject issue, Integer pageId, TstUser user) {
-        List<IsuPageElement> elems = pageElementDao.listElementByPageId(pageId);
+        List<IsuPageElement> elemObjs = pageElementDao.listElementByPageId(pageId);
+        List<IsuPageElement> elems = genElems(elemObjs);
 
         IsuIssue po = null;
         issue.put("orgId", user.getDefaultOrgId());
@@ -73,27 +57,65 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         issue.put("uuid", uuid);
 
         List<Object> params = genParams(issue, elems, true);
-        Integer count = issueDao.save(elems, params);
+
+        List<IsuPageElement> elems1 = new LinkedList<>();
+        List<Object> params1 = new LinkedList<>();
+        List<IsuPageElement> elems2 = new LinkedList<>();
+        List<Object> params2 = new LinkedList<>();
+
+        genDataForExtTable(elems, params, elems1, params1, elems2, params2);
+
+        Integer count = issueDao.save(elems1, params1);
         if (count > 0) {
             po = issueDao.getByUuid(uuid, user.getDefaultOrgId());
+            count = issueDao.saveExt(elems2, params2, po.getId());
+        }
+
+        if (count > 0) {
+            po = issueDao.get(po.getId(), user.getDefaultOrgId());
         }
 
         return po;
     }
 
     @Override
+    @Transactional
     public IsuIssue update(JSONObject issue, Integer pageId, TstUser user) {
         List<IsuPageElement> elems = pageElementDao.listElementByPageId(pageId);
 
         IsuIssue po = null;
         List<Object> params = genParams(issue, elems, false);
-        Integer count = issueDao.update(elems, params,
-                issue.getInteger("id"), user.getDefaultOrgId());
+
+        List<IsuPageElement> elems1 = new LinkedList<>();
+        List<Object> params1 = new LinkedList<>();
+        List<IsuPageElement> elems2 = new LinkedList<>();
+        List<Object> params2 = new LinkedList<>();
+
+        genDataForExtTable(elems, params, elems1, params1, elems2, params2);
+
+        Integer count = issueDao.update(elems1, params1, issue.getInteger("id"), user.getDefaultOrgId());
+        if (count > 0 && params2.size() > 0) {
+            count = issueDao.updateExt(elems2, params2, issue.getInteger("id"));
+        }
+
         if (count > 0) {
-            po = issueDao.getByUuid(issue.getString("uuid"), user.getDefaultOrgId());
+            po = issueDao.get(issue.getInteger("id"), user.getDefaultOrgId());
         }
 
         return po;
+    }
+
+    private List<IsuPageElement> genElems(List<IsuPageElement> elemObjs) {
+        List<IsuPageElement> elems = new LinkedList<>();
+        for (IsuPageElement elem : elemObjs) {
+            elems.add(elem);
+        }
+
+        elems.add(new IsuPageElement("orgId", ""));
+        elems.add(new IsuPageElement("projectId", ""));
+        elems.add(new IsuPageElement("uuid", ""));
+
+        return elems;
     }
 
     public List genParams(JSONObject issue, List<IsuPageElement> elems, Boolean init) {
@@ -138,6 +160,27 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
             ret.put(map.get("opt").toString(), Integer.valueOf(map.get("pageId").toString()));
         }
         return ret;
+    }
+
+    @Override
+    public void genDataForExtTable(List<IsuPageElement> elems,
+                                   List<Object> params,
+                                   List<IsuPageElement> elems1,
+                                   List<Object> params1,
+                                   List<IsuPageElement> elems2,
+                                   List<Object> params2) {
+        int i = 0;
+        for (IsuPageElement elem: elems) {
+            if (!elem.getColCode().startsWith("prop")) {
+                elems1.add(elem);
+                params1.add(params.get(i));
+            } else {
+                elems2.add(elem);
+                params2.add(params.get(i));
+            }
+
+            i++;
+        }
     }
 
 }

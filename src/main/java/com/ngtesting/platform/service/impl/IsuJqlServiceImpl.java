@@ -46,15 +46,13 @@ public class IsuJqlServiceImpl extends BaseServiceImpl implements IsuJqlService 
             SqlQueryResult sqlQueryResult = isuJqlBuildService.buildSqlQuery(JSON.toJSONString(rule));
             conditions = sqlQueryResult.getQuery(true);
         } else {
-            conditions = "projectId = " + projectId;
+            conditions = "projectId=" + projectId;
         }
 
         String reg = "[^,]*Id";
-
         Pattern r = Pattern.compile(reg);
         Matcher m = r.matcher(columns);
         columns = m.replaceAll("$0,$0Name").replaceAll("IdName","Name");
-//        logger.info("ReplaceAll: " + columns);
 
         result = isuTqlDao.query(conditions, columns, orderBy);
 

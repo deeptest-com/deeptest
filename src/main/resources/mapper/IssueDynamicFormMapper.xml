@@ -10,7 +10,8 @@
         AND fields.key NOT IN (
           SELECT elem.key FROM IsuPageElement elem WHERE elem.pageId = #{pageId}
         )
-        ORDER BY fields.ordr;
+
+        ORDER BY fields.elemOrdr;
     </select>
 
     <select id="fetchOrgField" resultMap="fieldMap">
@@ -74,9 +75,10 @@
         CASE fields.input WHEN 'dropdown' THEN 'canSelect' ELSE 'notSelect' END inputCatagory
 
         FROM (
-          (SELECT CONCAT('sys-', field.id) `key`, field.id fieldId, field.colCode, field.label,
+          (SELECT CONCAT('sys-', field.id) `key`, CONCAT('a-', field.elemOrdr) elemOrdr,
+            field.id fieldId, field.colCode, field.label,
             field.type, field.input, field.fullLine, field.required, field.readonly, true isBuildIn,
-            field.columnOrdr ordr, field.orgId
+            field.elemOrdr ordr, field.orgId
 
             FROM IsuField field
 
@@ -87,7 +89,8 @@
 
           UNION
 
-          (SELECT CONCAT('cust-', customField.id) `key`, customField.id fieldId, customField.colCode, customField.label,
+          (SELECT CONCAT('cust-', customField.id) `key`, CONCAT('b-', customField.ordr) elemOrdr,
+            customField.id fieldId, customField.colCode, customField.label,
             customField.type, customField.input,
             customField.fullLine, customField.required, customField.readonly, false isBuildIn,
             customField.ordr, customField.orgId

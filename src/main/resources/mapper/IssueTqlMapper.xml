@@ -4,6 +4,8 @@
 
     <select id="query" resultType="IsuIssue">
         SELECT id, ${columns} FROM IsuIssue
+        JOIN IsuIssueExt ext ON id = pid
+
         WHERE ${conditions}
         AND deleted != true AND disabled != true
 

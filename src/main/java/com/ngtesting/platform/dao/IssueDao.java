@@ -16,11 +16,17 @@ public interface IssueDao {
 
     Integer save(@Param("elems") List<IsuPageElement> elems,
                  @Param("params") List<Object> params);
+    Integer saveExt(@Param("elems") List<IsuPageElement> elems,
+                    @Param("params") List<Object> params,
+                    @Param("id") Integer id);
 
     Integer update(@Param("elems") List<IsuPageElement> elems,
                    @Param("params") List<Object> params,
                    @Param("id") Integer id,
                    @Param("orgId") Integer orgId);
+    Integer updateExt(@Param("elems") List<IsuPageElement> elems,
+                   @Param("params") List<Object> params,
+                   @Param("id") Integer id);
 
     Integer delete(@Param("id") Integer id,
                    @Param("orgId") Integer orgId);

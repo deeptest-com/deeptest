@@ -30,7 +30,6 @@ public class IssuePageElementServiceImpl extends BaseServiceImpl implements Issu
     public void saveAll(Integer orgId, Integer pageId, List<Map> maps) {
         elementDao.removeOthers(maps, pageId, orgId);
 
-        // TODO: 批量保存
         if (maps.size() > 0) {
             int ordr = 1;
             for (Map map: maps) {

@@ -9,8 +9,6 @@ public interface CustomFieldService extends BaseService {
 
     List<CustomField> list(Integer orgId, String applyTo, String keywords);
 
-    List<CustomField> listForCaseByProject(Integer orgId);
-
     CustomField get(Integer id, Integer orgId);
 
     CustomField save(CustomField vo, Integer orgId);
@@ -30,4 +28,6 @@ public interface CustomFieldService extends BaseService {
     Map typeMap();
 
     List<String> listFormat();
+
+    Map<String, Object> fetchProjectField(Integer orgId, Integer projectId);
 }

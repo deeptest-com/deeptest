@@ -39,7 +39,7 @@ public interface CaseDao {
                          @Param("updateById") Integer updateById);
 
     Integer updateProp(@Param("id") Integer id,
-                    @Param("prop") String prop,
+                    @Param("code") String code,
                     @Param("value") String value,
                     @Param("projectId") Integer projectId,
                        @Param("updateById") Integer updateById);

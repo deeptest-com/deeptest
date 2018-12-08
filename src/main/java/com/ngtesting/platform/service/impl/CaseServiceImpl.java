@@ -276,11 +276,11 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         Integer projectId = user.getDefaultPrjId();
 
         Integer id = json.getInteger("id");
-        String prop = json.getString("prop");
+        String code = json.getString("code");
         String value = json.getString("value");
         String label = json.getString("label");
 
-        Integer count = caseDao.updateProp(id, prop, value, projectId, user.getId());
+        Integer count = caseDao.updateProp(id, code, value, projectId, user.getId());
         if (count == 0) {
             return null;
         }

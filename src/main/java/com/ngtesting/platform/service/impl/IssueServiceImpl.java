@@ -79,6 +79,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
     }
 
     @Override
+    @Transactional
     public IsuIssue updateField(JSONObject json, TstUser user) {
         Integer projectId = user.getDefaultPrjId();
 

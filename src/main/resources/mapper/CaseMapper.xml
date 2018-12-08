@@ -83,7 +83,7 @@
 
     <update id="updateProp">
         UPDATE TstCase
-        SET ${prop} = '${value}',updateById=#{updateById},updateTime=NOW()
+        SET ${code} = '${value}',updateById=#{updateById},updateTime=NOW()
         WHERE id=#{id} AND projectId=#{projectId}
     </update>
 

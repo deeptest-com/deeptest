@@ -18,13 +18,17 @@
     </select>
 
     <select id="listForCase" resultMap="customFieldMap">
-        SELECT o.*
+        SELECT customField.id, CONCAT('cust-', customField.id) `key`,
+            customField.id fieldId, customField.colCode, customField.label,
+            customField.type, customField.input,
+            customField.fullLine, customField.required, customField.readonly, false isBuildIn,
+            customField.ordr, customField.orgId
 
-        FROM CustomField o
-        WHERE o.orgId = #{orgId} AND o.applyTo = 'test_case'
+        FROM CustomField customField
+        WHERE customField.orgId = #{orgId} AND customField.applyTo = 'test_case'
 
-        AND o.disabled != TRUE AND o.deleted != TRUE
-        ORDER BY ordr ASC
+        AND customField.disabled != TRUE AND customField.deleted != TRUE
+        ORDER BY customField.ordr ASC
     </select>
 
     <select id="get" resultType="CustomField">
@@ -109,7 +113,7 @@
         and o.disabled != true
     </select>
 
-    <resultMap id="customFieldMap" type="CustomField" autoMapping="true">
+    <resultMap id="customFieldMap" type="Map" autoMapping="true">
         <id column="id" property="id"/>
 
         <collection property="options" select="com.ngtesting.platform.dao.CustomFieldOptionDao.getByFieldId"

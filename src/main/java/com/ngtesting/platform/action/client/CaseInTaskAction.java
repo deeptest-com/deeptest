@@ -46,14 +46,11 @@ public class CaseInTaskAction extends BaseAction {
 
         List<TstCaseInTask> vos = caseInTaskService.query(taskId, projectId);
 
-        List<TstCaseType> caseTypePos = caseTypeService.list(orgId);
-        List<TstCasePriority> casePriorityPos = casePriorityService.list(orgId);
-        List<CustomField> customFieldList = customFieldService.listForCaseByProject(orgId);
+        Map<String, Object> map = customFieldService.fetchProjectField(orgId, projectId);
 
         ret.put("data", vos);
-        ret.put("caseTypeList", caseTypePos);
-        ret.put("casePriorityList", casePriorityPos);
-        ret.put("customFields", customFieldList);
+        ret.put("customFields", map.get("fields"));
+        ret.put("casePropMap", map.get("props"));
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

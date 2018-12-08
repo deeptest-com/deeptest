@@ -3,16 +3,15 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.config.ConstantIssue;
 import com.ngtesting.platform.dao.*;
 import com.ngtesting.platform.model.CustomField;
+import com.ngtesting.platform.model.TstCasePriority;
+import com.ngtesting.platform.model.TstCaseType;
 import com.ngtesting.platform.service.intf.CustomFieldService;
 import com.ngtesting.platform.service.intf.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFieldService {
@@ -21,6 +20,10 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
 
     @Autowired
     CustomFieldDao customFieldDao;
+    @Autowired
+    CaseTypeDao typeDao;
+    @Autowired
+    CasePriorityDao priorityDao;
 
     @Autowired
     CustomFieldOptionDao customFieldOptionDao;
@@ -34,13 +37,6 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     @Override
     public List<CustomField> list(Integer orgId, String applyTo, String keywords) {
         List<CustomField> ls = customFieldDao.list(orgId, applyTo, keywords);
-
-        return ls;
-    }
-
-    @Override
-    public List<CustomField> listForCaseByProject(Integer orgId) {
-        List<CustomField> ls = customFieldDao.listForCase(orgId);
 
         return ls;
     }
@@ -181,6 +177,27 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
             ls.add(item.toString());
         }
         return ls;
+    }
+
+    @Override // TODO: cached
+    public Map<String, Object> fetchProjectField(Integer orgId, Integer projectId) {
+        List<TstCaseType> caseTypePos = typeDao.list(orgId);
+        List<TstCasePriority> casePriorityPos = priorityDao.list(orgId);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", caseTypePos);
+        map.put("priority", casePriorityPos);
+
+        List<Map> fields = customFieldDao.listForCase(orgId);
+        for (Map field : fields) {
+            map.put(field.get("colCode").toString(), field.get("options"));
+        }
+
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("fields", fields);
+        ret.put("props", map);
+
+        return ret;
     }
 
 }

@@ -4,13 +4,14 @@ import com.ngtesting.platform.model.CustomField;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CustomFieldDao {
     List<CustomField> list(@Param("orgId") Integer orgId,
                            @Param("applyTo") String applyTo,
                            @Param("keywords") String keywords);
 
-    List<CustomField> listForCase(@Param("orgId") Integer orgId);
+    List<Map> listForCase(@Param("orgId") Integer orgId);
 
     CustomField get(@Param("id") Integer id,
                     @Param("orgId") Integer orgId);

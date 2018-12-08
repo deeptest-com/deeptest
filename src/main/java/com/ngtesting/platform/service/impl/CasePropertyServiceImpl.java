@@ -3,6 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.dao.CaseExeStatusDao;
 import com.ngtesting.platform.dao.CasePriorityDao;
 import com.ngtesting.platform.dao.CaseTypeDao;
+import com.ngtesting.platform.dao.CustomFieldDao;
 import com.ngtesting.platform.model.TstCaseExeStatus;
 import com.ngtesting.platform.model.TstCasePriority;
 import com.ngtesting.platform.model.TstCaseType;
@@ -25,6 +26,8 @@ public class CasePropertyServiceImpl extends BaseServiceImpl implements CaseProp
 
 	@Autowired
     CaseExeStatusDao caseExeStatusDao;
+    @Autowired
+    CustomFieldDao customFieldDao;
 
 	@Override
 	public Map<String,Map<String,String>> getMap(Integer orgId) {

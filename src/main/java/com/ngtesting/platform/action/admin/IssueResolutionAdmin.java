@@ -90,8 +90,8 @@ public class IssueResolutionAdmin extends BaseAction {
 			return authFail();
 		}
 
-		Map<String, Map<String, String>> casePropertyMap = issuePropertyService.getMap(orgId);
-		ret.put("casePropertyMap", casePropertyMap);
+//		Map<String, Map<String, String>> casePropertyValMap = issuePropertyService.getMap(orgId);
+//		ret.put("casePropertyValMap", casePropertyValMap);
 
 		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

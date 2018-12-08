@@ -63,7 +63,7 @@ public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSett
 
         Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(userId, orgId);
 
-        Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
+        Map<String,Map<String,String>> casePropertyValMap = casePropertyService.getMap(orgId);
 
         ret.put("orgPrivileges", orgPrivileges);
 
@@ -73,7 +73,7 @@ public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSett
         ret.put("defaultPrjId", user.getDefaultPrjId());
         ret.put("defaultPrjName", user.getDefaultPrjName());
 
-        ret.put("casePropertyMap", casePropertyMap);
+        ret.put("casePropertyValMap", casePropertyValMap);
 
         sendMsg(user, ret);
     }

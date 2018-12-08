@@ -74,8 +74,8 @@ public class ClientAction extends BaseAction {
         List<TstOrg> orgs = orgService.listByUser(userId);
         ret.put("myOrgs", orgs);
 
-        Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
-        ret.put("casePropertyMap", casePropertyMap);
+        Map<String,Map<String,String>> casePropertyValMap = casePropertyService.getMap(orgId);
+        ret.put("casePropertyValMap", casePropertyValMap);
 
         List<TstProjectAccessHistory> recentProjects = projectService.listRecentProject(orgId, userId);
         ret.put("recentProjects", recentProjects);

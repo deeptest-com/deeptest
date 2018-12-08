@@ -81,7 +81,7 @@ public class IssuePageAdmin extends BaseAction {
         IsuPage page = pageService.get(pageId, orgId);
 
         List<IsuField> fields = dynamicFormService.listNotUsedField(orgId, projectId, pageId);
-        Map<String, Object> issuePropMap = dynamicFormService.fetchOrgField(orgId, projectId);
+        Map<String, Object> issuePropMap = dynamicFormService.genIssuePropMap(orgId, projectId);
 
         ret.put("page", page);
         ret.put("fields", fields);

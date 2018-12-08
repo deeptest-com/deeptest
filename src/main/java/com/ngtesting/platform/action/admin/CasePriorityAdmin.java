@@ -88,9 +88,6 @@ public class CasePriorityAdmin extends BaseAction {
 			return authFail();
 		}
 
-		Map<String,Map<String,String>> casePropertyMap = casePropertyService.getMap(orgId);
-		ret.put("casePropertyMap", casePropertyMap);
-
         ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

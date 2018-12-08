@@ -19,7 +19,7 @@
           field.type, field.input, field.fullLine, field.required, field.readonly, true buildIn,
           field.columnOrdr ordr
 
-        FROM Isufield field
+        FROM IsuField field
         WHERE id = #{id} AND orgId = #{orgId} AND field.defaultShowInPage IS NOT null
     </select>
 

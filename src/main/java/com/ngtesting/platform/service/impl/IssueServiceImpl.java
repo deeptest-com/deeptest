@@ -1,12 +1,12 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.IssueDao;
 import com.ngtesting.platform.dao.IssuePageDao;
 import com.ngtesting.platform.dao.IssuePageElementDao;
 import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.intf.IssueService;
-import com.ngtesting.platform.utils.DateUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +74,31 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         if (count > 0) {
             po = issueDao.get(po.getId(), user.getDefaultOrgId());
         }
+
+        return po;
+    }
+
+    @Override
+    public IsuIssue updateField(JSONObject json, TstUser user) {
+        Integer projectId = user.getDefaultPrjId();
+
+        Integer id = json.getInteger("id");
+        String code = json.getString("code");
+        String value = json.getString("value");
+
+        Integer count;
+        if (!code.startsWith("prop")) {
+            count = issueDao.updateProp(id, code, value, projectId);
+        } else {
+            count = issueDao.updatePropExt(id, code, value);
+        }
+        if (count == 0) {
+            return null;
+        }
+
+        IsuIssue po = issueDao.get(id, user.getDefaultOrgId());
+
+//        issueHistoryService.saveHistory(user, Constant.CaseAct.update, issue, label);
 
         return po;
     }

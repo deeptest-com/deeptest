@@ -71,6 +71,17 @@
         WHERE pid=#{id}
     </update>
 
+    <update id="updateProp">
+        UPDATE IsuIssue
+        SET ${code} = '${value}', updateTime=NOW()
+        WHERE id=#{id} AND projectId=#{projectId}
+    </update>
+    <update id="updatePropExt">
+        UPDATE IsuIssueExt
+        SET ${code} = '${value}'
+        WHERE pid=#{id}
+    </update>
+
     <delete id="delete">
         UPDATE IsuIssue
         SET disabled=TRUE, updateTime=NOW()

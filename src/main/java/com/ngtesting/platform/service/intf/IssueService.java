@@ -18,6 +18,8 @@ public interface IssueService extends BaseService {
 
     IsuIssue save(JSONObject issue, Integer pageId, TstUser user);
 
+    IsuIssue updateField(JSONObject json, TstUser user);
+
     void  genDataForExtTable(List<IsuPageElement> elems,
                              List<Object> params,
                              List<IsuPageElement> elems1,

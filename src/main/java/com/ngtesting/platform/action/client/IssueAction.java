@@ -157,17 +157,16 @@ public class IssueAction extends BaseAction {
 		return ret;
 	}
 
-	@RequestMapping(value = "saveField", method = RequestMethod.POST)
+	@RequestMapping(value = "updateField", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> saveField(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> updateField(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-//		TstCase po = issueService.saveField(json, userVo);
-//        TstCaseVo caseVo = issueService.genVo(po);
-//
-//		ret.put("data", caseVo);
+		IsuIssue po = issueService.updateField(json, user);
+
+        ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

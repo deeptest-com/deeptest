@@ -28,6 +28,14 @@ public interface IssueDao {
                    @Param("params") List<Object> params,
                    @Param("id") Integer id);
 
+    Integer updateProp(@Param("id") Integer id,
+                       @Param("code") String code,
+                       @Param("value") String value,
+                       @Param("projectId") Integer projectId);
+    Integer updatePropExt(@Param("id") Integer id,
+                       @Param("code") String code,
+                       @Param("value") String value);
+
     Integer delete(@Param("id") Integer id,
                    @Param("orgId") Integer orgId);
 
@@ -37,4 +45,5 @@ public interface IssueDao {
     List<Map<String, Object>> getProjectDefaultPages(@Param("orgId") Integer orgId,
                                       @Param("prjId") Integer prjId,
                                       @Param("typeId") Integer typeId);
+
 }

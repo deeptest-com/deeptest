@@ -11,7 +11,8 @@ services:
 
   ngtesting-web:
     image: registry.cn-hangzhou.aliyuncs.com/ngtesting/ngtesting-web:1.0.10
+    depends_on:
+      - ngtesting-mysql
     ports:
       - "58080:8080"
-    links:
-      - ngtesting-mysql
+    command: ["/wait-for-it.sh", "ngtesting-mysql:3306", "--", "/usr/bin/java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/ngtesting-web.jar", "--spring.profiles.active=docker"]

@@ -8,7 +8,7 @@ public class TstCasePriority extends BaseModel {
 
 	private String descr;
     private String priority;
-    private Boolean isDefault;
+    private Boolean defaultVal;
     private Integer ordr;
     private Integer orgId;
 
@@ -35,11 +35,11 @@ public class TstCasePriority extends BaseModel {
 		this.priority = priority;
 	}
 	public Boolean getIsDefault() {
-		return this.isDefault;
+		return this.defaultVal;
 	}
 
-	public void setIsDefault(Boolean isDefault) {
-		this.isDefault = isDefault;
+	public void setIsDefault(Boolean defaultVal) {
+		this.defaultVal = defaultVal;
 	}
 
 	public Integer getOrdr() {

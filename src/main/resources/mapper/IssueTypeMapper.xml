@@ -44,9 +44,9 @@
 
     <insert id="save" parameterType="IsuType" useGeneratedKeys="true" keyProperty="id">
         insert into IsuType
-        (label,value,descr,orgId,ordr, isDefault, isBuildIn,deleted,disabled,createTime)
+        (label,value,descr,orgId,ordr, defaultVal, buildIn,deleted,disabled,createTime)
         values
-        (#{label},#{value},#{descr},#{orgId},#{ordr}, #{isDefault}, #{isBuildIn},FALSE,FALSE,NOW())
+        (#{label},#{value},#{descr},#{orgId},#{ordr}, #{defaultVal}, #{buildIn},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="IsuType">
@@ -66,12 +66,12 @@
 
     <update id="removeDefault">
         UPDATE IsuType
-        SET isDefault=FALSE, updateTime=NOW()
+        SET defaultVal=FALSE, updateTime=NOW()
         WHERE orgId=#{orgId}
     </update>
     <update id="setDefault">
         UPDATE IsuType
-        SET isDefault=TRUE, updateTime=NOW()
+        SET defaultVal=TRUE, updateTime=NOW()
         WHERE id=#{id} AND orgId=#{orgId}
     </update>
 

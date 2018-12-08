@@ -12,7 +12,7 @@ public class CustomField extends BaseModel {
     private String label;
     private Boolean required = false;
     private Boolean readonly = false;
-    private Boolean isBuildIn = false;
+    private Boolean buildIn = false;
     private Boolean fullLine = false;
 
     private String type;
@@ -70,11 +70,11 @@ public class CustomField extends BaseModel {
     }
 
     public Boolean getBuildIn() {
-        return isBuildIn;
+        return buildIn;
     }
 
     public void setBuildIn(Boolean buildIn) {
-        isBuildIn = buildIn;
+        this.buildIn = buildIn;
     }
 
     public String getColCode() {

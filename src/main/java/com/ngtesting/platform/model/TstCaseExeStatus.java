@@ -8,8 +8,8 @@ public class TstCaseExeStatus extends BaseModel {
 
     private String descr;
     private Integer ordr;
-    private Boolean isFinal;
-    private Boolean isBuildIn = false;
+    private Boolean finalVal;
+    private Boolean buildIn = false;
     private Integer orgId;
 
 	public String getLabel() {
@@ -43,34 +43,21 @@ public class TstCaseExeStatus extends BaseModel {
 		this.ordr = ordr;
 	}
 
-	public Boolean getFinal() {
-		return isFinal;
-	}
-
-	public void setFinal(Boolean aFinal) {
-		isFinal = aFinal;
-	}
-
 	public Boolean getBuildIn() {
-		return isBuildIn;
+		return buildIn;
 	}
 
 	public void setBuildIn(Boolean buildIn) {
-		isBuildIn = buildIn;
+    this.buildIn = buildIn;
 	}
 
-	public Boolean getIsFinal() {
-		return isFinal;
+	public Boolean getFinal() {
+		return finalVal;
 	}
-	public void setIsFinal(Boolean isFinal) {
-		this.isFinal = isFinal;
+	public void setFinal(Boolean finalVal) {
+		this.finalVal = finalVal;
 	}
-	public Boolean getIsBuildIn() {
-		return isBuildIn;
-	}
-	public void setIsBuildIn(Boolean isBuildIn) {
-		this.isBuildIn = isBuildIn;
-	}
+
 	public Integer getOrgId() {
 		return orgId;
 	}

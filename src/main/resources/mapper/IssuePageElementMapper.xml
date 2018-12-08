@@ -3,10 +3,10 @@
 <mapper namespace="com.ngtesting.platform.dao.IssuePageElementDao" >
     <insert id="save" parameterType="IsuPageElement" useGeneratedKeys="true" keyProperty="id">
         insert into IsuPageElement
-        (`key`, colCode, label, `type`, `input`, fullLine, required, readonly, isBuildIn,
+        (`key`, colCode, label, `type`, `input`, fullLine, required, readonly, buildIn,
           fieldId, pageId, orgId, ordr, deleted, disabled, createTime)
         values
-        (#{key}, #{colCode}, #{label}, #{type}, #{input}, #{fullLine}, #{required}, #{readonly}, #{isBuildIn},
+        (#{key}, #{colCode}, #{label}, #{type}, #{input}, #{fullLine}, #{required}, #{readonly}, #{buildIn},
           #{fieldId}, #{pageId}, #{orgId}, #{ordr}, FALSE, FALSE, NOW())
     </insert>
 

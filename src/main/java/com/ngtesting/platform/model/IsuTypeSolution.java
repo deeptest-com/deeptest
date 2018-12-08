@@ -9,8 +9,8 @@ public class IsuTypeSolution extends BaseModel {
     private String name;
 
     private String descr;
-    private Boolean isDefault = false;
-    private Boolean isBuildIn = false;
+    private Boolean defaultVal = false;
+    private Boolean buildIn = false;
     private Integer orgId;
 
     private List<IsuType> items = new LinkedList<>();
@@ -30,12 +30,12 @@ public class IsuTypeSolution extends BaseModel {
         this.name = name;
     }
 
-    public Boolean getDefault() {
-        return isDefault;
+    public Boolean getDefaultVal() {
+        return defaultVal;
     }
 
-    public void setDefault(Boolean aDefault) {
-        isDefault = aDefault;
+    public void setDefaultVal(Boolean aDefault) {
+        defaultVal = aDefault;
     }
 
     public Integer getOrgId() {
@@ -60,10 +60,10 @@ public class IsuTypeSolution extends BaseModel {
     }
 
     public Boolean getBuildIn() {
-        return isBuildIn;
+        return buildIn;
     }
 
     public void setBuildIn(Boolean buildIn) {
-        isBuildIn = buildIn;
+      this.buildIn = buildIn;
     }
 }

@@ -21,9 +21,9 @@
 
     <insert id="save" parameterType="IsuWorkflow" useGeneratedKeys="true" keyProperty="id">
         insert into IsuWorkflow
-        (name, descr, orgId, isDefault, isBuildIn, deleted, disabled, createTime)
+        (name, descr, orgId, defaultVal, buildIn, deleted, disabled, createTime)
         values
-        (#{name}, #{descr}, #{orgId}, #{isDefault}, #{isBuildIn}, FALSE, FALSE, NOW())
+        (#{name}, #{descr}, #{orgId}, #{defaultVal}, #{buildIn}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="IsuPage">
@@ -35,12 +35,12 @@
 
     <update id="removeDefault">
         UPDATE IsuWorkflow
-        SET isDefault=FALSE, updateTime=NOW()
+        SET defaultVal=FALSE, updateTime=NOW()
         WHERE orgId=#{orgId}
     </update>
     <update id="setDefault">
         UPDATE IsuWorkflow
-        SET isDefault=TRUE, updateTime=NOW()
+        SET defaultVal=TRUE, updateTime=NOW()
         WHERE id=#{id} AND orgId=#{orgId}
     </update>
 

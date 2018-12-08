@@ -10,9 +10,9 @@ public class IsuWorkflow extends BaseModel {
     private String code;
     private String descr;
     private Integer displayOrder;
-    private Boolean isFinal;
-	private Boolean isDefault = false;
-	private Boolean isBuildIn = false;
+    private Boolean finalVal;
+	private Boolean defaultVal = false;
+	private Boolean buildIn = false;
     private Integer orgId;
 
 	private List<IsuWorkflowTransition> statusTransitions = new LinkedList<>();
@@ -60,26 +60,26 @@ public class IsuWorkflow extends BaseModel {
 	}
 
 	public Boolean getFinal() {
-		return isFinal;
+		return finalVal;
 	}
 
 	public void setFinal(Boolean aFinal) {
-		isFinal = aFinal;
+		finalVal = aFinal;
 	}
 
-	public Boolean getDefault() {
-		return isDefault;
+	public Boolean getDefaultVal() {
+		return defaultVal;
 	}
 
-	public void setDefault(Boolean aDefault) {
-		isDefault = aDefault;
+	public void setDefaultVal(Boolean aDefault) {
+		defaultVal = aDefault;
 	}
 
 	public Boolean getBuildIn() {
-		return isBuildIn;
+		return buildIn;
 	}
 
 	public void setBuildIn(Boolean buildIn) {
-		isBuildIn = buildIn;
+    this.buildIn = buildIn;
 	}
 }

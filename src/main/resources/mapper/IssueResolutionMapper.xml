@@ -21,9 +21,9 @@
 
     <insert id="save" parameterType="IsuResolution" useGeneratedKeys="true" keyProperty="id">
         insert into IsuResolution
-        (label,value,descr,orgId,ordr,isDefault,deleted,disabled,createTime)
+        (label,value,descr,orgId,ordr,defaultVal,deleted,disabled,createTime)
         values
-        (#{label},#{value},#{descr},#{orgId},#{ordr},#{isDefault},FALSE,FALSE,NOW())
+        (#{label},#{value},#{descr},#{orgId},#{ordr},#{defaultVal},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="IsuResolution">
@@ -43,12 +43,12 @@
 
     <update id="removeDefault">
         UPDATE IsuResolution
-        SET isDefault=FALSE, updateTime=NOW()
+        SET defaultVal=FALSE, updateTime=NOW()
         WHERE orgId=#{orgId}
     </update>
     <update id="setDefault">
         UPDATE IsuResolution
-        SET isDefault=TRUE, updateTime=NOW()
+        SET defaultVal=TRUE, updateTime=NOW()
         WHERE id=#{id} AND orgId=#{orgId}
     </update>
 

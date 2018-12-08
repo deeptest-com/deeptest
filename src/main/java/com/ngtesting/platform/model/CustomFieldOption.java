@@ -8,8 +8,8 @@ public class CustomFieldOption extends BaseModel {
 	private String descr;
 	private Integer ordr;
 	private Integer fieldId;
-	private Boolean isDefault = false;
-    private Boolean isBuildIn = false;
+	private Boolean defaultVal = false;
+    private Boolean buildIn = false;
 
 	public Integer getFieldId() {
 		return fieldId;
@@ -51,19 +51,19 @@ public class CustomFieldOption extends BaseModel {
         this.ordr = ordr;
     }
 
-	public Boolean getDefault() {
-		return isDefault;
+	public Boolean getDefaultVal() {
+		return defaultVal;
 	}
 
-	public void setDefault(Boolean aDefault) {
-		isDefault = aDefault;
+	public void setDefaultVal(Boolean aDefault) {
+		defaultVal = aDefault;
 	}
 
     public Boolean getBuildIn() {
-        return isBuildIn;
+        return buildIn;
     }
 
     public void setBuildIn(Boolean buildIn) {
-        isBuildIn = buildIn;
+      this.buildIn = buildIn;
     }
 }

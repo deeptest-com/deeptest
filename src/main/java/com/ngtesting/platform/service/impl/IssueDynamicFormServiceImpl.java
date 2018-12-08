@@ -43,7 +43,7 @@ public class IssueDynamicFormServiceImpl extends BaseServiceImpl implements Issu
         List<Map> fields = fetchOrgField(orgId, projectId);
 
 		for (Map field : fields) {
-		    if (!"1".equals(field.get("isBuildIn").toString())
+		    if (!"1".equals(field.get("buildIn").toString())
                 || !"dropdown".equals(field.get("input").toString())
                 || field.get("options") == null) {
                 continue;

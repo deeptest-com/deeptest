@@ -9,7 +9,7 @@ public class TstOrgRole extends BaseModel {
     private String descr;
 
     private Integer orgId;
-	private Boolean isBuildIn = false;
+	private Boolean buildIn = false;
 
 	public static enum OrgRoleCode {
 		org_admin("org_admin", "组织管理员"),
@@ -58,10 +58,10 @@ public class TstOrgRole extends BaseModel {
 	}
 
 	public Boolean getBuildIn() {
-		return isBuildIn;
+		return buildIn;
 	}
 
 	public void setBuildIn(Boolean buildIn) {
-		isBuildIn = buildIn;
+    this.buildIn = buildIn;
 	}
 }

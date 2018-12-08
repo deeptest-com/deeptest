@@ -7,7 +7,7 @@ public class IsuResolution extends BaseModel {
 	private String value;
 
 	private String descr;
-	private Boolean isDefault = false;
+	private Boolean defaultVal = false;
 	private Integer ordr;
 	private Integer orgId;
 
@@ -28,11 +28,11 @@ public class IsuResolution extends BaseModel {
 	}
 
 	public Boolean getIsDefault() {
-		return this.isDefault;
+		return this.defaultVal;
 	}
 
-	public void setIsDefault(Boolean isDefault) {
-		this.isDefault = isDefault;
+	public void setIsDefault(Boolean defaultVal) {
+		this.defaultVal = defaultVal;
 	}
 
 	public Integer getOrdr() {

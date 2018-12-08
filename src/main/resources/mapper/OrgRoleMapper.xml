@@ -29,9 +29,9 @@
 
     <insert id="save" parameterType="TstOrgRole" useGeneratedKeys="true" keyProperty="id">
         insert into TstOrgRole
-        (code,name,orgId,isBuildIn,deleted,disabled,createTime)
+        (code,name,orgId,buildIn,deleted,disabled,createTime)
         values
-        (#{code},#{name},#{orgId},#{isBuildIn},FALSE,FALSE,NOW())
+        (#{code},#{name},#{orgId},#{buildIn},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="TstOrgRole">

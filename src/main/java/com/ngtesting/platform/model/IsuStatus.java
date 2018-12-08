@@ -8,9 +8,9 @@ public class IsuStatus extends BaseModel {
     private String descr;
     private Integer ordr;
 
-    private Boolean isDefault = false;
-    private Boolean isFinal;
-    private Boolean isBuildIn = false;
+    private Boolean defaultVal = false;
+    private Boolean finalVal;
+    private Boolean buildIn = false;
 
 	private Integer categoryId;
 	private String categoryName;
@@ -28,12 +28,12 @@ public class IsuStatus extends BaseModel {
         return this.id;
     }
 
-    public Boolean getDefault() {
-        return isDefault;
+    public Boolean getDefaultVal() {
+        return defaultVal;
     }
 
-    public void setDefault(Boolean aDefault) {
-        isDefault = aDefault;
+    public void setDefaultVal(Boolean aDefault) {
+        defaultVal = aDefault;
     }
 
     public String getLabel() {
@@ -53,19 +53,19 @@ public class IsuStatus extends BaseModel {
     }
 
     public Boolean getFinal() {
-		return isFinal;
+		return finalVal;
 	}
 
 	public void setFinal(Boolean aFinal) {
-		isFinal = aFinal;
+		finalVal = aFinal;
 	}
 
 	public Boolean getBuildIn() {
-		return isBuildIn;
+		return buildIn;
 	}
 
 	public void setBuildIn(Boolean buildIn) {
-		isBuildIn = buildIn;
+    this.buildIn = buildIn;
 	}
 
 	public String getDescr() {
@@ -83,18 +83,6 @@ public class IsuStatus extends BaseModel {
 		this.ordr = ordr;
 	}
 
-	public Boolean getIsFinal() {
-		return isFinal;
-	}
-	public void setIsFinal(Boolean isFinal) {
-		this.isFinal = isFinal;
-	}
-	public Boolean getIsBuildIn() {
-		return isBuildIn;
-	}
-	public void setIsBuildIn(Boolean isBuildIn) {
-		this.isBuildIn = isBuildIn;
-	}
 	public Integer getOrgId() {
 		return orgId;
 	}

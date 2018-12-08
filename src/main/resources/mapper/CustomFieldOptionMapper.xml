@@ -28,26 +28,26 @@
 
     <insert id="save" parameterType="CustomFieldOption" useGeneratedKeys="true" keyProperty="id">
         insert into CustomFieldOption
-        (label,value,ordr,fieldId,isDefault,isBuildIn,
+        (label,value,ordr,fieldId,defaultVal,buildIn,
           createTime,deleted,disabled)
         values
-        (#{label},#{value},#{ordr},#{fieldId},#{isDefault},#{isBuildIn},
+        (#{label},#{value},#{ordr},#{fieldId},#{defaultVal},#{buildIn},
           NOW(),FALSE,FALSE)
     </insert>
 <!--    <insert id="saveAll">
         insert into CustomFieldOption
-        (label,value,ordr,fieldId,isDefault,isBuildIn,
+        (label,value,ordr,fieldId,defaultVal,buildIn,
         createTime,deleted,disabled)
         values
         <foreach collection="list" item="item" separator=",">
-            (#{item.label},#{item.value}, #{item.ordr}, #{fieldId},#{item.isDefault},#{item.isBuildIn},
+            (#{item.label},#{item.value}, #{item.ordr}, #{fieldId},#{item.defaultVal},#{item.buildIn},
             NOW(),FALSE,FALSE)
         </foreach>
     </insert>-->
 
     <update id="update">
         UPDATE CustomFieldOption
-        SET label =#{label}, value=#{value}, isDefault=#{isDefault}, updateTime=NOW()
+        SET label =#{label}, value=#{value}, defaultVal=#{defaultVal}, updateTime=NOW()
         where id = #{id}
     </update>
     <update id="delete">
@@ -89,12 +89,12 @@
 
     <update id="setDefault">
         UPDATE CustomFieldOption
-        SET isDefault=TRUE, updateTime=NOW()
+        SET defaultVal=TRUE, updateTime=NOW()
         WHERE id=#{id} AND fieldId=#{fieldId}
     </update>
     <update id="removeDefault">
         UPDATE CustomFieldOption
-        SET isDefault=FALSE, updateTime=NOW()
+        SET defaultVal=FALSE, updateTime=NOW()
         WHERE fieldId=#{fieldId}
     </update>
 

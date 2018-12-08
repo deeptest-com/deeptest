@@ -77,7 +77,7 @@
         FROM (
           (SELECT CONCAT('sys-', field.id) `key`, CONCAT('a-', field.elemOrdr) elemOrdr,
             field.id fieldId, field.colCode, field.label,
-            field.type, field.input, field.fullLine, field.required, field.readonly, true isBuildIn,
+            field.type, field.input, field.fullLine, field.required, field.readonly, true buildIn,
             field.elemOrdr ordr, field.orgId
 
             FROM IsuField field
@@ -92,7 +92,7 @@
           (SELECT CONCAT('cust-', customField.id) `key`, CONCAT('b-', customField.ordr) elemOrdr,
             customField.id fieldId, customField.colCode, customField.label,
             customField.type, customField.input,
-            customField.fullLine, customField.required, customField.readonly, false isBuildIn,
+            customField.fullLine, customField.required, customField.readonly, false buildIn,
             customField.ordr, customField.orgId
 
             FROM CustomField customField
@@ -108,7 +108,7 @@
     </sql>
 
     <sql id="fetchCustomFieldOptions">
-        SELECT opt.id, opt.label, opt.value, opt.isDefault
+        SELECT opt.id, opt.label, opt.value, opt.defaultVal
         FROM CustomFieldOption opt
         WHERE opt.fieldId=#{fieldId}
         AND opt.disabled!=true AND opt.deleted!=true
@@ -135,7 +135,7 @@
     </sql>
 
     <sql id="fetchSysFieldOptions">
-        SELECT tb.id, tb.label, tb.isDefault, '${code}' fieldCode, '${optionTable}' optionTable
+        SELECT tb.id, tb.label, tb.defaultVal, '${code}' fieldCode, '${optionTable}' optionTable
         FROM ${optionTable} AS tb
         WHERE TRUE
         <if test="optionTable != 'TstUser'">

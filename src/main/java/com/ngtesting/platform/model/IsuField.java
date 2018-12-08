@@ -20,7 +20,7 @@ public class IsuField implements Serializable {
     private Boolean fullLine;
     private Boolean required;
     private Boolean readonly;
-    private Boolean isBuildIn;
+    private Boolean buildIn;
 
     private Boolean display;
 
@@ -123,10 +123,10 @@ public class IsuField implements Serializable {
     }
 
     public Boolean getBuildIn() {
-        return isBuildIn;
+        return buildIn;
     }
 
     public void setBuildIn(Boolean buildIn) {
-        isBuildIn = buildIn;
+        this.buildIn = buildIn;
     }
 }

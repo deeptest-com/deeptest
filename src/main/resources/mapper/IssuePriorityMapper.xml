@@ -45,9 +45,9 @@
 
     <insert id="save" parameterType="IsuPriority" useGeneratedKeys="true" keyProperty="id">
         insert into IsuPriority
-        (label,value,descr,orgId, isDefault, isBuildIn,ordr,deleted,disabled,createTime)
+        (label,value,descr,orgId, defaultVal, buildIn,ordr,deleted,disabled,createTime)
         values
-        (#{label},#{value},#{descr},#{orgId}, #{isDefault}, #{isBuildIn},#{ordr},FALSE,FALSE,NOW())
+        (#{label},#{value},#{descr},#{orgId}, #{defaultVal}, #{buildIn},#{ordr},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="IsuPriority">
@@ -67,12 +67,12 @@
 
     <update id="removeDefault">
         UPDATE IsuPriority
-        SET isDefault=FALSE, updateTime=NOW()
+        SET defaultVal=FALSE, updateTime=NOW()
         WHERE orgId=#{orgId}
     </update>
     <update id="setDefault">
         UPDATE IsuPriority
-        SET isDefault=TRUE, updateTime=NOW()
+        SET defaultVal=TRUE, updateTime=NOW()
         WHERE id=#{id} AND orgId=#{orgId}
     </update>
 

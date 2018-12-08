@@ -29,9 +29,9 @@
 
     <insert id="save" parameterType="IsuTypeSolution" useGeneratedKeys="true" keyProperty="id">
         insert into IsuTypeSolution
-        (name,orgId, isDefault, isBuildIn,deleted,disabled,createTime)
+        (name,orgId, defaultVal, buildIn,deleted,disabled,createTime)
         values
-        (#{name},#{orgId}, #{isDefault}, #{isBuildIn},FALSE,FALSE,NOW())
+        (#{name},#{orgId}, #{defaultVal}, #{buildIn},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="IsuTypeSolution">
@@ -51,12 +51,12 @@
 
     <update id="removeDefault">
         UPDATE IsuTypeSolution
-        SET isDefault=FALSE, updateTime=NOW()
+        SET defaultVal=FALSE, updateTime=NOW()
         WHERE orgId=#{orgId}
     </update>
     <update id="setDefault">
         UPDATE IsuTypeSolution
-        SET isDefault=TRUE, updateTime=NOW()
+        SET defaultVal=TRUE, updateTime=NOW()
         WHERE id=#{id} AND orgId=#{orgId}
     </update>
 

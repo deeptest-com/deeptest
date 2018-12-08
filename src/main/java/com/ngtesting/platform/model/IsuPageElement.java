@@ -14,7 +14,7 @@ public class IsuPageElement extends BaseModel {
     private Boolean fullLine;
     private Boolean required;
     private Boolean readonly;
-    private Boolean isBuildIn;
+    private Boolean buildIn;
 
     private String key;
     private List<Map> options = new LinkedList<>();
@@ -32,7 +32,7 @@ public class IsuPageElement extends BaseModel {
         this.input = input;
     }
     public IsuPageElement(String colCode, String label, String type,
-                          String input, Boolean fullLine, Boolean required, Boolean readonly, Boolean isBuildIn,
+                          String input, Boolean fullLine, Boolean required, Boolean readonly, Boolean buildIn,
                           String key, Integer fieldId, Integer pageId, Integer orgId,
                           Integer ordr) {
         this.colCode = colCode;
@@ -42,7 +42,7 @@ public class IsuPageElement extends BaseModel {
         this.fullLine = fullLine;
         this.required = required;
         this.readonly = readonly;
-        this.isBuildIn = isBuildIn;
+        this.buildIn = buildIn;
         this.key = key;
         this.fieldId = fieldId;
         this.pageId = pageId;
@@ -155,10 +155,10 @@ public class IsuPageElement extends BaseModel {
     }
 
     public Boolean getBuildIn() {
-        return isBuildIn;
+        return buildIn;
     }
 
     public void setBuildIn(Boolean buildIn) {
-        isBuildIn = buildIn;
+        this.buildIn = buildIn;
     }
 }

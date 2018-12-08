@@ -25,14 +25,14 @@
 
     <insert id="save" parameterType="IsuStatus" useGeneratedKeys="true" keyProperty="id">
         insert into IsuStatus
-        (label,value,descr,orgId,ordr,isDefault,isFinal,deleted,disabled,createTime)
+        (label,value,descr,orgId,ordr,defaultVal,finalVal,deleted,disabled,createTime)
         values
-        (#{label},#{value},#{descr},#{orgId},#{ordr},#{isDefault},#{isFinal},FALSE,FALSE,NOW())
+        (#{label},#{value},#{descr},#{orgId},#{ordr},#{defaultVal},#{finalVal},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="IsuStatus">
         UPDATE IsuStatus
-        SET label=#{label},value=#{value},descr=#{descr},isFinal=#{isFinal},
+        SET label=#{label},value=#{value},descr=#{descr},finalVal=#{finalVal},
         disabled=#{disabled},
         updateTime=NOW()
 
@@ -47,12 +47,12 @@
 
     <update id="removeDefault">
         UPDATE IsuStatus
-        SET isDefault=FALSE, updateTime=NOW()
+        SET defaultVal=FALSE, updateTime=NOW()
         WHERE orgId=#{orgId}
     </update>
     <update id="setDefault">
         UPDATE IsuStatus
-        SET isDefault=TRUE, updateTime=NOW()
+        SET defaultVal=TRUE, updateTime=NOW()
         WHERE id=#{id} AND orgId=#{orgId}
     </update>
 

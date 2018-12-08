@@ -7,8 +7,8 @@ public class IsuStatusCategory extends BaseModel {
 	private String code;
     private String descr;
     private Integer displayOrder;
-    private Boolean isFinal;
-    private Boolean isBuildIn = false;
+    private Boolean finalVal;
+    private Boolean buildIn = false;
     private Integer orgId;
 
 	public String getLabel() {
@@ -28,19 +28,19 @@ public class IsuStatusCategory extends BaseModel {
 	}
 
 	public Boolean getFinal() {
-		return isFinal;
+		return finalVal;
 	}
 
 	public void setFinal(Boolean aFinal) {
-		isFinal = aFinal;
+		finalVal = aFinal;
 	}
 
 	public Boolean getBuildIn() {
-		return isBuildIn;
+		return buildIn;
 	}
 
 	public void setBuildIn(Boolean buildIn) {
-		isBuildIn = buildIn;
+    this.buildIn = buildIn;
 	}
 
 	public String getDescr() {
@@ -54,18 +54,6 @@ public class IsuStatusCategory extends BaseModel {
 	}
 	public void setDisplayOrder(Integer displayOrder) {
 		this.displayOrder = displayOrder;
-	}
-	public Boolean getIsFinal() {
-		return isFinal;
-	}
-	public void setIsFinal(Boolean isFinal) {
-		this.isFinal = isFinal;
-	}
-	public Boolean getIsBuildIn() {
-		return isBuildIn;
-	}
-	public void setIsBuildIn(Boolean isBuildIn) {
-		this.isBuildIn = isBuildIn;
 	}
 	public Integer getOrgId() {
 		return orgId;

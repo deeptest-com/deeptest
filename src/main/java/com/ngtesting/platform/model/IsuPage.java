@@ -8,8 +8,8 @@ public class IsuPage extends BaseModel {
 
     private String name;
     private Integer orgId;
-    private Boolean isDefault = false;
-    private Boolean isBuildIn = false;
+    private Boolean defaultVal = false;
+    private Boolean buildIn = false;
 
     List<IsuPageElement> elements = new LinkedList();
 
@@ -37,19 +37,19 @@ public class IsuPage extends BaseModel {
         this.elements = elements;
     }
 
-    public Boolean getDefault() {
-        return isDefault;
+    public Boolean getDefaultVal() {
+        return defaultVal;
     }
 
-    public void setDefault(Boolean aDefault) {
-        isDefault = aDefault;
+    public void setDefaultVal(Boolean aDefault) {
+        defaultVal = aDefault;
     }
 
     public Boolean getBuildIn() {
-        return isBuildIn;
+        return buildIn;
     }
 
     public void setBuildIn(Boolean buildIn) {
-        isBuildIn = buildIn;
+      this.buildIn = buildIn;
     }
 }

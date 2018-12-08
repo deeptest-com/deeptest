@@ -6,8 +6,8 @@ public class IsuPageSolution extends BaseModel {
     private String name;
     private Integer orgId;
 
-    private Boolean isDefault = false;
-    private Boolean isBuildIn = false;
+    private Boolean defaultVal = false;
+    private Boolean buildIn = false;
 
     public String getName() {
         return name;
@@ -25,19 +25,19 @@ public class IsuPageSolution extends BaseModel {
         this.orgId = orgId;
     }
 
-    public Boolean getDefault() {
-        return isDefault;
+    public Boolean getDefaultVal() {
+        return defaultVal;
     }
 
-    public void setDefault(Boolean aDefault) {
-        isDefault = aDefault;
+    public void setDefaultVal(Boolean aDefault) {
+        defaultVal = aDefault;
     }
 
     public Boolean getBuildIn() {
-        return isBuildIn;
+        return buildIn;
     }
 
     public void setBuildIn(Boolean buildIn) {
-        isBuildIn = buildIn;
+        this.buildIn = buildIn;
     }
 }

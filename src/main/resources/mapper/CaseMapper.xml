@@ -2,14 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.CaseDao" >
 
-    <insert id="create" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
-        insert into TstCase (name,type,priority,contentType,estimate,pId,projectId,createById,isLeaf,ordr,
-        deleted,disabled,createTime)
-
-        values (#{name},#{type},#{priority},#{contentType},#{estimate},#{pId},#{projectId},#{createById},#{isLeaf},#{ordr},
-        #{deleted},#{disabled},#{createTime})
-    </insert>
-
     <select id="query" resultType="TstCase">
         SELECT * FROM TstCase o
 
@@ -17,6 +9,23 @@
          AND o.deleted != TRUE  AND o.disabled != TRUE
 
         ORDER BY o.pId, o.ordr
+    </select>
+
+    <select id="queryCaseWithStepInfoByPrj" resultMap="queryCaseWithStepInfoByPrjMap">
+        SELECT
+	        o.id,o.name,o.typeId,o.priorityId,o.isLeaf,o.pId,
+	        s.ordr,s.opt,s.expect,s.caseId,  t.typeName, p.priorityName
+        FROM
+            TstCase o
+        LEFT JOIN TstCaseStep s ON o.id = s.caseId
+        LEFT JOIN TstCaseType t ON o.typeId = t.id
+        LEFT JOIN TstCasePriority p ON o.priorityId = p.id
+
+        WHERE
+            o.projectId =#{projectId}
+        AND o.deleted != TRUE
+        AND o.disabled != TRUE
+        ORDER BY o.pId, o.ordr,s.ordr;
     </select>
 
     <select id="get" resultType="TstCase">
@@ -35,13 +44,21 @@
         </if>
     </select>
 
+    <insert id="create" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
+        insert into TstCase (name,typeId,priorityId,contentType,estimate,pId,projectId,createById,isLeaf,ordr,
+          deleted,disabled,createTime)
+
+        values (#{name},#{typeId},#{priorityId},#{contentType},#{estimate},#{pId},#{projectId},#{createById},#{isLeaf},#{ordr},
+          #{deleted},#{disabled},#{createTime})
+    </insert>
+
     <insert id="renameNew" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
         insert into TstCase
-        (name,priority,type,contentType,estimate,isLeaf,ordr,pId,
+        (name,priorityId,typeId,contentType,estimate,isLeaf,ordr,pId,
             projectId,createById,
             createTime,deleted,disabled)
         values
-          (#{name},#{priority},#{type},#{contentType},#{estimate},#{isLeaf},#{ordr},#{pId},
+          (#{name},#{priorityId},#{typeId},#{contentType},#{estimate},#{isLeaf},#{ordr},#{pId},
               #{projectId},#{createById},
               NOW(),FALSE,FALSE)
     </insert>
@@ -53,7 +70,7 @@
 
     <update id="update">
        UPDATE TstCase
-        SET name=#{obj.name},priority=#{obj.priority},type=#{obj.type},
+        SET name=#{obj.name},priorityId=#{obj.priorityId},typeId=#{obj.typeId},
             contentType=#{obj.contentType},content=#{obj.content},
             estimate=#{obj.estimate},objective=#{obj.objective},
             updateById=#{obj.updateById},updateTime=NOW(),
@@ -63,6 +80,14 @@
             </foreach>
 
         WHERE id=#{obj.id} AND projectId=#{projectId}
+    </update>
+
+    <update id="setDefaultVal">
+        UPDATE TstCase
+        SET priorityId=(select id from TstCasePriority where value='medium' and orgId=#{orgId}),
+            typeId=(select id from TstCaseType where value='functional' and orgId=#{orgId})
+
+        WHERE id=#{id}
     </update>
 
     <update id="delete">
@@ -95,11 +120,11 @@
     </update>
     <insert id="moveCopy" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
         insert into TstCase
-        (name,priority,type,contentType,estimate,isLeaf,ordr,pId,
+        (name,priorityId,typeId,contentType,estimate,isLeaf,ordr,pId,
         projectId,createById,
         createTime,updateTime,deleted,disabled)
         values
-        (#{name},#{priority},#{type},#{contentType},#{estimate},#{isLeaf},#{ordr},#{pId},
+        (#{name},#{priorityId},#{typeId},#{contentType},#{estimate},#{isLeaf},#{ordr},#{pId},
         #{projectId},#{createById},
         NOW(),NULL,FALSE,FALSE)
     </insert>
@@ -172,18 +197,4 @@
             <result column="caseId" property="caseId" jdbcType="INTEGER" />
         </collection>
     </resultMap>
-
-    <select id="queryCaseWithStepInfoByPrj" resultMap="queryCaseWithStepInfoByPrjMap">
-        SELECT
-	        o.id,o.name,o.type,o.isLeaf,o.pId,
-	        s.ordr,s.opt,s.expect,s.caseId
-        FROM
-            TstCase o
-        LEFT JOIN TstCaseStep s ON o.id = s.caseId
-        WHERE
-            o.projectId =#{projectId}
-        AND o.deleted != TRUE
-        AND o.disabled != TRUE
-        ORDER BY o.pId, o.ordr,s.ordr;
-    </select>
 </mapper>

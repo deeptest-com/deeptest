@@ -26,54 +26,55 @@ public class CasePropertyServiceImpl extends BaseServiceImpl implements CaseProp
 
 	@Autowired
     CaseExeStatusDao caseExeStatusDao;
+
     @Autowired
     CustomFieldDao customFieldDao;
 
 	@Override
 	public Map<String,Map<String,String>> getMap(Integer orgId) {
-		Map<String,String> typeMap = getTypeMap(orgId);
-		Map<String,String> priorityMap = getPriorityMap(orgId);
-		Map<String,String> exeStatusMap = getExeStatusMap(orgId);
+		Map<Integer,String> typeMap = getTypeMap(orgId);
+		Map<Integer,String> priorityMap = getPriorityMap(orgId);
+//		Map<Integer,String> exeStatusMap = getExeStatusMap(orgId);
 
 		Map map = new LinkedHashMap();
 		map.put("type", typeMap);
 		map.put("priority", priorityMap);
-		map.put("status", exeStatusMap);
+//		map.put("status", exeStatusMap);
 
 		return map;
 	}
 
 	@Override
-	public Map<String,String> getPriorityMap(Integer orgId) {
+	public Map<Integer,String> getTypeMap(Integer orgId) {
+		List<TstCaseType> ls = caseTypeDao.list(orgId);
+		Map<Integer,String> map = new LinkedHashMap();
+		for (TstCaseType item : ls) {
+			map.put(item.getId(), item.getLabel());
+		}
+
+		return map;
+	}
+
+	@Override
+	public Map<Integer,String> getPriorityMap(Integer orgId) {
         List<TstCasePriority> ls = casePriorityDao.list(orgId);
 
-        Map<String,String> map = new LinkedHashMap();
+        Map<Integer,String> map = new LinkedHashMap();
 		for (TstCasePriority item : ls) {
-			map.put(item.getValue(), item.getLabel());
+			map.put(item.getId(), item.getLabel());
 		}
 
 		return map;
 	}
 
-	@Override
-	public Map<String,String> getTypeMap(Integer orgId) {
-        List<TstCaseType> ls = caseTypeDao.list(orgId);
-        Map<String,String> map = new LinkedHashMap();
-		for (TstCaseType item : ls) {
-			map.put(item.getValue(), item.getLabel());
-		}
-
-		return map;
-	}
-
-	@Override
-	public Map<String,String> getExeStatusMap(Integer orgId) {
-        List<TstCaseExeStatus> ls = caseExeStatusDao.listExeStatus(orgId);
-        Map<String,String> map = new LinkedHashMap();
-		for (TstCaseExeStatus item : ls) {
-			map.put(item.getValue(), item.getLabel());
-		}
-
-		return map;
-	}
+//	@Override
+//	public Map<Integer,String> getExeStatusMap(Integer orgId) {
+//        List<TstCaseExeStatus> ls = caseExeStatusDao.listExeStatus(orgId);
+//        Map<Integer,String> map = new LinkedHashMap();
+//		for (TstCaseExeStatus item : ls) {
+//			map.put(item.getId(), item.getLabel());
+//		}
+//
+//		return map;
+//	}
 }

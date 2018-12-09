@@ -154,8 +154,8 @@ public class CaseExportServiceImpl extends BaseServiceImpl implements CaseExport
         titleCell.setCellValue(testCase.getName());
 
         if (testCase.getLeaf()) {
-            typeCell.setCellValue(testCase.getType());
-            priorityCell.setCellValue(testCase.getPriority());
+            typeCell.setCellValue(testCase.getTypeName());
+            priorityCell.setCellValue(testCase.getPriorityName());
             estimateCell.setCellValue(testCase.getEstimate() == null ? "" : testCase.getEstimate().toString());
             objectiveCell.setCellValue(testCase.getObjective());
         }

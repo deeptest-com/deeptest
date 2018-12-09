@@ -118,6 +118,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
         if (isNew) {
             caseDao.renameNew(po);
+            caseDao.setDefaultVal(po.getId(), user.getDefaultOrgId());
             caseDao.updateParentIfNeeded(po.getpId());
         } else {
             caseDao.renameUpdate(po);
@@ -303,6 +304,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         root.setOrdr(0);
 
         caseDao.create(root);
+        caseDao.setDefaultVal(root.getId(), user.getDefaultOrgId());
 
         TstCase testCase = new TstCase();
         testCase.setName("新特性");
@@ -313,6 +315,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         testCase.setLeaf(false);
         testCase.setOrdr(0);
         caseDao.create(testCase);
+        caseDao.setDefaultVal(testCase.getId(), user.getDefaultOrgId());
         caseHistoryService.saveHistory(user, Constant.CaseAct.create, testCase,null);
 
         TstCase testCase2 = new TstCase();
@@ -324,6 +327,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         testCase2.setLeaf(true);
         testCase2.setOrdr(0);
         caseDao.create(testCase2);
+        caseDao.setDefaultVal(testCase2.getpId(), user.getDefaultOrgId());
 
         caseHistoryService.saveHistory(user, Constant.CaseAct.create, testCase2,null);
     }

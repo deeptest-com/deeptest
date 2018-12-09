@@ -58,4 +58,6 @@ public interface CaseDao {
                               @Param("targetPid") Integer targetPid);
 
 
+    Integer setDefaultVal(@Param("id") Integer id,
+                          @Param("orgId") Integer orgId);
 }

@@ -31,7 +31,8 @@ public interface CaseService extends BaseService {
 	void createSample(Integer projectId, TstUser user);
 	boolean cloneStepsAndChildrenPers(TstCase testcase, TstCase src);
 	void loadNodeTree(TstCase po);
-	Integer getChildMaxOrderNumb(Integer parentId);
+
+    Integer getChildMaxOrderNumb(Integer parentId);
 
 	void genVos(List<TstCase> pos, List<Integer> selectIds);
 

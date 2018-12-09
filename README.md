@@ -11,8 +11,6 @@ AngularJS, SockJS, SpringBoot, MyBatis, MySQL
 1. Install docker and docker-compose;
 2. Download file from https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/docker-compose.yml ;
 3. In same dir, enter "docker-compose up" to launch.
-   
-   **Once you create and start containers by using "docker-compose up" command, next time you should use "docker-compose start|stop" to avoid to docker-compose re-creating the container after the remote image changed, which will cause data-losing.**
 4. Open http://localhost:58080/test.html using Chrome.
 
 ### Use Java Jar

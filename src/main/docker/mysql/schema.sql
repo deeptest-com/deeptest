@@ -11,7 +11,7 @@
  Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 12/08/2018 22:56:49 PM
+ Date: 12/09/2018 15:11:17 PM
 */
 
 SET NAMES utf8mb4;
@@ -44,13 +44,13 @@ CREATE TABLE `CustomField` (
   PRIMARY KEY (`id`),
   KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`orgId`),
   CONSTRAINT `customfield_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `CustomField`
 -- ----------------------------
 BEGIN;
-INSERT INTO `CustomField` VALUES ('75', 'prop01', '严重级别', 'integer', 'dropdown', null, 'issue', null, b'0', b'0', b'0', '1', null, null, '51', '2018-12-08 22:11:32', null, b'0', b'0');
+INSERT INTO `CustomField` VALUES ('75', 'prop01', '严重级别', 'integer', 'dropdown', null, 'issue', null, b'0', b'0', b'0', '1', null, null, '51', '2018-12-08 22:11:32', null, b'0', b'0'), ('76', 'prop01', '严重级别', 'integer', 'dropdown', null, 'issue', null, b'0', b'0', b'0', '1', null, null, '52', '2018-12-09 13:03:10', null, b'0', b'0');
 COMMIT;
 
 -- ----------------------------
@@ -94,7 +94,7 @@ CREATE TABLE `CustomFieldInputTypeRelation` (
   `inputValue` varchar(255) DEFAULT NULL,
   `typeValue` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `CustomFieldIputDefine`
@@ -139,13 +139,13 @@ CREATE TABLE `CustomFieldOption` (
   PRIMARY KEY (`id`),
   KEY `FK_1yiovndo2my1nj8ub95o8yp6` (`fieldId`),
   CONSTRAINT `fk_isucustomfieldoption_ibfk_1` FOREIGN KEY (`fieldId`) REFERENCES `CustomField` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=226 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=231 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `CustomFieldOption`
 -- ----------------------------
 BEGIN;
-INSERT INTO `CustomFieldOption` VALUES ('219', '阻塞', 'block', null, '1', b'0', b'1', '75', b'0', b'0', '2018-12-08 22:11:32', null), ('220', '紧急', 'critical', null, '2', b'0', b'1', '75', b'0', b'0', '2018-12-08 22:11:32', null), ('221', '重要', 'major', null, '3', b'0', b'1', '75', b'0', b'0', '2018-12-08 22:11:32', null), ('222', '一般', 'normal', null, '4', b'1', b'1', '75', b'0', b'0', '2018-12-08 22:11:32', null), ('223', '细微', 'minor', null, '5', b'0', b'1', '75', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `CustomFieldOption` VALUES ('219', '阻塞', 'block', null, '1', b'0', b'1', '75', b'0', b'0', '2018-12-08 22:11:32', null), ('220', '紧急', 'critical', null, '2', b'0', b'1', '75', b'0', b'0', '2018-12-08 22:11:32', null), ('221', '重要', 'major', null, '3', b'0', b'1', '75', b'0', b'0', '2018-12-08 22:11:32', null), ('222', '一般', 'normal', null, '4', b'1', b'1', '75', b'0', b'0', '2018-12-08 22:11:32', null), ('223', '细微', 'minor', null, '5', b'0', b'1', '75', b'0', b'0', '2018-12-08 22:11:32', null), ('224', '阻塞', 'block', null, '1', b'0', b'1', '76', b'0', b'0', '2018-12-09 13:03:10', null), ('225', '紧急', 'critical', null, '2', b'0', b'1', '76', b'0', b'0', '2018-12-09 13:03:10', null), ('226', '重要', 'major', null, '3', b'0', b'1', '76', b'0', b'0', '2018-12-09 13:03:10', null), ('227', '一般', 'normal', null, '4', b'1', b'1', '76', b'0', b'0', '2018-12-09 13:03:10', null), ('228', '细微', 'minor', null, '5', b'0', b'1', '76', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -357,13 +357,13 @@ CREATE TABLE `IsuField` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=805 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=819 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuField`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuField` VALUES ('790', 'title', '标题', 'string', 'text', b'1', b'1', null, null, null, null, b'1', '10100', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('791', 'typeId', '类型', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10200', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('792', 'statusId', '状态', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '10300', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('793', 'priorityId', '优先级', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10400', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('794', 'assigneeId', '经办人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10500', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('795', 'creatorId', '创建人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '11200', b'1', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('796', 'reporterId', '报告人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '10800', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('797', 'verId', '版本', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10600', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('798', 'envId', '环境', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10700', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('799', 'resolutionId', '解决结果', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '11000', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('800', 'dueTime', '截止时间', 'date', 'date', b'0', b'0', null, null, null, null, b'0', '10900', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('801', 'resolveTime', '解决时间', 'date', 'date', b'0', b'0', null, null, null, null, b'0', '11100', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('802', 'comments', '注释', 'string', 'textarea', b'1', b'0', null, null, null, null, b'0', '11900', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('803', 'resolutionDescr', '解决详情', 'string', 'textarea', b'0', b'0', null, null, null, null, b'0', '20000', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `IsuField` VALUES ('790', 'title', '标题', 'string', 'text', b'1', b'1', null, null, null, null, b'1', '10100', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('791', 'typeId', '类型', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10200', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('792', 'statusId', '状态', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '10300', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('793', 'priorityId', '优先级', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10400', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('794', 'assigneeId', '经办人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10500', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('795', 'creatorId', '创建人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '11200', b'1', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('796', 'reporterId', '报告人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '10800', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('797', 'verId', '版本', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10600', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('798', 'envId', '环境', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10700', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('799', 'resolutionId', '解决结果', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '11000', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('800', 'dueTime', '截止时间', 'date', 'date', b'0', b'0', null, null, null, null, b'0', '10900', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('801', 'resolveTime', '解决时间', 'date', 'date', b'0', b'0', null, null, null, null, b'0', '11100', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('802', 'comments', '注释', 'string', 'textarea', b'1', b'0', null, null, null, null, b'0', '11900', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('803', 'resolutionDescr', '解决详情', 'string', 'textarea', b'0', b'0', null, null, null, null, b'0', '20000', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('804', 'title', '标题', 'string', 'text', b'1', b'1', null, null, null, null, b'1', '10100', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('805', 'typeId', '类型', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10200', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('806', 'statusId', '状态', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '10300', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('807', 'priorityId', '优先级', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10400', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('808', 'assigneeId', '经办人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10500', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('809', 'creatorId', '创建人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '11200', b'1', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('810', 'reporterId', '报告人', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '10800', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('811', 'verId', '版本', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10600', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('812', 'envId', '环境', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'1', '10700', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('813', 'resolutionId', '解决结果', 'integer', 'dropdown', b'0', b'0', null, null, null, null, b'0', '11000', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('814', 'dueTime', '截止时间', 'date', 'date', b'0', b'0', null, null, null, null, b'0', '10900', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('815', 'resolveTime', '解决时间', 'date', 'date', b'0', b'0', null, null, null, null, b'0', '11100', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('816', 'comments', '注释', 'string', 'textarea', b'1', b'0', null, null, null, null, b'0', '11900', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('817', 'resolutionDescr', '解决详情', 'string', 'textarea', b'0', b'0', null, null, null, null, b'0', '20000', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -499,7 +499,7 @@ CREATE TABLE `IsuIssue` (
   PRIMARY KEY (`id`),
   KEY `FK_749574hr3f54gdlo4hrc6dquc` (`projectId`),
   CONSTRAINT `FK_749574hr3f54gdlo4hrc6dquc` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `IsuIssueExt`
@@ -644,13 +644,13 @@ CREATE TABLE `IsuPage` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `fk_isupage_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuPage`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuPage` VALUES ('87', '默认界面', null, '51', b'1', b'1', b'0', b'0', '2018-12-08 22:11:32', null), ('88', '默认问题解决界面', null, '51', b'0', b'1', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `IsuPage` VALUES ('87', '默认界面', null, '51', b'1', b'1', b'0', b'0', '2018-12-08 22:11:32', null), ('88', '默认问题解决界面', null, '51', b'0', b'1', b'0', b'0', '2018-12-08 22:11:32', null), ('89', '默认界面', null, '52', b'1', b'1', b'0', b'0', '2018-12-09 13:03:10', null), ('90', '默认问题解决界面', null, '52', b'0', b'1', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -679,13 +679,13 @@ CREATE TABLE `IsuPageElement` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `isupageelement_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=444 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=455 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuPageElement`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuPageElement` VALUES ('434', 'title', '标题', 'string', 'text', b'1', b'1', b'1', 'sys-790', '790', '87', '51', '10100', b'0', b'0', b'0', '2018-12-08 22:11:32', null), ('435', 'typeId', '类型', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-791', '791', '87', '51', '10200', b'0', b'0', b'0', '2018-12-08 22:11:32', null), ('436', 'priorityId', '优先级', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-793', '793', '87', '51', '10400', b'0', b'0', b'0', '2018-12-08 22:11:32', null), ('437', 'assigneeId', '经办人', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-794', '794', '87', '51', '10500', b'0', b'0', b'0', '2018-12-08 22:11:32', null), ('438', 'verId', '版本', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-797', '797', '87', '51', '10600', b'0', b'0', b'0', '2018-12-08 22:11:32', null), ('439', 'envId', '环境', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-798', '798', '87', '51', '10700', b'0', b'0', b'0', '2018-12-08 22:11:32', null), ('441', 'resolutionId', '解决结果', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-799', '799', '88', '51', '11000', b'0', b'0', b'0', '2018-12-08 22:11:32', null), ('442', 'resolutionDescr', '解决详情', 'string', 'textarea', b'0', b'0', b'1', 'sys-803', '803', '88', '51', '20000', b'0', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `IsuPageElement` VALUES ('434', 'title', '标题', 'string', 'text', b'1', b'1', b'1', 'sys-790', '790', '87', '51', '10100', b'0', b'0', b'0', '2018-12-08 22:11:32', null), ('435', 'typeId', '类型', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-791', '791', '87', '51', '10200', b'0', b'0', b'0', '2018-12-08 22:11:32', null), ('436', 'priorityId', '优先级', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-793', '793', '87', '51', '10400', b'0', b'0', b'0', '2018-12-08 22:11:32', null), ('437', 'assigneeId', '经办人', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-794', '794', '87', '51', '10500', b'0', b'0', b'0', '2018-12-08 22:11:32', null), ('438', 'verId', '版本', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-797', '797', '87', '51', '10600', b'0', b'0', b'0', '2018-12-08 22:11:32', null), ('439', 'envId', '环境', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-798', '798', '87', '51', '10700', b'0', b'0', b'0', '2018-12-08 22:11:32', null), ('441', 'resolutionId', '解决结果', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-799', '799', '88', '51', '3', b'0', b'0', b'0', '2018-12-08 22:11:32', null), ('442', 'resolutionDescr', '解决详情', 'string', 'textarea', b'0', b'0', b'1', 'sys-803', '803', '88', '51', '2', b'0', b'0', b'0', '2018-12-08 22:11:32', null), ('444', 'title', '标题', 'string', 'text', b'1', b'1', b'1', 'sys-790', '790', '88', '51', '1', b'0', b'0', b'0', '2018-12-08 23:15:54', null), ('445', 'title', '标题', 'string', 'text', b'1', b'1', b'1', 'sys-804', '804', '89', '52', '10100', b'0', b'0', b'0', '2018-12-09 13:03:10', null), ('446', 'typeId', '类型', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-805', '805', '89', '52', '10200', b'0', b'0', b'0', '2018-12-09 13:03:10', null), ('447', 'priorityId', '优先级', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-807', '807', '89', '52', '10400', b'0', b'0', b'0', '2018-12-09 13:03:10', null), ('448', 'assigneeId', '经办人', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-808', '808', '89', '52', '10500', b'0', b'0', b'0', '2018-12-09 13:03:10', null), ('449', 'verId', '版本', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-811', '811', '89', '52', '10600', b'0', b'0', b'0', '2018-12-09 13:03:10', null), ('450', 'envId', '环境', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-812', '812', '89', '52', '10700', b'0', b'0', b'0', '2018-12-09 13:03:10', null), ('452', 'resolutionId', '解决结果', 'integer', 'dropdown', b'0', b'0', b'1', 'sys-813', '813', '90', '52', '11000', b'0', b'0', b'0', '2018-12-09 13:03:10', null), ('453', 'resolutionDescr', '解决详情', 'string', 'textarea', b'0', b'0', b'1', 'sys-817', '817', '90', '52', '20000', b'0', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -706,13 +706,13 @@ CREATE TABLE `IsuPageSolution` (
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   CONSTRAINT `fk_isupagesolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuPageSolution`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuPageSolution` VALUES ('40', '默认界面方案', null, '51', null, null, b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `IsuPageSolution` VALUES ('40', '默认界面方案', null, '51', null, null, b'0', b'0', '2018-12-08 22:11:32', null), ('41', '默认界面方案', null, '52', null, null, b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -727,13 +727,13 @@ CREATE TABLE `IsuPageSolutionItem` (
   `solutionId` int(11) DEFAULT NULL,
   `orgId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=151 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=157 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuPageSolutionItem`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuPageSolutionItem` VALUES ('145', '220', 'create', '87', '40', '51'), ('146', '220', 'edit', '87', '40', '51'), ('147', '220', 'view', '87', '40', '51'), ('148', '221', 'create', '87', '40', '51'), ('149', '221', 'edit', '87', '40', '51'), ('150', '221', 'view', '87', '40', '51');
+INSERT INTO `IsuPageSolutionItem` VALUES ('145', '220', 'create', '87', '40', '51'), ('146', '220', 'edit', '87', '40', '51'), ('147', '220', 'view', '87', '40', '51'), ('148', '221', 'create', '87', '40', '51'), ('149', '221', 'edit', '87', '40', '51'), ('150', '221', 'view', '87', '40', '51'), ('151', '222', 'create', '89', '41', '52'), ('152', '222', 'edit', '89', '41', '52'), ('153', '222', 'view', '89', '41', '52'), ('154', '223', 'create', '89', '41', '52'), ('155', '223', 'edit', '89', '41', '52'), ('156', '223', 'view', '89', '41', '52');
 COMMIT;
 
 -- ----------------------------
@@ -756,13 +756,13 @@ CREATE TABLE `IsuPriority` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `fk_issu_priority_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=262 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=266 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuPriority`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuPriority` VALUES ('255', '紧急', 'urgent', null, b'0', b'1', '1', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('256', '高', 'high', null, b'0', b'1', '2', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('257', '中', 'medium', null, b'1', b'1', '3', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('258', '低', 'low', null, b'0', b'1', '4', '51', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `IsuPriority` VALUES ('255', '紧急', 'urgent', null, b'0', b'1', '1', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('256', '高', 'high', null, b'0', b'1', '2', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('257', '中', 'medium', null, b'1', b'1', '3', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('258', '低', 'low', null, b'0', b'1', '4', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('259', '紧急', 'urgent', null, b'0', b'1', '1', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('260', '高', 'high', null, b'0', b'1', '2', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('261', '中', 'medium', null, b'1', b'1', '3', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('262', '低', 'low', null, b'0', b'1', '4', '52', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -808,13 +808,13 @@ CREATE TABLE `IsuPrioritySolution` (
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   CONSTRAINT `fk_isuprioritysolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuPrioritySolution`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuPrioritySolution` VALUES ('19', '默认问题优先级方案', null, '51', b'1', b'1', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `IsuPrioritySolution` VALUES ('19', '默认问题优先级方案', null, '51', b'1', b'1', b'0', b'0', '2018-12-08 22:11:32', null), ('20', '默认问题优先级方案', null, '52', b'1', b'1', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -837,7 +837,7 @@ CREATE TABLE `IsuPrioritySolutionItem` (
 --  Records of `IsuPrioritySolutionItem`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuPrioritySolutionItem` VALUES ('255', '19', '51'), ('256', '19', '51'), ('257', '19', '51'), ('258', '19', '51');
+INSERT INTO `IsuPrioritySolutionItem` VALUES ('255', '19', '51'), ('256', '19', '51'), ('257', '19', '51'), ('258', '19', '51'), ('259', '20', '52'), ('260', '20', '52'), ('261', '20', '52'), ('262', '20', '52');
 COMMIT;
 
 -- ----------------------------
@@ -861,7 +861,7 @@ CREATE TABLE `IsuQuery` (
   PRIMARY KEY (`id`),
   KEY `FK_ajxhx3sfebovfyy5kcg74q88e` (`projectId`),
   CONSTRAINT `FK_ajxhx3sfebovfyy5kcg74q88e` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `IsuResolution`
@@ -883,13 +883,13 @@ CREATE TABLE `IsuResolution` (
   PRIMARY KEY (`id`),
   KEY `FK_jakioowaasj09sqr9d376dl9u` (`orgId`),
   CONSTRAINT `isuresolution_ibfk_2` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuResolution`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuResolution` VALUES ('16', '修复', 'fix', null, '1', null, b'1', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('17', '不是缺陷', 'fix', null, '1', null, b'1', '51', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `IsuResolution` VALUES ('16', '修复', 'fix', null, '1', null, b'1', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('17', '不是缺陷', 'fix', null, '1', null, b'1', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('18', '修复', 'fix', null, '1', null, b'1', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('19', '不是缺陷', 'fix', null, '1', null, b'1', '52', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -1026,13 +1026,13 @@ CREATE TABLE `IsuStatus` (
   KEY `isu_status_categoryid` (`categoryId`) USING BTREE,
   CONSTRAINT `fk_isu_status_categoryid` FOREIGN KEY (`categoryId`) REFERENCES `IsuStatusCategoryDefine` (`id`),
   CONSTRAINT `isustatus_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=217 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuStatus`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuStatus` VALUES ('205', '打开', 'open', null, '1', '51', '1', b'1', b'0', b'1', null, null, b'0', b'0', '2018-12-08 22:11:32', null), ('206', '解决', 'resolved', null, '2', '51', '2', b'0', b'0', b'1', null, null, b'0', b'0', '2018-12-08 22:11:32', null), ('207', '关闭', 'closed', null, '3', '51', '3', b'0', b'1', b'1', null, null, b'0', b'0', '2018-12-08 22:11:32', null), ('208', '重新打开', 'reopen', null, '4', '51', '1', b'0', b'0', b'1', null, null, b'0', b'0', '2018-12-08 22:11:32', null), ('209', '挂起', 'suspend', null, '5', '51', '3', b'0', b'1', b'1', null, null, b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `IsuStatus` VALUES ('205', '打开', 'open', null, '1', '51', '1', b'1', b'0', b'1', null, null, b'0', b'0', '2018-12-08 22:11:32', null), ('206', '解决', 'resolved', null, '2', '51', '2', b'0', b'0', b'1', null, null, b'0', b'0', '2018-12-08 22:11:32', null), ('207', '关闭', 'closed', null, '3', '51', '3', b'0', b'1', b'1', null, null, b'0', b'0', '2018-12-08 22:11:32', null), ('208', '重新打开', 'reopen', null, '4', '51', '1', b'0', b'0', b'1', null, null, b'0', b'0', '2018-12-08 22:11:32', null), ('209', '挂起', 'suspend', null, '5', '51', '3', b'0', b'1', b'1', null, null, b'0', b'0', '2018-12-08 22:11:32', null), ('210', '打开', 'open', null, '1', '52', '1', b'1', b'0', b'1', null, null, b'0', b'0', '2018-12-09 13:03:10', null), ('211', '解决', 'resolved', null, '2', '52', '2', b'0', b'0', b'1', null, null, b'0', b'0', '2018-12-09 13:03:10', null), ('212', '关闭', 'closed', null, '3', '52', '3', b'0', b'1', b'1', null, null, b'0', b'0', '2018-12-09 13:03:10', null), ('213', '重新打开', 'reopen', null, '4', '52', '1', b'0', b'0', b'1', null, null, b'0', b'0', '2018-12-09 13:03:10', null), ('214', '挂起', 'suspend', null, '5', '52', '3', b'0', b'1', b'1', null, null, b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -1108,13 +1108,13 @@ CREATE TABLE `IsuType` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `fk_isu_type_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=223 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=225 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuType`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuType` VALUES ('220', 'defect', '缺陷', null, '1', '51', b'1', b'1', b'0', b'0', '2018-12-08 22:11:32', null), ('221', 'todo', '待办事项', null, '2', '51', b'0', b'1', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `IsuType` VALUES ('220', 'defect', '缺陷', null, '1', '51', b'1', b'1', b'0', b'0', '2018-12-08 22:11:32', null), ('221', 'todo', '待办事项', null, '2', '51', b'0', b'1', b'0', b'0', '2018-12-08 22:11:32', null), ('222', 'defect', '缺陷', null, '1', '52', b'1', b'1', b'0', b'0', '2018-12-09 13:03:10', null), ('223', 'todo', '待办事项', null, '2', '52', b'0', b'1', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -1160,13 +1160,13 @@ CREATE TABLE `IsuTypeSolution` (
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   CONSTRAINT `fk_isutypesolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuTypeSolution`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuTypeSolution` VALUES ('33', '默认问题类型方案', null, '51', b'1', b'1', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `IsuTypeSolution` VALUES ('33', '默认问题类型方案', null, '51', b'1', b'1', b'0', b'0', '2018-12-08 22:11:32', null), ('34', '默认问题类型方案', null, '52', b'1', b'1', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -1189,7 +1189,7 @@ CREATE TABLE `IsuTypeSolutionItem` (
 --  Records of `IsuTypeSolutionItem`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuTypeSolutionItem` VALUES ('220', '33', '51'), ('221', '33', '51');
+INSERT INTO `IsuTypeSolutionItem` VALUES ('220', '33', '51'), ('221', '33', '51'), ('222', '34', '52'), ('223', '34', '52');
 COMMIT;
 
 -- ----------------------------
@@ -1210,13 +1210,13 @@ CREATE TABLE `IsuWorkflow` (
   PRIMARY KEY (`id`),
   KEY `FK_42yjv4ki9jm2ppkx819t2ega5` (`orgId`),
   CONSTRAINT `FK_42yjv4ki9jm2ppkx819t2ega5` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuWorkflow`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuWorkflow` VALUES ('21', '默认工作流', null, '1', b'1', '51', '2018-12-08 22:11:32', null, b'0', b'0');
+INSERT INTO `IsuWorkflow` VALUES ('21', '默认工作流', null, '1', b'1', '51', '2018-12-08 22:11:32', null, b'0', b'0'), ('22', '默认工作流', null, '1', b'1', '52', '2018-12-09 13:03:10', null, b'0', b'0');
 COMMIT;
 
 -- ----------------------------
@@ -1237,13 +1237,13 @@ CREATE TABLE `IsuWorkflowSolution` (
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   CONSTRAINT `isuworkflowsolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuWorkflowSolution`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuWorkflowSolution` VALUES ('10', '默认工作流方案', null, '51', b'1', b'1', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `IsuWorkflowSolution` VALUES ('10', '默认工作流方案', null, '51', b'1', b'1', b'0', b'0', '2018-12-08 22:11:32', null), ('11', '默认工作流方案', null, '52', b'1', b'1', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -1257,13 +1257,13 @@ CREATE TABLE `IsuWorkflowSolutionItem` (
   `solutionId` int(11) DEFAULT NULL,
   `orgId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuWorkflowSolutionItem`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuWorkflowSolutionItem` VALUES ('25', '220', '21', '10', '51'), ('26', '221', '21', '10', '51');
+INSERT INTO `IsuWorkflowSolutionItem` VALUES ('25', '220', '21', '10', '51'), ('26', '221', '21', '10', '51'), ('27', '222', '22', '11', '52'), ('28', '223', '22', '11', '52');
 COMMIT;
 
 -- ----------------------------
@@ -1282,13 +1282,13 @@ CREATE TABLE `IsuWorkflowStatusRelation` (
   CONSTRAINT `isuworkflowstatusrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
   CONSTRAINT `isuworkflowstatusrelation_ibfk_2` FOREIGN KEY (`workflowId`) REFERENCES `IsuWorkflow` (`id`),
   CONSTRAINT `isuworkflowstatusrelation_ibfk_3` FOREIGN KEY (`statusId`) REFERENCES `IsuStatus` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=137 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=142 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuWorkflowStatusRelation`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuWorkflowStatusRelation` VALUES ('130', '21', '205', '51'), ('131', '21', '206', '51'), ('132', '21', '207', '51'), ('133', '21', '208', '51'), ('134', '21', '209', '51');
+INSERT INTO `IsuWorkflowStatusRelation` VALUES ('130', '21', '205', '51'), ('131', '21', '206', '51'), ('132', '21', '207', '51'), ('133', '21', '208', '51'), ('134', '21', '209', '51'), ('135', '22', '210', '52'), ('136', '22', '211', '52'), ('137', '22', '212', '52'), ('138', '22', '213', '52'), ('139', '22', '214', '52');
 COMMIT;
 
 -- ----------------------------
@@ -1339,13 +1339,13 @@ CREATE TABLE `IsuWorkflowTransition` (
   CONSTRAINT `fk_isu_workflowtran_src` FOREIGN KEY (`srcStatusId`) REFERENCES `IsuStatus` (`id`),
   CONSTRAINT `isuworkflowtransition_ibfk_1` FOREIGN KEY (`dictStatusId`) REFERENCES `IsuStatus` (`id`),
   CONSTRAINT `isuworkflowtransition_ibfk_2` FOREIGN KEY (`actionPageId`) REFERENCES `IsuPage` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=242 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=251 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuWorkflowTransition`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuWorkflowTransition` VALUES ('227', '解决', '88', '205', '206', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null), ('228', '挂起', null, '205', '209', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null), ('229', '关闭', null, '205', '207', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null), ('230', '关闭', null, '206', '207', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null), ('231', '重新打开', null, '206', '208', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null), ('232', '挂起', null, '206', '209', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null), ('233', '解决', '88', '208', '206', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null), ('234', '关闭', null, '208', '207', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null), ('235', '重新打开', null, '209', '208', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `IsuWorkflowTransition` VALUES ('227', '解决', '88', '205', '206', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null), ('228', '挂起', null, '205', '209', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null), ('229', '关闭', null, '205', '207', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null), ('230', '关闭', null, '206', '207', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null), ('231', '重新打开', null, '206', '208', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null), ('232', '挂起', null, '206', '209', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null), ('233', '解决', '88', '208', '206', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null), ('234', '关闭', null, '208', '207', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null), ('235', '重新打开', null, '209', '208', '51', null, '21', b'0', b'0', '2018-12-08 22:11:32', null), ('236', '解决', '90', '210', '211', '52', null, '22', b'0', b'0', '2018-12-09 13:03:10', null), ('237', '挂起', null, '210', '214', '52', null, '22', b'0', b'0', '2018-12-09 13:03:10', null), ('238', '关闭', null, '210', '212', '52', null, '22', b'0', b'0', '2018-12-09 13:03:10', null), ('239', '关闭', null, '211', '212', '52', null, '22', b'0', b'0', '2018-12-09 13:03:10', null), ('240', '重新打开', null, '211', '213', '52', null, '22', b'0', b'0', '2018-12-09 13:03:10', null), ('241', '挂起', null, '211', '214', '52', null, '22', b'0', b'0', '2018-12-09 13:03:10', null), ('242', '解决', '90', '213', '211', '52', null, '22', b'0', b'0', '2018-12-09 13:03:10', null), ('243', '关闭', null, '213', '212', '52', null, '22', b'0', b'0', '2018-12-09 13:03:10', null), ('244', '重新打开', null, '214', '213', '52', null, '22', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -1398,13 +1398,13 @@ CREATE TABLE `IsuWorkflowTransitionProjectRoleRelation` (
   CONSTRAINT `isuworkflowtransitionprojectrolerelation_ibfk_2` FOREIGN KEY (`workflowId`) REFERENCES `IsuWorkflow` (`id`),
   CONSTRAINT `isuworkflowtransitionprojectrolerelation_ibfk_4` FOREIGN KEY (`workflowTransitionId`) REFERENCES `IsuWorkflowTransition` (`id`),
   CONSTRAINT `isuworkflowtransitionprojectrolerelation_ibfk_5` FOREIGN KEY (`projectRoleId`) REFERENCES `TstProjectRole` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=767 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=803 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `IsuWorkflowTransitionProjectRoleRelation`
 -- ----------------------------
 BEGIN;
-INSERT INTO `IsuWorkflowTransitionProjectRoleRelation` VALUES ('704', '21', '227', '345', '51'), ('705', '21', '227', '346', '51'), ('706', '21', '227', '347', '51'), ('707', '21', '227', '348', '51'), ('708', '21', '228', '345', '51'), ('709', '21', '228', '346', '51'), ('710', '21', '228', '347', '51'), ('711', '21', '228', '348', '51'), ('712', '21', '229', '345', '51'), ('713', '21', '229', '346', '51'), ('714', '21', '229', '347', '51'), ('715', '21', '229', '348', '51'), ('716', '21', '230', '345', '51'), ('717', '21', '230', '346', '51'), ('718', '21', '230', '347', '51'), ('719', '21', '230', '348', '51'), ('720', '21', '231', '345', '51'), ('721', '21', '231', '346', '51'), ('722', '21', '231', '347', '51'), ('723', '21', '231', '348', '51'), ('724', '21', '232', '345', '51'), ('725', '21', '232', '346', '51'), ('726', '21', '232', '347', '51'), ('727', '21', '232', '348', '51'), ('728', '21', '233', '345', '51'), ('729', '21', '233', '346', '51'), ('730', '21', '233', '347', '51'), ('731', '21', '233', '348', '51'), ('732', '21', '234', '345', '51'), ('733', '21', '234', '346', '51'), ('734', '21', '234', '347', '51'), ('735', '21', '234', '348', '51'), ('736', '21', '235', '345', '51'), ('737', '21', '235', '346', '51'), ('738', '21', '235', '347', '51'), ('739', '21', '235', '348', '51');
+INSERT INTO `IsuWorkflowTransitionProjectRoleRelation` VALUES ('704', '21', '227', '345', '51'), ('705', '21', '227', '346', '51'), ('706', '21', '227', '347', '51'), ('707', '21', '227', '348', '51'), ('708', '21', '228', '345', '51'), ('709', '21', '228', '346', '51'), ('710', '21', '228', '347', '51'), ('711', '21', '228', '348', '51'), ('712', '21', '229', '345', '51'), ('713', '21', '229', '346', '51'), ('714', '21', '229', '347', '51'), ('715', '21', '229', '348', '51'), ('716', '21', '230', '345', '51'), ('717', '21', '230', '346', '51'), ('718', '21', '230', '347', '51'), ('719', '21', '230', '348', '51'), ('720', '21', '231', '345', '51'), ('721', '21', '231', '346', '51'), ('722', '21', '231', '347', '51'), ('723', '21', '231', '348', '51'), ('724', '21', '232', '345', '51'), ('725', '21', '232', '346', '51'), ('726', '21', '232', '347', '51'), ('727', '21', '232', '348', '51'), ('728', '21', '233', '345', '51'), ('729', '21', '233', '346', '51'), ('730', '21', '233', '347', '51'), ('731', '21', '233', '348', '51'), ('732', '21', '234', '345', '51'), ('733', '21', '234', '346', '51'), ('734', '21', '234', '347', '51'), ('735', '21', '234', '348', '51'), ('736', '21', '235', '345', '51'), ('737', '21', '235', '346', '51'), ('738', '21', '235', '347', '51'), ('739', '21', '235', '348', '51'), ('740', '22', '236', '349', '52'), ('741', '22', '236', '350', '52'), ('742', '22', '236', '351', '52'), ('743', '22', '236', '352', '52'), ('744', '22', '237', '349', '52'), ('745', '22', '237', '350', '52'), ('746', '22', '237', '351', '52'), ('747', '22', '237', '352', '52'), ('748', '22', '238', '349', '52'), ('749', '22', '238', '350', '52'), ('750', '22', '238', '351', '52'), ('751', '22', '238', '352', '52'), ('752', '22', '239', '349', '52'), ('753', '22', '239', '350', '52'), ('754', '22', '239', '351', '52'), ('755', '22', '239', '352', '52'), ('756', '22', '240', '349', '52'), ('757', '22', '240', '350', '52'), ('758', '22', '240', '351', '52'), ('759', '22', '240', '352', '52'), ('760', '22', '241', '349', '52'), ('761', '22', '241', '350', '52'), ('762', '22', '241', '351', '52'), ('763', '22', '241', '352', '52'), ('764', '22', '242', '349', '52'), ('765', '22', '242', '350', '52'), ('766', '22', '242', '351', '52'), ('767', '22', '242', '352', '52'), ('768', '22', '243', '349', '52'), ('769', '22', '243', '350', '52'), ('770', '22', '243', '351', '52'), ('771', '22', '243', '352', '52'), ('772', '22', '244', '349', '52'), ('773', '22', '244', '350', '52'), ('774', '22', '244', '351', '52'), ('775', '22', '244', '352', '52');
 COMMIT;
 
 -- ----------------------------
@@ -1540,7 +1540,14 @@ CREATE TABLE `TstAlert` (
   KEY `FK_b4fbqud01ub7bqahljyyux0ss` (`userId`),
   CONSTRAINT `FK_b4fbqud01ub7bqahljyyux0ss` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_r8m7ykej6x9fpp4d52sq3y8x8` FOREIGN KEY (`assigneeId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstAlert`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstAlert` VALUES ('1', 'Task01', null, 'task', null, null, null, '1', null, b'0', b'0', '55', '55', b'0', b'0', '2018-12-09 13:04:47', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstCase`
@@ -1556,8 +1563,8 @@ CREATE TABLE `TstCase` (
   `pId` int(11) DEFAULT NULL,
   `isLeaf` bit(1) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
-  `type` varchar(255) DEFAULT NULL,
-  `priority` varchar(255) DEFAULT NULL,
+  `priorityId` int(11) DEFAULT NULL,
+  `typeId` int(11) DEFAULT NULL,
   `reviewResult` bit(1) DEFAULT NULL,
   `projectId` int(11) DEFAULT NULL,
   `createById` int(11) DEFAULT NULL,
@@ -1590,16 +1597,20 @@ CREATE TABLE `TstCase` (
   KEY `FK_4paqpejxxg65icpu7asf9btow` (`createById`),
   KEY `FK_le8suo2xxbcr036yaiivwkqn0` (`projectId`),
   KEY `FK_f3mtkmff26truvxmm897u8oeu` (`updateById`),
+  KEY `typeId` (`typeId`),
+  KEY `priorityId` (`priorityId`),
   CONSTRAINT `FK_4paqpejxxg65icpu7asf9btow` FOREIGN KEY (`createById`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_f3mtkmff26truvxmm897u8oeu` FOREIGN KEY (`updateById`) REFERENCES `TstUser` (`id`),
-  CONSTRAINT `FK_le8suo2xxbcr036yaiivwkqn0` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=281 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  CONSTRAINT `FK_le8suo2xxbcr036yaiivwkqn0` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
+  CONSTRAINT `tstcase_ibfk_1` FOREIGN KEY (`typeId`) REFERENCES `TstCaseType` (`id`),
+  CONSTRAINT `tstcase_ibfk_2` FOREIGN KEY (`priorityId`) REFERENCES `TstCasePriority` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=292 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstCase`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstCase` VALUES ('278', '测试用例', null, null, 'steps', '10', null, b'0', '0', 'functional', 'medium', null, '518', '54', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-12-08 22:11:32', null), ('279', '新特性', null, null, 'steps', '10', '278', b'0', '0', 'functional', 'medium', null, '518', '54', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-12-08 22:11:32', null), ('280', '新用例', null, null, 'steps', '10', '279', b'1', '0', 'functional', 'medium', null, '518', '54', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `TstCase` VALUES ('278', '测试用例', null, null, 'steps', '10', null, b'0', '0', null, null, null, '518', '54', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-12-08 22:11:32', null), ('279', '新特性', null, null, 'steps', '10', '278', b'0', '0', '262', '605', null, '518', '54', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-12-08 22:11:32', null), ('280', '新用例', null, null, 'steps', '10', '279', b'1', '0', null, null, null, '518', '54', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-12-08 22:11:32', null), ('281', '新用例2', null, null, 'steps', '10', '279', b'1', '1', '262', '606', null, '518', '54', '54', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'1', '2018-12-09 12:31:03', '2018-12-09 12:31:27'), ('282', '新用例3', null, null, 'steps', '10', '279', b'1', '2', null, null, null, '518', '54', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'1', '2018-12-09 12:32:32', null), ('284', '新用例5', null, null, 'steps', '10', '279', b'1', '3', null, null, null, '518', '54', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'1', '2018-12-09 12:51:11', null), ('285', '新用例2', null, null, 'steps', '10', '279', b'1', '1', null, null, null, '518', '54', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-12-09 12:51:57', null), ('286', '新用例3', null, null, 'steps', '10', '279', b'1', '2', null, null, null, '518', '54', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-12-09 12:57:58', null), ('287', '新用例4', null, null, 'steps', '10', '279', b'1', '3', null, null, null, '518', '54', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-12-09 13:01:35', null), ('288', '新用例5', null, null, 'steps', '10', '279', b'1', '4', '262', '605', null, '518', '54', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-12-09 13:02:18', null), ('289', '测试用例', null, null, 'steps', '10', null, b'0', '0', '265', '612', null, '520', '55', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-12-09 13:03:10', null), ('290', '新特性', null, null, 'steps', '10', '289', b'0', '0', '265', '612', null, '520', '55', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-12-09 13:03:10', null), ('291', '新用例', null, null, 'steps', '10', '290', b'1', '0', '265', '612', null, '520', '55', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -1645,7 +1656,7 @@ CREATE TABLE `TstCaseComments` (
   KEY `FK_d4d1t72y6wkb41bbpkdrk26sv` (`userId`),
   CONSTRAINT `FK_d4d1t72y6wkb41bbpkdrk26sv` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_f1r5t3p8vgi1iiq2v0wle7erj` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCaseExeStatus`
@@ -1667,13 +1678,13 @@ CREATE TABLE `TstCaseExeStatus` (
   PRIMARY KEY (`id`),
   KEY `FK_o4l4xg65y069b0ai5cgbfm175` (`orgid`),
   CONSTRAINT `FK_o4l4xg65y069b0ai5cgbfm175` FOREIGN KEY (`orgid`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=349 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=353 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstCaseExeStatus`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstCaseExeStatus` VALUES ('345', 'untest', '未执行', null, '10', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('346', 'pass', '成功', null, '20', b'0', b'1', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('347', 'fail', '失败', null, '30', b'0', b'1', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('348', 'block', '阻塞', null, '40', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `TstCaseExeStatus` VALUES ('345', 'untest', '未执行', null, '10', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('346', 'pass', '成功', null, '20', b'0', b'1', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('347', 'fail', '失败', null, '30', b'0', b'1', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('348', 'block', '阻塞', null, '40', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('349', 'untest', '未执行', null, '10', b'0', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('350', 'pass', '成功', null, '20', b'0', b'1', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('351', 'fail', '失败', null, '30', b'0', b'1', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('352', 'block', '阻塞', null, '40', b'0', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -1692,7 +1703,14 @@ CREATE TABLE `TstCaseHistory` (
   PRIMARY KEY (`id`),
   KEY `FK_8yss1awno54uahftbyi1wb2j8` (`caseId`),
   CONSTRAINT `FK_8yss1awno54uahftbyi1wb2j8` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `TstCaseHistory`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstCaseHistory` VALUES ('1', '用户<span class=\"dict\">Aaron Chen</span>创建', null, '281', b'0', b'0', '2018-12-09 12:31:03', null), ('2', '用户<span class=\"dict\">Aaron Chen</span>更新', null, '281', b'0', b'0', '2018-12-09 12:31:27', null), ('3', '用户<span class=\"dict\">Aaron Chen</span>创建', null, '282', b'0', b'0', '2018-12-09 12:32:32', null), ('4', '用户<span class=\"dict\">Aaron Chen</span>创建', null, '284', b'0', b'0', '2018-12-09 12:51:11', null), ('5', '用户<span class=\"dict\">Aaron Chen</span>删除', null, '281', b'0', b'0', '2018-12-09 12:51:48', null), ('6', '用户<span class=\"dict\">Aaron Chen</span>删除', null, '282', b'0', b'0', '2018-12-09 12:51:51', null), ('7', '用户<span class=\"dict\">Aaron Chen</span>删除', null, '284', b'0', b'0', '2018-12-09 12:51:53', null), ('8', '用户<span class=\"dict\">Aaron Chen</span>创建', null, '285', b'0', b'0', '2018-12-09 12:51:57', null), ('9', '用户<span class=\"dict\">Aaron Chen</span>创建', null, '286', b'0', b'0', '2018-12-09 12:57:58', null), ('10', '用户<span class=\"dict\">Aaron Chen</span>创建', null, '287', b'0', b'0', '2018-12-09 13:02:12', null), ('11', '用户<span class=\"dict\">Aaron Chen</span>创建', null, '288', b'0', b'0', '2018-12-09 13:02:18', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstCaseInSuite`
@@ -1757,7 +1775,14 @@ CREATE TABLE `TstCaseInTask` (
   CONSTRAINT `FK_ahth2x2i7j9loamqyg3jcwfu6` FOREIGN KEY (`createBy`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_avls2r88tnl837rhiw01wtyma` FOREIGN KEY (`planId`) REFERENCES `TstPlan` (`id`),
   CONSTRAINT `FK_mwbiov88r7ppt8x9yunxr18pu` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstCaseInTask`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstCaseInTask` VALUES ('1', '289', b'0', null, '0', null, null, 'untest', null, '1', '520', '1', b'0', b'0', null, '2018-12-09 13:04:52', null), ('2', '290', b'0', '289', '0', null, null, 'untest', null, '1', '520', '1', b'0', b'0', null, '2018-12-09 13:04:52', null), ('3', '291', b'1', '290', '0', '55', '2018-12-09 13:18:58', 'pass', null, '1', '520', '1', b'0', b'0', null, '2018-12-09 13:04:52', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstCaseInTaskHistory`
@@ -1778,7 +1803,14 @@ CREATE TABLE `TstCaseInTaskHistory` (
   KEY `caseInTaskId` (`caseInTaskId`),
   CONSTRAINT `fk_caseId` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`),
   CONSTRAINT `fk_caseInTaskId` FOREIGN KEY (`caseInTaskId`) REFERENCES `TstCaseInTask` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `TstCaseInTaskHistory`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstCaseInTaskHistory` VALUES ('1', '用户<span class=\"dict\">Aaron Chen</span>标注执行结果为\"成功\"', null, '291', '3', b'0', b'0', '2018-12-09 13:18:58', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstCasePriority`
@@ -1800,13 +1832,13 @@ CREATE TABLE `TstCasePriority` (
   PRIMARY KEY (`id`),
   KEY `FK_d8r4hkhobybms74u4vk43thj9` (`orgid`),
   CONSTRAINT `FK_d8r4hkhobybms74u4vk43thj9` FOREIGN KEY (`orgid`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=264 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=267 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstCasePriority`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstCasePriority` VALUES ('261', 'high', '高', null, '10', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('262', 'medium', '中', null, '20', b'0', b'1', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('263', 'low', '低', null, '30', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `TstCasePriority` VALUES ('261', 'high', '高', null, '10', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('262', 'medium', '中', null, '20', b'0', b'1', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('263', 'low', '低', null, '30', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('264', 'high', '高', null, '10', b'0', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('265', 'medium', '中', null, '20', b'0', b'1', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('266', 'low', '低', null, '30', b'0', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -1826,7 +1858,7 @@ CREATE TABLE `TstCaseStep` (
   PRIMARY KEY (`id`),
   KEY `FK_s8hj2viu2jtj1iwf4pgu789hi` (`caseId`),
   CONSTRAINT `FK_s8hj2viu2jtj1iwf4pgu789hi` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Table structure for `TstCaseType`
@@ -1848,13 +1880,13 @@ CREATE TABLE `TstCaseType` (
   PRIMARY KEY (`id`),
   KEY `FK_rqs9hiykm6kk5w8rewcy1uvy7` (`orgId`),
   CONSTRAINT `FK_rqs9hiykm6kk5w8rewcy1uvy7` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=612 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=619 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstCaseType`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstCaseType` VALUES ('605', 'functional', '功能', null, '10', b'0', b'1', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('606', 'performance', '性能', null, '20', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('607', 'ui', '界面', null, '30', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('608', 'compatibility', '兼容性', null, '40', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('609', 'security', '安全', null, '50', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('610', 'automation', '自动化', null, '60', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('611', 'other', '其它', null, '70', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `TstCaseType` VALUES ('605', 'functional', '功能', null, '10', b'0', b'1', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('606', 'performance', '性能', null, '20', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('607', 'ui', '界面', null, '30', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('608', 'compatibility', '兼容性', null, '40', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('609', 'security', '安全', null, '50', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('610', 'automation', '自动化', null, '60', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('611', 'other', '其它', null, '70', b'0', b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('612', 'functional', '功能', null, '10', b'0', b'1', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('613', 'performance', '性能', null, '20', b'0', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('614', 'ui', '界面', null, '30', b'0', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('615', 'compatibility', '兼容性', null, '40', b'0', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('616', 'security', '安全', null, '50', b'0', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('617', 'automation', '自动化', null, '60', b'0', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('618', 'other', '其它', null, '70', b'0', b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -1915,7 +1947,7 @@ CREATE TABLE `TstEnv` (
   PRIMARY KEY (`id`),
   KEY `FK_afu6qfm7329uojw4i8j0gaskf` (`projectId`),
   CONSTRAINT `FK_afu6qfm7329uojw4i8j0gaskf` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `TstHistory`
@@ -1940,13 +1972,13 @@ CREATE TABLE `TstHistory` (
   KEY `FK_m4yjkr3nwc5y1fcjj1ke08xie` (`userId`),
   CONSTRAINT `FK_j9m2m7ijlp9j2184nv0yiln9u` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_m4yjkr3nwc5y1fcjj1ke08xie` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=128 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=133 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstHistory`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstHistory` VALUES ('127', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '518', '518', '54', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `TstHistory` VALUES ('127', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '518', '518', '54', b'0', b'0', '2018-12-08 22:11:32', null), ('128', '用户<span class=\"dict\">Aaron Chen</span>初始化项目<span class=\"dict\">默认项目</span>', null, null, null, 'project', '520', '520', '55', b'0', b'0', '2018-12-09 13:03:10', null), ('129', '用户<span class=\"dict\">Aaron Chen</span>创建计划<span class=\"dict\">Plan01</span>', null, null, null, 'plan', '1', '520', '55', b'0', b'0', '2018-12-09 13:04:47', null), ('130', '用户<span class=\"dict\">Aaron Chen</span>创建测试任务<span class=\"dict\">Task01</span>', null, null, null, 'task', '1', '520', '55', b'0', b'0', '2018-12-09 13:04:47', null), ('131', '用户<span class=\"dict\">Aaron Chen</span>更新用例为测试任务<span class=\"dict\">Task01</span>', null, null, null, 'task', '1', '520', '55', b'0', b'0', '2018-12-09 13:04:52', null), ('132', '用户<span class=\"dict\">Aaron Chen</span>更新计划<span class=\"dict\">Plan01</span>', null, null, null, 'plan', '1', '520', '55', b'0', b'0', '2018-12-09 13:04:54', null);
 COMMIT;
 
 -- ----------------------------
@@ -1966,7 +1998,7 @@ CREATE TABLE `TstModule` (
   PRIMARY KEY (`id`),
   KEY `FK_thypvsn70njcdpm9jiv13eu9p` (`projectId`),
   CONSTRAINT `tstmodule_ibfk_1` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `TstMsg`
@@ -1984,7 +2016,14 @@ CREATE TABLE `TstMsg` (
   PRIMARY KEY (`id`),
   KEY `FK_h4g997qkpu00h24f9ppqa4g2k` (`userId`),
   CONSTRAINT `FK_h4g997qkpu00h24f9ppqa4g2k` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstMsg`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstMsg` VALUES ('1', '用户<span class=\"dict\">Aaron Chen</span>创建任务<span class=\"dict\">Task01</span>', b'0', '55', b'0', b'0', '2018-12-09 13:04:47', null), ('2', '用户<span class=\"dict\">Aaron Chen</span>更新用例为任务<span class=\"dict\">Task01</span>', b'0', '55', b'0', b'0', '2018-12-09 13:04:52', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstOrg`
@@ -1999,13 +2038,13 @@ CREATE TABLE `TstOrg` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstOrg`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstOrg` VALUES ('51', 'Aaron Chen的组织', null, b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `TstOrg` VALUES ('51', 'Aaron Chen的组织', null, b'0', b'0', '2018-12-08 22:11:32', null), ('52', 'Aaron Chen的组织', null, b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -2025,13 +2064,13 @@ CREATE TABLE `TstOrgGroup` (
   PRIMARY KEY (`id`),
   KEY `FK_dlddwakgodocwt7n7abndkhtg` (`orgId`),
   CONSTRAINT `FK_dlddwakgodocwt7n7abndkhtg` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstOrgGroup`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstOrgGroup` VALUES ('89', '所有人', null, '51', b'1', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `TstOrgGroup` VALUES ('89', '所有人', null, '51', b'1', b'0', b'0', '2018-12-08 22:11:32', null), ('90', '所有人', null, '52', b'1', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -2091,13 +2130,13 @@ CREATE TABLE `TstOrgRole` (
   PRIMARY KEY (`id`),
   KEY `FK_q5g6x4w1pwr5ur4iwbg17nr9u` (`orgId`),
   CONSTRAINT `FK_q5g6x4w1pwr5ur4iwbg17nr9u` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=177 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=179 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstOrgRole`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstOrgRole` VALUES ('175', '组织管理员', 'org_admin', null, '51', b'1', b'0', b'0', '2018-12-08 22:11:32', null), ('176', '项目管理员', 'project_admin', null, '51', b'1', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `TstOrgRole` VALUES ('175', '组织管理员', 'org_admin', null, '51', b'1', b'0', b'0', '2018-12-08 22:11:32', null), ('176', '项目管理员', 'project_admin', null, '51', b'1', b'0', b'0', '2018-12-08 22:11:32', null), ('177', '组织管理员', 'org_admin', null, '52', b'1', b'0', b'0', '2018-12-09 13:03:10', null), ('178', '项目管理员', 'project_admin', null, '52', b'1', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -2132,7 +2171,7 @@ CREATE TABLE `TstOrgRolePrivilegeRelation` (
 --  Records of `TstOrgRolePrivilegeRelation`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstOrgRolePrivilegeRelation` VALUES ('51', '175', '1'), ('51', '175', '3'), ('51', '176', '3');
+INSERT INTO `TstOrgRolePrivilegeRelation` VALUES ('51', '175', '1'), ('52', '177', '1'), ('51', '175', '3'), ('51', '176', '3'), ('52', '177', '3'), ('52', '178', '3');
 COMMIT;
 
 -- ----------------------------
@@ -2153,7 +2192,7 @@ CREATE TABLE `TstOrgRoleUserRelation` (
 --  Records of `TstOrgRoleUserRelation`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstOrgRoleUserRelation` VALUES ('175', '54', '51');
+INSERT INTO `TstOrgRoleUserRelation` VALUES ('175', '54', '51'), ('177', '55', '52');
 COMMIT;
 
 -- ----------------------------
@@ -2173,7 +2212,7 @@ CREATE TABLE `TstOrgUserRelation` (
 --  Records of `TstOrgUserRelation`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstOrgUserRelation` VALUES ('51', '54');
+INSERT INTO `TstOrgUserRelation` VALUES ('51', '54'), ('52', '55');
 COMMIT;
 
 -- ----------------------------
@@ -2203,7 +2242,14 @@ CREATE TABLE `TstPlan` (
   CONSTRAINT `FK_299h646hfdb07s239a6juu55k` FOREIGN KEY (`verId`) REFERENCES `TstVer` (`id`),
   CONSTRAINT `FK_pc89p4era2bchkg4ulsv1gv7l` FOREIGN KEY (`envId`) REFERENCES `TstVer` (`id`),
   CONSTRAINT `FK_te991npw8lxmrtmt2gcjolimr` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstPlan`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstPlan` VALUES ('1', 'Plan01', null, null, null, null, 'in_progress', '520', null, null, '55', b'0', b'0', '2018-12-09 13:04:29', null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstProject`
@@ -2238,13 +2284,13 @@ CREATE TABLE `TstProject` (
   CONSTRAINT `tstproject_ibfk_2` FOREIGN KEY (`issuePrioritySolutionId`) REFERENCES `IsuPrioritySolution` (`id`),
   CONSTRAINT `tstproject_ibfk_3` FOREIGN KEY (`issuePageSolutionId`) REFERENCES `IsuPageSolution` (`id`),
   CONSTRAINT `tstproject_ibfk_4` FOREIGN KEY (`issueWorkflowSolutionId`) REFERENCES `IsuWorkflowSolution` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=519 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=521 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstProject`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstProject` VALUES ('517', '默认项目组', null, 'group', null, null, null, null, null, '51', null, b'0', b'0', '2018-12-08 22:11:32', null), ('518', '默认项目', null, 'project', '33', '19', '40', '10', null, '51', '517', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `TstProject` VALUES ('517', '默认项目组', null, 'group', null, null, null, null, null, '51', null, b'0', b'0', '2018-12-08 22:11:32', null), ('518', '默认项目', null, 'project', '33', '19', '40', '10', null, '51', '517', b'0', b'0', '2018-12-08 22:11:32', null), ('519', '默认项目组', null, 'group', null, null, null, null, null, '52', null, b'0', b'0', '2018-12-09 13:03:10', null), ('520', '默认项目', null, 'project', '34', '20', '41', '11', null, '52', '519', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -2267,13 +2313,13 @@ CREATE TABLE `TstProjectAccessHistory` (
   CONSTRAINT `FK_dpcrx83ysgtel2eua0856xfk3` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_hv9vkb26yw1fluyh6thwh230h` FOREIGN KEY (`prjId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_l0ifd62wftf6w81779j64rfmc` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=102 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstProjectAccessHistory`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstProjectAccessHistory` VALUES ('101', '2018-12-08 22:11:32', '51', '518', '默认项目', '54', '2018-12-08 22:11:32', null);
+INSERT INTO `TstProjectAccessHistory` VALUES ('101', '2018-12-09 12:51:44', '51', '518', '默认项目', '54', '2018-12-08 22:11:32', null), ('102', '2018-12-09 13:18:49', '52', '520', '默认项目', '55', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -2319,13 +2365,13 @@ CREATE TABLE `TstProjectRole` (
   PRIMARY KEY (`id`),
   KEY `FK_8eokjbtquljjgjahh7y0l0la6` (`orgId`),
   CONSTRAINT `FK_8eokjbtquljjgjahh7y0l0la6` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=349 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=353 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstProjectRole`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstProjectRole` VALUES ('345', 'test_leader', '测试主管', null, b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('346', 'test_designer', '测试设计', null, b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('347', 'tester', '测试执行', null, b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('348', 'readonly', '只读用户', null, b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null);
+INSERT INTO `TstProjectRole` VALUES ('345', 'test_leader', '测试主管', null, b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('346', 'test_designer', '测试设计', null, b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('347', 'tester', '测试执行', null, b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('348', 'readonly', '只读用户', null, b'0', '51', b'0', b'0', '2018-12-08 22:11:32', null), ('349', 'test_leader', '测试主管', null, b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('350', 'test_designer', '测试设计', null, b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('351', 'tester', '测试执行', null, b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null), ('352', 'readonly', '只读用户', null, b'0', '52', b'0', b'0', '2018-12-09 13:03:10', null);
 COMMIT;
 
 -- ----------------------------
@@ -2346,7 +2392,7 @@ CREATE TABLE `TstProjectRoleEntityRelation` (
 --  Records of `TstProjectRoleEntityRelation`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstProjectRoleEntityRelation` VALUES ('54', '51', '518', '345', 'user');
+INSERT INTO `TstProjectRoleEntityRelation` VALUES ('54', '51', '518', '345', 'user'), ('55', '52', '520', '349', 'user');
 COMMIT;
 
 -- ----------------------------
@@ -2367,7 +2413,7 @@ CREATE TABLE `TstProjectRolePriviledgeRelation` (
 --  Records of `TstProjectRolePriviledgeRelation`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstProjectRolePriviledgeRelation` VALUES ('11100', '345', null), ('11200', '345', null), ('11300', '345', null), ('12100', '345', null), ('12200', '345', null), ('12300', '345', null), ('12400', '345', null), ('13100', '345', null), ('13200', '345', null), ('13300', '345', null), ('14100', '345', null), ('14200', '345', null), ('14300', '345', null), ('15100', '345', null), ('15200', '345', null), ('15300', '345', null), ('16100', '345', null), ('16200', '345', null), ('16300', '345', null), ('16400', '345', null), ('17100', '345', null), ('17200', '345', null), ('17300', '345', null), ('11100', '346', null), ('12100', '346', null), ('12200', '346', null), ('12300', '346', null), ('13100', '346', null), ('13200', '346', null), ('13300', '346', null), ('14100', '346', null), ('14200', '346', null), ('14300', '346', null), ('15100', '346', null), ('15200', '346', null), ('15300', '346', null), ('16100', '346', null), ('16200', '346', null), ('16300', '346', null), ('16400', '346', null), ('17100', '346', null), ('17200', '346', null), ('17300', '346', null), ('11100', '347', null), ('12100', '347', null), ('12300', '347', null), ('13100', '347', null), ('13200', '347', null), ('13300', '347', null), ('14100', '347', null), ('14200', '347', null), ('14300', '347', null), ('15100', '347', null), ('15200', '347', null), ('15300', '347', null), ('16100', '347', null), ('16200', '347', null), ('16300', '347', null), ('16400', '347', null), ('17100', '347', null), ('17200', '347', null), ('17300', '347', null), ('11100', '348', null), ('12100', '348', null), ('13100', '348', null), ('14100', '348', null), ('15100', '348', null), ('16100', '348', null), ('17100', '348', null);
+INSERT INTO `TstProjectRolePriviledgeRelation` VALUES ('11100', '345', null), ('11200', '345', null), ('11300', '345', null), ('12100', '345', null), ('12200', '345', null), ('12300', '345', null), ('12400', '345', null), ('13100', '345', null), ('13200', '345', null), ('13300', '345', null), ('14100', '345', null), ('14200', '345', null), ('14300', '345', null), ('15100', '345', null), ('15200', '345', null), ('15300', '345', null), ('16100', '345', null), ('16200', '345', null), ('16300', '345', null), ('16400', '345', null), ('17100', '345', null), ('17200', '345', null), ('17300', '345', null), ('11100', '346', null), ('12100', '346', null), ('12200', '346', null), ('12300', '346', null), ('13100', '346', null), ('13200', '346', null), ('13300', '346', null), ('14100', '346', null), ('14200', '346', null), ('14300', '346', null), ('15100', '346', null), ('15200', '346', null), ('15300', '346', null), ('16100', '346', null), ('16200', '346', null), ('16300', '346', null), ('16400', '346', null), ('17100', '346', null), ('17200', '346', null), ('17300', '346', null), ('11100', '347', null), ('12100', '347', null), ('12300', '347', null), ('13100', '347', null), ('13200', '347', null), ('13300', '347', null), ('14100', '347', null), ('14200', '347', null), ('14300', '347', null), ('15100', '347', null), ('15200', '347', null), ('15300', '347', null), ('16100', '347', null), ('16200', '347', null), ('16300', '347', null), ('16400', '347', null), ('17100', '347', null), ('17200', '347', null), ('17300', '347', null), ('11100', '348', null), ('12100', '348', null), ('13100', '348', null), ('14100', '348', null), ('15100', '348', null), ('16100', '348', null), ('17100', '348', null), ('11100', '349', null), ('11200', '349', null), ('11300', '349', null), ('12100', '349', null), ('12200', '349', null), ('12300', '349', null), ('12400', '349', null), ('13100', '349', null), ('13200', '349', null), ('13300', '349', null), ('14100', '349', null), ('14200', '349', null), ('14300', '349', null), ('15100', '349', null), ('15200', '349', null), ('15300', '349', null), ('16100', '349', null), ('16200', '349', null), ('16300', '349', null), ('16400', '349', null), ('17100', '349', null), ('17200', '349', null), ('17300', '349', null), ('11100', '350', null), ('12100', '350', null), ('12200', '350', null), ('12300', '350', null), ('13100', '350', null), ('13200', '350', null), ('13300', '350', null), ('14100', '350', null), ('14200', '350', null), ('14300', '350', null), ('15100', '350', null), ('15200', '350', null), ('15300', '350', null), ('16100', '350', null), ('16200', '350', null), ('16300', '350', null), ('16400', '350', null), ('17100', '350', null), ('17200', '350', null), ('17300', '350', null), ('11100', '351', null), ('12100', '351', null), ('12300', '351', null), ('13100', '351', null), ('13200', '351', null), ('13300', '351', null), ('14100', '351', null), ('14200', '351', null), ('14300', '351', null), ('15100', '351', null), ('15200', '351', null), ('15300', '351', null), ('16100', '351', null), ('16200', '351', null), ('16300', '351', null), ('16400', '351', null), ('17100', '351', null), ('17200', '351', null), ('17300', '351', null), ('11100', '352', null), ('12100', '352', null), ('13100', '352', null), ('14100', '352', null), ('15100', '352', null), ('16100', '352', null), ('17100', '352', null);
 COMMIT;
 
 -- ----------------------------
@@ -2426,7 +2472,14 @@ CREATE TABLE `TstTask` (
   CONSTRAINT `FK_fymnl68rmtbhmw3jcg66qfdes` FOREIGN KEY (`caseProjectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_iog5lfy5gnd0uccm0wgrlqcsd` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_iokmiyvqpbqi8uo8d8nq985fw` FOREIGN KEY (`envId`) REFERENCES `TstVer` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Records of `TstTask`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstTask` VALUES ('1', 'Task01', null, null, 'in_progress', '520', '520', '1', '55', null, b'0', b'0', '2018-12-09 13:04:47', '2018-12-09 13:04:52');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstTaskAssigneeRelation`
@@ -2440,6 +2493,13 @@ CREATE TABLE `TstTaskAssigneeRelation` (
   CONSTRAINT `FK_ddk65svfjm6yq59yxb2n29pr0` FOREIGN KEY (`taskId`) REFERENCES `TstTask` (`id`),
   CONSTRAINT `FK_l3ro39r8ji2hhaueh6flq6ict` FOREIGN KEY (`assigneeId`) REFERENCES `TstUser` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `TstTaskAssigneeRelation`
+-- ----------------------------
+BEGIN;
+INSERT INTO `TstTaskAssigneeRelation` VALUES ('1', '55');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `TstThread`
@@ -2485,13 +2545,13 @@ CREATE TABLE `TstUser` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstUser`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstUser` VALUES ('54', '462826@qq.com', 'Aaron Chen', '5aa8a9d0703b7f4100ef0ee12a40b232', '11111111116', 'upload/sample/user/avatar.png', '51', 'Aaron Chen的组织', '518', '默认项目', '[B@35a3cabb', 'ca14173e-483d-4119-a34c-bd10dde959cb', null, '2018-12-08 22:12:10', b'0', b'0', '2018-12-08 22:11:33', '2018-12-08 22:41:19');
+INSERT INTO `TstUser` VALUES ('54', '462826t1@qq.com', 'Aaron Chen', '5aa8a9d0703b7f4100ef0ee12a40b232', '11111111116', 'upload/sample/user/avatar.png', '51', 'Aaron Chen的组织', '518', '默认项目', '[B@35a3cabb', '', null, '2018-12-08 22:12:10', b'0', b'0', '2018-12-08 22:11:33', '2018-12-09 13:02:38'), ('55', '462826@qq.com', 'Aaron Chen', '487b2c260827eb3a9ab29fa847cb4bb6', '11111111111', 'upload/sample/user/avatar.png', '52', 'Aaron Chen的组织', '520', '默认项目', '[B@311d5bf8', 'd1572928-b93a-4614-a301-e21dc3ee13cd', null, '2018-12-09 13:03:43', b'0', b'0', '2018-12-09 13:03:11', '2018-12-09 13:03:43');
 COMMIT;
 
 -- ----------------------------
@@ -2516,7 +2576,7 @@ CREATE TABLE `TstUserSettings` (
 --  Records of `TstUserSettings`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstUserSettings` VALUES ('300', '200', null, null, null, null, null, '54');
+INSERT INTO `TstUserSettings` VALUES ('300', '200', null, null, 'title,typeId,statusId,priorityId,assigneeId', null, null, '54'), ('300', '200', null, null, null, null, null, '55');
 COMMIT;
 
 -- ----------------------------
@@ -2533,13 +2593,13 @@ CREATE TABLE `TstUserVerifyCode` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 --  Records of `TstUserVerifyCode`
 -- ----------------------------
 BEGIN;
-INSERT INTO `TstUserVerifyCode` VALUES ('24', '837ffc5ddba2474b9b3e203c32260da7', '2018-12-08 22:21:33', '54', b'1', b'1', '2018-12-08 22:11:33', '2018-12-08 22:12:10');
+INSERT INTO `TstUserVerifyCode` VALUES ('24', '837ffc5ddba2474b9b3e203c32260da7', '2018-12-08 22:21:33', '54', b'1', b'1', '2018-12-08 22:11:33', '2018-12-08 22:12:10'), ('25', '81c0a0d64a324d5e9b04b66e2861ef01', '2018-12-09 13:13:11', '55', b'1', b'1', '2018-12-09 13:03:11', '2018-12-09 13:03:43');
 COMMIT;
 
 -- ----------------------------
@@ -2564,7 +2624,7 @@ CREATE TABLE `TstVer` (
   PRIMARY KEY (`id`),
   KEY `FK_thypvsn70njcdpm9jiv13eu9p` (`projectId`),
   CONSTRAINT `FK_thypvsn70njcdpm9jiv13eu9p` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Procedure structure for `add_cases_to_suite`
@@ -3390,7 +3450,10 @@ BEGIN
     DECLARE project_role_id BIGINT;
     DECLARE project_role_leader_id BIGINT;
     DECLARE project_id BIGINT;
+
     DECLARE case_id BIGINT;
+    DECLARE case_default_priority_id BIGINT;
+    DECLARE case_default_type_id BIGINT;
 
     DECLARE issue_type_solution_id BIGINT;
     DECLARE issue_priority_solution_id BIGINT;
@@ -3449,6 +3512,9 @@ BEGIN
     insert into TstCasePriority (value, label, ordr, buildIn, defaultVal, orgId, disabled, deleted, createTime)
     values('low', '低', 30, false, false, org_id, false, false, NOW());
 
+    select id from TstCasePriority where value='medium' AND orgId=org_id into case_default_priority_id;
+
+
     insert into TstCaseType (value, label, ordr, buildIn, defaultVal, orgId, disabled, deleted, createTime)
     values('functional', '功能', 10,     false, true, org_id, false, false, NOW());
     insert into TstCaseType (value, label, ordr, buildIn, defaultVal, orgId, disabled, deleted, createTime)
@@ -3463,6 +3529,8 @@ BEGIN
     values('automation', '自动化', 60,     false, false, org_id, false, false, NOW());
     insert into TstCaseType (value, label, ordr, buildIn, defaultVal, orgId, disabled, deleted, createTime)
     values('other', '其它', 70,         false, false, org_id, false, false, NOW());
+
+    select id from TstCaseType where value='functional' AND orgId=org_id into case_default_type_id;
 
 
     insert into TstProjectRole (code, name, buildIn, orgId, disabled, deleted, createTime)
@@ -3552,14 +3620,14 @@ BEGIN
     update TstUser set defaultPrjId = project_id, defaultPrjName = '默认项目' where id = user_id;
 
 
-    insert into TstCase (name, projectId, pId, estimate, priority, type, isLeaf, ordr, createById, contentType, disabled, deleted, createTime)
-    values('测试用例', project_id, null, 10, 'medium', 'functional', 0, 0, user_id, 'steps', false, false, NOW());
+    insert into TstCase (name, projectId, pId, estimate, priorityId, typeId, isLeaf, ordr, createById, contentType, disabled, deleted, createTime)
+    values('测试用例', project_id, null, 10, case_default_priority_id, case_default_type_id, 0, 0, user_id, 'steps', false, false, NOW());
     select max(id) from TstCase into case_id;
-    insert into TstCase (name, projectId, pId, estimate, priority, type, isLeaf, ordr, createById, contentType, disabled, deleted, createTime)
-    values('新特性', project_id, case_id, 10, 'medium', 'functional', 0, 0, user_id, 'steps', false, false, NOW());
+    insert into TstCase (name, projectId, pId, estimate, priorityId, typeId, isLeaf, ordr, createById, contentType, disabled, deleted, createTime)
+    values('新特性', project_id, case_id, 10, case_default_priority_id, case_default_type_id, 0, 0, user_id, 'steps', false, false, NOW());
     select max(id) from TstCase into case_id;
-    insert into TstCase (name, projectId, pId, estimate, priority, type, isLeaf, ordr, createById, contentType, disabled, deleted, createTime)
-    values('新用例', project_id, case_id, 10, 'medium', 'functional', 1, 0, user_id, 'steps', false, false, NOW());
+    insert into TstCase (name, projectId, pId, estimate, priorityId, typeId, isLeaf, ordr, createById, contentType, disabled, deleted, createTime)
+    values('新用例', project_id, case_id, 10, case_default_priority_id, case_default_type_id, 1, 0, user_id, 'steps', false, false, NOW());
 
     -- 初始化问题类型
     insert into IsuType(`value`,label,ordr,orgId,defaultVal,buildIn,disabled,deleted,createTime) 

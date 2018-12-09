@@ -69,37 +69,13 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         if (count > 0) {
             po = issueDao.getByUuid(uuid, user.getDefaultOrgId());
             count = issueDao.saveExt(elems2, params2, po.getId());
+
+            issueDao.setDefaultVal(po.getId(), user.getDefaultOrgId(), user.getDefaultPrjId());
         }
 
         if (count > 0) {
             po = issueDao.get(po.getId(), user.getDefaultOrgId());
         }
-
-        return po;
-    }
-
-    @Override
-    @Transactional
-    public IsuIssue updateField(JSONObject json, TstUser user) {
-        Integer projectId = user.getDefaultPrjId();
-
-        Integer id = json.getInteger("id");
-        String code = json.getString("code");
-        String value = json.getString("value");
-
-        Integer count;
-        if (!code.startsWith("prop")) {
-            count = issueDao.updateProp(id, code, value, projectId);
-        } else {
-            count = issueDao.updatePropExt(id, code, value);
-        }
-        if (count == 0) {
-            return null;
-        }
-
-        IsuIssue po = issueDao.get(id, user.getDefaultOrgId());
-
-//        issueHistoryService.saveHistory(user, Constant.CaseAct.update, issue, label);
 
         return po;
     }
@@ -127,6 +103,32 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         if (count > 0) {
             po = issueDao.get(issue.getInteger("id"), user.getDefaultOrgId());
         }
+
+        return po;
+    }
+
+    @Override
+    @Transactional
+    public IsuIssue updateField(JSONObject json, TstUser user) {
+        Integer projectId = user.getDefaultPrjId();
+
+        Integer id = json.getInteger("id");
+        String code = json.getString("code");
+        String value = json.getString("value");
+
+        Integer count;
+        if (!code.startsWith("prop")) {
+            count = issueDao.updateProp(id, code, value, projectId);
+        } else {
+            count = issueDao.updatePropExt(id, code, value);
+        }
+        if (count == 0) {
+            return null;
+        }
+
+        IsuIssue po = issueDao.get(id, user.getDefaultOrgId());
+
+//        issueHistoryService.saveHistory(user, Constant.CaseAct.update, issue, label);
 
         return po;
     }

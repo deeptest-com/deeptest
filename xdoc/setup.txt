@@ -1,4 +1,8 @@
 mvn clean verify
 
+docker-compose pull
 docker rm -f `docker ps -a -q`
+docker-compose up -d
+docker-compose logs -f
+
 docker rmi `docker images -q`

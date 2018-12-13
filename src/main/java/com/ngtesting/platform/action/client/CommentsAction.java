@@ -3,7 +3,6 @@ package com.ngtesting.platform.action.client;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.TstCaseComments;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.CaseCommentsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "case_comments/")
-public class CaseCommentsAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_CLIENT + "comments/")
+public class CommentsAction extends BaseAction {
     @Autowired
     CaseCommentsService commentsService;
 
@@ -30,7 +29,13 @@ public class CaseCommentsAction extends BaseAction {
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        TstCaseComments vo = commentsService.save(json, user);
+        Object vo = null;
+        if ("case".equals(json.getString("modelType"))) {
+            vo = commentsService.save(json, user);
+        } else if ("issue".equals(json.getString("modelType"))) {
+
+        }
+
         if (vo == null) {
             return authFail();
         }

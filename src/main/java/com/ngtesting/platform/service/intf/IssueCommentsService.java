@@ -8,6 +8,4 @@ public interface IssueCommentsService extends BaseService {
 
 	TstCaseComments save(JSONObject vo, TstUser TstUser);
 	boolean delete(Long d, Long userId);
-
-    TstCaseComments genVo(TstCaseComments po);
 }

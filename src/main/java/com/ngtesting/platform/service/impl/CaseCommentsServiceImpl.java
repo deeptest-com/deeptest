@@ -30,6 +30,15 @@ public class CaseCommentsServiceImpl extends BaseServiceImpl implements CaseComm
     public TstCaseComments save(JSONObject json, TstUser user) {
         TstCaseComments vo = JSON.parseObject(JSON.toJSONString(json), TstCaseComments.class);
 
+        vo.setCaseId(json.getInteger("modelId"));
+
+        save(vo, user);
+        return vo;
+    }
+
+    @Override
+    @Transactional
+    public TstCaseComments save(TstCaseComments vo, TstUser user) {
         vo.setUserId(user.getId());
         vo.setUserName(user.getNickname());
         vo.setUserAvatar(user.getAvatar());

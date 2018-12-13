@@ -240,7 +240,7 @@ public class CaseAction extends BaseAction {
             return authFail();
         }
 
-        ret.put("reviewResult", testCase);
+        ret.put("data", testCase);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

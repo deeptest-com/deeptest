@@ -11,14 +11,15 @@ import java.util.Map;
 public interface IssueDao {
     IsuIssue get(@Param("id") Integer id,
                  @Param("orgId") Integer orgId);
-    IsuIssue getByUuid(@Param("uuid") String uuid,
-                       @Param("orgId") Integer orgId);
+    IsuIssue getByUuid(@Param("uuid") String uuid);
 
     Integer save(@Param("elems") List<IsuPageElement> elems,
                  @Param("params") List<Object> params);
     Integer saveExt(@Param("elems") List<IsuPageElement> elems,
                     @Param("params") List<Object> params,
                     @Param("id") Integer id);
+
+    void setDefaultVal(@Param("model") IsuIssue model);
 
     Integer update(@Param("elems") List<IsuPageElement> elems,
                    @Param("params") List<Object> params,
@@ -45,5 +46,4 @@ public interface IssueDao {
     List<Map<String, Object>> getProjectDefaultPages(@Param("orgId") Integer orgId,
                                       @Param("prjId") Integer prjId,
                                       @Param("typeId") Integer typeId);
-
 }

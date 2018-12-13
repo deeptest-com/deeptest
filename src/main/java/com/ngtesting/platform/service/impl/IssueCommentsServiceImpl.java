@@ -41,19 +41,4 @@ public class IssueCommentsServiceImpl extends BaseServiceImpl implements IssueCo
         return true;
     }
 
-    @Override
-    public TstCaseComments genVo(TstCaseComments po) {
-        TstCaseComments vo = new TstCaseComments();
-//        BeanUtilEx.copyProperties(vo, po);
-//        if (vo.getUpdateTime() == null) {
-//            vo.setUpdateTime(vo.getCreateTime());
-//        }
-//
-//        TestUser user = (TestUser)getDetail(TestUser.class, po.getUserId());
-//
-//        vo.setUserName(user.getName());
-//        vo.setUserAvatar(user.getAvatar());
-        return vo;
-    }
-
 }

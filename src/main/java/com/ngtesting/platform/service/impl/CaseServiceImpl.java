@@ -8,8 +8,10 @@ import com.ngtesting.platform.dao.CaseStepDao;
 import com.ngtesting.platform.dao.TestSuiteDao;
 import com.ngtesting.platform.dao.TestTaskDao;
 import com.ngtesting.platform.model.TstCase;
+import com.ngtesting.platform.model.TstCaseComments;
 import com.ngtesting.platform.model.TstCaseStep;
 import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.intf.CaseCommentsService;
 import com.ngtesting.platform.service.intf.CaseHistoryService;
 import com.ngtesting.platform.service.intf.CaseService;
 import com.ngtesting.platform.utils.BeanUtilEx;
@@ -34,6 +36,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     TestSuiteDao testSuiteDao;
     @Autowired
     TestTaskDao testTaskDao;
+    @Autowired
+    CaseCommentsService caseCommentsService;
 
     public static List<String> ExtPropList;
 
@@ -267,6 +271,9 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             return null;
         }
 
+        TstCaseComments vo = new TstCaseComments(id, result?"评审通过": "评审失败");
+        caseCommentsService.save(vo, user);
+
         TstCase testCase = caseDao.getDetail(id, projectId);
         return testCase;
     }
@@ -413,4 +420,3 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     }
 
 }
-

@@ -13,7 +13,6 @@
     <select id="getByUuid" resultType="IsuIssue">
         SELECT o.* FROM IsuIssue o
         WHERE o.uuid = #{uuid}
-        AND o.orgId=#{orgId}
     </select>
 
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
@@ -51,6 +50,23 @@
           </if>
         );
     </insert>
+
+    <update id="setDefaultVal">
+        UPDATE IsuIssue
+        SET statusId=(select id from IsuStatus where `value`='open' and orgId=#{model.orgId}),
+            creatorId=#{model.creatorId},
+            <if test="model.reporterId == null">
+                reporterId=#{model.creatorId},
+            </if>
+            <if test="model.assigneeId == null">
+                assigneeId=#{model.creatorId},
+            </if>
+
+            projectId=#{model.projectId},
+            orgId=#{model.orgId}
+
+        WHERE id=#{model.id}
+    </update>
 
     <update id="update">
         UPDATE IsuIssue

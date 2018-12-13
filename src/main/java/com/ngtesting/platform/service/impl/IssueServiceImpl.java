@@ -49,10 +49,6 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         List<IsuPageElement> elemObjs = pageElementDao.listElementByPageId(pageId);
         List<IsuPageElement> elems = genElems(elemObjs);
 
-        IsuIssue po = null;
-        issue.put("orgId", user.getDefaultOrgId());
-        issue.put("projectId", user.getDefaultPrjId());
-
         String uuid = UUID.randomUUID().toString().replace("-", "");
         issue.put("uuid", uuid);
 
@@ -66,11 +62,15 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         genDataForExtTable(elems, params, elems1, params1, elems2, params2);
 
         Integer count = issueDao.save(elems1, params1);
+        IsuIssue po = null;
         if (count > 0) {
-            po = issueDao.getByUuid(uuid, user.getDefaultOrgId());
+            po = issueDao.getByUuid(uuid);
             count = issueDao.saveExt(elems2, params2, po.getId());
 
-            issueDao.setDefaultVal(po.getId(), user.getDefaultOrgId(), user.getDefaultPrjId());
+            po.setCreatorId(user.getId());
+            po.setOrgId(user.getDefaultOrgId());
+            po.setProjectId(user.getDefaultPrjId());
+            issueDao.setDefaultVal(po);
         }
 
         if (count > 0) {
@@ -139,14 +139,12 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
             elems.add(elem);
         }
 
-        elems.add(new IsuPageElement("orgId", ""));
-        elems.add(new IsuPageElement("projectId", ""));
         elems.add(new IsuPageElement("uuid", ""));
 
         return elems;
     }
 
-    public List genParams(JSONObject issue, List<IsuPageElement> elems, Boolean init) {
+    private List genParams(JSONObject issue, List<IsuPageElement> elems, Boolean isSave) {
         List<Object> params = new LinkedList<>();
 
         int i = 0;
@@ -164,9 +162,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
             }
         }
 
-        if (init) {
-            params.add(issue.getInteger("orgId"));
-            params.add(issue.getInteger("prjId"));
+        if (isSave) {
             params.add(issue.getString("uuid"));
         }
 

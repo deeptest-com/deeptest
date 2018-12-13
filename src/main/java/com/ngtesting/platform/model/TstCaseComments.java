@@ -10,6 +10,13 @@ public class TstCaseComments extends BaseModel {
     private String userAvatar;
     private Integer caseId;
 
+    public TstCaseComments() {
+    }
+    public TstCaseComments(Integer caseId, String summary) {
+        this.caseId = caseId;
+        this.summary = summary;
+    }
+
     public Integer getUserId() {
         return userId;
     }

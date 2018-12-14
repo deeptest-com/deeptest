@@ -1,19 +1,9 @@
 package com.ngtesting.platform.service.intf;
 
-import com.ngtesting.platform.model.TstHistory;
+import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.model.TstUser;
 
-import java.util.List;
-import java.util.Map;
-
 public interface IssueHistoryService extends BaseService {
-
-	List<TstHistory> list(Integer projectId, String projectType);
-	TstHistory getById(Integer id);
-
-	TstHistory create(Integer projectI, TstUser optUser, String action,
-					  TstHistory.TargetType entityType, Integer entityId, String name);
-
-    Map<String, List<TstHistory>> genVosByDate(List<TstHistory> historyPos);
-
+    void saveHistory(TstUser user, Constant.EntityAct act, IsuIssue issue, String field);
 }

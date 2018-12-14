@@ -1,11 +1,11 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.IssueDao;
 import com.ngtesting.platform.dao.IssuePageDao;
 import com.ngtesting.platform.dao.IssuePageElementDao;
 import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.service.intf.IssueCommentsService;
 import com.ngtesting.platform.service.intf.IssueService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,10 +26,12 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
 	IssuePageDao pageDao;
     @Autowired
     IssuePageElementDao pageElementDao;
+    @Autowired
+    IssueCommentsService issueCommentsService;
 
     @Override
-	public IsuIssue get(Integer id, Integer orgId) {
-		IsuIssue po = issueDao.get(id, orgId);
+	public IsuIssue get(Integer id, Integer prjId) {
+		IsuIssue po = issueDao.get(id, prjId);
 
 		return po;
 	}
@@ -74,7 +76,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         }
 
         if (count > 0) {
-            po = issueDao.get(po.getId(), user.getDefaultOrgId());
+            po = issueDao.get(po.getId(), user.getDefaultPrjId());
         }
 
         return po;
@@ -82,7 +84,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
 
     @Override
     @Transactional
-    public IsuIssue update(JSONObject issue, Integer pageId, TstUser user) {
+    public Boolean update(JSONObject issue, Integer pageId, TstUser user) {
         List<IsuPageElement> elems = pageElementDao.listElementByPageId(pageId);
 
         IsuIssue po = null;
@@ -100,11 +102,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
             count = issueDao.updateExt(elems2, params2, issue.getInteger("id"));
         }
 
-        if (count > 0) {
-            po = issueDao.get(issue.getInteger("id"), user.getDefaultOrgId());
-        }
-
-        return po;
+        return count > 0;
     }
 
     @Override
@@ -126,9 +124,9 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
             return null;
         }
 
-        IsuIssue po = issueDao.get(id, user.getDefaultOrgId());
+        IsuIssue po = issueDao.get(id, user.getDefaultPrjId());
 
-//        issueHistoryService.saveHistory(user, Constant.CaseAct.update, issue, label);
+//        issueHistoryService.saveHistory(user, Constant.EntityAct.update, issue, label);
 
         return po;
     }
@@ -205,6 +203,28 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
 
             i++;
         }
+    }
+
+    @Override
+    public void delete(Integer id, TstUser user) {
+        issueDao.delete(id, user.getDefaultPrjId());
+    }
+
+    @Override
+    public void watch(Integer id, TstUser user, Boolean status) {
+        if (status) {
+            issueDao.watch(id, user.getId());
+        } else {
+            issueDao.unwatch(id, user.getId());
+        }
+    }
+
+    @Override
+    public void assign(Integer id, TstUser user, String content) {
+        IsuComments po = new IsuComments(id, "修改经办人", content);
+        issueCommentsService.save(po, user);
+
+        issueDao.assign(id, user.getId(), user.getDefaultPrjId());
     }
 
 }

@@ -2,17 +2,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.IssueDao" >
     <select id="get" resultType="IsuIssue">
-        SELECT o.*, ext.* FROM IsuIssue o
+        SELECT o.*, ext.*,
+          (select (count(id) > 0) FROM IsuWatch WHERE issueId=${id} AND userId=${userId}) watched
+
+        FROM IsuIssue o
         JOIN IsuIssueExt ext ON o.id = ext.pid
         WHERE o.id = #{id}
-        <if test="orgId != null">
-            AND o.orgId=#{orgId}
+        <if test="prjId != null">
+            AND o.projectId=#{prjId}
         </if>
     </select>
 
     <select id="getByUuid" resultType="IsuIssue">
         SELECT o.* FROM IsuIssue o
         WHERE o.uuid = #{uuid}
+    </select>
+
+    <select id="getDetail" resultMap="issueMaps">
+        SELECT * FROM IsuIssue o
+        WHERE o.id = #{id}
+        <if test="prjId != null">
+            AND o.projectId=#{prjId}
+        </if>
     </select>
 
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
@@ -100,9 +111,26 @@
 
     <delete id="delete">
         UPDATE IsuIssue
-        SET disabled=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        SET deleted=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND projectId=#{projectId}
     </delete>
+    <insert id="watch" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO IsuWatch
+        (issueId, userId)
+        SELECT ${id}, ${userId} FROM dual
+        WHERE NOT EXISTS (
+            SELECT * FROM IsuWatch WHERE issueId = ${id} AND userId=${userId}
+        )
+    </insert>
+    <delete id="unwatch">
+        DELETE FROM IsuWatch
+        WHERE issueId=#{id} AND userId=#{userId}
+    </delete>
+    <update id="assign">
+        UPDATE IsuIssue
+        SET assigneeId=#{userId}, updateTime=NOW()
+        WHERE id=#{id} AND projectId=#{projectId}
+    </update>
 
     <select id="getProjectDefaultPages" resultType="Map">
         SELECT psi.opt, psi.pageId FROM IsuPageSolutionItem psi
@@ -123,5 +151,22 @@
 
         WHERE t.defaultVal IS TRUE AND t.orgId = #{orgId} AND prj.id=#{prjId}
     </select>
+
+
+    <resultMap id="issueMaps" type="IsuIssue" autoMapping="true">
+        <id column="id" property="id"/>
+
+        <collection property="histories" select="com.ngtesting.platform.dao.IssueHistoryDao.listByIssueId"
+                    column="{id=id}">
+        </collection>
+
+        <collection property="comments" select="com.ngtesting.platform.dao.IssueCommentsDao.listByIssueId"
+                    column="{id=id}">
+        </collection>
+
+        <collection property="attachments" select="com.ngtesting.platform.dao.IssueAttachmentDao.listIssueId"
+                    column="{id=id}">
+        </collection>
+    </resultMap>
 
 </mapper>

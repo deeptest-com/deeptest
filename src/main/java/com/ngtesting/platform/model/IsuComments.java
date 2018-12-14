@@ -16,6 +16,12 @@ public class IsuComments extends BaseModel {
     public IsuComments() {
     }
 
+    public IsuComments(Integer issueId, String summary, String content) {
+        this.issueId = issueId;
+        this.summary = summary;
+        this.content = content;
+    }
+
     public Integer getUserId() {
         return userId;
     }

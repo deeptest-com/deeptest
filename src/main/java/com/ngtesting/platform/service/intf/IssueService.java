@@ -10,7 +10,7 @@ public interface IssueService extends BaseService {
 	IsuIssue get(Integer id, Integer orgId);
 	IsuPage getPage(Integer orgId, Integer prjId, String opt);
 
-    IsuIssue update(JSONObject issue, Integer pageId, TstUser user);
+    Boolean update(JSONObject issue, Integer pageId, TstUser user);
 
     IsuType getProjectDefaultType(Integer orgId, Integer prjId);
 
@@ -26,4 +26,9 @@ public interface IssueService extends BaseService {
                              List<Object> params1,
                              List<IsuPageElement> elems2,
                              List<Object> params2);
+
+    void delete(Integer id, TstUser user);
+
+    void watch(Integer id, TstUser user, Boolean status);
+    void assign(Integer id, TstUser user, String comments);
 }

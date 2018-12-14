@@ -43,6 +43,8 @@ public class IsuIssue extends BaseModel {
     private Integer assigneeId;
     private String assigneeName;
 
+    private Boolean watched = false;
+
     private Integer orgId;
     private Integer prjId;
 
@@ -574,5 +576,13 @@ public class IsuIssue extends BaseModel {
 
     public void setResolutionDescr(String resolutionDescr) {
         this.resolutionDescr = resolutionDescr;
+    }
+
+    public Boolean getWatched() {
+        return watched;
+    }
+
+    public void setWatched(Boolean watched) {
+        this.watched = watched;
     }
 }

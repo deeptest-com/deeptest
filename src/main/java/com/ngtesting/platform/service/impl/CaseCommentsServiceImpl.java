@@ -45,7 +45,7 @@ public class CaseCommentsServiceImpl extends BaseServiceImpl implements CaseComm
 
         if (vo.getId() == null) {
             caseCommentsDao.save(vo);
-//            caseHistoryService.saveHistory(user, Constant.CaseAct.comments_add, testCase, vo.getContent());
+//            caseHistoryService.saveHistory(user, Constant.EntityAct.comments_add, testCase, vo.getContent());
         } else {
             TstCase testCase = caseDao.get(vo.getCaseId(), user.getDefaultPrjId());
             if (testCase == null) {
@@ -53,7 +53,7 @@ public class CaseCommentsServiceImpl extends BaseServiceImpl implements CaseComm
             }
 
             caseCommentsDao.update(vo);
-//            caseHistoryService.saveHistory(user, Constant.CaseAct.comments_update, testCase, vo.getContent());
+//            caseHistoryService.saveHistory(user, Constant.EntityAct.comments_update, testCase, vo.getContent());
         }
 
         return vo;
@@ -71,21 +71,8 @@ public class CaseCommentsServiceImpl extends BaseServiceImpl implements CaseComm
 
         Boolean result = caseCommentsDao.delete(id, user.getId());
 
-//        caseHistoryService.saveHistory(user, Constant.CaseAct.comments_delete, testCase, comments.getContent());
+//        caseHistoryService.saveHistory(user, Constant.EntityAct.comments_delete, testCase, comments.getContent());
         return result;
-    }
-
-    @Override
-    public TstCaseComments genVo(TstCaseComments po) {
-        if (po.getUpdateTime() == null) {
-            po.setUpdateTime(po.getCreateTime());
-        }
-
-        TstUser user = userDao.get(po.getUserId());
-
-        po.setUserName(user.getNickname());
-        po.setUserAvatar(user.getAvatar());
-        return po;
     }
 
 }

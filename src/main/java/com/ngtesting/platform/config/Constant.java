@@ -81,7 +81,7 @@ public class Constant {
         put("asr", "ngtesting-asr");
     }};
 
-    public enum CaseAct {
+    public enum EntityAct {
         create("create", "创建"),
         rename("rename", "改名"),
         update("update", "更新"),
@@ -98,7 +98,7 @@ public class Constant {
 
         exe_result("exe_result", "标注执行结果");
 
-        CaseAct(String code, String msg) {
+        EntityAct(String code, String msg) {
             this.code = code;
             this.msg = msg;
         }

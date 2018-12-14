@@ -15,6 +15,6 @@ public interface CaseInTaskService extends BaseService {
 
     TstCaseInTask rename(JSONObject json, TstUser userVo);
 
-    void saveHistory(Integer caseId, Integer caseInTaskId, Constant.CaseAct act, TstUser user,
+    void saveHistory(Integer caseId, Integer caseInTaskId, Constant.EntityAct act, TstUser user,
                      String status, String result);
 }

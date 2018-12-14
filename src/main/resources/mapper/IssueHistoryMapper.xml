@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.IssueHistoryDao" >
+
+    <select id="query" resultType="IsuHistory">
+        SELECT * FROM IsuHistory o WHERE o.issueId=#{issueId}
+
+        AND o.deleted != true AND o.disabled != true
+        ORDER BY o.createTime DESC
+    </select>
+
+    <insert id="save" parameterType="IsuHistory" useGeneratedKeys="true" keyProperty="id">
+        insert into IsuHistory
+        (title,issueId,
+        deleted,disabled,createTime)
+        values
+        (#{title},#{issueId},
+        FALSE,FALSE,NOW() )
+    </insert>
+
+    <select id="listByIssueId" parameterType="Map" resultMap="issueHistoryMap">
+        SELECT o.* FROM IsuHistory o
+
+        WHERE o.issueId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.createTime DESC LIMIT 10
+    </select>
+
+    <resultMap id="issueHistoryMap" type="IsuHistory" autoMapping="true">
+        <id column="id" property="id"/>
+        <id column="title" property="title"/>
+        <id column="descr" property="descr"/>
+        <id column="createTime" property="createTime"/>
+        <id column="issueId" property="issueId"/>
+    </resultMap>
+
+</mapper>

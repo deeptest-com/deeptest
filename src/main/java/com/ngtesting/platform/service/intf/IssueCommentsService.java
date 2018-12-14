@@ -1,11 +1,12 @@
 package com.ngtesting.platform.service.intf;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.model.TstCaseComments;
+import com.ngtesting.platform.model.IsuComments;
 import com.ngtesting.platform.model.TstUser;
 
 public interface IssueCommentsService extends BaseService {
+	IsuComments save(JSONObject vo, TstUser userVo);
+	IsuComments save(IsuComments vo, TstUser user);
 
-	TstCaseComments save(JSONObject vo, TstUser TstUser);
-	boolean delete(Long d, Long userId);
+	Boolean delete(Integer id, TstUser user);
 }

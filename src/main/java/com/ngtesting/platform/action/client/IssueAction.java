@@ -63,7 +63,7 @@ public class IssueAction extends BaseAction {
         Integer prjId = user.getDefaultPrjId();
 
         Integer id = json.getInteger("id");
-        IsuIssue po = issueService.get(id, orgId);
+        IsuIssue po = issueService.get(id, prjId);
 
         if (po == null) { // 当对象不是默认org的，此处为空
             return authFail();
@@ -90,7 +90,7 @@ public class IssueAction extends BaseAction {
         Integer prjId = user.getDefaultPrjId();
 
         Integer id = json.getInteger("id");
-        IsuIssue po = issueService.get(id, orgId);
+        IsuIssue po = issueService.get(id, prjId);
 
         if (po == null) { // 当对象不是默认org的，此处为空
             return authFail();
@@ -136,28 +136,26 @@ public class IssueAction extends BaseAction {
         Integer pageId = json.getInteger("pageId");
         JSONObject issue = json.getJSONObject("issue");
 
-        IsuIssue po = issueService.update(issue, pageId, user);
+        issueService.update(issue, pageId, user);
 
-        ret.put("data", po);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
+    @ResponseBody
+    public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
 
-		Integer id = json.getInteger("id");
+        Integer id = json.getInteger("id");
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-//		TstCase testCase = issueService.delete(id, userVo);
-//		issueService.updateParentIfNeededPers(testCase.getpId());
+        issueService.delete(id, user);
 
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
 
 	@RequestMapping(value = "updateField", method = RequestMethod.POST)
 	@ResponseBody

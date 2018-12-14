@@ -1,44 +1,57 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.model.TstCaseComments;
+import com.ngtesting.platform.dao.IssueCommentsDao;
+import com.ngtesting.platform.model.TstCase;
+import com.ngtesting.platform.model.IsuComments;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueCommentsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class IssueCommentsServiceImpl extends BaseServiceImpl implements IssueCommentsService {
+    @Autowired
+    IssueCommentsDao issueCommentsDao;
 
     @Override
-    public TstCaseComments save(JSONObject json, TstUser TstUser) {
-//        TstCaseComments vo = JSON.parseObject(JSON.toJSONString(json), TstCaseComments.class);
-//
-//        TestCaseComments po = new TestCaseComments();
-//
-//        if (vo.getCode() != null) {
-//            po = (TestCaseComments)getDetail(TestCaseComments.class, vo.getCode());
-//        } else {
-//            po.setCode(null);
-//        }
-//        po.setSummary(vo.getSummary());
-//        po.setContent(vo.getContent());
-//        po.setTestCaseId(vo.getTestCaseId());
-//        po.setUserId(TstUser.getCode());
-//        po.setChangeTime(new Date());
-//        saveOrUpdate(po);
-//
-//        return genVo(po);
+    @Transactional
+    public IsuComments save(JSONObject json, TstUser user) {
+        IsuComments vo = JSON.parseObject(JSON.toJSONString(json), IsuComments.class);
 
-        return null;
+        vo.setIssueId(json.getInteger("modelId"));
+
+        save(vo, user);
+        return vo;
     }
 
     @Override
-    public boolean delete(Long id, Long userId) {
-//        TestCaseComments po = (TestCaseComments) getDetail(TestCaseComments.class, id);
-//        po.setDeleted(true);
-//        saveOrUpdate(po);
+    @Transactional
+    public IsuComments save(IsuComments vo, TstUser user) {
+        vo.setUserId(user.getId());
+        vo.setUserName(user.getNickname());
+        vo.setUserAvatar(user.getAvatar());
 
-        return true;
+        if (vo.getId() == null) {
+            issueCommentsDao.save(vo);
+        } else {
+            issueCommentsDao.update(vo);
+        }
+
+        return vo;
+    }
+
+    @Override
+    @Transactional
+    public Boolean delete(Integer id, TstUser user) {
+        IsuComments comments = issueCommentsDao.get(id);
+
+        Boolean result = issueCommentsDao.delete(id, user.getId());
+
+//        caseHistoryService.saveHistory(user, Constant.EntityAct.comments_delete, testCase, comments.getContent());
+        return result;
     }
 
 }

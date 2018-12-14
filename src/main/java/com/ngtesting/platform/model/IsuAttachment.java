@@ -12,6 +12,16 @@ public class IsuAttachment extends BaseModel {
 	private Integer issueId;
 	private Integer userId;
 
+	public IsuAttachment() {
+	}
+	public IsuAttachment(String name, String path, Integer issueId, Integer userId) {
+		super();
+		this.name = name;
+		this.uri = path;
+		this.issueId = issueId;
+		this.userId = userId;
+	}
+
     public String getName() {
         return name;
     }

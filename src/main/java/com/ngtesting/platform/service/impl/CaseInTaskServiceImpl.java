@@ -67,7 +67,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
 
         caseDao.renameUpdate(testCase);
 
-        caseHistoryService.saveHistory(user, Constant.CaseAct.rename, testCase,null);
+        caseHistoryService.saveHistory(user, Constant.EntityAct.rename, testCase,null);
 
         return caseInTaskDao.getDetail(entityId, projectId);
     }
@@ -85,7 +85,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
         caseInTaskDao.setResult(caseInTaskId, result, status, user.getId());
 
         saveHistory(caseId, caseInTaskId,
-                Constant.CaseAct.exe_result, user, status, result==null?"":result.trim());
+                Constant.EntityAct.exe_result, user, status, result==null?"":result.trim());
 
         taskDao.start(testCase.getTaskId());
         planDao.start(testCase.getPlanId());
@@ -98,7 +98,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
     }
 
     @Override
-    public void saveHistory(Integer caseId, Integer caseInTaskId, Constant.CaseAct act, TstUser user,
+    public void saveHistory(Integer caseId, Integer caseInTaskId, Constant.EntityAct act, TstUser user,
                             String status, String result) {
         String action = act.msg;
 

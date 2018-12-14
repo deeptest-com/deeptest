@@ -92,12 +92,12 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     @Transactional
 	public TstCase rename(Integer id, String name, Integer pId, Integer projectId, TstUser user) {
         TstCase po = new TstCase();
-        Constant.CaseAct action;
+        Constant.EntityAct action;
 
         boolean isNew;
         if (id != null && id > 0) {
             isNew = false;
-            action = Constant.CaseAct.rename;
+            action = Constant.EntityAct.rename;
             po = caseDao.get(id, projectId);
             if(po == null) {
                 return null;
@@ -106,7 +106,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             po.setUpdateById(user.getId());
         } else {
             isNew = true;
-            action = Constant.CaseAct.create;
+            action = Constant.EntityAct.create;
 
             po.setLeaf(true);
             po.setId(null);
@@ -115,7 +115,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
             po.setProjectId(projectId);
             po.setCreateById(user.getId());
-            action = Constant.CaseAct.create;
+            action = Constant.EntityAct.create;
         }
         po.setName(name);
         po.setReviewResult(null);
@@ -155,10 +155,10 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         Integer srcParentId = src.getpId();
 
         TstCase testCase;
-        Constant.CaseAct action;
+        Constant.EntityAct action;
 
         if (isCopy) {
-            action = Constant.CaseAct.copy;
+            action = Constant.EntityAct.copy;
 
             testCase = new TstCase();
             BeanUtilEx.copyProperties(src, testCase);
@@ -166,7 +166,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
             testCase.setCreateById(user.getId());
         } else {
-            action = Constant.CaseAct.move;
+            action = Constant.EntityAct.move;
             testCase = src;
             testCase.setUpdateById(user.getId());
         }
@@ -223,7 +223,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             return null;
         }
 
-        caseHistoryService.saveHistory(user, Constant.CaseAct.update, testCaseVo,null);
+        caseHistoryService.saveHistory(user, Constant.EntityAct.update, testCaseVo,null);
 
         TstCase ret = caseDao.getDetail(testCaseVo.getId(), projectId);
 		return ret;
@@ -242,7 +242,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         TstCase testCase = caseDao.get(id, null);
         caseDao.updateParentIfNeeded(testCase.getpId());
 
-        caseHistoryService.saveHistory(user, Constant.CaseAct.delete, testCase,null);
+        caseHistoryService.saveHistory(user, Constant.EntityAct.delete, testCase,null);
 
         return count;
 	}
@@ -294,7 +294,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         }
 
         TstCase testCase = caseDao.getDetail(id, projectId);
-        caseHistoryService.saveHistory(user, Constant.CaseAct.update, testCase,label);
+        caseHistoryService.saveHistory(user, Constant.EntityAct.update, testCase,label);
 
         return testCase;
     }
@@ -323,7 +323,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         testCase.setOrdr(0);
         caseDao.create(testCase);
         caseDao.setDefaultVal(testCase.getId(), user.getDefaultOrgId());
-        caseHistoryService.saveHistory(user, Constant.CaseAct.create, testCase,null);
+        caseHistoryService.saveHistory(user, Constant.EntityAct.create, testCase,null);
 
         TstCase testCase2 = new TstCase();
         testCase2.setName("新用例");
@@ -336,7 +336,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         caseDao.create(testCase2);
         caseDao.setDefaultVal(testCase2.getpId(), user.getDefaultOrgId());
 
-        caseHistoryService.saveHistory(user, Constant.CaseAct.create, testCase2,null);
+        caseHistoryService.saveHistory(user, Constant.EntityAct.create, testCase2,null);
     }
 
     @Override

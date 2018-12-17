@@ -41,7 +41,7 @@ public class IsuJqlFilterServiceImpl extends BaseServiceImpl implements IsuJqlFi
 
             Boolean filterEnable = filterNameArr.contains(code);
             if (filterEnable) {
-                field.setDefaultShowInFilters(filterEnable);
+                field.setDefaultShowInFilters(true);
             }
 
             IsuJqlFilter f = buildFilter(field, orgId, projectId);

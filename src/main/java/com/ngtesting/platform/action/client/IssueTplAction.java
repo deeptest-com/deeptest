@@ -75,20 +75,21 @@ public class IssueTplAction extends BaseAction {
 
         com.github.pagehelper.Page page = PageHelper.startPage(pageNum, pageSize);
         List<IsuIssue> data = isuJqlService.query(rule, user.getIssueColumns(), orderBy, orgId, projectId);
+        List<IsuJqlFilter> filters = isuJqlFilterService.buildUiFilters(rule, orgId, projectId);
 
         if (init) {
-            List<IsuJqlFilter> filters = isuJqlFilterService.buildUiFilters(rule, orgId, projectId);
             List<IsuJqlColumn> columns = isuJqlColumnService.loadColumns(user);
             Map<String, Object> issuePropMap = dynamicFormService.genIssuePropMap(orgId, projectId);
 
             ret.put("rule", rule);
-            ret.put("filters", filters);
+
             ret.put("columns", columns);
             ret.put("orderBy", orderBy);
 
             ret.put("issuePropMap", issuePropMap);
         }
 
+        ret.put("filters", filters);
         ret.put("total", page.getTotal());
         ret.put("data", data);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

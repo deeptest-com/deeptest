@@ -38,6 +38,10 @@ public class IssueTagServiceImpl extends BaseServiceImpl implements IssueTagServ
             }
 
             allTags.add(t);
+
+            if (!"".equals(tagStr)) {
+                tagStr += ",";
+            }
             tagStr += t.getName();
         }
 

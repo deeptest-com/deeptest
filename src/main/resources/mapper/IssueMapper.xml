@@ -19,7 +19,11 @@
     </select>
 
     <select id="getDetail" resultMap="issueMaps">
-        SELECT * FROM IsuIssue o
+        SELECT o.*, ext.*,
+        (select (count(id) > 0) FROM IsuWatch WHERE issueId=${id} AND userId=${userId}) watched
+
+        FROM IsuIssue o
+        JOIN IsuIssueExt ext ON o.id = ext.pid
         WHERE o.id = #{id}
         <if test="prjId != null">
             AND o.projectId=#{prjId}
@@ -164,7 +168,11 @@
                     column="{id=id}">
         </collection>
 
-        <collection property="attachments" select="com.ngtesting.platform.dao.IssueAttachmentDao.listIssueId"
+        <collection property="attachments" select="com.ngtesting.platform.dao.IssueAttachmentDao.listByIssueId"
+                    column="{id=id}">
+        </collection>
+
+        <collection property="tags" select="com.ngtesting.platform.dao.IssueTagDao.listByIssueId"
                     column="{id=id}">
         </collection>
     </resultMap>

@@ -3,10 +3,9 @@ package com.ngtesting.platform.action.client;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.model.IsuTag;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.IssueDynamicFormService;
-import com.ngtesting.platform.service.intf.IssueFieldService;
-import com.ngtesting.platform.service.intf.IssueService;
+import com.ngtesting.platform.service.intf.IssueTagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,45 +15,44 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "issue_opt/")
-public class IssueOptAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_CLIENT + "issue_tag/")
+public class IssueTagAction extends BaseAction {
     @Autowired
-    IssueService issueService;
-    @Autowired
-    IssueFieldService fieldService;
-	@Autowired
-	IssueDynamicFormService dynamicFormService;
+    IssueTagService issueTagService;
 
-    @RequestMapping(value = "watch", method = RequestMethod.POST)
+    @RequestMapping(value = "search", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> watch(HttpServletRequest request, @RequestBody JSONObject json) {
+    public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = user.getDefaultOrgId();
 
-        Integer id = json.getInteger("id");
-        Boolean status = json.getBoolean("status");
+        Integer issueId = json.getInteger("issueId");
+        String keywords = json.getString("keywords");
+        List<Integer> exceptIds = json.getObject("exceptIds", List.class);
 
-		issueService.watch(id, user, status);
+        List<IsuTag> tags = issueTagService.search(issueId, orgId, keywords, exceptIds);
 
+        ret.put("data", tags);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
 
-    @RequestMapping(value = "assign", method = RequestMethod.POST)
+    @RequestMapping(value = "save", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> assign(HttpServletRequest request, @RequestBody JSONObject json) {
+    public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        Integer id = json.getInteger("id");
-        Integer userId = json.getInteger("userId");
-        String comments = json.getString("comments");
+        Integer issueId = json.getInteger("issueId");
+        List<Map> tags = json.getObject("tags", List.class);
 
-        issueService.assign(id, user, comments);
+        issueTagService.save(issueId, tags, user);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

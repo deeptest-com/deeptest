@@ -30,13 +30,20 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
     IssueCommentsService issueCommentsService;
 
     @Override
-	public IsuIssue get(Integer id, Integer prjId) {
-		IsuIssue po = issueDao.get(id, prjId);
+	public IsuIssue get(Integer id, Integer userId, Integer prjId) {
+		IsuIssue po = issueDao.get(id, userId, prjId);
 
 		return po;
 	}
 
-	@Override
+    @Override
+    public IsuIssue getDetail(Integer id, Integer userId, Integer prjId) {
+        IsuIssue po = issueDao.getDetail(id, userId, prjId);
+
+        return po;
+    }
+
+    @Override
 	public IsuPage getPage(Integer orgId, Integer prjId, String opt) {
         IsuType type = getProjectDefaultType(orgId, prjId);
         Map<String, Integer> pageMap = getProjectDefaultPages(orgId, prjId, type.getId());
@@ -76,7 +83,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         }
 
         if (count > 0) {
-            po = issueDao.get(po.getId(), user.getDefaultPrjId());
+            po = issueDao.get(po.getId(), user.getId(), user.getDefaultPrjId());
         }
 
         return po;
@@ -124,7 +131,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
             return null;
         }
 
-        IsuIssue po = issueDao.get(id, user.getDefaultPrjId());
+        IsuIssue po = issueDao.get(id, user.getId(), user.getDefaultPrjId());
 
 //        issueHistoryService.saveHistory(user, Constant.EntityAct.update, issue, label);
 

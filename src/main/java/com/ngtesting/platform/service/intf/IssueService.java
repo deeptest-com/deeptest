@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface IssueService extends BaseService {
-	IsuIssue get(Integer id, Integer orgId);
+	IsuIssue get(Integer id, Integer userId, Integer orgId);
+    IsuIssue getDetail(Integer id, Integer id1, Integer prjId);
+
 	IsuPage getPage(Integer orgId, Integer prjId, String opt);
 
     Boolean update(JSONObject issue, Integer pageId, TstUser user);

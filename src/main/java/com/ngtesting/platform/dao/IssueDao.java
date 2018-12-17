@@ -10,10 +10,12 @@ import java.util.Map;
 
 public interface IssueDao {
     IsuIssue get(@Param("id") Integer id,
+                 @Param("userId") Integer userId,
                  @Param("prjId") Integer prjId);
     IsuIssue getByUuid(@Param("uuid") String uuid);
 
     IsuIssue getDetail(@Param("id") Integer id,
+                       @Param("userId") Integer userId,
                        @Param("prjId") Integer prjId);
 
     Integer save(@Param("elems") List<IsuPageElement> elems,
@@ -39,6 +41,8 @@ public interface IssueDao {
     Integer updatePropExt(@Param("id") Integer id,
                        @Param("code") String code,
                        @Param("value") String value);
+
+
 
     IsuType getProjectDefaultType(@Param("orgId") Integer orgId,
                                   @Param("prjId") Integer prjId);

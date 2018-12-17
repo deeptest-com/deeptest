@@ -53,6 +53,7 @@ public class IsuIssue extends BaseModel {
     private List<IsuComments> comments = new LinkedList<>();
     private List<IsuAttachment> attachments = new LinkedList<>();
     private List<IsuHistory> histories = new LinkedList<>();
+    private List<IsuTag> tags = new LinkedList<>();
 
     private String prop01;
     private String prop02;
@@ -89,6 +90,14 @@ public class IsuIssue extends BaseModel {
     private String prop28;
     private String prop29;
     private String prop30;
+
+    public List<IsuTag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<IsuTag> tags) {
+        this.tags = tags;
+    }
 
     public String getTitle() {
         return title;

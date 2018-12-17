@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface IssueAttachmentDao {
-    List<IsuAttachment> query(@Param("caseId") Integer caseId);
+    List<IsuAttachment> query(@Param("issueId") Integer issueId);
     IsuAttachment get(@Param("id") Integer id);
 
     void save(IsuAttachment attach);

@@ -63,7 +63,7 @@ public class IssueAction extends BaseAction {
         Integer prjId = user.getDefaultPrjId();
 
         Integer id = json.getInteger("id");
-        IsuIssue po = issueService.get(id, prjId);
+        IsuIssue po = issueService.get(id, user.getId(), prjId);
 
         if (po == null) { // 当对象不是默认org的，此处为空
             return authFail();
@@ -90,7 +90,7 @@ public class IssueAction extends BaseAction {
         Integer prjId = user.getDefaultPrjId();
 
         Integer id = json.getInteger("id");
-        IsuIssue po = issueService.get(id, prjId);
+        IsuIssue po = issueService.getDetail(id, user.getId(), prjId);
 
         if (po == null) { // 当对象不是默认org的，此处为空
             return authFail();

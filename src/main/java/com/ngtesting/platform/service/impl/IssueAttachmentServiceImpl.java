@@ -25,7 +25,7 @@ public class IssueAttachmentServiceImpl extends BaseServiceImpl implements Issue
     @Override
     @Transactional
     public Boolean save(Integer issueId, String name, String path, TstUser user) {
-        IsuIssue testIssue = issueDao.get(issueId, user.getDefaultPrjId());
+        IsuIssue testIssue = issueDao.get(issueId, user.getId(), user.getDefaultPrjId());
         if (testIssue == null) {
             return false;
         }
@@ -40,7 +40,7 @@ public class IssueAttachmentServiceImpl extends BaseServiceImpl implements Issue
     @Transactional
     public Boolean delete(Integer id, TstUser user) {
         IsuAttachment attach = issueAttachmentDao.get(id);
-        IsuIssue testIssue = issueDao.get(attach.getIssueId(), user.getDefaultPrjId());
+        IsuIssue testIssue = issueDao.get(attach.getIssueId(), user.getId(), user.getDefaultPrjId());
         if (testIssue == null) {
             return false;
         }

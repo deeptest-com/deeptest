@@ -41,6 +41,11 @@ spring:
           pool-prepared-statements: false
           max-pool-prepared-statement-per-connection-size: 20
 
+    servlet:
+      multipart:
+        max-file-size: 150MB
+        max-request-size: 150MB
+
 mybatis:
   mapperLocations: classpath:mapper/*.xml
   typeAliasesPackage: com.ngtesting.platform.model

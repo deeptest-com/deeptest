@@ -8,6 +8,7 @@ import com.ngtesting.platform.model.IsuPage;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueDynamicFormService;
 import com.ngtesting.platform.service.intf.IssueFieldService;
+import com.ngtesting.platform.service.intf.IssueMiscService;
 import com.ngtesting.platform.service.intf.IssueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,6 +31,8 @@ public class IssueAction extends BaseAction {
     IssueFieldService fieldService;
 	@Autowired
 	IssueDynamicFormService dynamicFormService;
+    @Autowired
+    IssueMiscService issueMiscService;
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody

@@ -6,6 +6,6 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface IssueHistoryDao {
-    List<IsuHistory> query(@Param("caseId") Integer caseId);
+    List<IsuHistory> query(@Param("issueId") Integer issueId);
     void save(IsuHistory his);
 }

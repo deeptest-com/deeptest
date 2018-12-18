@@ -3,7 +3,7 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueWatchDao" >
 
     <select id="list" resultType="Map">
-        SELECT u.id, u.nickname, u.email FROM TstUser u
+        SELECT w.id, u.nickname, u.email FROM TstUser u
         JOIN IsuWatch w ON u.id = w.userId
 
         WHERE w.issueId = #{issueId}

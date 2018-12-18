@@ -8,7 +8,7 @@ public class IsuIssue extends BaseModel {
 	private static final long serialVersionUID = 690125164201934534L;
 
     private String title;
-    private String discr;
+    private String descr;
 
     private Integer projectId;
     private String projectName;
@@ -107,12 +107,12 @@ public class IsuIssue extends BaseModel {
         this.title = title;
     }
 
-    public String getDiscr() {
-        return discr;
+    public String getDescr() {
+        return descr;
     }
 
-    public void setDiscr(String discr) {
-        this.discr = discr;
+    public void setDescr(String descr) {
+        this.descr = descr;
     }
 
     public Integer getProjectId() {

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.IssueWatchDao" >
+
+    <select id="list" resultType="Map">
+        SELECT u.id, u.nickname, u.email FROM TstUser u
+        JOIN IsuWatch w ON u.id = w.userId
+
+        WHERE w.issueId = #{issueId}
+    </select>
+
+    <select id="search" resultType="Map">
+        select usr.id, usr.nickname, 'user' type from TstUser usr
+        where
+            usr.id in
+                (
+                    select relation1.entityId from TstProjectRoleEntityRelation relation1
+                      where relation1.type = 'user' AND relation1.projectId = #{prjId}
+
+                    UNION
+
+                    select relta.userId from TstOrgGroupUserRelation relta
+                      where relta.orgGroupId in
+                        (
+                            select relation2.entityId from TstProjectRoleEntityRelation relation2
+                            where relation2.type = 'group' AND relation2.projectId = #{prjId}
+                        )
+                )
+
+            AND (
+                usr.nickname LIKE CONCAT('%','${keywords}','%' )
+                OR usr.email LIKE CONCAT('%','${keywords}','%' )
+                OR usr.phone LIKE CONCAT('%','${keywords}','%' )
+            )
+
+            <if test="exceptIds != null and exceptIds.size > 0">
+                AND usr.id NOT in
+                <foreach collection="exceptIds" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+        ORDER by usr.id ASC
+    </select>
+
+    <insert id="batchSave" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO IsuWatch
+        (issueId, userId)
+
+        values
+        <foreach collection="userIds" item="item" separator=",">
+            (#{issueId}, #{item})
+        </foreach>
+    </insert>
+
+    <delete id="remove">
+        DELETE FROM IsuWatch
+        WHERE id=#{id}
+    </delete>
+
+    <insert id="watch" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO IsuWatch
+        (issueId, userId)
+        SELECT ${issueId}, ${userId} FROM dual
+        WHERE NOT EXISTS (
+            SELECT * FROM IsuWatch WHERE issueId = ${id} AND userId=${userId}
+        )
+    </insert>
+
+    <delete id="unwatch">
+        DELETE FROM IsuWatch
+        WHERE issueId=#{issueId} AND userId=#{userId}
+    </delete>
+
+</mapper>

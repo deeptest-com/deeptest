@@ -218,15 +218,6 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
     }
 
     @Override
-    public void watch(Integer id, TstUser user, Boolean status) {
-        if (status) {
-            issueDao.watch(id, user.getId());
-        } else {
-            issueDao.unwatch(id, user.getId());
-        }
-    }
-
-    @Override
     public void assign(Integer id, TstUser user, String content) {
         IsuComments po = new IsuComments(id, "修改经办人", content);
         issueCommentsService.save(po, user);

@@ -29,21 +29,6 @@ public class IssueOptAction extends BaseAction {
 	@Autowired
 	IssueDynamicFormService dynamicFormService;
 
-    @RequestMapping(value = "watch", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> watch(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-
-        Integer id = json.getInteger("id");
-        Boolean status = json.getBoolean("status");
-
-		issueService.watch(id, user, status);
-
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
     @RequestMapping(value = "assign", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> assign(HttpServletRequest request, @RequestBody JSONObject json) {

@@ -31,6 +31,5 @@ public interface IssueService extends BaseService {
 
     void delete(Integer id, TstUser user);
 
-    void watch(Integer id, TstUser user, Boolean status);
     void assign(Integer id, TstUser user, String comments);
 }

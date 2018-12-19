@@ -21,4 +21,20 @@
         ORDER BY o.id ASC
     </select>
 
+    <select id="listByIssueId" parameterType="Map" resultMap="issueLinkMap">
+        SELECT l.reasonId, l.reasonName, o.id, o.title FROM IsuIssue o
+        JOIN IsuLink l ON l.dictIssueId = o.id
+        WHERE l.srcIssueId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY l.reasonId ASC, l.id ASC
+    </select>
+
+    <resultMap id="issueLinkMap" type="Map" autoMapping="true">
+        <id column="id" property="id"/>
+        <id column="title" property="title"/>
+        <id column="reasonId" property="reasonId"/>
+        <id column="reasonName" property="reasonName"/>
+    </resultMap>
+
 </mapper>

@@ -175,6 +175,10 @@
         <collection property="tags" select="com.ngtesting.platform.dao.IssueTagDao.listByIssueId"
                     column="{id=id}">
         </collection>
+
+        <collection property="links" select="com.ngtesting.platform.dao.IssueLinkDao.listByIssueId"
+                    column="{id=id}">
+        </collection>
     </resultMap>
 
 </mapper>

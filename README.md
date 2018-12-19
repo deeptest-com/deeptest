@@ -48,4 +48,4 @@ AngularJS, SockJS, SpringBoot, MyBatis, MySQL
 
 ## Licenses
 
-All source code is licensed under the [GPLv3 License](LICENSE.md).
+All SERVER SIDE source code is licensed under the [GPLv3 License](LICENSE.md).

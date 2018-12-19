@@ -6,7 +6,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueDynamicFormService;
 import com.ngtesting.platform.service.intf.IssueFieldService;
-import com.ngtesting.platform.service.intf.IssueService;
+import com.ngtesting.platform.service.intf.IssueOptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,11 +23,27 @@ import java.util.Map;
 @RequestMapping(Constant.API_PATH_CLIENT + "issue_opt/")
 public class IssueOptAction extends BaseAction {
     @Autowired
-    IssueService issueService;
+    IssueOptService issueOptService;
     @Autowired
     IssueFieldService fieldService;
 	@Autowired
 	IssueDynamicFormService dynamicFormService;
+
+    @RequestMapping(value = "statusTran", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> statusTran(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer projectId = user.getDefaultPrjId();
+
+        Integer id = json.getInteger("id");
+        Integer dictStatusId = json.getInteger("dictStatusId");
+
+        issueOptService.statusTran(id, dictStatusId, projectId);
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
 
     @RequestMapping(value = "assign", method = RequestMethod.POST)
     @ResponseBody
@@ -39,7 +55,7 @@ public class IssueOptAction extends BaseAction {
         Integer userId = json.getInteger("userId");
         String comments = json.getString("comments");
 
-        issueService.assign(id, user, comments);
+        issueOptService.assign(id, user, comments);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

@@ -7,9 +7,9 @@ public class IsuWorkflowTransition extends BaseModel {
     Integer actionPageId;
     String actionPageName;
 
-    String srcStatusId;
+    Integer srcStatusId;
     String srcStatusName;
-    String dictStatusId;
+    Integer dictStatusId;
     String dictStatusName;
 
     Integer workflowId;
@@ -22,11 +22,11 @@ public class IsuWorkflowTransition extends BaseModel {
         super();
     }
 
-    public String getSrcStatusId() {
+    public Integer getSrcStatusId() {
         return srcStatusId;
     }
 
-    public void setSrcStatusId(String srcStatusId) {
+    public void setSrcStatusId(Integer srcStatusId) {
         this.srcStatusId = srcStatusId;
     }
 
@@ -38,11 +38,11 @@ public class IsuWorkflowTransition extends BaseModel {
         this.srcStatusName = srcStatusName;
     }
 
-    public String getDictStatusId() {
+    public Integer getDictStatusId() {
         return dictStatusId;
     }
 
-    public void setDictStatusId(String dictStatusId) {
+    public void setDictStatusId(Integer dictStatusId) {
         this.dictStatusId = dictStatusId;
     }
 

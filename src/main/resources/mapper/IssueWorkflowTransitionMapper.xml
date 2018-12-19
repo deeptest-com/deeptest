@@ -11,6 +11,18 @@
         AND o.deleted != true AND o.disabled != true
     </select>
 
+    <select id="listByStatus" resultType="IsuWorkflowTransition">
+        SELECT o.*, src.label srcStatusName, dict.label dictStatusName FROM IsuWorkflowTransition o
+        JOIN IsuStatus src ON o.srcStatusId=src.id
+        JOIN IsuStatus dict ON o.dictStatusId=dict.id
+
+        JOIN TstProject prj ON prj.id=#{projectId}
+        JOIN IsuWorkflowSolution wfs ON prj.issueWorkflowSolutionId=wfs.id
+
+        WHERE o.workflowId = #{workflowId}
+        AND o.deleted != true AND o.disabled != true
+    </select>
+
     <select id="get" resultType="IsuWorkflowTransition">
         SELECT o.*, src.label srcStatusName, dict.label dictStatusName FROM IsuWorkflowTransition o
         JOIN IsuStatus src ON o.srcStatusId=src.id

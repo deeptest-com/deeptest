@@ -31,5 +31,4 @@ public interface IssueService extends BaseService {
 
     void delete(Integer id, TstUser user);
 
-    void assign(Integer id, TstUser user, String comments);
 }

@@ -6,10 +6,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.model.IsuPage;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.IssueDynamicFormService;
-import com.ngtesting.platform.service.intf.IssueFieldService;
-import com.ngtesting.platform.service.intf.IssueMiscService;
-import com.ngtesting.platform.service.intf.IssueService;
+import com.ngtesting.platform.service.intf.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +30,8 @@ public class IssueAction extends BaseAction {
 	IssueDynamicFormService dynamicFormService;
     @Autowired
     IssueMiscService issueMiscService;
+    @Autowired
+    IssueWorkflowTransitionService issueWorkflowTransitionService;
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
@@ -103,11 +102,13 @@ public class IssueAction extends BaseAction {
 
         Map<String, Object> issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
         Map<String, Object> issuePropValMap = dynamicFormService.genIssuePropValMap(orgId, prjId);
+        Map issueTransMap = issueWorkflowTransitionService.getStatusTrainsMap(prjId);
 
         ret.put("data", po);
         ret.put("page", page);
         ret.put("issuePropMap", issuePropMap);
         ret.put("issuePropValMap", issuePropValMap);
+        ret.put("issueTransMap", issueTransMap);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

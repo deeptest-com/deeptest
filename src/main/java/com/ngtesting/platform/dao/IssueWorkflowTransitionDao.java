@@ -8,6 +8,9 @@ import java.util.List;
 public interface IssueWorkflowTransitionDao {
     List<IsuWorkflowTransition> listTransition(@Param("workflowId") Integer id);
 
+    List<IsuWorkflowTransition> listByStatus(@Param("projectId") Integer projectId,
+                                             @Param("statusId") Integer statusId);
+
     IsuWorkflowTransition get(@Param("id") Integer id,
                               @Param("orgId") Integer orgId);
 

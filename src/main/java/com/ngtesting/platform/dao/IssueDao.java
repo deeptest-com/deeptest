@@ -53,12 +53,4 @@ public interface IssueDao {
 
     Integer delete(@Param("id") Integer id,
                    @Param("projectId") Integer projectId);
-    void watch(@Param("id") Integer id,
-               @Param("userId") Integer userId);
-    void unwatch(@Param("id") Integer id,
-               @Param("userId") Integer userId);
-
-    void assign(@Param("id") Integer id,
-                @Param("userId") Integer userId,
-                @Param("projectId") Integer projectId);
 }

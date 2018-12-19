@@ -217,13 +217,5 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         issueDao.delete(id, user.getDefaultPrjId());
     }
 
-    @Override
-    public void assign(Integer id, TstUser user, String content) {
-        IsuComments po = new IsuComments(id, "修改经办人", content);
-        issueCommentsService.save(po, user);
-
-        issueDao.assign(id, user.getId(), user.getDefaultPrjId());
-    }
-
 }
 

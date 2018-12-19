@@ -94,4 +94,11 @@
         WHERE id=#{projectId} AND orgId=#{orgId}
     </update>
 
+    <select id="getIssueTypeWorkflow" resultType="IsuWorkflowSolutionItem">
+        SELECT * FROM IsuWorkflowSolutionItem o
+        JOIN IsuWorkflowSolution slu ON o.solutionId=slu.id
+        JOIN TstProject p ON p.issueWorkflowSolutionId=slu.id
+        WHERE p.id = #{projectId}
+    </select>
+
 </mapper>

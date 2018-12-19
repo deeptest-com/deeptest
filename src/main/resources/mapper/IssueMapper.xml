@@ -118,23 +118,6 @@
         SET deleted=TRUE, updateTime=NOW()
         WHERE id=#{id} AND projectId=#{projectId}
     </delete>
-    <insert id="watch" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO IsuWatch
-        (issueId, userId)
-        SELECT ${id}, ${userId} FROM dual
-        WHERE NOT EXISTS (
-            SELECT * FROM IsuWatch WHERE issueId = ${id} AND userId=${userId}
-        )
-    </insert>
-    <delete id="unwatch">
-        DELETE FROM IsuWatch
-        WHERE issueId=#{id} AND userId=#{userId}
-    </delete>
-    <update id="assign">
-        UPDATE IsuIssue
-        SET assigneeId=#{userId}, updateTime=NOW()
-        WHERE id=#{id} AND projectId=#{projectId}
-    </update>
 
     <select id="getProjectDefaultPages" resultType="Map">
         SELECT psi.opt, psi.pageId FROM IsuPageSolutionItem psi

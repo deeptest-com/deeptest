@@ -33,7 +33,7 @@ public class ReportIssueServiceImpl extends ReportServiceImpl implements ReportI
 
         Integer countCreate = 0;
         Integer countFinal = 0;
-        for (int i = 0; i < createLs.size() - 1; i++) {
+        for (int i = 0; i < createLs.size(); i++) {
             xList.add(createLs.get(i).get("date").toString());
 
             countCreate += Integer.valueOf(createLs.get(i).get("numb").toString());

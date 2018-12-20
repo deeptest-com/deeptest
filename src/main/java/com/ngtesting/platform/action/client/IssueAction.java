@@ -46,7 +46,7 @@ public class IssueAction extends BaseAction {
 
         IsuPage page = issueService.getPage(orgId, prjId, "create");
 
-        Map<String, Object> issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
+        Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
 
         ret.put("data", po);
         ret.put("page", page);
@@ -73,7 +73,7 @@ public class IssueAction extends BaseAction {
 
         IsuPage page = issueService.getPage(orgId, prjId, "edit");
 
-        Map<String, Object> issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
+        Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
 
         ret.put("data", po);
         ret.put("page", page);
@@ -100,7 +100,7 @@ public class IssueAction extends BaseAction {
 
         IsuPage page = issueService.getPage(orgId, prjId, "view");
 
-        Map<String, Object> issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
+        Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
         Map<String, Object> issuePropValMap = dynamicFormService.genIssuePropValMap(orgId, prjId);
         Map issueTransMap = issueWorkflowTransitionService.getStatusTrainsMap(prjId);
 

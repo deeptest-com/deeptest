@@ -24,13 +24,13 @@ public class IssueDynamicFormServiceImpl extends BaseServiceImpl implements Issu
     }
 
     @Override
-    public Map<String, Object> genIssuePropMap(Integer orgId, Integer projectId) {
-        Map<String, Object> map = new HashMap<>();
+    public Map<String, List<Map>> genIssuePropMap(Integer orgId, Integer projectId) {
+        Map<String, List<Map>> map = new HashMap<>();
 
         List<Map> fields = fetchOrgField(orgId, projectId);
 
         for (Map field : fields) {
-            map.put(field.get("colCode").toString(), field.get("options"));
+            map.put(field.get("colCode").toString(), (List)field.get("options"));
         }
 
         return map;

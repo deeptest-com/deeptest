@@ -42,4 +42,7 @@ public interface ProjectDao {
     List<TstProject> listBrothers(@Param("id") Integer id);
 
     List<Integer> listBrotherIds(@Param("id") Integer projectId);
+
+    List<Integer> listProjectId(@Param("id") Integer id,
+                         @Param("type") String type);
 }

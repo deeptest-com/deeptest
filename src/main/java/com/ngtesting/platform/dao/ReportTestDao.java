@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 import java.util.Map;
 
-public interface TestReportDao {
+public interface ReportTestDao {
     List<TstMsg> query(@Param("userId") Integer userId);
 
     List<Map> chartDesignProgressByProject(@Param("projectId") Integer projectId,

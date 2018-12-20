@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.ReportIssueDao" >
+
+    <select id="chartIssueTrendCreate" resultType="java.util.LinkedHashMap" useCache="false" statementType="CALLABLE">
+        { call chart_issue_trend_create(
+                #{_projectIds,mode=IN,jdbcType=VARCHAR},
+                #{_numb,mode=IN,jdbcType=INTEGER} ) }
+    </select>
+
+    <select id="chartIssueTrendFinal" resultType="java.util.LinkedHashMap" useCache="false" statementType="CALLABLE">
+        { call chart_issue_trend_final(
+                #{_projectIds,mode=IN,jdbcType=VARCHAR},
+                #{_numb,mode=IN,jdbcType=INTEGER} ) }
+    </select>
+
+    <select id="chartIssueAge" resultType="java.util.LinkedHashMap" useCache="false" statementType="CALLABLE">
+        { call chart_issue_age(
+                #{_projectIds,mode=IN,jdbcType=INTEGER},
+                #{_numb,mode=IN,jdbcType=INTEGER} ) }
+    </select>
+
+    <select id="chartIssueDistribByPriority" resultType="java.util.LinkedHashMap" useCache="false" statementType="CALLABLE">
+        { call chart_issue_distrib_by_priority(
+          #{_projectId,mode=IN,jdbcType=INTEGER},
+          #{_projectType,mode=IN,jdbcType=VARCHAR}
+        )}
+    </select>
+
+    <select id="chartIssueDistribByStatus" resultType="java.util.LinkedHashMap" useCache="false" statementType="CALLABLE">
+        { call chart_issue_distrib_by_status(
+          #{_projectId,mode=IN,jdbcType=INTEGER},
+          #{_projectType,mode=IN,jdbcType=VARCHAR}
+        )}
+    </select>
+
+</mapper>

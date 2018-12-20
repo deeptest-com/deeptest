@@ -1,106 +1,18 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.dao.TestReportDao;
-import com.ngtesting.platform.model.TstProject;
-import com.ngtesting.platform.service.intf.TestReportService;
+import com.ngtesting.platform.service.intf.IssueDynamicFormService;
+import com.ngtesting.platform.service.intf.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
-public class TestReportServiceImpl extends BaseServiceImpl implements TestReportService {
+public class ReportServiceImpl extends BaseServiceImpl implements ReportService {
+
     @Autowired
-    TestReportDao reportDao;
-
-    @Override
-    public Map<String, List<Object>> chartDesignProgressByProject(Integer projectId, TstProject.ProjectType type, Integer numb) {
-        Map<String, List<Object>> map = new LinkedHashMap<>();
-
-        List<Object> xList = new LinkedList<>();
-        List<Object> numbList = new LinkedList<>();
-        List<Object> totalList = new LinkedList<>();
-
-        List<Map> ls = reportDao.chartDesignProgressByProject(projectId, type.toString(), numb);
-        Integer sum = null;
-        for (Map record : ls) {
-            if(sum == null) {
-                sum = Integer.valueOf(record.get("sum").toString());
-            }
-            xList.add(record.get("date").toString());
-            numbList.add(record.get("numb"));
-
-            sum += Integer.valueOf(record.get("numb").toString());
-            totalList.add(sum);
-        }
-        map.put("xList", xList);
-        map.put("numbList", numbList);
-        map.put("totalList", totalList);
-
-        return map;
-    }
-
-    @Override
-    public Map<String, List<Object>> chartExcutionProcessByProject(Integer projectId, TstProject.ProjectType type, Integer numb) {
-        List<Map> ls = reportDao.chartExecutionProcessByProject(projectId, type.toString(), numb);
-
-        return countByStatus(ls);
-    }
-
-    @Override
-    public List<Map<Object, Object>> chartExecutionResultByPlan(Integer planId) {
-        List<Map> ls = reportDao.chartExecutionResultByPlan(planId);
-
-        Map<String, String> map = new HashMap();
-        for (Map item : ls) {
-            map.put(item.get("status").toString(), item.get("count").toString());
-        }
-
-        List<Map<Object, Object>> data = orderByStatus(map);
-        return data;
-    }
-
-    @Override
-    public Map<String, List<Object>> chartExecutionProcessByPlan(Integer planId, Integer numb) {
-        List<Map> ls = reportDao.chartExecutionProcessByPlan(planId, numb);
-
-        return countByStatus(ls);
-    }
-
-    @Override
-    public Map<String, Object> chartExecutionProcessByPlanUser(Integer planId, Integer numb) {
-        List<Map> ls = reportDao.chartExecutionProcessByPlanUser(planId, numb);
-
-        return countByUser(ls);
-    }
-
-    @Override
-    public Map<String, Object> chartExecutionProgressByPlan(Integer planId, Integer numb) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        Map<String, List<Object>> series = new LinkedHashMap<>();
-
-        List<Object> xList = new LinkedList<>();
-        List<Object> numbList = new LinkedList<>();
-
-        List<Map> ls = reportDao.chartExecutionProgressByPlan(planId, numb);
-        Integer exeSum = 0;
-        int i = 0;
-        for (Map item : ls) {
-            xList.add(item.get("date").toString());
-
-            Integer totalNumb = Integer.valueOf(item.get("total").toString());
-            Integer exeNumb = item.get("numb")==null?0:Integer.valueOf(item.get("numb").toString());
-            exeSum += exeNumb;
-            numbList.add(totalNumb - exeSum);
-        }
-        map.put("xList", xList);
-
-        map.put("series", series);
-        series.put("剩余用例", numbList);
-
-        return map;
-    }
+    IssueDynamicFormService dynamicFormService;
 
     @Override
     public Map<String, List<Object>> countByStatus(List<Map> ls) {
@@ -120,8 +32,8 @@ public class TestReportServiceImpl extends BaseServiceImpl implements TestReport
             put("numb", null);
         }};
         ls.add(last);
-        for (Map arr : ls) {
-            String dayTemp = arr.get("date").toString();
+        for (Map map1 : ls) {
+            String dayTemp = map1.get("date").toString();
 
             if (!dayTemp.equals(day) && day != null) { // 新的一天
                 xList.add(day);
@@ -148,9 +60,9 @@ public class TestReportServiceImpl extends BaseServiceImpl implements TestReport
             }
 
             // 同一天，对多行内容进行统计
-            if (arr.get("status") != null) {
-                String status = arr.get("status").toString();
-                String numb = arr.get("numb").toString();
+            if (map1.get("status") != null) {
+                String status = map1.get("status").toString();
+                String numb = map1.get("numb").toString();
                 if ("pass".equals(status)) {
                     dayStatus.put("pass", numb);
                 } else if("fail".equals(status)) {
@@ -234,8 +146,53 @@ public class TestReportServiceImpl extends BaseServiceImpl implements TestReport
         return map;
     }
 
+    public Map<String, List<Object>> countAgeByPriority(List<Map> ls, Integer numb, Integer orgId, Integer prjId) {
+        Map<String, List<Map>> issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
+
+        Map<String, List<Object>> map = new LinkedHashMap<>();
+        List<Object> xList = new LinkedList<>();
+        map.put("xList", xList);
+
+        Map<String, String> validMap = new HashMap();
+        for (Map map1 : ls) {
+            String category = map1.get("category").toString();
+            String priority = map1.get("priority").toString();
+            String number = map1.get("numb").toString();
+
+            String key = category + "-" + priority;
+            validMap.put(key, number);
+        }
+
+        int round = 0;
+        for (Map option : issuePropMap.get("priorityId")) {
+            String priority = option.get("label").toString();
+            if (!map.containsKey(option)) {
+                map.put(priority, new LinkedList());
+            }
+
+            for (int i = 1; i <= numb + 1; i++) {
+                String category = i <= numb? "" + i: ">" + (i-1);
+
+                if (round == 0) {
+                    xList.add(category);
+                }
+
+                String key = category + "-" + option.get("label").toString();
+                if (validMap.containsKey(key)) {
+                    map.get(priority).add(validMap.get(key));
+                } else {
+                    map.get(priority).add(0);
+                }
+            }
+
+            round++;
+        }
+
+        return map;
+    }
+
     @Override
-    public List<Map<Object, Object>> orderByStatus(Map map) {
+    public List<Map<Object, Object>> orderByExeStatus(Map map) {
         List<Map<Object, Object>> data2 = new LinkedList<>();
         List<String> keys = Arrays.asList("pass","fail","block", "untest");
 

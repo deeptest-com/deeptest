@@ -10,7 +10,6 @@ import com.ngtesting.platform.service.intf.TestTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -81,6 +80,8 @@ public class TestPlanServiceImpl extends BaseServiceImpl implements TestPlanServ
 
     @Override
     public List<TstPlan> listByProject(Integer projectId, TstProject.ProjectType projectType) {
+        PageHelper.startPage(0, 10);
+
         List<TstPlan> pos;
 
         if (projectType.equals(TstProject.ProjectType.project)) {

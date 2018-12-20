@@ -35,6 +35,7 @@ public class IsuIssue extends BaseModel {
 
     private Date dueTime;
     private Date resolveTime;
+    private Date setFinalTime;
 
     private Integer creatorId;
     private String creatorName;
@@ -91,6 +92,14 @@ public class IsuIssue extends BaseModel {
     private String prop28;
     private String prop29;
     private String prop30;
+
+    public Date getSetFinalTime() {
+        return setFinalTime;
+    }
+
+    public void setSetFinalTime(Date setFinalTime) {
+        this.setFinalTime = setFinalTime;
+    }
 
     public List<IsuLink> getLinks() {
         return links;

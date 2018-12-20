@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface IssueDynamicFormService extends BaseService {
   List<IsuField> listNotUsedField(Integer orgId, Integer projectId, Integer pageId);
-  Map<String, Object> genIssuePropMap(Integer orgId, Integer projectId);
+  Map<String, List<Map>> genIssuePropMap(Integer orgId, Integer projectId);
 
   Map<String, Object> genIssuePropValMap(Integer orgId, Integer projectId);
 

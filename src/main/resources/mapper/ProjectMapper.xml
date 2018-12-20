@@ -110,6 +110,27 @@
         ORDER BY prj.id
     </select>
 
+    <select id="listProjectId" resultType="Integer">
+        SELECT prj.id FROM TstProject prj
+
+        WHERE TRUE
+        <if test="type == 'org'">
+            AND prj.orgId = #{id}
+        </if>
+        <if test="type == 'group'">
+            AND prj.parentId = #{id}
+        </if>
+        <if test="type == 'project'">
+            AND prj.id = #{id}
+        </if>
+
+        AND prj.type = 'project'
+
+        AND prj.deleted != TRUE
+        AND prj.disabled != TRUE
+        ORDER BY prj.id
+    </select>
+
     <insert id="save" parameterType="TstProject" useGeneratedKeys="true" keyProperty="id">
         insert into TstProject (name,descr,orgId,parentId,type,
           deleted,disabled,createTime)

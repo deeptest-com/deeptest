@@ -6,7 +6,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.ProjectService;
-import com.ngtesting.platform.service.intf.TestReportService;
+import com.ngtesting.platform.service.intf.ReportTestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,17 +21,18 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "report/")
-public class ReportAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_CLIENT + "report_test/")
+public class ReportTestAction extends BaseAction {
 
 	@Autowired
-    TestReportService reportService;
+    ReportTestService reportService;
+
     @Autowired
     ProjectService projectService;
 
-    @PostMapping(value = "org")
+    @PostMapping(value = "orgTest")
     @ResponseBody
-    public Map<String, Object> org(HttpServletRequest request, @RequestBody JSONObject json) {
+    public Map<String, Object> orgTest(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();
 
@@ -43,9 +44,9 @@ public class ReportAction extends BaseAction {
         }
 
         Map<String, List<Object>> designReport =
-                reportService.chartDesignProgressByProject(orgId, TstProject.ProjectType.org, 14);
+                reportService.chartDesignProgress(orgId, TstProject.ProjectType.org, 14);
         Map<String, List<Object>> exeReport =
-                reportService.chartExcutionProcessByProject(orgId, TstProject.ProjectType.org, 14);
+                reportService.chartExcutionProcess(orgId, TstProject.ProjectType.org, 14);
 
         data.put("design", designReport);
         data.put("exe", exeReport);
@@ -55,9 +56,9 @@ public class ReportAction extends BaseAction {
         return ret;
     }
 
-    @RequestMapping(value = "project")
+    @RequestMapping(value = "projectTest")
     @ResponseBody
-    public Map<String, Object> project(HttpServletRequest request, @RequestBody JSONObject json) {
+    public Map<String, Object> projectTest(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();
 
@@ -71,9 +72,9 @@ public class ReportAction extends BaseAction {
         }
 
         Map<String, List<Object>> designReport =
-                reportService.chartDesignProgressByProject(projectId, prj.getType(), 14);
+                reportService.chartDesignProgress(projectId, prj.getType(), 14);
         Map<String, List<Object>> exeReport =
-                reportService.chartExcutionProcessByProject(projectId, prj.getType(), 14);
+                reportService.chartExcutionProcess(projectId, prj.getType(), 14);
 
         data.put("design", designReport);
         data.put("exe", exeReport);

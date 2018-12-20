@@ -5,7 +5,7 @@
     <select id="test" resultType="SysNums">
         SELECT o.*
 
-        FROM SysNums o
+        FROM SysNumsDefine o
 
         ORDER BY o.`key` LIMIT 5
     </select>

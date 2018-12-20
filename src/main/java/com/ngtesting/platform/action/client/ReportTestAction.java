@@ -38,15 +38,15 @@ public class ReportTestAction extends BaseAction {
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        Integer orgId = json.getInteger("orgId");
-        if (userNotInOrg(user.getId(), orgId)) {
+        Integer id = json.getInteger("id");
+        if (userNotInOrg(user.getId(), id)) {
             return authFail();
         }
 
         Map<String, List<Object>> designReport =
-                reportService.chartDesignProgress(orgId, TstProject.ProjectType.org, 14);
+                reportService.chartDesignProgress(id, TstProject.ProjectType.org, 14);
         Map<String, List<Object>> exeReport =
-                reportService.chartExcutionProcess(orgId, TstProject.ProjectType.org, 14);
+                reportService.chartExcutionProcess(id, TstProject.ProjectType.org, 14);
 
         data.put("design", designReport);
         data.put("exe", exeReport);
@@ -64,17 +64,17 @@ public class ReportTestAction extends BaseAction {
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        Integer projectId = json.getInteger("projectId");
-        TstProject prj = projectService.get(projectId);
+        Integer id = json.getInteger("id");
+        TstProject prj = projectService.get(id);
         if (prj.getType().equals(TstProject.ProjectType.project) &&
-                userNotInProject(user.getId(), projectId)) {
+                userNotInProject(user.getId(), id)) {
             return authFail();
         }
 
         Map<String, List<Object>> designReport =
-                reportService.chartDesignProgress(projectId, prj.getType(), 14);
+                reportService.chartDesignProgress(id, prj.getType(), 14);
         Map<String, List<Object>> exeReport =
-                reportService.chartExcutionProcess(projectId, prj.getType(), 14);
+                reportService.chartExcutionProcess(id, prj.getType(), 14);
 
         data.put("design", designReport);
         data.put("exe", exeReport);

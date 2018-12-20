@@ -251,6 +251,25 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>export-db</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <exec executable="chmod">
+                                    <arg value="+x" />
+                                    <arg value="${project.basedir}/src/main/docker/mysql/export-db.sh" />
+                                </exec>
+                                <exec executable="${project.basedir}/src/main/docker/mysql/export-db.sh"
+                                      dir="${project.basedir}/src/main/docker/mysql">
+                                </exec>
+                            </tasks>
+                        </configuration>
+                    </execution>
+
+                    <execution>
                         <id>copy-jar</id>
                         <phase>package</phase>
                         <goals>

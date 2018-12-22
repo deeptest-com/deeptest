@@ -34,9 +34,9 @@ public class TestModuleServiceImpl extends BaseServiceImpl implements TestModule
         TstModule vo = JSON.parseObject(JSON.toJSONString(json), TstModule.class);
         Integer id = vo.getId();
 
-        vo.setProjectId(user.getDefaultPrjId());
-
         if (id == null) {
+            vo.setProjectId(user.getDefaultPrjId());
+
             Integer maxOrder = moduleDao.getMaxOrdrNumb(vo.getProjectId());
             if (maxOrder == null) {
                 maxOrder = 0;

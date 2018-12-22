@@ -7,9 +7,9 @@ public interface CasePropertyService extends BaseService {
 
 	Map<String,Map<String,String>> getMap(Integer orgId);
 
-	Map<Integer,String> getPriorityMap(Integer orgId);
+	Map<String,String> getPriorityMap(Integer orgId);
 
-	Map<Integer,String> getTypeMap(Integer orgId);
+	Map<String,String> getTypeMap(Integer orgId);
 
-//	Map<Integer,String> getExeStatusMap(Integer orgId);
+//	Map<String,String> getExeStatusMap(Integer orgId);
 }

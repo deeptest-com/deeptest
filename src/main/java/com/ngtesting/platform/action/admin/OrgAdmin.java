@@ -52,7 +52,7 @@ public class OrgAdmin extends BaseAction {
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = json.getInteger("id");
+		Integer orgId = json.getInteger("orgId");
 
         if (hasNoOrgAdminPriviledge(user.getId(), orgId)) { // 没有管理权限
             return authFail();
@@ -78,7 +78,7 @@ public class OrgAdmin extends BaseAction {
 
         TstOrg org = orgService.save(vo, user);
 
-        if (user.getDefaultOrgId() == null) { // 首个组织
+        if (user.getDefaultOrgId() == null) {
             orgService.changeDefaultOrg(user, org.getId());
         } else if (user.getDefaultOrgId().intValue() == org.getId().intValue() &&
                 !org.getName().equals(user.getDefaultOrgName())) { // 修改当前组织名称
@@ -95,7 +95,7 @@ public class OrgAdmin extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = json.getInteger("id");
+		Integer orgId = json.getInteger("orgId");
 
         if (hasNoOrgAdminPriviledge(user.getId(), orgId)) { // 没有管理权限
             return authFail();
@@ -114,7 +114,7 @@ public class OrgAdmin extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-		Integer orgId = json.getInteger("id");
+		Integer orgId = json.getInteger("orgId");
 		String keywords = json.getString("keywords");
 		Boolean disabled = json.getBoolean("disabled");
 

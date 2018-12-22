@@ -35,8 +35,8 @@ public class IssuePageSolutionAdmin extends BaseAction {
 	public Map<String, Object> load(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
 		List<IsuPageSolution> vos = pageSolutionService.list(orgId);
 
@@ -50,8 +50,8 @@ public class IssuePageSolutionAdmin extends BaseAction {
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
 		Integer solutionId = json.getInteger("id");
 		IsuPageSolution solution = null;
@@ -71,8 +71,8 @@ public class IssuePageSolutionAdmin extends BaseAction {
 	public Map<String, Object> getConfig(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
 		Integer solutionId = json.getInteger("id");
 
@@ -93,8 +93,8 @@ public class IssuePageSolutionAdmin extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
 		IsuPageSolution vo = JSON.parseObject(JSON.toJSONString(json), IsuPageSolution.class);
 		pageSolutionService.save(vo, orgId);
@@ -110,8 +110,8 @@ public class IssuePageSolutionAdmin extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
 
@@ -126,8 +126,8 @@ public class IssuePageSolutionAdmin extends BaseAction {
 	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
 
@@ -149,8 +149,8 @@ public class IssuePageSolutionAdmin extends BaseAction {
 	public Map<String, Object> changeItem(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
 		Integer solutionId = json.getInteger("solutionId");
 		Integer typeId = json.getInteger("type");

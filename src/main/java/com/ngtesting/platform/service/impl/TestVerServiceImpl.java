@@ -34,10 +34,10 @@ public class TestVerServiceImpl extends BaseServiceImpl implements TestVerServic
         TstVer vo = JSON.parseObject(JSON.toJSONString(json), TstVer.class);
         Integer id = vo.getId();
 
-        vo.setProjectId(user.getDefaultPrjId());
-        vo.setOrgId(user.getDefaultOrgId());
-
         if (id == null) {
+            vo.setProjectId(user.getDefaultPrjId());
+            vo.setOrgId(user.getDefaultOrgId());
+
             Integer maxOrder = verDao.getMaxOrdrNumb(vo.getProjectId());
             if (maxOrder == null) {
                 maxOrder = 0;

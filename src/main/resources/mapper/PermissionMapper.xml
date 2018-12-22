@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.ngtesting.platform.dao.PermissionDao" >
+
+    <select id="listOrgPermission" resultType="Map">
+        SELECT r_role_priv.orgId, priv.code, priv.name
+
+        from TstOrgPrivilegeDefine priv
+        join TstOrgRolePrivilegeRelation r_role_priv ON r_role_priv.orgPrivilegeId=priv.id
+
+        where r_role_priv.orgRoleId
+          IN (
+                SELECT r_role_user.orgRoleId
+                  from TstOrgRoleUserRelation r_role_user
+                where r_role_user.userId = ${userId}
+
+                UNION
+
+                SELECT r_role_group.orgRoleId
+                  from TstOrgRoleGroupRelation r_role_group
+                  JOIN TstOrgGroupUserRelation r_group_user ON r_group_user.orgGroupId = r_role_group.groupId
+
+                WHERE r_group_user.userId = ${userId}
+              )
+
+        AND priv.deleted != true and priv.disabled!= true
+        order by priv.id asc
+    </select>
+
+    <select id="listPrjPermission" resultType="Map">
+        select tmp.projectId, CONCAT(define.`code`,'-',define.action) code
+        from TstProjectPrivilegeDefine define
+        left join TstProjectRolePriviledgeRelation r on r.projectPrivilegeDefineId = define.id
+
+        INNER join
+          (select relation.projectId, relation.projectRoleId
+            from TstProjectRoleEntityRelation relation
+            where (
+                (type = 'user' AND relation.entityId = ${userId})
+                or (type = 'group' AND
+                    relation.entityId in (
+                    select grp.id from TstOrgGroup grp
+                    left join TstOrgGroupUserRelation relat on relat.orgGroupId = grp.id
+                    left join TstUser userr on relat.userId = userr.id
+                    where userr.id = ${userId}
+                    UNION
+                    select grp.id from TstOrgGroup grp
+                    where grp.name = '所有人')
+                )
+            )
+        ) tmp
+
+        on r.projectRoleId = tmp.projectRoleId
+
+        where TRUE
+        order by tmp.projectId,  define.`code`;
+    </select>
+
+</mapper>

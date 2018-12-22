@@ -34,8 +34,8 @@ public class IssuePriorityAdmin extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
 		List<IsuPriority> vos = issuePriorityService.list(orgId);
 
@@ -51,8 +51,8 @@ public class IssuePriorityAdmin extends BaseAction {
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
 		IsuPriority po;
@@ -76,8 +76,8 @@ public class IssuePriorityAdmin extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
 		IsuPriority vo = json.getObject("model", IsuPriority.class);
 
@@ -96,8 +96,8 @@ public class IssuePriorityAdmin extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
 
@@ -115,8 +115,8 @@ public class IssuePriorityAdmin extends BaseAction {
 	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
 

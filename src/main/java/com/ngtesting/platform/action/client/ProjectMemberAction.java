@@ -44,15 +44,15 @@ public class ProjectMemberAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
+        Integer prjId = user.getDefaultPrjId();
 
-        Integer projectId = json.getInteger("projectId");
-        if (userNotInProject(user.getId(), projectId)) {
+        if (userNotInProject(user.getId(), prjId)) {
             return authFail();
         }
 
         List<TstProjectRole> projectRoles = projectRoleService.list(orgId, null, null);
 
-        List<TstProjectRoleEntityRelation> entityInRoles = projectRoleEntityRelationService.listByProject(projectId);
+        List<TstProjectRoleEntityRelation> entityInRoles = projectRoleEntityRelationService.listByProject(prjId);
 
         ret.put("projectRoles", projectRoles);
         ret.put("entityInRoles", entityInRoles);
@@ -67,17 +67,17 @@ public class ProjectMemberAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
+        Integer prjId = user.getDefaultPrjId();
 
-        Integer projectId = json.getInteger("projectId");
-        if (userNotInProject(user.getId(), projectId)) {
+        if (userNotInProject(user.getId(), prjId)) {
             return authFail();
         }
 
         List<TstProjectRoleEntityRelation> entityInRoles = projectRoleEntityRelationService.batchSavePers(json, orgId);
 
-        TstProject project = projectService.get(projectId);
-        historyService.create(projectId, user, Constant.MsgType.update.msg,
-                TstHistory.TargetType.project_member, projectId, project.getName());
+        TstProject project = projectService.get(prjId);
+        historyService.create(prjId, user, Constant.MsgType.update.msg,
+                TstHistory.TargetType.project_member, prjId, project.getName());
 
         ret.put("entityInRoles", entityInRoles);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -89,13 +89,13 @@ public class ProjectMemberAction extends BaseAction {
     public Map<String, Object> changeRole(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer prjId = user.getDefaultPrjId();
 
-        Integer projectId = json.getInteger("projectId");
-        if (userNotInProject(user.getId(), projectId)) {
+        if (userNotInProject(user.getId(), prjId)) {
             return authFail();
         }
 
-        List<TstProjectRoleEntityRelation> entityInRoles = projectRoleEntityRelationService.changeRolePers(json);
+        List<TstProjectRoleEntityRelation> entityInRoles = projectRoleEntityRelationService.changeRolePers(json, prjId);
 
         pushSettingsService.pushPrjSettings(user);
 
@@ -109,17 +109,17 @@ public class ProjectMemberAction extends BaseAction {
     public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer prjId = user.getDefaultPrjId();
 
-        Integer projectId = json.getInteger("projectId");
         String type = json.getString("type");
         Integer entityId = json.getInteger("entityId");
 
-        if (userNotInProject(user.getId(), projectId)) {
+        if (userNotInProject(user.getId(), prjId)) {
             return authFail();
         }
 
         List<TstProjectRoleEntityRelation> entityInRoles =
-                projectRoleEntityRelationService.remove(projectId, type, entityId);
+                projectRoleEntityRelationService.remove(prjId, type, entityId);
 
         pushSettingsService.pushPrjSettings(user);
 

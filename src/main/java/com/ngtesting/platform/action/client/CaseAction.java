@@ -47,14 +47,13 @@ public class CaseAction extends BaseAction {
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer orgId = user.getDefaultOrgId();
-		Integer projectId = user.getDefaultPrjId();
+		Integer prjId = user.getDefaultPrjId();
 
-		List<TstCase> ls = caseService.query(projectId);
+		List<TstCase> ls = caseService.query(prjId);
 
-        Map<String, Object> map = customFieldService.fetchProjectField(orgId, projectId);
+        Map<String, Object> map = customFieldService.fetchProjectField(orgId, prjId);
 
         ret.put("data", ls);
-        ret.put("prjId", projectId);
         ret.put("customFields", map.get("fields"));
 		ret.put("casePropMap", map.get("props"));
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -66,18 +65,18 @@ public class CaseAction extends BaseAction {
 	public Map<String, Object> queryForSuiteSelection(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer prjId = user.getDefaultPrjId();
 
-		Integer projectId = json.getInteger("projectId");
         Integer caseProjectId = json.getInteger("caseProjectId");
 		Integer suiteId = json.getInteger("suiteId");
 
-        Integer prjId = caseProjectId == null? projectId: caseProjectId;
-        if (userNotInProject(user.getId(), prjId)) {
+        Integer projectId = caseProjectId == null? prjId: caseProjectId;
+        if (userNotInProject(user.getId(), projectId)) {
             return authFail();
         }
 
-        List<TstCase> vos = caseService.queryForSuiteSelection(prjId, suiteId);
-		List<TstProject> projects = projectDao.listBrothers(projectId);
+        List<TstCase> vos = caseService.queryForSuiteSelection(projectId, suiteId);
+		List<TstProject> projects = projectDao.listBrothers(prjId);
 
 		ret.put("data", vos);
 		ret.put("brotherProjects", projects);
@@ -90,18 +89,18 @@ public class CaseAction extends BaseAction {
 	public Map<String, Object> queryForTaskSelection(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer prjId = user.getDefaultPrjId();
 
-		Integer projectId = json.getInteger("projectId");
         Integer caseProjectId = json.getInteger("caseProjectId");
 		Integer taskId = json.getInteger("taskId");
 
-        Integer prjId = caseProjectId == null? projectId: caseProjectId;
-        if (userNotInProject(user.getId(), prjId)) {
+        Integer projectId = caseProjectId == null? prjId: caseProjectId;
+        if (userNotInProject(user.getId(), projectId)) {
             return authFail();
         }
 
-		List<TstCase> vos = caseService.queryForTaskSelection(prjId, taskId);
-		List<TstProject> projects = projectDao.listBrothers(projectId);
+		List<TstCase> vos = caseService.queryForTaskSelection(projectId, taskId);
+		List<TstProject> projects = projectDao.listBrothers(prjId);
 
 		ret.put("data", vos);
 		ret.put("brotherProjects", projects);
@@ -250,10 +249,9 @@ public class CaseAction extends BaseAction {
     public Map<String, Object> exportAll(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer prjId = user.getDefaultPrjId();
 
-        Integer projectId = user.getDefaultPrjId();
-
-		String excelPath = caseExportService.export(projectId);
+		String excelPath = caseExportService.export(prjId);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		ret.put("excelPath", excelPath);
 

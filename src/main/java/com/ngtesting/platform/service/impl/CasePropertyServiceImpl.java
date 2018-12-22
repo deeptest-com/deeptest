@@ -32,9 +32,9 @@ public class CasePropertyServiceImpl extends BaseServiceImpl implements CaseProp
 
 	@Override
 	public Map<String,Map<String,String>> getMap(Integer orgId) {
-		Map<Integer,String> typeMap = getTypeMap(orgId);
-		Map<Integer,String> priorityMap = getPriorityMap(orgId);
-//		Map<Integer,String> exeStatusMap = getExeStatusMap(orgId);
+		Map<String,String> typeMap = getTypeMap(orgId);
+		Map<String,String> priorityMap = getPriorityMap(orgId);
+//		Map<String,String> exeStatusMap = getExeStatusMap(orgId);
 
 		Map map = new LinkedHashMap();
 		map.put("type", typeMap);
@@ -45,34 +45,34 @@ public class CasePropertyServiceImpl extends BaseServiceImpl implements CaseProp
 	}
 
 	@Override
-	public Map<Integer,String> getTypeMap(Integer orgId) {
+	public Map<String,String> getTypeMap(Integer orgId) {
 		List<TstCaseType> ls = caseTypeDao.list(orgId);
-		Map<Integer,String> map = new LinkedHashMap();
+		Map<String,String> map = new LinkedHashMap();
 		for (TstCaseType item : ls) {
-			map.put(item.getId(), item.getLabel());
+			map.put(item.getId().toString(), item.getLabel());
 		}
 
 		return map;
 	}
 
 	@Override
-	public Map<Integer,String> getPriorityMap(Integer orgId) {
+	public Map<String,String> getPriorityMap(Integer orgId) {
         List<TstCasePriority> ls = casePriorityDao.list(orgId);
 
-        Map<Integer,String> map = new LinkedHashMap();
+        Map<String,String> map = new LinkedHashMap();
 		for (TstCasePriority item : ls) {
-			map.put(item.getId(), item.getLabel());
+			map.put(item.getId().toString(), item.getLabel());
 		}
 
 		return map;
 	}
 
 //	@Override
-//	public Map<Integer,String> getExeStatusMap(Integer orgId) {
+//	public Map<String,String> getExeStatusMap(Integer orgId) {
 //        List<TstCaseExeStatus> ls = caseExeStatusDao.listExeStatus(orgId);
-//        Map<Integer,String> map = new LinkedHashMap();
+//        Map<String,String> map = new LinkedHashMap();
 //		for (TstCaseExeStatus item : ls) {
-//			map.put(item.getId(), item.getLabel());
+//			map.put(item.getId().toString(), item.getLabel());
 //		}
 //
 //		return map;

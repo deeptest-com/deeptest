@@ -37,8 +37,8 @@ public class IssuePageAdmin extends BaseAction {
 	public Map<String, Object> load(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
 		List<IsuPage> pages = pageService.list(orgId);
 
@@ -52,8 +52,8 @@ public class IssuePageAdmin extends BaseAction {
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
 		Integer pageId = json.getInteger("id");
 		IsuPage page = null;
@@ -73,9 +73,9 @@ public class IssuePageAdmin extends BaseAction {
     public Map<String, Object> getDetail(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = userVo.getDefaultOrgId();
-		Integer projectId = userVo.getDefaultPrjId();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = user.getDefaultOrgId();
+		Integer projectId = user.getDefaultPrjId();
 
         Integer pageId = json.getInteger("id");
         IsuPage page = pageService.get(pageId, orgId);
@@ -96,9 +96,9 @@ public class IssuePageAdmin extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
-		Integer projectId = userVo.getDefaultPrjId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
+		Integer projectId = user.getDefaultPrjId();
 
 		IsuPage page = JSON.parseObject(JSON.toJSONString(json), IsuPage.class);
         pageService.save(page, orgId);
@@ -119,8 +119,8 @@ public class IssuePageAdmin extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
 
@@ -135,8 +135,8 @@ public class IssuePageAdmin extends BaseAction {
 	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
 

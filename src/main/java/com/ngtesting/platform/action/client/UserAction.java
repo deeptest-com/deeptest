@@ -33,9 +33,9 @@ public class UserAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer projectId = user.getDefaultPrjId();
+        Integer prjId = user.getDefaultPrjId();
 
-        List<TstUser> users = userDao.getProjectUsers(projectId, 10);
+        List<TstUser> users = userDao.getProjectUsers(prjId, 10);
 
         ret.put("data", users);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -49,10 +49,9 @@ public class UserAction extends BaseAction {
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
+        Integer prjId = user.getDefaultPrjId();
 
-        Integer projectId = json.getInteger("projectId");
-
-        List <TstUser> vos = userService.getProjectUsers(orgId, projectId);
+        List <TstUser> vos = userService.getProjectUsers(orgId, prjId);
 
         ret.put("data", vos);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

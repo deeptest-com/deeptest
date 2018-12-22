@@ -3,11 +3,15 @@ package com.ngtesting.platform.action.client;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.model.TstHistory;
+import com.ngtesting.platform.model.TstPlan;
+import com.ngtesting.platform.model.TstProject;
+import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.AuthService;
 import com.ngtesting.platform.service.intf.HistoryService;
 import com.ngtesting.platform.service.intf.ProjectService;
 import com.ngtesting.platform.service.intf.TestPlanService;
+import com.ngtesting.platform.servlet.PrivPrj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,7 +61,7 @@ public class ProjectAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        Integer projectId = json.getInteger("id");
+        Integer projectId = json.getInteger("projectId");
 
         if (projectId != null) {
             TstProject project = projectService.get(projectId);
@@ -79,7 +83,7 @@ public class ProjectAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
 
-        Integer projectId = json.getInteger("id");
+        Integer projectId = json.getInteger("projectId");
 
         if (projectId != null) {
             TstProject project = projectService.get(projectId);
@@ -104,11 +108,12 @@ public class ProjectAction extends BaseAction {
 
     @ResponseBody
     @PostMapping("/view")
+    @PrivPrj(perms = {"prj-view"}, src = "request")
     public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
-        Integer projectId = json.getInteger("id");
+        Integer projectId = json.getInteger("projectId");
 
         TstProject po = projectService.getWithPrivs(projectId, user.getId());
         if (authService.noProjectAndProjectGroupPrivilege(user.getId(), po)) {
@@ -135,7 +140,6 @@ public class ProjectAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
-        Integer userId = user.getId();
 
         TstProject vo = json.getObject("model", TstProject.class);
 
@@ -155,7 +159,7 @@ public class ProjectAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        Integer projectId = json.getInteger("id");
+        Integer projectId = json.getInteger("projectId");
         TstProject project = projectService.get(projectId);
         if (authService.noProjectAndProjectGroupPrivilege(user.getId(), project)) {
             return authFail();
@@ -174,7 +178,7 @@ public class ProjectAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer projectId = json.getInteger("id");
+        Integer projectId = json.getInteger("projectId");
 
         TstProject vo = projectService.changeDefaultPrj(user, projectId);
         if (vo == null) {

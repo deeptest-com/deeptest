@@ -37,16 +37,16 @@ public class ProjectEnvAction extends BaseAction {
     public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer prjId = user.getDefaultPrjId();
 
-        Integer projectId = json.getInteger("projectId");
-        if (userNotInProject(user.getId(), projectId)) {
+        if (userNotInProject(user.getId(), prjId)) {
             return authFail();
         }
 
         String keywords = json.getString("keywords");
         Boolean disabled = json.getBoolean("disabled");
 
-        List<TstEnv> ls = envService.list(projectId, keywords, disabled);
+        List<TstEnv> ls = envService.list(prjId, keywords, disabled);
 
         ret.put("data", ls);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -58,11 +58,11 @@ public class ProjectEnvAction extends BaseAction {
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer projectId = user.getDefaultPrjId();
+        Integer prjId = user.getDefaultPrjId();
 
         Integer id = json.getInteger("id");
 
-        TstEnv vo = envService.getById(id, projectId);
+        TstEnv vo = envService.getById(id, prjId);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -90,11 +90,11 @@ public class ProjectEnvAction extends BaseAction {
     public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer projectId = user.getDefaultPrjId();
+        Integer prjId = user.getDefaultPrjId();
 
         Integer id = json.getInteger("id");
 
-        Boolean result = envService.delete(id, projectId);
+        Boolean result = envService.delete(id, prjId);
         if (!result) {
             return authFail();
         }
@@ -108,8 +108,9 @@ public class ProjectEnvAction extends BaseAction {
     public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer projectId = json.getInteger("projectId");
-        if (userNotInProject(user.getId(), projectId)) {
+        Integer prjId = user.getDefaultPrjId();
+
+        if (userNotInProject(user.getId(), prjId)) {
             return authFail();
         }
 
@@ -119,12 +120,12 @@ public class ProjectEnvAction extends BaseAction {
         String keywords = json.getString("keywords");
         Boolean disabled = json.getBoolean("disabled");
 
-        Boolean result = envService.changeOrder(id, act, projectId);
+        Boolean result = envService.changeOrder(id, act, prjId);
         if (!result) {
             return authFail();
         }
 
-        List<TstEnv> vos = envService.list(projectId, keywords, disabled);
+        List<TstEnv> vos = envService.list(prjId, keywords, disabled);
 
         ret.put("data", vos);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

@@ -34,16 +34,16 @@ public class ProjectModuleAction extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer prjId = user.getDefaultPrjId();
 
-		Integer projectId = json.getInteger("projectId");
-		if (userNotInProject(user.getId(), projectId)) {
+		if (userNotInProject(user.getId(), prjId)) {
 			return authFail();
 		}
 
 		String keywords = json.getString("keywords");
 		Boolean disabled = json.getBoolean("disabled");
 
-		List<TstModule> ls = moduleService.list(projectId, keywords, disabled);
+		List<TstModule> ls = moduleService.list(prjId, keywords, disabled);
 
         ret.put("data", ls);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -55,11 +55,11 @@ public class ProjectModuleAction extends BaseAction {
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer projectId = user.getDefaultPrjId();
+		Integer prjId = user.getDefaultPrjId();
 
         Integer id = json.getInteger("id");
 
-		TstModule vo = moduleService.getById(id, projectId);
+		TstModule vo = moduleService.getById(id, prjId);
 
         ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -87,11 +87,11 @@ public class ProjectModuleAction extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer projectId = user.getDefaultPrjId();
+		Integer prjId = user.getDefaultPrjId();
 
 		Integer id = json.getInteger("id");
 
-		Boolean result = moduleService.delete(id, projectId);
+		Boolean result = moduleService.delete(id, prjId);
         if (!result) {
             return authFail();
         }
@@ -105,8 +105,9 @@ public class ProjectModuleAction extends BaseAction {
 	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer projectId = json.getInteger("projectId");
-        if (userNotInProject(user.getId(), projectId)) {
+        Integer prjId = user.getDefaultPrjId();
+
+        if (userNotInProject(user.getId(), prjId)) {
             return authFail();
         }
 
@@ -116,12 +117,12 @@ public class ProjectModuleAction extends BaseAction {
         String keywords = json.getString("keywords");
         Boolean disabled = json.getBoolean("disabled");
 
-        Boolean result = moduleService.changeOrder(id, act, projectId);
+        Boolean result = moduleService.changeOrder(id, act, prjId);
         if (!result) {
             return authFail();
         }
 
-		List<TstModule> vos = moduleService.list(projectId, keywords, disabled);
+		List<TstModule> vos = moduleService.list(prjId, keywords, disabled);
 
 		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

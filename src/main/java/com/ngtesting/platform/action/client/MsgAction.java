@@ -59,9 +59,9 @@ public class MsgAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-		Boolean result = msgService.delete(id, userVo.getId());
+		Boolean result = msgService.delete(id, user.getId());
 		if (!result) {
             return authFail();
         }

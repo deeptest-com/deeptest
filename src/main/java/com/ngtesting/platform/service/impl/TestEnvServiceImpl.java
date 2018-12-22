@@ -36,10 +36,10 @@ public class TestEnvServiceImpl extends BaseServiceImpl implements TestEnvServic
         TstEnv vo = JSON.parseObject(JSON.toJSONString(json), TstEnv.class);
         Integer id = vo.getId();
 
-        vo.setProjectId(user.getDefaultPrjId());
-        vo.setOrgId(user.getDefaultOrgId());
-
         if (id == null) {
+            vo.setProjectId(user.getDefaultPrjId());
+            vo.setOrgId(user.getDefaultOrgId());
+
             Integer maxOrder = envDao.getMaxOrdrNumb(vo.getProjectId());
             if (maxOrder == null) {
                 maxOrder = 0;

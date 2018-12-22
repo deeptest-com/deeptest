@@ -39,7 +39,7 @@ public class OrgAction extends BaseAction {
 	public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = json.getInteger("id");
+		Integer orgId = json.getInteger("orgId");
 
         if (userNotInOrg(user.getId(), orgId)) { // 不在组织中
             return authFail();
@@ -67,7 +67,7 @@ public class OrgAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = json.getInteger("id");
+		Integer orgId = json.getInteger("orgId");
         if (userNotInOrg(user.getId(), orgId)) {
             return authFail();
         }

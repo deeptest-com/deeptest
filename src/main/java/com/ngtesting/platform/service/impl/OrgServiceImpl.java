@@ -99,6 +99,7 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
     @Override
     @Transactional
     public void changeDefaultOrg(TstUser user, Integer orgId) {
+	    // 删除时
 	    if (orgId == null) {
             user.setDefaultOrgId(null);
             user.setDefaultOrgName(null);

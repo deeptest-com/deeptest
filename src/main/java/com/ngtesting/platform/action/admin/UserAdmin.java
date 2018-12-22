@@ -11,6 +11,7 @@ import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.OrgGroupUserRelationService;
 import com.ngtesting.platform.service.intf.PushSettingsService;
 import com.ngtesting.platform.service.intf.UserService;
+import com.ngtesting.platform.servlet.PrivOrg;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +35,7 @@ public class UserAdmin extends BaseAction {
 
     @PostMapping(value = "list")
     @ResponseBody
+    @PrivOrg(perms = {"org-admin", "project-admin"})
     public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -142,9 +144,9 @@ public class UserAdmin extends BaseAction {
     public Map<String, Object> removeFromOrg(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = user.getDefaultOrgId();
 
         Integer userId = json.getInteger("userId");
-        Integer orgId = json.getInteger("orgId");
 
         if (userNotInOrg(userId, orgId)) { // 用户不属于当前组织
             return authFail();

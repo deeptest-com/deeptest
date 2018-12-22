@@ -35,12 +35,11 @@ public class IssuePriorityAction extends BaseAction {
 	public Map<String, Object> getByProject(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
+		Integer prjId = user.getDefaultPrjId();
 
-		Integer projectId = json.getInteger("projectId");
-
-        IsuPrioritySolution solution = solutionService.getByProject(projectId, orgId);
+        IsuPrioritySolution solution = solutionService.getByProject(prjId, orgId);
 		List<IsuPrioritySolution> solutions = solutionService.list(orgId);
 
 		ret.put("model", solution);
@@ -55,15 +54,15 @@ public class IssuePriorityAction extends BaseAction {
 	public Map<String, Object> setByProject(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
+		Integer prjId = user.getDefaultPrjId();
 
 		Integer solutionId = json.getInteger("solutionId");
-		Integer projectId = json.getInteger("projectId");
 
-		solutionService.setByProject(solutionId, projectId, orgId);
+		solutionService.setByProject(solutionId, prjId, orgId);
 
-        IsuPrioritySolution solution = solutionService.getByProject(projectId, orgId);
+        IsuPrioritySolution solution = solutionService.getByProject(prjId, orgId);
 		List<IsuPrioritySolution> solutions = solutionService.list(orgId);
 
 		ret.put("model", solution);

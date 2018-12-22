@@ -10,7 +10,7 @@ public interface ProjectRoleEntityRelationService extends BaseService {
     List<TstProjectRoleEntityRelation> listByProject(Integer projectId);
 
     List<TstProjectRoleEntityRelation> batchSavePers(JSONObject json, Integer orgId);
-    List<TstProjectRoleEntityRelation> changeRolePers(JSONObject json);
+    List<TstProjectRoleEntityRelation> changeRolePers(JSONObject json, Integer prjId);
 
     List<TstProjectRoleEntityRelation> remove(Integer projectId, String type, Integer entityId);
 }

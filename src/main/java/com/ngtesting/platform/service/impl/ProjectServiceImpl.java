@@ -223,7 +223,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	@Override
     @Transactional
 	public TstProject changeDefaultPrj(TstUser user, Integer projectId, Boolean pushMsg) {
-	    if (projectId == null) {
+	    if (projectId == null) { // 删除的时候
             setUserDefaultPrjToNullForDelete(projectId);
             projectDao.setDefault(user.getId(), null, null);
 
@@ -290,18 +290,18 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
             for (TstProject child : children) {
                 child = genVo(child, privMap);
 
-                if (child.getPrivs() != null
-                        && child.getPrivs().get("project-view") != null
-                        && child.getPrivs().get("project-view") ) {
-                    childCanView = true;
-                }
+//                if (child.getPrivs() != null
+//                        && child.getPrivs().get("project-view") != null
+//                        && child.getPrivs().get("project-view") ) {
+//                    childCanView = true;
+//                }
                 voList.add(child);
             }
             po.setChildrenNumb(po.getChildren().size());
 
-            if (childCanView) {
-                po.getPrivs().put("project-view", true);
-            }
+//            if (childCanView) {
+//                po.getPrivs().put("project-view", true);
+//            }
         }
 
         return voList;

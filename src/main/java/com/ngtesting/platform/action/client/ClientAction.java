@@ -54,14 +54,14 @@ public class ClientAction extends BaseAction {
         Integer userId = user.getId();
 
         Integer orgIdNew = json.getInteger("orgId");
-        Integer prjIdNew = json.getInteger("prjId");
+        Integer projectIdNew = json.getInteger("projectId");
 
         // 前端上下文变了
         if (orgIdNew != null && orgIdNew.longValue() != orgId.longValue()) { // org不能为空
             orgService.changeDefaultOrg(user, orgId);
         }
-        if (prjIdNew != null && (prjId == null || prjIdNew.longValue() != prjId.longValue())) { // prj可能为空
-            projectService.changeDefaultPrj(user, prjIdNew);
+        if (projectIdNew != null && (prjId == null || projectIdNew.longValue() != prjId.longValue())) { // prj可能为空
+            projectService.changeDefaultPrj(user, projectIdNew);
         }
 
         Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userId);

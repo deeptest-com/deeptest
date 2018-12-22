@@ -43,9 +43,9 @@ public class IssuePageElementAdmin extends BaseAction {
 	public Map<String, Object> saveAll(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-		Integer orgId = userVo.getDefaultOrgId();
-        Integer projectId = userVo.getDefaultPrjId();
+		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		Integer orgId = user.getDefaultOrgId();
+        Integer projectId = user.getDefaultPrjId();
 
         Integer pageId = json.getInteger("pageId");
         List<Map> maps = JSON.parseArray(json.getJSONArray("elems").toJSONString(), Map.class) ;
@@ -67,8 +67,8 @@ public class IssuePageElementAdmin extends BaseAction {
     public Map<String, Object> updateProp(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser userVo = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = userVo.getDefaultOrgId();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = user.getDefaultOrgId();
 
         String id = json.getString("id");
         String prop = json.getString("prop");

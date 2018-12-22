@@ -34,12 +34,12 @@ public class IssueOptAction extends BaseAction {
     public Map<String, Object> statusTran(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer projectId = user.getDefaultPrjId();
+        Integer prjId = user.getDefaultPrjId();
 
         Integer id = json.getInteger("id");
         Integer dictStatusId = json.getInteger("dictStatusId");
 
-        issueOptService.statusTran(id, dictStatusId, projectId);
+        issueOptService.statusTran(id, dictStatusId, prjId);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

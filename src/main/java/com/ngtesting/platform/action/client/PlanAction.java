@@ -12,6 +12,7 @@ import com.ngtesting.platform.service.intf.TestEnvService;
 import com.ngtesting.platform.service.intf.TestPlanService;
 import com.ngtesting.platform.service.intf.TestSuiteService;
 import com.ngtesting.platform.service.intf.TestVerService;
+import com.ngtesting.platform.servlet.PrivPrj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,7 +47,7 @@ public class PlanAction extends BaseAction {
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer projectId = user.getDefaultPrjId();
+        Integer prjId = user.getDefaultPrjId();
 
 		String keywords = json.getString("keywords");
 		String status = json.getString("status");
@@ -54,7 +55,7 @@ public class PlanAction extends BaseAction {
 		Integer pageSize = json.getInteger("pageSize");
 
 		com.github.pagehelper.Page page = PageHelper.startPage(pageNum, pageSize);
-        List<TstPlan> pos = planService.listByPage(projectId, keywords, status);
+        List<TstPlan> pos = planService.listByPage(prjId, keywords, status);
         planService.genVos(pos);
 
 		ret.put("total", page.getTotal());
@@ -68,19 +69,19 @@ public class PlanAction extends BaseAction {
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer projectId = user.getDefaultPrjId();
+        Integer prjId = user.getDefaultPrjId();
 
         Integer id = json.getInteger("id");
 
-		TstPlan vo = planService.getById(id, projectId);
+		TstPlan vo = planService.getById(id, prjId);
 		if (vo == null) {
             return authFail();
         }
 
-		List<TstSuite> suites = suiteService.listForImport(projectId);
+		List<TstSuite> suites = suiteService.listForImport(prjId);
 
-		List<TstVer> vers = verService.list(projectId, null, null);
-		List<TstEnv> envs = envService.list(projectId, null, null);
+		List<TstVer> vers = verService.list(prjId, null, null);
+		List<TstEnv> envs = envService.list(prjId, null, null);
 
         ret.put("data", vo);
 		ret.put("suites", suites);
@@ -95,11 +96,11 @@ public class PlanAction extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer projectId = user.getDefaultPrjId();
+        Integer prjId = user.getDefaultPrjId();
 
         TstPlan vo = JSON.parseObject(JSON.toJSONString(json), TstPlan.class);
 
-		TstPlan po = planService.save(vo, user, projectId);
+		TstPlan po = planService.save(vo, user, prjId);
         if (po == null) {
             return authFail();
         }
@@ -118,11 +119,11 @@ public class PlanAction extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer projectId = user.getDefaultPrjId();
+        Integer prjId = user.getDefaultPrjId();
 
 		Integer id = json.getInteger("id");
 
-		Boolean result = planService.delete(id, projectId);
+		Boolean result = planService.delete(id, prjId);
         if (!result) {
             return authFail();
         }

@@ -40,13 +40,13 @@ public class CaseInTaskAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer orgId = user.getDefaultOrgId();
-        Integer projectId = user.getDefaultPrjId();
+        Integer prjId = user.getDefaultPrjId();
 
         Integer taskId = json.getInteger("taskId");
 
-        List<TstCaseInTask> vos = caseInTaskService.query(taskId, projectId);
+        List<TstCaseInTask> vos = caseInTaskService.query(taskId, prjId);
 
-        Map<String, Object> map = customFieldService.fetchProjectField(orgId, projectId);
+        Map<String, Object> map = customFieldService.fetchProjectField(orgId, prjId);
 
         ret.put("data", vos);
         ret.put("customFields", map.get("fields"));

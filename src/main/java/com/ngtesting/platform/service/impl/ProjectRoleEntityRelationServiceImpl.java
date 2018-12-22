@@ -54,14 +54,13 @@ public class ProjectRoleEntityRelationServiceImpl extends BaseServiceImpl implem
 	}
 
     @Override
-    public List<TstProjectRoleEntityRelation> changeRolePers(JSONObject json) {
-        Integer projectId = json.getInteger("projectId");
+    public List<TstProjectRoleEntityRelation> changeRolePers(JSONObject json, Integer prjId) {
         Integer projectRoleId = json.getInteger("roleId");
         Integer entityId = json.getInteger("entityId");
 
-        projectRoleEntityRelationDao.changeRole(projectId, projectRoleId, entityId);
+        projectRoleEntityRelationDao.changeRole(prjId, projectRoleId, entityId);
 
-        return listByProject(projectId);
+        return listByProject(prjId);
     }
 
     @Override

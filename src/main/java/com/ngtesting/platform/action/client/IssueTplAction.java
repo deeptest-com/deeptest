@@ -49,7 +49,7 @@ public class IssueTplAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = user.getDefaultOrgId();
-        Integer projectId = user.getDefaultPrjId();
+        Integer prjId = user.getDefaultPrjId();
 
         Integer pageNum = json.getInteger("page");
         Integer pageSize = json.getInteger("pageSize");
@@ -57,7 +57,7 @@ public class IssueTplAction extends BaseAction {
 
         JsonRule rule;
         if (!json.getJSONObject("rule").containsKey("condition")) {
-            rule = isuJqlService.buildDefaultJql(orgId, projectId);
+            rule = isuJqlService.buildDefaultJql(orgId, prjId);
         } else {
             rule = json.getObject("rule", JsonRule.class);
         }
@@ -74,12 +74,12 @@ public class IssueTplAction extends BaseAction {
         }
 
         com.github.pagehelper.Page page = PageHelper.startPage(pageNum, pageSize);
-        List<IsuIssue> data = isuJqlService.query(rule, user.getIssueColumns(), orderBy, orgId, projectId);
+        List<IsuIssue> data = isuJqlService.query(rule, user.getIssueColumns(), orderBy, orgId, prjId);
 
         if (init) {
-            List<IsuJqlFilter> filters = isuJqlFilterService.buildUiFilters(rule, orgId, projectId);
+            List<IsuJqlFilter> filters = isuJqlFilterService.buildUiFilters(rule, orgId, prjId);
             List<IsuJqlColumn> columns = isuJqlColumnService.loadColumns(user);
-            Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, projectId);
+            Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
 
             ret.put("rule", rule);
             ret.put("filters", filters);
@@ -101,7 +101,7 @@ public class IssueTplAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
-        Integer projectId = user.getDefaultPrjId();
+        Integer prjId = user.getDefaultPrjId();
 
         Integer pageNum = json.getInteger("page");
         Integer pageSize = json.getInteger("pageSize");
@@ -115,7 +115,7 @@ public class IssueTplAction extends BaseAction {
 
         JsonRule rule;
         if (ruleString == null) {
-            rule = isuJqlService.buildDefaultJql(orgId, projectId);
+            rule = isuJqlService.buildDefaultJql(orgId, prjId);
         } else {
             rule = JSONObject.parseObject(ruleString, JsonRule.class);
         }
@@ -132,14 +132,14 @@ public class IssueTplAction extends BaseAction {
         }
 
         com.github.pagehelper.Page page = PageHelper.startPage(pageNum, pageSize);
-        List<IsuIssue> data = isuJqlService.query(rule, user.getIssueColumns(), orderBy, orgId, projectId);
+        List<IsuIssue> data = isuJqlService.query(rule, user.getIssueColumns(), orderBy, orgId, prjId);
 
         ret.put("rule", rule);
 
         if (init) {
-            List<IsuJqlFilter> filters = isuJqlFilterService.buildUiFilters(rule, orgId, projectId);
+            List<IsuJqlFilter> filters = isuJqlFilterService.buildUiFilters(rule, orgId, prjId);
             List<IsuJqlColumn> columns = isuJqlColumnService.loadColumns(user);
-            Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, projectId);
+            Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
 
             ret.put("filters", filters);
             ret.put("columns", columns);

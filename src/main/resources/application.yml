@@ -79,6 +79,9 @@ sys:
     login: http://{0}#/login
     resetPassword: http://{0}#/reset-password
 
+logging:
+  config: classpath:logback-spring.xml
+
 ---
 spring:
   profiles: dev

@@ -5,11 +5,14 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.exception.AuthException;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.PermissionService;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +25,8 @@ import java.util.Map;
 @Aspect
 @Component
 public class AuthAspect {
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
     @Autowired
     PermissionService permissionService;
 
@@ -43,19 +48,53 @@ public class AuthAspect {
 
     public void beforeCheck(JoinPoint joinPoint, String scope){
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        PrivOrg authAnnotation = signature.getMethod().getAnnotation(PrivOrg.class);
+
+        String key;
+        String src;
+        String[] perms;
+        String opt;
+        String classAndMethod = signature.getMethod().toString();
+
+        if (scope.equals("org")) {
+            PrivOrg authAnnotation = signature.getMethod().getAnnotation(PrivOrg.class);
+            key = authAnnotation.key();
+            src = authAnnotation.src();
+            perms = authAnnotation.perms();
+            opt = authAnnotation.opt();
+        } else {
+            PrivPrj authAnnotation = signature.getMethod().getAnnotation(PrivPrj.class);
+            key = authAnnotation.key();
+            src = authAnnotation.src();
+            perms = authAnnotation.perms();
+            opt = authAnnotation.opt();
+        }
 
         Map<String, Object> map = getParam(joinPoint);
         HttpServletRequest request = (HttpServletRequest)map.get("request");
         JSONObject json = (JSONObject)map.get("json");
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = authAnnotation.src().equals("session")? user.getDefaultOrgId(): json.getInteger(authAnnotation.key());
+        Integer id;
 
-        String[] perms = authAnnotation.perms();
-        String opt = authAnnotation.opt();
+        if (src.equals("request")) {
+            id = json.getInteger(key);
+        } else if (src.equals("session")) {
+            id = scope.equals("org")? user.getDefaultOrgId(): user.getDefaultPrjId();
+        } else { // 未指定
+            id = json.getInteger(key) != null?
+                    json.getInteger(key) :
+                        scope.equals("org")? user.getDefaultOrgId(): user.getDefaultPrjId();
+        }
 
-        Boolean pass = permissionService.hasOrgPerm(scope, perms, opt, user.getId(), orgId, request);
+        Boolean pass = permissionService.hasPerm(scope, perms, opt, user.getId(), id, request);
+
+        logger.info("AuthAspect Has      = " + StringUtils.join(perms, ","));
+        logger.info("AuthAspect Result   = " + pass);
+
+        logger.info("AuthAspect Detail   - " + classAndMethod);
+        logger.info("                      " + "user: " + user.getId()
+                + ", " + scope + "Id = " + id
+                + ", opt: " + opt);
 
         if (!pass) {
             throw new AuthException();

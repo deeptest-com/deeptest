@@ -13,7 +13,7 @@ public @interface PrivOrg {
     String[] perms() default {};
 
     @AliasFor("src")
-    String src() default "session"; // request
+    String src() default "";
 
     @AliasFor("key")
     String key() default "orgId";

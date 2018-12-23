@@ -1,9 +1,0 @@
-Configuration:
-  status: warn
-
-  Properties:
-    Property:
-      - name: log.level.console
-        value: warn
-      - name: log.level.dao
-        value: info

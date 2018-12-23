@@ -12,6 +12,8 @@ import com.ngtesting.platform.service.intf.OrgGroupUserRelationService;
 import com.ngtesting.platform.service.intf.PushSettingsService;
 import com.ngtesting.platform.service.intf.UserService;
 import com.ngtesting.platform.servlet.PrivOrg;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,8 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = Constant.API_PATH_ADMIN + "user")
 public class UserAdmin extends BaseAction {
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
     @Autowired
     private UserService userService;
 

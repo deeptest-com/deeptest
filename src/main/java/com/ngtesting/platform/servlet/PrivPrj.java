@@ -13,7 +13,7 @@ public @interface PrivPrj {
     String[] perms() default {};
 
     @AliasFor("src")
-    String src() default "session";
+    String src() default "";
 
     @AliasFor("key")
     String key() default "projectId";

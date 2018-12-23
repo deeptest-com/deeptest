@@ -61,19 +61,25 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	@Override
     @Transactional
 	public TstOrg save(TstOrg vo, TstUser user) {
-		if (vo.getId() == null) {
-            vo.setDeleted(false);
-            orgDao.save(vo);
+        vo.setDeleted(false);
+        orgDao.save(vo);
 
-			orgDao.initOrg(vo.getId(), user.getId());
-		} else {
-            orgDao.update(vo);
-        }
+        orgDao.initOrg(vo.getId(), user.getId());
 
         pushSettingsService.pushMyOrgs(user);
 
 		return vo;
 	}
+
+    @Override
+    @Transactional
+    public TstOrg update(TstOrg vo, TstUser user) {
+	    orgDao.update(vo);
+
+        pushSettingsService.pushMyOrgs(user);
+
+        return vo;
+    }
 
 	@Override
 	public Boolean delete(Integer id, TstUser user) {

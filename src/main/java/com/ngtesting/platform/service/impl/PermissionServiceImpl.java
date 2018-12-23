@@ -39,7 +39,7 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
     }
 
     private Boolean checkPerm(String[] perms, String opt, Map<String, Boolean> permsMap) {
-        logger.info("AuthAspect Required = " + StringUtils.join(permsMap.keySet(), ","));
+        logger.info("AuthAspect Has      = " + StringUtils.join(permsMap.keySet(), ","));
 
         if ("or".equals(opt)) {
             for (String p : perms) {

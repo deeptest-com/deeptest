@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.intf;
 
 import com.ngtesting.platform.model.TstOrg;
 import com.ngtesting.platform.model.TstUser;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -13,7 +14,10 @@ public interface OrgService extends BaseService {
 
 	TstOrg get(Integer id);
 
-	Boolean delete(Integer id, TstUser user);
+    @Transactional
+    TstOrg update(TstOrg vo, TstUser user);
+
+    Boolean delete(Integer id, TstUser user);
 
 	void changeDefaultOrg(TstUser user, Integer orgId);
     void setUserDefaultOrgPrjToNullForDelete(Integer orgId);

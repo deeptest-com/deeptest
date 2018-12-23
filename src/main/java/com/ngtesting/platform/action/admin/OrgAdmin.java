@@ -7,6 +7,7 @@ import com.ngtesting.platform.model.TstOrg;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.OrgService;
 import com.ngtesting.platform.service.intf.PushSettingsService;
+import com.ngtesting.platform.servlet.PrivCommon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +33,7 @@ public class OrgAdmin extends BaseAction {
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
+	@PrivCommon(check="false")
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -67,14 +69,11 @@ public class OrgAdmin extends BaseAction {
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
+    @PrivCommon(check="false")
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody TstOrg vo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = vo.getId();
-
-        if (orgId != null && hasNoOrgAdminPriviledge(user.getId(), orgId)) { // 没有管理权限
-            return authFail();
-        }
 
         TstOrg org = orgService.save(vo, user);
 
@@ -89,6 +88,27 @@ public class OrgAdmin extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> update(HttpServletRequest request, @RequestBody TstOrg vo) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = vo.getId();
+
+        TstOrg org = orgService.update(vo, user);
+
+        if (user.getDefaultOrgId() == null) {
+            orgService.changeDefaultOrg(user, org.getId());
+        } else if (user.getDefaultOrgId().intValue() == org.getId().intValue() &&
+                !org.getName().equals(user.getDefaultOrgName())) { // 修改当前组织名称
+            user.setDefaultOrgName(vo.getName());
+            pushSettingsService.pushOrgSettings(user);
+        }
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody

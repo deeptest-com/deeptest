@@ -11,7 +11,6 @@ import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.OrgGroupUserRelationService;
 import com.ngtesting.platform.service.intf.PushSettingsService;
 import com.ngtesting.platform.service.intf.UserService;
-import com.ngtesting.platform.servlet.PrivOrg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,7 @@ public class UserAdmin extends BaseAction {
 
     @PostMapping(value = "list")
     @ResponseBody
-    @PrivOrg(perms = {"org-admin", "project-admin"})
+//    @PrivOrg(perms = {"org-admin", "project-admin"})
     public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 

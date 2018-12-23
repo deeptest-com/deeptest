@@ -88,32 +88,51 @@ public class AuthAspect {
 
         Boolean pass = permissionService.hasPerm(scope, perms, opt, user.getId(), id, request);
 
-        logger.info("AuthAspect Has      = " + StringUtils.join(perms, ","));
-        logger.info("AuthAspect Result   = " + pass);
-
-        logger.info("AuthAspect Detail   - " + classAndMethod);
-        logger.info("                      " + "user: " + user.getId()
-                + ", " + scope + "Id = " + id
-                + ", opt: " + opt);
+        log(perms, pass, classAndMethod, user, id, opt);
 
         if (!pass) {
             throw new AuthException();
         }
     }
 
-//    @Before("execution(* com.ngtesting.platform.service.impl.UserServiceImpl.list(..))")
-//    public void before(JoinPoint joinPoint){
-//        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-//        Method method = signature.getMethod();
-//        System.out.println("方法规则式拦截,"+method.getName());
-//    }
+    @Before("execution(* com.ngtesting.platform.action.admin.*.*(..))")
+    public void before(JoinPoint joinPoint){
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        PrivCommon authAnnotation = signature.getMethod().getAnnotation(PrivCommon.class);
+
+        Map<String, Object> map = getParam(joinPoint);
+        HttpServletRequest request = (HttpServletRequest)map.get("request");
+        JSONObject json = (JSONObject)map.get("json");
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+
+        String classAndMethod = signature.getMethod().toString();
+        if (authAnnotation != null && authAnnotation.check() != null && authAnnotation.check().equals("false")) {
+            String perms[] = { "@PrivCommon(check=\"false\")" };
+            log(perms, true, classAndMethod, user, null, null);
+
+            return;
+        }
+
+        String perms[] = { "org-admin" };
+        String opt = "or";
+
+        Integer orgId = json.getInteger("orgId") != null? json.getInteger("orgId") : user.getDefaultOrgId();
+
+        Boolean pass = permissionService.hasPerm("org", perms, opt, user.getId(), orgId, request);
+
+        log(perms, pass, classAndMethod, user, orgId, opt);
+
+        if (!pass) {
+            throw new AuthException();
+        }
+    }
 
     private Map<String, Object> getParam(JoinPoint joinPoint){
         Map<String, Object> map = new HashMap<>();
 
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Method method = methodSignature.getMethod();
-        PrivOrg authAnnotation = method.getAnnotation(PrivOrg.class);
 
         Parameter[] params =  method.getParameters();
 
@@ -129,6 +148,25 @@ public class AuthAspect {
         }
 
         return map;
+    }
+
+    private void log(String[] perms, Boolean pass, String classAndMethod, TstUser user, Integer orgId, String opt){
+
+        logger.info("AuthAspect Require  = " + StringUtils.join(perms, ","));
+        logger.info("AuthAspect Result   = " + pass);
+
+        logger.info("AuthAspect Detail   - " + classAndMethod);
+
+        String info = "                      " + "user: " + user.getId() + ", " + user.getEmail();
+
+        if (orgId != null) {
+            info += ", orgId = " + orgId;
+        }
+        if (opt != null) {
+            info += ", opt: " + opt;
+        }
+
+        logger.info(info);
     }
 
 }

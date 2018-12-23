@@ -66,6 +66,8 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
         Object obj = request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PERMISSION);
         if (obj == null) {
             permsMap = genPermsMap(userId, request);
+        } else {
+            permsMap = (Map) obj;
         }
 
         return permsMap;

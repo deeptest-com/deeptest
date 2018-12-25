@@ -50,6 +50,8 @@ mybatis:
   mapperLocations: classpath:mapper/*.xml
   typeAliasesPackage: com.ngtesting.platform.model
   typeHandlersPackage: com.ngtesting.platform.typehandler
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 pagehelper:
     helperDialect: mysql

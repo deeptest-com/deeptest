@@ -23,21 +23,21 @@
 
     <select id="getDetail" resultMap="taskMap">
         SELECT task.*,
-        usr.nickname userName,
+--         usr.nickname userName,
         project.name projectName,
         caseProject.name caseProjectName,
-        env.label envName,
-        assignee.id assigneeId, assignee.nickname assigneeNickname, assignee.avatar assigneeAvatar
+        env.label envName
+--         assignee.id assigneeId, assignee.nickname assigneeNickname, assignee.avatar assigneeAvatar
 
         FROM TstTask task
 
-        JOIN TstUser usr ON task.userId = usr.id
-        JOIN TstProject project ON task.projectId = project.id
+--         LEFT JOIN TstUser usr ON task.userId = usr.id
+        LEFT JOIN TstProject project ON task.projectId = project.id
         LEFT JOIN TstProject caseProject ON task.caseProjectId = caseProject.id
         LEFT JOIN TstEnv env ON task.envId = env.id
 
-        LEFT JOIN TstTaskAssigneeRelation r on r.taskId = task.id
-        LEFT JOIN TstUser assignee on r.assigneeId = assignee.id
+--         LEFT JOIN TstTaskAssigneeRelation r on r.taskId = task.id
+--         LEFT JOIN TstUser assignee on r.assigneeId = assignee.id
 
         WHERE task.id=#{id}
         <if test="projectId != null">

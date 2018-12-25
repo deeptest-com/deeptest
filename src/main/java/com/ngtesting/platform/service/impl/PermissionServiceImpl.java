@@ -1,6 +1,7 @@
 package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.dao.AuthDao;
 import com.ngtesting.platform.dao.PermissionDao;
 import com.ngtesting.platform.service.intf.PermissionService;
 import org.apache.commons.lang3.StringUtils;
@@ -20,12 +21,14 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
 
     @Autowired
     PermissionDao permissionDao;
+    @Autowired
+    AuthDao authDao;
 
     @Override
-    public Boolean hasPerm(String scope, String[] perms, String opt, Integer userId, Integer orgId, HttpServletRequest request) {
+    public Boolean hasPerm(String scope, String[] perms, String opt, Integer userId, Integer entityId, HttpServletRequest request) {
         Map<String, Map<String, Boolean>> permsMap = getPermsMap(userId, request);
 
-        Boolean pass = permsMap.get(scope) == null? false: checkPerm(perms, opt, permsMap.get(scope));
+        Boolean pass = permsMap.get(scope) == null? false: checkPerm(perms, opt, permsMap.get(scope), entityId);
 
         // 基本都不用访问数据库，二次查询只会发生在：
         // 1. 权限有所更新
@@ -33,16 +36,31 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
         // 3. 非法攻击（模拟了非法的orgId、prjId等请求参数）
         if (!pass) {
             permsMap = genPermsMap(userId, request);
-            pass = checkPerm(perms, opt, permsMap.get(scope));
+            pass = checkPerm(perms, opt, permsMap.get(scope), entityId);
         }
         return pass;
     }
 
-    private Boolean checkPerm(String[] perms, String opt, Map<String, Boolean> permsMap) {
+    @Override
+    public Boolean viewPerm(String scope, String opt, Integer userId, Integer entityId, HttpServletRequest request) {
+        if (scope.equals("org")) {
+            if (authDao.userNotInOrg(userId, entityId)) { // 不在组织中
+                return Boolean.FALSE;
+            }
+        } else {
+            if (authDao.userNotInProject(userId, entityId)) { // 不在组织中
+                return Boolean.FALSE;
+            }
+        }
+        return Boolean.TRUE;
+    }
+
+    private Boolean checkPerm(String[] perms, String opt, Map<String, Boolean> permsMap, Integer entityId) {
         logger.info("AuthAspect Has      = " + StringUtils.join(permsMap.keySet(), ","));
 
         if ("or".equals(opt)) {
             for (String p : perms) {
+                p = entityId + "-" + p;
                 if (permsMap.get(p) != null && permsMap.get(p)) {
                     return true;
                 }
@@ -51,6 +69,7 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
             return false;
         } else {
             for (String p : perms) {
+                p = entityId + "-" + p;
                 if (permsMap.get(p) == null || permsMap.get(p) == false) {
                     return false;
                 }
@@ -88,7 +107,7 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
 
         Map<String, Boolean> ret = new HashMap<>();
         for (Map map : ls) {
-            ret.put(map.get("code").toString(), true);
+            ret.put(map.get("entityId").toString() + "-" + map.get("code").toString(), true);
         }
 
         return ret;
@@ -99,7 +118,7 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
 
         Map<String, Boolean> ret = new HashMap<>();
         for (Map map : ls) {
-            ret.put(map.get("code").toString(), true);
+            ret.put(map.get("entityId").toString() + "-" + map.get("code").toString(), true);
         }
 
         return ret;

@@ -11,6 +11,7 @@ import com.ngtesting.platform.service.intf.AuthService;
 import com.ngtesting.platform.service.intf.HistoryService;
 import com.ngtesting.platform.service.intf.ProjectService;
 import com.ngtesting.platform.service.intf.TestPlanService;
+import com.ngtesting.platform.servlet.PrivOrg;
 import com.ngtesting.platform.servlet.PrivPrj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -39,6 +40,7 @@ public class ProjectAction extends BaseAction {
 
     @ResponseBody
     @PostMapping("/list")
+    @PrivOrg
     public Object list(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -57,6 +59,7 @@ public class ProjectAction extends BaseAction {
 
     @ResponseBody
     @PostMapping("/get")
+    @PrivPrj
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -78,6 +81,7 @@ public class ProjectAction extends BaseAction {
 
     @ResponseBody
     @PostMapping("/getInfo")
+    @PrivPrj
     public Map<String, Object> getInfo(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -108,7 +112,7 @@ public class ProjectAction extends BaseAction {
 
     @ResponseBody
     @PostMapping("/view")
-    @PrivPrj(perms = {"prj-view"}, src = "request")
+    @PrivPrj()
     public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -136,6 +140,7 @@ public class ProjectAction extends BaseAction {
 
     @ResponseBody
     @PostMapping("/save")
+    @PrivOrg(perms = {"project-admin"})
     public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -155,6 +160,7 @@ public class ProjectAction extends BaseAction {
 
     @PostMapping(value = "delete")
     @ResponseBody
+    @PrivOrg(perms = {"project-admin"})
     public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -174,6 +180,7 @@ public class ProjectAction extends BaseAction {
     // 来源于前端上下文的变化
     @ResponseBody
     @PostMapping("/change")
+    @PrivPrj()
     public Map<String, Object> change(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 

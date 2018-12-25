@@ -86,7 +86,12 @@ public class AuthAspect {
                         scope.equals("org")? user.getDefaultOrgId(): user.getDefaultPrjId();
         }
 
-        Boolean pass = permissionService.hasPerm(scope, perms, opt, user.getId(), id, request);
+        Boolean pass;
+        if (perms.length == 0) { // 查看权限
+            pass = permissionService.viewPerm(scope, opt, user.getId(), id, request);
+        } else {
+            pass = permissionService.hasPerm(scope, perms, opt, user.getId(), id, request);
+        }
 
         log(perms, pass, classAndMethod, user, id, opt);
 
@@ -152,7 +157,7 @@ public class AuthAspect {
 
     private void log(String[] perms, Boolean pass, String classAndMethod, TstUser user, Integer orgId, String opt){
 
-        logger.info("AuthAspect Require  = " + StringUtils.join(perms, ","));
+        logger.info("AuthAspect Require  = " + (perms.length == 0?"view":StringUtils.join(perms, ",")));
         logger.info("AuthAspect Result   = " + pass);
 
         logger.info("AuthAspect Detail   - " + classAndMethod);

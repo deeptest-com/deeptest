@@ -14,7 +14,7 @@
     <select id="queryCaseWithStepInfoByPrj" resultMap="queryCaseWithStepInfoByPrjMap">
         SELECT
 	        o.id,o.name,o.typeId,o.priorityId,o.isLeaf,o.pId,
-	        s.ordr,s.opt,s.expect,s.caseId,  t.label, p.label
+	        s.ordr,s.opt,s.expect,s.caseId,  t.label typeName, p.label priorityName
         FROM
             TstCase o
         LEFT JOIN TstCaseStep s ON o.id = s.caseId
@@ -185,7 +185,8 @@
     <resultMap id="queryCaseWithStepInfoByPrjMap" type="TstCase">
         <id column="id" property="id" jdbcType="VARCHAR"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
-        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="typeName" property="typeName" jdbcType="VARCHAR"/>
+        <result column="priorityName" property="priorityName" jdbcType="VARCHAR"/>
         <result column="isLeaf" property="isLeaf" jdbcType="INTEGER" />
         <result column="pId" property="pId" jdbcType="INTEGER" />
         <!-- ofType steps集合中的对象类型 -->

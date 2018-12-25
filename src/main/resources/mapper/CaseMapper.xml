@@ -14,7 +14,7 @@
     <select id="queryCaseWithStepInfoByPrj" resultMap="queryCaseWithStepInfoByPrjMap">
         SELECT
 	        o.id,o.name,o.typeId,o.priorityId,o.isLeaf,o.pId,
-	        s.ordr,s.opt,s.expect,s.caseId,  t.typeName, p.priorityName
+	        s.ordr,s.opt,s.expect,s.caseId,  t.label, p.label
         FROM
             TstCase o
         LEFT JOIN TstCaseStep s ON o.id = s.caseId

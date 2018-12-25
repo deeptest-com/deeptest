@@ -112,7 +112,7 @@ public class ProjectAction extends BaseAction {
 
     @ResponseBody
     @PostMapping("/view")
-    @PrivPrj()
+    @PrivPrj
     public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -180,7 +180,7 @@ public class ProjectAction extends BaseAction {
     // 来源于前端上下文的变化
     @ResponseBody
     @PostMapping("/change")
-    @PrivPrj()
+    @PrivPrj
     public Map<String, Object> change(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 

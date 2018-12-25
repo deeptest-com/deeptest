@@ -20,4 +20,6 @@ public interface IssueWorkflowService extends BaseService {
     Map<String, IsuWorkflowTransition> getTransitionMap(Integer id);
 
     Boolean setDefault(Integer id, Integer orgId);
+
+    Boolean delete(Integer id, Integer orgId);
 }

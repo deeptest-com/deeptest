@@ -9,7 +9,7 @@ public interface IssuePrioritySolutionService extends BaseService {
 
     List<IsuPrioritySolution> list(Integer orgId, Integer prjId);
 
-    IsuPrioritySolution get(Integer id, Integer orgId);
+//    IsuPrioritySolution get(Integer id, Integer orgId);
     IsuPrioritySolution getDetail(Integer solutionId, Integer orgId);
 
 	IsuPrioritySolution save(IsuPrioritySolution vo, Integer orgId);

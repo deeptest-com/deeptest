@@ -19,28 +19,38 @@ public class CustomFieldOptionServiceImpl extends BaseServiceImpl implements Iss
     CustomFieldDao customFieldDao;
 
     @Override
-    public List<CustomFieldOption> listVos(Integer fieldId) {
-        List<CustomFieldOption> ls = customFieldOptionDao.listByFieldId(fieldId);
+    public List<CustomFieldOption> list(Integer fieldId, Integer orgId) {
+        List<CustomFieldOption> ls = customFieldOptionDao.listByFieldId(fieldId, orgId);
         return ls;
     }
 
     @Override
+    @Transactional
+    public CustomFieldOption get(Integer id, Integer fieldId, Integer orgId) {
+        return customFieldOptionDao.get(id, fieldId, orgId);
+    }
+
+    @Override
     public CustomFieldOption save(CustomFieldOption vo, Integer orgId) {
-        CustomField field = customFieldDao.get(vo.getFieldId(), orgId);
-        if (field == null) {
-            return null;
-        }
+        vo.setOrgId(orgId);
 
         if (vo.getId() == null) {
-            Integer maxOrder = customFieldOptionDao.getMaxOrder(vo.getFieldId());
+            CustomField field = customFieldDao.get(vo.getFieldId(), orgId);
+            if (field == null) {
+                return null;
+            }
+
+            Integer maxOrder = customFieldOptionDao.getMaxOrder(vo.getFieldId(), orgId);
             if (maxOrder == null) {
                 maxOrder = 0;
             }
             vo.setOrdr(maxOrder + 10);
-
             customFieldOptionDao.save(vo);
         } else {
-            customFieldOptionDao.update(vo);
+            Integer count = customFieldOptionDao.update(vo);
+            if (count == 0) {
+                return null;
+            }
         }
 
         return vo;
@@ -48,13 +58,8 @@ public class CustomFieldOptionServiceImpl extends BaseServiceImpl implements Iss
 
     @Override
     public Boolean delete(Integer id, Integer fieldId, Integer orgId) {
-        CustomFieldOption option = customFieldOptionDao.get(id, fieldId, orgId);
-        if (option == null) {
-            return false;
-        }
-
-        customFieldOptionDao.delete(id);
-        return true;
+        Integer count = customFieldOptionDao.delete(id, orgId);
+        return count > 0;
     }
 
     @Override
@@ -64,16 +69,11 @@ public class CustomFieldOptionServiceImpl extends BaseServiceImpl implements Iss
             return false;
         }
 
-        CustomField field = customFieldDao.get(curr.getFieldId(), orgId);
-        if (field == null) {
-            return false;
-        }
-
         CustomFieldOption neighbor = null;
         if ("up".equals(act)) {
-            neighbor = customFieldOptionDao.getPrev(curr.getOrdr(), fieldId);
+            neighbor = customFieldOptionDao.getPrev(curr.getOrdr(), fieldId, orgId);
         } else if ("down".equals(act)) {
-            neighbor = customFieldOptionDao.getNext(curr.getOrdr(), fieldId);
+            neighbor = customFieldOptionDao.getNext(curr.getOrdr(), fieldId, orgId);
         }
 
         if (neighbor == null) {
@@ -96,16 +96,10 @@ public class CustomFieldOptionServiceImpl extends BaseServiceImpl implements Iss
             return false;
         }
 
-        Integer count = customFieldOptionDao.removeDefault(fieldId);
-        count = customFieldOptionDao.setDefault(id, fieldId);
+        Integer count = customFieldOptionDao.removeDefault(fieldId, orgId);
+        count = customFieldOptionDao.setDefault(id, fieldId, orgId);
 
         return count > 0;
-    }
-
-    @Override
-    @Transactional
-    public CustomFieldOption get(Integer id, Integer fieldId, Integer orgId) {
-        return customFieldOptionDao.get(id, fieldId, orgId);
     }
 
 }

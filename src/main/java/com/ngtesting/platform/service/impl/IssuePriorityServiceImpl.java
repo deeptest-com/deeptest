@@ -41,6 +41,7 @@ public class IssuePriorityServiceImpl extends BaseServiceImpl implements IssuePr
 
 	@Override
 	public IsuPriority save(IsuPriority vo, Integer orgId) {
+		vo.setOrgId(orgId);
 
 		if (vo.getId() == null) {
 			Integer maxOrder = issuePriorityDao.getMaxOrdrNumb(orgId);
@@ -48,8 +49,6 @@ public class IssuePriorityServiceImpl extends BaseServiceImpl implements IssuePr
 				maxOrder = 0;
 			}
 			vo.setOrdr(maxOrder + 10);
-
-			vo.setOrgId(orgId);
 			issuePriorityDao.save(vo);
 		} else {
 			Integer count = issuePriorityDao.update(vo);
@@ -64,11 +63,8 @@ public class IssuePriorityServiceImpl extends BaseServiceImpl implements IssuePr
 	@Override
 	public Boolean delete(Integer id, Integer orgId) {
 		Integer count = issuePriorityDao.delete(id, orgId);
-		if (count == 0) {
-			return false;
-		}
 
-		return true;
+		return count > 0;
 	}
 
 	@Override
@@ -77,10 +73,7 @@ public class IssuePriorityServiceImpl extends BaseServiceImpl implements IssuePr
 		issuePriorityDao.removeDefault(orgId);
 
 		Integer count = issuePriorityDao.setDefault(id, orgId);
-		if (count == 0) {
-			return false;
-		}
-		return true;
+		return count > 0;
 	}
 
 	@Override

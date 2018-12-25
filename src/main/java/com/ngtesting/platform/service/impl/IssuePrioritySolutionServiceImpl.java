@@ -33,10 +33,10 @@ public class IssuePrioritySolutionServiceImpl extends BaseServiceImpl implements
         return ls;
     }
 
-	@Override
-	public IsuPrioritySolution get(Integer id, Integer orgId) {
-		return solutionDao.get(id, orgId);
-	}
+//	@Override
+//	public IsuPrioritySolution get(Integer id, Integer orgId) {
+//		return solutionDao.get(id, orgId);
+//	}
     @Override
     public IsuPrioritySolution getDetail(Integer id, Integer orgId) {
         return solutionDao.getDetail(id, orgId);
@@ -44,9 +44,9 @@ public class IssuePrioritySolutionServiceImpl extends BaseServiceImpl implements
 
     @Override
 	public IsuPrioritySolution save(IsuPrioritySolution vo, Integer orgId) {
+		vo.setOrgId(orgId);
 
 		if (vo.getId() == null) {
-			vo.setOrgId(orgId);
 			solutionDao.save(vo);
 		} else {
 			Integer count = solutionDao.update(vo);

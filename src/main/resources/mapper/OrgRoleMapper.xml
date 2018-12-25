@@ -21,10 +21,7 @@
 
     <select id="get" resultType="TstOrgRole">
         SELECT * FROM TstOrgRole role
-        WHERE role.id = #{id}
-        <if test="orgId != null">
-            AND role.orgId = #{orgId}
-        </if>
+        WHERE role.id = #{id} AND role.orgId = #{orgId}
     </select>
 
     <insert id="save" parameterType="TstOrgRole" useGeneratedKeys="true" keyProperty="id">

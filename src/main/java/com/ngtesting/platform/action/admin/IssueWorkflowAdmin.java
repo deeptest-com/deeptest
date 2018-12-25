@@ -132,9 +132,12 @@ public class IssueWorkflowAdmin extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = user.getDefaultOrgId();
+
 		Integer id = json.getInteger("id");
 
-//		issueWorkflowService.delete(id);
+		issueWorkflowService.delete(id, orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

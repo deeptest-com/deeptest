@@ -51,11 +51,8 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
 	@Override
 	public Boolean delete(Integer id, Integer orgId) {
         Integer count = caseTypeDao.delete(id, orgId);
-        if (count == 0) {
-            return false;
-        }
 
-        return true;
+        return count > 0;
 	}
 
 	@Override
@@ -64,10 +61,7 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
         caseTypeDao.removeDefault(orgId);
 
         Integer count = caseTypeDao.setDefault(id, orgId);
-        if (count == 0) {
-            return false;
-        }
-		return true;
+        return count > 0;
 	}
 
 	@Override

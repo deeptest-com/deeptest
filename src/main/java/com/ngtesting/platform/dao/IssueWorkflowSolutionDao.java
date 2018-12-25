@@ -10,13 +10,15 @@ public interface IssueWorkflowSolutionDao {
 
     List<IsuWorkflowSolution> list(Integer orgId);
 
-    IsuWorkflowSolution get(@Param("id") Integer id, @Param("orgId") Integer orgId);
+    IsuWorkflowSolution get(@Param("id") Integer id,
+                            @Param("orgId") Integer orgId);
 
     void save(IsuWorkflowSolution vo);
 
     Integer update(IsuWorkflowSolution vo);
 
-    Integer delete(@Param("id") Integer id, @Param("orgId") Integer orgId);
+    Integer delete(@Param("id") Integer id,
+                   @Param("orgId") Integer orgId);
 
     Integer removeDefault(@Param("orgId") Integer orgId);
     Integer setDefault(@Param("id") Integer id,

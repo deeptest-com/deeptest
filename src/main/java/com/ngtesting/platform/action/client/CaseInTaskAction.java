@@ -46,7 +46,7 @@ public class CaseInTaskAction extends BaseAction {
 
         List<TstCaseInTask> vos = caseInTaskService.query(taskId, prjId);
 
-        Map<String, Object> map = customFieldService.fetchProjectField(orgId, prjId);
+        Map<String, Object> map = customFieldService.fetchProjectFieldForCase(orgId, prjId);
 
         ret.put("data", vos);
         ret.put("customFields", map.get("fields"));

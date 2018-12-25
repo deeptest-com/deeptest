@@ -69,7 +69,7 @@ public class CustomFieldAdmin extends BaseAction {
             vo = new CustomField();
             vo.setColCode(customFieldService.getLastUnusedColumn(orgId));
         } else {
-            vo = customFieldService.get(id, orgId);
+            vo = customFieldService.getDetail(id, orgId);
         }
 
         if (vo == null) { // 当对象不是默认org的，此处为空

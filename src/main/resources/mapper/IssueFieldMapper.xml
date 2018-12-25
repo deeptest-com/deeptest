@@ -33,39 +33,4 @@
 
         WHERE id = #{id} AND orgId = #{orgId}
     </select>
-
-    <select id="listInput" resultType="Map">
-        SELECT o.id, o.label, o.value
-        FROM CustomFieldIputDefine o
-        ORDER BY o.ordr
-    </select>
-    <select id="listType" resultType="Map">
-        SELECT o.id, o.label, o.value
-        FROM CustomFieldTypeDefine o
-        ORDER BY o.ordr
-    </select>
-
-    <select id="fetchInputMap" resultMap="inputMap">
-        SELECT o.id, o.label, o.value
-        FROM CustomFieldIputDefine o
-        ORDER BY o.ordr
-    </select>
-    <select id="listFieldTypeByInput" resultType="Map">
-        SELECT o.id, o.label, o.value
-        FROM CustomFieldTypeDefine o
-        JOIN CustomFieldInputTypeRelation r ON o.value = r.typeValue
-
-        WHERE r.inputValue = #{value}
-
-        ORDER BY o.ordr
-    </select>
-
-    <resultMap id="inputMap" type="Map" autoMapping="true">
-        <id column="value" property="value"/>
-
-        <collection property="types" select="listFieldTypeByInput"
-                    column="{value=value}">
-        </collection>
-    </resultMap>
-
 </mapper>

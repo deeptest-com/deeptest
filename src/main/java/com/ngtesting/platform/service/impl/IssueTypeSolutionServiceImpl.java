@@ -26,10 +26,10 @@ public class IssueTypeSolutionServiceImpl extends BaseServiceImpl implements Iss
         return ls;
     }
 
-    @Override
-    public IsuTypeSolution get(Integer id, Integer orgId) {
-        return solutionDao.get(id, orgId);
-    }
+//    @Override
+//    public IsuTypeSolution get(Integer id, Integer orgId) {
+//        return solutionDao.get(id, orgId);
+//    }
 
     @Override
     public IsuTypeSolution getDetail(Integer id, Integer orgId) {

@@ -65,11 +65,7 @@ public class IssueWorkflowSolutionServiceImpl extends BaseServiceImpl implements
     @Override
     public boolean delete(Integer id, Integer orgId) {
         Integer count = workflowSolutionDao.delete(id, orgId);
-        if (count == 0) {
-            return false;
-        }
-
-        return true;
+        return count > 0;
     }
 
     @Override

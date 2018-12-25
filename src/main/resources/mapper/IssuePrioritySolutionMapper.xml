@@ -10,22 +10,19 @@
         ORDER BY id ASC
     </select>
 
-    <select id="get" resultType="IsuPrioritySolution">
-        SELECT * FROM IsuPrioritySolution o
+    <!--<select id="get" resultType="IsuPrioritySolution">-->
+        <!--SELECT * FROM IsuPrioritySolution o-->
 
-        WHERE o.id = #{id}
-        <if test="orgId != null">
-            AND o.orgId=#{orgId}
-        </if>
-    </select>
+        <!--WHERE o.id = #{id}-->
+        <!--<if test="orgId != null">-->
+            <!--AND o.orgId=#{orgId}-->
+        <!--</if>-->
+    <!--</select>-->
 
     <select id="getDetail" resultMap="isuPrioritySolutionMap">
         SELECT * FROM IsuPrioritySolution o
 
-        WHERE o.id = #{id}
-        <if test="orgId != null">
-            AND o.orgId=#{orgId}
-        </if>
+        WHERE o.id = #{id} AND o.orgId=#{orgId}
     </select>
 
     <insert id="save" parameterType="IsuPrioritySolution" useGeneratedKeys="true" keyProperty="id">

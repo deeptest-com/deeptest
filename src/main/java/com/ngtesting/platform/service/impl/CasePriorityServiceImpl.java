@@ -53,11 +53,7 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
     @Transactional
 	public Boolean delete(Integer id, Integer orgId) {
         Integer count = casePriorityDao.delete(id, orgId);
-        if (count == 0) {
-            return false;
-        }
-
-        return true;
+        return count > 0;
 	}
 
 	@Override
@@ -66,10 +62,7 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
         casePriorityDao.removeDefault(orgId);
 
         Integer count = casePriorityDao.setDefault(id, orgId);
-        if (count == 0) {
-            return false;
-        }
-        return true;
+        return count > 0;
 	}
 
 	@Override

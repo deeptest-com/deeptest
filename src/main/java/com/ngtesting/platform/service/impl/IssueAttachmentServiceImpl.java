@@ -31,14 +31,14 @@ public class IssueAttachmentServiceImpl extends BaseServiceImpl implements Issue
     @Override
     @Transactional
     public Boolean save(Integer issueId, String name, String path, TstUser user) {
-        IsuIssue testIssue = issueDao.get(issueId, user.getId(), user.getDefaultPrjId());
-        if (testIssue == null) {
+        IsuIssue issue = issueDao.get(issueId, user.getId(), user.getDefaultPrjId());
+        if (issue == null) {
             return false;
         }
 
         IsuAttachment attach = new IsuAttachment(name, path, issueId, user.getId());
         issueAttachmentDao.save(attach);
-        issueHistoryService.saveHistory(user, Constant.EntityAct.attachment_upload, testIssue, name);
+        issueHistoryService.saveHistory(user, Constant.EntityAct.attachment_upload, issue, name);
         return true;
     }
 
@@ -46,13 +46,13 @@ public class IssueAttachmentServiceImpl extends BaseServiceImpl implements Issue
     @Transactional
     public Boolean delete(Integer id, TstUser user) {
         IsuAttachment attach = issueAttachmentDao.get(id);
-        IsuIssue testIssue = issueDao.get(attach.getIssueId(), user.getId(), user.getDefaultPrjId());
-        if (testIssue == null) {
+        IsuIssue issue = issueDao.get(attach.getIssueId(), user.getId(), user.getDefaultPrjId());
+        if (issue == null) {
             return false;
         }
 
         issueAttachmentDao.delete(id);
-        issueHistoryService.saveHistory(user, Constant.EntityAct.attachment_delete, testIssue, attach.getName());
+        issueHistoryService.saveHistory(user, Constant.EntityAct.attachment_delete, issue, attach.getName());
 
         return true;
     }

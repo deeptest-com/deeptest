@@ -5,6 +5,7 @@ import com.ngtesting.platform.model.IsuPageElement;
 import com.ngtesting.platform.model.IsuType;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,11 +13,14 @@ public interface IssueDao {
     IsuIssue get(@Param("id") Integer id,
                  @Param("userId") Integer userId,
                  @Param("prjId") Integer prjId);
-    IsuIssue getByUuid(@Param("uuid") String uuid);
 
     IsuIssue getDetail(@Param("id") Integer id,
                        @Param("userId") Integer userId,
                        @Param("prjId") Integer prjId);
+
+    IsuIssue getByUuid(@Param("uuid") String uuid);
+
+    List<Integer> getByIds(@Param("ids") LinkedList<Integer> ids);
 
     Integer save(@Param("elems") List<IsuPageElement> elems,
                  @Param("params") List<Object> params);

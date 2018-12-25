@@ -10,13 +10,15 @@ public interface IssuePageSolutionDao {
 
     List<IsuPageSolution> list(Integer orgId);
 
-    IsuPageSolution get(@Param("id") Integer id, @Param("orgId") Integer orgId);
+    IsuPageSolution get(@Param("id") Integer id,
+                        @Param("orgId") Integer orgId);
 
     void save(IsuPageSolution vo);
 
     Integer update(IsuPageSolution vo);
 
-    Integer delete(@Param("id") Integer id, @Param("orgId") Integer orgId);
+    Integer delete(@Param("id") Integer id,
+                   @Param("orgId") Integer orgId);
 
     List<IsuPageSolutionItem> getItems(@Param("solutionId") Integer solutionId,
                                        @Param("orgId") Integer orgId);

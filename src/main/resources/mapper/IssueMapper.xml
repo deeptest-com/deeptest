@@ -7,15 +7,7 @@
 
         FROM IsuIssue o
         JOIN IsuIssueExt ext ON o.id = ext.pid
-        WHERE o.id = #{id}
-        <if test="prjId != null">
-            AND o.projectId=#{prjId}
-        </if>
-    </select>
-
-    <select id="getByUuid" resultType="IsuIssue">
-        SELECT o.* FROM IsuIssue o
-        WHERE o.uuid = #{uuid}
+        WHERE o.id = #{id} AND o.projectId=#{prjId}
     </select>
 
     <select id="getDetail" resultMap="issueMaps">
@@ -24,10 +16,20 @@
 
         FROM IsuIssue o
         JOIN IsuIssueExt ext ON o.id = ext.pid
-        WHERE o.id = #{id}
-        <if test="prjId != null">
-            AND o.projectId=#{prjId}
-        </if>
+        WHERE o.id = #{id} AND o.projectId=#{prjId}
+    </select>
+
+    <select id="getByUuid" resultType="IsuIssue">
+        SELECT o.* FROM IsuIssue o
+        WHERE o.uuid = #{uuid}
+    </select>
+
+    <select id="getByIds" resultType="Integer">
+        SELECT o.id FROM IsuIssue o
+        WHERE o.id IN
+        <foreach collection="ids" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
     </select>
 
     <insert id="save" useGeneratedKeys="true" keyProperty="id">

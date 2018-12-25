@@ -57,7 +57,7 @@ public class CustomFieldOptionAdmin extends BaseAction {
 			return authFail();
 		}
 
-		List<CustomFieldOption> vos = customFieldOptionService.listVos(fieldId);
+		List<CustomFieldOption> vos = customFieldOptionService.list(fieldId, orgId);
 
 		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -79,7 +79,7 @@ public class CustomFieldOptionAdmin extends BaseAction {
 			return authFail();
 		}
 
-		List<CustomFieldOption> vos = customFieldOptionService.listVos(fieldId);
+		List<CustomFieldOption> vos = customFieldOptionService.list(fieldId, orgId);
 
 		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -104,7 +104,7 @@ public class CustomFieldOptionAdmin extends BaseAction {
 			return authFail();
 		}
 
-		List<CustomFieldOption> vos = customFieldOptionService.listVos(fieldId);
+		List<CustomFieldOption> vos = customFieldOptionService.list(fieldId, orgId);
 
 		ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -124,7 +124,7 @@ public class CustomFieldOptionAdmin extends BaseAction {
 
         customFieldOptionService.setDefault(id, fieldId, orgId);  // 涵盖项目设置WS推送消息
 
-        List<CustomFieldOption> vos = customFieldOptionService.listVos(fieldId);
+        List<CustomFieldOption> vos = customFieldOptionService.list(fieldId, orgId);
 
         ret.put("data", vos);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

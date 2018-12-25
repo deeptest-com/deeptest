@@ -1,11 +1,9 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.dao.IssuePageDao;
-import com.ngtesting.platform.dao.IssuePageElementDao;
+import com.ngtesting.platform.dao.IssueDao;
 import com.ngtesting.platform.dao.IssueWatchDao;
-import com.ngtesting.platform.model.IsuTag;
+import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.IssueCommentsService;
 import com.ngtesting.platform.service.intf.IssueWatchService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,6 +18,9 @@ public class IssueWatchServiceImpl extends BaseServiceImpl implements IssueWatch
 
     @Autowired
     IssueWatchDao issueWatchDao;
+    @Autowired
+    IssueDao issueDao;
+
 
     @Override
     public List<TstUser> list(Integer issueId) {
@@ -27,12 +28,17 @@ public class IssueWatchServiceImpl extends BaseServiceImpl implements IssueWatch
     }
 
     @Override
-    public List<TstUser> search(Integer issueId, Integer prjId, String keywords, List<Integer> exceptIds) {
-        List<TstUser> watchedIds = issueWatchDao.list(issueId);
+    public List<TstUser> search(Integer issueId, Integer prjId, String keywords, List<Integer> exceptIds, TstUser user) {
+        IsuIssue issue = issueDao.get(issueId, user.getId(), user.getDefaultPrjId());
+        if (issue == null) {
+            return null;
+        }
 
-        for (TstUser user: watchedIds) {
-            if (!exceptIds.contains(user.getId())) {
-                exceptIds.add(user.getId());
+        List<TstUser> watchedUsers = issueWatchDao.list(issueId);
+
+        for (TstUser u: watchedUsers) {
+            if (!exceptIds.contains(u.getId())) {
+                exceptIds.add(u.getId());
             }
         }
 
@@ -40,22 +46,42 @@ public class IssueWatchServiceImpl extends BaseServiceImpl implements IssueWatch
     }
 
     @Override
-    public void remove(Integer id) {
-        issueWatchDao.remove(id);
-    }
-
-    @Override
-    public void batchSave(Integer issueId, List<Integer> userIds) {
-        issueWatchDao.batchSave(issueId, userIds);
-    }
-
-    @Override
-    public void watch(Integer id, TstUser user, Boolean status) {
-        if (status) {
-            issueWatchDao.watch(id, user.getId());
-        } else {
-            issueWatchDao.unwatch(id, user.getId());
+    public Boolean remove(Integer id, Integer issueId, TstUser user) {
+        IsuIssue issue = issueDao.get(issueId, user.getId(), user.getDefaultPrjId());
+        if (issue == null) {
+            return false;
         }
+        issueWatchDao.remove(id);
+
+        return true;
+    }
+
+    @Override
+    public Boolean batchSave(Integer issueId, List<Integer> userIds, TstUser user) {
+        IsuIssue issue = issueDao.get(issueId, user.getId(), user.getDefaultPrjId());
+        if (issue == null) {
+            return false;
+        }
+
+        issueWatchDao.batchSave(issueId, userIds);
+
+        return true;
+    }
+
+    @Override
+    public Boolean watch(Integer issueId, TstUser user, Boolean status) {
+        IsuIssue issue = issueDao.get(issueId, user.getId(), user.getDefaultPrjId());
+        if (issue == null) {
+            return false;
+        }
+
+        if (status) {
+            issueWatchDao.watch(issueId, user.getId());
+        } else {
+            issueWatchDao.unwatch(issueId, user.getId());
+        }
+
+        return true;
     }
 
 }

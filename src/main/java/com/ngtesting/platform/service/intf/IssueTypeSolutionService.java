@@ -8,7 +8,7 @@ public interface IssueTypeSolutionService extends BaseService {
 
     List<IsuTypeSolution> list(Integer orgId);
 
-    IsuTypeSolution get(Integer id, Integer orgId);
+//    IsuTypeSolution get(Integer id, Integer orgId);
     IsuTypeSolution getDetail(Integer id, Integer orgId);
 
     IsuTypeSolution save(IsuTypeSolution vo, Integer orgId);

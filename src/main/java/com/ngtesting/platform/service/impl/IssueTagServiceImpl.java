@@ -1,6 +1,8 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.dao.IssueDao;
 import com.ngtesting.platform.dao.IssueTagDao;
+import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.model.IsuTag;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueTagService;
@@ -17,6 +19,9 @@ public class IssueTagServiceImpl extends BaseServiceImpl implements IssueTagServ
     @Autowired
     IssueTagDao issueTagDao;
 
+    @Autowired
+    IssueDao issueDao;
+
     @Override
     public List<IsuTag> search(Integer issueId, Integer orgId, String keywords, List<Integer> exceptIds) {
         return issueTagDao.search(issueId, orgId, keywords, exceptIds);
@@ -24,7 +29,12 @@ public class IssueTagServiceImpl extends BaseServiceImpl implements IssueTagServ
 
     @Override
     @Transactional
-    public void save(Integer issueId, List<Map> tags, TstUser user) {
+    public Boolean save(Integer issueId, List<Map> tags, TstUser user) {
+        IsuIssue issue = issueDao.get(issueId, user.getId(), user.getDefaultPrjId());
+        if (issue == null) {
+            return false;
+        }
+
         List<IsuTag> newTags = new LinkedList<>();
         List<IsuTag> allTags = new LinkedList<>();
         String tagStr = "";
@@ -53,11 +63,7 @@ public class IssueTagServiceImpl extends BaseServiceImpl implements IssueTagServ
         issueTagDao.saveRelations(issueId, allTags);
 
         issueTagDao.updateTagField(issueId, tagStr);
-    }
 
-    @Override
-    @Transactional
-    public Boolean delete(Integer id, TstUser user) {
         return true;
     }
 

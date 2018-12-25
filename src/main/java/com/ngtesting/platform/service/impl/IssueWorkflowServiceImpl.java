@@ -73,6 +73,13 @@ public class IssueWorkflowServiceImpl extends BaseServiceImpl implements IssueWo
     }
 
     @Override
+    public Boolean delete(Integer id, Integer orgId) {
+        Integer count = workflowDao.delete(id, orgId);
+
+        return count > 0;
+    }
+
+    @Override
     public List<IsuStatus> listStatusForEdit(Integer id, Integer orgId) {
         List<IsuStatus> all = statusService.list(orgId);
         List<IsuStatus> statuses = workflowDao.listStatus(id);

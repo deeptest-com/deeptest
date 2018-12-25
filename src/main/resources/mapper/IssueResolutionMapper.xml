@@ -13,10 +13,7 @@
     <select id="get" resultType="IsuResolution">
         SELECT * FROM IsuResolution o
 
-        WHERE o.id = #{id}
-        <if test="orgId != null">
-            AND o.orgId=#{orgId}
-        </if>
+        WHERE o.id = #{id} AND o.orgId=#{orgId}
     </select>
 
     <insert id="save" parameterType="IsuResolution" useGeneratedKeys="true" keyProperty="id">

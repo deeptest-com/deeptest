@@ -9,8 +9,8 @@ import java.util.List;
 public interface IssuePrioritySolutionDao {
     List<IsuPrioritySolution> list(@Param("orgId") Integer orgId);
 
-    IsuPrioritySolution get(@Param("id") Integer id,
-                    @Param("orgId") Integer orgId);
+//    IsuPrioritySolution get(@Param("id") Integer id,
+//                    @Param("orgId") Integer orgId);
     IsuPrioritySolution getDetail(@Param("id") Integer id,
                                   @Param("orgId") Integer orgId);
 

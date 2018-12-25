@@ -8,8 +8,17 @@ public class CustomFieldOption extends BaseModel {
 	private String descr;
 	private Integer ordr;
 	private Integer fieldId;
+	private Integer orgId;
 	private Boolean defaultVal = false;
     private Boolean buildIn = false;
+
+	public Integer getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Integer orgId) {
+		this.orgId = orgId;
+	}
 
 	public Integer getFieldId() {
 		return fieldId;

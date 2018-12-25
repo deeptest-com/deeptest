@@ -52,10 +52,7 @@
     <select id="get" resultType="TstOrgGroup">
         SELECT * FROM TstOrgGroup grp
 
-        WHERE grp.id = #{id}
-        <if test="orgId != null">
-            AND grp.orgId = #{orgId}
-        </if>
+        WHERE grp.id = #{id} AND grp.orgId = #{orgId}
     </select>
 
     <insert id="save" parameterType="TstOrgGroup" useGeneratedKeys="true" keyProperty="id">

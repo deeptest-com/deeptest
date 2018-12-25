@@ -34,17 +34,11 @@
     <select id="get" resultType="CustomField">
         SELECT * FROM CustomField o
 
-        WHERE o.id = #{id}
-        <if test="orgId != null">
-            AND o.orgId=#{orgId}
-        </if>
+        WHERE o.id = #{id} AND o.orgId=#{orgId}
     </select>
     <select id="getDetail" resultMap="customFieldMap">
         SELECT * FROM CustomField o
-        WHERE o.id = #{id}
-        <if test="orgId != null">
-            AND o.orgId=#{orgId}
-        </if>
+        WHERE o.id = #{id} AND o.orgId=#{orgId}
     </select>
 
     <insert id="save" parameterType="CustomField" useGeneratedKeys="true" keyProperty="id">
@@ -96,7 +90,6 @@
         WHERE id=#{id} AND orgId=#{orgId}
     </update>
 
-
     <select id="getLastUnusedColumn" resultType="String">
         select cf.colCode from CustomField cf
 
@@ -120,5 +113,40 @@
                     column="{id=id}">
         </collection>
     </resultMap>
+
+    <select id="listInput" resultType="Map">
+        SELECT o.id, o.label, o.value
+        FROM CustomFieldIputDefine o
+        ORDER BY o.ordr
+    </select>
+    <select id="listType" resultType="Map">
+        SELECT o.id, o.label, o.value
+        FROM CustomFieldTypeDefine o
+        ORDER BY o.ordr
+    </select>
+
+    <select id="fetchInputMap" resultMap="inputMap">
+        SELECT o.id, o.label, o.value
+        FROM CustomFieldIputDefine o
+        ORDER BY o.ordr
+    </select>
+    <select id="listFieldTypeByInput" resultType="Map">
+        SELECT o.id, o.label, o.value
+        FROM CustomFieldTypeDefine o
+        JOIN CustomFieldInputTypeRelationDefine r ON o.value = r.typeValue
+
+        WHERE r.inputValue = #{value}
+
+        ORDER BY o.ordr
+    </select>
+
+    <resultMap id="inputMap" type="Map" autoMapping="true">
+        <id column="value" property="value"/>
+
+        <collection property="types" select="listFieldTypeByInput"
+                    column="{value=value}">
+        </collection>
+    </resultMap>
+
 
 </mapper>

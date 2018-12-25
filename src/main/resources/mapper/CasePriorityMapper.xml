@@ -12,11 +12,7 @@
 
     <select id="get" resultType="TstCasePriority">
         SELECT * FROM TstCasePriority o
-
-        WHERE o.id = #{id}
-        <if test="orgId != null">
-            AND o.orgId=#{orgId}
-        </if>
+        WHERE o.id = #{id} AND o.orgId=#{orgId}
     </select>
 
     <insert id="save" parameterType="TstCasePriority" useGeneratedKeys="true" keyProperty="id">

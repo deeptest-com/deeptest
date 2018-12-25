@@ -51,7 +51,7 @@ public class IssueWatchAction extends BaseAction {
         String keywords = json.getString("keywords");
         List<Integer> exceptIds = json.getObject("exceptIds", List.class);
 
-        List<TstUser> users = issueWatchService.search(issueId, prjId, keywords, exceptIds);
+        List<TstUser> users = issueWatchService.search(issueId, prjId, keywords, exceptIds, user);
 
         ret.put("data", users);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -67,7 +67,7 @@ public class IssueWatchAction extends BaseAction {
         Integer issueId = json.getInteger("issueId");
         List<Integer> userIds = json.getObject("userIds", List.class);
 
-        issueWatchService.batchSave(issueId, userIds);
+        issueWatchService.batchSave(issueId, userIds, user);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
@@ -80,8 +80,9 @@ public class IssueWatchAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer id = json.getInteger("id");
+        Integer issueId = json.getInteger("issueId");
 
-        issueWatchService.remove(id);
+        issueWatchService.remove(id, issueId, user);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

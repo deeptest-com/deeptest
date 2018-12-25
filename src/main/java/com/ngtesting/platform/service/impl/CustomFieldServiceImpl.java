@@ -15,18 +15,19 @@ import java.util.*;
 
 @Service
 public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFieldService {
-    @Autowired
-    IssueFieldDao fieldDao;
 
     @Autowired
     CustomFieldDao customFieldDao;
     @Autowired
-    CaseTypeDao typeDao;
-    @Autowired
-    CasePriorityDao priorityDao;
+    CustomFieldOptionDao customFieldOptionDao;
 
     @Autowired
-    CustomFieldOptionDao customFieldOptionDao;
+    IssueFieldDao issueFieldDao;
+
+    @Autowired
+    CaseTypeDao caseTypeDao;
+    @Autowired
+    CasePriorityDao casePriorityDao;
 
     @Autowired
     IssuePageElementDao elementDao;
@@ -42,7 +43,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     }
 
     @Override
-    public CustomField get(Integer id, Integer orgId) {
+    public CustomField getDetail(Integer id, Integer orgId) {
         return customFieldDao.getDetail(id, orgId);
     }
 
@@ -59,11 +60,6 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
             vo.setOrdr(maxOrder + 10);
 
             customFieldDao.save(vo);
-//            if (vo.getInput().equals(ConstantIssue.IssueInput.dropdown)
-//                    || vo.getInput().equals(ConstantIssue.IssueInput.radio)
-//                    || vo.getInput().equals(ConstantIssue.IssueInput.checkbox)) {
-//                customFieldOptionDao.saveAll(vo.getId(), vo.getOptions());
-//            }
         } else {
             Integer count = customFieldDao.update(vo);
             if (count == 0) {
@@ -79,11 +75,7 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
     @Override
     public Boolean delete(Integer id, Integer orgId) {
         Integer count = customFieldDao.delete(id, orgId);
-        if (count == 0) {
-            return false;
-        }
-
-        return true;
+        return count > 0;
     }
 
     @Override
@@ -127,66 +119,14 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
         return ret;
     }
 
-    @Override
-    public List<String> listApplyTo() {
-        List<String> ls = new LinkedList();
-        for (CustomField.FieldApplyTo item : CustomField.FieldApplyTo.values()) {
-            ls.add(item.toString());
-        }
-        return ls;
-    }
-
-    @Override
-    public Map<String, Map> fetchInputMap() {
-        List<Map> inputs = fieldDao.fetchInputMap();
-
-        Map<String, Map> ret = new LinkedHashMap<>();
-        for (Map<String, Object> input : inputs) {
-            ret.put(input.get("value").toString(), input);
-        }
-
-        return ret;
-    }
-
-    @Override
-    public Map inputMap() {
-        List<Map> ls = fieldDao.listInput();
-
-        Map<String, String> ret = new LinkedHashMap<>();
-        for (Map<String, String> input : ls) {
-            ret.put(input.get("value"), input.get("label"));
-        }
-        return ret;
-    }
-
-    @Override
-    public Map typeMap() {
-        List<Map> ls = fieldDao.listType();
-
-        Map<String, String> ret = new LinkedHashMap<>();
-        for (Map<String, String> input : ls) {
-            ret.put(input.get("value"), input.get("label"));
-        }
-        return ret;
-    }
-
-    @Override
-    public List<String> listFormat() {
-        List<String> ls = new LinkedList();
-        for (ConstantIssue.TextFormat item : ConstantIssue.TextFormat.values()) {
-            ls.add(item.toString());
-        }
-        return ls;
-    }
-
     @Override // TODO: cached
-    public Map<String, Object> fetchProjectField(Integer orgId, Integer projectId) {
-        List<TstCaseType> caseTypePos = typeDao.list(orgId);
-        List<TstCasePriority> casePriorityPos = priorityDao.list(orgId);
+    public Map<String, Object> fetchProjectFieldForCase(Integer orgId, Integer projectId) {
+        List<TstCaseType> caseTypes = caseTypeDao.list(orgId);
+        List<TstCasePriority> casePriorities = casePriorityDao.list(orgId);
 
         Map<String, Object> map = new HashMap<>();
-        map.put("type", caseTypePos);
-        map.put("priority", casePriorityPos);
+        map.put("type", caseTypes);
+        map.put("priority", casePriorities);
 
         List<Map> fields = customFieldDao.listForCase(orgId);
         for (Map field : fields) {
@@ -198,6 +138,59 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
         ret.put("props", map);
 
         return ret;
+    }
+
+    // 获取input及其对应的type，用于表单联动
+    @Override
+    public Map<String, Map> fetchInputMap() {
+        List<Map> inputs = customFieldDao.fetchInputMap();
+
+        Map<String, Map> ret = new LinkedHashMap<>();
+        for (Map<String, Object> input : inputs) {
+            ret.put(input.get("value").toString(), input);
+        }
+
+        return ret;
+    }
+
+    @Override
+    public Map inputMap() {
+        List<Map> ls = customFieldDao.listInput();
+
+        Map<String, String> ret = new LinkedHashMap<>();
+        for (Map<String, String> input : ls) {
+            ret.put(input.get("value"), input.get("label"));
+        }
+        return ret;
+    }
+
+    @Override
+    public Map typeMap() {
+        List<Map> ls = customFieldDao.listType();
+
+        Map<String, String> ret = new LinkedHashMap<>();
+        for (Map<String, String> input : ls) {
+            ret.put(input.get("value"), input.get("label"));
+        }
+        return ret;
+    }
+
+    @Override
+    public List<String> listApplyTo() {
+        List<String> ls = new LinkedList();
+        for (CustomField.FieldApplyTo item : CustomField.FieldApplyTo.values()) {
+            ls.add(item.toString());
+        }
+        return ls;
+    }
+
+    @Override
+    public List<String> listFormat() {
+        List<String> ls = new LinkedList();
+        for (ConstantIssue.TextFormat item : ConstantIssue.TextFormat.values()) {
+            ls.add(item.toString());
+        }
+        return ls;
     }
 
 }

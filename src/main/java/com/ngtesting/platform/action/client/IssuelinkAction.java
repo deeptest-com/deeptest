@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuLinkReason;
+import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueLinkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,12 +30,16 @@ public class IssuelinkAction extends BaseAction {
     public Map<String, Object> link(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = user.getDefaultOrgId();
+        Integer prjId = user.getDefaultPrjId();
+
         Integer srcIssueId = json.getInteger("srcIssueId");
         Integer dictIssueId = json.getInteger("dictIssueId");
         Integer reasonId = json.getInteger("reasonId");
         String reasonName = json.getString("reasonName");
 
-        issueLinkService.link(srcIssueId, dictIssueId, reasonId, reasonName);
+        issueLinkService.link(srcIssueId, dictIssueId, reasonId, reasonName, prjId);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

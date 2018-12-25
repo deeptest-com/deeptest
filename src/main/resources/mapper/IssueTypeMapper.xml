@@ -51,7 +51,7 @@
 
     <update id="update" parameterType="IsuType">
         UPDATE IsuType
-        SET label=#{label},value=#{value},descr=#{descr},
+        SET label=#{label}, value=#{value}, descr=#{descr},
         disabled=#{disabled},
         updateTime=NOW()
 

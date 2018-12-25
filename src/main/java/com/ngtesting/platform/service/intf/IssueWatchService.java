@@ -6,10 +6,10 @@ import java.util.List;
 
 public interface IssueWatchService extends BaseService {
     List<TstUser> list(Integer issueId);
-    List<TstUser> search(Integer issueId, Integer orgId, String keywords, List<Integer> exceptIds);
+    List<TstUser> search(Integer issueId, Integer orgId, String keywords, List<Integer> exceptIds, TstUser user);
 
-    void remove(Integer id);
+    Boolean remove(Integer id, Integer issueId, TstUser user);
 
-    void batchSave(Integer issueId, List<Integer> userIds);
-    void watch(Integer id, TstUser user, Boolean status);
+    Boolean batchSave(Integer issueId, List<Integer> userIds, TstUser user);
+    Boolean watch(Integer id, TstUser user, Boolean status);
 }

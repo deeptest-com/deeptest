@@ -291,8 +291,8 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
                 child = genVo(child, privMap);
 
 //                if (child.getPrivs() != null
-//                        && child.getPrivs().get("project-view") != null
-//                        && child.getPrivs().get("project-view") ) {
+//                        && child.getPrivs().getDetail("project-view") != null
+//                        && child.getPrivs().getDetail("project-view") ) {
 //                    childCanView = true;
 //                }
                 voList.add(child);

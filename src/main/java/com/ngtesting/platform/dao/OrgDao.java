@@ -14,9 +14,11 @@ public interface OrgDao {
 
     TstOrg get(@Param("id") Integer id);
 
-    void setDefault(@Param("orgId") Integer orgId, @Param("userId") Integer userId);
+    void setDefault(@Param("orgId") Integer orgId,
+                    @Param("userId") Integer userId);
 
-    void initOrg(@Param("orgId") Integer id, @Param("userId") Integer userId);
+    void initOrg(@Param("orgId") Integer id,
+                 @Param("userId") Integer userId);
 
     void save(TstOrg vo);
     void update(TstOrg vo);

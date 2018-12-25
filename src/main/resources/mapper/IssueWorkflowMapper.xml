@@ -44,6 +44,12 @@
         WHERE id=#{id} AND orgId=#{orgId}
     </update>
 
+    <delete id="delete">
+        UPDATE IsuWorkflow
+        SET disabled=TRUE, updateTime=NOW()
+        WHERE id=#{id} AND orgId=#{orgId}
+    </delete>
+
     <delete id="removeTransitions">
         DELETE FROM IsuWorkflowTransition
         WHERE ( srcStatusId NOT IN (${statusIds}) OR dictStatusId NOT IN (${statusIds}) )

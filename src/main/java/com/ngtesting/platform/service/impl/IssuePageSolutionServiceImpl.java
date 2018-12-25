@@ -51,9 +51,9 @@ public class IssuePageSolutionServiceImpl extends BaseServiceImpl implements Iss
 
     @Override
     public IsuPageSolution save(IsuPageSolution vo, Integer orgId) {
-        if (vo.getId() == null) {
+        vo.setOrgId(orgId);
 
-            vo.setOrgId(orgId);
+        if (vo.getId() == null) {
             pageSolutionDao.save(vo);
         } else {
             Integer count = pageSolutionDao.update(vo);
@@ -68,11 +68,7 @@ public class IssuePageSolutionServiceImpl extends BaseServiceImpl implements Iss
     @Override
     public boolean delete(Integer id, Integer orgId) {
         Integer count = pageSolutionDao.delete(id, orgId);
-        if (count == 0) {
-            return false;
-        }
-
-        return true;
+        return count > 0;
     }
 
     @Override

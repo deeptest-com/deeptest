@@ -11,7 +11,6 @@ public interface IssueResolutionDao {
     IsuResolution get(@Param("id") Integer id,
                     @Param("orgId") Integer orgId);
 
-
     Integer save(IsuResolution vo);
     Integer update(IsuResolution vo);
     Integer delete(@Param("id") Integer id,
@@ -24,9 +23,11 @@ public interface IssueResolutionDao {
                      @Param("ordr") Integer ordr,
                      @Param("orgId") Integer orgId);
 
-    IsuResolution getPrev(@Param("ordr") Integer ordr, @Param("orgId") Integer orgId);
+    IsuResolution getPrev(@Param("ordr") Integer ordr,
+                          @Param("orgId") Integer orgId);
 
-    IsuResolution getNext(@Param("ordr") Integer ordr, @Param("orgId") Integer orgId);
+    IsuResolution getNext(@Param("ordr") Integer ordr,
+                          @Param("orgId") Integer orgId);
 
     Integer getMaxOrdrNumb(@Param("orgId") Integer orgId);
 }

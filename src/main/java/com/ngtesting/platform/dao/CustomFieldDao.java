@@ -38,4 +38,9 @@ public interface CustomFieldDao {
     CustomField getNext(@Param("ordr") Integer ordr,
                         @Param("orgId") Integer orgId,
                         @Param("applyTo") String applyTo);
+
+    List<Map> fetchInputMap();
+
+    List<Map> listInput();
+    List<Map> listType();
 }

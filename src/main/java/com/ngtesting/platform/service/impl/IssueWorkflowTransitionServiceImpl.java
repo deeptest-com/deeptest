@@ -52,7 +52,6 @@ public class IssueWorkflowTransitionServiceImpl extends BaseServiceImpl implemen
             typeMap.put(workflowItem.getTypeId(), statusMap);
         }
 
-
         return typeMap;
     }
 

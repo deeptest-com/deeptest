@@ -51,11 +51,7 @@ public class IssueStatusServiceImpl extends BaseServiceImpl implements IssueStat
     @Override
     public Boolean delete(Integer id, Integer orgId) {
         Integer count = issueStatusDao.delete(id, orgId);
-        if (count == 0) {
-            return false;
-        }
-
-        return true;
+        return count > 0;
     }
 
     @Override
@@ -64,10 +60,7 @@ public class IssueStatusServiceImpl extends BaseServiceImpl implements IssueStat
         issueStatusDao.removeDefault(orgId);
 
         Integer count = issueStatusDao.setDefault(id, orgId);
-        if (count == 0) {
-            return false;
-        }
-        return true;
+        return count > 0;
     }
 
     @Override

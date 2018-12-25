@@ -31,9 +31,9 @@ public class IssuePageServiceImpl extends BaseServiceImpl implements IssuePageSe
     @Override
     @Transactional
     public IsuPage save(IsuPage vo, Integer orgId) {
-        if (vo.getId() == null) {
+        vo.setOrgId(orgId);
 
-            vo.setOrgId(orgId);
+        if (vo.getId() == null) {
             pageDao.save(vo);
         } else {
             Integer count = pageDao.update(vo);
@@ -48,11 +48,8 @@ public class IssuePageServiceImpl extends BaseServiceImpl implements IssuePageSe
     @Override
     public boolean delete(Integer id, Integer orgId) {
         Integer count = pageDao.delete(id, orgId);
-        if (count == 0) {
-            return false;
-        }
 
-        return true;
+        return count > 0;
     }
 
     @Override

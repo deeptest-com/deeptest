@@ -45,7 +45,7 @@ CREATE TABLE `CustomField` (
   PRIMARY KEY (`id`),
   KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`orgId`),
   CONSTRAINT `customfield_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -89,7 +89,7 @@ CREATE TABLE `CustomFieldInputTypeRelationDefine` (
   `inputValue` varchar(255) DEFAULT NULL,
   `typeValue` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -109,7 +109,7 @@ CREATE TABLE `CustomFieldIputDefine` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -136,7 +136,7 @@ CREATE TABLE `CustomFieldOption` (
   PRIMARY KEY (`id`),
   KEY `FK_1yiovndo2my1nj8ub95o8yp6` (`fieldId`),
   CONSTRAINT `fk_isucustomfieldoption_ibfk_1` FOREIGN KEY (`fieldId`) REFERENCES `CustomField` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=264 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=270 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -229,7 +229,7 @@ CREATE TABLE `IsuAttachment` (
   KEY `FK_j705hrf8uusgq7nxvtuc6nvx5` (`userId`),
   CONSTRAINT `FK_5km3w701l0ckc79d6dl71auw` FOREIGN KEY (`issueId`) REFERENCES `IsuIssue` (`id`),
   CONSTRAINT `FK_j705hrf8uusgq7nxvtuc6nvx5` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -254,7 +254,7 @@ CREATE TABLE `IsuComments` (
   KEY `FK_2nxss8uw9dwjuh9gup03g2335` (`userId`),
   CONSTRAINT `FK_2nxss8uw9dwjuh9gup03g2335` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_dhkk8l46ybsojeoshbnc1iaqs` FOREIGN KEY (`issueId`) REFERENCES `IsuIssue` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -374,7 +374,7 @@ CREATE TABLE `IsuField` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=893 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=892 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -445,7 +445,7 @@ CREATE TABLE `IsuHistory` (
   PRIMARY KEY (`id`),
   KEY `FK_8cp2wymy81uq5vi58woofpq2f` (`issueId`),
   CONSTRAINT `FK_8cp2wymy81uq5vi58woofpq2f` FOREIGN KEY (`issueId`) REFERENCES `isuissue` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -489,31 +489,11 @@ CREATE TABLE `IsuIssue` (
   `updateTime` datetime DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
-  `prop01` varchar(255) DEFAULT NULL,
-  `prop02` varchar(255) DEFAULT NULL,
-  `prop03` varchar(255) DEFAULT NULL,
-  `prop04` varchar(255) DEFAULT NULL,
-  `prop05` varchar(255) DEFAULT NULL,
-  `prop06` varchar(255) DEFAULT NULL,
-  `prop07` varchar(255) DEFAULT NULL,
-  `prop08` varchar(255) DEFAULT NULL,
-  `prop09` varchar(255) DEFAULT NULL,
-  `prop10` varchar(255) DEFAULT NULL,
-  `prop11` varchar(255) DEFAULT NULL,
-  `prop12` varchar(255) DEFAULT NULL,
-  `prop13` varchar(255) DEFAULT NULL,
-  `prop14` varchar(255) DEFAULT NULL,
-  `prop15` varchar(255) DEFAULT NULL,
-  `prop16` varchar(255) DEFAULT NULL,
-  `prop17` varchar(255) DEFAULT NULL,
-  `prop18` varchar(255) DEFAULT NULL,
-  `prop19` varchar(255) DEFAULT NULL,
-  `prop20` varchar(255) DEFAULT NULL,
   `uuid` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_749574hr3f54gdlo4hrc6dquc` (`projectId`),
   CONSTRAINT `FK_749574hr3f54gdlo4hrc6dquc` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -725,7 +705,7 @@ CREATE TABLE `IsuPageElement` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `isupageelement_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=537 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=556 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -793,7 +773,7 @@ CREATE TABLE `IsuPriority` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `fk_issu_priority_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=298 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=295 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -911,7 +891,7 @@ CREATE TABLE `IsuResolution` (
   PRIMARY KEY (`id`),
   KEY `FK_jakioowaasj09sqr9d376dl9u` (`orgId`),
   CONSTRAINT `isuresolution_ibfk_2` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1057,7 +1037,7 @@ CREATE TABLE `IsuStatus` (
   KEY `isu_status_categoryid` (`categoryId`) USING BTREE,
   CONSTRAINT `fk_isu_status_categoryid` FOREIGN KEY (`categoryId`) REFERENCES `IsuStatusCategoryDefine` (`id`),
   CONSTRAINT `isustatus_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=250 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=248 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1124,7 +1104,7 @@ CREATE TABLE `IsuTag` (
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1144,7 +1124,7 @@ CREATE TABLE `IsuTagRelation` (
   KEY `tagId` (`tagId`),
   CONSTRAINT `isutagrelation_ibfk_1` FOREIGN KEY (`tagId`) REFERENCES `IsuTag` (`id`),
   CONSTRAINT `isutagrelation_ibfk_2` FOREIGN KEY (`issueId`) REFERENCES `IsuIssue` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1170,7 +1150,7 @@ CREATE TABLE `IsuType` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `fk_isu_type_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=239 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=238 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1320,7 +1300,7 @@ CREATE TABLE `IsuWorkflowSolutionItem` (
   `solutionId` int(11) DEFAULT NULL,
   `orgId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1342,7 +1322,7 @@ CREATE TABLE `IsuWorkflowStatusRelation` (
   CONSTRAINT `isuworkflowstatusrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
   CONSTRAINT `isuworkflowstatusrelation_ibfk_2` FOREIGN KEY (`workflowId`) REFERENCES `IsuWorkflow` (`id`),
   CONSTRAINT `isuworkflowstatusrelation_ibfk_3` FOREIGN KEY (`statusId`) REFERENCES `IsuStatus` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=177 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=175 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1393,7 +1373,7 @@ CREATE TABLE `IsuWorkflowTransition` (
   CONSTRAINT `fk_isu_workflowtran_src` FOREIGN KEY (`srcStatusId`) REFERENCES `IsuStatus` (`id`),
   CONSTRAINT `isuworkflowtransition_ibfk_1` FOREIGN KEY (`dictStatusId`) REFERENCES `IsuStatus` (`id`),
   CONSTRAINT `isuworkflowtransition_ibfk_2` FOREIGN KEY (`actionPageId`) REFERENCES `IsuPage` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=314 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1446,7 +1426,7 @@ CREATE TABLE `IsuWorkflowTransitionProjectRoleRelation` (
   CONSTRAINT `isuworkflowtransitionprojectrolerelation_ibfk_2` FOREIGN KEY (`workflowId`) REFERENCES `IsuWorkflow` (`id`),
   CONSTRAINT `isuworkflowtransitionprojectrolerelation_ibfk_4` FOREIGN KEY (`workflowTransitionId`) REFERENCES `IsuWorkflowTransition` (`id`),
   CONSTRAINT `isuworkflowtransitionprojectrolerelation_ibfk_5` FOREIGN KEY (`projectRoleId`) REFERENCES `TstProjectRole` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1091 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1064 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1690,7 +1670,7 @@ CREATE TABLE `TstCaseAttachment` (
   KEY `FK_ajcsto1d9eupd3476t861vhxp` (`userId`),
   CONSTRAINT `FK_ajcsto1d9eupd3476t861vhxp` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_hubkj6m012dpsarrjmh3160sv` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1715,7 +1695,7 @@ CREATE TABLE `TstCaseComments` (
   KEY `FK_d4d1t72y6wkb41bbpkdrk26sv` (`userId`),
   CONSTRAINT `FK_d4d1t72y6wkb41bbpkdrk26sv` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_f1r5t3p8vgi1iiq2v0wle7erj` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1763,7 +1743,7 @@ CREATE TABLE `TstCaseHistory` (
   PRIMARY KEY (`id`),
   KEY `FK_8yss1awno54uahftbyi1wb2j8` (`caseId`),
   CONSTRAINT `FK_8yss1awno54uahftbyi1wb2j8` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4406,7 +4386,7 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-12-26 11:47:19
+-- Dump completed on 2018-12-26 18:57:49
 -- MySQL dump 10.13  Distrib 5.7.14, for osx10.11 (x86_64)
 --
 -- Host: localhost    Database: ngtesting-web
@@ -4440,7 +4420,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `CustomFieldInputTypeRelationDefine` WRITE;
 /*!40000 ALTER TABLE `CustomFieldInputTypeRelationDefine` DISABLE KEYS */;
-INSERT INTO `CustomFieldInputTypeRelationDefine` VALUES (1,'text','string'),(2,'number','integer'),(3,'number','double'),(4,'textarea','string'),(5,'dropdown','string'),(6,'multi_select','string'),(7,'radio','string'),(8,'checkbox','string'),(9,'date','date'),(10,'time','time'),(11,'datetime','datetime');
+INSERT INTO `CustomFieldInputTypeRelationDefine` VALUES (1,'text','string'),(2,'number','integer'),(3,'number','double'),(4,'textarea','string'),(5,'dropdown','string'),(6,'multi_select','string'),(7,'radio','string'),(8,'checkbox','string'),(9,'date','date'),(10,'time','time'),(11,'datetime','datetime'),(12,'richtext','string');
 /*!40000 ALTER TABLE `CustomFieldInputTypeRelationDefine` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -4450,7 +4430,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `CustomFieldIputDefine` WRITE;
 /*!40000 ALTER TABLE `CustomFieldIputDefine` DISABLE KEYS */;
-INSERT INTO `CustomFieldIputDefine` VALUES (1,'文本','text',1,'\0','\0','2018-11-28 09:24:07',NULL),(2,'数字','number',2,'\0','\0','2018-11-28 09:24:07',NULL),(3,'多行文本','textarea',3,'\0','\0','2018-11-28 09:24:07',NULL),(4,'下拉菜单','dropdown',4,'\0','\0','2018-11-28 09:24:07',NULL),(5,'下拉菜单(多选)','multi_select',5,'\0','\0','2018-11-28 09:24:07',NULL),(6,'单选按钮','radio',6,'\0','\0','2018-11-28 09:24:07',NULL),(7,'多选框','checkbox',7,'\0','\0','2018-11-28 09:24:07',NULL),(8,'日期','date',8,'\0','\0','2018-11-28 09:24:07',NULL),(9,'时间','time',9,'\0','\0','2018-11-28 09:24:07',NULL),(10,'日期时间','datetime',10,'\0','\0','2018-12-07 13:55:03',NULL);
+INSERT INTO `CustomFieldIputDefine` VALUES (1,'文本','text',1,'\0','\0','2018-11-28 09:24:07',NULL),(2,'数字','number',2,'\0','\0','2018-11-28 09:24:07',NULL),(3,'多行文本','textarea',3,'\0','\0','2018-11-28 09:24:07',NULL),(4,'下拉菜单','dropdown',4,'\0','\0','2018-11-28 09:24:07',NULL),(5,'下拉菜单(多选)','multi_select',5,'\0','\0','2018-11-28 09:24:07',NULL),(6,'单选按钮','radio',6,'\0','\0','2018-11-28 09:24:07',NULL),(7,'多选框','checkbox',7,'\0','\0','2018-11-28 09:24:07',NULL),(8,'日期','date',8,'\0','\0','2018-11-28 09:24:07',NULL),(9,'时间','time',9,'\0','\0','2018-11-28 09:24:07',NULL),(10,'日期时间','datetime',10,'\0','\0','2018-12-07 13:55:03',NULL),(11,'富文本','richtext',11,'\0','\0','2018-12-26 12:39:44',NULL);
 /*!40000 ALTER TABLE `CustomFieldIputDefine` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -4632,4 +4612,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-12-26 11:47:20
+-- Dump completed on 2018-12-26 18:57:50

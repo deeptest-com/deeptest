@@ -111,7 +111,7 @@
     </update>
     <update id="updatePropExt">
         UPDATE IsuIssueExt
-        SET ${code} = '${value}'
+        SET ${code} = #{value}
         WHERE pid=#{id}
     </update>
 

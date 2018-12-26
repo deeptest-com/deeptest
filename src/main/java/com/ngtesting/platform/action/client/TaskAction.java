@@ -8,6 +8,7 @@ import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.model.TstTask;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.TestTaskService;
+import com.ngtesting.platform.servlet.PrivPrj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,7 @@ public class TaskAction extends BaseAction {
 
     @RequestMapping(value = "get", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj(perms = {"test_task-view"})
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -45,48 +47,9 @@ public class TaskAction extends BaseAction {
         return ret;
     }
 
-    @RequestMapping(value = "delete", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer prjId = user.getDefaultPrjId();
-
-        Integer id = json.getInteger("id");
-
-        Boolean result = taskService.delete(id, prjId);
-        if (!result) {
-            return authFail();
-        }
-
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
-	@RequestMapping(value = "close", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> close(HttpServletRequest request, @RequestBody JSONObject json) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer prjId = user.getDefaultPrjId();
-
-		Integer id = json.getInteger("id");
-
-		Boolean result = taskService.close(id, prjId);
-		if (!result) {
-		    return authFail();
-        }
-
-		taskService.closePlanIfAllTaskClosed(id);
-		TstTask vo = taskService.getById(id, prjId);
-
-        ret.put("data", vo);
-		ret.put("code", Constant.RespCode.SUCCESS.getCode());
-		return ret;
-	}
-
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
+    @PrivPrj(perms = {"test_plan-maintain"})
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -108,6 +71,7 @@ public class TaskAction extends BaseAction {
 
 	@RequestMapping(value = "saveCases", method = RequestMethod.POST)
 	@ResponseBody
+    @PrivPrj(perms = {"test_plan-maintain"})
 	public Map<String, Object> saveCases(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -120,5 +84,47 @@ public class TaskAction extends BaseAction {
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}
+
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    @ResponseBody
+    @PrivPrj(perms = {"test_plan-delete"})
+    public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer prjId = user.getDefaultPrjId();
+
+        Integer id = json.getInteger("id");
+
+        Boolean result = taskService.delete(id, prjId);
+        if (!result) {
+            return authFail();
+        }
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @RequestMapping(value = "close", method = RequestMethod.POST)
+    @ResponseBody
+    @PrivPrj(perms = {"test_task-close"})
+    public Map<String, Object> close(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer prjId = user.getDefaultPrjId();
+
+        Integer id = json.getInteger("id");
+
+        Boolean result = taskService.close(id, prjId);
+        if (!result) {
+            return authFail();
+        }
+
+        taskService.closePlanIfAllTaskClosed(id);
+        TstTask vo = taskService.getById(id, prjId);
+
+        ret.put("data", vo);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
 
 }

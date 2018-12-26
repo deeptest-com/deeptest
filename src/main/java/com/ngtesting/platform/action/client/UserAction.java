@@ -6,6 +6,8 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.UserDao;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.UserService;
+import com.ngtesting.platform.servlet.PrivOrg;
+import com.ngtesting.platform.servlet.PrivPrj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,23 +29,25 @@ public class UserAction extends BaseAction {
     @Autowired
     private UserDao userDao;
 
-    @PostMapping(value = "listLastest")
-    @ResponseBody
-    public Map<String, Object> listLastest(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer prjId = user.getDefaultPrjId();
-
-        List<TstUser> users = userDao.getProjectUsers(prjId, 10);
-
-        ret.put("data", users);
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
+//    @PostMapping(value = "listLastest")
+//    @ResponseBody
+//    @PrivPrj
+//    public Map<String, Object> listLastest(HttpServletRequest request, @RequestBody JSONObject json) {
+//        Map<String, Object> ret = new HashMap<String, Object>();
+//
+//        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+//        Integer prjId = user.getDefaultPrjId();
+//
+//        List<TstUser> users = userDao.getProjectUsers(prjId, 10);
+//
+//        ret.put("data", users);
+//        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+//        return ret;
+//    }
 
     @PostMapping(value = "getUsers")
     @ResponseBody
+    @PrivPrj
     public Map<String, Object> getUsers(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -60,6 +64,7 @@ public class UserAction extends BaseAction {
 
     @PostMapping(value = "search")
     @ResponseBody
+    @PrivOrg
     public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);

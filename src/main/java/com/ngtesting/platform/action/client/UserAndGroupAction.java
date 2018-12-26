@@ -7,6 +7,7 @@ import com.ngtesting.platform.config.Constant.RespCode;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.OrgGroupService;
 import com.ngtesting.platform.service.intf.UserService;
+import com.ngtesting.platform.servlet.PrivOrg;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,7 @@ public class UserAndGroupAction extends BaseAction {
 
 	@PostMapping(value = "search")
 	@ResponseBody
+	@PrivOrg
 	public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);

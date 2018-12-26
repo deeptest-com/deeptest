@@ -106,7 +106,7 @@
         and o.disabled != true
     </select>
 
-    <resultMap id="customFieldMap" type="Map" autoMapping="true">
+    <resultMap id="customFieldMap" type="CustomField" autoMapping="true">
         <id column="id" property="id"/>
 
         <collection property="options" select="com.ngtesting.platform.dao.CustomFieldOptionDao.getByFieldId"

@@ -148,6 +148,7 @@ public class IssueAction extends BaseAction {
 
         issueService.update(issue, pageId, user);
 
+        ret.put("id", issue.getInteger("id"));
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

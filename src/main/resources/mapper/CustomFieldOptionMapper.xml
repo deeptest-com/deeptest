@@ -71,12 +71,12 @@
     <update id="setDefault">
         UPDATE CustomFieldOption
         SET defaultVal=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND fieldId=#{fieldId} AND o.orgId=#{orgId}
+        WHERE id=#{id} AND fieldId=#{fieldId} AND orgId=#{orgId}
     </update>
     <update id="removeDefault">
         UPDATE CustomFieldOption
         SET defaultVal=FALSE, updateTime=NOW()
-        WHERE fieldId=#{fieldId} AND o.orgId=#{orgId}
+        WHERE fieldId=#{fieldId} AND orgId=#{orgId}
     </update>
 
     <!-- 级联抓取用 -->

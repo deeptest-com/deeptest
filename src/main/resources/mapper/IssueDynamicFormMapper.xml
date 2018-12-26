@@ -11,7 +11,7 @@
           SELECT elem.key FROM IsuPageElement elem WHERE elem.pageId = #{pageId}
         )
 
-        ORDER BY fields.elemOrdr;
+        /*ORDER BY fields.elemOrdr;*/
     </select>
 
     <select id="fetchOrgField" resultMap="fieldMap">
@@ -72,7 +72,11 @@
 
     <sql id="fetch">
         SELECT fields.*, dict.table optionTable, '${projectId}' projectId,
-        CASE fields.input WHEN 'dropdown' THEN 'canSelect' ELSE 'notSelect' END inputCatagory
+
+        CASE fields.input
+          WHEN 'dropdown' OR 'multi_select' OR 'radio' OR 'checkbox' THEN 'canSelect'
+          ELSE 'notSelect'
+        END inputCatagory
 
         FROM (
           (SELECT CONCAT('sys-', field.id) `key`, CONCAT('a-', field.elemOrdr) elemOrdr,

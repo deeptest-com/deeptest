@@ -50,18 +50,28 @@ public class ReportIssueServiceImpl extends ReportServiceImpl implements ReportI
     }
 
     @Override
-    public Map<String, List<Object>> chartIssueAge(Integer id, TstProject.ProjectType type, Integer numb,
-                                                   Integer orgId, Integer prjId) {
-        String projectIds = StringUtils.join(projectDao.listProjectId(id, type.toString()).toArray(),",");
+    public Map<String, List<Object>> chartIssueAgeByProject(Integer projectId, Integer numb, Integer orgId) {
+        String projectIdsString = projectId.toString();
 
-        List<Map> ls = reportIssueDao.chartIssueAge(projectIds, numb);
+        List<Map> ls = reportIssueDao.chartIssueAge(projectIdsString, numb);
 
-        return countAgeByPriority(ls, numb, orgId, prjId);
+        return countAgeByPriority(ls, numb, orgId, projectId);
     }
 
     @Override
-    public List<Map<Object, Object>> chartIssueDistribByPriority(Integer projectId, TstProject.ProjectType type) {
-        List<Map> ls = reportIssueDao.chartIssueDistribByPriority(projectId, type.toString());
+    public Map<String, List<Object>> chartIssueAgeByOrgOrGroup(Integer id, TstProject.ProjectType type, Integer numb) {
+        List<Integer> projectIds = projectDao.listProjectId(id, type.toString());
+
+        String projectIdsString = StringUtils.join(projectIds.toArray(),",");
+
+        List<Map> ls = reportIssueDao.chartIssueAge(projectIdsString, numb);
+
+        return countAge(ls, numb);
+    }
+
+    @Override
+    public List<Map<Object, Object>> chartIssueDistribByPriority(Integer id, TstProject.ProjectType type) {
+        List<Map> ls = reportIssueDao.chartIssueDistribByPriority(id, type.toString());
 
         List<Map<Object, Object>> data2 = new LinkedList<>();
         for (Map item : ls) {
@@ -75,8 +85,8 @@ public class ReportIssueServiceImpl extends ReportServiceImpl implements ReportI
     }
 
     @Override
-    public List<Map<Object, Object>> chartIssueDistribByStatus(Integer projectId, TstProject.ProjectType type) {
-        List<Map> ls = reportIssueDao.chartIssueDistribByStatus(projectId, type.toString());
+    public List<Map<Object, Object>> chartIssueDistribByStatus(Integer id, TstProject.ProjectType type) {
+        List<Map> ls = reportIssueDao.chartIssueDistribByStatus(id, type.toString());
 
         List<Map<Object, Object>> data2 = new LinkedList<>();
         for (Map item : ls) {

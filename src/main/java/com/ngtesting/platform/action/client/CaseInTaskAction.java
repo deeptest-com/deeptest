@@ -3,8 +3,10 @@ package com.ngtesting.platform.action.client;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.model.TstCaseInTask;
+import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.*;
+import com.ngtesting.platform.servlet.PrivPrj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +37,7 @@ public class CaseInTaskAction extends BaseAction {
 
     @RequestMapping(value = "query", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj(perms = {"test_case-view", "test_plan-view", "test_task-view"})
     public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -57,6 +60,7 @@ public class CaseInTaskAction extends BaseAction {
 
     @RequestMapping(value = "get", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj(perms = {"test_case-view", "test_plan-view", "test_task-view"})
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -74,6 +78,7 @@ public class CaseInTaskAction extends BaseAction {
 
     @RequestMapping(value = "rename", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj(perms = {"test_case-maintain"})
     public Map<String, Object> rename(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -91,6 +96,7 @@ public class CaseInTaskAction extends BaseAction {
 
     @RequestMapping(value = "setResult", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj(perms = {"test_task-exe"})
     public Map<String, Object> setResult(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 

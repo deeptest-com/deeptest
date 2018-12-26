@@ -11,7 +11,7 @@ public class IsuQuery extends BaseModel {
 	private String descr;
     private Date useTime;
 
-    private Integer orgId;
+//    private Integer orgId;
 	private Integer projectId;
 	private Integer userId;
 
@@ -39,13 +39,13 @@ public class IsuQuery extends BaseModel {
 		this.descr = descr;
 	}
 
-	public Integer getOrgId() {
-		return orgId;
-	}
-
-	public void setOrgId(Integer orgId) {
-		this.orgId = orgId;
-	}
+//	public Integer getOrgId() {
+//		return orgId;
+//	}
+//
+//	public void setOrgId(Integer orgId) {
+//		this.orgId = orgId;
+//	}
 
     public Integer getProjectId() {
         return projectId;

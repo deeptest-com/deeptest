@@ -9,6 +9,7 @@ import com.ngtesting.platform.model.TstCaseAttachment;
 import com.ngtesting.platform.model.TstCaseHistory;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.CaseAttachmentService;
+import com.ngtesting.platform.servlet.PrivPrj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +35,7 @@ public class CaseAttachmentAction extends BaseAction {
 
 	@RequestMapping(value = "upload", method = RequestMethod.POST)
 	@ResponseBody
+	@PrivPrj(perms = {"test_case-maintain"})
 	public Map<String, Object> upload(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -61,6 +63,7 @@ public class CaseAttachmentAction extends BaseAction {
 
 	@RequestMapping(value = "remove", method = RequestMethod.POST)
 	@ResponseBody
+    @PrivPrj(perms = {"test_case-maintain"})
 	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 

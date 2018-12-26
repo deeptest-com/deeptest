@@ -3,9 +3,12 @@ package com.ngtesting.platform.action.client;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.model.IsuAttachment;
+import com.ngtesting.platform.model.IsuHistory;
+import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueAttachmentService;
 import com.ngtesting.platform.service.intf.IssueHistoryService;
+import com.ngtesting.platform.servlet.PrivPrj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +34,7 @@ public class IssueAttachmentAction extends BaseAction {
 
     @RequestMapping(value = "save", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj(perms = {"issue-maintain"})
     public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -57,6 +61,7 @@ public class IssueAttachmentAction extends BaseAction {
 
     @RequestMapping(value = "remove", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj(perms = {"issue-maintain"})
     public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 

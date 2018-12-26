@@ -10,6 +10,7 @@ import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.model.IsuQuery;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.*;
+import com.ngtesting.platform.servlet.PrivPrj;
 import com.ngtesting.platform.vo.IsuJqlColumn;
 import com.ngtesting.platform.vo.IsuJqlFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ public class IssueTplAction extends BaseAction {
 
 	@RequestMapping(value = "query", method = RequestMethod.POST)
 	@ResponseBody
+    @PrivPrj
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -97,6 +99,7 @@ public class IssueTplAction extends BaseAction {
 
     @RequestMapping(value = "queryById", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj
     public Map<String, Object> queryById(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -156,6 +159,7 @@ public class IssueTplAction extends BaseAction {
 
     @RequestMapping(value = "changeColumns", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj
     public Map<String, Object> changeColumns(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);

@@ -114,7 +114,7 @@ public class CaseAction extends BaseAction {
 
     @RequestMapping(value = "get", method = RequestMethod.POST)
     @ResponseBody
-    @PrivPrj(perms = {"test_case-view"})
+    @PrivPrj(perms = {"test_case-view", "test_case-maintain"})
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);

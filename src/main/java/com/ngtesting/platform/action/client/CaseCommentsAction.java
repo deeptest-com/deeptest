@@ -3,9 +3,8 @@ package com.ngtesting.platform.action.client;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.TstCaseStep;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.CaseStepService;
+import com.ngtesting.platform.service.intf.CaseCommentsService;
 import com.ngtesting.platform.servlet.PrivPrj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,24 +18,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "case_step/")
-public class CaseStepAction extends BaseAction {
+@RequestMapping(Constant.API_PATH_CLIENT + "case_comments/")
+public class CaseCommentsAction extends BaseAction {
     @Autowired
-    CaseStepService caseStepService;
+    CaseCommentsService caseCommentsService;
 
     @RequestMapping(value = "save", method = RequestMethod.POST)
     @ResponseBody
     @PrivPrj(perms = {"test_case-maintain"})
     public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
+
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        TstCaseStep po = caseStepService.save(json, user);
-        if (po == null) {
+        Object vo = caseCommentsService.save(json, user);
+
+        if (vo == null) {
             return authFail();
         }
 
-        ret.put("data", po);
+        ret.put("data", vo);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -48,40 +49,8 @@ public class CaseStepAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Boolean result = caseCommentsService.delete(json.getInteger("id"), user);
 
-        Boolean result = caseStepService.delete(json.getInteger("id"), user);
-        if (!result) {
-            return authFail();
-        }
-
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
-    @RequestMapping(value = "up", method = RequestMethod.POST)
-    @ResponseBody
-    @PrivPrj(perms = {"test_case-maintain"})
-    public Map<String, Object> up(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-
-        Boolean result = caseStepService.changeOrder(json, "up", user);
-        if (!result) {
-            return authFail();
-        }
-
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
-    @RequestMapping(value = "down", method = RequestMethod.POST)
-    @ResponseBody
-    @PrivPrj(perms = {"test_case-maintain"})
-    public Map<String, Object> down(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-
-        Boolean result = caseStepService.changeOrder(json, "down", user);
         if (!result) {
             return authFail();
         }

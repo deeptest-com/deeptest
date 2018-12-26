@@ -21,13 +21,13 @@ public class IssueQueryServiceImpl extends BaseServiceImpl implements IssueQuery
 	IssueQueryDao queryDao;
 
 	@Override
-	public List<IsuQuery> list(Integer orgId, Integer userId, String keywords) {
-        return queryDao.list(orgId, userId, keywords);
+	public List<IsuQuery> list(Integer prjId, Integer userId, String keywords) {
+        return queryDao.list(prjId, userId, keywords);
 	}
 
     @Override
-    public List<IsuQuery> listRecentQuery(Integer orgId, Integer userId) {
-        return queryDao.listRecentQuery(orgId, userId);
+    public List<IsuQuery> listRecentQuery(Integer prjId, Integer userId) {
+        return queryDao.listRecentQuery(prjId, userId);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class IssueQueryServiceImpl extends BaseServiceImpl implements IssueQuery
         query.setRule(JSON.toJSONString(rule));
 
 		query.setProjectId(user.getDefaultPrjId());
-		query.setOrgId(user.getDefaultOrgId());
+//		query.setOrgId(user.getDefaultOrgId());
 		query.setUserId(user.getId());
 
 		queryDao.save(query);

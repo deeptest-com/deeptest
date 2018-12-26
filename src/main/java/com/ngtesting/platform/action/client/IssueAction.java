@@ -7,6 +7,7 @@ import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.model.IsuPage;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.*;
+import com.ngtesting.platform.servlet.PrivPrj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +36,7 @@ public class IssueAction extends BaseAction {
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj(perms = {"issue-maintain"})
     public Map<String, Object> create(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -55,6 +57,7 @@ public class IssueAction extends BaseAction {
         return ret;
     }
 
+    @PrivPrj(perms = {"issue-maintain"})
     @RequestMapping(value = "edit", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> edit(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -82,6 +85,7 @@ public class IssueAction extends BaseAction {
         return ret;
     }
 
+    @PrivPrj(perms = {"issue-view"})
     @RequestMapping(value = "view", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -113,6 +117,7 @@ public class IssueAction extends BaseAction {
         return ret;
     }
 
+    @PrivPrj(perms = {"issue-maintain"})
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -130,6 +135,7 @@ public class IssueAction extends BaseAction {
 		return ret;
 	}
 
+    @PrivPrj(perms = {"issue-maintain"})
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> update(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -146,6 +152,7 @@ public class IssueAction extends BaseAction {
         return ret;
     }
 
+    @PrivPrj(perms = {"issue-maintain"})
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -161,6 +168,7 @@ public class IssueAction extends BaseAction {
         return ret;
     }
 
+    @PrivPrj(perms = {"issue-maintain"})
 	@RequestMapping(value = "updateField", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> updateField(HttpServletRequest request, @RequestBody JSONObject json) {

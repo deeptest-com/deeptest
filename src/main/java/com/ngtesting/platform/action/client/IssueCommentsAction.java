@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.CaseCommentsService;
 import com.ngtesting.platform.service.intf.IssueCommentsService;
+import com.ngtesting.platform.servlet.PrivPrj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,27 +18,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RequestMapping(Constant.API_PATH_CLIENT + "comments/")
-public class CommentsAction extends BaseAction {
-    @Autowired
-    CaseCommentsService caseCommentsService;
-
+@RequestMapping(Constant.API_PATH_CLIENT + "issue_comments/")
+public class IssueCommentsAction extends BaseAction {
     @Autowired
     IssueCommentsService issueCommentsService;
 
     @RequestMapping(value = "save", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj(perms = {"issue-maintain"})
     public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        Object vo = null;
-        if ("case".equals(json.getString("modelType"))) {
-            vo = caseCommentsService.save(json, user);
-        } else if ("issue".equals(json.getString("modelType"))) {
-            vo = issueCommentsService.save(json, user);
-        }
+        Object vo = issueCommentsService.save(json, user);
 
         if (vo == null) {
             return authFail();
@@ -51,17 +44,12 @@ public class CommentsAction extends BaseAction {
 
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj(perms = {"issue-maintain"})
     public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Boolean result = null;
-
-        if ("case".equals(json.getString("modelType"))) {
-            result = caseCommentsService.delete(json.getInteger("id"), user);
-        } else if ("issue".equals(json.getString("modelType"))) {
-            result = issueCommentsService.delete(json.getInteger("id"), user);
-        }
+        Boolean result = issueCommentsService.delete(json.getInteger("id"), user);
 
         if (!result) {
             return authFail();

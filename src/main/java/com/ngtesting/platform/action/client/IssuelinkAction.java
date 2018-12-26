@@ -6,6 +6,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuLinkReason;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueLinkService;
+import com.ngtesting.platform.servlet.PrivPrj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +28,7 @@ public class IssuelinkAction extends BaseAction {
 
     @RequestMapping(value = "link", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj(perms = {"issue-maintain"})
     public Map<String, Object> link(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -47,6 +49,7 @@ public class IssuelinkAction extends BaseAction {
 
     @RequestMapping(value = "listIssueLinkReasons", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj
     public Map<String, Object> listIssueLinkReasons(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 

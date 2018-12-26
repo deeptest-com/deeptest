@@ -64,17 +64,18 @@ public class ReportTestAction extends BaseAction {
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        Integer id = json.getInteger("id");
-        TstProject prj = projectService.get(id);
+        Integer projectId = json.getInteger("projectId");
+
+        TstProject prj = projectService.get(projectId);
         if (prj.getType().equals(TstProject.ProjectType.project) &&
-                userNotInProject(user.getId(), id)) {
+                userNotInProject(user.getId(), projectId)) {
             return authFail();
         }
 
         Map<String, List<Object>> designReport =
-                reportService.chartDesignProgress(id, prj.getType(), 14);
+                reportService.chartDesignProgress(projectId, prj.getType(), 14);
         Map<String, List<Object>> exeReport =
-                reportService.chartExcutionProcess(id, prj.getType(), 14);
+                reportService.chartExcutionProcess(projectId, prj.getType(), 14);
 
         data.put("design", designReport);
         data.put("exe", exeReport);

@@ -191,6 +191,34 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
         return map;
     }
 
+    public Map<String, List<Object>> countAge(List<Map> ls, Integer numb) {
+        Map<String, List<Object>> map = new LinkedHashMap<>();
+        List<Object> xList = new LinkedList<>();
+        map.put("xList", xList);
+
+        map.put("问题", new LinkedList());
+
+        Map<String, String> validMap = new HashMap();
+        for (Map map1 : ls) {
+            String category = map1.get("category").toString();
+            String number = map1.get("numb").toString();
+            validMap.put(category, number);
+        }
+
+        for (int i = 1; i <= numb + 1; i++) {
+            String category = i <= numb? "" + i: ">" + (i-1);
+            xList.add(category);
+
+            if (validMap.containsKey(category)) {
+                map.get("问题").add(validMap.get(category));
+            } else {
+                map.get("问题").add(0);
+            }
+        }
+
+        return map;
+    }
+
     @Override
     public List<Map<Object, Object>> orderByExeStatus(Map map) {
         List<Map<Object, Object>> data2 = new LinkedList<>();

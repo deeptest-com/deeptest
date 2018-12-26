@@ -6,6 +6,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuTag;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueTagService;
+import com.ngtesting.platform.servlet.PrivPrj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +28,7 @@ public class IssueTagAction extends BaseAction {
 
     @RequestMapping(value = "search", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj
     public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -45,6 +47,7 @@ public class IssueTagAction extends BaseAction {
 
     @RequestMapping(value = "save", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj(perms = {"issue-maintain"})
     public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);

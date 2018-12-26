@@ -8,6 +8,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuQuery;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueQueryService;
+import com.ngtesting.platform.servlet.PrivPrj;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,17 +31,18 @@ public class IssueQueryAction extends BaseAction {
 
     @ResponseBody
     @PostMapping("/list")
+    @PrivPrj
     public Object list(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = user.getDefaultOrgId();
+        Integer prjId = user.getDefaultPrjId();
 
         String keywords = json.getString("keywords");
         Integer pageNum = json.getInteger("page");
         Integer pageSize = json.getInteger("pageSize");
 
         com.github.pagehelper.Page page = PageHelper.startPage(pageNum, pageSize);
-        List<IsuQuery> vos = queryService.list(orgId, user.getId(), keywords);
+        List<IsuQuery> vos = queryService.list(prjId, user.getId(), keywords);
 
         ret.put("total", page.getTotal());
         ret.put("data", vos);
@@ -51,10 +53,10 @@ public class IssueQueryAction extends BaseAction {
 
     @ResponseBody
     @PostMapping("/get")
+    @PrivPrj
     public Object get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = user.getDefaultOrgId();
 
         Integer id = json.getInteger("id");
 
@@ -68,6 +70,7 @@ public class IssueQueryAction extends BaseAction {
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
+    @PrivPrj
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -83,6 +86,7 @@ public class IssueQueryAction extends BaseAction {
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj
     public Map<String, Object> update(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -97,6 +101,7 @@ public class IssueQueryAction extends BaseAction {
 
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj
     public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);

@@ -44,6 +44,7 @@ public class PlanAction extends BaseAction {
 
 	@RequestMapping(value = "query", method = RequestMethod.POST)
 	@ResponseBody
+    @PrivPrj
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -66,6 +67,7 @@ public class PlanAction extends BaseAction {
 
     @RequestMapping(value = "get", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj(perms = {"test_plan-view"})
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -93,6 +95,7 @@ public class PlanAction extends BaseAction {
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
+    @PrivPrj(perms = {"test_plan-maintain"})
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -116,6 +119,7 @@ public class PlanAction extends BaseAction {
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
+    @PrivPrj(perms = {"test_plan-delete"})
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);

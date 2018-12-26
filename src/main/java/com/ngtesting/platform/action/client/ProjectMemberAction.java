@@ -5,6 +5,7 @@ import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.intf.*;
+import com.ngtesting.platform.servlet.PrivPrj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,6 +41,7 @@ public class ProjectMemberAction extends BaseAction {
 
     @ResponseBody
     @PostMapping("/getUsers")
+    @PrivPrj(perms = {"project-admin"})
     public Map<String, Object> getUsers(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -63,6 +65,7 @@ public class ProjectMemberAction extends BaseAction {
 
     @PostMapping(value = "saveMembers")
     @ResponseBody
+    @PrivPrj(perms = {"project-admin"})
     public Map<String, Object> saveMembers(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -86,6 +89,7 @@ public class ProjectMemberAction extends BaseAction {
 
     @PostMapping(value = "changeRole")
     @ResponseBody
+    @PrivPrj(perms = {"project-admin"})
     public Map<String, Object> changeRole(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -106,6 +110,7 @@ public class ProjectMemberAction extends BaseAction {
 
     @PostMapping(value = "remove")
     @ResponseBody
+    @PrivPrj(perms = {"project-admin"})
     public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);

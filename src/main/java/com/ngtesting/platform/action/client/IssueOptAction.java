@@ -7,6 +7,7 @@ import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueDynamicFormService;
 import com.ngtesting.platform.service.intf.IssueFieldService;
 import com.ngtesting.platform.service.intf.IssueOptService;
+import com.ngtesting.platform.servlet.PrivPrj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,7 @@ public class IssueOptAction extends BaseAction {
 
     @RequestMapping(value = "statusTran", method = RequestMethod.POST)
     @ResponseBody
+    @PrivPrj(perms = {"issue-maintain"})
     public Map<String, Object> statusTran(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -45,6 +47,7 @@ public class IssueOptAction extends BaseAction {
         return ret;
     }
 
+    @PrivPrj(perms = {"issue-maintain"})
     @RequestMapping(value = "assign", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> assign(HttpServletRequest request, @RequestBody JSONObject json) {

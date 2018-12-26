@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 public interface ReportIssueService extends ReportService {
-    Map<String, List<Object>> chartIssueTrend(Integer orgId, TstProject.ProjectType type, Integer numb);
-    Map<String, List<Object>> chartIssueAge(Integer projectId, TstProject.ProjectType type,
-                                            Integer numb, Integer orgId, Integer prjId);
-    List<Map<Object, Object>> chartIssueDistribByPriority(Integer orgId, TstProject.ProjectType type);
-    List<Map<Object, Object>> chartIssueDistribByStatus(Integer orgId, TstProject.ProjectType type);
+    Map<String, List<Object>> chartIssueTrend(Integer id, TstProject.ProjectType type, Integer numb);
+
+    Map<String, List<Object>> chartIssueAgeByProject(Integer projectId, Integer numb, Integer orgId);
+    Map<String, List<Object>> chartIssueAgeByOrgOrGroup(Integer id, TstProject.ProjectType type, Integer numb);
+
+    List<Map<Object, Object>> chartIssueDistribByPriority(Integer id, TstProject.ProjectType type);
+    List<Map<Object, Object>> chartIssueDistribByStatus(Integer id, TstProject.ProjectType type);
 
 }

@@ -6,6 +6,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuWorkflowSolution;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueWorkflowSolutionService;
+import com.ngtesting.platform.servlet.PrivPrj;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ public class IssueWorkflowAction extends BaseAction {
 
 	@RequestMapping(value = "getByProject", method = RequestMethod.POST)
 	@ResponseBody
+	@PrivPrj
 	public Map<String, Object> getByProject(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -53,6 +55,7 @@ public class IssueWorkflowAction extends BaseAction {
 
 	@RequestMapping(value = "setByProject", method = RequestMethod.POST)
 	@ResponseBody
+	@PrivPrj(perms = {"issue-maintain"})
 	public Map<String, Object> setByProject(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 

@@ -133,9 +133,19 @@
 
     <insert id="save" parameterType="TstProject" useGeneratedKeys="true" keyProperty="id">
         insert into TstProject (name,descr,orgId,parentId,type,
+             issueTypeSolutionId,
+			 issuePrioritySolutionId,
+			 issuePageSolutionId,
+			 issueWorkflowSolutionId,
           deleted,disabled,createTime)
 
         values (#{name},#{descr},#{orgId},#{parentId},#{type},
+
+        (select s.id from IsuTypeSolution s where s.orgId=${orgId} AND s.defaultVal),
+        (select s.id from IsuPrioritySolution s where s.orgId=${orgId} AND s.defaultVal),
+        (select s.id from IsuPageSolution s where s.orgId=${orgId} AND s.defaultVal),
+        (select s.id from IsuWorkflowSolution s where s.orgId=${orgId} AND s.defaultVal),
+
           #{deleted},#{disabled},#{createTime})
     </insert>
     <update id="update" parameterType="TstProject">

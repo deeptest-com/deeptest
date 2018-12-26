@@ -6,11 +6,11 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface IssueQueryDao {
-    List<IsuQuery> list(@Param("orgId") Integer orgId,
+    List<IsuQuery> list(@Param("prjId") Integer prjId,
                         @Param("userId") Integer userId,
                         @Param("keywords") String keywords);
 
-    List<IsuQuery> listRecentQuery(@Param("orgId") Integer orgId,
+    List<IsuQuery> listRecentQuery(@Param("prjId") Integer prjId,
                                    @Param("userId") Integer userId);
 
     IsuQuery get(@Param("id") Integer id,

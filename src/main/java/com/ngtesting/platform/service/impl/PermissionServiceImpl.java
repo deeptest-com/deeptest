@@ -3,6 +3,8 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.AuthDao;
 import com.ngtesting.platform.dao.PermissionDao;
+import com.ngtesting.platform.dao.ProjectDao;
+import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.service.intf.PermissionService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -23,6 +25,8 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
     PermissionDao permissionDao;
     @Autowired
     AuthDao authDao;
+    @Autowired
+    ProjectDao projectDao;
 
     @Override
     public Boolean hasPerm(String scope, String[] perms, String opt, Integer userId, Integer entityId, HttpServletRequest request) {
@@ -46,8 +50,12 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
         if (scope.equals("org")) {
             if (authDao.userNotInOrg(userId, entityId)) { // 不在组织中
                 return Boolean.FALSE;
-            }
+           }
         } else {
+            TstProject project = projectDao.get(entityId);
+            if (project.getType().equals(TstProject.ProjectType.group)) {
+                return Boolean.TRUE;
+            }
             if (authDao.userNotInProject(userId, entityId)) { // 不在组织中
                 return Boolean.FALSE;
             }

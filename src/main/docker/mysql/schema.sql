@@ -45,7 +45,7 @@ CREATE TABLE `CustomField` (
   PRIMARY KEY (`id`),
   KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`orgId`),
   CONSTRAINT `customfield_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -78,18 +78,18 @@ CREATE TABLE `CustomFieldDefine` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `CustomFieldInputTypeRelation`
+-- Table structure for table `CustomFieldInputTypeRelationDefine`
 --
 
-DROP TABLE IF EXISTS `CustomFieldInputTypeRelation`;
+DROP TABLE IF EXISTS `CustomFieldInputTypeRelationDefine`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `CustomFieldInputTypeRelation` (
+CREATE TABLE `CustomFieldInputTypeRelationDefine` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `inputValue` varchar(255) DEFAULT NULL,
   `typeValue` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -128,6 +128,7 @@ CREATE TABLE `CustomFieldOption` (
   `defaultVal` bit(1) DEFAULT NULL,
   `buildIn` bit(1) DEFAULT NULL,
   `fieldId` int(11) DEFAULT NULL,
+  `orgId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
@@ -135,7 +136,7 @@ CREATE TABLE `CustomFieldOption` (
   PRIMARY KEY (`id`),
   KEY `FK_1yiovndo2my1nj8ub95o8yp6` (`fieldId`),
   CONSTRAINT `fk_isucustomfieldoption_ibfk_1` FOREIGN KEY (`fieldId`) REFERENCES `CustomField` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=243 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=264 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -373,7 +374,7 @@ CREATE TABLE `IsuField` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=848 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=893 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -512,7 +513,7 @@ CREATE TABLE `IsuIssue` (
   PRIMARY KEY (`id`),
   KEY `FK_749574hr3f54gdlo4hrc6dquc` (`projectId`),
   CONSTRAINT `FK_749574hr3f54gdlo4hrc6dquc` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -604,7 +605,7 @@ CREATE TABLE `IsuLink` (
   KEY `dictIssueId` (`dictIssueId`),
   CONSTRAINT `fk_isulink_ibfk_1` FOREIGN KEY (`srcIssueId`) REFERENCES `IsuIssue` (`id`),
   CONSTRAINT `fk_isulink_issueid` FOREIGN KEY (`dictIssueId`) REFERENCES `IsuIssue` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -692,7 +693,7 @@ CREATE TABLE `IsuPage` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `fk_isupage_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=95 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -724,7 +725,7 @@ CREATE TABLE `IsuPageElement` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `isupageelement_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=483 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=537 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -748,7 +749,7 @@ CREATE TABLE `IsuPageSolution` (
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   CONSTRAINT `fk_isupagesolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -766,7 +767,7 @@ CREATE TABLE `IsuPageSolutionItem` (
   `solutionId` int(11) DEFAULT NULL,
   `orgId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=169 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=187 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -792,7 +793,7 @@ CREATE TABLE `IsuPriority` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `fk_issu_priority_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=277 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=298 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -838,7 +839,7 @@ CREATE TABLE `IsuPrioritySolution` (
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   CONSTRAINT `fk_isuprioritysolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -876,7 +877,6 @@ CREATE TABLE `IsuQuery` (
   `descr` varchar(1000) DEFAULT NULL,
   `useTime` datetime DEFAULT NULL,
   `projectId` int(11) DEFAULT NULL,
-  `orgId` int(11) DEFAULT NULL,
   `userId` int(11) DEFAULT NULL,
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
@@ -911,7 +911,7 @@ CREATE TABLE `IsuResolution` (
   PRIMARY KEY (`id`),
   KEY `FK_jakioowaasj09sqr9d376dl9u` (`orgId`),
   CONSTRAINT `isuresolution_ibfk_2` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1057,7 +1057,7 @@ CREATE TABLE `IsuStatus` (
   KEY `isu_status_categoryid` (`categoryId`) USING BTREE,
   CONSTRAINT `fk_isu_status_categoryid` FOREIGN KEY (`categoryId`) REFERENCES `IsuStatusCategoryDefine` (`id`),
   CONSTRAINT `isustatus_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=229 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=250 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1170,7 +1170,7 @@ CREATE TABLE `IsuType` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `fk_isu_type_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=230 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=239 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1216,7 +1216,7 @@ CREATE TABLE `IsuTypeSolution` (
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   CONSTRAINT `fk_isutypesolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1279,7 +1279,7 @@ CREATE TABLE `IsuWorkflow` (
   PRIMARY KEY (`id`),
   KEY `FK_42yjv4ki9jm2ppkx819t2ega5` (`orgId`),
   CONSTRAINT `FK_42yjv4ki9jm2ppkx819t2ega5` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1303,7 +1303,7 @@ CREATE TABLE `IsuWorkflowSolution` (
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   CONSTRAINT `isuworkflowsolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1320,7 +1320,7 @@ CREATE TABLE `IsuWorkflowSolutionItem` (
   `solutionId` int(11) DEFAULT NULL,
   `orgId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1342,7 +1342,7 @@ CREATE TABLE `IsuWorkflowStatusRelation` (
   CONSTRAINT `isuworkflowstatusrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
   CONSTRAINT `isuworkflowstatusrelation_ibfk_2` FOREIGN KEY (`workflowId`) REFERENCES `IsuWorkflow` (`id`),
   CONSTRAINT `isuworkflowstatusrelation_ibfk_3` FOREIGN KEY (`statusId`) REFERENCES `IsuStatus` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=154 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=177 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1393,7 +1393,7 @@ CREATE TABLE `IsuWorkflowTransition` (
   CONSTRAINT `fk_isu_workflowtran_src` FOREIGN KEY (`srcStatusId`) REFERENCES `IsuStatus` (`id`),
   CONSTRAINT `isuworkflowtransition_ibfk_1` FOREIGN KEY (`dictStatusId`) REFERENCES `IsuStatus` (`id`),
   CONSTRAINT `isuworkflowtransition_ibfk_2` FOREIGN KEY (`actionPageId`) REFERENCES `IsuPage` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=275 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=320 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1446,7 +1446,7 @@ CREATE TABLE `IsuWorkflowTransitionProjectRoleRelation` (
   CONSTRAINT `isuworkflowtransitionprojectrolerelation_ibfk_2` FOREIGN KEY (`workflowId`) REFERENCES `IsuWorkflow` (`id`),
   CONSTRAINT `isuworkflowtransitionprojectrolerelation_ibfk_4` FOREIGN KEY (`workflowTransitionId`) REFERENCES `IsuWorkflowTransition` (`id`),
   CONSTRAINT `isuworkflowtransitionprojectrolerelation_ibfk_5` FOREIGN KEY (`projectRoleId`) REFERENCES `TstProjectRole` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=902 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1091 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1601,7 +1601,7 @@ CREATE TABLE `TstAlert` (
   KEY `FK_b4fbqud01ub7bqahljyyux0ss` (`userId`),
   CONSTRAINT `FK_b4fbqud01ub7bqahljyyux0ss` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_r8m7ykej6x9fpp4d52sq3y8x8` FOREIGN KEY (`assigneeId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1662,7 +1662,7 @@ CREATE TABLE `TstCase` (
   CONSTRAINT `FK_le8suo2xxbcr036yaiivwkqn0` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `tstcase_ibfk_1` FOREIGN KEY (`typeId`) REFERENCES `TstCaseType` (`id`),
   CONSTRAINT `tstcase_ibfk_2` FOREIGN KEY (`priorityId`) REFERENCES `TstCasePriority` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=301 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=322 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1741,7 +1741,7 @@ CREATE TABLE `TstCaseExeStatus` (
   PRIMARY KEY (`id`),
   KEY `FK_o4l4xg65y069b0ai5cgbfm175` (`orgid`),
   CONSTRAINT `FK_o4l4xg65y069b0ai5cgbfm175` FOREIGN KEY (`orgid`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=361 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=373 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1763,7 +1763,7 @@ CREATE TABLE `TstCaseHistory` (
   PRIMARY KEY (`id`),
   KEY `FK_8yss1awno54uahftbyi1wb2j8` (`caseId`),
   CONSTRAINT `FK_8yss1awno54uahftbyi1wb2j8` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1836,7 +1836,7 @@ CREATE TABLE `TstCaseInTask` (
   CONSTRAINT `FK_ahth2x2i7j9loamqyg3jcwfu6` FOREIGN KEY (`createBy`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_avls2r88tnl837rhiw01wtyma` FOREIGN KEY (`planId`) REFERENCES `TstPlan` (`id`),
   CONSTRAINT `FK_mwbiov88r7ppt8x9yunxr18pu` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1861,7 +1861,7 @@ CREATE TABLE `TstCaseInTaskHistory` (
   KEY `caseInTaskId` (`caseInTaskId`),
   CONSTRAINT `fk_caseId` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`),
   CONSTRAINT `fk_caseInTaskId` FOREIGN KEY (`caseInTaskId`) REFERENCES `TstCaseInTask` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1887,7 +1887,7 @@ CREATE TABLE `TstCasePriority` (
   PRIMARY KEY (`id`),
   KEY `FK_d8r4hkhobybms74u4vk43thj9` (`orgid`),
   CONSTRAINT `FK_d8r4hkhobybms74u4vk43thj9` FOREIGN KEY (`orgid`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=273 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=282 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1936,7 +1936,7 @@ CREATE TABLE `TstCaseType` (
   PRIMARY KEY (`id`),
   KEY `FK_rqs9hiykm6kk5w8rewcy1uvy7` (`orgId`),
   CONSTRAINT `FK_rqs9hiykm6kk5w8rewcy1uvy7` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=633 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=654 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2037,7 +2037,7 @@ CREATE TABLE `TstHistory` (
   KEY `FK_m4yjkr3nwc5y1fcjj1ke08xie` (`userId`),
   CONSTRAINT `FK_j9m2m7ijlp9j2184nv0yiln9u` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_m4yjkr3nwc5y1fcjj1ke08xie` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=137 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=157 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2082,7 +2082,7 @@ CREATE TABLE `TstMsg` (
   PRIMARY KEY (`id`),
   KEY `FK_h4g997qkpu00h24f9ppqa4g2k` (`userId`),
   CONSTRAINT `FK_h4g997qkpu00h24f9ppqa4g2k` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2101,7 +2101,7 @@ CREATE TABLE `TstOrg` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2124,7 +2124,7 @@ CREATE TABLE `TstOrgGroup` (
   PRIMARY KEY (`id`),
   KEY `FK_dlddwakgodocwt7n7abndkhtg` (`orgId`),
   CONSTRAINT `FK_dlddwakgodocwt7n7abndkhtg` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2188,7 +2188,7 @@ CREATE TABLE `TstOrgRole` (
   PRIMARY KEY (`id`),
   KEY `FK_q5g6x4w1pwr5ur4iwbg17nr9u` (`orgId`),
   CONSTRAINT `FK_q5g6x4w1pwr5ur4iwbg17nr9u` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=183 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=189 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2292,7 +2292,7 @@ CREATE TABLE `TstPlan` (
   CONSTRAINT `FK_299h646hfdb07s239a6juu55k` FOREIGN KEY (`verId`) REFERENCES `TstVer` (`id`),
   CONSTRAINT `FK_pc89p4era2bchkg4ulsv1gv7l` FOREIGN KEY (`envId`) REFERENCES `TstVer` (`id`),
   CONSTRAINT `FK_te991npw8lxmrtmt2gcjolimr` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2331,7 +2331,7 @@ CREATE TABLE `TstProject` (
   CONSTRAINT `tstproject_ibfk_2` FOREIGN KEY (`issuePrioritySolutionId`) REFERENCES `IsuPrioritySolution` (`id`),
   CONSTRAINT `tstproject_ibfk_3` FOREIGN KEY (`issuePageSolutionId`) REFERENCES `IsuPageSolution` (`id`),
   CONSTRAINT `tstproject_ibfk_4` FOREIGN KEY (`issueWorkflowSolutionId`) REFERENCES `IsuWorkflowSolution` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=526 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=536 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2357,7 +2357,7 @@ CREATE TABLE `TstProjectAccessHistory` (
   CONSTRAINT `FK_dpcrx83ysgtel2eua0856xfk3` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_hv9vkb26yw1fluyh6thwh230h` FOREIGN KEY (`prjId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_l0ifd62wftf6w81779j64rfmc` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=115 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2403,7 +2403,7 @@ CREATE TABLE `TstProjectRole` (
   PRIMARY KEY (`id`),
   KEY `FK_8eokjbtquljjgjahh7y0l0la6` (`orgId`),
   CONSTRAINT `FK_8eokjbtquljjgjahh7y0l0la6` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=361 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=373 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2469,7 +2469,7 @@ CREATE TABLE `TstSuite` (
   CONSTRAINT `FK_1r4cd0cr11rrevb0x5sj7w2pv` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_bof1daqokqea3o5yfdlreg8jy` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_gam83w6tee7evc846fh0kqvq0` FOREIGN KEY (`caseProjectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2505,7 +2505,7 @@ CREATE TABLE `TstTask` (
   CONSTRAINT `FK_fymnl68rmtbhmw3jcg66qfdes` FOREIGN KEY (`caseProjectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_iog5lfy5gnd0uccm0wgrlqcsd` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_iokmiyvqpbqi8uo8d8nq985fw` FOREIGN KEY (`envId`) REFERENCES `TstVer` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2576,7 +2576,7 @@ CREATE TABLE `TstUser` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2618,7 +2618,7 @@ CREATE TABLE `TstUserVerifyCode` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3963,69 +3963,34 @@ BEGIN
 
     select id from TstCaseType where value='functional' AND orgId=org_id into case_default_type_id;
 
-
     insert into TstProjectRole (code, name, buildIn, orgId, disabled, deleted, createTime)
     values('test_leader', '测试主管', false, org_id, false, false, NOW());
     select max(id) from TstProjectRole into project_role_id;
     set project_role_leader_id=project_role_id;
 
-    set i=11100;
-    while i<=17300 do
-      select count(id) from TstProjectPrivilegeDefine where id=i into count;
-      IF count > 0 THEN
-        insert into TstProjectRolePriviledgeRelation
-        ( projectPrivilegeDefineId,   projectRoleId )
-        VALUES ( i, project_role_id );
-      END IF;
-      set i=i+100;
-    end while;
+    insert into TstProjectRolePriviledgeRelation ( projectPrivilegeDefineId,   projectRoleId )
+	select d.id,project_role_id from TstProjectPrivilegeDefine d;
 
     insert into TstProjectRole (code, name, buildIn, orgId, disabled, deleted, createTime)
     values('test_designer', '测试设计', false, org_id, false, false, NOW());
     select max(id) from TstProjectRole into project_role_id;
 
-    set i=11100;
-    while i<=17300 do
-      select count(id) from TstProjectPrivilegeDefine 
-		where id=i AND id != 11200 and id != 11300 and id != 12400 into count;
-      IF count > 0 THEN
-        insert into TstProjectRolePriviledgeRelation
-        ( projectPrivilegeDefineId,   projectRoleId )
-        VALUES ( i, project_role_id );
-      END IF;
-      set i=i+100;
-    end while;
+    insert into TstProjectRolePriviledgeRelation ( projectPrivilegeDefineId,   projectRoleId )
+	select d.id,project_role_id from TstProjectPrivilegeDefine d where d.id != 12400;
 
     insert into TstProjectRole (code, name, buildIn, orgId, disabled, deleted, createTime)
     values('tester', '测试执行', false, org_id, false, false, NOW());
     select max(id) from TstProjectRole into project_role_id;
 
-    set i=11100;
-    while i<=17300 do
-      select count(id) from TstProjectPrivilegeDefine 
-		where id=i AND id != 11200 and id != 11300 AND id != 12200 and id != 12400 into count;
-      IF count > 0 THEN
-        insert into TstProjectRolePriviledgeRelation
-        ( projectPrivilegeDefineId,   projectRoleId )
-        VALUES ( i, project_role_id );
-      END IF;
-      set i=i+100;
-    end while;
+    insert into TstProjectRolePriviledgeRelation ( projectPrivilegeDefineId,   projectRoleId )
+	select d.id,project_role_id from TstProjectPrivilegeDefine d where d.id != 12200 and d.id != 12400;
 
     insert into TstProjectRole (code, name, buildIn, orgId, disabled, deleted, createTime)
     values('readonly', '只读用户', false, org_id, false, false, NOW());
     select max(id) from TstProjectRole into project_role_id;
 
-    set i=11100;
-    while i<=17300 do
-      select count(id) from TstProjectPrivilegeDefine where id=i and action = 'view' into count;
-      IF count > 0 THEN
-        insert into TstProjectRolePriviledgeRelation
-        ( projectPrivilegeDefineId,   projectRoleId )
-        VALUES ( i, project_role_id );
-      END IF;
-      set i=i+100;
-    end while;
+    insert into TstProjectRolePriviledgeRelation ( projectPrivilegeDefineId,   projectRoleId )
+	select d.id,project_role_id from TstProjectPrivilegeDefine d where d.action = 'view';
 
 
     insert into TstProject (name, type, parentId, orgId, disabled, deleted, createTime)
@@ -4114,8 +4079,8 @@ BEGIN
 		false,false,NOW()
 	    from IsuField f where f.orgId = org_id and f.defaultShowInPage ORDER BY f.elemOrdr;
 
-    insert into IsuPageSolution(name,orgId,disabled,deleted,createTime) 
-		values ('默认界面方案', org_id,FALSE,FALSE,NOW());
+    insert into IsuPageSolution(name,orgId,defaultVal,disabled,deleted,createTime) 
+		values ('默认界面方案', org_id,TRUE,FALSE,FALSE,NOW());
     select max(id) from IsuPageSolution into issue_page_solution_id;
 
     call init_org_issue_page_solution_item(issue_page_id, issue_page_solution_id, org_id);
@@ -4220,9 +4185,9 @@ BEGIN
 		   select id from CustomFieldDefine WHERE colCode=custom_field_colcode 
 			into custom_field_define_id;
 	    
-	           insert into CustomFieldOption(label,value,ordr,fieldId,
+	           insert into CustomFieldOption(label,value,ordr,fieldId,orgId,
 				defaultVal,buildIn,disabled,deleted,createTime) 
-			select d.label,d.value,d.ordr,custom_field_id,
+			select d.label,d.value,d.ordr,custom_field_id,org_id,
 				defaultVal,true,d.disabled,d.deleted,NOW() from CustomFieldOptionDefine d
 			   where d.fieldId = custom_field_define_id;
 
@@ -4441,7 +4406,7 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-12-20 20:54:04
+-- Dump completed on 2018-12-26 11:47:19
 -- MySQL dump 10.13  Distrib 5.7.14, for osx10.11 (x86_64)
 --
 -- Host: localhost    Database: ngtesting-web
@@ -4467,6 +4432,16 @@ LOCK TABLES `CustomFieldDefine` WRITE;
 /*!40000 ALTER TABLE `CustomFieldDefine` DISABLE KEYS */;
 INSERT INTO `CustomFieldDefine` VALUES (1,'prop01','严重级别','integer','dropdown',NULL,'issue',NULL,'\0','\0','\0',1,NULL,'2018-11-09 12:06:02',NULL,'\0','\0');
 /*!40000 ALTER TABLE `CustomFieldDefine` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `CustomFieldInputTypeRelationDefine`
+--
+
+LOCK TABLES `CustomFieldInputTypeRelationDefine` WRITE;
+/*!40000 ALTER TABLE `CustomFieldInputTypeRelationDefine` DISABLE KEYS */;
+INSERT INTO `CustomFieldInputTypeRelationDefine` VALUES (1,'text','string'),(2,'number','integer'),(3,'number','double'),(4,'textarea','string'),(5,'dropdown','string'),(6,'multi_select','string'),(7,'radio','string'),(8,'checkbox','string'),(9,'date','date'),(10,'time','time'),(11,'datetime','datetime');
+/*!40000 ALTER TABLE `CustomFieldInputTypeRelationDefine` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -4644,7 +4619,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `TstProjectPrivilegeDefine` WRITE;
 /*!40000 ALTER TABLE `TstProjectPrivilegeDefine` DISABLE KEYS */;
-INSERT INTO `TstProjectPrivilegeDefine` VALUES (11100,'project','项目','view','查看',NULL,'\0','\0','2017-12-26 10:11:16','2017-12-26 10:11:18'),(11200,'project','项目','maintain','维护',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(11300,'project','项目','delete','删除',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(12100,'test_case','测试用例','view','查看',NULL,'\0','\0','2017-12-26 10:11:16','2017-12-26 10:11:18'),(12200,'test_case','测试用例','maintain','维护',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(12300,'test_case','测试用例','delete','删除',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(12400,'test_case','测试用例','review','评审',NULL,'\0','\0','2018-09-16 08:15:23','2018-09-16 08:15:26'),(13100,'test_suite','测试集','view','查看',NULL,'\0','\0','2017-12-26 10:18:29','2017-12-26 10:18:38'),(13200,'test_suite','测试集','maintain','维护',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(13300,'test_suite','测试集','delete','删除',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(14100,'test_plan','执行计划','view','查看',NULL,'\0','\0','2017-12-26 10:13:08','2017-12-26 10:13:11'),(14200,'test_plan','执行计划','maintain','维护',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(14300,'test_plan','执行计划','delete','删除',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(15100,'test_task','测试任务','view','查看',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(15200,'test_task','测试任务','exe','执行',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(15300,'test_task','测试任务','close','关闭',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(16100,'auto_task','自动化任务','view','查看',NULL,'\0','\0','2018-05-03 17:03:01','2018-05-03 17:03:08'),(16200,'auto_task','自动化任务','maintain','维护',NULL,'\0','\0','2018-05-03 17:03:01','2018-05-03 17:03:08'),(16300,'auto_task','自动化任务','exe','执行',NULL,'\0','\0','2018-05-03 17:03:01','2018-05-03 17:03:08'),(16400,'auto_task','自动化任务','delete','删除',NULL,'\0','\0','2018-05-03 17:03:01','2018-05-03 17:03:08'),(17100,'issue','问题','view','查看',NULL,'\0','\0','2018-05-03 17:03:01','2018-05-03 17:03:08'),(17200,'issue','问题','maintain','维护',NULL,'\0','\0','2018-05-03 17:03:01','2018-05-03 17:03:08'),(17300,'issue','问题','delete','删除',NULL,'\0','\0','2018-05-03 17:03:01','2018-05-03 17:03:08');
+INSERT INTO `TstProjectPrivilegeDefine` VALUES (12100,'test_case','测试用例','view','查看',NULL,'\0','\0','2017-12-26 10:11:16','2017-12-26 10:11:18'),(12200,'test_case','测试用例','maintain','维护',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(12300,'test_case','测试用例','delete','删除',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(12400,'test_case','测试用例','review','评审',NULL,'\0','\0','2018-09-16 08:15:23','2018-09-16 08:15:26'),(13100,'test_suite','测试集','view','查看',NULL,'\0','\0','2017-12-26 10:18:29','2017-12-26 10:18:38'),(13200,'test_suite','测试集','maintain','维护',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(13300,'test_suite','测试集','delete','删除',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(14100,'test_plan','执行计划','view','查看',NULL,'\0','\0','2017-12-26 10:13:08','2017-12-26 10:13:11'),(14200,'test_plan','执行计划','maintain','维护',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(14300,'test_plan','执行计划','delete','删除',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(15100,'test_task','测试任务','view','查看',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(15200,'test_task','测试任务','exe','执行',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(15300,'test_task','测试任务','close','关闭',NULL,'\0','\0','2017-04-05 11:52:26','2017-04-05 11:52:28'),(17100,'issue','问题','view','查看',NULL,'\0','\0','2018-05-03 17:03:01','2018-05-03 17:03:08'),(17200,'issue','问题','maintain','维护',NULL,'\0','\0','2018-05-03 17:03:01','2018-05-03 17:03:08'),(17300,'issue','问题','delete','删除',NULL,'\0','\0','2018-05-03 17:03:01','2018-05-03 17:03:08');
 /*!40000 ALTER TABLE `TstProjectPrivilegeDefine` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -4657,4 +4632,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-12-20 20:54:04
+-- Dump completed on 2018-12-26 11:47:20

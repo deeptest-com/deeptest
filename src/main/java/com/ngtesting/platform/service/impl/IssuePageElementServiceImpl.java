@@ -7,6 +7,7 @@ import com.ngtesting.platform.service.intf.IssueFieldService;
 import com.ngtesting.platform.service.intf.IssuePageElementService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +47,9 @@ public class IssuePageElementServiceImpl extends BaseServiceImpl implements Issu
                             field.getFullLine(), field.getRequired(), field.getReadonly(), field.getBuildIn(),
                             field.getKey(), field.getFieldId(), pageId, orgId, ordr);
 
+                    if (elm.getInput().equals("textarea") || elm.getInput().equals("richtext")) {
+                        elm.setFullLine(Boolean.TRUE);
+                    }
                     elementDao.save(elm);
                     map.put("id", elm.getId().toString());
                 }

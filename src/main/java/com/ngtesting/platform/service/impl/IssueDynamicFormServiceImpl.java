@@ -18,16 +18,16 @@ public class IssueDynamicFormServiceImpl extends BaseServiceImpl implements Issu
 
     @Override
     public List<IsuField> listNotUsedField(Integer orgId, Integer projectId, Integer pageId) {
-        List<IsuField> fields = dynamicFormDao.listNotUsedField(orgId, projectId, pageId);
+        List<IsuField> fields = dynamicFormDao.listNotUsedField(orgId, projectId, pageId, "elem");
 
         return fields;
     }
 
     @Override
     public Map<String, List<Map>> genIssuePropMap(Integer orgId, Integer projectId) {
-        Map<String, List<Map>> map = new HashMap<>();
+        Map<String, List<Map>> map = new LinkedHashMap<>();
 
-        List<Map> fields = fetchOrgField(orgId, projectId);
+        List<Map> fields = fetchOrgField(orgId, projectId, "elem");
 
         for (Map field : fields) {
             map.put(field.get("colCode").toString(), (List)field.get("options"));
@@ -38,9 +38,9 @@ public class IssueDynamicFormServiceImpl extends BaseServiceImpl implements Issu
 
     @Override
     public Map<String, Object> genIssuePropValMap(Integer orgId, Integer projectId) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new LinkedHashMap<>();
 
-        List<Map> fields = fetchOrgField(orgId, projectId);
+        List<Map> fields = fetchOrgField(orgId, projectId, "elem");
 
 		for (Map field : fields) {
 		    if (!"1".equals(field.get("buildIn").toString())
@@ -60,8 +60,8 @@ public class IssueDynamicFormServiceImpl extends BaseServiceImpl implements Issu
     }
 
     @Override // TODO: cached
-    public List<Map> fetchOrgField(Integer orgId, Integer projectId) {
-        List<Map> fields = dynamicFormDao.fetchOrgField(orgId, projectId);
+    public List<Map> fetchOrgField(Integer orgId, Integer projectId, String sort) {
+        List<Map> fields = dynamicFormDao.fetchOrgField(orgId, projectId, sort);
         return fields;
     }
 

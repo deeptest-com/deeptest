@@ -11,7 +11,7 @@
           SELECT elem.key FROM IsuPageElement elem WHERE elem.pageId = #{pageId}
         )
 
-        /*ORDER BY fields.elemOrdr;*/
+        /*ORDER BY fields.sort;*/
     </select>
 
     <select id="fetchOrgField" resultMap="fieldMap">
@@ -79,31 +79,37 @@
         END inputCatagory
 
         FROM (
-          (SELECT CONCAT('sys-', field.id) `key`, CONCAT('a-', field.elemOrdr) elemOrdr,
+          (SELECT CONCAT('sys-', field.id) `key`,
             field.id fieldId, field.colCode, field.label,
-            field.type, field.input, field.fullLine, field.required, field.readonly, true buildIn,
-            field.elemOrdr ordr, field.orgId
+            field.type, field.input, field.fullLine, field.required,
+            field.readonly, true buildIn,
+            field.orgId,
+            CASE '${sort}'
+              WHEN 'filter' THEN field.filterOrdr
+              WHEN 'col' THEN field.columnOrdr
+              ELSE field.elemOrdr
+            END sort
 
             FROM IsuField field
 
             WHERE field.orgId = #{orgId} AND field.disabled!=true AND field.deleted!=true
 
-            ORDER BY field.elemOrdr ASC
+            ORDER BY sort ASC
           )
 
           UNION
 
-          (SELECT CONCAT('cust-', customField.id) `key`, CONCAT('b-', customField.ordr) elemOrdr,
+          (SELECT CONCAT('cust-', customField.id) `key`,
             customField.id fieldId, customField.colCode, customField.label,
-            customField.type, customField.input,
-            customField.fullLine, customField.required, customField.readonly, false buildIn,
-            customField.ordr, customField.orgId
+            customField.type, customField.input, customField.fullLine, customField.required,
+            customField.readonly, false buildIn,
+            customField.orgId, customField.ordr sort
 
             FROM CustomField customField
 
             WHERE customField.orgId = #{orgId} AND customField.applyTo = 'issue'
                 AND customField.disabled!=true AND customField.deleted!=true
-            ORDER BY customField.ordr ASC
+            ORDER BY sort ASC
           )
         ) fields
 

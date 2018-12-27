@@ -2,15 +2,13 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.itfsw.query.builder.support.model.JsonRule;
-import com.itfsw.query.builder.support.model.enums.EnumOperator;
-import com.itfsw.query.builder.support.model.enums.EnumRuleType;
 import com.itfsw.query.builder.support.model.result.SqlQueryResult;
 import com.ngtesting.platform.dao.IssueTqlDao;
 import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.service.intf.IssueService;
-import com.ngtesting.platform.service.intf.IsuJqlBuildService;
-import com.ngtesting.platform.service.intf.IsuJqlFilterService;
-import com.ngtesting.platform.service.intf.IsuJqlService;
+import com.ngtesting.platform.service.intf.IssueJqlBuildService;
+import com.ngtesting.platform.service.intf.IssueJqlFilterService;
+import com.ngtesting.platform.service.intf.IssueJqlService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +19,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
-public class IsuJqlServiceImpl extends BaseServiceImpl implements IsuJqlService {
-    Log logger = LogFactory.getLog(IsuJqlServiceImpl.class);
+public class IssueJqlServiceImpl extends BaseServiceImpl implements IssueJqlService {
+    Log logger = LogFactory.getLog(IssueJqlServiceImpl.class);
 
     public static String[] defaultFilters = new String[] {"project", };
 
     @Autowired
-    IsuJqlBuildService isuJqlBuildService;
+    IssueJqlBuildService issueJqlBuildService;
     @Autowired
     IssueService issueService;
 
     @Autowired
-    IsuJqlFilterService isuJqlFilterService;
+    IssueJqlFilterService issueJqlFilterService;
 
     @Autowired
     IssueTqlDao isuTqlDao;
@@ -43,8 +41,16 @@ public class IsuJqlServiceImpl extends BaseServiceImpl implements IsuJqlService 
 
         String conditions;
         if (rule.getRules().size() > 0) {
-            SqlQueryResult sqlQueryResult = isuJqlBuildService.buildSqlQuery(JSON.toJSONString(rule));
+            List<JsonRule> rules = rule.getRules();
+//            for (JsonRule rule1 : rules) {
+//                if (rule1.getField().equals("projectId")) {
+//                    rule1.setOperator(EnumOperator.EQUAL.value());
+//                    rule1.setValue(projectId);
+//                }
+//            }
+            SqlQueryResult sqlQueryResult = issueJqlBuildService.buildSqlQuery(JSON.toJSONString(rule));
             conditions = sqlQueryResult.getQuery(true);
+            conditions += " AND projectId = " + projectId;
         } else {
             conditions = "projectId=" + projectId;
         }
@@ -60,13 +66,13 @@ public class IsuJqlServiceImpl extends BaseServiceImpl implements IsuJqlService 
     }
 
     @Override
-    public JsonRule buildDefaultJql(Integer orgId, Integer projectId) {
-        JsonRule ret = isuJqlBuildService.genJsonRuleRoot();
+    public JsonRule buildEmptyJql() {
+        JsonRule ret = issueJqlBuildService.genJsonRuleRoot();
 
-        JsonRule projectRule = isuJqlBuildService.genJsonRule(
-                "projectId", "projectId", "select", projectId.toString(),
-                EnumOperator.EQUAL, EnumRuleType.INTEGER);
-        ret.getRules().add(projectRule);
+//        JsonRule projectRule = issueJqlBuildService.genJsonRule(
+//                "projectId", "projectId", "select", "-1",
+//                EnumOperator.NOT_EQUAL, EnumRuleType.INTEGER);
+//        ret.getRules().add(projectRule);
 
         return ret;
     }

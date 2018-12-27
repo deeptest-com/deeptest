@@ -12,5 +12,5 @@ public interface IssueDynamicFormService extends BaseService {
   Map<String, Object> genIssuePropValMap(Integer orgId, Integer projectId);
 
   // TODO: cached
-  List<Map> fetchOrgField(Integer orgId, Integer projectId);
+  List<Map> fetchOrgField(Integer orgId, Integer projectId, String sort);
 }

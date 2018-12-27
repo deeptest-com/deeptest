@@ -5,7 +5,7 @@ import com.ngtesting.platform.vo.IsuJqlColumn;
 
 import java.util.List;
 
-public interface IsuJqlColumnService extends BaseService {
+public interface IssueJqlColumnService extends BaseService {
 
     List<IsuJqlColumn> loadColumns(TstUser user);
 

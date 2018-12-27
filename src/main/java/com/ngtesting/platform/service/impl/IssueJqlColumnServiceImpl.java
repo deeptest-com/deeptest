@@ -1,10 +1,9 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.config.ConstantIssue;
 import com.ngtesting.platform.dao.IssueFieldDao;
 import com.ngtesting.platform.model.IsuFieldDefine;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.IsuJqlColumnService;
+import com.ngtesting.platform.service.intf.IssueJqlColumnService;
 import com.ngtesting.platform.service.intf.UserService;
 import com.ngtesting.platform.utils.StringUtil;
 import com.ngtesting.platform.vo.IsuJqlColumn;
@@ -18,8 +17,8 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 
 @Service
-public class IsuJqlColumnServiceImpl extends BaseServiceImpl implements IsuJqlColumnService {
-    Log logger = LogFactory.getLog(IsuJqlColumnServiceImpl.class);
+public class IssueJqlColumnServiceImpl extends BaseServiceImpl implements IssueJqlColumnService {
+    Log logger = LogFactory.getLog(IssueJqlColumnServiceImpl.class);
 
     @Autowired
     UserService userService;

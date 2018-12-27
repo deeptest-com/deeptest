@@ -1,8 +1,6 @@
 package com.ngtesting.platform.vo;
 
 
-import com.ngtesting.platform.model.IsuFieldDefine;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -14,39 +12,27 @@ public class IsuJqlFilter implements Serializable {
     String label;
     String type;
     String input;
-    Map values;
+//    Map values;
     List<String> operators;
+    Boolean buildIn;
     Boolean display;
 
-    public IsuJqlFilter(IsuFieldDefine field) {
-        this.code = field.getColCode();
-        this.label = field.getLabel();
-        this.type = field.getType();
-        this.input = field.getInput();
-        this.display = field.getDefaultShowInFilters();
-
-//        if (ConstantIssue.IssueInput.string.equals(type)) {
-//            this.operators = ConstantIssue.OperatorsForText;
-//        } else if (ConstantIssue.IssueInput.date.equals(type)) {
-//            this.operators = ConstantIssue.OperatorsForDate;
-//        }
+    public IsuJqlFilter(Map field) {
+        this.code = field.get("colCode").toString();
+        this.label = field.get("label").toString();
+        this.type = field.get("type").toString();
+        this.input = field.get("input").toString();
+        this.buildIn = "1".equals(field.get("buildIn").toString());
+        this.display = field.get("defaultShowInFilters") != null?
+                Boolean.valueOf(field.get("defaultShowInFilters").toString()): null;
     }
 
-    public IsuJqlFilter(IsuFieldDefine field, Map values) {
-        this.code = field.getColCode();
-        this.label = field.getLabel();
-        this.type = field.getType();
-        this.input = field.getInput();
-        this.display = field.getDefaultShowInFilters();
+    public Boolean getBuildIn() {
+        return buildIn;
+    }
 
-        this.values = values;
-//        if (ConstantIssue.IssueInput.string.equals(input)) {
-//            this.operators = ConstantIssue.OperatorsForText;
-//        } else if (ConstantIssue.IssueInput.dropdown.equals(input)) {
-//            this.operators = ConstantIssue.OperatorsForSelect;
-//        } else if (ConstantIssue.IssueInput.date.equals(input)) {
-//            this.operators = ConstantIssue.OperatorsForDate;
-//        }
+    public void setBuildIn(Boolean buildIn) {
+        this.buildIn = buildIn;
     }
 
     public String getCode() {
@@ -81,13 +67,13 @@ public class IsuJqlFilter implements Serializable {
         this.input = input;
     }
 
-    public Map getValues() {
-        return values;
-    }
-
-    public void setValues(Map values) {
-        this.values = values;
-    }
+//    public Map getValues() {
+//        return values;
+//    }
+//
+//    public void setValues(Map values) {
+//        this.values = values;
+//    }
 
     public List<String> getOperators() {
         return operators;

@@ -31,11 +31,13 @@ import java.util.Map;
 public class IssueTplAction extends BaseAction {
 
 	@Autowired
-    IsuJqlService isuJqlService;
+    IssueJqlService issueJqlService;
     @Autowired
-    IsuJqlFilterService isuJqlFilterService;
+    IssueJqlBuildService issueJqlBuildService;
     @Autowired
-    IsuJqlColumnService isuJqlColumnService;
+    IssueJqlFilterService issueJqlFilterService;
+    @Autowired
+    IssueJqlColumnService issueJqlColumnService;
 
     @Autowired
     IssueQueryService issueQueryService;
@@ -59,29 +61,30 @@ public class IssueTplAction extends BaseAction {
 
         JsonRule rule;
         if (!json.getJSONObject("rule").containsKey("condition")) {
-            rule = isuJqlService.buildDefaultJql(orgId, prjId);
+            rule = issueJqlBuildService.genJsonRuleRoot();
         } else {
             rule = json.getObject("rule", JsonRule.class);
         }
 
         if (StringUtils.isEmpty(user.getIssueColumns())) {
-            isuJqlColumnService.buildDefaultColStr(user);
+            issueJqlColumnService.buildDefaultColStr(user);
         }
 
         List<Map<String, String>> orderBy;
         if (json.getJSONArray("orderBy") == null || json.getJSONArray("orderBy").size() == 0) {
-            orderBy = isuJqlService.buildDefaultOrderBy();
+            orderBy = issueJqlService.buildDefaultOrderBy();
         } else {
             orderBy = json.getObject("orderBy", List.class);
         }
 
         com.github.pagehelper.Page page = PageHelper.startPage(pageNum, pageSize);
-        List<IsuIssue> data = isuJqlService.query(rule, user.getIssueColumns(), orderBy, orgId, prjId);
+        List<IsuIssue> data = issueJqlService.query(rule, user.getIssueColumns(), orderBy, orgId, prjId);
 
         if (init) {
-            List<IsuJqlFilter> filters = isuJqlFilterService.buildUiFilters(rule, orgId, prjId);
-            List<IsuJqlColumn> columns = isuJqlColumnService.loadColumns(user);
+            List<IsuJqlFilter> filters = issueJqlFilterService.buildUiFilters(rule, orgId, prjId);
+            List<IsuJqlColumn> columns = issueJqlColumnService.loadColumns(user);
             Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
+            Map<String, Object> issuePropValMap = dynamicFormService.genIssuePropValMap(orgId, prjId);
 
             ret.put("rule", rule);
             ret.put("filters", filters);
@@ -89,6 +92,7 @@ public class IssueTplAction extends BaseAction {
             ret.put("orderBy", orderBy);
 
             ret.put("issuePropMap", issuePropMap);
+            ret.put("issuePropValMap", issuePropValMap);
         }
 
         ret.put("total", page.getTotal());
@@ -118,7 +122,7 @@ public class IssueTplAction extends BaseAction {
 
         JsonRule rule;
         if (ruleString == null) {
-            rule = isuJqlService.buildDefaultJql(orgId, prjId);
+            rule = issueJqlBuildService.genJsonRuleRoot();
         } else {
             rule = JSONObject.parseObject(ruleString, JsonRule.class);
         }
@@ -131,22 +135,24 @@ public class IssueTplAction extends BaseAction {
         }
 
         if (StringUtils.isEmpty(user.getIssueColumns())) {
-            isuJqlColumnService.buildDefaultColStr(user);
+            issueJqlColumnService.buildDefaultColStr(user);
         }
 
         com.github.pagehelper.Page page = PageHelper.startPage(pageNum, pageSize);
-        List<IsuIssue> data = isuJqlService.query(rule, user.getIssueColumns(), orderBy, orgId, prjId);
+        List<IsuIssue> data = issueJqlService.query(rule, user.getIssueColumns(), orderBy, orgId, prjId);
 
         ret.put("rule", rule);
 
         if (init) {
-            List<IsuJqlFilter> filters = isuJqlFilterService.buildUiFilters(rule, orgId, prjId);
-            List<IsuJqlColumn> columns = isuJqlColumnService.loadColumns(user);
+            List<IsuJqlFilter> filters = issueJqlFilterService.buildUiFilters(rule, orgId, prjId);
+            List<IsuJqlColumn> columns = issueJqlColumnService.loadColumns(user);
             Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
+            Map<String, Object> issuePropValMap = dynamicFormService.genIssuePropValMap(orgId, prjId);
 
             ret.put("filters", filters);
             ret.put("columns", columns);
             ret.put("issuePropMap", issuePropMap);
+            ret.put("issuePropValMap", issuePropValMap);
         }
 
         issueQueryService.updateUseTime(query, user);

@@ -7,7 +7,6 @@ import com.ngtesting.platform.service.intf.IssueFieldService;
 import com.ngtesting.platform.service.intf.IssuePageElementService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +17,7 @@ import java.util.Map;
 
 @Service
 public class IssuePageElementServiceImpl extends BaseServiceImpl implements IssuePageElementService {
-    Log logger = LogFactory.getLog(IsuJqlColumnServiceImpl.class);
+    Log logger = LogFactory.getLog(IssueJqlColumnServiceImpl.class);
 
 	@Autowired
     IssuePageElementDao elementDao;

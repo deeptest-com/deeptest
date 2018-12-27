@@ -3,12 +3,11 @@ package com.ngtesting.platform.service.impl;
 import com.itfsw.query.builder.SqlQueryBuilderFactory;
 import com.itfsw.query.builder.support.builder.SqlBuilder;
 import com.itfsw.query.builder.support.model.JsonRule;
-import com.itfsw.query.builder.support.model.enums.EnumCondition;
 import com.itfsw.query.builder.support.model.enums.EnumOperator;
 import com.itfsw.query.builder.support.model.enums.EnumRuleType;
 import com.itfsw.query.builder.support.model.result.SqlQueryResult;
 import com.ngtesting.platform.dao.IssueTqlDao;
-import com.ngtesting.platform.service.intf.IsuJqlBuildService;
+import com.ngtesting.platform.service.intf.IssueJqlBuildService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +18,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Service
-public class IsuJqlBuildServiceImpl extends BaseServiceImpl implements IsuJqlBuildService {
-    Log logger = LogFactory.getLog(IsuJqlBuildServiceImpl.class);
+public class IssueJqlBuildServiceImpl extends BaseServiceImpl implements IssueJqlBuildService {
+    Log logger = LogFactory.getLog(IssueJqlBuildServiceImpl.class);
 
     @Autowired
     IssueTqlDao isuTqlDao;
@@ -42,24 +41,24 @@ public class IsuJqlBuildServiceImpl extends BaseServiceImpl implements IsuJqlBui
         return rule;
     }
 
-    @Override
-    public JsonRule genJsonRuleGroup(String id, String field, String input, String val,
-                                EnumCondition condition, EnumOperator operator, EnumRuleType type) {
-
-        JsonRule rule = new JsonRule();
-        rule.setCondition(condition.value());
-        rule.setRules(new LinkedList<>());
-
-        rule.setId(id);
-        rule.setField(field);
-        rule.setInput(input);
-        rule.setValue(val);
-
-        rule.setType(type.value());
-        rule.setOperator(operator.value());
-
-        return rule;
-    }
+//    @Override
+//    public JsonRule genJsonRuleGroup(String id, String field, String input, String val,
+//                                EnumCondition condition, EnumOperator operator, EnumRuleType type) {
+//
+//        JsonRule rule = new JsonRule();
+//        rule.setCondition(condition.value());
+//        rule.setRules(new LinkedList<>());
+//
+//        rule.setId(id);
+//        rule.setField(field);
+//        rule.setInput(input);
+//        rule.setValue(val);
+//
+//        rule.setType(type.value());
+//        rule.setOperator(operator.value());
+//
+//        return rule;
+//    }
 
     @Override
     public JsonRule genJsonRuleRoot() {

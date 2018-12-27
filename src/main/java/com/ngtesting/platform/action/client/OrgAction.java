@@ -43,10 +43,6 @@ public class OrgAction extends BaseAction {
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = json.getInteger("orgId");
 
-        if (userNotInOrg(user.getId(), orgId)) { // 不在组织中
-            return authFail();
-        }
-
 		TstOrg po = orgService.get(orgId);
 
 		List<TstPlan> planPos = planService.listByOrg(orgId);
@@ -71,9 +67,6 @@ public class OrgAction extends BaseAction {
 
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = json.getInteger("orgId");
-        if (userNotInOrg(user.getId(), orgId)) {
-            return authFail();
-        }
 
 		orgService.changeDefaultOrg(user, orgId); // 涵盖项目设置WS推送消息
 

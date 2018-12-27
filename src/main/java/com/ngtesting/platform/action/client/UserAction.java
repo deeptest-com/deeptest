@@ -29,22 +29,6 @@ public class UserAction extends BaseAction {
     @Autowired
     private UserDao userDao;
 
-//    @PostMapping(value = "listLastest")
-//    @ResponseBody
-//    @PrivPrj
-//    public Map<String, Object> listLastest(HttpServletRequest request, @RequestBody JSONObject json) {
-//        Map<String, Object> ret = new HashMap<String, Object>();
-//
-//        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-//        Integer prjId = user.getDefaultPrjId();
-//
-//        List<TstUser> users = userDao.getProjectUsers(prjId, 10);
-//
-//        ret.put("data", users);
-//        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-//        return ret;
-//    }
-
     @PostMapping(value = "getUsers")
     @ResponseBody
     @PrivPrj
@@ -72,7 +56,7 @@ public class UserAction extends BaseAction {
         String keywords = json.getString("keywords");
         List<Integer> exceptIds = json.getObject("exceptIds", List.class);
 
-        List users = userService.search(user.getDefaultOrgId(), keywords, exceptIds);
+        List users = userService.search(user.getDefaultPrjId(), keywords, exceptIds);
 
         List<Object> vos = new ArrayList<>();
         vos.addAll(users);

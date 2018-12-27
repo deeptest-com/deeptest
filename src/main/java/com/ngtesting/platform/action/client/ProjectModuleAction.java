@@ -7,7 +7,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstModule;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.TestModuleService;
-import com.ngtesting.platform.servlet.PrivPrj;
+import com.ngtesting.platform.servlet.PrivOrg;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,15 +32,11 @@ public class ProjectModuleAction extends BaseAction {
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@ResponseBody
-    @PrivPrj(perms = {"project-admin"})
+    @PrivOrg(perms = {"project-admin"})
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer prjId = user.getDefaultPrjId();
-
-		if (userNotInProject(user.getId(), prjId)) {
-			return authFail();
-		}
 
 		String keywords = json.getString("keywords");
 		Boolean disabled = json.getBoolean("disabled");
@@ -54,7 +50,7 @@ public class ProjectModuleAction extends BaseAction {
 
     @RequestMapping(value = "get", method = RequestMethod.POST)
     @ResponseBody
-    @PrivPrj(perms = {"project-admin"})
+    @PrivOrg(perms = {"project-admin"})
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -71,7 +67,7 @@ public class ProjectModuleAction extends BaseAction {
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
-    @PrivPrj(perms = {"project-admin"})
+    @PrivOrg(perms = {"project-admin"})
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -88,7 +84,7 @@ public class ProjectModuleAction extends BaseAction {
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
-    @PrivPrj(perms = {"project-admin"})
+    @PrivOrg(perms = {"project-admin"})
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
@@ -107,15 +103,11 @@ public class ProjectModuleAction extends BaseAction {
 
 	@RequestMapping(value = "changeOrder", method = RequestMethod.POST)
 	@ResponseBody
-    @PrivPrj(perms = {"project-admin"})
+    @PrivOrg(perms = {"project-admin"})
 	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer prjId = user.getDefaultPrjId();
-
-        if (userNotInProject(user.getId(), prjId)) {
-            return authFail();
-        }
 
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");

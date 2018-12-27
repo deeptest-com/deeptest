@@ -7,6 +7,7 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuPrioritySolution;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssuePrioritySolutionService;
+import com.ngtesting.platform.servlet.PrivOrg;
 import com.ngtesting.platform.servlet.PrivPrj;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,7 +54,7 @@ public class IssuePriorityAction extends BaseAction {
 
 	@RequestMapping(value = "setByProject", method = RequestMethod.POST)
 	@ResponseBody
-	@PrivPrj(perms = {"project-admin"})
+	@PrivOrg(perms = {"project-admin"})
 	public Map<String, Object> setByProject(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 

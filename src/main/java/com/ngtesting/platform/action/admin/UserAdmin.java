@@ -11,6 +11,7 @@ import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.OrgGroupUserRelationService;
 import com.ngtesting.platform.service.intf.PushSettingsService;
 import com.ngtesting.platform.service.intf.UserService;
+import com.ngtesting.platform.servlet.PrivOrg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class UserAdmin extends BaseAction {
 
     @PostMapping(value = "list")
     @ResponseBody
-//    @PrivOrg(perms = {"org-admin", "project-admin"})
+    @PrivOrg(perms = {"org-admin"})
     public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -75,10 +76,6 @@ public class UserAdmin extends BaseAction {
             ret.put("relations", relations);
             ret.put("code", Constant.RespCode.SUCCESS.getCode());
             return ret;
-        }
-
-        if (userNotInOrg(userId, orgId)) { // 用户不属于当前组织
-            return authFail();
         }
 
         TstUser po = userService.get(userId);
@@ -121,10 +118,6 @@ public class UserAdmin extends BaseAction {
 
         TstUser vo = JSON.parseObject(JSON.toJSONString(json.get("user")), TstUser.class);
 
-        if (userNotInOrg(vo.getId(), orgId)) { // 用户不属于当前组织
-            return authFail();
-        }
-
         TstUser existUser = userService.getByEmail(vo.getEmail());
         if (existUser != null && existUser.getId() != vo.getId()) {
             ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
@@ -150,10 +143,6 @@ public class UserAdmin extends BaseAction {
         Integer orgId = user.getDefaultOrgId();
 
         Integer userId = json.getInteger("userId");
-
-        if (userNotInOrg(userId, orgId)) { // 用户不属于当前组织
-            return authFail();
-        }
 
         Boolean result = userService.removeFromOrg(userId, orgId);
 

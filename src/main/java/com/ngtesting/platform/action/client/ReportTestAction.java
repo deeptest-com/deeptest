@@ -42,9 +42,6 @@ public class ReportTestAction extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer id = json.getInteger("id");
-        if (userNotInOrg(user.getId(), id)) {
-            return authFail();
-        }
 
         Map<String, List<Object>> designReport =
                 reportService.chartDesignProgress(id, TstProject.ProjectType.org, 14);
@@ -71,10 +68,6 @@ public class ReportTestAction extends BaseAction {
         Integer projectId = json.getInteger("projectId");
 
         TstProject prj = projectService.get(projectId);
-        if (prj.getType().equals(TstProject.ProjectType.project) &&
-                userNotInProject(user.getId(), projectId)) {
-            return authFail();
-        }
 
         Map<String, List<Object>> designReport =
                 reportService.chartDesignProgress(projectId, prj.getType(), 14);

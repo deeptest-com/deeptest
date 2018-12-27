@@ -100,9 +100,6 @@ public class SuiteAction extends BaseAction {
         Integer suiteId = json.getInteger("suiteId");
         List<Integer> ids = JSON.parseArray(json.getString("cases"), Integer.class);
 
-        if (userNotInProject(user.getId(), prjId) || userNotInProject(user.getId(), caseProjectId)) {
-            return authFail();
-        }
         TstSuite suite = suiteService.get(suiteId, prjId);
         if (suite == null) { // suite和project不匹配
             return authFail();

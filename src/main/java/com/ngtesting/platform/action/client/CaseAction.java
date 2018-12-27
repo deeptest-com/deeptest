@@ -74,9 +74,6 @@ public class CaseAction extends BaseAction {
 		Integer suiteId = json.getInteger("suiteId");
 
         Integer projectId = caseProjectId == null? prjId: caseProjectId;
-        if (userNotInProject(user.getId(), projectId)) {
-            return authFail();
-        }
 
         List<TstCase> vos = caseService.queryForSuiteSelection(projectId, suiteId);
 		List<TstProject> projects = projectDao.listBrothers(prjId);
@@ -99,9 +96,6 @@ public class CaseAction extends BaseAction {
 		Integer taskId = json.getInteger("taskId");
 
         Integer projectId = caseProjectId == null? prjId: caseProjectId;
-        if (userNotInProject(user.getId(), projectId)) {
-            return authFail();
-        }
 
 		List<TstCase> vos = caseService.queryForTaskSelection(projectId, taskId);
 		List<TstProject> projects = projectDao.listBrothers(prjId);

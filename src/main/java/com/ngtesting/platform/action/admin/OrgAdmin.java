@@ -56,10 +56,6 @@ public class OrgAdmin extends BaseAction {
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = json.getInteger("orgId");
 
-        if (hasNoOrgAdminPriviledge(user.getId(), orgId)) { // 没有管理权限
-            return authFail();
-        }
-
 		TstOrg po = orgService.get(orgId); //
 
 		ret.put("data", po);
@@ -117,10 +113,6 @@ public class OrgAdmin extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = json.getInteger("orgId");
 
-        if (hasNoOrgAdminPriviledge(user.getId(), orgId)) { // 没有管理权限
-            return authFail();
-        }
-
 		Boolean result = orgService.delete(orgId, user);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -137,10 +129,6 @@ public class OrgAdmin extends BaseAction {
 		Integer orgId = json.getInteger("orgId");
 		String keywords = json.getString("keywords");
 		Boolean disabled = json.getBoolean("disabled");
-
-        if (userNotInOrg(user.getId(), orgId)) { // 不在组织中
-            return authFail();
-        }
 
 		orgService.changeDefaultOrg(user, orgId);  // 涵盖项目设置WS推送消息
 

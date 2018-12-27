@@ -84,7 +84,7 @@ public class IssueTplAction extends BaseAction {
             List<IsuJqlFilter> filters = issueJqlFilterService.buildUiFilters(rule, orgId, prjId);
             List<IsuJqlColumn> columns = issueJqlColumnService.loadColumns(user);
             Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
-            Map<String, Object> issuePropValMap = dynamicFormService.genIssuePropValMap(orgId, prjId);
+            Map<String, Object> issuePropValMap = dynamicFormService.genIssueBuldInPropValMap(orgId, prjId);
 
             ret.put("rule", rule);
             ret.put("filters", filters);
@@ -147,7 +147,7 @@ public class IssueTplAction extends BaseAction {
             List<IsuJqlFilter> filters = issueJqlFilterService.buildUiFilters(rule, orgId, prjId);
             List<IsuJqlColumn> columns = issueJqlColumnService.loadColumns(user);
             Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
-            Map<String, Object> issuePropValMap = dynamicFormService.genIssuePropValMap(orgId, prjId);
+            Map<String, Object> issuePropValMap = dynamicFormService.genIssueBuldInPropValMap(orgId, prjId);
 
             ret.put("filters", filters);
             ret.put("columns", columns);

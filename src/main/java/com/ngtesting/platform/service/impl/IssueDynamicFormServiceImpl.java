@@ -37,15 +37,17 @@ public class IssueDynamicFormServiceImpl extends BaseServiceImpl implements Issu
     }
 
     @Override
-    public Map<String, Object> genIssuePropValMap(Integer orgId, Integer projectId) {
+    public Map<String, Object> genIssueBuldInPropValMap(Integer orgId, Integer projectId) {
         Map<String, Object> map = new LinkedHashMap<>();
 
         List<Map> fields = fetchOrgField(orgId, projectId, "elem");
 
 		for (Map field : fields) {
-		    if (!"1".equals(field.get("buildIn").toString())
-                || !"dropdown".equals(field.get("input").toString())
-                || field.get("options") == null) {
+            System.out.println(field.get("colCode").toString());
+            System.out.println(field.get("buildIn").toString());
+            System.out.println("1".equals(field.get("buildIn").toString()));
+
+		    if (!"1".equals(field.get("buildIn").toString()) || field.get("options") == null) {
                 continue;
             }
 

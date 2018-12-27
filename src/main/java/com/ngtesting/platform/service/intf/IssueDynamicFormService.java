@@ -9,7 +9,7 @@ public interface IssueDynamicFormService extends BaseService {
   List<IsuField> listNotUsedField(Integer orgId, Integer projectId, Integer pageId);
   Map<String, List<Map>> genIssuePropMap(Integer orgId, Integer projectId);
 
-  Map<String, Object> genIssuePropValMap(Integer orgId, Integer projectId);
+  Map<String, Object> genIssueBuldInPropValMap(Integer orgId, Integer projectId);
 
   // TODO: cached
   List<Map> fetchOrgField(Integer orgId, Integer projectId, String sort);

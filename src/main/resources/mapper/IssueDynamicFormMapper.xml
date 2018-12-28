@@ -93,7 +93,15 @@
             FROM IsuField field
 
             WHERE field.orgId = #{orgId} AND field.disabled!=true AND field.deleted!=true
-
+                <if test="sort == 'filter'">
+                    AND field.defaultShowInFilters IS NOT NULL
+                </if>
+                <if test="sort == 'col'">
+                    AND field.defaultShowInColumns IS NOT NULL
+                </if>
+                <if test="sort == 'elem'">
+                    AND field.defaultShowInPage IS NOT NULL
+                </if>
             ORDER BY sort ASC
           )
 
@@ -103,7 +111,7 @@
             customField.id fieldId, customField.colCode, customField.label,
             customField.type, customField.input, customField.fullLine, customField.required,
             customField.readonly, false buildIn,
-            customField.orgId, customField.ordr sort
+            customField.orgId, customField.ordr+10000 sort
 
             FROM CustomField customField
 
@@ -115,6 +123,7 @@
 
         LEFT JOIN IsuFieldCodeToTableDefine dict ON fields.colCode = dict.colCode
         WHERE TRUE
+        ORDER BY fields.sort ASC
     </sql>
 
     <sql id="fetchCustomFieldOptions">

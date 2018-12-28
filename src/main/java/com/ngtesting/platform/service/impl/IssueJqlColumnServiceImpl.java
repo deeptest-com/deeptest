@@ -42,7 +42,7 @@ public class IssueJqlColumnServiceImpl extends BaseServiceImpl implements IssueJ
         List<String> colShowArr = new ArrayList<>(Arrays.asList(columnsStr.split(",")));
 
         List<Map> fields = dynamicFormService.fetchOrgField(
-                user.getDefaultOrgId(), user.getDefaultPrjId(), "filter");
+                user.getDefaultOrgId(), user.getDefaultPrjId(), "col");
 
         for (Map field : fields) {
             String code = field.get("colCode").toString();

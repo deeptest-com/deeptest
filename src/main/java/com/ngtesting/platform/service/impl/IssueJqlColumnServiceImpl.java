@@ -44,16 +44,32 @@ public class IssueJqlColumnServiceImpl extends BaseServiceImpl implements IssueJ
         List<Map> fields = dynamicFormService.fetchOrgField(
                 user.getDefaultOrgId(), user.getDefaultPrjId(), "col");
 
+        Map<String, Map> colAllMap = new HashMap<>();
+
         for (Map field : fields) {
             String code = field.get("colCode").toString();
+            colAllMap.put(code, field);
+        }
 
-            Boolean colEnable = colShowArr.contains(code);
-            if (colEnable) {
-                field.put("defaultShowInColumns", true);
+        for (String code : colShowArr) {
+            if (!colAllMap.containsKey(code)) { // 删除了
+                continue;
             }
 
-            IsuJqlColumn vo = new IsuJqlColumn(field);
+            colAllMap.get(code).put("defaultShowInColumns", true);
+            IsuJqlColumn vo = new IsuJqlColumn(colAllMap.get(code));
+            ret.add(vo);
 
+            colAllMap.put(code, null);
+        }
+
+        for (String code : colAllMap.keySet()) {
+            if (colAllMap.get(code) == null) { // 已添加了
+                continue;
+            }
+
+            colAllMap.get(code).put("defaultShowInColumns", false);
+            IsuJqlColumn vo = new IsuJqlColumn(colAllMap.get(code));
             ret.add(vo);
         }
 

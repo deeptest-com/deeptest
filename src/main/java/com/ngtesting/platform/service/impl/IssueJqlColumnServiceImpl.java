@@ -3,6 +3,7 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.dao.IssueFieldDao;
 import com.ngtesting.platform.model.IsuFieldDefine;
 import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.intf.IssueDynamicFormService;
 import com.ngtesting.platform.service.intf.IssueJqlColumnService;
 import com.ngtesting.platform.service.intf.UserService;
 import com.ngtesting.platform.utils.StringUtil;
@@ -26,43 +27,37 @@ public class IssueJqlColumnServiceImpl extends BaseServiceImpl implements IssueJ
     @Autowired
     IssueFieldDao fieldDao;
 
+    @Autowired
+    IssueDynamicFormService dynamicFormService;
+
     @Override
     @Transactional
     public List<IsuJqlColumn> loadColumns(TstUser user) {
+        List<IsuJqlColumn> ret = new LinkedList<>();
+
         String columnsStr = user.getIssueColumns();
         if (StringUtils.isEmpty(columnsStr) || columnsStr.indexOf("null") > -1) {
             columnsStr = buildDefaultColStr(user);
         }
+        List<String> colShowArr = new ArrayList<>(Arrays.asList(columnsStr.split(",")));
 
-        List<String> ls = new ArrayList<>(Arrays.asList(columnsStr.split(",")));
-        List<IsuJqlColumn> vos = new LinkedList<>();
+        List<Map> fields = dynamicFormService.fetchOrgField(
+                user.getDefaultOrgId(), user.getDefaultPrjId(), "filter");
 
-        List<IsuFieldDefine> cols = fieldDao.listDefaultField();
+        for (Map field : fields) {
+            String code = field.get("colCode").toString();
 
-        if (ls.size() > 0) {
-            Map<String, IsuFieldDefine> map = new HashMap<>();
-            for (IsuFieldDefine col : cols) {
-                map.put(col.getColCode(), col);
+            Boolean colEnable = colShowArr.contains(code);
+            if (colEnable) {
+                field.put("defaultShowInColumns", true);
             }
 
-            for (String colCode : ls) {
-                if (StringUtil.isEmpty(colCode) || "null".equals(colCode)) continue;
-                IsuFieldDefine col = map.get(colCode);
-                IsuJqlColumn vo = new IsuJqlColumn(col.getColCode(), col.getLabel(), col.getType(), true);
+            IsuJqlColumn vo = new IsuJqlColumn(field);
 
-                vos.add(vo);
-            }
-        } else {
-            int i = 0;
-            for (IsuFieldDefine col : cols) {
-                Boolean display = i++ < 5;
-                IsuJqlColumn vo = new IsuJqlColumn(col.getColCode(), col.getLabel(), col.getType(), display);
-
-                vos.add(vo);
-            }
+            ret.add(vo);
         }
 
-        return vos;
+        return ret;
     }
 
     @Override
@@ -70,7 +65,7 @@ public class IssueJqlColumnServiceImpl extends BaseServiceImpl implements IssueJ
     public String buildDefaultColStr(TstUser user) {
         String ret = "";
 
-        List<IsuFieldDefine> cols = fieldDao.listDefaultField();
+        List<IsuFieldDefine> cols = fieldDao.listDefaultFieldInColumns();
         int i = 0;
         for (IsuFieldDefine col : cols) {
             String code = col.getColCode();

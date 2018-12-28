@@ -2,25 +2,49 @@ package com.ngtesting.platform.vo;
 
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class IsuJqlColumn implements Serializable {
 
 	private static final long serialVersionUID = -7413029715796093478L;
 	private String code;
 	private String label;
-	private Boolean display;
+    private String input;
 	private String type;
+    Boolean buildIn;
+
+    private Boolean display;
 
 	public IsuJqlColumn() {
 	}
-	public IsuJqlColumn(String code, String label, String type, Boolean display) {
-		this.code = code;
-		this.label = label;
-		this.type = type;
-		this.display = display;
-	}
 
-	public String getCode() {
+    public IsuJqlColumn(Map field) {
+        this.code = field.get("colCode").toString();
+        this.label = field.get("label").toString();
+        this.type = field.get("type").toString();
+        this.input = field.get("input").toString();
+        this.buildIn = "1".equals(field.get("buildIn").toString());
+        this.display = field.get("defaultShowInColumns") != null?
+                Boolean.valueOf(field.get("defaultShowInColumns").toString()): null;
+    }
+
+    public String getInput() {
+        return input;
+    }
+
+    public void setInput(String input) {
+        this.input = input;
+    }
+
+    public Boolean getBuildIn() {
+        return buildIn;
+    }
+
+    public void setBuildIn(Boolean buildIn) {
+        this.buildIn = buildIn;
+    }
+
+    public String getCode() {
         return code;
     }
 

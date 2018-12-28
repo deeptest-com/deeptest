@@ -8,14 +8,14 @@ import java.util.Map;
 public class IsuJqlFilter implements Serializable {
     private static final long serialVersionUID = -5923944030125754321L;
 
-    String code;
-    String label;
-    String type;
-    String input;
+    private String code;
+    private String label;
+    private String type;
+    private String input;
 //    Map values;
-    List<String> operators;
-    Boolean buildIn;
-    Boolean display;
+    private List<String> operators;
+    private Boolean buildIn;
+    private Boolean display;
 
     public IsuJqlFilter(Map field) {
         this.code = field.get("colCode").toString();

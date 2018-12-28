@@ -2,13 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.IssueFieldDao" >
 
-    <select id="listDefaultFilter" resultType="IsuFieldDefine">
-        SELECT * FROM IsuFieldDefine
-        WHERE defaultShowInFilters IS NOT NULL
-        ORDER BY filterOrdr ASC
-    </select>
-
-    <select id="listDefaultField" resultType="IsuFieldDefine">
+    <select id="listDefaultFieldInColumns" resultType="IsuFieldDefine">
         SELECT * FROM IsuFieldDefine
         WHERE defaultShowInColumns IS NOT NULL
         ORDER BY columnOrdr ASC

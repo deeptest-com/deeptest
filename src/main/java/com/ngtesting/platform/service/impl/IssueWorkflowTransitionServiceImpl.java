@@ -4,6 +4,7 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.dao.IssueWorkflowSolutionDao;
 import com.ngtesting.platform.dao.IssueWorkflowTransitionDao;
 import com.ngtesting.platform.dao.ProjectRoleDao;
+import com.ngtesting.platform.dao.ProjectRoleEntityRelationDao;
 import com.ngtesting.platform.model.IsuWorkflowSolutionItem;
 import com.ngtesting.platform.model.IsuWorkflowTransition;
 import com.ngtesting.platform.model.TstProjectRole;
@@ -27,9 +28,16 @@ public class IssueWorkflowTransitionServiceImpl extends BaseServiceImpl implemen
     IssueStatusService statusService;
     @Autowired
     ProjectRoleDao projectRoleDao;
+    @Autowired
+    ProjectRoleEntityRelationDao projectRoleEntityRelationDao;
 
     @Override // TODO: cached，某个问题类型的状态对应的转换
-    public Map<Integer, Map<Integer, List<IsuWorkflowTransition>>> getStatusTrainsMap(Integer projectId) {
+    public Map<Integer, Map<Integer, List<IsuWorkflowTransition>>> getStatusTrainsMap(
+            Integer projectId, Integer userId) {
+
+        List<Integer> projectRoleIds = projectRoleEntityRelationDao
+                .listIdsByProjectAndUser(projectId, userId);
+
         List<IsuWorkflowSolutionItem> workflowItems =
                 issueWorkflowSolutionDao.getIssueTypeWorkflow(projectId);
 
@@ -37,7 +45,7 @@ public class IssueWorkflowTransitionServiceImpl extends BaseServiceImpl implemen
         for (IsuWorkflowSolutionItem workflowItem : workflowItems) {
             Integer workflowId = workflowItem.getWorkflowId();
 
-            List<IsuWorkflowTransition> trans = transitionDao.listTransition(workflowId);
+            List<IsuWorkflowTransition> trans = transitionDao.listTransition(workflowId, projectRoleIds);
 
             Map<Integer, List<IsuWorkflowTransition>> statusMap = new LinkedHashMap();
             for (IsuWorkflowTransition tran : trans) {
@@ -89,7 +97,11 @@ public class IssueWorkflowTransitionServiceImpl extends BaseServiceImpl implemen
             if (count == 0) {
                 return null;
             }
+
+            transitionDao.removeAllRoles(tran.getId(), orgId);
         }
+
+        transitionDao.addRoles(tran, projectRoleIds);
 
         return tran;
     }

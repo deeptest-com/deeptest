@@ -104,7 +104,7 @@ public class IssueWorkflowServiceImpl extends BaseServiceImpl implements IssueWo
 
     @Override
     public Map<String, IsuWorkflowTransition> getTransitionMap(Integer id) {
-        List<IsuWorkflowTransition> trans = transitionDao.listTransition(id);
+        List<IsuWorkflowTransition> trans = transitionDao.listTransition(id, null);
 
         Map<String, IsuWorkflowTransition> map = new HashMap<>();
         for (IsuWorkflowTransition tran : trans) {

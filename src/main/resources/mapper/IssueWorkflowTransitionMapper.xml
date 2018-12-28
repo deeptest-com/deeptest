@@ -7,8 +7,19 @@
         JOIN IsuStatus src ON o.srcStatusId=src.id
         JOIN IsuStatus dict ON o.dictStatusId=dict.id
 
+        <if test="projectRoleIds != null">
+            JOIN IsuWorkflowTransitionProjectRoleRelation r ON r.workflowTransitionId = o.id
+        </if>
+
         WHERE o.workflowId = #{workflowId}
         AND o.deleted != true AND o.disabled != true
+
+        <if test="projectRoleIds != null">
+          AND r.projectRoleId IN
+            <foreach collection="projectRoleIds" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+        </if>
     </select>
 
     <select id="listByStatus" resultType="IsuWorkflowTransition">
@@ -59,6 +70,19 @@
 
         WHERE id=#{id} AND orgId=#{orgId}
     </delete>
+
+    <delete id="removeAllRoles">
+        DELETE FROM IsuWorkflowTransitionProjectRoleRelation
+        WHERE workflowTransitionId=#{id} AND orgId=#{orgId}
+    </delete>
+    <insert id="addRoles">
+        insert into IsuWorkflowTransitionProjectRoleRelation
+            (orgId,projectRoleId,workflowTransitionId,workflowId)
+        values
+        <foreach collection="projectRoleIds" item="roleId" separator=",">
+            (#{tran.orgId}, #{roleId}, #{tran.id}, #{tran.workflowId})
+        </foreach>
+    </insert>
 
     <select id="listProjectRoleId" resultType="Integer">
         SELECT o.projectRoleId FROM IsuWorkflowTransitionProjectRoleRelation o

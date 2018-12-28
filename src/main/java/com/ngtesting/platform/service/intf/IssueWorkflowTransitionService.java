@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface IssueWorkflowTransitionService extends BaseService {
-    Map<Integer, Map<Integer, List<IsuWorkflowTransition>>> getStatusTrainsMap(Integer projectId);
+    // TODO: cached，某个问题类型的状态对应的转换
+    Map<Integer, Map<Integer, List<IsuWorkflowTransition>>> getStatusTrainsMap(
+            Integer projectId, Integer userId);
 
     List<TstProjectRole> listProjectRoles(Integer id, Integer orgId);
     IsuWorkflowTransition get(Integer id, Integer orgId);

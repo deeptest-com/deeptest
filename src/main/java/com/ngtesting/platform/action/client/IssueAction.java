@@ -106,7 +106,7 @@ public class IssueAction extends BaseAction {
 
         Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
         Map<String, Object> issuePropValMap = dynamicFormService.genIssueBuldInPropValMap(orgId, prjId);
-        Map issueTransMap = issueWorkflowTransitionService.getStatusTrainsMap(prjId);
+        Map issueTransMap = issueWorkflowTransitionService.getStatusTrainsMap(prjId, user.getId());
 
         ret.put("data", po);
         ret.put("page", page);

@@ -705,7 +705,7 @@ CREATE TABLE `IsuPageElement` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `isupageelement_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=556 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=562 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1426,7 +1426,7 @@ CREATE TABLE `IsuWorkflowTransitionProjectRoleRelation` (
   CONSTRAINT `isuworkflowtransitionprojectrolerelation_ibfk_2` FOREIGN KEY (`workflowId`) REFERENCES `IsuWorkflow` (`id`),
   CONSTRAINT `isuworkflowtransitionprojectrolerelation_ibfk_4` FOREIGN KEY (`workflowTransitionId`) REFERENCES `IsuWorkflowTransition` (`id`),
   CONSTRAINT `isuworkflowtransitionprojectrolerelation_ibfk_5` FOREIGN KEY (`projectRoleId`) REFERENCES `TstProjectRole` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1064 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1082 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4386,7 +4386,7 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-12-26 18:57:49
+-- Dump completed on 2018-12-28 11:53:28
 -- MySQL dump 10.13  Distrib 5.7.14, for osx10.11 (x86_64)
 --
 -- Host: localhost    Database: ngtesting-web
@@ -4470,7 +4470,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `IsuFieldDefine` WRITE;
 /*!40000 ALTER TABLE `IsuFieldDefine` DISABLE KEYS */;
-INSERT INTO `IsuFieldDefine` VALUES (1,'title','标题','string','text',NULL,NULL,'',10100,'',10100,'\0','','','\0','\0','2018-11-09 13:18:24',NULL),(2,'projectId','项目','integer','dropdown',NULL,NULL,'\0',11300,NULL,NULL,'\0',NULL,NULL,'\0','\0','2018-11-09 13:18:24',NULL),(3,'typeId','类型','integer','dropdown','',10200,'',10200,'',10200,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(4,'statusId','状态','integer','dropdown','',10300,'',10300,'\0',10300,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(5,'priorityId','优先级','integer','dropdown','',10400,'',10400,'',10400,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(6,'assigneeId','经办人','integer','dropdown','',10500,'',10500,'',10500,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(7,'creatorId','创建人','integer','dropdown','\0',10600,'\0',10600,'\0',11200,'','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(8,'reporterId','报告人','integer','dropdown','\0',10700,'\0',10700,'',10550,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(9,'verId','版本','integer','dropdown','\0',10800,'\0',10800,'',10600,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(10,'envId','环境','integer','dropdown','\0',10900,'\0',10900,'',10700,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(11,'resolutionId','解决结果','integer','dropdown','\0',11000,'\0',11000,'\0',11000,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(12,'dueTime','截止时间','date','date','\0',11100,'\0',11100,'\0',10900,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(13,'resolveTime','解决时间','date','date','\0',11200,'\0',11200,'\0',11100,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(14,'comments','备注','string','textarea',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'\0','\0','2018-11-09 13:18:24',NULL),(15,'resolutionDescr','解决详情','string','textarea',NULL,NULL,NULL,NULL,'\0',20000,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(16,'tag','标签','string','text','\0',11400,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'\0','\0','2018-12-18 08:38:44',NULL),(17,'descr','描述','string','textarea','\0',11250,NULL,NULL,'',10800,'\0','','\0','\0','\0','2018-12-18 08:35:16',NULL);
+INSERT INTO `IsuFieldDefine` VALUES (1,'title','标题','string','text',NULL,NULL,'',10100,'',10100,'\0','','','\0','\0','2018-11-09 13:18:24',NULL),(2,'projectId','项目','integer','dropdown',NULL,NULL,'\0',11300,NULL,NULL,'\0',NULL,NULL,'\0','\0','2018-11-09 13:18:24',NULL),(3,'typeId','类型','integer','dropdown','',10200,'',10200,'',10200,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(4,'statusId','状态','integer','dropdown','',10300,'',10300,'',10150,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(5,'priorityId','优先级','integer','dropdown','',10400,'',10400,'',10400,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(6,'assigneeId','经办人','integer','dropdown','',10500,'',10500,'',10500,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(7,'creatorId','创建人','integer','dropdown','\0',10600,'\0',10600,'\0',11200,'','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(8,'reporterId','报告人','integer','dropdown','\0',10700,'\0',10700,'',10550,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(9,'verId','版本','integer','dropdown','\0',10800,'\0',10800,'',10600,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(10,'envId','环境','integer','dropdown','\0',10900,'\0',10900,'',10700,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(11,'resolutionId','解决结果','integer','dropdown','\0',11000,'\0',11000,'\0',11000,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(12,'dueTime','截止时间','date','date','\0',11100,'\0',11100,'\0',10900,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(13,'resolveTime','解决时间','date','date','\0',11200,'\0',11200,'\0',11100,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(14,'comments','备注','string','textarea',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'\0','\0','2018-11-09 13:18:24',NULL),(15,'resolutionDescr','解决详情','string','textarea',NULL,NULL,NULL,NULL,'\0',20000,'\0','\0','\0','\0','\0','2018-11-09 13:18:24',NULL),(16,'tag','标签','string','text','\0',11400,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'\0','\0','2018-12-18 08:38:44',NULL),(17,'descr','描述','string','textarea','\0',11250,NULL,NULL,'',10800,'\0','','\0','\0','\0','2018-12-18 08:35:16',NULL);
 /*!40000 ALTER TABLE `IsuFieldDefine` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -4612,4 +4612,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-12-26 18:57:50
+-- Dump completed on 2018-12-28 11:53:29

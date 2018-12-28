@@ -214,11 +214,9 @@
         <appender-ref ref="INFO_AUTH" />
     </logger>
 
-    <logger name="com.ngtesting.platform.dao" level="debug" additivity="true"/>
-
     <!--开发环境:打印控制台-->
     <springProfile name="dev">
-
+        <logger name="mapper" level="debug" additivity="true"/>
     </springProfile>
 
     <!--生产环境:输出到文件-->

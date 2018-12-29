@@ -493,7 +493,7 @@ CREATE TABLE `IsuIssue` (
   PRIMARY KEY (`id`),
   KEY `FK_749574hr3f54gdlo4hrc6dquc` (`projectId`),
   CONSTRAINT `FK_749574hr3f54gdlo4hrc6dquc` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -705,7 +705,7 @@ CREATE TABLE `IsuPageElement` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `isupageelement_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=580 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=581 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2017,7 +2017,7 @@ CREATE TABLE `TstHistory` (
   KEY `FK_m4yjkr3nwc5y1fcjj1ke08xie` (`userId`),
   CONSTRAINT `FK_j9m2m7ijlp9j2184nv0yiln9u` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_m4yjkr3nwc5y1fcjj1ke08xie` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=158 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=159 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2272,7 +2272,7 @@ CREATE TABLE `TstPlan` (
   CONSTRAINT `FK_299h646hfdb07s239a6juu55k` FOREIGN KEY (`verId`) REFERENCES `TstVer` (`id`),
   CONSTRAINT `FK_pc89p4era2bchkg4ulsv1gv7l` FOREIGN KEY (`envId`) REFERENCES `TstVer` (`id`),
   CONSTRAINT `FK_te991npw8lxmrtmt2gcjolimr` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4394,7 +4394,7 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-12-28 13:25:09
+-- Dump completed on 2018-12-29 14:36:39
 -- MySQL dump 10.13  Distrib 5.7.14, for osx10.11 (x86_64)
 --
 -- Host: localhost    Database: ngtesting-web
@@ -4620,4 +4620,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-12-28 13:25:09
+-- Dump completed on 2018-12-29 14:36:39

@@ -11,7 +11,7 @@
           SELECT elem.key FROM IsuPageElement elem WHERE elem.pageId = #{pageId}
         )
 
-        /*ORDER BY fields.sort;*/
+        ORDER BY fields.sort ASC
     </select>
 
     <select id="fetchOrgField" resultMap="fieldMap">
@@ -123,7 +123,10 @@
 
         LEFT JOIN IsuFieldCodeToTableDefine dict ON fields.colCode = dict.colCode
         WHERE TRUE
-        ORDER BY fields.sort ASC
+
+        <if test="sort == 'filter'">
+            AND fields.input != 'time'
+        </if>
     </sql>
 
     <sql id="fetchCustomFieldOptions">

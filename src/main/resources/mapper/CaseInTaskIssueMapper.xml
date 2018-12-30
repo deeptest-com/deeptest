@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.CaseInTaskIssueDao" >
+
+    <select id="query" resultType="TstCaseInTaskIssue">
+        SELECT *, isu.title FROM TstCaseInTaskIssue o
+        JOIN IsuIssue isu ON o.issueId=isu.id
+
+        WHERE o.caseInTaskId=#{caseInTaskId}
+        AND o.deleted != true AND o.disabled != true
+        ORDER BY o.createTime ASC
+    </select>
+
+    <select id="get" resultType="TstCaseInTaskIssue">
+        SELECT * FROM TstCaseInTaskIssue o
+
+        WHERE o.id=#{id}
+    </select>
+
+    <insert id="save" parameterType="TstCaseInTaskIssue" useGeneratedKeys="true" keyProperty="id">
+        insert into TstCaseInTaskIssue
+        (caseInTaskId,issueId,userId,
+          deleted,disabled,createTime)
+        values (#{caseInTaskId}, #{issueId}, #{userId},
+          #{deleted},#{disabled},#{createTime})
+    </insert>
+
+    <update id="delete">
+        UPDATE TstCaseInTaskIssue
+        SET disabled=TRUE
+        WHERE id=#{id} AND userId=#{userId}
+    </update>
+
+    <select id="listByCaseInTaskId" parameterType="Map" resultMap="caseInTaskIssueMap">
+        SELECT o.*, isu.title FROM TstCaseInTaskIssue o
+        JOIN IsuIssue isu ON o.issueId=isu.id
+
+        WHERE o.caseInTaskId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.createTime ASC
+    </select>
+
+    <resultMap id="caseInTaskIssueMap" type="TstCaseInTaskIssue" autoMapping="true">
+        <id column="id" property="id"/>
+        <id column="name" property="name"/>
+        <id column="caseInTaskId" property="caseInTaskId"/>
+        <id column="userId" property="userId"/>
+        <id column="createTime" property="createTime"/>
+    </resultMap>
+
+</mapper>

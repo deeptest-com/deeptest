@@ -11,5 +11,6 @@ public interface CaseAttachmentDao {
 
     void save(TstCaseAttachment attach);
 
-    void delete(@Param("id") Integer id);
+    void delete(@Param("id") Integer id,
+                @Param("userId") Integer userId);
 }

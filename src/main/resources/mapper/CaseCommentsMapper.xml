@@ -35,15 +35,15 @@
         values (#{summary},#{content},#{caseId},#{userId},
           NOW(),NOW(),#{deleted},#{disabled})
     </insert>
-    <update id="update" parameterType="TstCaseComments">
+    <update id="update">
         UPDATE TstCaseComments
-        SET summary=#{summary},content=#{content},updateTime=NOW()
-        WHERE id=#{id}
+        SET summary=#{vo.summary},content=#{vo.content},updateTime=NOW()
+        WHERE id=#{vo.id} AND userId=#{userId}
     </update>
     <update id="delete">
         UPDATE TstCaseComments
-        SET disabled=TRUE, userId=#{userId}
-        WHERE id=#{id}
+        SET disabled=TRUE
+        WHERE id=#{id} AND userId=#{userId}
     </update>
 
     <resultMap id="caseCommentsMap" type="TstCaseComments" autoMapping="true">

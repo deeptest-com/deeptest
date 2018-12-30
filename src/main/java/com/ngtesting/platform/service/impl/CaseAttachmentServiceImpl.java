@@ -44,7 +44,7 @@ public class CaseAttachmentServiceImpl extends BaseServiceImpl implements CaseAt
             return false;
         }
 
-        caseAttachmentDao.delete(id);
+        caseAttachmentDao.delete(id, user.getId());
         caseHistoryService.saveHistory(user, Constant.EntityAct.attachment_delete, testCase, attach.getName());
 
         return true;

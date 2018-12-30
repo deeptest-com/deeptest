@@ -6,9 +6,11 @@ import org.apache.ibatis.annotations.Param;
 public interface CaseCommentsDao {
     TstCaseComments get(@Param("id") Integer id);
 
-    void update(TstCaseComments vo);
-
     void save(TstCaseComments vo);
 
-    boolean delete(@Param("id") Integer id, @Param("userId") Integer userId);
+    void update(@Param("vo") TstCaseComments vo,
+                @Param("userId") Integer userId);
+
+    boolean delete(@Param("id") Integer id,
+                   @Param("userId") Integer userId);
 }

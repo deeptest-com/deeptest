@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ngtesting.platform.dao.CaseInTaskCommentsDao" >
+
+    <select id="query" resultType="TstCaseInTaskComments">
+        SELECT * FROM TstCaseInTaskComments o WHERE o.caseId=#{caseId}
+
+        AND o.deleted != true AND o.disabled != true
+        ORDER BY o.updateTime ASC
+    </select>
+
+    <select id="get" resultType="TstCaseInTaskComments">
+        SELECT *
+        FROM TstCaseInTaskComments o
+        WHERE o.id=#{id}
+    </select>
+
+    <insert id="save" parameterType="TstCaseInTaskComments" useGeneratedKeys="true" keyProperty="id">
+        insert into TstCaseInTaskComments (summary,content,caseInTaskId,userId,
+          createTime,updateTime,deleted,disabled)
+
+        values (#{summary},#{content},#{caseInTaskId},#{userId},
+          NOW(),NOW(),#{deleted},#{disabled})
+    </insert>
+    <update id="update">
+        UPDATE TstCaseInTaskComments
+        SET summary=#{vo.summary},content=#{vo.content},updateTime=NOW()
+        WHERE id=#{vo.id} AND userId=#{userId}
+    </update>
+    <update id="delete">
+        UPDATE TstCaseInTaskComments
+        SET disabled=TRUE, userId=#{userId}
+        WHERE id=#{id}
+    </update>
+
+    <select id="listByCaseInTaskId" parameterType="Map" resultMap="caseInTaskCommentsMap">
+        SELECT o.*, usr.id userId, usr.nickname userName, usr.avatar userAvatar
+
+        FROM TstCaseInTaskComments o
+
+        JOIN TstUser usr ON o.userId = usr.id
+
+        WHERE o.caseInTaskId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.updateTime ASC
+    </select>
+
+    <resultMap id="caseInTaskCommentsMap" type="TstCaseInTaskComments" autoMapping="true">
+        <id column="id" property="id"/>
+        <id column="summary" property="summary"/>
+        <id column="userId" property="userId"/>
+        <id column="userName" property="userName"/>
+        <id column="userAvatar" property="userAvatar"/>
+        <id column="updateTime" property="updateTime"/>
+        <id column="caseInTaskId" property="caseInTaskId"/>
+
+    </resultMap>
+
+</mapper>

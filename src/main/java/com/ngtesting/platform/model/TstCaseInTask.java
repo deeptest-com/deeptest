@@ -61,12 +61,17 @@ public class TstCaseInTask extends BaseModel {
 	private String prop20;
 
 	private List<TstCaseStep> steps = new LinkedList<>();
-	private List<TstCaseComments> comments = new LinkedList<>();
-	private List<TstCaseAttachment> attachments = new LinkedList<>();
+	private List<TstCaseInTaskComments> comments = new LinkedList<>();
+	private List<TstCaseInTaskAttachment> attachments = new LinkedList<>();
+	private List<TstCaseInTaskIssue> issues = new LinkedList<>();
 
     private List<TstCaseInTaskHistory> histories = new LinkedList<>();
 
-	public Integer getProjectId() {
+    public TstCaseInTask(Integer issueId, Integer caseInTaskId) {
+        super();
+    }
+
+    public Integer getProjectId() {
 		return projectId;
 	}
 
@@ -104,14 +109,6 @@ public class TstCaseInTask extends BaseModel {
 
 	public void setLeaf(Boolean leaf) {
 		isLeaf = leaf;
-	}
-
-	public List<TstCaseComments> getComments() {
-		return comments;
-	}
-
-	public void setComments(List<TstCaseComments> comments) {
-		this.comments = comments;
 	}
 
 	public TstCaseInTask() {
@@ -422,12 +419,28 @@ public class TstCaseInTask extends BaseModel {
         this.histories = histories;
     }
 
-    public List<TstCaseAttachment> getAttachments() {
+	public List<TstCaseInTaskComments> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<TstCaseInTaskComments> comments) {
+		this.comments = comments;
+	}
+
+	public List<TstCaseInTaskAttachment> getAttachments() {
 		return attachments;
 	}
 
-	public void setAttachments(List<TstCaseAttachment> attachments) {
+	public void setAttachments(List<TstCaseInTaskAttachment> attachments) {
 		this.attachments = attachments;
+	}
+
+	public List<TstCaseInTaskIssue> getIssues() {
+		return issues;
+	}
+
+	public void setIssues(List<TstCaseInTaskIssue> issues) {
+		this.issues = issues;
 	}
 
 	public Date getExeTime() {

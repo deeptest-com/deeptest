@@ -27,7 +27,7 @@
     <update id="delete">
         UPDATE TstCaseAttachment
         SET disabled=TRUE
-        WHERE id=#{id}
+        WHERE id=#{id} userId=#{userId}
     </update>
 
     <select id="listByCaseId" parameterType="Map" resultMap="caseAttachmentMap">

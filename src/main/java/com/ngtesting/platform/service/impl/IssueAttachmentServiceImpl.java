@@ -38,7 +38,7 @@ public class IssueAttachmentServiceImpl extends BaseServiceImpl implements Issue
 
         IsuAttachment attach = new IsuAttachment(name, path, issueId, user.getId());
         issueAttachmentDao.save(attach);
-        issueHistoryService.saveHistory(user, Constant.EntityAct.attachment_upload, issue, name);
+        issueHistoryService.saveHistory(user, Constant.EntityAct.attachment_upload, issueId, name);
         return true;
     }
 
@@ -52,7 +52,7 @@ public class IssueAttachmentServiceImpl extends BaseServiceImpl implements Issue
         }
 
         issueAttachmentDao.delete(id);
-        issueHistoryService.saveHistory(user, Constant.EntityAct.attachment_delete, issue, attach.getName());
+        issueHistoryService.saveHistory(user, Constant.EntityAct.attachment_delete, attach.getIssueId(), attach.getName());
 
         return true;
     }

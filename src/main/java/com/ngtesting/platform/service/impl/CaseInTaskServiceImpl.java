@@ -8,6 +8,7 @@ import com.ngtesting.platform.model.TstCaseInTask;
 import com.ngtesting.platform.model.TstCaseInTaskHistory;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.CaseHistoryService;
+import com.ngtesting.platform.service.intf.CaseInTaskHistoryService;
 import com.ngtesting.platform.service.intf.CaseInTaskService;
 import com.ngtesting.platform.utils.StringUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,9 @@ import java.util.List;
 public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTaskService {
     @Autowired
     CaseHistoryService caseHistoryService;
+    @Autowired
+    CaseInTaskHistoryService caseInTaskHistoryService;
+
     @Autowired
     CaseDao caseDao;
     @Autowired
@@ -67,7 +71,8 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
 
         caseDao.renameUpdate(testCase);
 
-        caseHistoryService.saveHistory(user, Constant.EntityAct.rename, testCase,null);
+        caseHistoryService.saveHistory(user, Constant.EntityAct.rename, caseId,null);
+        caseInTaskHistoryService.saveHistory(user, Constant.EntityAct.rename, entityId,null);
 
         return caseInTaskDao.getDetail(entityId, projectId);
     }
@@ -84,7 +89,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
 
         caseInTaskDao.setResult(caseInTaskId, result, status, user.getId());
 
-        saveHistory(caseId, caseInTaskId,
+        caseInTaskHistoryService.saveHistory(caseId, caseInTaskId,
                 Constant.EntityAct.exe_result, user, status, result==null?"":result.trim());
 
         taskDao.start(testCase.getTaskId());
@@ -95,25 +100,6 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
         } else {
             return caseInTaskDao.getDetail(caseInTaskId, projectId);
         }
-    }
-
-    @Override
-    public void saveHistory(Integer caseId, Integer caseInTaskId, Constant.EntityAct act, TstUser user,
-                            String status, String result) {
-        String action = act.msg;
-
-        String msg = "用户" + StringUtil.highlightDict(user.getNickname()) + action
-                + "为\"" + Constant.ExeStatus.get(status) + "\"";
-        if (!StringUtils.isEmpty(result)) {
-            msg += ", 结果内容：" + result;
-        }
-
-        TstCaseInTaskHistory his = new TstCaseInTaskHistory();
-        his.setTitle(msg);
-        his.setCaseId(caseId);
-        his.setCaseInTaskId(caseInTaskId);
-
-        caseInTaskHistoryDao.save(his);
     }
 
 }

@@ -1,7 +1,6 @@
 package com.ngtesting.platform.service.intf;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstCaseInTask;
 import com.ngtesting.platform.model.TstUser;
 
@@ -14,7 +13,4 @@ public interface CaseInTaskService extends BaseService {
     TstCaseInTask setResult(Integer caseInTaskId, Integer caseId, String result, String status, Integer next, TstUser userVo);
 
     TstCaseInTask rename(JSONObject json, TstUser userVo);
-
-    void saveHistory(Integer caseId, Integer caseInTaskId, Constant.EntityAct act, TstUser user,
-                     String status, String result);
 }

@@ -83,8 +83,10 @@ public class IssueWorkflowTransitionServiceImpl extends BaseServiceImpl implemen
     }
 
     @Override
-    public IsuWorkflowTransition emptyObject(Integer srcStatusId, Integer dictStatusId, Integer orgId) {
-        return transitionDao.emptyObject(srcStatusId, dictStatusId, orgId);
+    public IsuWorkflowTransition emptyObject(Integer workflowId, Integer srcStatusId, Integer dictStatusId, Integer orgId) {
+        IsuWorkflowTransition tran = transitionDao.emptyObject(srcStatusId, dictStatusId, orgId);
+        tran.setWorkflowId(workflowId);
+        return tran;
     }
 
     @Override
@@ -108,6 +110,7 @@ public class IssueWorkflowTransitionServiceImpl extends BaseServiceImpl implemen
 
     @Override
     public void delete(Integer id, Integer orgId) {
+        transitionDao.removeAllRoles(id, orgId);
         transitionDao.delete(id, orgId);
     }
 

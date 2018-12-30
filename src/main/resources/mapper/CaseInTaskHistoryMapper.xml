@@ -6,7 +6,16 @@
         SELECT * FROM TstCaseInTaskHistory o WHERE o.caseInTaskId=#{caseInTaskId}
 
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+        ORDER BY o.createTime DESC LIMIT 15
+    </select>
+
+    <select id="listByCaseInTaskId" parameterType="Map" resultMap="caseInTaskHistoryMap">
+        SELECT o.* FROM TstCaseInTaskHistory o
+
+        WHERE o.caseInTaskId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.createTime DESC LIMIT 15
     </select>
 
     <insert id="save" parameterType="TstCaseInTaskHistory" useGeneratedKeys="true" keyProperty="id">
@@ -17,15 +26,6 @@
           (#{title},#{caseInTaskId},
             FALSE,FALSE,NOW() )
     </insert>
-
-    <select id="listByCaseInTaskId" parameterType="Map" resultMap="caseInTaskHistoryMap">
-        SELECT o.* FROM TstCaseInTaskHistory o
-
-        WHERE o.caseInTaskId = #{id}
-        AND o.deleted != true AND o.disabled != true
-
-        ORDER BY o.createTime DESC LIMIT 10
-    </select>
 
     <resultMap id="caseInTaskHistoryMap" type="TstCaseInTaskHistory" autoMapping="true">
         <id column="id" property="id"/>

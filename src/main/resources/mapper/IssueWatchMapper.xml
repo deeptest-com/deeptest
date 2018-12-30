@@ -3,13 +3,13 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueWatchDao" >
 
     <select id="list" resultType="Map">
-        SELECT w.id, u.nickname, u.email FROM TstUser u
+        SELECT w.id, u.id userId, u.nickname, u.email FROM TstUser u
         JOIN IsuWatch w ON u.id = w.userId
 
         WHERE w.issueId = #{issueId}
     </select>
 
-    <select id="search" resultType="Map">
+    <select id="search" resultType="TstUser">
         select usr.id, usr.nickname, 'user' type from TstUser usr
         where
             usr.id in
@@ -63,7 +63,7 @@
         (issueId, userId)
         SELECT ${issueId}, ${userId} FROM dual
         WHERE NOT EXISTS (
-            SELECT * FROM IsuWatch WHERE issueId = ${id} AND userId=${userId}
+            SELECT * FROM IsuWatch WHERE issueId = ${issueId} AND userId=${userId}
         )
     </insert>
 

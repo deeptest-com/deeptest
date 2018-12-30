@@ -34,6 +34,13 @@ public class IssueAction extends BaseAction {
     @Autowired
     IssueWorkflowTransitionService issueWorkflowTransitionService;
 
+    @Autowired
+    IssueLinkService issueLinkService;
+    @Autowired
+    IssueTagService issueTagService;
+    @Autowired
+    IssueWatchService issueWatchService;
+
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
     @PrivPrj(perms = {"issue-maintain"})
@@ -116,6 +123,24 @@ public class IssueAction extends BaseAction {
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
+
+    @PrivPrj(perms = {"issue-view"})
+    @RequestMapping(value = "getData", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> getData(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer prjId = user.getDefaultPrjId();
+
+        Integer id = json.getInteger("id");
+        IsuIssue po = issueService.getData(id, user.getId(), prjId);
+
+        ret.put("data", po);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
 
     @PrivPrj(perms = {"issue-maintain"})
 	@RequestMapping(value = "save", method = RequestMethod.POST)

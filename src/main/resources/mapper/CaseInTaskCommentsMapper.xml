@@ -6,7 +6,20 @@
         SELECT * FROM TstCaseInTaskComments o WHERE o.caseId=#{caseId}
 
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.updateTime ASC
+        ORDER BY o.updateTime  DESC LIMIT 15
+    </select>
+
+    <select id="listByCaseInTaskId" parameterType="Map" resultMap="caseInTaskCommentsMap">
+        SELECT o.*, usr.id userId, usr.nickname userName, usr.avatar userAvatar
+
+        FROM TstCaseInTaskComments o
+
+        JOIN TstUser usr ON o.userId = usr.id
+
+        WHERE o.caseInTaskId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.updateTime DESC LIMIT 15
     </select>
 
     <select id="get" resultType="TstCaseInTaskComments">
@@ -32,19 +45,6 @@
         SET disabled=TRUE, userId=#{userId}
         WHERE id=#{id}
     </update>
-
-    <select id="listByCaseInTaskId" parameterType="Map" resultMap="caseInTaskCommentsMap">
-        SELECT o.*, usr.id userId, usr.nickname userName, usr.avatar userAvatar
-
-        FROM TstCaseInTaskComments o
-
-        JOIN TstUser usr ON o.userId = usr.id
-
-        WHERE o.caseInTaskId = #{id}
-        AND o.deleted != true AND o.disabled != true
-
-        ORDER BY o.updateTime ASC
-    </select>
 
     <resultMap id="caseInTaskCommentsMap" type="TstCaseInTaskComments" autoMapping="true">
         <id column="id" property="id"/>

@@ -21,7 +21,7 @@ public class CaseInTaskHistoryServiceImpl extends BaseServiceImpl implements Cas
     CaseInTaskHistoryDao caseInTaskHistoryDao;
 
     @Override
-    public void saveHistory(TstUser user, Constant.EntityAct act, TstCaseInTask testCase, String field) {
+    public void saveHistory(TstUser user, Constant.EntityAct act, Integer caseInTaskId, String field) {
 	    String action = act.msg;
 
         String msg = "用户" + StringUtil.highlightDict(user.getNickname()) + action;
@@ -32,7 +32,26 @@ public class CaseInTaskHistoryServiceImpl extends BaseServiceImpl implements Cas
         }
         TstCaseInTaskHistory his = new TstCaseInTaskHistory();
         his.setTitle(msg);
-        his.setCaseId(testCase.getId());
+        his.setCaseInTaskId(caseInTaskId);
+        caseInTaskHistoryDao.save(his);
+    }
+
+    @Override
+    public void saveHistory(Integer caseId, Integer caseInTaskId, Constant.EntityAct act, TstUser user,
+                            String status, String result) {
+        String action = act.msg;
+
+        String msg = "用户" + StringUtil.highlightDict(user.getNickname()) + action
+                + "为\"" + Constant.ExeStatus.get(status) + "\"";
+        if (!StringUtils.isEmpty(result)) {
+            msg += ", 结果内容：" + result;
+        }
+
+        TstCaseInTaskHistory his = new TstCaseInTaskHistory();
+        his.setTitle(msg);
+        his.setCaseId(caseId);
+        his.setCaseInTaskId(caseInTaskId);
+
         caseInTaskHistoryDao.save(his);
     }
 

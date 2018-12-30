@@ -33,15 +33,13 @@ public class IssuelinkAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = user.getDefaultOrgId();
-        Integer prjId = user.getDefaultPrjId();
 
         Integer srcIssueId = json.getInteger("srcIssueId");
         Integer dictIssueId = json.getInteger("dictIssueId");
         Integer reasonId = json.getInteger("reasonId");
         String reasonName = json.getString("reasonName");
 
-        issueLinkService.link(srcIssueId, dictIssueId, reasonId, reasonName, prjId);
+        issueLinkService.link(srcIssueId, dictIssueId, reasonId, reasonName, user);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

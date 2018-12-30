@@ -18,5 +18,5 @@ public interface IssueWorkflowTransitionService extends BaseService {
 
     void delete(Integer id, Integer orgId);
 
-    IsuWorkflowTransition emptyObject(Integer srcStatusId, Integer dictStatusId, Integer orgId);
+    IsuWorkflowTransition emptyObject(Integer workflowId, Integer srcStatusId, Integer dictStatusId, Integer orgId);
 }

@@ -30,7 +30,7 @@ public class IssueHistoryServiceImpl extends BaseServiceImpl implements IssueHis
 	}
 
 	@Override
-	public void saveHistory(TstUser user, Constant.EntityAct act, IsuIssue issue, String field) {
+	public void saveHistory(TstUser user, Constant.EntityAct act, Integer issueId, String field) {
 		String action = act.msg;
 
 		String msg = "用户" + StringUtil.highlightDict(user.getNickname()) + action;
@@ -41,7 +41,7 @@ public class IssueHistoryServiceImpl extends BaseServiceImpl implements IssueHis
 		}
 		IsuHistory his = new IsuHistory();
 		his.setTitle(msg);
-		his.setIssueId(issue.getId());
+		his.setIssueId(issueId);
 		issueHistoryDao.save(his);
 	}
 

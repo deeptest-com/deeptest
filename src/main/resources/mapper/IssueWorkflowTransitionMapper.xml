@@ -44,7 +44,8 @@
     </select>
 
     <select id="emptyObject" resultType="IsuWorkflowTransition">
-        SELECT t1.label srcStatusName, t2.label dictStatusName from
+        SELECT #{srcStatusId} srcStatusId, t1.label srcStatusName,
+               #{dictStatusId} dictStatusId, t2.label dictStatusName from
 
         (SELECT label from IsuStatus where id=#{srcStatusId} AND orgId=#{orgId} ) t1,
         (SELECT label FROM IsuStatus where id=#{dictStatusId} AND orgId=#{orgId} ) t2

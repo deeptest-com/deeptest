@@ -90,12 +90,20 @@ public class Constant {
         copy("copy", "复制"),
         delete("delete", "删除"),
 
+        assign("assign", "分配经办人"),
+        changeStatus("changeStatus", "修改状态"),
+        link("link", "建立链接"),
+        watch("watch", "关注问题"),
+        unwatch("unwatch", "取消关注"),
+        removeWatch("removeWatch", "移除关注人"),
+        changeWatch("changeWatch", "修改关注列表"),
+
         attachment_upload("attachment_upload", "上传附件"),
         attachment_delete("attachment_delete", "删除附件"),
 
-        comments_add("comments_add", "新增注释"),
-        comments_update("comments_update", "修改注释"),
-        comments_delete("comments_delete", "删除注释"),
+//        comments_add("comments_add", "新增注释"),
+//        comments_update("comments_update", "修改注释"),
+//        comments_delete("comments_delete", "删除注释"),
 
         exe_result("exe_result", "标注执行结果");
 

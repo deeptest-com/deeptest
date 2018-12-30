@@ -1,11 +1,13 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.IssueDao;
 import com.ngtesting.platform.dao.IssuePageDao;
 import com.ngtesting.platform.dao.IssuePageElementDao;
 import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.intf.IssueCommentsService;
+import com.ngtesting.platform.service.intf.IssueHistoryService;
 import com.ngtesting.platform.service.intf.IssueService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,6 +20,9 @@ import java.util.*;
 @Service
 public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
     Log logger = LogFactory.getLog(IssueServiceImpl.class);
+
+    @Autowired
+    IssueHistoryService issueHistoryService;
 
     @Autowired
     IssueDao issueDao;
@@ -39,6 +44,13 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
     @Override
     public IsuIssue getDetail(Integer id, Integer userId, Integer prjId) {
         IsuIssue po = issueDao.getDetail(id, userId, prjId);
+
+        return po;
+    }
+
+    @Override
+    public IsuIssue getData(Integer id, Integer userId, Integer prjId) {
+        IsuIssue po = issueDao.getData(id, userId, prjId);
 
         return po;
     }
@@ -82,6 +94,8 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
             issueDao.setDefaultVal(po);
         }
 
+        issueHistoryService.saveHistory(user, Constant.EntityAct.create, po.getId(),null);
+
         if (count > 0) {
             po = issueDao.get(po.getId(), user.getId(), user.getDefaultPrjId());
         }
@@ -109,6 +123,8 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
             count = issueDao.updateExt(elems2, params2, issue.getInteger("id"));
         }
 
+        issueHistoryService.saveHistory(user, Constant.EntityAct.update, issue.getInteger("id"),null);
+
         return count > 0;
     }
 
@@ -120,6 +136,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         Integer id = json.getInteger("id");
         String code = json.getString("code");
         String value = json.getString("value");
+        String label = json.getString("label");
 
         Integer count;
         if (!code.startsWith("prop")) {
@@ -131,9 +148,8 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
             return null;
         }
 
+        issueHistoryService.saveHistory(user, Constant.EntityAct.update, id, label);
         IsuIssue po = issueDao.get(id, user.getId(), user.getDefaultPrjId());
-
-//        issueHistoryService.saveHistory(user, Constant.EntityAct.update, issue, label);
 
         return po;
     }

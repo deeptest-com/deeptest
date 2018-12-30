@@ -21,7 +21,7 @@ public class CaseHistoryServiceImpl extends BaseServiceImpl implements CaseHisto
     CaseHistoryDao caseHistoryDao;
 
     @Override
-    public void saveHistory(TstUser user, Constant.EntityAct act, TstCase testCase, String field) {
+    public void saveHistory(TstUser user, Constant.EntityAct act, Integer caseId, String field) {
 	    String action = act.msg;
 
         String msg = "用户" + StringUtil.highlightDict(user.getNickname()) + action;
@@ -32,7 +32,7 @@ public class CaseHistoryServiceImpl extends BaseServiceImpl implements CaseHisto
         }
         TstCaseHistory his = new TstCaseHistory();
         his.setTitle(msg);
-        his.setCaseId(testCase.getId());
+        his.setCaseId(caseId);
         caseHistoryDao.save(his);
     }
 

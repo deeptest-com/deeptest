@@ -128,7 +128,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             caseDao.renameUpdate(po);
         }
 
-        caseHistoryService.saveHistory(user, action, po,null);
+        caseHistoryService.saveHistory(user, action, po.getId(),null);
 
         TstCase ret = caseDao.getDetail(po.getId(), projectId);
         return ret;
@@ -200,7 +200,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             caseDao.updateParentIfNeeded(targetId);
         }
 
-        caseHistoryService.saveHistory(user, action, testCase,null);
+        caseHistoryService.saveHistory(user, action, testCase.getId(),null);
 
         TstCase ret = caseDao.getDetail(testCase.getId(), projectId);
         if (isCopy && isParent) {
@@ -223,7 +223,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             return null;
         }
 
-        caseHistoryService.saveHistory(user, Constant.EntityAct.update, testCaseVo,null);
+        caseHistoryService.saveHistory(user, Constant.EntityAct.update, testCaseVo.getId(),null);
 
         TstCase ret = caseDao.getDetail(testCaseVo.getId(), projectId);
 		return ret;
@@ -242,7 +242,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         TstCase testCase = caseDao.get(id, null);
         caseDao.updateParentIfNeeded(testCase.getpId());
 
-        caseHistoryService.saveHistory(user, Constant.EntityAct.delete, testCase,null);
+        caseHistoryService.saveHistory(user, Constant.EntityAct.delete, testCase.getId(),null);
 
         return count;
 	}
@@ -258,6 +258,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         }
 
         TstCase testCase = caseDao.getDetail(id, projectId);
+        caseHistoryService.saveHistory(user, Constant.EntityAct.update, testCase.getId(), "内容类型");
         return testCase;
     }
 
@@ -294,7 +295,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         }
 
         TstCase testCase = caseDao.getDetail(id, projectId);
-        caseHistoryService.saveHistory(user, Constant.EntityAct.update, testCase,label);
+        caseHistoryService.saveHistory(user, Constant.EntityAct.update, testCase.getId(),label);
 
         return testCase;
     }
@@ -323,7 +324,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         testCase.setOrdr(0);
         caseDao.create(testCase);
         caseDao.setDefaultVal(testCase.getId(), user.getDefaultOrgId());
-        caseHistoryService.saveHistory(user, Constant.EntityAct.create, testCase,null);
+        caseHistoryService.saveHistory(user, Constant.EntityAct.create, testCase.getId(),null);
 
         TstCase testCase2 = new TstCase();
         testCase2.setName("新用例");
@@ -336,7 +337,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         caseDao.create(testCase2);
         caseDao.setDefaultVal(testCase2.getpId(), user.getDefaultOrgId());
 
-        caseHistoryService.saveHistory(user, Constant.EntityAct.create, testCase2,null);
+        caseHistoryService.saveHistory(user, Constant.EntityAct.create, testCase2.getId(),null);
     }
 
     @Override

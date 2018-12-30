@@ -1,9 +1,11 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.IssueDao;
 import com.ngtesting.platform.dao.IssueWatchDao;
 import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.intf.IssueHistoryService;
 import com.ngtesting.platform.service.intf.IssueWatchService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class IssueWatchServiceImpl extends BaseServiceImpl implements IssueWatchService {
@@ -21,9 +24,11 @@ public class IssueWatchServiceImpl extends BaseServiceImpl implements IssueWatch
     @Autowired
     IssueDao issueDao;
 
+    @Autowired
+    IssueHistoryService issueHistoryService;
 
     @Override
-    public List<TstUser> list(Integer issueId) {
+    public List<Map> list(Integer issueId) {
         return issueWatchDao.list(issueId);
     }
 
@@ -34,11 +39,12 @@ public class IssueWatchServiceImpl extends BaseServiceImpl implements IssueWatch
             return null;
         }
 
-        List<TstUser> watchedUsers = issueWatchDao.list(issueId);
+        List<Map> watchedUsers = issueWatchDao.list(issueId);
 
-        for (TstUser u: watchedUsers) {
-            if (!exceptIds.contains(u.getId())) {
-                exceptIds.add(u.getId());
+        for (Map w: watchedUsers) {
+            Integer id = Integer.valueOf(w.get("userId").toString());
+            if (!exceptIds.contains(id)) {
+                exceptIds.add(id);
             }
         }
 
@@ -53,6 +59,8 @@ public class IssueWatchServiceImpl extends BaseServiceImpl implements IssueWatch
         }
         issueWatchDao.remove(id);
 
+        issueHistoryService.saveHistory(user, Constant.EntityAct.removeWatch, issueId, null);
+
         return true;
     }
 
@@ -65,6 +73,8 @@ public class IssueWatchServiceImpl extends BaseServiceImpl implements IssueWatch
 
         issueWatchDao.batchSave(issueId, userIds);
 
+        issueHistoryService.saveHistory(user, Constant.EntityAct.changeWatch, issueId, null);
+
         return true;
     }
 
@@ -75,11 +85,18 @@ public class IssueWatchServiceImpl extends BaseServiceImpl implements IssueWatch
             return false;
         }
 
+        Constant.EntityAct act;
         if (status) {
             issueWatchDao.watch(issueId, user.getId());
+
+            act = Constant.EntityAct.watch;
         } else {
             issueWatchDao.unwatch(issueId, user.getId());
+
+            act = Constant.EntityAct.unwatch;
         }
+
+        issueHistoryService.saveHistory(user, act, issueId, null);
 
         return true;
     }

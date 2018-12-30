@@ -40,8 +40,9 @@ public class IssueOptAction extends BaseAction {
 
         Integer id = json.getInteger("id");
         Integer dictStatusId = json.getInteger("dictStatusId");
+        String dictStatusName = json.getString("dictStatusName");
 
-        issueOptService.statusTran(id, dictStatusId, prjId);
+        issueOptService.statusTran(id, dictStatusId, dictStatusName, user);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
@@ -58,7 +59,7 @@ public class IssueOptAction extends BaseAction {
         Integer userId = json.getInteger("userId");
         String comments = json.getString("comments");
 
-        issueOptService.assign(id, user, comments);
+        issueOptService.assign(id, userId, comments, user);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

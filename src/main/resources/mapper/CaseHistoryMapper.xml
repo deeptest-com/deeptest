@@ -6,7 +6,16 @@
         SELECT * FROM TstCaseHistory o WHERE o.caseId=#{caseId}
 
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+        ORDER BY o.createTime DESC LIMIT 15
+    </select>
+
+    <select id="listByCaseId" parameterType="Map" resultMap="caseHistoryMap">
+        SELECT o.* FROM TstCaseHistory o
+
+        WHERE o.caseId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.createTime DESC LIMIT 15
     </select>
 
     <insert id="save" parameterType="TstCaseHistory" useGeneratedKeys="true" keyProperty="id">
@@ -17,15 +26,6 @@
         (#{title},#{caseId},
         FALSE,FALSE,NOW() )
     </insert>
-
-    <select id="listByCaseId" parameterType="Map" resultMap="caseHistoryMap">
-        SELECT o.* FROM TstCaseHistory o
-
-        WHERE o.caseId = #{id}
-        AND o.deleted != true AND o.disabled != true
-
-        ORDER BY o.createTime DESC LIMIT 10
-    </select>
 
     <resultMap id="caseHistoryMap" type="TstCaseHistory" autoMapping="true">
         <id column="id" property="id"/>

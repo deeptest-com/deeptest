@@ -35,7 +35,7 @@ public class IssueWatchAction extends BaseAction {
 
         Integer issueId = json.getInteger("issueId");
 
-        List<TstUser> users = issueWatchService.list(issueId);
+        List<Map> users = issueWatchService.list(issueId);
 
         ret.put("data", users);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

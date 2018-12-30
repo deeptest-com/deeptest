@@ -24,14 +24,9 @@ public class CaseAttachmentServiceImpl extends BaseServiceImpl implements CaseAt
     @Override
     @Transactional
     public Boolean save(Integer caseId, String name, String path, TstUser user) {
-        TstCase testCase = caseDao.get(caseId, user.getDefaultPrjId());
-        if (testCase == null) {
-            return false;
-        }
-
         TstCaseAttachment attach = new TstCaseAttachment(name, path, caseId, user.getId());
         caseAttachmentDao.save(attach);
-        caseHistoryService.saveHistory(user, Constant.EntityAct.attachment_upload, testCase, name);
+        caseHistoryService.saveHistory(user, Constant.EntityAct.attachment_upload, caseId, name);
         return true;
     }
 
@@ -39,13 +34,10 @@ public class CaseAttachmentServiceImpl extends BaseServiceImpl implements CaseAt
     @Transactional
     public Boolean delete(Integer id, TstUser user) {
         TstCaseAttachment attach = caseAttachmentDao.get(id);
-        TstCase testCase = caseDao.get(attach.getCaseId(), user.getDefaultPrjId());
-        if (testCase == null) {
-            return false;
-        }
 
         caseAttachmentDao.delete(id, user.getId());
-        caseHistoryService.saveHistory(user, Constant.EntityAct.attachment_delete, testCase, attach.getName());
+        caseHistoryService.saveHistory(user, Constant.EntityAct.attachment_delete,
+                attach.getCaseId(), attach.getName());
 
         return true;
     }

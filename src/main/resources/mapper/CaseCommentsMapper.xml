@@ -6,7 +6,7 @@
         SELECT * FROM TstCaseComments o WHERE o.caseId=#{caseId}
 
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.updateTime ASC
+        ORDER BY o.updateTime ASC LIMIT 15
     </select>
 
     <select id="listByCaseId" parameterType="Map" resultMap="caseCommentsMap">
@@ -19,7 +19,7 @@
         WHERE o.caseId = #{id}
         AND o.deleted != true AND o.disabled != true
 
-        ORDER BY o.updateTime ASC
+        ORDER BY o.updateTime DESC LIMIT 15;
     </select>
 
     <select id="get" resultType="TstCaseComments">

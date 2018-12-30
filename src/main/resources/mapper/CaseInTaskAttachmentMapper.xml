@@ -7,7 +7,16 @@
 
         WHERE o.caseInTaskId=#{caseInTaskId}
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime ASC
+        ORDER BY o.createTime DESC LIMIT 15
+    </select>
+
+    <select id="listByCaseInTaskId" parameterType="Map" resultMap="caseInTaskAttachmentMap">
+        SELECT o.* FROM TstCaseInTaskAttachment o
+
+        WHERE o.caseInTaskId = #{id}
+        AND o.deleted != true AND o.disabled != true
+
+        ORDER BY o.createTime DESC LIMIT 15
     </select>
 
     <select id="get" resultType="TstCaseInTaskAttachment">
@@ -29,15 +38,6 @@
         SET disabled=TRUE
         WHERE id=#{id} AND userId=#{userId}
     </update>
-
-    <select id="listByCaseInTaskId" parameterType="Map" resultMap="caseInTaskAttachmentMap">
-        SELECT o.* FROM TstCaseInTaskAttachment o
-
-        WHERE o.caseInTaskId = #{id}
-        AND o.deleted != true AND o.disabled != true
-
-        ORDER BY o.createTime ASC
-    </select>
 
     <resultMap id="caseInTaskAttachmentMap" type="TstCaseInTaskAttachment" autoMapping="true">
         <id column="id" property="id"/>

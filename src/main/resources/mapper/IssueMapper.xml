@@ -19,6 +19,14 @@
         WHERE o.id = #{id} AND o.projectId=#{prjId}
     </select>
 
+    <select id="getData" resultMap="issueData">
+        SELECT o.*, ext.*
+
+        FROM IsuIssue o
+        JOIN IsuIssueExt ext ON o.id = ext.pid
+        WHERE o.id = #{id} AND o.projectId=#{prjId}
+    </select>
+
     <select id="getByUuid" resultType="IsuIssue">
         SELECT o.* FROM IsuIssue o
         WHERE o.uuid = #{uuid}
@@ -154,6 +162,22 @@
         </collection>
 
         <collection property="attachments" select="com.ngtesting.platform.dao.IssueAttachmentDao.listByIssueId"
+                    column="{id=id}">
+        </collection>
+
+        <collection property="tags" select="com.ngtesting.platform.dao.IssueTagDao.listByIssueId"
+                    column="{id=id}">
+        </collection>
+
+        <collection property="links" select="com.ngtesting.platform.dao.IssueLinkDao.listByIssueId"
+                    column="{id=id}">
+        </collection>
+    </resultMap>
+
+    <resultMap id="issueData" type="IsuIssue" autoMapping="true">
+        <id column="id" property="id"/>
+
+        <collection property="histories" select="com.ngtesting.platform.dao.IssueHistoryDao.listByIssueId"
                     column="{id=id}">
         </collection>
 

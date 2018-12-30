@@ -18,6 +18,10 @@ public interface IssueDao {
                        @Param("userId") Integer userId,
                        @Param("prjId") Integer prjId);
 
+    IsuIssue getData(@Param("id") Integer id,
+                     @Param("userId") Integer userId,
+                     @Param("prjId") Integer prjId);
+
     IsuIssue getByUuid(@Param("uuid") String uuid);
 
     List<Integer> getByIds(@Param("ids") LinkedList<Integer> ids);

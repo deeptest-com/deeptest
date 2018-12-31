@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface IssueWatchDao {
-    List<Map> list(@Param("issueId") Integer issueId);
+    List<Map> listByIssueId(@Param("issueId") Integer issueId);
 
     List<TstUser> search(@Param("issueId") Integer issueId,
                         @Param("prjId") Integer prjId,

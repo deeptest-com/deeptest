@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.IssueWatchDao" >
 
-    <select id="list" resultType="Map">
+    <select id="listByIssueId" resultType="Map">
         SELECT w.id, u.id userId, u.nickname, u.email FROM TstUser u
         JOIN IsuWatch w ON u.id = w.userId
 

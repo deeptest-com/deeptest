@@ -169,6 +169,10 @@
                     column="{id=id}">
         </collection>
 
+        <collection property="watchList" select="com.ngtesting.platform.dao.IssueWatchDao.listByIssueId"
+                    column="{id=id}">
+        </collection>
+
         <collection property="links" select="com.ngtesting.platform.dao.IssueLinkDao.listByIssueId"
                     column="{id=id}">
         </collection>
@@ -182,6 +186,10 @@
         </collection>
 
         <collection property="tags" select="com.ngtesting.platform.dao.IssueTagDao.listByIssueId"
+                    column="{id=id}">
+        </collection>
+
+        <collection property="watchList" select="com.ngtesting.platform.dao.IssueWatchDao.listByIssueId"
                     column="{id=id}">
         </collection>
 

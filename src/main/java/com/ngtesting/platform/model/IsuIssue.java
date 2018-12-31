@@ -3,6 +3,7 @@ package com.ngtesting.platform.model;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class IsuIssue extends BaseModel {
 	private static final long serialVersionUID = 690125164201934534L;
@@ -55,6 +56,7 @@ public class IsuIssue extends BaseModel {
     private List<IsuAttachment> attachments = new LinkedList<>();
     private List<IsuHistory> histories = new LinkedList<>();
     private List<IsuTag> tags = new LinkedList<>();
+    private List<Map> watchList = new LinkedList<>();
     private List<IsuLink> links = new LinkedList<>();
 
     private String prop01;
@@ -92,6 +94,15 @@ public class IsuIssue extends BaseModel {
     private String prop28;
     private String prop29;
     private String prop30;
+
+
+    public List<Map> getWatchList() {
+        return watchList;
+    }
+
+    public void setWatchList(List<Map> watchList) {
+        this.watchList = watchList;
+    }
 
     public Date getSetFinalTime() {
         return setFinalTime;

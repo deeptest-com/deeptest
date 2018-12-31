@@ -29,7 +29,7 @@ public class IssueWatchServiceImpl extends BaseServiceImpl implements IssueWatch
 
     @Override
     public List<Map> list(Integer issueId) {
-        return issueWatchDao.list(issueId);
+        return issueWatchDao.listByIssueId(issueId);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class IssueWatchServiceImpl extends BaseServiceImpl implements IssueWatch
             return null;
         }
 
-        List<Map> watchedUsers = issueWatchDao.list(issueId);
+        List<Map> watchedUsers = issueWatchDao.listByIssueId(issueId);
 
         for (Map w: watchedUsers) {
             Integer id = Integer.valueOf(w.get("userId").toString());

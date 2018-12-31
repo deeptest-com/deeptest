@@ -58,10 +58,10 @@ public class IssueFieldServiceImpl extends BaseServiceImpl implements IssueField
 //    @Override
 //    public Map<String,List> getProps(Integer orgId) {
 //
-//        List<IsuType> types = issueTypeDao.list(orgId);
-//        List<IsuStatus> statuses = issueStatusDao.list(orgId);
-//        List<IsuPriority> priorities = issuePriorityDao.list(orgId);
-//        List<IsuResolution> resolutions = issueResolutionDao.list(orgId);
+//        List<IsuType> types = issueTypeDao.listByIssueId(orgId);
+//        List<IsuStatus> statuses = issueStatusDao.listByIssueId(orgId);
+//        List<IsuPriority> priorities = issuePriorityDao.listByIssueId(orgId);
+//        List<IsuResolution> resolutions = issueResolutionDao.listByIssueId(orgId);
 //
 //        Map map = new LinkedHashMap();
 //        map.put("types", types);
@@ -90,7 +90,7 @@ public class IssueFieldServiceImpl extends BaseServiceImpl implements IssueField
 //
 //	@Override
 //	public Map<String,String> getPriorityMap(Integer orgId) {
-//		List<IsuPriority> ls = issuePriorityDao.list(orgId);
+//		List<IsuPriority> ls = issuePriorityDao.listByIssueId(orgId);
 //
 //		Map<String,String> map = new LinkedHashMap();
 //		for (IsuPriority item : ls) {
@@ -102,7 +102,7 @@ public class IssueFieldServiceImpl extends BaseServiceImpl implements IssueField
 //
 //	@Override
 //	public Map<String,String> getTypeMap(Integer orgId) {
-//		List<IsuType> ls = issueTypeDao.list(orgId);
+//		List<IsuType> ls = issueTypeDao.listByIssueId(orgId);
 //		Map<String,String> map = new LinkedHashMap();
 //		for (IsuType item : ls) {
 //			map.put(item.getValue(), item.getLabel());
@@ -113,7 +113,7 @@ public class IssueFieldServiceImpl extends BaseServiceImpl implements IssueField
 //
 //	@Override
 //	public Map<String,String> getStatusMap(Integer orgId) {
-//		List<IsuStatus> ls = issueStatusDao.list(orgId);
+//		List<IsuStatus> ls = issueStatusDao.listByIssueId(orgId);
 //		Map<String,String> map = new LinkedHashMap();
 //		for (IsuStatus item : ls) {
 //			map.put(item.getValue(), item.getLabel());
@@ -124,7 +124,7 @@ public class IssueFieldServiceImpl extends BaseServiceImpl implements IssueField
 //
 //	@Override
 //	public Map<String, String> getResolutionsMap(Integer orgId) {
-//		List<IsuResolution> ls = issueResolutionDao.list(orgId);
+//		List<IsuResolution> ls = issueResolutionDao.listByIssueId(orgId);
 //		Map<String,String> map = new LinkedHashMap();
 //		for (IsuResolution item : ls) {
 //			map.put(item.getValue(), item.getLabel());

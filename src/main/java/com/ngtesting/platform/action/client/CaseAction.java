@@ -239,8 +239,9 @@ public class CaseAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 		Boolean result = json.getBoolean("result");
+        Integer nextId = json.getInteger("nextId");
 
-		TstCase testCase = caseService.reviewResult(id, result, user);
+		TstCase testCase = caseService.reviewResult(id, result, nextId, user);
         if (testCase == null) {
             return authFail();
         }

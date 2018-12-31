@@ -264,7 +264,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public TstCase reviewResult(Integer id, Boolean result, TstUser user) {
+    public TstCase reviewResult(Integer id, Boolean result, Integer nextId, TstUser user) {
         Integer projectId = user.getDefaultPrjId();
 
         Integer count = caseDao.reviewResult(id, result, projectId, user.getId());
@@ -275,7 +275,12 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         TstCaseComments vo = new TstCaseComments(id, result?"评审通过": "评审失败");
         caseCommentsService.save(vo, user);
 
-        TstCase testCase = caseDao.getDetail(id, projectId);
+        TstCase testCase;
+        if (nextId != null) {
+            testCase = caseDao.getDetail(nextId, projectId);
+        } else {
+            testCase = caseDao.getDetail(id, projectId);
+        }
         return testCase;
     }
 

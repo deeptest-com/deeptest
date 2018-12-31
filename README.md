@@ -40,6 +40,9 @@ AngularJS, SockJS, SpringBoot, MyBatis, MySQL
 ## Issue Query
 ![issue_query](xdoc/capture/issue_query.jpg)
 
+## Issue View
+![issue_view](xdoc/capture/issue_view.jpg)
+
 ## Issue Page Design
 ![issue_page_design](xdoc/capture/issue_page_design.jpg)
 

@@ -26,7 +26,7 @@ public interface CaseService extends BaseService {
     TstCase saveField(JSONObject json, TstUser user);
 
     TstCase changeContentType(Integer id, String contentType, TstUser user);
-    TstCase reviewResult(Integer id, Boolean pass, TstUser user);
+    TstCase reviewResult(Integer id, Boolean pass, Integer nextId, TstUser user);
 
 	void createSample(Integer projectId, TstUser user);
 	boolean cloneStepsAndChildrenPers(TstCase testcase, TstCase src);

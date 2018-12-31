@@ -6,7 +6,7 @@
         SELECT w.id, u.id userId, u.nickname, u.email FROM TstUser u
         JOIN IsuWatch w ON u.id = w.userId
 
-        WHERE w.issueId = #{issueId}
+        WHERE w.issueId = #{id}
     </select>
 
     <select id="search" resultType="TstUser">

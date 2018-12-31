@@ -6,6 +6,7 @@ public interface IssueOptDao {
 
     void statusTran(@Param("id") Integer id,
                     @Param("dictStatusId") Integer dictStatusId,
+                    @Param("finalVal") Boolean finalVal,
                     @Param("projectId") Integer projectId);
 
     void assign(@Param("id") Integer id,

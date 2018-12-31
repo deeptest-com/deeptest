@@ -5,6 +5,11 @@
     <update id="statusTran">
         UPDATE IsuIssue
         SET statusId=#{dictStatusId}, updateTime=NOW()
+
+        <if test="finalVal != null and finalVal == true">
+            ,setFinalTime = NOW()
+        </if>
+
         WHERE id=#{id} AND projectId=#{projectId}
     </update>
 

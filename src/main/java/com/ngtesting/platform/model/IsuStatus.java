@@ -52,15 +52,15 @@ public class IsuStatus extends BaseModel {
         this.value = value;
     }
 
-    public Boolean getFinal() {
-		return finalVal;
-	}
+    public Boolean getFinalVal() {
+        return finalVal;
+    }
 
-	public void setFinal(Boolean aFinal) {
-		finalVal = aFinal;
-	}
+    public void setFinalVal(Boolean finalVal) {
+        this.finalVal = finalVal;
+    }
 
-	public Boolean getBuildIn() {
+    public Boolean getBuildIn() {
 		return buildIn;
 	}
 

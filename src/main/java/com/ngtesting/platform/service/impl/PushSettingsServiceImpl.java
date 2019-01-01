@@ -89,8 +89,10 @@ public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSett
         Integer prjId = user.getDefaultPrjId();
 
         Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userId, prjId, orgId);
-        ret.put("prjPrivileges", prjPrivileges);
+        ret.put("prjId", user.getDefaultPrjId());
         ret.put("prjName", user.getDefaultPrjName());
+
+        ret.put("prjPrivileges", prjPrivileges);
 
         sendMsg(user, ret);
     }

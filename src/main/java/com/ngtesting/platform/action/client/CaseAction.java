@@ -34,8 +34,6 @@ public class CaseAction extends BaseAction {
     CaseTypeService caseTypeService;
     @Autowired
     CasePriorityService casePriorityService;
-	@Autowired
-    CustomFieldService customFieldService;
 
     @Autowired
     ProjectDao projectDao;
@@ -52,12 +50,7 @@ public class CaseAction extends BaseAction {
 		Integer prjId = user.getDefaultPrjId();
 
 		List<TstCase> ls = caseService.query(prjId);
-
-        Map<String, Object> map = customFieldService.fetchProjectFieldForCase(orgId, prjId);
-
         ret.put("data", ls);
-        ret.put("customFields", map.get("fields"));
-		ret.put("casePropMap", map.get("props"));
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

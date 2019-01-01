@@ -36,10 +36,7 @@ public class ClientAction extends BaseAction {
     SysPrivilegeService sysPrivilegeService;
     @Autowired
     OrgPrivilegeService orgPrivilegeService;
-    @Autowired
-    CasePropertyService casePropertyService;
-    @Autowired
-    ProjectPrivilegeService projectPrivilegeService;
+
     @Autowired
     PushSettingsService pushSettingsService;
 
@@ -64,26 +61,23 @@ public class ClientAction extends BaseAction {
             projectService.changeDefaultPrj(user, projectIdNew);
         }
 
+        // 个人层面
+        ret.put("profile", user);
         Map<String, Boolean> sysPrivileges = sysPrivilegeService.listByUser(userId);
         ret.put("sysPrivileges", sysPrivileges);
+        List<TstOrg> orgs = orgService.listByUser(userId);
+
+        ret.put("myOrgs", orgs);
+        List<IsuQuery> recentQueries = issueQueryService.listRecentQuery(orgId, userId);
+        ret.put("recentQueries", recentQueries);
+
+        // 组织层面
         Map<String, Boolean> orgPrivileges = orgPrivilegeService.listByUser(user.getId(), orgId);
         ret.put("orgPrivileges", orgPrivileges);
-        Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userId, prjId, orgId);
-        ret.put("prjPrivileges", prjPrivileges);
-
-        List<TstOrg> orgs = orgService.listByUser(userId);
-        ret.put("myOrgs", orgs);
-
-        Map<String,Map<String,String>> casePropertyValMap = casePropertyService.getMap(orgId);
-        ret.put("casePropertyValMap", casePropertyValMap);
 
         List<TstProjectAccessHistory> recentProjects = projectService.listRecentProject(orgId, userId);
         ret.put("recentProjects", recentProjects);
 
-        List<IsuQuery> recentQueries = issueQueryService.listRecentQuery(orgId, userId);
-        ret.put("recentQueries", recentQueries);
-
-        ret.put("profile", user);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
         return ret;

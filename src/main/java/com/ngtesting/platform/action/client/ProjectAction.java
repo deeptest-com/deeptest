@@ -7,10 +7,7 @@ import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstPlan;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.AuthService;
-import com.ngtesting.platform.service.intf.HistoryService;
-import com.ngtesting.platform.service.intf.ProjectService;
-import com.ngtesting.platform.service.intf.TestPlanService;
+import com.ngtesting.platform.service.intf.*;
 import com.ngtesting.platform.servlet.PrivOrg;
 import com.ngtesting.platform.servlet.PrivPrj;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +34,18 @@ public class ProjectAction extends BaseAction {
     private HistoryService historyService;
     @Autowired
     AuthService authService;
+
+    @Autowired
+    CustomFieldService customFieldService;
+    @Autowired
+    CasePropertyService casePropertyService;
+    @Autowired
+    ProjectPrivilegeService projectPrivilegeService;
+
+    @Autowired
+    IssueDynamicFormService dynamicFormService;
+    @Autowired
+    IssueWorkflowTransitionService issueWorkflowTransitionService;
 
     @ResponseBody
     @PostMapping("/list")
@@ -68,9 +77,6 @@ public class ProjectAction extends BaseAction {
 
         if (projectId != null) {
             TstProject project = projectService.get(projectId);
-            if (authService.noProjectAndProjectGroupPrivilege(user.getId(), project)) {
-                return authFail();
-            }
 
             ret.put("data", project);
         }
@@ -91,9 +97,6 @@ public class ProjectAction extends BaseAction {
 
         if (projectId != null) {
             TstProject project = projectService.get(projectId);
-            if (authService.noProjectAndProjectGroupPrivilege(user.getId(), project)) {
-                return authFail();
-            }
 
             TstProject vo = projectService.genVo(project, null);
 
@@ -120,9 +123,6 @@ public class ProjectAction extends BaseAction {
         Integer projectId = json.getInteger("projectId");
 
         TstProject po = projectService.getWithPrivs(projectId, user.getId());
-        if (authService.noProjectAndProjectGroupPrivilege(user.getId(), po)) {
-            return authFail();
-        }
 
         List<TstPlan> planPos = planService.listByProject(projectId, po.getType());
         planService.genVos(planPos);
@@ -149,11 +149,8 @@ public class ProjectAction extends BaseAction {
         TstProject vo = json.getObject("model", TstProject.class);
 
         TstProject po = projectService.save(vo, orgId, user);
-        if (po == null) {
-            return authFail();
-        }
 
-        ret.put("data", vo);
+        ret.put("data", po);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -167,9 +164,6 @@ public class ProjectAction extends BaseAction {
 
         Integer projectId = json.getInteger("projectId");
         TstProject project = projectService.get(projectId);
-        if (authService.noProjectAndProjectGroupPrivilege(user.getId(), project)) {
-            return authFail();
-        }
 
         projectService.delete(projectId, user);
 
@@ -179,23 +173,71 @@ public class ProjectAction extends BaseAction {
 
     // 来源于前端上下文的变化
     @ResponseBody
-    @PostMapping("/change")
+    @PostMapping("/initContext")
     @PrivPrj
-    public Map<String, Object> change(HttpServletRequest request, @RequestBody JSONObject json) {
+    public Map<String, Object> initContext(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = user.getDefaultOrgId();
         Integer projectId = json.getInteger("projectId");
 
-        TstProject vo = projectService.changeDefaultPrj(user, projectId);
-        if (vo == null) {
-            return authFail();
+        TstProject po = projectService.get(projectId);
+
+        if (po != null && po.getType().equals(TstProject.ProjectType.project)) {
+            prjConf(ret, orgId, projectId, user.getId());
         }
 
+        ret.put("type", po.getType());
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        ret.put("data", vo);
 
         return ret;
+    }
+
+    // 来源于前端上下文的变化
+    @ResponseBody
+    @PostMapping("/changeContext")
+    @PrivPrj
+    public Map<String, Object> changeContext(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = user.getDefaultOrgId();
+        Integer projectId = json.getInteger("projectId");
+
+        TstProject po = projectService.changeDefaultPrj(user, projectId);
+        ret.put("data", po);
+
+        if (po != null && po.getType().equals(TstProject.ProjectType.project)) {
+            prjConf(ret, orgId, projectId, user.getId());
+        }
+
+        ret.put("type", po.getType());
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+
+        return ret;
+    }
+
+    private void prjConf(Map<String, Object> ret, Integer orgId, Integer projectId, Integer userId) {
+        // 权限
+        Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userId, projectId, orgId);
+        ret.put("prjPrivileges", prjPrivileges);
+
+        // 用例
+        Map<String, Object> map = customFieldService.fetchProjectFieldForCase(orgId, projectId);
+        ret.put("caseCustomFields", map.get("fields"));
+        ret.put("casePropMap", map.get("props"));
+        Map<String,Map<String,String>> casePropValMap = casePropertyService.getMap(orgId);
+        ret.put("casePropValMap", casePropValMap);
+
+        // 缺陷
+        Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, projectId);
+        ret.put("issuePropMap", issuePropMap);
+        Map<String, Object> issuePropValMap = dynamicFormService.genIssueBuldInPropValMap(orgId, projectId);
+        ret.put("issuePropValMap", issuePropValMap);
+
+        Map issueTransMap = issueWorkflowTransitionService.getStatusTrainsMap(projectId, userId);
+        ret.put("issueTransMap", issueTransMap);
     }
 
 }

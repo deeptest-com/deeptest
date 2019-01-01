@@ -59,10 +59,10 @@ public class OrgAction extends BaseAction {
 	}
 
 	// 来源于前端上下文的变化
-	@RequestMapping(value = "change", method = RequestMethod.POST)
+	@RequestMapping(value = "changeContext", method = RequestMethod.POST)
 	@ResponseBody
     @PrivOrg
-	public Map<String, Object> change(HttpServletRequest request, @RequestBody JSONObject json) {
+	public Map<String, Object> changeContext(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);

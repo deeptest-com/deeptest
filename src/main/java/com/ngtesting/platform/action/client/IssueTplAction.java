@@ -83,16 +83,11 @@ public class IssueTplAction extends BaseAction {
         if (init) {
             List<IsuJqlFilter> filters = issueJqlFilterService.buildUiFilters(rule, orgId, prjId);
             List<IsuJqlColumn> columns = issueJqlColumnService.loadColumns(user);
-            Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
-            Map<String, Object> issuePropValMap = dynamicFormService.genIssueBuldInPropValMap(orgId, prjId);
 
             ret.put("rule", rule);
             ret.put("filters", filters);
             ret.put("columns", columns);
             ret.put("orderBy", orderBy);
-
-            ret.put("issuePropMap", issuePropMap);
-            ret.put("issuePropValMap", issuePropValMap);
         }
 
         ret.put("total", page.getTotal());
@@ -146,13 +141,9 @@ public class IssueTplAction extends BaseAction {
         if (init) {
             List<IsuJqlFilter> filters = issueJqlFilterService.buildUiFilters(rule, orgId, prjId);
             List<IsuJqlColumn> columns = issueJqlColumnService.loadColumns(user);
-            Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
-            Map<String, Object> issuePropValMap = dynamicFormService.genIssueBuldInPropValMap(orgId, prjId);
 
             ret.put("filters", filters);
             ret.put("columns", columns);
-            ret.put("issuePropMap", issuePropMap);
-            ret.put("issuePropValMap", issuePropValMap);
         }
 
         issueQueryService.updateUseTime(query, user);

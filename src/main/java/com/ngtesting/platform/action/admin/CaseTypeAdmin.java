@@ -89,9 +89,6 @@ public class CaseTypeAdmin extends BaseAction {
 			return authFail();
 		}
 
-//		Map<String,Map<String,String>> casePropertyValMap = casePropertyService.getMap(orgId);
-//		ret.put("casePropertyValMap", casePropertyValMap);
-
         ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

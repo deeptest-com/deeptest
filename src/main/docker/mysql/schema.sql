@@ -445,7 +445,7 @@ CREATE TABLE `IsuHistory` (
   PRIMARY KEY (`id`),
   KEY `FK_8cp2wymy81uq5vi58woofpq2f` (`issueId`),
   CONSTRAINT `FK_8cp2wymy81uq5vi58woofpq2f` FOREIGN KEY (`issueId`) REFERENCES `isuissue` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1104,7 +1104,7 @@ CREATE TABLE `IsuTag` (
   `disabled` bit(1) DEFAULT NULL,
   `deleted` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1124,7 +1124,7 @@ CREATE TABLE `IsuTagRelation` (
   KEY `tagId` (`tagId`),
   CONSTRAINT `isutagrelation_ibfk_1` FOREIGN KEY (`tagId`) REFERENCES `IsuTag` (`id`),
   CONSTRAINT `isutagrelation_ibfk_2` FOREIGN KEY (`issueId`) REFERENCES `IsuIssue` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1235,7 +1235,7 @@ CREATE TABLE `IsuWatch` (
   KEY `issueId` (`issueId`),
   CONSTRAINT `isuwatch_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `isuwatch_ibfk_2` FOREIGN KEY (`issueId`) REFERENCES `IsuIssue` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4473,7 +4473,7 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-12-31 18:37:17
+-- Dump completed on 2019-01-01 20:40:49
 -- MySQL dump 10.13  Distrib 5.7.14, for osx10.11 (x86_64)
 --
 -- Host: localhost    Database: ngtesting-web
@@ -4699,4 +4699,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-12-31 18:37:18
+-- Dump completed on 2019-01-01 20:40:49

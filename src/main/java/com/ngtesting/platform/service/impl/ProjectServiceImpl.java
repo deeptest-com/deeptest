@@ -238,10 +238,6 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
 		TstProject po = get(projectId);
 
-        if (authService.noProjectAndProjectGroupPrivilege(user.getId(), po)) {
-            return null;
-        }
-
         if (po.getType().equals(TstProject.ProjectType.project)) {
             projectDao.genHistory(po.getOrgId(), user.getId(), projectId, po.getName());
 

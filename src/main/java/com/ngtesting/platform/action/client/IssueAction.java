@@ -31,8 +31,6 @@ public class IssueAction extends BaseAction {
 	IssueDynamicFormService dynamicFormService;
     @Autowired
     IssueMiscService issueMiscService;
-    @Autowired
-    IssueWorkflowTransitionService issueWorkflowTransitionService;
 
     @Autowired
     IssueLinkService issueLinkService;
@@ -40,6 +38,49 @@ public class IssueAction extends BaseAction {
     IssueTagService issueTagService;
     @Autowired
     IssueWatchService issueWatchService;
+
+    @PrivPrj(perms = {"issue-view"})
+    @RequestMapping(value = "view", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = user.getDefaultOrgId();
+        Integer prjId = user.getDefaultPrjId();
+
+        Integer id = json.getInteger("id");
+        IsuIssue po = issueService.getDetail(id, user.getId(), prjId);
+
+        if (po == null) { // 当对象不是默认org的，此处为空
+            return authFail();
+        }
+
+        IsuPage page = issueService.getPage(orgId, prjId, "view");
+
+        ret.put("data", po);
+        ret.put("page", page);
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @PrivPrj(perms = {"issue-view"})
+    @RequestMapping(value = "getData", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> getData(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer prjId = user.getDefaultPrjId();
+
+        Integer id = json.getInteger("id");
+        IsuIssue po = issueService.getData(id, user.getId(), prjId);
+
+        ret.put("data", po);
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
@@ -55,11 +96,11 @@ public class IssueAction extends BaseAction {
 
         IsuPage page = issueService.getPage(orgId, prjId, "create");
 
-        Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
+//        Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
 
         ret.put("data", po);
         ret.put("page", page);
-        ret.put("issuePropMap", issuePropMap);
+//        ret.put("issuePropMap", issuePropMap);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -83,64 +124,14 @@ public class IssueAction extends BaseAction {
 
         IsuPage page = issueService.getPage(orgId, prjId, "edit");
 
-        Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
+//        Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
 
         ret.put("data", po);
         ret.put("page", page);
-        ret.put("issuePropMap", issuePropMap);
+//        ret.put("issuePropMap", issuePropMap);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
-
-    @PrivPrj(perms = {"issue-view"})
-    @RequestMapping(value = "view", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = user.getDefaultOrgId();
-        Integer prjId = user.getDefaultPrjId();
-
-        Integer id = json.getInteger("id");
-        IsuIssue po = issueService.getDetail(id, user.getId(), prjId);
-
-        if (po == null) { // 当对象不是默认org的，此处为空
-            return authFail();
-        }
-
-        IsuPage page = issueService.getPage(orgId, prjId, "view");
-
-        Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
-        Map<String, Object> issuePropValMap = dynamicFormService.genIssueBuldInPropValMap(orgId, prjId);
-        Map issueTransMap = issueWorkflowTransitionService.getStatusTrainsMap(prjId, user.getId());
-
-        ret.put("data", po);
-        ret.put("page", page);
-        ret.put("issuePropMap", issuePropMap);
-        ret.put("issuePropValMap", issuePropValMap);
-        ret.put("issueTransMap", issueTransMap);
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
-    @PrivPrj(perms = {"issue-view"})
-    @RequestMapping(value = "getData", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> getData(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer prjId = user.getDefaultPrjId();
-
-        Integer id = json.getInteger("id");
-        IsuIssue po = issueService.getData(id, user.getId(), prjId);
-
-        ret.put("data", po);
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
 
     @PrivPrj(perms = {"issue-maintain"})
 	@RequestMapping(value = "save", method = RequestMethod.POST)

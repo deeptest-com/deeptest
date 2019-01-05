@@ -42,7 +42,7 @@ public class UserAndGroupAction extends BaseAction {
         List<Integer> exceptUserIds = json.getObject("exceptUserIds", List.class);
 		List<Integer> exceptGroupIds = json.getObject("exceptGroupIds", List.class);
 
-		List users = userService.search(orgId, keywords, exceptUserIds);
+		List users = userService.searchOrgUser(orgId, keywords, exceptUserIds);
 		List groups = orgGroupService.search(orgId, keywords, exceptGroupIds);
 
 		List<Object> vos = new ArrayList<>();

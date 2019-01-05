@@ -23,7 +23,10 @@ public interface UserService {
 
     TstUser modifyProp(JSONObject json);
 
-    List<TstUser> search(Integer orgId, String keywords,  List<Integer> exceptIds);
+    List<TstUser> searchOrgUser(Integer orgId, String keywords, List<Integer> exceptIds);
+
+    List<TstUser> searchPrjUser(Integer projectId, String keywords, List<Integer> exceptIds);
+
     TstUser setIssueView(TstUser user, String issueView);
 
     TstUser setLeftSizePers(TstUser user, Integer left, String prop);

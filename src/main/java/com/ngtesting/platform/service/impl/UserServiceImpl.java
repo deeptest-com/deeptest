@@ -197,9 +197,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<TstUser> search(Integer projectId, String keywords,  List<Integer> exceptIds) {
+    public List<TstUser> searchOrgUser(Integer orgId, String keywords,  List<Integer> exceptIds) {
 //        PageHelper.startPage(0, 20);
-        List<TstUser> users = userDao.search(projectId, keywords, exceptIds);
+        List<TstUser> users = userDao.searchOrgUser(orgId, keywords, exceptIds);
+
+        return users;
+    }
+
+    @Override
+    public List<TstUser> searchPrjUser(Integer projectId, String keywords,  List<Integer> exceptIds) {
+//        PageHelper.startPage(0, 20);
+        List<TstUser> users = userDao.searchPrjUser(projectId, keywords, exceptIds);
 
         return users;
     }

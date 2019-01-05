@@ -94,7 +94,7 @@ public class OrgGroupUserRelationServiceImpl extends BaseServiceImpl implements 
 	}
     @Override
     public List<TstUser> listAllOrgUsers(Integer orgId) {
-        List<TstUser> ls = userService.search(orgId, null, null);
+        List<TstUser> ls = userService.searchOrgUser(orgId, null, null);
 
         return ls;
     }

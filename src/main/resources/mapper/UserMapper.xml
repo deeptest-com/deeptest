@@ -145,7 +145,32 @@
         WHERE userId=#{userId}
     </update>
 
-    <select id="search" resultType="TstUser">
+    <select id="searchOrgUser" resultType="TstUser">
+        SELECT * FROM TstUser usr
+        JOIN TstOrgUserRelation r ON r.orgId = #{orgId} AND r.userId = usr.id
+
+        WHERE TRUE
+
+        <if test="keywords != null and keywords != ''">
+            AND (
+            usr.nickname LIKE CONCAT('%','${keywords}','%' )
+            OR usr.email LIKE CONCAT('%','${keywords}','%' )
+            OR usr.phone LIKE CONCAT('%','${keywords}','%' )
+            )
+        </if>
+        <if test="exceptIds != null and exceptIds.size > 0">
+            AND usr.id NOT IN
+            <foreach collection="exceptIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        AND usr.deleted != TRUE
+        AND usr.disabled != TRUE
+        ORDER BY usr.id ASC
+    </select>
+
+    <select id="searchPrjUser" resultType="TstUser">
         SELECT * FROM TstUser usr
 
         WHERE usr.id in

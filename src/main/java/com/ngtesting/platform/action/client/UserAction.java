@@ -56,7 +56,7 @@ public class UserAction extends BaseAction {
         String keywords = json.getString("keywords");
         List<Integer> exceptIds = json.getObject("exceptIds", List.class);
 
-        List users = userService.search(user.getDefaultPrjId(), keywords, exceptIds);
+        List users = userService.searchPrjUser(user.getDefaultPrjId(), keywords, exceptIds);
 
         List<Object> vos = new ArrayList<>();
         vos.addAll(users);

@@ -45,7 +45,7 @@ CREATE TABLE `CustomField` (
   PRIMARY KEY (`id`),
   KEY `FK_ro4ivq1br0vdteycd9ri6fr62` (`orgId`),
   CONSTRAINT `customfield_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -136,7 +136,7 @@ CREATE TABLE `CustomFieldOption` (
   PRIMARY KEY (`id`),
   KEY `FK_1yiovndo2my1nj8ub95o8yp6` (`fieldId`),
   CONSTRAINT `fk_isucustomfieldoption_ibfk_1` FOREIGN KEY (`fieldId`) REFERENCES `CustomField` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=279 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=286 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -374,7 +374,7 @@ CREATE TABLE `IsuField` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=907 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=922 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -673,7 +673,7 @@ CREATE TABLE `IsuPage` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `fk_isupage_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -705,7 +705,7 @@ CREATE TABLE `IsuPageElement` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `isupageelement_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=582 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=600 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -729,7 +729,7 @@ CREATE TABLE `IsuPageSolution` (
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   CONSTRAINT `fk_isupagesolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -747,7 +747,7 @@ CREATE TABLE `IsuPageSolutionItem` (
   `solutionId` int(11) DEFAULT NULL,
   `orgId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=193 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=199 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -773,7 +773,7 @@ CREATE TABLE `IsuPriority` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `fk_issu_priority_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=302 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=309 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -819,7 +819,7 @@ CREATE TABLE `IsuPrioritySolution` (
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   CONSTRAINT `fk_isuprioritysolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -891,7 +891,7 @@ CREATE TABLE `IsuResolution` (
   PRIMARY KEY (`id`),
   KEY `FK_jakioowaasj09sqr9d376dl9u` (`orgId`),
   CONSTRAINT `isuresolution_ibfk_2` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1037,7 +1037,7 @@ CREATE TABLE `IsuStatus` (
   KEY `isu_status_categoryid` (`categoryId`) USING BTREE,
   CONSTRAINT `fk_isu_status_categoryid` FOREIGN KEY (`categoryId`) REFERENCES `IsuStatusCategoryDefine` (`id`),
   CONSTRAINT `isustatus_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=255 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=262 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1150,7 +1150,7 @@ CREATE TABLE `IsuType` (
   PRIMARY KEY (`id`),
   KEY `orgId` (`orgId`),
   CONSTRAINT `fk_isu_type_orgid` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=241 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=244 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1196,7 +1196,7 @@ CREATE TABLE `IsuTypeSolution` (
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   CONSTRAINT `fk_isutypesolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1259,7 +1259,7 @@ CREATE TABLE `IsuWorkflow` (
   PRIMARY KEY (`id`),
   KEY `FK_42yjv4ki9jm2ppkx819t2ega5` (`orgId`),
   CONSTRAINT `FK_42yjv4ki9jm2ppkx819t2ega5` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1283,7 +1283,7 @@ CREATE TABLE `IsuWorkflowSolution` (
   PRIMARY KEY (`id`),
   KEY `FK_pgvna94k4ldleev7wjusoe5w5` (`orgId`),
   CONSTRAINT `isuworkflowsolution_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1300,7 +1300,7 @@ CREATE TABLE `IsuWorkflowSolutionItem` (
   `solutionId` int(11) DEFAULT NULL,
   `orgId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1322,7 +1322,7 @@ CREATE TABLE `IsuWorkflowStatusRelation` (
   CONSTRAINT `isuworkflowstatusrelation_ibfk_1` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`),
   CONSTRAINT `isuworkflowstatusrelation_ibfk_2` FOREIGN KEY (`workflowId`) REFERENCES `IsuWorkflow` (`id`),
   CONSTRAINT `isuworkflowstatusrelation_ibfk_3` FOREIGN KEY (`statusId`) REFERENCES `IsuStatus` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=182 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=189 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1373,7 +1373,7 @@ CREATE TABLE `IsuWorkflowTransition` (
   CONSTRAINT `fk_isu_workflowtran_src` FOREIGN KEY (`srcStatusId`) REFERENCES `IsuStatus` (`id`),
   CONSTRAINT `isuworkflowtransition_ibfk_1` FOREIGN KEY (`dictStatusId`) REFERENCES `IsuStatus` (`id`),
   CONSTRAINT `isuworkflowtransition_ibfk_2` FOREIGN KEY (`actionPageId`) REFERENCES `IsuPage` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=337 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=352 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1426,7 +1426,7 @@ CREATE TABLE `IsuWorkflowTransitionProjectRoleRelation` (
   CONSTRAINT `isuworkflowtransitionprojectrolerelation_ibfk_2` FOREIGN KEY (`workflowId`) REFERENCES `IsuWorkflow` (`id`),
   CONSTRAINT `isuworkflowtransitionprojectrolerelation_ibfk_4` FOREIGN KEY (`workflowTransitionId`) REFERENCES `IsuWorkflowTransition` (`id`),
   CONSTRAINT `isuworkflowtransitionprojectrolerelation_ibfk_5` FOREIGN KEY (`projectRoleId`) REFERENCES `TstProjectRole` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1177 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1240 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1581,7 +1581,7 @@ CREATE TABLE `TstAlert` (
   KEY `FK_b4fbqud01ub7bqahljyyux0ss` (`userId`),
   CONSTRAINT `FK_b4fbqud01ub7bqahljyyux0ss` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_r8m7ykej6x9fpp4d52sq3y8x8` FOREIGN KEY (`assigneeId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1599,7 +1599,7 @@ CREATE TABLE `TstCase` (
   `contentType` varchar(255) DEFAULT NULL,
   `estimate` int(11) DEFAULT NULL,
   `pId` int(11) DEFAULT NULL,
-  `isLeaf` bit(1) DEFAULT NULL,
+  `isParent` bit(1) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
   `priorityId` int(11) DEFAULT NULL,
   `typeId` int(11) DEFAULT NULL,
@@ -1642,7 +1642,7 @@ CREATE TABLE `TstCase` (
   CONSTRAINT `FK_le8suo2xxbcr036yaiivwkqn0` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `tstcase_ibfk_1` FOREIGN KEY (`typeId`) REFERENCES `TstCaseType` (`id`),
   CONSTRAINT `tstcase_ibfk_2` FOREIGN KEY (`priorityId`) REFERENCES `TstCasePriority` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=342 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=360 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1695,7 +1695,7 @@ CREATE TABLE `TstCaseComments` (
   KEY `FK_d4d1t72y6wkb41bbpkdrk26sv` (`userId`),
   CONSTRAINT `FK_d4d1t72y6wkb41bbpkdrk26sv` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_f1r5t3p8vgi1iiq2v0wle7erj` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1721,7 +1721,7 @@ CREATE TABLE `TstCaseExeStatus` (
   PRIMARY KEY (`id`),
   KEY `FK_o4l4xg65y069b0ai5cgbfm175` (`orgid`),
   CONSTRAINT `FK_o4l4xg65y069b0ai5cgbfm175` FOREIGN KEY (`orgid`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=377 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=381 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1743,7 +1743,7 @@ CREATE TABLE `TstCaseHistory` (
   PRIMARY KEY (`id`),
   KEY `FK_8yss1awno54uahftbyi1wb2j8` (`caseId`),
   CONSTRAINT `FK_8yss1awno54uahftbyi1wb2j8` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=111 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1756,7 +1756,7 @@ DROP TABLE IF EXISTS `TstCaseInSuite`;
 CREATE TABLE `TstCaseInSuite` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `caseId` int(11) DEFAULT NULL,
-  `isLeaf` bit(1) DEFAULT NULL,
+  `isParent` bit(1) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
   `pId` int(11) DEFAULT NULL,
   `projectId` int(11) DEFAULT NULL,
@@ -1788,7 +1788,7 @@ DROP TABLE IF EXISTS `TstCaseInTask`;
 CREATE TABLE `TstCaseInTask` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `caseId` int(11) DEFAULT NULL,
-  `isLeaf` bit(1) DEFAULT NULL,
+  `isParent` bit(1) DEFAULT NULL,
   `pId` int(11) DEFAULT NULL,
   `ordr` int(11) DEFAULT NULL,
   `exeBy` int(11) DEFAULT NULL,
@@ -1816,7 +1816,7 @@ CREATE TABLE `TstCaseInTask` (
   CONSTRAINT `FK_ahth2x2i7j9loamqyg3jcwfu6` FOREIGN KEY (`createBy`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_avls2r88tnl837rhiw01wtyma` FOREIGN KEY (`planId`) REFERENCES `TstPlan` (`id`),
   CONSTRAINT `FK_mwbiov88r7ppt8x9yunxr18pu` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1895,7 +1895,7 @@ CREATE TABLE `TstCaseInTaskHistory` (
   KEY `caseInTaskId` (`caseInTaskId`),
   CONSTRAINT `fk_caseId` FOREIGN KEY (`caseId`) REFERENCES `TstCase` (`id`),
   CONSTRAINT `fk_caseInTaskId` FOREIGN KEY (`caseInTaskId`) REFERENCES `TstCaseInTask` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1945,7 +1945,7 @@ CREATE TABLE `TstCasePriority` (
   PRIMARY KEY (`id`),
   KEY `FK_d8r4hkhobybms74u4vk43thj9` (`orgid`),
   CONSTRAINT `FK_d8r4hkhobybms74u4vk43thj9` FOREIGN KEY (`orgid`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=285 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=288 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1994,7 +1994,7 @@ CREATE TABLE `TstCaseType` (
   PRIMARY KEY (`id`),
   KEY `FK_rqs9hiykm6kk5w8rewcy1uvy7` (`orgId`),
   CONSTRAINT `FK_rqs9hiykm6kk5w8rewcy1uvy7` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=661 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=668 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2095,7 +2095,7 @@ CREATE TABLE `TstHistory` (
   KEY `FK_m4yjkr3nwc5y1fcjj1ke08xie` (`userId`),
   CONSTRAINT `FK_j9m2m7ijlp9j2184nv0yiln9u` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_m4yjkr3nwc5y1fcjj1ke08xie` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=172 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=177 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2140,7 +2140,7 @@ CREATE TABLE `TstMsg` (
   PRIMARY KEY (`id`),
   KEY `FK_h4g997qkpu00h24f9ppqa4g2k` (`userId`),
   CONSTRAINT `FK_h4g997qkpu00h24f9ppqa4g2k` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2159,7 +2159,7 @@ CREATE TABLE `TstOrg` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2182,7 +2182,7 @@ CREATE TABLE `TstOrgGroup` (
   PRIMARY KEY (`id`),
   KEY `FK_dlddwakgodocwt7n7abndkhtg` (`orgId`),
   CONSTRAINT `FK_dlddwakgodocwt7n7abndkhtg` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=98 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2246,7 +2246,7 @@ CREATE TABLE `TstOrgRole` (
   PRIMARY KEY (`id`),
   KEY `FK_q5g6x4w1pwr5ur4iwbg17nr9u` (`orgId`),
   CONSTRAINT `FK_q5g6x4w1pwr5ur4iwbg17nr9u` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=191 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=193 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2350,7 +2350,7 @@ CREATE TABLE `TstPlan` (
   CONSTRAINT `FK_299h646hfdb07s239a6juu55k` FOREIGN KEY (`verId`) REFERENCES `TstVer` (`id`),
   CONSTRAINT `FK_pc89p4era2bchkg4ulsv1gv7l` FOREIGN KEY (`envId`) REFERENCES `TstVer` (`id`),
   CONSTRAINT `FK_te991npw8lxmrtmt2gcjolimr` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2389,7 +2389,7 @@ CREATE TABLE `TstProject` (
   CONSTRAINT `tstproject_ibfk_2` FOREIGN KEY (`issuePrioritySolutionId`) REFERENCES `IsuPrioritySolution` (`id`),
   CONSTRAINT `tstproject_ibfk_3` FOREIGN KEY (`issuePageSolutionId`) REFERENCES `IsuPageSolution` (`id`),
   CONSTRAINT `tstproject_ibfk_4` FOREIGN KEY (`issueWorkflowSolutionId`) REFERENCES `IsuWorkflowSolution` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=538 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=540 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2415,7 +2415,7 @@ CREATE TABLE `TstProjectAccessHistory` (
   CONSTRAINT `FK_dpcrx83ysgtel2eua0856xfk3` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_hv9vkb26yw1fluyh6thwh230h` FOREIGN KEY (`prjId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_l0ifd62wftf6w81779j64rfmc` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=117 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=118 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2461,7 +2461,7 @@ CREATE TABLE `TstProjectRole` (
   PRIMARY KEY (`id`),
   KEY `FK_8eokjbtquljjgjahh7y0l0la6` (`orgId`),
   CONSTRAINT `FK_8eokjbtquljjgjahh7y0l0la6` FOREIGN KEY (`orgId`) REFERENCES `TstOrg` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=377 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=381 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2563,7 +2563,7 @@ CREATE TABLE `TstTask` (
   CONSTRAINT `FK_fymnl68rmtbhmw3jcg66qfdes` FOREIGN KEY (`caseProjectId`) REFERENCES `TstProject` (`id`),
   CONSTRAINT `FK_iog5lfy5gnd0uccm0wgrlqcsd` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
   CONSTRAINT `FK_iokmiyvqpbqi8uo8d8nq985fw` FOREIGN KEY (`envId`) REFERENCES `TstVer` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2634,7 +2634,7 @@ CREATE TABLE `TstUser` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2676,7 +2676,7 @@ CREATE TABLE `TstUserVerifyCode` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2755,7 +2755,7 @@ BEGIN
     DECLARE _p_id BIGINT;
 
     DECLARE  _name VARCHAR(255);
-    DECLARE  _is_leaf TINYINT;
+    DECLARE  _is_parent TINYINT;
     DECLARE  _ordr INT;
 
     select projectId from TstSuite where id=_suiteId INTO _project_id;
@@ -2768,11 +2768,11 @@ BEGIN
 
       SELECT reverse(substring_index( reverse(substring_index(caseIds, spl, i)), spl, 1)) into id;
 
-      select cs.id, cs.name, cs.isLeaf, cs.pId, cs.ordr from TstCase cs WHERE cs.id=id into _id, _name, _is_leaf, _p_id, _ordr;
+      select cs.id, cs.name, cs.isParent, cs.pId, cs.ordr from TstCase cs WHERE cs.id=id into _id, _name, _is_parent, _p_id, _ordr;
 
       IF NOT EXISTS(select * from TstCaseInSuite temp where temp.suiteId=_suiteId and temp.caseId=id) then
-        INSERT INTO `TstCaseInSuite` (projectId, suiteId, pId, caseId, isLeaf, ordr, disabled, deleted, createTime)
-        VALUES (_project_id, _suiteId, _p_id, _id, _is_leaf, _ordr, b'0', b'0', NOW());
+        INSERT INTO `TstCaseInSuite` (projectId, suiteId, pId, caseId, isParent, ordr, disabled, deleted, createTime)
+        VALUES (_project_id, _suiteId, _p_id, _id, _is_parent, _ordr, b'0', b'0', NOW());
       END if;
 
     end while;
@@ -2877,12 +2877,12 @@ BEGIN
     DECLARE _p_id BIGINT;
 
     DECLARE  _name VARCHAR(255);
-    DECLARE  _is_leaf TINYINT;
+    DECLARE  _is_parent TINYINT;
     DECLARE  _ordr INT;
 
     declare done int default false;
 
-    declare cur cursor for SELECT cs.id, cs.name, cs.isLeaf, cs.pId, cs.ordr
+    declare cur cursor for SELECT cs.id, cs.name, cs.isParent, cs.pId, cs.ordr
                            FROM TstCase cs WHERE cs.id=_caseId;
 
     declare continue HANDLER for not found set done = true;
@@ -2891,14 +2891,14 @@ BEGIN
 
     open cur;
     read_loop:loop
-      fetch cur into _id, _name, _is_leaf, _p_id, _ordr;
+      fetch cur into _id, _name, _is_parent, _p_id, _ordr;
       if done then
         leave read_loop;
       end if;
 
       IF NOT EXISTS(select * from TstCaseInTask temp where temp.taskId=_taskId and temp.caseId=_caseId and temp.deleted != true) then
-        INSERT INTO `TstCaseInTask` (projectId, planId, taskId, pId, caseId, isLeaf, ordr, `status`, disabled, deleted, createTime)
-        VALUES (_project_id, _plan_id, _taskId, _p_id, _id, _is_leaf, _ordr, 'untest', b'0', b'0', NOW());
+        INSERT INTO `TstCaseInTask` (projectId, planId, taskId, pId, caseId, isParent, ordr, `status`, disabled, deleted, createTime)
+        VALUES (_project_id, _plan_id, _taskId, _p_id, _id, _is_parent, _ordr, 'untest', b'0', b'0', NOW());
       END if;
 
     end loop;
@@ -3247,7 +3247,7 @@ BEGIN
         FROM TstCaseInTask csr
           left join TstTask task on csr.taskId=task.id
         WHERE csr.planId=_planId and task.deleted != true AND task.disabled != true
-              AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+              AND csr.isParent=true AND csr.deleted != true AND csr.disabled != TRUE
               AND csr.`status` != 'untest'
         GROUP BY dt, csr.`status`
       ) temp ON days.date = temp.dt
@@ -3286,7 +3286,7 @@ BEGIN
                            left join TstTask task on csr.taskId=task.id
 
                          WHERE csr.planId=_planId and task.deleted != true AND task.disabled != true
-                               AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+                               AND csr.isParent=true AND csr.deleted != true AND csr.disabled != TRUE
                                AND csr.`status` != 'untest'
                          GROUP BY dt, csr.exeBy
                        ) temp ON days.date = temp.dt
@@ -3331,7 +3331,7 @@ BEGIN
             JOIN TstTask task on csr.taskId = task.id
 
           WHERE csr.projectId=project_id
-                AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+                AND csr.isParent=true AND csr.deleted != true AND csr.disabled != TRUE
                 AND csr.`status` != 'untest'
                 AND plan.deleted != true AND task.deleted != true
           GROUP BY dt, csr.`status`
@@ -3354,7 +3354,7 @@ BEGIN
 
           WHERE csr.projectId in (SELECT p.id from TstProject p where p.parentId = project_id
                                                                       AND p.deleted != true AND p.disabled != true)
-                AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+                AND csr.isParent=true AND csr.deleted != true AND csr.disabled != TRUE
                 AND csr.`status` != 'untest'
                 AND plan.deleted != true AND task.deleted != true
           GROUP BY dt, csr.`status`
@@ -3377,7 +3377,7 @@ BEGIN
 
           WHERE csr.projectId in (SELECT p.id from TstProject p where p.orgId = project_id
                                                                       AND p.deleted != true AND p.disabled != true)
-                AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+                AND csr.isParent=true AND csr.deleted != true AND csr.disabled != TRUE
                 AND csr.`status` != 'untest'
                 AND plan.deleted != true AND task.deleted != TRUE
 
@@ -3414,7 +3414,7 @@ BEGIN
       left join TstTask task on csr.taskId=task.id
 
     WHERE csr.planId=_plan_id and task.deleted != true AND task.disabled != true
-          AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+          AND csr.isParent=true AND csr.deleted != true AND csr.disabled != TRUE
     into total;
 
     select days.date, temp.numb, total from
@@ -3430,7 +3430,7 @@ BEGIN
          left join TstTask task on csr.taskId=task.id
 
        WHERE csr.planId=_plan_id and task.deleted != true AND task.disabled != true
-             AND csr.isLeaf=true AND csr.deleted != true AND csr.disabled != TRUE
+             AND csr.isParent=true AND csr.deleted != true AND csr.disabled != TRUE
              AND csr.`status` != 'untest'
        GROUP BY dt
        ORDER BY dt) temp
@@ -3461,7 +3461,7 @@ BEGIN
     from TstCaseInTask tcin
       left join TstTask task on tcin.taskId=task.id
     where tcin.planId  = _planId and task.deleted != true AND task.disabled != true
-          AND tcin.deleted != true AND tcin.disabled != true  AND tcin.isLeaf=true
+          AND tcin.deleted != true AND tcin.disabled != true  AND tcin.isParent=true
     group by tcin.`status`;
 
   END ;;
@@ -3923,9 +3923,9 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
@@ -4075,14 +4075,14 @@ BEGIN
     update TstUser set defaultPrjId = project_id, defaultPrjName = '默认项目' where id = user_id;
 
 
-    insert into TstCase (name, projectId, pId, estimate, priorityId, typeId, isLeaf, ordr, createById, contentType, disabled, deleted, createTime)
-    values('测试用例', project_id, null, 10, case_default_priority_id, case_default_type_id, 0, 0, user_id, 'steps', false, false, NOW());
+    insert into TstCase (name, projectId, pId, estimate, priorityId, typeId, isParent, ordr, createById, contentType, disabled, deleted, createTime)
+    values('测试用例', project_id, null, 10, case_default_priority_id, case_default_type_id, true, 0, user_id, 'steps', false, false, NOW());
     select max(id) from TstCase into case_id;
-    insert into TstCase (name, projectId, pId, estimate, priorityId, typeId, isLeaf, ordr, createById, contentType, disabled, deleted, createTime)
-    values('新特性', project_id, case_id, 10, case_default_priority_id, case_default_type_id, 0, 0, user_id, 'steps', false, false, NOW());
+    insert into TstCase (name, projectId, pId, estimate, priorityId, typeId, isParent, ordr, createById, contentType, disabled, deleted, createTime)
+    values('新特性', project_id, case_id, 10, case_default_priority_id, case_default_type_id, true, 0, user_id, 'steps', false, false, NOW());
     select max(id) from TstCase into case_id;
-    insert into TstCase (name, projectId, pId, estimate, priorityId, typeId, isLeaf, ordr, createById, contentType, disabled, deleted, createTime)
-    values('新用例', project_id, case_id, 10, case_default_priority_id, case_default_type_id, 1, 0, user_id, 'steps', false, false, NOW());
+    insert into TstCase (name, projectId, pId, estimate, priorityId, typeId, isParent, ordr, createById, contentType, disabled, deleted, createTime)
+    values('新用例', project_id, case_id, 10, case_default_priority_id, case_default_type_id, false, 0, user_id, 'steps', false, false, NOW());
 
     -- 初始化问题类型
     insert into IsuType(`value`,label,ordr,orgId,defaultVal,buildIn,disabled,deleted,createTime) 
@@ -4473,7 +4473,7 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-01-05 13:12:39
+-- Dump completed on 2019-01-06 15:47:47
 -- MySQL dump 10.13  Distrib 5.7.14, for osx10.11 (x86_64)
 --
 -- Host: localhost    Database: ngtesting-web
@@ -4699,4 +4699,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-01-05 13:12:39
+-- Dump completed on 2019-01-06 15:47:48

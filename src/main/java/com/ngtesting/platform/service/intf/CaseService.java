@@ -16,7 +16,7 @@ public interface CaseService extends BaseService {
 	TstCase getDetail(Integer caseId, Integer prjId);
 
 	TstCase rename(JSONObject json, TstUser user);
-	TstCase rename(Integer id, String name, Integer pId, Integer projectId, TstUser user);
+	TstCase rename(Integer id, String name, Boolean isParent, Integer pId, Integer projectId, TstUser user);
 
 	TstCase move(JSONObject json, TstUser user);
 

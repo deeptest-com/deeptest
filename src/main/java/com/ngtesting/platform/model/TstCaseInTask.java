@@ -8,15 +8,19 @@ public class TstCaseInTask extends BaseModel {
 	private static final long serialVersionUID = -5955583523485410239L;
 
 	private String name;
-	private String priority;
+
+	private Integer typeId;
+	private String typeName;
+	private Integer priorityId;
+	private String priorityName;
+
 	private Integer estimate;
-    private String type;
 	private String objective;
     private String descr;
 	private String result;
 	private Integer pId;
 	private Integer ordr;
-	private Boolean isLeaf;
+	private Boolean isParent;
 
     private Integer entityId; // 真正是实体Id
 	private Integer projectId;
@@ -103,12 +107,12 @@ public class TstCaseInTask extends BaseModel {
 		this.ordr = ordr;
 	}
 
-	public Boolean getLeaf() {
-		return isLeaf;
+	public Boolean getIsParent() {
+		return isParent;
 	}
 
-	public void setLeaf(Boolean leaf) {
-		isLeaf = leaf;
+	public void setIsParent(Boolean parent) {
+		isParent = parent;
 	}
 
 	public TstCaseInTask() {
@@ -355,12 +359,44 @@ public class TstCaseInTask extends BaseModel {
 		this.prop20 = prop20;
 	}
 
-	public String getPriority() {
-		return priority;
+	public Integer getTypeId() {
+		return typeId;
 	}
 
-	public void setPriority(String priority) {
-		this.priority = priority;
+	public void setTypeId(Integer typeId) {
+		this.typeId = typeId;
+	}
+
+	public String getTypeName() {
+		return typeName;
+	}
+
+	public void setTypeName(String typeName) {
+		this.typeName = typeName;
+	}
+
+	public Integer getPriorityId() {
+		return priorityId;
+	}
+
+	public void setPriorityId(Integer priorityId) {
+		this.priorityId = priorityId;
+	}
+
+	public String getPriorityName() {
+		return priorityName;
+	}
+
+	public void setPriorityName(String priorityName) {
+		this.priorityName = priorityName;
+	}
+
+	public Boolean getParent() {
+		return isParent;
+	}
+
+	public void setParent(Boolean parent) {
+		isParent = parent;
 	}
 
 	public Integer getEstimate() {
@@ -402,14 +438,6 @@ public class TstCaseInTask extends BaseModel {
 	public void setSteps(List<TstCaseStep> steps) {
 		this.steps = steps;
 	}
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 
     public List<TstCaseInTaskHistory> getHistories() {
         return histories;

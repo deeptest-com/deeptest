@@ -11,7 +11,7 @@ public class TstCaseInSuite extends BaseModel {
     private String descr;
 	private Integer pId;
 	private Integer ordr;
-	private Boolean isLeaf;
+	private Boolean isParent;
 
     private Integer entityId; // 真正是实体Id
 
@@ -57,13 +57,13 @@ public class TstCaseInSuite extends BaseModel {
 		this.ordr = ordr;
 	}
 
-	public Boolean getLeaf() {
-		return isLeaf;
-	}
+    public Boolean getIsParent() {
+        return isParent;
+    }
 
-	public void setLeaf(Boolean leaf) {
-		isLeaf = leaf;
-	}
+    public void setIsParent(Boolean parent) {
+        isParent = parent;
+    }
 
 	public TstCaseInSuite() {
         super();

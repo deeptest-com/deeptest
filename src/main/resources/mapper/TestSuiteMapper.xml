@@ -26,7 +26,7 @@
         SELECT o.id, o.name, o.projectId, o.caseProjectId,
           prj.name projectName, casePrj.name caseProjectName, usr.nickname userName,
         ( SELECT count(cs.id) FROM TstCaseInSuite cs
-                                WHERE cs.suiteId = o.id AND isLeaf=TRUE AND cs.deleted != true AND cs.disabled != true ) `count`
+                                WHERE cs.suiteId = o.id AND cs.isParent=FALSE AND cs.deleted != true AND cs.disabled != true ) `count`
 
         FROM TstSuite o
 
@@ -68,7 +68,7 @@
     <select id="get" resultType="TstSuite">
         SELECT o.*, usr.nickname userName, prj.name projectName, casePrj.name caseProjectName,
                     ( SELECT count(cs.id) FROM TstCaseInSuite cs
-                                WHERE cs.suiteId = o.id AND isLeaf=TRUE AND cs.deleted != true AND cs.disabled != true ) `count`
+                                WHERE cs.suiteId = o.id AND cs.isParent=false AND cs.deleted != true AND cs.disabled != true ) `count`
 
         FROM TstSuite o
 

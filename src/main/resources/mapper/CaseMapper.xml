@@ -13,7 +13,7 @@
 
     <select id="queryCaseWithStepInfoByPrj" resultMap="queryCaseWithStepInfoByPrjMap">
         SELECT
-	        o.id,o.name,o.typeId,o.priorityId,o.isLeaf,o.pId,
+	        o.id,o.name,o.typeId,o.priorityId,o.isParent,o.pId,
 	        s.ordr,s.opt,s.expect,s.caseId,  t.label typeName, p.label priorityName
         FROM
             TstCase o
@@ -45,20 +45,20 @@
     </select>
 
     <insert id="create" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
-        insert into TstCase (name,typeId,priorityId,contentType,estimate,pId,projectId,createById,isLeaf,ordr,
+        insert into TstCase (name,typeId,priorityId,contentType,estimate,pId,projectId,createById,isParent,ordr,
           deleted,disabled,createTime)
 
-        values (#{name},#{typeId},#{priorityId},#{contentType},#{estimate},#{pId},#{projectId},#{createById},#{isLeaf},#{ordr},
+        values (#{name},#{typeId},#{priorityId},#{contentType},#{estimate},#{pId},#{projectId},#{createById},#{isParent},#{ordr},
           #{deleted},#{disabled},#{createTime})
     </insert>
 
     <insert id="renameNew" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
         insert into TstCase
-        (name,priorityId,typeId,contentType,estimate,isLeaf,ordr,pId,
+        (name,priorityId,typeId,contentType,estimate,isParent,ordr,pId,
             projectId,createById,
             createTime,deleted,disabled)
         values
-          (#{name},#{priorityId},#{typeId},#{contentType},#{estimate},#{isLeaf},#{ordr},#{pId},
+          (#{name},#{priorityId},#{typeId},#{contentType},#{estimate},#{isParent},#{ordr},#{pId},
               #{projectId},#{createById},
               NOW(),FALSE,FALSE)
     </insert>
@@ -120,20 +120,20 @@
     </update>
     <insert id="moveCopy" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
         insert into TstCase
-        (name,priorityId,typeId,contentType,estimate,isLeaf,ordr,pId,
+        (name,priorityId,typeId,contentType,estimate,isParent,ordr,pId,
         projectId,createById,
         createTime,updateTime,deleted,disabled)
         values
-        (#{name},#{priorityId},#{typeId},#{contentType},#{estimate},#{isLeaf},#{ordr},#{pId},
+        (#{name},#{priorityId},#{typeId},#{contentType},#{estimate},#{isParent},#{ordr},#{pId},
         #{projectId},#{createById},
         NOW(),NULL,FALSE,FALSE)
     </insert>
 
-    <update id="updateParentIfNeeded">
+<!--    <update id="updateParentIfNeeded">
         { call update_case_parent_if_needed(
         #{pId,mode=IN,jdbcType=INTEGER}
         )}
-    </update>
+    </update>-->
     <update id="addOrderForTargetAndNextCases">
         update TstCase c
         set c.ordr = c.ordr+1
@@ -187,7 +187,7 @@
         <result column="name" property="name" jdbcType="VARCHAR"/>
         <result column="typeName" property="typeName" jdbcType="VARCHAR"/>
         <result column="priorityName" property="priorityName" jdbcType="VARCHAR"/>
-        <result column="isLeaf" property="isLeaf" jdbcType="INTEGER" />
+        <result column="isParent" property="isParent" jdbcType="BOOLEAN" />
         <result column="pId" property="pId" jdbcType="INTEGER" />
         <!-- ofType steps集合中的对象类型 -->
         <collection property="steps" javaType="java.util.List" ofType="TstCaseStep">

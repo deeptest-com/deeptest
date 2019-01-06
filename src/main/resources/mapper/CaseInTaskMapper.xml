@@ -4,7 +4,7 @@
 
     <select id="query" resultType="TstCaseInTask">
         SELECT cs.id id, cs.name name, cs.typeId, cs.priorityId,
-          o.id entityId, o.pId pId, o.isLeaf isLeaf, o.status status, o.ordr ordr
+          o.id entityId, o.pId pId, o.isParent isParent, o.status status, o.ordr ordr
 
         FROM TstCaseInTask o
         JOIN TstCase cs ON o.caseId = cs.id
@@ -20,7 +20,7 @@
 
     <select id="get" resultType="TstCaseInTask">
         SELECT cs.id id, cs.name name, cs.typeId, cs.priorityId,
-        o.id entityId, o.pId pId, o.isLeaf isLeaf, o.status status, o.ordr ordr
+        o.id entityId, o.pId pId, o.isParent isParent, o.status status, o.ordr ordr
 
         FROM TstCaseInTask o
         JOIN TstCase cs ON o.caseId = cs.id
@@ -30,7 +30,7 @@
 
     <select id="getDetail" resultMap="caseInTaskMap">
         SELECT cs.id id, cs.*, o.id entityId,
-          o.pId pId, o.isLeaf isLeaf, o.status status, o.result result, o.ordr ordr,
+          o.pId pId, o.isParent isParent, o.status status, o.result result, o.ordr ordr,
           o.planId planId, o.taskId taskId
 
         FROM TstCaseInTask o

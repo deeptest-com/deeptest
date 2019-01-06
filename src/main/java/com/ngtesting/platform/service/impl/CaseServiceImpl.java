@@ -81,16 +81,17 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     public TstCase rename(JSONObject json, TstUser user) {
         Integer id = json.getInteger("id");
         String name = json.getString("name");
+        Boolean isParent = json.getBoolean("isParent");
         Integer pId = json.getInteger("pId");
 
         Integer projectId = user.getDefaultPrjId();
 
-        return rename(id, name, pId, projectId, user);
+        return rename(id, name, isParent, pId, projectId, user);
     }
 
 	@Override
     @Transactional
-	public TstCase rename(Integer id, String name, Integer pId, Integer projectId, TstUser user) {
+	public TstCase rename(Integer id, String name, Boolean isParent, Integer pId, Integer projectId, TstUser user) {
         TstCase po = new TstCase();
         Constant.EntityAct action;
 
@@ -108,7 +109,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             isNew = true;
             action = Constant.EntityAct.create;
 
-            po.setLeaf(true);
+            po.setIsParent(isParent);
             po.setId(null);
             po.setpId(pId);
             po.setOrdr(getChildMaxOrderNumb(po.getpId()));
@@ -123,7 +124,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         if (isNew) {
             caseDao.renameNew(po);
             caseDao.setDefaultVal(po.getId(), user.getDefaultOrgId());
-            caseDao.updateParentIfNeeded(po.getpId());
+//            caseDao.updateParentIfNeeded(po.getpId());
         } else {
             caseDao.renameUpdate(po);
         }
@@ -193,12 +194,12 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             caseDao.moveUpdate(testCase);
         }
 
-        if (!isCopy) {
-            caseDao.updateParentIfNeeded(srcParentId);
-        }
-        if ("inner".equals(moveType)) {
-            caseDao.updateParentIfNeeded(targetId);
-        }
+//        if (!isCopy) {
+//            caseDao.updateParentIfNeeded(srcParentId);
+//        }
+//        if ("inner".equals(moveType)) {
+//            caseDao.updateParentIfNeeded(targetId);
+//        }
 
         caseHistoryService.saveHistory(user, action, testCase.getId(),null);
 
@@ -240,7 +241,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         }
 
         TstCase testCase = caseDao.get(id, null);
-        caseDao.updateParentIfNeeded(testCase.getpId());
+//        caseDao.updateParentIfNeeded(testCase.getpId());
 
         caseHistoryService.saveHistory(user, Constant.EntityAct.delete, testCase.getId(),null);
 
@@ -310,7 +311,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     public void createSample(Integer projectId, TstUser user) {
         TstCase root = new TstCase();
         root.setName("测试用例");
-        root.setLeaf(false);
+        root.setIsParent(true);
         root.setProjectId(projectId);
         root.setCreateById(user.getId());
         root.setCreateTime(new Date());
@@ -325,7 +326,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         testCase.setProjectId(projectId);
         testCase.setCreateById(user.getId());
         testCase.setCreateTime(new Date());
-        testCase.setLeaf(false);
+        testCase.setIsParent(true);
         testCase.setOrdr(0);
         caseDao.create(testCase);
         caseDao.setDefaultVal(testCase.getId(), user.getDefaultOrgId());
@@ -337,7 +338,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         testCase2.setProjectId(projectId);
         testCase2.setCreateById(user.getId());
         testCase2.setCreateTime(new Date());
-        testCase2.setLeaf(true);
+        testCase2.setIsParent(false);
         testCase2.setOrdr(0);
         caseDao.create(testCase2);
         caseDao.setDefaultVal(testCase2.getpId(), user.getDefaultOrgId());

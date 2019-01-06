@@ -37,8 +37,8 @@ public class CasePropertyServiceImpl extends BaseServiceImpl implements CaseProp
 //		Map<String,String> exeStatusMap = getExeStatusMap(orgId);
 
 		Map map = new LinkedHashMap();
-		map.put("type", typeMap);
-		map.put("priority", priorityMap);
+		map.put("typeId", typeMap);
+		map.put("priorityId", priorityMap);
 //		map.put("status", exeStatusMap);
 
 		return map;

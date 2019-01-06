@@ -44,7 +44,7 @@ public interface CaseDao {
                     @Param("projectId") Integer projectId,
                        @Param("updateById") Integer updateById);
 
-    void updateParentIfNeeded(@Param("pId") Integer pId);
+//    void updateParentIfNeeded(@Param("pId") Integer pId);
     List<TstCase> getChildren(@Param("id") Integer id);
 
     Integer getChildMaxOrderNumb(@Param("pId") Integer pId);

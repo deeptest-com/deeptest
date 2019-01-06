@@ -16,7 +16,7 @@ public class TstCase extends BaseModel {
 	private Integer estimate = 10;
 	private String objective;
     private String descr;
-    private Boolean isLeaf;
+	private Boolean isParent;
     private Integer ordr;
 	private Integer pId;
 	private Integer projectId;
@@ -72,6 +72,14 @@ public class TstCase extends BaseModel {
         }
     }
 
+    public Boolean getIsParent() {
+        return isParent;
+    }
+
+    public void setIsParent(Boolean parent) {
+        isParent = parent;
+    }
+
     private List<TstCase> children = new LinkedList<>();
 	private List<TstCaseStep> steps = new LinkedList<>();
 	private List<TstCaseComments> comments = new LinkedList<>();
@@ -97,14 +105,6 @@ public class TstCase extends BaseModel {
 
 	public void setHistories(List<TstCaseHistory> histories) {
 		this.histories = histories;
-	}
-
-	public Boolean getLeaf() {
-		return isLeaf;
-	}
-
-	public void setLeaf(Boolean leaf) {
-		isLeaf = leaf;
 	}
 
 	public List<TstCaseComments> getComments() {

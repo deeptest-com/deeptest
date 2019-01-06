@@ -125,8 +125,8 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
         List<TstCasePriority> casePriorities = casePriorityDao.list(orgId);
 
         Map<String, Object> map = new HashMap<>();
-        map.put("type", caseTypes);
-        map.put("priority", casePriorities);
+        map.put("typeId", caseTypes);
+        map.put("priorityId", casePriorities);
 
         List<Map> fields = customFieldDao.listForCase(orgId);
         for (Map field : fields) {

@@ -153,7 +153,7 @@ public class CaseExportServiceImpl extends BaseServiceImpl implements CaseExport
         idCell.setCellValue(testCase.getLevel());
         titleCell.setCellValue(testCase.getName());
 
-        if (testCase.getLeaf()) {
+        if (testCase.getIsParent()) {
             typeCell.setCellValue(testCase.getTypeName());
             priorityCell.setCellValue(testCase.getPriorityName());
             estimateCell.setCellValue(testCase.getEstimate() == null ? "" : testCase.getEstimate().toString());
@@ -163,14 +163,14 @@ public class CaseExportServiceImpl extends BaseServiceImpl implements CaseExport
         idCell.setCellStyle(cellStyle);
         titleCell.setCellStyle(indentionStyle);
 
-        if (testCase.getLeaf()) {
+        if (testCase.getIsParent()) {
             typeCell.setCellStyle(cellStyle);
             priorityCell.setCellStyle(cellStyle);
             estimateCell.setCellStyle(cellStyle);
             objectiveCell.setCellStyle(cellStyle);
         }
 
-        if (testCase.getLeaf()) {
+        if (testCase.getIsParent()) {
             for (TstCaseStep step : testCase.getSteps()) {
                 sheet.addMergedRegion(new CellRangeAddress(rowCount, rowCount, 2, 5));
 

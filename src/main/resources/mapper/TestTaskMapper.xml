@@ -129,7 +129,7 @@
        select tcin.`status` status, count(tcin.id) `count`
        from TstCaseInTask tcin
        where tcin.taskId = #{id}
-        AND tcin.deleted != true AND tcin.disabled != true AND tcin.isLeaf = true
+        AND tcin.deleted != true AND tcin.disabled != true AND tcin.isParent = false
        group by tcin.`status`
     </select>
 

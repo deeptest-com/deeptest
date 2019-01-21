@@ -49,7 +49,7 @@ public class IssueDynamicFormServiceImpl extends BaseServiceImpl implements Issu
 
             Map optionMap = new LinkedHashMap();
             for (Map option: (List<Map>)field.get("options")) {
-                    optionMap.put(option.get("id"), option.get("label"));
+                    optionMap.put(option.get("id").toString(), option.get("label"));
             }
 			map.put(field.get("colCode").toString(), optionMap);
 		}

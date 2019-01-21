@@ -71,6 +71,7 @@ public class OrgAction extends BaseAction {
 		orgService.changeDefaultOrg(user, orgId); // 涵盖项目设置WS推送消息
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
+		ret.put("projectId", user.getDefaultPrjId());
 
 		return ret;
 	}

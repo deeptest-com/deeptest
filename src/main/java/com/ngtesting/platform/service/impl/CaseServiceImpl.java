@@ -309,41 +309,25 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public void createSample(Integer projectId, TstUser user) {
-        TstCase root = new TstCase();
-        root.setName("测试用例");
-        root.setIsParent(true);
-        root.setProjectId(projectId);
-        root.setCreateById(user.getId());
-        root.setCreateTime(new Date());
-        root.setOrdr(0);
-
+        TstCase root = new TstCase("测试用例", null, projectId, user.getId(), true, 1);
         caseDao.create(root);
         caseDao.setDefaultVal(root.getId(), user.getDefaultOrgId());
 
-        TstCase testCase = new TstCase();
-        testCase.setName("新特性");
-        testCase.setpId(root.getId());
-        testCase.setProjectId(projectId);
-        testCase.setCreateById(user.getId());
-        testCase.setCreateTime(new Date());
-        testCase.setIsParent(true);
-        testCase.setOrdr(0);
+        TstCase testCase = new TstCase("新特性", root.getId(), projectId, user.getId(), true, 1);
         caseDao.create(testCase);
-        caseDao.setDefaultVal(testCase.getId(), user.getDefaultOrgId());
-        caseHistoryService.saveHistory(user, Constant.EntityAct.create, testCase.getId(),null);
 
-        TstCase testCase2 = new TstCase();
-        testCase2.setName("新用例");
-        testCase2.setpId(testCase.getId());
-        testCase2.setProjectId(projectId);
-        testCase2.setCreateById(user.getId());
-        testCase2.setCreateTime(new Date());
-        testCase2.setIsParent(false);
-        testCase2.setOrdr(0);
+        TstCase testCase2 = new TstCase("新用例", testCase.getId(), projectId, user.getId(), false, 1);
         caseDao.create(testCase2);
         caseDao.setDefaultVal(testCase2.getpId(), user.getDefaultOrgId());
 
         caseHistoryService.saveHistory(user, Constant.EntityAct.create, testCase2.getId(),null);
+
+        TstCaseStep step = new TstCaseStep("操作步骤1", "期待结果1", 1, testCase2.getId());
+        caseStepDao.save(step);
+        step = new TstCaseStep("操作步骤2", "期待结果2", 2, testCase2.getId());
+        caseStepDao.save(step);
+        step = new TstCaseStep("操作步骤3", "期待结果3", 3, testCase2.getId());
+        caseStepDao.save(step);
     }
 
     @Override

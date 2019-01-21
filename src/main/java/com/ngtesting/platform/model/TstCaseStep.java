@@ -11,6 +11,17 @@ public class TstCaseStep extends BaseModel {
 
     private Integer caseId;
 
+    public TstCaseStep(String opt, String expect, Integer ordr, Integer caseId) {
+        this.opt = opt;
+        this.expect = expect;
+        this.ordr = ordr;
+        this.caseId = caseId;
+    }
+
+    public TstCaseStep() {
+
+    }
+
     public String getOpt() {
         return opt;
     }

@@ -49,7 +49,7 @@
           deleted,disabled,createTime)
 
         values (#{name},#{typeId},#{priorityId},#{contentType},#{estimate},#{pId},#{projectId},#{createById},#{isParent},#{ordr},
-          #{deleted},#{disabled},#{createTime})
+          #{deleted},#{disabled}, NOW())
     </insert>
 
     <insert id="renameNew" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">

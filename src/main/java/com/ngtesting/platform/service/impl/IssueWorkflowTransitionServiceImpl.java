@@ -32,7 +32,7 @@ public class IssueWorkflowTransitionServiceImpl extends BaseServiceImpl implemen
     ProjectRoleEntityRelationDao projectRoleEntityRelationDao;
 
     @Override // TODO: cached，某个问题类型的状态对应的转换
-    public Map<Integer, Map<Integer, List<IsuWorkflowTransition>>> getStatusTrainsMap(
+    public Map<String, Map<String, List<IsuWorkflowTransition>>> getStatusTrainsMap(
             Integer projectId, Integer userId) {
 
         List<Integer> projectRoleIds = projectRoleEntityRelationDao
@@ -41,15 +41,15 @@ public class IssueWorkflowTransitionServiceImpl extends BaseServiceImpl implemen
         List<IsuWorkflowSolutionItem> workflowItems =
                 issueWorkflowSolutionDao.getIssueTypeWorkflow(projectId);
 
-        Map<Integer, Map<Integer, List<IsuWorkflowTransition>>> typeMap = new LinkedHashMap();
+        Map<String, Map<String, List<IsuWorkflowTransition>>> typeMap = new LinkedHashMap();
         for (IsuWorkflowSolutionItem workflowItem : workflowItems) {
             Integer workflowId = workflowItem.getWorkflowId();
 
             List<IsuWorkflowTransition> trans = transitionDao.listTransition(workflowId, projectRoleIds);
 
-            Map<Integer, List<IsuWorkflowTransition>> statusMap = new LinkedHashMap();
+            Map<String, List<IsuWorkflowTransition>> statusMap = new LinkedHashMap();
             for (IsuWorkflowTransition tran : trans) {
-                Integer srcStatusId = tran.getSrcStatusId();
+                String srcStatusId = tran.getSrcStatusId().toString();
                 if (!statusMap.containsKey(srcStatusId)) {
                     statusMap.put(srcStatusId, new LinkedList<>());
                 }
@@ -57,7 +57,7 @@ public class IssueWorkflowTransitionServiceImpl extends BaseServiceImpl implemen
                 statusMap.get(srcStatusId).add(tran);
             }
 
-            typeMap.put(workflowItem.getTypeId(), statusMap);
+            typeMap.put(workflowItem.getTypeId().toString(), statusMap);
         }
 
         return typeMap;

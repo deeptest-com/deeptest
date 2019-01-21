@@ -39,6 +39,13 @@ public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSett
     @Autowired
     ProjectService projectService;
 
+    @Autowired
+    CustomFieldService customFieldService;
+    @Autowired
+    IssueDynamicFormService dynamicFormService;
+    @Autowired
+    IssueWorkflowTransitionService issueWorkflowTransitionService;
+
     @Override
     public void pushUserSettings(TstUser user) {
         Map<String, Object> ret = new HashMap<>();
@@ -63,8 +70,6 @@ public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSett
 
         Map<String, Boolean> orgPrivileges = orgRolePrivilegeService.listByUser(userId, orgId);
 
-        Map<String,Map<String,String>> casePropertyValMap = casePropertyService.getMap(orgId);
-
         ret.put("orgPrivileges", orgPrivileges);
 
         ret.put("defaultOrgId", user.getDefaultOrgId());
@@ -72,8 +77,6 @@ public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSett
 
         ret.put("defaultPrjId", user.getDefaultPrjId());
         ret.put("defaultPrjName", user.getDefaultPrjName());
-
-        ret.put("casePropertyValMap", casePropertyValMap);
 
         sendMsg(user, ret);
     }
@@ -88,11 +91,28 @@ public class PushSettingsServiceImpl extends BaseServiceImpl implements PushSett
         Integer orgId = user.getDefaultOrgId();
         Integer prjId = user.getDefaultPrjId();
 
-        Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userId, prjId, orgId);
         ret.put("prjId", user.getDefaultPrjId());
         ret.put("prjName", user.getDefaultPrjName());
 
+        // 权限
+        Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userId, prjId, orgId);
         ret.put("prjPrivileges", prjPrivileges);
+
+        // 用例
+        Map<String, Object> map = customFieldService.fetchProjectFieldForCase(orgId, prjId);
+        ret.put("caseCustomFields", map.get("fields"));
+        ret.put("casePropMap", map.get("props"));
+        Map<String,Map<String,String>> casePropValMap = casePropertyService.getMap(orgId);
+        ret.put("casePropValMap", casePropValMap);
+
+        // 缺陷
+        Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
+        ret.put("issuePropMap", issuePropMap);
+        Map<String, Object> issuePropValMap = dynamicFormService.genIssueBuldInPropValMap(orgId, prjId);
+        ret.put("issuePropValMap", issuePropValMap);
+
+        Map issueTransMap = issueWorkflowTransitionService.getStatusTrainsMap(prjId, userId);
+        ret.put("issueTransMap", issueTransMap);
 
         sendMsg(user, ret);
     }

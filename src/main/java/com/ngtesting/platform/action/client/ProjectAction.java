@@ -179,16 +179,18 @@ public class ProjectAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = user.getDefaultOrgId();
+//        Integer orgId = user.getDefaultOrgId();
         Integer projectId = json.getInteger("projectId");
 
-        TstProject po = projectService.get(projectId);
+        TstProject po = projectService.changeDefaultPrj(user, projectId);
 
-        if (po != null && po.getType().equals(TstProject.ProjectType.project)) {
-            prjConf(ret, orgId, projectId, user.getId());
-        }
+//        TstProject po = projectService.get(projectId);
 
-        ret.put("type", po.getType());
+//        if (po != null && po.getType().equals(TstProject.ProjectType.project)) {
+//            prjConf(ret, orgId, projectId, user.getId());
+//        }
+//
+//        ret.put("type", po.getType());
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
         return ret;
@@ -202,42 +204,42 @@ public class ProjectAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = user.getDefaultOrgId();
+//        Integer orgId = user.getDefaultOrgId();
         Integer projectId = json.getInteger("projectId");
 
         TstProject po = projectService.changeDefaultPrj(user, projectId);
-        ret.put("data", po);
-
-        if (po != null && po.getType().equals(TstProject.ProjectType.project)) {
-            prjConf(ret, orgId, projectId, user.getId());
-        }
-
-        ret.put("type", po.getType());
+//        ret.put("data", po);
+//
+//        if (po != null && po.getType().equals(TstProject.ProjectType.project)) {
+//            prjConf(ret, orgId, projectId, user.getId());
+//        }
+//
+//        ret.put("type", po.getType());
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
         return ret;
     }
 
-    private void prjConf(Map<String, Object> ret, Integer orgId, Integer projectId, Integer userId) {
-        // 权限
-        Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userId, projectId, orgId);
-        ret.put("prjPrivileges", prjPrivileges);
-
-        // 用例
-        Map<String, Object> map = customFieldService.fetchProjectFieldForCase(orgId, projectId);
-        ret.put("caseCustomFields", map.get("fields"));
-        ret.put("casePropMap", map.get("props"));
-        Map<String,Map<String,String>> casePropValMap = casePropertyService.getMap(orgId);
-        ret.put("casePropValMap", casePropValMap);
-
-        // 缺陷
-        Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, projectId);
-        ret.put("issuePropMap", issuePropMap);
-        Map<String, Object> issuePropValMap = dynamicFormService.genIssueBuldInPropValMap(orgId, projectId);
-        ret.put("issuePropValMap", issuePropValMap);
-
-        Map issueTransMap = issueWorkflowTransitionService.getStatusTrainsMap(projectId, userId);
-        ret.put("issueTransMap", issueTransMap);
-    }
+//    private void prjConf(Map<String, Object> ret, Integer orgId, Integer projectId, Integer userId) {
+//        // 权限
+//        Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userId, projectId, orgId);
+//        ret.put("prjPrivileges", prjPrivileges);
+//
+//        // 用例
+//        Map<String, Object> map = customFieldService.fetchProjectFieldForCase(orgId, projectId);
+//        ret.put("caseCustomFields", map.get("fields"));
+//        ret.put("casePropMap", map.get("props"));
+//        Map<String,Map<String,String>> casePropValMap = casePropertyService.getMap(orgId);
+//        ret.put("casePropValMap", casePropValMap);
+//
+//        // 缺陷
+//        Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, projectId);
+//        ret.put("issuePropMap", issuePropMap);
+//        Map<String, Object> issuePropValMap = dynamicFormService.genIssueBuldInPropValMap(orgId, projectId);
+//        ret.put("issuePropValMap", issuePropValMap);
+//
+//        Map issueTransMap = issueWorkflowTransitionService.getStatusTrainsMap(projectId, userId);
+//        ret.put("issueTransMap", issueTransMap);
+//    }
 
 }

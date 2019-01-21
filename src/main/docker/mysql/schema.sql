@@ -342,7 +342,7 @@ CREATE TABLE `IsuDocument` (
   KEY `FK_a1lgb1l61iljqw3qjm07lnxo` (`issueId`),
   KEY `FK_7p0pjbn3kgcu2hhwk0u9j5mv2` (`userId`),
   CONSTRAINT `FK_7p0pjbn3kgcu2hhwk0u9j5mv2` FOREIGN KEY (`userId`) REFERENCES `TstUser` (`id`),
-  CONSTRAINT `FK_a1lgb1l61iljqw3qjm07lnxo` FOREIGN KEY (`issueId`) REFERENCES `isuissue` (`id`)
+  CONSTRAINT `FK_a1lgb1l61iljqw3qjm07lnxo` FOREIGN KEY (`issueId`) REFERENCES `IsuIssue` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -444,8 +444,8 @@ CREATE TABLE `IsuHistory` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_8cp2wymy81uq5vi58woofpq2f` (`issueId`),
-  CONSTRAINT `FK_8cp2wymy81uq5vi58woofpq2f` FOREIGN KEY (`issueId`) REFERENCES `isuissue` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=utf8;
+  CONSTRAINT `FK_8cp2wymy81uq5vi58woofpq2f` FOREIGN KEY (`issueId`) REFERENCES `IsuIssue` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -493,7 +493,7 @@ CREATE TABLE `IsuIssue` (
   PRIMARY KEY (`id`),
   KEY `FK_749574hr3f54gdlo4hrc6dquc` (`projectId`),
   CONSTRAINT `FK_749574hr3f54gdlo4hrc6dquc` FOREIGN KEY (`projectId`) REFERENCES `TstProject` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3247,7 +3247,7 @@ BEGIN
         FROM TstCaseInTask csr
           left join TstTask task on csr.taskId=task.id
         WHERE csr.planId=_planId and task.deleted != true AND task.disabled != true
-              AND csr.isParent=true AND csr.deleted != true AND csr.disabled != TRUE
+              AND csr.isParent=false AND csr.deleted != true AND csr.disabled != TRUE
               AND csr.`status` != 'untest'
         GROUP BY dt, csr.`status`
       ) temp ON days.date = temp.dt
@@ -3286,7 +3286,7 @@ BEGIN
                            left join TstTask task on csr.taskId=task.id
 
                          WHERE csr.planId=_planId and task.deleted != true AND task.disabled != true
-                               AND csr.isParent=true AND csr.deleted != true AND csr.disabled != TRUE
+                               AND csr.isParent=false AND csr.deleted != true AND csr.disabled != TRUE
                                AND csr.`status` != 'untest'
                          GROUP BY dt, csr.exeBy
                        ) temp ON days.date = temp.dt
@@ -3331,7 +3331,7 @@ BEGIN
             JOIN TstTask task on csr.taskId = task.id
 
           WHERE csr.projectId=project_id
-                AND csr.isParent=true AND csr.deleted != true AND csr.disabled != TRUE
+                AND csr.isParent=false AND csr.deleted != true AND csr.disabled != TRUE
                 AND csr.`status` != 'untest'
                 AND plan.deleted != true AND task.deleted != true
           GROUP BY dt, csr.`status`
@@ -3354,7 +3354,7 @@ BEGIN
 
           WHERE csr.projectId in (SELECT p.id from TstProject p where p.parentId = project_id
                                                                       AND p.deleted != true AND p.disabled != true)
-                AND csr.isParent=true AND csr.deleted != true AND csr.disabled != TRUE
+                AND csr.isParent=false AND csr.deleted != true AND csr.disabled != TRUE
                 AND csr.`status` != 'untest'
                 AND plan.deleted != true AND task.deleted != true
           GROUP BY dt, csr.`status`
@@ -3377,7 +3377,7 @@ BEGIN
 
           WHERE csr.projectId in (SELECT p.id from TstProject p where p.orgId = project_id
                                                                       AND p.deleted != true AND p.disabled != true)
-                AND csr.isParent=true AND csr.deleted != true AND csr.disabled != TRUE
+                AND csr.isParent=false AND csr.deleted != true AND csr.disabled != TRUE
                 AND csr.`status` != 'untest'
                 AND plan.deleted != true AND task.deleted != TRUE
 
@@ -3414,7 +3414,7 @@ BEGIN
       left join TstTask task on csr.taskId=task.id
 
     WHERE csr.planId=_plan_id and task.deleted != true AND task.disabled != true
-          AND csr.isParent=true AND csr.deleted != true AND csr.disabled != TRUE
+          AND csr.isParent=false AND csr.deleted != true AND csr.disabled != TRUE
     into total;
 
     select days.date, temp.numb, total from
@@ -3430,7 +3430,7 @@ BEGIN
          left join TstTask task on csr.taskId=task.id
 
        WHERE csr.planId=_plan_id and task.deleted != true AND task.disabled != true
-             AND csr.isParent=true AND csr.deleted != true AND csr.disabled != TRUE
+             AND csr.isParent=false AND csr.deleted != true AND csr.disabled != TRUE
              AND csr.`status` != 'untest'
        GROUP BY dt
        ORDER BY dt) temp
@@ -3461,7 +3461,7 @@ BEGIN
     from TstCaseInTask tcin
       left join TstTask task on tcin.taskId=task.id
     where tcin.planId  = _planId and task.deleted != true AND task.disabled != true
-          AND tcin.deleted != true AND tcin.disabled != true  AND tcin.isParent=true
+          AND tcin.deleted != true AND tcin.disabled != true  AND tcin.isParent=false
     group by tcin.`status`;
 
   END ;;
@@ -4473,7 +4473,7 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-01-21 12:00:04
+-- Dump completed on 2019-01-21 12:43:53
 -- MySQL dump 10.13  Distrib 5.7.14, for osx10.11 (x86_64)
 --
 -- Host: localhost    Database: ngtesting-web
@@ -4699,4 +4699,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-01-21 12:00:05
+-- Dump completed on 2019-01-21 12:43:53

@@ -1,5 +1,5 @@
 --
--- ngtestingQL database dump
+-- PostgreSQL database dump
 --
 
 -- Dumped from database version 11.1
@@ -976,15 +976,18 @@ CREATE FUNCTION public.chart_issue_trend_create(p_project_id integer, p_project_
     LANGUAGE plpgsql
     AS $$  
 declare  
-	var_sql character varying;   
+	var_sql character varying; 
+	
+	var_project_ids integer[];
 	
     var_date_before timestamp;
     var_numb_before bigint;
 BEGIN  
 	SELECT _date_before(p_day_numb) INTO var_date_before;
+	select array(select * from _project_list(p_project_id,p_project_type)) INTO var_project_ids;
 	
     SELECT COUNT(id) from "IsuIssue" isu WHERE isu."createTime" < var_date_before 
-        and isu."projectId" = ANY (select _project_list(p_project_id,p_project_type))
+        and isu."projectId" = ANY (var_project_ids)
 		INTO var_numb_before;
 	RAISE NOTICE 'var_numb_before = %', var_numb_before;
 	
@@ -997,7 +1000,7 @@ BEGIN
 	 LEFT JOIN (
 		SELECT COUNT(isu.id) numb, isu."createTime"::date dt
     	FROM "IsuIssue" isu
-        WHERE isu."projectId" = ANY (select _project_list(p_project_id,p_project_type))  
+        WHERE isu."projectId" = ANY (var_project_ids)  
 		    AND isu."createTime" >= var_date_before
 			AND isu.deleted != true AND isu.disabled != true
         GROUP BY dt) count_by_day
@@ -1018,15 +1021,18 @@ CREATE FUNCTION public.chart_issue_trend_final(p_project_id integer, p_project_t
     LANGUAGE plpgsql
     AS $$  
 declare  
-	var_sql character varying;   
+	var_sql character varying;  
+	
+	var_project_ids integer[];
 	
     var_date_before timestamp;
     var_numb_before bigint;
 BEGIN  
 	SELECT _date_before(p_day_numb) INTO var_date_before;
+	select array(select * from _project_list(p_project_id,p_project_type)) INTO var_project_ids;
 	
     SELECT COUNT(id) from "IsuIssue" isu WHERE isu."setFinalTime" < var_date_before 
-		and isu."projectId" = ANY (select _project_list(p_project_id,p_project_type))
+		and isu."projectId" = ANY (var_project_ids)
 	INTO var_numb_before;
 	RAISE NOTICE 'var_numb_before = %', var_numb_before;
 	
@@ -1039,7 +1045,7 @@ BEGIN
 	 LEFT JOIN (
 		SELECT COUNT(isu.id) numb, isu."setFinalTime"::date dt
     	FROM "IsuIssue" isu
-        WHERE isu."projectId" = ANY (select _project_list(p_project_id,p_project_type))  
+        WHERE isu."projectId" = ANY (var_project_ids)  
 		    AND isu."setFinalTime" >= var_date_before
 			AND isu.deleted != true AND isu.disabled != true
         GROUP BY dt) count_by_day
@@ -1060,16 +1066,19 @@ CREATE FUNCTION public.chart_test_design_progress_by_project(p_project_id intege
     LANGUAGE plpgsql
     AS $$  
 declare  
-	var_sql character varying;   
+	var_sql character varying;  
+	
+	var_project_ids integer[];
 	
     var_date_before timestamp;
     var_numb_before bigint;
 BEGIN  
 	SELECT _date_before(p_day_numb) INTO var_date_before;
+	select array(select * from _project_list(p_project_id,p_project_type)) INTO var_project_ids;
 	
     SELECT COUNT(id) from "TstCase" cs 
 		WHERE cs."createTime" < var_date_before 
-		and cs."projectId" = ANY (select _project_list(p_project_id,p_project_type))
+		and cs."projectId" = ANY (var_project_ids)
 		INTO var_numb_before;
 	RAISE NOTICE 'var_numb_before = %', var_numb_before;
 	
@@ -1082,7 +1091,7 @@ BEGIN
 	 LEFT JOIN (
 		SELECT COUNT(cs.id) numb, cs."createTime"::date dt
     	FROM "TstCase" cs
-        WHERE cs."projectId" = ANY (select _project_list(p_project_id,p_project_type))  
+        WHERE cs."projectId" = ANY (var_project_ids)  
 			AND cs."isParent"=false
 		    AND cs."createTime" >= var_date_before
 			AND cs.deleted != true AND cs.disabled != true
@@ -1415,15 +1424,14 @@ BEGIN
     update "TstUser" set "defaultPrjId" = project_id, "defaultPrjName" = '默认项目' where id = p_user_id;
 		   
 	-- 初始化执行计划和任务
-		   
     INSERT INTO public."TstPlan"(name, status, "projectId", "userId", disabled, deleted, "createTime")
-		VALUES ('示例计划', 'not_start', project_id, 1, false, false, now());
+		VALUES ('示例计划', 'not_start', project_id, p_user_id, false, false, now());
     select max(id) from "TstPlan" into plan_id;
 		
     INSERT INTO public."TstTask"(
 			name, status, "projectId", "caseProjectId", "planId", "userId", 
 			disabled, deleted, "createTime")
-		VALUES ('示例任务', 'not_start', project_id, project_id, plan_id, 1, 
+		VALUES ('示例任务', 'not_start', project_id, project_id, plan_id, p_user_id, 
 			false, false, now());
 	select max(id) from "TstTask" into task_id;
 
@@ -1434,7 +1442,7 @@ BEGIN
 		"caseId", "isParent", "pId", ordr, "exeBy", "exeTime", status, "projectId", "planId", "taskId", 
 			disabled, deleted, "createBy", "createTime")
 	VALUES (case_id, true, null, 1, null, null, 'untest', project_id, plan_id, task_id, 
-			false, false, 1, now());
+			false, false, p_user_id, now());
 		   
     insert into "TstCase" (name, "projectId", "pId", estimate, "priorityId", "typeId", "isParent", ordr, "createById", "contentType", disabled, deleted, "createTime")
     values('新特性', project_id, case_id, 10, case_default_priority_id, case_default_type_id, true, 0, p_user_id, 'steps', false, false, NOW());
@@ -1443,7 +1451,7 @@ BEGIN
 		"caseId", "isParent", "pId", ordr, "exeBy", "exeTime", status, "projectId", "planId", "taskId", 
 			disabled, deleted, "createBy", "createTime")
 	VALUES (case_id, true, null, 1, null, null, 'untest', project_id, plan_id, task_id, 
-			false, false, 1, now());
+			false, false, p_user_id, now());
 		   
     insert into "TstCase" (name, "projectId", "pId", estimate, "priorityId", "typeId", "isParent", ordr, "createById", "contentType", disabled, deleted, "createTime")
     values('新用例', project_id, case_id, 10, case_default_priority_id, case_default_type_id, false, 0, p_user_id, 'steps', false, false, NOW());
@@ -1452,7 +1460,7 @@ BEGIN
 		"caseId", "isParent", "pId", ordr, "exeBy", "exeTime", status, "projectId", "planId", "taskId", 
 			disabled, deleted, "createBy", "createTime")
 	VALUES (case_id, false, null, 1, null, null, 'untest', project_id, plan_id, task_id, 
-			false, false, 1, now());
+			false, false, p_user_id, now());
 
     insert into "TstCaseStep" (opt, expect, "caseId", ordr, disabled, deleted, "createTime")
     values('操作步骤1', '期待结果1', case_id, 1, false, false, NOW());
@@ -8960,11 +8968,11 @@ ALTER TABLE ONLY public."TstVer"
 
 
 --
--- ngtestingQL database dump complete
+-- PostgreSQL database dump complete
 --
 
 --
--- ngtestingQL database dump
+-- PostgreSQL database dump
 --
 
 -- Dumped from database version 11.1
@@ -9414,21 +9422,21 @@ SELECT pg_catalog.setval('public."IsuWorkflowTransitionDefine_id_seq"', 1, false
 -- Name: TstCaseExeStatus_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ngtesting
 --
 
-SELECT pg_catalog.setval('public."TstCaseExeStatus_id_seq"', 462, true);
+SELECT pg_catalog.setval('public."TstCaseExeStatus_id_seq"', 502, true);
 
 
 --
 -- Name: TstCasePriority_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ngtesting
 --
 
-SELECT pg_catalog.setval('public."TstCasePriority_id_seq"', 328, true);
+SELECT pg_catalog.setval('public."TstCasePriority_id_seq"', 358, true);
 
 
 --
 -- Name: TstCaseType_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ngtesting
 --
 
-SELECT pg_catalog.setval('public."TstCaseType_id_seq"', 770, true);
+SELECT pg_catalog.setval('public."TstCaseType_id_seq"', 840, true);
 
 
 --
@@ -9446,6 +9454,6 @@ SELECT pg_catalog.setval('public."TstProjectPrivilegeDefine_id_seq"', 1, false);
 
 
 --
--- ngtestingQL database dump complete
+-- PostgreSQL database dump complete
 --
 

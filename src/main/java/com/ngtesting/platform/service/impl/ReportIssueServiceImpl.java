@@ -31,13 +31,13 @@ public class ReportIssueServiceImpl extends ReportServiceImpl implements ReportI
         List<Object> totalListCreate = new LinkedList<>();
         List<Object> totalListFinal = new LinkedList<>();
 
-        Integer countCreate = 0;
-        Integer countFinal = 0;
+        Integer countCreate = null;
+        Integer countFinal = null;
         for (int i = 0; i < createLs.size(); i++) {
             xList.add(createLs.get(i).get("date").toString());
 
-            countCreate += Integer.valueOf(createLs.get(i).get("numb").toString());
-            countFinal += Integer.valueOf(finalLs.get(i).get("numb").toString());
+            countCreate = Integer.valueOf(createLs.get(i).get("sum").toString());
+            countFinal = Integer.valueOf(finalLs.get(i).get("sum").toString());
 
             totalListCreate.add(countCreate);
             totalListFinal.add(countFinal);

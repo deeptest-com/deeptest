@@ -19,7 +19,7 @@ public class AccountVerifyCodeServiceImpl implements AccountVerifyCodeService {
     public String genVerifyCode(Integer userId) {
         String code = UUID.randomUUID().toString().replaceAll("-", "");
         Map<String, Object> map = new HashMap();
-        map.put("userId", userId.toString());
+        map.put("userId", userId);
         map.put("code", code);
 
         Date now = new Date();

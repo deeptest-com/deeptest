@@ -82,7 +82,7 @@ public class AccountServiceImpl implements AccountService {
             return null;
         }
 
-        TstUser user = userDao.get(code.getRefId());
+        TstUser user = userDao.get(code.getUserId());
         if (user == null) {
             return null;
         }
@@ -178,7 +178,7 @@ public class AccountServiceImpl implements AccountService {
             return null;
         }
 
-        TstUser user = userDao.get(code.getRefId());
+        TstUser user = userDao.get(code.getUserId());
         if (user == null) {
             return null;
         }

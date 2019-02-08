@@ -8,7 +8,7 @@ public class TstUserVerifyCode {
     private String code;
     private Date expireTime;
 
-    private Integer refId;
+    private Integer userId;
 
     public String getCode() {
         return code;
@@ -26,12 +26,12 @@ public class TstUserVerifyCode {
         this.expireTime = expireTime;
     }
 
-    public Integer getRefId() {
-        return refId;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setRefId(Integer refId) {
-        this.refId = refId;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public Integer getId() {

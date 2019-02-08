@@ -3,7 +3,7 @@
 <mapper namespace="com.ngtesting.platform.dao.AccountVerifyCodeDao" >
 
     <insert id="genVerifyCode" parameterType="Map" useGeneratedKeys="true" keyProperty="id">
-        insert into TstUserVerifyCode (refId,code,expireTime,createTime,deleted,disabled)
+        insert into "TstUserVerifyCode" ("userId",code,"expireTime","createTime",deleted,disabled)
         values (#{userId},#{code},#{expireTime},#{createTime},false,false)
     </insert>
 

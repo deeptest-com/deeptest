@@ -3,9 +3,9 @@
 <mapper namespace="com.ngtesting.platform.dao.AccountDao" >
 
     <insert id="register" parameterType="TstUser" useGeneratedKeys="true" keyProperty="id">
-        insert into TstUser (email,password,nickname,phone,avatar,token,salt,
-          defaultOrgId,defaultPrjId,
-          deleted,disabled,createTime)
+        insert into "TstUser" (email,password,nickname,phone,avatar,token,salt,
+          "defaultOrgId","defaultPrjId",
+          deleted,disabled,"createTime")
         values (#{email},#{password},#{nickname},#{phone},#{avatar},#{token},#{temp},
           #{defaultOrgId},#{defaultPrjId},
           #{deleted},#{disabled},#{createTime})
@@ -26,9 +26,9 @@
         WHERE email=#{email}
     </update>
 
-    <select id="initUser" useCache="false" statementType="CALLABLE">
+    <update id="initUser" statementType="CALLABLE">
         { call init_user(#{userId,mode=IN,jdbcType=INTEGER}, #{orgName,mode=IN,jdbcType=VARCHAR}) }
-    </select>
+    </update>
 
     <update id="changePassword" parameterType="TstCaseType">
         UPDATE TstUser

@@ -33,7 +33,7 @@ public class TstCaseInTask extends BaseModel {
 	private Date exeTime;
 	private Integer exeBy;
 
-    private String status;
+    private CaseExtStatus status;
 
 	private String contentType;
 	private String content;
@@ -63,6 +63,22 @@ public class TstCaseInTask extends BaseModel {
 	private String prop18;
 	private String prop19;
 	private String prop20;
+
+	public static enum CaseExtStatus {
+		untest("untest"),
+		pass("pass"),
+		fail("fail"),
+		block("block");
+
+		CaseExtStatus(String val) {
+			this.val = val;
+		}
+
+		private String val;
+		public String toString() {
+			return val;
+		}
+	}
 
 	private List<TstCaseStep> steps = new LinkedList<>();
 	private List<TstCaseInTaskComments> comments = new LinkedList<>();
@@ -159,11 +175,11 @@ public class TstCaseInTask extends BaseModel {
         this.entityId = entityId;
     }
 
-    public String getStatus() {
+    public CaseExtStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(CaseExtStatus status) {
         this.status = status;
     }
 

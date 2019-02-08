@@ -12,15 +12,15 @@ spring:
     jackson:
       time-zone: GMT+8
     datasource:
-        name: mysql_ngtesting
+        name: db_ngtesting
         type: com.alibaba.druid.pool.DruidDataSource
         #druid相关配置
         druid:
           #监控统计拦截的filters
           filters: stat
-          driver-class-name: com.mysql.jdbc.Driver
+          driver-class-name: org.postgresql.Driver
           #基本属性
-          url: jdbc:mysql://${config.mysql.host}:${config.mysql.port}/ngtesting-web?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&noAccessToProcedureBodies=true
+          url: jdbc:postgresql://${config.db.host}:${config.db.port}/ngtesting-test?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&noAccessToProcedureBodies=true
           username: ngtesting
           password: P2ssw0rd
           #配置初始化大小/最小/最大
@@ -38,7 +38,7 @@ spring:
           test-on-borrow: false
           test-on-return: false
           #打开PSCache，并指定每个连接上PSCache的大小。oracle设为true，mysql设为false。分库分表较多推荐设置为false
-          pool-prepared-statements: false
+          pool-prepared-statements: true
           max-pool-prepared-statement-per-connection-size: 20
 
     servlet:
@@ -54,7 +54,7 @@ mybatis:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 pagehelper:
-    helperDialect: mysql
+    helperDialect: postgresql
     reasonable: true
     supportMethodsArguments: true
     params: count=countSql
@@ -88,30 +88,30 @@ logging:
 spring:
   profiles: dev
 config:
-  mysql:
+  db:
     host: localhost
-    port: 3306
+    port: 5432
 
 ---
 spring:
   profiles: prod
 config:
-  mysql:
+  db:
     host: localhost
-    port: 3306
+    port: 5432
 
 ---
 spring:
   profiles: docker
 config:
-  mysql:
-    host: ngtesting-mysql
-    port: 3306
+  db:
+    host: ngtesting-db
+    port: 5432
 
 ---
 spring:
   profiles: aliyun-db
 config:
-  mysql:
+  db:
     host: 47.99.102.138
-    port: 3306
+    port: 5432

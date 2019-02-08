@@ -3,7 +3,6 @@ package com.ngtesting.platform.servlet;
 import com.alibaba.fastjson.JSON;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.OrgPrivilegeService;
 import com.ngtesting.platform.service.intf.PropService;
 import com.ngtesting.platform.service.intf.UserService;
 import com.ngtesting.platform.utils.AuthPassport;
@@ -30,8 +29,6 @@ public class AuthInterceptor implements HandlerInterceptor {
     private PropService propService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private OrgPrivilegeService orgPrivilegeService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -62,8 +59,6 @@ public class AuthInterceptor implements HandlerInterceptor {
             if (packageName.startsWith(Constant.API_PACKAGE_FOR_CLIENT)) {
                 if (!StringUtils.isEmpty(token)) {
                     // 登录验证
-//                    UserService userService = SpringContextHolder.getBean(UserService.class);
-
                     TstUser user = userService.getByToken(token.trim());
                     if (user != null) {
                         request.getSession().setAttribute(Constant.HTTP_SESSION_USER_PROFILE, user);

@@ -5,49 +5,49 @@
     <select id="list" resultMap="issuePageMap">
         SELECT page.*
 
-        FROM IsuPage page
+        FROM "IsuPage" page
 
-        WHERE page.orgId=#{orgId}
+        WHERE page."orgId"=#{orgId}
         AND page.deleted != TRUE AND page.disabled != TRUE
-        ORDER BY page.createTime ASC
+        ORDER BY page."createTime" ASC
     </select>
 
     <select id="get" resultMap="issuePageMap">
-        SELECT o.* FROM IsuPage o
+        SELECT o.* FROM "IsuPage" o
 
-        WHERE o.id = #{id} AND orgId = #{orgId}
+        WHERE o.id = #{id} AND "orgId" = #{orgId}
         AND o.deleted != true AND o.disabled != true
     </select>
 
     <insert id="save" parameterType="IsuPage" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuPage
-        (name, orgId, defaultVal, buildIn, deleted, disabled, createTime)
+        insert into "IsuPage"
+        (name, "orgId", "defaultVal", "buildIn", deleted, disabled, "createTime")
         values
         (#{name}, #{orgId}, #{defaultVal}, #{buildIn}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="IsuPage">
-        UPDATE IsuPage
-        SET name=#{name}, updateTime=NOW()
+        UPDATE "IsuPage"
+        SET name=#{name}, "updateTime"=NOW()
 
-        WHERE id=#{id} AND orgId=#{orgId}
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <delete id="delete">
-        UPDATE IsuPage
-        SET disabled=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuPage"
+        SET disabled=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </delete>
 
     <update id="removeDefault">
-        UPDATE IsuPage
-        SET defaultVal=FALSE, updateTime=NOW()
-        WHERE orgId=#{orgId}
+        UPDATE "IsuPage"
+        SET "defaultVal"=FALSE, "updateTime"=NOW()
+        WHERE "orgId"=#{orgId}
     </update>
     <update id="setDefault">
-        UPDATE IsuPage
-        SET defaultVal=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuPage"
+        SET "defaultVal"=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <resultMap id="issuePageMap" type="IsuPage" autoMapping="true">

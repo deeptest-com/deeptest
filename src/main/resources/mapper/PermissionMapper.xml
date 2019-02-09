@@ -4,57 +4,57 @@
 <mapper namespace="com.ngtesting.platform.dao.PermissionDao" >
 
     <select id="listOrgPermission" resultType="Map">
-        SELECT r_role_priv.orgId entityId, priv.code, priv.name
+        SELECT r_role_priv.orgId "entityId", priv.code, priv.name
 
-        from TstOrgPrivilegeDefine priv
-        join TstOrgRolePrivilegeRelation r_role_priv ON r_role_priv.orgPrivilegeId=priv.id
+        from "TstOrgPrivilegeDefine" priv
+        join "TstOrgRolePrivilegeRelation" r_role_priv ON r_role_priv.orgPrivilegeId=priv.id
 
-        where r_role_priv.orgRoleId
+        where r_role_priv."orgRoleId"
           IN (
-                SELECT r_role_user.orgRoleId
-                  from TstOrgRoleUserRelation r_role_user
-                where r_role_user.userId = ${userId}
+                SELECT r_role_user."orgRoleId"
+                  from "TstOrgRoleUserRelation" r_role_user
+                where r_role_user."userId" = ${userId}
 
                 UNION
 
-                SELECT r_role_group.orgRoleId
-                  from TstOrgRoleGroupRelation r_role_group
-                  JOIN TstOrgGroupUserRelation r_group_user ON r_group_user.orgGroupId = r_role_group.groupId
+                SELECT r_role_group."orgRoleId"
+                  from "TstOrgRoleGroupRelation" r_role_group
+                  JOIN "TstOrgGroupUserRelation" r_group_user ON r_group_user."orgGroupId" = r_role_group."groupId"
 
-                WHERE r_group_user.userId = ${userId}
+                WHERE r_group_user."userId" = ${userId}
               )
 
         AND priv.deleted != true and priv.disabled!= true
-        order by entityId, priv.code asc
+        order by "entityId", priv.code asc
     </select>
 
     <select id="listPrjPermission" resultType="Map">
-        select tmp.projectId entityId, CONCAT(define.`code`,'-',define.action) code
-        from TstProjectPrivilegeDefine define
-        left join TstProjectRolePriviledgeRelation r on r.projectPrivilegeDefineId = define.id
+        select tmp."projectId" "entityId", (define.'code' || '-' || define.action) code
+        from "TstProjectPrivilegeDefine" "define"
+        left join "TstProjectRolePriviledgeRelation" r on r."projectPrivilegeDefineId" = "define".id
 
         INNER join
-          (select relation.projectId, relation.projectRoleId
-            from TstProjectRoleEntityRelation relation
+          (select relation."projectId", relation."projectRoleId"
+            from "TstProjectRoleEntityRelation" relation
             where (
-                (type = 'user' AND relation.entityId = ${userId})
+                (type = 'user' AND relation."entityId" = ${userId})
                 or (type = 'group' AND
-                    relation.entityId in (
-                    select grp.id from TstOrgGroup grp
-                    left join TstOrgGroupUserRelation relat on relat.orgGroupId = grp.id
-                    left join TstUser userr on relat.userId = userr.id
+                    relation."entityId" in (
+                    select grp.id from "TstOrgGroup" grp
+                    left join "TstOrgGroupUserRelation" relat on relat."orgGroupId" = grp.id
+                    left join "TstUser" userr on relat."userId" = userr.id
                     where userr.id = ${userId}
                     UNION
-                    select grp.id from TstOrgGroup grp
+                    select grp.id from "TstOrgGroup" grp
                     where grp.name = '所有人')
                 )
             )
         ) tmp
 
-        on r.projectRoleId = tmp.projectRoleId
+        on r."projectRoleId" = tmp."projectRoleId"
 
         where TRUE
-        order by tmp.projectId,  define.`code`;
+        order by tmp."projectId",  "define"."code";
     </select>
 
 </mapper>

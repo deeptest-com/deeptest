@@ -2,35 +2,35 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.IssuePageElementDao" >
     <insert id="save" parameterType="IsuPageElement" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuPageElement
-        (`key`, colCode, label, `type`, `input`, fullLine, required, readonly, buildIn,
-          fieldId, pageId, orgId, ordr, deleted, disabled, createTime)
+        insert into "IsuPageElement"
+        ("key", "colCode", label, "type", "input", "fullLine", required, readonly, "buildIn",
+          "fieldId", "pageId", "orgId", ordr, deleted, disabled, "createTime")
         values
         (#{key}, #{colCode}, #{label}, #{type}, #{input}, #{fullLine}, #{required}, #{readonly}, #{buildIn},
           #{fieldId}, #{pageId}, #{orgId}, #{ordr}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="updateProp">
-        UPDATE IsuPageElement
+        UPDATE "IsuPageElement"
         SET ${prop}=${val}
-        WHERE id=#{id} AND orgId=#{orgId}
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <update id="updateFromCustomField">
-        UPDATE IsuPageElement
-        SET colCode=#{colCode}, label=#{label}, `type`=#{type}, `input`=#{input}
-        WHERE `key`=CONCAT('cust-', #{id}) AND orgId=#{orgId}
+        UPDATE "IsuPageElement"
+        SET "colCode"=#{colCode}, "label"=#{label}, "type"=#{type}, "input"=#{input}
+        WHERE "key"=('cust-' || ${id}) AND orgId=#{orgId}
     </update>
 
     <update id="saveOrdrs">
-       UPDATE IsuPageElement
+       UPDATE "IsuPageElement"
         SET ordr =
             CASE id
                 <foreach collection="maps" item="map">
                     WHEN #{map.id} THEN #{map.ordr}
                 </foreach>
             END
-        WHERE pageId=#{pageId} AND orgId=#{orgId}
+        WHERE "pageId"=#{pageId} AND "orgId"=#{orgId}
           AND id IN (
             <foreach collection="maps" item="map" separator=",">
                 #{map.id}
@@ -39,9 +39,9 @@
     </update>
 
     <delete id="removeOthers">
-        DELETE FROM IsuPageElement
+        DELETE FROM "IsuPageElement"
 
-        WHERE pageId=#{pageId} AND orgId=#{orgId}
+        WHERE "pageId"=#{pageId} AND "orgId"=#{orgId}
 
         <if test="maps.size > 0">
             AND id NOT IN
@@ -52,9 +52,9 @@
     </delete>
 
     <select id="listElementByPageId" parameterType="Map" resultType="IsuPageElement">
-        SELECT o.* FROM IsuPageElement o
+        SELECT o.* FROM "IsuPageElement" o
 
-        WHERE o.pageId = #{id}
+        WHERE o."pageId" = #{id}
         AND o.deleted != true AND o.disabled != true
 
         ORDER BY o.ordr ASC

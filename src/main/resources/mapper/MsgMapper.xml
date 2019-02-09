@@ -3,60 +3,60 @@
 <mapper namespace="com.ngtesting.platform.dao.MsgDao" >
 
     <select id="query" resultType="TstMsg">
-        SELECT o.*, usr.avatar userAvatar
+        SELECT o.*, usr.avatar "userAvatar"
 
-        FROM TstMsg o
-        LEFT JOIN TstUser usr on o.userId = usr.id
+        FROM "TstMsg" o
+        LEFT JOIN "TstUser" usr on o."userId" = usr.id
 
-        WHERE o.userId=#{userId}
+        WHERE o."userId"=#{userId}
         <if test="keywords != null and keywords != ''">
-            AND o.title LIKE CONCAT('%','${keywords}','%' )
+            AND o.title LIKE '%${keywords}%'
         </if>
         <if test="isRead != null">
-            AND o.isRead = #{isRead}
+            AND o."isRead" = #{isRead}
         </if>
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+        ORDER BY o."createTime" DESC
     </select>
 
     <insert id="create" parameterType="TstMsg" useGeneratedKeys="true" keyProperty="id">
-        insert into TstMsg
-            (title,userId,isRead,
-              deleted,disabled,createTime)
+        insert into "TstMsg"
+            (title,"userId","isRead",
+              deleted,disabled,"createTime")
           values
             (#{title},#{userId},FALSE,
               FALSE,FALSE,NOW() )
     </insert>
 
     <select id="get" resultType="TstMsg">
-        SELECT o.*, usr.avatar userAvatar
+        SELECT o.*, usr.avatar "userAvatar"
 
-        FROM TstMsg o
-        LEFT JOIN TstUser usr on o.userId = usr.id
+        FROM "TstMsg" o
+        LEFT JOIN "TstUser" usr on o."userId" = usr.id
 
         WHERE o.id=#{id}
         <if test="userId != null">
-            AND o.userId=#{userId}
+            AND o."userId"=#{userId}
         </if>
     </select>
 
     <update id="delete">
-        update TstMsg msg
+        update "TstMsg" msg
         set msg.deleted=true
-        WHERE msg.id=#{id} AND msg.userId = #{userId}
+        WHERE msg.id=#{id} AND msg."userId" = #{userId}
     </update>
     <update id="markRead">
-        update TstMsg msg
-            set msg.isRead=true
-        WHERE msg.id=#{id} AND msg.userId = #{userId}
+        update "TstMsg" msg
+            set msg."isRead"=true
+        WHERE msg.id=#{id} AND msg."userId" = #{userId}
     </update>
 
     <update id="markAllRead">
-        update TstMsg msg
-        set msg.isRead=true
-        where msg.userId=#{userId}
-              AND msg.isRead != true
-              AND msg.deleted != true AND msg.disabled != true
+        update "TstMsg" msg
+        set msg."isRead"=true
+        where msg."userId"=#{userId}
+              AND msg."isRead" != true
+              AND msg."deleted" != true AND msg.disabled != true
     </update>
 
 </mapper>

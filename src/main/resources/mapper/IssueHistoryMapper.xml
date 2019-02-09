@@ -3,28 +3,28 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueHistoryDao" >
 
     <select id="query" resultType="IsuHistory">
-        SELECT * FROM IsuHistory o WHERE o.issueId=#{issueId}
+        SELECT * FROM "IsuHistory" o WHERE o."issueId"=#{issueId}
 
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+        ORDER BY o."createTime" DESC
     </select>
 
     <insert id="save" parameterType="IsuHistory" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuHistory
-        (title,issueId,
-        deleted,disabled,createTime)
+        insert into "IsuHistory"
+        (title,"issueId",
+        deleted,disabled,"createTime")
         values
         (#{title},#{issueId},
         FALSE,FALSE,NOW() )
     </insert>
 
     <select id="listByIssueId" parameterType="Map" resultMap="issueHistoryMap">
-        SELECT o.* FROM IsuHistory o
+        SELECT o.* FROM "IsuHistory" o
 
-        WHERE o.issueId = #{id}
+        WHERE o."issueId" = #{id}
         AND o.deleted != true AND o.disabled != true
 
-        ORDER BY o.createTime DESC LIMIT 10
+        ORDER BY o."createTime" DESC LIMIT 10
     </select>
 
     <resultMap id="issueHistoryMap" type="IsuHistory" autoMapping="true">

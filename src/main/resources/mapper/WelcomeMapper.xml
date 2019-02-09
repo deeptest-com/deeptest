@@ -4,10 +4,8 @@
 
     <select id="test" resultType="SysNums">
         SELECT o.*
-
-        FROM SysNumsDefine o
-
-        ORDER BY o.`key` LIMIT 5
+        FROM "Test" o
+        LIMIT 1
     </select>
 
 </mapper>

@@ -3,23 +3,23 @@
 <mapper namespace="com.ngtesting.platform.dao.ProjectDao" >
 
     <select id="query" resultMap="projectMaps">
-        SELECT #{keywordsParam} as keywordsParam,
-               #{disabledParam} as disabledParam,
-               p.* FROM TstProject p WHERE p.orgId=#{orgId} AND p.type='group'
+        SELECT #{keywordsParam} as "keywordsParam",
+               #{disabledParam} as "disabledParam",
+               p.* FROM "TstProject" p WHERE p."orgId"=#{orgId} AND p."type"='group'
         <if test="keywordsParam != null and keywordsParam != ''">
-            AND p.name LIKE CONCAT('%','${keywordsParam}','%' )
+            AND p.name LIKE '%${keywordsParam}%'
         </if>
         <if test="disabledParam != null and disabledParam != ''">
-            AND p.disabledParam = #{disabledParam}
+            AND p."disabledParam" = #{disabledParam}
         </if>
         AND p.deleted != TRUE
         ORDER BY p.id
     </select>
     <select id="getChildren" parameterType="Map" resultType="TstProject">
-      SELECT c.* FROM TstProject c
-        WHERE c.parentId = #{id} AND c.type='project'
+      SELECT c.* FROM "TstProject" c
+        WHERE c."parentId" = #{id} AND c."type"='project'
         <if test="keywordsParam != null and keywordsParam != ''">
-            AND c.name LIKE CONCAT('%','${keywordsParam}','%' )
+            AND c.name LIKE '%${keywordsParam}%'
         </if>
         <if test="disabledParam != null and disabledParam != ''">
             AND c.disabled = #{disabledParam}
@@ -30,17 +30,17 @@
 
     <select id="queryIdAndName" resultType="Map">
         SELECT p.id, p.name
-        FROM TstProject p WHERE p.orgId=#{orgId} AND p.type='project'
+        FROM "TstProject" p WHERE p."orgId"=#{orgId} AND p."type"='project'
         AND p.deleted != TRUE AND p.disabled != TRUE
         ORDER BY p.id
     </select>
 
     <select id="get" parameterType="Integer" resultType="TstProject">
-        SELECT * FROM TstProject p WHERE p.id = #{id}
+        SELECT * FROM "TstProject" p WHERE p.id = #{id}
     </select>
     <delete id="delete">
-        UPDATE TstProject
-        SET deleted=TRUE, updateTime=NOW()
+        UPDATE "TstProject"
+        SET deleted=TRUE, "updateTime"=NOW()
         WHERE id=#{id}
     </delete>
 
@@ -54,22 +54,22 @@
     </insert>
 
     <select id="listRecent" resultType="TstProjectAccessHistory">
-        SELECT * FROM TstProjectAccessHistory his
-        JOIN TstProject prj on his.prjId = prj.id
-        WHERE his.orgId = #{orgId}
-            AND his.userId = #{userId}
+        SELECT * FROM "TstProjectAccessHistory" his
+        JOIN "TstProject" prj on his."prjId" = prj.id
+        WHERE his."orgId" = #{orgId}
+            AND his."userId" = #{userId}
 
             AND prj.deleted != TRUE
             AND prj.disabled != TRUE
-        ORDER BY his.lastAccessTime DESC
+        ORDER BY his."lastAccessTime" DESC
     </select>
 
     <select id="isLastestProjectGroup" resultType="INTEGER">
-        SELECT COUNT(prj.id) FROM TstProject prj
+        SELECT COUNT(prj.id) FROM "TstProject" prj
 
-        WHERE prj.orgId = #{orgId}
+        WHERE prj."orgId" = #{orgId}
         AND prj.id != #{projectGroupId}
-        AND prj.type = 'group'
+        AND prj."type" = 'group'
 
         AND prj.deleted != TRUE
         AND prj.disabled != TRUE
@@ -77,22 +77,22 @@
     </select>
 
     <select id="listBrothers" resultType="TstProject">
-        SELECT * FROM TstProject prj
-        JOIN TstProject temp ON temp.parentId = prj.parentId
+        SELECT * FROM "TstProject" prj
+        JOIN "TstProject" temp ON temp."parentId" = prj.parentId
         WHERE temp.id=#{id}
         ORDER BY prj.id
     </select>
     <select id="listBrotherIds" resultType="int">
-        SELECT prj.id FROM TstProject prj
-        JOIN TstProject temp ON temp.parentId = prj.parentId
+        SELECT prj.id FROM "TstProject" prj
+        JOIN "TstProject" temp ON temp."parentId" = prj.parentId
         WHERE temp.id=#{id}
         ORDER BY prj.id
     </select>
     <select id="listProjectGroups" resultType="TstProject">
-        SELECT * FROM TstProject prj
+        SELECT * FROM "TstProject" prj
 
-        WHERE prj.orgId = #{orgId}
-        AND prj.type = 'group'
+        WHERE prj."orgId" = #{orgId}
+        AND prj."type" = 'group'
 
         AND prj.deleted != TRUE
         AND prj.disabled != TRUE
@@ -100,10 +100,10 @@
     </select>
 
     <select id="getProjectsByOrg" resultType="TstProject">
-        SELECT * FROM TstProject prj
+        SELECT * FROM "TstProject" prj
 
-        WHERE prj.orgId = #{orgId}
-        AND prj.type = 'project'
+        WHERE prj."orgId" = #{orgId}
+        AND prj."type" = 'project'
 
         AND prj.deleted != TRUE
         AND prj.disabled != TRUE
@@ -111,20 +111,20 @@
     </select>
 
     <select id="listProjectId" resultType="Integer">
-        SELECT prj.id FROM TstProject prj
+        SELECT prj.id FROM "TstProject" prj
 
         WHERE TRUE
         <if test="type == 'org'">
-            AND prj.orgId = #{id}
+            AND prj."orgId" = #{id}
         </if>
         <if test="type == 'group'">
-            AND prj.parentId = #{id}
+            AND prj."parentId" = #{id}
         </if>
         <if test="type == 'project'">
             AND prj.id = #{id}
         </if>
 
-        AND prj.type = 'project'
+        AND prj."type" = 'project'
 
         AND prj.deleted != TRUE
         AND prj.disabled != TRUE
@@ -132,53 +132,53 @@
     </select>
 
     <insert id="save" parameterType="TstProject" useGeneratedKeys="true" keyProperty="id">
-        insert into TstProject (name,descr,orgId,parentId,type,
-             issueTypeSolutionId,
-			 issuePrioritySolutionId,
-			 issuePageSolutionId,
-			 issueWorkflowSolutionId,
-          deleted,disabled,createTime)
+        insert into "TstProject" (name,descr,"orgId","parentId","type",
+             "issueTypeSolutionId",
+			 "issuePrioritySolutionId",
+			 "issuePageSolutionId",
+			 "issueWorkflowSolutionId",
+          deleted,disabled,"createTime")
 
         values (#{name},#{descr},#{orgId},#{parentId},#{type},
 
-        (select s.id from IsuTypeSolution s where s.orgId=${orgId} AND s.defaultVal),
-        (select s.id from IsuPrioritySolution s where s.orgId=${orgId} AND s.defaultVal),
-        (select s.id from IsuPageSolution s where s.orgId=${orgId} AND s.defaultVal),
-        (select s.id from IsuWorkflowSolution s where s.orgId=${orgId} AND s.defaultVal),
+        (select s.id from "IsuTypeSolution" s where s."orgId"=${orgId} AND s."defaultVal"),
+        (select s.id from "IsuPrioritySolution" s where s."orgId"=${orgId} AND s."defaultVal"),
+        (select s.id from "IsuPageSolution" s where s."orgId"=${orgId} AND s."defaultVal"),
+        (select s.id from "IsuWorkflowSolution" s where s."orgId"=${orgId} AND s."defaultVal"),
 
           #{deleted},#{disabled},#{createTime})
     </insert>
     <update id="update" parameterType="TstProject">
-        UPDATE TstProject
-        SET name=#{name}, descr=#{descr}, orgId=#{orgId}, parentId=#{parentId}, disabled=#{disabled}
+        UPDATE "TstProject"
+        SET name=#{name}, descr=#{descr}, "orgId"=#{orgId}, "parentId"=#{parentId}, disabled=#{disabled}
         WHERE id=#{id}
     </update>
 
     <update id="enable" parameterType="TstProject">
-        UPDATE TstProject
+        UPDATE "TstProject"
         SET disabled=FALSE
         WHERE id=#{id}
     </update>
     <update id="enableChildren" parameterType="TstProject">
-        UPDATE TstProject
+        UPDATE "TstProject"
         SET disabled=FALSE
-        WHERE parentId=#{id}
+        WHERE "parentId"=#{id}
     </update>
     <update id="disableChildren" parameterType="TstProject">
-        UPDATE TstProject
+        UPDATE "TstProject"
         SET disabled=TRUE
-        WHERE parentId=#{id}
+        WHERE "parentId"=#{id}
     </update>
 
     <update id="setDefault">
-        UPDATE TstUser
-        SET defaultPrjId=#{prjId}, defaultPrjName=#{prjName}
+        UPDATE "TstUser"
+        SET "defaultPrjId"=#{prjId}, "defaultPrjName"=#{prjName}
         WHERE id=#{id}
     </update>
     <update id="setUserDefaultPrjToNullForDelete">
-        UPDATE TstUser
-        SET defaultPrjId=NULL, defaultPrjName=NULL
-        WHERE defaultPrjId=#{prjId}
+        UPDATE "TstUser"
+        SET "defaultPrjId"=NULL, "defaultPrjName"=NULL
+        WHERE "defaultPrjId"=#{prjId}
     </update>
 
     <resultMap id="projectMaps" type="TstProject" autoMapping="true">

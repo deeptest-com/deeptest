@@ -3,101 +3,103 @@
 <mapper namespace="com.ngtesting.platform.dao.TestPlanDao" >
 
     <select id="query" resultType="TstPlan">
-        SELECT o.*, usr.nickname userName, prj.name projectName, ver.label verName
-        FROM TstPlan o
+        SELECT o.*, usr.nickname "userName", prj.name "projectName", ver.label "verName"
+        FROM "TstPlan" o
 
-        JOIN TstUser usr ON usr.id=o.userId
-        JOIN TstProject prj ON prj.id=o.projectId
+        JOIN "TstUser" usr ON usr.id=o.userId
+        JOIN "TstProject" prj ON prj.id=o.projectId
         LEFT JOIN TstVer ver ON ver.id=o.verId
 
-        WHERE o.projectId = #{projectId}
+        WHERE o."projectId" = #{projectId}
 
         <if test="keywords != null and keywords != ''">
-            AND o.name LIKE CONCAT('%','${keywords}','%' )
+            AND o.name LIKE '%${keywords}%'
         </if>
         <if test="status != null and status != ''">
             AND o.status = #{status}
         </if>
 
         AND o.deleted != TRUE
-        ORDER BY o.createTime DESC
+        ORDER BY o."createTime" DESC
     </select>
 
     <select id="listByProject" resultType="TstPlan">
         SELECT o.*,
-          p.id projectId, p.name projectName,
-          v.id verId, v.label verName
+          p.id "projectId", p.name "projectName",
+          v.id "verId", v.label "verName"
 
-        FROM TstPlan o
+        FROM "TstPlan" o
 
-        JOIN TstProject p ON o.projectId=p.id
-        LEFT JOIN TstVer v ON o.verId=v.id
+        JOIN "TstProject" p ON o."projectId"=p.id
+        LEFT JOIN "TstVer" v ON o."verId"=v.id
 
-        WHERE o.projectId=#{projectId}
+        WHERE o."projectId"=#{projectId}
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+        ORDER BY o."createTime" DESC
     </select>
 
     <select id="listByProjectGroup" resultType="TstPlan">
-        SELECT o.*, p.name projectName, v.label verName FROM TstPlan o
-        JOIN TstProject p ON o.projectId=p.id
-        LEFT JOIN TstVer v ON o.verId=v.id
+        SELECT o.*, p.name "projectName", v.label "verName"
+        FROM "TstPlan" o
+        JOIN "TstProject" p ON o."projectId"=p.id
+        LEFT JOIN "TstVer" v ON o."verId"=v.id
 
-        WHERE p.parentId=#{projectId}
+        WHERE p."parentId"=#{projectId}
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+        ORDER BY o."createTime" DESC
     </select>
 
     <select id="listByOrg" resultType="TstPlan">
-        SELECT o.*, p.name projectName, v.label verName FROM TstPlan o
-        JOIN TstProject p ON o.projectId=p.id
-        LEFT JOIN TstVer v ON o.verId=v.id
+        SELECT o.*, p.name "projectName", v.label "verName"
+        FROM "TstPlan" o
+        JOIN "TstProject" p ON o."projectId"=p.id
+        LEFT JOIN "TstVer" v ON o."verId"=v.id
 
-        WHERE p.orgId=#{orgId}
+        WHERE p."orgId"=#{orgId}
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+        ORDER BY o."createTime" DESC
     </select>
 
     <select id="get" resultType="TstPlan">
-        SELECT o.*, usr.nickname userName, prj.name projectName, ver.label verName
-        FROM TstPlan o
+        SELECT o.*, usr.nickname "userName", prj.name "projectName", ver.label "verName"
+        FROM "TstPlan" o
 
-        JOIN TstUser usr ON usr.id=o.userId
-        JOIN TstProject prj ON prj.id=o.projectId
-        LEFT JOIN TstVer ver ON ver.id=o.verId
+        JOIN "TstUser" usr ON usr.id=o."userId"
+        JOIN "TstProject" prj ON prj.id=o."projectId"
+        LEFT JOIN "TstVer" ver ON ver.id=o."verId"
 
         WHERE o.id = #{id}
         <if test="projectId != null">
-            AND o.projectId=#{projectId}
+            AND o."projectId"=#{projectId}
         </if>
     </select>
 
     <insert id="save" parameterType="TstPlan" useGeneratedKeys="true" keyProperty="id">
-        insert into TstPlan (name,estimate,startTime,endTime,descr,status,projectId,userId,verId,
-        deleted,disabled,createTime)
+        insert into "TstPlan" (name,estimate,"startTime","endTime",descr,status,"projectId","userId","verId",
+        deleted,disabled,"createTime")
 
         values (#{name},#{estimate},#{startTime},#{endTime},#{descr},#{status},#{projectId},#{userId},#{verId},
         #{deleted},#{disabled},#{createTime})
     </insert>
     <update id="update" parameterType="TstPlan">
-        UPDATE TstPlan
-        SET name=#{name}, estimate=#{estimate}, startTime=#{startTime}, endTime=#{endTime},
-        descr=#{descr}, userId=#{userId}, verId=#{verId},
+        UPDATE "TstPlan"
+        SET name=#{name}, estimate=#{estimate}, "startTime"=#{startTime}, "endTime"=#{endTime},
+        descr=#{descr}, "userId"=#{userId}, "verId"=#{verId},
         disabled=#{disabled}
 
-        WHERE id=#{id} AND projectId=#{projectId}
+        WHERE id=#{id} AND "projectId"=#{projectId}
     </update>
 
     <update id="start">
-        UPDATE TstPlan o
+        UPDATE "TstPlan" o
         SET o.status = 'in_progress'
         WHERE o.id=#{id} AND o.status != 'in_progress'
     </update>
 
     <update id="delete">
-        UPDATE TstPlan
+        UPDATE "TstPlan"
         SET deleted = TRUE
-        WHERE id=#{id} AND projectId=#{projectId}
+        WHERE id=#{id} AND "projectId"=#{projectId}
     </update>
 
     <update id="closePlanIfAllTaskClosed">

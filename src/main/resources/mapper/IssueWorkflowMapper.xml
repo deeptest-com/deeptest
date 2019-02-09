@@ -5,66 +5,66 @@
     <select id="list" resultType="IsuWorkflow">
         SELECT o.*
 
-        FROM IsuWorkflow o
+        FROM "IsuWorkflow" o
 
-        WHERE o.orgId=#{orgId}
+        WHERE o."orgId"=#{orgId}
         AND o.deleted != TRUE AND o.disabled != TRUE
-        ORDER BY o.createTime ASC
+        ORDER BY o."createTime" ASC
     </select>
 
     <select id="get" resultType="IsuWorkflow">
-        SELECT o.* FROM IsuWorkflow o
+        SELECT o.* FROM "IsuWorkflow" o
 
-        WHERE o.id = #{id} AND o.orgId = #{orgId}
+        WHERE o.id = #{id} AND o."orgId" = #{orgId}
         AND o.deleted != true AND o.disabled != true
     </select>
 
     <insert id="save" parameterType="IsuWorkflow" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuWorkflow
-        (name, descr, orgId, defaultVal, buildIn, deleted, disabled, createTime)
+        insert into "IsuWorkflow"
+        (name, descr, "orgId", "defaultVal", "buildIn", deleted, disabled, "createTime")
         values
         (#{name}, #{descr}, #{orgId}, #{defaultVal}, #{buildIn}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="IsuPage">
-        UPDATE IsuWorkflow
-        SET name=#{name}, descr=#{descr}, updateTime=NOW()
+        UPDATE "IsuWorkflow"
+        SET name=#{name}, descr=#{descr}, "updateTime"=NOW()
 
-        WHERE id=#{id} AND orgId=#{orgId}
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <update id="removeDefault">
-        UPDATE IsuWorkflow
-        SET defaultVal=FALSE, updateTime=NOW()
-        WHERE orgId=#{orgId}
+        UPDATE "IsuWorkflow"
+        SET "defaultVal"=FALSE, "updateTime"=NOW()
+        WHERE "orgId"=#{orgId}
     </update>
     <update id="setDefault">
-        UPDATE IsuWorkflow
-        SET defaultVal=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuWorkflow"
+        SET "defaultVal"=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <delete id="delete">
-        UPDATE IsuWorkflow
-        SET disabled=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuWorkflow"
+        SET disabled=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </delete>
 
     <delete id="removeTransitions">
-        DELETE FROM IsuWorkflowTransition
-        WHERE ( srcStatusId NOT IN (${statusIds}) OR dictStatusId NOT IN (${statusIds}) )
-          AND workflowId=#{workflowId} AND orgId=#{orgId}
+        DELETE FROM "IsuWorkflowTransition"
+        WHERE ( "srcStatusId" NOT IN (${statusIds}) OR "dictStatusId" NOT IN (${statusIds}) )
+          AND "workflowId"=#{workflowId} AND "orgId"=#{orgId}
     </delete>
 
     <delete id="removeStatuses">
-        DELETE FROM IsuWorkflowStatusRelation
-        WHERE statusId NOT IN ( ${statusIds} )
-          AND workflowId=#{workflowId} AND orgId=#{orgId}
+        DELETE FROM "IsuWorkflowStatusRelation"
+        WHERE "statusId" NOT IN ( ${statusIds} )
+          AND "workflowId"=#{workflowId} AND "orgId"=#{orgId}
     </delete>
 
     <insert id="saveStatuses">
-        insert into IsuWorkflowStatusRelation
-        (orgId,workflowId,statusId)
+        insert into "IsuWorkflowStatusRelation"
+        ("orgId","workflowId","statusId")
         values
         <foreach collection="statusIds" item="item" separator=",">
             (#{orgId}, #{workflowId}, #{item} )
@@ -72,10 +72,10 @@
     </insert>
 
     <select id="listStatus" resultType="IsuStatus">
-        SELECT o.* FROM IsuStatus o
-        JOIN IsuWorkflowStatusRelation r ON o.id=r.statusId
+        SELECT o.* FROM "IsuStatus" o
+        JOIN "IsuWorkflowStatusRelation" r ON o.id=r."statusId"
 
-        WHERE r.workflowId = #{id}
+        WHERE r."workflowId" = #{id}
         AND o.deleted != true AND o.disabled != true
     </select>
 

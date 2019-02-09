@@ -3,12 +3,7 @@
 <mapper namespace="com.ngtesting.platform.dao.DocumentDao" >
 
     <select id="query" resultType="Document">
-        SELECT * FROM TstAlert o WHERE o.userId=#{userId}
-        <if test="isRead != null">
-            AND o.isRead = #{isRead}
-        </if>
-        AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+
     </select>
 
 </mapper>

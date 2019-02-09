@@ -3,16 +3,16 @@
 <mapper namespace="com.ngtesting.platform.dao.TestSuiteDao" >
 
     <select id="query" resultType="TstSuite">
-        SELECT o.*, usr.nickname userName, prj.name projectName, casePrj.name caseProjectName
-        FROM TstSuite o
+        SELECT o.*, usr.nickname "userName", prj.name "projectName", casePrj.name "caseProjectName"
+        FROM "TstSuite" o
 
-        JOIN TstUser usr ON usr.id=o.userId
-        JOIN TstProject prj ON prj.id=o.projectId
-        JOIN TstProject casePrj ON casePrj.id=o.caseProjectId
+        JOIN "TstUser" usr ON usr.id=o."userId"
+        JOIN "TstProject" prj ON prj.id=o."projectId"
+        JOIN "TstProject" "casePrj" ON "casePrj".id=o."caseProjectId"
 
-        WHERE o.projectId = #{projectId}
+        WHERE o."projectId" = #{projectId}
         <if test="keywords != null and keywords != ''">
-            AND o.name LIKE CONCAT('%','${keywords}','%' )
+            AND o.name LIKE '%${keywords}%'
         </if>
         <if test="disabled != null">
             AND o.disabled = #{disabled}
@@ -23,84 +23,86 @@
     </select>
 
     <select id="listForImport" resultType="TstSuite">
-        SELECT o.id, o.name, o.projectId, o.caseProjectId,
-          prj.name projectName, casePrj.name caseProjectName, usr.nickname userName,
-        ( SELECT count(cs.id) FROM TstCaseInSuite cs
-                                WHERE cs.suiteId = o.id AND cs.isParent=FALSE AND cs.deleted != true AND cs.disabled != true ) `count`
+        SELECT o.id, o.name, o."projectId", o."caseProjectId",
+          prj.name "projectName", "casePrj".name "caseProjectName", usr.nickname "userName",
+        ( SELECT count(cs.id) FROM "TstCaseInSuite" cs
+                                WHERE cs."suiteId" = o.id AND cs."isParent"=FALSE
+          AND cs.deleted != true AND cs.disabled != true ) "count"
 
-        FROM TstSuite o
+        FROM "TstSuite" o
 
-        JOIN TstUser usr ON usr.id=o.userId
-        JOIN TstProject prj ON prj.id=o.projectId
-        JOIN TstProject casePrj ON casePrj.id=o.caseProjectId
+        JOIN "TstUser" usr ON usr.id=o."userId"
+        JOIN "TstProject" prj ON prj.id=o."projectId"
+        JOIN "TstProject" "casePrj" ON "casePrj".id=o."caseProjectId"
 
-        WHERE o.projectId IN (
+        WHERE o."projectId" IN (
             <foreach collection="projectIds" item="item" separator=",">
                 #{item}
             </foreach>)
         AND o.deleted != TRUE AND o.disabled != TRUE
         AND prj.deleted != TRUE AND prj.disabled != TRUE
-        AND casePrj.deleted != TRUE AND casePrj.disabled != TRUE
+        AND "casePrj".deleted != TRUE AND "casePrj".disabled != TRUE
 
-        ORDER BY o.caseProjectId ASC, o.id ASC
+        ORDER BY o."caseProjectId" ASC, o.id ASC
     </select>
 
     <insert id="save" parameterType="TstSuite" useGeneratedKeys="true" keyProperty="id">
-        insert into TstSuite
+        insert into "TstSuite"
         (name,estimate,descr,
-          projectId,caseProjectId,userId,
-          deleted,disabled,createTime)
+          "projectId","caseProjectId","userId",
+          deleted,disabled,"createTime")
         values
           (#{name},#{estimate},#{descr},#{projectId},#{caseProjectId},#{userId},
           FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="TstSuite">
-        UPDATE TstSuite
+        UPDATE "TstSuite"
         SET name=#{name},estimate=#{estimate},descr=#{descr},
-        caseProjectId=#{caseProjectId},userId=#{userId},
+        "caseProjectId"=#{caseProjectId},"userId"=#{userId},
         disabled=#{disabled},
-        updateTime=NOW()
+        "updateTime"=NOW()
 
-        WHERE id=#{id} AND projectId=#{projectId}
+        WHERE id=#{id} AND "projectId"=#{projectId}
     </update>
 
     <select id="get" resultType="TstSuite">
-        SELECT o.*, usr.nickname userName, prj.name projectName, casePrj.name caseProjectName,
-                    ( SELECT count(cs.id) FROM TstCaseInSuite cs
-                                WHERE cs.suiteId = o.id AND cs.isParent=false AND cs.deleted != true AND cs.disabled != true ) `count`
+        SELECT o.*, usr.nickname "userName", prj.name "projectName", "casePrj".name "caseProjectName",
+                    ( SELECT count(cs.id) FROM "TstCaseInSuite" cs
+                                WHERE cs."suiteId" = o.id AND cs."isParent"=false
+                                AND cs.deleted != true AND cs.disabled != true ) "count"
 
-        FROM TstSuite o
+        FROM "TstSuite" o
 
-        JOIN TstUser usr ON usr.id=o.userId
-        JOIN TstProject prj ON prj.id=o.projectId
-        JOIN TstProject casePrj ON casePrj.id=o.caseProjectId
+        JOIN "TstUser" usr ON usr.id=o."userId"
+        JOIN "TstProject" prj ON prj.id=o."projectId"
+        JOIN "TstProject" "casePrj" ON "casePrj".id=o."caseProjectId"
 
         WHERE o.id = #{id}
         <if test="projectId != null">
-            AND o.projectId=#{projectId}
+            AND o."projectId"=#{projectId}
         </if>
     </select>
 
     <update id="delete">
-        UPDATE TstSuite
+        UPDATE "TstSuite"
         SET deleted = TRUE
-        WHERE id=#{id} AND projectId=#{projectId}
+        WHERE id=#{id} AND "projectId"=#{projectId}
     </update>
 
     <select id="listCaseIds" resultType="int">
-        SELECT o.caseId
-        FROM TstCaseInSuite o
+        SELECT o."caseId"
+        FROM "TstCaseInSuite" o
 
-        WHERE o.suiteId=#{id}
+        WHERE o."suiteId"=#{id}
         AND o.deleted != TRUE AND o.disabled != TRUE
-        ORDER BY o.pId, o.id
+        ORDER BY o."pId", o.id
     </select>
 
     <update id="updateSuiteProject">
-        UPDATE TstSuite
-        SET projectId=#{projectId},caseProjectId=#{caseProjectId},userId=#{userId},
-        updateTime=NOW()
+        UPDATE "TstSuite"
+        SET "projectId"=#{projectId},"caseProjectId"=#{caseProjectId},"userId"=#{userId},
+        "updateTime"=NOW()
 
         WHERE id=#{id}
     </update>
@@ -110,21 +112,21 @@
     </update>
 
     <select id="getWithCases" resultMap="testSuiteMaps">
-        SELECT o.*, prj.name projectName, casePrj.name caseProjectName
-                    ( SELECT count(cs.id) FROM TstCaseInSuite cs
-                                WHERE cs.suiteId = o.id AND cs.deleted != true AND cs.disabled != true ) `count`
+        SELECT o.*, prj.name "projectName", "casePrj".name "caseProjectName"
+                    ( SELECT count(cs.id) FROM "TstCaseInSuite" cs
+                                WHERE cs."suiteId" = o.id AND cs.deleted != true AND cs.disabled != true ) "count"
 
-        FROM TstSuite o
+        FROM "TstSuite" o
 
-        JOIN TstProject prj ON prj.id=o.projectId
-        JOIN TstProject casePrj ON casePrj.id=o.caseProjectId
+        JOIN "TstProject" prj ON prj.id=o."projectId"
+        JOIN "TstProject" "casePrj" ON "casePrj".id=o."caseProjectId"
 
         WHERE o.id = #{id}
     </select>
     <select id="listTestCases" parameterType="Map" resultMap="testCaseMaps">
-        SELECT o.* FROM TstCaseInSuite o
+        SELECT o.* FROM "TstCaseInSuite" o
 
-        WHERE o.suiteId = #{id}
+        WHERE o."suiteId" = #{id}
         AND o.deleted != true AND o.disabled != true
 
         ORDER BY o.ordr ASC

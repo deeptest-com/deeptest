@@ -3,11 +3,11 @@
 <mapper namespace="com.ngtesting.platform.dao.OrgDao" >
 
     <select id="query" resultType="TstOrg">
-        SELECT * FROM TstOrg o
-        JOIN TstOrgUserRelation r on r.orgId=o.id
-        WHERE r.userId = #{userId}
+        SELECT * FROM "TstOrg" o
+        JOIN "TstOrgUserRelation" r on r."orgId"=o.id
+        WHERE r."userId" = #{userId}
         <if test="keywords != null and keywords != ''">
-            AND o.name LIKE CONCAT('%','${keywords}','%' )
+            AND o.name LIKE '%${keywords}%'
         </if>
         <if test="disabled != null">
             AND o.disabled = #{disabled}
@@ -16,49 +16,49 @@
     </select>
 
     <select id="queryByUser" parameterType="int" resultType="TstOrg">
-        SELECT * FROM TstOrg o
-        JOIN TstOrgUserRelation r on r.orgId=o.id
+        SELECT * FROM "TstOrg" o
+        JOIN "TstOrgUserRelation" r on r."orgId"=o.id
 
-        WHERE r.userId = #{userId}
+        WHERE r."userId" = #{userId}
         AND o.disabled != TRUE
         AND o.deleted != TRUE
     </select>
 
     <select id="get" parameterType="int" resultType="TstOrg">
-        SELECT * FROM TstOrg o
+        SELECT * FROM "TstOrg" o
 
         WHERE o.id = #{id}
     </select>
 
     <update id="setDefault">
-        UPDATE TstUser
-        SET defaultOrgId=#{orgId}, defaultOrgName=#{orgName}
+        UPDATE "TstUser"
+        SET "defaultOrgId"=#{orgId}, "defaultOrgName"=#{orgName}
         WHERE id=#{id}
     </update>
 
     <insert id="save" parameterType="TstOrg" useGeneratedKeys="true" keyProperty="id">
-        insert into TstOrg (name,website,
-        deleted,disabled,createTime)
+        insert into "TstOrg" (name,"website",
+        deleted,disabled,"createTime")
 
         values (#{name},#{website},
         #{deleted},#{disabled},#{createTime})
     </insert>
     <update id="update" parameterType="TstOrg">
-        UPDATE TstOrg
+        UPDATE "TstOrg"
         SET name=#{name},website=#{website},disabled=#{disabled}
         WHERE id=#{id}
     </update>
     <delete id="delete">
-        UPDATE TstOrg
+        UPDATE "TstOrg"
         SET deleted=TRUE
         WHERE id=#{id}
     </delete>
 
     <update id="setUserDefaultOrgPrjToNullForDelete">
-        UPDATE TstUser
-        SET defaultOrgId=NULL, defaultOrgName=NULL,
-        defaultPrjId=NULL, defaultPrjName=NULL
-        WHERE defaultOrgId=#{orgId}
+        UPDATE "TstUser"
+        SET "defaultOrgId"=NULL, "defaultOrgName"=NULL,
+        "defaultPrjId"=NULL, "defaultPrjName"=NULL
+        WHERE "defaultOrgId"=#{orgId}
     </update>
 
     <insert id="initOrg">

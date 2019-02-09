@@ -11,18 +11,18 @@
           #{deleted},#{disabled},#{createTime})
     </insert>
     <update id="loginWithVerifyCode" parameterType="TstUser">
-        UPDATE TstUser
-        SET token=#{token},lastLoginTime=NOW(),updateTime=NOW()
+        UPDATE "TstUser"
+        SET token=#{token},"lastLoginTime"=NOW(),"updateTime"=NOW()
         WHERE id=#{id}
     </update>
     <update id="login">
-        UPDATE TstUser
-          SET token=#{token}, lastLoginTime=#{lastLoginTime}
+        UPDATE "TstUser"
+          SET token=#{token}, "lastLoginTime"=#{lastLoginTime}
           WHERE id=#{id}
     </update>
     <update id="logout">
-        UPDATE TstUser
-        SET token='', updateTime=NOW()
+        UPDATE "TstUser"
+        SET token='', "updateTime"=NOW()
         WHERE email=#{email}
     </update>
 
@@ -31,15 +31,15 @@
     </update>
 
     <update id="changePassword" parameterType="TstCaseType">
-        UPDATE TstUser
-        SET password=#{password},updateTime=NOW()
+        UPDATE "TstUser"
+        SET password=#{password},"updateTime"=NOW()
 
         WHERE id=#{userId} AND password=#{oldPassword}
     </update>
 
     <update id="resetPassword" parameterType="TstUser">
-        UPDATE TstUser
-        SET password=#{password},token=#{token},lastLoginTime=NOW(),updateTime=NOW()
+        UPDATE "TstUser"
+        SET password=#{password},token=#{token},"lastLoginTime"=NOW(),"updateTime"=NOW()
         WHERE id=#{id}
     </update>
 

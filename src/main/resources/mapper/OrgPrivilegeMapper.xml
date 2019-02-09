@@ -4,31 +4,31 @@
 <mapper namespace="com.ngtesting.platform.dao.OrgPrivilegeDao" >
 
     <select id="listAllOrgPrivileges" resultType="TstOrgPrivilegeDefine">
-        SELECT * from TstOrgPrivilegeDefine priv
+        SELECT * from "TstOrgPrivilegeDefine" priv
             WHERE priv.deleted != true and priv.disabled!= true
             order by priv.id asc
     </select>
 
     <select id="listByUser" resultType="TstOrgPrivilegeDefine">
-        SELECT priv.code,priv.name from TstOrgPrivilegeDefine priv
+        SELECT priv.code,priv.name from "TstOrgPrivilegeDefine" priv
 
-        join TstOrgRolePrivilegeRelation r_role_priv ON r_role_priv.orgPrivilegeId=priv.id
+        join "TstOrgRolePrivilegeRelation" r_role_priv ON r_role_priv."orgPrivilegeId"=priv.id
 
         where r_role_priv.orgRoleId
           IN (
-                SELECT r_role_user.orgRoleId
-                  from TstOrgRoleUserRelation r_role_user
-                where r_role_user.userId = ${userId}
-                  AND r_role_user.orgId = ${orgId}
+                SELECT r_role_user."orgRoleId"
+                  from "TstOrgRoleUserRelation" r_role_user
+                where r_role_user."userId" = ${userId}
+                  AND r_role_user."orgId" = ${orgId}
 
                 UNION
 
-                SELECT r_role_group.orgRoleId
-                  from TstOrgRoleGroupRelation r_role_group
-                  JOIN TstOrgGroupUserRelation r_group_user ON r_group_user.orgGroupId = r_role_group.groupId
+                SELECT r_role_group."orgRoleId"
+                  from "TstOrgRoleGroupRelation" r_role_group
+                  JOIN "TstOrgGroupUserRelation" r_group_user ON r_group_user."orgGroupId" = r_role_group."groupId"
 
-                WHERE r_group_user.userId = ${userId}
-                  AND r_group_user.orgId = ${orgId}
+                WHERE r_group_user."userId" = ${userId}
+                  AND r_group_user."orgId" = ${orgId}
               )
 
         AND priv.deleted != true and priv.disabled!= true

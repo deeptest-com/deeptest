@@ -3,50 +3,50 @@
 <mapper namespace="com.ngtesting.platform.dao.CustomFieldOptionDao" >
 
     <select id="listByFieldId" resultType="CustomFieldOption">
-        SELECT o.* FROM CustomFieldOption o
+        SELECT o.* FROM "CustomFieldOption" o
 
-        WHERE o.fieldId = #{fieldId} AND o.orgId = #{orgId}
+        WHERE o."fieldId" = #{fieldId} AND o."orgId" = #{orgId}
         AND o.deleted != true AND o.disabled != true
 
         ORDER BY o.ordr ASC
     </select>
     <select id="get" resultType="CustomFieldOption">
-        SELECT o.* FROM CustomFieldOption o
-        WHERE o.id = #{id} AND o.fieldId=#{fieldId} AND o.orgId=#{orgId}
+        SELECT o.* FROM "CustomFieldOption" o
+        WHERE o.id = #{id} AND o."fieldId"=#{fieldId} AND o."orgId"=#{orgId}
     </select>
 
     <insert id="save" parameterType="CustomFieldOption" useGeneratedKeys="true" keyProperty="id">
-        insert into CustomFieldOption
-        (label,value,ordr,fieldId,orgId,defaultVal,buildIn,
-          createTime,deleted,disabled)
+        insert into "CustomFieldOption"
+        (label,value,ordr,"fieldId","orgId","defaultVal","buildIn",
+          "createTime",deleted,disabled)
         values
         (#{label},#{value},#{ordr},#{fieldId},#{orgId},#{defaultVal},#{buildIn},
           NOW(),FALSE,FALSE)
     </insert>
 
     <update id="update">
-        UPDATE CustomFieldOption
-        SET label =#{label}, value=#{value}, defaultVal=#{defaultVal}, updateTime=NOW()
-        where id = #{id}  AND orgId = #{orgId}
+        UPDATE "CustomFieldOption"
+        SET label =#{label}, "value"=#{value}, "defaultVal"=#{defaultVal}, "updateTime"=NOW()
+        where id = #{id}  AND "orgId" = #{orgId}
     </update>
     <update id="delete">
-        UPDATE CustomFieldOption
+        UPDATE "CustomFieldOption"
         SET deleted = TRUE
-        where id = #{id} AND orgId = #{orgId}
+        where id = #{id} AND "orgId" = #{orgId}
     </update>
 
     <select id="getMaxOrder" resultType="int">
-        SELECT max(o.ordr) FROM CustomFieldOption o
+        SELECT max(o.ordr) FROM "CustomFieldOption" o
 
-        WHERE o.fieldId=#{fieldId} AND o.orgId = #{orgId}
+        WHERE o."fieldId"=#{fieldId} AND o."orgId" = #{orgId}
         AND o.deleted != true AND o.disabled != true
     </select>
 
     <select id="getPrev" resultType="CustomFieldOption">
         <![CDATA[
-            SELECT * FROM CustomFieldOption o
+            SELECT * FROM "CustomFieldOption" o
             WHERE o.ordr < #{ordr}
-            AND o.fieldId = #{fieldId} AND o.orgId = #{orgId}
+            AND o."fieldId" = #{fieldId} AND o."orgId" = #{orgId}
             AND o.deleted != TRUE
             ORDER BY o.ordr DESC LIMIT 1
         ]]>
@@ -54,36 +54,36 @@
 
     <select id="getNext" resultType="CustomFieldOption">
         <![CDATA[
-            SELECT * FROM CustomFieldOption o
+            SELECT * FROM "CustomFieldOption" o
             WHERE o.ordr > #{ordr}
-            AND o.fieldId = #{fieldId} AND o.orgId = #{orgId}
+            AND o."fieldId" = #{fieldId} AND o."orgId" = #{orgId}
             AND o.deleted != TRUE
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>
 
     <update id="setOrder">
-        UPDATE CustomFieldOption
-        SET ordr=#{ordr}, updateTime=NOW()
+        UPDATE "CustomFieldOption"
+        SET ordr=#{ordr}, "updateTime"=NOW()
         WHERE id=#{id}
     </update>
 
     <update id="setDefault">
-        UPDATE CustomFieldOption
-        SET defaultVal=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND fieldId=#{fieldId} AND orgId=#{orgId}
+        UPDATE "CustomFieldOption"
+        SET "defaultVal"=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "fieldId"=#{fieldId} AND "orgId"=#{orgId}
     </update>
     <update id="removeDefault">
-        UPDATE CustomFieldOption
-        SET defaultVal=FALSE, updateTime=NOW()
-        WHERE fieldId=#{fieldId} AND orgId=#{orgId}
+        UPDATE "CustomFieldOption"
+        SET "defaultVal"=FALSE, "updateTime"=NOW()
+        WHERE "fieldId"=#{fieldId} AND "orgId"=#{orgId}
     </update>
 
     <!-- 级联抓取用 -->
     <select id="getByFieldId" resultMap="optionMap">
-        SELECT o.* FROM CustomFieldOption o
+        SELECT o.* FROM "CustomFieldOption" o
 
-        WHERE o.fieldId = #{id}
+        WHERE o."fieldId" = #{id}
         AND o.deleted != true AND o.disabled != true
 
         ORDER BY o.ordr ASC

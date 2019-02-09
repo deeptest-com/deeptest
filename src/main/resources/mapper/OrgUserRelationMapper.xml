@@ -3,14 +3,14 @@
 <mapper namespace="com.ngtesting.platform.dao.OrgUserRelationDao" >
 
     <insert id="addUserToOrg">
-        insert into TstOrgUserRelation (userId,orgId)
+        insert into "TstOrgUserRelation" ("userId","orgId")
 
         values (#{userId},#{orgId})
     </insert>
 
     <select id="userInOrg" resultType="int">
-        SELECT count(*) FROM TstOrgUserRelation r
-        WHERE r.userId = #{userId} AND r.orgId=#{orgId}
+        SELECT count(*) FROM "TstOrgUserRelation" r
+        WHERE r."userId" = #{userId} AND r."orgId"=#{orgId}
     </select>
 
 </mapper>

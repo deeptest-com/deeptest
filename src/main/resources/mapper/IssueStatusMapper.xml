@@ -3,66 +3,68 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueStatusDao" >
 
     <select id="list" resultType="IsuStatus">
-        SELECT o.*, c.label categoryName FROM IsuStatus o
-        JOIN IsuStatusCategoryDefine c ON o.categoryId=c.id
+        SELECT o.*, c.label "categoryName"
+        FROM "IsuStatus" o
+        JOIN "IsuStatusCategoryDefine" c ON o."categoryId"=c.id
 
-        WHERE o.orgId=#{orgId}
+        WHERE o."orgId"=#{orgId}
 
         AND o.disabled!=TRUE AND o.deleted!=TRUE
         ORDER BY ordr ASC
     </select>
 
     <select id="get" resultType="IsuStatus">
-        SELECT o.*, c.label categoryName FROM IsuStatus o
+        SELECT o.*, c.label "categoryName"
+        FROM "IsuStatus" o
 
-        JOIN IsuStatusCategoryDefine c ON o.categoryId=c.id
+        JOIN "IsuStatusCategoryDefine" c ON o."categoryId"=c.id
 
-        WHERE o.id = #{id} AND o.orgId=#{orgId}
+        WHERE o.id = #{id} AND o."orgId"=#{orgId}
     </select>
 
     <insert id="save" parameterType="IsuStatus" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuStatus
-        (label,value,descr,orgId,ordr,defaultVal,finalVal,deleted,disabled,createTime)
+        insert into "IsuStatus"
+          (label,"value",descr,"orgId",ordr,"defaultVal","finalVal",deleted,disabled,"createTime")
         values
-        (#{label},#{value},#{descr},#{orgId},#{ordr},#{defaultVal},#{finalVal},FALSE,FALSE,NOW())
+          (#{label},#{value},#{descr},#{orgId},#{ordr},#{defaultVal},#{finalVal},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="IsuStatus">
-        UPDATE IsuStatus
-        SET label=#{label},value=#{value},descr=#{descr},finalVal=#{finalVal},
+        UPDATE "IsuStatus"
+        SET label=#{label},"value"=#{value},descr=#{descr},"finalVal"=#{finalVal},
         disabled=#{disabled},
-        updateTime=NOW()
+        "updateTime"=NOW()
 
-        WHERE id=#{id} AND orgId=#{orgId}
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <delete id="delete">
-        UPDATE IsuStatus
-        SET disabled=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuStatus"
+        SET disabled=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </delete>
 
     <update id="removeDefault">
-        UPDATE IsuStatus
-        SET defaultVal=FALSE, updateTime=NOW()
+        UPDATE "IsuStatus"
+        SET "defaultVal"=FALSE, "updateTime"=NOW()
         WHERE orgId=#{orgId}
     </update>
     <update id="setDefault">
-        UPDATE IsuStatus
-        SET defaultVal=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuStatus"
+        SET "defaultVal"=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <update id="setOrder">
-        UPDATE IsuStatus
-        SET ordr=#{ordr}, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuStatus"
+        SET ordr=#{ordr}, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <select id="getPrev" resultType="IsuStatus">
         <![CDATA[
-            SELECT * FROM IsuStatus o
-            WHERE o.ordr < #{ordr} AND o.orgId = #{orgId}
+            SELECT * FROM "IsuStatus" o
+            WHERE o.ordr < #{ordr} AND o."orgId" = #{orgId}
             AND o.deleted != TRUE
             ORDER BY o.ordr DESC LIMIT 1
         ]]>
@@ -70,16 +72,16 @@
 
     <select id="getNext" resultType="IsuStatus">
         <![CDATA[
-            SELECT * FROM IsuStatus o
-            WHERE o.ordr > #{ordr} AND o.orgId = #{orgId}
+            SELECT * FROM "IsuStatus" o
+            WHERE o.ordr > #{ordr} AND o."orgId" = #{orgId}
             AND o.deleted != TRUE
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>
 
     <select id="getMaxOrdrNumb" resultType="Integer">
-        select max(ordr) from IsuStatus o
-        where o.orgId=#{orgId}
+        select max(ordr) from "IsuStatus" o
+        where o."orgId"=#{orgId}
         and o.deleted != true
         and o.disabled != true
     </select>

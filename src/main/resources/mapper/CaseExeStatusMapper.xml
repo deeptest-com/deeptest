@@ -3,8 +3,8 @@
 <mapper namespace="com.ngtesting.platform.dao.CaseExeStatusDao" >
 
     <select id="listExeStatus" resultType="TstCaseExeStatus">
-        SELECT * FROM TstCaseExeStatus o WHERE
-            o.orgId=#{orgId}
+        SELECT * FROM "TstCaseExeStatus" o WHERE
+            o."orgId"=#{orgId}
             AND o.disabled!=TRUE
             AND o.deleted!=TRUE
             ORDER BY ordr ASC

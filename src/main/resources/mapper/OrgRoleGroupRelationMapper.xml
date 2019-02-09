@@ -3,27 +3,28 @@
 <mapper namespace="com.ngtesting.platform.dao.OrgRoleGroupRelationDao" >
 
     <select id="query" resultType="TstOrgRoleGroupRelation">
-        SELECT * FROM TstOrgRoleGroupRelation o WHERE o.orgId=#{orgId}
+        SELECT * FROM "TstOrgRoleGroupRelation" o
+        WHERE o."orgId"=#{orgId}
         <if test="roleId != null">
-            AND o.orgRoleId = #{roleId}
+            AND o."orgRoleId" = #{roleId}
         </if>
         <if test="groupId != null">
-            AND o.groupId = #{groupId}
+            AND o."groupId" = #{groupId}
         </if>
-        ORDER BY o.groupId ASC
+        ORDER BY o."groupId" ASC
     </select>
 
     <delete id="removeAllRolesForGroup">
-        DELETE FROM TstOrgRoleGroupRelation
-        WHERE orgId=#{orgId} AND groupId=#{groupId}
+        DELETE FROM "TstOrgRoleGroupRelation"
+        WHERE "orgId"=#{orgId} AND "groupId"=#{groupId}
     </delete>
     <delete id="removeAllGroupsForRole">
-        DELETE FROM TstOrgRoleGroupRelation
-        WHERE orgId=#{orgId} AND orgRoleId=#{roleId}
+        DELETE FROM "TstOrgRoleGroupRelation"
+        WHERE "orgId"=#{orgId} AND "orgRoleId"=#{roleId}
     </delete>
 
     <insert id="saveRelations">
-        insert into TstOrgRoleGroupRelation (orgId,orgRoleId,groupId)
+        insert into "TstOrgRoleGroupRelation" ("orgId","orgRoleId","groupId")
         values
         <foreach collection="list" item="item" separator=",">
             (#{item.orgId},#{item.orgRoleId}, #{item.groupId})

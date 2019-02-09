@@ -10,9 +10,9 @@
         WHERE TRUE
         <if test="keywords != null and keywords != ''">
             AND (
-            usr.nickname LIKE CONCAT('%','${keywords}','%' )
-            OR usr.email LIKE CONCAT('%','${keywords}','%' )
-            OR usr.phone LIKE CONCAT('%','${keywords}','%' )
+            usr.nickname LIKE '%${keywords}%'
+            OR usr.email LIKE '%${keywords}%'
+            OR usr.phone LIKE '%${keywords}%'
             )
         </if>
         <if test="disabled != null">
@@ -93,7 +93,7 @@
     </select>
 
     <select id="getSalt" resultType="String">
-        SELECT salt FROM TstUser WHERE id = #{id}
+        SELECT salt FROM "TstUser" WHERE id = #{id}
         AND disabled != TRUE AND deleted != TRUE
         LIMIT 1;
     </select>
@@ -153,9 +153,9 @@
 
         <if test="keywords != null and keywords != ''">
             AND (
-            usr.nickname LIKE CONCAT('%','${keywords}','%' )
-            OR usr.email LIKE CONCAT('%','${keywords}','%' )
-            OR usr.phone LIKE CONCAT('%','${keywords}','%' )
+            usr.nickname LIKE '%${keywords}%'
+            OR usr.email LIKE '%${keywords}%'
+            OR usr.phone LIKE '%${keywords}%'
             )
         </if>
         <if test="exceptIds != null and exceptIds.size > 0">
@@ -187,9 +187,9 @@
         )
         <if test="keywords != null and keywords != ''">
             AND (
-              usr.nickname LIKE CONCAT('%','${keywords}','%' )
-              OR usr.email LIKE CONCAT('%','${keywords}','%' )
-              OR usr.phone LIKE CONCAT('%','${keywords}','%' )
+              usr.nickname LIKE '%${keywords}%'
+              OR usr.email LIKE '%${keywords}%'
+              OR usr.phone LIKE '%${keywords}%'
             )
         </if>
         <if test="exceptIds != null and exceptIds.size > 0">

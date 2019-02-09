@@ -3,46 +3,46 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueCommentsDao" >
 
     <select id="query" resultType="IsuComments">
-        SELECT * FROM IsuComments o WHERE o.issueId=#{issueId}
+        SELECT * FROM "IsuComments" o WHERE o."issueId"=#{issueId}
 
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.updateTime ASC
+        ORDER BY o."updateTime" ASC
     </select>
 
     <select id="listByIssueId" parameterType="Map" resultMap="issueCommentsMap">
-        SELECT o.*, usr.id userId, usr.nickname userName, usr.avatar userAvatar
+        SELECT o.*, usr.id "userId", usr.nickname "userName", usr.avatar "userAvatar"
 
-        FROM IsuComments o
+        FROM "IsuComments" o
 
-        JOIN TstUser usr ON o.userId = usr.id
+        JOIN "TstUser" usr ON o."userId" = usr.id
 
-        WHERE o.issueId = #{id}
+        WHERE o."issueId" = #{id}
         AND o.deleted != true AND o.disabled != true
 
-        ORDER BY o.updateTime ASC
+        ORDER BY o."updateTime" ASC
     </select>
 
     <select id="get" resultType="IsuComments">
         SELECT *
-        FROM IsuComments o
+        FROM "IsuComments" o
         WHERE o.id=#{id}
     </select>
 
     <insert id="save" parameterType="IsuComments" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuComments (summary,content,issueId,userId,
-          createTime,updateTime,deleted,disabled)
+        insert into "IsuComments" (summary,content,"issueId","userId",
+          "createTime","updateTime",deleted,disabled)
 
         values (#{summary},#{content},#{issueId},#{userId},
           NOW(),NOW(),#{deleted},#{disabled})
     </insert>
     <update id="update" parameterType="IsuComments">
-        UPDATE IsuComments
-        SET summary=#{summary},content=#{content},updateTime=NOW()
+        UPDATE "IsuComments"
+        SET summary=#{summary},content=#{content},"updateTime"=NOW()
         WHERE id=#{id}
     </update>
     <update id="delete">
-        UPDATE IsuComments
-        SET disabled=TRUE, userId=#{userId}
+        UPDATE "IsuComments"
+        SET disabled=TRUE, "userId"=#{userId}
         WHERE id=#{id}
     </update>
 

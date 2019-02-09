@@ -3,7 +3,7 @@
 <mapper namespace="com.ngtesting.platform.dao.ProjectPrivilegeDao" >
 
     <select id="listAllProjectPrivileges" resultType="TstProjectPrivilegeDefine">
-        SELECT * from TstProjectPrivilegeDefine o
+        SELECT * from "TstProjectPrivilegeDefine" o
         WHERE o.deleted != true and o.disabled!= true
         order by o.id asc
     </select>

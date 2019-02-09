@@ -3,20 +3,20 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueOptDao" >
 
     <update id="statusTran">
-        UPDATE IsuIssue
-        SET statusId=#{dictStatusId}, updateTime=NOW()
+        UPDATE "IsuIssue"
+        SET "statusId"=#{dictStatusId}, "updateTime"=NOW()
 
         <if test="finalVal != null and finalVal == true">
-            ,setFinalTime = NOW()
+            ,"setFinalTime" = NOW()
         </if>
 
-        WHERE id=#{id} AND projectId=#{projectId}
+        WHERE id=#{id} AND "projectId"=#{projectId}
     </update>
 
     <update id="assign">
-        UPDATE IsuIssue
-        SET assigneeId=#{userId}, updateTime=NOW()
-        WHERE id=#{id} AND projectId=#{projectId}
+        UPDATE "IsuIssue"
+        SET "assigneeId"=#{userId}, "updateTime"=NOW()
+        WHERE id=#{id} AND "projectId"=#{projectId}
     </update>
 
 </mapper>

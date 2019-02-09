@@ -3,37 +3,37 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueDao" >
     <select id="get" resultType="IsuIssue">
         SELECT o.*, ext.*,
-          (select (count(id) > 0) FROM IsuWatch WHERE issueId=${id} AND userId=${userId}) watched
+          (select (count(id) > 0) FROM "IsuWatch" WHERE "issueId"=${id} AND "userId"=${userId}) watched
 
-        FROM IsuIssue o
-        JOIN IsuIssueExt ext ON o.id = ext.pid
-        WHERE o.id = #{id} AND o.projectId=#{prjId}
+        FROM "IsuIssue" o
+        JOIN "IsuIssueExt" ext ON o.id = ext.pid
+        WHERE o.id = #{id} AND o."projectId"=#{prjId}
     </select>
 
     <select id="getDetail" resultMap="issueMaps">
         SELECT o.*, ext.*,
-        (select (count(id) > 0) FROM IsuWatch WHERE issueId=${id} AND userId=${userId}) watched
+        (select (count(id) > 0) FROM "IsuWatch" WHERE "issueId"=${id} AND "userId"=${userId}) watched
 
-        FROM IsuIssue o
-        JOIN IsuIssueExt ext ON o.id = ext.pid
-        WHERE o.id = #{id} AND o.projectId=#{prjId}
+        FROM "IsuIssue" o
+        JOIN "IsuIssueExt" ext ON o.id = ext.pid
+        WHERE o.id = #{id} AND o."projectId"=#{prjId}
     </select>
 
     <select id="getData" resultMap="issueData">
         SELECT o.*, ext.*
 
-        FROM IsuIssue o
-        JOIN IsuIssueExt ext ON o.id = ext.pid
-        WHERE o.id = #{id} AND o.projectId=#{prjId}
+        FROM "IsuIssue" o
+        JOIN "IsuIssueExt" ext ON o.id = ext.pid
+        WHERE o.id = #{id} AND o."projectId"=#{prjId}
     </select>
 
     <select id="getByUuid" resultType="IsuIssue">
-        SELECT o.* FROM IsuIssue o
+        SELECT o.* FROM "IsuIssue" o
         WHERE o.uuid = #{uuid}
     </select>
 
     <select id="getByIds" resultType="Integer">
-        SELECT o.id FROM IsuIssue o
+        SELECT o.id FROM "IsuIssue" o
         WHERE o.id IN
         <foreach collection="ids" item="item" separator="," open="(" close=")">
             #{item}
@@ -41,12 +41,12 @@
     </select>
 
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuIssue
+        insert into "IsuIssue"
         (
             <foreach collection="elems" item="item" separator=",">
                 ${item.colCode}
             </foreach>
-            , createTime, disabled, deleted
+            , "createTime", disabled, deleted
         )
         values
         (
@@ -58,7 +58,7 @@
     </insert>
 
     <insert id="saveExt">
-        insert into IsuIssueExt
+        insert into "IsuIssueExt"
         (pid
           <if test="params.size > 0">,
             <foreach collection="elems" item="item" separator=",">
@@ -77,33 +77,33 @@
     </insert>
 
     <update id="setDefaultVal">
-        UPDATE IsuIssue
-        SET statusId=(select id from IsuStatus where `value`='open' and orgId=#{model.orgId}),
-            creatorId=#{model.creatorId},
+        UPDATE "IsuIssue"
+        SET "statusId"=(select id from "IsuStatus" where "value"='open' and "orgId"=#{model.orgId}),
+            "creatorId"=#{model.creatorId},
             <if test="model.reporterId == null">
-                reporterId=#{model.creatorId},
+                "reporterId"=#{model.creatorId},
             </if>
             <if test="model.assigneeId == null">
-                assigneeId=#{model.creatorId},
+                "assigneeId"=#{model.creatorId},
             </if>
 
-            projectId=#{model.projectId},
-            orgId=#{model.orgId}
+            "projectId"=#{model.projectId},
+            "orgId"=#{model.orgId}
 
         WHERE id=#{model.id}
     </update>
 
     <update id="update">
-        UPDATE IsuIssue
+        UPDATE "IsuIssue"
         SET
             <foreach collection="elems" item="item" index="indx" separator=",">
                  ${item.colCode} = #{params[${indx}]}
             </foreach>
-        WHERE id=#{id} AND orgId=#{orgId}
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <update id="updateExt">
-        UPDATE IsuIssueExt
+        UPDATE "IsuIssueExt"
         SET
             <foreach collection="elems" item="item" index="indx" separator=",">
                 ${item.colCode} = #{params[${indx}]}
@@ -113,40 +113,39 @@
     </update>
 
     <update id="updateProp">
-        UPDATE IsuIssue
-        SET ${code} = #{value}, updateTime=NOW()
-        WHERE id=#{id} AND projectId=#{projectId}
+        UPDATE "IsuIssue"
+        SET ${code} = #{value}, "updateTime"=NOW()
+        WHERE id=#{id} AND "projectId"=#{projectId}
     </update>
     <update id="updatePropExt">
-        UPDATE IsuIssueExt
+        UPDATE "IsuIssueExt"
         SET ${code} = #{value}
         WHERE pid=#{id}
     </update>
 
     <delete id="delete">
-        UPDATE IsuIssue
-        SET deleted=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND projectId=#{projectId}
+        UPDATE "IsuIssue"
+        SET deleted=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "projectId"=#{projectId}
     </delete>
 
     <select id="getProjectDefaultPages" resultType="Map">
-        SELECT psi.opt, psi.pageId FROM IsuPageSolutionItem psi
+        SELECT psi.opt, psi."pageId" FROM "IsuPageSolutionItem" psi
+        JOIN "IsuPageSolution" ps ON psi."solutionId"=ps.id
 
-        JOIN IsuPageSolution ps ON psi.solutionId=ps.id
+        JOIN "TstProject" prj ON prj."issuePageSolutionId"=ps.id
 
-        JOIN TstProject prj ON prj.issuePageSolutionId=ps.id
-
-        WHERE psi.typeId=#{typeId} AND prj.id=#{prjId}
+        WHERE psi."typeId"=#{typeId} AND prj.id=#{prjId}
     </select>
 
     <select id="getProjectDefaultType" resultType="IsuType">
-        SELECT t.* FROM IsuType t
-        JOIN IsuTypeSolutionItem tsi ON tsi.typeId=t.id
-        JOIN IsuTypeSolution ts ON tsi.solutionId=ts.id
+        SELECT t.* FROM "IsuType" t
+        JOIN "IsuTypeSolutionItem" tsi ON tsi."typeId"=t.id
+        JOIN "IsuTypeSolution" ts ON tsi."solutionId"=ts.id
 
-        JOIN TstProject prj ON prj.issueTypeSolutionId=ts.id
+        JOIN "TstProject" prj ON prj."issueTypeSolutionId"=ts.id
 
-        WHERE t.defaultVal IS TRUE AND t.orgId = #{orgId} AND prj.id=#{prjId}
+        WHERE t."defaultVal" IS TRUE AND t."orgId" = #{orgId} AND prj.id=#{prjId}
     </select>
 
 

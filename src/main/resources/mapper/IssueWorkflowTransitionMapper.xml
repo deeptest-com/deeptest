@@ -3,19 +3,20 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueWorkflowTransitionDao" >
 
     <select id="listTransition" resultType="IsuWorkflowTransition">
-        SELECT o.*, src.label srcStatusName, dict.label dictStatusName FROM IsuWorkflowTransition o
-        JOIN IsuStatus src ON o.srcStatusId=src.id
-        JOIN IsuStatus dict ON o.dictStatusId=dict.id
+        SELECT o.*, src.label "srcStatusName", dict.label "dictStatusName"
+        FROM "IsuWorkflowTransition" o
+        JOIN "IsuStatus" src ON o."srcStatusId"=src.id
+        JOIN "IsuStatus" dict ON o."dictStatusId"=dict.id
 
         <if test="projectRoleIds != null">
-            JOIN IsuWorkflowTransitionProjectRoleRelation r ON r.workflowTransitionId = o.id
+            JOIN "IsuWorkflowTransitionProjectRoleRelation" r ON r."workflowTransitionId" = o.id
         </if>
 
-        WHERE o.workflowId = #{workflowId}
+        WHERE o."workflowId" = #{workflowId}
         AND o.deleted != true AND o.disabled != true
 
         <if test="projectRoleIds != null">
-          AND r.projectRoleId IN
+          AND r."projectRoleId" IN
             <foreach collection="projectRoleIds" item="id" separator="," open="(" close=")">
                 #{id}
             </foreach>
@@ -23,62 +24,65 @@
     </select>
 
     <select id="listByStatus" resultType="IsuWorkflowTransition">
-        SELECT o.*, src.label srcStatusName, dict.label dictStatusName FROM IsuWorkflowTransition o
-        JOIN IsuStatus src ON o.srcStatusId=src.id
-        JOIN IsuStatus dict ON o.dictStatusId=dict.id
+        SELECT o.*, src.label "srcStatusName", dict.label "dictStatusName"
+        FROM "IsuWorkflowTransition" o
+        JOIN "IsuStatus" src ON o."srcStatusId"=src.id
+        JOIN "IsuStatus" dict ON o."dictStatusId"=dict.id
 
-        JOIN TstProject prj ON prj.id=#{projectId}
-        JOIN IsuWorkflowSolution wfs ON prj.issueWorkflowSolutionId=wfs.id
+        JOIN "TstProject" prj ON prj.id=#{projectId}
+        JOIN "IsuWorkflowSolution" wfs ON prj."issueWorkflowSolutionId"=wfs.id
 
-        WHERE o.workflowId = #{workflowId}
+        WHERE o."workflowId" = #{workflowId}
         AND o.deleted != true AND o.disabled != true
     </select>
 
     <select id="get" resultType="IsuWorkflowTransition">
-        SELECT o.*, src.label srcStatusName, dict.label dictStatusName FROM IsuWorkflowTransition o
-        JOIN IsuStatus src ON o.srcStatusId=src.id
-        JOIN IsuStatus dict ON o.dictStatusId=dict.id
+        SELECT o.*, src.label "srcStatusName", dict.label "dictStatusName"
+        FROM "IsuWorkflowTransition" o
+        JOIN "IsuStatus" src ON o."srcStatusId"=src.id
+        JOIN "IsuStatus" dict ON o."dictStatusId"=dict.id
 
         WHERE o.id = #{id}
-        AND o.orgId=#{orgId}
+        AND o."orgId"=#{orgId}
     </select>
 
     <select id="emptyObject" resultType="IsuWorkflowTransition">
-        SELECT #{srcStatusId} srcStatusId, t1.label srcStatusName,
-               #{dictStatusId} dictStatusId, t2.label dictStatusName from
+        SELECT #{srcStatusId} "srcStatusId", t1.label "srcStatusName",
+               #{dictStatusId} "dictStatusId", t2.label "dictStatusName"
+        from
 
-        (SELECT label from IsuStatus where id=#{srcStatusId} AND orgId=#{orgId} ) t1,
-        (SELECT label FROM IsuStatus where id=#{dictStatusId} AND orgId=#{orgId} ) t2
+        (SELECT label from "IsuStatus" where id=#{srcStatusId} AND "orgId"=#{orgId} ) t1,
+        (SELECT label FROM "IsuStatus" where id=#{dictStatusId} AND "orgId"=#{orgId} ) t2
     </select>
 
     <insert id="save" parameterType="IsuWorkflowTransition" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuWorkflowTransition
-        (name, actionPageId, srcStatusId, dictStatusId, workflowId, orgId, deleted, disabled, createTime)
+        insert into "IsuWorkflowTransition"
+        (name, "actionPageId", "srcStatusId", "dictStatusId", "workflowId", "orgId", deleted, disabled, "createTime")
         values
         (#{name}, #{actionPageId}, #{srcStatusId}, #{dictStatusId}, #{workflowId}, #{orgId}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="IsuWorkflowTransition">
-        UPDATE IsuWorkflowTransition
-        SET name=#{name}, actionPageId=#{actionPageId}, srcStatusId=#{srcStatusId}, dictStatusId=#{dictStatusId},
-        updateTime=NOW()
+        UPDATE "IsuWorkflowTransition"
+        SET name=#{name}, "actionPageId"=#{actionPageId}, "srcStatusId"=#{srcStatusId}, "dictStatusId"=#{dictStatusId},
+        "updateTime"=NOW()
 
-        WHERE id=#{id} AND workflowId=#{workflowId} AND orgId=#{orgId}
+        WHERE id=#{id} AND "workflowId"=#{workflowId} AND "orgId"=#{orgId}
     </update>
 
     <delete id="delete">
-        DELETE FROM IsuWorkflowTransition
+        DELETE FROM "IsuWorkflowTransition"
 
-        WHERE id=#{id} AND orgId=#{orgId}
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </delete>
 
     <delete id="removeAllRoles">
-        DELETE FROM IsuWorkflowTransitionProjectRoleRelation
-        WHERE workflowTransitionId=#{id} AND orgId=#{orgId}
+        DELETE FROM "IsuWorkflowTransitionProjectRoleRelation"
+        WHERE "workflowTransitionId"=#{id} AND "orgId"=#{orgId}
     </delete>
     <insert id="addRoles">
-        insert into IsuWorkflowTransitionProjectRoleRelation
-            (orgId,projectRoleId,workflowTransitionId,workflowId)
+        insert into "IsuWorkflowTransitionProjectRoleRelation"
+            ("orgId","projectRoleId","workflowTransitionId","workflowId")
         values
         <foreach collection="projectRoleIds" item="roleId" separator=",">
             (#{tran.orgId}, #{roleId}, #{tran.id}, #{tran.workflowId})
@@ -86,9 +90,10 @@
     </insert>
 
     <select id="listProjectRoleId" resultType="Integer">
-        SELECT o.projectRoleId FROM IsuWorkflowTransitionProjectRoleRelation o
-        WHERE o.workflowTransitionId = #{id}
-          AND o.orgId=#{orgId}
+        SELECT o."projectRoleId"
+        FROM "IsuWorkflowTransitionProjectRoleRelation" o
+        WHERE o."workflowTransitionId" = #{id}
+          AND o."orgId"=#{orgId}
 
         ORDER BY o.id ASC
     </select>

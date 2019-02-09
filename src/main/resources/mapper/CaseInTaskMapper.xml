@@ -3,51 +3,51 @@
 <mapper namespace="com.ngtesting.platform.dao.CaseInTaskDao" >
 
     <select id="query" resultType="TstCaseInTask">
-        SELECT cs.id id, cs.name name, cs.typeId, cs.priorityId,
-          o.id entityId, o.pId pId, o.isParent isParent, o.status status, o.ordr ordr
+        SELECT cs.id id, cs.name name, cs."typeId", cs."priorityId",
+          o.id "entityId", o."pId", o."isParent", o."status", o."ordr"
 
-        FROM TstCaseInTask o
-        JOIN TstCase cs ON o.caseId = cs.id
+        FROM "TstCaseInTask" o
+        JOIN "TstCase" cs ON o."caseId" = cs.id
 
-        WHERE o.taskId=#{taskId}
+        WHERE o."taskId"=#{taskId}
         <if test="projectId != null">
-            AND o.projectId=#{projectId}
+            AND o."projectId"=#{projectId}
         </if>
 
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.pId, o.ordr
+        ORDER BY o."pId", o.ordr
     </select>
 
     <select id="get" resultType="TstCaseInTask">
-        SELECT cs.id id, cs.name name, cs.typeId, cs.priorityId,
-        o.id entityId, o.pId pId, o.isParent isParent, o.status status, o.ordr ordr
+        SELECT cs.id id, cs.name name, cs."typeId", cs."priorityId",
+        o.id "entityId", o."pId", o."isParent", o."status", o.ordr
 
-        FROM TstCaseInTask o
-        JOIN TstCase cs ON o.caseId = cs.id
+        FROM "TstCaseInTask" o
+        JOIN "TstCase" cs ON o."caseId" = cs.id
 
         WHERE o.id=#{id}
     </select>
 
     <select id="getDetail" resultMap="caseInTaskMap">
-        SELECT cs.id id, cs.*, o.id entityId,
-          o.pId pId, o.isParent isParent, o.status status, o.result result, o.ordr ordr,
-          o.planId planId, o.taskId taskId
+        SELECT cs.id id, cs.*, o.id "entityId",
+          o."pId", o."isParent", o."status", o.result, o.ordr,
+          o."planId", o."taskId"
 
-        FROM TstCaseInTask o
-        JOIN TstCase cs ON o.caseId = cs.id
+        FROM "TstCaseInTask" o
+        JOIN "TstCase" cs ON o."caseId" = cs.id
 
         WHERE o.id=#{id}
         <if test="projectId != null">
-            AND o.projectId=#{projectId}
+            AND o."projectId"=#{projectId}
         </if>
     </select>
 
     <update id="setResult">
-        update TstCaseInTask o
+        update "TstCaseInTask" o
         set o.result=#{result},
         o.status=#{status},
-        o.exeBy=#{exeBy},
-        o.exeTime=NOW()
+        o."exeBy"=#{exeBy},
+        o."exeTime"=NOW()
 
         where o.id = #{id}
     </update>

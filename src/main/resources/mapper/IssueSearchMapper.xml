@@ -3,10 +3,11 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueSearchDao" >
 
     <select id="idSearch" resultType="Map">
-        SELECT CONCAT(o.id,'-',o.title ) name, 'issue' type FROM IsuIssue o
+        SELECT o.id || '-' || o.title name, 'issue' "type"
+        FROM "IsuIssue" o
 
         WHERE o.id = #{text}
-        AND o.projectId = #{projectId}
+        AND o."projectId" = #{projectId}
         <if test="exceptIds != null and exceptIds.size > 0">
             AND o.id NOT IN
             <foreach collection="exceptIds" item="item" separator="," open="(" close=")">
@@ -17,10 +18,11 @@
     </select>
 
     <select id="titleSearch" resultType="Map">
-        SELECT o.id, CONCAT(o.id,'-',o.title ) name, 'issue' type FROM IsuIssue o
+        SELECT o.id, o.id || '-' || o.title name, 'issue' "type"
+        FROM "IsuIssue" o
 
-        WHERE o.title LIKE CONCAT('%','${text}','%' )
-        AND o.projectId = #{projectId}
+        WHERE o.title LIKE '%${text}%'
+        AND o."projectId" = #{projectId}
         <if test="exceptIds != null and exceptIds.size > 0">
             AND o.id NOT IN
             <foreach collection="exceptIds" item="item" separator="," open="(" close=")">

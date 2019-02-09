@@ -3,14 +3,14 @@
 <mapper namespace="com.ngtesting.platform.dao.CustomFieldDao" >
 
     <select id="list" resultType="CustomField">
-        SELECT * FROM CustomField o
-        WHERE o.orgId=#{orgId}
+        SELECT * FROM "CustomField" o
+        WHERE o."orgId"=#{orgId}
 
         <if test="keywords != null and keywords != ''">
-            AND o.label LIKE CONCAT('%','${keywords}','%' )
+            AND o.label LIKE '%${keywords}%' )
         </if>
         <if test="applyTo != null and applyTo != ''">
-            AND o.applyTo = #{applyTo}
+            AND o."applyTo" = #{applyTo}
         </if>
 
         AND o.disabled!=TRUE AND o.deleted!=TRUE
@@ -18,90 +18,90 @@
     </select>
 
     <select id="listForCase" resultMap="customFieldMap">
-        SELECT customField.id, CONCAT('cust-', customField.id) `key`,
-            customField.id fieldId, customField.colCode, customField.label,
-            customField.type, customField.input,
-            customField.fullLine, customField.required, customField.readonly, false buildIn,
-            customField.ordr, customField.orgId
+        SELECT "customField".id, 'cust-' || customField.id "key",
+            "customField".id "fieldId", "customField"."colCode", "customField".label,
+            "customField".type, "customField".input,
+            "customField"."fullLine", "customField".required, "customField".readonly, false "buildIn",
+            "customField".ordr, "customField"."orgId"
 
-        FROM CustomField customField
-        WHERE customField.orgId = #{orgId} AND customField.applyTo = 'test_case'
+        FROM "CustomField" "customField"
+        WHERE "customField"."orgId" = #{orgId} AND "customField"."applyTo" = 'test_case'
 
-        AND customField.disabled != TRUE AND customField.deleted != TRUE
-        ORDER BY customField.ordr ASC
+        AND "customField".disabled != TRUE AND "customField".deleted != TRUE
+        ORDER BY "customField".ordr ASC
     </select>
 
     <select id="get" resultType="CustomField">
-        SELECT * FROM CustomField o
+        SELECT * FROM "CustomField" o
 
-        WHERE o.id = #{id} AND o.orgId=#{orgId}
+        WHERE o.id = #{id} AND o."orgId"=#{orgId}
     </select>
     <select id="getDetail" resultMap="customFieldMap">
-        SELECT * FROM CustomField o
-        WHERE o.id = #{id} AND o.orgId=#{orgId}
+        SELECT * FROM "CustomField" o
+        WHERE o.id = #{id} AND o."orgId"=#{orgId}
     </select>
 
     <insert id="save" parameterType="CustomField" useGeneratedKeys="true" keyProperty="id">
-        insert into CustomField
-        (label,colCode,required,descr,`type`,`input`,`rows`,textFormat,applyTo,
-        orgId,ordr,buildIn, readonly, fullLine, deleted,disabled,createTime)
+        insert into "CustomField"
+          (label,"colCode",required,descr,"type","input","rows","textFormat","applyTo",
+          "orgId",ordr,"buildIn", readonly, "fullLine", deleted,disabled,"createTime")
         values
-        (#{label},#{colCode},#{required},#{descr},#{type},#{input},#{rows},#{textFormat},#{applyTo},
-        #{orgId},#{ordr}, #{buildIn}, #{readonly}, #{fullLine}, FALSE, FALSE, NOW())
+          (#{label},#{colCode},#{required},#{descr},#{type},#{input},#{rows},#{textFormat},#{applyTo},
+          #{orgId},#{ordr}, #{buildIn}, #{readonly}, #{fullLine}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="CustomField">
-        UPDATE CustomField
-        SET label=#{label},descr=#{descr},`type`=#{type},`input`=#{input},
-        rows=#{rows}, textFormat=#{textFormat},applyTo=#{applyTo},
-        fullLine=#{fullLine},
-        orgId=#{orgId}, disabled=#{disabled}, updateTime=NOW()
+        UPDATE "CustomField"
+        SET label=#{label},descr=#{descr},"type"=#{type},"input"=#{input},
+        rows=#{rows}, "textFormat"=#{textFormat},"applyTo"=#{applyTo},
+        "fullLine"=#{fullLine},
+        "orgId"=#{orgId}, disabled=#{disabled}, "updateTime"=NOW()
 
-        WHERE id=#{id} AND orgId=#{orgId}
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <delete id="delete">
-        UPDATE CustomField
-        SET deleted=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "CustomField"
+        SET deleted=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </delete>
 
     <select id="getPrev" resultType="CustomField">
         <![CDATA[
-            SELECT * FROM CustomField o
-            WHERE o.ordr < #{ordr} AND o.orgId = #{orgId}
-            AND o.applyTo=#{applyTo} AND o.deleted != TRUE
+            SELECT * FROM "CustomField" o
+            WHERE o.ordr < #{ordr} AND o."orgId" = #{orgId}
+            AND o."applyTo"=#{applyTo} AND o.deleted != TRUE
             ORDER BY o.ordr DESC LIMIT 1
         ]]>
     </select>
 
     <select id="getNext" resultType="CustomField">
         <![CDATA[
-            SELECT * FROM CustomField o
-            WHERE o.ordr > #{ordr} AND o.orgId = #{orgId}
-            AND o.applyTo=#{applyTo} AND o.deleted != TRUE
+            SELECT * FROM "CustomField" o
+            WHERE o.ordr > #{ordr} AND o."orgId" = #{orgId}
+            AND o."applyTo"=#{applyTo} AND o.deleted != TRUE
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>
 
     <update id="setOrder">
-        UPDATE CustomField
-        SET ordr=#{ordr}, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "CustomField"
+        SET ordr=#{ordr}, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <select id="getLastUnusedColumn" resultType="String">
-        select cf.colCode from CustomField cf
+        select cf."colCode" from "CustomField" cf
 
-        where cf.orgId = #{orgId}
+        where cf."orgId" = #{orgId}
         and cf.deleted != TRUE and cf.disabled != TRUE
 
-        order by cf.colCode asc
+        order by cf."colCode" asc
     </select>
 
     <select id="getMaxOrdrNumb" resultType="Integer">
-        select max(ordr) from CustomField o
-        where o.orgId=#{orgId} AND o.applyTo=#{applyTo}
+        select max(ordr) from "CustomField" o
+        where o."orgId"=#{orgId} AND o."applyTo"=#{applyTo}
         and o.deleted != true
         and o.disabled != true
     </select>
@@ -115,27 +115,27 @@
     </resultMap>
 
     <select id="listInput" resultType="Map">
-        SELECT o.id, o.label, o.value
-        FROM CustomFieldIputDefine o
+        SELECT o.id, o.label, o."value"
+        FROM "CustomFieldIputDefine" o
         ORDER BY o.ordr
     </select>
     <select id="listType" resultType="Map">
-        SELECT o.id, o.label, o.value
-        FROM CustomFieldTypeDefine o
+        SELECT o.id, o.label, o."value"
+        FROM "CustomFieldTypeDefine" o
         ORDER BY o.ordr
     </select>
 
     <select id="fetchInputMap" resultMap="inputMap">
-        SELECT o.id, o.label, o.value
-        FROM CustomFieldIputDefine o
+        SELECT o.id, o.label, o."value"
+        FROM "CustomFieldIputDefine" o
         ORDER BY o.ordr
     </select>
     <select id="listFieldTypeByInput" resultType="Map">
-        SELECT o.id, o.label, o.value
-        FROM CustomFieldTypeDefine o
-        JOIN CustomFieldInputTypeRelationDefine r ON o.value = r.typeValue
+        SELECT o.id, o.label, o."value"
+        FROM "CustomFieldTypeDefine" o
+        JOIN "CustomFieldInputTypeRelationDefine" r ON o."value" = r."typeValue"
 
-        WHERE r.inputValue = #{value}
+        WHERE r."inputValue" = #{value}
 
         ORDER BY o.ordr
     </select>

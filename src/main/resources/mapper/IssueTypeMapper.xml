@@ -3,30 +3,30 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueTypeDao" >
 
     <select id="list" resultType="IsuType">
-        SELECT * FROM IsuType o
-        WHERE o.orgId=#{orgId}
+        SELECT * FROM "IsuType" o
+        WHERE o."orgId"=#{orgId}
 
         AND o.disabled!=TRUE AND o.deleted!=TRUE
         ORDER BY o.ordr ASC
     </select>
     <select id="listBySolutionId" resultType="IsuType" parameterType="Map">
-        SELECT * FROM IsuType o
-        JOIN IsuTypeSolutionItem r ON r.typeId = o.id
-        WHERE r.solutionId = #{solutionId}
-          AND o.orgId=#{orgId}
+        SELECT * FROM "IsuType" o
+        JOIN "IsuTypeSolutionItem" r ON r."typeId" = o.id
+        WHERE r."solutionId" = #{solutionId}
+          AND o."orgId"=#{orgId}
 
         AND o.disabled!=TRUE AND o.deleted!=TRUE
         ORDER BY o.ordr ASC
     </select>
 
     <select id="listNotInSolution" resultType="IsuType" parameterType="Map">
-        SELECT * FROM IsuType o
+        SELECT * FROM "IsuType" o
 
-        WHERE o.orgId=#{orgId}
+        WHERE o."orgId"=#{orgId}
          AND o.id NOT IN (
-          SELECT tmp.id FROM IsuType tmp
-          JOIN IsuTypeSolutionItem r ON r.typeId = tmp.id
-          WHERE r.solutionId = #{solutionId} AND tmp.orgId=#{orgId}
+          SELECT tmp.id FROM "IsuType" tmp
+          JOIN "IsuTypeSolutionItem" r ON r."typeId" = tmp.id
+          WHERE r."solutionId" = #{solutionId} AND tmp."orgId"=#{orgId}
         )
 
         AND o.disabled!=TRUE AND o.deleted!=TRUE
@@ -34,57 +34,57 @@
     </select>
 
     <select id="get" resultType="IsuType">
-        SELECT * FROM IsuType o
+        SELECT * FROM "IsuType" o
 
         WHERE o.id = #{id}
         <if test="orgId != null">
-            AND o.orgId=#{orgId}
+            AND o."orgId"=#{orgId}
         </if>
     </select>
 
     <insert id="save" parameterType="IsuType" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuType
-        (label,value,descr,orgId,ordr, defaultVal, buildIn,deleted,disabled,createTime)
+        insert into "IsuType"
+        (label,"value",descr,"orgId",ordr, "defaultVal", "buildIn",deleted,disabled,"createTime")
         values
         (#{label},#{value},#{descr},#{orgId},#{ordr}, #{defaultVal}, #{buildIn},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="IsuType">
-        UPDATE IsuType
-        SET label=#{label}, value=#{value}, descr=#{descr},
+        UPDATE "IsuType"
+        SET label=#{label}, "value"=#{value}, descr=#{descr},
         disabled=#{disabled},
-        updateTime=NOW()
+        "updateTime"=NOW()
 
         WHERE id=#{id} AND orgId=#{orgId}
     </update>
 
     <delete id="delete">
-        UPDATE IsuType
-        SET disabled=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuType"
+        SET disabled=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </delete>
 
     <update id="removeDefault">
-        UPDATE IsuType
-        SET defaultVal=FALSE, updateTime=NOW()
-        WHERE orgId=#{orgId}
+        UPDATE "IsuType"
+        SET "defaultVal"=FALSE, "updateTime"=NOW()
+        WHERE "orgId"=#{orgId}
     </update>
     <update id="setDefault">
-        UPDATE IsuType
-        SET defaultVal=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuType"
+        SET "defaultVal"=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <update id="setOrder">
-        UPDATE IsuType
-        SET ordr=#{ordr}, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuType"
+        SET ordr=#{ordr}, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <select id="getPrev" resultType="IsuType">
         <![CDATA[
-            SELECT * FROM IsuType o
-            WHERE o.ordr < #{ordr} AND o.orgId = #{orgId}
+            SELECT * FROM "IsuType" o
+            WHERE o.ordr < #{ordr} AND o."orgId" = #{orgId}
             AND o.deleted != TRUE
             ORDER BY o.ordr DESC LIMIT 1
         ]]>
@@ -92,16 +92,17 @@
 
     <select id="getNext" resultType="IsuType">
         <![CDATA[
-            SELECT * FROM IsuType o
-            WHERE o.ordr > #{ordr} AND o.orgId = #{orgId}
+            SELECT * FROM "IsuType" o
+            WHERE o.ordr > #{ordr} AND o."orgId" = #{orgId}
             AND o.deleted != TRUE
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>
 
     <select id="getMaxOrdrNumb" resultType="Integer">
-        select max(ordr) from IsuType o
-        where o.orgId=#{orgId}
+        select max(ordr)
+        from "IsuTyp"e o
+        where o."orgId"=#{orgId}
         and o.deleted != true
         and o.disabled != true
     </select>

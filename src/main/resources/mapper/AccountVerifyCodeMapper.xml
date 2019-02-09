@@ -8,16 +8,16 @@
     </insert>
 
     <select id="getByCode" resultType="TstUserVerifyCode">
-        SELECT * FROM TstUserVerifyCode o
+        SELECT * FROM "TstUserVerifyCode" o
 
         WHERE o.code=#{code}
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+        ORDER BY o."createTime" DESC
     </select>
 
     <update id="disableCode">
-        UPDATE TstUserVerifyCode
-        SET disabled=TRUE, deleted=TRUE,updateTime=NOW()
+        UPDATE "TstUserVerifyCode"
+        SET disabled=TRUE, deleted=TRUE,"updateTime"=NOW()
         WHERE id=#{id}
     </update>
 

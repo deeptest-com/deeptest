@@ -3,62 +3,61 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueResolutionDao" >
 
     <select id="list" resultType="IsuResolution">
-        SELECT * FROM IsuResolution o
-        WHERE o.orgId=#{orgId}
+        SELECT * FROM "IsuResolution" o
+        WHERE o."orgId"=#{orgId}
 
         AND o.disabled!=TRUE AND o.deleted!=TRUE
         ORDER BY ordr ASC
     </select>
 
     <select id="get" resultType="IsuResolution">
-        SELECT * FROM IsuResolution o
+        SELECT * FROM "IsuResolution" o
 
-        WHERE o.id = #{id} AND o.orgId=#{orgId}
+        WHERE o.id = #{id} AND o."orgId"=#{orgId}
     </select>
 
     <insert id="save" parameterType="IsuResolution" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuResolution
-        (label,value,descr,orgId,ordr,defaultVal,deleted,disabled,createTime)
+        insert into "IsuResolution"
+        (label,"value",descr,"orgId",ordr,"defaultVal",deleted,disabled,"createTime")
         values
         (#{label},#{value},#{descr},#{orgId},#{ordr},#{defaultVal},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="IsuResolution">
-        UPDATE IsuResolution
-        SET label=#{label},value=#{value},descr=#{descr},
-        disabled=#{disabled},
-        updateTime=NOW()
+        UPDATE "IsuResolution"
+        SET label=#{label},"value"=#{value},descr=#{descr},
+          disabled=#{disabled}, "updateTime"=NOW()
 
-        WHERE id=#{id} AND orgId=#{orgId}
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <delete id="delete">
-        UPDATE IsuResolution
-        SET disabled=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuResolution"
+        SET disabled=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </delete>
 
     <update id="removeDefault">
-        UPDATE IsuResolution
-        SET defaultVal=FALSE, updateTime=NOW()
-        WHERE orgId=#{orgId}
+        UPDATE "IsuResolution"
+        SET "defaultVal"=FALSE, "updateTime"=NOW()
+        WHERE "orgId"=#{orgId}
     </update>
     <update id="setDefault">
-        UPDATE IsuResolution
-        SET defaultVal=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuResolution"
+        SET "defaultVal"=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <update id="setOrder">
-        UPDATE IsuResolution
-        SET ordr=#{ordr}, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuResolution"
+        SET ordr=#{ordr}, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <select id="getPrev" resultType="IsuResolution">
         <![CDATA[
-            SELECT * FROM IsuResolution o
-            WHERE o.ordr < #{ordr} AND o.orgId = #{orgId}
+            SELECT * FROM "IsuResolution" o
+            WHERE o.ordr < #{ordr} AND o."orgId" = #{orgId}
             AND o.deleted != TRUE
             ORDER BY o.ordr DESC LIMIT 1
         ]]>
@@ -66,16 +65,16 @@
 
     <select id="getNext" resultType="IsuResolution">
         <![CDATA[
-            SELECT * FROM IsuResolution o
-            WHERE o.ordr > #{ordr} AND o.orgId = #{orgId}
+            SELECT * FROM "IsuResolution" o
+            WHERE o.ordr > #{ordr} AND o."orgId" = #{orgId}
             AND o.deleted != TRUE
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>
 
     <select id="getMaxOrdrNumb" resultType="Integer">
-        select max(ordr) from IsuResolution o
-        where o.orgId=#{orgId}
+        select max(ordr) from "IsuResolution" o
+        where o."orgId"=#{orgId}
         and o.deleted != true
         and o.disabled != true
     </select>

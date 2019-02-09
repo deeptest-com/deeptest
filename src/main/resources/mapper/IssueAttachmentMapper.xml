@@ -3,40 +3,40 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueAttachmentDao" >
 
     <select id="query" resultType="IsuAttachment">
-        SELECT * FROM IsuAttachment o
+        SELECT * FROM "IsuAttachment" o
 
         WHERE o.issueId=#{issueId}
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime ASC
+        ORDER BY o."createTime" ASC
     </select>
 
     <select id="get" resultType="IsuAttachment">
-        SELECT * FROM IsuAttachment o
+        SELECT * FROM "IsuAttachment" o
 
         WHERE o.id=#{id}
     </select>
 
     <insert id="save" parameterType="IsuAttachment" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuAttachment
-        (name,uri,issueId,userId,
-          deleted,disabled,createTime)
+        insert into "IsuAttachment"
+        (name,uri,"issueId","userId",
+          deleted,disabled,"createTime")
         values (#{name},#{uri},#{issueId},#{userId},
           #{deleted},#{disabled},#{createTime})
     </insert>
 
     <update id="delete">
-        UPDATE IsuAttachment
-        SET disabled=TRUE
+        UPDATE "IsuAttachment"
+        SET deleted=TRUE
         WHERE id=#{id}
     </update>
 
     <select id="listByIssueId" parameterType="Map" resultMap="issueAttachmentMap">
-        SELECT o.* FROM IsuAttachment o
+        SELECT o.* FROM "IsuAttachment" o
 
-        WHERE o.issueId = #{id}
+        WHERE o."issueId" = #{id}
         AND o.deleted != true AND o.disabled != true
 
-        ORDER BY o.createTime ASC
+        ORDER BY o."createTime" ASC
     </select>
 
     <resultMap id="issueAttachmentMap" type="IsuAttachment" autoMapping="true">

@@ -4,52 +4,49 @@
 
     <select id="listByProject" resultType="TstHistory">
         SELECT o.*
+        FROM "TstHistory" o
+        JOIN "TstProject" p ON o."projectId"=p.id
 
-        FROM TstHistory o
-
-        JOIN TstProject p ON o.projectId=p.id
-
-        WHERE o.projectId=#{projectId}
+        WHERE o."projectId"=#{projectId}
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+        ORDER BY o."createTime" DESC
     </select>
 
     <select id="listByProjectGroup" resultType="TstHistory">
         SELECT o.*
 
-        FROM TstHistory o
-        JOIN TstProject p ON o.projectId=p.id
+        FROM "TstHistory" o
+        JOIN "TstProject" p ON o."projectId"=p.id
 
-        WHERE p.parentId=#{projectId}
+        WHERE p."parentId"=#{projectId}
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+        ORDER BY o."createTime" DESC
     </select>
 
     <select id="listByOrg" resultType="TstHistory">
         SELECT o.*
+        FROM "TstHistory" o
+        JOIN "TstProject" p ON o."projectId"=p.id
 
-        FROM TstHistory o
-        JOIN TstProject p ON o.projectId=p.id
-
-        WHERE p.orgId=#{orgId}
+        WHERE p."orgId"=#{orgId}
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC
+        ORDER BY o."createTime" DESC
     </select>
 
     <select id="get" resultType="TstHistory">
         SELECT o.*
 
-        FROM TstHistory o
+        FROM "TstHistory" o
         WHERE p.id=#{id}
     </select>
 
     <insert id="create" parameterType="TstHistory" useGeneratedKeys="true" keyProperty="id">
-        insert into TstHistory
-        (title,projectId,entityId,entityType,userId,
-        deleted,disabled,createTime)
+        insert into "TstHistory"
+          (title,"projectId","entityId","entityType","userId",
+          deleted,disabled,"createTime")
         values
-        (#{title},#{projectId},#{entityId},#{entityType},#{userId},
-        FALSE,FALSE,NOW() )
+          (#{title},#{projectId},#{entityId},#{entityType},#{userId},
+          FALSE,FALSE,NOW() )
     </insert>
 
 </mapper>

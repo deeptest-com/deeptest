@@ -3,10 +3,10 @@
 <mapper namespace="com.ngtesting.platform.dao.AuthDao" >
 
     <select id="userNotInOrg" resultType="boolean" statementType="CALLABLE">
-        SELECT (count(o.id) = 0) isExist
-        FROM TstUser o
-        JOIN TstOrgUserRelation r on r.userId=o.id
-        WHERE r.userId = #{userId} AND r.orgId = #{orgId}
+        SELECT (count(o.id) = 0) "isExist"
+        FROM "TstUser" o
+        JOIN "TstOrgUserRelation" r on r."userId"=o.id
+        WHERE r."userId" = #{userId} AND r."orgId" = #{orgId}
     </select>
 
     <select id="userNotInProject" resultType="boolean" statementType="CALLABLE">

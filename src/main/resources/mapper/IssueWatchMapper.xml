@@ -3,34 +3,35 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueWatchDao" >
 
     <select id="listByIssueId" resultType="Map">
-        SELECT w.id, u.id userId, u.nickname, u.email FROM TstUser u
-        JOIN IsuWatch w ON u.id = w.userId
+        SELECT w.id, u.id userId, u."nickname", u.email
+        FROM "TstUser" u
+        JOIN "IsuWatch" w ON u.id = w."userId"
 
-        WHERE w.issueId = #{id}
+        WHERE w."issueId" = #{id}
     </select>
 
     <select id="search" resultType="TstUser">
-        select usr.id, usr.nickname, 'user' type from TstUser usr
+        select usr.id, usr.nickname, 'user' "type" from "TstUser" usr
         where
             usr.id in
                 (
-                    select relation1.entityId from TstProjectRoleEntityRelation relation1
-                      where relation1.type = 'user' AND relation1.projectId = #{prjId}
+                    select relation1."entityId" from "TstProjectRoleEntityRelation" relation1
+                      where relation1.type = 'user' AND relation1."projectId" = #{prjId}
 
                     UNION
 
-                    select relta.userId from TstOrgGroupUserRelation relta
-                      where relta.orgGroupId in
+                    select relta."userId" from "TstOrgGroupUserRelation" relta
+                      where relta."orgGroupId" in
                         (
-                            select relation2.entityId from TstProjectRoleEntityRelation relation2
-                            where relation2.type = 'group' AND relation2.projectId = #{prjId}
+                            select relation2."entityId" from "TstProjectRoleEntityRelation" relation2
+                            where relation2.type = 'group' AND relation2."projectId" = #{prjId}
                         )
                 )
 
             AND (
-                usr.nickname LIKE CONCAT('%','${keywords}','%' )
-                OR usr.email LIKE CONCAT('%','${keywords}','%' )
-                OR usr.phone LIKE CONCAT('%','${keywords}','%' )
+                usr.nickname LIKE '%${keywords}%'
+                OR usr.email LIKE '%${keywords}%'
+                OR usr.phone LIKE '%${keywords}%'
             )
 
             <if test="exceptIds != null and exceptIds.size > 0">
@@ -44,8 +45,8 @@
     </select>
 
     <insert id="batchSave" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO IsuWatch
-        (issueId, userId)
+        INSERT INTO "IsuWatch"
+        ("issueId", "userId")
 
         values
         <foreach collection="userIds" item="item" separator=",">
@@ -54,22 +55,22 @@
     </insert>
 
     <delete id="remove">
-        DELETE FROM IsuWatch
+        DELETE FROM "IsuWatch"
         WHERE id=#{id}
     </delete>
 
     <insert id="watch" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO IsuWatch
-        (issueId, userId)
-        SELECT ${issueId}, ${userId} FROM dual
+        INSERT INTO "IsuWatch"
+        ("issueId", "userId")
+            SELECT ${issueId}, ${userId}
         WHERE NOT EXISTS (
-            SELECT * FROM IsuWatch WHERE issueId = ${issueId} AND userId=${userId}
+            SELECT * FROM "IsuWatch" WHERE "issueId" = ${issueId} AND "userId"=${userId}
         )
     </insert>
 
     <delete id="unwatch">
-        DELETE FROM IsuWatch
-        WHERE issueId=#{issueId} AND userId=#{userId}
+        DELETE FROM "IsuWatch"
+        WHERE "issueId"=#{issueId} AND "userId"=#{userId}
     </delete>
 
 </mapper>

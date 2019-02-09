@@ -3,25 +3,25 @@
 <mapper namespace="com.ngtesting.platform.dao.CaseHistoryDao" >
 
     <select id="query" resultType="TstCaseHistory">
-        SELECT * FROM TstCaseHistory o WHERE o.caseId=#{caseId}
+        SELECT * FROM "TstCaseHistory" o WHERE o."caseId"=#{caseId}
 
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime DESC LIMIT 15
+        ORDER BY o."createTime" DESC LIMIT 15
     </select>
 
     <select id="listByCaseId" parameterType="Map" resultMap="caseHistoryMap">
-        SELECT o.* FROM TstCaseHistory o
+        SELECT o.* FROM "TstCaseHistory" o
 
-        WHERE o.caseId = #{id}
+        WHERE o."caseId" = #{id}
         AND o.deleted != true AND o.disabled != true
 
-        ORDER BY o.createTime DESC LIMIT 15
+        ORDER BY o."createTime" DESC LIMIT 15
     </select>
 
     <insert id="save" parameterType="TstCaseHistory" useGeneratedKeys="true" keyProperty="id">
-        insert into TstCaseHistory
-        (title,caseId,
-        deleted,disabled,createTime)
+        insert into "TstCaseHistory"
+        (title,"caseId",
+        deleted,disabled,"createTime")
         values
         (#{title},#{caseId},
         FALSE,FALSE,NOW() )

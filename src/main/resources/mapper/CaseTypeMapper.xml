@@ -3,61 +3,61 @@
 <mapper namespace="com.ngtesting.platform.dao.CaseTypeDao" >
 
     <select id="list" resultType="TstCaseType">
-        SELECT * FROM TstCaseType o
-        WHERE o.orgId=#{orgId}
+        SELECT * FROM "TstCaseType" o
+        WHERE o."orgId"=#{orgId}
 
         AND o.disabled!=TRUE AND o.deleted!=TRUE
         ORDER BY ordr ASC
     </select>
 
     <select id="get" resultType="TstCaseType">
-        SELECT * FROM TstCaseType o
+        SELECT * FROM "TstCaseType" o
         WHERE o.id = #{id} AND o.orgId=#{orgId}
     </select>
 
     <insert id="save" parameterType="TstCaseType" useGeneratedKeys="true" keyProperty="id">
-        insert into TstCaseType
-        (label,value,descr,orgId,ordr,defaultVal,deleted,disabled,createTime)
+        insert into "TstCaseType"
+        (label,value,descr,"orgId",ordr,"defaultVal",deleted,disabled,"createTime")
         values
         (#{label},#{value},#{descr},#{orgId},#{ordr},#{defaultVal},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="TstCaseType">
-        UPDATE TstCaseType
-        SET label=#{label},value=#{value},descr=#{descr},
+        UPDATE "TstCaseType"
+        SET label=#{label},"value"=#{value},descr=#{descr},
         disabled=#{disabled},
-        updateTime=NOW()
+        "updateTime"=NOW()
 
-        WHERE id=#{id} AND orgId=#{orgId}
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <delete id="delete">
-        UPDATE TstCaseType
-        SET disabled=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "TstCaseType"
+        SET disabled=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </delete>
 
     <update id="removeDefault">
-        UPDATE TstCaseType
-        SET defaultVal=FALSE, updateTime=NOW()
-        WHERE orgId=#{orgId}
+        UPDATE "TstCaseType"
+        SET "defaultVal"=FALSE, "updateTime"=NOW()
+        WHERE "orgId"=#{orgId}
     </update>
     <update id="setDefault">
-        UPDATE TstCaseType
-        SET defaultVal=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "TstCaseType"
+        SET "defaultVal"=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <update id="setOrder">
-        UPDATE TstCaseType
-        SET ordr=#{ordr}, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "TstCaseType"
+        SET ordr=#{ordr}, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <select id="getPrev" resultType="TstCaseType">
         <![CDATA[
-            SELECT * FROM TstCaseType o
-            WHERE o.ordr < #{ordr} AND o.orgId = #{orgId}
+            SELECT * FROM "TstCaseType" o
+            WHERE o.ordr < #{ordr} AND o."orgId" = #{orgId}
             AND o.deleted != TRUE
             ORDER BY o.ordr DESC LIMIT 1
         ]]>
@@ -65,16 +65,16 @@
 
     <select id="getNext" resultType="TstCaseType">
         <![CDATA[
-            SELECT * FROM TstCaseType o
-            WHERE o.ordr > #{ordr} AND o.orgId = #{orgId}
+            SELECT * FROM "TstCaseType" o
+            WHERE o.ordr > #{ordr} AND o."orgId" = #{orgId}
             AND o.deleted != TRUE
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>
 
     <select id="getMaxOrdrNumb" resultType="Integer">
-        select max(ordr) from TstCaseType o
-        where o.orgId=#{orgId}
+        select max(ordr) from "TstCaseType" o
+        where o."orgId"=#{orgId}
         and o.deleted != true
         and o.disabled != true
     </select>

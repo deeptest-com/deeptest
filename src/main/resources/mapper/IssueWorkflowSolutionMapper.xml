@@ -5,76 +5,76 @@
     <select id="list" resultType="IsuWorkflowSolution">
         SELECT solution.*
 
-        FROM IsuWorkflowSolution solution
+        FROM "IsuWorkflowSolution" solution
 
-        WHERE solution.orgId=#{orgId}
+        WHERE solution."orgId"=#{orgId}
         AND solution.deleted != TRUE AND solution.disabled != TRUE
-        ORDER BY solution.createTime ASC
+        ORDER BY solution."createTime" ASC
     </select>
 
     <select id="get" resultType="IsuWorkflowSolution">
-        SELECT o.* FROM IsuWorkflowSolution o
+        SELECT o.* FROM "IsuWorkflowSolution" o
 
-        WHERE o.id = #{id} AND orgId = #{orgId}
+        WHERE o.id = #{id} AND "orgId" = #{orgId}
         AND o.deleted != true AND o.disabled != true
     </select>
 
     <insert id="save" parameterType="IsuWorkflowSolution" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuWorkflowSolution
-        (name, orgId, defaultVal, buildIn, deleted, disabled, createTime)
+        insert into "IsuWorkflowSolution"
+        (name, "orgId", "defaultVal", "buildIn", deleted, disabled, "createTime")
         values
         (#{name}, #{orgId}, #{defaultVal}, #{buildIn}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="IsuWorkflowSolution">
-        UPDATE IsuWorkflowSolution
+        UPDATE "IsuWorkflowSolution"
         SET name=#{name}, updateTime=NOW()
 
-        WHERE id=#{id} AND orgId=#{orgId}
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <delete id="delete">
-        UPDATE IsuWorkflowSolution
-        SET disabled=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuWorkflowSolution"
+        SET disabled=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </delete>
 
     <update id="removeDefault">
-        UPDATE IsuWorkflowSolution
-        SET defaultVal=FALSE, updateTime=NOW()
-        WHERE orgId=#{orgId}
+        UPDATE "IsuWorkflowSolution"
+        SET "defaultVal"=FALSE, "updateTime"=NOW()
+        WHERE "orgId"=#{orgId}
     </update>
     <update id="setDefault">
-        UPDATE IsuWorkflowSolution
-        SET defaultVal=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuWorkflowSolution"
+        SET "defaultVal"=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <select id="getItems" resultType="IsuWorkflowSolutionItem">
-        SELECT o.*, type.label typeName, workflow.name workflowName
+        SELECT o.*, isuType.label "typeName", workflow.name "workflowName"
 
-        FROM IsuWorkflowSolutionItem o
-        JOIN IsuType type ON type.id = o.typeId
-        JOIN IsuWorkflow workflow ON workflow.id = o.workflowId
+        FROM "IsuWorkflowSolutionItem" o
+        JOIN "IsuType" isuType ON isuType.id = o.typeId
+        JOIN "IsuWorkflow" workflow ON workflow.id = o.workflowId
 
-        WHERE o.solutionId = #{solutionId} AND o.orgId = #{orgId}
+        WHERE o."solutionId" = #{solutionId} AND o."orgId" = #{orgId}
 
         ORDER BY o.id ASC;
     </select>
 
     <update id="changeItem">
         <selectKey keyProperty="count" resultType="int" order="BEFORE">
-            select count(*) from IsuWorkflowSolutionItem
-            where typeId=#{typeId} AND solutionId=#{solutionId} AND orgId=#{orgId}
+            select count(*) from "IsuWorkflowSolutionItem"
+            where "typeId"=#{typeId} AND "solutionId"=#{solutionId} AND "orgId"=#{orgId}
         </selectKey>
         <if test="count > 0">
-            update IsuWorkflowSolutionItem
-            set workflowId = #{workflowId}
-            where typeId=#{typeId} AND solutionId=#{solutionId} AND orgId=#{orgId}
+            update "IsuWorkflowSolutionItem"
+            set "workflowId" = #{workflowId}
+            where "typeId"=#{typeId} AND "solutionId"=#{solutionId} AND "orgId"=#{orgId}
         </if>
         <if test="count == 0">
-            insert into IsuWorkflowSolutionItem
-              (typeId, workflowId, solutionId, orgId)
+            insert into "IsuWorkflowSolutionItem"
+              ("typeId", "workflowId", "solutionId", "orgId")
             values
               (#{typeId}, #{workflowId}, #{solutionId}, #{orgId})
         </if>
@@ -82,22 +82,22 @@
 
     <!-- For Project -->
     <select id="getByProject" resultType="IsuWorkflowSolution">
-        SELECT * FROM IsuWorkflowSolution o
-        JOIN TstProject p ON p.issueWorkflowSolutionId=o.id
-        WHERE p.id = #{projectId} AND o.orgId = #{orgId}
+        SELECT * FROM "IsuWorkflowSolution" o
+        JOIN "TstProject" p ON p."issueWorkflowSolutionId"=o.id
+        WHERE p.id = #{projectId} AND o."orgId" = #{orgId}
     </select>
     <update id="setByProject">
-        UPDATE TstProject
-        SET issueWorkflowSolutionId=#{solutionId},
-        updateTime=NOW()
+        UPDATE "TstProject"
+        SET "issueWorkflowSolutionId"=#{solutionId},
+          "updateTime"=NOW()
 
-        WHERE id=#{projectId} AND orgId=#{orgId}
+        WHERE id=#{projectId} AND "orgId"=#{orgId}
     </update>
 
     <select id="getIssueTypeWorkflow" resultType="IsuWorkflowSolutionItem">
-        SELECT * FROM IsuWorkflowSolutionItem o
-        JOIN IsuWorkflowSolution slu ON o.solutionId=slu.id
-        JOIN TstProject p ON p.issueWorkflowSolutionId=slu.id
+        SELECT * FROM "IsuWorkflowSolutionItem" o
+        JOIN "IsuWorkflowSolution" slu ON o."solutionId"=slu.id
+        JOIN "TstProject" p ON p."issueWorkflowSolutionId"=slu.id
         WHERE p.id = #{projectId}
     </select>
 

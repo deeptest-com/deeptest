@@ -8,7 +8,7 @@
             <property name="projectId" value="${projectId}"/>
         </include>
         AND fields.key NOT IN (
-          SELECT elem.key FROM IsuPageElement elem WHERE elem.pageId = #{pageId}
+          SELECT elem.key FROM "IsuPageElement" elem WHERE elem."pageId" = #{pageId}
         )
 
         ORDER BY fields.sort ASC
@@ -71,57 +71,57 @@
     </resultMap>
 
     <sql id="fetch">
-        SELECT fields.*, dict.table optionTable, '${projectId}' projectId,
+        SELECT fields.*, dict.table "optionTable", '${projectId}' "projectId",
 
         CASE fields.input
           WHEN 'dropdown' OR 'multi_select' OR 'radio' OR 'checkbox' THEN 'canSelect'
           ELSE 'notSelect'
-        END inputCatagory
+        END "inputCatagory"
 
         FROM (
-          (SELECT CONCAT('sys-', field.id) `key`,
-            field.id fieldId, field.colCode, field.label,
-            field.type, field.input, field.fullLine, field.required,
-            field.readonly, true buildIn,
-            field.orgId,
+          (SELECT 'sys-' || field.id "key",
+            field.id "fieldId", field."colCode", field.label,
+            field.type, field.input, field."fullLine", field.required,
+            field.readonly, true "buildIn",
+            field."orgId",
             CASE '${sort}'
-              WHEN 'filter' THEN field.filterOrdr
-              WHEN 'col' THEN field.columnOrdr
-              ELSE field.elemOrdr
+              WHEN 'filter' THEN field."filterOrdr"
+              WHEN 'col' THEN field."columnOrdr"
+              ELSE field."elemOrdr"
             END sort
 
-            FROM IsuField field
+            FROM "IsuField" field
 
-            WHERE field.orgId = #{orgId} AND field.disabled!=true AND field.deleted!=true
+            WHERE field."orgId" = #{orgId} AND field.disabled!=true AND field.deleted!=true
                 <if test="sort == 'filter'">
-                    AND field.defaultShowInFilters IS NOT NULL
+                    AND field."defaultShowInFilters" IS NOT NULL
                 </if>
                 <if test="sort == 'col'">
-                    AND field.defaultShowInColumns IS NOT NULL
+                    AND field."defaultShowInColumns" IS NOT NULL
                 </if>
                 <if test="sort == 'elem'">
-                    AND field.defaultShowInPage IS NOT NULL
+                    AND field."defaultShowInPage" IS NOT NULL
                 </if>
             ORDER BY sort ASC
           )
 
           UNION
 
-          (SELECT CONCAT('cust-', customField.id) `key`,
-            customField.id fieldId, customField.colCode, customField.label,
-            customField.type, customField.input, customField.fullLine, customField.required,
-            customField.readonly, false buildIn,
-            customField.orgId, customField.ordr+1000000 sort
+          (SELECT 'cust-' || "customField".id "key",
+            "customField".id "fieldId", "customField"."colCode", "customField".label,
+            "customField".type, "customField".input, "customField"."fullLine", "customField".required,
+            "customField".readonly, false "buildIn",
+            "customField"."orgId", "customField".ordr+1000000 sort
 
-            FROM CustomField customField
+            FROM "CustomField" "customField"
 
-            WHERE customField.orgId = #{orgId} AND customField.applyTo = 'issue'
-                AND customField.disabled!=true AND customField.deleted!=true
+            WHERE "customField"."orgId" = #{orgId} AND "customField"."applyTo" = 'issue'
+                AND "customField".disabled!=true AND "customField".deleted!=true
             ORDER BY sort ASC
           )
         ) fields
 
-        LEFT JOIN IsuFieldCodeToTableDefine dict ON fields.colCode = dict.colCode
+        LEFT JOIN "IsuFieldCodeToTableDefine" dict ON fields."colCode" = dict."colCode"
         WHERE TRUE
 
         <if test="sort == 'filter'">
@@ -130,38 +130,38 @@
     </sql>
 
     <sql id="fetchCustomFieldOptions">
-        SELECT opt.id, opt.label, opt.value, opt.defaultVal
-        FROM CustomFieldOption opt
-        WHERE opt.fieldId=#{fieldId}
+        SELECT opt.id, opt.label, opt.value, opt."defaultVal"
+        FROM "CustomFieldOption" opt
+        WHERE opt."fieldId"=#{fieldId}
         AND opt.disabled!=true AND opt.deleted!=true
         ORDER BY opt.ordr;
     </sql>
 
     <sql id="fetchUsers">
-        select usr.id, usr.nickname label from TstUser usr
+        select usr.id, usr.nickname label from "TstUser" usr
         where usr.id in
         (
-            select relation1.entityId from TstProjectRoleEntityRelation relation1
-              where relation1.type = 'user' AND relation1.projectId = #{projectId}
+            select relation1."entityId" from "TstProjectRoleEntityRelation" relation1
+              where relation1.type = 'user' AND relation1."projectId" = #{projectId}
 
             UNION
 
-            select relta.userId from TstOrgGroupUserRelation relta
-              where relta.orgGroupId in
+            select relta."userId" from "TstOrgGroupUserRelation" relta
+              where relta."orgGroupId" in
                 (
-                  select relation2.entityId from TstProjectRoleEntityRelation relation2
-                  where relation2.type = 'group' AND relation2.projectId = #{projectId}
+                  select relation2."entityId" from "TstProjectRoleEntityRelation" relation2
+                  where relation2.type = 'group' AND relation2."projectId" = #{projectId}
                 )
         )
         ORDER by usr.nickname ASC
     </sql>
 
     <sql id="fetchSysFieldOptions">
-        SELECT tb.id, tb.label, tb.defaultVal, '${code}' fieldCode, '${optionTable}' optionTable
+        SELECT tb.id, tb.label, tb."defaultVal", '${code}' "fieldCode", '${optionTable}' "optionTable"
         FROM ${optionTable} AS tb
         WHERE TRUE
         <if test="optionTable != 'TstUser'">
-            AND tb.orgId = #{orgId}
+            AND tb."orgId" = #{orgId}
         </if>
         ORDER BY tb.ordr
     </sql>

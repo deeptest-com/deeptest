@@ -3,18 +3,19 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueLinkDao" >
 
     <insert id="link">
-        INSERT INTO IsuLink
-          (srcIssueId, dictIssueId, reasonId, reasonName)
-        SELECT ${srcIssueId}, ${dictIssueId}, ${reasonId}, '${reasonName}' FROM dual
+        INSERT INTO "IsuLink"
+          ("srcIssueId", "dictIssueId", "reasonId", "reasonName")
+        values(${srcIssueId}, ${dictIssueId}, ${reasonId}, '${reasonName}')
+
         WHERE NOT EXISTS (
-            SELECT * FROM IsuLink WHERE srcIssueId = ${srcIssueId}
-                                  AND dictIssueId=${dictIssueId}
-                                  AND reasonId=${reasonId}
+            SELECT * FROM "IsuLink" WHERE "srcIssueId" = ${srcIssueId}
+                                  AND "dictIssueId"=${dictIssueId}
+                                  AND "reasonId"=${reasonId}
         )
     </insert>
 
     <select id="listLinkReason" resultType="IsuLinkReason">
-        SELECT * FROM IsuLinkReasonDefine o
+        SELECT * FROM "IsuLinkReasonDefine" o
 
         WHERE o.deleted != TRUE
         AND o.disabled != TRUE
@@ -22,12 +23,13 @@
     </select>
 
     <select id="listByIssueId" parameterType="Map" resultMap="issueLinkMap">
-        SELECT l.reasonId, l.reasonName, o.id, o.title FROM IsuIssue o
-        JOIN IsuLink l ON l.dictIssueId = o.id
-        WHERE l.srcIssueId = #{id}
+        SELECT l."reasonId", l."reasonName", o.id, o.title
+        FROM "IsuIssue" o
+        JOIN "IsuLink" l ON l."dictIssueId" = o.id
+        WHERE l."srcIssueId" = #{id}
         AND o.deleted != true AND o.disabled != true
 
-        ORDER BY l.reasonId ASC, l.id ASC
+        ORDER BY l."reasonId" ASC, l.id ASC
     </select>
 
     <resultMap id="issueLinkMap" type="Map" autoMapping="true">

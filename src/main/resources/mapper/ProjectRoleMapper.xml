@@ -3,12 +3,12 @@
 <mapper namespace="com.ngtesting.platform.dao.ProjectRoleDao" >
 
     <select id="query" resultType="TstProjectRole">
-        SELECT * FROM TstProjectRole o
+        SELECT * FROM "TstProjectRole" o
 
         WHERE
-            o.orgId=#{orgId}
+            o."orgId"=#{orgId}
             <if test="keywordsParam != null and keywordsParam != ''">
-                AND o.name LIKE CONCAT('%','${keywordsParam}','%' )
+                AND o.name LIKE '%${keywordsParam}%'
             </if>
             <if test="disabledParam != null">
                 AND o.disabled = #{disabledParam}
@@ -19,9 +19,9 @@
     </select>
 
     <select id="getRoleByCode" resultType="TstProjectRole">
-        SELECT * FROM TstProjectRole o
+        SELECT * FROM "TstProjectRole" o
 
-        WHERE o.orgId=#{orgId}
+        WHERE o."orgId"=#{orgId}
         AND o.code = #{roleCode}
         AND o.deleted != TRUE
 
@@ -29,31 +29,31 @@
     </select>
 
     <select id="get" resultType="TstProjectRole">
-        SELECT * FROM TstProjectRole o
+        SELECT * FROM "TstProjectRole" o
 
-        WHERE o.id=#{id} AND o.orgId = #{orgId}
+        WHERE o.id=#{id} AND o."orgId" = #{orgId}
     </select>
 
     <insert id="save" parameterType="TstProjectRole" useGeneratedKeys="true" keyProperty="id">
-        insert into TstProjectRole
-        (code,name,orgId,deleted,disabled,createTime)
+        insert into "TstProjectRole"
+        (code,name,"orgId",deleted,disabled,"createTime")
         values
         (#{code},#{name},#{orgId},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="TstProjectRole">
-        UPDATE TstProjectRole
+        UPDATE "TstProjectRole"
         SET name=#{name},
         disabled=#{disabled},
-        updateTime=NOW()
+        "updateTime"=NOW()
 
-        WHERE id=#{id} AND orgId=#{orgId}
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <delete id="delete" parameterType="TstProjectRole">
-        UPDATE TstProjectRole
-        SET deleted=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "TstProjectRole"
+        SET deleted=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </delete>
 
 </mapper>

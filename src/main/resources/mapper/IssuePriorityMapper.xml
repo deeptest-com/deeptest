@@ -3,31 +3,31 @@
 <mapper namespace="com.ngtesting.platform.dao.IssuePriorityDao" >
 
     <select id="list" resultType="IsuPriority">
-        SELECT * FROM IsuPriority o
-        WHERE o.orgId=#{orgId}
+        SELECT * FROM "IsuPriority" o
+        WHERE o."orgId"=#{orgId}
 
         AND o.disabled!=TRUE AND o.deleted!=TRUE
         ORDER BY o.ordr ASC
     </select>
 
     <select id="listBySolutionId" resultType="IsuPriority" parameterType="Map">
-        SELECT * FROM IsuPriority o
-        JOIN IsuPrioritySolutionItem r ON r.priorityId = o.id
-        WHERE r.solutionId = #{solutionId}
-          AND o.orgId=#{orgId}
+        SELECT * FROM "IsuPriority" o
+        JOIN "IsuPrioritySolutionItem" r ON r."priorityId" = o.id
+        WHERE r."solutionId" = #{solutionId}
+          AND o."orgId"=#{orgId}
 
         AND o.disabled!=TRUE AND o.deleted!=TRUE
         ORDER BY o.ordr ASC
     </select>
 
     <select id="listNotInSolution" resultType="IsuPriority" parameterType="Map">
-        SELECT * FROM IsuPriority o
+        SELECT * FROM "IsuPriority" o
 
-        WHERE o.orgId=#{orgId}
+        WHERE o."orgId"=#{orgId}
          AND o.id NOT IN (
-          SELECT tmp.id FROM IsuPriority tmp
-          JOIN IsuPrioritySolutionItem r ON r.priorityId = tmp.id
-          WHERE r.solutionId = #{solutionId} AND tmp.orgId=#{orgId}
+          SELECT tmp.id FROM "IsuPriority" tmp
+          JOIN "IsuPrioritySolutionItem" r ON r."priorityId" = tmp.id
+          WHERE r."solutionId" = #{solutionId} AND tmp."orgId"=#{orgId}
         )
 
         AND o.disabled!=TRUE AND o.deleted!=TRUE
@@ -35,57 +35,57 @@
     </select>
 
     <select id="get" resultType="IsuPriority">
-        SELECT * FROM IsuPriority o
+        SELECT * FROM "IsuPriority" o
 
         WHERE o.id = #{id}
         <if test="orgId != null">
-            AND o.orgId=#{orgId}
+            AND o."orgId"=#{orgId}
         </if>
     </select>
 
     <insert id="save" parameterType="IsuPriority" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuPriority
-        (label,value,descr,orgId, defaultVal, buildIn,ordr,deleted,disabled,createTime)
+        insert into "IsuPriority"
+        (label,value,descr,"orgId", "defaultVal", "buildIn",ordr,deleted,disabled,"createTime")
         values
         (#{label},#{value},#{descr},#{orgId}, #{defaultVal}, #{buildIn},#{ordr},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="IsuPriority">
-        UPDATE IsuPriority
-        SET label=#{label},value=#{value},descr=#{descr},
+        UPDATE "IsuPriority"
+        SET label=#{label},"value"=#{value},descr=#{descr},
         disabled=#{disabled},
-        updateTime=NOW()
+        "updateTime"=NOW()
 
-        WHERE id=#{id} AND orgId=#{orgId}
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <delete id="delete">
-        UPDATE IsuPriority
-        SET disabled=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuPriority"
+        SET disabled=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </delete>
 
     <update id="removeDefault">
-        UPDATE IsuPriority
-        SET defaultVal=FALSE, updateTime=NOW()
-        WHERE orgId=#{orgId}
+        UPDATE "IsuPriority"
+        SET "defaultVal"=FALSE, "updateTime"=NOW()
+        WHERE "orgId"=#{orgId}
     </update>
     <update id="setDefault">
-        UPDATE IsuPriority
-        SET defaultVal=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuPriority"
+        SET "defaultVal"=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <update id="setOrder">
-        UPDATE IsuPriority
-        SET ordr=#{ordr}, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuPriority"
+        SET ordr=#{ordr}, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <select id="getPrev" resultType="IsuPriority">
         <![CDATA[
-            SELECT * FROM IsuPriority o
-            WHERE o.ordr < #{ordr} AND o.orgId = #{orgId}
+            SELECT * FROM "IsuPriority" o
+            WHERE o.ordr < #{ordr} AND o."orgId" = #{orgId}
             AND o.deleted != TRUE
             ORDER BY o.ordr DESC LIMIT 1
         ]]>
@@ -93,16 +93,16 @@
 
     <select id="getNext" resultType="IsuPriority">
         <![CDATA[
-            SELECT * FROM IsuPriority o
-            WHERE o.ordr > #{ordr} AND o.orgId = #{orgId}
+            SELECT * FROM "IsuPriority" o
+            WHERE o.ordr > #{ordr} AND o."orgId" = #{orgId}
             AND o.deleted != TRUE
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>
 
     <select id="getMaxOrdrNumb" resultType="Integer">
-        select max(ordr) from IsuPriority o
-        where o.orgId=#{orgId}
+        select max(ordr) from "IsuPriority" o
+        where o."orgId"=#{orgId}
         and o.deleted != true
         and o.disabled != true
     </select>

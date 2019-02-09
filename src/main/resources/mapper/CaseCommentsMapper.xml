@@ -3,47 +3,47 @@
 <mapper namespace="com.ngtesting.platform.dao.CaseCommentsDao" >
 
     <select id="query" resultType="TstCaseComments">
-        SELECT * FROM TstCaseComments o WHERE o.caseId=#{caseId}
+        SELECT * FROM "TstCaseComments" o WHERE o."caseId"=#{caseId}
 
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.updateTime ASC LIMIT 15
+        ORDER BY o."updateTime" ASC LIMIT 15
     </select>
 
     <select id="listByCaseId" parameterType="Map" resultMap="caseCommentsMap">
-        SELECT o.*, usr.id userId, usr.nickname userName, usr.avatar userAvatar
+        SELECT o.*, usr.id "userId", usr."nickname" "userName", usr."avatar" "userAvatar"
 
-        FROM TstCaseComments o
+        FROM "TstCaseComments" o
 
-        JOIN TstUser usr ON o.userId = usr.id
+        JOIN "TstUser" usr ON o."userId" = usr.id
 
-        WHERE o.caseId = #{id}
+        WHERE o."caseId" = #{id}
         AND o.deleted != true AND o.disabled != true
 
-        ORDER BY o.updateTime DESC LIMIT 15;
+        ORDER BY o."updateTime" DESC LIMIT 15;
     </select>
 
     <select id="get" resultType="TstCaseComments">
         SELECT *
-        FROM TstCaseComments o
+        FROM "TstCaseComments" o
         WHERE o.id=#{id}
     </select>
 
     <insert id="save" parameterType="TstCaseComments" useGeneratedKeys="true" keyProperty="id">
-        insert into TstCaseComments (summary,content,caseId,userId,
-          createTime,updateTime,deleted,disabled)
+        insert into "TstCaseComments" (summary,content,"caseId","userId",
+          "createTime","updateTime",deleted,disabled)
 
         values (#{summary},#{content},#{caseId},#{userId},
           NOW(),NOW(),#{deleted},#{disabled})
     </insert>
     <update id="update">
-        UPDATE TstCaseComments
-        SET summary=#{vo.summary},content=#{vo.content},updateTime=NOW()
+        UPDATE "TstCaseComments"
+        SET summary=#{vo.summary},content=#{vo.content},"updateTime"=NOW()
         WHERE id=#{vo.id} AND userId=#{userId}
     </update>
     <update id="delete">
-        UPDATE TstCaseComments
+        UPDATE "TstCaseComments"
         SET disabled=TRUE
-        WHERE id=#{id} AND userId=#{userId}
+        WHERE id=#{id} AND "userId"=#{userId}
     </update>
 
     <resultMap id="caseCommentsMap" type="TstCaseComments" autoMapping="true">

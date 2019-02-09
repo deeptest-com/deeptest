@@ -3,58 +3,58 @@
 <mapper namespace="com.ngtesting.platform.dao.TestVerDao" >
 
     <select id="query" resultType="TstVer">
-        SELECT * FROM TstVer o WHERE TRUE
+        SELECT * FROM "TstVer" o WHERE TRUE
         <if test="keywords != null and keywords != ''">
-            AND o.label LIKE CONCAT('%','${keywords}','%' )
+            AND o.label LIKE '%${keywords}%'
         </if>
         <if test="disabled != null">
             AND o.disabled = #{disabled}
         </if>
-        AND o.projectId = #{projectId}
+        AND o."projectId" = #{projectId}
         AND o.deleted != TRUE
 
         ORDER BY o.ordr ASC
     </select>
 
     <select id="listLastest" resultType="TstVer">
-        SELECT * FROM TstVer o
-        WHERE o.projectId = #{projectId}
+        SELECT * FROM "TstVer" o
+        WHERE o."projectId" = #{projectId}
         AND o.deleted != TRUE
         AND o.disabled != TRUE
 
-        ORDER BY o.createTime DESC LIMIT 10
+        ORDER BY o."createTime" DESC LIMIT 10
     </select>
 
     <select id="get" resultType="TstVer">
-        SELECT * FROM TstVer o
+        SELECT * FROM "TstVer" o
         WHERE o.id = #{id}
         <if test="projectId != null">
-            AND o.projectId=#{projectId}
+            AND o."projectId"=#{projectId}
         </if>
     </select>
 
     <insert id="add" parameterType="TstVer" useGeneratedKeys="true" keyProperty="id">
-        insert into TstVer
-          (label,startTime,endTime,descr,projectId,orgId,ordr,deleted,disabled,createTime)
+        insert into "TstVer"
+          (label,"startTime","endTime",descr,"projectId","orgId",ordr,deleted,disabled,"createTime")
         values
           (#{label},#{startTime},#{endTime},#{descr},#{projectId},#{orgId},#{ordr},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="TstVer">
-        UPDATE TstVer
+        UPDATE "TstVer"
         SET label=#{label},
-            startTime=#{startTime}, endTime=#{endTime},
+            "startTime"=#{startTime}, "endTime"=#{endTime},
             descr=#{descr},
             ordr=#{ordr},
             disabled=#{disabled},
-            updateTime=NOW()
-        WHERE id=#{id} AND projectId = #{projectId}
+            "updateTime"=NOW()
+        WHERE id=#{id} AND "projectId" = #{projectId}
     </update>
 
     <update id="delete">
-        UPDATE TstVer
-        SET deleted=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND projectId = #{projectId}
+        UPDATE "TstVer"
+        SET deleted=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "projectId" = #{projectId}
     </update>
 
     <update id="setOrder">
@@ -64,16 +64,16 @@
     </update>
 
     <select id="getMaxOrdrNumb" resultType="Integer">
-        select max(ordr) from TstVer tp
-        where tp.projectId=#{projectId}
+        select max(ordr) from "TstVer" tp
+        where tp."projectId"=#{projectId}
         and tp.deleted != true
         and tp.disabled != true
     </select>
 
     <select id="getPrev" resultType="TstVer">
         <![CDATA[
-            SELECT * FROM TstVer o
-            WHERE o.ordr < #{ordr} AND o.projectId = #{projectId}
+            SELECT * FROM "TstVer" o
+            WHERE o.ordr < #{ordr} AND o."projectId" = #{projectId}
             AND o.deleted != TRUE
             ORDER BY o.ordr DESC LIMIT 1
         ]]>
@@ -81,8 +81,8 @@
 
     <select id="getNext" resultType="TstVer">
         <![CDATA[
-            SELECT * FROM TstVer o
-            WHERE o.ordr > #{ordr} AND o.projectId = #{projectId}
+            SELECT * FROM "TstVer" o
+            WHERE o.ordr > #{ordr} AND o."projectId" = #{projectId}
             AND o.deleted != TRUE
             ORDER BY o.ordr ASC LIMIT 1
         ]]>

@@ -3,56 +3,56 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueQueryDao" >
 
     <select id="list" resultType="IsuQuery">
-        SELECT * FROM IsuQuery o
-        WHERE o.projectId=#{prjId} AND userId=#{userId}
+        SELECT * FROM "IsuQuery" o
+        WHERE o."projectId"=#{prjId} AND "userId"=#{userId}
 
         <if test="keywords != null and keywords != ''">
-            AND o.name LIKE CONCAT('%','${keywords}','%' )
+            AND o.name LIKE '%${keywords}%'
         </if>
 
         AND o.disabled!=TRUE AND o.deleted!=TRUE
-        ORDER BY o.createTime ASC
+        ORDER BY o."createTime" ASC
     </select>
 
     <select id="listRecentQuery" resultType="IsuQuery">
-        SELECT * FROM IsuQuery o
-        WHERE o.projectId=#{prjId} AND userId=#{userId}
+        SELECT * FROM "IsuQuery" o
+        WHERE o."projectId"=#{prjId} AND "userId"=#{userId}
 
         AND o.disabled!=TRUE AND o.deleted!=TRUE
-        ORDER BY useTime DESC  LIMIT 6
+        ORDER BY "useTime" DESC  LIMIT 6
     </select>
 
     <select id="get" resultType="IsuQuery">
-        SELECT * FROM IsuQuery o
+        SELECT * FROM "IsuQuery" o
 
-        WHERE o.id = #{id} AND o.userId=#{userId}
+        WHERE o.id = #{id} AND o."userId"=#{userId}
     </select>
 
     <insert id="save" parameterType="IsuQuery" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuQuery
-        (name,rule,descr,projectId,prjId,userId,deleted,disabled,useTime,createTime)
+        insert into "IsuQuery"
+        (name,rule,descr,"projectId","prjId","userId",deleted,disabled,"useTime","createTime")
         values
         (#{name},#{rule},#{descr},#{projectId},#{prjId},#{userId},FALSE,FALSE,NOW(),NOW())
     </insert>
 
     <update id="update">
-        UPDATE IsuQuery
-        SET name=#{model.name}, updateTime=NOW()
+        UPDATE "IsuQuery"
+        SET name=#{model.name}, "updateTime"=NOW()
 
-        WHERE id=#{model.id} AND userId=#{userId}
+        WHERE id=#{model.id} AND "userId"=#{userId}
     </update>
 
     <update id="updateUseTime">
-        UPDATE IsuQuery
-        SET useTime=NOW(), updateTime=NOW()
+        UPDATE "IsuQuery"
+        SET "useTime"=NOW(), "updateTime"=NOW()
 
         WHERE id=#{id}
     </update>
 
     <delete id="delete">
-        UPDATE IsuQuery
-        SET disabled=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND userId=#{userId}
+        UPDATE "IsuQuery"
+        SET disabled=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "userId"=#{userId}
     </delete>
 
 </mapper>

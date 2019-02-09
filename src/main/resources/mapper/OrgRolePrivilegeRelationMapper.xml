@@ -4,27 +4,28 @@
 <mapper namespace="com.ngtesting.platform.dao.OrgRolePrivilegeRelationDao" >
 
     <select id="query" resultType="TstOrgRolePrivilegeRelation">
-        SELECT * FROM TstOrgRolePrivilegeRelation o WHERE o.orgId=#{orgId}
+        SELECT * FROM "TstOrgRolePrivilegeRelation" o
+        WHERE o."orgId"=#{orgId}
         <if test="roleId != null">
-            AND o.orgRoleId = #{roleId}
+            AND o."orgRoleId" = #{roleId}
         </if>
         <if test="privilegeId != null">
-            AND o.orgPrivilegeId = #{privilegeId}
+            AND o."orgPrivilegeId" = #{privilegeId}
         </if>
-        ORDER BY o.orgPrivilegeId ASC
+        ORDER BY o."orgPrivilegeId" ASC
     </select>
 
     <delete id="removeAllPrivilegesForRole">
-        DELETE FROM TstOrgRolePrivilegeRelation
-        WHERE orgId=#{orgId} AND orgRoleId=#{roleId}
+        DELETE FROM "TstOrgRolePrivilegeRelation"
+        WHERE "orgId"=#{orgId} AND "orgRoleId"=#{roleId}
     </delete>
     <delete id="removeAllRolesForPrivilege">
-        DELETE FROM TstOrgRolePrivilegeRelation
-        WHERE orgId=#{orgId} AND orgPrivilegeId=#{privilegeId}
+        DELETE FROM "TstOrgRolePrivilegeRelation"
+        WHERE "orgId"=#{orgId} AND "orgPrivilegeId"=#{privilegeId}
     </delete>
 
     <insert id="saveRelations">
-        insert into TstOrgRolePrivilegeRelation (orgId,orgRoleId,orgPrivilegeId)
+        insert into "TstOrgRolePrivilegeRelation" ("orgId","orgRoleId","orgPrivilegeId")
         values
         <foreach collection="list" item="item" separator=",">
             (#{item.orgId},#{item.orgRoleId}, #{item.orgPrivilegeId})

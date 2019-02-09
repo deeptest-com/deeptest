@@ -3,16 +3,16 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueTagDao" >
 
     <select id="search" resultType="IsuTag">
-        SELECT * FROM IsuTag tag
-        LEFT JOIN IsuTagRelation r ON r.tagId = tag.id
+        SELECT * FROM "IsuTag" tag
+        LEFT JOIN "IsuTagRelation" r ON r."tagId" = tag.id
 
         WHERE TRUE
         <if test="issueId != null and issueId != ''">
-            AND r.issueId = #{issueId}
+            AND r."issueId" = #{issueId}
         </if>
 
         <if test="keywords != null and keywords != ''">
-            AND tag.name LIKE CONCAT('%','${keywords}','%' )
+            AND tag.name LIKE '%${keywords}%'
         </if>
         <if test="exceptIds != null and exceptIds.size > 0">
             AND tag.id NOT IN
@@ -21,29 +21,29 @@
             </foreach>
         </if>
 
-        AND tag.orgId = #{orgId}
+        AND tag."orgId" = #{orgId}
         AND tag.deleted != TRUE
         AND tag.disabled != TRUE
         ORDER BY tag.id ASC
     </select>
 
     <select id="query" resultType="IsuAttachment">
-        SELECT * FROM IsuAttachment o
+        SELECT * FROM "IsuAttachment" o
 
-        WHERE o.issueId=#{issueId}
+        WHERE o."issueId"=#{issueId}
         AND o.deleted != true AND o.disabled != true
-        ORDER BY o.createTime ASC
+        ORDER BY o."createTime" ASC
     </select>
 
     <select id="get" resultType="IsuAttachment">
-        SELECT * FROM IsuAttachment o
+        SELECT * FROM "IsuAttachment" o
 
         WHERE o.id=#{id}
     </select>
 
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuTag
-          (name, orgId, userId, deleted, disabled, createTime)
+        insert into "IsuTag"
+          (name, "orgId", "userId", deleted, disabled, "createTime")
         values
         <foreach collection="list" item="item" separator=",">
           (#{item.name}, #{item.orgId}, #{item.userId}, false, false, NOW())
@@ -51,12 +51,12 @@
     </insert>
 
     <delete id="removeRelations">
-        DELETE FROM IsuTagRelation
-        WHERE issueId = #{issueId}
+        DELETE FROM "IsuTagRelation"
+        WHERE "issueId" = #{issueId}
     </delete>
 
     <insert id="saveRelations" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuTagRelation
+        insert into "IsuTagRelation"
           (issueId, tagId)
         values
         <foreach collection="tags" item="item" separator=",">
@@ -65,16 +65,16 @@
     </insert>
 
     <update id="updateTagField">
-        UPDATE IsuIssue
+        UPDATE "IsuIssue"
         SET tag=#{tags}
         WHERE id=#{issueId}
     </update>
 
     <select id="listByIssueId" parameterType="Map" resultMap="issueTagMap">
-        SELECT tag.* FROM IsuTag tag
-        JOIN IsuTagRelation r ON r.tagId = tag.id
+        SELECT tag.* FROM "IsuTag" tag
+        JOIN "IsuTagRelation" r ON r."tagId" = tag.id
 
-        WHERE r.issueId = #{id}
+        WHERE r."issueId" = #{id}
         AND tag.deleted != TRUE
         AND tag.disabled != TRUE
         ORDER BY tag.id ASC

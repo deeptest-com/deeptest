@@ -5,47 +5,47 @@
     <select id="listByProject" resultType="TstProjectRoleEntityRelation">
         SELECT
           o.*,
-          role.name projectRoleName,
-          CASE o.type
+          role.name "projectRoleName",
+          CASE o."type"
               WHEN 'user' THEN
                 usr.nickname
               WHEN 'group' THEN
                 grp.name
               ELSE
                 'N/A'
-          END entityName
+          END "entityName"
 
-        FROM TstProjectRoleEntityRelation o
+        FROM "TstProjectRoleEntityRelation" o
 
-        JOIN TstProjectRole role ON role.id = o.projectRoleId
+        JOIN "TstProjectRole" role ON role.id = o."projectRoleId"
 
-        LEFT JOIN TstUser usr ON usr.id = o.entityId
-        LEFT JOIN TstOrgGroup grp ON grp.id = o.entityId
+        LEFT JOIN "TstUser" usr ON usr.id = o."entityId"
+        LEFT JOIN "TstOrgGroup" grp ON grp.id = o."entityId"
 
-        WHERE o.projectId=#{projectId}
+        WHERE o."projectId"=#{projectId}
 
-        ORDER BY o.type, role.id ASC
+        ORDER BY o."type", role.id ASC
     </select>
 
     <select id="listIdsByProjectAndUser" resultType="Integer">
-      select relation.projectRoleId from TstProjectRoleEntityRelation relation
+      select relation."projectRoleId" from "TstProjectRoleEntityRelation" relation
           where
             (
-              (relation.type = 'user' AND relation.entityId = #{userId})
-              or (relation.type = 'group' AND
-                  relation.entityId in (
-                    select grp.id from TstOrgGroup grp
-                      left join TstOrgGroupUserRelation relat on relat.orgGroupId = grp.id
-                      left join TstUser userr on relat.userId = userr.id
+              (relation."type" = 'user' AND relation."entityId" = #{userId})
+              or (relation."type" = 'group' AND
+                  relation."entityId" in (
+                    select grp.id from "TstOrgGroup" grp
+                      left join "TstOrgGroupUserRelation" relat on relat."orgGroupId" = grp.id
+                      left join "TstUser" userr on relat."userId" = userr.id
                     where userr.id = #{userId}
                   )
               )
             )
-            and relation.projectId = #{projectId}
+            and relation."projectId" = #{projectId}
     </select>
 
     <insert id="addRole" useGeneratedKeys="true" keyProperty="id">
-        insert into TstProjectRoleEntityRelation (orgId,projectId,projectRoleId,entityId,type
+        insert into "TstProjectRoleEntityRelation" ("orgId","projectId","projectRoleId","entityId","type"
           )
 
         values (#{orgId},#{projectId},#{projectRoleId},#{entityId},#{type}
@@ -53,14 +53,14 @@
     </insert>
 
     <update id="changeRole">
-        UPDATE TstProjectRoleEntityRelation
-        SET projectRoleId=#{projectRoleId}
-        WHERE projectId=#{projectId} AND entityId=#{entityId}
+        UPDATE "TstProjectRoleEntityRelation"
+        SET "projectRoleId"=#{projectRoleId}
+        WHERE "projectId"=#{projectId} AND "entityId"=#{entityId}
     </update>
 
     <delete id="remove">
-        DELETE FROM TstProjectRoleEntityRelation
-        WHERE projectId=#{projectId} AND type=#{type} AND entityId=#{entityId}
+        DELETE FROM "TstProjectRoleEntityRelation"
+        WHERE "projectId"=#{projectId} AND "type"=#{type} AND "entityId"=#{entityId}
     </delete>
 
 </mapper>

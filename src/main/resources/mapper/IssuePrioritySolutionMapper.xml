@@ -3,8 +3,8 @@
 <mapper namespace="com.ngtesting.platform.dao.IssuePrioritySolutionDao" >
 
     <select id="list" resultType="IsuPrioritySolution">
-        SELECT * FROM IsuPrioritySolution o
-        WHERE o.orgId=#{orgId}
+        SELECT * FROM "IsuPrioritySolution" o
+        WHERE o."orgId"=#{orgId}
 
         AND o.disabled!=TRUE AND o.deleted!=TRUE
         ORDER BY id ASC
@@ -20,61 +20,61 @@
     <!--</select>-->
 
     <select id="getDetail" resultMap="isuPrioritySolutionMap">
-        SELECT * FROM IsuPrioritySolution o
+        SELECT * FROM "IsuPrioritySolution" o
 
-        WHERE o.id = #{id} AND o.orgId=#{orgId}
+        WHERE o.id = #{id} AND o."orgId"=#{orgId}
     </select>
 
     <insert id="save" parameterType="IsuPrioritySolution" useGeneratedKeys="true" keyProperty="id">
-        insert into IsuPrioritySolution
-        (name,orgId, defaultVal, buildIn,deleted,disabled,createTime)
+        insert into "IsuPrioritySolution"
+        (name,"orgId", "defaultVal", "buildIn",deleted,disabled,"createTime")
         values
         (#{name},#{orgId}, #{defaultVal}, #{buildIn}, FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="IsuPrioritySolution">
-        UPDATE IsuPrioritySolution
+        UPDATE "IsuPrioritySolution"
         SET name=#{name},
         disabled=#{disabled},
-        updateTime=NOW()
+        "updateTime"=NOW()
 
-        WHERE id=#{id} AND orgId=#{orgId}
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <delete id="delete">
-        UPDATE IsuPrioritySolution
-        SET disabled=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuPrioritySolution"
+        SET disabled=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </delete>
 
     <update id="removeDefault">
-        UPDATE IsuPrioritySolution
-        SET defaultVal=FALSE, updateTime=NOW()
-        WHERE orgId=#{orgId}
+        UPDATE "IsuPrioritySolution"
+        SET "defaultVal"=FALSE, "updateTime"=NOW()
+        WHERE "orgId"=#{orgId}
     </update>
     <update id="setDefault">
-        UPDATE IsuPrioritySolution
-        SET defaultVal=TRUE, updateTime=NOW()
-        WHERE id=#{id} AND orgId=#{orgId}
+        UPDATE "IsuPrioritySolution"
+        SET "defaultVal"=TRUE, "updateTime"=NOW()
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <insert id="addPriority">
-        insert into IsuPrioritySolutionItem
-        (priorityId,solutionId,orgId)
+        insert into "IsuPrioritySolutionItem"
+        ("priorityId","solutionId","orgId")
         values
         ( #{priorityId}, #{solutionId}, #{orgId} );
     </insert>
 
     <delete id="removePriority">
-        DELETE FROM IsuPrioritySolutionItem
-        WHERE priorityId=#{priorityId}
-          AND solutionId=#{solutionId}
-          AND orgId=#{orgId}
+        DELETE FROM "IsuPrioritySolutionItem"
+        WHERE "priorityId"=#{priorityId}
+          AND "solutionId"=#{solutionId}
+          AND "orgId"=#{orgId}
     </delete>
 
     <insert id="addAll">
-        insert into IsuPrioritySolutionItem
-        (priorityId,solutionId,orgId)
+        insert into "IsuPrioritySolutionItem"
+        ("priorityId","solutionId","orgId")
         values
         <foreach collection="priorities" item="item" separator=",">
             ( #{item.id}, #{solutionId}, #{orgId} )
@@ -82,8 +82,8 @@
     </insert>
 
     <delete id="removeAll">
-        DELETE FROM IsuPrioritySolutionItem
-        WHERE solutionId=#{solutionId} AND orgId=#{orgId}
+        DELETE FROM "IsuPrioritySolutionItem"
+        WHERE "solutionId"=#{solutionId} AND "orgId"=#{orgId}
     </delete>
 
     <resultMap id="isuPrioritySolutionMap" type="IsuPrioritySolution" autoMapping="true">
@@ -96,16 +96,16 @@
 
     <!-- For Project -->
     <select id="getByProject" resultMap="isuPrioritySolutionMap">
-        SELECT * FROM IsuPrioritySolution o
-        JOIN TstProject p ON p.issuePrioritySolutionId=o.id
-        WHERE p.id = #{projectId} AND o.orgId = #{orgId}
+        SELECT * FROM "IsuPrioritySolution" o
+        JOIN "TstProject" p ON p."issuePrioritySolutionId"=o.id
+        WHERE p.id = #{projectId} AND o."orgId" = #{orgId}
     </select>
     <update id="setByProject">
-        UPDATE TstProject
-        SET issuePrioritySolutionId=#{solutionId},
-        updateTime=NOW()
+        UPDATE "TstProject"
+        SET "issuePrioritySolutionId"=#{solutionId},
+          "updateTime"=NOW()
 
-        WHERE id=#{projectId} AND orgId=#{orgId}
+        WHERE id=#{projectId} AND "orgId"=#{orgId}
     </update>
 
 </mapper>

@@ -11,7 +11,7 @@
 
         FROM "TstTask" task
 
-        JOIN "TstUser" usr ON task.userId = usr.id
+        JOIN "TstUser" usr ON task."userId" = usr.id
         JOIN "TstProject" project ON task."projectId" = project.id
         LEFT JOIN "TstProject" "caseProject" ON task."caseProjectId" = "caseProject".id
         LEFT JOIN "TstEnv" env ON task."envId" = env.id

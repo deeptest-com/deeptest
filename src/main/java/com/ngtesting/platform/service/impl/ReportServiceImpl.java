@@ -157,7 +157,7 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
         for (Map map1 : ls) {
             String category = map1.get("category").toString();
             String priority = map1.get("priority").toString();
-            String number = map1.get("numb").toString();
+            String number = map1.get("count").toString();
 
             String key = category + "-" + priority;
             validMap.put(key, number);

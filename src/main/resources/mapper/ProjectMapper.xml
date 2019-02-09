@@ -44,12 +44,12 @@
         WHERE id=#{id}
     </delete>
 
-    <insert id="genHistory">
+    <insert id="genHistory" statementType="CALLABLE">
       { call gen_project_access_history(
                 #{orgId,mode=IN,jdbcType=INTEGER},
-                #{userId,mode=IN,jdbcType=INTEGER},
                 #{prjId,mode=IN,jdbcType=INTEGER},
-                #{prjName,mode=IN,jdbcType=CHAR}
+                #{prjName,mode=IN,jdbcType=VARCHAR},
+                #{userId,mode=IN,jdbcType=INTEGER},
              ) }
     </insert>
 

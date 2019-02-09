@@ -9,14 +9,14 @@
             AND o."orgRoleId" = #{roleId}
         </if>
         <if test="groupId != null">
-            AND o."groupId" = #{groupId}
+            AND o."orgGroupId" = #{groupId}
         </if>
-        ORDER BY o."groupId" ASC
+        ORDER BY o."orgGroupId" ASC
     </select>
 
     <delete id="removeAllRolesForGroup">
         DELETE FROM "TstOrgRoleGroupRelation"
-        WHERE "orgId"=#{orgId} AND "groupId"=#{groupId}
+        WHERE "orgId"=#{orgId} AND "orgGroupId"=#{groupId}
     </delete>
     <delete id="removeAllGroupsForRole">
         DELETE FROM "TstOrgRoleGroupRelation"
@@ -24,7 +24,7 @@
     </delete>
 
     <insert id="saveRelations">
-        insert into "TstOrgRoleGroupRelation" ("orgId","orgRoleId","groupId")
+        insert into "TstOrgRoleGroupRelation" ("orgId","orgRoleId","orgGroupId")
         values
         <foreach collection="list" item="item" separator=",">
             (#{item.orgId},#{item.orgRoleId}, #{item.groupId})

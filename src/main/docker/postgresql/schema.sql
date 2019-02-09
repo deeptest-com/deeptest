@@ -984,7 +984,7 @@ declare
     var_numb_before bigint;
 BEGIN  
 	SELECT _date_before(p_day_numb) INTO var_date_before;
-	select array(select * from _project_list(p_project_id,p_project_type)) INTO var_project_ids;
+	select array(select _project_list(p_project_id,p_project_type)) INTO var_project_ids;
 	
     SELECT COUNT(id) from "IsuIssue" isu WHERE isu."createTime" < var_date_before 
         and isu."projectId" = ANY (var_project_ids)
@@ -1029,7 +1029,7 @@ declare
     var_numb_before bigint;
 BEGIN  
 	SELECT _date_before(p_day_numb) INTO var_date_before;
-	select array(select * from _project_list(p_project_id,p_project_type)) INTO var_project_ids;
+	select array(select _project_list(p_project_id,p_project_type)) INTO var_project_ids;
 	
     SELECT COUNT(id) from "IsuIssue" isu WHERE isu."setFinalTime" < var_date_before 
 		and isu."projectId" = ANY (var_project_ids)
@@ -1074,7 +1074,7 @@ declare
     var_numb_before bigint;
 BEGIN  
 	SELECT _date_before(p_day_numb) INTO var_date_before;
-	select array(select * from _project_list(p_project_id,p_project_type)) INTO var_project_ids;
+	select array(select _project_list(p_project_id,p_project_type)) INTO var_project_ids;
 	
     SELECT COUNT(id) from "TstCase" cs 
 		WHERE cs."createTime" < var_date_before 
@@ -1249,7 +1249,7 @@ ALTER FUNCTION public.gen_project_access_history(p_org_id integer, p_project_id 
 -- Name: get_project_privilege_for_user(integer, integer, character varying); Type: FUNCTION; Schema: public; Owner: aaron
 --
 
-CREATE FUNCTION public.get_project_privilege_for_user(p_user_id integer, p_project_id integer, p_project_type character varying) RETURNS TABLE(projectid integer, code character varying, action character varying)
+CREATE FUNCTION public.get_project_privilege_for_user(p_user_id integer, p_project_id integer, p_project_type character varying) RETURNS TABLE("projectId" text, code character varying, action character varying)
     LANGUAGE plpgsql
     AS $$  
 declare  
@@ -1257,7 +1257,7 @@ declare
 BEGIN
 	RETURN QUERY
 	
-   select tmp."projectId", define.code, define.action
+   select '' || tmp."projectId", define.code, define.action
    from "TstProjectPrivilegeDefine" define
    left join "TstProjectRolePriviledgeRelation" r on r."projectPrivilegeDefineId" = define.id
    INNER join
@@ -1277,7 +1277,7 @@ BEGIN
 			  )
           )
         )
-        and relation."projectId" = ANY (select _project_list(p_project_id,p_project_type))  
+        and relation."projectId" = ANY (select * from _project_list(p_project_id,p_project_type))  
       ) tmp
       on r."projectRoleId" = tmp."projectRoleId"
 

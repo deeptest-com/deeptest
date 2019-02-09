@@ -106,7 +106,7 @@
 
         WHERE id=#{id}
     </update>
-    <update id="addCases">
+    <update id="addCases" statementType="CALLABLE">
         { call add_cases_to_suite(#{suiteId,mode=IN,jdbcType=INTEGER},
                                   #{caseIds,mode=IN,jdbcType=VARCHAR}) }
     </update>

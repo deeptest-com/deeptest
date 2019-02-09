@@ -3,7 +3,7 @@
 <mapper namespace="com.ngtesting.platform.dao.CaseInTaskDao" >
 
     <select id="query" resultType="TstCaseInTask">
-        SELECT cs.id id, cs.name name, cs."typeId", cs."priorityId",
+        SELECT cs.id id, cs.name "name", cs."typeId", cs."priorityId",
           o.id "entityId", o."pId", o."isParent", o."status", o."ordr"
 
         FROM "TstCaseInTask" o
@@ -19,7 +19,7 @@
     </select>
 
     <select id="get" resultType="TstCaseInTask">
-        SELECT cs.id id, cs.name name, cs."typeId", cs."priorityId",
+        SELECT cs.id id, cs.name "name", cs."typeId", cs."priorityId",
         o.id "entityId", o."pId", o."isParent", o."status", o.ordr
 
         FROM "TstCaseInTask" o

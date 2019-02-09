@@ -92,7 +92,7 @@
         WHERE id=#{id}
     </update>
 
-    <update id="delete">
+    <update id="delete" statementType="CALLABLE">
         { call remove_case_and_its_children(#{pId,mode=IN,jdbcType=INTEGER}, #{projectId,mode=IN,jdbcType=INTEGER}) }
     </update>
 
@@ -131,7 +131,7 @@
           NOW(),NULL,FALSE,FALSE)
     </insert>
 
-<!--    <update id="updateParentIfNeeded">
+<!--    <update id="updateParentIfNeeded" statementType="CALLABLE">
         { call update_case_parent_if_needed(
         #{pId,mode=IN,jdbcType=INTEGER}
         )}

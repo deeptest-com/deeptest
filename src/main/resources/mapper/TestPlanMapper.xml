@@ -102,7 +102,7 @@
         WHERE id=#{id} AND "projectId"=#{projectId}
     </update>
 
-    <update id="closePlanIfAllTaskClosed">
+    <update id="closePlanIfAllTaskClosed" statementType="CALLABLE">
         { call close_plan_if_all_task_closed(
             #{planId,mode=IN,jdbcType=INTEGER}
         )}

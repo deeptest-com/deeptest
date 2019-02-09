@@ -51,10 +51,10 @@
     </update>
 
     <select id="getItems" resultType="IsuWorkflowSolutionItem">
-        SELECT o.*, isuType.label "typeName", workflow.name "workflowName"
+        SELECT o.*, "isuType".label "typeName", workflow.name "workflowName"
 
         FROM "IsuWorkflowSolutionItem" o
-        JOIN "IsuType" isuType ON isuType.id = o.typeId
+        JOIN "IsuType" "isuType" ON "isuType".id = o.typeId
         JOIN "IsuWorkflow" workflow ON workflow.id = o.workflowId
 
         WHERE o."solutionId" = #{solutionId} AND o."orgId" = #{orgId}

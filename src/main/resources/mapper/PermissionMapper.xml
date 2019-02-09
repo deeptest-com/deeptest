@@ -19,7 +19,7 @@
 
                 SELECT r_role_group."orgRoleId"
                   from "TstOrgRoleGroupRelation" r_role_group
-                  JOIN "TstOrgGroupUserRelation" r_group_user ON r_group_user."orgGroupId" = r_role_group."groupId"
+                  JOIN "TstOrgGroupUserRelation" r_group_user ON r_group_user."orgGroupId" = r_role_group."orgGroupId"
 
                 WHERE r_group_user."userId" = ${userId}
               )

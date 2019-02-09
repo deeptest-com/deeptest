@@ -9,12 +9,15 @@ import java.util.Map;
 public interface ReportIssueDao {
     List<TstMsg> query(@Param("userId") Integer userId);
 
-    List<Map> chartIssueTrendCreate(@Param("_projectIds") String projectIds,
+    List<Map> chartIssueTrendCreate(@Param("_projectId") Integer projectId,
+                                    @Param("_projectType") String projectType,
                                     @Param("_numb") Integer numb);
-    List<Map> chartIssueTrendFinal(@Param("_projectIds") String projectIds,
+    List<Map> chartIssueTrendFinal(@Param("_projectId") Integer projectId,
+                                   @Param("_projectType") String projectType,
                                    @Param("_numb") Integer numb);
 
-    List<Map> chartIssueAge(@Param("_projectIds") String projectIds,
+    List<Map> chartIssueAge(@Param("_projectId") Integer projectId,
+                            @Param("_projectType") String projectType,
                             @Param("_numb") Integer numb);
 
     List<Map> chartIssueDistribByPriority(@Param("_projectId") Integer projectId,

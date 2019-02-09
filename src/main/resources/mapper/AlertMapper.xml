@@ -15,8 +15,8 @@
 
     <select id="scanAlerts" resultType="TstAlert">
         <![CDATA[
-        SELECT o."entityName" name, u."nickname" "userName", u."Avatar" "userAvatar",
-                                a.nickname assigneeName, a.Avatar assigneeAvatar, o.*
+        SELECT o."entityName" "name", u."nickname" "userName", u.avatar "userAvatar",
+                                a.nickname "assigneeName", a.Avatar "assigneeAvatar", o.*
         FROM "TstAlert" o LEFT JOIN "TstUser" u on o."userId"=u.id LEFT JOIN "TstUser" a on o."assigneeId"=a.id
         WHERE o."assigneeId"=#{userId}
         AND (

@@ -4,19 +4,22 @@
 
     <select id="chartIssueTrendCreate" resultType="java.util.LinkedHashMap" useCache="false" statementType="CALLABLE">
         { call chart_issue_trend_create(
-                #{_projectIds,mode=IN,jdbcType=VARCHAR},
+                #{_projectId,mode=IN,jdbcType=INTEGER},
+                #{_projectType,mode=IN,jdbcType=VARCHAR},
                 #{_numb,mode=IN,jdbcType=INTEGER} ) }
     </select>
 
     <select id="chartIssueTrendFinal" resultType="java.util.LinkedHashMap" useCache="false" statementType="CALLABLE">
         { call chart_issue_trend_final(
-                #{_projectIds,mode=IN,jdbcType=VARCHAR},
+                #{_projectId,mode=IN,jdbcType=INTEGER},
+                #{_projectType,mode=IN,jdbcType=VARCHAR},
                 #{_numb,mode=IN,jdbcType=INTEGER} ) }
     </select>
 
     <select id="chartIssueAge" resultType="java.util.LinkedHashMap" useCache="false" statementType="CALLABLE">
         { call chart_issue_age(
-                #{_projectIds,mode=IN,jdbcType=INTEGER},
+                #{_projectId,mode=IN,jdbcType=INTEGER},
+                #{_projectType,mode=IN,jdbcType=VARCHAR},
                 #{_numb,mode=IN,jdbcType=INTEGER} ) }
     </select>
 

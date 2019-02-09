@@ -25,9 +25,9 @@
     <update id="saveOrdrs">
        UPDATE "IsuPageElement"
         SET ordr =
-            CASE id
+            CASE
                 <foreach collection="maps" item="map">
-                    WHEN #{map.id} THEN #{map.ordr}
+                    WHEN id=#{map.id} THEN #{map.ordr}
                 </foreach>
             END
         WHERE "pageId"=#{pageId} AND "orgId"=#{orgId}

@@ -3,9 +3,9 @@
 <mapper namespace="com.ngtesting.platform.dao.UserDao" >
 
     <select id="query" resultType="TstUser">
-        SELECT * FROM TstUser usr
+        SELECT * FROM "TstUser" usr
 
-        JOIN TstOrgUserRelation r ON r.userId = usr.id
+        JOIN "TstOrgUserRelation" r ON r."userId" = usr.id
 
         WHERE TRUE
         <if test="keywords != null and keywords != ''">
@@ -19,27 +19,27 @@
             AND usr.disabled = #{disabled}
         </if>
 
-        AND r.orgId = #{orgId}
+        AND r."orgId" = #{orgId}
         AND usr.deleted != TRUE
         ORDER BY usr.id ASC
     </select>
 
     <select id="queryByUser" resultType="TstUser">
-        SELECT * FROM tstUser
+        SELECT * FROM "tstUser"
     </select>
 
     <select id="getProjectUsers" resultType="TstUser">
-        select usr.id, usr.nickname from TstUser usr
+        select usr.id, usr.nickname from "TstUser" usr
         where usr.id in
         (
-            select relation1.entityId from TstProjectRoleEntityRelation relation1
-                where relation1.type = 'user' AND relation1.projectId = #{prjId}
+            select relation1."entityId" from "TstProjectRoleEntityRelation" relation1
+                where relation1."type" = 'user' AND relation1."projectId" = #{prjId}
             UNION
-            select relta.userId from TstOrgGroupUserRelation relta
-                where relta.orgGroupId in
+            select relta."userId" from "TstOrgGroupUserRelation" relta
+                where relta."orgGroupId" in
                 (
-                    select relation2.entityId from TstProjectRoleEntityRelation relation2
-                        where relation2.type = 'group' AND relation2.projectId = #{prjId}
+                    select relation2."entityId" from "TstProjectRoleEntityRelation" relation2
+                        where relation2.type = 'group' AND relation2."projectId" = #{prjId}
                 )
         )
         ORDER by usr.id ASC
@@ -76,18 +76,18 @@
 
     <select id="getByToken" resultType="TstUser">
         SELECT usr.*,
-          s.leftSizeDesign leftSizeDesign, s.leftSizeExe leftSizeExe, s.issueView issueView,
-          s.issueColumns issueColumns
+          s."leftSizeDesign", s."leftSizeExe", s."issueView",
+          s."issueColumns"
 
-        FROM TstUser usr
-        JOIN TstUserSettings s ON s.userId = usr.id
+        FROM "TstUser" usr
+        JOIN "TstUserSettings" s ON s."userId" = usr.id
 
         WHERE usr.token = #{token}
         AND usr.disabled != TRUE AND usr.deleted != TRUE
         LIMIT 1;
     </select>
     <select id="getByPhone" resultType="TstUser">
-        SELECT * FROM TstUser WHERE phone = #{phone}
+        SELECT * FROM "TstUser" WHERE phone = #{phone}
         AND disabled != TRUE AND deleted != TRUE
         LIMIT 1;
     </select>
@@ -99,9 +99,9 @@
     </select>
 
     <insert id="save" parameterType="TstUser" useGeneratedKeys="true" keyProperty="id">
-        insert into TstUser (email,password,nickname,phone,avatar,token,salt,
-          defaultOrgId,defaultOrgName,defaultPrjId,defaultPrjName,
-          deleted,disabled,createTime)
+        insert into "TstUser" (email,password,nickname,phone,avatar,token,salt,
+          "defaultOrgId","defaultOrgName","defaultPrjId","defaultPrjName",
+          deleted,disabled,"createTime")
         values (#{email},#{password},#{nickname},#{phone},#{avatar},#{token},#{temp},
           #{defaultOrgId},#{defaultOrgName},#{defaultPrjId},#{defaultPrjName},
           #{deleted},#{disabled},#{createTime})
@@ -112,42 +112,42 @@
     </insert>
 
     <update id="update" parameterType="TstUser">
-        UPDATE TstUser
+        UPDATE "TstUser"
         SET email=#{email}, nickname=#{nickname}, phone=#{phone}, disabled=#{disabled}
         WHERE id=#{id}
     </update>
 
     <update id="modifyProp">
-        UPDATE TstUser
-        SET ${prop} = #{value}, updateTime=NOW()
+        UPDATE "TstUser"
+        SET ${prop} = #{value}, "updateTime"=NOW()
         WHERE id=#{id}
     </update>
 
     <update id="setLeftSize" parameterType="TstUser">
-        UPDATE TstUserSettings
-        SET leftSizeDesign=#{leftSizeDesign}, leftSizeExe=#{leftSizeExe}, leftSizeIssue=#{leftSizeIssue}
+        UPDATE "TstUserSettings"
+        SET "leftSizeDesign"=#{leftSizeDesign}, "leftSizeExe"=#{leftSizeExe}, "leftSizeIssue"=#{leftSizeIssue}
 
         WHERE userId=#{id}
     </update>
     <update id="setIssueView" parameterType="TstUser">
-        UPDATE TstUserSettings
-        SET issueView=#{issueView}
-        WHERE userId=#{id}
+        UPDATE "TstUserSettings"
+        SET "issueView"=#{issueView}
+        WHERE "userId"=#{id}
     </update>
     <update id="saveIssueColumns">
-        UPDATE TstUserSettings
-        SET issueColumns=#{issueColumns}
-        WHERE userId=#{userId}
+        UPDATE "TstUserSettings"
+        SET "issueColumns"=#{issueColumns}
+        WHERE "userId"=#{userId}
     </update>
     <update id="saveIssueFields">
-        UPDATE TstUserSettings
-        SET issueFields=#{issueFields}
-        WHERE userId=#{userId}
+        UPDATE "TstUserSettings"
+        SET "issueFields"=#{issueFields}
+        WHERE "userId"=#{userId}
     </update>
 
     <select id="searchOrgUser" resultType="TstUser">
-        SELECT * FROM TstUser usr
-        JOIN TstOrgUserRelation r ON r.orgId = #{orgId} AND r.userId = usr.id
+        SELECT * FROM "TstUser" usr
+        JOIN "TstOrgUserRelation" r ON r."orgId" = #{orgId} AND r."userId" = usr.id
 
         WHERE TRUE
 
@@ -171,18 +171,18 @@
     </select>
 
     <select id="searchPrjUser" resultType="TstUser">
-        SELECT * FROM TstUser usr
+        SELECT * FROM "TstUser" usr
 
         WHERE usr.id in
         (
-            select relation1.entityId from TstProjectRoleEntityRelation relation1
-              where relation1.type = 'user' AND relation1.projectId = #{projectId}
+            select relation1."entityId" from "TstProjectRoleEntityRelation" relation1
+              where relation1."type" = 'user' AND relation1."projectId" = #{projectId}
             UNION
-            select relta.userId from TstOrgGroupUserRelation relta
-                where relta.orgGroupId in
+            select relta."userId" from "TstOrgGroupUserRelation" relta
+                where relta."orgGroupId" in
                 (
-                select relation2.entityId from TstProjectRoleEntityRelation relation2
-                where relation2.type = 'group' AND relation2.projectId = #{projectId}
+                select relation2."entityId" from "TstProjectRoleEntityRelation" relation2
+                where relation2."type" = 'group' AND relation2."projectId" = #{projectId}
                 )
         )
         <if test="keywords != null and keywords != ''">
@@ -204,7 +204,7 @@
         ORDER BY usr.id ASC
     </select>
 
-    <delete id="removeFromOrg">
+    <delete id="removeFromOrg" statementType="CALLABLE">
       { call remove_user_from_org(
                 #{userId,mode=IN,jdbcType=INTEGER},
                 #{orgId,mode=IN,jdbcType=INTEGER}

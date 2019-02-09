@@ -6,10 +6,10 @@
         SELECT
           o.*,
           role.name "projectRoleName",
-          CASE o."type"
-              WHEN 'user' THEN
+          CASE
+              WHEN o."type"='user' THEN
                 usr.nickname
-              WHEN 'group' THEN
+              WHEN o."type"='group' THEN
                 grp.name
               ELSE
                 'N/A'

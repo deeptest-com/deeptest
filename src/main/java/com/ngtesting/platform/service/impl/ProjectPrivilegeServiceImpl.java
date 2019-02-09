@@ -113,7 +113,7 @@ public class ProjectPrivilegeServiceImpl extends BaseServiceImpl implements Proj
             return map;
         }
 
-		List<Map<String, String>> ls = projectPrivilegeDao.listByProjectForUser(userId, prjId, orgId);
+		List<Map<String, String>> ls = projectPrivilegeDao.listForUser(userId, prjId, "project");
 		for (Map<String, String> item : ls) {
 			map.put(item.get("code") + "-" + item.get("action"), true);
 		}

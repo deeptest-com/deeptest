@@ -61,7 +61,7 @@
         WHERE "defaultOrgId"=#{orgId}
     </update>
 
-    <insert id="initOrg">
+    <insert id="initOrg" statementType="CALLABLE">
         { call init_org(
             #{orgId,mode=IN,jdbcType=INTEGER},
             #{userId,mode=IN,jdbcType=INTEGER}

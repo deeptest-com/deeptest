@@ -3,7 +3,7 @@
 <mapper namespace="com.ngtesting.platform.dao.IssueSearchDao" >
 
     <select id="idSearch" resultType="Map">
-        SELECT o.id || '-' || o.title name, 'issue' "type"
+        SELECT o.id || '-' || o.title "name", 'issue' "type"
         FROM "IsuIssue" o
 
         WHERE o.id = #{text}
@@ -18,7 +18,7 @@
     </select>
 
     <select id="titleSearch" resultType="Map">
-        SELECT o.id, o.id || '-' || o.title name, 'issue' "type"
+        SELECT o.id, o.id || '-' || o.title "name", 'issue' "type"
         FROM "IsuIssue" o
 
         WHERE o.title LIKE '%${text}%'

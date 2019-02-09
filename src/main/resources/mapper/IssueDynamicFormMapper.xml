@@ -73,8 +73,12 @@
     <sql id="fetch">
         SELECT fields.*, dict.table "optionTable", '${projectId}' "projectId",
 
-        CASE fields.input
-          WHEN 'dropdown' OR 'multi_select' OR 'radio' OR 'checkbox' THEN 'canSelect'
+        CASE
+          WHEN fields.input='dropdown'
+            OR fields.input='multi_select'
+            OR fields.input='radio'
+            OR fields.input='checkbox'
+          THEN 'canSelect'
           ELSE 'notSelect'
         END "inputCatagory"
 
@@ -84,9 +88,9 @@
             field.type, field.input, field."fullLine", field.required,
             field.readonly, true "buildIn",
             field."orgId",
-            CASE '${sort}'
-              WHEN 'filter' THEN field."filterOrdr"
-              WHEN 'col' THEN field."columnOrdr"
+            CASE
+              WHEN '${sort}'='filter' THEN field."filterOrdr"
+              WHEN '${sort}'='col' THEN field."columnOrdr"
               ELSE field."elemOrdr"
             END sort
 

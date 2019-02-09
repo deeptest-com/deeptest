@@ -51,7 +51,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	@Override
 	public List<TstProject> list(Integer orgId, Integer userId, String keywords, Boolean disabled) {
 		Map<String, Map<String, Boolean>> privMap = new HashMap();
-        List<Map<String, String>> projectPrivs = projectPrivilegeDao.listByOrgProjectsForUser(userId, orgId);
+        List<Map<String, String>> projectPrivs = projectPrivilegeDao.listForUser(userId, orgId, "org");
         for (Map<String, String> map : projectPrivs) {
 		    if (privMap.get(map.get("projectId")) == null) {
 		        String prjId = map.get("projectId");
@@ -94,14 +94,14 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	}
 
     @Override
-    public TstProject getWithPrivs(Integer id, Integer userId) {
-        if (id == null) {
+    public TstProject getWithPrivs(Integer projectId, Integer userId) {
+        if (projectId == null) {
             return null;
         }
-        TstProject po = projectDao.get(id);
+        TstProject po = projectDao.get(projectId);
         Map<String, Boolean> privMap = new HashMap();
-        List<Map<String, String>> projectPrivs = projectPrivilegeDao.listByProjectForUser(
-                userId, id, po.getOrgId());
+        List<Map<String, String>> projectPrivs = projectPrivilegeDao.listForUser(
+                userId, projectId, "org");
         for (Map<String, String> map : projectPrivs) {
             String str = map.get("code") + "-" + map.get("action");
             privMap.put(str, true);
@@ -239,7 +239,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 		TstProject po = get(projectId);
 
         if (po.getType().equals(TstProject.ProjectType.project)) {
-            projectDao.genHistory(po.getOrgId(), user.getId(), projectId, po.getName());
+            projectDao.genHistory(po.getOrgId(), projectId, po.getName(), user.getId());
 
             projectDao.setDefault(user.getId(), projectId, po.getName());
 
@@ -258,7 +258,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
     @Override
     public void updateNameInHisoty(Integer projectId, Integer userId) {
         TstProject project = get(projectId);
-        projectDao.genHistory(project.getOrgId(), userId, projectId, project.getName());
+        projectDao.genHistory(project.getOrgId(), projectId, project.getName(), userId);
     }
 
 	@Override

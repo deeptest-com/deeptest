@@ -8,17 +8,11 @@
         order by o.id asc
     </select>
 
-    <select id="listByOrgProjectsForUser" resultType="Map" useCache="false" statementType="CALLABLE">
-        { call get_project_privilege_by_org_for_user(
-              #{userId,mode=IN,jdbcType=INTEGER},
-              #{orgId,mode=IN,jdbcType=INTEGER}) }
-    </select>
-
-    <select id="listByProjectForUser" resultType="Map">
-        { call get_project_privilege_by_project_for_user(
-               #{userId,mode=IN,jdbcType=INTEGER},
-               #{prjId,mode=IN,jdbcType=INTEGER},
-               #{orgId,mode=IN,jdbcType=INTEGER}
+    <select id="listForUser" resultType="Map" statementType="CALLABLE">
+        { call get_project_privilege_for_user(
+            #{userId,mode=IN,jdbcType=INTEGER},
+            #{prjId,mode=IN,jdbcType=INTEGER},
+            #{prjType,mode=IN,jdbcType=VARCHAR}
         )}
     </select>
 

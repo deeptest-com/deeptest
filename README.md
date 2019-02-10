@@ -1,9 +1,10 @@
 # Next Generation Testing Tools
-有兴趣请加微信, Wechat: 462826
+交流合作请加微信, Wechat: 462826
 
 DEMO: http://139.224.8.129:58080
 
-AngularJS, SockJS, SpringBoot, MyBatis, MySQL
+AngularJS, SockJS, SpringBoot, MyBatis, PostgreSQL  
+正在迁移到PostgreSQL数据库，以获取更好的JSONB扩展属性支持和全文检索性能！
 
 ## Quick start
 ### Use Docker

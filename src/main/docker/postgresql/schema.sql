@@ -390,6 +390,7 @@ ALTER TABLE public."CustomFieldIputDefine" ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE public."CustomFieldInputTypeRelationDefine" ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE public."CustomFieldDefine" ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE public."CustomField" ALTER COLUMN id DROP DEFAULT;
+DROP TABLE public.a;
 DROP SEQUENCE public."TstVer_id_seq";
 DROP TABLE public."TstVer";
 DROP SEQUENCE public."TstUser_id_seq";
@@ -605,12 +606,15 @@ DROP FUNCTION public.gen_project_access_history(p_org_id integer, p_project_id i
 DROP FUNCTION public.close_plan_if_all_task_closed(p_plan_id integer);
 DROP FUNCTION public.chart_test_execution_result_by_plan(p_plan_id integer);
 DROP FUNCTION public.chart_test_execution_progress_by_plan(p_plan_id integer, p_day_numb integer);
+DROP FUNCTION public.chart_test_execution_process_by_project(p_project_id integer, p_project_type character varying, p_day_numb integer);
+DROP FUNCTION public.chart_test_execution_process_by_plan_user(p_plan_id integer, p_day_numb integer);
+DROP FUNCTION public.chart_test_execution_process_by_plan(p_plan_id integer, p_day_numb integer);
 DROP FUNCTION public.chart_test_design_progress_by_project(p_project_id integer, p_project_type character varying, p_day_numb integer);
 DROP FUNCTION public.chart_issue_trend_final(p_project_id integer, p_project_type character varying, p_day_numb integer);
 DROP FUNCTION public.chart_issue_trend_create(p_project_id integer, p_project_type character varying, p_day_numb integer);
 DROP FUNCTION public.chart_issue_distrib_by_status(p_project_id integer, p_project_type character varying);
 DROP FUNCTION public.chart_issue_distrib_by_priority(p_project_id integer, p_project_type character varying);
-DROP FUNCTION public.chart_issue_age(p_project_ids character varying, p_day_numb integer);
+DROP FUNCTION public.chart_issue_age(p_project_id integer, p_project_type character varying, p_day_numb integer);
 DROP FUNCTION public.add_cases_to_task_by_suites(p_suite_ids character varying, p_task_id integer);
 DROP FUNCTION public.add_cases_to_task(p_case_ids character varying, p_task_id integer);
 DROP FUNCTION public.add_cases_to_suite(p_case_ids character varying, p_suite_id integer);
@@ -886,15 +890,18 @@ $$;
 ALTER FUNCTION public.add_cases_to_task_by_suites(p_suite_ids character varying, p_task_id integer) OWNER TO aaron;
 
 --
--- Name: chart_issue_age(character varying, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: chart_issue_age(integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aaron
 --
 
-CREATE FUNCTION public.chart_issue_age(p_project_ids character varying, p_day_numb integer) RETURNS TABLE(category text, priority character varying, count bigint)
+CREATE FUNCTION public.chart_issue_age(p_project_id integer, p_project_type character varying, p_day_numb integer) RETURNS TABLE(category text, priority character varying, count bigint)
     LANGUAGE plpgsql
     AS $$  
 declare  
 	var_sql character varying;   
+	
+	var_project_ids integer[];
 BEGIN  
+	select array(select _project_list(p_project_id,p_project_type)) INTO var_project_ids;
 
 	RETURN QUERY
 
@@ -908,7 +915,7 @@ BEGIN
 			isu."priorityId", count(isu.id) count 
 		from "IsuIssue" isu 
 		LEFT JOIN "IsuStatus" sta ON sta.id = isu."statusId"
-		where isu."projectId" = ANY (string_to_array(p_project_ids, ',')::int[])  
+		where isu."projectId" = ANY (var_project_ids)  
 			  AND sta."finalVal" != true
 		GROUP BY days, isu."priorityId"
 	) temp
@@ -921,7 +928,7 @@ END;
 $$;
 
 
-ALTER FUNCTION public.chart_issue_age(p_project_ids character varying, p_day_numb integer) OWNER TO aaron;
+ALTER FUNCTION public.chart_issue_age(p_project_id integer, p_project_type character varying, p_day_numb integer) OWNER TO aaron;
 
 --
 -- Name: chart_issue_distrib_by_priority(integer, character varying); Type: FUNCTION; Schema: public; Owner: aaron
@@ -1106,6 +1113,129 @@ $$;
 ALTER FUNCTION public.chart_test_design_progress_by_project(p_project_id integer, p_project_type character varying, p_day_numb integer) OWNER TO aaron;
 
 --
+-- Name: chart_test_execution_process_by_plan(integer, integer); Type: FUNCTION; Schema: public; Owner: aaron
+--
+
+CREATE FUNCTION public.chart_test_execution_process_by_plan(p_plan_id integer, p_day_numb integer) RETURNS TABLE(date date, sum numeric, numb bigint)
+    LANGUAGE plpgsql
+    AS $$  
+declare  
+	var_sql character varying; 
+	
+    var_date_before timestamp;
+BEGIN  
+	SELECT _date_before(p_day_numb) INTO var_date_before;
+
+	RETURN QUERY
+	 SELECT days.dt2, 
+	 		(sum(COALESCE(count_by_day.numb, 0)) over (order by days.dt2)), 
+								   COALESCE(count_by_day.numb, 0)
+	 FROM 
+	 	(SELECT dt dt2 from _date_list(var_date_before)) days
+	 LEFT JOIN (
+		 SELECT COUNT(csr.id) numb, csr."exeTime"::date dt, csr."status"
+			FROM "TstCaseInTask" csr
+			  left join "TstTask" task on csr."taskId"=task.id
+			WHERE csr."planId"=p_plan_id 
+		 		  and task.deleted != true AND task.disabled != true
+				  AND csr."isParent"=false AND csr.deleted != true AND csr.disabled != TRUE
+				  AND csr."status" != 'untest'
+			GROUP BY dt, csr."status") count_by_day
+     
+	ON count_by_day.dt = days.dt2;
+	
+END;  
+$$;
+
+
+ALTER FUNCTION public.chart_test_execution_process_by_plan(p_plan_id integer, p_day_numb integer) OWNER TO aaron;
+
+--
+-- Name: chart_test_execution_process_by_plan_user(integer, integer); Type: FUNCTION; Schema: public; Owner: aaron
+--
+
+CREATE FUNCTION public.chart_test_execution_process_by_plan_user(p_plan_id integer, p_day_numb integer) RETURNS TABLE(date date, name character varying, sum numeric, numb bigint)
+    LANGUAGE plpgsql
+    AS $$  
+declare  
+	var_sql character varying; 
+	
+    var_date_before timestamp;
+BEGIN  
+	SELECT _date_before(p_day_numb) INTO var_date_before;
+	
+	RETURN QUERY
+	 SELECT days.dt2, usr.nickname "name",
+	 		(sum(COALESCE(count_by_day_and_user.numb, 0)) over (order by days.dt2)), 
+								   COALESCE(count_by_day_and_user.numb, 0)
+	 FROM 
+	 	(SELECT dt dt2 from _date_list(var_date_before)) days
+	 LEFT JOIN (
+		 SELECT COUNT(csr.id) numb, csr."exeTime"::date dt, csr."exeBy"
+			FROM "TstCaseInTask" csr
+			  left join "TstTask" task on csr."taskId"=task.id
+			WHERE csr."planId"=p_plan_id 
+		 		  and task.deleted != true AND task.disabled != true
+				  AND csr."isParent"=false AND csr.deleted != true AND csr.disabled != TRUE
+				  AND csr."status" != 'untest'
+			GROUP BY dt, csr."exeBy") count_by_day_and_user
+	 LEFT JOIN "TstUser" usr on count_by_day_and_user."exeBy" = usr.id
+     
+	ON count_by_day_and_user.dt = days.dt2
+	ORDER BY days.dt2, "name";
+	
+END;  
+$$;
+
+
+ALTER FUNCTION public.chart_test_execution_process_by_plan_user(p_plan_id integer, p_day_numb integer) OWNER TO aaron;
+
+--
+-- Name: chart_test_execution_process_by_project(integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aaron
+--
+
+CREATE FUNCTION public.chart_test_execution_process_by_project(p_project_id integer, p_project_type character varying, p_day_numb integer) RETURNS TABLE(date date, sum numeric, numb bigint)
+    LANGUAGE plpgsql
+    AS $$  
+declare  
+	var_sql character varying; 
+	
+	var_project_ids integer[];
+	
+    var_date_before timestamp;
+    var_numb_before bigint;
+BEGIN  
+	SELECT _date_before(p_day_numb) INTO var_date_before;
+	select array(select _project_list(p_project_id,p_project_type)) INTO var_project_ids;
+	
+	RETURN QUERY
+	 SELECT days.dt2, 
+	 		(sum(COALESCE(count_by_day.numb, 0)) over (order by days.dt2)) + var_numb_before, 
+								   COALESCE(count_by_day.numb, 0)
+	 FROM 
+	 	(SELECT dt dt2 from _date_list(var_date_before)) days
+	 LEFT JOIN (
+		 SELECT COUNT(csr.id) numb, csr."exeTime"::date dt, csr."status"
+			FROM "TstCaseInTask" csr
+		      left JOIN "TstPlan" plan on csr."planId" = plan.id
+			  left join "TstTask" task on csr."taskId"=task.id
+			WHERE csr."projectId" = ANY (var_project_ids)  
+		          and plan.deleted != true AND plan.disabled != true
+		 		  and task.deleted != true AND task.disabled != true
+				  AND csr."isParent"=false AND csr.deleted != true AND csr.disabled != TRUE
+				  AND csr."status" != 'untest'
+			GROUP BY dt, csr."status") count_by_day
+     
+	ON count_by_day.dt = days.dt2
+	order by days.dt2;
+	
+END;  
+$$;
+
+
+ALTER FUNCTION public.chart_test_execution_process_by_project(p_project_id integer, p_project_type character varying, p_day_numb integer) OWNER TO aaron;
+
+--
 -- Name: chart_test_execution_progress_by_plan(integer, integer); Type: FUNCTION; Schema: public; Owner: aaron
 --
 
@@ -1209,7 +1339,7 @@ ALTER FUNCTION public.close_plan_if_all_task_closed(p_plan_id integer) OWNER TO 
 -- Name: gen_project_access_history(integer, integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aaron
 --
 
-CREATE FUNCTION public.gen_project_access_history(p_org_id integer, p_project_id integer, p_project_name character varying, p_user_id integer) RETURNS integer
+CREATE FUNCTION public.gen_project_access_history(p_org_id integer, p_project_id integer, p_project_name character varying, p_user_id integer) RETURNS void
     LANGUAGE plpgsql
     AS $$  
 declare  
@@ -1235,10 +1365,7 @@ BEGIN
 	  GET DIAGNOSTICS v_cnt = ROW_COUNT;
 	  RAISE NOTICE 'update v_cnt = %', v_cnt;
     END IF;
-
-	
-	
-    RETURN v_cnt;  
+ 
 END;  
 $$;
 
@@ -1310,6 +1437,7 @@ declare
 	plan_id integer;
 	task_id integer;
 
+    p_case_id integer;
     case_id integer;
 	case_default_exe_status_id integer;
     case_default_priority_id integer;
@@ -1434,10 +1562,15 @@ BEGIN
 		VALUES ('示例任务', 'not_start', project_id, project_id, plan_id, p_user_id, 
 			false, false, now());
 	select max(id) from "TstTask" into task_id;
+				
+	INSERT INTO public."TstTaskAssigneeRelation"("taskId", "assigneeId")
+	VALUES (task_id, p_user_id);
 
     insert into "TstCase" (name, "projectId", "pId", estimate, "priorityId", "typeId", "isParent", ordr, "createById", "contentType", disabled, deleted, "createTime")
     values('测试用例', project_id, null, 10, case_default_priority_id, case_default_type_id, true, 0, p_user_id, 'steps', false, false, NOW());
     select max(id) from "TstCase" into case_id;
+    select case_id into p_case_id;
+		   
 	INSERT INTO "TstCaseInTask"(
 		"caseId", "isParent", "pId", ordr, "exeBy", "exeTime", status, "projectId", "planId", "taskId", 
 			disabled, deleted, "createBy", "createTime")
@@ -1450,8 +1583,9 @@ BEGIN
 	INSERT INTO "TstCaseInTask"(
 		"caseId", "isParent", "pId", ordr, "exeBy", "exeTime", status, "projectId", "planId", "taskId", 
 			disabled, deleted, "createBy", "createTime")
-	VALUES (case_id, true, null, 1, null, null, 'untest', project_id, plan_id, task_id, 
+	VALUES (case_id, true, p_case_id, 1, null, null, 'untest', project_id, plan_id, task_id, 
 			false, false, p_user_id, now());
+	select case_id into p_case_id;
 		   
     insert into "TstCase" (name, "projectId", "pId", estimate, "priorityId", "typeId", "isParent", ordr, "createById", "contentType", disabled, deleted, "createTime")
     values('新用例', project_id, case_id, 10, case_default_priority_id, case_default_type_id, false, 0, p_user_id, 'steps', false, false, NOW());
@@ -1459,7 +1593,7 @@ BEGIN
 	INSERT INTO "TstCaseInTask"(
 		"caseId", "isParent", "pId", ordr, "exeBy", "exeTime", status, "projectId", "planId", "taskId", 
 			disabled, deleted, "createBy", "createTime")
-	VALUES (case_id, false, null, 1, null, null, 'untest', project_id, plan_id, task_id, 
+	VALUES (case_id, false, p_case_id, 1, null, null, 'untest', project_id, plan_id, task_id, 
 			false, false, p_user_id, now());
 
     insert into "TstCaseStep" (opt, expect, "caseId", ordr, disabled, deleted, "createTime")
@@ -6061,6 +6195,17 @@ ALTER SEQUENCE public."TstVer_id_seq" OWNED BY public."TstVer".id;
 
 
 --
+-- Name: a; Type: TABLE; Schema: public; Owner: ngtesting
+--
+
+CREATE TABLE public.a (
+    "?column?" integer
+);
+
+
+ALTER TABLE public.a OWNER TO ngtesting;
+
+--
 -- Name: CustomField id; Type: DEFAULT; Schema: public; Owner: ngtesting
 --
 
@@ -9422,21 +9567,21 @@ SELECT pg_catalog.setval('public."IsuWorkflowTransitionDefine_id_seq"', 1, false
 -- Name: TstCaseExeStatus_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ngtesting
 --
 
-SELECT pg_catalog.setval('public."TstCaseExeStatus_id_seq"', 502, true);
+SELECT pg_catalog.setval('public."TstCaseExeStatus_id_seq"', 510, true);
 
 
 --
 -- Name: TstCasePriority_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ngtesting
 --
 
-SELECT pg_catalog.setval('public."TstCasePriority_id_seq"', 358, true);
+SELECT pg_catalog.setval('public."TstCasePriority_id_seq"', 364, true);
 
 
 --
 -- Name: TstCaseType_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ngtesting
 --
 
-SELECT pg_catalog.setval('public."TstCaseType_id_seq"', 840, true);
+SELECT pg_catalog.setval('public."TstCaseType_id_seq"', 854, true);
 
 
 --

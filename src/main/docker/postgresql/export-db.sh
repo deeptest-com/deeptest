@@ -9,4 +9,4 @@ cat init-data.sql >> schema.sql
 
 rm init-*
 
-psql ngtesting-web -U ngtesting < schema.sql
+# psql ngtesting-web -U ngtesting < schema.sql

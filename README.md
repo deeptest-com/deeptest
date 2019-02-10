@@ -3,8 +3,8 @@
 
 DEMO: http://139.224.8.129:58080
 
-AngularJS, SockJS, SpringBoot, MyBatis, PostgreSQL
-##### 正在迁移到PostgreSQL数据库，以获取更好的JSONB扩展属性支持和全文检索性能！
+AngularJS, SockJS, SpringBoot, MyBatis, PostgreSQL  
+正在迁移到PostgreSQL数据库，以获取更好的JSONB扩展属性支持和全文检索性能！
 
 ## Quick start
 ### Use Docker

@@ -8,7 +8,7 @@
         JOIN "TstProject" p ON o."projectId"=p.id
 
         WHERE o."projectId"=#{projectId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
         ORDER BY o."createTime" DESC
     </select>
 
@@ -19,7 +19,7 @@
         JOIN "TstProject" p ON o."projectId"=p.id
 
         WHERE p."parentId"=#{projectId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
         ORDER BY o."createTime" DESC
     </select>
 
@@ -29,7 +29,7 @@
         JOIN "TstProject" p ON o."projectId"=p.id
 
         WHERE p."orgId"=#{orgId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
         ORDER BY o."createTime" DESC
     </select>
 

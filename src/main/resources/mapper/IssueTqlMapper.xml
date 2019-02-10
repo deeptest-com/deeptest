@@ -7,7 +7,7 @@
         JOIN "IsuIssueExt" ext ON id = pid
 
         WHERE ${conditions}
-        AND deleted != true AND disabled != true
+        AND NOT deleted AND NOT disabled
 
         <if test="orderBy != null">
             ORDER BY

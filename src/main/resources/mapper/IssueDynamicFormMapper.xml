@@ -96,7 +96,7 @@
 
             FROM "IsuField" field
 
-            WHERE field."orgId" = #{orgId} AND field.disabled!=true AND field.deleted!=true
+            WHERE field."orgId" = #{orgId} AND NOT field.disabled AND NOT field.deleted
                 <if test="sort == 'filter'">
                     AND field."defaultShowInFilters" IS NOT NULL
                 </if>
@@ -120,7 +120,7 @@
             FROM "CustomField" "customField"
 
             WHERE "customField"."orgId" = #{orgId} AND "customField"."applyTo" = 'issue'
-                AND "customField".disabled!=true AND "customField".deleted!=true
+                AND NOT "customField".disabled AND NOT "customField".deleted
             ORDER BY sort ASC
           )
         ) fields
@@ -137,7 +137,7 @@
         SELECT opt.id, opt."label", opt."value", opt."defaultVal"
         FROM "CustomFieldOption" opt
         WHERE opt."fieldId"=#{fieldId}
-        AND opt.disabled!=true AND opt.deleted!=true
+        AND NOT opt.disabled AND NOT opt.deleted
         ORDER BY opt.ordr;
     </sql>
 

@@ -8,7 +8,7 @@
         FROM "IsuPageSolution" solution
 
         WHERE solution."orgId"=#{orgId}
-        AND solution.deleted != TRUE AND solution.disabled != TRUE
+        AND NOT solution.deleted AND NOT solution.disabled
         ORDER BY solution."createTime" ASC
     </select>
 
@@ -16,7 +16,7 @@
         SELECT o.* FROM "IsuPageSolution" o
 
         WHERE o.id = #{id} AND "orgId" = #{orgId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
     </select>
 
     <insert id="save" parameterType="IsuPageSolution" useGeneratedKeys="true" keyProperty="id">
@@ -28,7 +28,7 @@
 
     <update id="update" parameterType="IsuPageSolution">
         UPDATE "IsuPageSolution"
-        SET name=#{name}, updateTime=NOW()
+        SET name=#{name}, "updateTime"=NOW()
 
         WHERE id=#{id} AND "orgId"=#{orgId}
     </update>

@@ -7,7 +7,7 @@
         JOIN "IsuIssue" isu ON o."issueId"=isu.id
 
         WHERE o."caseInTaskId"=#{caseInTaskId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
         ORDER BY o."createTime" ASC
     </select>
 
@@ -36,7 +36,7 @@
         JOIN "IsuIssue" isu ON o."issueId"=isu.id
 
         WHERE o."caseInTaskId" = #{id}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
 
         ORDER BY o."createTime" ASC
     </select>

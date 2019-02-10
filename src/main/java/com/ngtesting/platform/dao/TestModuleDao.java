@@ -14,7 +14,7 @@ public interface TestModuleDao {
     TstModule get(@Param("id") Integer id,
                @Param("projectId") Integer projectId);
 
-    Integer add(TstModule vo);
+    Integer save(TstModule vo);
     Integer update(TstModule vo);
 
     Integer delete(@Param("id") Integer id,

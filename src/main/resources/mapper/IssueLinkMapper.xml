@@ -17,8 +17,8 @@
     <select id="listLinkReason" resultType="IsuLinkReason">
         SELECT * FROM "IsuLinkReasonDefine" o
 
-        WHERE o.deleted != TRUE
-        AND o.disabled != TRUE
+        WHERE NOT o.deleted
+        AND NOT o.disabled
         ORDER BY o.id ASC
     </select>
 
@@ -27,7 +27,7 @@
         FROM "IsuIssue" o
         JOIN "IsuLink" l ON l."dictIssueId" = o.id
         WHERE l."srcIssueId" = #{id}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
 
         ORDER BY l."reasonId" ASC, l.id ASC
     </select>

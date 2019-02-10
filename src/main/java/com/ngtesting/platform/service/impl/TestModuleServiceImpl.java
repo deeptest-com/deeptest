@@ -43,7 +43,7 @@ public class TestModuleServiceImpl extends BaseServiceImpl implements TestModule
             }
             vo.setOrdr(maxOrder + 10);
 
-            moduleDao.add(vo);
+            moduleDao.save(vo);
         } else {
             Integer count = moduleDao.update(vo);
             if (count == 0) {

@@ -20,7 +20,7 @@
         </if>
 
         AND r."orgId" = #{orgId}
-        AND usr.deleted != TRUE
+        AND NOT usr.deleted
         ORDER BY usr.id ASC
     </select>
 
@@ -65,7 +65,7 @@
         JOIN "TstUserSettings" s ON s."userId" = usr.id
 
         WHERE usr.email = #{email}
-        AND usr.disabled != TRUE AND usr.deleted != TRUE
+        AND NOT usr.disabled  AND NOT usr.deleted
 
         LIMIT 1;
     </select>
@@ -83,18 +83,18 @@
         JOIN "TstUserSettings" s ON s."userId" = usr.id
 
         WHERE usr.token = #{token}
-        AND usr.disabled != TRUE AND usr.deleted != TRUE
+        AND NOT usr.disabled  AND NOT usr.deleted
         LIMIT 1;
     </select>
     <select id="getByPhone" resultType="TstUser">
         SELECT * FROM "TstUser" WHERE phone = #{phone}
-        AND disabled != TRUE AND deleted != TRUE
+        AND NOT disabled  AND NOT deleted
         LIMIT 1;
     </select>
 
     <select id="getSalt" resultType="String">
         SELECT salt FROM "TstUser" WHERE id = #{id}
-        AND disabled != TRUE AND deleted != TRUE
+        AND NOT disabled  AND NOT deleted
         LIMIT 1;
     </select>
 
@@ -165,8 +165,8 @@
             </foreach>
         </if>
 
-        AND usr.deleted != TRUE
-        AND usr.disabled != TRUE
+        AND NOT usr.deleted
+        AND NOT usr.disabled
         ORDER BY usr.id ASC
     </select>
 
@@ -199,8 +199,8 @@
             </foreach>
         </if>
 
-        AND usr.deleted != TRUE
-        AND usr.disabled != TRUE
+        AND NOT usr.deleted
+        AND NOT usr.disabled
         ORDER BY usr.id ASC
     </select>
 

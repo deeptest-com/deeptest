@@ -56,7 +56,7 @@ public class OrgAdmin extends BaseAction {
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = json.getInteger("orgId");
 
-		TstOrg po = orgService.get(orgId); //
+		TstOrg po = orgService.get(orgId, user); //
 
 		ret.put("data", po);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

@@ -11,7 +11,7 @@
             AND o.disabled = #{disabled}
         </if>
         AND o."projectId" = #{projectId}
-        AND o.deleted != TRUE
+        AND NOT o.deleted
 
         ORDER BY o.ordr ASC
     </select>
@@ -19,8 +19,8 @@
     <select id="listLastest" resultType="TstVer">
         SELECT * FROM "TstVer" o
         WHERE o."projectId" = #{projectId}
-        AND o.deleted != TRUE
-        AND o.disabled != TRUE
+        AND NOT o.deleted
+        AND NOT o.disabled
 
         ORDER BY o."createTime" DESC LIMIT 10
     </select>
@@ -33,11 +33,11 @@
         </if>
     </select>
 
-    <insert id="add" parameterType="TstVer" useGeneratedKeys="true" keyProperty="id">
+    <insert id="save" parameterType="TstVer" useGeneratedKeys="true" keyProperty="id">
         insert into "TstVer"
           (label,"startTime","endTime",descr,"projectId","orgId",ordr,deleted,disabled,"createTime")
         values
-          (#{label},#{startTime},#{endTime},#{descr},#{projectId},#{orgId},#{ordr},FALSE,FALSE,NOW())
+          (#{label},#{startTime},#{endTime},#{descr},#{projectId},#{orgId},#{ordr},FALSE,#{disabled},NOW())
     </insert>
 
     <update id="update" parameterType="TstVer">
@@ -58,23 +58,23 @@
     </update>
 
     <update id="setOrder">
-        UPDATE TstVer
-        SET ordr=#{ordr}, updateTime=NOW()
-        WHERE id=#{id} AND projectId = #{projectId}
+        UPDATE "TstVer"
+        SET ordr=#{ordr}, "updateTime"=NOW()
+        WHERE id=#{id} AND "projectId" = #{projectId}
     </update>
 
     <select id="getMaxOrdrNumb" resultType="Integer">
         select max(ordr) from "TstVer" tp
         where tp."projectId"=#{projectId}
-        and tp.deleted != true
-        and tp.disabled != true
+        and NOT tp.deleted
+        and NOT tp.disabled
     </select>
 
     <select id="getPrev" resultType="TstVer">
         <![CDATA[
             SELECT * FROM "TstVer" o
             WHERE o.ordr < #{ordr} AND o."projectId" = #{projectId}
-            AND o.deleted != TRUE
+            AND NOT o.deleted
             ORDER BY o.ordr DESC LIMIT 1
         ]]>
     </select>
@@ -83,7 +83,7 @@
         <![CDATA[
             SELECT * FROM "TstVer" o
             WHERE o.ordr > #{ordr} AND o."projectId" = #{projectId}
-            AND o.deleted != TRUE
+            AND NOT o.deleted
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>

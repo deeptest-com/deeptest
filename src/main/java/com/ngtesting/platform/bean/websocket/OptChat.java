@@ -26,7 +26,7 @@ public class OptChat {
 //        for (TstThread po: pos) {
 //            TstThread vo = new ThreadVo();
 //            TstThread.copyProperties(vo, po);
-//        	vos.add(vo);
+//        	vos.save(vo);
 //        }
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

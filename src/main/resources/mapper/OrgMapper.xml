@@ -12,7 +12,7 @@
         <if test="disabled != null">
             AND o.disabled = #{disabled}
         </if>
-        AND o.deleted != TRUE
+        AND NOT o.deleted
     </select>
 
     <select id="queryByUser" parameterType="int" resultType="TstOrg">
@@ -20,8 +20,8 @@
         JOIN "TstOrgUserRelation" r on r."orgId"=o.id
 
         WHERE r."userId" = #{userId}
-        AND o.disabled != TRUE
-        AND o.deleted != TRUE
+        AND NOT o.disabled
+        AND NOT o.deleted
     </select>
 
     <select id="get" parameterType="int" resultType="TstOrg">

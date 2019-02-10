@@ -3,7 +3,7 @@
 <mapper namespace="com.ngtesting.platform.dao.TestSuiteDao" >
 
     <select id="query" resultType="TstSuite">
-        SELECT o.*, usr.nickname "userName", prj.name "projectName", casePrj.name "caseProjectName"
+        SELECT o.*, usr.nickname "userName", prj.name "projectName", "casePrj".name "caseProjectName"
         FROM "TstSuite" o
 
         JOIN "TstUser" usr ON usr.id=o."userId"
@@ -18,7 +18,7 @@
             AND o.disabled = #{disabled}
         </if>
 
-        AND o.deleted != TRUE
+        AND NOT o.deleted
         ORDER BY o.id ASC
     </select>
 
@@ -27,7 +27,7 @@
           prj.name "projectName", "casePrj".name "caseProjectName", usr.nickname "userName",
         ( SELECT count(cs.id) FROM "TstCaseInSuite" cs
                                 WHERE cs."suiteId" = o.id AND cs."isParent"=FALSE
-          AND cs.deleted != true AND cs.disabled != true ) "count"
+          AND NOT cs.deleted AND NOT cs.disabled ) "count"
 
         FROM "TstSuite" o
 
@@ -39,9 +39,9 @@
             <foreach collection="projectIds" item="item" separator=",">
                 #{item}
             </foreach>)
-        AND o.deleted != TRUE AND o.disabled != TRUE
-        AND prj.deleted != TRUE AND prj.disabled != TRUE
-        AND "casePrj".deleted != TRUE AND "casePrj".disabled != TRUE
+        AND NOT o.deleted AND NOT o.disabled
+        AND NOT prj.deleted AND NOT prj.disabled
+        AND NOT "casePrj".deleted AND NOT "casePrj".disabled
 
         ORDER BY o."caseProjectId" ASC, o.id ASC
     </select>
@@ -70,7 +70,7 @@
         SELECT o.*, usr.nickname "userName", prj.name "projectName", "casePrj".name "caseProjectName",
                     ( SELECT count(cs.id) FROM "TstCaseInSuite" cs
                                 WHERE cs."suiteId" = o.id AND cs."isParent"=false
-                                AND cs.deleted != true AND cs.disabled != true ) "count"
+                                AND NOT cs.deleted AND NOT cs.disabled ) "count"
 
         FROM "TstSuite" o
 
@@ -95,7 +95,7 @@
         FROM "TstCaseInSuite" o
 
         WHERE o."suiteId"=#{id}
-        AND o.deleted != TRUE AND o.disabled != TRUE
+        AND NOT o.deleted AND NOT o.disabled
         ORDER BY o."pId", o.id
     </select>
 
@@ -107,14 +107,15 @@
         WHERE id=#{id}
     </update>
     <update id="addCases" statementType="CALLABLE">
-        { call add_cases_to_suite(#{suiteId,mode=IN,jdbcType=INTEGER},
-                                  #{caseIds,mode=IN,jdbcType=VARCHAR}) }
+        { call add_cases_to_suite(#{caseIds,mode=IN,jdbcType=VARCHAR},
+                                  #{suiteId,mode=IN,jdbcType=INTEGER}
+        )}
     </update>
 
     <select id="getWithCases" resultMap="testSuiteMaps">
         SELECT o.*, prj.name "projectName", "casePrj".name "caseProjectName"
                     ( SELECT count(cs.id) FROM "TstCaseInSuite" cs
-                                WHERE cs."suiteId" = o.id AND cs.deleted != true AND cs.disabled != true ) "count"
+                                WHERE cs."suiteId" = o.id AND NOT cs.deleted AND NOT cs.disabled ) "count"
 
         FROM "TstSuite" o
 
@@ -127,7 +128,7 @@
         SELECT o.* FROM "TstCaseInSuite" o
 
         WHERE o."suiteId" = #{id}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
 
         ORDER BY o.ordr ASC
     </select>

@@ -6,7 +6,7 @@
         SELECT * FROM "TstCaseInTaskAttachment" o
 
         WHERE o."caseInTaskId"=#{caseInTaskId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
         ORDER BY o."createTime" DESC LIMIT 15
     </select>
 
@@ -14,7 +14,7 @@
         SELECT o.* FROM "TstCaseInTaskAttachment" o
 
         WHERE o."caseInTaskId" = #{id}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
 
         ORDER BY o."createTime" DESC LIMIT 15
     </select>

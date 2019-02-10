@@ -15,14 +15,14 @@ public class IssueDocumentServiceImpl extends BaseServiceImpl implements IssueDo
 	@Override
 	public Page listByPage(Integer eventId, Integer currentPage, Integer itemsPerPage, String type) {
 //        DetachedCriteria dc = DetachedCriteria.forClass(Document.class);
-//        dc.add(Restrictions.eq("eventId", eventId));
+//        dc.save(Restrictions.eq("eventId", eventId));
 //
 //        if (type != null) {
-//        	dc.add(Restrictions.eq("docType", type));
+//        	dc.save(Restrictions.eq("docType", type));
 //        }
 //
-//        dc.add(Restrictions.eq("deleted", Boolean.FALSE));
-//        dc.add(Restrictions.eq("disabled", Boolean.FALSE));
+//        dc.save(Restrictions.eq("deleted", Boolean.FALSE));
+//        dc.save(Restrictions.eq("disabled", Boolean.FALSE));
 //        dc.addOrder(Order.asc("id"));
 //        Page listByPage = findPage(dc, currentPage * itemsPerPage, itemsPerPage);
 //

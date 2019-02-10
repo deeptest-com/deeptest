@@ -14,7 +14,7 @@
             AND o."projectId"=#{projectId}
         </if>
 
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
         ORDER BY o."pId", o.ordr
     </select>
 

@@ -15,7 +15,7 @@
         </if>
 
         AND role."orgId" = #{orgId}
-        AND role.deleted != TRUE
+        AND NOT role.deleted
         ORDER BY role.id ASC
     </select>
 
@@ -28,7 +28,7 @@
         insert into "TstOrgRole"
         (code,name,"orgId","buildIn",deleted,disabled,"createTime")
         values
-        (#{code},#{name},#{orgId},#{buildIn},FALSE,FALSE,NOW())
+        (#{code},#{name},#{orgId},#{buildIn},FALSE,#{disabled},NOW())
     </insert>
 
     <update id="update" parameterType="TstOrgRole">

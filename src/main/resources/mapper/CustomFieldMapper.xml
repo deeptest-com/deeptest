@@ -13,7 +13,7 @@
             AND o."applyTo" = #{applyTo}
         </if>
 
-        AND o.disabled!=TRUE AND o.deleted!=TRUE
+        AND NOT o.disabled AND NOT o.deleted
         ORDER BY ordr ASC
     </select>
 
@@ -27,7 +27,7 @@
         FROM "CustomField" "customField"
         WHERE "customField"."orgId" = #{orgId} AND "customField"."applyTo" = 'test_case'
 
-        AND "customField".disabled != TRUE AND "customField".deleted != TRUE
+        AND NOT "customField".disabled AND NOT "customField".deleted
         ORDER BY "customField".ordr ASC
     </select>
 
@@ -70,7 +70,7 @@
         <![CDATA[
             SELECT * FROM "CustomField" o
             WHERE o.ordr < #{ordr} AND o."orgId" = #{orgId}
-            AND o."applyTo"=#{applyTo} AND o.deleted != TRUE
+            AND o."applyTo"=#{applyTo} AND NOT o.deleted
             ORDER BY o.ordr DESC LIMIT 1
         ]]>
     </select>
@@ -79,7 +79,7 @@
         <![CDATA[
             SELECT * FROM "CustomField" o
             WHERE o.ordr > #{ordr} AND o."orgId" = #{orgId}
-            AND o."applyTo"=#{applyTo} AND o.deleted != TRUE
+            AND o."applyTo"=#{applyTo} AND NOT o.deleted
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>
@@ -94,7 +94,7 @@
         select cf."colCode" from "CustomField" cf
 
         where cf."orgId" = #{orgId}
-        and cf.deleted != TRUE and cf.disabled != TRUE
+        and NOT cf.deleted and NOT cf.disabled
 
         order by cf."colCode" asc
     </select>
@@ -102,8 +102,8 @@
     <select id="getMaxOrdrNumb" resultType="Integer">
         select max(ordr) from "CustomField" o
         where o."orgId"=#{orgId} AND o."applyTo"=#{applyTo}
-        and o.deleted != true
-        and o.disabled != true
+        and NOT o.deleted
+        and NOT o.disabled
     </select>
 
     <resultMap id="customFieldMap" type="CustomField" autoMapping="true">

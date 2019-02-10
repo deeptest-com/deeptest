@@ -10,7 +10,7 @@
             AND o.name LIKE '%${keywords}%'
         </if>
 
-        AND o.disabled!=TRUE AND o.deleted!=TRUE
+        AND NOT o.disabled AND NOT o.deleted
         ORDER BY o."createTime" ASC
     </select>
 
@@ -18,7 +18,7 @@
         SELECT * FROM "IsuQuery" o
         WHERE o."projectId"=#{prjId} AND "userId"=#{userId}
 
-        AND o.disabled!=TRUE AND o.deleted!=TRUE
+        AND NOT o.disabled AND NOT o.deleted
         ORDER BY "useTime" DESC  LIMIT 6
     </select>
 

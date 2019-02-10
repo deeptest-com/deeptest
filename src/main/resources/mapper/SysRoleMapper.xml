@@ -7,7 +7,7 @@
         <if test="isRead != null">
             AND o."isRead" = #{isRead}
         </if>
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
         ORDER BY o."createTime" DESC
     </select>
 

@@ -19,7 +19,7 @@
             AND o.status = #{status}
         </if>
 
-        AND o.deleted != TRUE
+        AND NOT o.deleted
         ORDER BY o."createTime" DESC
     </select>
 
@@ -34,7 +34,7 @@
         LEFT JOIN "TstVer" v ON o."verId"=v.id
 
         WHERE o."projectId"=#{projectId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
         ORDER BY o."createTime" DESC
     </select>
 
@@ -45,7 +45,7 @@
         LEFT JOIN "TstVer" v ON o."verId"=v.id
 
         WHERE p."parentId"=#{projectId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
         ORDER BY o."createTime" DESC
     </select>
 
@@ -56,7 +56,7 @@
         LEFT JOIN "TstVer" v ON o."verId"=v.id
 
         WHERE p."orgId"=#{orgId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
         ORDER BY o."createTime" DESC
     </select>
 
@@ -98,7 +98,7 @@
 
     <update id="delete">
         UPDATE "TstPlan"
-        SET deleted = TRUE
+        SET NOT deleted = TRUE
         WHERE id=#{id} AND "projectId"=#{projectId}
     </update>
 

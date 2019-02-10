@@ -5,7 +5,7 @@
 
     <select id="listAllOrgPrivileges" resultType="TstOrgPrivilegeDefine">
         SELECT * from "TstOrgPrivilegeDefine" priv
-            WHERE priv.deleted != true and priv.disabled!= true
+            WHERE NOT priv.deleted and NOT priv.disabled
             order by priv.id asc
     </select>
 
@@ -31,7 +31,7 @@
                   AND r_group_user."orgId" = ${orgId}
               )
 
-        AND priv.deleted != true and priv.disabled!= true
+        AND NOT priv.deleted and NOT priv.disabled
         order by priv.id asc
     </select>
 

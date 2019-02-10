@@ -15,7 +15,7 @@ public interface TestEnvDao {
     TstEnv get(@Param("id") Integer id,
                @Param("projectId") Integer projectId);
 
-    Integer add(TstEnv vo);
+    Integer save(TstEnv vo);
     Integer update(TstEnv vo);
 
     Integer setOrder(@Param("id") Integer id,

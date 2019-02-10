@@ -6,7 +6,7 @@
         SELECT * FROM "IsuPrioritySolution" o
         WHERE o."orgId"=#{orgId}
 
-        AND o.disabled!=TRUE AND o.deleted!=TRUE
+        AND NOT o.disabled AND NOT o.deleted
         ORDER BY id ASC
     </select>
 

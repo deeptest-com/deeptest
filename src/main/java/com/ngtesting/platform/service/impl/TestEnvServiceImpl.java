@@ -46,7 +46,7 @@ public class TestEnvServiceImpl extends BaseServiceImpl implements TestEnvServic
             }
             vo.setOrdr(maxOrder + 10);
 
-            envDao.add(vo);
+            envDao.save(vo);
         } else {
             Integer count = envDao.update(vo);
             if (count == 0) {

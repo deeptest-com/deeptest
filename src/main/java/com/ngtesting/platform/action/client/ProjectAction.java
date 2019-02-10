@@ -205,12 +205,7 @@ public class ProjectAction extends BaseAction {
         Integer orgId = user.getDefaultOrgId();
         Integer projectId = json.getInteger("projectId");
 
-        TstProject po = projectService.changeDefaultPrj(user, projectId, false);
-        ret.put("data", po);
-
-        if (po != null && po.getType().equals(TstProject.ProjectType.project)) {
-            prjConf(ret, orgId, projectId, user.getId());
-        }
+        TstProject po = projectService.changeDefaultPrj(user, projectId, true);
 
         ret.put("type", po.getType());
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

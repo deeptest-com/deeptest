@@ -11,7 +11,7 @@
             AND o.disabled = #{disabled}
         </if>
         AND o."projectId" = #{projectId}
-        AND o.deleted != TRUE
+        AND NOT o.deleted
 
         ORDER BY o.ordr ASC
     </select>
@@ -19,10 +19,10 @@
     <select id="listLastest" resultType="TstModule">
         SELECT * FROM "TstModule" o
         WHERE o."projectId" = #{projectId}
-        AND o.deleted != TRUE
-        AND o.disabled != TRUE
+        AND NOT o.deleted
+        AND NOT o.disabled
 
-        ORDER BY o.createTime DESC LIMIT 10
+        ORDER BY o."createTime" DESC LIMIT 10
     </select>
 
     <select id="get" resultType="TstModule">
@@ -33,20 +33,18 @@
         </if>
     </select>
 
-    <insert id="add" parameterType="TstModule" useGeneratedKeys="true" keyProperty="id">
+    <insert id="save" parameterType="TstModule" useGeneratedKeys="true" keyProperty="id">
         insert into "TstModule"
           (name,descr,"projectId",ordr,deleted,disabled,"createTime")
         values
-          (#{name},#{descr},#{projectId},#{ordr},FALSE,FALSE,NOW())
+          (#{name},#{descr},#{projectId},#{ordr},FALSE,#{disabled},NOW())
     </insert>
 
     <update id="update" parameterType="TstModule">
         UPDATE "TstModule"
         SET name=#{name},
-            descr=#{descr},
-            ordr=#{ordr},
-            disabled=#{disabled},
-            "updateTime"=NOW()
+            descr=#{descr}, ordr=#{ordr},
+            disabled=#{disabled}, "updateTime"=NOW()
         WHERE id=#{id} AND "projectId" = #{projectId}
     </update>
 
@@ -65,15 +63,15 @@
     <select id="getMaxOrdrNumb" resultType="Integer">
         select max(ordr) from "TstModule" tp
         where tp."projectId"=#{projectId}
-        and tp.deleted != true
-        and tp.disabled != true
+        and NOT tp.deleted
+        and NOT tp.disabled
     </select>
 
     <select id="getPrev" resultType="TstModule">
         <![CDATA[
             SELECT * FROM "TstModule" o
             WHERE o.ordr < #{ordr} AND o."projectId" = #{projectId}
-            AND o.deleted != TRUE
+            AND NOT o.deleted
             ORDER BY o.ordr DESC LIMIT 1
         ]]>
     </select>
@@ -82,7 +80,7 @@
         <![CDATA[
             SELECT * FROM "TstModule" o
             WHERE o.ordr > #{ordr} AND o."projectId" = #{projectId}
-            AND o.deleted != TRUE
+            AND NOT o.deleted
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>

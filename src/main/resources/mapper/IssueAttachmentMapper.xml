@@ -6,7 +6,7 @@
         SELECT * FROM "IsuAttachment" o
 
         WHERE o.issueId=#{issueId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
         ORDER BY o."createTime" ASC
     </select>
 
@@ -34,7 +34,7 @@
         SELECT o.* FROM "IsuAttachment" o
 
         WHERE o."issueId" = #{id}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
 
         ORDER BY o."createTime" ASC
     </select>

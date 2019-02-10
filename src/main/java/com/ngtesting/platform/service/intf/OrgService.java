@@ -12,7 +12,7 @@ public interface OrgService extends BaseService {
 	List<TstOrg> list(Integer userId, String keywords, Boolean disabled);
 	List<TstOrg> listByUser(Integer userId);
 
-	TstOrg get(Integer id);
+	TstOrg get(Integer id, TstUser user);
 
     @Transactional
     TstOrg update(TstOrg vo, TstUser user);

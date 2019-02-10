@@ -13,7 +13,7 @@
             <if test="disabledParam != null">
                 AND o.disabled = #{disabledParam}
             </if>
-            AND o.deleted != TRUE
+            AND NOT o.deleted
 
         ORDER BY o.id ASC
     </select>
@@ -23,7 +23,7 @@
 
         WHERE o."orgId"=#{orgId}
         AND o."code" = #{roleCode}
-        AND o.deleted != TRUE
+        AND NOT o.deleted
 
         ORDER BY o.id ASC
     </select>

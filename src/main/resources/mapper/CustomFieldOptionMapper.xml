@@ -6,7 +6,7 @@
         SELECT o.* FROM "CustomFieldOption" o
 
         WHERE o."fieldId" = #{fieldId} AND o."orgId" = #{orgId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
 
         ORDER BY o.ordr ASC
     </select>
@@ -39,7 +39,7 @@
         SELECT max(o.ordr) FROM "CustomFieldOption" o
 
         WHERE o."fieldId"=#{fieldId} AND o."orgId" = #{orgId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
     </select>
 
     <select id="getPrev" resultType="CustomFieldOption">
@@ -47,7 +47,7 @@
             SELECT * FROM "CustomFieldOption" o
             WHERE o.ordr < #{ordr}
             AND o."fieldId" = #{fieldId} AND o."orgId" = #{orgId}
-            AND o.deleted != TRUE
+            AND NOT o.deleted
             ORDER BY o.ordr DESC LIMIT 1
         ]]>
     </select>
@@ -57,7 +57,7 @@
             SELECT * FROM "CustomFieldOption" o
             WHERE o.ordr > #{ordr}
             AND o."fieldId" = #{fieldId} AND o."orgId" = #{orgId}
-            AND o.deleted != TRUE
+            AND NOT o.deleted
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>
@@ -84,7 +84,7 @@
         SELECT o.* FROM "CustomFieldOption" o
 
         WHERE o."fieldId" = #{id}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
 
         ORDER BY o.ordr ASC
     </select>

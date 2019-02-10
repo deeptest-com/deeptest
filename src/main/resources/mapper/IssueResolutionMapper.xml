@@ -6,7 +6,7 @@
         SELECT * FROM "IsuResolution" o
         WHERE o."orgId"=#{orgId}
 
-        AND o.disabled!=TRUE AND o.deleted!=TRUE
+        AND NOT o.disabled AND NOT o.deleted
         ORDER BY ordr ASC
     </select>
 
@@ -58,7 +58,7 @@
         <![CDATA[
             SELECT * FROM "IsuResolution" o
             WHERE o.ordr < #{ordr} AND o."orgId" = #{orgId}
-            AND o.deleted != TRUE
+            AND NOT o.deleted
             ORDER BY o.ordr DESC LIMIT 1
         ]]>
     </select>
@@ -67,7 +67,7 @@
         <![CDATA[
             SELECT * FROM "IsuResolution" o
             WHERE o.ordr > #{ordr} AND o."orgId" = #{orgId}
-            AND o.deleted != TRUE
+            AND NOT o.deleted
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>
@@ -75,8 +75,8 @@
     <select id="getMaxOrdrNumb" resultType="Integer">
         select max(ordr) from "IsuResolution" o
         where o."orgId"=#{orgId}
-        and o.deleted != true
-        and o.disabled != true
+        and NOT o.deleted
+        and NOT o.disabled
     </select>
 
 </mapper>

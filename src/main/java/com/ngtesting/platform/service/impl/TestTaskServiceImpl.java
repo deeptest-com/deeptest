@@ -113,7 +113,7 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
         }
 
         String suiteIdsStr = StringUtil.join(suiteIds.toArray(), ",");
-        taskDao.addCasesBySuites(task.getId(), suiteIdsStr);
+        taskDao.addCasesBySuites(suiteIdsStr, task.getId());
 
         if (caseProjectId != null &&
                 (task.getCaseProjectId() == null ||  caseProjectId.intValue() != task.getCaseProjectId().intValue())) {
@@ -139,7 +139,7 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
         }
 
         String ids = StringUtil.join(caseIds.toArray(), ",");
-        taskDao.addCases(taskId, ids, false);
+        taskDao.addCases(ids, taskId);
 
         TstTask task = taskDao.get(taskId);
         Constant.MsgType action = Constant.MsgType.update_case;

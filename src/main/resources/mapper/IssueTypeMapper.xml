@@ -6,7 +6,7 @@
         SELECT * FROM "IsuType" o
         WHERE o."orgId"=#{orgId}
 
-        AND o.disabled!=TRUE AND o.deleted!=TRUE
+        AND NOT o.disabled AND NOT o.deleted
         ORDER BY o.ordr ASC
     </select>
     <select id="listBySolutionId" resultType="IsuType" parameterType="Map">
@@ -15,7 +15,7 @@
         WHERE r."solutionId" = #{solutionId}
           AND o."orgId"=#{orgId}
 
-        AND o.disabled!=TRUE AND o.deleted!=TRUE
+        AND NOT o.disabled AND NOT o.deleted
         ORDER BY o.ordr ASC
     </select>
 
@@ -29,7 +29,7 @@
           WHERE r."solutionId" = #{solutionId} AND tmp."orgId"=#{orgId}
         )
 
-        AND o.disabled!=TRUE AND o.deleted!=TRUE
+        AND NOT o.disabled AND NOT o.deleted
         ORDER BY ordr ASC
     </select>
 
@@ -85,7 +85,7 @@
         <![CDATA[
             SELECT * FROM "IsuType" o
             WHERE o.ordr < #{ordr} AND o."orgId" = #{orgId}
-            AND o.deleted != TRUE
+            AND NOT o.deleted
             ORDER BY o.ordr DESC LIMIT 1
         ]]>
     </select>
@@ -94,7 +94,7 @@
         <![CDATA[
             SELECT * FROM "IsuType" o
             WHERE o.ordr > #{ordr} AND o."orgId" = #{orgId}
-            AND o.deleted != TRUE
+            AND NOT o.deleted
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>
@@ -103,8 +103,8 @@
         select max(ordr)
         from "IsuTyp"e o
         where o."orgId"=#{orgId}
-        and o.deleted != true
-        and o.disabled != true
+        and NOT o.deleted
+        and NOT o.disabled
     </select>
 
 </mapper>

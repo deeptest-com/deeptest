@@ -1,42 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.ProjectDao" >
+<mapper namespace="com.ngtesting.platform.dao.ProjectDao">
 
     <select id="query" resultMap="projectMaps">
         SELECT #{keywordsParam} as "keywordsParam",
                #{disabledParam} as "disabledParam",
                p.* FROM "TstProject" p WHERE p."orgId"=#{orgId} AND p."type"='group'
-        <if test="keywordsParam != null and keywordsParam != ''">
-            AND p.name LIKE '%${keywordsParam}%'
-        </if>
-        <if test="disabledParam != null and disabledParam != ''">
-            AND p."disabledParam" = #{disabledParam}
-        </if>
-        AND p.deleted != TRUE
+        AND NOT p.deleted
         ORDER BY p.id
     </select>
     <select id="getChildren" parameterType="Map" resultType="TstProject">
-      SELECT c.* FROM "TstProject" c
+        SELECT c.* FROM "TstProject" c
         WHERE c."parentId" = #{id} AND c."type"='project'
         <if test="keywordsParam != null and keywordsParam != ''">
             AND c.name LIKE '%${keywordsParam}%'
         </if>
-        <if test="disabledParam != null and disabledParam != ''">
-            AND c.disabled = #{disabledParam}
+        <if test="disabledParam != null">
+            AND c.disabled = ${disabledParam}
         </if>
-        AND c.deleted != TRUE
+        AND NOT c.deleted
         ORDER BY c.id
     </select>
 
     <select id="queryIdAndName" resultType="Map">
         SELECT p.id, p.name
         FROM "TstProject" p WHERE p."orgId"=#{orgId} AND p."type"='project'
-        AND p.deleted != TRUE AND p.disabled != TRUE
+        AND NOT p.deleted  AND NOT p.disabled
         ORDER BY p.id
     </select>
 
     <select id="get" parameterType="Integer" resultType="TstProject">
-        SELECT * FROM "TstProject" p WHERE p.id = #{id}
+        SELECT * FROM "TstProject" prj WHERE prj.id = #{id}
     </select>
     <delete id="delete">
         UPDATE "TstProject"
@@ -59,21 +53,19 @@
         WHERE his."orgId" = #{orgId}
             AND his."userId" = #{userId}
 
-            AND prj.deleted != TRUE
-            AND prj.disabled != TRUE
+            AND NOT prj.deleted
+            AND NOT prj.disabled
         ORDER BY his."lastAccessTime" DESC
     </select>
 
     <select id="isLastestProjectGroup" resultType="INTEGER">
-        SELECT COUNT(prj.id) FROM "TstProject" prj
+        SELECT COUNT(*) FROM "TstProject" prj
 
         WHERE prj."orgId" = #{orgId}
         AND prj.id != #{projectGroupId}
         AND prj."type" = 'group'
 
-        AND prj.deleted != TRUE
-        AND prj.disabled != TRUE
-        ORDER BY prj.id
+        AND NOT prj.deleted  AND NOT prj.disabled
     </select>
 
     <select id="listBrothers" resultType="TstProject">
@@ -94,8 +86,8 @@
         WHERE prj."orgId" = #{orgId}
         AND prj."type" = 'group'
 
-        AND prj.deleted != TRUE
-        AND prj.disabled != TRUE
+        AND NOT prj.deleted
+        AND NOT prj.disabled
         ORDER BY prj.id
     </select>
 
@@ -105,8 +97,8 @@
         WHERE prj."orgId" = #{orgId}
         AND prj."type" = 'project'
 
-        AND prj.deleted != TRUE
-        AND prj.disabled != TRUE
+        AND NOT prj.deleted
+        AND NOT prj.disabled
         ORDER BY prj.id
     </select>
 
@@ -126,8 +118,8 @@
 
         AND prj."type" = 'project'
 
-        AND prj.deleted != TRUE
-        AND prj.disabled != TRUE
+        AND NOT prj.deleted
+        AND NOT prj.disabled
         ORDER BY prj.id
     </select>
 

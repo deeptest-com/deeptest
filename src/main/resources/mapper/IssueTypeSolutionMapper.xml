@@ -6,7 +6,7 @@
         SELECT * FROM "IsuTypeSolution" o
         WHERE o."orgId"=#{orgId}
 
-        AND o.disabled!=TRUE AND o.deleted!=TRUE
+        AND NOT o.disabled AND NOT o.deleted
         ORDER BY id ASC
     </select>
 
@@ -35,7 +35,7 @@
         UPDATE "IsuTypeSolution"
         SET name=#{name},
         disabled=#{disabled},
-        updateTime=NOW()
+        "updateTime"=NOW()
 
         WHERE id=#{id} AND "orgId"=#{orgId}
     </update>

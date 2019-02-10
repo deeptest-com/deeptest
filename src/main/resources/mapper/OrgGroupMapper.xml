@@ -14,7 +14,7 @@
         </if>
 
         AND grp."orgId" = #{orgId}
-        AND grp.deleted != TRUE
+        AND NOT grp.deleted
         ORDER BY grp.id ASC
     </select>
 
@@ -33,8 +33,8 @@
             </foreach>
         </if>
 
-        AND grp.deleted != TRUE
-        AND grp.disabled != TRUE
+        AND NOT grp.deleted
+        AND NOT grp.disabled
         ORDER BY grp.id ASC
     </select>
 
@@ -44,8 +44,8 @@
         WHERE grp."orgId" = #{orgId}
 
         AND grp.name != '所有人'
-        AND grp.deleted != TRUE
-        AND grp.disabled != TRUE
+        AND NOT grp.deleted
+        AND NOT grp.disabled
         ORDER BY grp.id ASC
     </select>
 
@@ -57,9 +57,9 @@
 
     <insert id="save" parameterType="TstOrgGroup" useGeneratedKeys="true" keyProperty="id">
         insert into "TstOrgGroup"
-          (name,"orgId",buildIn,deleted,disabled,"createTime")
+          (name,"orgId","buildIn",deleted,disabled,"createTime")
         values
-          (#{name},#{orgId},#{buildIn},FALSE,FALSE,NOW())
+          (#{name},#{orgId},#{buildIn},FALSE,#{disabled},NOW())
     </insert>
 
     <update id="update" parameterType="TstOrgGroup">

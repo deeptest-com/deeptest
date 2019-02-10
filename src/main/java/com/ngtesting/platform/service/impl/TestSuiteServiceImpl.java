@@ -96,7 +96,7 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
         testSuiteDao.updateSuiteProject(suiteId, projectId, caseProjectId, user.getId());
 
         String caseIdsStr = StringUtil.join(caseIds.toArray(), ",");
-        testSuiteDao.addCases(suiteId, caseIdsStr);
+        testSuiteDao.addCases(caseIdsStr, suiteId);
 
         TstSuite suite = testSuiteDao.get(suiteId, projectId);
         Constant.MsgType action = Constant.MsgType.update_case;

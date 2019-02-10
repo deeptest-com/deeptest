@@ -5,7 +5,7 @@
     <select id="query" resultType="IsuHistory">
         SELECT * FROM "IsuHistory" o WHERE o."issueId"=#{issueId}
 
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
         ORDER BY o."createTime" DESC
     </select>
 
@@ -22,7 +22,7 @@
         SELECT o.* FROM "IsuHistory" o
 
         WHERE o."issueId" = #{id}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
 
         ORDER BY o."createTime" DESC LIMIT 10
     </select>

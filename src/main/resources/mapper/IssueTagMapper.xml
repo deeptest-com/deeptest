@@ -22,8 +22,8 @@
         </if>
 
         AND tag."orgId" = #{orgId}
-        AND tag.deleted != TRUE
-        AND tag.disabled != TRUE
+        AND NOT tag.deleted
+        AND NOT tag.disabled
         ORDER BY tag.id ASC
     </select>
 
@@ -31,7 +31,7 @@
         SELECT * FROM "IsuAttachment" o
 
         WHERE o."issueId"=#{issueId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
         ORDER BY o."createTime" ASC
     </select>
 
@@ -75,8 +75,8 @@
         JOIN "IsuTagRelation" r ON r."tagId" = tag.id
 
         WHERE r."issueId" = #{id}
-        AND tag.deleted != TRUE
-        AND tag.disabled != TRUE
+        AND NOT tag.deleted
+        AND NOT tag.disabled
         ORDER BY tag.id ASC
     </select>
 

@@ -42,7 +42,7 @@ public class OrgRoleGroupRelationServiceImpl extends BaseServiceImpl implements 
 			vo.setSelected(false);
 			vo.setSelecting(false);
 			for (TstOrgRoleGroupRelation po : relations) {
-				if (po.getGroupId().longValue() == group.getId().longValue()
+				if (po.getOrgGroupId().longValue() == group.getId().longValue()
 						&& po.getOrgRoleId().longValue() == orgRoleId.longValue()) {
 					vo.setSelected(true);
 					vo.setSelecting(true);
@@ -73,7 +73,7 @@ public class OrgRoleGroupRelationServiceImpl extends BaseServiceImpl implements 
             vo.setSelecting(false);
             for (TstOrgRoleGroupRelation po : relations) {
                 if (po.getOrgRoleId().longValue() == role.getId().longValue()
-                        && po.getGroupId().longValue() == groupId.longValue()) {
+                        && po.getOrgGroupId().longValue() == groupId.longValue()) {
                     vo.setSelected(true);
                     vo.setSelecting(true);
                 }
@@ -94,7 +94,7 @@ public class OrgRoleGroupRelationServiceImpl extends BaseServiceImpl implements 
         for (Object obj: relations) {
             TstOrgRoleGroupRelation vo = JSON.parseObject(JSON.toJSONString(obj), TstOrgRoleGroupRelation.class);
             if (vo.getSelecting()) {
-                vo.setGroupId(groupId);
+                vo.setOrgGroupId(groupId);
                 selectedList.add(vo);
             }
         }
@@ -136,7 +136,7 @@ public class OrgRoleGroupRelationServiceImpl extends BaseServiceImpl implements 
         vo.setOrgId(orgId);
         vo.setOrgRoleId(orgRoleId);
 
-        vo.setGroupId(group.getId());
+        vo.setOrgGroupId(group.getId());
         vo.setGroupName(group.getName());
 
         return vo;
@@ -146,7 +146,7 @@ public class OrgRoleGroupRelationServiceImpl extends BaseServiceImpl implements 
     public TstOrgRoleGroupRelation genVo(Integer orgId, TstOrgRole role, Integer groupId) {
         TstOrgRoleGroupRelation vo = new TstOrgRoleGroupRelation();
         vo.setOrgId(orgId);
-        vo.setGroupId(groupId);
+        vo.setOrgGroupId(groupId);
 
         vo.setOrgRoleId(role.getId());
         vo.setOrgRoleName(role.getName());

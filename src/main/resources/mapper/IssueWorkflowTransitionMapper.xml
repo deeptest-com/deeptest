@@ -13,7 +13,7 @@
         </if>
 
         WHERE o."workflowId" = #{workflowId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
 
         <if test="projectRoleIds != null">
           AND r."projectRoleId" IN
@@ -33,7 +33,7 @@
         JOIN "IsuWorkflowSolution" wfs ON prj."issueWorkflowSolutionId"=wfs.id
 
         WHERE o."workflowId" = #{workflowId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
     </select>
 
     <select id="get" resultType="IsuWorkflowTransition">

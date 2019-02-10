@@ -72,7 +72,7 @@ public class IssueJqlServiceImpl extends BaseServiceImpl implements IssueJqlServ
 //        JsonRule projectRule = issueJqlBuildService.genJsonRule(
 //                "projectId", "projectId", "select", "-1",
 //                EnumOperator.NOT_EQUAL, EnumRuleType.INTEGER);
-//        ret.getRules().add(projectRule);
+//        ret.getRules().save(projectRule);
 
         return ret;
     }

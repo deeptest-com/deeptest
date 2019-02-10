@@ -11,7 +11,7 @@
             AND o.disabled = #{disabled}
         </if>
         AND o."projectId" = #{projectId}
-        AND o.deleted != TRUE
+        AND NOT o.deleted
 
         ORDER BY o.ordr ASC
     </select>
@@ -19,8 +19,8 @@
     <select id="listLastest" resultType="TstEnv">
         SELECT * FROM "TstEnv" o
         WHERE o."projectId" = #{projectId}
-        AND o.deleted != TRUE
-        AND o.disabled != TRUE
+        AND NOT o.deleted
+        AND NOT o.disabled
 
         ORDER BY o."createTime" DESC LIMIT 10
     </select>
@@ -36,15 +36,15 @@
     <select id="getMaxOrdrNumb" resultType="Integer">
         select max(ordr) from "TstEnv" tp
         where tp."projectId"=#{projectId}
-        and tp.deleted != true
-        and tp.disabled != true
+        and NOT tp.deleted
+        and NOT tp.disabled
     </select>
 
-    <insert id="add" parameterType="TstEnv" useGeneratedKeys="true" keyProperty="id">
+    <insert id="save" parameterType="TstEnv" useGeneratedKeys="true" keyProperty="id">
         insert into "TstEnv"
         (label,descr,"projectId","orgId",ordr,deleted,disabled,"createTime")
         values
-        (#{label},#{descr},#{projectId},#{orgId},#{ordr},FALSE,FALSE,NOW())
+        (#{label},#{descr},#{projectId},#{orgId},#{ordr},FALSE,#{disabled},NOW())
     </insert>
 
     <update id="update" parameterType="TstEnv">
@@ -76,7 +76,7 @@
         <![CDATA[
             SELECT * FROM "TstEnv" o
             WHERE o.ordr < #{ordr} AND o."projectId" = #{projectId}
-            AND o.deleted != TRUE
+            AND NOT o.deleted
             ORDER BY o.ordr DESC LIMIT 1
         ]]>
     </select>
@@ -85,7 +85,7 @@
         <![CDATA[
             SELECT * FROM "TstEnv" o
             WHERE o.ordr > #{ordr} AND o."projectId" = #{projectId}
-            AND o.deleted != TRUE
+            AND NOT o.deleted
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>

@@ -53,8 +53,12 @@ public class OrgServiceImpl extends BaseServiceImpl implements OrgService {
 	}
 
 	@Override
-	public TstOrg get(Integer id) {
+	public TstOrg get(Integer id, TstUser user) {
 		TstOrg po = orgDao.get(id);
+        if (user.getDefaultOrgId() != null
+                && user.getDefaultOrgId().longValue() == po.getId().longValue()) {
+            po.setDefaultOrg(true);
+        }
 		return po;
 	}
 

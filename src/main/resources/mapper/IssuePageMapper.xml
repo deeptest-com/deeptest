@@ -8,7 +8,7 @@
         FROM "IsuPage" page
 
         WHERE page."orgId"=#{orgId}
-        AND page.deleted != TRUE AND page.disabled != TRUE
+        AND NOT page.deleted AND NOT page.disabled
         ORDER BY page."createTime" ASC
     </select>
 
@@ -16,7 +16,7 @@
         SELECT o.* FROM "IsuPage" o
 
         WHERE o.id = #{id} AND "orgId" = #{orgId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
     </select>
 
     <insert id="save" parameterType="IsuPage" useGeneratedKeys="true" keyProperty="id">

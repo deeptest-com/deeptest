@@ -12,12 +12,20 @@ public class TstOrgRoleGroupRelation implements Serializable {
 
     private String orgRoleName;
 
-    private Integer groupId;
+	private Integer orgGroupId;
 
     private String groupName;
 
     private Boolean selected;
     private Boolean selecting;
+
+	public Integer getOrgGroupId() {
+		return orgGroupId;
+	}
+
+	public void setOrgGroupId(Integer orgGroupId) {
+		this.orgGroupId = orgGroupId;
+	}
 
 	public Integer getOrgId() {
 		return orgId;
@@ -41,14 +49,6 @@ public class TstOrgRoleGroupRelation implements Serializable {
 
 	public void setOrgRoleName(String orgRoleName) {
 		this.orgRoleName = orgRoleName;
-	}
-
-	public Integer getGroupId() {
-		return groupId;
-	}
-
-	public void setGroupId(Integer groupId) {
-		this.groupId = groupId;
 	}
 
 	public String getGroupName() {

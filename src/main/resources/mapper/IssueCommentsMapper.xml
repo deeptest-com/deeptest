@@ -5,7 +5,7 @@
     <select id="query" resultType="IsuComments">
         SELECT * FROM "IsuComments" o WHERE o."issueId"=#{issueId}
 
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
         ORDER BY o."updateTime" ASC
     </select>
 
@@ -17,7 +17,7 @@
         JOIN "TstUser" usr ON o."userId" = usr.id
 
         WHERE o."issueId" = #{id}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
 
         ORDER BY o."updateTime" ASC
     </select>

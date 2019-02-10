@@ -17,7 +17,7 @@
         LEFT JOIN "TstEnv" env ON task."envId" = env.id
 
         WHERE task."planId"=#{planId}
-        AND task.deleted != TRUE AND task.disabled != TRUE
+        AND NOT task.deleted AND NOT task.disabled
         ORDER BY task."createTime" ASC
     </select>
 
@@ -59,7 +59,7 @@
         FROM "TstCaseInTask" o
 
         WHERE o."taskId"=#{id}
-        AND o.deleted != TRUE AND o.disabled != TRUE
+        AND NOT o.deleted AND NOT o.disabled
         ORDER BY o."pId", o.id
     </select>
 
@@ -107,15 +107,14 @@
 
     <update id="addCasesBySuites" statementType="CALLABLE">
         { call add_cases_to_task_by_suites(
-              #{taskId,mode=IN,jdbcType=INTEGER},
-              #{suiteIds,mode=IN,jdbcType=VARCHAR}
+              #{suiteIds,mode=IN,jdbcType=VARCHAR},
+              #{taskId,mode=IN,jdbcType=INTEGER}
         ) }
     </update>
     <update id="addCases" statementType="CALLABLE">
         { call add_cases_to_task(
-            #{taskId,mode=IN,jdbcType=INTEGER},
             #{caseIds,mode=IN,jdbcType=VARCHAR},
-            #{append,mode=IN,jdbcType=BOOLEAN}
+            #{taskId,mode=IN,jdbcType=INTEGER}
         ) }
     </update>
 
@@ -129,7 +128,7 @@
        select tcin."status" status, count(tcin.id) "count"
        from "TstCaseInTask" tcin
        where tcin."taskId" = #{id}
-        AND tcin.deleted != true AND tcin.disabled != true AND tcin."isParent" = false
+        AND NOT tcin.deleted AND NOT tcin.disabled AND NOT tcin."isParent"
        group by tcin."status"
     </select>
 
@@ -146,7 +145,7 @@
         LEFT JOIN "TstTaskAssigneeRelation" r on r."assigneeId" = o.id
 
         WHERE r."taskId" = #{id}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
 
         ORDER BY o.id ASC
     </select>

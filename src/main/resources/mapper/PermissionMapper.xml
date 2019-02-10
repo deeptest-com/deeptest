@@ -24,7 +24,7 @@
                 WHERE r_group_user."userId" = ${userId}
               )
 
-        AND priv.deleted != true and priv.disabled!= true
+        AND NOT priv.deleted  and NOT priv.disabled
         order by "entityId", priv."code" asc
     </select>
 

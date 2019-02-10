@@ -8,7 +8,7 @@
         FROM "IsuWorkflow" o
 
         WHERE o."orgId"=#{orgId}
-        AND o.deleted != TRUE AND o.disabled != TRUE
+        AND NOT o.deleted  AND NOT o.disabled
         ORDER BY o."createTime" ASC
     </select>
 
@@ -16,7 +16,7 @@
         SELECT o.* FROM "IsuWorkflow" o
 
         WHERE o.id = #{id} AND o."orgId" = #{orgId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
     </select>
 
     <insert id="save" parameterType="IsuWorkflow" useGeneratedKeys="true" keyProperty="id">
@@ -76,7 +76,7 @@
         JOIN "IsuWorkflowStatusRelation" r ON o.id=r."statusId"
 
         WHERE r."workflowId" = #{id}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
     </select>
 
 </mapper>

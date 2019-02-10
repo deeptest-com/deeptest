@@ -31,6 +31,7 @@ public interface TestSuiteDao {
                             @Param("caseProjectId") Integer caseProjectId,
                             @Param("userId") Integer userId);
 
-    void addCases(@Param("suiteId") Integer suiteId,
-                  @Param("caseIds") String caseIds);
+    void addCases(@Param("caseIds") String caseIds,
+                  @Param("suiteId") Integer suiteId
+                  );
 }

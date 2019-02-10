@@ -30,11 +30,11 @@ public interface TestTaskDao {
 
     void updateCaseProject(@Param("id") Integer id, @Param("caseProjectId") Integer caseProjectId);
 
-    void addCasesBySuites(@Param("taskId") Integer taskId, @Param("suiteIds") String suiteIds);
+    void addCasesBySuites(@Param("suiteIds") String suiteIds,
+                          @Param("taskId") Integer taskId);
 
-    void addCases(@Param("taskId") Integer taskId,
-                  @Param("caseIds") String caseIds,
-                  @Param("append") Boolean append);
+    void addCases(@Param("caseIds") String caseIds,
+                  @Param("taskId") Integer taskId);
 
     void start(@Param("id") Integer id);
 

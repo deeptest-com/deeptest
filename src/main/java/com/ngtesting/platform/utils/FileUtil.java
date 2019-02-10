@@ -161,7 +161,7 @@ public class FileUtil {
 //
 //                            AiRunMlf mlf = new AiRunMlf();
 //                            mlf.setPath(mlfPath);
-//                            mlfs.add(mlf);
+//                            mlfs.save(mlf);
 //                        }
 //                    }
 //                }

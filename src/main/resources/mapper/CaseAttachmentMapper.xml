@@ -6,7 +6,7 @@
         SELECT * FROM "TstCaseAttachment" o
 
         WHERE o."caseId"=#{caseId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
         ORDER BY o."createTime" ASC
     </select>
 
@@ -34,7 +34,7 @@
         SELECT o.* FROM "TstCaseAttachment" o
 
         WHERE o."caseId" = #{id}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
 
         ORDER BY o."createTime" ASC
     </select>

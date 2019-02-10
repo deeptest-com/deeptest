@@ -44,7 +44,7 @@ public class TestVerServiceImpl extends BaseServiceImpl implements TestVerServic
             }
             vo.setOrdr(maxOrder + 10);
 
-            verDao.add(vo);
+            verDao.save(vo);
         } else {
             Integer count = verDao.update(vo);
             if (count == 0) {

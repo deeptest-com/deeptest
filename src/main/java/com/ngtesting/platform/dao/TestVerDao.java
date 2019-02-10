@@ -14,7 +14,7 @@ public interface TestVerDao {
     TstVer get(@Param("id") Integer id,
                @Param("projectId") Integer projectId);
 
-    Integer add(TstVer vo);
+    Integer save(TstVer vo);
     Integer update(TstVer vo);
 
     Integer delete(@Param("id") Integer id,

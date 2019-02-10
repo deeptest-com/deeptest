@@ -55,7 +55,7 @@
         SELECT o.* FROM "IsuPageElement" o
 
         WHERE o."pageId" = #{id}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
 
         ORDER BY o.ordr ASC
     </select>

@@ -6,7 +6,7 @@
         SELECT * FROM "TstCase" o
 
         WHERE o."projectId" = #{projectId}
-         AND o.deleted != TRUE  AND o.disabled != TRUE
+         AND NOT o.deleted   AND NOT o.disabled
 
         ORDER BY o."pId", o.ordr
     </select>
@@ -23,8 +23,8 @@
 
         WHERE
             o."projectId" =#{projectId}
-        AND o.deleted != TRUE
-        AND o.disabled != TRUE
+        AND NOT o.deleted
+        AND NOT o.disabled
         ORDER BY o."pId", o.ordr,s.ordr;
     </select>
 
@@ -150,15 +150,15 @@
     <select id="getChildMaxOrderNumb" resultType="Integer">
         select max(ordr) from "TstCase" o
         where o."pId"=#{pId}
-        and o.deleted != true
-        and o.disabled != true
+        and NOT o.deleted
+        and NOT o.disabled
     </select>
 
     <select id="getChildren" resultType="TstCase">
         select * from "TstCase" o
         where o."pId"=#{id}
-        and o.deleted != true
-        and o.disabled != true
+        and NOT o.deleted
+        and NOT o.disabled
 
         ORDER BY o."pId", o.ordr
     </select>

@@ -11,7 +11,7 @@
         SELECT * FROM "TstUserVerifyCode" o
 
         WHERE o."code"=#{code}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted  AND NOT o.disabled
         ORDER BY o."createTime" DESC
     </select>
 

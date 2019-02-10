@@ -6,7 +6,7 @@
         SELECT * FROM "TstCaseStep" o
 
         WHERE o."caseId"=#{caseId}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
         ORDER BY o.ordr ASC
     </select>
     <select id="get" resultType="TstCaseStep">
@@ -37,13 +37,13 @@
         UPDATE "TstCaseStep"
           SET ordr = ordr - 1
         where "caseId" = #{caseId} and ordr > #{ordr}
-          AND deleted != TRUE and disabled != TRUE
+          AND NOT deleted and NOT disabled
     </update>
     <update id="moveOthersDown">
         UPDATE "TstCaseStep"
           SET ordr = ordr + 1
         where "caseI"d = #{caseId} and id!=#{id} AND ordr >= #{ordr}
-          AND deleted != TRUE and disabled != TRUE
+          AND NOT deleted and NOT disabled
     </update>
 
     <select id="getPrev" resultType="TstCaseStep">
@@ -52,7 +52,7 @@
 
         WHERE o."caseId" = #{caseId}
         AND o.ordr < #{ordr}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
 
         ORDER BY o.ordr desc LIMIT 1
         ]]>
@@ -62,7 +62,7 @@
 
         WHERE o."caseId" = #{caseId}
         AND o.ordr > #{ordr}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
 
         ORDER BY o.ordr ASC LIMIT 1
     </select>
@@ -76,7 +76,7 @@
         SELECT o.* FROM "TstCaseStep" o
 
         WHERE o."caseId" = #{id}
-        AND o.deleted != true AND o.disabled != true
+        AND NOT o.deleted AND NOT o.disabled
 
         ORDER BY o.ordr ASC
     </select>

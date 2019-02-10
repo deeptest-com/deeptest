@@ -27,7 +27,7 @@
         insert into "TstOrgRoleGroupRelation" ("orgId","orgRoleId","orgGroupId")
         values
         <foreach collection="list" item="item" separator=",">
-            (#{item.orgId},#{item.orgRoleId}, #{item.groupId})
+            (#{item.orgId},#{item.orgRoleId}, #{item.orgGroupId})
         </foreach>
     </insert>
 

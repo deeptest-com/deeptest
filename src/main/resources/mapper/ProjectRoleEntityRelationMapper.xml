@@ -27,21 +27,9 @@
         ORDER BY o."type", role.id ASC
     </select>
 
-    <select id="listIdsByProjectAndUser" resultType="Integer">
-      select relation."projectRoleId" from "TstProjectRoleEntityRelation" relation
-          where
-            (
-              (relation."type" = 'user' AND relation."entityId" = #{userId})
-              or (relation."type" = 'group' AND
-                  relation."entityId" in (
-                    select grp.id from "TstOrgGroup" grp
-                      left join "TstOrgGroupUserRelation" relat on relat."orgGroupId" = grp.id
-                      left join "TstUser" userr on relat."userId" = userr.id
-                    where userr.id = #{userId}
-                  )
-              )
-            )
-            and relation."projectId" = #{projectId}
+    <select id="listIdsByUserAndProject" resultType="Integer">
+      select relation."projectRoleId" from
+       (  select * from _user_project_role(#{userId}, #{projectId}, 'project')  ) relation
     </select>
 
     <insert id="addRole" useGeneratedKeys="true" keyProperty="id">

@@ -13,20 +13,7 @@
     <select id="search" resultType="TstUser">
         select usr.id, usr.nickname, 'user' "type" from "TstUser" usr
         where
-            usr.id in
-                (
-                    select relation1."entityId" from "TstProjectRoleEntityRelation" relation1
-                      where relation1.type = 'user' AND relation1."projectId" = #{prjId}
-
-                    UNION
-
-                    select relta."userId" from "TstOrgGroupUserRelation" relta
-                      where relta."orgGroupId" in
-                        (
-                            select relation2."entityId" from "TstProjectRoleEntityRelation" relation2
-                            where relation2.type = 'group' AND relation2."projectId" = #{prjId}
-                        )
-                )
+            usr.id = any (  select "userId" from _project_user(#{prjId})  )
 
             AND (
                 usr.nickname LIKE '%${keywords}%'

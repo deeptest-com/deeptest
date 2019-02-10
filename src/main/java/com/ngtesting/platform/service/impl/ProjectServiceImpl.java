@@ -101,7 +101,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
         TstProject po = projectDao.get(projectId);
         Map<String, Boolean> privMap = new HashMap();
         List<Map<String, String>> projectPrivs = projectPrivilegeDao.listForUser(
-                userId, projectId, "org");
+                userId, projectId, "project");
         for (Map<String, String> map : projectPrivs) {
             String str = map.get("code") + "-" + map.get("action");
             privMap.put(str, true);

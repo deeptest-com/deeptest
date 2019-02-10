@@ -11,8 +11,8 @@ public interface ProjectRoleEntityRelationDao {
 
     List<TstProjectRoleEntityRelation> listByProject(@Param("projectId") Integer projectId);
 
-    List<Integer> listIdsByProjectAndUser(@Param("projectId") Integer projectId,
-                                         @Param("userId") Integer userId);
+    List<Integer> listIdsByUserAndProject(@Param("userId") Integer userId,
+                                          @Param("projectId") Integer projectId);
 
     void addRole(@Param("orgId") Integer orgId,
                  @Param("projectId") Integer projectId,

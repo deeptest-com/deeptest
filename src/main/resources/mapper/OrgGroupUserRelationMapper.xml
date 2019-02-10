@@ -25,12 +25,12 @@
     </delete>
 
     <insert id="saveRelations">
-        insert into "TstOrgGroupUserRelation" ("orgId","orgGroupId","orgGroupName","userId","userName")
+        insert into "TstOrgGroupUserRelation" ("orgId","orgGroupId","userId")
         values
             <foreach collection="list" item="item" separator=",">
                 (#{item.orgId},
-                  #{item.orgGroupId}, #{item.orgGroupName},
-                  #{item.userId}, #{item.userName} )
+                  #{item.orgGroupId},
+                  #{item.userId} )
             </foreach>
     </insert>
 

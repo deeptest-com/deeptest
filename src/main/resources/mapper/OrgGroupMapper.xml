@@ -43,7 +43,6 @@
 
         WHERE grp."orgId" = #{orgId}
 
-        AND grp.name != '所有人'
         AND NOT grp.deleted
         AND NOT grp.disabled
         ORDER BY grp.id ASC

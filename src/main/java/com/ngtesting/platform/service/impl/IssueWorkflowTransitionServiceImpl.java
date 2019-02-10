@@ -36,7 +36,7 @@ public class IssueWorkflowTransitionServiceImpl extends BaseServiceImpl implemen
             Integer projectId, Integer userId) {
 
         List<Integer> projectRoleIds = projectRoleEntityRelationDao
-                .listIdsByProjectAndUser(projectId, userId);
+                .listIdsByUserAndProject(userId, projectId);
 
         List<IsuWorkflowSolutionItem> workflowItems =
                 issueWorkflowSolutionDao.getIssueTypeWorkflow(projectId);

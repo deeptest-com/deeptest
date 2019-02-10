@@ -9,20 +9,7 @@
         from "TstOrgPrivilegeDefine" priv
         join "TstOrgRolePrivilegeRelation" r_role_priv ON r_role_priv."orgPrivilegeId"=priv.id
 
-        where r_role_priv."orgRoleId"
-          IN (
-                SELECT r_role_user."orgRoleId"
-                  from "TstOrgRoleUserRelation" r_role_user
-                where r_role_user."userId" = ${userId}
-
-                UNION
-
-                SELECT r_role_group."orgRoleId"
-                  from "TstOrgRoleGroupRelation" r_role_group
-                  JOIN "TstOrgGroupUserRelation" r_group_user ON r_group_user."orgGroupId" = r_role_group."orgGroupId"
-
-                WHERE r_group_user."userId" = ${userId}
-              )
+        where r_role_priv."orgRoleId" = any (select _user_org_role(${userId}))
 
         AND NOT priv.deleted  and NOT priv.disabled
         order by "entityId", priv."code" asc
@@ -34,22 +21,7 @@
         left join "TstProjectRolePriviledgeRelation" r on r."projectPrivilegeDefineId" = "define".id
 
         INNER join
-          (select relation."projectId", relation."projectRoleId"
-            from "TstProjectRoleEntityRelation" relation
-            where (
-                (type = 'user' AND relation."entityId" = ${userId})
-                or (type = 'group' AND
-                    relation."entityId" in (
-                    select grp.id from "TstOrgGroup" grp
-                    left join "TstOrgGroupUserRelation" relat on relat."orgGroupId" = grp.id
-                    left join "TstUser" userr on relat."userId" = userr.id
-                    where userr.id = ${userId}
-                    UNION
-                    select grp.id from "TstOrgGroup" grp
-                    where grp.name = '所有人')
-                )
-            )
-        ) tmp
+          ( select "projectId", "projectRoleId" from _user_project_role(${userId}) ) tmp
 
         on r."projectRoleId" = tmp."projectRoleId"
 

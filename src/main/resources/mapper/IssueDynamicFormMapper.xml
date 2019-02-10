@@ -143,21 +143,7 @@
 
     <sql id="fetchUsers">
         select usr.id, usr.nickname "label" from "TstUser" usr
-        where usr.id in
-        (
-            select relation1."entityId" from "TstProjectRoleEntityRelation" relation1
-              where relation1.type = 'user' AND relation1."projectId" = #{projectId}
-
-            UNION
-
-            select relta."userId" from "TstOrgGroupUserRelation" relta
-              where relta."orgGroupId" in
-                (
-                  select relation2."entityId" from "TstProjectRoleEntityRelation" relation2
-                  where relation2.type = 'group'
-                  AND relation2."projectId" = #{projectId}
-                )
-        )
+        where usr.id = any (  select "userId" from _project_user(#{prjId})  )
         ORDER by usr.nickname ASC
     </sql>
 

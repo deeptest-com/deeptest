@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface OrgPrivilegeDao {
     List<TstOrgPrivilegeDefine> listAllOrgPrivileges();
-    List<TstOrgPrivilegeDefine> listByUser(@Param("orgId") Integer orgId,
-                                           @Param("userId") Integer userId);
+    List<TstOrgPrivilegeDefine> listByUser(@Param("userId") Integer userId,
+                                           @Param("orgId") Integer orgId);
 }

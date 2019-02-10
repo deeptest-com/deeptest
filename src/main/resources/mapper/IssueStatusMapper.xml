@@ -47,7 +47,7 @@
     <update id="removeDefault">
         UPDATE "IsuStatus"
         SET "defaultVal"=FALSE, "updateTime"=NOW()
-        WHERE orgId=#{orgId}
+        WHERE "orgId"=#{orgId}
     </update>
     <update id="setDefault">
         UPDATE "IsuStatus"

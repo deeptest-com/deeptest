@@ -9,30 +9,11 @@
             order by priv.id asc
     </select>
 
-    <select id="listByUser" resultType="TstOrgPrivilegeDefine">
-        SELECT priv."code",priv.name from "TstOrgPrivilegeDefine" priv
-
-        join "TstOrgRolePrivilegeRelation" r_role_priv ON r_role_priv."orgPrivilegeId"=priv.id
-
-        where r_role_priv."orgRoleId"
-          IN (
-                SELECT r_role_user."orgRoleId"
-                  from "TstOrgRoleUserRelation" r_role_user
-                where r_role_user."userId" = ${userId}
-                  AND r_role_user."orgId" = ${orgId}
-
-                UNION
-
-                SELECT r_role_group."orgRoleId"
-                  from "TstOrgRoleGroupRelation" r_role_group
-                  JOIN "TstOrgGroupUserRelation" r_group_user ON r_group_user."orgGroupId" = r_role_group."orgGroupId"
-
-                WHERE r_group_user."userId" = ${userId}
-                  AND r_group_user."orgId" = ${orgId}
-              )
-
-        AND NOT priv.deleted and NOT priv.disabled
-        order by priv.id asc
+    <select id="listByUser" resultType="TstOrgPrivilegeDefine" statementType="CALLABLE">
+        { call get_org_privilege_for_user(
+            #{userId,mode=IN,jdbcType=INTEGER},
+            #{orgId,mode=IN,jdbcType=INTEGER}
+        ) }
     </select>
 
 </mapper>

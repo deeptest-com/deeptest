@@ -19,7 +19,7 @@
     <update id="updateFromCustomField">
         UPDATE "IsuPageElement"
         SET "colCode"=#{colCode}, "label"=#{label}, "type"=#{type}, "input"=#{input}
-        WHERE "key"=('cust-' || ${id}) AND orgId=#{orgId}
+        WHERE "key"=('cust-' || ${id}) AND "orgId"=#{orgId}
     </update>
 
     <update id="saveOrdrs">

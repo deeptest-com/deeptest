@@ -22,7 +22,7 @@ public class OrgPrivilegeServiceImpl extends BaseServiceImpl implements OrgPrivi
             return map;
         }
 
-        List<TstOrgPrivilegeDefine> ls = orgPrivilegeDao.listByUser(orgId, userId);
+        List<TstOrgPrivilegeDefine> ls = orgPrivilegeDao.listByUser(userId, orgId);
         for (TstOrgPrivilegeDefine priv: ls) {
             map.put(priv.getCode(), true);
         }

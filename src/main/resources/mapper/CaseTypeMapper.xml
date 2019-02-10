@@ -12,7 +12,7 @@
 
     <select id="get" resultType="TstCaseType">
         SELECT * FROM "TstCaseType" o
-        WHERE o.id = #{id} AND o.orgId=#{orgId}
+        WHERE o.id = #{id} AND o."orgId"=#{orgId}
     </select>
 
     <insert id="save" parameterType="TstCaseType" useGeneratedKeys="true" keyProperty="id">
@@ -58,7 +58,7 @@
         <![CDATA[
             SELECT * FROM "TstCaseType" o
             WHERE o.ordr < #{ordr} AND o."orgId" = #{orgId}
-            AND o.deleted
+            AND NOT o.deleted
             ORDER BY o.ordr DESC LIMIT 1
         ]]>
     </select>
@@ -67,7 +67,7 @@
         <![CDATA[
             SELECT * FROM "TstCaseType" o
             WHERE o.ordr > #{ordr} AND o."orgId" = #{orgId}
-            AND o.deleted
+            AND NOT o.deleted
             ORDER BY o.ordr ASC LIMIT 1
         ]]>
     </select>
@@ -75,8 +75,8 @@
     <select id="getMaxOrdrNumb" resultType="Integer">
         select max(ordr) from "TstCaseType" o
         where o."orgId"=#{orgId}
-        and o.deleted
-        and o.disabled
+        and NOT o.deleted
+        and NOT o.disabled
     </select>
 
 </mapper>

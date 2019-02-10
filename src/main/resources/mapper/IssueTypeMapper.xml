@@ -55,7 +55,7 @@
         disabled=#{disabled},
         "updateTime"=NOW()
 
-        WHERE id=#{id} AND orgId=#{orgId}
+        WHERE id=#{id} AND "orgId"=#{orgId}
     </update>
 
     <delete id="delete">

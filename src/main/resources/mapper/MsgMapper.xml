@@ -41,22 +41,22 @@
     </select>
 
     <update id="delete">
-        update "TstMsg" msg
-        set msg.deleted=true
-        WHERE msg.id=#{id} AND msg."userId" = #{userId}
+        update "TstMsg"
+        set deleted=true
+        WHERE id=#{id} AND "userId" = #{userId}
     </update>
     <update id="markRead">
-        update "TstMsg" msg
-            set msg."isRead"=true
-        WHERE msg.id=#{id} AND msg."userId" = #{userId}
+        update "TstMsg"
+            set "isRead"=true
+        WHERE id=#{id} AND "userId" = #{userId}
     </update>
 
     <update id="markAllRead">
-        update "TstMsg" msg
-        set msg."isRead"=true
-        where msg."userId"=#{userId}
-              AND msg."isRead" != true
-              AND msg."deleted" != true AND msg.disabled != true
+        update "TstMsg"
+        set "isRead"=true
+        where "userId"=#{userId}
+              AND "isRead" != true
+              AND "deleted" != true AND disabled != true
     </update>
 
 </mapper>

@@ -88,10 +88,8 @@ public class ReportTestServiceImpl extends ReportServiceImpl implements ReportTe
         for (Map item : ls) {
             xList.add(item.get("date").toString());
 
-            Integer totalNumb = Integer.valueOf(item.get("total").toString());
-            Integer exeNumb = item.get("numb")==null?0:Integer.valueOf(item.get("numb").toString());
-            exeSum += exeNumb;
-            numbList.add(totalNumb - exeSum);
+            Integer left = Integer.valueOf(item.get("left").toString());
+            numbList.add(left);
         }
         map.put("xList", xList);
 

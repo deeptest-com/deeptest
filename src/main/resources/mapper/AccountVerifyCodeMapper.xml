@@ -10,7 +10,7 @@
     <select id="getByCode" resultType="TstUserVerifyCode">
         SELECT * FROM "TstUserVerifyCode" o
 
-        WHERE o.code=#{code}
+        WHERE o."code"=#{code}
         AND o.deleted != true AND o.disabled != true
         ORDER BY o."createTime" DESC
     </select>

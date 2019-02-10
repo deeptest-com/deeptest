@@ -10,7 +10,7 @@
     </select>
 
     <select id="listByUser" resultType="TstOrgPrivilegeDefine">
-        SELECT priv.code,priv.name from "TstOrgPrivilegeDefine" priv
+        SELECT priv."code",priv.name from "TstOrgPrivilegeDefine" priv
 
         join "TstOrgRolePrivilegeRelation" r_role_priv ON r_role_priv."orgPrivilegeId"=priv.id
 

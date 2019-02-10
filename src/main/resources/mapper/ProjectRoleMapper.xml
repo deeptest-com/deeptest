@@ -22,7 +22,7 @@
         SELECT * FROM "TstProjectRole" o
 
         WHERE o."orgId"=#{orgId}
-        AND o.code = #{roleCode}
+        AND o."code" = #{roleCode}
         AND o.deleted != TRUE
 
         ORDER BY o.id ASC

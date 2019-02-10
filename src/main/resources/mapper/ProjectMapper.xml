@@ -49,8 +49,8 @@
                 #{orgId,mode=IN,jdbcType=INTEGER},
                 #{prjId,mode=IN,jdbcType=INTEGER},
                 #{prjName,mode=IN,jdbcType=VARCHAR},
-                #{userId,mode=IN,jdbcType=INTEGER},
-             ) }
+                #{userId,mode=IN,jdbcType=INTEGER}
+      ) }
     </insert>
 
     <select id="listRecent" resultType="TstProjectAccessHistory">
@@ -78,13 +78,13 @@
 
     <select id="listBrothers" resultType="TstProject">
         SELECT * FROM "TstProject" prj
-        JOIN "TstProject" temp ON temp."parentId" = prj.parentId
+        JOIN "TstProject" temp ON temp."parentId" = prj."parentId"
         WHERE temp.id=#{id}
         ORDER BY prj.id
     </select>
     <select id="listBrotherIds" resultType="int">
         SELECT prj.id FROM "TstProject" prj
-        JOIN "TstProject" temp ON temp."parentId" = prj.parentId
+        JOIN "TstProject" temp ON temp."parentId" = prj."parentId"
         WHERE temp.id=#{id}
         ORDER BY prj.id
     </select>

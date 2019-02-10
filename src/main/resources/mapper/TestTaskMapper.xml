@@ -120,9 +120,9 @@
     </update>
 
     <update id="start">
-        UPDATE "TstTask" o
-        SET o.status = 'in_progress'
-        WHERE o.id=#{id} AND o.status != 'in_progress'
+        UPDATE "TstTask"
+        SET status = 'in_progress'
+        WHERE id=#{id} AND status != 'in_progress'
     </update>
 
     <select id="countStatus" resultType="map">

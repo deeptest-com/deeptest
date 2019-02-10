@@ -4,10 +4,10 @@
 <mapper namespace="com.ngtesting.platform.dao.PermissionDao" >
 
     <select id="listOrgPermission" resultType="Map">
-        SELECT r_role_priv.orgId "entityId", priv.code, priv.name
+        SELECT r_role_priv."orgId" "entityId", priv."code", priv.name
 
         from "TstOrgPrivilegeDefine" priv
-        join "TstOrgRolePrivilegeRelation" r_role_priv ON r_role_priv.orgPrivilegeId=priv.id
+        join "TstOrgRolePrivilegeRelation" r_role_priv ON r_role_priv."orgPrivilegeId"=priv.id
 
         where r_role_priv."orgRoleId"
           IN (
@@ -25,11 +25,11 @@
               )
 
         AND priv.deleted != true and priv.disabled!= true
-        order by "entityId", priv.code asc
+        order by "entityId", priv."code" asc
     </select>
 
     <select id="listPrjPermission" resultType="Map">
-        select tmp."projectId" "entityId", (define.'code' || '-' || define.action) code
+        select tmp."projectId" "entityId", ("define"."code" || '-' || "define".action) "code"
         from "TstProjectPrivilegeDefine" "define"
         left join "TstProjectRolePriviledgeRelation" r on r."projectPrivilegeDefineId" = "define".id
 

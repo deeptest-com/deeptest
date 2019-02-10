@@ -18,7 +18,7 @@
     </select>
 
     <select id="listForCase" resultMap="customFieldMap">
-        SELECT "customField".id, 'cust-' || customField.id "key",
+        SELECT "customField".id, 'cust-' || "customField".id "key",
             "customField".id "fieldId", "customField"."colCode", "customField".label,
             "customField".type, "customField".input,
             "customField"."fullLine", "customField".required, "customField".readonly, false "buildIn",

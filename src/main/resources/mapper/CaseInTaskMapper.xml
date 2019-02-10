@@ -43,13 +43,13 @@
     </select>
 
     <update id="setResult">
-        update "TstCaseInTask" o
-        set o.result=#{result},
-        o.status=#{status},
-        o."exeBy"=#{exeBy},
-        o."exeTime"=NOW()
+        update "TstCaseInTask"
+        set result=#{result},
+          status=#{status},
+          "exeBy"=#{exeBy},
+          "exeTime"=NOW()
 
-        where o.id = #{id}
+        where id = #{id}
     </update>
 
     <resultMap id="caseInTaskMap" type="TstCaseInTask" autoMapping="true">

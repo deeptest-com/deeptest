@@ -70,6 +70,13 @@
             (#{orgId}, #{workflowId}, #{item} )
         </foreach>
     </insert>
+    <update id="updateStatuses" statementType="CALLABLE">
+        { call update_workflow_statuses(
+              #{workflowId,mode=IN,jdbcType=INTEGER},
+              #{statusIds,mode=IN,jdbcType=VARCHAR},
+              #{orgId,mode=IN,jdbcType=INTEGER}
+        ) }
+    </update>
 
     <select id="listStatus" resultType="IsuStatus">
         SELECT o.* FROM "IsuStatus" o

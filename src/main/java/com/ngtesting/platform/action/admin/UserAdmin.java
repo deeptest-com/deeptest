@@ -131,7 +131,7 @@ public class UserAdmin extends BaseAction {
         orgGroupUserRelationService.saveRelationsForUser(orgId, vo.getId(), relations);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
-        pushSettingsService.pushUserSettings(po);
+//        pushSettingsService.pushUserSettings(po);
         return ret;
     }
 

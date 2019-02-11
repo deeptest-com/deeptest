@@ -4,8 +4,13 @@
 
     <insert id="addUserToOrg">
         insert into "TstOrgUserRelation" ("userId","orgId")
-
         values (#{userId},#{orgId})
+    </insert>
+    <insert id="addUserToDefaultOrgGroup">
+        INSERT INTO public."TstOrgGroupUserRelation"("orgId", "orgGroupId", "userId")
+        VALUES (#{orgId},
+          (select grp.id from "TstOrgGroup" grp WHERE grp."orgId"=#{orgId} and grp."buildIn"),
+        #{userId});
     </insert>
 
     <select id="userInOrg" resultType="int">

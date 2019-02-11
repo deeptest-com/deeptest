@@ -18,6 +18,7 @@
     <delete id="removeAllGroupsForUser">
         DELETE FROM "TstOrgGroupUserRelation"
         WHERE "orgId"=#{orgId} AND "userId"=#{userId}
+        AND "orgGroupId" != (select grp.id from "TstOrgGroup" grp WHERE grp."orgId"=#{orgId} and grp."buildIn")
     </delete>
     <delete id="removeAllUsersForGroup">
         DELETE FROM "TstOrgGroupUserRelation"

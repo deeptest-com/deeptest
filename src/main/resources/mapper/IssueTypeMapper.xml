@@ -101,7 +101,7 @@
 
     <select id="getMaxOrdrNumb" resultType="Integer">
         select max(ordr)
-        from "IsuTyp"e o
+        from "IsuType" o
         where o."orgId"=#{orgId}
         and NOT o.deleted
         and NOT o.disabled

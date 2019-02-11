@@ -135,6 +135,7 @@ public class UserServiceImpl implements UserService {
 
         if (isNew || orgUserRelationDao.userInOrg(vo.getId(), orgId) == 0) { // 不在组织里
             orgUserRelationDao.addUserToOrg(vo.getId(), orgId);
+            orgUserRelationDao.addUserToDefaultOrgGroup(vo.getId(), orgId);
 
             Integer projectRoleId = projectRoleDao.getRoleByCode(orgId, "test_designer").getId();
             projectRoleEntityRelationDao.addRole(orgId, prjId, projectRoleId, vo.getId(), "user");

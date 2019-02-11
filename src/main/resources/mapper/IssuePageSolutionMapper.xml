@@ -9,7 +9,7 @@
 
         WHERE solution."orgId"=#{orgId}
         AND NOT solution.deleted AND NOT solution.disabled
-        ORDER BY solution."createTime" ASC
+        ORDER BY solution.id ASC
     </select>
 
     <select id="get" resultType="IsuPageSolution">
@@ -66,7 +66,7 @@
         <selectKey keyProperty="count" resultType="int" order="BEFORE">
             select count(*) from "IsuPageSolutionItem"
             where "typeId"=#{typeId} AND opt=#{opt}
-            AND "solutionI"d=#{solutionId} AND "orgId"=#{orgId}
+            AND "solutionId"=#{solutionId} AND "orgId"=#{orgId}
         </selectKey>
         <if test="count > 0">
             update "IsuPageSolutionItem"

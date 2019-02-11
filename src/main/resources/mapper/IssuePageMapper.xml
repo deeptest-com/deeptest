@@ -9,7 +9,7 @@
 
         WHERE page."orgId"=#{orgId}
         AND NOT page.deleted AND NOT page.disabled
-        ORDER BY page."createTime" ASC
+        ORDER BY page.id ASC
     </select>
 
     <select id="get" resultMap="issuePageMap">

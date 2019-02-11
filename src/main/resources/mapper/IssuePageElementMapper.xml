@@ -27,13 +27,13 @@
         SET ordr =
             CASE
                 <foreach collection="maps" item="map">
-                    WHEN id=#{map.id} THEN #{map.ordr}
+                    WHEN id=${map.id} THEN ${map.ordr}
                 </foreach>
             END
-        WHERE "pageId"=#{pageId} AND "orgId"=#{orgId}
+        WHERE "pageId"=${pageId} AND "orgId"=${orgId}
           AND id IN (
             <foreach collection="maps" item="map" separator=",">
-                #{map.id}
+                ${map.id}
             </foreach>
         )
     </update>

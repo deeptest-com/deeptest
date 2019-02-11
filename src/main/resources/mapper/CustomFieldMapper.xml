@@ -7,7 +7,7 @@
         WHERE o."orgId"=#{orgId}
 
         <if test="keywords != null and keywords != ''">
-            AND o.label LIKE '%${keywords}%' )
+            AND o.label LIKE '%${keywords}%'
         </if>
         <if test="applyTo != null and applyTo != ''">
             AND o."applyTo" = #{applyTo}

@@ -50,18 +50,6 @@
         WHERE id=#{id} AND "orgId"=#{orgId}
     </delete>
 
-    <delete id="removeTransitions">
-        DELETE FROM "IsuWorkflowTransition"
-        WHERE ( "srcStatusId" NOT IN (${statusIds}) OR "dictStatusId" NOT IN (${statusIds}) )
-          AND "workflowId"=#{workflowId} AND "orgId"=#{orgId}
-    </delete>
-
-    <delete id="removeStatuses">
-        DELETE FROM "IsuWorkflowStatusRelation"
-        WHERE "statusId" NOT IN ( ${statusIds} )
-          AND "workflowId"=#{workflowId} AND "orgId"=#{orgId}
-    </delete>
-
     <insert id="saveStatuses">
         insert into "IsuWorkflowStatusRelation"
         ("orgId","workflowId","statusId")
@@ -73,8 +61,7 @@
     <update id="updateStatuses" statementType="CALLABLE">
         { call update_workflow_statuses(
               #{workflowId,mode=IN,jdbcType=INTEGER},
-              #{statusIds,mode=IN,jdbcType=VARCHAR},
-              #{orgId,mode=IN,jdbcType=INTEGER}
+              #{statusIds,mode=IN,jdbcType=VARCHAR}
         ) }
     </update>
 

@@ -36,6 +36,5 @@ public interface IssueWorkflowDao {
                       @Param("orgId") Integer orgId);
 
     void updateStatuses(@Param("workflowId") Integer workflowId,
-                        @Param("statusIds") String str,
-                        @Param("orgId") Integer orgId);
+                        @Param("statusIds") String str);
 }

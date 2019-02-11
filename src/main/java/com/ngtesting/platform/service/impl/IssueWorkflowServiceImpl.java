@@ -45,19 +45,16 @@ public class IssueWorkflowServiceImpl extends BaseServiceImpl implements IssueWo
         if (vo.getId() == null) {
             vo.setOrgId(orgId);
             workflowDao.save(vo);
-            if (statusIds.size() > 0) {
-                workflowDao.saveStatuses(vo.getId(), statusIds, orgId);
-            }
         } else {
             Integer count = workflowDao.update(vo);
             if (count == 0) {
                 return null;
             }
+            workflowDao.updateStatuses(vo.getId(), str);
+        }
 
-            workflowDao.updateStatuses(vo.getId(), str, orgId);
-
-//            workflowDao.removeTransitions(vo.getId(), str, orgId);
-//            workflowDao.removeStatuses(vo.getId(), str, orgId);
+        if (statusIds.size() > 0) {
+            workflowDao.saveStatuses(vo.getId(), statusIds, orgId);
         }
 
         return vo;

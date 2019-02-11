@@ -21,11 +21,11 @@ public class IsuStatus extends BaseModel {
     @Override
     public boolean equals(Object obj) {
         IsuStatus s = (IsuStatus)obj;
+        if (this.getId() == null || s.getId() == null) {
+            return false;
+        }
+
         return this.getId().intValue() == s.getId().intValue();
-    }
-    @Override
-    public int hashCode() {
-        return this.id;
     }
 
     public Boolean getDefaultVal() {

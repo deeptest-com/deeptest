@@ -1,6 +1,7 @@
 package com.ngtesting.platform.dao;
 
 import com.ngtesting.platform.model.IsuStatus;
+import com.ngtesting.platform.model.IsuStatusCategoryDefine;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -8,8 +9,12 @@ import java.util.List;
 public interface IssueStatusDao {
     List<IsuStatus> list(@Param("orgId") Integer orgId);
 
+    List<IsuStatusCategoryDefine> listCategory();
+
     IsuStatus get(@Param("id") Integer id,
                 @Param("orgId") Integer orgId);
+
+    IsuStatusCategoryDefine getCategoryById(@Param("id") Integer id);
 
 
     Integer save(IsuStatus vo);

@@ -13,6 +13,13 @@
         ORDER BY ordr ASC
     </select>
 
+    <select id="listCategory" resultType="IsuStatusCategoryDefine">
+        SELECT o.* from "IsuStatusCategoryDefine" o
+
+        WHERE NOT o.disabled AND NOT o.deleted
+        ORDER BY ordr ASC
+    </select>
+
     <select id="get" resultType="IsuStatus">
         SELECT o.*, c.label "categoryName"
         FROM "IsuStatus" o
@@ -21,12 +28,19 @@
 
         WHERE o.id = #{id} AND o."orgId"=#{orgId}
     </select>
+    <select id="getCategoryById" resultType="IsuStatusCategoryDefine">
+        SELECT o.*
+        FROM "IsuStatusCategoryDefine" o
+        WHERE o.id = #{id}
+    </select>
 
     <insert id="save" parameterType="IsuStatus" useGeneratedKeys="true" keyProperty="id">
         insert into "IsuStatus"
-          (label,"value",descr,"orgId",ordr,"defaultVal","finalVal",deleted,disabled,"createTime")
+          (label,"value",descr,"categoryId",
+          "orgId",ordr,"defaultVal","finalVal",deleted,disabled,"createTime")
         values
-          (#{label},#{value},#{descr},#{orgId},#{ordr},#{defaultVal},#{finalVal},FALSE,FALSE,NOW())
+          (#{label},#{value},#{descr},#{categoryId},
+          #{orgId},#{ordr},#{defaultVal},#{finalVal},FALSE,FALSE,NOW())
     </insert>
 
     <update id="update" parameterType="IsuStatus">

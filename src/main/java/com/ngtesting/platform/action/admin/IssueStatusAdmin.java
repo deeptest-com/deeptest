@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuStatus;
+import com.ngtesting.platform.model.IsuStatusCategoryDefine;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssuePropertyService;
 import com.ngtesting.platform.service.intf.IssueStatusService;
@@ -70,7 +71,10 @@ public class IssueStatusAdmin extends BaseAction {
 			return authFail();
 		}
 
+		List<IsuStatusCategoryDefine> categories = issueStatusService.listCategory();
+
 		ret.put("data", po);
+		ret.put("categories", categories);
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;
 	}

@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.impl;
 
 import com.ngtesting.platform.dao.IssueStatusDao;
 import com.ngtesting.platform.model.IsuStatus;
+import com.ngtesting.platform.model.IsuStatusCategoryDefine;
 import com.ngtesting.platform.service.intf.IssueStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,12 +23,21 @@ public class IssueStatusServiceImpl extends BaseServiceImpl implements IssueStat
     }
 
     @Override
+    public List<IsuStatusCategoryDefine> listCategory() {
+        List<IsuStatusCategoryDefine> ls = issueStatusDao.listCategory();
+
+        return ls;
+    }
+
+    @Override
     public IsuStatus get(Integer id, Integer orgId) {
         return issueStatusDao.get(id, orgId);
     }
 
     @Override
     public IsuStatus save(IsuStatus vo, Integer orgId) {
+        IsuStatusCategoryDefine cate = issueStatusDao.getCategoryById(vo.getCategoryId());
+        vo.setFinalVal(cate.getFinalVal());
 
         if (vo.getId() == null) {
             Integer maxOrder = issueStatusDao.getMaxOrdrNumb(orgId);
@@ -37,6 +47,7 @@ public class IssueStatusServiceImpl extends BaseServiceImpl implements IssueStat
             vo.setOrdr(maxOrder + 10);
 
             vo.setOrgId(orgId);
+            vo.setBuildIn(Boolean.FALSE);
             issueStatusDao.save(vo);
         } else {
             Integer count = issueStatusDao.update(vo);

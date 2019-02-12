@@ -2,28 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.IssueDao" >
     <select id="get" resultType="IsuIssue">
-        SELECT o.*, ext.*,
-          (select (count(id) > 0) FROM "IsuWatch" WHERE "issueId"=${id} AND "userId"=${userId}) watched
+        SELECT o.*,
+          ( select (count(id) > 0) FROM "IsuWatch" WHERE "issueId"=${id} AND "userId"=${userId} ) watched
 
         FROM "IsuIssue" o
-        JOIN "IsuIssueExt" ext ON o.id = ext.pid
         WHERE o.id = #{id} AND o."projectId"=#{prjId}
     </select>
 
     <select id="getDetail" resultMap="issueMaps">
-        SELECT o.*, ext.*,
-        (select (count(id) > 0) FROM "IsuWatch" WHERE "issueId"=${id} AND "userId"=${userId}) watched
+        SELECT o.*,
+        ( select (count(id) > 0) FROM "IsuWatch" WHERE "issueId"=${id} AND "userId"=${userId} ) watched
 
         FROM "IsuIssue" o
-        JOIN "IsuIssueExt" ext ON o.id = ext.pid
         WHERE o.id = #{id} AND o."projectId"=#{prjId}
     </select>
 
     <select id="getData" resultMap="issueData">
-        SELECT o.*, ext.*
+        SELECT o.*
 
         FROM "IsuIssue" o
-        JOIN "IsuIssueExt" ext ON o.id = ext.pid
         WHERE o.id = #{id} AND o."projectId"=#{prjId}
     </select>
 
@@ -44,83 +41,38 @@
         insert into "IsuIssue"
         (
             <foreach collection="elems" item="item" separator=",">
-                ${item.colCode}
+                "${item.colCode}"
             </foreach>
             , "createTime", disabled, deleted
         )
         values
         (
             <foreach collection="params" item="item" separator=",">
-                #{item}
-            </foreach>
-            , NOW(), false, false
+                <choose>
+                    <when test="(item+'').indexOf('{') == -1">
+                        #{item}
+                    </when>
+                    <otherwise>
+                        ${item}
+                    </otherwise>
+                </choose>
+            </foreach>, NOW(),FALSE, FALSE
         );
     </insert>
-
-    <insert id="saveExt">
-        insert into "IsuIssueExt"
-        (pid
-          <if test="params.size > 0">,
-            <foreach collection="elems" item="item" separator=",">
-                ${item.colCode}
-            </foreach>
-          </if>
-        )
-        values
-        (#{id}
-          <if test="params.size > 0">,
-            <foreach collection="params" item="item" separator=",">
-                #{item}
-            </foreach>
-          </if>
-        );
-    </insert>
-
-    <update id="setDefaultVal">
-        UPDATE "IsuIssue"
-        SET "statusId"=(select id from "IsuStatus" where "value"='open' and "orgId"=#{model.orgId}),
-            "creatorId"=#{model.creatorId},
-            <if test="model.reporterId == null">
-                "reporterId"=#{model.creatorId},
-            </if>
-            <if test="model.assigneeId == null">
-                "assigneeId"=#{model.creatorId},
-            </if>
-
-            "projectId"=#{model.projectId},
-            "orgId"=#{model.orgId}
-
-        WHERE id=#{model.id}
-    </update>
 
     <update id="update">
         UPDATE "IsuIssue"
         SET
             <foreach collection="elems" item="item" index="indx" separator=",">
-                 ${item.colCode} = #{params[${indx}]}
+                 "${item.colCode}" = #{params[${indx}]}
             </foreach>
         WHERE id=#{id} AND "orgId"=#{orgId}
-    </update>
-
-    <update id="updateExt">
-        UPDATE "IsuIssueExt"
-        SET
-            <foreach collection="elems" item="item" index="indx" separator=",">
-                ${item.colCode} = #{params[${indx}]}
-            </foreach>
-
-        WHERE pid=#{id}
     </update>
 
     <update id="updateProp">
         UPDATE "IsuIssue"
         SET ${code} = #{value}, "updateTime"=NOW()
         WHERE id=#{id} AND "projectId"=#{projectId}
-    </update>
-    <update id="updatePropExt">
-        UPDATE "IsuIssueExt"
-        SET ${code} = #{value}
-        WHERE pid=#{id}
     </update>
 
     <delete id="delete">

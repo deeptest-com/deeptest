@@ -26,6 +26,8 @@
         AND NOT o.deleted
         AND NOT o.disabled
         ORDER BY o."pId", o.ordr,s.ordr;
+
+        select * from "Tst"
     </select>
 
     <select id="get" resultType="TstCase">

@@ -1,13 +1,13 @@
 package com.ngtesting.platform.service.impl;
 
-import com.itfsw.query.builder.SqlQueryBuilderFactory;
-import com.itfsw.query.builder.support.builder.SqlBuilder;
-import com.itfsw.query.builder.support.model.JsonRule;
-import com.itfsw.query.builder.support.model.enums.EnumOperator;
-import com.itfsw.query.builder.support.model.enums.EnumRuleType;
-import com.itfsw.query.builder.support.model.result.SqlQueryResult;
 import com.ngtesting.platform.dao.IssueTqlDao;
 import com.ngtesting.platform.service.intf.IssueJqlBuildService;
+import com.ngtesting.platform.tql.query.builder.SqlQueryBuilderFactory;
+import com.ngtesting.platform.tql.query.builder.support.builder.SqlBuilder;
+import com.ngtesting.platform.tql.query.builder.support.model.JsonRule;
+import com.ngtesting.platform.tql.query.builder.support.model.enums.EnumOperator;
+import com.ngtesting.platform.tql.query.builder.support.model.enums.EnumRuleType;
+import com.ngtesting.platform.tql.query.builder.support.model.result.SqlQueryResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class IssueJqlBuildServiceImpl extends BaseServiceImpl implements IssueJq
 
     @Override
     public JsonRule genJsonRule(String id, String field, String input, String val,
-                                     EnumOperator operator, EnumRuleType type) {
+                                EnumOperator operator, EnumRuleType type) {
 
         JsonRule rule = new JsonRule();
 

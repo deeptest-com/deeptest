@@ -1,20 +1,23 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.itfsw.query.builder.support.model.JsonRule;
-import com.itfsw.query.builder.support.model.result.SqlQueryResult;
 import com.ngtesting.platform.dao.IssueTqlDao;
 import com.ngtesting.platform.model.IsuIssue;
-import com.ngtesting.platform.service.intf.IssueService;
 import com.ngtesting.platform.service.intf.IssueJqlBuildService;
 import com.ngtesting.platform.service.intf.IssueJqlFilterService;
 import com.ngtesting.platform.service.intf.IssueJqlService;
+import com.ngtesting.platform.service.intf.IssueService;
+import com.ngtesting.platform.tql.query.builder.support.model.JsonRule;
+import com.ngtesting.platform.tql.query.builder.support.model.result.SqlQueryResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,7 +40,7 @@ public class IssueJqlServiceImpl extends BaseServiceImpl implements IssueJqlServ
 
     @Override
     public List<IsuIssue> query(JsonRule rule, String columns, List<Map<String, String>> orderBy, Integer orgId, Integer projectId) {
-        List<IsuIssue> result;
+        List<IsuIssue> result = new LinkedList<>();
 
         String conditions;
         if (rule.getRules().size() > 0) {
@@ -50,15 +53,22 @@ public class IssueJqlServiceImpl extends BaseServiceImpl implements IssueJqlServ
 //            }
             SqlQueryResult sqlQueryResult = issueJqlBuildService.buildSqlQuery(JSON.toJSONString(rule));
             conditions = sqlQueryResult.getQuery(true);
-            conditions += " AND projectId = " + projectId;
+            conditions += " AND \"projectId\" = " + projectId;
         } else {
-            conditions = "projectId=" + projectId;
+            conditions = "\"projectId\"=" + projectId;
         }
 
         String reg = "[^,]*Id";
         Pattern r = Pattern.compile(reg);
         Matcher m = r.matcher(columns);
-        columns = m.replaceAll("$0,$0Name").replaceAll("IdName","Name");
+
+//        select id, "extProp" -> 'age', "extProp" -> 'nickName' from "Test"
+//        where id = 5 and "extProp" @> '{"nickName":"aaron"}'::jsonb
+        if (rule.getBuildIn() != null && rule.getBuildIn()) {
+            columns = m.replaceAll("\"$0\"");
+        } else {
+            columns = m.replaceAll("\"extProp\" -> '$0'");
+        }
 
         result = isuTqlDao.query(conditions, columns, orderBy);
 

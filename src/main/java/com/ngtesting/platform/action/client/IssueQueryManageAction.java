@@ -2,13 +2,13 @@ package com.ngtesting.platform.action.client;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
-import com.itfsw.query.builder.support.model.JsonRule;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuQuery;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueQueryService;
 import com.ngtesting.platform.servlet.PrivPrj;
+import com.ngtesting.platform.tql.query.builder.support.model.JsonRule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +23,8 @@ import java.util.Map;
 
 @Controller
 @RequestMapping(Constant.API_PATH_CLIENT + "issue_query/")
-public class IssueQueryAction extends BaseAction {
-	private static final Log log = LogFactory.getLog(IssueQueryAction.class);
+public class IssueQueryManageAction extends BaseAction {
+	private static final Log log = LogFactory.getLog(IssueQueryManageAction.class);
 
 	@Autowired
 	IssueQueryService queryService;

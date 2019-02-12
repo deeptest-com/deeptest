@@ -6,7 +6,6 @@ import com.ngtesting.platform.service.intf.IssueDynamicFormService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +42,7 @@ public class IssueDynamicFormServiceImpl extends BaseServiceImpl implements Issu
         List<Map> fields = fetchOrgField(orgId, projectId, "elem");
 
 		for (Map field : fields) {
-		    if (!"1".equals(field.get("buildIn").toString()) || field.get("options") == null) {
+		    if (!Boolean.valueOf(field.get("buildIn").toString()) || field.get("options") == null) {
                 continue;
             }
 

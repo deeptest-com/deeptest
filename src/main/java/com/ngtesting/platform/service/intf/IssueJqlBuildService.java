@@ -1,9 +1,9 @@
 package com.ngtesting.platform.service.intf;
 
-import com.itfsw.query.builder.support.model.JsonRule;
-import com.itfsw.query.builder.support.model.enums.EnumOperator;
-import com.itfsw.query.builder.support.model.enums.EnumRuleType;
-import com.itfsw.query.builder.support.model.result.SqlQueryResult;
+import com.ngtesting.platform.tql.query.builder.support.model.JsonRule;
+import com.ngtesting.platform.tql.query.builder.support.model.enums.EnumOperator;
+import com.ngtesting.platform.tql.query.builder.support.model.enums.EnumRuleType;
+import com.ngtesting.platform.tql.query.builder.support.model.result.SqlQueryResult;
 
 public interface IssueJqlBuildService extends BaseService {
 

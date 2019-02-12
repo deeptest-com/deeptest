@@ -31,6 +31,12 @@ public class IsuPageElement extends BaseModel {
         this.colCode = colCode;
         this.input = input;
     }
+    public IsuPageElement(String colCode, String input, Boolean buildIn) {
+        this.colCode = colCode;
+        this.input = input;
+        this.buildIn = buildIn;
+    }
+
     public IsuPageElement(String colCode, String label, String type,
                           String input, Boolean fullLine, Boolean required, Boolean readonly, Boolean buildIn,
                           String key, Integer fieldId, Integer pageId, Integer orgId,

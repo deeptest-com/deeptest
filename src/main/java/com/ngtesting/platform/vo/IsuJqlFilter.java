@@ -22,7 +22,7 @@ public class IsuJqlFilter implements Serializable {
         this.label = field.get("label").toString();
         this.type = field.get("type").toString();
         this.input = field.get("input").toString();
-        this.buildIn = "1".equals(field.get("buildIn").toString());
+        this.buildIn = Boolean.valueOf(field.get("buildIn").toString());
         this.display = field.get("defaultShowInFilters") != null?
                 Boolean.valueOf(field.get("defaultShowInFilters").toString()): null;
     }

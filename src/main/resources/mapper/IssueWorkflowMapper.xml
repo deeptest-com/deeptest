@@ -8,7 +8,7 @@
         FROM "IsuWorkflow" o
 
         WHERE o."orgId"=#{orgId}
-        AND NOT o.deleted  AND NOT o.disabled
+        AND NOT o.deleted  AND NOT o.
         ORDER BY o."createTime" ASC
     </select>
 

@@ -1,12 +1,12 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.itfsw.query.builder.support.model.JsonRule;
 import com.ngtesting.platform.dao.IssueQueryDao;
 import com.ngtesting.platform.model.IsuQuery;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueQueryService;
 import com.ngtesting.platform.service.intf.PushSettingsService;
+import com.ngtesting.platform.tql.query.builder.support.model.JsonRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

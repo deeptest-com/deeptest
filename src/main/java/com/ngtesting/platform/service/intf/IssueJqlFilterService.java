@@ -1,6 +1,6 @@
 package com.ngtesting.platform.service.intf;
 
-import com.itfsw.query.builder.support.model.JsonRule;
+import com.ngtesting.platform.tql.query.builder.support.model.JsonRule;
 import com.ngtesting.platform.vo.IsuJqlFilter;
 
 import java.util.List;

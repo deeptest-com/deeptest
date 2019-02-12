@@ -1,11 +1,11 @@
 package com.ngtesting.platform.service.impl;
 
-import com.itfsw.query.builder.support.model.JsonRule;
 import com.ngtesting.platform.dao.IssueFieldDao;
 import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.service.intf.IssueDynamicFormService;
 import com.ngtesting.platform.service.intf.IssueJqlFilterService;
 import com.ngtesting.platform.service.intf.ProjectService;
+import com.ngtesting.platform.tql.query.builder.support.model.JsonRule;
 import com.ngtesting.platform.vo.IsuJqlFilter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

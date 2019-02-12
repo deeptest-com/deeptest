@@ -73,31 +73,20 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         String uuid = UUID.randomUUID().toString().replace("-", "");
         issue.put("uuid", uuid);
 
-        List<Object> params = genParams(issue, elems, true);
+        List<Object> params = genParams(issue, elemObjs, user);
 
-        List<IsuPageElement> elems1 = new LinkedList<>();
-        List<Object> params1 = new LinkedList<>();
-        List<IsuPageElement> elems2 = new LinkedList<>();
-        List<Object> params2 = new LinkedList<>();
+        elems.add(new IsuPageElement("extProp", "", true));
 
-        genDataForExtTable(elems, params, elems1, params1, elems2, params2);
+        elems.add(new IsuPageElement("orgId", "", true));
+        elems.add(new IsuPageElement("projectId", "", true));
+        elems.add(new IsuPageElement("creatorId", "", true));
+        elems.add(new IsuPageElement("uuid", "", true));
 
-        Integer count = issueDao.save(elems1, params1);
+        Integer count = issueDao.save(elems, params);
         IsuIssue po = null;
         if (count > 0) {
             po = issueDao.getByUuid(uuid);
-            count = issueDao.saveExt(elems2, params2, po.getId());
-
-            po.setCreatorId(user.getId());
-            po.setOrgId(user.getDefaultOrgId());
-            po.setProjectId(user.getDefaultPrjId());
-            issueDao.setDefaultVal(po);
-        }
-
-        issueHistoryService.saveHistory(user, Constant.EntityAct.create, po.getId(),null);
-
-        if (count > 0) {
-            po = issueDao.get(po.getId(), user.getId(), user.getDefaultPrjId());
+            issueHistoryService.saveHistory(user, Constant.EntityAct.create, po.getId(),null);
         }
 
         return po;
@@ -109,20 +98,10 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         List<IsuPageElement> elems = pageElementDao.listElementByPageId(pageId);
 
         IsuIssue po = null;
-        List<Object> params = genParams(issue, elems, false);
 
-        List<IsuPageElement> elems1 = new LinkedList<>();
-        List<Object> params1 = new LinkedList<>();
-        List<IsuPageElement> elems2 = new LinkedList<>();
-        List<Object> params2 = new LinkedList<>();
+        List<Object> params = genParams(issue, elems, user);
 
-        genDataForExtTable(elems, params, elems1, params1, elems2, params2);
-
-        Integer count = issueDao.update(elems1, params1, issue.getInteger("id"), user.getDefaultOrgId());
-        if (count > 0 && params2.size() > 0) {
-            count = issueDao.updateExt(elems2, params2, issue.getInteger("id"));
-        }
-
+        Integer count = issueDao.update(elems, params, issue.getInteger("id"), user.getDefaultOrgId());
         issueHistoryService.saveHistory(user, Constant.EntityAct.update, issue.getInteger("id"),null);
 
         return count > 0;
@@ -135,14 +114,15 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
 
         Integer id = json.getInteger("id");
         String code = json.getString("code");
+        Boolean buildIn = json.getBoolean("buildIn");
         String value = json.getString("value");
         String label = json.getString("label");
 
-        Integer count;
-        if (!code.startsWith("prop")) {
+        Integer count = 0;
+        if (buildIn) {
             count = issueDao.updateProp(id, code, value, projectId);
         } else {
-            count = issueDao.updatePropExt(id, code, value);
+            // count = issueDao.updatePropExt(id, code, value);
         }
         if (count == 0) {
             return null;
@@ -157,35 +137,46 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
     private List<IsuPageElement> genElems(List<IsuPageElement> elemObjs) {
         List<IsuPageElement> elems = new LinkedList<>();
         for (IsuPageElement elem : elemObjs) {
-            elems.add(elem);
+            if (elem.getBuildIn()) {
+                elems.add(elem);
+            }
         }
-
-        elems.add(new IsuPageElement("uuid", ""));
 
         return elems;
     }
 
-    private List genParams(JSONObject issue, List<IsuPageElement> elems, Boolean isSave) {
+    private List genParams(JSONObject issue, List<IsuPageElement> elems, TstUser user) {
         List<Object> params = new LinkedList<>();
+        JSONObject jsonb = new JSONObject();
 
         int i = 0;
         for (IsuPageElement elem : elems) {
             String code = elem.getColCode();
 
+            Object param;
             switch(elem.getInput()){
                 case "date":
-                    params.add(issue.get(code)!=null?issue.getDate(code): null);
+                    param = issue.get(code)!=null?issue.getDate(code): null;
                     break;
 
                 default:
-                    params.add(issue.get(code));
+                    param = issue.get(code);
                     break;
+            }
+
+            if (elem.getBuildIn() != null && elem.getBuildIn()) {
+                params.add(param);
+            } else {
+                jsonb.put(code, param);
             }
         }
 
-        if (isSave) {
-            params.add(issue.getString("uuid"));
-        }
+        params.add("'" + jsonb.toJSONString() + "'");
+
+        params.add(user.getDefaultOrgId());
+        params.add(user.getDefaultPrjId());
+        params.add(user.getId());
+        params.add(issue.getString("uuid"));
 
         return params;
     }
@@ -205,27 +196,6 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
             ret.put(map.get("opt").toString(), Integer.valueOf(map.get("pageId").toString()));
         }
         return ret;
-    }
-
-    @Override
-    public void genDataForExtTable(List<IsuPageElement> elems,
-                                   List<Object> params,
-                                   List<IsuPageElement> elems1,
-                                   List<Object> params1,
-                                   List<IsuPageElement> elems2,
-                                   List<Object> params2) {
-        int i = 0;
-        for (IsuPageElement elem: elems) {
-            if (!elem.getColCode().startsWith("prop")) {
-                elems1.add(elem);
-                params1.add(params.get(i));
-            } else {
-                elems2.add(elem);
-                params2.add(params.get(i));
-            }
-
-            i++;
-        }
     }
 
     @Override

@@ -28,29 +28,16 @@ public interface IssueDao {
 
     Integer save(@Param("elems") List<IsuPageElement> elems,
                  @Param("params") List<Object> params);
-    Integer saveExt(@Param("elems") List<IsuPageElement> elems,
-                    @Param("params") List<Object> params,
-                    @Param("id") Integer id);
-
-    void setDefaultVal(@Param("model") IsuIssue model);
 
     Integer update(@Param("elems") List<IsuPageElement> elems,
                    @Param("params") List<Object> params,
                    @Param("id") Integer id,
                    @Param("orgId") Integer orgId);
-    Integer updateExt(@Param("elems") List<IsuPageElement> elems,
-                   @Param("params") List<Object> params,
-                   @Param("id") Integer id);
 
     Integer updateProp(@Param("id") Integer id,
                        @Param("code") String code,
                        @Param("value") String value,
                        @Param("projectId") Integer projectId);
-    Integer updatePropExt(@Param("id") Integer id,
-                       @Param("code") String code,
-                       @Param("value") String value);
-
-
 
     IsuType getProjectDefaultType(@Param("orgId") Integer orgId,
                                   @Param("prjId") Integer prjId);

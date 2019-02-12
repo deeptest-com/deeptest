@@ -49,11 +49,11 @@
         (
             <foreach collection="params" item="item" separator=",">
                 <choose>
-                    <when test="(item+'').indexOf('{') == -1">
-                        #{item}
+                    <when test="(item+'').indexOf('::JSON') != -1">
+                        ${item}
                     </when>
                     <otherwise>
-                        ${item}
+                        #{item}
                     </otherwise>
                 </choose>
             </foreach>, NOW(),FALSE, FALSE
@@ -72,6 +72,11 @@
     <update id="updateProp">
         UPDATE "IsuIssue"
         SET ${code} = #{value}, "updateTime"=NOW()
+        WHERE id=#{id} AND "projectId"=#{projectId}
+    </update>
+    <update id="updateExtProp">
+        UPDATE "IsuIssue"
+        SET "extProp" = jsonb_set("extProp", '{${code}}', '${value}', true), "updateTime"=NOW()
         WHERE id=#{id} AND "projectId"=#{projectId}
     </update>
 

@@ -39,6 +39,11 @@ public interface IssueDao {
                        @Param("value") String value,
                        @Param("projectId") Integer projectId);
 
+    Integer updateExtProp(@Param("id") Integer id,
+                       @Param("code") String code,
+                       @Param("value") String value,
+                       @Param("projectId") Integer projectId);
+
     IsuType getProjectDefaultType(@Param("orgId") Integer orgId,
                                   @Param("prjId") Integer prjId);
 

@@ -96,11 +96,8 @@ public class IssueAction extends BaseAction {
 
         IsuPage page = issueService.getPage(orgId, prjId, "create");
 
-//        Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
-
         ret.put("data", po);
         ret.put("page", page);
-//        ret.put("issuePropMap", issuePropMap);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
@@ -124,11 +121,8 @@ public class IssueAction extends BaseAction {
 
         IsuPage page = issueService.getPage(orgId, prjId, "edit");
 
-//        Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, prjId);
-
         ret.put("data", po);
         ret.put("page", page);
-//        ret.put("issuePropMap", issuePropMap);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }

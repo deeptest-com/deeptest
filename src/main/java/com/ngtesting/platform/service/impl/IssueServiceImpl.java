@@ -75,13 +75,6 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
 
         List<Object> params = genParams(issue, elemObjs, user);
 
-        elems.add(new IsuPageElement("extProp", "", true));
-
-        elems.add(new IsuPageElement("orgId", "", true));
-        elems.add(new IsuPageElement("projectId", "", true));
-        elems.add(new IsuPageElement("creatorId", "", true));
-        elems.add(new IsuPageElement("uuid", "", true));
-
         Integer count = issueDao.save(elems, params);
         IsuIssue po = null;
         if (count > 0) {
@@ -95,11 +88,10 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
     @Override
     @Transactional
     public Boolean update(JSONObject issue, Integer pageId, TstUser user) {
-        List<IsuPageElement> elems = pageElementDao.listElementByPageId(pageId);
+        List<IsuPageElement> elemObjs = pageElementDao.listElementByPageId(pageId);
+        List<IsuPageElement> elems = genElems(elemObjs);
 
-        IsuIssue po = null;
-
-        List<Object> params = genParams(issue, elems, user);
+        List<Object> params = genParams(issue, elemObjs, user);
 
         Integer count = issueDao.update(elems, params, issue.getInteger("id"), user.getDefaultOrgId());
         issueHistoryService.saveHistory(user, Constant.EntityAct.update, issue.getInteger("id"),null);
@@ -122,7 +114,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         if (buildIn) {
             count = issueDao.updateProp(id, code, value, projectId);
         } else {
-            // count = issueDao.updatePropExt(id, code, value);
+            count = issueDao.updateExtProp(id, code, value, projectId);
         }
         if (count == 0) {
             return null;
@@ -141,6 +133,13 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
                 elems.add(elem);
             }
         }
+
+        elems.add(new IsuPageElement("extProp", "", true));
+
+        elems.add(new IsuPageElement("orgId", "", true));
+        elems.add(new IsuPageElement("projectId", "", true));
+        elems.add(new IsuPageElement("creatorId", "", true));
+        elems.add(new IsuPageElement("uuid", "", true));
 
         return elems;
     }
@@ -171,7 +170,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
             }
         }
 
-        params.add("'" + jsonb.toJSONString() + "'");
+        params.add("'" + jsonb.toJSONString() + "'::JSON");
 
         params.add(user.getDefaultOrgId());
         params.add(user.getDefaultPrjId());

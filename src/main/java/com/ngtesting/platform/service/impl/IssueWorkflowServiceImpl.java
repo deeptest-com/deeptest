@@ -50,7 +50,7 @@ public class IssueWorkflowServiceImpl extends BaseServiceImpl implements IssueWo
             if (count == 0) {
                 return null;
             }
-            workflowDao.updateStatuses(vo.getId(), str);
+            workflowDao.removeStatuses(vo.getId());
         }
 
         if (statusIds.size() > 0) {
@@ -93,8 +93,8 @@ public class IssueWorkflowServiceImpl extends BaseServiceImpl implements IssueWo
     }
 
     @Override
-    public List<IsuStatus> listStatusForDesign(Integer id) {
-        List<IsuStatus> statuses = workflowDao.listStatus(id);
+    public List<IsuStatus> listStatusForDesign(Integer workflowId) {
+        List<IsuStatus> statuses = workflowDao.listStatus(workflowId);
 
         return statuses;
     }

@@ -58,19 +58,24 @@
             (#{orgId}, #{workflowId}, #{item} )
         </foreach>
     </insert>
-    <update id="updateStatuses" statementType="CALLABLE">
+    <delete id="removeStatuses">
+        DELETE FROM "IsuWorkflowStatusRelation"
+        WHERE "workflowId"=#{workflowId}
+    </delete>
+    <!--    <update id="updateStatuses" statementType="CALLABLE">
         { call update_workflow_statuses(
               #{workflowId,mode=IN,jdbcType=INTEGER},
               #{statusIds,mode=IN,jdbcType=VARCHAR}
         ) }
-    </update>
+    </update>-->
 
     <select id="listStatus" resultType="IsuStatus">
         SELECT o.* FROM "IsuStatus" o
         JOIN "IsuWorkflowStatusRelation" r ON o.id=r."statusId"
 
-        WHERE r."workflowId" = #{id}
+        WHERE r."workflowId" = #{workflowId}
         AND NOT o.deleted  AND NOT o.disabled
+        order by o.ordr asc
     </select>
 
 </mapper>

@@ -21,20 +21,14 @@ public interface IssueWorkflowDao {
     Integer setDefault(@Param("id") Integer id,
                        @Param("orgId") Integer orgId);
 
-    List<IsuStatus> listStatus(@Param("id") Integer id);
+    List<IsuStatus> listStatus(@Param("workflowId") Integer workflowId);
 
-//    void removeTransitions(@Param("workflowId") Integer workflowId,
-//                           @Param("statusIds") String statusIds,
-//                           @Param("orgId") Integer orgId);
-//
-//    void removeStatuses(@Param("workflowId") Integer workflowId,
-//                        @Param("statusIds") String statusIds,
-//                        @Param("orgId") Integer orgId);
+    void removeStatuses(@Param("workflowId") Integer workflowId);
 
     void saveStatuses(@Param("workflowId") Integer workflowId,
                       @Param("statusIds") List<Integer> statusIds,
                       @Param("orgId") Integer orgId);
 
-    void updateStatuses(@Param("workflowId") Integer workflowId,
-                        @Param("statusIds") String str);
+//    void updateStatuses(@Param("workflowId") Integer workflowId,
+//                        @Param("statusIds") String str);
 }

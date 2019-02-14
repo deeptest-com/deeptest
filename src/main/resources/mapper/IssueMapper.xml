@@ -64,9 +64,17 @@
         UPDATE "IsuIssue"
         SET
             <foreach collection="elems" item="item" index="indx" separator=",">
-                 "${item.colCode}" = #{params[${indx}]}
+                 "${item.colCode}" =
+                <choose>
+                    <when test="(params[indx]+'').indexOf('::JSON') != -1">
+                        ${params[indx]}
+                    </when>
+                    <otherwise>
+                        #{params[${indx}]}
+                    </otherwise>
+                </choose>
             </foreach>
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        WHERE id=#{id} AND "projectId"=#{projectId}
     </update>
 
     <update id="updateProp">
@@ -109,15 +117,15 @@
     <resultMap id="issueMaps" type="IsuIssue" autoMapping="true">
         <id column="id" property="id"/>
 
-        <collection property="histories" select="com.ngtesting.platform.dao.IssueHistoryDao.listByIssueId"
-                    column="{id=id}">
-        </collection>
-
         <collection property="comments" select="com.ngtesting.platform.dao.IssueCommentsDao.listByIssueId"
                     column="{id=id}">
         </collection>
 
         <collection property="attachments" select="com.ngtesting.platform.dao.IssueAttachmentDao.listByIssueId"
+                    column="{id=id}">
+        </collection>
+
+        <collection property="histories" select="com.ngtesting.platform.dao.IssueHistoryDao.listByIssueId"
                     column="{id=id}">
         </collection>
 

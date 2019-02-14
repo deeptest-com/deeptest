@@ -93,7 +93,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
 
         List<Object> params = genParams(issue, elemObjs, user);
 
-        Integer count = issueDao.update(elems, params, issue.getInteger("id"), user.getDefaultOrgId());
+        Integer count = issueDao.update(elems, params, issue.getInteger("id"), user.getDefaultPrjId());
         issueHistoryService.saveHistory(user, Constant.EntityAct.update, issue.getInteger("id"),null);
 
         return count > 0;

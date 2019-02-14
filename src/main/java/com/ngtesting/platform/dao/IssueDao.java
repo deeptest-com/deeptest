@@ -32,7 +32,7 @@ public interface IssueDao {
     Integer update(@Param("elems") List<IsuPageElement> elems,
                    @Param("params") List<Object> params,
                    @Param("id") Integer id,
-                   @Param("orgId") Integer orgId);
+                   @Param("projectId") Integer projectId);
 
     Integer updateProp(@Param("id") Integer id,
                        @Param("code") String code,

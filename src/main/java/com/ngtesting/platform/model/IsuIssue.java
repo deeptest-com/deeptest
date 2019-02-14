@@ -66,11 +66,6 @@ public class IsuIssue extends BaseModel {
     public JSONObject getJsonProp() {
         return JSON.parseObject(extProp);
     }
-
-    public String getExtProp() {
-        return extProp;
-    }
-
     public void setExtProp(String extProp) {
         this.extProp = extProp;
     }

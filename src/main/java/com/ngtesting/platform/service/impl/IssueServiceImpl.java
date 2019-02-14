@@ -9,6 +9,7 @@ import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.intf.IssueCommentsService;
 import com.ngtesting.platform.service.intf.IssueHistoryService;
 import com.ngtesting.platform.service.intf.IssueService;
+import com.ngtesting.platform.utils.FieldUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,8 +108,10 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         Integer id = json.getInteger("id");
         String code = json.getString("code");
         Boolean buildIn = json.getBoolean("buildIn");
-        String value = json.getString("value");
         String label = json.getString("label");
+        String type = json.getString("type");
+
+        Object value = FieldUtil.GetFieldVal(type, json);
 
         Integer count = 0;
         if (buildIn) {

@@ -41,12 +41,12 @@ public interface CaseDao {
 
     Integer updateProp(@Param("id") Integer id,
                     @Param("code") String code,
-                    @Param("value") String value,
+                    @Param("value") Object value,
                     @Param("projectId") Integer projectId);
 
     Integer updateExtProp(@Param("id") Integer id,
                        @Param("code") String code,
-                       @Param("value") String value,
+                       @Param("value") Object value,
                        @Param("projectId") Integer projectId);
 
 //    void updateParentIfNeeded(@Param("pId") Integer pId);

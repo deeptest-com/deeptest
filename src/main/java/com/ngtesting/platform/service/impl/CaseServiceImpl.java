@@ -8,6 +8,7 @@ import com.ngtesting.platform.service.intf.CaseCommentsService;
 import com.ngtesting.platform.service.intf.CaseHistoryService;
 import com.ngtesting.platform.service.intf.CaseService;
 import com.ngtesting.platform.utils.BeanUtilEx;
+import com.ngtesting.platform.utils.FieldUtil;
 import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -294,9 +295,11 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
         Integer id = json.getInteger("id");
         String code = json.getString("code");
-        String value = json.getString("value");
         String label = json.getString("label");
         Boolean buildIn = json.getBoolean("buildIn");
+        String type = json.getString("type");
+
+        Object value = FieldUtil.GetFieldVal(type, json);
 
         Integer count;
         if (buildIn) {

@@ -4,7 +4,8 @@ import com.ngtesting.platform.dao.CaseExeStatusDao;
 import com.ngtesting.platform.dao.CasePriorityDao;
 import com.ngtesting.platform.dao.CaseTypeDao;
 import com.ngtesting.platform.dao.CustomFieldDao;
-import com.ngtesting.platform.model.TstCaseExeStatus;
+import com.ngtesting.platform.model.CustomField;
+import com.ngtesting.platform.model.CustomFieldOption;
 import com.ngtesting.platform.model.TstCasePriority;
 import com.ngtesting.platform.model.TstCaseType;
 import com.ngtesting.platform.service.intf.CasePropertyService;
@@ -40,6 +41,16 @@ public class CasePropertyServiceImpl extends BaseServiceImpl implements CaseProp
 		map.put("typeId", typeMap);
 		map.put("priorityId", priorityMap);
 //		map.put("status", exeStatusMap);
+
+		List<CustomField> fields = customFieldDao.listForCase(orgId);
+		for (CustomField field : fields) {
+            Map<String,String> mapOption = new LinkedHashMap();
+            for (CustomFieldOption option : field.getOptions()) {
+                mapOption.put(option.getId().toString(), option.getLabel());
+            }
+
+			map.put(field.getColCode(), mapOption);
+		}
 
 		return map;
 	}

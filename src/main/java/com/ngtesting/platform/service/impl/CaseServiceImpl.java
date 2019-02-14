@@ -1,16 +1,9 @@
 package com.ngtesting.platform.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.dao.CaseDao;
-import com.ngtesting.platform.dao.CaseStepDao;
-import com.ngtesting.platform.dao.TestSuiteDao;
-import com.ngtesting.platform.dao.TestTaskDao;
-import com.ngtesting.platform.model.TstCase;
-import com.ngtesting.platform.model.TstCaseComments;
-import com.ngtesting.platform.model.TstCaseStep;
-import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.dao.*;
+import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.intf.CaseCommentsService;
 import com.ngtesting.platform.service.intf.CaseHistoryService;
 import com.ngtesting.platform.service.intf.CaseService;
@@ -43,6 +36,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
     @Autowired
     CaseHistoryService caseHistoryService;
+    @Autowired
+    CustomFieldDao customFieldDao;
 
 	@Override
 	public List<TstCase> query(Integer projectId) {
@@ -116,7 +111,6 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
             po.setProjectId(projectId);
             po.setCreateById(user.getId());
-            action = Constant.EntityAct.create;
         }
         po.setName(name);
         po.setReviewResult(null);
@@ -216,17 +210,25 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	public TstCase update(JSONObject json, TstUser user) {
         Integer projectId = user.getDefaultPrjId();
 
-        TstCase testCaseVo = JSON.parseObject(JSON.toJSONString(json), TstCase.class);
+//        TstCase testCaseVo = JSON.parseObject(JSON.toJSONString(json), TstCase.class);
 
-        testCaseVo.setUpdateById(user.getId());
-        Integer count = caseDao.update(testCaseVo, genExtPropList(), projectId);
+        json.put("updateById", user.getId());
+
+        List<CustomField> fields = customFieldDao.listForCase(user.getDefaultOrgId());
+        JSONObject jsonb = new JSONObject();
+        List<String> props = genExtPropList();
+        for (CustomField field : fields) {
+            jsonb.put(field.getColCode(), json.get(field.getColCode()));
+        }
+
+        Integer count = caseDao.update(json, jsonb.toJSONString(), projectId);
         if (count == 0) {
             return null;
         }
 
-        caseHistoryService.saveHistory(user, Constant.EntityAct.update, testCaseVo.getId(),null);
+        caseHistoryService.saveHistory(user, Constant.EntityAct.update, json.getInteger("id"),null);
 
-        TstCase ret = caseDao.getDetail(testCaseVo.getId(), projectId);
+        TstCase ret = caseDao.getDetail(json.getInteger("id"), projectId);
 		return ret;
 	}
 
@@ -294,8 +296,15 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         String code = json.getString("code");
         String value = json.getString("value");
         String label = json.getString("label");
+        Boolean buildIn = json.getBoolean("buildIn");
 
-        Integer count = caseDao.updateProp(id, code, value, projectId, user.getId());
+        Integer count;
+        if (buildIn) {
+            count = caseDao.updateProp(id, code, value, projectId);
+        } else {
+            count = caseDao.updateExtProp(id, code, value, projectId);
+        }
+
         if (count == 0) {
             return null;
         }
@@ -310,14 +319,14 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     @Transactional
     public void createSample(Integer projectId, TstUser user) {
         TstCase root = new TstCase("测试用例", null, projectId, user.getId(), true, 1);
-        caseDao.create(root);
+        caseDao.createSample(root);
         caseDao.setDefaultVal(root.getId(), user.getDefaultOrgId());
 
         TstCase testCase = new TstCase("新特性", root.getId(), projectId, user.getId(), true, 1);
-        caseDao.create(testCase);
+        caseDao.createSample(testCase);
 
         TstCase testCase2 = new TstCase("新用例", testCase.getId(), projectId, user.getId(), false, 1);
-        caseDao.create(testCase2);
+        caseDao.createSample(testCase2);
         caseDao.setDefaultVal(testCase2.getpId(), user.getDefaultOrgId());
 
         caseHistoryService.saveHistory(user, Constant.EntityAct.create, testCase2.getId(),null);

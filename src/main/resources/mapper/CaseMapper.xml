@@ -26,8 +26,6 @@
         AND NOT o.deleted
         AND NOT o.disabled
         ORDER BY o."pId", o.ordr,s.ordr;
-
-        select * from "Tst"
     </select>
 
     <select id="get" resultType="TstCase">
@@ -46,7 +44,7 @@
         </if>
     </select>
 
-    <insert id="create" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
+    <insert id="createSample" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
         insert into "TstCase" (name,"typeId","priorityId","contentType",estimate,
           "pId","projectId","createById","isParent",ordr,
           deleted,disabled,"createTime")
@@ -78,12 +76,21 @@
             "contentType"=#{obj.contentType},content=#{obj.content},
             estimate=#{obj.estimate},objective=#{obj.objective},
             "updateById"=#{obj.updateById},"updateTime"=NOW(),
-
-            <foreach collection="props" item="item" separator=",">
-                prop${item} = #{obj.prop${item}}
-            </foreach>
+            "extProp"='${extProp}'::JSON
 
         WHERE id=#{obj.id} AND "projectId"=#{projectId}
+    </update>
+
+    <update id="updateProp">
+        UPDATE "TstCase"
+        SET ${code} = #{value}, "updateTime"=NOW()
+        WHERE id=#{id} AND "projectId"=#{projectId}
+    </update>
+    <update id="updateExtProp">
+        UPDATE "TstCase"
+        SET "extProp" = jsonb_set("extProp", '{${code}}', '${value}', true), "updateTime"=NOW()
+
+        WHERE id=#{id} AND "projectId"=#{projectId}
     </update>
 
     <update id="setDefaultVal">
@@ -107,12 +114,6 @@
     <update id="reviewResult">
         UPDATE "TstCase"
         SET "reviewResult"=#{result},"updateById"=#{updateById},"updateTime"=NOW()
-        WHERE id=#{id} AND "projectId"=#{projectId}
-    </update>
-
-    <update id="updateProp">
-        UPDATE "TstCase"
-        SET ${code} = #{value},"updateById"=#{updateById},"updateTime"=NOW()
         WHERE id=#{id} AND "projectId"=#{projectId}
     </update>
 

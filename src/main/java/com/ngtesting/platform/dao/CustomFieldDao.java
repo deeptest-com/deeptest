@@ -11,7 +11,7 @@ public interface CustomFieldDao {
                            @Param("applyTo") String applyTo,
                            @Param("keywords") String keywords);
 
-    List<Map> listForCase(@Param("orgId") Integer orgId);
+    List<CustomField> listForCase(@Param("orgId") Integer orgId);
 
     CustomField get(@Param("id") Integer id,
                     @Param("orgId") Integer orgId);

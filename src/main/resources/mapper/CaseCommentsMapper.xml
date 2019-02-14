@@ -17,7 +17,7 @@
         JOIN "TstUser" usr ON o."userId" = usr.id
 
         WHERE o."caseId" = #{id}
-        AND NOT o.deleted ! AND NOT o.disabled !
+        AND NOT o.deleted AND NOT o.disabled
 
         ORDER BY o."updateTime" DESC LIMIT 15;
     </select>

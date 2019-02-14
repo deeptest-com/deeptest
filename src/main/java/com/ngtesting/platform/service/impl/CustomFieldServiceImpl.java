@@ -128,9 +128,9 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
         map.put("typeId", caseTypes);
         map.put("priorityId", casePriorities);
 
-        List<Map> fields = customFieldDao.listForCase(orgId);
-        for (Map field : fields) {
-            map.put(field.get("colCode").toString(), field.get("options"));
+        List<CustomField> fields = customFieldDao.listForCase(orgId);
+        for (CustomField field : fields) {
+            map.put(field.getColCode(), field.getOptions());
         }
 
         Map<String, Object> ret = new HashMap<>();

@@ -3,6 +3,8 @@ FROM mysql:5.7
 ADD my.cnf /etc/mysql/conf.d/mysql.cnf
 
 ADD setup.sh /etc/mysql/setup.sh
+RUN chmod +x /wait-for-it.sh
+
 ADD database.sql /etc/mysql/database.sql
 ADD schema.sql /etc/mysql/schema.sql
 ADD privileges.sql /etc/mysql/privileges.sql

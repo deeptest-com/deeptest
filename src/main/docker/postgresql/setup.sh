@@ -1,8 +1,6 @@
 #!/bin/bash
 
 echo '1. 检测postgres状态'
-/wait-for-it.sh localhost:5432 -t 10
-
 count=`psql -h localhost -U ngtesting ngtesting-web  -c "select tablename from pg_tables where schemaname='public'" | grep TstProject`
 echo "count=$count"
 
@@ -20,7 +18,7 @@ else
     echo '3. 成功创建数据库'
 
     echo '4. 导入数据....'
-    psql ngtesting-web -U ngtesting < /schema.sql
+    psql ngtesting-web -U ngtesting < /etc/postgres/schema.sql
     echo '4. 成功导入数据'
 
     touch ~/init-success

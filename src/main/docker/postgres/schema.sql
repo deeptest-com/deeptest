@@ -817,7 +817,7 @@ DROP FUNCTION public._project_list(p_project_id integer, p_project_type characte
 DROP FUNCTION public._date_list(p_time_before timestamp without time zone);
 DROP FUNCTION public._date_before(p_day_numb integer);
 --
--- Name: _date_before(integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: _date_before(integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public._date_before(p_day_numb integer) RETURNS timestamp without time zone
@@ -839,10 +839,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public._date_before(p_day_numb integer) OWNER TO aaron;
+ALTER FUNCTION public._date_before(p_day_numb integer) OWNER TO ngtesting;
 
 --
--- Name: _date_list(timestamp without time zone); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: _date_list(timestamp without time zone); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public._date_list(p_time_before timestamp without time zone) RETURNS TABLE(dt date)
@@ -859,10 +859,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public._date_list(p_time_before timestamp without time zone) OWNER TO aaron;
+ALTER FUNCTION public._date_list(p_time_before timestamp without time zone) OWNER TO ngtesting;
 
 --
--- Name: _project_list(integer, character varying); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: _project_list(integer, character varying); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public._project_list(p_project_id integer, p_project_type character varying) RETURNS TABLE(id integer)
@@ -898,7 +898,7 @@ END;
 $$;
 
 
-ALTER FUNCTION public._project_list(p_project_id integer, p_project_type character varying) OWNER TO aaron;
+ALTER FUNCTION public._project_list(p_project_id integer, p_project_type character varying) OWNER TO ngtesting;
 
 --
 -- Name: _project_user(integer); Type: FUNCTION; Schema: public; Owner: ngtesting
@@ -927,7 +927,7 @@ $$;
 ALTER FUNCTION public._project_user(p_project_id integer) OWNER TO ngtesting;
 
 --
--- Name: _user_org_role(integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: _user_org_role(integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public._user_org_role(p_user_id integer) RETURNS TABLE("orgRoleId" integer)
@@ -953,10 +953,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public._user_org_role(p_user_id integer) OWNER TO aaron;
+ALTER FUNCTION public._user_org_role(p_user_id integer) OWNER TO ngtesting;
 
 --
--- Name: _user_org_role(integer, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: _user_org_role(integer, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public._user_org_role(p_user_id integer, p_org_id integer) RETURNS TABLE("orgRoleId" integer)
@@ -984,10 +984,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public._user_org_role(p_user_id integer, p_org_id integer) OWNER TO aaron;
+ALTER FUNCTION public._user_org_role(p_user_id integer, p_org_id integer) OWNER TO ngtesting;
 
 --
--- Name: _user_project_role(integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: _user_project_role(integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public._user_project_role(p_user_id integer) RETURNS TABLE("projectId" integer, "projectRoleId" integer)
@@ -1016,10 +1016,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public._user_project_role(p_user_id integer) OWNER TO aaron;
+ALTER FUNCTION public._user_project_role(p_user_id integer) OWNER TO ngtesting;
 
 --
--- Name: _user_project_role(integer, integer, character varying); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: _user_project_role(integer, integer, character varying); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public._user_project_role(p_user_id integer, p_project_id integer, p_project_type character varying) RETURNS TABLE("projectId" integer, "projectRoleId" integer)
@@ -1052,10 +1052,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public._user_project_role(p_user_id integer, p_project_id integer, p_project_type character varying) OWNER TO aaron;
+ALTER FUNCTION public._user_project_role(p_user_id integer, p_project_id integer, p_project_type character varying) OWNER TO ngtesting;
 
 --
--- Name: add_case_to_suite(integer, integer, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: add_case_to_suite(integer, integer, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.add_case_to_suite(p_case_id integer, p_suite_id integer, p_project_id integer) RETURNS integer
@@ -1088,10 +1088,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.add_case_to_suite(p_case_id integer, p_suite_id integer, p_project_id integer) OWNER TO aaron;
+ALTER FUNCTION public.add_case_to_suite(p_case_id integer, p_suite_id integer, p_project_id integer) OWNER TO ngtesting;
 
 --
--- Name: add_case_to_task(integer, integer, integer, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: add_case_to_task(integer, integer, integer, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.add_case_to_task(p_case_id integer, p_task_id integer, p_plan_id integer, p_project_id integer) RETURNS integer
@@ -1124,10 +1124,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.add_case_to_task(p_case_id integer, p_task_id integer, p_plan_id integer, p_project_id integer) OWNER TO aaron;
+ALTER FUNCTION public.add_case_to_task(p_case_id integer, p_task_id integer, p_plan_id integer, p_project_id integer) OWNER TO ngtesting;
 
 --
--- Name: add_cases_to_suite(character varying, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: add_cases_to_suite(character varying, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.add_cases_to_suite(p_case_ids character varying, p_suite_id integer) RETURNS integer
@@ -1158,10 +1158,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.add_cases_to_suite(p_case_ids character varying, p_suite_id integer) OWNER TO aaron;
+ALTER FUNCTION public.add_cases_to_suite(p_case_ids character varying, p_suite_id integer) OWNER TO ngtesting;
 
 --
--- Name: add_cases_to_task(character varying, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: add_cases_to_task(character varying, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.add_cases_to_task(p_case_ids character varying, p_task_id integer) RETURNS integer
@@ -1195,10 +1195,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.add_cases_to_task(p_case_ids character varying, p_task_id integer) OWNER TO aaron;
+ALTER FUNCTION public.add_cases_to_task(p_case_ids character varying, p_task_id integer) OWNER TO ngtesting;
 
 --
--- Name: add_cases_to_task_by_suites(character varying, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: add_cases_to_task_by_suites(character varying, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.add_cases_to_task_by_suites(p_suite_ids character varying, p_task_id integer) RETURNS integer
@@ -1234,10 +1234,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.add_cases_to_task_by_suites(p_suite_ids character varying, p_task_id integer) OWNER TO aaron;
+ALTER FUNCTION public.add_cases_to_task_by_suites(p_suite_ids character varying, p_task_id integer) OWNER TO ngtesting;
 
 --
--- Name: chart_issue_age(integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: chart_issue_age(integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.chart_issue_age(p_project_id integer, p_project_type character varying, p_day_numb integer) RETURNS TABLE(category text, priority character varying, numb bigint)
@@ -1275,10 +1275,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.chart_issue_age(p_project_id integer, p_project_type character varying, p_day_numb integer) OWNER TO aaron;
+ALTER FUNCTION public.chart_issue_age(p_project_id integer, p_project_type character varying, p_day_numb integer) OWNER TO ngtesting;
 
 --
--- Name: chart_issue_distrib_by_priority(integer, character varying); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: chart_issue_distrib_by_priority(integer, character varying); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.chart_issue_distrib_by_priority(p_project_id integer, p_project_type character varying) RETURNS TABLE(label character varying, count bigint)
@@ -1298,10 +1298,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.chart_issue_distrib_by_priority(p_project_id integer, p_project_type character varying) OWNER TO aaron;
+ALTER FUNCTION public.chart_issue_distrib_by_priority(p_project_id integer, p_project_type character varying) OWNER TO ngtesting;
 
 --
--- Name: chart_issue_distrib_by_status(integer, character varying); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: chart_issue_distrib_by_status(integer, character varying); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.chart_issue_distrib_by_status(p_project_id integer, p_project_type character varying) RETURNS TABLE(label character varying, count bigint)
@@ -1320,10 +1320,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.chart_issue_distrib_by_status(p_project_id integer, p_project_type character varying) OWNER TO aaron;
+ALTER FUNCTION public.chart_issue_distrib_by_status(p_project_id integer, p_project_type character varying) OWNER TO ngtesting;
 
 --
--- Name: chart_issue_trend_create(integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: chart_issue_trend_create(integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.chart_issue_trend_create(p_project_id integer, p_project_type character varying, p_day_numb integer) RETURNS TABLE(date date, sum numeric, numb bigint)
@@ -1365,10 +1365,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.chart_issue_trend_create(p_project_id integer, p_project_type character varying, p_day_numb integer) OWNER TO aaron;
+ALTER FUNCTION public.chart_issue_trend_create(p_project_id integer, p_project_type character varying, p_day_numb integer) OWNER TO ngtesting;
 
 --
--- Name: chart_issue_trend_final(integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: chart_issue_trend_final(integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.chart_issue_trend_final(p_project_id integer, p_project_type character varying, p_day_numb integer) RETURNS TABLE(date date, sum numeric, numb bigint)
@@ -1410,10 +1410,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.chart_issue_trend_final(p_project_id integer, p_project_type character varying, p_day_numb integer) OWNER TO aaron;
+ALTER FUNCTION public.chart_issue_trend_final(p_project_id integer, p_project_type character varying, p_day_numb integer) OWNER TO ngtesting;
 
 --
--- Name: chart_test_design_progress_by_project(integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: chart_test_design_progress_by_project(integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.chart_test_design_progress_by_project(p_project_id integer, p_project_type character varying, p_day_numb integer) RETURNS TABLE(date date, sum numeric, numb bigint)
@@ -1457,10 +1457,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.chart_test_design_progress_by_project(p_project_id integer, p_project_type character varying, p_day_numb integer) OWNER TO aaron;
+ALTER FUNCTION public.chart_test_design_progress_by_project(p_project_id integer, p_project_type character varying, p_day_numb integer) OWNER TO ngtesting;
 
 --
--- Name: chart_test_execution_process_by_plan(integer, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: chart_test_execution_process_by_plan(integer, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.chart_test_execution_process_by_plan(p_plan_id integer, p_day_numb integer) RETURNS TABLE(date date, status character varying, sum numeric, numb bigint)
@@ -1495,10 +1495,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.chart_test_execution_process_by_plan(p_plan_id integer, p_day_numb integer) OWNER TO aaron;
+ALTER FUNCTION public.chart_test_execution_process_by_plan(p_plan_id integer, p_day_numb integer) OWNER TO ngtesting;
 
 --
--- Name: chart_test_execution_process_by_plan_user(integer, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: chart_test_execution_process_by_plan_user(integer, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.chart_test_execution_process_by_plan_user(p_plan_id integer, p_day_numb integer) RETURNS TABLE(date date, name character varying, sum numeric, numb bigint)
@@ -1535,10 +1535,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.chart_test_execution_process_by_plan_user(p_plan_id integer, p_day_numb integer) OWNER TO aaron;
+ALTER FUNCTION public.chart_test_execution_process_by_plan_user(p_plan_id integer, p_day_numb integer) OWNER TO ngtesting;
 
 --
--- Name: chart_test_execution_process_by_project(integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: chart_test_execution_process_by_project(integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.chart_test_execution_process_by_project(p_project_id integer, p_project_type character varying, p_day_numb integer) RETURNS TABLE(date date, status character varying, sum numeric, numb bigint)
@@ -1580,10 +1580,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.chart_test_execution_process_by_project(p_project_id integer, p_project_type character varying, p_day_numb integer) OWNER TO aaron;
+ALTER FUNCTION public.chart_test_execution_process_by_project(p_project_id integer, p_project_type character varying, p_day_numb integer) OWNER TO ngtesting;
 
 --
--- Name: chart_test_execution_progress_by_plan(integer, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: chart_test_execution_progress_by_plan(integer, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.chart_test_execution_progress_by_plan(p_plan_id integer, p_day_numb integer) RETURNS TABLE(date date, "left" numeric, numb bigint)
@@ -1626,10 +1626,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.chart_test_execution_progress_by_plan(p_plan_id integer, p_day_numb integer) OWNER TO aaron;
+ALTER FUNCTION public.chart_test_execution_progress_by_plan(p_plan_id integer, p_day_numb integer) OWNER TO ngtesting;
 
 --
--- Name: chart_test_execution_result_by_plan(integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: chart_test_execution_result_by_plan(integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.chart_test_execution_result_by_plan(p_plan_id integer) RETURNS TABLE(status character varying, count bigint)
@@ -1649,10 +1649,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.chart_test_execution_result_by_plan(p_plan_id integer) OWNER TO aaron;
+ALTER FUNCTION public.chart_test_execution_result_by_plan(p_plan_id integer) OWNER TO ngtesting;
 
 --
--- Name: close_plan_if_all_task_closed(integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: close_plan_if_all_task_closed(integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.close_plan_if_all_task_closed(p_plan_id integer) RETURNS integer
@@ -1680,10 +1680,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.close_plan_if_all_task_closed(p_plan_id integer) OWNER TO aaron;
+ALTER FUNCTION public.close_plan_if_all_task_closed(p_plan_id integer) OWNER TO ngtesting;
 
 --
--- Name: gen_project_access_history(integer, integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: gen_project_access_history(integer, integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.gen_project_access_history(p_org_id integer, p_project_id integer, p_project_name character varying, p_user_id integer) RETURNS void
@@ -1717,10 +1717,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.gen_project_access_history(p_org_id integer, p_project_id integer, p_project_name character varying, p_user_id integer) OWNER TO aaron;
+ALTER FUNCTION public.gen_project_access_history(p_org_id integer, p_project_id integer, p_project_name character varying, p_user_id integer) OWNER TO ngtesting;
 
 --
--- Name: get_org_privilege_for_user(integer, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: get_org_privilege_for_user(integer, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.get_org_privilege_for_user(p_user_id integer, p_org_id integer) RETURNS TABLE(code character varying, name character varying)
@@ -1742,10 +1742,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.get_org_privilege_for_user(p_user_id integer, p_org_id integer) OWNER TO aaron;
+ALTER FUNCTION public.get_org_privilege_for_user(p_user_id integer, p_org_id integer) OWNER TO ngtesting;
 
 --
--- Name: get_project_privilege_for_user(integer, integer, character varying); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: get_project_privilege_for_user(integer, integer, character varying); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.get_project_privilege_for_user(p_user_id integer, p_project_id integer, p_project_type character varying) RETURNS TABLE("projectId" text, code character varying, action character varying)
@@ -1771,10 +1771,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.get_project_privilege_for_user(p_user_id integer, p_project_id integer, p_project_type character varying) OWNER TO aaron;
+ALTER FUNCTION public.get_project_privilege_for_user(p_user_id integer, p_project_id integer, p_project_type character varying) OWNER TO ngtesting;
 
 --
--- Name: init_org(integer, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: init_org(integer, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.init_org(p_org_id integer, p_user_id integer) RETURNS void
@@ -2107,10 +2107,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.init_org(p_org_id integer, p_user_id integer) OWNER TO aaron;
+ALTER FUNCTION public.init_org(p_org_id integer, p_user_id integer) OWNER TO ngtesting;
 
 --
--- Name: init_org_custom_field_option(integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: init_org_custom_field_option(integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.init_org_custom_field_option(p_org_id integer) RETURNS void
@@ -2154,10 +2154,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.init_org_custom_field_option(p_org_id integer) OWNER TO aaron;
+ALTER FUNCTION public.init_org_custom_field_option(p_org_id integer) OWNER TO ngtesting;
 
 --
--- Name: init_org_issue_page_solution_item(integer, integer, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: init_org_issue_page_solution_item(integer, integer, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.init_org_issue_page_solution_item(p_issue_page_id integer, p_issue_page_solution_id integer, p_org_id integer) RETURNS void
@@ -2194,10 +2194,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.init_org_issue_page_solution_item(p_issue_page_id integer, p_issue_page_solution_id integer, p_org_id integer) OWNER TO aaron;
+ALTER FUNCTION public.init_org_issue_page_solution_item(p_issue_page_id integer, p_issue_page_solution_id integer, p_org_id integer) OWNER TO ngtesting;
 
 --
--- Name: init_user(integer, character varying); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: init_user(integer, character varying); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.init_user(p_user_id integer, p_org_name character varying) RETURNS void
@@ -2222,10 +2222,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.init_user(p_user_id integer, p_org_name character varying) OWNER TO aaron;
+ALTER FUNCTION public.init_user(p_user_id integer, p_org_name character varying) OWNER TO ngtesting;
 
 --
--- Name: remove_all(); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: remove_all(); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.remove_all() RETURNS void
@@ -2246,10 +2246,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.remove_all() OWNER TO aaron;
+ALTER FUNCTION public.remove_all() OWNER TO ngtesting;
 
 --
--- Name: remove_all_tables(); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: remove_all_tables(); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.remove_all_tables() RETURNS void
@@ -2284,10 +2284,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.remove_all_tables() OWNER TO aaron;
+ALTER FUNCTION public.remove_all_tables() OWNER TO ngtesting;
 
 --
--- Name: remove_case_and_its_children(integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: remove_case_and_its_children(integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.remove_case_and_its_children(p_case_id integer) RETURNS integer
@@ -2313,10 +2313,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.remove_case_and_its_children(p_case_id integer) OWNER TO aaron;
+ALTER FUNCTION public.remove_case_and_its_children(p_case_id integer) OWNER TO ngtesting;
 
 --
--- Name: remove_user_from_org(integer, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: remove_user_from_org(integer, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.remove_user_from_org(p_user_id integer, p_org_id integer) RETURNS integer
@@ -2345,10 +2345,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.remove_user_from_org(p_user_id integer, p_org_id integer) OWNER TO aaron;
+ALTER FUNCTION public.remove_user_from_org(p_user_id integer, p_org_id integer) OWNER TO ngtesting;
 
 --
--- Name: test(integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: test(integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.test(_p integer) RETURNS integer
@@ -2367,7 +2367,7 @@ END;
 $$;
 
 
-ALTER FUNCTION public.test(_p integer) OWNER TO aaron;
+ALTER FUNCTION public.test(_p integer) OWNER TO ngtesting;
 
 --
 -- Name: update_workflow_statuses(integer, character varying); Type: FUNCTION; Schema: public; Owner: ngtesting
@@ -2411,7 +2411,7 @@ $$;
 ALTER FUNCTION public.update_workflow_statuses(p_workflow_id integer, p_status_ids character varying) OWNER TO ngtesting;
 
 --
--- Name: update_workflow_statuses(integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: update_workflow_statuses(integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.update_workflow_statuses(p_workflow_id integer, p_status_ids character varying, p_org_id integer) RETURNS integer
@@ -2430,10 +2430,10 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_workflow_statuses(p_workflow_id integer, p_status_ids character varying, p_org_id integer) OWNER TO aaron;
+ALTER FUNCTION public.update_workflow_statuses(p_workflow_id integer, p_status_ids character varying, p_org_id integer) OWNER TO ngtesting;
 
 --
--- Name: user_not_in_project(integer, integer); Type: FUNCTION; Schema: public; Owner: aaron
+-- Name: user_not_in_project(integer, integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
 CREATE FUNCTION public.user_not_in_project(p_user_id integer, p_project_id integer) RETURNS boolean
@@ -2466,7 +2466,7 @@ END;
 $$;
 
 
-ALTER FUNCTION public.user_not_in_project(p_user_id integer, p_project_id integer) OWNER TO aaron;
+ALTER FUNCTION public.user_not_in_project(p_user_id integer, p_project_id integer) OWNER TO ngtesting;
 
 SET default_tablespace = '';
 

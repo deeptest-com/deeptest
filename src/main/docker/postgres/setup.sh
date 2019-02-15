@@ -1,7 +1,9 @@
 #!/bin/bash
 
 echo '1. 检测postgres状态'
-count=`psql -h ngtesting-postgres -U ngtesting ngtesting-web  -c "select tablename from pg_tables where schemaname='public'" | grep TstProject`
+echo "localhost:*:*:ngtesting:P2ssw0rd" > $HOME/.pgpass
+echo "`chmod 0600 $HOME/.pgpass`"
+count=`psql -h localhost -U ngtesting ngtesting-web  -c "select tablename from pg_tables where schemaname='public'" | grep TstProject`
 echo "count=$count"
 
 set -e  # Exit the script if an error happens
@@ -18,10 +20,8 @@ else
     echo '3. 成功创建数据库'
 
     echo '4. 导入数据....'
-    su - postgres -c "psql ngtesting-web -U ngtesting < /etc/postgres/schema.sql"
+    su - postgres -c "psql ngtesting-web -U ngtesting < /schema.sql"
     echo '4. 成功导入数据'
 
     touch ~/init-success
 fi
-
-tail -f /dev/null

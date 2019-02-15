@@ -1,7 +1,7 @@
 FROM java:8
 VOLUME /tmp
 
-ADD postgres/wait-for-it.sh /
+ADD wait-for-it.sh /
 RUN chmod +x /wait-for-it.sh
 
 RUN export PATH="/:$PATH"

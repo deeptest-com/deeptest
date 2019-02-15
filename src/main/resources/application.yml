@@ -20,7 +20,7 @@ spring:
           filters: stat
           driver-class-name: org.postgresql.Driver
           #基本属性
-          url: jdbc:postgresql://${config.db.host}:${config.db.port}/ngtesting-test?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&noAccessToProcedureBodies=true
+          url: jdbc:postgresql://${config.db.host}:${config.db.port}/ngtesting-web?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&noAccessToProcedureBodies=true
           username: ngtesting
           password: P2ssw0rd
           #配置初始化大小/最小/最大
@@ -105,7 +105,7 @@ spring:
   profiles: docker
 config:
   db:
-    host: ngtesting-db
+    host: ngtesting-postgres
     port: 5432
 
 ---

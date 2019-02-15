@@ -1,11 +1,11 @@
 FROM postgres:11.2
 
-ADD wait-for-it.sh /etc/postgres/wait-for-it.sh
-RUN chmod +x /etc/postgres/wait-for-it.sh
+ADD wait-for-it.sh /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
 
-ADD setup.sh /etc/postgres/setup.sh
-RUN chmod +x /etc/postgres/setup.sh
+ADD setup.sh /setup.sh
+RUN chmod +x /setup.sh
 
-ADD schema.sql /etc/postgres/schema.sql
+ADD schema.sql /schema.sql
 
 EXPOSE 5432

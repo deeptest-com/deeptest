@@ -47,6 +47,8 @@ wait_for()
         sleep 1
     done
 
+    sleep 10
+
     return $result
 }
 

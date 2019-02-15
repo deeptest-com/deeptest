@@ -1,53 +1,63 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IssueWorkflowDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssueWorkflowDao">
 
     <select id="list" resultType="IsuWorkflow">
         SELECT o.*
 
         FROM "IsuWorkflow" o
 
-        WHERE o."orgId"=#{orgId}
-        AND NOT o.deleted  AND NOT o.
-        ORDER BY o."createTime" ASC
+        WHERE o."orgId" = #{orgId}
+          AND NOT o.deleted
+          AND NOT o.
+                ORDER BY o."createTime" ASC
     </select>
 
     <select id="get" resultType="IsuWorkflow">
-        SELECT o.* FROM "IsuWorkflow" o
+        SELECT o.*
+        FROM "IsuWorkflow" o
 
-        WHERE o.id = #{id} AND o."orgId" = #{orgId}
-        AND NOT o.deleted  AND NOT o.disabled
+        WHERE o.id = #{id}
+          AND o."orgId" = #{orgId}
+          AND NOT o.deleted
+          AND NOT o.disabled
     </select>
 
     <insert id="save" parameterType="IsuWorkflow" useGeneratedKeys="true" keyProperty="id">
-        insert into "IsuWorkflow"
-        (name, descr, "orgId", "defaultVal", "buildIn", deleted, disabled, "createTime")
-        values
-        (#{name}, #{descr}, #{orgId}, #{defaultVal}, #{buildIn}, FALSE, FALSE, NOW())
+        insert into "IsuWorkflow" (name, descr, "orgId", "defaultVal", "buildIn", deleted, disabled, "createTime")
+        values (#{name}, #{descr}, #{orgId}, #{defaultVal}, #{buildIn}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="IsuPage">
         UPDATE "IsuWorkflow"
-        SET name=#{name}, descr=#{descr}, "updateTime"=NOW()
+        SET name = #{name},
+            descr = #{descr},
+            "updateTime" = NOW()
 
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </update>
 
     <update id="removeDefault">
         UPDATE "IsuWorkflow"
-        SET "defaultVal"=FALSE, "updateTime"=NOW()
-        WHERE "orgId"=#{orgId}
+        SET "defaultVal" = FALSE,
+            "updateTime" = NOW()
+        WHERE "orgId" = #{orgId}
     </update>
     <update id="setDefault">
         UPDATE "IsuWorkflow"
-        SET "defaultVal"=TRUE, "updateTime"=NOW()
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        SET "defaultVal" = TRUE,
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </update>
 
     <delete id="delete">
         UPDATE "IsuWorkflow"
-        SET disabled=TRUE, "updateTime"=NOW()
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        SET disabled     = TRUE,
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </delete>
 
     <insert id="saveStatuses">
@@ -59,8 +69,9 @@
         </foreach>
     </insert>
     <delete id="removeStatuses">
-        DELETE FROM "IsuWorkflowStatusRelation"
-        WHERE "workflowId"=#{workflowId}
+        DELETE
+        FROM "IsuWorkflowStatusRelation"
+        WHERE "workflowId" = #{workflowId}
     </delete>
     <!--    <update id="updateStatuses" statementType="CALLABLE">
         { call update_workflow_statuses(
@@ -70,11 +81,13 @@
     </update>-->
 
     <select id="listStatus" resultType="IsuStatus">
-        SELECT o.* FROM "IsuStatus" o
-        JOIN "IsuWorkflowStatusRelation" r ON o.id=r."statusId"
+        SELECT o.*
+        FROM "IsuStatus" o
+                 JOIN "IsuWorkflowStatusRelation" r ON o.id = r."statusId"
 
         WHERE r."workflowId" = #{workflowId}
-        AND NOT o.deleted  AND NOT o.disabled
+          AND NOT o.deleted
+          AND NOT o.disabled
         order by o.ordr asc
     </select>
 

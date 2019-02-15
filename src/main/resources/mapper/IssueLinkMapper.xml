@@ -1,38 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IssueLinkDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssueLinkDao">
 
     <insert id="link">
-        INSERT INTO "IsuLink"
-          ("srcIssueId", "dictIssueId", "reasonId", "reasonName")
-        values(${srcIssueId}, ${dictIssueId}, ${reasonId}, '${reasonName}')
+        INSERT INTO "IsuLink" ("srcIssueId", "dictIssueId", "reasonId", "reasonName")
+        values (${srcIssueId}, ${dictIssueId}, ${reasonId}, '${reasonName}')
 
-        WHERE NOT EXISTS (
-            SELECT * FROM "IsuLink" WHERE "srcIssueId" = ${srcIssueId}
-                                  AND "dictIssueId"=${dictIssueId}
-                                  AND "reasonId"=${reasonId}
-        )
+                WHERE NOT EXISTS (
+                SELECT * FROM "IsuLink" WHERE "srcIssueId" = ${srcIssueId}
+                AND "dictIssueId" = ${dictIssueId}
+                AND "reasonId" = ${reasonId}
+                )
     </insert>
 
     <select id="listLinkReason" resultType="IsuLinkReason">
-        SELECT * FROM "IsuLinkReasonDefine" o
+        SELECT *
+        FROM "IsuLinkReasonDefine" o
 
         WHERE NOT o.deleted
-        AND NOT o.disabled
+          AND NOT o.disabled
         ORDER BY o.id ASC
     </select>
 
     <select id="listByIssueId" parameterType="Map" resultMap="issueLinkMap">
         SELECT l."reasonId", l."reasonName", o.id, o.title
         FROM "IsuIssue" o
-        JOIN "IsuLink" l ON l."dictIssueId" = o.id
+                 JOIN "IsuLink" l ON l."dictIssueId" = o.id
         WHERE l."srcIssueId" = #{id}
-        AND NOT o.deleted  AND NOT o.disabled
+          AND NOT o.deleted
+          AND NOT o.disabled
 
         ORDER BY l."reasonId" ASC, l.id ASC
     </select>
 
-    <resultMap id="issueLinkMap" type="Map" autoMapping="true">
+    <resultMap id="issueLinkMap" type="java.util.Map" autoMapping="true">
         <id column="id" property="id"/>
         <id column="title" property="title"/>
         <id column="reasonId" property="reasonId"/>

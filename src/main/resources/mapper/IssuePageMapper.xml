@@ -1,56 +1,65 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IssuePageDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssuePageDao">
 
     <select id="list" resultMap="issuePageMap">
         SELECT page.*
 
         FROM "IsuPage" page
 
-        WHERE page."orgId"=#{orgId}
-        AND NOT page.deleted AND NOT page.disabled
+        WHERE page."orgId" = #{orgId}
+          AND NOT page.deleted
+          AND NOT page.disabled
         ORDER BY page.id ASC
     </select>
 
     <select id="get" resultMap="issuePageMap">
-        SELECT o.* FROM "IsuPage" o
+        SELECT o.*
+        FROM "IsuPage" o
 
-        WHERE o.id = #{id} AND "orgId" = #{orgId}
-        AND NOT o.deleted AND NOT o.disabled
+        WHERE o.id = #{id}
+          AND "orgId" = #{orgId}
+          AND NOT o.deleted
+          AND NOT o.disabled
     </select>
 
     <insert id="save" parameterType="IsuPage" useGeneratedKeys="true" keyProperty="id">
-        insert into "IsuPage"
-        (name, "orgId", "defaultVal", "buildIn", deleted, disabled, "createTime")
-        values
-        (#{name}, #{orgId}, #{defaultVal}, #{buildIn}, FALSE, FALSE, NOW())
+        insert into "IsuPage" (name, "orgId", "defaultVal", "buildIn", deleted, disabled, "createTime")
+        values (#{name}, #{orgId}, #{defaultVal}, #{buildIn}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="IsuPage">
         UPDATE "IsuPage"
-        SET name=#{name}, "updateTime"=NOW()
+        SET name = #{name},
+            "updateTime" = NOW()
 
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </update>
 
     <delete id="delete">
         UPDATE "IsuPage"
-        SET disabled=TRUE, "updateTime"=NOW()
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        SET disabled     = TRUE,
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </delete>
 
     <update id="removeDefault">
         UPDATE "IsuPage"
-        SET "defaultVal"=FALSE, "updateTime"=NOW()
-        WHERE "orgId"=#{orgId}
+        SET "defaultVal" = FALSE,
+            "updateTime" = NOW()
+        WHERE "orgId" = #{orgId}
     </update>
     <update id="setDefault">
         UPDATE "IsuPage"
-        SET "defaultVal"=TRUE, "updateTime"=NOW()
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        SET "defaultVal" = TRUE,
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </update>
 
-    <resultMap id="issuePageMap" type="IsuPage" autoMapping="true">
+    <resultMap id="issuePageMap" type="com.ngtesting.platform.model.IsuPage" autoMapping="true">
         <id column="id" property="id"/>
 
         <collection property="elements" select="com.ngtesting.platform.dao.IssuePageElementDao.listElementByPageId"

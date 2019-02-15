@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
-<mapper namespace="com.ngtesting.platform.dao.OrgPrivilegeDao" >
+<mapper namespace="com.ngtesting.platform.dao.OrgPrivilegeDao">
 
     <select id="listAllOrgPrivileges" resultType="TstOrgPrivilegeDefine">
-        SELECT * from "TstOrgPrivilegeDefine" priv
-            WHERE NOT priv.deleted and NOT priv.disabled
-            order by priv.id asc
+        SELECT *
+        from "TstOrgPrivilegeDefine" priv
+        WHERE NOT priv.deleted
+          and NOT priv.disabled
+        order by priv.id asc
     </select>
 
     <select id="listByUser" resultType="TstOrgPrivilegeDefine" statementType="CALLABLE">
-        { call get_org_privilege_for_user(
-            #{userId,mode=IN,jdbcType=INTEGER},
-            #{orgId,mode=IN,jdbcType=INTEGER}
-        ) }
+        {call get_org_privilege_for_user(
+                #{userId,mode=IN,jdbcType=INTEGER},
+                #{orgId,mode=IN,jdbcType=INTEGER}
+        )}
     </select>
 
 </mapper>

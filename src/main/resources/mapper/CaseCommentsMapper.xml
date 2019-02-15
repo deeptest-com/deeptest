@@ -1,52 +1,65 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.CaseCommentsDao" >
+<mapper namespace="com.ngtesting.platform.dao.CaseCommentsDao">
 
     <select id="query" resultType="TstCaseComments">
-        SELECT * FROM "TstCaseComments" o WHERE o."caseId"=#{caseId}
-
-        AND NOT o.deleted AND NOT o.disabled
-        ORDER BY o."updateTime" ASC LIMIT 15
+        SELECT *
+        FROM "TstCaseComments" o
+        WHERE o."caseId" = #{caseId}
+          AND NOT o.deleted
+          AND NOT o.disabled
+        ORDER BY o."updateTime" ASC
+        LIMIT 15
     </select>
 
     <select id="listByCaseId" parameterType="Map" resultMap="caseCommentsMap">
         SELECT o.*, usr.id "userId", usr."nickname" "userName", usr."avatar" "userAvatar"
 
         FROM "TstCaseComments" o
-
-        JOIN "TstUser" usr ON o."userId" = usr.id
+                 JOIN "TstUser" usr ON o."userId" = usr.id
 
         WHERE o."caseId" = #{id}
-        AND NOT o.deleted AND NOT o.disabled
+          AND NOT o.deleted
+          AND NOT o.disabled
 
-        ORDER BY o."updateTime" DESC LIMIT 15;
+        ORDER BY o."updateTime" DESC
+        LIMIT 15;
     </select>
 
     <select id="get" resultType="TstCaseComments">
         SELECT *
         FROM "TstCaseComments" o
-        WHERE o.id=#{id}
+        WHERE o.id = #{id}
     </select>
 
     <insert id="save" parameterType="TstCaseComments" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstCaseComments" (summary,content,"caseId","userId",
-          "createTime","updateTime",deleted,disabled)
+        insert into "TstCaseComments" (summary,
+                                       content,
+                                       "caseId",
+                                       "userId",
+                                       "createTime",
+                                       "updateTime",
+                                       deleted,
+                                       disabled)
 
-        values (#{summary},#{content},#{caseId},#{userId},
-          NOW(),NOW(),#{deleted},#{disabled})
+        values (#{summary}, #{content}, #{caseId}, #{userId}, NOW(), NOW(), #{deleted}, #{disabled})
     </insert>
     <update id="update">
         UPDATE "TstCaseComments"
-        SET summary=#{vo.summary},content=#{vo.content},"updateTime"=NOW()
-        WHERE id=#{vo.id} AND userId=#{userId}
+        SET summary      = #{vo.summary},
+            content      = #{vo.content},
+            "updateTime" = NOW()
+        WHERE id = #{vo.id}
+          AND userId = #{userId}
     </update>
     <update id="delete">
         UPDATE "TstCaseComments"
-        SET disabled=TRUE
-        WHERE id=#{id} AND "userId"=#{userId}
+        SET disabled = TRUE
+        WHERE id = #{id}
+          AND "userId" = #{userId}
     </update>
 
-    <resultMap id="caseCommentsMap" type="TstCaseComments" autoMapping="true">
+    <resultMap id="caseCommentsMap" type="com.ngtesting.platform.model.TstCaseComments" autoMapping="true">
         <id column="id" property="id"/>
         <id column="summary" property="summary"/>
         <id column="userId" property="userId"/>

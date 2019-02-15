@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.ProjectRolePrivilegeRelationDao" >
+<mapper namespace="com.ngtesting.platform.dao.ProjectRolePrivilegeRelationDao">
 
     <select id="listProjectRolePrivileges" resultType="TstProjectRolePriviledgeRelation">
-        SELECT * FROM "TstProjectRolePriviledgeRelation" o
+        SELECT *
+        FROM "TstProjectRolePriviledgeRelation" o
 
-        WHERE o."projectRoleId"=#{projectRoleId}
+        WHERE o."projectRoleId" = #{projectRoleId}
 
         ORDER BY o."projectPrivilegeDefineId" ASC
     </select>
 
     <delete id="removeAllPrivilegsForRole">
-        DELETE FROM "TstProjectRolePriviledgeRelation"
-        WHERE "projectRoleId"=#{projectRoleId}
+        DELETE
+        FROM "TstProjectRolePriviledgeRelation"
+        WHERE "projectRoleId" = #{projectRoleId}
     </delete>
 
     <insert id="saveRelations">

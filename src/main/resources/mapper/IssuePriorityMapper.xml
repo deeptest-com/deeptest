@@ -1,36 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IssuePriorityDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssuePriorityDao">
 
     <select id="list" resultType="IsuPriority">
-        SELECT * FROM "IsuPriority" o
-        WHERE o."orgId"=#{orgId}
-
-        AND NOT o.disabled AND NOT o.deleted
+        SELECT *
+        FROM "IsuPriority" o
+        WHERE o."orgId" = #{orgId}
+          AND NOT o.disabled
+          AND NOT o.deleted
         ORDER BY o.ordr ASC
     </select>
 
     <select id="listBySolutionId" resultType="IsuPriority" parameterType="Map">
-        SELECT * FROM "IsuPriority" o
-        JOIN "IsuPrioritySolutionItem" r ON r."priorityId" = o.id
+        SELECT *
+        FROM "IsuPriority" o
+                 JOIN "IsuPrioritySolutionItem" r ON r."priorityId" = o.id
         WHERE r."solutionId" = #{solutionId}
-          AND o."orgId"=#{orgId}
-
-        AND NOT o.disabled AND NOT o.deleted
+          AND o."orgId" = #{orgId}
+          AND NOT o.disabled
+          AND NOT o.deleted
         ORDER BY o.ordr ASC
     </select>
 
     <select id="listNotInSolution" resultType="IsuPriority" parameterType="Map">
-        SELECT * FROM "IsuPriority" o
+        SELECT *
+        FROM "IsuPriority" o
 
-        WHERE o."orgId"=#{orgId}
-         AND o.id NOT IN (
-          SELECT tmp.id FROM "IsuPriority" tmp
-          JOIN "IsuPrioritySolutionItem" r ON r."priorityId" = tmp.id
-          WHERE r."solutionId" = #{solutionId} AND tmp."orgId"=#{orgId}
-        )
-
-        AND NOT o.disabled AND NOT o.deleted
+        WHERE o."orgId" = #{orgId}
+          AND o.id NOT IN (SELECT tmp.id
+                           FROM "IsuPriority" tmp
+                                    JOIN "IsuPrioritySolutionItem" r ON r."priorityId" = tmp.id
+                           WHERE r."solutionId" = #{solutionId}
+                             AND tmp."orgId" = #{orgId})
+          AND NOT o.disabled
+          AND NOT o.deleted
         ORDER BY ordr ASC
     </select>
 
@@ -44,67 +47,91 @@
     </select>
 
     <insert id="save" parameterType="IsuPriority" useGeneratedKeys="true" keyProperty="id">
-        insert into "IsuPriority"
-        (label,value,descr,"orgId", "defaultVal", "buildIn",ordr,deleted,disabled,"createTime")
-        values
-        (#{label},#{value},#{descr},#{orgId}, #{defaultVal}, #{buildIn},#{ordr},FALSE,FALSE,NOW())
+        insert into "IsuPriority" (label,
+                                   value,
+                                   descr,
+                                   "orgId",
+                                   "defaultVal",
+                                   "buildIn",
+                                   ordr,
+                                   deleted,
+                                   disabled,
+                                   "createTime")
+        values (#{label}, #{value}, #{descr}, #{orgId}, #{defaultVal}, #{buildIn}, #{ordr}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="IsuPriority">
         UPDATE "IsuPriority"
-        SET label=#{label},"value"=#{value},descr=#{descr},
-        disabled=#{disabled},
-        "updateTime"=NOW()
+        SET label = #{label},
+            "value" = #{value},
+            descr = #{descr},
+            disabled = #{disabled},
+            "updateTime" = NOW()
 
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </update>
 
     <delete id="delete">
         UPDATE "IsuPriority"
-        SET disabled=TRUE, "updateTime"=NOW()
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        SET disabled     = TRUE,
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </delete>
 
     <update id="removeDefault">
         UPDATE "IsuPriority"
-        SET "defaultVal"=FALSE, "updateTime"=NOW()
-        WHERE "orgId"=#{orgId}
+        SET "defaultVal" = FALSE,
+            "updateTime" = NOW()
+        WHERE "orgId" = #{orgId}
     </update>
     <update id="setDefault">
         UPDATE "IsuPriority"
-        SET "defaultVal"=TRUE, "updateTime"=NOW()
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        SET "defaultVal" = TRUE,
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </update>
 
     <update id="setOrder">
         UPDATE "IsuPriority"
-        SET ordr=#{ordr}, "updateTime"=NOW()
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        SET ordr = #{ordr},
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </update>
 
     <select id="getPrev" resultType="IsuPriority">
         <![CDATA[
-            SELECT * FROM "IsuPriority" o
-            WHERE o.ordr < #{ordr} AND o."orgId" = #{orgId}
-            AND NOT o.deleted
-            ORDER BY o.ordr DESC LIMIT 1
+        SELECT *
+        FROM "IsuPriority" o
+        WHERE o.ordr < #{ordr}
+          AND o."orgId" = #{orgId}
+          AND NOT o.deleted
+        ORDER BY o.ordr DESC
+        LIMIT 1
         ]]>
     </select>
 
     <select id="getNext" resultType="IsuPriority">
         <![CDATA[
-            SELECT * FROM "IsuPriority" o
-            WHERE o.ordr > #{ordr} AND o."orgId" = #{orgId}
-            AND NOT o.deleted
-            ORDER BY o.ordr ASC LIMIT 1
+        SELECT *
+        FROM "IsuPriority" o
+        WHERE o.ordr > #{ordr}
+          AND o."orgId" = #{orgId}
+          AND NOT o.deleted
+        ORDER BY o.ordr ASC
+        LIMIT 1
         ]]>
     </select>
 
     <select id="getMaxOrdrNumb" resultType="Integer">
-        select max(ordr) from "IsuPriority" o
-        where o."orgId"=#{orgId}
-        and NOT o.deleted
-        and NOT o.disabled
+        select max(ordr)
+        from "IsuPriority" o
+        where o."orgId" = #{orgId}
+          and NOT o.deleted
+          and NOT o.disabled
     </select>
 
 </mapper>

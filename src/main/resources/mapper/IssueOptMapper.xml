@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IssueOptDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssueOptDao">
 
     <update id="statusTran">
         UPDATE "IsuIssue"
@@ -15,8 +15,10 @@
 
     <update id="assign">
         UPDATE "IsuIssue"
-        SET "assigneeId"=#{userId}, "updateTime"=NOW()
-        WHERE id=#{id} AND "projectId"=#{projectId}
+        SET "assigneeId" = #{userId},
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "projectId" = #{projectId}
     </update>
 
 </mapper>

@@ -1,74 +1,80 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IssueTypeSolutionDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssueTypeSolutionDao">
 
     <select id="list" resultType="IsuTypeSolution">
-        SELECT * FROM "IsuTypeSolution" o
-        WHERE o."orgId"=#{orgId}
-
-        AND NOT o.disabled AND NOT o.deleted
+        SELECT *
+        FROM "IsuTypeSolution" o
+        WHERE o."orgId" = #{orgId}
+          AND NOT o.disabled
+          AND NOT o.deleted
         ORDER BY id ASC
     </select>
 
     <!--<select id="get" resultType="IsuTypeSolution">-->
-        <!--SELECT * FROM "IsuTypeSolution" o-->
+    <!--SELECT * FROM "IsuTypeSolution" o-->
 
-        <!--WHERE o.id = #{id}-->
-        <!--<if test="orgId != null">-->
-            <!--AND o."orgId"=#{orgId}-->
-        <!--</if>-->
+    <!--WHERE o.id = #{id}-->
+    <!--<if test="orgId != null">-->
+    <!--AND o."orgId"=#{orgId}-->
+    <!--</if>-->
     <!--</select>-->
     <select id="getDetail" resultMap="isuTypeSolutionMap">
-        SELECT * FROM "IsuTypeSolution" o
+        SELECT *
+        FROM "IsuTypeSolution" o
 
-        WHERE o.id = #{id} AND o."orgId"=#{orgId}
+        WHERE o.id = #{id}
+          AND o."orgId" = #{orgId}
     </select>
 
     <insert id="save" parameterType="IsuTypeSolution" useGeneratedKeys="true" keyProperty="id">
-        insert into "IsuTypeSolution"
-        (name,"orgId", "defaultVal", "buildIn",deleted,disabled,"createTime")
-        values
-        (#{name},#{orgId}, #{defaultVal}, #{buildIn},FALSE,FALSE,NOW())
+        insert into "IsuTypeSolution" (name, "orgId", "defaultVal", "buildIn", deleted, disabled, "createTime")
+        values (#{name}, #{orgId}, #{defaultVal}, #{buildIn}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="IsuTypeSolution">
         UPDATE "IsuTypeSolution"
-        SET name=#{name},
-        disabled=#{disabled},
-        "updateTime"=NOW()
+        SET name = #{name},
+            disabled = #{disabled},
+            "updateTime" = NOW()
 
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </update>
 
     <update id="delete">
         UPDATE "IsuTypeSolution"
-        SET disabled=TRUE, "updateTime"=NOW()
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        SET disabled     = TRUE,
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </update>
 
     <update id="removeDefault">
         UPDATE "IsuTypeSolution"
-        SET "defaultVal"=FALSE, "updateTime"=NOW()
-        WHERE "orgId"=#{orgId}
+        SET "defaultVal" = FALSE,
+            "updateTime" = NOW()
+        WHERE "orgId" = #{orgId}
     </update>
     <update id="setDefault">
         UPDATE "IsuTypeSolution"
-        SET "defaultVal"=TRUE, "updateTime"=NOW()
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        SET "defaultVal" = TRUE,
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </update>
 
     <insert id="addType">
-        insert into "IsuTypeSolutionItem"
-        ("typeId","solutionId","orgId")
-        values
-        ( #{typeId}, #{solutionId}, #{orgId} );
+        insert into "IsuTypeSolutionItem" ("typeId", "solutionId", "orgId")
+        values (#{typeId}, #{solutionId}, #{orgId});
     </insert>
 
     <delete id="removeType">
-        DELETE FROM "IsuTypeSolutionItem"
-        WHERE "typeId"=#{typeId}
-          AND "solutionId"=#{solutionId}
-          AND "orgId"=#{orgId}
+        DELETE
+        FROM "IsuTypeSolutionItem"
+        WHERE "typeId" = #{typeId}
+          AND "solutionId" = #{solutionId}
+          AND "orgId" = #{orgId}
     </delete>
 
     <insert id="addAll">
@@ -81,11 +87,13 @@
     </insert>
 
     <delete id="removeAll">
-        DELETE FROM "IsuTypeSolutionItem"
-        WHERE "solutionId"=#{solutionId} AND "orgId"=#{orgId}
+        DELETE
+        FROM "IsuTypeSolutionItem"
+        WHERE "solutionId" = #{solutionId}
+          AND "orgId" = #{orgId}
     </delete>
 
-    <resultMap id="isuTypeSolutionMap" type="IsuTypeSolution" autoMapping="true">
+    <resultMap id="isuTypeSolutionMap" type="com.ngtesting.platform.model.IsuTypeSolution" autoMapping="true">
         <id column="id" property="id"/>
 
         <collection property="items" select="com.ngtesting.platform.dao.IssueTypeDao.listBySolutionId"
@@ -95,16 +103,19 @@
 
     <!-- For Project -->
     <select id="getByProject" resultMap="isuTypeSolutionMap">
-        SELECT * FROM "IsuTypeSolution" o
-        JOIN "TstProject" p ON p."issueTypeSolutionId"=o.id
-        WHERE p.id = #{projectId} AND o."orgId" = #{orgId}
+        SELECT *
+        FROM "IsuTypeSolution" o
+                 JOIN "TstProject" p ON p."issueTypeSolutionId" = o.id
+        WHERE p.id = #{projectId}
+          AND o."orgId" = #{orgId}
     </select>
     <update id="setByProject">
         UPDATE "TstProject"
-        SET "issueTypeSolutionId"=#{solutionId},
-          "updateTime"=NOW()
+        SET "issueTypeSolutionId" = #{solutionId},
+            "updateTime" = NOW()
 
-        WHERE id=#{projectId} AND "orgId"=#{orgId}
+        WHERE id = #{projectId}
+          AND "orgId" = #{orgId}
     </update>
 
 </mapper>

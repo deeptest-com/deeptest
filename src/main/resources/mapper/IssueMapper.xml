@@ -1,31 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IssueDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssueDao">
     <select id="get" resultType="IsuIssue">
         SELECT o.*,
-          ( select (count(id) > 0) FROM "IsuWatch" WHERE "issueId"=${id} AND "userId"=${userId} ) watched
+               (select (count(id) > 0)
+                FROM "IsuWatch"
+                WHERE "issueId" = ${id}
+                  AND "userId" = ${userId}) watched
 
         FROM "IsuIssue" o
-        WHERE o.id = #{id} AND o."projectId"=#{prjId}
+        WHERE o.id = #{id}
+          AND o."projectId" = #{prjId}
     </select>
 
     <select id="getDetail" resultMap="issueMaps">
         SELECT o.*,
-        ( select (count(id) > 0) FROM "IsuWatch" WHERE "issueId"=${id} AND "userId"=${userId} ) watched
+               (select (count(id) > 0)
+                FROM "IsuWatch"
+                WHERE "issueId" = ${id}
+                  AND "userId" = ${userId}) watched
 
         FROM "IsuIssue" o
-        WHERE o.id = #{id} AND o."projectId"=#{prjId}
+        WHERE o.id = #{id}
+          AND o."projectId" = #{prjId}
     </select>
 
     <select id="getData" resultMap="issueData">
         SELECT o.*
 
         FROM "IsuIssue" o
-        WHERE o.id = #{id} AND o."projectId"=#{prjId}
+        WHERE o.id = #{id}
+          AND o."projectId" = #{prjId}
     </select>
 
     <select id="getByUuid" resultType="IsuIssue">
-        SELECT o.* FROM "IsuIssue" o
+        SELECT o.*
+        FROM "IsuIssue" o
         WHERE o.uuid = #{uuid}
     </select>
 
@@ -40,81 +50,91 @@
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
         insert into "IsuIssue"
         (
-            <foreach collection="elems" item="item" separator=",">
-                "${item.colCode}"
-            </foreach>
-            , "createTime", disabled, deleted
+        <foreach collection="elems" item="item" separator=",">
+            "${item.colCode}"
+        </foreach>
+        , "createTime", disabled, deleted
         )
         values
         (
-            <foreach collection="params" item="item" separator=",">
-                <choose>
-                    <when test="(item+'').indexOf('::JSON') != -1">
-                        ${item}
-                    </when>
-                    <otherwise>
-                        #{item}
-                    </otherwise>
-                </choose>
-            </foreach>, NOW(),FALSE, FALSE
+        <foreach collection="params" item="item" separator=",">
+            <choose>
+                <when test="(item+'').indexOf('::JSON') != -1">
+                    ${item}
+                </when>
+                <otherwise>
+                    #{item}
+                </otherwise>
+            </choose>
+        </foreach>
+        , NOW(),FALSE, FALSE
         );
     </insert>
 
     <update id="update">
         UPDATE "IsuIssue"
         SET
-            <foreach collection="elems" item="item" index="indx" separator=",">
-                 "${item.colCode}" =
-                <choose>
-                    <when test="(params[indx]+'').indexOf('::JSON') != -1">
-                        ${params[indx]}
-                    </when>
-                    <otherwise>
-                        #{params[${indx}]}
-                    </otherwise>
-                </choose>
-            </foreach>
+        <foreach collection="elems" item="item" index="indx" separator=",">
+            "${item.colCode}" =
+            <choose>
+                <when test="(params[indx]+'').indexOf('::JSON') != -1">
+                    ${params[indx]}
+                </when>
+                <otherwise>
+                    #{params[${indx}]}
+                </otherwise>
+            </choose>
+        </foreach>
         WHERE id=#{id} AND "projectId"=#{projectId}
     </update>
 
     <update id="updateProp">
         UPDATE "IsuIssue"
-        SET "${code}" = #{value}, "updateTime"=NOW()
-        WHERE id=#{id} AND "projectId"=#{projectId}
+        SET "${code}"    = #{value},
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "projectId" = #{projectId}
     </update>
     <update id="updateExtProp">
         UPDATE "IsuIssue"
-        SET "extProp" = jsonb_set("extProp", '{${code}}', '${value}', true), "updateTime"=NOW()
-        WHERE id=#{id} AND "projectId"=#{projectId}
+        SET "extProp"    = jsonb_set("extProp", '{${code}}', '${value}', true),
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "projectId" = #{projectId}
     </update>
 
     <delete id="delete">
         UPDATE "IsuIssue"
-        SET deleted=TRUE, "updateTime"=NOW()
-        WHERE id=#{id} AND "projectId"=#{projectId}
+        SET deleted      = TRUE,
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "projectId" = #{projectId}
     </delete>
 
     <select id="getProjectDefaultPages" resultType="Map">
-        SELECT psi.opt, psi."pageId" FROM "IsuPageSolutionItem" psi
-        JOIN "IsuPageSolution" ps ON psi."solutionId"=ps.id
+        SELECT psi.opt, psi."pageId"
+        FROM "IsuPageSolutionItem" psi
+                 JOIN "IsuPageSolution" ps ON psi."solutionId" = ps.id
+                 JOIN "TstProject" prj ON prj."issuePageSolutionId" = ps.id
 
-        JOIN "TstProject" prj ON prj."issuePageSolutionId"=ps.id
-
-        WHERE psi."typeId"=#{typeId} AND prj.id=#{prjId}
+        WHERE psi."typeId" = #{typeId}
+          AND prj.id = #{prjId}
     </select>
 
     <select id="getProjectDefaultType" resultType="IsuType">
-        SELECT t.* FROM "IsuType" t
-        JOIN "IsuTypeSolutionItem" tsi ON tsi."typeId"=t.id
-        JOIN "IsuTypeSolution" ts ON tsi."solutionId"=ts.id
+        SELECT t.*
+        FROM "IsuType" t
+                 JOIN "IsuTypeSolutionItem" tsi ON tsi."typeId" = t.id
+                 JOIN "IsuTypeSolution" ts ON tsi."solutionId" = ts.id
+                 JOIN "TstProject" prj ON prj."issueTypeSolutionId" = ts.id
 
-        JOIN "TstProject" prj ON prj."issueTypeSolutionId"=ts.id
-
-        WHERE t."defaultVal" IS TRUE AND t."orgId" = #{orgId} AND prj.id=#{prjId}
+        WHERE t."defaultVal" IS TRUE
+          AND t."orgId" = #{orgId}
+          AND prj.id = #{prjId}
     </select>
 
 
-    <resultMap id="issueMaps" type="IsuIssue" autoMapping="true">
+    <resultMap id="issueMaps" type="com.ngtesting.platform.model.IsuIssue" autoMapping="true">
         <id column="id" property="id"/>
 
         <collection property="comments" select="com.ngtesting.platform.dao.IssueCommentsDao.listByIssueId"
@@ -142,7 +162,7 @@
         </collection>
     </resultMap>
 
-    <resultMap id="issueData" type="IsuIssue" autoMapping="true">
+    <resultMap id="issueData" type="com.ngtesting.platform.model.IsuIssue" autoMapping="true">
         <id column="id" property="id"/>
 
         <collection property="histories" select="com.ngtesting.platform.dao.IssueHistoryDao.listByIssueId"

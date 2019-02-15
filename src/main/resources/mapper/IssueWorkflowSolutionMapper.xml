@@ -1,63 +1,73 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IssueWorkflowSolutionDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssueWorkflowSolutionDao">
 
     <select id="list" resultType="IsuWorkflowSolution">
         SELECT solution.*
 
         FROM "IsuWorkflowSolution" solution
 
-        WHERE solution."orgId"=#{orgId}
-        AND NOT solution.deleted  AND NOT solution.disabled
+        WHERE solution."orgId" = #{orgId}
+          AND NOT solution.deleted
+          AND NOT solution.disabled
         ORDER BY solution."createTime" ASC
     </select>
 
     <select id="get" resultType="IsuWorkflowSolution">
-        SELECT o.* FROM "IsuWorkflowSolution" o
+        SELECT o.*
+        FROM "IsuWorkflowSolution" o
 
-        WHERE o.id = #{id} AND "orgId" = #{orgId}
-        AND NOT o.deleted  AND NOT o.disabled
+        WHERE o.id = #{id}
+          AND "orgId" = #{orgId}
+          AND NOT o.deleted
+          AND NOT o.disabled
     </select>
 
     <insert id="save" parameterType="IsuWorkflowSolution" useGeneratedKeys="true" keyProperty="id">
-        insert into "IsuWorkflowSolution"
-        (name, "orgId", "defaultVal", "buildIn", deleted, disabled, "createTime")
-        values
-        (#{name}, #{orgId}, #{defaultVal}, #{buildIn}, FALSE, FALSE, NOW())
+        insert into "IsuWorkflowSolution" (name, "orgId", "defaultVal", "buildIn", deleted, disabled, "createTime")
+        values (#{name}, #{orgId}, #{defaultVal}, #{buildIn}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="IsuWorkflowSolution">
         UPDATE "IsuWorkflowSolution"
-        SET name=#{name}, "updateTime"=NOW()
+        SET name = #{name},
+            "updateTime" = NOW()
 
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </update>
 
     <delete id="delete">
         UPDATE "IsuWorkflowSolution"
-        SET disabled=TRUE, "updateTime"=NOW()
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        SET disabled     = TRUE,
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </delete>
 
     <update id="removeDefault">
         UPDATE "IsuWorkflowSolution"
-        SET "defaultVal"=FALSE, "updateTime"=NOW()
-        WHERE "orgId"=#{orgId}
+        SET "defaultVal" = FALSE,
+            "updateTime" = NOW()
+        WHERE "orgId" = #{orgId}
     </update>
     <update id="setDefault">
         UPDATE "IsuWorkflowSolution"
-        SET "defaultVal"=TRUE, "updateTime"=NOW()
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        SET "defaultVal" = TRUE,
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </update>
 
     <select id="getItems" resultType="IsuWorkflowSolutionItem">
         SELECT o.*, "isuType".label "typeName", workflow.name "workflowName"
 
         FROM "IsuWorkflowSolutionItem" o
-        JOIN "IsuType" "isuType" ON "isuType".id = o."typeId"
-        JOIN "IsuWorkflow" workflow ON workflow.id = o."workflowId"
+                 JOIN "IsuType" "isuType" ON "isuType".id = o."typeId"
+                 JOIN "IsuWorkflow" workflow ON workflow.id = o."workflowId"
 
-        WHERE o."solutionId" = #{solutionId} AND o."orgId" = #{orgId}
+        WHERE o."solutionId" = #{solutionId}
+          AND o."orgId" = #{orgId}
 
         ORDER BY o.id ASC;
     </select>
@@ -65,39 +75,43 @@
     <update id="changeItem">
         <selectKey keyProperty="count" resultType="int" order="BEFORE">
             select count(*) from "IsuWorkflowSolutionItem"
-            where "typeId"=#{typeId} AND "solutionId"=#{solutionId} AND "orgId"=#{orgId}
+            where "typeId"=#{typeId} AND "solutionId"=#{solutionId} AND "orgId"=#{orgId};
         </selectKey>
         <if test="count > 0">
             update "IsuWorkflowSolutionItem"
             set "workflowId" = #{workflowId}
-            where "typeId"=#{typeId} AND "solutionId"=#{solutionId} AND "orgId"=#{orgId}
+            where "typeId"=#{typeId} AND "solutionId"=#{solutionId} AND "orgId"=#{orgId};
         </if>
         <if test="count == 0">
             insert into "IsuWorkflowSolutionItem"
-              ("typeId", "workflowId", "solutionId", "orgId")
+            ("typeId", "workflowId", "solutionId", "orgId")
             values
-              (#{typeId}, #{workflowId}, #{solutionId}, #{orgId})
+            (#{typeId}, #{workflowId}, #{solutionId}, #{orgId})
         </if>
     </update>
 
     <!-- For Project -->
     <select id="getByProject" resultType="IsuWorkflowSolution">
-        SELECT * FROM "IsuWorkflowSolution" o
-        JOIN "TstProject" p ON p."issueWorkflowSolutionId"=o.id
-        WHERE p.id = #{projectId} AND o."orgId" = #{orgId}
+        SELECT *
+        FROM "IsuWorkflowSolution" o
+                 JOIN "TstProject" p ON p."issueWorkflowSolutionId" = o.id
+        WHERE p.id = #{projectId}
+          AND o."orgId" = #{orgId}
     </select>
     <update id="setByProject">
         UPDATE "TstProject"
-        SET "issueWorkflowSolutionId"=#{solutionId},
-          "updateTime"=NOW()
+        SET "issueWorkflowSolutionId" = #{solutionId},
+            "updateTime" = NOW()
 
-        WHERE id=#{projectId} AND "orgId"=#{orgId}
+        WHERE id = #{projectId}
+          AND "orgId" = #{orgId}
     </update>
 
     <select id="getIssueTypeWorkflow" resultType="IsuWorkflowSolutionItem">
-        SELECT * FROM "IsuWorkflowSolutionItem" o
-        JOIN "IsuWorkflowSolution" slu ON o."solutionId"=slu.id
-        JOIN "TstProject" p ON p."issueWorkflowSolutionId"=slu.id
+        SELECT *
+        FROM "IsuWorkflowSolutionItem" o
+                 JOIN "IsuWorkflowSolution" slu ON o."solutionId" = slu.id
+                 JOIN "TstProject" p ON p."issueWorkflowSolutionId" = slu.id
         WHERE p.id = #{projectId}
     </select>
 

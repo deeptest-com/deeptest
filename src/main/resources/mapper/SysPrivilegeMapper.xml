@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-mybatis.orgDTD Mapper 3.0EN" "http:mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.SysPrivilegeDao" >
+<mapper namespace="com.ngtesting.platform.dao.SysPrivilegeDao">
 
     <select id="queryByUser" resultType="SysPrivilege">
-        SELECT priv.* from "SysPrivilege" priv
-            join "SysRolePrivilegeRelation" r_role_priv ON r_role_priv."privilegeId"=priv.id
-            join "SysRoleUserRelation" r_role_user ON r_role_user."roleId"=r_role_priv."roleId"
-                where r_role_user."userId" = #{userId}
-                AND NOT priv.deleted  and NOT priv.disabled
-                order by priv.id asc
+        SELECT priv.*
+        from "SysPrivilege" priv
+                 join "SysRolePrivilegeRelation" r_role_priv ON r_role_priv."privilegeId" = priv.id
+                 join "SysRoleUserRelation" r_role_user ON r_role_user."roleId" = r_role_priv."roleId"
+        where r_role_user."userId" = #{userId}
+          AND NOT priv.deleted
+          and NOT priv.disabled
+        order by priv.id asc
     </select>
 
 </mapper>

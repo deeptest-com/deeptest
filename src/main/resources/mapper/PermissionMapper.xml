@@ -1,32 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
-<mapper namespace="com.ngtesting.platform.dao.PermissionDao" >
+<mapper namespace="com.ngtesting.platform.dao.PermissionDao">
 
     <select id="listOrgPermission" resultType="Map">
         SELECT r_role_priv."orgId" "entityId", priv."code", priv.name
 
         from "TstOrgPrivilegeDefine" priv
-        join "TstOrgRolePrivilegeRelation" r_role_priv ON r_role_priv."orgPrivilegeId"=priv.id
+                 join "TstOrgRolePrivilegeRelation" r_role_priv ON r_role_priv."orgPrivilegeId" = priv.id
 
         where r_role_priv."orgRoleId" = any (select _user_org_role(${userId}))
-
-        AND NOT priv.deleted  and NOT priv.disabled
+          AND NOT priv.deleted
+          and NOT priv.disabled
         order by "entityId", priv."code" asc
     </select>
 
     <select id="listPrjPermission" resultType="Map">
         select tmp."projectId" "entityId", ("define"."code" || '-' || "define".action) "code"
         from "TstProjectPrivilegeDefine" "define"
-        left join "TstProjectRolePriviledgeRelation" r on r."projectPrivilegeDefineId" = "define".id
-
-        INNER join
-          ( select "projectId", "projectRoleId" from _user_project_role(${userId}) ) tmp
-
-        on r."projectRoleId" = tmp."projectRoleId"
+                 left join "TstProjectRolePriviledgeRelation" r on r."projectPrivilegeDefineId" = "define".id
+                 INNER join (select "projectId", "projectRoleId" from _user_project_role(${userId})) tmp
+                     on r."projectRoleId" = tmp."projectRoleId"
 
         where TRUE
-        order by tmp."projectId",  "define"."code";
+        order by tmp."projectId", "define"."code";
     </select>
 
 </mapper>

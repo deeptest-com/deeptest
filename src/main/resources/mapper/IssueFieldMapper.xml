@@ -1,30 +1,49 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IssueFieldDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssueFieldDao">
 
     <select id="listDefaultFieldInColumns" resultType="IsuFieldDefine">
-        SELECT * FROM "IsuFieldDefine"
+        SELECT *
+        FROM "IsuFieldDefine"
         WHERE "defaultShowInColumns" IS NOT NULL
         ORDER BY "columnOrdr" ASC
     </select>
 
     <select id="getSysField" resultType="IsuField">
-        SELECT ('sys-' || field.id) "key", field.id "fieldId", field."colCode", field.label,
-          field.type, field.input, field."fullLine", field.required, field.readonly, true "buildIn",
-          field."columnOrdr" ordr
+        SELECT ('sys-' || field.id) "key",
+               field.id             "fieldId",
+               field."colCode",
+               field.label,
+               field.type,
+               field.input,
+               field."fullLine",
+               field.required,
+               field.readonly,
+               true                 "buildIn",
+               field."columnOrdr"   ordr
 
         FROM "IsuField" field
-        WHERE id = #{id} AND "orgId" = #{orgId} AND field."defaultShowInPage" IS NOT null
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
+          AND field."defaultShowInPage" IS NOT null
     </select>
 
     <select id="getCustField" resultType="IsuField">
-        SELECT ('cust-' || "customField".id) "key", "customField".id "fieldId", "customField"."colCode", "customField".label,
-          "customField".type, "customField".input,
-          "customField"."fullLine", "customField".required, "customField".readonly, false "buildIn",
-          "customField".ordr
+        SELECT ('cust-' || "customField".id) "key",
+               "customField".id              "fieldId",
+               "customField"."colCode",
+               "customField".label,
+               "customField".type,
+               "customField".input,
+               "customField"."fullLine",
+               "customField".required,
+               "customField".readonly,
+               false                         "buildIn",
+               "customField".ordr
 
         FROM "CustomField" "customField"
 
-        WHERE id = #{id} AND "orgId" = #{orgId}
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </select>
 </mapper>

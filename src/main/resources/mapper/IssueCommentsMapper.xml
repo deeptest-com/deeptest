@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IssueCommentsDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssueCommentsDao">
 
     <select id="query" resultType="IsuComments">
-        SELECT * FROM "IsuComments" o WHERE o."issueId"=#{issueId}
-
-        AND NOT o.deleted  AND NOT o.disabled
+        SELECT *
+        FROM "IsuComments" o
+        WHERE o."issueId" = #{issueId}
+          AND NOT o.deleted
+          AND NOT o.disabled
         ORDER BY o."updateTime" ASC
     </select>
 
@@ -13,11 +15,11 @@
         SELECT o.*, usr.id "userId", usr.nickname "userName", usr.avatar "userAvatar"
 
         FROM "IsuComments" o
-
-        JOIN "TstUser" usr ON o."userId" = usr.id
+                 JOIN "TstUser" usr ON o."userId" = usr.id
 
         WHERE o."issueId" = #{id}
-        AND NOT o.deleted  AND NOT o.disabled
+          AND NOT o.deleted
+          AND NOT o.disabled
 
         ORDER BY o."updateTime" ASC
     </select>
@@ -25,28 +27,29 @@
     <select id="get" resultType="IsuComments">
         SELECT *
         FROM "IsuComments" o
-        WHERE o.id=#{id}
+        WHERE o.id = #{id}
     </select>
 
     <insert id="save" parameterType="IsuComments" useGeneratedKeys="true" keyProperty="id">
-        insert into "IsuComments" (summary,content,"issueId","userId",
-          "createTime","updateTime",deleted,disabled)
+        insert into "IsuComments" (summary, content, "issueId", "userId", "createTime", "updateTime", deleted, disabled)
 
-        values (#{summary},#{content},#{issueId},#{userId},
-          NOW(),NOW(),#{deleted},#{disabled})
+        values (#{summary}, #{content}, #{issueId}, #{userId}, NOW(), NOW(), #{deleted}, #{disabled})
     </insert>
     <update id="update" parameterType="IsuComments">
         UPDATE "IsuComments"
-        SET summary=#{summary},content=#{content},"updateTime"=NOW()
-        WHERE id=#{id}
+        SET summary = #{summary},
+            content = #{content},
+            "updateTime" = NOW()
+        WHERE id = #{id}
     </update>
     <update id="delete">
         UPDATE "IsuComments"
-        SET disabled=TRUE, "userId"=#{userId}
-        WHERE id=#{id}
+        SET disabled = TRUE,
+            "userId" = #{userId}
+        WHERE id = #{id}
     </update>
 
-    <resultMap id="issueCommentsMap" type="IsuComments" autoMapping="true">
+    <resultMap id="issueCommentsMap" type="com.ngtesting.platform.model.IsuComments" autoMapping="true">
         <id column="id" property="id"/>
         <id column="summary" property="summary"/>
         <id column="userId" property="userId"/>

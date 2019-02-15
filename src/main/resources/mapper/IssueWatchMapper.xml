@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IssueWatchDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssueWatchDao">
 
     <select id="listByIssueId" resultType="Map">
         SELECT w.id, u.id "userId", u."nickname", u.email
         FROM "TstUser" u
-        JOIN "IsuWatch" w ON u.id = w."userId"
+                 JOIN "IsuWatch" w ON u.id = w."userId"
 
         WHERE w."issueId" = #{id}
     </select>
@@ -13,20 +13,20 @@
     <select id="search" resultType="TstUser">
         select usr.id, usr.nickname, 'user' "type" from "TstUser" usr
         where
-            usr.id = any (  select "userId" from _project_user(#{prjId})  )
+        usr.id = any ( select "userId" from _project_user(#{prjId}) )
 
-            AND (
-                usr.nickname LIKE '%${keywords}%'
-                OR usr.email LIKE '%${keywords}%'
-                OR usr.phone LIKE '%${keywords}%'
-            )
+        AND (
+        usr.nickname LIKE '%${keywords}%'
+        OR usr.email LIKE '%${keywords}%'
+        OR usr.phone LIKE '%${keywords}%'
+        )
 
-            <if test="exceptIds != null and exceptIds.size > 0">
-                AND usr.id NOT in
-                <foreach collection="exceptIds" item="item" separator="," open="(" close=")">
-                    #{item}
-                </foreach>
-            </if>
+        <if test="exceptIds != null and exceptIds.size > 0">
+            AND usr.id NOT in
+            <foreach collection="exceptIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
 
         ORDER by usr.id ASC
     </select>
@@ -42,22 +42,27 @@
     </insert>
 
     <delete id="remove">
-        DELETE FROM "IsuWatch"
-        WHERE id=#{id}
+        DELETE
+        FROM "IsuWatch"
+        WHERE id = #{id}
     </delete>
 
     <insert id="watch" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO "IsuWatch"
-        ("issueId", "userId")
-            SELECT ${issueId}, ${userId}
-        WHERE NOT EXISTS (
-            SELECT * FROM "IsuWatch" WHERE "issueId" = ${issueId} AND "userId"=${userId}
-        )
+        INSERT INTO "IsuWatch" ("issueId", "userId")
+        SELECT ${issueId}, ${userId}
+        WHERE NOT EXISTS(
+                      SELECT *
+                      FROM "IsuWatch"
+                      WHERE "issueId" = ${issueId}
+                        AND "userId" = ${userId}
+                )
     </insert>
 
     <delete id="unwatch">
-        DELETE FROM "IsuWatch"
-        WHERE "issueId"=#{issueId} AND "userId"=#{userId}
+        DELETE
+        FROM "IsuWatch"
+        WHERE "issueId" = #{issueId}
+          AND "userId" = #{userId}
     </delete>
 
 </mapper>

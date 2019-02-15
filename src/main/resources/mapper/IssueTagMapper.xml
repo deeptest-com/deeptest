@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IssueTagDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssueTagDao">
 
     <select id="search" resultType="IsuTag">
         SELECT * FROM "IsuTag" tag
@@ -28,62 +28,66 @@
     </select>
 
     <select id="query" resultType="IsuAttachment">
-        SELECT * FROM "IsuAttachment" o
+        SELECT *
+        FROM "IsuAttachment" o
 
-        WHERE o."issueId"=#{issueId}
-        AND NOT o.deleted  AND NOT o.disabled
+        WHERE o."issueId" = #{issueId}
+          AND NOT o.deleted
+          AND NOT o.disabled
         ORDER BY o."createTime" ASC
     </select>
 
     <select id="get" resultType="IsuAttachment">
-        SELECT * FROM "IsuAttachment" o
+        SELECT *
+        FROM "IsuAttachment" o
 
-        WHERE o.id=#{id}
+        WHERE o.id = #{id}
     </select>
 
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
         insert into "IsuTag"
-          (name, "orgId", "userId", deleted, disabled, "createTime")
+        (name, "orgId", "userId", deleted, disabled, "createTime")
         values
         <foreach collection="list" item="item" separator=",">
-          (#{item.name}, #{item.orgId}, #{item.userId}, false, false, NOW())
+            (#{item.name}, #{item.orgId}, #{item.userId}, false, false, NOW())
         </foreach>
     </insert>
 
     <delete id="removeRelations">
-        DELETE FROM "IsuTagRelation"
+        DELETE
+        FROM "IsuTagRelation"
         WHERE "issueId" = #{issueId}
     </delete>
 
     <insert id="saveRelations" useGeneratedKeys="true" keyProperty="id">
         insert into "IsuTagRelation"
-          (issueId, tagId)
+        (issueId, tagId)
         values
         <foreach collection="tags" item="item" separator=",">
-          (#{issueId}, #{item.id})
+            (#{issueId}, #{item.id})
         </foreach>
     </insert>
 
     <update id="updateTagField">
         UPDATE "IsuIssue"
-        SET tag=#{tags}
-        WHERE id=#{issueId}
+        SET tag = #{tags}
+        WHERE id = #{issueId}
     </update>
 
     <select id="listByIssueId" parameterType="Map" resultMap="issueTagMap">
-        SELECT tag.* FROM "IsuTag" tag
-        JOIN "IsuTagRelation" r ON r."tagId" = tag.id
+        SELECT tag.*
+        FROM "IsuTag" tag
+                 JOIN "IsuTagRelation" r ON r."tagId" = tag.id
 
         WHERE r."issueId" = #{id}
-        AND NOT tag.deleted
-        AND NOT tag.disabled
+          AND NOT tag.deleted
+          AND NOT tag.disabled
         ORDER BY tag.id ASC
     </select>
 
-    <resultMap id="issueTagMap" type="IsuTag" autoMapping="true">
+    <resultMap id="issueTagMap" type="com.ngtesting.platform.model.IsuTag" autoMapping="true">
         <id column="id" property="id"/>
         <id column="name" property="name"/>
-        <id column="issueId" property="issueId"/>
         <id column="userId" property="userId"/>
         <id column="createTime" property="createTime"/>
     </resultMap>

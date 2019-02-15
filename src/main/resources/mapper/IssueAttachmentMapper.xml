@@ -1,45 +1,47 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IssueAttachmentDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssueAttachmentDao">
 
     <select id="query" resultType="IsuAttachment">
-        SELECT * FROM "IsuAttachment" o
+        SELECT *
+        FROM "IsuAttachment" o
 
-        WHERE o.issueId=#{issueId}
-        AND NOT o.deleted  AND NOT o.disabled
+        WHERE o.issueId = #{issueId}
+          AND NOT o.deleted
+          AND NOT o.disabled
         ORDER BY o."createTime" ASC
     </select>
 
     <select id="get" resultType="IsuAttachment">
-        SELECT * FROM "IsuAttachment" o
+        SELECT *
+        FROM "IsuAttachment" o
 
-        WHERE o.id=#{id}
+        WHERE o.id = #{id}
     </select>
 
     <insert id="save" parameterType="IsuAttachment" useGeneratedKeys="true" keyProperty="id">
-        insert into "IsuAttachment"
-        (name,uri,"issueId","userId",
-          deleted,disabled,"createTime")
-        values (#{name},#{uri},#{issueId},#{userId},
-          #{deleted},#{disabled},#{createTime})
+        insert into "IsuAttachment" (name, uri, "issueId", "userId", deleted, disabled, "createTime")
+        values (#{name}, #{uri}, #{issueId}, #{userId}, #{deleted}, #{disabled}, #{createTime})
     </insert>
 
     <update id="delete">
         UPDATE "IsuAttachment"
-        SET deleted=TRUE
-        WHERE id=#{id}
+        SET deleted = TRUE
+        WHERE id = #{id}
     </update>
 
     <select id="listByIssueId" parameterType="Map" resultMap="issueAttachmentMap">
-        SELECT o.* FROM "IsuAttachment" o
+        SELECT o.*
+        FROM "IsuAttachment" o
 
         WHERE o."issueId" = #{id}
-        AND NOT o.deleted  AND NOT o.disabled
+          AND NOT o.deleted
+          AND NOT o.disabled
 
         ORDER BY o."createTime" ASC
     </select>
 
-    <resultMap id="issueAttachmentMap" type="IsuAttachment" autoMapping="true">
+    <resultMap id="issueAttachmentMap" type="com.ngtesting.platform.model.IsuAttachment" autoMapping="true">
         <id column="id" property="id"/>
         <id column="name" property="name"/>
         <id column="issueId" property="issueId"/>

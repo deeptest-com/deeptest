@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
-<mapper namespace="com.ngtesting.platform.dao.OrgRoleDao" >
+<mapper namespace="com.ngtesting.platform.dao.OrgRoleDao">
 
     <select id="query" resultType="TstOrgRole">
         SELECT * FROM "TstOrgRole" role
@@ -20,30 +20,33 @@
     </select>
 
     <select id="get" resultType="TstOrgRole">
-        SELECT * FROM "TstOrgRole" role
-        WHERE role.id = #{id} AND role."orgId" = #{orgId}
+        SELECT *
+        FROM "TstOrgRole" role
+        WHERE role.id = #{id}
+          AND role."orgId" = #{orgId}
     </select>
 
     <insert id="save" parameterType="TstOrgRole" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstOrgRole"
-        (code,name,"orgId","buildIn",deleted,disabled,"createTime")
-        values
-        (#{code},#{name},#{orgId},#{buildIn},FALSE,#{disabled},NOW())
+        insert into "TstOrgRole" (code, name, "orgId", "buildIn", deleted, disabled, "createTime")
+        values (#{code}, #{name}, #{orgId}, #{buildIn}, FALSE, #{disabled}, NOW())
     </insert>
 
     <update id="update" parameterType="TstOrgRole">
         UPDATE "TstOrgRole"
-        SET name=#{name},
-        disabled=#{disabled},
-        "updateTime"=NOW()
+        SET name = #{name},
+            disabled = #{disabled},
+            "updateTime" = NOW()
 
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </update>
 
     <delete id="delete" parameterType="TstOrgRole">
         UPDATE "TstOrgRole"
-        SET deleted=TRUE, "updateTime"=NOW()
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        SET deleted      = TRUE,
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </delete>
 
 </mapper>

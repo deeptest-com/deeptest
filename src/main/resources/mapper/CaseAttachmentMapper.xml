@@ -1,45 +1,47 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.CaseAttachmentDao" >
+<mapper namespace="com.ngtesting.platform.dao.CaseAttachmentDao">
 
     <select id="query" resultType="TstCaseAttachment">
-        SELECT * FROM "TstCaseAttachment" o
+        SELECT *
+        FROM "TstCaseAttachment" o
 
-        WHERE o."caseId"=#{caseId}
-        AND NOT o.deleted AND NOT o.disabled
+        WHERE o."caseId" = #{caseId}
+          AND NOT o.deleted
+          AND NOT o.disabled
         ORDER BY o."createTime" ASC
     </select>
 
     <select id="get" resultType="TstCaseAttachment">
-        SELECT * FROM "TstCaseAttachment" o
+        SELECT *
+        FROM "TstCaseAttachment" o
 
-        WHERE o.id=#{id}
+        WHERE o.id = #{id}
     </select>
 
     <insert id="save" parameterType="TstCaseAttachment" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstCaseAttachment"
-        (name,uri,"caseId","userId",
-          deleted,disabled,"createTime")
-        values (#{name},#{uri},#{caseId},#{userId},
-          #{deleted},#{disabled},#{createTime})
+        insert into "TstCaseAttachment" (name, uri, "caseId", "userId", deleted, disabled, "createTime")
+        values (#{name}, #{uri}, #{caseId}, #{userId}, #{deleted}, #{disabled}, #{createTime})
     </insert>
 
     <update id="delete">
         UPDATE "TstCaseAttachment"
-        SET disabled=TRUE
-        WHERE id=#{id} userId=#{userId}
+        SET disabled = TRUE
+        WHERE id = #{id} userId = #{userId}
     </update>
 
     <select id="listByCaseId" parameterType="Map" resultMap="caseAttachmentMap">
-        SELECT o.* FROM "TstCaseAttachment" o
+        SELECT o.*
+        FROM "TstCaseAttachment" o
 
         WHERE o."caseId" = #{id}
-        AND NOT o.deleted AND NOT o.disabled
+          AND NOT o.deleted
+          AND NOT o.disabled
 
         ORDER BY o."createTime" ASC
     </select>
 
-    <resultMap id="caseAttachmentMap" type="TstCaseAttachment" autoMapping="true">
+    <resultMap id="caseAttachmentMap" type="com.ngtesting.platform.model.TstCaseAttachment" autoMapping="true">
         <id column="id" property="id"/>
         <id column="name" property="name"/>
         <id column="caseId" property="caseId"/>

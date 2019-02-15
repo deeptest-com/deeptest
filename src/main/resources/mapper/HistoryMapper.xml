@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.HistoryDao" >
+<mapper namespace="com.ngtesting.platform.dao.HistoryDao">
 
     <select id="listByProject" resultType="TstHistory">
         SELECT o.*
         FROM "TstHistory" o
-        JOIN "TstProject" p ON o."projectId"=p.id
+                 JOIN "TstProject" p ON o."projectId" = p.id
 
-        WHERE o."projectId"=#{projectId}
-        AND NOT o.deleted  AND NOT o.disabled
+        WHERE o."projectId" = #{projectId}
+          AND NOT o.deleted
+          AND NOT o.disabled
         ORDER BY o."createTime" DESC
     </select>
 
@@ -16,20 +17,22 @@
         SELECT o.*
 
         FROM "TstHistory" o
-        JOIN "TstProject" p ON o."projectId"=p.id
+                 JOIN "TstProject" p ON o."projectId" = p.id
 
-        WHERE p."parentId"=#{projectId}
-        AND NOT o.deleted  AND NOT o.disabled
+        WHERE p."parentId" = #{projectId}
+          AND NOT o.deleted
+          AND NOT o.disabled
         ORDER BY o."createTime" DESC
     </select>
 
     <select id="listByOrg" resultType="TstHistory">
         SELECT o.*
         FROM "TstHistory" o
-        JOIN "TstProject" p ON o."projectId"=p.id
+                 JOIN "TstProject" p ON o."projectId" = p.id
 
-        WHERE p."orgId"=#{orgId}
-        AND NOT o.deleted  AND NOT o.disabled
+        WHERE p."orgId" = #{orgId}
+          AND NOT o.deleted
+          AND NOT o.disabled
         ORDER BY o."createTime" DESC
     </select>
 
@@ -37,16 +40,19 @@
         SELECT o.*
 
         FROM "TstHistory" o
-        WHERE p.id=#{id}
+        WHERE p.id = #{id}
     </select>
 
     <insert id="create" parameterType="TstHistory" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstHistory"
-          (title,"projectId","entityId","entityType","userId",
-          deleted,disabled,"createTime")
-        values
-          (#{title},#{projectId},#{entityId},#{entityType},#{userId},
-          FALSE,FALSE,NOW() )
+        insert into "TstHistory" (title,
+                                  "projectId",
+                                  "entityId",
+                                  "entityType",
+                                  "userId",
+                                  deleted,
+                                  disabled,
+                                  "createTime")
+        values (#{title}, #{projectId}, #{entityId}, #{entityType}, #{userId}, FALSE, FALSE, NOW())
     </insert>
 
 </mapper>

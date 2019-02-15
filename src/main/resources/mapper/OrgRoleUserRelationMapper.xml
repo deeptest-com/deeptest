@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.OrgRoleUserRelationDao" >
+<mapper namespace="com.ngtesting.platform.dao.OrgRoleUserRelationDao">
 
     <select id="query" resultType="TstOrgRoleUserRelation">
         SELECT * FROM "TstOrgRoleUserRelation" o WHERE o."orgId"=#{orgId}
@@ -14,12 +14,16 @@
     </select>
 
     <delete id="removeAllRolesForUser">
-        DELETE FROM "TstOrgRoleUserRelation"
-        WHERE "orgId"=#{orgId} AND "userId"=#{userId}
+        DELETE
+        FROM "TstOrgRoleUserRelation"
+        WHERE "orgId" = #{orgId}
+          AND "userId" = #{userId}
     </delete>
     <delete id="removeAllUsersForRole">
-        DELETE FROM "TstOrgRoleUserRelation"
-        WHERE "orgId"=#{orgId} AND "orgRoleId"=#{roleId}
+        DELETE
+        FROM "TstOrgRoleUserRelation"
+        WHERE "orgId" = #{orgId}
+          AND "orgRoleId" = #{roleId}
     </delete>
 
     <insert id="saveRelations">

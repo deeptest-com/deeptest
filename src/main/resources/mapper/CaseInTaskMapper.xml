@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.CaseInTaskDao" >
+<mapper namespace="com.ngtesting.platform.dao.CaseInTaskDao">
 
     <select id="query" resultType="TstCaseInTask">
         SELECT cs.id id, cs.name "name", cs."typeId", cs."priorityId",
-          o.id "entityId", o."pId", o."isParent", o."status", o."ordr"
+        o.id "entityId", o."pId", o."isParent", o."status", o."ordr"
 
         FROM "TstCaseInTask" o
         JOIN "TstCase" cs ON o."caseId" = cs.id
@@ -14,24 +14,31 @@
             AND o."projectId"=#{projectId}
         </if>
 
-        AND NOT o.deleted  AND NOT o.disabled
+        AND NOT o.deleted AND NOT o.disabled
         ORDER BY o."pId", o.ordr
     </select>
 
     <select id="get" resultType="TstCaseInTask">
-        SELECT cs.id id, cs.name "name", cs."typeId", cs."priorityId",
-        o.id "entityId", o."pId", o."isParent", o."status", o.ordr
+        SELECT cs.id   id,
+               cs.name "name",
+               cs."typeId",
+               cs."priorityId",
+               o.id    "entityId",
+               o."pId",
+               o."isParent",
+               o."status",
+               o.ordr
 
         FROM "TstCaseInTask" o
-        JOIN "TstCase" cs ON o."caseId" = cs.id
+                 JOIN "TstCase" cs ON o."caseId" = cs.id
 
-        WHERE o.id=#{id}
+        WHERE o.id = #{id}
     </select>
 
     <select id="getDetail" resultMap="caseInTaskMap">
         SELECT cs.id id, cs.*, o.id "entityId",
-          o."pId", o."isParent", o."status", o.result, o.ordr,
-          o."planId", o."taskId"
+        o."pId", o."isParent", o."status", o.result, o.ordr,
+        o."planId", o."taskId"
 
         FROM "TstCaseInTask" o
         JOIN "TstCase" cs ON o."caseId" = cs.id
@@ -44,15 +51,15 @@
 
     <update id="setResult">
         update "TstCaseInTask"
-        set result=#{result},
-          status=#{status},
-          "exeBy"=#{exeBy},
-          "exeTime"=NOW()
+        set result = #{result},
+            status = #{status},
+            "exeBy" = #{exeBy},
+            "exeTime" = NOW()
 
         where id = #{id}
     </update>
 
-    <resultMap id="caseInTaskMap" type="TstCaseInTask" autoMapping="true">
+    <resultMap id="caseInTaskMap" type="com.ngtesting.platform.model.TstCaseInTask" autoMapping="true">
         <id column="id" property="id"/>
         <id column="entityId" property="entityId"/>
 
@@ -64,7 +71,8 @@
                     column="{id=entityId}">
         </collection>
 
-        <collection property="attachments" select="com.ngtesting.platform.dao.CaseInTaskAttachmentDao.listByCaseInTaskId"
+        <collection property="attachments"
+                    select="com.ngtesting.platform.dao.CaseInTaskAttachmentDao.listByCaseInTaskId"
                     column="{id=entityId}">
         </collection>
 

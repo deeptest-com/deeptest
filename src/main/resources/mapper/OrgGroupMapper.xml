@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.OrgGroupDao" >
+<mapper namespace="com.ngtesting.platform.dao.OrgGroupDao">
 
     <select id="query" resultType="TstOrgGroup">
         SELECT * FROM "TstOrgGroup" grp
@@ -39,41 +39,44 @@
     </select>
 
     <select id="list" resultType="TstOrgGroup">
-        SELECT * FROM "TstOrgGroup" grp
+        SELECT *
+        FROM "TstOrgGroup" grp
 
         WHERE grp."orgId" = #{orgId}
-
-        AND NOT grp.deleted
-        AND NOT grp.disabled
+          AND NOT grp.deleted
+          AND NOT grp.disabled
         ORDER BY grp.id ASC
     </select>
 
     <select id="get" resultType="TstOrgGroup">
-        SELECT * FROM "TstOrgGroup" grp
+        SELECT *
+        FROM "TstOrgGroup" grp
 
-        WHERE grp.id = #{id} AND grp."orgId" = #{orgId}
+        WHERE grp.id = #{id}
+          AND grp."orgId" = #{orgId}
     </select>
 
     <insert id="save" parameterType="TstOrgGroup" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstOrgGroup"
-          (name,"orgId","buildIn",deleted,disabled,"createTime")
-        values
-          (#{name},#{orgId},#{buildIn},FALSE,#{disabled},NOW())
+        insert into "TstOrgGroup" (name, "orgId", "buildIn", deleted, disabled, "createTime")
+        values (#{name}, #{orgId}, #{buildIn}, FALSE, #{disabled}, NOW())
     </insert>
 
     <update id="update" parameterType="TstOrgGroup">
         UPDATE "TstOrgGroup"
-        SET name=#{name},
-        disabled=#{disabled},
-        "updateTime"=NOW()
+        SET name = #{name},
+            disabled = #{disabled},
+            "updateTime" = NOW()
 
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </update>
 
     <delete id="delete" parameterType="TstOrgGroup">
         UPDATE "TstOrgGroup"
-        SET deleted=TRUE, "updateTime"=NOW()
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        SET deleted      = TRUE,
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </delete>
 
 </mapper>

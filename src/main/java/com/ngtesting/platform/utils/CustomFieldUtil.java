@@ -2,7 +2,7 @@ package com.ngtesting.platform.utils;
 
 import com.alibaba.fastjson.JSONObject;
 
-public class FieldUtil {
+public class CustomFieldUtil {
     public static Object GetFieldVal(String type, JSONObject json) {
         Object value = null;
         if (type.equals("string") ) {

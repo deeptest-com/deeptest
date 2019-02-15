@@ -1,45 +1,50 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.CaseInTaskAttachmentDao" >
+<mapper namespace="com.ngtesting.platform.dao.CaseInTaskAttachmentDao">
 
     <select id="query" resultType="TstCaseInTaskAttachment">
-        SELECT * FROM "TstCaseInTaskAttachment" o
+        SELECT *
+        FROM "TstCaseInTaskAttachment" o
 
-        WHERE o."caseInTaskId"=#{caseInTaskId}
-        AND NOT o.deleted  AND NOT o.disabled
-        ORDER BY o."createTime" DESC LIMIT 15
+        WHERE o."caseInTaskId" = #{caseInTaskId}
+          AND NOT o.deleted
+          AND NOT o.disabled
+        ORDER BY o."createTime" DESC
+        LIMIT 15
     </select>
 
     <select id="listByCaseInTaskId" parameterType="Map" resultMap="caseInTaskAttachmentMap">
-        SELECT o.* FROM "TstCaseInTaskAttachment" o
+        SELECT o.*
+        FROM "TstCaseInTaskAttachment" o
 
         WHERE o."caseInTaskId" = #{id}
-        AND NOT o.deleted  AND NOT o.disabled
+          AND NOT o.deleted
+          AND NOT o.disabled
 
-        ORDER BY o."createTime" DESC LIMIT 15
+        ORDER BY o."createTime" DESC
+        LIMIT 15
     </select>
 
     <select id="get" resultType="TstCaseInTaskAttachment">
-        SELECT * FROM "TstCaseInTaskAttachment" o
+        SELECT *
+        FROM "TstCaseInTaskAttachment" o
 
-        WHERE o.id=#{id}
+        WHERE o.id = #{id}
     </select>
 
     <insert id="save" parameterType="TstCaseInTaskAttachment" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstCaseInTaskAttachment"
-        (name,uri,"caseInTaskId","userId",
-          deleted,disabled,"createTime")
-        values (#{name},#{uri},#{caseInTaskId},#{userId},
-          #{deleted},#{disabled},#{createTime})
+        insert into "TstCaseInTaskAttachment" (name, uri, "caseInTaskId", "userId", deleted, disabled, "createTime")
+        values (#{name}, #{uri}, #{caseInTaskId}, #{userId}, #{deleted}, #{disabled}, #{createTime})
     </insert>
 
     <update id="delete">
         UPDATE "TstCaseInTaskAttachment"
-        SET disabled=TRUE
-        WHERE id=#{id} AND "userId"=#{userId}
+        SET disabled = TRUE
+        WHERE id = #{id}
+          AND "userId" = #{userId}
     </update>
 
-    <resultMap id="caseInTaskAttachmentMap" type="TstCaseInTaskAttachment" autoMapping="true">
+    <resultMap id="caseInTaskAttachmentMap" type="com.ngtesting.platform.model.TstCaseInTaskAttachment" autoMapping="true">
         <id column="id" property="id"/>
         <id column="name" property="name"/>
         <id column="caseInTaskId" property="caseInTaskId"/>

@@ -3,7 +3,6 @@ package com.ngtesting.platform.model;
 public class CustomFieldOption extends BaseModel {
 
 	private static final long serialVersionUID = 8057353932992599921L;
-	private String value;
 	private String label;
 	private String descr;
 	private Integer ordr;
@@ -27,14 +26,6 @@ public class CustomFieldOption extends BaseModel {
 	public void setFieldId(Integer fieldId) {
 		this.fieldId = fieldId;
 	}
-
-	public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
 
     public String getLabel() {
 		return label;

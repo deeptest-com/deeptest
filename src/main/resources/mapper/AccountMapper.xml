@@ -1,46 +1,73 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.AccountDao" >
+<mapper namespace="com.ngtesting.platform.dao.AccountDao">
 
     <insert id="register" parameterType="TstUser" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstUser" (email,password,nickname,phone,avatar,token,salt,
-          "defaultOrgId","defaultPrjId",
-          deleted,disabled,"createTime")
-        values (#{email},#{password},#{nickname},#{phone},#{avatar},#{token},#{temp},
-          #{defaultOrgId},#{defaultPrjId},
-          #{deleted},#{disabled},#{createTime})
+        insert into "TstUser" (email,
+                               password,
+                               nickname,
+                               phone,
+                               avatar,
+                               token,
+                               salt,
+                               "defaultOrgId",
+                               "defaultPrjId",
+                               deleted,
+                               disabled,
+                               "createTime")
+        values (#{email},
+                #{password},
+                #{nickname},
+                #{phone},
+                #{avatar},
+                #{token},
+                #{temp},
+                #{defaultOrgId},
+                #{defaultPrjId},
+                #{deleted},
+                #{disabled},
+                #{createTime})
     </insert>
     <update id="loginWithVerifyCode" parameterType="TstUser">
         UPDATE "TstUser"
-        SET token=#{token},"lastLoginTime"=NOW(),"updateTime"=NOW()
-        WHERE id=#{id}
+        SET token = #{token},
+            "lastLoginTime" = NOW(),
+            "updateTime"    = NOW()
+        WHERE id = #{id}
     </update>
     <update id="login">
         UPDATE "TstUser"
-          SET token=#{token}, "lastLoginTime"=#{lastLoginTime}
-          WHERE id=#{id}
+        SET token = #{token},
+            "lastLoginTime" = #{lastLoginTime}
+        WHERE id = #{id}
     </update>
     <update id="logout">
         UPDATE "TstUser"
-        SET token='', "updateTime"=NOW()
-        WHERE email=#{email}
+        SET token        = '',
+            "updateTime" = NOW()
+        WHERE email = #{email}
     </update>
 
     <update id="initUser" statementType="CALLABLE">
-        { call init_user(#{userId,mode=IN,jdbcType=INTEGER}, #{orgName,mode=IN,jdbcType=VARCHAR}) }
+        {call init_user(#{userId,mode=IN,jdbcType=INTEGER}, #{orgName,mode=IN,jdbcType=VARCHAR})}
     </update>
 
     <update id="changePassword" parameterType="TstCaseType">
         UPDATE "TstUser"
-        SET password=#{password},"updateTime"=NOW()
+        SET password = #{password},
+            "updateTime" = NOW()
 
-        WHERE id=#{userId} AND password=#{oldPassword}
+        WHERE id = #{userId}
+          AND password = #{oldPassword}
     </update>
 
     <update id="resetPassword" parameterType="TstUser">
         UPDATE "TstUser"
-        SET password=#{password},token=#{token},"lastLoginTime"=NOW(),"updateTime"=NOW()
-        WHERE id=#{id}
+        SET password = #{password},
+            token = #{token},
+            "lastLoginTime" = NOW(),
+            "updateTime"    = NOW()
+        WHERE id = #{id}
     </update>
 
 </mapper>

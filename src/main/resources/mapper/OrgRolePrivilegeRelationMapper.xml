@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
-<mapper namespace="com.ngtesting.platform.dao.OrgRolePrivilegeRelationDao" >
+<mapper namespace="com.ngtesting.platform.dao.OrgRolePrivilegeRelationDao">
 
     <select id="query" resultType="TstOrgRolePrivilegeRelation">
         SELECT * FROM "TstOrgRolePrivilegeRelation" o
@@ -16,12 +16,16 @@
     </select>
 
     <delete id="removeAllPrivilegesForRole">
-        DELETE FROM "TstOrgRolePrivilegeRelation"
-        WHERE "orgId"=#{orgId} AND "orgRoleId"=#{roleId}
+        DELETE
+        FROM "TstOrgRolePrivilegeRelation"
+        WHERE "orgId" = #{orgId}
+          AND "orgRoleId" = #{roleId}
     </delete>
     <delete id="removeAllRolesForPrivilege">
-        DELETE FROM "TstOrgRolePrivilegeRelation"
-        WHERE "orgId"=#{orgId} AND "orgPrivilegeId"=#{privilegeId}
+        DELETE
+        FROM "TstOrgRolePrivilegeRelation"
+        WHERE "orgId" = #{orgId}
+          AND "orgPrivilegeId" = #{privilegeId}
     </delete>
 
     <insert id="saveRelations">

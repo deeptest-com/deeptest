@@ -1,54 +1,50 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.ProjectRoleEntityRelationDao" >
+<mapper namespace="com.ngtesting.platform.dao.ProjectRoleEntityRelationDao">
 
     <select id="listByProject" resultType="TstProjectRoleEntityRelation">
-        SELECT
-          o.*,
-          role.name "projectRoleName",
-          CASE
-              WHEN o."type"='user' THEN
-                usr.nickname
-              WHEN o."type"='group' THEN
-                grp.name
-              ELSE
-                'N/A'
-          END "entityName"
+        SELECT o.*,
+               role.name   "projectRoleName",
+               CASE
+                   WHEN o."type" = 'user' THEN usr.nickname
+                   WHEN o."type" = 'group' THEN grp.name
+                   ELSE 'N/A'
+                       END "entityName"
 
         FROM "TstProjectRoleEntityRelation" o
+                 JOIN "TstProjectRole" role ON role.id = o."projectRoleId"
+                 LEFT JOIN "TstUser" usr ON usr.id = o."entityId"
+                 LEFT JOIN "TstOrgGroup" grp ON grp.id = o."entityId"
 
-        JOIN "TstProjectRole" role ON role.id = o."projectRoleId"
-
-        LEFT JOIN "TstUser" usr ON usr.id = o."entityId"
-        LEFT JOIN "TstOrgGroup" grp ON grp.id = o."entityId"
-
-        WHERE o."projectId"=#{projectId}
+        WHERE o."projectId" = #{projectId}
 
         ORDER BY o."type", role.id ASC
     </select>
 
     <select id="listIdsByUserAndProject" resultType="Integer">
-      select relation."projectRoleId" from
-       (  select * from _user_project_role(#{userId}, #{projectId}, 'project')  ) relation
+        select relation."projectRoleId"
+        from (select * from _user_project_role(#{userId}, #{projectId}, 'project')) relation
     </select>
 
     <insert id="addRole" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstProjectRoleEntityRelation" ("orgId","projectId","projectRoleId","entityId","type"
-          )
+        insert into "TstProjectRoleEntityRelation" ("orgId", "projectId", "projectRoleId", "entityId", "type")
 
-        values (#{orgId},#{projectId},#{projectRoleId},#{entityId},#{type}
-          )
+        values (#{orgId}, #{projectId}, #{projectRoleId}, #{entityId}, #{type})
     </insert>
 
     <update id="changeRole">
         UPDATE "TstProjectRoleEntityRelation"
-        SET "projectRoleId"=#{projectRoleId}
-        WHERE "projectId"=#{projectId} AND "entityId"=#{entityId}
+        SET "projectRoleId" = #{projectRoleId}
+        WHERE "projectId" = #{projectId}
+          AND "entityId" = #{entityId}
     </update>
 
     <delete id="remove">
-        DELETE FROM "TstProjectRoleEntityRelation"
-        WHERE "projectId"=#{projectId} AND "type"=#{type} AND "entityId"=#{entityId}
+        DELETE
+        FROM "TstProjectRoleEntityRelation"
+        WHERE "projectId" = #{projectId}
+          AND "type" = #{type}
+          AND "entityId" = #{entityId}
     </delete>
 
 </mapper>

@@ -1,33 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.CaseInTaskHistoryDao" >
+<mapper namespace="com.ngtesting.platform.dao.CaseInTaskHistoryDao">
 
     <select id="query" resultType="TstCaseInTaskHistory">
-        SELECT * FROM "TstCaseInTaskHistory" o WHERE o."caseInTaskId"=#{caseInTaskId}
-
-        AND NOT o.deleted AND NOT o.disabled
-        ORDER BY o."createTime" DESC LIMIT 15
+        SELECT *
+        FROM "TstCaseInTaskHistory" o
+        WHERE o."caseInTaskId" = #{caseInTaskId}
+          AND NOT o.deleted
+          AND NOT o.disabled
+        ORDER BY o."createTime" DESC
+        LIMIT 15
     </select>
 
     <select id="listByCaseInTaskId" parameterType="Map" resultMap="caseInTaskHistoryMap">
-        SELECT o.* FROM "TstCaseInTaskHistory" o
+        SELECT o.*
+        FROM "TstCaseInTaskHistory" o
 
         WHERE o."caseInTaskId" = #{id}
-        AND NOT o.deleted AND NOT o.disabled
+          AND NOT o.deleted
+          AND NOT o.disabled
 
-        ORDER BY o."createTime" DESC LIMIT 15
+        ORDER BY o."createTime" DESC
+        LIMIT 15
     </select>
 
     <insert id="save" parameterType="TstCaseInTaskHistory" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstCaseInTaskHistory"
-          (title,"caseInTaskId",
-            deleted,disabled,"createTime")
-        values
-          (#{title},#{caseInTaskId},
-            FALSE,FALSE,NOW() )
+        insert into "TstCaseInTaskHistory" (title, "caseInTaskId", deleted, disabled, "createTime")
+        values (#{title}, #{caseInTaskId}, FALSE, FALSE, NOW())
     </insert>
 
-    <resultMap id="caseInTaskHistoryMap" type="TstCaseInTaskHistory" autoMapping="true">
+    <resultMap id="caseInTaskHistoryMap" type="com.ngtesting.platform.model.TstCaseInTaskHistory" autoMapping="true">
         <id column="id" property="id"/>
         <id column="title" property="title"/>
         <id column="descr" property="descr"/>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.OrgDao" >
+<mapper namespace="com.ngtesting.platform.dao.OrgDao">
 
     <select id="query" resultType="TstOrg">
         SELECT * FROM "TstOrg" o
@@ -16,55 +16,60 @@
     </select>
 
     <select id="queryByUser" parameterType="int" resultType="TstOrg">
-        SELECT * FROM "TstOrg" o
-        JOIN "TstOrgUserRelation" r on r."orgId"=o.id
+        SELECT *
+        FROM "TstOrg" o
+                 JOIN "TstOrgUserRelation" r on r."orgId" = o.id
 
         WHERE r."userId" = #{userId}
-        AND NOT o.disabled
-        AND NOT o.deleted
+          AND NOT o.disabled
+          AND NOT o.deleted
     </select>
 
     <select id="get" parameterType="int" resultType="TstOrg">
-        SELECT * FROM "TstOrg" o
+        SELECT *
+        FROM "TstOrg" o
 
         WHERE o.id = #{id}
     </select>
 
     <update id="setDefault">
         UPDATE "TstUser"
-        SET "defaultOrgId"=#{orgId}, "defaultOrgName"=#{orgName}
-        WHERE id=#{id}
+        SET "defaultOrgId" = #{orgId},
+            "defaultOrgName" = #{orgName}
+        WHERE id = #{id}
     </update>
 
     <insert id="save" parameterType="TstOrg" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstOrg" (name,"website",
-        deleted,disabled,"createTime")
+        insert into "TstOrg" (name, "website", deleted, disabled, "createTime")
 
-        values (#{name},#{website},
-        #{deleted},#{disabled},#{createTime})
+        values (#{name}, #{website}, #{deleted}, #{disabled}, #{createTime})
     </insert>
     <update id="update" parameterType="TstOrg">
         UPDATE "TstOrg"
-        SET name=#{name},website=#{website},disabled=#{disabled}
-        WHERE id=#{id}
+        SET name = #{name},
+            website = #{website},
+            disabled = #{disabled}
+        WHERE id = #{id}
     </update>
     <delete id="delete">
         UPDATE "TstOrg"
-        SET deleted=TRUE
-        WHERE id=#{id}
+        SET deleted = TRUE
+        WHERE id = #{id}
     </delete>
 
     <update id="setUserDefaultOrgPrjToNullForDelete">
         UPDATE "TstUser"
-        SET "defaultOrgId"=NULL, "defaultOrgName"=NULL,
-        "defaultPrjId"=NULL, "defaultPrjName"=NULL
-        WHERE "defaultOrgId"=#{orgId}
+        SET "defaultOrgId"   = NULL,
+            "defaultOrgName" = NULL,
+            "defaultPrjId"   = NULL,
+            "defaultPrjName" = NULL
+        WHERE "defaultOrgId" = #{orgId}
     </update>
 
     <insert id="initOrg" statementType="CALLABLE">
-        { call init_org(
-            #{orgId,mode=IN,jdbcType=INTEGER},
-            #{userId,mode=IN,jdbcType=INTEGER}
+        {call init_org(
+                #{orgId,mode=IN,jdbcType=INTEGER},
+                #{userId,mode=IN,jdbcType=INTEGER}
         )}
     </insert>
 

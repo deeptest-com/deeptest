@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.OrgGroupUserRelationDao" >
+<mapper namespace="com.ngtesting.platform.dao.OrgGroupUserRelationDao">
 
     <select id="query" resultType="TstOrgGroupUserRelation">
         SELECT * FROM "TstOrgGroupUserRelation" o
@@ -16,23 +16,30 @@
     </select>
 
     <delete id="removeAllGroupsForUser">
-        DELETE FROM "TstOrgGroupUserRelation"
-        WHERE "orgId"=#{orgId} AND "userId"=#{userId}
-        AND "orgGroupId" != (select grp.id from "TstOrgGroup" grp WHERE grp."orgId"=#{orgId} and grp."buildIn")
+        DELETE
+        FROM "TstOrgGroupUserRelation"
+        WHERE "orgId" = #{orgId}
+          AND "userId" = #{userId}
+          AND "orgGroupId" != (select grp.id
+                               from "TstOrgGroup" grp
+                               WHERE grp."orgId" = #{orgId}
+                                 and grp."buildIn")
     </delete>
     <delete id="removeAllUsersForGroup">
-        DELETE FROM "TstOrgGroupUserRelation"
-        WHERE "orgId"=#{orgId} AND "orgGroupId"=#{groupId}
+        DELETE
+        FROM "TstOrgGroupUserRelation"
+        WHERE "orgId" = #{orgId}
+          AND "orgGroupId" = #{groupId}
     </delete>
 
     <insert id="saveRelations">
         insert into "TstOrgGroupUserRelation" ("orgId","orgGroupId","userId")
         values
-            <foreach collection="list" item="item" separator=",">
-                (#{item.orgId},
-                  #{item.orgGroupId},
-                  #{item.userId} )
-            </foreach>
+        <foreach collection="list" item="item" separator=",">
+            (#{item.orgId},
+            #{item.orgGroupId},
+            #{item.userId} )
+        </foreach>
     </insert>
 
 </mapper>

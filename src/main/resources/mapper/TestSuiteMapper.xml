@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.TestSuiteDao" >
+<mapper namespace="com.ngtesting.platform.dao.TestSuiteDao">
 
     <select id="query" resultType="TstSuite">
         SELECT o.*, usr.nickname "userName", prj.name "projectName", "casePrj".name "caseProjectName"
@@ -24,10 +24,10 @@
 
     <select id="listForImport" resultType="TstSuite">
         SELECT o.id, o.name, o."projectId", o."caseProjectId",
-          prj.name "projectName", "casePrj".name "caseProjectName", usr.nickname "userName",
+        prj.name "projectName", "casePrj".name "caseProjectName", usr.nickname "userName",
         ( SELECT count(cs.id) FROM "TstCaseInSuite" cs
-                                WHERE cs."suiteId" = o.id AND cs."isParent"=FALSE
-          AND NOT cs.deleted AND NOT cs.disabled ) "count"
+        WHERE cs."suiteId" = o.id AND cs."isParent"=FALSE
+        AND NOT cs.deleted AND NOT cs.disabled ) "count"
 
         FROM "TstSuite" o
 
@@ -36,9 +36,9 @@
         JOIN "TstProject" "casePrj" ON "casePrj".id=o."caseProjectId"
 
         WHERE o."projectId" IN (
-            <foreach collection="projectIds" item="item" separator=",">
-                #{item}
-            </foreach>)
+        <foreach collection="projectIds" item="item" separator=",">
+            #{item}
+        </foreach>)
         AND NOT o.deleted AND NOT o.disabled
         AND NOT prj.deleted AND NOT prj.disabled
         AND NOT "casePrj".deleted AND NOT "casePrj".disabled
@@ -47,30 +47,37 @@
     </select>
 
     <insert id="save" parameterType="TstSuite" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstSuite"
-        (name,estimate,descr,
-          "projectId","caseProjectId","userId",
-          deleted,disabled,"createTime")
-        values
-          (#{name},#{estimate},#{descr},#{projectId},#{caseProjectId},#{userId},
-          FALSE,FALSE,NOW())
+        insert into "TstSuite" (name,
+                                estimate,
+                                descr,
+                                "projectId",
+                                "caseProjectId",
+                                "userId",
+                                deleted,
+                                disabled,
+                                "createTime")
+        values (#{name}, #{estimate}, #{descr}, #{projectId}, #{caseProjectId}, #{userId}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="TstSuite">
         UPDATE "TstSuite"
-        SET name=#{name},estimate=#{estimate},descr=#{descr},
-        "caseProjectId"=#{caseProjectId},"userId"=#{userId},
-        disabled=#{disabled},
-        "updateTime"=NOW()
+        SET name = #{name},
+            estimate = #{estimate},
+            descr = #{descr},
+            "caseProjectId" = #{caseProjectId},
+            "userId" = #{userId},
+            disabled = #{disabled},
+            "updateTime" = NOW()
 
-        WHERE id=#{id} AND "projectId"=#{projectId}
+        WHERE id = #{id}
+          AND "projectId" = #{projectId}
     </update>
 
     <select id="get" resultType="TstSuite">
         SELECT o.*, usr.nickname "userName", prj.name "projectName", "casePrj".name "caseProjectName",
-                    ( SELECT count(cs.id) FROM "TstCaseInSuite" cs
-                                WHERE cs."suiteId" = o.id AND cs."isParent"=false
-                                AND NOT cs.deleted AND NOT cs.disabled ) "count"
+        ( SELECT count(cs.id) FROM "TstCaseInSuite" cs
+        WHERE cs."suiteId" = o.id AND cs."isParent"=false
+        AND NOT cs.deleted AND NOT cs.disabled ) "count"
 
         FROM "TstSuite" o
 
@@ -87,60 +94,70 @@
     <update id="delete">
         UPDATE "TstSuite"
         SET deleted = TRUE
-        WHERE id=#{id} AND "projectId"=#{projectId}
+        WHERE id = #{id}
+          AND "projectId" = #{projectId}
     </update>
 
     <select id="listCaseIds" resultType="int">
         SELECT o."caseId"
         FROM "TstCaseInSuite" o
 
-        WHERE o."suiteId"=#{id}
-        AND NOT o.deleted AND NOT o.disabled
+        WHERE o."suiteId" = #{id}
+          AND NOT o.deleted
+          AND NOT o.disabled
         ORDER BY o."pId", o.id
     </select>
 
     <update id="updateSuiteProject">
         UPDATE "TstSuite"
-        SET "projectId"=#{projectId},"caseProjectId"=#{caseProjectId},"userId"=#{userId},
-        "updateTime"=NOW()
+        SET "projectId" = #{projectId},
+            "caseProjectId" = #{caseProjectId},
+            "userId" = #{userId},
+            "updateTime" = NOW()
 
-        WHERE id=#{id}
+        WHERE id = #{id}
     </update>
     <update id="addCases" statementType="CALLABLE">
-        { call add_cases_to_suite(#{caseIds,mode=IN,jdbcType=VARCHAR},
-                                  #{suiteId,mode=IN,jdbcType=INTEGER}
+        {call add_cases_to_suite(#{caseIds,mode=IN,jdbcType=VARCHAR},
+                                 #{suiteId,mode=IN,jdbcType=INTEGER}
         )}
     </update>
 
     <select id="getWithCases" resultMap="testSuiteMaps">
-        SELECT o.*, prj.name "projectName", "casePrj".name "caseProjectName"
-                    ( SELECT count(cs.id) FROM "TstCaseInSuite" cs
-                                WHERE cs."suiteId" = o.id AND NOT cs.deleted AND NOT cs.disabled ) "count"
+        SELECT o.*,
+               prj.name       "projectName",
+               "casePrj".name "caseProjectName",
+               ( SELECT count(cs.id)
+                FROM "TstCaseInSuite" cs
+                WHERE cs."suiteId" = o.id
+                  AND NOT cs.deleted
+                  AND NOT cs.disabled ) "count"
 
         FROM "TstSuite" o
-
-        JOIN "TstProject" prj ON prj.id=o."projectId"
-        JOIN "TstProject" "casePrj" ON "casePrj".id=o."caseProjectId"
+                 JOIN "TstProject" prj ON prj.id = o."projectId"
+                 JOIN "TstProject" "casePrj" ON "casePrj".id = o."caseProjectId"
 
         WHERE o.id = #{id}
     </select>
     <select id="listTestCases" parameterType="Map" resultMap="testCaseMaps">
-        SELECT o.* FROM "TstCaseInSuite" o
+        SELECT o.*
+        FROM "TstCaseInSuite" o
 
         WHERE o."suiteId" = #{id}
-        AND NOT o.deleted AND NOT o.disabled
+          AND NOT o.deleted
+          AND NOT o.disabled
 
         ORDER BY o.ordr ASC
     </select>
 
-    <resultMap id="testSuiteMaps" type="TstSuite" autoMapping="true">
+    <resultMap id="testSuiteMaps" type="com.ngtesting.platform.model.TstSuite" autoMapping="true">
         <id column="id" property="id"/>
 
         <collection property="testCases" select="listTestCases"
                     column="{id=id}">
         </collection>
     </resultMap>
-    <resultMap id="testCaseMaps" type="TstCaseInSuite" autoMapping="true">
+    <resultMap id="testCaseMaps" type="com.ngtesting.platform.model.TstCaseInSuite" autoMapping="true">
         <id column="id" property="id"/>
         <id column="name" property="name"/>
     </resultMap>

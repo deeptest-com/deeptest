@@ -1,30 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.CaseStepDao" >
+<mapper namespace="com.ngtesting.platform.dao.CaseStepDao">
 
     <select id="query" resultType="TstCaseStep">
-        SELECT * FROM "TstCaseStep" o
+        SELECT *
+        FROM "TstCaseStep" o
 
-        WHERE o."caseId"=#{caseId}
-        AND NOT o.deleted AND NOT o.disabled
+        WHERE o."caseId" = #{caseId}
+          AND NOT o.deleted
+          AND NOT o.disabled
         ORDER BY o.ordr ASC
     </select>
     <select id="get" resultType="TstCaseStep">
-        SELECT * FROM "TstCaseStep" o
-        WHERE o.id=#{id}
+        SELECT *
+        FROM "TstCaseStep" o
+        WHERE o.id = #{id}
     </select>
 
     <insert id="save" parameterType="TstCaseStep" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstCaseStep"
-          (opt,expect,ordr,"caseId",
-          "createTime",deleted,disabled)
-        values
-          (#{opt},#{expect},#{ordr},#{caseId},
-          NOW(),FALSE,FALSE)
+        insert into "TstCaseStep" (opt, expect, ordr, "caseId", "createTime", deleted, disabled)
+        values (#{opt}, #{expect}, #{ordr}, #{caseId}, NOW(), FALSE, FALSE)
     </insert>
     <update id="update">
         UPDATE "TstCaseStep"
-        SET opt =#{opt},expect=#{expect},"updateTime"=NOW()
+        SET opt = #{opt},
+            expect = #{expect},
+            "updateTime" = NOW()
         where id = #{id}
     </update>
     <update id="delete">
@@ -35,36 +36,44 @@
 
     <update id="moveOthersUp">
         UPDATE "TstCaseStep"
-          SET ordr = ordr - 1
-        where "caseId" = #{caseId} and ordr > #{ordr}
-          AND NOT deleted and NOT disabled
+        SET ordr = ordr - 1
+        where "caseId" = #{caseId}
+          and ordr > #{ordr}
+          AND NOT deleted
+          and NOT disabled
     </update>
     <update id="moveOthersDown">
         UPDATE "TstCaseStep"
-          SET ordr = ordr + 1
-        where "caseI"d = #{caseId} and id!=#{id} AND ordr >= #{ordr}
-          AND NOT deleted and NOT disabled
+        SET ordr = ordr + 1
+        where "caseId" = #{caseId} and id!=#{id} AND ordr >= #{ordr}
+                AND NOT deleted and NOT disabled
     </update>
 
     <select id="getPrev" resultType="TstCaseStep">
         <![CDATA[
-        SELECT o.* FROM "TstCaseStep" o
+        SELECT o.*
+        FROM "TstCaseStep" o
 
         WHERE o."caseId" = #{caseId}
-        AND o.ordr < #{ordr}
-        AND NOT o.deleted AND NOT o.disabled
+          AND o.ordr < #{ordr}
+          AND NOT o.deleted
+          AND NOT o.disabled
 
-        ORDER BY o.ordr desc LIMIT 1
+        ORDER BY o.ordr desc
+        LIMIT 1
         ]]>
     </select>
     <select id="getNext" resultType="TstCaseStep">
-        SELECT o.* FROM "TstCaseStep" o
+        SELECT o.*
+        FROM "TstCaseStep" o
 
         WHERE o."caseId" = #{caseId}
-        AND o.ordr > #{ordr}
-        AND NOT o.deleted AND NOT o.disabled
+          AND o.ordr > #{ordr}
+          AND NOT o.deleted
+          AND NOT o.disabled
 
-        ORDER BY o.ordr ASC LIMIT 1
+        ORDER BY o.ordr ASC
+        LIMIT 1
     </select>
     <update id="setOrder">
         UPDATE "TstCaseStep"
@@ -73,14 +82,16 @@
     </update>
 
     <select id="listByCaseId" parameterType="Map" resultMap="caseStepMap">
-        SELECT o.* FROM "TstCaseStep" o
+        SELECT o.*
+        FROM "TstCaseStep" o
 
         WHERE o."caseId" = #{id}
-        AND NOT o.deleted AND NOT o.disabled
+          AND NOT o.deleted
+          AND NOT o.disabled
 
         ORDER BY o.ordr ASC
     </select>
-    <resultMap id="caseStepMap" type="TstCaseStep" autoMapping="true">
+    <resultMap id="caseStepMap" type="com.ngtesting.platform.model.TstCaseStep" autoMapping="true">
         <id column="id" property="id"/>
         <id column="opt" property="opt"/>
         <id column="expect" property="expect"/>

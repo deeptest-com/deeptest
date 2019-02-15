@@ -1,42 +1,48 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.ReportTestDao" >
+<mapper namespace="com.ngtesting.platform.dao.ReportTestDao">
 
-    <select id="chartDesignProgressByProject" resultType="java.util.LinkedHashMap" useCache="false" statementType="CALLABLE">
-        { call chart_test_design_progress_by_project(
+    <select id="chartDesignProgressByProject" resultType="java.util.LinkedHashMap" useCache="false"
+            statementType="CALLABLE">
+        {call chart_test_design_progress_by_project(
                 #{projectId,mode=IN,jdbcType=INTEGER},
                 #{projectType,mode=IN,jdbcType=VARCHAR},
-                #{numb,mode=IN,jdbcType=INTEGER} ) }
+                #{numb,mode=IN,jdbcType=INTEGER})}
     </select>
 
-    <select id="chartExecutionProcessByProject" resultType="java.util.LinkedHashMap" useCache="false" statementType="CALLABLE">
-        { call chart_test_execution_process_by_project(
+    <select id="chartExecutionProcessByProject" resultType="java.util.LinkedHashMap" useCache="false"
+            statementType="CALLABLE">
+        {call chart_test_execution_process_by_project(
                 #{projectId,mode=IN,jdbcType=INTEGER},
                 #{projectType,mode=IN,jdbcType=VARCHAR},
-                #{numb,mode=IN,jdbcType=INTEGER} ) }
+                #{numb,mode=IN,jdbcType=INTEGER})}
     </select>
 
-    <select id="chartExecutionResultByPlan" resultType="java.util.LinkedHashMap" useCache="false" statementType="CALLABLE">
-        { call chart_test_execution_result_by_plan(
-        #{planId,mode=IN,jdbcType=INTEGER} ) }
+    <select id="chartExecutionResultByPlan" resultType="java.util.LinkedHashMap" useCache="false"
+            statementType="CALLABLE">
+        {call chart_test_execution_result_by_plan(
+                #{planId,mode=IN,jdbcType=INTEGER})}
     </select>
 
-    <select id="chartExecutionProcessByPlan" resultType="java.util.LinkedHashMap" useCache="false" statementType="CALLABLE">
-        { call chart_test_execution_process_by_plan(
-        #{planId,mode=IN,jdbcType=INTEGER},
-        #{numb,mode=IN,jdbcType=INTEGER} ) }
+    <select id="chartExecutionProcessByPlan" resultType="java.util.LinkedHashMap" useCache="false"
+            statementType="CALLABLE">
+        {call chart_test_execution_process_by_plan(
+                #{planId,mode=IN,jdbcType=INTEGER},
+                #{numb,mode=IN,jdbcType=INTEGER})}
     </select>
 
-    <select id="chartExecutionProcessByPlanUser" resultType="java.util.LinkedHashMap" useCache="false" statementType="CALLABLE">
-        { call chart_test_execution_process_by_plan_user(
-        #{planId,mode=IN,jdbcType=INTEGER},
-        #{numb,mode=IN,jdbcType=INTEGER} ) }
+    <select id="chartExecutionProcessByPlanUser" resultType="java.util.LinkedHashMap" useCache="false"
+            statementType="CALLABLE">
+        {call chart_test_execution_process_by_plan_user(
+                #{planId,mode=IN,jdbcType=INTEGER},
+                #{numb,mode=IN,jdbcType=INTEGER})}
     </select>
 
-    <select id="chartExecutionProgressByPlan" resultType="java.util.LinkedHashMap" useCache="false" statementType="CALLABLE">
-        { call chart_test_execution_progress_by_plan(
-        #{planId,mode=IN,jdbcType=INTEGER},
-        #{numb,mode=IN,jdbcType=INTEGER} ) }
+    <select id="chartExecutionProgressByPlan" resultType="java.util.LinkedHashMap" useCache="false"
+            statementType="CALLABLE">
+        {call chart_test_execution_progress_by_plan(
+                #{planId,mode=IN,jdbcType=INTEGER},
+                #{numb,mode=IN,jdbcType=INTEGER})}
     </select>
 
 </mapper>

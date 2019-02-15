@@ -1,63 +1,73 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IssuePageSolutionDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssuePageSolutionDao">
 
     <select id="list" resultType="IsuPageSolution">
         SELECT solution.*
 
         FROM "IsuPageSolution" solution
 
-        WHERE solution."orgId"=#{orgId}
-        AND NOT solution.deleted AND NOT solution.disabled
+        WHERE solution."orgId" = #{orgId}
+          AND NOT solution.deleted
+          AND NOT solution.disabled
         ORDER BY solution.id ASC
     </select>
 
     <select id="get" resultType="IsuPageSolution">
-        SELECT o.* FROM "IsuPageSolution" o
+        SELECT o.*
+        FROM "IsuPageSolution" o
 
-        WHERE o.id = #{id} AND "orgId" = #{orgId}
-        AND NOT o.deleted AND NOT o.disabled
+        WHERE o.id = #{id}
+          AND "orgId" = #{orgId}
+          AND NOT o.deleted
+          AND NOT o.disabled
     </select>
 
     <insert id="save" parameterType="IsuPageSolution" useGeneratedKeys="true" keyProperty="id">
-        insert into "IsuPageSolution"
-        (name, "orgId", "defaultVal", "buildIn", deleted, disabled, "createTime")
-        values
-        (#{name}, #{orgId}, #{defaultVal}, #{buildIn}, FALSE, FALSE, NOW())
+        insert into "IsuPageSolution" (name, "orgId", "defaultVal", "buildIn", deleted, disabled, "createTime")
+        values (#{name}, #{orgId}, #{defaultVal}, #{buildIn}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="IsuPageSolution">
         UPDATE "IsuPageSolution"
-        SET name=#{name}, "updateTime"=NOW()
+        SET name = #{name},
+            "updateTime" = NOW()
 
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </update>
 
     <delete id="delete">
         UPDATE "IsuPageSolution"
-        SET disabled=TRUE, "updateTime"=NOW()
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        SET disabled     = TRUE,
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </delete>
 
     <update id="removeDefault">
         UPDATE "IsuPageSolution"
-        SET "defaultVal"=FALSE, "updateTime"=NOW()
-        WHERE "orgId"=#{orgId}
+        SET "defaultVal" = FALSE,
+            "updateTime" = NOW()
+        WHERE "orgId" = #{orgId}
     </update>
     <update id="setDefault">
         UPDATE "IsuPageSolution"
-        SET "defaultVal"=TRUE, "updateTime"=NOW()
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        SET "defaultVal" = TRUE,
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </update>
 
     <select id="getItems" resultType="IsuPageSolutionItem">
         SELECT o.*, type.label "typeName", page.name "pageName"
 
         FROM "IsuPageSolutionItem" o
-        JOIN "IsuType" "type" ON "type".id = o."typeId"
-        JOIN "IsuPage" "page" ON "page".id = o."pageId"
+                 JOIN "IsuType" "type" ON "type".id = o."typeId"
+                 JOIN "IsuPage" "page" ON "page".id = o."pageId"
 
-        WHERE o."solutionId" = #{solutionId} AND o."orgId" = #{orgId}
+        WHERE o."solutionId" = #{solutionId}
+          AND o."orgId" = #{orgId}
 
         ORDER BY o.id ASC;
     </select>
@@ -70,30 +80,33 @@
         </selectKey>
         <if test="count > 0">
             update "IsuPageSolutionItem"
-              set "pageId" = #{pageId}
+            set "pageId" = #{pageId}
             where "typeId"=#{typeId} AND opt=#{opt}
-              AND "solutionId"=#{solutionId} AND "orgId"=#{orgId}
+            AND "solutionId"=#{solutionId} AND "orgId"=#{orgId};
         </if>
         <if test="count == 0">
             insert into "IsuPageSolutionItem"
             ("typeId", opt, "pageId", "solutionId", "orgId")
             values
-            (#{typeId}, #{opt}, #{pageId}, #{solutionId}, #{orgId})
+            (#{typeId}, #{opt}, #{pageId}, #{solutionId}, #{orgId});
         </if>
     </update>
 
     <!-- For Project -->
     <select id="getByProject" resultType="IsuPageSolution">
-        SELECT * FROM "IsuPageSolution" o
-        JOIN "TstProject" p ON p."issuePageSolutionId"=o.id
-        WHERE p.id = #{projectId} AND o."orgId" = #{orgId}
+        SELECT *
+        FROM "IsuPageSolution" o
+                 JOIN "TstProject" p ON p."issuePageSolutionId" = o.id
+        WHERE p.id = #{projectId}
+          AND o."orgId" = #{orgId};
     </select>
     <update id="setByProject">
         UPDATE "TstProject"
-        SET "issuePageSolutionId"=#{solutionId},
-        "updateTime"=NOW()
+        SET "issuePageSolutionId" = #{solutionId},
+            "updateTime" = NOW()
 
-        WHERE id=#{projectId} AND "orgId"=#{orgId}
+        WHERE id = #{projectId}
+          AND "orgId" = #{orgId};
     </update>
 
 </mapper>

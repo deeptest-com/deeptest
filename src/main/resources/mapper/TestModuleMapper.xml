@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.TestModuleDao" >
+<mapper namespace="com.ngtesting.platform.dao.TestModuleDao">
 
     <select id="query" resultType="TstModule">
         SELECT * FROM "TstModule" o WHERE TRUE
@@ -17,12 +17,14 @@
     </select>
 
     <select id="listLastest" resultType="TstModule">
-        SELECT * FROM "TstModule" o
+        SELECT *
+        FROM "TstModule" o
         WHERE o."projectId" = #{projectId}
-        AND NOT o.deleted
-        AND NOT o.disabled
+          AND NOT o.deleted
+          AND NOT o.disabled
 
-        ORDER BY o."createTime" DESC LIMIT 10
+        ORDER BY o."createTime" DESC
+        LIMIT 10
     </select>
 
     <select id="get" resultType="TstModule">
@@ -34,54 +36,66 @@
     </select>
 
     <insert id="save" parameterType="TstModule" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstModule"
-          (name,descr,"projectId",ordr,deleted,disabled,"createTime")
-        values
-          (#{name},#{descr},#{projectId},#{ordr},FALSE,#{disabled},NOW())
+        insert into "TstModule" (name, descr, "projectId", ordr, deleted, disabled, "createTime")
+        values (#{name}, #{descr}, #{projectId}, #{ordr}, FALSE, #{disabled}, NOW())
     </insert>
 
     <update id="update" parameterType="TstModule">
         UPDATE "TstModule"
-        SET name=#{name},
-            descr=#{descr}, ordr=#{ordr},
-            disabled=#{disabled}, "updateTime"=NOW()
-        WHERE id=#{id} AND "projectId" = #{projectId}
+        SET name = #{name},
+            descr = #{descr},
+            ordr = #{ordr},
+            disabled = #{disabled},
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "projectId" = #{projectId}
     </update>
 
     <update id="delete">
         UPDATE "TstModule"
-        SET deleted=TRUE, "updateTime"=NOW()
-        WHERE id=#{id} AND "projectId" = #{projectId}
+        SET deleted      = TRUE,
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "projectId" = #{projectId}
     </update>
 
     <update id="setOrder">
         UPDATE "TstModule"
-        SET ordr=#{ordr}, "updateTime"=NOW()
-        WHERE id=#{id} AND "projectId" = #{projectId}
+        SET ordr = #{ordr},
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "projectId" = #{projectId}
     </update>
 
     <select id="getMaxOrdrNumb" resultType="Integer">
-        select max(ordr) from "TstModule" tp
-        where tp."projectId"=#{projectId}
-        and NOT tp.deleted
-        and NOT tp.disabled
+        select max(ordr)
+        from "TstModule" tp
+        where tp."projectId" = #{projectId}
+          and NOT tp.deleted
+          and NOT tp.disabled
     </select>
 
     <select id="getPrev" resultType="TstModule">
         <![CDATA[
-            SELECT * FROM "TstModule" o
-            WHERE o.ordr < #{ordr} AND o."projectId" = #{projectId}
-            AND NOT o.deleted
-            ORDER BY o.ordr DESC LIMIT 1
+        SELECT *
+        FROM "TstModule" o
+        WHERE o.ordr < #{ordr}
+          AND o."projectId" = #{projectId}
+          AND NOT o.deleted
+        ORDER BY o.ordr DESC
+        LIMIT 1
         ]]>
     </select>
 
     <select id="getNext" resultType="TstModule">
         <![CDATA[
-            SELECT * FROM "TstModule" o
-            WHERE o.ordr > #{ordr} AND o."projectId" = #{projectId}
-            AND NOT o.deleted
-            ORDER BY o.ordr ASC LIMIT 1
+        SELECT *
+        FROM "TstModule" o
+        WHERE o.ordr > #{ordr}
+          AND o."projectId" = #{projectId}
+          AND NOT o.deleted
+        ORDER BY o.ordr ASC
+        LIMIT 1
         ]]>
     </select>
 

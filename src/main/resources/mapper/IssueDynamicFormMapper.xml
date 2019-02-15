@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.IssueDynamicFormDao" >
+<mapper namespace="com.ngtesting.platform.dao.IssueDynamicFormDao">
 
     <select id="listNotUsedField" resultType="Map">
         <include refid="fetch">
@@ -8,7 +8,7 @@
             <property name="projectId" value="${projectId}"/>
         </include>
         AND fields.key NOT IN (
-          SELECT elem.key FROM "IsuPageElement" elem WHERE elem."pageId" = #{pageId}
+        SELECT elem.key FROM "IsuPageElement" elem WHERE elem."pageId" = #{pageId}
         )
 
         ORDER BY fields.sort ASC
@@ -47,14 +47,14 @@
         </choose>
     </select>
 
-    <resultMap id="fieldMap" type="Map" autoMapping="true">
+    <resultMap id="fieldMap" type="java.util.Map" autoMapping="true">
         <discriminator column="inputCatagory" jdbcType="VARCHAR" javaType="String">
             <case value="notSelect" resultType="Map"/>
             <case value="canSelect" resultMap="fieldMapCanSelect"/>
         </discriminator>
     </resultMap>
 
-    <resultMap id="fieldMapCanSelect" type="Map" autoMapping="true">
+    <resultMap id="fieldMapCanSelect" type="java.util.Map" autoMapping="true">
         <id column="fieldId" property="fieldId"/>
         <id column="colCode" property="colCode"/>
         <id column="optionTable" property="optionTable"/>
@@ -67,62 +67,62 @@
         </collection>
     </resultMap>
 
-    <resultMap id="optionMap" type="Map">
+    <resultMap id="optionMap" type="java.util.Map">
     </resultMap>
 
     <sql id="fetch">
         SELECT fields.*, dict.table "optionTable", ${projectId} "projectId",
 
         CASE
-          WHEN fields.input='dropdown'
-            OR fields.input='multi_select'
-            OR fields.input='radio'
-            OR fields.input='checkbox'
-          THEN 'canSelect'
-          ELSE 'notSelect'
+        WHEN fields.input='dropdown'
+        OR fields.input='multi_select'
+        OR fields.input='radio'
+        OR fields.input='checkbox'
+        THEN 'canSelect'
+        ELSE 'notSelect'
         END "inputCatagory"
 
         FROM (
-          (SELECT 'sys-' || field.id "key",
-            field.id "fieldId", field."colCode", field."label",
-            field.type, field.input, field."fullLine", field.required,
-            field.readonly, true "buildIn",
-            field."orgId",
-            CASE
-              WHEN '${sort}'='filter' THEN field."filterOrdr"
-              WHEN '${sort}'='col' THEN field."columnOrdr"
-              ELSE field."elemOrdr"
-            END sort
+        (SELECT 'sys-' || field.id "key",
+        field.id "fieldId", field."colCode", field."label",
+        field.type, field.input, field."fullLine", field.required,
+        field.readonly, true "buildIn",
+        field."orgId",
+        CASE
+        WHEN '${sort}'='filter' THEN field."filterOrdr"
+        WHEN '${sort}'='col' THEN field."columnOrdr"
+        ELSE field."elemOrdr"
+        END sort
 
-            FROM "IsuField" field
+        FROM "IsuField" field
 
-            WHERE field."orgId" = #{orgId} AND NOT field.disabled AND NOT field.deleted
-                <if test="sort == 'filter'">
-                    AND field."defaultShowInFilters" IS NOT NULL
-                </if>
-                <if test="sort == 'col'">
-                    AND field."defaultShowInColumns" IS NOT NULL
-                </if>
-                <if test="sort == 'elem'">
-                    AND field."defaultShowInPage" IS NOT NULL
-                </if>
-            ORDER BY sort ASC
-          )
+        WHERE field."orgId" = #{orgId} AND NOT field.disabled AND NOT field.deleted
+        <if test="sort == 'filter'">
+            AND field."defaultShowInFilters" IS NOT NULL
+        </if>
+        <if test="sort == 'col'">
+            AND field."defaultShowInColumns" IS NOT NULL
+        </if>
+        <if test="sort == 'elem'">
+            AND field."defaultShowInPage" IS NOT NULL
+        </if>
+        ORDER BY sort ASC
+        )
 
-          UNION
+        UNION
 
-          (SELECT 'cust-' || "customField".id "key",
-            "customField".id "fieldId", "customField"."colCode", "customField"."label",
-            "customField".type, "customField".input, "customField"."fullLine", "customField".required,
-            "customField".readonly, false "buildIn",
-            "customField"."orgId", "customField".ordr+1000000 sort
+        (SELECT 'cust-' || "customField".id "key",
+        "customField".id "fieldId", "customField"."colCode", "customField"."label",
+        "customField".type, "customField".input, "customField"."fullLine", "customField".required,
+        "customField".readonly, false "buildIn",
+        "customField"."orgId", "customField".ordr+1000000 sort
 
-            FROM "CustomField" "customField"
+        FROM "CustomField" "customField"
 
-            WHERE "customField"."orgId" = #{orgId} AND "customField"."applyTo" = 'issue'
-                AND NOT "customField".disabled AND NOT "customField".deleted
-            ORDER BY sort ASC
-          )
+        WHERE "customField"."orgId" = #{orgId} AND "customField"."applyTo" = 'issue'
+        AND NOT "customField".disabled AND NOT "customField".deleted
+        ORDER BY sort ASC
+        )
         ) fields
 
         LEFT JOIN "IsuFieldCodeToTableDefine" dict ON fields."colCode" = dict."colCode"
@@ -136,14 +136,16 @@
     <sql id="fetchCustomFieldOptions">
         SELECT opt.id, opt."label", opt."value", opt."defaultVal"
         FROM "CustomFieldOption" opt
-        WHERE opt."fieldId"=#{fieldId}
-        AND NOT opt.disabled AND NOT opt.deleted
+        WHERE opt."fieldId" = #{fieldId}
+          AND NOT opt.disabled
+          AND NOT opt.deleted
         ORDER BY opt.ordr;
     </sql>
 
     <sql id="fetchUsers">
-        select usr.id, usr.nickname "label" from "TstUser" usr
-        where usr.id = any (  select "userId" from _project_user(#{prjId})  )
+        select usr.id, usr.nickname "label"
+        from "TstUser" usr
+        where usr.id = any (select "userId" from _project_user(#{prjId}))
         ORDER by usr.nickname ASC
     </sql>
 

@@ -1,59 +1,63 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.ProjectRoleDao" >
+<mapper namespace="com.ngtesting.platform.dao.ProjectRoleDao">
 
     <select id="query" resultType="TstProjectRole">
         SELECT * FROM "TstProjectRole" o
 
         WHERE
-            o."orgId"=#{orgId}
-            <if test="keywordsParam != null and keywordsParam != ''">
-                AND o.name LIKE '%${keywordsParam}%'
-            </if>
-            <if test="disabledParam != null">
-                AND o.disabled = #{disabledParam}
-            </if>
-            AND NOT o.deleted
-
-        ORDER BY o.id ASC
-    </select>
-
-    <select id="getRoleByCode" resultType="TstProjectRole">
-        SELECT * FROM "TstProjectRole" o
-
-        WHERE o."orgId"=#{orgId}
-        AND o."code" = #{roleCode}
+        o."orgId"=#{orgId}
+        <if test="keywordsParam != null and keywordsParam != ''">
+            AND o.name LIKE '%${keywordsParam}%'
+        </if>
+        <if test="disabledParam != null">
+            AND o.disabled = #{disabledParam}
+        </if>
         AND NOT o.deleted
 
         ORDER BY o.id ASC
     </select>
 
-    <select id="get" resultType="TstProjectRole">
-        SELECT * FROM "TstProjectRole" o
+    <select id="getRoleByCode" resultType="TstProjectRole">
+        SELECT *
+        FROM "TstProjectRole" o
 
-        WHERE o.id=#{id} AND o."orgId" = #{orgId}
+        WHERE o."orgId" = #{orgId}
+          AND o."code" = #{roleCode}
+          AND NOT o.deleted
+
+        ORDER BY o.id ASC
+    </select>
+
+    <select id="get" resultType="TstProjectRole">
+        SELECT *
+        FROM "TstProjectRole" o
+
+        WHERE o.id = #{id}
+          AND o."orgId" = #{orgId}
     </select>
 
     <insert id="save" parameterType="TstProjectRole" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstProjectRole"
-        (code,name,"orgId",deleted,disabled,"createTime")
-        values
-        (#{code},#{name},#{orgId},FALSE,FALSE,NOW())
+        insert into "TstProjectRole" (code, name, "orgId", deleted, disabled, "createTime")
+        values (#{code}, #{name}, #{orgId}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="TstProjectRole">
         UPDATE "TstProjectRole"
-        SET name=#{name},
-        disabled=#{disabled},
-        "updateTime"=NOW()
+        SET name = #{name},
+            disabled = #{disabled},
+            "updateTime" = NOW()
 
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </update>
 
     <delete id="delete" parameterType="TstProjectRole">
         UPDATE "TstProjectRole"
-        SET deleted=TRUE, "updateTime"=NOW()
-        WHERE id=#{id} AND "orgId"=#{orgId}
+        SET deleted      = TRUE,
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "orgId" = #{orgId}
     </delete>
 
 </mapper>

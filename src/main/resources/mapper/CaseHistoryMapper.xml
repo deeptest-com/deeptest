@@ -1,33 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.CaseHistoryDao" >
+<mapper namespace="com.ngtesting.platform.dao.CaseHistoryDao">
 
     <select id="query" resultType="TstCaseHistory">
-        SELECT * FROM "TstCaseHistory" o WHERE o."caseId"=#{caseId}
-
-        AND NOT o.deleted AND NOT o.disabled
-        ORDER BY o."createTime" DESC LIMIT 15
+        SELECT *
+        FROM "TstCaseHistory" o
+        WHERE o."caseId" = #{caseId}
+          AND NOT o.deleted
+          AND NOT o.disabled
+        ORDER BY o."createTime" DESC
+        LIMIT 15
     </select>
 
     <select id="listByCaseId" parameterType="Map" resultMap="caseHistoryMap">
-        SELECT o.* FROM "TstCaseHistory" o
+        SELECT o.*
+        FROM "TstCaseHistory" o
 
         WHERE o."caseId" = #{id}
-        AND NOT o.deleted AND NOT o.disabled
+          AND NOT o.deleted
+          AND NOT o.disabled
 
-        ORDER BY o."createTime" DESC LIMIT 15
+        ORDER BY o."createTime" DESC
+        LIMIT 15
     </select>
 
     <insert id="save" parameterType="TstCaseHistory" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstCaseHistory"
-        (title,"caseId",
-        deleted,disabled,"createTime")
-        values
-        (#{title},#{caseId},
-        FALSE,FALSE,NOW() )
+        insert into "TstCaseHistory" (title, "caseId", deleted, disabled, "createTime")
+        values (#{title}, #{caseId}, FALSE, FALSE, NOW())
     </insert>
 
-    <resultMap id="caseHistoryMap" type="TstCaseHistory" autoMapping="true">
+    <resultMap id="caseHistoryMap" type="com.ngtesting.platform.model.TstCaseHistory" autoMapping="true">
         <id column="id" property="id"/>
         <id column="title" property="title"/>
         <id column="descr" property="descr"/>

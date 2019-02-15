@@ -1,31 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ngtesting.platform.dao.CaseDao" >
+<mapper namespace="com.ngtesting.platform.dao.CaseDao">
 
     <select id="query" resultType="TstCase">
-        SELECT * FROM "TstCase" o
+        SELECT *
+        FROM "TstCase" o
 
         WHERE o."projectId" = #{projectId}
-         AND NOT o.deleted   AND NOT o.disabled
+          AND NOT o.deleted
+          AND NOT o.disabled
 
         ORDER BY o."pId", o.ordr
     </select>
 
     <select id="queryCaseWithStepInfoByPrj" resultMap="queryCaseWithStepInfoByPrjMap">
-        SELECT
-	        o.id,o.name,o."typeId",o."priorityId",o."isParent",o."pId",
-	        s.ordr,s.opt,s.expect,s."caseId",  t.label "typeName", p.label "priorityName"
-        FROM
-            "TstCase" o
-        LEFT JOIN "TstCaseStep" s ON o.id = s."caseId"
-        LEFT JOIN "TstCaseType" t ON o."typeId" = t.id
-        LEFT JOIN "TstCasePriority" p ON o."priorityId" = p.id
+        SELECT o.id,
+               o.name,
+               o."typeId",
+               o."priorityId",
+               o."isParent",
+               o."pId",
+               s.ordr,
+               s.opt,
+               s.expect,
+               s."caseId",
+               t.label "typeName",
+               p.label "priorityName"
+        FROM "TstCase" o
+                 LEFT JOIN "TstCaseStep" s ON o.id = s."caseId"
+                 LEFT JOIN "TstCaseType" t ON o."typeId" = t.id
+                 LEFT JOIN "TstCasePriority" p ON o."priorityId" = p.id
 
-        WHERE
-            o."projectId" =#{projectId}
-        AND NOT o.deleted
-        AND NOT o.disabled
-        ORDER BY o."pId", o.ordr,s.ordr;
+        WHERE o."projectId" = #{projectId}
+          AND NOT o.deleted
+          AND NOT o.disabled
+        ORDER BY o."pId", o.ordr, s.ordr;
     </select>
 
     <select id="get" resultType="TstCase">
@@ -45,128 +54,218 @@
     </select>
 
     <insert id="createSample" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstCase" (name,"typeId","priorityId","contentType",estimate,
-          "pId","projectId","createById","isParent",ordr,
-          deleted,disabled,"createTime")
+        insert into "TstCase" (name,
+                               "typeId",
+                               "priorityId",
+                               "contentType",
+                               estimate,
+                               "pId",
+                               "projectId",
+                               "createById",
+                               "isParent",
+                               ordr,
+                               deleted,
+                               disabled,
+                               "createTime")
 
-        values (#{name},#{typeId},#{priorityId},#{contentType},#{estimate},
-          #{pId},#{projectId},#{createById},#{isParent},#{ordr},
-          #{deleted},#{disabled}, NOW())
+        values (#{name},
+                #{typeId},
+                #{priorityId},
+                #{contentType},
+                #{estimate},
+                #{pId},
+                #{projectId},
+                #{createById},
+                #{isParent},
+                #{ordr},
+                #{deleted},
+                #{disabled},
+                NOW())
     </insert>
 
     <insert id="renameNew" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstCase"
-        (name,"priorityId","typeId","contentType",estimate,"isParent",ordr,"pId",
-            "projectId","createById",
-            "createTime",deleted,disabled)
-        values
-          (#{name},#{priorityId},#{typeId},#{contentType},#{estimate},#{isParent},#{ordr},#{pId},
-              #{projectId},#{createById},
-              NOW(),FALSE,FALSE)
+        insert into "TstCase" (name,
+                               "priorityId",
+                               "typeId",
+                               "contentType",
+                               estimate,
+                               "isParent",
+                               ordr,
+                               "pId",
+                               "projectId",
+                               "createById",
+                               "createTime",
+                               deleted,
+                               disabled)
+        values (#{name},
+                #{priorityId},
+                #{typeId},
+                #{contentType},
+                #{estimate},
+                #{isParent},
+                #{ordr},
+                #{pId},
+                #{projectId},
+                #{createById},
+                NOW(),
+                FALSE,
+                FALSE)
     </insert>
     <update id="renameUpdate" parameterType="TstCase">
         UPDATE "TstCase"
-          SET name=#{name}, "updateById"=#{updateById}, "updateTime"=NOW()
-        WHERE id=#{id}
+        SET name = #{name},
+            "updateById" = #{updateById},
+            "updateTime" = NOW()
+        WHERE id = #{id}
     </update>
 
     <update id="update">
-       UPDATE "TstCase"
-        SET name=#{obj.name},"priorityId"=#{obj.priorityId},"typeId"=#{obj.typeId},
-            "contentType"=#{obj.contentType},content=#{obj.content},
-            estimate=#{obj.estimate},objective=#{obj.objective},
-            "updateById"=#{obj.updateById},"updateTime"=NOW(),
-            "extProp"='${extProp}'::JSON
+        UPDATE "TstCase"
+        SET name = #{obj.name},
+            "priorityId" = #{obj.priorityId},
+            "typeId" = #{obj.typeId},
+            "contentType" = #{obj.contentType},
+            content = #{obj.content},
+            estimate = #{obj.estimate},
+            objective = #{obj.objective},
+            "updateById" = #{obj.updateById},
+            "updateTime" = NOW(),
+            "extProp"    = '${extProp}' :: JSON
 
-        WHERE id=#{obj.id} AND "projectId"=#{projectId}
+        WHERE id = #{obj.id}
+          AND "projectId" = #{projectId}
     </update>
 
     <update id="updateProp">
         UPDATE "TstCase"
-        SET "${code}" = #{value}, "updateTime"=NOW()
-        WHERE id=#{id} AND "projectId"=#{projectId}
+        SET "${code}"    = #{value},
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "projectId" = #{projectId}
     </update>
     <update id="updateExtProp">
         UPDATE "TstCase"
-        SET "extProp" = jsonb_set("extProp", '{${code}}', '${value}', true), "updateTime"=NOW()
+        SET "extProp"    = jsonb_set("extProp", '{${code}}', '${value}', true),
+            "updateTime" = NOW()
 
-        WHERE id=#{id} AND "projectId"=#{projectId}
+        WHERE id = #{id}
+          AND "projectId" = #{projectId}
     </update>
 
     <update id="setDefaultVal">
         UPDATE "TstCase"
-        SET "priorityId"=(select id from "TstCasePriority" where "value"='medium' and "orgId"=#{orgId}),
-            "typeId"=(select id from "TstCaseType" where "value"='functional' and "orgId"=#{orgId})
+        SET "priorityId" = (select id
+                            from "TstCasePriority"
+                            where "value" = 'medium'
+                              and "orgId" = #{orgId}),
+            "typeId"     = (select id
+                            from "TstCaseType"
+                            where "value" = 'functional'
+                              and "orgId" = #{orgId})
 
-        WHERE id=#{id}
+        WHERE id = #{id}
     </update>
 
     <update id="delete" statementType="CALLABLE">
-        { call remove_case_and_its_children(#{pId,mode=IN,jdbcType=INTEGER}, #{projectId,mode=IN,jdbcType=INTEGER}) }
+        {call remove_case_and_its_children(#{pId,mode=IN,jdbcType=INTEGER}, #{projectId,mode=IN,jdbcType=INTEGER})}
     </update>
 
     <update id="changeContentType">
         UPDATE "TstCase"
-        SET "contentType"=#{contentType},"updateById"=#{updateById},"updateTime"=NOW()
-        WHERE id=#{id} AND "projectId"=#{projectId}
+        SET "contentType" = #{contentType},
+            "updateById" = #{updateById},
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "projectId" = #{projectId}
     </update>
 
     <update id="reviewResult">
         UPDATE "TstCase"
-        SET "reviewResult"=#{result},"updateById"=#{updateById},"updateTime"=NOW()
-        WHERE id=#{id} AND "projectId"=#{projectId}
+        SET "reviewResult" = #{result},
+            "updateById" = #{updateById},
+            "updateTime" = NOW()
+        WHERE id = #{id}
+          AND "projectId" = #{projectId}
     </update>
 
     <update id="moveUpdate">
         update "TstCase" c
-        set c."pId" = #{pId}, c.ordr = #{ordr},
-        c."updateById"=#{updateById}, c."updateTime"=NOW()
-        where c.id=#{id}
+        set c."pId"        = #{pId},
+            c.ordr         = #{ordr},
+            c."updateById" = #{updateById},
+            c."updateTime" = NOW()
+        where c.id = #{id}
     </update>
     <insert id="moveCopy" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
-        insert into "TstCase"
-        (name,"priorityId","typeId","contentType",estimate,"isParent",ordr,"pId",
-          "projectId","createById",
-          "createTime","updateTime",deleted,disabled)
-        values
-          (#{name},#{priorityId},#{typeId},#{contentType},#{estimate},#{isParent},#{ordr},#{pId},
-          #{projectId},#{createById},
-          NOW(),NULL,FALSE,FALSE)
+        insert into "TstCase" (name,
+                               "priorityId",
+                               "typeId",
+                               "contentType",
+                               estimate,
+                               "isParent",
+                               ordr,
+                               "pId",
+                               "projectId",
+                               "createById",
+                               "createTime",
+                               "updateTime",
+                               deleted,
+                               disabled)
+        values (#{name},
+                #{priorityId},
+                #{typeId},
+                #{contentType},
+                #{estimate},
+                #{isParent},
+                #{ordr},
+                #{pId},
+                #{projectId},
+                #{createById},
+                NOW(),
+                NULL,
+                FALSE,
+                FALSE)
     </insert>
 
-<!--    <update id="updateParentIfNeeded" statementType="CALLABLE">
-        { call update_case_parent_if_needed(
-        #{pId,mode=IN,jdbcType=INTEGER}
-        )}
-    </update>-->
+    <!--    <update id="updateParentIfNeeded" statementType="CALLABLE">
+            { call update_case_parent_if_needed(
+            #{pId,mode=IN,jdbcType=INTEGER}
+            )}
+        </update>-->
     <update id="addOrderForTargetAndNextCases">
         update "TstCase" c
-        set c.ordr = c.ordr+1
-        where c.ordr >= #{targetOrdr} and c."pId"=#{targetPid} and id!=#{srcId}
+        set c.ordr = c.ordr + 1
+        where c.ordr >= #{targetOrdr}
+          and c."pId" = #{targetPid}
+          and id!=#{srcId}
     </update>
     <update id="addOrderForNextCases">
         update "TstCase" c
-        set c.ordr = c.ordr+1
-        where c.ordr > #{targetOrdr} and c."pId"=#{targetPid} and id!=#{srcId}
+        set c.ordr = c.ordr + 1
+        where c.ordr > #{targetOrdr}
+          and c."pId" = #{targetPid}
+          and id!=#{srcId}
     </update>
 
     <select id="getChildMaxOrderNumb" resultType="Integer">
-        select max(ordr) from "TstCase" o
-        where o."pId"=#{pId}
-        and NOT o.deleted
-        and NOT o.disabled
+        select max(ordr)
+        from "TstCase" o
+        where o."pId" = #{pId}
+          and NOT o.deleted
+          and NOT o.disabled
     </select>
 
     <select id="getChildren" resultType="TstCase">
-        select * from "TstCase" o
-        where o."pId"=#{id}
-        and NOT o.deleted
-        and NOT o.disabled
+        select *
+        from "TstCase" o
+        where o."pId" = #{id}
+          and NOT o.deleted
+          and NOT o.disabled
 
         ORDER BY o."pId", o.ordr
     </select>
 
-    <resultMap id="caseMaps" type="TstCase" autoMapping="true">
+    <resultMap id="caseMaps" type="com.ngtesting.platform.model.TstCase" autoMapping="true">
         <id column="id" property="id"/>
 
         <collection property="steps" select="com.ngtesting.platform.dao.CaseStepDao.listByCaseId"
@@ -187,20 +286,20 @@
     </resultMap>
 
 
-    <resultMap id="queryCaseWithStepInfoByPrjMap" type="TstCase">
+    <resultMap id="queryCaseWithStepInfoByPrjMap" type="com.ngtesting.platform.model.TstCase">
         <id column="id" property="id" jdbcType="VARCHAR"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
         <result column="typeName" property="typeName" jdbcType="VARCHAR"/>
         <result column="priorityName" property="priorityName" jdbcType="VARCHAR"/>
-        <result column="isParent" property="isParent" jdbcType="BOOLEAN" />
-        <result column="pId" property="pId" jdbcType="INTEGER" />
+        <result column="isParent" property="isParent" jdbcType="BOOLEAN"/>
+        <result column="pId" property="pId" jdbcType="INTEGER"/>
         <!-- ofType steps集合中的对象类型 -->
         <collection property="steps" javaType="java.util.List" ofType="TstCaseStep">
             <!--<id column="s_id" property="id" jdbcType="VARCHAR" />-->
-            <result column="opt" property="opt" jdbcType="VARCHAR" />
-            <result column="expect" property="expect" jdbcType="VARCHAR" />
-            <result column="ordr" property="ordr" jdbcType="INTEGER" />
-            <result column="caseId" property="caseId" jdbcType="INTEGER" />
+            <result column="opt" property="opt" jdbcType="VARCHAR"/>
+            <result column="expect" property="expect" jdbcType="VARCHAR"/>
+            <result column="ordr" property="ordr" jdbcType="INTEGER"/>
+            <result column="caseId" property="caseId" jdbcType="INTEGER"/>
         </collection>
     </resultMap>
 </mapper>

@@ -1,9 +1,8 @@
 mvn clean verify
 
-docker-compose pull
+docker-compose pull;
 docker rm -f `docker ps -a -q`
-docker-compose up -d
-docker-compose exec ngtesting-postgres bash -c "/wait-for-it.sh localhost:5432 -t 10; /setup.sh"
-docker-compose logs -f
+docker-compose up -d;
+docker-compose logs -f;
 
 docker rmi `docker images -q`

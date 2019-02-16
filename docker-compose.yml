@@ -13,4 +13,4 @@ services:
       - ngtesting-postgres
     ports:
       - "58080:8080"
-    command: ["/wait-for-it.sh", "ngtesting-mysql:3306", "--", "/setup.sh", "--", "/usr/bin/java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/ngtesting-web.jar", "--spring.profiles.active=docker"]
+    command: ["/wait-for-it.sh", "ngtesting-postgres:5432", "-t", "10", "--", "/setup.sh", "--", "/usr/bin/java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/ngtesting-web.jar", "--spring.profiles.active=docker"]

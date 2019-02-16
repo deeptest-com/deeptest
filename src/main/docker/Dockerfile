@@ -9,6 +9,9 @@ RUN chmod +x /setup.sh
 
 ADD postgres/schema.sql /
 
+RUN apt-get update
+RUN apt-get -y install postgresql-client
+
 RUN export PATH="/:$PATH"
 ADD ngtesting-web-*.jar ngtesting-web.jar
 RUN sh -c 'touch /ngtesting-web.jar'

@@ -11,19 +11,8 @@ AngularJS, SockJS, SpringBoot, MyBatis, PostgreSQL
 
 1. Install docker and docker-compose;
 2. Download file from https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/docker-compose.yml ;
-3. In same dir, enter "docker-compose up" to launch.
+3. In same dir, enter "docker-compose up;docker-compose logs -f;" to launch.
 4. Open http://localhost:58080/test.html using Chrome.
-
-### Use Java Jar
-1. Create dir "/work/ngtesting-data/" for file upload;
-2. Create a MySQL database named "ngtesting-web";
-3. Add MySQL user "ngtesting" with password "P2ssw0rd";
-4. Run "git clone https://github.com/aaronchen2k/ngtesting-platform.git";
-5. Import "src/main/docker/mysql/schema.sql" to database;
-6. In project dir, enter command "xdoc/ngtesting-web-1.*.jar" to run;
-
-   You may change the config params in application.yml file like this: "xdoc/ngtesting-web-1.*.jar --config.mysql.host=10.0.0.10 --config.mysql.port=3306".
-7. Open http://localhost:8080/test.html using Chrome.
 
 ## Test Project
 ![project_view](xdoc/capture/project_view.jpg)

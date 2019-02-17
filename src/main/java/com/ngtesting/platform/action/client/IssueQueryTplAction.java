@@ -28,7 +28,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping(Constant.API_PATH_CLIENT + "issue_tql/")
-public class IssueTplAction extends BaseAction {
+public class IssueQueryTplAction extends BaseAction {
 
 	@Autowired
     IssueJqlService issueJqlService;
@@ -81,7 +81,7 @@ public class IssueTplAction extends BaseAction {
         List<IsuIssue> data = issueJqlService.query(rule, user.getIssueColumns(), orderBy, orgId, prjId);
 
         if (init) {
-            List<IsuJqlFilter> filters = issueJqlFilterService.buildUiFilters(rule, orgId, prjId);
+            List<IsuJqlFilter> filters = issueJqlFilterService.buildTplFilter(rule, orgId, prjId);
             List<IsuJqlColumn> columns = issueJqlColumnService.loadColumns(user);
 
             ret.put("rule", rule);
@@ -139,7 +139,7 @@ public class IssueTplAction extends BaseAction {
         ret.put("rule", rule);
 
         if (init) {
-            List<IsuJqlFilter> filters = issueJqlFilterService.buildUiFilters(rule, orgId, prjId);
+            List<IsuJqlFilter> filters = issueJqlFilterService.buildTplFilter(rule, orgId, prjId);
             List<IsuJqlColumn> columns = issueJqlColumnService.loadColumns(user);
 
             ret.put("filters", filters);

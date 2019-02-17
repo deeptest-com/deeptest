@@ -134,7 +134,7 @@
     </sql>
 
     <sql id="fetchCustomFieldOptions">
-        SELECT opt.id, opt."label", opt."value", opt."defaultVal"
+        SELECT opt.id, opt."label", opt."defaultVal"
         FROM "CustomFieldOption" opt
         WHERE opt."fieldId" = #{fieldId}
           AND NOT opt.disabled

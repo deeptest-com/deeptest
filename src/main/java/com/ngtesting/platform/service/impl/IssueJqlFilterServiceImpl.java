@@ -33,7 +33,7 @@ public class IssueJqlFilterServiceImpl extends BaseServiceImpl implements IssueJ
     IssueFieldDao isuFieldDefineDao;
 
     @Override
-    public List<IsuJqlFilter> buildUiFilters(JsonRule rule, Integer orgId, Integer projectId) {
+    public List<IsuJqlFilter> buildTplFilter(JsonRule rule, Integer orgId, Integer projectId) {
         List<IsuJqlFilter> filtes = new LinkedList<>();
 
         List<String> filterNameArr = new LinkedList<>();
@@ -42,6 +42,10 @@ public class IssueJqlFilterServiceImpl extends BaseServiceImpl implements IssueJ
         List<Map> fields = dynamicFormService.fetchOrgField(orgId, projectId, "filter");
 
         for (Map field : fields) {
+            if ("string".equals(field.get("type"))) { // string类型的使用全文检索
+                continue;
+            }
+
             String code = field.get("colCode").toString();
 
             Boolean filterEnable = filterNameArr.contains(code);

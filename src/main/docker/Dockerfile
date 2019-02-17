@@ -9,6 +9,8 @@ RUN chmod +x /setup.sh
 
 ADD postgres/schema.sql /
 
+COPY sources.list /etc/apt/sources.list
+
 RUN apt-get update
 RUN apt-get -y install postgresql-client
 

@@ -1,4 +1,4 @@
-FROM java:8
+FROM registry.cn-shanghai.aliyuncs.com/ngtesting/ngtesting-web-base:2.0.0
 VOLUME /tmp
 
 ADD wait-for-it.sh /
@@ -7,12 +7,10 @@ RUN chmod +x /wait-for-it.sh
 ADD postgres/setup.sh /setup.sh
 RUN chmod +x /setup.sh
 
+ADD launch.sh /
+RUN chmod +x /launch.sh
+
 ADD postgres/schema.sql /
-
-COPY sources.list /etc/apt/sources.list
-
-RUN apt-get update
-RUN apt-get -y install postgresql-client
 
 RUN export PATH="/:$PATH"
 ADD ngtesting-web-*.jar ngtesting-web.jar

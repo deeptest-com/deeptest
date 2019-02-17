@@ -574,7 +574,6 @@ ALTER TABLE public."CustomFieldIputDefine" ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE public."CustomFieldInputTypeRelationDefine" ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE public."CustomFieldDefine" ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE public."CustomField" ALTER COLUMN id DROP DEFAULT;
-DROP TABLE public.a;
 DROP SEQUENCE public."TstVer_id_seq";
 DROP TABLE public."TstVer";
 DROP SEQUENCE public."TstUser_id_seq";
@@ -6640,17 +6639,6 @@ ALTER TABLE public."TstVer_id_seq" OWNER TO ngtesting;
 
 ALTER SEQUENCE public."TstVer_id_seq" OWNED BY public."TstVer".id;
 
-
---
--- Name: a; Type: TABLE; Schema: public; Owner: ngtesting
---
-
-CREATE TABLE public.a (
-    "?column?" integer
-);
-
-
-ALTER TABLE public.a OWNER TO ngtesting;
 
 --
 -- Name: CustomField id; Type: DEFAULT; Schema: public; Owner: ngtesting

@@ -9,5 +9,5 @@ import java.util.Map;
 public interface IssueTqlDao {
     List<IsuIssue> query(@Param("conditions") String conditions,
                          @Param("columns") String columns,
-                         @Param("orderBy") List<Map<String, String>> orderBy);
+                         @Param("orders") List<Map<String, String>> orderBy);
 }

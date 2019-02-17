@@ -19,10 +19,7 @@ package com.ngtesting.platform.tql.query.builder;
 import com.ngtesting.platform.tql.query.builder.exception.FilterAddException;
 import com.ngtesting.platform.tql.query.builder.exception.ParserAddException;
 import com.ngtesting.platform.tql.query.builder.support.builder.AbstractBuilder;
-import com.ngtesting.platform.tql.query.builder.support.filter.DatetimeConvertFilter;
-import com.ngtesting.platform.tql.query.builder.support.filter.DefaultValueConvertFilter;
-import com.ngtesting.platform.tql.query.builder.support.filter.IRuleFilter;
-import com.ngtesting.platform.tql.query.builder.support.filter.ValidateFilter;
+import com.ngtesting.platform.tql.query.builder.support.filter.*;
 import com.ngtesting.platform.tql.query.builder.support.parser.IGroupParser;
 import com.ngtesting.platform.tql.query.builder.support.parser.IRuleParser;
 

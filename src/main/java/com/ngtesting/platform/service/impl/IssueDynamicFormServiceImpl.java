@@ -6,9 +6,7 @@ import com.ngtesting.platform.service.intf.IssueDynamicFormService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class IssueDynamicFormServiceImpl extends BaseServiceImpl implements IssueDynamicFormService {
@@ -20,6 +18,20 @@ public class IssueDynamicFormServiceImpl extends BaseServiceImpl implements Issu
         List<IsuField> fields = dynamicFormDao.listNotUsedField(orgId, projectId, pageId, "elem");
 
         return fields;
+    }
+
+    @Override
+    public List<String> listCustomaField(Integer orgId, Integer projectId) {
+        List<Map> fields = fetchOrgField(orgId, projectId, "elem");
+
+        List<String> customFields = new ArrayList<>();
+        for (Map field : fields) {
+            if (!Boolean.valueOf(field.get("buildIn").toString())) {
+                customFields.add(field.get("colCode").toString());
+            }
+        }
+
+        return customFields;
     }
 
     @Override

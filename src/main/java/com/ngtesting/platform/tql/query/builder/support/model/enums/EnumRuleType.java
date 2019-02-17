@@ -25,6 +25,8 @@ package com.ngtesting.platform.tql.query.builder.support.model.enums;
  * ---------------------------------------------------------------------------
  */
 public enum EnumRuleType {
+    FULLTEXT("fulltext"),
+
     STRING("string"),
     INTEGER("integer"),
     DOUBLE("double"),

@@ -25,6 +25,7 @@ package com.ngtesting.platform.tql.query.builder.support.model.enums;
  * ---------------------------------------------------------------------------
  */
 public enum EnumOperator {
+    FULLTEXT("fulltext"),
     EQUAL("equal"),
     NOT_EQUAL("not_equal"),
     IN("in"),

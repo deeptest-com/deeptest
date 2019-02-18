@@ -36,17 +36,16 @@ public class EqualRuleParser extends AbstractSqlRuleParser {
     }
 
     public Operation parse(IRule rule, JsonRuleParser parser) {
-        System.out.println("rule.buildIn = " + rule.getBuildIn());
-
 //        select id, "extProp" -> 'age', "extProp" -> 'nickName' from "Test"
 //        where id = 5 and "extProp" @> '{"nickName":"aaron"}'::jsonb
         String opt;
         if (rule.getBuildIn()) {
             opt = "\"" + rule.getField() + "\"" + " = ?";
         } else {
-            opt = "\"extProp\"  @> '{\"" + rule.getField() + "\" : \"" + "?" + "\"}'::jsonb";
+            opt = "\"extProp\"  @> '{\"" + rule.getField() + "\" : " + "?" + "}'::jsonb";
         }
 
+        System.out.println("rule = buildIn:" + rule.getBuildIn() + ", opt:" + opt);
         return new Operation(new StringBuffer(opt), rule.getValue());
     }
 }

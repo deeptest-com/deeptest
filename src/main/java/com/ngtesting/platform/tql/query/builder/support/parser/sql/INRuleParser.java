@@ -38,20 +38,36 @@ public class INRuleParser extends AbstractSqlRuleParser {
     }
 
     public Operation parse(IRule rule, JsonRuleParser parser) {
-        StringBuffer operate = new StringBuffer(rule.getField());
-        operate.append(" IN(");
+        if (rule.getBuildIn()) {
+            StringBuffer operate = new StringBuffer("\"" + rule.getField() + "\"");
+            operate.append(" IN(");
 
-        List<Object> value = (List<Object>) rule.getValue();
-
-        for (int i = 0; i < value.size(); i++){
-            operate.append("?");
-            if (i < value.size() - 1){
-                operate.append(", ");
+            List<Object> value = (List<Object>) rule.getValue();
+            for (int i = 0; i < value.size(); i++) {
+                operate.append("?");
+                if (i < value.size() - 1) {
+                    operate.append(", ");
+                }
             }
+
+            operate.append(")");
+
+            return new Operation(operate, rule.getValue());
+        } else {
+            // where data @> '[{"id": "1"}]' or data @> '[{"id": "2"}]'
+
+            String opt = "";
+
+            List<Object> value = (List<Object>) rule.getValue();
+            for (int i = 0; i < value.size(); i++) {
+                opt +=  "\"extProp\" @> '{\"" + rule.getField() + "\" : " + "?" + "}'::jsonb";
+                if (i < value.size() - 1) {
+                    opt += " or ";
+                }
+            }
+
+            System.out.println("rule = buildIn:" + rule.getBuildIn() + ", opt:" + opt);
+            return new Operation(new StringBuffer(opt), rule.getValue());
         }
-
-        operate.append(")");
-
-        return new Operation(operate, rule.getValue());
     }
 }

@@ -201,6 +201,7 @@ ALTER TABLE ONLY public."CustomField" DROP CONSTRAINT "CustomField_orgId_fkey";
 ALTER TABLE ONLY public."CustomFieldOption" DROP CONSTRAINT "CustomFieldOption_orgId_fkey";
 ALTER TABLE ONLY public."CustomFieldOption" DROP CONSTRAINT "CustomFieldOption_fieldId_fkey";
 ALTER TABLE ONLY public."CustomFieldOptionDefine" DROP CONSTRAINT "CustomFieldOptionDefine_fieldId_fkey";
+DROP TRIGGER issue_tsvector_update_trigger ON public."IsuIssue";
 DROP INDEX public.idx_test_case_extprop;
 DROP INDEX public.idx_isu_issue_extprop;
 DROP INDEX public."fki_TstVer_projectId_fkey";
@@ -775,9 +776,11 @@ DROP TABLE public."CustomFieldInputTypeRelationDefine";
 DROP SEQUENCE public."CustomFieldDefine_id_seq";
 DROP TABLE public."CustomFieldDefine";
 DROP TABLE public."CustomField";
+DROP TEXT SEARCH CONFIGURATION public.chinese;
 DROP FUNCTION public.user_not_in_project(p_user_id integer, p_project_id integer);
 DROP FUNCTION public.update_workflow_statuses(p_workflow_id integer, p_status_ids character varying, p_org_id integer);
 DROP FUNCTION public.update_workflow_statuses(p_workflow_id integer, p_status_ids character varying);
+DROP FUNCTION public.update_issue_tsv_content();
 DROP FUNCTION public.test(_p integer);
 DROP FUNCTION public.remove_user_from_org(p_user_id integer, p_org_id integer);
 DROP FUNCTION public.remove_case_and_its_children(p_case_id integer);
@@ -815,6 +818,21 @@ DROP FUNCTION public._project_user(p_project_id integer);
 DROP FUNCTION public._project_list(p_project_id integer, p_project_type character varying);
 DROP FUNCTION public._date_list(p_time_before timestamp without time zone);
 DROP FUNCTION public._date_before(p_day_numb integer);
+DROP EXTENSION zhparser;
+--
+-- Name: zhparser; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS zhparser WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION zhparser; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION zhparser IS 'a parser for full-text search of Chinese';
+
+
 --
 -- Name: _date_before(integer); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
@@ -2369,6 +2387,41 @@ $$;
 ALTER FUNCTION public.test(_p integer) OWNER TO ngtesting;
 
 --
+-- Name: update_issue_tsv_content(); Type: FUNCTION; Schema: public; Owner: ngtesting
+--
+
+CREATE FUNCTION public.update_issue_tsv_content() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+   p_str VARCHAR;
+BEGIN
+
+	select string_agg(temp.val::TEXT, ' ')
+	from "IsuIssue" b, jsonb_each(coalesce(b."extProp",'{}')) as temp(key,val)
+	where b.id = OLD.id
+	into p_str;
+	
+	RAISE NOTICE 'NEW_ID: %', NEW.id;
+	RAISE NOTICE 'p_str: %', p_str;
+	
+	update "IsuIssue" a
+	set tsv_content = 
+           setweight(to_tsvector('chinese_zh', coalesce(a.tag,'')), 'A') 
+		|| setweight(to_tsvector('chinese_zh', coalesce(a.title,'')), 'B') 
+		|| setweight(to_tsvector('chinese_zh', coalesce(p_str,'')), 'C')
+		|| setweight(to_tsvector('chinese_zh', coalesce(a.descr,'')), 'D')
+	WHERE a.id = NEW.id;
+									 
+	RETURN null;
+END;
+
+$$;
+
+
+ALTER FUNCTION public.update_issue_tsv_content() OWNER TO ngtesting;
+
+--
 -- Name: update_workflow_statuses(integer, character varying); Type: FUNCTION; Schema: public; Owner: ngtesting
 --
 
@@ -2466,6 +2519,34 @@ $$;
 
 
 ALTER FUNCTION public.user_not_in_project(p_user_id integer, p_project_id integer) OWNER TO ngtesting;
+
+--
+-- Name: chinese; Type: TEXT SEARCH CONFIGURATION; Schema: public; Owner: ngtesting
+--
+
+CREATE TEXT SEARCH CONFIGURATION public.chinese (
+    PARSER = public.zhparser );
+
+ALTER TEXT SEARCH CONFIGURATION public.chinese
+    ADD MAPPING FOR a WITH simple;
+
+ALTER TEXT SEARCH CONFIGURATION public.chinese
+    ADD MAPPING FOR e WITH simple;
+
+ALTER TEXT SEARCH CONFIGURATION public.chinese
+    ADD MAPPING FOR i WITH simple;
+
+ALTER TEXT SEARCH CONFIGURATION public.chinese
+    ADD MAPPING FOR l WITH simple;
+
+ALTER TEXT SEARCH CONFIGURATION public.chinese
+    ADD MAPPING FOR n WITH simple;
+
+ALTER TEXT SEARCH CONFIGURATION public.chinese
+    ADD MAPPING FOR v WITH simple;
+
+
+ALTER TEXT SEARCH CONFIGURATION public.chinese OWNER TO ngtesting;
 
 SET default_tablespace = '';
 
@@ -3153,7 +3234,6 @@ ALTER SEQUENCE public."IsuHistory_id_seq" OWNED BY public."IsuHistory".id;
 CREATE TABLE public."IsuIssue" (
     id integer NOT NULL,
     title character varying(500),
-    descr character varying(1000),
     "orgId" integer,
     "projectId" integer,
     "projectName" character varying(255),
@@ -3176,7 +3256,9 @@ CREATE TABLE public."IsuIssue" (
     disabled boolean,
     deleted boolean,
     uuid character varying(32),
-    "extProp" jsonb
+    "extProp" jsonb,
+    tsv_content tsvector,
+    descr character varying(10000)
 );
 
 
@@ -9346,6 +9428,13 @@ CREATE INDEX idx_test_case_extprop ON public."TstCase" USING gin ("extProp" json
 
 
 --
+-- Name: IsuIssue issue_tsvector_update_trigger; Type: TRIGGER; Schema: public; Owner: ngtesting
+--
+
+CREATE TRIGGER issue_tsvector_update_trigger AFTER INSERT OR UPDATE OF title, tag, "extProp", descr ON public."IsuIssue" FOR EACH ROW EXECUTE PROCEDURE public.update_issue_tsv_content();
+
+
+--
 -- Name: CustomFieldOptionDefine CustomFieldOptionDefine_fieldId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ngtesting
 --
 
@@ -10952,7 +11041,6 @@ COPY public."IsuFieldCodeToTableDefine" (id, "colCode", "table", disabled, delet
 --
 
 COPY public."IsuFieldDefine" (id, "colCode", label, type, input, "defaultShowInFilters", "filterOrdr", "defaultShowInColumns", "columnOrdr", "defaultShowInPage", "elemOrdr", readonly, "fullLine", required, disabled, deleted, "createTime", "updateTime") FROM stdin;
-1	title	标题	string	text	\N	\N	t	10100	t	10100	f	t	t	f	f	2018-11-09 13:18:24	\N
 2	projectId	项目	integer	dropdown	\N	\N	f	11300	\N	\N	f	\N	\N	f	f	2018-11-09 13:18:24	\N
 3	typeId	类型	integer	dropdown	t	10200	t	10200	t	10200	f	f	f	f	f	2018-11-09 13:18:24	\N
 4	statusId	状态	integer	dropdown	t	10300	t	10300	t	10150	f	f	f	f	f	2018-11-09 13:18:24	\N
@@ -10968,7 +11056,8 @@ COPY public."IsuFieldDefine" (id, "colCode", label, type, input, "defaultShowInF
 14	comments	备注	string	textarea	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	f	2018-11-09 13:18:24	\N
 15	resolutionDescr	解决详情	string	textarea	\N	\N	\N	\N	f	20000	f	f	f	f	f	2018-11-09 13:18:24	\N
 16	tag	标签	string	text	f	11400	\N	\N	\N	\N	\N	\N	\N	f	f	2018-12-18 08:38:44	\N
-17	descr	描述	string	textarea	f	11250	\N	\N	t	10800	f	t	f	f	f	2018-12-18 08:35:16	\N
+1	title	标题	string	text	\N	\N	t	10100	t	10100	f	t	t	f	f	2018-11-09 13:18:24	\N
+17	descr	描述	string	textarea	f	11250	\N	\N	t	10800	f	t	f	f	f	2019-02-18 21:49:26.756654	\N
 \.
 
 
@@ -11211,7 +11300,7 @@ SELECT pg_catalog.setval('public."IsuFieldCodeToTableDefine_id_seq"', 1, false);
 -- Name: IsuFieldDefine_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ngtesting
 --
 
-SELECT pg_catalog.setval('public."IsuFieldDefine_id_seq"', 1, false);
+SELECT pg_catalog.setval('public."IsuFieldDefine_id_seq"', 1, true);
 
 
 --
@@ -11288,21 +11377,21 @@ SELECT pg_catalog.setval('public."IsuWorkflowTransitionDefine_id_seq"', 1, false
 -- Name: TstCaseExeStatus_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ngtesting
 --
 
-SELECT pg_catalog.setval('public."TstCaseExeStatus_id_seq"', 518, true);
+SELECT pg_catalog.setval('public."TstCaseExeStatus_id_seq"', 526, true);
 
 
 --
 -- Name: TstCasePriority_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ngtesting
 --
 
-SELECT pg_catalog.setval('public."TstCasePriority_id_seq"', 371, true);
+SELECT pg_catalog.setval('public."TstCasePriority_id_seq"', 377, true);
 
 
 --
 -- Name: TstCaseType_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ngtesting
 --
 
-SELECT pg_catalog.setval('public."TstCaseType_id_seq"', 869, true);
+SELECT pg_catalog.setval('public."TstCaseType_id_seq"', 883, true);
 
 
 --

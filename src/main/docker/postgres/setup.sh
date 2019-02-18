@@ -18,6 +18,10 @@ else
     psql -h ngtesting-postgres -U postgres  -c 'CREATE DATABASE "ngtesting-web" OWNER ngtesting'
     echo '3. 成功创建数据库'
 
+    psql -h ngtesting-postgres -U ngtesting ngtesting-web  -c 'CREATE EXTENSION zhparser;'
+    psql -h ngtesting-postgres -U ngtesting ngtesting-web  -c 'CREATE TEXT SEARCH CONFIGURATION chinese_zh (PARSER = zhparser);'
+    psql -h ngtesting-postgres -U ngtesting ngtesting-web  -c 'ALTER TEXT SEARCH CONFIGURATION chinese_zh ADD MAPPING FOR n,v,a,i,e,l WITH simple;'
+
     echo '4. 导入数据....'
     psql -h ngtesting-postgres -U ngtesting "ngtesting-web" < /schema.sql
     echo '4. 成功导入数据'

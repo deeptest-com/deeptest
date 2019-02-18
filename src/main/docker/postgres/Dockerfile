@@ -1,3 +1,1 @@
-FROM postgres:11.2
-
-EXPOSE 5432
+FROM chenxinaz/zhparser

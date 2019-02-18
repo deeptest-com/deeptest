@@ -39,7 +39,7 @@ public class FulltextRuleParser extends AbstractSqlRuleParser {
         System.out.println("rule.buildIn = " + rule.getBuildIn());
 
         // select title from posts where tsv_content @@ plainto_tsquery('hello world');
-        String opt = "tsv_content @@ plainto_tsquery('chinese', ?)";
+        String opt = "tsv_content @@ plainto_tsquery('chinese_zh', ?)";
 
         System.out.println("rule = buildIn:" + rule.getBuildIn() + ", opt:" + opt);
         return new Operation(new StringBuffer(opt), rule.getValue());

@@ -70,6 +70,14 @@ public class IsuIssue extends BaseModel {
         this.extProp = extProp;
     }
 
+    public String getDescr() {
+        return descr;
+    }
+
+    public void setDescr(String descr) {
+        this.descr = descr;
+    }
+
     public List<Map> getWatchList() {
         return watchList;
     }
@@ -108,14 +116,6 @@ public class IsuIssue extends BaseModel {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getDescr() {
-        return descr;
-    }
-
-    public void setDescr(String descr) {
-        this.descr = descr;
     }
 
     public Integer getProjectId() {

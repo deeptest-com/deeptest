@@ -66,11 +66,10 @@ public class SqlQueryResult extends AbstractResult {
             for (Object param : params) {
                 int index = sql.indexOf("?");
 
-                // 日期
                 StringBuffer str;
-                if (param instanceof Time) {
+                if (param instanceof Time) { // 日期
                     str = new StringBuffer(new SimpleDateFormat("HH:mm:ss").format(param));
-                } else if (param instanceof Date || param instanceof java.sql.Date) {
+                } else if (param instanceof Date || param instanceof java.sql.Date) { // 日期时间
                     str = new StringBuffer(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(param));
                 } else {
                     str = new StringBuffer(param.toString());

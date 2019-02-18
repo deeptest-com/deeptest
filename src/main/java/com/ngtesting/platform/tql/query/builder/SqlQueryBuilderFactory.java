@@ -72,6 +72,8 @@ public class SqlQueryBuilderFactory extends AbstractQueryBuilderFactory {
         ruleParsers.add(new IsNotEmptyRuleParser());
         ruleParsers.add(new IsNullRuleParser());
         ruleParsers.add(new IsNotNullRuleParser());
+
+        ruleParsers.add(new FulltextRuleParser());
     }
 
     /**

@@ -38,8 +38,10 @@ public class FulltextRuleParser extends AbstractSqlRuleParser {
     public Operation parse(IRule rule, JsonRuleParser parser) {
         System.out.println("rule.buildIn = " + rule.getBuildIn());
 
-        String opt = ""; // TODO:
+        // select title from posts where tsv_content @@ plainto_tsquery('hello world');
+        String opt = "tsv_content @@ plainto_tsquery('chinese', ?)";
 
+        System.out.println("rule = buildIn:" + rule.getBuildIn() + ", opt:" + opt);
         return new Operation(new StringBuffer(opt), rule.getValue());
     }
 }

@@ -1,1 +1,0 @@
-CREATE DATABASE IF NOT EXISTS `ngtesting-web` DEFAULT CHARSET utf8 COLLATE utf8_general_ci;

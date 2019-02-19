@@ -1,1 +1,1 @@
-FROM chenxinaz/zhparser
+FROM registry.cn-shanghai.aliyuncs.com/ngtesting/ngtesting-postgres-base:2.0.0

@@ -2399,13 +2399,13 @@ BEGIN
 	select 
 	   string_agg(distinct(CASE WHEN fld.type = 'string' 
 	            THEN replace(temp.val::TEXT, '"', '')
-            WHEN (fld.input = 'dropdown' OR fld.input = 'radio')
-			  THEN (select opt.label from "CustomFieldOption" opt
-			    where opt.id = temp.val::TEXT::integer)::text
-            WHEN fld.type = 'muti_select' OR fld.type = 'checkbox'
-			  THEN (select string_agg(opt.label, '') from "CustomFieldOption" opt
-			    where opt.id = any(array(SELECT * FROM regexp_split_to_array(temp.val::text, ','))::TEXT::integer[]))
-            ELSE ''
+            --WHEN (fld.input = 'dropdown' OR fld.input = 'radio')
+			--  THEN (select opt.label from "CustomFieldOption" opt
+			--    where opt.id = temp.val::TEXT::integer)::text
+            --WHEN fld.type = 'muti_select' OR fld.type = 'checkbox'
+			--  THEN (select string_agg(opt.label, '') from "CustomFieldOption" opt
+			--    where opt.id = any(array(SELECT * FROM regexp_split_to_array(temp.val::text, ','))::TEXT::integer[]))
+            --ELSE ''
        END), ' ')		   
 	from "IsuIssue" b, jsonb_each(coalesce(b."extProp",'{}')) as temp(key,val)
 	join "CustomField" fld on fld."colCode" = temp.key::text			   

@@ -5,6 +5,7 @@ docker rm -f `docker ps -a -q`
 docker-compose up -d;
 docker-compose logs -f;
 
+docker image prune
 docker rmi `docker images -q`
 
 docker build -f Dockerfile-Base --rm -t registry.cn-shanghai.aliyuncs.com/ngtesting/ngtesting-web-base:2.0.0 .

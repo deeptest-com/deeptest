@@ -61,7 +61,7 @@
 
     <insert id="saveRelations" useGeneratedKeys="true" keyProperty="id">
         insert into "IsuTagRelation"
-        (issueId, tagId)
+        ("issueId", "tagId")
         values
         <foreach collection="tags" item="item" separator=",">
             (#{issueId}, #{item.id})

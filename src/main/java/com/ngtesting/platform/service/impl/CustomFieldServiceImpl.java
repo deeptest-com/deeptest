@@ -108,8 +108,8 @@ public class CustomFieldServiceImpl extends BaseServiceImpl implements CustomFie
         List<String> ls = customFieldDao.getLastUnusedColumn(orgId);
 
         String ret = null;
-        for (int i = 1; i <= 20; i++) {
-            String prop = "prop" + String.format("%02d", i);
+        for (int i = 1; i <= 1000; i++) {
+            String prop = "prop" + String.format("%03d", i);
             if (!ls.contains(prop)) {
                 ret = prop;
                 break;

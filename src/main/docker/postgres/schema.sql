@@ -776,7 +776,7 @@ DROP TABLE public."CustomFieldInputTypeRelationDefine";
 DROP SEQUENCE public."CustomFieldDefine_id_seq";
 DROP TABLE public."CustomFieldDefine";
 DROP TABLE public."CustomField";
-DROP TEXT SEARCH CONFIGURATION public.chinese;
+DROP TEXT SEARCH CONFIGURATION public.chinese_zh;
 DROP FUNCTION public.user_not_in_project(p_user_id integer, p_project_id integer);
 DROP FUNCTION public.update_workflow_statuses(p_workflow_id integer, p_status_ids character varying, p_org_id integer);
 DROP FUNCTION public.update_workflow_statuses(p_workflow_id integer, p_status_ids character varying);
@@ -2399,7 +2399,7 @@ BEGIN
 
 	select string_agg(temp.val::TEXT, ' ')
 	from "IsuIssue" b, jsonb_each(coalesce(b."extProp",'{}')) as temp(key,val)
-	where b.id = OLD.id
+	where b.id = NEW.id
 	into p_str;
 	
 	RAISE NOTICE 'NEW_ID: %', NEW.id;
@@ -2521,32 +2521,32 @@ $$;
 ALTER FUNCTION public.user_not_in_project(p_user_id integer, p_project_id integer) OWNER TO ngtesting;
 
 --
--- Name: chinese; Type: TEXT SEARCH CONFIGURATION; Schema: public; Owner: ngtesting
+-- Name: chinese_zh; Type: TEXT SEARCH CONFIGURATION; Schema: public; Owner: ngtesting
 --
 
-CREATE TEXT SEARCH CONFIGURATION public.chinese (
+CREATE TEXT SEARCH CONFIGURATION public.chinese_zh (
     PARSER = public.zhparser );
 
-ALTER TEXT SEARCH CONFIGURATION public.chinese
+ALTER TEXT SEARCH CONFIGURATION public.chinese_zh
     ADD MAPPING FOR a WITH simple;
 
-ALTER TEXT SEARCH CONFIGURATION public.chinese
+ALTER TEXT SEARCH CONFIGURATION public.chinese_zh
     ADD MAPPING FOR e WITH simple;
 
-ALTER TEXT SEARCH CONFIGURATION public.chinese
+ALTER TEXT SEARCH CONFIGURATION public.chinese_zh
     ADD MAPPING FOR i WITH simple;
 
-ALTER TEXT SEARCH CONFIGURATION public.chinese
+ALTER TEXT SEARCH CONFIGURATION public.chinese_zh
     ADD MAPPING FOR l WITH simple;
 
-ALTER TEXT SEARCH CONFIGURATION public.chinese
+ALTER TEXT SEARCH CONFIGURATION public.chinese_zh
     ADD MAPPING FOR n WITH simple;
 
-ALTER TEXT SEARCH CONFIGURATION public.chinese
+ALTER TEXT SEARCH CONFIGURATION public.chinese_zh
     ADD MAPPING FOR v WITH simple;
 
 
-ALTER TEXT SEARCH CONFIGURATION public.chinese OWNER TO ngtesting;
+ALTER TEXT SEARCH CONFIGURATION public.chinese_zh OWNER TO ngtesting;
 
 SET default_tablespace = '';
 

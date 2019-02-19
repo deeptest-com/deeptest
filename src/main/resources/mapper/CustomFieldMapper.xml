@@ -196,6 +196,16 @@
         ORDER BY o.ordr
     </select>
 
+    <select id="listFieldTypeByInput" resultType="Map">
+        SELECT o.id, o.label, o."value"
+        FROM "CustomFieldTypeDefine" o
+                 JOIN "CustomFieldInputTypeRelationDefine" r ON o."value" = r."typeValue"
+
+        WHERE r."inputValue" = #{value}
+
+        ORDER BY o.ordr
+    </select>
+
     <resultMap id="inputMap" type="java.util.Map" autoMapping="true">
         <id column="value" property="value"/>
 

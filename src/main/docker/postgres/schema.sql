@@ -2395,11 +2395,21 @@ CREATE FUNCTION public.update_issue_tsv_content() RETURNS trigger
     AS $$
 DECLARE
    p_str VARCHAR;
-BEGIN
-
-	select string_agg(temp.val::TEXT, ' ')
+BEGIN							   
+	select 
+	   string_agg(distinct(CASE WHEN fld.type = 'string' 
+	            THEN replace(temp.val::TEXT, '"', '')
+            WHEN (fld.input = 'dropdown' OR fld.input = 'radio')
+			  THEN (select opt.label from "CustomFieldOption" opt
+			    where opt.id = temp.val::integer)::text
+            WHEN fld.type = 'muti_select' OR fld.type = 'checkbox'
+			  THEN (select string_agg(opt.label, '') from "CustomFieldOption" opt
+			    where opt.id = any(array(SELECT * FROM regexp_split_to_array(temp.val::text, ','))::integer[]))
+            ELSE ''
+       END), ' ')		   
 	from "IsuIssue" b, jsonb_each(coalesce(b."extProp",'{}')) as temp(key,val)
-	where b.id = NEW.id
+	join "CustomField" fld on fld."colCode" = temp.key::text			   
+	WHERE b.id = NEW.id AND (fld.type = 'string' or fld.type = 'integer')
 	into p_str;
 	
 	RAISE NOTICE 'NEW_ID: %', NEW.id;

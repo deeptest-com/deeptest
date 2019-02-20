@@ -148,7 +148,7 @@
 
         SELECT wat."userId"
         FROM "IsuWatch" wat
-        WHERE wat.issueId = #{id}
+        WHERE wat."issueId" = #{id}
     </select>
 
 

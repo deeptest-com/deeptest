@@ -1,4 +1,5 @@
 /target/
+/postgres-data/
 
 ### STS ###
 .apt_generated

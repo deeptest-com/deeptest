@@ -1,16 +1,16 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.CaseHistoryDao;
 import com.ngtesting.platform.dao.UserDao;
-import com.ngtesting.platform.model.TstCase;
 import com.ngtesting.platform.model.TstCaseHistory;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.CaseHistoryService;
-import com.ngtesting.platform.utils.StringUtil;
+import com.ngtesting.platform.utils.MsgUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.text.MessageFormat;
 
 @Service
 public class CaseHistoryServiceImpl extends BaseServiceImpl implements CaseHistoryService {
@@ -21,15 +21,12 @@ public class CaseHistoryServiceImpl extends BaseServiceImpl implements CaseHisto
     CaseHistoryDao caseHistoryDao;
 
     @Override
-    public void saveHistory(TstUser user, Constant.EntityAct act, Integer caseId, String field) {
+    public void saveHistory(TstUser user, MsgUtil.MsgAction act, Integer caseId, String field) {
 	    String action = act.msg;
 
-        String msg = "用户" + StringUtil.highlightDict(user.getNickname()) + action;
-        if (StringUtils.isNotEmpty(field)) {
-            msg += " " + field;
-        } else {
-//            msg += "信息";
-        }
+        String fieldMsg = StringUtils.isNotEmpty(field)? "字段 "  + field: "";
+        String msg = MessageFormat.format(MsgUtil.HistoryMsgTemplate.opt_entity.msg, user.getNickname(), action, fieldMsg);
+
         TstCaseHistory his = new TstCaseHistory();
         his.setTitle(msg);
         his.setCaseId(caseId);

@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface IssueDao {
+    IsuIssue getById(@Param("id") Integer id);
+
     IsuIssue get(@Param("id") Integer id,
                  @Param("userId") Integer userId,
                  @Param("prjId") Integer prjId);
@@ -53,4 +55,6 @@ public interface IssueDao {
 
     Integer delete(@Param("id") Integer id,
                    @Param("projectId") Integer projectId);
+
+    List<Integer> listAssigneeAndWatcherIds(@Param("id") Integer id);
 }

@@ -3,6 +3,7 @@ package com.ngtesting.platform.action.client;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.model.IsuComments;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueCommentsService;
 import com.ngtesting.platform.servlet.PrivPrj;
@@ -31,7 +32,7 @@ public class IssueCommentsAction extends BaseAction {
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
-        Object vo = issueCommentsService.save(json, user);
+        IsuComments vo = issueCommentsService.save(json, user);
 
         if (vo == null) {
             return authFail();
@@ -49,8 +50,10 @@ public class IssueCommentsAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Boolean result = issueCommentsService.delete(json.getInteger("id"), user);
 
+        Integer id = json.getInteger("id");
+
+        Boolean result = issueCommentsService.delete(id, user);
         if (!result) {
             return authFail();
         }

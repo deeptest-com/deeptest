@@ -8,11 +8,12 @@ import com.ngtesting.platform.model.TstTask;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.AlertService;
 import com.ngtesting.platform.utils.DateUtil;
-import com.ngtesting.platform.utils.StringUtil;
+import com.ngtesting.platform.utils.MsgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.MessageFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,6 +32,33 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
         List<TstAlert> vos = genVos(pos);
 
         return vos;
+    }
+
+    @Override
+    @Transactional
+    public void create(TstTask task) {
+        List<TstUser> assignees = task.getAssignees();
+
+        alertDao.removeOldIfNeeded(task.getId(), assignees);
+
+        for (TstUser assignee : assignees) {
+            TstAlert po = new TstAlert();
+
+            po.setType("task");
+            po.setTitle(task.getName());
+
+            po.setEntityId(task.getId());
+
+            po.setUserId(task.getUserId());
+            po.setAssigneeId(assignee.getId());
+
+            TstPlan plan= planDao.get(task.getPlanId(), null);
+
+            po.setStartTime(plan.getStartTime());
+            po.setEndTime(plan.getEndTime());
+
+            alertDao.create(po);
+        }
     }
 
     @Override
@@ -65,38 +93,12 @@ public class AlertServiceImpl extends BaseServiceImpl implements AlertService {
         Date endTime = po.getEndTime();
 
         if (endTime != null && endTime.getTime() >= startTimeOfToday && endTime.getTime() <= endTimeOfToday) {
-            po.setTitle("任务" + StringUtil.highlightDict(po.getTitle()) + "完成");
+            po.setTitle(MessageFormat.format(MsgUtil.HistoryMsgTemplate.end_task.msg, po.getTitle()));
         } else {
-            po.setTitle("任务" + StringUtil.highlightDict(po.getTitle()) + "开始");
+            po.setTitle(MessageFormat.format(MsgUtil.HistoryMsgTemplate.start_task.msg, po.getTitle()));
         }
 
         return po;
-    }
-    @Override
-    @Transactional
-    public void create(TstTask task) {
-        List<TstUser> assignees = task.getAssignees();
-
-        alertDao.removeOldIfNeeded(task.getId(), assignees);
-
-        for (TstUser assignee : assignees) {
-            TstAlert po = new TstAlert();
-
-            po.setType("task");
-            po.setTitle(task.getName());
-
-            po.setEntityId(task.getId());
-
-            po.setUserId(task.getUserId());
-            po.setAssigneeId(assignee.getId());
-
-            TstPlan plan= planDao.get(task.getPlanId(), null);
-
-            po.setStartTime(plan.getStartTime());
-            po.setEndTime(plan.getEndTime());
-
-            alertDao.create(po);
-        }
     }
 
     @Override

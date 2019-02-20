@@ -7,7 +7,7 @@ import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstOrg;
 import com.ngtesting.platform.model.TstPlan;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.HistoryService;
+import com.ngtesting.platform.service.intf.ProjectHistoryService;
 import com.ngtesting.platform.service.intf.OrgService;
 import com.ngtesting.platform.service.intf.TestPlanService;
 import com.ngtesting.platform.servlet.PrivOrg;
@@ -33,7 +33,7 @@ public class OrgAction extends BaseAction {
 	@Autowired
     TestPlanService planService;
 	@Autowired
-    HistoryService historyService;
+    ProjectHistoryService historyService;
 
 	@RequestMapping(value = "view", method = RequestMethod.POST)
 	@ResponseBody

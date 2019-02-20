@@ -7,7 +7,7 @@ import com.ngtesting.platform.model.TstUser;
 import java.util.List;
 import java.util.Map;
 
-public interface HistoryService extends BaseService {
+public interface ProjectHistoryService extends BaseService {
 
 	List<TstHistory> listByOrg(Integer orgId);
 

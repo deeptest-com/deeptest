@@ -39,6 +39,7 @@ public class IssueAction extends BaseAction {
     @Autowired
     IssueWatchService issueWatchService;
 
+
     @PrivPrj(perms = {"issue-view"})
     @RequestMapping(value = "view", method = RequestMethod.POST)
     @ResponseBody
@@ -152,9 +153,11 @@ public class IssueAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer prjId = user.getDefaultPrjId();
 
         Integer pageId = json.getInteger("pageId");
         JSONObject issue = json.getJSONObject("issue");
+        Integer id = issue.getInteger("id");
 
         issueService.update(issue, pageId, user);
 

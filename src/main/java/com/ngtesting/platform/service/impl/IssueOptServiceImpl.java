@@ -1,6 +1,5 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.IssueOptDao;
 import com.ngtesting.platform.dao.UserDao;
 import com.ngtesting.platform.model.IsuComments;
@@ -10,6 +9,7 @@ import com.ngtesting.platform.service.intf.IssueCommentsService;
 import com.ngtesting.platform.service.intf.IssueHistoryService;
 import com.ngtesting.platform.service.intf.IssueOptService;
 import com.ngtesting.platform.service.intf.IssueStatusService;
+import com.ngtesting.platform.utils.MsgUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,7 @@ public class IssueOptServiceImpl extends BaseServiceImpl implements IssueOptServ
 
         issueOptDao.statusTran(id, dictStatusId, status.getFinalVal(), user.getDefaultPrjId());
 
-        issueHistoryService.saveHistory(user, Constant.EntityAct.changeStatus, id, dictStatusName);
+        issueHistoryService.saveHistory(user, MsgUtil.MsgAction.changeStatus, id, dictStatusName);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class IssueOptServiceImpl extends BaseServiceImpl implements IssueOptServ
 
         TstUser u = userDao.get(userId);
 
-        issueHistoryService.saveHistory(user, Constant.EntityAct.assign, id, u.getNickname());
+        issueHistoryService.saveHistory(user, MsgUtil.MsgAction.assign, id, u.getNickname());
     }
 
 }

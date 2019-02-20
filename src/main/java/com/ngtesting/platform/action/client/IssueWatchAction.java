@@ -61,17 +61,33 @@ public class IssueWatchAction extends BaseAction {
         return ret;
     }
 
-    @RequestMapping(value = "batchSave", method = RequestMethod.POST)
+    @RequestMapping(value = "watch", method = RequestMethod.POST)
+    @ResponseBody
+    @PrivPrj
+    public Map<String, Object> watch(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+
+        Integer id = json.getInteger("id");
+        Boolean status = json.getBoolean("status");
+
+        issueWatchService.watch(id, user, status);
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @RequestMapping(value = "batchWatch", method = RequestMethod.POST)
     @ResponseBody
     @PrivPrj(perms = {"issue-maintain"})
-    public Map<String, Object> batchSave(HttpServletRequest request, @RequestBody JSONObject json) {
+    public Map<String, Object> batchWatch(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 
         Integer issueId = json.getInteger("issueId");
         List<Integer> userIds = json.getObject("userIds", List.class);
 
-        issueWatchService.batchSave(issueId, userIds, user);
+        issueWatchService.batchWatch(issueId, userIds, user);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
@@ -88,22 +104,6 @@ public class IssueWatchAction extends BaseAction {
         Integer issueId = json.getInteger("issueId");
 
         issueWatchService.remove(id, issueId, user);
-
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
-    @RequestMapping(value = "watch", method = RequestMethod.POST)
-    @ResponseBody
-    @PrivPrj
-    public Map<String, Object> watch(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-
-        Integer id = json.getInteger("id");
-        Boolean status = json.getBoolean("status");
-
-        issueWatchService.watch(id, user, status);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

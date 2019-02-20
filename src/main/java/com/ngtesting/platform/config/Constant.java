@@ -54,23 +54,6 @@ public class Constant {
         }
     }
 
-    public enum MsgType {
-        create("create", "创建"),
-        update("update", "更新"),
-        update_case("update_case", "更新用例为");
-
-        MsgType(String code, String msg) {
-            this.code = code;
-            this.msg = msg;
-        }
-
-        public String code;
-        public String msg;
-        public String toString() {
-            return code;
-        }
-    }
-
     public static Map<String, String> ExeStatus = new HashMap() {{
         put("pass", "成功");
         put("fail", "失败");
@@ -81,41 +64,4 @@ public class Constant {
     public static Map<String, String> JenkinsTask = new HashMap() {{
         put("asr", "ngtesting-asr");
     }};
-
-    public enum EntityAct {
-        create("create", "创建"),
-        rename("rename", "改名"),
-        update("update", "更新"),
-        move("move", "移动"),
-        copy("copy", "复制"),
-        delete("delete", "删除"),
-
-        assign("assign", "分配经办人"),
-        changeStatus("changeStatus", "修改状态"),
-        link("link", "建立链接"),
-        watch("watch", "关注问题"),
-        unwatch("unwatch", "取消关注"),
-        removeWatch("removeWatch", "移除关注人"),
-        changeWatch("changeWatch", "修改关注列表"),
-
-        attachment_upload("attachment_upload", "上传附件"),
-        attachment_delete("attachment_delete", "删除附件"),
-
-//        comments_add("comments_add", "新增注释"),
-//        comments_update("comments_update", "修改注释"),
-//        comments_delete("comments_delete", "删除注释"),
-
-        exe_result("exe_result", "标注执行结果");
-
-        EntityAct(String code, String msg) {
-            this.code = code;
-            this.msg = msg;
-        }
-
-        public String code;
-        public String msg;
-        public String toString() {
-            return code;
-        }
-    }
 }

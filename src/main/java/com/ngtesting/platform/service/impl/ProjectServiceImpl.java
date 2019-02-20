@@ -25,7 +25,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	private static final Log log = LogFactory.getLog(ProjectServiceImpl.class);
 
     @Autowired
-    HistoryService historyService;
+    ProjectHistoryService historyService;
 	@Autowired
 	private ProjectDao projectDao;
     @Autowired
@@ -144,7 +144,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 //        设置为默认项目？
 //        if(TstProject.ProjectType.project.equals(vo.getType())) {
 //            historyService.create(vo.getCode(), user,
-//                    isNew? Constant.MsgType.create.msg: Constant.MsgType.create.update.msg,
+//                    isNew? Constant.HistoryMsgTemplate.create.msg: Constant.HistoryMsgTemplate.create.update.msg,
 //                    TstHistory.TargetType.project, vo.getCode(), vo.getName());
 //        }
 

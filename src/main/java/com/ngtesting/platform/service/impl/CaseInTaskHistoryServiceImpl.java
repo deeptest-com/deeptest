@@ -3,14 +3,15 @@ package com.ngtesting.platform.service.impl;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.CaseInTaskHistoryDao;
 import com.ngtesting.platform.dao.UserDao;
-import com.ngtesting.platform.model.TstCaseInTask;
 import com.ngtesting.platform.model.TstCaseInTaskHistory;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.CaseInTaskHistoryService;
-import com.ngtesting.platform.utils.StringUtil;
+import com.ngtesting.platform.utils.MsgUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.text.MessageFormat;
 
 @Service
 public class CaseInTaskHistoryServiceImpl extends BaseServiceImpl implements CaseInTaskHistoryService {
@@ -21,15 +22,12 @@ public class CaseInTaskHistoryServiceImpl extends BaseServiceImpl implements Cas
     CaseInTaskHistoryDao caseInTaskHistoryDao;
 
     @Override
-    public void saveHistory(TstUser user, Constant.EntityAct act, Integer caseInTaskId, String field) {
+    public void saveHistory(TstUser user, MsgUtil.MsgAction act, Integer caseInTaskId, String field) {
 	    String action = act.msg;
 
-        String msg = "用户" + StringUtil.highlightDict(user.getNickname()) + action;
-        if (StringUtils.isNotEmpty(field)) {
-            msg += " " + field;
-        } else {
-//            msg += "信息";
-        }
+        String fieldMsg = StringUtils.isNotEmpty(field)? "字段 "  + field: "";
+        String msg = MessageFormat.format(MsgUtil.HistoryMsgTemplate.opt_entity.msg, user.getNickname(), action, fieldMsg);
+
         TstCaseInTaskHistory his = new TstCaseInTaskHistory();
         his.setTitle(msg);
         his.setCaseInTaskId(caseInTaskId);
@@ -37,15 +35,12 @@ public class CaseInTaskHistoryServiceImpl extends BaseServiceImpl implements Cas
     }
 
     @Override
-    public void saveHistory(Integer caseId, Integer caseInTaskId, Constant.EntityAct act, TstUser user,
+    public void saveHistory(Integer caseId, Integer caseInTaskId, MsgUtil.MsgAction act, TstUser user,
                             String status, String result) {
         String action = act.msg;
 
-        String msg = "用户" + StringUtil.highlightDict(user.getNickname()) + action
-                + "为\"" + Constant.ExeStatus.get(status) + "\"";
-        if (!StringUtils.isEmpty(result)) {
-            msg += ", 结果内容：" + result;
-        }
+        String resultMsg = StringUtils.isNotEmpty(result)? Constant.ExeStatus.get(status): "";
+        String msg = MessageFormat.format(MsgUtil.HistoryMsgTemplate.exe_case.msg, user.getNickname(), action, resultMsg);
 
         TstCaseInTaskHistory his = new TstCaseInTaskHistory();
         his.setTitle(msg);

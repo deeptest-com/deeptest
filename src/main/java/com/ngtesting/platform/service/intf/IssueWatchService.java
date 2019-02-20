@@ -11,6 +11,6 @@ public interface IssueWatchService extends BaseService {
 
     Boolean remove(Integer id, Integer issueId, TstUser user);
 
-    Boolean batchSave(Integer issueId, List<Integer> userIds, TstUser user);
+    Boolean batchWatch(Integer issueId, List<Integer> userIds, TstUser user);
     Boolean watch(Integer id, TstUser user, Boolean status);
 }

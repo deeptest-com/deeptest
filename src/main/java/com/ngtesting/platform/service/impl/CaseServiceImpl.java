@@ -1,7 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.*;
 import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.intf.CaseCommentsService;
@@ -9,6 +8,7 @@ import com.ngtesting.platform.service.intf.CaseHistoryService;
 import com.ngtesting.platform.service.intf.CaseService;
 import com.ngtesting.platform.utils.BeanUtilEx;
 import com.ngtesting.platform.utils.CustomFieldUtil;
+import com.ngtesting.platform.utils.MsgUtil;
 import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -89,12 +89,12 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     @Transactional
 	public TstCase rename(Integer id, String name, Boolean isParent, Integer pId, Integer projectId, TstUser user) {
         TstCase po = new TstCase();
-        Constant.EntityAct action;
+        MsgUtil.MsgAction action;
 
         boolean isNew;
         if (id != null && id > 0) {
             isNew = false;
-            action = Constant.EntityAct.rename;
+            action = MsgUtil.MsgAction.rename;
             po = caseDao.get(id, projectId);
             if(po == null) {
                 return null;
@@ -103,7 +103,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             po.setUpdateById(user.getId());
         } else {
             isNew = true;
-            action = Constant.EntityAct.create;
+            action = MsgUtil.MsgAction.create;
 
             po.setIsParent(isParent);
             po.setId(null);
@@ -151,10 +151,10 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         Integer srcParentId = src.getpId();
 
         TstCase testCase;
-        Constant.EntityAct action;
+        MsgUtil.MsgAction action;
 
         if (isCopy) {
-            action = Constant.EntityAct.copy;
+            action = MsgUtil.MsgAction.copy;
 
             testCase = new TstCase();
             BeanUtilEx.copyProperties(src, testCase);
@@ -162,7 +162,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 
             testCase.setCreateById(user.getId());
         } else {
-            action = Constant.EntityAct.move;
+            action = MsgUtil.MsgAction.move;
             testCase = src;
             testCase.setUpdateById(user.getId());
         }
@@ -227,7 +227,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             return null;
         }
 
-        caseHistoryService.saveHistory(user, Constant.EntityAct.update, json.getInteger("id"),null);
+        caseHistoryService.saveHistory(user, MsgUtil.MsgAction.update, json.getInteger("id"),null);
 
         TstCase ret = caseDao.getDetail(json.getInteger("id"), projectId);
 		return ret;
@@ -246,7 +246,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         TstCase testCase = caseDao.get(id, null);
 //        caseDao.updateParentIfNeeded(testCase.getpId());
 
-        caseHistoryService.saveHistory(user, Constant.EntityAct.delete, testCase.getId(),null);
+        caseHistoryService.saveHistory(user, MsgUtil.MsgAction.delete, testCase.getId(),null);
 
         return count;
 	}
@@ -262,7 +262,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         }
 
         TstCase testCase = caseDao.getDetail(id, projectId);
-        caseHistoryService.saveHistory(user, Constant.EntityAct.update, testCase.getId(), "内容类型");
+        caseHistoryService.saveHistory(user, MsgUtil.MsgAction.update, testCase.getId(), "内容类型");
         return testCase;
     }
 
@@ -313,7 +313,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         }
 
         TstCase testCase = caseDao.getDetail(id, projectId);
-        caseHistoryService.saveHistory(user, Constant.EntityAct.update, testCase.getId(),label);
+        caseHistoryService.saveHistory(user, MsgUtil.MsgAction.update, testCase.getId(),label);
 
         return testCase;
     }
@@ -332,7 +332,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
         caseDao.createSample(testCase2);
         caseDao.setDefaultVal(testCase2.getpId(), user.getDefaultOrgId());
 
-        caseHistoryService.saveHistory(user, Constant.EntityAct.create, testCase2.getId(),null);
+        caseHistoryService.saveHistory(user, MsgUtil.MsgAction.create, testCase2.getId(),null);
 
         TstCaseStep step = new TstCaseStep("操作步骤1", "期待结果1", 1, testCase2.getId());
         caseStepDao.save(step);

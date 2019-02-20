@@ -30,9 +30,9 @@ public class StringUtil extends StringUtils {
 		}
 	}
 
-	public static String highlightDict(String str){
-		return "<span class=\"dict\">" +str + "</span>";
-	}
+//	public static String highlightDict(String str){
+//		return "<span class=\"dict\">" +str + "</span>";
+//	}
 
 	/**
 	 * 获得i18n字符串

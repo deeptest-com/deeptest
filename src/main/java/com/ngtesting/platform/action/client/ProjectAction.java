@@ -31,7 +31,7 @@ public class ProjectAction extends BaseAction {
     @Autowired
     private TestPlanService planService;
     @Autowired
-    private HistoryService historyService;
+    private ProjectHistoryService historyService;
     @Autowired
     AuthService authService;
 

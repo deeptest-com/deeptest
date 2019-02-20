@@ -3,14 +3,17 @@ package com.ngtesting.platform.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.TestPlanDao;
 import com.ngtesting.platform.dao.TestTaskDao;
-import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.model.TstHistory;
+import com.ngtesting.platform.model.TstSuite;
+import com.ngtesting.platform.model.TstTask;
+import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.AlertService;
-import com.ngtesting.platform.service.intf.HistoryService;
+import com.ngtesting.platform.service.intf.ProjectHistoryService;
 import com.ngtesting.platform.service.intf.MsgService;
 import com.ngtesting.platform.service.intf.TestTaskService;
+import com.ngtesting.platform.utils.MsgUtil;
 import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +33,7 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
     AlertService alertService;
 
     @Autowired
-    HistoryService historyService;
+    ProjectHistoryService historyService;
 
     @Autowired
     TestTaskDao taskDao;
@@ -59,13 +62,13 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
             task.setCaseProjectId(task.getProjectId());
         }
 
-        Constant.MsgType action = null;
+        MsgUtil.MsgAction action = null;
         if (task.getId() == null) {
-            action = Constant.MsgType.create;
+            action = MsgUtil.MsgAction.create;
 
             taskDao.save(task);
         } else {
-            action = Constant.MsgType.update;
+            action = MsgUtil.MsgAction.update;
             Integer count = taskDao.update(task);
             if (count == null) {
                 return null;
@@ -82,7 +85,13 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
         importSuiteCasesPers(task, suites, user);
 
         alertService.create(task);
-        msgService.create(task, action, user);
+
+        MsgUtil.HistoryMsgTemplate template = action.equals(MsgUtil.MsgAction.create)
+                ? MsgUtil.HistoryMsgTemplate.create_task: MsgUtil.HistoryMsgTemplate.update_task;
+
+        msgService.createForTask(user, task, template,
+                user.getNickname(), task.getName());
+
         historyService.create(task.getProjectId(), user, action.msg, TstHistory.TargetType.task,
                 task.getId(), task.getName());
 
@@ -120,7 +129,9 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
             taskDao.updateCaseProject(task.getId(), caseProjectId);
         }
 
-        msgService.create(task, Constant.MsgType.create, optUser);
+        msgService.createForTask(optUser, task,
+                MsgUtil.HistoryMsgTemplate.update_case_for_task,
+                optUser.getNickname(), task.getName());
     }
 
     @Override
@@ -142,9 +153,12 @@ public class TestTaskServiceImpl extends BaseServiceImpl implements TestTaskServ
         taskDao.addCases(ids, taskId);
 
         TstTask task = taskDao.get(taskId);
-        Constant.MsgType action = Constant.MsgType.update_case;
-        msgService.create(task, action, optUser);
-        historyService.create(task.getProjectId(), optUser, action.msg, TstHistory.TargetType.task,
+
+        msgService.createForTask(optUser, task,
+                MsgUtil.HistoryMsgTemplate.update_case_for_task,
+                optUser.getNickname(), task.getName());
+
+        historyService.create(task.getProjectId(), optUser, MsgUtil.MsgAction.update.msg, TstHistory.TargetType.task,
                 task.getId(), task.getName());
 
         return task;

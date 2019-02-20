@@ -5,16 +5,17 @@ import com.ngtesting.platform.dao.HistoryDao;
 import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.HistoryService;
+import com.ngtesting.platform.service.intf.ProjectHistoryService;
 import com.ngtesting.platform.utils.DateUtil;
-import com.ngtesting.platform.utils.StringUtil;
+import com.ngtesting.platform.utils.MsgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 @Service
-public class HistoryServiceImpl extends BaseServiceImpl implements HistoryService {
+public class ProjectHistoryServiceImpl extends BaseServiceImpl implements ProjectHistoryService {
     @Autowired
 	HistoryDao historyDao;
 
@@ -50,8 +51,8 @@ public class HistoryServiceImpl extends BaseServiceImpl implements HistoryServic
     @Override
     public TstHistory create(Integer projectId, TstUser optUser, String action,
 							 TstHistory.TargetType entityType, Integer entityId, String entityName) {
-		String title = "用户" + StringUtil.highlightDict(optUser.getNickname())
-				+ action + entityType.name + StringUtil.highlightDict(entityName);
+		String title = MessageFormat.format(MsgUtil.HistoryMsgTemplate.opt_project.msg,
+				optUser.getNickname(), action, entityType.name, entityName);
 
         TstHistory history = new TstHistory();
 		history.setTitle(title);

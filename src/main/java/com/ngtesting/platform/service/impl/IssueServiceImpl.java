@@ -1,7 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.IssueDao;
 import com.ngtesting.platform.dao.IssuePageDao;
 import com.ngtesting.platform.dao.IssuePageElementDao;
@@ -9,7 +8,9 @@ import com.ngtesting.platform.model.*;
 import com.ngtesting.platform.service.intf.IssueCommentsService;
 import com.ngtesting.platform.service.intf.IssueHistoryService;
 import com.ngtesting.platform.service.intf.IssueService;
+import com.ngtesting.platform.service.intf.MsgService;
 import com.ngtesting.platform.utils.CustomFieldUtil;
+import com.ngtesting.platform.utils.MsgUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,18 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
     IssuePageElementDao pageElementDao;
     @Autowired
     IssueCommentsService issueCommentsService;
+
+    @Autowired
+    IssueService issueService;
+    @Autowired
+    MsgService msgService;
+
+    @Override
+    public IsuIssue get(Integer id) {
+        IsuIssue po = issueDao.getById(id);
+
+        return po;
+    }
 
     @Override
 	public IsuIssue get(Integer id, Integer userId, Integer prjId) {
@@ -80,7 +93,11 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         IsuIssue po = null;
         if (count > 0) {
             po = issueDao.getByUuid(uuid);
-            issueHistoryService.saveHistory(user, Constant.EntityAct.create, po.getId(),null);
+
+            msgService.createForIssue(user, po, MsgUtil.HistoryMsgTemplate.create_issue,
+                    user.getNickname(), po.getTitle());
+
+            issueHistoryService.saveHistory(user, MsgUtil.MsgAction.create, po.getId(),null);
         }
 
         return po;
@@ -89,13 +106,19 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
     @Override
     @Transactional
     public Boolean update(JSONObject issue, Integer pageId, TstUser user) {
+        Integer id = issue.getInteger("id");
         List<IsuPageElement> elemObjs = pageElementDao.listElementByPageId(pageId);
         List<IsuPageElement> elems = genElems(elemObjs);
 
         List<Object> params = genParams(issue, elemObjs, user);
 
-        Integer count = issueDao.update(elems, params, issue.getInteger("id"), user.getDefaultPrjId());
-        issueHistoryService.saveHistory(user, Constant.EntityAct.update, issue.getInteger("id"),null);
+        Integer count = issueDao.update(elems, params, id, user.getDefaultPrjId());
+
+        IsuIssue po = issueService.get(id);
+        msgService.createForIssue(user, po, MsgUtil.HistoryMsgTemplate.update_issue,
+                user.getNickname(), po.getTitle());
+
+        issueHistoryService.saveHistory(user, MsgUtil.MsgAction.update, id,null);
 
         return count > 0;
     }
@@ -107,6 +130,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
 
         Integer id = json.getInteger("id");
         String code = json.getString("code");
+        String name = json.getString("name");
         Boolean buildIn = json.getBoolean("buildIn");
         String label = json.getString("label");
         String type = json.getString("type");
@@ -123,8 +147,11 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
             return null;
         }
 
-        issueHistoryService.saveHistory(user, Constant.EntityAct.update, id, label);
-        IsuIssue po = issueDao.get(id, user.getId(), user.getDefaultPrjId());
+        IsuIssue po = issueService.get(id);
+        msgService.createForIssue(user, po, MsgUtil.HistoryMsgTemplate.update_issue_field,
+                user.getNickname(), po.getTitle(), name);
+
+        issueHistoryService.saveHistory(user, MsgUtil.MsgAction.update, id, label);
 
         return po;
     }

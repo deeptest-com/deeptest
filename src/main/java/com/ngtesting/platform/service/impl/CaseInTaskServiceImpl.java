@@ -1,17 +1,14 @@
 package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.*;
 import com.ngtesting.platform.model.TstCase;
 import com.ngtesting.platform.model.TstCaseInTask;
-import com.ngtesting.platform.model.TstCaseInTaskHistory;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.CaseHistoryService;
 import com.ngtesting.platform.service.intf.CaseInTaskHistoryService;
 import com.ngtesting.platform.service.intf.CaseInTaskService;
-import com.ngtesting.platform.utils.StringUtil;
-import org.apache.commons.lang3.StringUtils;
+import com.ngtesting.platform.utils.MsgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,8 +68,8 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
 
         caseDao.renameUpdate(testCase);
 
-        caseHistoryService.saveHistory(user, Constant.EntityAct.rename, caseId,null);
-        caseInTaskHistoryService.saveHistory(user, Constant.EntityAct.rename, entityId,null);
+        caseHistoryService.saveHistory(user, MsgUtil.MsgAction.rename, caseId,null);
+        caseInTaskHistoryService.saveHistory(user, MsgUtil.MsgAction.rename, entityId,null);
 
         return caseInTaskDao.getDetail(entityId, projectId);
     }
@@ -90,7 +87,7 @@ public class CaseInTaskServiceImpl extends BaseServiceImpl implements CaseInTask
         caseInTaskDao.setResult(caseInTaskId, result, status, user.getId());
 
         caseInTaskHistoryService.saveHistory(caseId, caseInTaskId,
-                Constant.EntityAct.exe_result, user, status, result==null?"":result.trim());
+                MsgUtil.MsgAction.exe_result, user, status, result==null?"":result.trim());
 
         taskDao.start(testCase.getTaskId());
         planDao.start(testCase.getPlanId());

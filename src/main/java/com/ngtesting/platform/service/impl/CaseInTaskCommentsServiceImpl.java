@@ -46,10 +46,10 @@ public class CaseInTaskCommentsServiceImpl extends BaseServiceImpl implements Ca
 
         if (vo.getId() == null) {
             caseInTaskCommentsDao.save(vo);
-//            caseHistoryService.saveHistory(user, Constant.EntityAct.comments_add, testCase, vo.getContent());
+//            caseHistoryService.saveHistory(user, MsgUtil.MsgAction.comments_add, testCase, vo.getContent());
         } else {
             caseInTaskCommentsDao.update(vo, user.getId());
-//            caseHistoryService.saveHistory(user, Constant.EntityAct.comments_update, testCase, vo.getContent());
+//            caseHistoryService.saveHistory(user, MsgUtil.MsgAction.comments_update, testCase, vo.getContent());
         }
 
         return vo;
@@ -62,7 +62,7 @@ public class CaseInTaskCommentsServiceImpl extends BaseServiceImpl implements Ca
 
         Boolean result = caseInTaskCommentsDao.delete(id, user.getId());
 
-//        caseHistoryService.saveHistory(user, Constant.EntityAct.comments_delete, testCase, comments.getContent());
+//        caseHistoryService.saveHistory(user, MsgUtil.MsgAction.comments_delete, testCase, comments.getContent());
         return result;
     }
 

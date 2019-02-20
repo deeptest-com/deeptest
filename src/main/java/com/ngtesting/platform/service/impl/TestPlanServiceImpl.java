@@ -1,12 +1,12 @@
 package com.ngtesting.platform.service.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.TestPlanDao;
 import com.ngtesting.platform.model.*;
-import com.ngtesting.platform.service.intf.HistoryService;
+import com.ngtesting.platform.service.intf.ProjectHistoryService;
 import com.ngtesting.platform.service.intf.TestPlanService;
 import com.ngtesting.platform.service.intf.TestTaskService;
+import com.ngtesting.platform.utils.MsgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public class TestPlanServiceImpl extends BaseServiceImpl implements TestPlanService {
     @Autowired
-    HistoryService historyService;
+    ProjectHistoryService historyService;
 
     @Autowired
     TestPlanDao testPlanDao;
@@ -45,13 +45,13 @@ public class TestPlanServiceImpl extends BaseServiceImpl implements TestPlanServ
         vo.setUserId(user.getId());
         vo.setProjectId(projectId);
 
-        Constant.MsgType action;
+        MsgUtil.MsgAction action;
         if (vo.getId() == null) {
-            action = Constant.MsgType.create;
+            action = MsgUtil.MsgAction.create;
 
             testPlanDao.save(vo);
         } else {
-            action = Constant.MsgType.update;
+            action = MsgUtil.MsgAction.update;
             Integer count = testPlanDao.update(vo);
             if (count == 0) {
                 return null;

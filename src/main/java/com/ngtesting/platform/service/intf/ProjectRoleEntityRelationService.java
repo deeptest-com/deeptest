@@ -2,6 +2,7 @@ package com.ngtesting.platform.service.intf;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.TstProjectRoleEntityRelation;
+import com.ngtesting.platform.model.TstUser;
 
 import java.util.List;
 
@@ -9,8 +10,8 @@ public interface ProjectRoleEntityRelationService extends BaseService {
 
     List<TstProjectRoleEntityRelation> listByProject(Integer projectId);
 
-    List<TstProjectRoleEntityRelation> batchSavePers(JSONObject json, Integer orgId);
-    List<TstProjectRoleEntityRelation> changeRolePers(JSONObject json, Integer prjId);
+    List<TstProjectRoleEntityRelation> batchSavePers(JSONObject json, TstUser user);
 
-    List<TstProjectRoleEntityRelation> remove(Integer projectId, String type, Integer entityId);
+    List<TstProjectRoleEntityRelation> changeRolePers(JSONObject json, TstUser user);
+    List<TstProjectRoleEntityRelation> remove(String type, Integer entityId, TstUser user);
 }

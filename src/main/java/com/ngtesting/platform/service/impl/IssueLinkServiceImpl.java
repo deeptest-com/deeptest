@@ -1,13 +1,12 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.IssueDao;
 import com.ngtesting.platform.dao.IssueLinkDao;
-import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.model.IsuLinkReason;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueHistoryService;
 import com.ngtesting.platform.service.intf.IssueLinkService;
+import com.ngtesting.platform.utils.MsgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +34,7 @@ public class IssueLinkServiceImpl extends BaseServiceImpl implements IssueLinkSe
 
         issueLinkDao.link(srcIssueId, dictIssueId, reasonId, reasonName);
 
-        issueHistoryService.saveHistory(user, Constant.EntityAct.link, srcIssueId, "IS-" + dictIssueId);
+        issueHistoryService.saveHistory(user, MsgUtil.MsgAction.link, srcIssueId, "IS-" + dictIssueId);
 
         return true;
     }

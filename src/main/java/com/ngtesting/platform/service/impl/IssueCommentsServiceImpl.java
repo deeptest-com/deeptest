@@ -3,10 +3,13 @@ package com.ngtesting.platform.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.dao.IssueCommentsDao;
-import com.ngtesting.platform.model.TstCase;
 import com.ngtesting.platform.model.IsuComments;
+import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueCommentsService;
+import com.ngtesting.platform.service.intf.IssueService;
+import com.ngtesting.platform.service.intf.MsgService;
+import com.ngtesting.platform.utils.MsgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +18,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class IssueCommentsServiceImpl extends BaseServiceImpl implements IssueCommentsService {
     @Autowired
     IssueCommentsDao issueCommentsDao;
+
+    @Autowired
+    IssueService issueService;
+    @Autowired
+    MsgService msgService;
+
+    @Override
+    public IsuComments get(Integer id) {
+        return issueCommentsDao.get(id);
+    }
 
     @Override
     @Transactional
@@ -40,17 +53,26 @@ public class IssueCommentsServiceImpl extends BaseServiceImpl implements IssueCo
             issueCommentsDao.update(vo);
         }
 
+        Integer issueId = vo.getIssueId();
+
+        IsuIssue issue = issueService.get(issueId);
+        msgService.createForIssue(user, issue, MsgUtil.HistoryMsgTemplate.create_comments_for_issue,
+                user.getNickname(), issue.getTitle(), vo.getSummary());
+
         return vo;
     }
 
     @Override
     @Transactional
     public Boolean delete(Integer id, TstUser user) {
-        IsuComments comments = issueCommentsDao.get(id);
-
         Boolean result = issueCommentsDao.delete(id, user.getId());
 
-//        caseHistoryService.saveHistory(user, Constant.EntityAct.comments_delete, testCase, comments.getContent());
+        IsuComments comments = issueCommentsDao.get(id);
+        IsuIssue issue = issueService.get(comments.getIssueId());
+        msgService.createForIssue(user, issue, MsgUtil.HistoryMsgTemplate.remove_comments_for_issue,
+                user.getNickname(), issue.getTitle(), comments.getSummary());
+
+//        caseHistoryService.saveHistory(user, MsgUtil.MsgAction.comments_delete, testCase, comments.getContent());
         return result;
     }
 

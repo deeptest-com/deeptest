@@ -2,15 +2,15 @@ package com.ngtesting.platform.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.ProjectDao;
 import com.ngtesting.platform.dao.TestSuiteDao;
 import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstSuite;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.HistoryService;
+import com.ngtesting.platform.service.intf.ProjectHistoryService;
 import com.ngtesting.platform.service.intf.MsgService;
 import com.ngtesting.platform.service.intf.TestSuiteService;
+import com.ngtesting.platform.utils.MsgUtil;
 import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
     @Autowired
     TestSuiteDao testSuiteDao;
     @Autowired
-    HistoryService historyService;
+    ProjectHistoryService historyService;
     @Autowired
     ProjectDao projectDao;
 
@@ -64,13 +64,13 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
         vo.setUserId(user.getId());
         vo.setProjectId(user.getDefaultPrjId());
 
-        Constant.MsgType action;
+        MsgUtil.MsgAction action;
         if (vo.getId() == null) {
-            action = Constant.MsgType.create;
+            action = MsgUtil.MsgAction.create;
 
             testSuiteDao.save(vo);
         } else {
-            action = Constant.MsgType.update;
+            action = MsgUtil.MsgAction.update;
 
             Integer count = testSuiteDao.update(vo);
             if (count == 0) {
@@ -99,8 +99,9 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
         testSuiteDao.addCases(caseIdsStr, suiteId);
 
         TstSuite suite = testSuiteDao.get(suiteId, projectId);
-        Constant.MsgType action = Constant.MsgType.update_case;
-        historyService.create(suite.getProjectId(), user, action.msg, TstHistory.TargetType.task,
+
+        historyService.create(suite.getProjectId(), user,
+                MsgUtil.MsgAction.update.msg, TstHistory.TargetType.suite,
                 suite.getId(), suite.getName());
 
         return suite;

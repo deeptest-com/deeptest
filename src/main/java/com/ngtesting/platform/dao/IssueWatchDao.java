@@ -14,8 +14,8 @@ public interface IssueWatchDao {
                         @Param("keywords") String keywords,
                         @Param("exceptIds") List<Integer> exceptIds);
 
-    void batchSave(@Param("issueId") Integer issueId,
-                   @Param("userIds") List<Integer> userIds);
+    void batchWatch(@Param("issueId") Integer issueId,
+                    @Param("userIds") List<Integer> userIds);
 
     void remove(@Param("id") Integer id);
 

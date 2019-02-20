@@ -1,6 +1,5 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.IssueAttachmentDao;
 import com.ngtesting.platform.dao.IssueDao;
 import com.ngtesting.platform.model.IsuAttachment;
@@ -8,6 +7,9 @@ import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueAttachmentService;
 import com.ngtesting.platform.service.intf.IssueHistoryService;
+import com.ngtesting.platform.service.intf.IssueService;
+import com.ngtesting.platform.service.intf.MsgService;
+import com.ngtesting.platform.utils.MsgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +25,19 @@ public class IssueAttachmentServiceImpl extends BaseServiceImpl implements Issue
     @Autowired
     IssueDao issueDao;
 
+    @Autowired
+    IssueService issueService;
+    @Autowired
+    MsgService msgService;
+
     @Override
     public List<IsuAttachment> query(Integer issueId) {
         return issueAttachmentDao.query(issueId);
+    }
+
+    @Override
+    public IsuAttachment get(Integer id) {
+        return issueAttachmentDao.get(id);
     }
 
     @Override
@@ -38,7 +50,11 @@ public class IssueAttachmentServiceImpl extends BaseServiceImpl implements Issue
 
         IsuAttachment attach = new IsuAttachment(name, path, issueId, user.getId());
         issueAttachmentDao.save(attach);
-        issueHistoryService.saveHistory(user, Constant.EntityAct.attachment_upload, issueId, name);
+
+        msgService.createForIssue(user, issue, MsgUtil.HistoryMsgTemplate.create_attament_for_issue,
+                user.getNickname(), issue.getTitle(), name);
+
+        issueHistoryService.saveHistory(user, MsgUtil.MsgAction.attachment_upload, issueId, name);
         return true;
     }
 
@@ -52,7 +68,12 @@ public class IssueAttachmentServiceImpl extends BaseServiceImpl implements Issue
         }
 
         issueAttachmentDao.delete(id);
-        issueHistoryService.saveHistory(user, Constant.EntityAct.attachment_delete, attach.getIssueId(), attach.getName());
+
+        IsuAttachment attchement = issueAttachmentDao.get(id);
+        msgService.createForIssue(user, issue, MsgUtil.HistoryMsgTemplate.remove_attament_for_issue,
+                user.getNickname(), issue.getTitle(), attchement.getName());
+
+        issueHistoryService.saveHistory(user, MsgUtil.MsgAction.attachment_delete, attach.getIssueId(), attach.getName());
 
         return true;
     }

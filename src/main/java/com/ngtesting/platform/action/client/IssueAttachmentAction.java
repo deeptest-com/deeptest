@@ -8,6 +8,8 @@ import com.ngtesting.platform.model.IsuHistory;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueAttachmentService;
 import com.ngtesting.platform.service.intf.IssueHistoryService;
+import com.ngtesting.platform.service.intf.IssueService;
+import com.ngtesting.platform.service.intf.MsgService;
 import com.ngtesting.platform.servlet.PrivPrj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,9 +30,13 @@ public class IssueAttachmentAction extends BaseAction {
 
     @Autowired
     IssueAttachmentService issueAttachmentService;
-
     @Autowired
     IssueHistoryService issueHistoryService;
+
+    @Autowired
+    IssueService issueService;
+    @Autowired
+    MsgService msgService;
 
     @RequestMapping(value = "save", method = RequestMethod.POST)
     @ResponseBody
@@ -39,6 +45,7 @@ public class IssueAttachmentAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer prjId = user.getDefaultPrjId();
 
         Integer issueId = json.getInteger("issueId");
         String path = json.getString("path");
@@ -66,6 +73,7 @@ public class IssueAttachmentAction extends BaseAction {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer prjId = user.getDefaultPrjId();
 
         Integer issueId = json.getInteger("issueId");
         Integer id = json.getInteger("id");

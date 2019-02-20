@@ -31,7 +31,7 @@
         ORDER by usr.id ASC
     </select>
 
-    <insert id="batchSave" useGeneratedKeys="true" keyProperty="id">
+    <insert id="batchWatch" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO "IsuWatch"
         ("issueId", "userId")
 

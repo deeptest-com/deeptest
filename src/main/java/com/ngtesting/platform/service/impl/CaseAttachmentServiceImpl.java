@@ -1,13 +1,12 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.CaseAttachmentDao;
 import com.ngtesting.platform.dao.CaseDao;
-import com.ngtesting.platform.model.TstCase;
 import com.ngtesting.platform.model.TstCaseAttachment;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.CaseAttachmentService;
 import com.ngtesting.platform.service.intf.CaseHistoryService;
+import com.ngtesting.platform.utils.MsgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +25,7 @@ public class CaseAttachmentServiceImpl extends BaseServiceImpl implements CaseAt
     public Boolean save(Integer caseId, String name, String path, TstUser user) {
         TstCaseAttachment attach = new TstCaseAttachment(name, path, caseId, user.getId());
         caseAttachmentDao.save(attach);
-        caseHistoryService.saveHistory(user, Constant.EntityAct.attachment_upload, caseId, name);
+        caseHistoryService.saveHistory(user, MsgUtil.MsgAction.attachment_upload, caseId, name);
         return true;
     }
 
@@ -36,7 +35,7 @@ public class CaseAttachmentServiceImpl extends BaseServiceImpl implements CaseAt
         TstCaseAttachment attach = caseAttachmentDao.get(id);
 
         caseAttachmentDao.delete(id, user.getId());
-        caseHistoryService.saveHistory(user, Constant.EntityAct.attachment_delete,
+        caseHistoryService.saveHistory(user, MsgUtil.MsgAction.attachment_delete,
                 attach.getCaseId(), attach.getName());
 
         return true;

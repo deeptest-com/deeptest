@@ -9,7 +9,9 @@ import com.ngtesting.platform.model.TstUser;
 import java.util.Map;
 
 public interface IssueService extends BaseService {
-	IsuIssue get(Integer id, Integer userId, Integer orgId);
+    IsuIssue get(Integer id);
+
+    IsuIssue get(Integer id, Integer userId, Integer orgId);
     IsuIssue getDetail(Integer id, Integer userId, Integer prjId);
 
     IsuIssue getData(Integer id, Integer userId, Integer prjId);

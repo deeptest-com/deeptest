@@ -24,7 +24,7 @@ public class CaseInTaskIssueServiceImpl extends BaseServiceImpl implements CaseI
     public Boolean save(Integer caseInTaskId, Integer issueId, TstUser user) {
         TstCaseInTaskIssue link = new TstCaseInTaskIssue(issueId, caseInTaskId, user.getId());
         caseInTaskIssueDao.save(link);
-//        caseHistoryService.saveHistory(user, Constant.EntityAct.attachment_upload, testCase, name);
+//        caseHistoryService.saveHistory(user, MsgUtil.MsgAction.attachment_upload, testCase, name);
         return true;
     }
 
@@ -32,7 +32,7 @@ public class CaseInTaskIssueServiceImpl extends BaseServiceImpl implements CaseI
     @Transactional
     public Boolean remove(Integer caseInTaskId, Integer id, TstUser user) {
         caseInTaskIssueDao.delete(id, user.getId());
-//        caseHistoryService.saveHistory(user, Constant.EntityAct.attachment_delete, testCase, attach.getName());
+//        caseHistoryService.saveHistory(user, MsgUtil.MsgAction.attachment_delete, testCase, attach.getName());
 
         return true;
     }

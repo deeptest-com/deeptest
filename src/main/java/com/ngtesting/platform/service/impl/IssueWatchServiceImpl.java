@@ -1,12 +1,12 @@
 package com.ngtesting.platform.service.impl;
 
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.IssueDao;
 import com.ngtesting.platform.dao.IssueWatchDao;
 import com.ngtesting.platform.model.IsuIssue;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueHistoryService;
 import com.ngtesting.platform.service.intf.IssueWatchService;
+import com.ngtesting.platform.utils.MsgUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,21 +59,21 @@ public class IssueWatchServiceImpl extends BaseServiceImpl implements IssueWatch
         }
         issueWatchDao.remove(id);
 
-        issueHistoryService.saveHistory(user, Constant.EntityAct.removeWatch, issueId, null);
+        issueHistoryService.saveHistory(user, MsgUtil.MsgAction.removeWatch, issueId, null);
 
         return true;
     }
 
     @Override
-    public Boolean batchSave(Integer issueId, List<Integer> userIds, TstUser user) {
+    public Boolean batchWatch(Integer issueId, List<Integer> userIds, TstUser user) {
         IsuIssue issue = issueDao.get(issueId, user.getId(), user.getDefaultPrjId());
         if (issue == null) {
             return false;
         }
 
-        issueWatchDao.batchSave(issueId, userIds);
+        issueWatchDao.batchWatch(issueId, userIds);
 
-        issueHistoryService.saveHistory(user, Constant.EntityAct.changeWatch, issueId, null);
+        issueHistoryService.saveHistory(user, MsgUtil.MsgAction.changeWatch, issueId, null);
 
         return true;
     }
@@ -85,15 +85,15 @@ public class IssueWatchServiceImpl extends BaseServiceImpl implements IssueWatch
             return false;
         }
 
-        Constant.EntityAct act;
+        MsgUtil.MsgAction act;
         if (status) {
             issueWatchDao.watch(issueId, user.getId());
 
-            act = Constant.EntityAct.watch;
+            act = MsgUtil.MsgAction.watch;
         } else {
             issueWatchDao.unwatch(issueId, user.getId());
 
-            act = Constant.EntityAct.unwatch;
+            act = MsgUtil.MsgAction.unwatch;
         }
 
         issueHistoryService.saveHistory(user, act, issueId, null);

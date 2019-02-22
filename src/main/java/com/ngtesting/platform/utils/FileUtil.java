@@ -92,9 +92,8 @@ public class FileUtil {
     }
 
     public static String UuidFileName(String origName) {
-        String name = FilenameUtils.getBaseName(origName);
         String ext = FilenameUtils.getExtension(origName);
-        return name + "-" + UUID.randomUUID().toString().replace("-", "") + "." + ext;
+        return UUID.randomUUID().toString() + "." + ext;
     }
 
     public static String RandomFilePath(String brother, String ext) {

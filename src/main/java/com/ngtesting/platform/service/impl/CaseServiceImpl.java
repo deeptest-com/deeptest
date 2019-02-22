@@ -1,5 +1,6 @@
 package com.ngtesting.platform.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.dao.*;
 import com.ngtesting.platform.model.*;
@@ -211,7 +212,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
 	public TstCase update(JSONObject json, TstUser user) {
         Integer projectId = user.getDefaultPrjId();
 
-//        TstCase testCaseVo = JSON.parseObject(JSON.toJSONString(json), TstCase.class);
+        TstCase vo = JSON.parseObject(JSON.toJSONString(json), TstCase.class);
 
         json.put("updateById", user.getId());
 
@@ -222,7 +223,7 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
             jsonb.put(field.getColCode(), json.get(field.getColCode()));
         }
 
-        Integer count = caseDao.update(json, jsonb.toJSONString(), projectId);
+        Integer count = caseDao.update(vo, jsonb.toJSONString(), projectId);
         if (count == 0) {
             return null;
         }

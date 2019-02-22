@@ -1,6 +1,5 @@
 package com.ngtesting.platform.dao;
 
-import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.TstCase;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,7 +20,7 @@ public interface CaseDao {
     void moveUpdate(TstCase testCase);
 
     Integer update(
-            @Param("obj") JSONObject testCase,
+            @Param("obj") TstCase testCase,
             @Param("extProp") String extProp,
             @Param("projectId") Integer projectId);
 

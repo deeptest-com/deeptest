@@ -11387,21 +11387,21 @@ SELECT pg_catalog.setval('public."IsuWorkflowTransitionDefine_id_seq"', 1, false
 -- Name: TstCaseExeStatus_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ngtesting
 --
 
-SELECT pg_catalog.setval('public."TstCaseExeStatus_id_seq"', 534, true);
+SELECT pg_catalog.setval('public."TstCaseExeStatus_id_seq"', 538, true);
 
 
 --
 -- Name: TstCasePriority_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ngtesting
 --
 
-SELECT pg_catalog.setval('public."TstCasePriority_id_seq"', 383, true);
+SELECT pg_catalog.setval('public."TstCasePriority_id_seq"', 386, true);
 
 
 --
 -- Name: TstCaseType_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ngtesting
 --
 
-SELECT pg_catalog.setval('public."TstCaseType_id_seq"', 897, true);
+SELECT pg_catalog.setval('public."TstCaseType_id_seq"', 904, true);
 
 
 --

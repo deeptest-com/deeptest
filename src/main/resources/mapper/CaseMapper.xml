@@ -16,25 +16,22 @@
     <select id="queryCaseWithStepInfoByPrj" resultMap="queryCaseWithStepInfoByPrjMap">
         SELECT o.id,
                o.name,
+               o.content,
+               o."contentType",
+               o."extProp",
                o."typeId",
                o."priorityId",
                o."isParent",
                o."pId",
-               s.ordr,
-               s.opt,
-               s.expect,
-               s."caseId",
                t.label "typeName",
                p.label "priorityName"
         FROM "TstCase" o
-                 LEFT JOIN "TstCaseStep" s ON o.id = s."caseId"
                  LEFT JOIN "TstCaseType" t ON o."typeId" = t.id
                  LEFT JOIN "TstCasePriority" p ON o."priorityId" = p.id
 
         WHERE o."projectId" = #{projectId}
-          AND NOT o.deleted
-          AND NOT o.disabled
-        ORDER BY o."pId", o.ordr, s.ordr;
+          AND NOT o.deleted AND NOT o.disabled
+        ORDER BY o."pId", o.ordr
     </select>
 
     <select id="get" resultType="TstCase">
@@ -288,18 +285,9 @@
 
     <resultMap id="queryCaseWithStepInfoByPrjMap" type="com.ngtesting.platform.model.TstCase">
         <id column="id" property="id" jdbcType="VARCHAR"/>
-        <result column="name" property="name" jdbcType="VARCHAR"/>
-        <result column="typeName" property="typeName" jdbcType="VARCHAR"/>
-        <result column="priorityName" property="priorityName" jdbcType="VARCHAR"/>
-        <result column="isParent" property="isParent" jdbcType="BOOLEAN"/>
-        <result column="pId" property="pId" jdbcType="INTEGER"/>
-        <!-- ofType steps集合中的对象类型 -->
-        <collection property="steps" javaType="java.util.List" ofType="TstCaseStep">
-            <!--<id column="s_id" property="id" jdbcType="VARCHAR" />-->
-            <result column="opt" property="opt" jdbcType="VARCHAR"/>
-            <result column="expect" property="expect" jdbcType="VARCHAR"/>
-            <result column="ordr" property="ordr" jdbcType="INTEGER"/>
-            <result column="caseId" property="caseId" jdbcType="INTEGER"/>
+
+        <collection property="steps" select="com.ngtesting.platform.dao.CaseStepDao.listByCaseId"
+                    column="{id=id}">
         </collection>
     </resultMap>
 </mapper>

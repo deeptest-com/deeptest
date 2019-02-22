@@ -52,7 +52,7 @@ public class CaseExportServiceImpl extends BaseServiceImpl implements CaseExport
         XSSFWorkbook wb = new XSSFWorkbook();
         Sheet sheet = wb.createSheet();
         sheet.autoSizeColumn(1, true);
-        sheet.setColumnWidth(0, 10 * 256);
+        sheet.setColumnWidth(0, 12 * 256);
         sheet.setColumnWidth(1, 50 * 256);
         sheet.setColumnWidth(2, 16 * 256);
         sheet.setColumnWidth(3, 16 * 256);
@@ -71,7 +71,7 @@ public class CaseExportServiceImpl extends BaseServiceImpl implements CaseExport
         cellStyle.setFont(fontStyle);
 
         Font fontStyle2 = wb.createFont();
-        ((XSSFFont) fontStyle2).setColor(IndexedColors.BLUE.getIndex());
+        ((XSSFFont) fontStyle2).setColor(IndexedColors.GREY_50_PERCENT.getIndex());
         fontStyle2.setFontHeightInPoints((short) 13); // 大小
         stepStyle.setFont(fontStyle2);
 
@@ -113,7 +113,7 @@ public class CaseExportServiceImpl extends BaseServiceImpl implements CaseExport
         Cell estimateCell = titleRow.createCell(cellCount++);
         Cell objectiveCell = titleRow.createCell(cellCount++);
 
-        idCell.setCellValue("层级");
+        idCell.setCellValue("层级/序号");
         titleCell.setCellValue("标题");
         typeCell.setCellValue("类型");
         priorityCell.setCellValue("优先级");
@@ -153,40 +153,49 @@ public class CaseExportServiceImpl extends BaseServiceImpl implements CaseExport
         idCell.setCellValue(testCase.getLevel());
         titleCell.setCellValue(testCase.getName());
 
-        if (testCase.getIsParent()) {
+        if (!testCase.getIsParent()) {
             typeCell.setCellValue(testCase.getTypeName());
             priorityCell.setCellValue(testCase.getPriorityName());
             estimateCell.setCellValue(testCase.getEstimate() == null ? "" : testCase.getEstimate().toString());
             objectiveCell.setCellValue(testCase.getObjective());
-        }
 
-        idCell.setCellStyle(cellStyle);
-        titleCell.setCellStyle(indentionStyle);
-
-        if (testCase.getIsParent()) {
             typeCell.setCellStyle(cellStyle);
             priorityCell.setCellStyle(cellStyle);
             estimateCell.setCellStyle(cellStyle);
             objectiveCell.setCellStyle(cellStyle);
         }
 
-        if (testCase.getIsParent()) {
-            for (TstCaseStep step : testCase.getSteps()) {
-                sheet.addMergedRegion(new CellRangeAddress(rowCount, rowCount, 2, 5));
+        idCell.setCellStyle(cellStyle);
+        titleCell.setCellStyle(indentionStyle);
 
-                Row stepRow = sheet.createRow(rowCount++);
+        if (!testCase.getIsParent()) {
+            if (TstCase.CaseContentType.steps.equals(testCase.getContentType())) {
+                for (TstCaseStep step : testCase.getSteps()) {
+                    sheet.addMergedRegion(new CellRangeAddress(rowCount, rowCount, 2, 5));
+
+                    Row stepRow = sheet.createRow(rowCount++);
+                    cellCount = 0;
+                    Cell ordrCell = stepRow.createCell(cellCount++);
+                    Cell optCell = stepRow.createCell(cellCount++);
+                    Cell resultCell = stepRow.createCell(cellCount++);
+
+                    ordrCell.setCellValue(step.getOrdr());
+
+                    optCell.setCellValue(step.getOpt());
+                    optCell.setCellStyle(stepStyle);
+
+                    resultCell.setCellValue(step.getExpect());
+                    resultCell.setCellStyle(stepStyle);
+                }
+            } else {
+                sheet.addMergedRegion(new CellRangeAddress(rowCount, rowCount, 1, 5));
+                Row contentRow = sheet.createRow(rowCount++);
                 cellCount = 0;
-                Cell ordrCell = stepRow.createCell(cellCount++);
-                Cell optCell = stepRow.createCell(cellCount++);
-                Cell resultCell = stepRow.createCell(cellCount++);
+                Cell ordrCell = contentRow.createCell(cellCount++);
+                Cell contentCell = contentRow.createCell(cellCount++);
 
-                ordrCell.setCellValue(step.getOrdr());
-
-                optCell.setCellValue(step.getOpt());
-                optCell.setCellStyle(stepStyle);
-
-                resultCell.setCellValue(step.getExpect());
-                resultCell.setCellStyle(stepStyle);
+                contentCell.setCellValue(testCase.getContent());
+                contentCell.setCellStyle(stepStyle);
             }
         }
 

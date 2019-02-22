@@ -86,8 +86,7 @@
         FROM "TstCaseStep" o
 
         WHERE o."caseId" = #{id}
-          AND NOT o.deleted
-          AND NOT o.disabled
+          AND NOT o.deleted AND NOT o.disabled
 
         ORDER BY o.ordr ASC
     </select>

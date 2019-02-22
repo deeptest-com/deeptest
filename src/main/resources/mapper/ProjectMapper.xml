@@ -90,14 +90,20 @@
         WHERE temp.id = #{id}
         ORDER BY prj.id
     </select>
+
     <select id="listProjectGroups" resultType="TstProject">
         SELECT *
         FROM "TstProject" prj
 
-        WHERE prj."orgId" = #{orgId}
-          AND prj."type" = 'group'
+        WHERE prj."orgId" = #{orgId} AND prj."type" = 'group'
           AND NOT prj.deleted
-          AND NOT prj.disabled
+
+            <if test="groupId != null">
+                AND (NOT prj.disabled OR prj.id = #{groupId})
+            </if>
+            <if test="groupId == null">
+                AND NOT prj.disabled
+            </if>
         ORDER BY prj.id
     </select>
 

@@ -25,214 +25,216 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = Constant.API_PATH_CLIENT + "/project")
 public class ProjectAction extends BaseAction {
-    @Autowired
-    private ProjectService projectService;
+  @Autowired
+  private ProjectService projectService;
 
-    @Autowired
-    private TestPlanService planService;
-    @Autowired
-    private ProjectHistoryService historyService;
-    @Autowired
-    AuthService authService;
+  @Autowired
+  private TestPlanService planService;
+  @Autowired
+  private ProjectHistoryService historyService;
+  @Autowired
+  AuthService authService;
 
-    @Autowired
-    CustomFieldService customFieldService;
-    @Autowired
-    CasePropertyService casePropertyService;
-    @Autowired
-    ProjectPrivilegeService projectPrivilegeService;
+  @Autowired
+  CustomFieldService customFieldService;
+  @Autowired
+  CasePropertyService casePropertyService;
+  @Autowired
+  ProjectPrivilegeService projectPrivilegeService;
 
-    @Autowired
-    IssueDynamicFormService dynamicFormService;
-    @Autowired
-    IssueWorkflowTransitionService issueWorkflowTransitionService;
+  @Autowired
+  IssueDynamicFormService dynamicFormService;
+  @Autowired
+  IssueWorkflowTransitionService issueWorkflowTransitionService;
 
-    @ResponseBody
-    @PostMapping("/list")
-    @PrivOrg
-    public Object list(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = user.getDefaultOrgId();
+  @ResponseBody
+  @PostMapping("/list")
+  @PrivOrg
+  public Object list(HttpServletRequest request, @RequestBody JSONObject json) {
+    Map<String, Object> ret = new HashMap<String, Object>();
+    TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+    Integer orgId = user.getDefaultOrgId();
 
-        String keywords = json.getString("keywords");
-        Boolean disabled = json.getBoolean("disabled");
+    String keywords = json.getString("keywords");
+    Boolean disabled = json.getBoolean("disabled");
 
-        List<TstProject> vos = projectService.list(orgId, user.getId(), keywords, disabled);
+    List<TstProject> vos = projectService.list(orgId, user.getId(), keywords, disabled);
 
-        ret.put("data", vos);
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+    ret.put("data", vos);
+    ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
-        return ret;
+    return ret;
+  }
+
+  @ResponseBody
+  @PostMapping("/get")
+  @PrivPrj
+  public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
+    Map<String, Object> ret = new HashMap<String, Object>();
+    TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+
+    Integer projectId = json.getInteger("projectId");
+
+    if (projectId != null) {
+      TstProject project = projectService.get(projectId);
+
+      ret.put("data", project);
     }
 
-    @ResponseBody
-    @PostMapping("/get")
-    @PrivPrj
-    public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+    ret.put("code", Constant.RespCode.SUCCESS.getCode());
+    return ret;
+  }
 
-        Integer projectId = json.getInteger("projectId");
+  @ResponseBody
+  @PostMapping("/getInfo")
+  @PrivPrj
+  public Map<String, Object> getInfo(HttpServletRequest request, @RequestBody JSONObject json) {
+    Map<String, Object> ret = new HashMap<String, Object>();
+    TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+    Integer orgId = user.getDefaultOrgId();
 
-        if (projectId != null) {
-            TstProject project = projectService.get(projectId);
+    Integer projectId = json.getInteger("projectId");
+    Integer groupId = null;
 
-            ret.put("data", project);
-        }
+    if (projectId != null) {
+      TstProject project = projectService.get(projectId);
 
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
+      TstProject vo = projectService.genVo(project, null);
+
+      if (TstProject.ProjectType.group.equals(project.getType())) {
+        vo.setLastestProjectGroup(projectService.isLastestProjectGroup(orgId, projectId));
+      }
+      groupId = vo.getParentId();
+      ret.put("data", vo);
     }
 
-    @ResponseBody
-    @PostMapping("/getInfo")
-    @PrivPrj
-    public Map<String, Object> getInfo(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = user.getDefaultOrgId();
+    List<TstProject> groups = projectService.listProjectGroups(orgId, groupId);
+    ret.put("groups", groups);
 
-        Integer projectId = json.getInteger("projectId");
+    ret.put("code", Constant.RespCode.SUCCESS.getCode());
+    return ret;
+  }
 
-        if (projectId != null) {
-            TstProject project = projectService.get(projectId);
+  @ResponseBody
+  @PostMapping("/view")
+  @PrivPrj
+  public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
+    Map<String, Object> ret = new HashMap<String, Object>();
+    TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+    Integer orgId = user.getDefaultOrgId();
+    Integer projectId = json.getInteger("projectId");
 
-            TstProject vo = projectService.genVo(project, null);
+    TstProject po = projectService.getWithPrivs(projectId, user.getId());
 
-            if (TstProject.ProjectType.group.equals(project.getType())) {
-                vo.setLastestProjectGroup(projectService.isLastestProjectGroup(orgId, projectId));
-            }
+    List<TstPlan> planPos = planService.listByProject(projectId, po.getType());
+    planService.genVos(planPos);
 
-            ret.put("data", vo);
-        }
-        List<TstProject> groups = projectService.listProjectGroups(orgId);
-        ret.put("groups", groups);
+    List<TstHistory> historyPos = historyService.listByProject(projectId, po.getType());
+    Map<String, List<TstHistory>> historyVos = historyService.genVosByDate(historyPos);
 
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
+    ret.put("code", Constant.RespCode.SUCCESS.getCode());
+    ret.put("project", po);
+    ret.put("plans", planPos);
+    ret.put("histories", historyVos);
+
+    return ret;
+  }
+
+  @ResponseBody
+  @PostMapping("/save")
+  @PrivOrg(perms = {"project-admin"})
+  public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
+    Map<String, Object> ret = new HashMap<String, Object>();
+    TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+    Integer orgId = user.getDefaultOrgId();
+
+    TstProject vo = json.getObject("model", TstProject.class);
+
+    TstProject po = projectService.save(vo, orgId, user);
+
+    ret.put("data", po);
+    ret.put("code", Constant.RespCode.SUCCESS.getCode());
+    return ret;
+  }
+
+  @PostMapping(value = "delete")
+  @ResponseBody
+  @PrivOrg(perms = {"project-admin"})
+  public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
+    Map<String, Object> ret = new HashMap<String, Object>();
+    TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+
+    Integer projectId = json.getInteger("projectId");
+    TstProject project = projectService.get(projectId);
+
+    projectService.delete(projectId, user);
+
+    ret.put("code", Constant.RespCode.SUCCESS.getCode());
+    return ret;
+  }
+
+  // 来源于前端上下文的变化
+  @ResponseBody
+  @PostMapping("/initContext")
+  @PrivPrj
+  public Map<String, Object> initContext(HttpServletRequest request, @RequestBody JSONObject json) {
+    Map<String, Object> ret = new HashMap<String, Object>();
+
+    TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+    Integer orgId = user.getDefaultOrgId();
+    Integer projectId = json.getInteger("projectId");
+
+    TstProject po = projectService.changeDefaultPrj(user, projectId, false);
+
+    if (po != null && po.getType().equals(TstProject.ProjectType.project)) {
+      prjConf(ret, orgId, projectId, user.getId());
     }
 
-    @ResponseBody
-    @PostMapping("/view")
-    @PrivPrj
-    public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = user.getDefaultOrgId();
-        Integer projectId = json.getInteger("projectId");
+    ret.put("type", po.getType());
+    ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
-        TstProject po = projectService.getWithPrivs(projectId, user.getId());
+    return ret;
+  }
 
-        List<TstPlan> planPos = planService.listByProject(projectId, po.getType());
-        planService.genVos(planPos);
+  // 来源于前端上下文的变化
+  @ResponseBody
+  @PostMapping("/changeContext")
+  @PrivPrj
+  public Map<String, Object> changeContext(HttpServletRequest request, @RequestBody JSONObject json) {
+    Map<String, Object> ret = new HashMap<String, Object>();
 
-        List<TstHistory> historyPos = historyService.listByProject(projectId, po.getType());
-        Map<String, List<TstHistory>> historyVos = historyService.genVosByDate(historyPos);
+    TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+    Integer orgId = user.getDefaultOrgId();
+    Integer projectId = json.getInteger("projectId");
 
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        ret.put("project", po);
-        ret.put("plans", planPos);
-        ret.put("histories", historyVos);
+    TstProject po = projectService.changeDefaultPrj(user, projectId, true);
 
-        return ret;
-    }
+    ret.put("type", po.getType());
+    ret.put("code", Constant.RespCode.SUCCESS.getCode());
 
-    @ResponseBody
-    @PostMapping("/save")
-    @PrivOrg(perms = {"project-admin"})
-    public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = user.getDefaultOrgId();
+    return ret;
+  }
 
-        TstProject vo = json.getObject("model", TstProject.class);
+  private void prjConf(Map<String, Object> ret, Integer orgId, Integer projectId, Integer userId) {
+    // 权限
+    Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userId, projectId, orgId);
+    ret.put("prjPrivileges", prjPrivileges);
 
-        TstProject po = projectService.save(vo, orgId, user);
+    // 用例
+    Map<String, Object> map = customFieldService.fetchProjectFieldForCase(orgId, projectId);
+    ret.put("caseCustomFields", map.get("fields"));
+    ret.put("casePropMap", map.get("props"));
+    Map<String, Map<String, String>> casePropValMap = casePropertyService.getMap(orgId);
+    ret.put("casePropValMap", casePropValMap);
 
-        ret.put("data", po);
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
+    // 缺陷
+    Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, projectId);
+    ret.put("issuePropMap", issuePropMap);
+    Map<String, Object> issuePropValMap = dynamicFormService.genIssueBuldInPropValMap(orgId, projectId);
+    ret.put("issuePropValMap", issuePropValMap);
 
-    @PostMapping(value = "delete")
-    @ResponseBody
-    @PrivOrg(perms = {"project-admin"})
-    public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-
-        Integer projectId = json.getInteger("projectId");
-        TstProject project = projectService.get(projectId);
-
-        projectService.delete(projectId, user);
-
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-        return ret;
-    }
-
-    // 来源于前端上下文的变化
-    @ResponseBody
-    @PostMapping("/initContext")
-    @PrivPrj
-    public Map<String, Object> initContext(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = user.getDefaultOrgId();
-        Integer projectId = json.getInteger("projectId");
-
-        TstProject po = projectService.changeDefaultPrj(user, projectId, false);
-
-        if (po != null && po.getType().equals(TstProject.ProjectType.project)) {
-            prjConf(ret, orgId, projectId, user.getId());
-        }
-
-        ret.put("type", po.getType());
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-
-        return ret;
-    }
-
-    // 来源于前端上下文的变化
-    @ResponseBody
-    @PostMapping("/changeContext")
-    @PrivPrj
-    public Map<String, Object> changeContext(HttpServletRequest request, @RequestBody JSONObject json) {
-        Map<String, Object> ret = new HashMap<String, Object>();
-
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = user.getDefaultOrgId();
-        Integer projectId = json.getInteger("projectId");
-
-        TstProject po = projectService.changeDefaultPrj(user, projectId, true);
-
-        ret.put("type", po.getType());
-        ret.put("code", Constant.RespCode.SUCCESS.getCode());
-
-        return ret;
-    }
-
-    private void prjConf(Map<String, Object> ret, Integer orgId, Integer projectId, Integer userId) {
-        // 权限
-        Map<String, Boolean> prjPrivileges = projectPrivilegeService.listByUser(userId, projectId, orgId);
-        ret.put("prjPrivileges", prjPrivileges);
-
-        // 用例
-        Map<String, Object> map = customFieldService.fetchProjectFieldForCase(orgId, projectId);
-        ret.put("caseCustomFields", map.get("fields"));
-        ret.put("casePropMap", map.get("props"));
-        Map<String,Map<String,String>> casePropValMap = casePropertyService.getMap(orgId);
-        ret.put("casePropValMap", casePropValMap);
-
-        // 缺陷
-        Map issuePropMap = dynamicFormService.genIssuePropMap(orgId, projectId);
-        ret.put("issuePropMap", issuePropMap);
-        Map<String, Object> issuePropValMap = dynamicFormService.genIssueBuldInPropValMap(orgId, projectId);
-        ret.put("issuePropValMap", issuePropValMap);
-
-        Map issueTransMap = issueWorkflowTransitionService.getStatusTrainsMap(projectId, userId);
-        ret.put("issueTransMap", issueTransMap);
-    }
+    Map issueTransMap = issueWorkflowTransitionService.getStatusTrainsMap(projectId, userId);
+    ret.put("issueTransMap", issueTransMap);
+  }
 
 }

@@ -199,7 +199,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<TstUser> searchOrgUser(Integer orgId, String keywords,  List<Integer> exceptIds) {
-//        PageHelper.startPage(0, 20);
         List<TstUser> users = userDao.searchOrgUser(orgId, keywords, exceptIds);
 
         return users;
@@ -207,7 +206,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<TstUser> searchPrjUser(Integer projectId, String keywords,  List<Integer> exceptIds) {
-//        PageHelper.startPage(0, 20);
         List<TstUser> users = userDao.searchPrjUser(projectId, keywords, exceptIds);
 
         return users;

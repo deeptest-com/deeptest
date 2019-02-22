@@ -53,10 +53,10 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
            }
         } else {
             TstProject project = projectDao.get(entityId);
-            if (project.getType().equals(TstProject.ProjectType.group)) {
+            if (project.getType().equals(TstProject.ProjectType.group)) { // 查看项目组
                 return Boolean.TRUE;
             }
-            if (authDao.userNotInProject(userId, entityId)) { // 不在组织中
+            if (authDao.userNotInProject(userId, entityId)) { // 不在项目中
                 return Boolean.FALSE;
             }
         }

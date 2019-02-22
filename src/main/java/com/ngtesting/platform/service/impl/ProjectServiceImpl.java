@@ -69,8 +69,8 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 	}
 
 	@Override
-	public List<TstProject> listProjectGroups(Integer orgId) {
-		List<TstProject> pos = projectDao.listProjectGroups(orgId);
+	public List<TstProject> listProjectGroups(Integer orgId, Integer groupId) {
+		List<TstProject> pos = projectDao.listProjectGroups(orgId, groupId);
 		this.genGroupVos(pos);
 		return pos;
 	}

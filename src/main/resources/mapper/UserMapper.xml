@@ -174,9 +174,9 @@
 
         <if test="keywords != null and keywords != ''">
             AND (
-            usr.nickname LIKE '%${keywords}%'
-            OR usr.email LIKE '%${keywords}%'
-            OR usr.phone LIKE '%${keywords}%'
+            usr.nickname ilike '%${keywords}%'
+            OR usr.email ilike '%${keywords}%'
+            OR usr.phone ilike '%${keywords}%'
             )
         </if>
         <if test="exceptIds != null and exceptIds.size > 0">

@@ -11,7 +11,7 @@ import java.util.Map;
 public interface ProjectService extends BaseService {
 
 	List<TstProject> list(Integer orgId, Integer userId, String keywords, Boolean disabled);
-	List<TstProject> listProjectGroups(Integer orgId);
+	List<TstProject> listProjectGroups(Integer orgId, Integer groupId);
 
 	List<TstProjectAccessHistory> listRecentProject(Integer orgId, Integer userId);
 

@@ -18,7 +18,7 @@
 
         WHERE o."projectId" = #{projectId}
 
-        ORDER BY role.id, o."type"ASC
+        ORDER BY role.id, o."type", usr.id
     </select>
 
     <select id="listIdsByUserAndProject" resultType="Integer">

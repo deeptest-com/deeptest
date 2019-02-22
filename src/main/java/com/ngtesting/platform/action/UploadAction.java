@@ -3,7 +3,6 @@ package com.ngtesting.platform.action;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.service.intf.UserService;
 import com.ngtesting.platform.utils.FileUtil;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 
 @Controller
@@ -32,8 +30,7 @@ public class UploadAction extends BaseAction {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		String origName = file.getOriginalFilename();
-		String extName = FilenameUtils.getExtension(origName);
-		String fileName = UUID.randomUUID().toString() + "." + extName;
+		String fileName = FileUtil.UuidFileName(origName);
 
 		String uploadPath = FileUtil.SaveFile(file, "data/", fileName);
 

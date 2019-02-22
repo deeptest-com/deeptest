@@ -91,6 +91,12 @@ public class FileUtil {
         return des;
     }
 
+    public static String UuidFileName(String origName) {
+        String name = FilenameUtils.getBaseName(origName);
+        String ext = FilenameUtils.getExtension(origName);
+        return name + "-" + UUID.randomUUID().toString().replace("-", "") + "." + ext;
+    }
+
     public static String RandomFilePath(String brother, String ext) {
         String dir = brother.substring(0, brother.lastIndexOf("/") + 1) ;
         String fileName = UUID.randomUUID().toString() + "." + ext;

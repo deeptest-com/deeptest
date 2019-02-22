@@ -50,7 +50,7 @@
             content      = #{vo.content},
             "updateTime" = NOW()
         WHERE id = #{vo.id}
-          AND userId = #{userId}
+          AND "userId" = #{userId}
     </update>
     <update id="delete">
         UPDATE "TstCaseComments"

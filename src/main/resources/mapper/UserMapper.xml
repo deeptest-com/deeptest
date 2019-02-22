@@ -148,7 +148,7 @@
             "leftSizeExe" = #{leftSizeExe},
             "leftSizeIssue" = #{leftSizeIssue}
 
-        WHERE userId = #{id}
+        WHERE "userId" = #{id}
     </update>
     <update id="setIssueView" parameterType="TstUser">
         UPDATE "TstUserSettings"

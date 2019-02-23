@@ -23,7 +23,7 @@
 
     <select id="getDetail" resultMap="taskMap">
         SELECT task.*,
-        -- usr.nickname userName,
+        usr.nickname userName, -- 保存后需要显示用户信息
         project.name "projectName",
         "caseProject".name "caseProjectName",
         env.label "envName"
@@ -31,7 +31,7 @@
 
         FROM "TstTask" task
 
-        -- LEFT JOIN TstUser usr ON task.userId = usr.id
+        LEFT JOIN "TstUser" usr ON task."userId" = usr.id
         LEFT JOIN "TstProject" project ON task."projectId" = project.id
         LEFT JOIN "TstProject" "caseProject" ON task."caseProjectId" = "caseProject".id
         LEFT JOIN "TstEnv" env ON task."envId" = env.id

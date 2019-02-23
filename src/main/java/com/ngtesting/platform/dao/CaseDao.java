@@ -39,14 +39,14 @@ public interface CaseDao {
                          @Param("updateById") Integer updateById);
 
     Integer updateProp(@Param("id") Integer id,
-                    @Param("code") String code,
-                    @Param("value") Object value,
-                    @Param("projectId") Integer projectId);
-
-    Integer updateExtProp(@Param("id") Integer id,
                        @Param("code") String code,
                        @Param("value") Object value,
                        @Param("projectId") Integer projectId);
+
+    Integer updateExtProp(@Param("id") Integer id,
+                          @Param("code") String code,
+                          @Param("value") Object value,
+                          @Param("projectId") Integer projectId);
 
 //    void updateParentIfNeeded(@Param("pId") Integer pId);
     List<TstCase> getChildren(@Param("id") Integer id);

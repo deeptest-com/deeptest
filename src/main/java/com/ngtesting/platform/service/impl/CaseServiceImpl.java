@@ -44,6 +44,8 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     CaseHistoryService caseHistoryService;
     @Autowired
     CustomFieldDao customFieldDao;
+    @Autowired
+    AuthDao authDao;
 
 	@Override
 	public List<TstCase> query(Integer projectId) {
@@ -297,6 +299,11 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     @Transactional
     public TstCase saveField(JSONObject json, TstUser user) {
         Integer projectId = user.getDefaultPrjId();
+        Integer caseProjectId = json.getInteger("caseProjectId");
+
+        if (caseProjectId != null && !authDao.userNotInProject(user.getId(), projectId)) {
+            projectId = caseProjectId;
+        }
 
         Integer id = json.getInteger("id");
         String code = json.getString("code");

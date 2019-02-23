@@ -26,14 +26,14 @@
         SELECT o.id, o.name, o."projectId", o."caseProjectId",
         prj.name "projectName", "casePrj".name "caseProjectName", usr.nickname "userName",
         ( SELECT count(cs.id) FROM "TstCaseInSuite" cs
-        WHERE cs."suiteId" = o.id AND cs."isParent"=FALSE
-        AND NOT cs.deleted AND NOT cs.disabled ) "count"
+          WHERE cs."suiteId" = o.id AND cs."isParent"=FALSE
+          AND NOT cs.deleted AND NOT cs.disabled ) "count"
 
         FROM "TstSuite" o
 
-        JOIN "TstUser" usr ON usr.id=o."userId"
-        JOIN "TstProject" prj ON prj.id=o."projectId"
-        JOIN "TstProject" "casePrj" ON "casePrj".id=o."caseProjectId"
+        left JOIN "TstUser" usr ON usr.id=o."userId"
+        left JOIN "TstProject" prj ON prj.id=o."projectId"
+        left JOIN "TstProject" "casePrj" ON "casePrj".id=o."caseProjectId"
 
         WHERE o."projectId" IN (
         <foreach collection="projectIds" item="item" separator=",">
@@ -41,7 +41,7 @@
         </foreach>)
         AND NOT o.deleted AND NOT o.disabled
         AND NOT prj.deleted AND NOT prj.disabled
-        AND NOT "casePrj".deleted AND NOT "casePrj".disabled
+        -- AND NOT "casePrj".deleted AND NOT "casePrj".disabled
 
         ORDER BY o."caseProjectId" ASC, o.id ASC
     </select>

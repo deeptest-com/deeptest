@@ -81,6 +81,7 @@
         FROM "TstProject" prj
                  JOIN "TstProject" temp ON temp."parentId" = prj."parentId"
         WHERE temp.id = #{id}
+        and not prj.deleted and not prj.disabled
         ORDER BY prj.id
     </select>
     <select id="listBrotherIds" resultType="int">
@@ -88,6 +89,7 @@
         FROM "TstProject" prj
                  JOIN "TstProject" temp ON temp."parentId" = prj."parentId"
         WHERE temp.id = #{id}
+        and NOT prj.deleted and not prj.disabled
         ORDER BY prj.id
     </select>
 

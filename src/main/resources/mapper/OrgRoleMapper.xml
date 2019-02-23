@@ -34,6 +34,7 @@
     <update id="update" parameterType="TstOrgRole">
         UPDATE "TstOrgRole"
         SET name = #{name},
+            descr = #{descr},
             disabled = #{disabled},
             "updateTime" = NOW()
 

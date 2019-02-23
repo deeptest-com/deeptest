@@ -1083,11 +1083,10 @@ DECLARE
    var_count integer = 0;
 
 BEGIN
-
-	IF NOT EXISTS 
-		(select csin.* from "TstCaseInSuite" csin 
-			where csin."suiteId"=p_suite_id and csin."caseId"=p_case_id and csin.deleted != true)  
-	THEN
+	--IF NOT EXISTS 
+	--	(select csin.* from "TstCaseInSuite" csin 
+	--		where csin."suiteId"=p_suite_id and csin."caseId"=p_case_id and csin.deleted != true)  
+	--THEN
 		INSERT INTO "TstCaseInSuite"
 			("projectId", "suiteId",  
 			 	"pId", "caseId", "isParent", ordr, disabled, deleted, "createTime")
@@ -1096,7 +1095,7 @@ BEGIN
           FROM "TstCase" cs WHERE cs.id=p_case_id;
 		
 		GET DIAGNOSTICS var_count = ROW_COUNT;
-	END IF;
+	--END IF;
 	
 	RAISE NOTICE 'var_count = %', var_count;
 	RETURN var_count;
@@ -1120,10 +1119,10 @@ DECLARE
 
 BEGIN
 
-	IF NOT EXISTS 
-		(select csin.* from "TstCaseInTask" csin 
-			where csin."taskId"=p_task_id and csin."caseId"=p_case_id and csin.deleted != true)  
-	THEN
+	--IF NOT EXISTS 
+	--	(select csin.* from "TstCaseInTask" csin 
+	--		where csin."taskId"=p_task_id and csin."caseId"=p_case_id and csin.deleted != true)  
+	--THEN
 		INSERT INTO "TstCaseInTask"
 			("projectId", "planId", "taskId", 
 			 	"pId", "caseId", "isParent", ordr, status, disabled, deleted, "createTime")
@@ -1132,7 +1131,7 @@ BEGIN
           FROM "TstCase" cs WHERE cs.id=p_case_id;
 		
 		GET DIAGNOSTICS var_count = ROW_COUNT;
-	END IF;
+	--END IF;
 	
 	RAISE NOTICE 'var_count = %', var_count;
 	RETURN var_count;
@@ -1161,6 +1160,8 @@ BEGIN
 	
     SELECT string_to_array(p_case_ids, ',') into arr_case_id;
 	RAISE NOTICE 'arr_case_id = %', arr_case_id;
+	
+	delete from "TstCaseInSuite" where "suiteId" = p_suite_id;
 														 
    FOREACH var_case_id IN ARRAY arr_case_id
    LOOP
@@ -1169,7 +1170,6 @@ BEGIN
    END LOOP;
 	
 	RETURN var_total;
-	
 END;
 
 $$;
@@ -1198,6 +1198,8 @@ BEGIN
 	
     SELECT string_to_array(p_case_ids, ',') into arr_case_id;
 	RAISE NOTICE 'arr_case_id = %', arr_case_id;
+	
+	update "TstCaseInTask" set deleted=true where "taskId" = p_task_id;
 														 
    FOREACH var_case_id IN ARRAY arr_case_id
    LOOP
@@ -1233,13 +1235,15 @@ BEGIN
 
     SELECT string_to_array(p_suite_ids, ',') into arr_suite_id;
 	RAISE NOTICE 'arr_suite_id = %', arr_suite_id;
+	
+	update "TstCaseInTask" set deleted=true where "taskId" = p_task_id;
 														 
    FOREACH var_suite_id IN ARRAY arr_suite_id
    LOOP
       RAISE NOTICE 'var_suite_id = %', var_suite_id;
 	  
 	  SELECT array_to_string(ARRAY(SELECT unnest(array_agg("caseId"))),',') 
-			 FROM "TstCaseInSuite" INTO var_case_ids;
+			 FROM "TstCaseInSuite" where "suiteId"=var_suite_id INTO var_case_ids;
 	  
 	  SELECT var_total + add_cases_to_task(var_case_ids, p_task_id) INTO var_total;
    END LOOP;
@@ -1523,7 +1527,6 @@ CREATE FUNCTION public.chart_test_execution_process_by_plan_user(p_plan_id integ
     AS $$  
 declare  
 	var_sql character varying; 
-	
     var_date_before timestamp;
 BEGIN  
 	SELECT _date_before(p_day_numb) INTO var_date_before;
@@ -1943,8 +1946,8 @@ BEGIN
 	INSERT INTO public."TstTaskAssigneeRelation"("taskId", "assigneeId")
 	VALUES (task_id, p_user_id);
 
-    insert into "TstCase" (name, "projectId", "pId", estimate, "priorityId", "typeId", "isParent", ordr, "createById", "contentType", disabled, deleted, "createTime")
-    values('测试用例', project_id, null, 10, case_default_priority_id, case_default_type_id, true, 0, p_user_id, 'steps', false, false, NOW());
+    insert into "TstCase" (name, "projectId", "pId", estimate, "isParent", ordr, "createById", "contentType", disabled, deleted, "createTime")
+    values('测试用例', project_id, null, 10, true, 0, p_user_id, 'steps', false, false, NOW());
     select max(id) from "TstCase" into case_id;
     select case_id into p_case_id;
 		   
@@ -1954,8 +1957,8 @@ BEGIN
 	VALUES (case_id, true, null, 1, null, null, 'untest', project_id, plan_id, task_id, 
 			false, false, p_user_id, now());
 		   
-    insert into "TstCase" (name, "projectId", "pId", estimate, "priorityId", "typeId", "isParent", ordr, "createById", "contentType", disabled, deleted, "createTime")
-    values('新特性', project_id, case_id, 10, case_default_priority_id, case_default_type_id, true, 0, p_user_id, 'steps', false, false, NOW());
+    insert into "TstCase" (name, "projectId", "pId", estimate, "isParent", ordr, "createById", "contentType", disabled, deleted, "createTime")
+    values('新特性', project_id, case_id, 10, true, 0, p_user_id, 'steps', false, false, NOW());
     select max(id) from "TstCase" into case_id;
 	INSERT INTO "TstCaseInTask"(
 		"caseId", "isParent", "pId", ordr, "exeBy", "exeTime", status, "projectId", "planId", "taskId", 
@@ -11387,21 +11390,21 @@ SELECT pg_catalog.setval('public."IsuWorkflowTransitionDefine_id_seq"', 1, false
 -- Name: TstCaseExeStatus_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ngtesting
 --
 
-SELECT pg_catalog.setval('public."TstCaseExeStatus_id_seq"', 538, true);
+SELECT pg_catalog.setval('public."TstCaseExeStatus_id_seq"', 542, true);
 
 
 --
 -- Name: TstCasePriority_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ngtesting
 --
 
-SELECT pg_catalog.setval('public."TstCasePriority_id_seq"', 386, true);
+SELECT pg_catalog.setval('public."TstCasePriority_id_seq"', 391, true);
 
 
 --
 -- Name: TstCaseType_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ngtesting
 --
 
-SELECT pg_catalog.setval('public."TstCaseType_id_seq"', 904, true);
+SELECT pg_catalog.setval('public."TstCaseType_id_seq"', 913, true);
 
 
 --

@@ -83,10 +83,13 @@ public class TstCase extends BaseModel {
 		this.attachments = attachments;
 	}
 
-	public TstCase(String name, Integer pId, Integer projectId, Integer createById, Boolean isParent, Integer ordr) {
+	public TstCase(String name, Integer pId, Integer projectId, Integer typeId, Integer priorityId,
+				   Integer createById, Boolean isParent, Integer ordr) {
 		this.name = name;
 		this.pId = pId;
 		this.projectId = projectId;
+		this.typeId = typeId;
+		this.priorityId = priorityId;
 		this.createById = createById;
 		this.isParent = isParent;
 		this.ordr = ordr;

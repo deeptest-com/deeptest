@@ -161,8 +161,9 @@
                     column="{id=id}">
         </collection>
     </resultMap>
+
     <select id="listAssigneesByTaskId" parameterType="Map" resultMap="assigneeMap">
-        SELECT o.*
+        SELECT o.id, o.nickname
         FROM "TstUser" o
                  LEFT JOIN "TstTaskAssigneeRelation" r on r."assigneeId" = o.id
 
@@ -172,7 +173,7 @@
 
         ORDER BY o.id ASC
     </select>
-    <resultMap id="assigneeMap" type="com.ngtesting.platform.model.TstUser" autoMapping="true">
+    <resultMap id="assigneeMap" type="java.util.Map" autoMapping="true">
         <id column="id" property="id"/>
         <id column="nickname" property="nickname"/>
     </resultMap>

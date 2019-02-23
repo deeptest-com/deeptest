@@ -11,6 +11,7 @@ public interface CaseTypeDao {
     TstCaseType get(@Param("id") Integer id,
                     @Param("orgId") Integer orgId);
 
+    TstCaseType getDefault(Integer orgId);
 
     Integer save(TstCaseType vo);
     Integer update(TstCaseType vo);

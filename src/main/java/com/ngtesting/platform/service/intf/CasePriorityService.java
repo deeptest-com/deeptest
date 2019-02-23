@@ -9,7 +9,9 @@ public interface CasePriorityService extends BaseService {
 
 	TstCasePriority get(Integer id, Integer orgId);
 
-	TstCasePriority save(TstCasePriority vo, Integer orgId);
+    TstCasePriority getDefault(Integer orgId);
+
+    TstCasePriority save(TstCasePriority vo, Integer orgId);
 	Boolean delete(Integer id, Integer orgId);
 
 	Boolean setDefault(Integer id, Integer orgId);

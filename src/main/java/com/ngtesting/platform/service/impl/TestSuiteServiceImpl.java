@@ -7,13 +7,14 @@ import com.ngtesting.platform.dao.TestSuiteDao;
 import com.ngtesting.platform.model.TstHistory;
 import com.ngtesting.platform.model.TstSuite;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.ProjectHistoryService;
 import com.ngtesting.platform.service.intf.MsgService;
+import com.ngtesting.platform.service.intf.ProjectHistoryService;
 import com.ngtesting.platform.service.intf.TestSuiteService;
 import com.ngtesting.platform.utils.MsgUtil;
 import com.ngtesting.platform.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -59,6 +60,7 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
     }
 
     @Override
+    @Transactional
     public TstSuite save(JSONObject json, TstUser user) {
         TstSuite vo = JSON.parseObject(JSON.toJSONString(json), TstSuite.class);
         vo.setUserId(user.getId());
@@ -85,12 +87,14 @@ public class TestSuiteServiceImpl extends BaseServiceImpl implements TestSuiteSe
     }
 
     @Override
+    @Transactional
     public Boolean delete(Integer id, Integer projectId) {
         Integer count = testSuiteDao.delete(id, projectId);
         return count > 0;
     }
 
     @Override
+    @Transactional
     public TstSuite saveCases(Integer projectId, Integer caseProjectId, Integer suiteId,
                               List<Integer> caseIds, TstUser user) {
         testSuiteDao.updateSuiteProject(suiteId, projectId, caseProjectId, user.getId());

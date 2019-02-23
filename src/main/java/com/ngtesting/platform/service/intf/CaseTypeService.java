@@ -9,7 +9,9 @@ public interface CaseTypeService extends BaseService {
 
 	TstCaseType get(Integer id, Integer orgId);
 
-	TstCaseType save(TstCaseType vo, Integer orgId);
+    TstCaseType getDefault(Integer orgId);
+
+    TstCaseType save(TstCaseType vo, Integer orgId);
 	Boolean delete(Integer id, Integer orgId);
 
 	Boolean setDefault(Integer orgId, Integer orgId2);

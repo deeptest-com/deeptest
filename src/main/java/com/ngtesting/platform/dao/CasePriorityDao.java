@@ -11,6 +11,8 @@ public interface CasePriorityDao {
     TstCasePriority get(@Param("id") Integer id,
                         @Param("orgId") Integer orgId);
 
+    TstCasePriority getDefault(Integer orgId);
+
     Integer save(TstCasePriority vo);
 
     Integer update(TstCasePriority vo);

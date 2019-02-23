@@ -27,6 +27,11 @@ public class CaseTypeServiceImpl extends BaseServiceImpl implements CaseTypeServ
     }
 
     @Override
+    public TstCaseType getDefault(Integer orgId) {
+        return caseTypeDao.getDefault(orgId);
+    }
+
+    @Override
 	public TstCaseType save(TstCaseType vo, Integer orgId) {
 
         if (vo.getId() == null) {

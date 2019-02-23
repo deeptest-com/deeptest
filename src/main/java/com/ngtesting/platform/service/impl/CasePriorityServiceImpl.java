@@ -27,6 +27,11 @@ public class CasePriorityServiceImpl extends BaseServiceImpl implements CasePrio
     }
 
     @Override
+    public TstCasePriority getDefault(Integer orgId) {
+        return casePriorityDao.getDefault(orgId);
+    }
+
+    @Override
     @Transactional
 	public TstCasePriority save(TstCasePriority vo, Integer orgId) {
         vo.setOrgId(orgId);

@@ -4,9 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.dao.*;
 import com.ngtesting.platform.model.*;
-import com.ngtesting.platform.service.intf.CaseCommentsService;
-import com.ngtesting.platform.service.intf.CaseHistoryService;
-import com.ngtesting.platform.service.intf.CaseService;
+import com.ngtesting.platform.service.intf.*;
 import com.ngtesting.platform.utils.BeanUtilEx;
 import com.ngtesting.platform.utils.CustomFieldUtil;
 import com.ngtesting.platform.utils.MsgUtil;
@@ -35,6 +33,12 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     CaseCommentsService caseCommentsService;
 
     public static List<String> ExtPropList;
+
+    @Autowired
+    CasePriorityService casePriorityService;
+
+    @Autowired
+    CaseTypeService caseTypeService;
 
     @Autowired
     CaseHistoryService caseHistoryService;
@@ -322,14 +326,18 @@ public class CaseServiceImpl extends BaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public void createSample(Integer projectId, TstUser user) {
-        TstCase root = new TstCase("测试用例", null, projectId, user.getId(), true, 1);
+        TstCase root = new TstCase("测试用例", null, projectId, null, null, user.getId(), true, 1);
         caseDao.createSample(root);
         caseDao.setDefaultVal(root.getId(), user.getDefaultOrgId());
 
-        TstCase testCase = new TstCase("新特性", root.getId(), projectId, user.getId(), true, 1);
+        TstCase testCase = new TstCase("新特性", root.getId(), projectId, null, null, user.getId(), true, 1);
         caseDao.createSample(testCase);
 
-        TstCase testCase2 = new TstCase("新用例", testCase.getId(), projectId, user.getId(), false, 1);
+        TstCaseType caseType = caseTypeService.getDefault(user.getDefaultOrgId());
+        TstCasePriority casePriority = casePriorityService.getDefault(user.getDefaultOrgId());
+
+        TstCase testCase2 = new TstCase("新用例", testCase.getId(), projectId, caseType.getId(), casePriority.getId(),
+                user.getId(), false, 1);
         caseDao.createSample(testCase2);
         caseDao.setDefaultVal(testCase2.getpId(), user.getDefaultOrgId());
 

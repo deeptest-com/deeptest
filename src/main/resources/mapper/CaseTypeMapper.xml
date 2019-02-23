@@ -18,6 +18,13 @@
           AND o."orgId" = #{orgId}
     </select>
 
+    <select id="getDefault" resultType="TstCaseType">
+        SELECT *
+        FROM "TstCaseType" o
+        WHERE o."defaultVal"
+          AND o."orgId" = #{orgId}
+    </select>
+
     <insert id="save" parameterType="TstCaseType" useGeneratedKeys="true" keyProperty="id">
         insert into "TstCaseType" (label, value, descr, "orgId", ordr, "defaultVal", deleted, disabled, "createTime")
         values (#{label}, #{value}, #{descr}, #{orgId}, #{ordr}, #{defaultVal}, FALSE, FALSE, NOW())

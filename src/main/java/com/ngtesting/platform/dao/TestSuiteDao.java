@@ -22,8 +22,6 @@ public interface TestSuiteDao {
     Integer delete(@Param("id") Integer id,
                 @Param("projectId") Integer projectId);
 
-    List<TstCaseInSuite> listCases(@Param("id") Integer id);
-
     List<Integer> listCaseIds(@Param("id") Integer id);
 
     void updateSuiteProject(@Param("id") Integer id,
@@ -32,6 +30,5 @@ public interface TestSuiteDao {
                             @Param("userId") Integer userId);
 
     void addCases(@Param("caseIds") String caseIds,
-                  @Param("suiteId") Integer suiteId
-                  );
+                  @Param("suiteId") Integer suiteId);
 }

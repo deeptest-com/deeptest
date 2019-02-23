@@ -19,6 +19,13 @@
           AND o."orgId" = #{orgId}
     </select>
 
+    <select id="getDefault" resultType="TstCasePriority">
+        SELECT *
+        FROM "TstCasePriority" o
+        WHERE o."defaultVal"
+          AND o."orgId" = #{orgId}
+    </select>
+
     <insert id="save" parameterType="TstCasePriority" useGeneratedKeys="true" keyProperty="id">
         insert into "TstCasePriority" (label,
                                        value,

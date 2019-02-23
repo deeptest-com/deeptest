@@ -108,6 +108,10 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
                 if (!byUserMap.containsKey(userName)) {
                     byUserMap.put(userName, new LinkedList<>());
                 }
+            } else {
+                if (!byUserMap.containsKey("N/A")) {
+                    byUserMap.put("N/A", new LinkedList<>());
+                }
             }
         }
 
@@ -115,8 +119,8 @@ public class ReportServiceImpl extends BaseServiceImpl implements ReportService 
         for (Map item : ls) {
             String dayTemp = item.get("date").toString();
             String name = item.get("name")!=null?item.get("name").toString():null;
-            Integer numb = item.get("numb")!=null?Integer.valueOf(item.get("numb").toString()):null;
-            Integer sum =  item.get("sum")!=null?Integer.valueOf(item.get("sum").toString()):null;
+            Integer numb = item.get("numb")!=null?Integer.valueOf(item.get("numb").toString()):0;
+            Integer sum =  item.get("sum")!=null?Integer.valueOf(item.get("sum").toString()):0;
 
             if (!dayTemp.equals(day) && day != null) { // 新的一天
                 xList.add(day);

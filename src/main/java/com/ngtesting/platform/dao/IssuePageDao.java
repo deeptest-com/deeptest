@@ -13,6 +13,8 @@ public interface IssuePageDao {
     IsuPage get(@Param("id") Integer id,
                 @Param("orgId") Integer orgId);
 
+    IsuPage getDefault(@Param("orgId") Integer orgId);
+
     void save(IsuPage vo);
 
     Integer update(IsuPage vo);

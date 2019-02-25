@@ -38,7 +38,6 @@
 
     <insert id="save" parameterType="IsuStatus" useGeneratedKeys="true" keyProperty="id">
         insert into "IsuStatus" (label,
-                                 "value",
                                  descr,
                                  "categoryId",
                                  "orgId",
@@ -49,7 +48,6 @@
                                  disabled,
                                  "createTime")
         values (#{label},
-                #{value},
                 #{descr},
                 #{categoryId},
                 #{orgId},
@@ -64,7 +62,6 @@
     <update id="update" parameterType="IsuStatus">
         UPDATE "IsuStatus"
         SET label = #{label},
-            "value" = #{value},
             descr = #{descr},
             "finalVal" = #{finalVal},
             disabled = #{disabled},

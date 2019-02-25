@@ -35,6 +35,17 @@
           AND NOT o.disabled
     </select>
 
+
+    <select id="getDefault" resultType="IsuPage">
+        SELECT o.*
+        FROM "IsuPage" o
+
+        WHERE o."defaultVal"
+          AND "orgId" = #{orgId}
+          AND NOT o.deleted
+          AND NOT o.disabled
+    </select>
+
     <insert id="save" parameterType="IsuPage" useGeneratedKeys="true" keyProperty="id">
         insert into "IsuPage" (name, "orgId", "defaultVal", "buildIn", deleted, disabled, "createTime")
         values (#{name}, #{orgId}, #{defaultVal}, #{buildIn}, FALSE, FALSE, NOW())

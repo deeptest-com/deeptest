@@ -4,7 +4,7 @@
 
     <insert id="link">
         INSERT INTO "IsuLink" ("srcIssueId", "dictIssueId", "reasonId", "reasonName")
-        values (${srcIssueId}, ${dictIssueId}, ${reasonId}, '${reasonName}')
+        select ${srcIssueId}, ${dictIssueId}, ${reasonId}, '${reasonName}'
 
                 WHERE NOT EXISTS (
                 SELECT * FROM "IsuLink" WHERE "srcIssueId" = ${srcIssueId}

@@ -6,7 +6,7 @@
         SELECT *
         FROM "IsuAttachment" o
 
-        WHERE o.issueId = #{issueId}
+        WHERE o."issueId" = #{issueId}
           AND NOT o.deleted
           AND NOT o.disabled
         ORDER BY o."createTime" ASC

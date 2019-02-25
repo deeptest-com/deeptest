@@ -4,7 +4,7 @@ public class IsuType extends BaseModel {
 	private static final long serialVersionUID = -2904250132388811594L;
 
     private String label;
-    private String value;
+    /*private String value;*/
 
     private String descr;
     private Boolean defaultVal = false;
@@ -18,14 +18,6 @@ public class IsuType extends BaseModel {
 
     public void setLabel(String label) {
         this.label = label;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
     }
 
     public Integer getOrgId() {

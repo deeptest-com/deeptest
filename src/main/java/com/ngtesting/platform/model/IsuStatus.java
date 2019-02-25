@@ -4,7 +4,7 @@ public class IsuStatus extends BaseModel {
 
 	private static final long serialVersionUID = 1657004478821957505L;
 	private String label;
-	private String value;
+	// private String value;
     private String descr;
     private Integer ordr;
 
@@ -43,14 +43,6 @@ public class IsuStatus extends BaseModel {
 	public void setLabel(String label) {
 		this.label = label;
 	}
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
 
     public Boolean getFinalVal() {
         return finalVal;

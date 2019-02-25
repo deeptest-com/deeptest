@@ -12,6 +12,8 @@ public interface IssueWorkflowDao {
     IsuWorkflow get(@Param("id") Integer id,
                 @Param("orgId") Integer orgId);
 
+    IsuWorkflow getDefault(Integer orgId);
+
     Integer save(IsuWorkflow vo);
     Integer update(IsuWorkflow vo);
     Integer delete(@Param("id") Integer id,

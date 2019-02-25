@@ -94,6 +94,7 @@ public class IssueAction extends BaseAction {
         Integer prjId = user.getDefaultPrjId();
 
 		IsuIssue po = new IsuIssue();
+        po.setReporterId(user.getId());
 
         IsuPage page = issueService.getPage(orgId, prjId, "create");
 

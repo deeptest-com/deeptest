@@ -1,6 +1,10 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.dao.IssueTypeDao;
+import com.ngtesting.platform.dao.IssueWorkflowDao;
 import com.ngtesting.platform.dao.IssueWorkflowSolutionDao;
+import com.ngtesting.platform.model.IsuType;
+import com.ngtesting.platform.model.IsuWorkflow;
 import com.ngtesting.platform.model.IsuWorkflowSolution;
 import com.ngtesting.platform.model.IsuWorkflowSolutionItem;
 import com.ngtesting.platform.service.intf.IssueWorkflowSolutionService;
@@ -20,6 +24,11 @@ public class IssueWorkflowSolutionServiceImpl extends BaseServiceImpl implements
 
     @Autowired
     IssueWorkflowSolutionDao workflowSolutionDao;
+    @Autowired
+    IssueWorkflowDao workflowDao;
+
+    @Autowired
+    IssueTypeDao issueTypeDao;
 
     @Override
     public List<IsuWorkflowSolution> list(Integer orgId) {
@@ -43,15 +52,26 @@ public class IssueWorkflowSolutionServiceImpl extends BaseServiceImpl implements
             map.put(typeKey, workflowKey);
         }
 
+        List<IsuType> types = issueTypeDao.list(orgId);
+        for (IsuType type : types) {
+            String typeKey = type.getId() + "-" + type.getLabel();
+            if (!map.containsKey(typeKey)) {
+                map.put(typeKey, "");
+            }
+        }
+
         return map;
     }
 
     @Override
     public IsuWorkflowSolution save(IsuWorkflowSolution vo, Integer orgId) {
-        if (vo.getId() == null) {
+        vo.setOrgId(orgId);
 
-            vo.setOrgId(orgId);
+        if (vo.getId() == null) {
             workflowSolutionDao.save(vo);
+
+            IsuWorkflow workflow = workflowDao.getDefault(orgId);
+            workflowSolutionDao.setDefaultPage(workflow.getId(), vo.getId(), orgId);
         } else {
             Integer count = workflowSolutionDao.update(vo);
             if (count == 0) {

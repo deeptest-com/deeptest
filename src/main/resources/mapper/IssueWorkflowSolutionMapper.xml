@@ -69,7 +69,7 @@
         WHERE o."solutionId" = #{solutionId}
           AND o."orgId" = #{orgId}
 
-        ORDER BY o.id ASC;
+        ORDER BY "isuType".id ASC;
     </select>
 
     <update id="changeItem">
@@ -114,5 +114,14 @@
                  JOIN "TstProject" p ON p."issueWorkflowSolutionId" = slu.id
         WHERE p.id = #{projectId}
     </select>
+
+    <insert id="setDefaultPage" statementType="CALLABLE">
+        insert into "IsuWorkflowSolutionItem"
+            ("typeId", "workflowId", "solutionId", "orgId")
+        select tp.id, #{workflowId}, #{solutionId}, #{orgId}
+            from "IsuWorkflow" wf, "IsuType" tp
+            where wf."orgId"=#{orgId} and tp."orgId"=#{orgId}
+            order by tp.id;
+    </insert>
 
 </mapper>

@@ -69,7 +69,7 @@
         WHERE o."solutionId" = #{solutionId}
           AND o."orgId" = #{orgId}
 
-        ORDER BY o.id ASC;
+        ORDER BY "type".id ASC;
     </select>
 
     <update id="changeItem">
@@ -108,5 +108,13 @@
         WHERE id = #{projectId}
           AND "orgId" = #{orgId};
     </update>
+
+    <insert id="setDefaultPage" statementType="CALLABLE">
+        {call init_org_issue_page_solution_item(
+            #{pageId,mode=IN,jdbcType=INTEGER},
+            #{solutionId,mode=IN,jdbcType=INTEGER},
+            #{orgId,mode=IN,jdbcType=INTEGER}
+        )}
+    </insert>
 
 </mapper>

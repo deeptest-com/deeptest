@@ -1,8 +1,12 @@
 package com.ngtesting.platform.service.impl;
 
+import com.ngtesting.platform.dao.IssuePageDao;
 import com.ngtesting.platform.dao.IssuePageSolutionDao;
+import com.ngtesting.platform.dao.IssueTypeDao;
+import com.ngtesting.platform.model.IsuPage;
 import com.ngtesting.platform.model.IsuPageSolution;
 import com.ngtesting.platform.model.IsuPageSolutionItem;
+import com.ngtesting.platform.model.IsuType;
 import com.ngtesting.platform.service.intf.IssuePageSolutionService;
 import com.ngtesting.platform.service.intf.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,11 @@ public class IssuePageSolutionServiceImpl extends BaseServiceImpl implements Iss
 
     @Autowired
     IssuePageSolutionDao pageSolutionDao;
+
+    @Autowired
+    IssueTypeDao issueTypeDao;
+    @Autowired
+    IssuePageDao issuePageDao;
 
     @Override
     public List<IsuPageSolution> list(Integer orgId) {
@@ -45,6 +54,13 @@ public class IssuePageSolutionServiceImpl extends BaseServiceImpl implements Iss
             String pageKey = item.getPageId() + "-" + item.getPageName();
             map.get(typeKey).put(item.getOpt().toString(), pageKey);
         }
+        List<IsuType> types = issueTypeDao.list(orgId);
+        for (IsuType type : types) {
+            String typeKey = type.getId() + "-" + type.getLabel();
+            if (!map.containsKey(typeKey)) {
+                map.put(typeKey, new LinkedHashMap<>());
+            }
+        }
 
         return map;
     }
@@ -55,6 +71,9 @@ public class IssuePageSolutionServiceImpl extends BaseServiceImpl implements Iss
 
         if (vo.getId() == null) {
             pageSolutionDao.save(vo);
+
+            IsuPage page = issuePageDao.getDefault(orgId);
+            pageSolutionDao.setDefaultPage(page.getId(), vo.getId(), orgId);
         } else {
             Integer count = pageSolutionDao.update(vo);
             if (count == 0) {

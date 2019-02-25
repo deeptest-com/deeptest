@@ -40,4 +40,8 @@ public interface IssuePageSolutionDao {
     void setByProject(@Param("solutionId") Integer solutionId,
                       @Param("projectId") Integer projectId,
                       @Param("orgId") Integer orgId);
+
+    void setDefaultPage(@Param("pageId") Integer pageId,
+                        @Param("solutionId") Integer solutionId,
+                        @Param("orgId") Integer orgId);
 }

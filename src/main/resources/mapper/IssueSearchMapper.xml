@@ -21,7 +21,7 @@
         SELECT o.id, o.id || '-' || o.title "name", 'issue' "type"
         FROM "IsuIssue" o
 
-        WHERE o.title LIKE '%${text}%'
+        WHERE o.title ilike '%${text}%'
         AND o."projectId" = #{projectId}
         <if test="exceptIds != null and exceptIds.size > 0">
             AND o.id NOT IN

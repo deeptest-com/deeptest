@@ -47,7 +47,6 @@
 
     <insert id="save" parameterType="IsuType" useGeneratedKeys="true" keyProperty="id">
         insert into "IsuType" (label,
-                               "value",
                                descr,
                                "orgId",
                                ordr,
@@ -56,13 +55,12 @@
                                deleted,
                                disabled,
                                "createTime")
-        values (#{label}, #{value}, #{descr}, #{orgId}, #{ordr}, #{defaultVal}, #{buildIn}, FALSE, FALSE, NOW())
+        values (#{label}, #{descr}, #{orgId}, #{ordr}, #{defaultVal}, #{buildIn}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="IsuType">
         UPDATE "IsuType"
         SET label = #{label},
-            "value" = #{value},
             descr = #{descr},
             disabled = #{disabled},
             "updateTime" = NOW()

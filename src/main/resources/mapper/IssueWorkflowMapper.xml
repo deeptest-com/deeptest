@@ -23,6 +23,16 @@
           AND NOT o.disabled
     </select>
 
+    <select id="getDefault" resultType="IsuWorkflow">
+        SELECT o.*
+        FROM "IsuWorkflow" o
+
+        WHERE o."defaultVal"
+          AND o."orgId" = #{orgId}
+          AND NOT o.deleted
+          AND NOT o.disabled
+    </select>
+
     <insert id="save" parameterType="IsuWorkflow" useGeneratedKeys="true" keyProperty="id">
         insert into "IsuWorkflow" (name, descr, "orgId", "defaultVal", "buildIn", deleted, disabled, "createTime")
         values (#{name}, #{descr}, #{orgId}, #{defaultVal}, #{buildIn}, FALSE, FALSE, NOW())

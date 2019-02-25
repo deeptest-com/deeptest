@@ -4,7 +4,7 @@ public class IsuResolution extends BaseModel {
 	private static final long serialVersionUID = 4118180732729567467L;
 
 	private String label;
-	private String value;
+//	private String value;
 
 	private String descr;
 	private Boolean defaultVal = false;
@@ -25,14 +25,6 @@ public class IsuResolution extends BaseModel {
 
 	public void setLabel(String label) {
 		this.label = label;
-	}
-
-	public String getValue() {
-		return value;
-	}
-
-	public void setValue(String value) {
-		this.value = value;
 	}
 
 	public Integer getOrdr() {

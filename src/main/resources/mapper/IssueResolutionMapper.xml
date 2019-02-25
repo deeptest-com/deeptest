@@ -21,7 +21,6 @@
 
     <insert id="save" parameterType="IsuResolution" useGeneratedKeys="true" keyProperty="id">
         insert into "IsuResolution" (label,
-                                     "value",
                                      descr,
                                      "orgId",
                                      ordr,
@@ -29,13 +28,12 @@
                                      deleted,
                                      disabled,
                                      "createTime")
-        values (#{label}, #{value}, #{descr}, #{orgId}, #{ordr}, #{defaultVal}, FALSE, FALSE, NOW())
+        values (#{label}, #{descr}, #{orgId}, #{ordr}, #{defaultVal}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="IsuResolution">
         UPDATE "IsuResolution"
         SET label = #{label},
-            "value" = #{value},
             descr = #{descr},
             disabled = #{disabled},
             "updateTime" = NOW()

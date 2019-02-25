@@ -48,7 +48,6 @@
 
     <insert id="save" parameterType="IsuPriority" useGeneratedKeys="true" keyProperty="id">
         insert into "IsuPriority" (label,
-                                   value,
                                    descr,
                                    "orgId",
                                    "defaultVal",
@@ -57,13 +56,12 @@
                                    deleted,
                                    disabled,
                                    "createTime")
-        values (#{label}, #{value}, #{descr}, #{orgId}, #{defaultVal}, #{buildIn}, #{ordr}, FALSE, FALSE, NOW())
+        values (#{label}, #{descr}, #{orgId}, #{defaultVal}, #{buildIn}, #{ordr}, FALSE, FALSE, NOW())
     </insert>
 
     <update id="update" parameterType="IsuPriority">
         UPDATE "IsuPriority"
         SET label = #{label},
-            "value" = #{value},
             descr = #{descr},
             disabled = #{disabled},
             "updateTime" = NOW()

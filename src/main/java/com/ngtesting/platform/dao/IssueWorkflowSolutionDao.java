@@ -42,4 +42,8 @@ public interface IssueWorkflowSolutionDao {
 
     List<IsuWorkflowSolutionItem> getIssueTypeWorkflow(
             @Param("projectId") Integer projectId);
+
+    void setDefaultPage(@Param("workflowId") Integer workflowId,
+                        @Param("solutionId") Integer solutionId,
+                        @Param("orgId") Integer orgId);
 }

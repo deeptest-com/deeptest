@@ -3,8 +3,10 @@ package com.ngtesting.platform.action.client;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
+import com.ngtesting.platform.model.IsuPage;
 import com.ngtesting.platform.model.IsuPageSolution;
 import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.intf.IssuePageService;
 import com.ngtesting.platform.service.intf.IssuePageSolutionService;
 import com.ngtesting.platform.servlet.PrivOrg;
 import com.ngtesting.platform.servlet.PrivPrj;
@@ -30,6 +32,32 @@ public class IssuePageAction extends BaseAction {
 
 	@Autowired
 	IssuePageSolutionService solutionService;
+
+    @Autowired
+    IssuePageService pageService;
+
+	@RequestMapping(value = "get", method = RequestMethod.POST)
+	@ResponseBody
+	@PrivOrg
+	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        Integer orgId = user.getDefaultOrgId();
+
+        Integer pageId = json.getInteger("id");
+        IsuPage page = null;
+        if (pageId == null) {
+            page = new IsuPage();
+        } else {
+            page = pageService.get(pageId, orgId);
+        }
+
+        ret.put("data", page);
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+	}
 
 	@RequestMapping(value = "getByProject", method = RequestMethod.POST)
 	@ResponseBody

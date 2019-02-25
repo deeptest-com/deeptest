@@ -663,7 +663,7 @@ public abstract class ObjectUtils {
 
 	/**
 	 * Return a String representation of the contents of the specified array.
-	 * <p>The String representation consists of a list of the array's elements,
+	 * <p>The String representation consists of a listAll of the array's elements,
 	 * enclosed in curly braces ({@code "{}"}). Adjacent elements are separated
 	 * by the characters {@code ", "} (a comma followed by a space). Returns
 	 * {@code "null"} if {@code array} is {@code null}.
@@ -694,7 +694,7 @@ public abstract class ObjectUtils {
 
 	/**
 	 * Return a String representation of the contents of the specified array.
-	 * <p>The String representation consists of a list of the array's elements,
+	 * <p>The String representation consists of a listAll of the array's elements,
 	 * enclosed in curly braces ({@code "{}"}). Adjacent elements are separated
 	 * by the characters {@code ", "} (a comma followed by a space). Returns
 	 * {@code "null"} if {@code array} is {@code null}.
@@ -726,7 +726,7 @@ public abstract class ObjectUtils {
 
 	/**
 	 * Return a String representation of the contents of the specified array.
-	 * <p>The String representation consists of a list of the array's elements,
+	 * <p>The String representation consists of a listAll of the array's elements,
 	 * enclosed in curly braces ({@code "{}"}). Adjacent elements are separated
 	 * by the characters {@code ", "} (a comma followed by a space). Returns
 	 * {@code "null"} if {@code array} is {@code null}.
@@ -757,7 +757,7 @@ public abstract class ObjectUtils {
 
 	/**
 	 * Return a String representation of the contents of the specified array.
-	 * <p>The String representation consists of a list of the array's elements,
+	 * <p>The String representation consists of a listAll of the array's elements,
 	 * enclosed in curly braces ({@code "{}"}). Adjacent elements are separated
 	 * by the characters {@code ", "} (a comma followed by a space). Returns
 	 * {@code "null"} if {@code array} is {@code null}.
@@ -788,7 +788,7 @@ public abstract class ObjectUtils {
 
 	/**
 	 * Return a String representation of the contents of the specified array.
-	 * <p>The String representation consists of a list of the array's elements,
+	 * <p>The String representation consists of a listAll of the array's elements,
 	 * enclosed in curly braces ({@code "{}"}). Adjacent elements are separated
 	 * by the characters {@code ", "} (a comma followed by a space). Returns
 	 * {@code "null"} if {@code array} is {@code null}.
@@ -820,7 +820,7 @@ public abstract class ObjectUtils {
 
 	/**
 	 * Return a String representation of the contents of the specified array.
-	 * <p>The String representation consists of a list of the array's elements,
+	 * <p>The String representation consists of a listAll of the array's elements,
 	 * enclosed in curly braces ({@code "{}"}). Adjacent elements are separated
 	 * by the characters {@code ", "} (a comma followed by a space). Returns
 	 * {@code "null"} if {@code array} is {@code null}.
@@ -852,7 +852,7 @@ public abstract class ObjectUtils {
 
 	/**
 	 * Return a String representation of the contents of the specified array.
-	 * <p>The String representation consists of a list of the array's elements,
+	 * <p>The String representation consists of a listAll of the array's elements,
 	 * enclosed in curly braces ({@code "{}"}). Adjacent elements are separated
 	 * by the characters {@code ", "} (a comma followed by a space). Returns
 	 * {@code "null"} if {@code array} is {@code null}.
@@ -883,7 +883,7 @@ public abstract class ObjectUtils {
 
 	/**
 	 * Return a String representation of the contents of the specified array.
-	 * <p>The String representation consists of a list of the array's elements,
+	 * <p>The String representation consists of a listAll of the array's elements,
 	 * enclosed in curly braces ({@code "{}"}). Adjacent elements are separated
 	 * by the characters {@code ", "} (a comma followed by a space). Returns
 	 * {@code "null"} if {@code array} is {@code null}.
@@ -914,7 +914,7 @@ public abstract class ObjectUtils {
 
 	/**
 	 * Return a String representation of the contents of the specified array.
-	 * <p>The String representation consists of a list of the array's elements,
+	 * <p>The String representation consists of a listAll of the array's elements,
 	 * enclosed in curly braces ({@code "{}"}). Adjacent elements are separated
 	 * by the characters {@code ", "} (a comma followed by a space). Returns
 	 * {@code "null"} if {@code array} is {@code null}.

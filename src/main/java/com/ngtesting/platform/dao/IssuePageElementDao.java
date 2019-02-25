@@ -10,7 +10,7 @@ import java.util.Map;
 public interface IssuePageElementDao {
     void save(IsuPageElement elm);
 
-    void updateProp(@Param("id") String id,
+    void updateProp(@Param("id") Integer id,
                     @Param("prop") String prop,
                     @Param("val") String val,
                     @Param("orgId") Integer orgId);

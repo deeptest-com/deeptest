@@ -24,12 +24,12 @@ public class IssueOptAction extends BaseAction {
     @Autowired
     IssueOptService issueOptService;
     @Autowired
+    IssueService issueService;
+
+    @Autowired
     IssueFieldService fieldService;
 	@Autowired
 	IssueDynamicFormService dynamicFormService;
-
-    @Autowired
-    IssueService issueService;
     @Autowired
     MsgService msgService;
 
@@ -64,6 +64,19 @@ public class IssueOptAction extends BaseAction {
         String dictStatusName = json.getString("dictStatusName");
 
         issueOptService.statusTran(id, dictStatusId, dictStatusName, user);
+
+        ret.put("code", Constant.RespCode.SUCCESS.getCode());
+        return ret;
+    }
+
+    @RequestMapping(value = "updateThenStatusTran", method = RequestMethod.POST)
+    @ResponseBody
+    @PrivPrj(perms = {"issue-maintain"})
+    public Map<String, Object> updateThenStatusTran(HttpServletRequest request, @RequestBody JSONObject json) {
+        Map<String, Object> ret = new HashMap<>();
+        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+
+        issueOptService.updateThenStatusTran(json, user);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;

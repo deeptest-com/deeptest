@@ -98,7 +98,7 @@ public class IssueWorkflowAdmin extends BaseAction {
         List<IsuStatus> statuses = issueWorkflowService.listStatusForDesign(id);
         Map<String, IsuWorkflowTransition> tranMap = issueWorkflowService.getTransitionMap(id);
 
-        List<IsuPage> pages = pageService.list(orgId);
+        List<IsuPage> pages = pageService.listForWorkflowTran(orgId);
 
         ret.put("data", vo);
         ret.put("statuses", statuses);

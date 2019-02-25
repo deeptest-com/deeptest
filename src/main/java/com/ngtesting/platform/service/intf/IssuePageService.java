@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface IssuePageService extends BaseService {
 
-    List<IsuPage> list(Integer orgId);
+    List<IsuPage> listAll(Integer orgId);
+
+    List<IsuPage> listForWorkflowTran(Integer orgId);
 
     IsuPage get(Integer pageId, Integer orgId);
 

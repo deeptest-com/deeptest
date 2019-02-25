@@ -19,8 +19,13 @@ public class IssuePageServiceImpl extends BaseServiceImpl implements IssuePageSe
     IssuePageDao pageDao;
 
     @Override
-    public List<IsuPage> list(Integer orgId) {
-        return pageDao.list(orgId);
+    public List<IsuPage> listAll(Integer orgId) {
+        return pageDao.listAll(orgId);
+    }
+
+    @Override
+    public List<IsuPage> listForWorkflowTran(Integer orgId) {
+        return pageDao.listForWorkflowTran(orgId);
     }
 
     @Override

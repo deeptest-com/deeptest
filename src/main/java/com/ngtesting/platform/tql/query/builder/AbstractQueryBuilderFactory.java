@@ -192,7 +192,7 @@ public abstract class AbstractQueryBuilderFactory {
     }
 
     /**
-     * get class index of list
+     * get class index of listAll
      * @param list
      * @param cls
      * @return

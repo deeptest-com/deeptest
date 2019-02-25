@@ -7,5 +7,5 @@ public interface IssuePageElementService extends BaseService {
 
     void saveAll(Integer orgId, Integer pageId, List<Map> jsonArr);
 
-    void updateProp(String id, String prop, String val, Integer orgId);
+    void updateProp(Integer id, String prop, String val, Integer orgId);
 }

@@ -9,8 +9,8 @@
 
         WHERE o."orgId" = #{orgId}
           AND NOT o.deleted
-          AND NOT o.
-                ORDER BY o."createTime" ASC
+          AND NOT o.disabled
+          ORDER BY o."createTime" ASC
     </select>
 
     <select id="get" resultType="IsuWorkflow">

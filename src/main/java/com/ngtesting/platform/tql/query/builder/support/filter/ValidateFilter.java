@@ -72,10 +72,10 @@ public class ValidateFilter implements IRuleFilter {
                 }
             }
 
-            // must be list
+            // must be listAll
             if (EnumOperator.IN.equals(rule.getOperator()) || EnumOperator.NOT_IN.equals(rule.getOperator())
                     || EnumOperator.BETWEEN.equals(rule.getOperator()) || EnumOperator.NOT_BETWEEN.equals(rule.getOperator())) {
-                // list
+                // listAll
                 if (!(rule.getValue() instanceof List)) {
                     throw new FilterException("rule's value must be Array for:" + rule);
                 }

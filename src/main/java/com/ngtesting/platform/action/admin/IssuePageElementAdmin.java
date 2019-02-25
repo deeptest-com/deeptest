@@ -70,7 +70,7 @@ public class IssuePageElementAdmin extends BaseAction {
         TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
         Integer orgId = user.getDefaultOrgId();
 
-        String id = json.getString("id");
+        Integer id = json.getInteger("id");
         String prop = json.getString("prop");
         String val = json.getString("val");
 

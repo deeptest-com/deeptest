@@ -79,7 +79,7 @@ public class IssuePageSolutionAdmin extends BaseAction {
         IsuPageSolution solution = pageSolutionService.get(solutionId, orgId);
         Map itemMap = pageSolutionService.getItemsMap(solutionId, orgId);
 
-        List<IsuPage> pages = pageService.list(orgId);
+        List<IsuPage> pages = pageService.listAll(orgId);
 
 		ret.put("solution", solution);
         ret.put("itemMap", itemMap);
@@ -162,7 +162,7 @@ public class IssuePageSolutionAdmin extends BaseAction {
 		IsuPageSolution solution = pageSolutionService.get(solutionId, orgId);
 		Map itemMap = pageSolutionService.getItemsMap(solutionId, orgId);
 
-		List<IsuPage> pages = pageService.list(orgId);
+		List<IsuPage> pages = pageService.listAll(orgId);
 
 		ret.put("solution", solution);
 		ret.put("itemMap", itemMap);

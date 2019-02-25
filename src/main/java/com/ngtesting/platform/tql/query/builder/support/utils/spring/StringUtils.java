@@ -1077,7 +1077,7 @@ public abstract class StringUtils {
     }
 
     /**
-     * Take a {@code String} that is a delimited list and convert it into a
+     * Take a {@code String} that is a delimited listAll and convert it into a
      * {@code String} array.
      * <p>A single {@code delimiter} may consist of more than one character,
      * but it will still be considered as a single delimiter string, rather
@@ -1086,7 +1086,7 @@ public abstract class StringUtils {
      * @param str the input {@code String}
      * @param delimiter the delimiter between elements (this is a single delimiter,
      * rather than a bunch individual delimiter characters)
-     * @return an array of the tokens in the list
+     * @return an array of the tokens in the listAll
      * @see #tokenizeToStringArray
      */
     public static String[] delimitedListToStringArray(String str, String delimiter) {
@@ -1094,7 +1094,7 @@ public abstract class StringUtils {
     }
 
     /**
-     * Take a {@code String} that is a delimited list and convert it into
+     * Take a {@code String} that is a delimited listAll and convert it into
      * a {@code String} array.
      * <p>A single {@code delimiter} may consist of more than one character,
      * but it will still be considered as a single delimiter string, rather
@@ -1105,7 +1105,7 @@ public abstract class StringUtils {
      * rather than a bunch individual delimiter characters)
      * @param charsToDelete a set of characters to delete; useful for deleting unwanted
      * line breaks: e.g. "\r\n\f" will delete all new lines and line feeds in a {@code String}
-     * @return an array of the tokens in the list
+     * @return an array of the tokens in the listAll
      * @see #tokenizeToStringArray
      */
     public static String[] delimitedListToStringArray(String str, String delimiter, String charsToDelete) {
@@ -1138,7 +1138,7 @@ public abstract class StringUtils {
     }
 
     /**
-     * Convert a comma delimited list (e.g., a row from a CSV file) into an
+     * Convert a comma delimited listAll (e.g., a row from a CSV file) into an
      * array of strings.
      * @param str the input {@code String}
      * @return an array of strings, or the empty array in case of empty input
@@ -1148,11 +1148,11 @@ public abstract class StringUtils {
     }
 
     /**
-     * Convert a comma delimited list (e.g., a row from a CSV file) into a set.
+     * Convert a comma delimited listAll (e.g., a row from a CSV file) into a set.
      * <p>Note that this will suppress duplicates, and as of 4.2, the elements in
      * the returned set will preserve the original order in a {@link LinkedHashSet}.
      * @param str the input {@code String}
-     * @return a set of {@code String} entries in the list
+     * @return a set of {@code String} entries in the listAll
      * @see #removeDuplicateStrings(String[])
      */
     public static Set<String> commaDelimitedListToSet(String str) {

@@ -82,12 +82,12 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
     @Transactional
     public IsuIssue save(JSONObject issue, Integer pageId, TstUser user) {
         List<IsuPageElement> elemObjs = pageElementDao.listElementByPageId(pageId);
-        List<IsuPageElement> elems = genElems(elemObjs);
+        List<IsuPageElement> elems = genElems(elemObjs, true);
 
         String uuid = UUID.randomUUID().toString().replace("-", "");
         issue.put("uuid", uuid);
 
-        List<Object> params = genParams(issue, elemObjs, user);
+        List<Object> params = genParams(issue, elemObjs, user, true);
 
         Integer count = issueDao.save(elems, params);
         IsuIssue po = null;
@@ -108,9 +108,9 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
     public Boolean update(JSONObject issue, Integer pageId, TstUser user) {
         Integer id = issue.getInteger("id");
         List<IsuPageElement> elemObjs = pageElementDao.listElementByPageId(pageId);
-        List<IsuPageElement> elems = genElems(elemObjs);
+        List<IsuPageElement> elems = genElems(elemObjs, false);
 
-        List<Object> params = genParams(issue, elemObjs, user);
+        List<Object> params = genParams(issue, elemObjs, user, false);
 
         Integer count = issueDao.update(elems, params, id, user.getDefaultPrjId());
 
@@ -156,7 +156,7 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         return po;
     }
 
-    private List<IsuPageElement> genElems(List<IsuPageElement> elemObjs) {
+    private List<IsuPageElement> genElems(List<IsuPageElement> elemObjs, Boolean isNew) {
         List<IsuPageElement> elems = new LinkedList<>();
         for (IsuPageElement elem : elemObjs) {
             if (elem.getBuildIn()) {
@@ -165,16 +165,17 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         }
 
         elems.add(new IsuPageElement("extProp", "", true));
-
-        elems.add(new IsuPageElement("orgId", "", true));
-        elems.add(new IsuPageElement("projectId", "", true));
-        elems.add(new IsuPageElement("creatorId", "", true));
-        elems.add(new IsuPageElement("uuid", "", true));
+        if (isNew) {
+            elems.add(new IsuPageElement("orgId", "", true));
+            elems.add(new IsuPageElement("projectId", "", true));
+            elems.add(new IsuPageElement("creatorId", "", true));
+            elems.add(new IsuPageElement("uuid", "", true));
+        }
 
         return elems;
     }
 
-    private List genParams(JSONObject issue, List<IsuPageElement> elems, TstUser user) {
+    private List genParams(JSONObject issue, List<IsuPageElement> elems, TstUser user, Boolean isNew) {
         List<Object> params = new LinkedList<>();
         JSONObject jsonb = new JSONObject();
 
@@ -183,11 +184,16 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
             String code = elem.getColCode();
 
             Object param;
-            switch(elem.getInput()){
+            switch(elem.getType()){
                 case "date":
                     param = issue.get(code)!=null?issue.getDate(code): null;
                     break;
-
+                case "string":
+                    param = issue.get(code)!=null?issue.getString(code): null;
+                    break;
+                case "integer":
+                    param = issue.get(code)!=null?issue.getInteger(code): null;
+                    break;
                 default:
                     param = issue.get(code);
                     break;
@@ -201,11 +207,12 @@ public class IssueServiceImpl extends BaseServiceImpl implements IssueService {
         }
 
         params.add("'" + jsonb.toJSONString() + "'::JSON");
-
-        params.add(user.getDefaultOrgId());
-        params.add(user.getDefaultPrjId());
-        params.add(user.getId());
-        params.add(issue.getString("uuid"));
+        if (isNew) {
+            params.add(user.getDefaultOrgId());
+            params.add(user.getDefaultPrjId());
+            params.add(user.getId());
+            params.add(issue.getString("uuid"));
+        }
 
         return params;
     }

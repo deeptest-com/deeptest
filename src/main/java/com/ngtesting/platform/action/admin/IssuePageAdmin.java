@@ -40,7 +40,7 @@ public class IssuePageAdmin extends BaseAction {
 		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
 		Integer orgId = user.getDefaultOrgId();
 
-		List<IsuPage> pages = pageService.list(orgId);
+		List<IsuPage> pages = pageService.listAll(orgId);
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		ret.put("pages", pages);
@@ -145,7 +145,7 @@ public class IssuePageAdmin extends BaseAction {
 			return authFail();
 		}
 
-        List<IsuPage> pages = pageService.list(orgId);
+        List<IsuPage> pages = pageService.listAll(orgId);
 
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         ret.put("pages", pages);

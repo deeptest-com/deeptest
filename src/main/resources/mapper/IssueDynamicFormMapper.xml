@@ -139,7 +139,9 @@
     <sql id="fetchSysFieldOptions">
         SELECT tb.id, tb."label", tb."defaultVal", '${code}' "fieldCode", '${optionTable}' "optionTable"
         FROM "${optionTable}" AS tb
-        WHERE TRUE
+        WHERE tb."orgId" = #{orgId}
+          AND NOT tb.disabled
+          AND NOT tb.deleted
         ORDER BY tb.ordr
     </sql>
 

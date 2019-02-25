@@ -38,7 +38,7 @@
 
     <update id="updateProp">
         UPDATE "IsuPageElement"
-        SET ${prop} = ${val}
+        SET "${prop}" = ${val}
         WHERE id = #{id}
           AND "orgId" = #{orgId}
     </update>

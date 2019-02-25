@@ -63,7 +63,7 @@ public class IssuePageElementServiceImpl extends BaseServiceImpl implements Issu
     }
 
     @Override
-    public void updateProp(String id, String prop, String val, Integer orgId) {
+    public void updateProp(Integer id, String prop, String val, Integer orgId) {
         if ("required".equals(prop) || "fullLine".equals(prop) || "readonly".equals(prop)) {
 
         } else {

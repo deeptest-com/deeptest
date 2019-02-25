@@ -2090,7 +2090,8 @@ BEGIN
 
     insert into "IsuWorkflowSolutionItem" ("typeId", "workflowId", "solutionId", "orgId")
     select tp.id, wf.id, issue_workflow_solution_id, p_org_id from "IsuWorkflow" wf, "IsuType" tp
-        where wf."orgId"=p_org_id and tp."orgId"=p_org_id;
+        where wf."orgId"=p_org_id and tp."orgId"=p_org_id
+		order by tp.id;
 
     -- 工作流配置
     select ((select max(id) from "IsuStatus") - (select max(id) from "IsuStatusDefine")) into record_gap_to_define_table;
@@ -11079,11 +11080,11 @@ COPY public."IsuFieldDefine" (id, "colCode", label, type, input, "defaultShowInF
 --
 
 COPY public."IsuLinkReasonDefine" (id, label, value, disabled, deleted, "createTime", "updateTime") FROM stdin;
-10	重复	\N	f	f	2018-12-18 09:03:16	\N
 20	重复于	\N	f	f	2018-12-18 08:59:57	\N
 30	阻塞	\N	f	f	2018-12-18 09:03:19	\N
 40	阻塞于	\N	f	f	2018-12-18 09:00:19	\N
 50	相关于	\N	f	f	2018-12-18 09:03:22	\N
+10	重复	\N	t	f	2018-12-18 09:03:16	\N
 \.
 
 
@@ -11191,6 +11192,7 @@ COPY public."IsuWorkflowTransitionDefine" (id, name, "actionPageId", "srcStatusI
 300	解决	\N	4	2	t	f	f	2018-11-15 17:16:24	\N
 310	关闭	\N	4	3	\N	f	f	2018-11-15 17:16:31	\N
 320	重新打开	\N	5	4	\N	f	f	2018-11-15 17:16:34	\N
+330	重新打开	\N	3	4	\N	f	f	2018-11-15 17:16:34	\N
 \.
 
 

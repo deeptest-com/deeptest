@@ -254,7 +254,7 @@
                         </configuration>
                     </execution>
 
-                    <execution>
+                    <!--<execution>
                         <id>copy-jar</id>
                         <phase>package</phase>
                         <goals>
@@ -273,7 +273,7 @@
                                 </exec>
                             </tasks>
                         </configuration>
-                    </execution>
+                    </execution>-->
 
                     <execution>
                         <id>gen-postgres-image</id>

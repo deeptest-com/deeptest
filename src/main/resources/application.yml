@@ -46,6 +46,17 @@ spring:
         max-file-size: 150MB
         max-request-size: 150MB
 
+server:
+ port: 8443
+ ssl:
+   key-store: classpath:keystore.p12
+   key-store-password: P2ssw0rd
+   key-store-type: PKCS12
+   key-alias: ngtesting-mac
+
+http:
+  port: 8080
+
 mybatis:
   mapperLocations: classpath:mapper/*.xml
   typeAliasesPackage: com.ngtesting.platform.model

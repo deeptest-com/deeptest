@@ -13,13 +13,13 @@ import javax.annotation.PostConstruct;
 @SpringBootApplication
 @EnableTransactionManagement
 @MapperScan("com.ngtesting.platform.dao")
-@ComponentScan(basePackages={"com.ngtesting.platform"})
+@ComponentScan(basePackages = {"com.ngtesting.platform"})
 public class AppLaunch {
     Logger logger = LoggerFactory.getLogger(AppLaunch.class);
 
-	public static void main(String[] args) {
-		SpringApplication.run(AppLaunch.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(AppLaunch.class, args);
+    }
 
     @PostConstruct
     void setDefaultTimezone() {

@@ -11,4 +11,3 @@ docker rmi -f `docker images -q`
 
 docker build -f Dockerfile-Base --rm -t registry.cn-shanghai.aliyuncs.com/ngtesting/ngtesting-web-base:2.0.0 .
 docker push registry.cn-shanghai.aliyuncs.com/ngtesting/ngtesting-web-base:2.0.0
-

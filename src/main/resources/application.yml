@@ -47,7 +47,7 @@ spring:
         max-request-size: 150MB
 
 server:
- port: 8443
+ port: 443
  ssl:
    key-store: classpath:keystore.p12
    key-store-password: P2ssw0rd
@@ -55,7 +55,7 @@ server:
    key-alias: ngtesting-mac
 
 http:
-  port: 8080
+  port: 80
 
 mybatis:
   mapperLocations: classpath:mapper/*.xml

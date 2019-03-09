@@ -34,7 +34,7 @@ public class AuthAminAspect {
     @Before("authAmin()")
     public void doBefore(JoinPoint joinPoint) throws Throwable {
         String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
-        if (className.equals("OrgAdmin")) {
+        if (className.equals("OrgAdmin")) { // 管理组织实体本身，不需要权限
             return;
         }
 
@@ -68,20 +68,5 @@ public class AuthAminAspect {
         Integer orgId = user.getDefaultOrgId();
         return orgId;
     }
-
-//        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-//        Annotation[][] annotationMatrix = methodSignature.getMethod().getParameterAnnotations();
-//        int index = -1;
-//        for (Annotation[] annotations : annotationMatrix) {
-//            index++;
-//            for (Annotation annotation : annotations) {
-//                if (annotation instanceof RequestBody) {
-//                    Object requestBody = joinPoint.getArgs()[index];
-//                    if (requestBody instanceof JSONObject) {
-//                        logger.info("RequestBody: " + requestBody);
-//                    }
-//                }
-//            }
-//        }
 
 }

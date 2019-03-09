@@ -36,30 +36,28 @@ public class AuthInterceptor implements HandlerInterceptor {
         WebUtils.InitWebContext(request, propService.getWorkDir());
 
         if (handler.getClass().isAssignableFrom(HandlerMethod.class)) {
-            // 方法上是否有身份验证注解
             AuthPassport authPassport = ((HandlerMethod) handler).getMethodAnnotation(AuthPassport.class);
-            // 声明不验证权限
+            // 声明无需权限，返回
             if (authPassport != null && authPassport.validate() == false) {
                 return true;
             }
 
-            // 已经登录
+            // 已经登录，返回
             if (request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE) != null) {
                 return true;
             }
 
-            // 根据不同package处理不同身份认证逻辑
-            String packageName = ((HandlerMethod) handler).getBeanType().getPackage().getName();
             String token = request.getHeader("token");
             if (token == null) {
                 token = request.getParameter("token");
             }
 
+            String packageName = ((HandlerMethod) handler).getBeanType().getPackage().getName();
             // client请求鉴权
             if (packageName.startsWith(Constant.API_PACKAGE_FOR_CLIENT)) {
                 if (!StringUtils.isEmpty(token)) {
-                    // 登录验证
                     TstUser user = userService.getByToken(token.trim());
+                    // token对应上用户，返回
                     if (user != null) {
                         request.getSession().setAttribute(Constant.HTTP_SESSION_USER_PROFILE, user);
                         return true;

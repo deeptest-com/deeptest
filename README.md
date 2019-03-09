@@ -1,7 +1,7 @@
 # Next Generation Testing Tools
 交流合作请加微信, Wechat: 462826
 
-DEMO: http://139.224.8.129:58080
+DEMO: http://139.224.8.129
 
 AngularJS, SockJS, SpringBoot, MyBatis, PostgreSQL  
 

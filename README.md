@@ -11,7 +11,7 @@ AngularJS, SockJS, SpringBoot, MyBatis, PostgreSQL
 1. Install docker and docker-compose;
 2. Download file from https://raw.githubusercontent.com/aaronchen2k/ngtesting-platform/master/docker-compose.yml ;
 3. In same dir, enter "docker-compose up;docker-compose logs -f;" to launch.
-4. Open http://localhost:58080/test.html using Chrome.
+4. Open http://localhost/test.html using Chrome.
 
 ## Test Project
 ![project_view](xdoc/capture/project_view.jpg)

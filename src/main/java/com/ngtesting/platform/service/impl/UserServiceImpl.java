@@ -125,8 +125,8 @@ public class UserServiceImpl implements UserService {
             String salt = PasswordEncoder.genSalt();
             PasswordEncoder passwordEncoder = new  PasswordEncoder(salt);
 
-            user.setTemp(salt);
-            user.setPassword(passwordEncoder.encodePassword(StringUtil.RandomString(6)));
+            vo.setTemp(salt);
+            vo.setPassword(passwordEncoder.encodePassword(StringUtil.RandomString(6)));
 
             userDao.save(vo);
 

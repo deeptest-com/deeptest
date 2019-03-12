@@ -30,11 +30,7 @@ import java.util.Map;
 public class AccountAction {
     @Autowired
     private AccountService accountService;
-    @Autowired
-    private AccountVerifyCodeService accountVerifyCodeService;
 
-    @Autowired
-    private OrgService orgService;
     @Autowired
     private UserService userService;
 

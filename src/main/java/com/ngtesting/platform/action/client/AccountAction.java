@@ -1,5 +1,6 @@
 package com.ngtesting.platform.action.client;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstUser;
@@ -7,7 +8,6 @@ import com.ngtesting.platform.service.intf.AccountService;
 import com.ngtesting.platform.service.intf.AccountVerifyCodeService;
 import com.ngtesting.platform.service.intf.OrgService;
 import com.ngtesting.platform.service.intf.UserService;
-import com.ngtesting.platform.utils.AuthPassport;
 import com.ngtesting.platform.utils.StringUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -16,7 +16,10 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -35,17 +38,14 @@ public class AccountAction {
     @Autowired
     private UserService userService;
 
-    @AuthPassport(validate = false)
     @PostMapping("/register")
-    public Map register(HttpServletRequest request, @RequestBody TstUser json) {
+    public Map register(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap();
-        TstUser user = accountService.register(json);
 
+        TstUser vo = JSON.parseObject(JSON.toJSONString(json), TstUser.class);
+        TstUser user = accountService.register(vo);
         if (user != null) {
             UsernamePasswordToken token = new UsernamePasswordToken(user.getEmail(), user.getPassword(), true);
-            //登录不在该处处理，交由shiro处理
-            Subject subject = SecurityUtils.getSubject();
-            subject.login(token);
 
             ret.put("msg", "注册成功，请访问您的邮箱进行登录");
             ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -57,8 +57,6 @@ public class AccountAction {
         return ret;
     }
 
-    @AuthPassport(validate = false)
-    @ResponseBody
     @PostMapping("/loginWithVerifyCode")
     public Object loginWithVerifyCode(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -73,8 +71,8 @@ public class AccountAction {
             subject.login(token);
 
             if (subject.isAuthenticated()) {
-                ret.put("profile", user);
-                ret.put("token", user.getToken());
+                ret.put("orgId", user.getDefaultOrgId());
+                ret.put("token", subject.getSession().getId());
                 ret.put("code", Constant.RespCode.SUCCESS.getCode());
             }
         } else {
@@ -89,8 +87,6 @@ public class AccountAction {
         return ret;
     }
 
-    @AuthPassport(validate = false)
-    @ResponseBody
     @PostMapping("/login")
     public Object login(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -112,8 +108,8 @@ public class AccountAction {
 
             if (subject.isAuthenticated()) {
                 TstUser user = userService.getByEmail(email);
-                ret.put("profile", user);
                 ret.put("token", subject.getSession().getId());
+                ret.put("orgId", user.getDefaultOrgId());
                 ret.put("code", Constant.RespCode.SUCCESS.getCode());
             }else{
                 msg = "登录异常";
@@ -136,7 +132,6 @@ public class AccountAction {
         return ret;
     }
 
-    @ResponseBody
     @PostMapping("/logout")
     public Object logout(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -148,7 +143,6 @@ public class AccountAction {
         return ret;
     }
 
-    @ResponseBody
     @PostMapping("/changePassword")
     public Object changePassword(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -164,8 +158,6 @@ public class AccountAction {
         return ret;
     }
 
-    @AuthPassport(validate = false)
-    @ResponseBody
     @PostMapping("/forgotPassword")
     public Object forgotPassword(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -187,8 +179,6 @@ public class AccountAction {
         return ret;
     }
 
-    @AuthPassport(validate = false)
-    @ResponseBody
     @PostMapping("/checkResetPassword")
     public Object checkResetPassword(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -206,8 +196,6 @@ public class AccountAction {
         return ret;
     }
 
-    @AuthPassport(validate = false)
-    @ResponseBody
     @PostMapping("/resetPassword")
     public Object resetPassword(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -215,10 +203,12 @@ public class AccountAction {
         String verifyCode = json.getString("vcode");
         String password = json.getString("password");
 
+        Subject subject = SecurityUtils.getSubject();
         TstUser user = accountService.resetPassword(verifyCode, password);
 
         if (user != null) {
-            ret.put("token", user.getToken());
+            ret.put("token", subject.getSession().getId());
+            ret.put("orgId", user.getDefaultOrgId());
             ret.put("code", Constant.RespCode.SUCCESS.getCode());
         } else {
             ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());

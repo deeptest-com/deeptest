@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,28 +90,6 @@ public class AccountServiceImpl implements AccountService {
         verifyCodeDao.disableCode(code.getId());
 
         accountDao.loginWithVerifyCode(user);
-
-        return user;
-    }
-
-    @Override
-    @Transactional
-    public TstUser login(String email, String password, Boolean rememberMe) {
-        TstUser user = userDao.getByEmail(email);
-        if (user == null) {
-            return null;
-        }
-
-        String salt = user.getSalt();
-        String passwdInDb = user.getPassword();
-
-        PasswordEncoder passwordEncoder = new  PasswordEncoder(salt);
-        Boolean pass = passwordEncoder.checkPassword(passwdInDb, password);
-        if (!pass) {
-            return null;
-        }
-
-        accountDao.login(user.getId(), new Date());
 
         return user;
     }

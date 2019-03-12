@@ -44,7 +44,6 @@ public class SessionControlFilter extends AccessControlFilter {
             return true;
         }
 
-
         Session session = subject.getSession();
         TstUser user = (TstUser) subject.getPrincipal();
         String username = user.getEmail();

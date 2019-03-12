@@ -57,12 +57,9 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/static/**", "anon");
         filterChainDefinitionMap.put("/public/**", "anon");
         filterChainDefinitionMap.put(Constant.API_PATH + "websocket/**", "anon");
-//        filterChainDefinitionMap.put(Constant.API_PATH_CLIENT + "**", "anon");
 
         // 注册和登录
-        filterChainDefinitionMap.put(Constant.API_PATH_CLIENT + "account/register*", "anon");
-        filterChainDefinitionMap.put(Constant.API_PATH_CLIENT + "account/login", "anon");
-        filterChainDefinitionMap.put(Constant.API_PATH_CLIENT + "account/loginWithVerifyCode", "anon");
+        filterChainDefinitionMap.put(Constant.API_PATH_CLIENT + "account/**", "anon");
 
 //        filterChainDefinitionMap.put(Constant.API_PATH_CLIENT + "**", "authc");
 
@@ -146,7 +143,7 @@ public class ShiroConfig {
         sessionManager.setSessionIdUrlRewritingEnabled(false);
         sessionManager.setDeleteInvalidSessions(true);
         sessionManager.setSessionIdCookie(simpleCookie);
-        sessionManager.setGlobalSessionTimeout(30 * 24 * 60 * 60 * 1000);
+        sessionManager.setGlobalSessionTimeout(30 * 60 * 1000);
         return sessionManager;
     }
 

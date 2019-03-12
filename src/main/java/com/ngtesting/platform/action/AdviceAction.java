@@ -1,23 +1,22 @@
 package com.ngtesting.platform.action;
 
-import com.ngtesting.platform.exception.AuthException;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
 @ControllerAdvice
+@RestController
 public class AdviceAction extends BaseAction {
 
-    @ResponseBody
-    @ExceptionHandler(value = AuthException.class)
-    public Map authErrorHandler(AuthException ex) {
-        ex.printStackTrace();
-        return authFail();
+    @ExceptionHandler(value = UnauthorizedException.class)
+    public Map authorErrorHandler(UnauthorizedException ex) {
+//        ex.printStackTrace();
+        return authorFail();
     }
 
-    @ResponseBody
     @ExceptionHandler(value = Exception.class)
     public Map errorHandler(Exception ex) {
         ex.printStackTrace();

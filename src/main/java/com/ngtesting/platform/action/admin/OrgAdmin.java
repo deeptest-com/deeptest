@@ -1,5 +1,6 @@
 package com.ngtesting.platform.action.admin;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
@@ -8,12 +9,12 @@ import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.OrgService;
 import com.ngtesting.platform.service.intf.PushSettingsService;
 import com.ngtesting.platform.servlet.PrivCommon;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@Controller
+@RestController
 @RequestMapping(Constant.API_PATH_ADMIN + "org/")
 public class OrgAdmin extends BaseAction {
 	@Autowired
@@ -30,14 +31,12 @@ public class OrgAdmin extends BaseAction {
 	@Autowired
 	PushSettingsService pushSettingsService;
 
-
 	@RequestMapping(value = "list", method = RequestMethod.POST)
-	@ResponseBody
 	@PrivCommon(check="false")
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
 		String keywords = json.getString("keywords");
 		Boolean disabled = json.getBoolean("disabled");
@@ -50,10 +49,9 @@ public class OrgAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "get", method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = json.getInteger("orgId");
 
 		TstOrg po = orgService.get(orgId, user); //
@@ -64,20 +62,20 @@ public class OrgAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
-    @PrivCommon(check="false")
-	public Map<String, Object> save(HttpServletRequest request, @RequestBody TstOrg vo) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = vo.getId();
 
+    @PrivCommon(check="false")
+	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
+
+		TstOrg vo = JSON.parseObject(JSON.toJSONString(json), TstOrg.class);
         TstOrg org = orgService.save(vo, user);
 
         if (user.getDefaultOrgId() == null) {
             orgService.changeDefaultOrg(user, org.getId());
         } else if (user.getDefaultOrgId().intValue() == org.getId().intValue() &&
                 !org.getName().equals(user.getDefaultOrgName())) { // 修改当前组织名称
-            user.setDefaultOrgName(vo.getName());
+            user.setDefaultOrgName(org.getName());
             pushSettingsService.pushOrgSettings(user);
         }
 
@@ -86,19 +84,18 @@ public class OrgAdmin extends BaseAction {
 	}
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> update(HttpServletRequest request, @RequestBody TstOrg vo) {
+    public Map<String, Object> update(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-        Integer orgId = vo.getId();
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
+		TstOrg vo = JSON.parseObject(JSON.toJSONString(json), TstOrg.class);
         TstOrg org = orgService.update(vo, user);
 
         if (user.getDefaultOrgId() == null) {
             orgService.changeDefaultOrg(user, org.getId());
         } else if (user.getDefaultOrgId().intValue() == org.getId().intValue() &&
                 !org.getName().equals(user.getDefaultOrgName())) { // 修改当前组织名称
-            user.setDefaultOrgName(vo.getName());
+            user.setDefaultOrgName(org.getName());
             pushSettingsService.pushOrgSettings(user);
         }
 
@@ -107,10 +104,9 @@ public class OrgAdmin extends BaseAction {
     }
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = json.getInteger("orgId");
 
 		Boolean result = orgService.delete(orgId, user);
@@ -121,10 +117,9 @@ public class OrgAdmin extends BaseAction {
 
     // 用户在列表页，设置默认组织
 	@RequestMapping(value = "setDefault", method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
 		Integer orgId = json.getInteger("orgId");
 		String keywords = json.getString("keywords");

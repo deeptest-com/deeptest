@@ -10,12 +10,9 @@ import com.ngtesting.platform.model.TstCaseHistory;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.CaseAttachmentService;
 import com.ngtesting.platform.servlet.PrivPrj;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -23,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@Controller
+@RestController
 @RequestMapping(Constant.API_PATH_CLIENT + "case_attachment/")
 public class CaseAttachmentAction extends BaseAction {
 	@Autowired
@@ -39,7 +36,7 @@ public class CaseAttachmentAction extends BaseAction {
 	public Map<String, Object> upload(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         Integer caseId = json.getInteger("caseId");
 		String path = json.getString("path");
@@ -47,7 +44,7 @@ public class CaseAttachmentAction extends BaseAction {
 
 		Boolean result = caseAttachmentService.save(caseId, name, path, user);
 		if (!result) {
-			return authFail();
+			return authorFail();
 		}
 
         List<TstCaseAttachment> attachments = caseAttachmentDao.query(caseId);
@@ -67,14 +64,14 @@ public class CaseAttachmentAction extends BaseAction {
 	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         Integer caseId = json.getInteger("caseId");
 		Integer id = json.getInteger("id");
 
 		Boolean result = caseAttachmentService.delete(id, user);
 		if (!result) {
-			return authFail();
+			return authorFail();
 		}
 
         List<TstCaseAttachment> attachments = caseAttachmentDao.query(caseId);

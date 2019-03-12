@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Constant {
-    public static final String HTTP_SESSION_USER_PROFILE = "http_session_user_profile";
-    public static final String HTTP_SESSION_USER_PERMISSION = "http_session_user_permission";
+//    public static final String HTTP_SESSION_USER_PROFILE = "http_session_user_profile";
+//    public static final String HTTP_SESSION_USER_PERMISSION = "http_session_user_permission";
 
     // 配置项，初始化在 PropertyConfig.processProperties()
     public static String WORK_DIR;
@@ -38,8 +38,9 @@ public class Constant {
         BIZ_FAIL(101),
         BIZ_FAIL_2(102),
         INTERFACE_FAIL(-10),
-        NOT_LOGIN(-100),
-        AUTH_FAIL(-110),
+
+        AUTHEN_FAIL(-110),
+        AUTHOR_FAIL(-120),
 
         RELOAD(100);
 

@@ -6,21 +6,24 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstProjectRole;
 import com.ngtesting.platform.model.TstProjectRoleEntityRelation;
 import com.ngtesting.platform.model.TstUser;
-import com.ngtesting.platform.service.intf.*;
-import com.ngtesting.platform.servlet.PrivOrg;
+import com.ngtesting.platform.service.intf.AuthService;
+import com.ngtesting.platform.service.intf.ProjectRoleEntityRelationService;
+import com.ngtesting.platform.service.intf.ProjectRoleService;
+import com.ngtesting.platform.service.intf.PushSettingsService;
+import com.ngtesting.platform.servlet.PrivPrj;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping(value = Constant.API_PATH_CLIENT + "/project_member")
 public class ProjectMemberAction extends BaseAction {
 
@@ -35,12 +38,11 @@ public class ProjectMemberAction extends BaseAction {
     @Autowired
     AuthService authService;
 
-    @ResponseBody
     @PostMapping("/getUsers")
-    @PrivOrg(perms = {"project-admin"})
+    @PrivPrj(perms = {"project:*"})
     public Map<String, Object> getUsers(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
         Integer orgId = user.getDefaultOrgId();
         Integer prjId = user.getDefaultPrjId();
 
@@ -56,11 +58,10 @@ public class ProjectMemberAction extends BaseAction {
     }
 
     @PostMapping(value = "saveMembers")
-    @ResponseBody
-    @PrivOrg(perms = {"project-admin"})
+    @PrivPrj(perms = {"project:*"})
     public Map<String, Object> saveMembers(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         List<TstProjectRoleEntityRelation> entityInRoles = projectRoleEntityRelationService.batchSavePers(json, user);
 
@@ -70,11 +71,10 @@ public class ProjectMemberAction extends BaseAction {
     }
 
     @PostMapping(value = "changeRole")
-    @ResponseBody
-    @PrivOrg(perms = {"project-admin"})
+    @PrivPrj(perms = {"project:*"})
     public Map<String, Object> changeRole(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         List<TstProjectRoleEntityRelation> entityInRoles = projectRoleEntityRelationService.changeRolePers(json, user);
 
@@ -86,11 +86,10 @@ public class ProjectMemberAction extends BaseAction {
     }
 
     @PostMapping(value = "remove")
-    @ResponseBody
-    @PrivOrg(perms = {"project-admin"})
+    @PrivPrj(perms = {"project:*"})
     public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         String type = json.getString("type");
         Integer entityId = json.getInteger("entityId");

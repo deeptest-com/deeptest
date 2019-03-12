@@ -13,20 +13,20 @@ import com.ngtesting.platform.servlet.PrivPrj;
 import com.ngtesting.platform.tql.query.builder.support.model.JsonRule;
 import com.ngtesting.platform.vo.IsuJqlColumn;
 import com.ngtesting.platform.vo.IsuJqlFilter;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping(Constant.API_PATH_CLIENT + "issue_tql/")
 public class IssueQueryTplAction extends BaseAction {
 
@@ -47,11 +47,11 @@ public class IssueQueryTplAction extends BaseAction {
     IssueDynamicFormService dynamicFormService;
 
 	@RequestMapping(value = "query", method = RequestMethod.POST)
-	@ResponseBody
+
     @PrivPrj
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
         Integer prjId = user.getDefaultPrjId();
 
@@ -97,11 +97,10 @@ public class IssueQueryTplAction extends BaseAction {
 	}
 
     @RequestMapping(value = "queryById", method = RequestMethod.POST)
-    @ResponseBody
     @PrivPrj
     public Map<String, Object> queryById(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
         Integer orgId = user.getDefaultOrgId();
         Integer prjId = user.getDefaultPrjId();
 
@@ -155,11 +154,10 @@ public class IssueQueryTplAction extends BaseAction {
     }
 
     @RequestMapping(value = "changeColumns", method = RequestMethod.POST)
-    @ResponseBody
     @PrivPrj
     public Map<String, Object> changeColumns(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         String columnsStr = json.getString("columns");
 

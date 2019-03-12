@@ -8,8 +8,8 @@ import com.ngtesting.platform.model.TstOrg;
 import com.ngtesting.platform.model.TstProjectAccessHistory;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.*;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping(value = Constant.API_PATH_CLIENT + "/client")
 public class ClientAction extends BaseAction {
     @Autowired
@@ -41,11 +41,11 @@ public class ClientAction extends BaseAction {
     PushSettingsService pushSettingsService;
 
     @PostMapping(value = "getProfile")
-    @ResponseBody
     public Map<String, Object> getProfile(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
+
         Integer orgId = user.getDefaultOrgId();
         Integer prjId = user.getDefaultPrjId();
         Integer userId = user.getId();
@@ -85,15 +85,14 @@ public class ClientAction extends BaseAction {
 
     // 用户修改某个字段
     @RequestMapping(value = "saveInfo", method = RequestMethod.POST)
-    @ResponseBody
     public Map<String, Object> saveInfo(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
         json.put("id", user.getId()); // 强制设置当前用户的属性
 
         TstUser po = userService.modifyProp(json);
-        request.getSession().setAttribute(Constant.HTTP_SESSION_USER_PROFILE, po);
+        userService.updateUserInfoToPrincipal(po, user);
 
         pushSettingsService.pushUserSettings(po);
 
@@ -103,16 +102,16 @@ public class ClientAction extends BaseAction {
     }
 
     @PostMapping(value = "setLeftSize")
-    @ResponseBody
     public Map<String, Object> setLeftSize(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         Integer left = json.getInteger("left");
         String prop = json.getString("prop");
 
-        user = userService.setLeftSizePers(user, left, prop);
+        TstUser po = userService.setLeftSize(user, left, prop);
+        userService.updateUserInfoToPrincipal(po, user);
 
         ret.put("data", user);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -120,15 +119,15 @@ public class ClientAction extends BaseAction {
     }
 
     @PostMapping(value = "setIssueView")
-    @ResponseBody
     public Map<String, Object> setIssueView(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         String issueView = json.getString("issueView");
 
-        user = userService.setIssueView(user, issueView);
+        TstUser po = userService.setIssueView(user, issueView);
+        userService.updateUserInfoToPrincipal(po, user);
 
         ret.put("data", user);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());

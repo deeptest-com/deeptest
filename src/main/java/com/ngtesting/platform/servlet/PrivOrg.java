@@ -19,6 +19,6 @@ public @interface PrivOrg {
     String key() default "orgId";
 
     @AliasFor("opt")
-    String opt() default "or";
+    String opt() default "and";
 
 }

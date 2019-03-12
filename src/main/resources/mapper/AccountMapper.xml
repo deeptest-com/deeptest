@@ -8,45 +8,43 @@
                                nickname,
                                phone,
                                avatar,
-                               token,
                                salt,
                                "defaultOrgId",
                                "defaultPrjId",
                                deleted,
                                disabled,
+                               locked,
                                "createTime")
         values (#{email},
                 #{password},
                 #{nickname},
                 #{phone},
                 #{avatar},
-                #{token},
                 #{temp},
                 #{defaultOrgId},
                 #{defaultPrjId},
                 #{deleted},
                 #{disabled},
+                #{locked},
                 #{createTime})
     </insert>
     <update id="loginWithVerifyCode" parameterType="TstUser">
         UPDATE "TstUser"
-        SET token = #{token},
-            "lastLoginTime" = NOW(),
+        SET "lastLoginTime" = NOW(),
             "updateTime"    = NOW()
         WHERE id = #{id}
     </update>
     <update id="login">
         UPDATE "TstUser"
-        SET token = #{token},
-            "lastLoginTime" = #{lastLoginTime}
+        SET "lastLoginTime" = #{lastLoginTime}
         WHERE id = #{id}
     </update>
-    <update id="logout">
+<!--    <update id="logout">
         UPDATE "TstUser"
         SET token        = '',
             "updateTime" = NOW()
         WHERE email = #{email}
-    </update>
+    </update>-->
 
     <update id="initUser" statementType="CALLABLE">
         {call init_user(#{userId,mode=IN,jdbcType=INTEGER}, #{orgName,mode=IN,jdbcType=VARCHAR})}
@@ -64,7 +62,6 @@
     <update id="resetPassword" parameterType="TstUser">
         UPDATE "TstUser"
         SET password = #{password},
-            token = #{token},
             "lastLoginTime" = NOW(),
             "updateTime"    = NOW()
         WHERE id = #{id}

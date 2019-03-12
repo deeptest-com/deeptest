@@ -19,6 +19,6 @@ public @interface PrivPrj {
     String key() default "projectId";
 
     @AliasFor("opt")
-    String opt() default "or";
+    String opt() default "and";
 
 }

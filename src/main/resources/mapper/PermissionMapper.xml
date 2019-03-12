@@ -3,7 +3,56 @@
 
 <mapper namespace="com.ngtesting.platform.dao.PermissionDao">
 
-    <select id="listOrgPermission" resultType="Map">
+    <select id="getShiroStylePermissions" resultType="String">
+       select tp."code" || ':' || tp."action" || ':' || tp."entityId" from (
+            (SELECT r_role_priv."orgId" "entityId", "define"."code", "define"."action"
+            from "TstOrgPrivilegeDefine" "define"
+                     join "TstOrgRolePrivilegeRelation" r_role_priv ON r_role_priv."orgPrivilegeId" = "define".id
+
+            where r_role_priv."orgRoleId" = any (select _user_org_role(${userId}))
+              AND NOT "define".deleted
+              and NOT "define".disabled
+            order by "entityId", "code", "action" asc)
+
+            UNION
+
+            (SELECT tmp."projectId" "entityId", "define"."code", "define"."action"
+            from "TstProjectPrivilegeDefine" "define"
+                     left join "TstProjectRolePriviledgeRelation" r on r."projectPrivilegeDefineId" = "define".id
+                     INNER join (select "projectId", "projectRoleId" from _user_project_role(${userId})) tmp
+                         on r."projectRoleId" = tmp."projectRoleId"
+
+            where TRUE
+            order by "entityId", "code", "action")
+
+            UNION
+             SELECT r."orgId" "entityId", 'org_access' "code", 'view' "action"
+             from "TstOrgUserRelation" r
+             WHERE r."userId" = ${userId}
+
+            UNION
+
+             SELECT "entityId", 'project_access' "code", 'view' "action"
+             from (
+                  select relation."projectId" "entityId"
+                  from "TstProjectRoleEntityRelation" relation
+                  where (
+                        (relation.type = 'user' AND relation."entityId" = ${userId})
+                            or (relation.type = 'group' AND
+                                relation."entityId" in (
+                                   select grp.id from "TstOrgGroup" grp
+                                                          left join "TstOrgGroupUserRelation" relat on relat."orgGroupId" = grp.id
+                                                          left join "TstUser" userr on relat."userId" = userr.id
+                                   where userr.id = ${userId}
+                                   )
+                                )
+                        )
+                  ) r
+
+        ) tp order by tp."code", tp."action"
+    </select>
+
+<!--    <select id="listOrgPermission" resultType="Map">
         SELECT r_role_priv."orgId" "entityId", priv."code", priv.name
 
         from "TstOrgPrivilegeDefine" priv
@@ -24,6 +73,6 @@
 
         where TRUE
         order by tmp."projectId", "define"."code";
-    </select>
+    </select>-->
 
 </mapper>

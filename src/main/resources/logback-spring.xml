@@ -207,7 +207,7 @@
         <appender-ref ref="ERROR_FILE"/>
     </root>
 
-    <logger name="com.ngtesting.platform.servlet.AuthAspect" level="info" additivity="true">
+    <logger name="com.ngtesting.platform.servlet.AuthClientAspect" level="info" additivity="true">
         <appender-ref ref="INFO_AUTH" />
     </logger>
     <logger name="com.ngtesting.platform.service.impl.PermissionServiceImpl" level="info" additivity="true">

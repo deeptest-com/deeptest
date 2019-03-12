@@ -1,5 +1,7 @@
 package com.ngtesting.platform.utils;
 
+import org.apache.shiro.util.ByteSource;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -8,11 +10,14 @@ public class PasswordEncoder {
     private final static String[] hexDigits = { "0", "1", "2", "3", "4", "5",
             "6", "7", "8", "9", "a", "b", "c", "d", "e", "f" };
 
-    private Object salt;
+    private ByteSource salt;
     private String algorithm = "MD5";
 
-    public PasswordEncoder(Object salt) {
+    public PasswordEncoder(ByteSource salt) {
         this.salt = salt;
+    }
+    public PasswordEncoder(String salt) {
+        this.salt = ByteSource.Util.bytes(salt);
     }
 
     public String encodePassword(String rawPass) {

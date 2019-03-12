@@ -8,19 +8,19 @@ import com.ngtesting.platform.model.IsuPage;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.*;
 import com.ngtesting.platform.servlet.PrivPrj;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
 
-@Controller
+@RestController
 @RequestMapping(Constant.API_PATH_CLIENT + "issue/")
 public class IssueAction extends BaseAction {
 	@Autowired
@@ -42,11 +42,10 @@ public class IssueAction extends BaseAction {
 
     @PrivPrj(perms = {"issue-view"})
     @RequestMapping(value = "view", method = RequestMethod.POST)
-    @ResponseBody
     public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
         Integer orgId = user.getDefaultOrgId();
         Integer prjId = user.getDefaultPrjId();
 
@@ -54,7 +53,7 @@ public class IssueAction extends BaseAction {
         IsuIssue po = issueService.getDetail(id, user.getId(), prjId);
 
         if (po == null) { // 当对象不是默认org的，此处为空
-            return authFail();
+            return authorFail();
         }
 
         IsuPage page = issueService.getPage(orgId, prjId, "view");
@@ -68,11 +67,10 @@ public class IssueAction extends BaseAction {
 
     @PrivPrj(perms = {"issue-view"})
     @RequestMapping(value = "getData", method = RequestMethod.POST)
-    @ResponseBody
     public Map<String, Object> getData(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
         Integer prjId = user.getDefaultPrjId();
 
         Integer id = json.getInteger("id");
@@ -84,12 +82,11 @@ public class IssueAction extends BaseAction {
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
-    @ResponseBody
     @PrivPrj(perms = {"issue-maintain"})
     public Map<String, Object> create(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
         Integer orgId = user.getDefaultOrgId();
         Integer prjId = user.getDefaultPrjId();
 
@@ -106,11 +103,10 @@ public class IssueAction extends BaseAction {
 
     @PrivPrj(perms = {"issue-maintain"})
     @RequestMapping(value = "edit", method = RequestMethod.POST)
-    @ResponseBody
     public Map<String, Object> edit(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
         Integer orgId = user.getDefaultOrgId();
         Integer prjId = user.getDefaultPrjId();
 
@@ -118,7 +114,7 @@ public class IssueAction extends BaseAction {
         IsuIssue po = issueService.get(id, user.getId(), prjId);
 
         if (po == null) { // 当对象不是默认org的，此处为空
-            return authFail();
+            return authorFail();
         }
 
         IsuPage page = issueService.getPage(orgId, prjId, "edit");
@@ -131,11 +127,11 @@ public class IssueAction extends BaseAction {
 
     @PrivPrj(perms = {"issue-maintain"})
 	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         Integer pageId = json.getInteger("pageId");
         JSONObject issue = json.getJSONObject("issue");
@@ -149,11 +145,10 @@ public class IssueAction extends BaseAction {
 
     @PrivPrj(perms = {"issue-maintain"})
     @RequestMapping(value = "update", method = RequestMethod.POST)
-    @ResponseBody
     public Map<String, Object> update(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
         Integer prjId = user.getDefaultPrjId();
 
         Integer pageId = json.getInteger("pageId");
@@ -169,13 +164,12 @@ public class IssueAction extends BaseAction {
 
     @PrivPrj(perms = {"issue-maintain"})
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
-    @ResponseBody
     public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         Integer id = json.getInteger("id");
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         issueService.delete(id, user);
 
@@ -185,11 +179,11 @@ public class IssueAction extends BaseAction {
 
     @PrivPrj(perms = {"issue-maintain"})
 	@RequestMapping(value = "updateField", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> updateField(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
 		IsuIssue po = issueService.updateField(json, user);
 

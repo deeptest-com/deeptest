@@ -6,12 +6,12 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueWatchService;
 import com.ngtesting.platform.servlet.PrivPrj;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -19,18 +19,17 @@ import java.util.List;
 import java.util.Map;
 
 
-@Controller
+@RestController
 @RequestMapping(Constant.API_PATH_CLIENT + "issue_watch/")
 public class IssueWatchAction extends BaseAction {
     @Autowired
     IssueWatchService issueWatchService;
 
     @RequestMapping(value = "list", method = RequestMethod.POST)
-    @ResponseBody
     @PrivPrj
     public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
         Integer prjId = user.getDefaultPrjId();
 
         Integer issueId = json.getInteger("issueId");
@@ -43,11 +42,10 @@ public class IssueWatchAction extends BaseAction {
     }
 
     @RequestMapping(value = "search", method = RequestMethod.POST)
-    @ResponseBody
     @PrivPrj
     public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
         Integer prjId = user.getDefaultPrjId();
 
         Integer issueId = json.getInteger("issueId");
@@ -62,11 +60,10 @@ public class IssueWatchAction extends BaseAction {
     }
 
     @RequestMapping(value = "watch", method = RequestMethod.POST)
-    @ResponseBody
     @PrivPrj
     public Map<String, Object> watch(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         Integer id = json.getInteger("id");
         Boolean status = json.getBoolean("status");
@@ -78,11 +75,10 @@ public class IssueWatchAction extends BaseAction {
     }
 
     @RequestMapping(value = "batchWatch", method = RequestMethod.POST)
-    @ResponseBody
     @PrivPrj(perms = {"issue-maintain"})
     public Map<String, Object> batchWatch(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         Integer issueId = json.getInteger("issueId");
         List<Integer> userIds = json.getObject("userIds", List.class);
@@ -94,11 +90,10 @@ public class IssueWatchAction extends BaseAction {
     }
 
     @RequestMapping(value = "remove", method = RequestMethod.POST)
-    @ResponseBody
     @PrivPrj(perms = {"issue-maintain"})
     public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         Integer id = json.getInteger("id");
         Integer issueId = json.getInteger("issueId");

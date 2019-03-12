@@ -4,15 +4,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.ProjectDao;
-import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.model.TstCase;
+import com.ngtesting.platform.model.TstProject;
+import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.*;
 import com.ngtesting.platform.servlet.PrivPrj;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -20,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@Controller
+@RestController
 @RequestMapping(Constant.API_PATH_CLIENT + "case/")
 public class CaseAction extends BaseAction {
 	@Autowired
@@ -44,7 +43,7 @@ public class CaseAction extends BaseAction {
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         Integer orgId = user.getDefaultOrgId();
 		Integer prjId = user.getDefaultPrjId();
@@ -60,7 +59,7 @@ public class CaseAction extends BaseAction {
     @PrivPrj(perms = {"test_case-view"})
 	public Map<String, Object> queryForSuiteSelection(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer prjId = user.getDefaultPrjId();
 
         Integer caseProjectId = json.getInteger("caseProjectId");
@@ -82,7 +81,7 @@ public class CaseAction extends BaseAction {
     @PrivPrj(perms = {"test_case-view"})
 	public Map<String, Object> queryForTaskSelection(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer prjId = user.getDefaultPrjId();
 
         Integer caseProjectId = json.getInteger("caseProjectId");
@@ -100,11 +99,10 @@ public class CaseAction extends BaseAction {
 	}
 
     @RequestMapping(value = "get", method = RequestMethod.POST)
-    @ResponseBody
     @PrivPrj(perms = {"test_case-view", "test_case-maintain"})
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         Integer prjId = user.getDefaultPrjId();
         Integer caseId = json.getInteger("id");
@@ -117,16 +115,15 @@ public class CaseAction extends BaseAction {
     }
 
     @RequestMapping(value = "rename", method = RequestMethod.POST)
-    @ResponseBody
     @PrivPrj(perms = {"test_case-maintain"})
     public Map<String, Object> rename(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         TstCase testCase = caseService.rename(json, user);
         if (testCase == null) {
-            return authFail();
+            return authorFail();
         }
 
         ret.put("data", testCase);
@@ -140,10 +137,10 @@ public class CaseAction extends BaseAction {
 	public Map<String, Object> move(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		TstCase testCase = caseService.move(json, user);
         if (testCase == null) {
-            return authFail();
+            return authorFail();
         }
 
 		ret.put("data", testCase);
@@ -159,11 +156,11 @@ public class CaseAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
 		Integer count = caseService.delete(id, user);
         if (count == 0) {
-            return authFail();
+            return authorFail();
         }
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -171,15 +168,14 @@ public class CaseAction extends BaseAction {
 	}
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
-    @ResponseBody
     @PrivPrj(perms = {"test_case-maintain"})
     public Map<String, Object> update(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         TstCase testCase = caseService.update(json, user);
         if (testCase == null) {
-            return authFail();
+            return authorFail();
         }
 
         ret.put("data", testCase);
@@ -192,11 +188,11 @@ public class CaseAction extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> saveField(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
 		TstCase testCase = caseService.saveField(json, user);
         if (testCase == null) {
-            return authFail();
+            return authorFail();
         }
 
         ret.put("data", testCase);
@@ -209,14 +205,14 @@ public class CaseAction extends BaseAction {
     @PrivPrj(perms = {"test_case-maintain"})
 	public Map<String, Object> changeContentType(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
 		Integer id = json.getInteger("id");
         String contentType = json.getString("contentType");
 
         TstCase testCase = caseService.changeContentType(id, contentType, user);
         if (testCase == null) {
-            return authFail();
+            return authorFail();
         }
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -228,7 +224,7 @@ public class CaseAction extends BaseAction {
     @PrivPrj(perms = {"test_case-review"})
 	public Map<String, Object> reviewResult(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
 		Integer id = json.getInteger("id");
 		Boolean result = json.getBoolean("result");
@@ -236,7 +232,7 @@ public class CaseAction extends BaseAction {
 
 		TstCase testCase = caseService.reviewResult(id, result, nextId, user);
         if (testCase == null) {
-            return authFail();
+            return authorFail();
         }
 
         ret.put("data", testCase);
@@ -245,11 +241,10 @@ public class CaseAction extends BaseAction {
 	}
 
     @RequestMapping(value = "exportAll", method = RequestMethod.POST)
-    @ResponseBody
     @PrivPrj(perms = {"test_case-view"})
     public Map<String, Object> exportAll(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
         Integer prjId = user.getDefaultPrjId();
 
 		String excelPath = caseExportService.export(prjId);

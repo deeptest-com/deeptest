@@ -82,14 +82,14 @@
         LIMIT 1;
     </select>
 
-    <select id="getSalt" resultType="String">
+<!--    <select id="getSalt" resultType="String">
         SELECT salt
         FROM "TstUser"
         WHERE id = #{id}
           AND NOT disabled
           AND NOT deleted
         LIMIT 1;
-    </select>
+    </select>-->
 
     <insert id="save" parameterType="TstUser" useGeneratedKeys="true" keyProperty="id">
         insert into "TstUser" (email,
@@ -105,6 +105,7 @@
                                "defaultPrjName",
                                deleted,
                                disabled,
+                               locked,
                                "createTime")
         values (#{email},
                 #{password},
@@ -119,6 +120,7 @@
                 #{defaultPrjName},
                 #{deleted},
                 #{disabled},
+                #{locked},
                 #{createTime})
     </insert>
     <insert id="saveSettings" parameterType="TstUser">

@@ -9,12 +9,12 @@ import com.ngtesting.platform.service.intf.IssuePropertyService;
 import com.ngtesting.platform.service.intf.IssueResolutionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@Controller
+@RestController
 @RequestMapping(Constant.API_PATH_ADMIN + "issue_resolution/")
 public class IssueResolutionAdmin extends BaseAction {
 	private static final Log log = LogFactory.getLog(CaseTypeAdmin.class);
@@ -34,11 +34,11 @@ public class IssueResolutionAdmin extends BaseAction {
 	IssuePropertyService issuePropertyService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		List<IsuResolution> vos = issueResolutionService.list(orgId);
@@ -51,11 +51,11 @@ public class IssueResolutionAdmin extends BaseAction {
 
 
 	@RequestMapping(value = "get", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
@@ -67,7 +67,7 @@ public class IssueResolutionAdmin extends BaseAction {
 		}
 
 		if (po == null) { // 当对象不是默认org的，此处为空
-			return authFail();
+			return authorFail();
 		}
 
 		ret.put("data", po);
@@ -76,18 +76,18 @@ public class IssueResolutionAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		IsuResolution vo = json.getObject("model", IsuResolution.class);
 
 		IsuResolution po = issueResolutionService.save(vo, orgId);
 		if (po == null) {    // 当对象不是默认org的，update的结果会返回空
-			return authFail();
+			return authorFail();
 		}
 
 //		Map<String, Map<String, String>> casePropertyValMap = issuePropertyService.getMap(orgId);
@@ -99,18 +99,18 @@ public class IssueResolutionAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
 
 		Boolean result = issueResolutionService.delete(id, orgId);
 		if (!result) { // 当对象不是默认org的，结果会返回false
-			return authFail();
+			return authorFail();
 		}
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -119,18 +119,18 @@ public class IssueResolutionAdmin extends BaseAction {
 
 
 	@RequestMapping(value = "setDefault", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
 
 		Boolean result = issueResolutionService.setDefault(id, orgId);
 		if (!result) { // 当对象不是默认org的，结果会返回false
-			return authFail();
+			return authorFail();
 		}
 
 		List<IsuResolution> vos = issueResolutionService.list(orgId);
@@ -142,11 +142,11 @@ public class IssueResolutionAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "changeOrder", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
@@ -154,7 +154,7 @@ public class IssueResolutionAdmin extends BaseAction {
 
 		Boolean result = issueResolutionService.changeOrder(id, act, orgId);
 		if (!result) { // 当对象不是默认org的，结果会返回false
-			return authFail();
+			return authorFail();
 		}
 
 		List<IsuResolution> vos = issueResolutionService.list(orgId);

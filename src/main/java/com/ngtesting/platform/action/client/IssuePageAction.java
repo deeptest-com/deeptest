@@ -12,12 +12,12 @@ import com.ngtesting.platform.servlet.PrivOrg;
 import com.ngtesting.platform.servlet.PrivPrj;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@Controller
+@RestController
 @RequestMapping(Constant.API_PATH_CLIENT + "issue_page/")
 public class IssuePageAction extends BaseAction {
 	private static final Log log = LogFactory.getLog(IssuePageAction.class);
@@ -37,12 +37,12 @@ public class IssuePageAction extends BaseAction {
     IssuePageService pageService;
 
 	@RequestMapping(value = "get", method = RequestMethod.POST)
-	@ResponseBody
-	@PrivOrg
+
+	@PrivOrg(perms = {"org_org:*"})
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
         Integer orgId = user.getDefaultOrgId();
 
         Integer pageId = json.getInteger("id");
@@ -60,12 +60,12 @@ public class IssuePageAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "getByProject", method = RequestMethod.POST)
-	@ResponseBody
+
 	@PrivPrj
 	public Map<String, Object> getByProject(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 		Integer prjId = user.getDefaultPrjId();
 
@@ -83,12 +83,12 @@ public class IssuePageAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "setByProject", method = RequestMethod.POST)
-	@ResponseBody
-	@PrivOrg(perms = {"project-admin"})
+
+	@PrivOrg(perms = {"org_org:*"})
 	public Map<String, Object> setByProject(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 		Integer prjId = user.getDefaultPrjId();
 

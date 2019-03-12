@@ -5,8 +5,8 @@ public class TstProjectPrivilegeDefine extends BaseModel {
 	private static final long serialVersionUID = -6981838223153872057L;
 
 	private String code;
-	private String name;
 	private String action;
+	private String name;
     private String descr;
 
 	private Integer relationId;

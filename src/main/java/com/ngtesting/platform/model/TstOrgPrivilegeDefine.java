@@ -5,6 +5,7 @@ public class TstOrgPrivilegeDefine extends BaseModel {
 	private static final long serialVersionUID = -6981838223153872057L;
 
 	private String code;
+	private String action;
 	private String name;
     private String descr;
 
@@ -16,14 +17,15 @@ public class TstOrgPrivilegeDefine extends BaseModel {
     public TstOrgPrivilegeDefine() {
 	}
 
-	public TstOrgPrivilegeDefine(Integer id, String code, String name, String descr, Integer orgId) {
-		this.id = id;
-		this.name = name;
-		this.descr = descr;
-		this.orgId = orgId;
-	}
+    public String getAction() {
+        return action;
+    }
 
-	public String getCode() {
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public String getCode() {
 		return code;
 	}
 

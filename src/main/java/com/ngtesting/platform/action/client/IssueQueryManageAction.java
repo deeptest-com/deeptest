@@ -11,8 +11,8 @@ import com.ngtesting.platform.servlet.PrivPrj;
 import com.ngtesting.platform.tql.query.builder.support.model.JsonRule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@Controller
+@RestController
 @RequestMapping(Constant.API_PATH_CLIENT + "issue_query/")
 public class IssueQueryManageAction extends BaseAction {
 	private static final Log log = LogFactory.getLog(IssueQueryManageAction.class);
@@ -29,12 +29,11 @@ public class IssueQueryManageAction extends BaseAction {
 	@Autowired
 	IssueQueryService queryService;
 
-    @ResponseBody
     @PostMapping("/list")
     @PrivPrj
     public Object list(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
         Integer prjId = user.getDefaultPrjId();
 
         String keywords = json.getString("keywords");
@@ -51,12 +50,11 @@ public class IssueQueryManageAction extends BaseAction {
         return ret;
     }
 
-    @ResponseBody
     @PostMapping("/get")
     @PrivPrj
     public Object get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         Integer id = json.getInteger("id");
 
@@ -69,11 +67,11 @@ public class IssueQueryManageAction extends BaseAction {
     }
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
+
     @PrivPrj
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         String queryName = json.getString("queryName");
 		JsonRule rule = json.getObject("rule", JsonRule.class);
@@ -85,11 +83,10 @@ public class IssueQueryManageAction extends BaseAction {
 	}
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
-    @ResponseBody
     @PrivPrj
     public Map<String, Object> update(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         IsuQuery vo = json.getObject("model", IsuQuery.class);
 
@@ -100,11 +97,10 @@ public class IssueQueryManageAction extends BaseAction {
     }
 
     @RequestMapping(value = "delete", method = RequestMethod.POST)
-    @ResponseBody
     @PrivPrj
     public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         Integer id = json.getInteger("id");
         queryService.delete(id, user);

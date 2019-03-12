@@ -26,17 +26,24 @@ public class BaseAction {
 //		return authDao.userNotInProject(userId, projectId);
 //	}
 
-	public Map<String, Object> authFail() {
+	public Map<String, Object> authenFail() {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		ret.put("code", Constant.RespCode.AUTH_FAIL.getCode());
-		ret.put("msg", "权限不足");
+		ret.put("code", Constant.RespCode.AUTHEN_FAIL.getCode());
+		ret.put("msg", "认证错误");
 		return ret;
 	}
+
+    public Map<String, Object> authorFail() {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        ret.put("code", Constant.RespCode.AUTHOR_FAIL.getCode());
+        ret.put("msg", "授权错误");
+        return ret;
+    }
 
     public Map<String, Object> bizFail() {
         Map<String, Object> ret = new HashMap<String, Object>();
         ret.put("code", Constant.RespCode.BIZ_FAIL.getCode());
-        ret.put("msg", "业务处理错误");
+        ret.put("msg", "业务错误");
         return ret;
     }
 

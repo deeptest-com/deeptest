@@ -58,8 +58,8 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
                 privMap.put(prjId, new HashMap());
             }
 
-			String str = map.get("code") + "-" + map.get("action");
-            privMap.get(map.get("projectId").toString()).put(str, true);
+			String str = map.get("code") + ":" + map.get("action");
+            privMap.get(map.get("projectId")).put(str, true);
 		}
 
         List<TstProject> pos = projectDao.query(orgId, keywords, disabled);
@@ -103,7 +103,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
         List<Map<String, String>> projectPrivs = projectPrivilegeDao.listForUser(
                 userId, projectId, "project");
         for (Map<String, String> map : projectPrivs) {
-            String str = map.get("code") + "-" + map.get("action");
+            String str = map.get("code") + ":" + map.get("action");
             privMap.put(str, true);
         }
         po.setPrivs(privMap);

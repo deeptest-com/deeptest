@@ -8,12 +8,12 @@ import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.UserService;
 import com.ngtesting.platform.servlet.PrivOrg;
 import com.ngtesting.platform.servlet.PrivPrj;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping(value = Constant.API_PATH_CLIENT + "/user")
 public class UserAction extends BaseAction {
     @Autowired
@@ -30,12 +30,11 @@ public class UserAction extends BaseAction {
     private UserDao userDao;
 
     @PostMapping(value = "getUsers")
-    @ResponseBody
     @PrivPrj
     public Map<String, Object> getUsers(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
         Integer orgId = user.getDefaultOrgId();
         Integer prjId = user.getDefaultPrjId();
 
@@ -47,11 +46,10 @@ public class UserAction extends BaseAction {
     }
 
     @PostMapping(value = "search")
-    @ResponseBody
-    @PrivOrg
+    @PrivOrg(perms = {"org_org:*"})
     public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         String keywords = json.getString("keywords");
         List<Integer> exceptIds = json.getObject("exceptIds", List.class);

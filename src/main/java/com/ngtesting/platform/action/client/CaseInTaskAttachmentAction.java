@@ -5,15 +5,17 @@ import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.CaseInTaskAttachmentDao;
 import com.ngtesting.platform.dao.CaseInTaskHistoryDao;
-import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.model.TstCaseInTaskAttachment;
+import com.ngtesting.platform.model.TstCaseInTaskHistory;
+import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.CaseInTaskAttachmentService;
 import com.ngtesting.platform.servlet.PrivPrj;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -21,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@Controller
+@RestController
 @RequestMapping(Constant.API_PATH_CLIENT + "case_in_task_attachment/")
 public class CaseInTaskAttachmentAction extends BaseAction {
 	@Autowired
@@ -32,12 +34,12 @@ public class CaseInTaskAttachmentAction extends BaseAction {
 	CaseInTaskAttachmentDao caseInTaskAttachmentDao;
 
 	@RequestMapping(value = "upload", method = RequestMethod.POST)
-	@ResponseBody
+
 	@PrivPrj(perms = {"test_case-maintain"})
 	public Map<String, Object> upload(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         Integer caseInTaskId = json.getInteger("caseInTaskId");
 		String path = json.getString("path");
@@ -45,7 +47,7 @@ public class CaseInTaskAttachmentAction extends BaseAction {
 
 		Boolean result = caseInTaskAttachmentService.save(caseInTaskId, name, path, user);
 		if (!result) {
-			return authFail();
+			return authorFail();
 		}
 
         List<TstCaseInTaskAttachment> attachments = caseInTaskAttachmentDao.query(caseInTaskId);
@@ -60,19 +62,19 @@ public class CaseInTaskAttachmentAction extends BaseAction {
 
 
 	@RequestMapping(value = "remove", method = RequestMethod.POST)
-	@ResponseBody
+
     @PrivPrj(perms = {"test_case-maintain"})
 	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         Integer caseInTaskId = json.getInteger("caseInTaskId");
 		Integer id = json.getInteger("id");
 
 		Boolean result = caseInTaskAttachmentService.delete(id, user);
 		if (!result) {
-			return authFail();
+			return authorFail();
 		}
 
         List<TstCaseInTaskAttachment> attachments = caseInTaskAttachmentDao.query(caseInTaskId);

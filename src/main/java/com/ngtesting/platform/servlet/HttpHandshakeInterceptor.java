@@ -1,8 +1,8 @@
 package com.ngtesting.platform.servlet;
 
-import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.model.TstUser;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -26,13 +26,8 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
 
             String test = (String) httpSession.getAttribute("TEST");
 
-            TstUser user = null;
-            if (httpSession.getAttribute(Constant.HTTP_SESSION_USER_PROFILE) != null) {
-                user = (TstUser) httpSession.getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-            }
-
+            TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
             if (user != null) {
-                String userId = user.getId().toString();
                 attributes.put(WsConstant.WS_USER_KEY, user);
 
                 return true;

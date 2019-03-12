@@ -4,16 +4,18 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
-import com.ngtesting.platform.model.*;
+import com.ngtesting.platform.model.IsuField;
+import com.ngtesting.platform.model.IsuPage;
+import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueDynamicFormService;
 import com.ngtesting.platform.service.intf.IssueFieldService;
 import com.ngtesting.platform.service.intf.IssuePageService;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -21,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@Controller
+@RestController
 @RequestMapping(Constant.API_PATH_ADMIN + "issue_page/")
 public class IssuePageAdmin extends BaseAction {
 	@Autowired
@@ -33,11 +35,11 @@ public class IssuePageAdmin extends BaseAction {
     IssueDynamicFormService dynamicFormService;
 
 	@RequestMapping(value = "load", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> load(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		List<IsuPage> pages = pageService.listAll(orgId);
@@ -48,11 +50,11 @@ public class IssuePageAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "get", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		Integer pageId = json.getInteger("id");
@@ -69,11 +71,10 @@ public class IssuePageAdmin extends BaseAction {
 	}
 
     @RequestMapping(value = "getDetail", method = RequestMethod.POST)
-    @ResponseBody
     public Map<String, Object> getDetail(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
         Integer orgId = user.getDefaultOrgId();
 		Integer projectId = user.getDefaultPrjId();
 
@@ -92,11 +93,11 @@ public class IssuePageAdmin extends BaseAction {
     }
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 		Integer projectId = user.getDefaultPrjId();
 
@@ -115,11 +116,11 @@ public class IssuePageAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
@@ -131,18 +132,18 @@ public class IssuePageAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "setDefault", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
 
 		Boolean result = pageService.setDefault(id, orgId);
 		if (!result) { // 当对象不是默认org的，结果会返回false
-			return authFail();
+			return authorFail();
 		}
 
         List<IsuPage> pages = pageService.listAll(orgId);

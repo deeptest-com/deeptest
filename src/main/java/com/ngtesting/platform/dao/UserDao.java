@@ -24,7 +24,7 @@ public interface UserDao {
     TstUser getByToken(@Param("token") String token);
     TstUser getByPhone(@Param("phone") String phone);
 
-    String getSalt(@Param("id") Integer id);
+//    String getSalt(@Param("id") Integer id);
 
     void save(TstUser record);
     void saveSettings(TstUser record);

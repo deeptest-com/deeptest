@@ -8,12 +8,9 @@ import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.OrgGroupService;
 import com.ngtesting.platform.service.intf.UserService;
 import com.ngtesting.platform.servlet.PrivOrg;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -22,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@Controller
+@RestController
 @RequestMapping(Constant.API_PATH_CLIENT + "userAndGroup/")
 public class UserAndGroupAction extends BaseAction {
 	@Autowired
@@ -32,10 +29,10 @@ public class UserAndGroupAction extends BaseAction {
 
 	@PostMapping(value = "search")
 	@ResponseBody
-	@PrivOrg
+	@PrivOrg(perms = {"org_org:*"})
 	public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		String keywords = json.getString("keywords");

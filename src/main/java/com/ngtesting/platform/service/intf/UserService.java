@@ -29,7 +29,7 @@ public interface UserService {
 
     TstUser setIssueView(TstUser user, String issueView);
 
-    TstUser setLeftSizePers(TstUser user, Integer left, String prop);
+    TstUser setLeftSize(TstUser user, Integer left, String prop);
 
     List<TstUser> getProjectUsers(Integer orgId, Integer projectId);
 
@@ -39,4 +39,5 @@ public interface UserService {
 
     void saveIssueFields(String fieldStr, TstUser user);
 
+    void updateUserInfoToPrincipal(TstUser userIn, TstUser principal);
 }

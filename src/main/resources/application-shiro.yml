@@ -1,0 +1,7 @@
+shiro:
+  loginUrl: /page/401         # 用户未登录时跳转的请求路径
+  unauthorizedUrl: /page/403  # 用户没有访问权限时跳转的请求路径
+  userNativeSessionManager: true
+  sessionManager:
+    cookie:
+      name: BIUSID

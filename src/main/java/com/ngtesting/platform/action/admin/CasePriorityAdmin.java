@@ -9,12 +9,9 @@ import com.ngtesting.platform.service.intf.CasePriorityService;
 import com.ngtesting.platform.service.intf.CasePropertyService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -22,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@Controller
+@RestController
 @RequestMapping(Constant.API_PATH_ADMIN + "case_priority/")
 public class CasePriorityAdmin extends BaseAction {
 	private static final Log log = LogFactory.getLog(CasePriorityAdmin.class);
@@ -38,7 +35,7 @@ public class CasePriorityAdmin extends BaseAction {
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		List<TstCasePriority> vos = casePriorityService.list(orgId); // 总是取当前活动org的，不需要再鉴权
@@ -53,7 +50,7 @@ public class CasePriorityAdmin extends BaseAction {
 	@ResponseBody
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
@@ -65,7 +62,7 @@ public class CasePriorityAdmin extends BaseAction {
 		}
 
 		if (po == null) { // 当对象不是默认org的，此处为空
-			return authFail();
+			return authorFail();
 		}
 
 		ret.put("data", po);
@@ -78,14 +75,14 @@ public class CasePriorityAdmin extends BaseAction {
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		TstCasePriority vo = json.getObject("model", TstCasePriority.class);
 
 		TstCasePriority po = casePriorityService.save(vo, orgId);
 		if (po == null) { // 当对象不是默认org的，update的结果会返回空
-			return authFail();
+			return authorFail();
 		}
 
         ret.put("data", po);
@@ -98,14 +95,14 @@ public class CasePriorityAdmin extends BaseAction {
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		Integer id = json.getInteger("id");
 
 		Boolean result = casePriorityService.delete(id, orgId);
         if (!result) { // 当对象不是默认org的，结果会返回false
-            return authFail();
+            return authorFail();
         }
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -117,13 +114,13 @@ public class CasePriorityAdmin extends BaseAction {
 	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 		Integer id = json.getInteger("id");
 
 		Boolean result = casePriorityService.setDefault(id, orgId);
         if (!result) { // 当对象不是默认org的，结果会返回false
-            return authFail();
+            return authorFail();
         }
 
 		List<TstCasePriority> vos = casePriorityService.list(orgId);
@@ -139,14 +136,14 @@ public class CasePriorityAdmin extends BaseAction {
 	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 		Integer id = json.getInteger("id");
 		String act = json.getString("act");
 
         Boolean result = casePriorityService.changeOrder(id, act, orgId);
         if (!result) { // 当对象不是默认org的，结果会返回false
-            return authFail();
+            return authorFail();
         }
 
 		List<TstCasePriority> vos = casePriorityService.list(orgId);

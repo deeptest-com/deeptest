@@ -219,7 +219,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public TstUser setLeftSizePers(TstUser user, Integer left, String prop) {
+    public TstUser setLeftSize(TstUser user, Integer left, String prop) {
         if ("design".equals(prop)) {
             user.setLeftSizeDesign(left);
         } else if ("exe".equals(prop)) {
@@ -242,6 +242,28 @@ public class UserServiceImpl implements UserService {
     public void saveIssueFields(String fieldStr, TstUser user) {
         user.setIssueFileds(fieldStr);
         userDao.saveIssueFields(fieldStr, user.getId());
+    }
+
+    @Override
+    public void updateUserInfoToPrincipal(TstUser user, TstUser principal) {
+        principal.setEmail(user.getEmail());
+        principal.setNickname(user.getNickname());
+        principal.setPhone(user.getPhone());
+        principal.setAvatar(user.getAvatar());
+
+        principal.setLeftSizeDesign(user.getLeftSizeDesign());
+        principal.setLeftSizeExe(user.getLeftSizeExe());
+        principal.setLeftSizeIssue(user.getLeftSizeIssue());
+
+        principal.setIssueView(user.getIssueView());
+        principal.setIssueColumns(user.getIssueColumns());
+        principal.setIssueFileds(user.getIssueFileds());
+
+        principal.setDefaultOrgId(user.getDefaultOrgId());
+        principal.setDefaultOrgName(user.getDefaultOrgName());
+        principal.setDefaultPrjId(user.getDefaultPrjId());
+        principal.setDefaultPrjName(user.getDefaultPrjName());
+        principal.setLocked(user.getLocked());
     }
 
 }

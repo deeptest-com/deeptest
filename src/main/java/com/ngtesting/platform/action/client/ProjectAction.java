@@ -10,19 +10,16 @@ import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.*;
 import com.ngtesting.platform.servlet.PrivOrg;
 import com.ngtesting.platform.servlet.PrivPrj;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping(value = Constant.API_PATH_CLIENT + "/project")
 public class ProjectAction extends BaseAction {
   @Autowired
@@ -49,10 +46,10 @@ public class ProjectAction extends BaseAction {
 
   @ResponseBody
   @PostMapping("/list")
-  @PrivOrg
+  @PrivOrg(perms = {"org_project:*"})
   public Object list(HttpServletRequest request, @RequestBody JSONObject json) {
     Map<String, Object> ret = new HashMap<String, Object>();
-    TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+    TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
     Integer orgId = user.getDefaultOrgId();
 
     String keywords = json.getString("keywords");
@@ -68,10 +65,10 @@ public class ProjectAction extends BaseAction {
 
   @ResponseBody
   @PostMapping("/get")
-  @PrivPrj
+  @PrivPrj(perms = {"project_access:view"})
   public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
     Map<String, Object> ret = new HashMap<String, Object>();
-    TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+    TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
     Integer projectId = json.getInteger("projectId");
 
@@ -87,10 +84,10 @@ public class ProjectAction extends BaseAction {
 
   @ResponseBody
   @PostMapping("/getInfo")
-  @PrivPrj
+  @PrivPrj(perms = {"project_access:view"})
   public Map<String, Object> getInfo(HttpServletRequest request, @RequestBody JSONObject json) {
     Map<String, Object> ret = new HashMap<String, Object>();
-    TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+    TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
     Integer orgId = user.getDefaultOrgId();
 
     Integer projectId = json.getInteger("projectId");
@@ -117,10 +114,10 @@ public class ProjectAction extends BaseAction {
 
   @ResponseBody
   @PostMapping("/view")
-  @PrivPrj
+  @PrivPrj(perms = {"project_access:view"})
   public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
     Map<String, Object> ret = new HashMap<String, Object>();
-    TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+    TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
     Integer orgId = user.getDefaultOrgId();
     Integer projectId = json.getInteger("projectId");
 
@@ -142,10 +139,10 @@ public class ProjectAction extends BaseAction {
 
   @ResponseBody
   @PostMapping("/save")
-  @PrivOrg(perms = {"project-admin"})
+  @PrivOrg(perms = {"org_project:*"})
   public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
     Map<String, Object> ret = new HashMap<String, Object>();
-    TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+    TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
     Integer orgId = user.getDefaultOrgId();
 
     TstProject vo = json.getObject("model", TstProject.class);
@@ -159,10 +156,10 @@ public class ProjectAction extends BaseAction {
 
   @PostMapping(value = "delete")
   @ResponseBody
-  @PrivOrg(perms = {"project-admin"})
+  @PrivOrg(perms = {"org_project:*"})
   public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
     Map<String, Object> ret = new HashMap<String, Object>();
-    TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+    TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
     Integer projectId = json.getInteger("projectId");
     TstProject project = projectService.get(projectId);
@@ -176,11 +173,11 @@ public class ProjectAction extends BaseAction {
   // 来源于前端上下文的变化
   @ResponseBody
   @PostMapping("/initContext")
-  @PrivPrj
+  @PrivPrj(perms = {"project_access:view"})
   public Map<String, Object> initContext(HttpServletRequest request, @RequestBody JSONObject json) {
     Map<String, Object> ret = new HashMap<String, Object>();
 
-    TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+    TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
     Integer orgId = user.getDefaultOrgId();
     Integer projectId = json.getInteger("projectId");
 
@@ -199,11 +196,11 @@ public class ProjectAction extends BaseAction {
   // 来源于前端上下文的变化
   @ResponseBody
   @PostMapping("/changeContext")
-  @PrivPrj
+  @PrivPrj(perms = {"project_access:view"})
   public Map<String, Object> changeContext(HttpServletRequest request, @RequestBody JSONObject json) {
     Map<String, Object> ret = new HashMap<String, Object>();
 
-    TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+    TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
     Integer orgId = user.getDefaultOrgId();
     Integer projectId = json.getInteger("projectId");
 

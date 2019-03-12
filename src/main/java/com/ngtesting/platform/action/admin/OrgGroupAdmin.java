@@ -11,19 +11,19 @@ import com.ngtesting.platform.model.TstOrgGroupUserRelation;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.OrgGroupService;
 import com.ngtesting.platform.service.intf.OrgGroupUserRelationService;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping(Constant.API_PATH_ADMIN + "org_group/")
 public class OrgGroupAdmin extends BaseAction {
 	@Autowired
@@ -33,11 +33,11 @@ public class OrgGroupAdmin extends BaseAction {
 	OrgGroupUserRelationService orgGroupUserService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		String keywords = json.getString("keywords");
@@ -56,11 +56,11 @@ public class OrgGroupAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "get", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 		Integer orgGroupId = json.getInteger("id");
 
@@ -72,7 +72,7 @@ public class OrgGroupAdmin extends BaseAction {
 			group = orgGroupService.get(orgGroupId, orgId);
 		}
 		if (group == null) { // 当对象不是默认org的，此处为空
-            return authFail();
+            return authorFail();
         }
 
 		List<TstOrgGroupUserRelation> relations = orgGroupUserService.listRelationsByGroup(orgId, orgGroupId);
@@ -90,11 +90,11 @@ public class OrgGroupAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		TstOrgGroup group = JSON.parseObject(JSON.toJSONString(json.get("group")), TstOrgGroup.class);;
@@ -102,7 +102,7 @@ public class OrgGroupAdmin extends BaseAction {
 
 		TstOrgGroup po = orgGroupService.save(group, orgId);
         if (po == null) { // 当对象不是默认org的，update的结果会返回空
-            return authFail();
+            return authorFail();
         }
 
 		orgGroupUserService.saveRelationsForGroup(orgId, po.getId(), relations);
@@ -112,17 +112,17 @@ public class OrgGroupAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();
 
 		Integer groupId = json.getInteger("id");
 
 		Boolean result = orgGroupService.delete(groupId, orgId);
         if (!result) { // 当对象不是默认org的，结果会返回false
-            return authFail();
+            return authorFail();
         }
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());

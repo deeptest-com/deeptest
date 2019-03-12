@@ -9,12 +9,9 @@ import com.ngtesting.platform.config.WsConstant;
 import com.ngtesting.platform.model.TstMsg;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.MsgService;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -22,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@Controller
+@RestController
 @RequestMapping(Constant.API_PATH_CLIENT + "msg/")
 public class MsgAction extends BaseAction {
     @Autowired
@@ -32,11 +29,11 @@ public class MsgAction extends BaseAction {
     MsgService msgService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
-	@ResponseBody
+
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         String keywords = json.getString("keywords");
         Boolean isRead = json.getBoolean("isRead");
@@ -59,11 +56,11 @@ public class MsgAction extends BaseAction {
 
 		Integer id = json.getInteger("id");
 
-		TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
 		Boolean result = msgService.delete(id, user.getId());
 		if (!result) {
-            return authFail();
+            return authorFail();
         }
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
@@ -71,15 +68,14 @@ public class MsgAction extends BaseAction {
 	}
 
     @RequestMapping(value = "markRead", method = RequestMethod.POST)
-    @ResponseBody
     public Map<String, Object> markRead(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         Integer id = json.getInteger("id");
         Boolean result = msgService.markRead(id, user.getId());
         if (!result) {
-            return authFail();
+            return authorFail();
         }
 
         optFacade.opt(WsConstant.WS_TODO, user);
@@ -89,12 +85,10 @@ public class MsgAction extends BaseAction {
     }
 
     @RequestMapping(value = "markAllRead", method = RequestMethod.POST)
-    @ResponseBody
     public Map<String, Object> markAllRead(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
-        TstUser user = (TstUser) request.getSession().getAttribute(Constant.HTTP_SESSION_USER_PROFILE);
-
+        TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		msgService.markAllRead(user.getId());
 		optFacade.opt(WsConstant.WS_TODO, user);
 

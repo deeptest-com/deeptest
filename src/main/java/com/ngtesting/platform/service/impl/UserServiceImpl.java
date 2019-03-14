@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<TstUser> getProjectUsers(Integer orgId, Integer projectId) {
+    public List<TstUser> getProjectUsers(Integer projectId) {
         List<TstUser> ls = userDao.getProjectUsers(projectId, null);
 
         return ls;

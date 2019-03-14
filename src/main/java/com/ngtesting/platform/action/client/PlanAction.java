@@ -44,7 +44,7 @@ public class PlanAction extends BaseAction {
 
 	@RequestMapping(value = "query", method = RequestMethod.POST)
 
-    @PrivPrj
+    @PrivPrj(perms = {"test_plan-view"})
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();

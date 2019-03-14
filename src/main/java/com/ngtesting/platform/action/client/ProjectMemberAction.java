@@ -39,7 +39,7 @@ public class ProjectMemberAction extends BaseAction {
     AuthService authService;
 
     @PostMapping("/getUsers")
-    @PrivPrj(perms = {"project:*"})
+    @PrivPrj(perms = {"project:maintain"})
     public Map<String, Object> getUsers(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -58,7 +58,7 @@ public class ProjectMemberAction extends BaseAction {
     }
 
     @PostMapping(value = "saveMembers")
-    @PrivPrj(perms = {"project:*"})
+    @PrivPrj(perms = {"project:maintain"})
     public Map<String, Object> saveMembers(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -71,7 +71,7 @@ public class ProjectMemberAction extends BaseAction {
     }
 
     @PostMapping(value = "changeRole")
-    @PrivPrj(perms = {"project:*"})
+    @PrivPrj(perms = {"project:maintain"})
     public Map<String, Object> changeRole(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -86,7 +86,7 @@ public class ProjectMemberAction extends BaseAction {
     }
 
     @PostMapping(value = "remove")
-    @PrivPrj(perms = {"project:*"})
+    @PrivPrj(perms = {"project:maintain"})
     public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();

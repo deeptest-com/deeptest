@@ -7,13 +7,15 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.IsuTypeSolution;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.IssueTypeSolutionService;
-import com.ngtesting.platform.servlet.PrivOrg;
 import com.ngtesting.platform.servlet.PrivPrj;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -30,8 +32,7 @@ public class IssueTypeAction extends BaseAction {
 	IssueTypeSolutionService solutionService;
 
 	@RequestMapping(value = "getByProject", method = RequestMethod.POST)
-	@ResponseBody
-	@PrivPrj
+	@PrivPrj(perms = {"project:maintain"})
 	public Map<String, Object> getByProject(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -50,8 +51,7 @@ public class IssueTypeAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "setByProject", method = RequestMethod.POST)
-	@ResponseBody
-	@PrivOrg(perms = {"org_org:*"})
+	@PrivPrj(perms = {"project:maintain"})
 	public Map<String, Object> setByProject(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 

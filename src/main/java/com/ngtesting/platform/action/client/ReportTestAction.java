@@ -52,7 +52,7 @@ public class ReportTestAction extends BaseAction {
     }
 
     @RequestMapping(value = "projectTest")
-    @PrivPrj
+    @PrivPrj(perms = {"project_access:view"})
     public Map<String, Object> projectTest(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();
@@ -75,6 +75,7 @@ public class ReportTestAction extends BaseAction {
     }
 
     @PostMapping(value = "plan")
+    @PrivPrj(perms = {"test_plan:view"})
     public Map<String, Object> plan(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();

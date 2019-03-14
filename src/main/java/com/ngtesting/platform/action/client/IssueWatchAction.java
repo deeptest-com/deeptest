@@ -26,7 +26,7 @@ public class IssueWatchAction extends BaseAction {
     IssueWatchService issueWatchService;
 
     @RequestMapping(value = "list", method = RequestMethod.POST)
-    @PrivPrj
+    @PrivPrj(perms = {"issue-view"})
     public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -42,7 +42,7 @@ public class IssueWatchAction extends BaseAction {
     }
 
     @RequestMapping(value = "search", method = RequestMethod.POST)
-    @PrivPrj
+    @PrivPrj(perms = {"issue-view"})
     public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -60,7 +60,7 @@ public class IssueWatchAction extends BaseAction {
     }
 
     @RequestMapping(value = "watch", method = RequestMethod.POST)
-    @PrivPrj
+    @PrivPrj(perms = {"issue-view"})
     public Map<String, Object> watch(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();

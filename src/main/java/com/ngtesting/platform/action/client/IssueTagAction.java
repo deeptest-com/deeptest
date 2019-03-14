@@ -27,7 +27,7 @@ public class IssueTagAction extends BaseAction {
     IssueTagService issueTagService;
 
     @RequestMapping(value = "search", method = RequestMethod.POST)
-    @PrivPrj
+    @PrivPrj(perms = {"issue-view"})
     public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -45,7 +45,7 @@ public class IssueTagAction extends BaseAction {
     }
 
     @RequestMapping(value = "save", method = RequestMethod.POST)
-    @PrivPrj(perms = {"issue-maintain"})
+    @PrivPrj(perms = {"issue-view"})
     public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();

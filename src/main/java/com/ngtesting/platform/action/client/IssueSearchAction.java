@@ -26,7 +26,7 @@ public class IssueSearchAction extends BaseAction {
     IssueSearchService issueSearchService;
 
     @RequestMapping(value = "idAndTitleSearch", method = RequestMethod.POST)
-    @PrivPrj
+    @PrivPrj(perms = {"issue-view"})
     public Map<String, Object> idAndTitleSearch(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 

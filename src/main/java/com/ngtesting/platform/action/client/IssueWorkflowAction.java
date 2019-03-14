@@ -28,8 +28,7 @@ public class IssueWorkflowAction extends BaseAction {
 	IssueWorkflowSolutionService solutionService;
 
 	@RequestMapping(value = "getByProject", method = RequestMethod.POST)
-	@ResponseBody
-	@PrivPrj
+	@PrivPrj(perms = {"project:maintain"})
 	public Map<String, Object> getByProject(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -51,8 +50,7 @@ public class IssueWorkflowAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "setByProject", method = RequestMethod.POST)
-	@ResponseBody
-	@PrivPrj(perms = {"issue-maintain"})
+	@PrivPrj(perms = {"project:maintain"})
 	public Map<String, Object> setByProject(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 

@@ -6,7 +6,6 @@ import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.dao.UserDao;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.UserService;
-import com.ngtesting.platform.servlet.PrivOrg;
 import com.ngtesting.platform.servlet.PrivPrj;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,24 +28,23 @@ public class UserAction extends BaseAction {
     @Autowired
     private UserDao userDao;
 
-    @PostMapping(value = "getUsers")
-    @PrivPrj
+    @PostMapping(value = "getUsers") // 用例筛选页面，通过用户筛选
+    @PrivPrj(perms = {"project_access:view"})
     public Map<String, Object> getUsers(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
-        Integer orgId = user.getDefaultOrgId();
         Integer prjId = user.getDefaultPrjId();
 
-        List <TstUser> vos = userService.getProjectUsers(orgId, prjId);
+        List <TstUser> vos = userService.getProjectUsers(prjId);
 
         ret.put("data", vos);
         ret.put("code", Constant.RespCode.SUCCESS.getCode());
         return ret;
     }
 
-    @PostMapping(value = "search")
-    @PrivOrg(perms = {"org_org:*"})
+    @PostMapping(value = "search") // 任务指定用户时调用
+    @PrivPrj(perms = {"test_plan-maintain"})
     public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();

@@ -29,7 +29,7 @@ public class UserAndGroupAction extends BaseAction {
 
 	@PostMapping(value = "search")
 	@ResponseBody
-	@PrivOrg(perms = {"org_org:*"})
+	@PrivOrg(perms = {"org_access:view"}) // 维护用户成员时访问
 	public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();

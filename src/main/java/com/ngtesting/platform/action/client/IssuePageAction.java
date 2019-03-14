@@ -61,7 +61,7 @@ public class IssuePageAction extends BaseAction {
 
 	@RequestMapping(value = "getByProject", method = RequestMethod.POST)
 
-	@PrivPrj
+	@PrivPrj(perms = {"project:maintain"})
 	public Map<String, Object> getByProject(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 

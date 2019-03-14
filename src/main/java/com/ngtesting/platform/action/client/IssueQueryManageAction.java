@@ -30,7 +30,7 @@ public class IssueQueryManageAction extends BaseAction {
 	IssueQueryService queryService;
 
     @PostMapping("/list")
-    @PrivPrj
+    @PrivPrj(perms = {"issue-view"})
     public Object list(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -51,7 +51,7 @@ public class IssueQueryManageAction extends BaseAction {
     }
 
     @PostMapping("/get")
-    @PrivPrj
+    @PrivPrj(perms = {"issue-view"})
     public Object get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -68,7 +68,7 @@ public class IssueQueryManageAction extends BaseAction {
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 
-    @PrivPrj
+    @PrivPrj(perms = {"issue-view"})
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -83,7 +83,7 @@ public class IssueQueryManageAction extends BaseAction {
 	}
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
-    @PrivPrj
+    @PrivPrj(perms = {"issue-view"})
     public Map<String, Object> update(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -97,7 +97,7 @@ public class IssueQueryManageAction extends BaseAction {
     }
 
     @RequestMapping(value = "delete", method = RequestMethod.POST)
-    @PrivPrj
+    @PrivPrj(perms = {"issue-view"})
     public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();

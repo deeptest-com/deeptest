@@ -31,7 +31,7 @@ public interface UserService {
 
     TstUser setLeftSize(TstUser user, Integer left, String prop);
 
-    List<TstUser> getProjectUsers(Integer orgId, Integer projectId);
+    List<TstUser> getProjectUsers(Integer projectId);
 
     Boolean removeFromOrg(Integer userId, Integer orgId);
 

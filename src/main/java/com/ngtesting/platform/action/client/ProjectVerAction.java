@@ -8,11 +8,13 @@ import com.ngtesting.platform.dao.TestVerDao;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.model.TstVer;
 import com.ngtesting.platform.service.intf.TestVerService;
-import com.ngtesting.platform.servlet.PrivOrg;
 import com.ngtesting.platform.servlet.PrivPrj;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -32,7 +34,7 @@ public class ProjectVerAction extends BaseAction {
 	TestVerDao verDao;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
-	@PrivPrj(perms = {"project:*"})
+	@PrivPrj(perms = {"project:maintain"})
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -49,7 +51,7 @@ public class ProjectVerAction extends BaseAction {
 	}
 
     @RequestMapping(value = "get", method = RequestMethod.POST)
-	@PrivPrj(perms = {"project:*"})
+	@PrivPrj(perms = {"project:maintain"})
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -65,8 +67,7 @@ public class ProjectVerAction extends BaseAction {
     }
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
-	@PrivOrg(perms = {"project:*"})
+	@PrivPrj(perms = {"project:maintain"})
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -82,8 +83,7 @@ public class ProjectVerAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	@ResponseBody
-	@PrivOrg(perms = {"project:*"})
+	@PrivPrj(perms = {"project:maintain"})
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -101,8 +101,7 @@ public class ProjectVerAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "changeOrder", method = RequestMethod.POST)
-	@ResponseBody
-	@PrivOrg(perms = {"project:*"})
+	@PrivPrj(perms = {"project:maintain"})
 	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();

@@ -60,6 +60,7 @@ public class ReportIssueAction extends BaseAction {
         return ret;
     }
 
+
     @RequestMapping(value = "projectIssue")
     @PrivPrj(perms = {"project_access:view"})
     public Map<String, Object> projectIssue(HttpServletRequest request, @RequestBody JSONObject json) {

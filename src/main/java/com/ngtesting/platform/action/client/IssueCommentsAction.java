@@ -25,7 +25,7 @@ public class IssueCommentsAction extends BaseAction {
     IssueCommentsService issueCommentsService;
 
     @RequestMapping(value = "save", method = RequestMethod.POST)
-    @PrivPrj(perms = {"issue-maintain"})
+    @PrivPrj(perms = {"issue:maintain"})
     public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -43,7 +43,7 @@ public class IssueCommentsAction extends BaseAction {
     }
 
     @RequestMapping(value = "delete", method = RequestMethod.POST)
-    @PrivPrj(perms = {"issue-maintain"})
+    @PrivPrj(perms = {"issue:maintain"})
     public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 

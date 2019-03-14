@@ -26,7 +26,7 @@ public class IssueWatchAction extends BaseAction {
     IssueWatchService issueWatchService;
 
     @RequestMapping(value = "list", method = RequestMethod.POST)
-    @PrivPrj(perms = {"issue-view"})
+    @PrivPrj(perms = {"issue:view"})
     public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -42,7 +42,7 @@ public class IssueWatchAction extends BaseAction {
     }
 
     @RequestMapping(value = "search", method = RequestMethod.POST)
-    @PrivPrj(perms = {"issue-view"})
+    @PrivPrj(perms = {"issue:view"})
     public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -60,7 +60,7 @@ public class IssueWatchAction extends BaseAction {
     }
 
     @RequestMapping(value = "watch", method = RequestMethod.POST)
-    @PrivPrj(perms = {"issue-view"})
+    @PrivPrj(perms = {"issue:view"})
     public Map<String, Object> watch(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -75,7 +75,7 @@ public class IssueWatchAction extends BaseAction {
     }
 
     @RequestMapping(value = "batchWatch", method = RequestMethod.POST)
-    @PrivPrj(perms = {"issue-maintain"})
+    @PrivPrj(perms = {"issue:maintain"})
     public Map<String, Object> batchWatch(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -90,7 +90,7 @@ public class IssueWatchAction extends BaseAction {
     }
 
     @RequestMapping(value = "remove", method = RequestMethod.POST)
-    @PrivPrj(perms = {"issue-maintain"})
+    @PrivPrj(perms = {"issue:maintain"})
     public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();

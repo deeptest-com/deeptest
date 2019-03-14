@@ -33,7 +33,7 @@ public class IssueOptAction extends BaseAction {
     @Autowired
     MsgService msgService;
 
-    @PrivPrj(perms = {"issue-maintain"})
+    @PrivPrj(perms = {"issue:maintain"})
     @RequestMapping(value = "assign", method = RequestMethod.POST)
     public Map<String, Object> assign(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
@@ -51,7 +51,7 @@ public class IssueOptAction extends BaseAction {
     }
 
     @RequestMapping(value = "statusTran", method = RequestMethod.POST)
-    @PrivPrj(perms = {"issue-maintain"})
+    @PrivPrj(perms = {"issue:maintain"})
     public Map<String, Object> statusTran(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -68,7 +68,7 @@ public class IssueOptAction extends BaseAction {
     }
 
     @RequestMapping(value = "updateThenStatusTran", method = RequestMethod.POST)
-    @PrivPrj(perms = {"issue-maintain"})
+    @PrivPrj(perms = {"issue:maintain"})
     public Map<String, Object> updateThenStatusTran(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();

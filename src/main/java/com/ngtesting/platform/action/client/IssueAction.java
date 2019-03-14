@@ -40,7 +40,7 @@ public class IssueAction extends BaseAction {
     IssueWatchService issueWatchService;
 
 
-    @PrivPrj(perms = {"issue-view"})
+    @PrivPrj(perms = {"issue:view"})
     @RequestMapping(value = "view", method = RequestMethod.POST)
     public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -65,7 +65,7 @@ public class IssueAction extends BaseAction {
         return ret;
     }
 
-    @PrivPrj(perms = {"issue-view"})
+    @PrivPrj(perms = {"issue:view"})
     @RequestMapping(value = "getData", method = RequestMethod.POST)
     public Map<String, Object> getData(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -82,7 +82,7 @@ public class IssueAction extends BaseAction {
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
-    @PrivPrj(perms = {"issue-maintain"})
+    @PrivPrj(perms = {"issue:maintain"})
     public Map<String, Object> create(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -101,7 +101,7 @@ public class IssueAction extends BaseAction {
         return ret;
     }
 
-    @PrivPrj(perms = {"issue-maintain"})
+    @PrivPrj(perms = {"issue:maintain"})
     @RequestMapping(value = "edit", method = RequestMethod.POST)
     public Map<String, Object> edit(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -125,7 +125,7 @@ public class IssueAction extends BaseAction {
         return ret;
     }
 
-    @PrivPrj(perms = {"issue-maintain"})
+    @PrivPrj(perms = {"issue:maintain"})
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -143,7 +143,7 @@ public class IssueAction extends BaseAction {
 		return ret;
 	}
 
-    @PrivPrj(perms = {"issue-maintain"})
+    @PrivPrj(perms = {"issue:maintain"})
     @RequestMapping(value = "update", method = RequestMethod.POST)
     public Map<String, Object> update(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -162,7 +162,7 @@ public class IssueAction extends BaseAction {
         return ret;
     }
 
-    @PrivPrj(perms = {"issue-maintain"})
+    @PrivPrj(perms = {"issue:maintain"})
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
     public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -177,7 +177,7 @@ public class IssueAction extends BaseAction {
         return ret;
     }
 
-    @PrivPrj(perms = {"issue-maintain"})
+    @PrivPrj(perms = {"issue:maintain"})
 	@RequestMapping(value = "updateField", method = RequestMethod.POST)
 
 	public Map<String, Object> updateField(HttpServletRequest request, @RequestBody JSONObject json) {

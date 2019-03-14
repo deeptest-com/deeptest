@@ -35,7 +35,7 @@ public class CaseInTaskAttachmentAction extends BaseAction {
 
 	@RequestMapping(value = "upload", method = RequestMethod.POST)
 
-	@PrivPrj(perms = {"test_case-maintain"})
+	@PrivPrj(perms = {"test_case:maintain"})
 	public Map<String, Object> upload(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -63,7 +63,7 @@ public class CaseInTaskAttachmentAction extends BaseAction {
 
 	@RequestMapping(value = "remove", method = RequestMethod.POST)
 
-    @PrivPrj(perms = {"test_case-maintain"})
+    @PrivPrj(perms = {"test_case:maintain"})
 	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 

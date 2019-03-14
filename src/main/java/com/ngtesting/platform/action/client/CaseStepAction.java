@@ -25,7 +25,7 @@ public class CaseStepAction extends BaseAction {
     CaseStepService caseStepService;
 
     @RequestMapping(value = "save", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-maintain"})
+    @PrivPrj(perms = {"test_case:maintain"})
     public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -41,7 +41,7 @@ public class CaseStepAction extends BaseAction {
     }
 
     @RequestMapping(value = "delete", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-maintain"})
+    @PrivPrj(perms = {"test_case:maintain"})
     public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -57,7 +57,7 @@ public class CaseStepAction extends BaseAction {
     }
 
     @RequestMapping(value = "up", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-maintain"})
+    @PrivPrj(perms = {"test_case:maintain"})
     public Map<String, Object> up(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -72,7 +72,7 @@ public class CaseStepAction extends BaseAction {
     }
 
     @RequestMapping(value = "down", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-maintain"})
+    @PrivPrj(perms = {"test_case:maintain"})
     public Map<String, Object> down(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();

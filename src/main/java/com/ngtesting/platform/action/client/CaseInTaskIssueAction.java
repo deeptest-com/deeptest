@@ -30,7 +30,7 @@ public class CaseInTaskIssueAction extends BaseAction {
 	CaseInTaskIssueDao caseInTaskIssueDao;
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@PrivPrj(perms = {"test_task-exe"})
+	@PrivPrj(perms = {"test_task:exe"})
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -50,7 +50,7 @@ public class CaseInTaskIssueAction extends BaseAction {
 
 
 	@RequestMapping(value = "remove", method = RequestMethod.POST)
-	@PrivPrj(perms = {"test_task-exe"})
+	@PrivPrj(perms = {"test_task:exe"})
 	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 

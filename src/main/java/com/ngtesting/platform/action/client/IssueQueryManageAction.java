@@ -30,7 +30,7 @@ public class IssueQueryManageAction extends BaseAction {
 	IssueQueryService queryService;
 
     @PostMapping("/list")
-    @PrivPrj(perms = {"issue-view"})
+    @PrivPrj(perms = {"issue:view"})
     public Object list(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();

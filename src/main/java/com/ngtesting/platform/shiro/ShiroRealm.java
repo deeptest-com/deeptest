@@ -1,8 +1,11 @@
 package com.ngtesting.platform.shiro;
 
 import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.impl.IssueOptServiceImpl;
 import com.ngtesting.platform.service.intf.PermissionService;
 import com.ngtesting.platform.service.intf.UserService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -16,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 public class ShiroRealm extends AuthorizingRealm {
+    Log logger = LogFactory.getLog(IssueOptServiceImpl.class);
+
     @Autowired
     private UserService userService;
     @Autowired
@@ -69,6 +74,7 @@ public class ShiroRealm extends AuthorizingRealm {
 //                Map<String, String> map = new HashMap<>();
                 List<String> list = permissionService.getShiroStylePermissions(user.getId());
                 for (String perm : list){
+                    System.out.println(perm);
                     info.addStringPermission(perm);
 //                    if (!perm.startsWith("org_")) {
 //                        String id = perm.split(":")[2];

@@ -44,7 +44,7 @@ public class UserAction extends BaseAction {
     }
 
     @PostMapping(value = "searchProjectUser") // 任务指定用户时调用
-    @PrivPrj(perms = {"test_plan-maintain"})
+    @PrivPrj(perms = {"test_plan:maintain"})
     public Map<String, Object> searchProjectUser(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();

@@ -36,7 +36,7 @@ public class CaseInTaskAction extends BaseAction {
     CustomFieldService customFieldService;
 
     @RequestMapping(value = "query", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-view", "test_plan-view", "test_task-view"})
+    @PrivPrj(perms = {"test_case:view", "test_plan:view", "test_task:view"})
     public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -58,7 +58,7 @@ public class CaseInTaskAction extends BaseAction {
     }
 
     @RequestMapping(value = "get", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-view", "test_plan-view", "test_task-view"})
+    @PrivPrj(perms = {"test_case:view", "test_plan:view", "test_task:view"})
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -75,7 +75,7 @@ public class CaseInTaskAction extends BaseAction {
     }
 
     @RequestMapping(value = "rename", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-maintain"})
+    @PrivPrj(perms = {"test_case:maintain"})
     public Map<String, Object> rename(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -92,7 +92,7 @@ public class CaseInTaskAction extends BaseAction {
     }
 
     @RequestMapping(value = "setResult", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_task-exe"})
+    @PrivPrj(perms = {"test_task:exe"})
     public Map<String, Object> setResult(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 

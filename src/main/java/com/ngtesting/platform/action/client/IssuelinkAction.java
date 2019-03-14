@@ -31,7 +31,7 @@ public class IssuelinkAction extends BaseAction {
     MsgService msgService;
 
     @RequestMapping(value = "link", method = RequestMethod.POST)
-    @PrivPrj(perms = {"issue-view"})
+    @PrivPrj(perms = {"issue:view"})
     public Map<String, Object> link(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -49,7 +49,7 @@ public class IssuelinkAction extends BaseAction {
     }
 
     @RequestMapping(value = "listIssueLinkReasons", method = RequestMethod.POST)
-    @PrivPrj(perms = {"issue-view"})
+    @PrivPrj(perms = {"issue:view"})
     public Map<String, Object> listIssueLinkReasons(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 

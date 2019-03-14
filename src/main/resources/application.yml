@@ -59,12 +59,7 @@ spring:
         max-request-size: 150MB
 
 server:
- port: 443
- ssl:
-   key-store: classpath:keystore.p12
-   key-store-password: P2ssw0rd
-   key-store-type: PKCS12
-   key-alias: ngtesting-mac
+ port: 80
 
 http:
   port: 80
@@ -117,15 +112,14 @@ config:
 
 ---
 spring:
-  profiles: prod
-config:
-  db:
-    host: localhost
-    port: 5432
-
----
-spring:
-  profiles: docker
+  profiles: docker-domain
+server:
+  port: 443
+  ssl:
+    key-store: classpath:keystore.p12
+    key-store-password: P2ssw0rd
+    key-store-type: PKCS12
+    key-alias: ngtesting-mac
 config:
   db:
     host: ngtesting-postgres
@@ -133,7 +127,15 @@ config:
 
 ---
 spring:
-  profiles: aliyun-db
+  profiles: docker-ip
+config:
+  db:
+    host: ngtesting-postgres
+    port: 5432
+
+---
+spring:
+  profiles: aliyun-db-test
 config:
   db:
     host: 47.99.102.138

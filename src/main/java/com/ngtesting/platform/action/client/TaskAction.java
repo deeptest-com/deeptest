@@ -28,7 +28,7 @@ public class TaskAction extends BaseAction {
 	TestTaskService taskService;
 
     @RequestMapping(value = "get", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_task-view"})
+    @PrivPrj(perms = {"test_task:view"})
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -44,7 +44,7 @@ public class TaskAction extends BaseAction {
     }
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_plan-maintain"})
+    @PrivPrj(perms = {"test_plan:maintain"})
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -65,7 +65,7 @@ public class TaskAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "saveCases", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_plan-maintain"})
+    @PrivPrj(perms = {"test_plan:maintain"})
 	public Map<String, Object> saveCases(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -80,7 +80,7 @@ public class TaskAction extends BaseAction {
 	}
 
     @RequestMapping(value = "delete", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_plan-delete"})
+    @PrivPrj(perms = {"test_plan:delete"})
     public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -98,7 +98,7 @@ public class TaskAction extends BaseAction {
     }
 
     @RequestMapping(value = "close", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_task-close"})
+    @PrivPrj(perms = {"test_task:close"})
     public Map<String, Object> close(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();

@@ -5,11 +5,13 @@ import org.apache.catalina.connector.Connector;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.apache.tomcat.websocket.server.WsSci;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 @Configuration
 public class SSLConfig {
@@ -19,23 +21,33 @@ public class SSLConfig {
     @Value("${server.port}")
     Integer httpsPort;
 
+    @Autowired
+    private Environment env;
+
     @Bean
     public TomcatServletWebServerFactory servletContainer() { //springboot2 新变化
-        TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
+        String profile = env.getActiveProfiles()[0];
 
-            @Override
-            protected void postProcessContext(Context context) {
+        if ("docker-domain".equals(profile)) {
+            TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
 
-                SecurityConstraint securityConstraint = new SecurityConstraint();
-                securityConstraint.setUserConstraint("CONFIDENTIAL");
-                SecurityCollection collection = new SecurityCollection();
-                collection.addPattern("/*");
-                securityConstraint.addCollection(collection);
-                context.addConstraint(securityConstraint);
-            }
-        };
-        tomcat.addAdditionalTomcatConnectors(initiateHttpConnector());
-        return tomcat;
+                @Override
+                protected void postProcessContext(Context context) {
+                    SecurityConstraint securityConstraint = new SecurityConstraint();
+                    securityConstraint.setUserConstraint("CONFIDENTIAL");
+                    SecurityCollection collection = new SecurityCollection();
+                    collection.addPattern("/*");
+                    securityConstraint.addCollection(collection);
+                    context.addConstraint(securityConstraint);
+                }
+
+            };
+            tomcat.addAdditionalTomcatConnectors(initiateHttpConnector());
+
+            return tomcat;
+        } else {
+            return new TomcatServletWebServerFactory();
+        }
     }
 
     private Connector initiateHttpConnector() {
@@ -49,13 +61,22 @@ public class SSLConfig {
 
     @Bean
     public TomcatContextCustomizer tomcatContextCustomizer() {
-        return new TomcatContextCustomizer() {
-            @Override
-            public void customize(Context context) {
-                System.out.println("init   customize");
-                context.addServletContainerInitializer(new WsSci(), null);
-            }
+        String profile = env.getActiveProfiles()[0];
 
-        };
+        if ("docker-domain".equals(profile)) {
+            return new TomcatContextCustomizer() {
+                @Override
+                public void customize(Context context) {
+                    System.out.println("init customize");
+                    context.addServletContainerInitializer(new WsSci(), null);
+                }
+
+            };
+        } else {
+            return new TomcatContextCustomizer() {
+                @Override
+                public void customize(Context context) {}
+            };
+        }
     }
 }

@@ -44,7 +44,7 @@ public class PlanAction extends BaseAction {
 
 	@RequestMapping(value = "query", method = RequestMethod.POST)
 
-    @PrivPrj(perms = {"test_plan-view"})
+    @PrivPrj(perms = {"test_plan:view"})
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -66,7 +66,7 @@ public class PlanAction extends BaseAction {
 	}
 
     @RequestMapping(value = "get", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_plan-view"})
+    @PrivPrj(perms = {"test_plan:view"})
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -94,7 +94,7 @@ public class PlanAction extends BaseAction {
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 
-    @PrivPrj(perms = {"test_plan-maintain"})
+    @PrivPrj(perms = {"test_plan:maintain"})
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -118,7 +118,7 @@ public class PlanAction extends BaseAction {
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 
-    @PrivPrj(perms = {"test_plan-delete"})
+    @PrivPrj(perms = {"test_plan:delete"})
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();

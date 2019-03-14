@@ -24,7 +24,7 @@ public class CaseInTaskCommentsAction extends BaseAction {
     CaseInTaskCommentsService caseInTaskCommentsService;
 
     @RequestMapping(value = "save", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-maintain"})
+    @PrivPrj(perms = {"test_case:maintain"})
     public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -42,7 +42,7 @@ public class CaseInTaskCommentsAction extends BaseAction {
     }
 
     @RequestMapping(value = "delete", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-maintain"})
+    @PrivPrj(perms = {"test_case:maintain"})
     public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 

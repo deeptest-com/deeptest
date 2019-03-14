@@ -38,7 +38,7 @@ public class CaseAction extends BaseAction {
     ProjectDao projectDao;
 
 	@RequestMapping(value = "query", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-view"})
+    @PrivPrj(perms = {"test_case:view"})
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -54,7 +54,7 @@ public class CaseAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "queryForSuiteSelection", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-view"})
+    @PrivPrj(perms = {"test_case:view"})
 	public Map<String, Object> queryForSuiteSelection(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -75,7 +75,7 @@ public class CaseAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "queryForTaskSelection", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-view"})
+    @PrivPrj(perms = {"test_case:view"})
 	public Map<String, Object> queryForTaskSelection(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -96,7 +96,7 @@ public class CaseAction extends BaseAction {
 	}
 
     @RequestMapping(value = "get", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-view", "test_case-maintain"})
+    @PrivPrj(perms = {"test_case:view", "test_case:maintain"})
     public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -112,7 +112,7 @@ public class CaseAction extends BaseAction {
     }
 
     @RequestMapping(value = "rename", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-maintain"})
+    @PrivPrj(perms = {"test_case:maintain"})
     public Map<String, Object> rename(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -129,7 +129,7 @@ public class CaseAction extends BaseAction {
     }
 
 	@RequestMapping(value = "move", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-maintain"})
+    @PrivPrj(perms = {"test_case:maintain"})
 	public Map<String, Object> move(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -145,7 +145,7 @@ public class CaseAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-delete"})
+    @PrivPrj(perms = {"test_case:delete"})
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -163,7 +163,7 @@ public class CaseAction extends BaseAction {
 	}
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-maintain"})
+    @PrivPrj(perms = {"test_case:maintain"})
     public Map<String, Object> update(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -178,7 +178,7 @@ public class CaseAction extends BaseAction {
         return ret;
     }
 
-    @PrivPrj(perms = {"test_case-maintain"})
+    @PrivPrj(perms = {"test_case:maintain"})
 	@RequestMapping(value = "saveField", method = RequestMethod.POST)
 	public Map<String, Object> saveField(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
@@ -195,7 +195,7 @@ public class CaseAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "changeContentType", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-maintain"})
+    @PrivPrj(perms = {"test_case:maintain"})
 	public Map<String, Object> changeContentType(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -213,7 +213,7 @@ public class CaseAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "reviewResult", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-review"})
+    @PrivPrj(perms = {"test_case:review"})
 	public Map<String, Object> reviewResult(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -233,7 +233,7 @@ public class CaseAction extends BaseAction {
 	}
 
     @RequestMapping(value = "exportAll", method = RequestMethod.POST)
-    @PrivPrj(perms = {"test_case-view"})
+    @PrivPrj(perms = {"test_case:view"})
     public Map<String, Object> exportAll(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();

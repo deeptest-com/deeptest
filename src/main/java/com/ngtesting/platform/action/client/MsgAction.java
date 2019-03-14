@@ -50,7 +50,6 @@ public class MsgAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 

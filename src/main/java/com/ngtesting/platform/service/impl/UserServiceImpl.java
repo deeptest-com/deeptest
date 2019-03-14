@@ -205,8 +205,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<TstUser> searchPrjUser(Integer projectId, String keywords,  List<Integer> exceptIds) {
-        List<TstUser> users = userDao.searchPrjUser(projectId, keywords, exceptIds);
+    public List<TstUser> searchProjectUser(Integer projectId, String keywords, List<Integer> exceptIds) {
+        List<TstUser> users = userDao.searchProjectUser(projectId, keywords, exceptIds);
 
         return users;
     }

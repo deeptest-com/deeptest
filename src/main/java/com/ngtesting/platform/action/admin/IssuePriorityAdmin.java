@@ -27,7 +27,6 @@ public class IssuePriorityAdmin extends BaseAction {
 	IssuePriorityService issuePriorityService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
-
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -89,7 +88,6 @@ public class IssuePriorityAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -108,7 +106,6 @@ public class IssuePriorityAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "setDefault", method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -131,7 +128,6 @@ public class IssuePriorityAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "changeOrder", method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 

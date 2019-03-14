@@ -31,7 +31,6 @@ public class CasePriorityAdmin extends BaseAction {
     CasePropertyService casePropertyService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -47,7 +46,6 @@ public class CasePriorityAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "get", method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -71,7 +69,6 @@ public class CasePriorityAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -91,7 +88,6 @@ public class CasePriorityAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -110,7 +106,6 @@ public class CasePriorityAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "setDefault", method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> setDefault(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -132,7 +127,6 @@ public class CasePriorityAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "changeOrder", method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 

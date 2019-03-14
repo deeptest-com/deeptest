@@ -31,7 +31,6 @@ public class CaseAttachmentAction extends BaseAction {
 	CaseAttachmentDao caseAttachmentDao;
 
 	@RequestMapping(value = "upload", method = RequestMethod.POST)
-	@ResponseBody
 	@PrivPrj(perms = {"test_case-maintain"})
 	public Map<String, Object> upload(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
@@ -59,7 +58,6 @@ public class CaseAttachmentAction extends BaseAction {
 
 
 	@RequestMapping(value = "remove", method = RequestMethod.POST)
-	@ResponseBody
     @PrivPrj(perms = {"test_case-maintain"})
 	public Map<String, Object> remove(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();

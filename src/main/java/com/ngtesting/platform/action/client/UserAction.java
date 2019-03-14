@@ -28,9 +28,9 @@ public class UserAction extends BaseAction {
     @Autowired
     private UserDao userDao;
 
-    @PostMapping(value = "getUsers") // 用例筛选页面，通过用户筛选
-    @PrivPrj(perms = {"project_access:view"})
-    public Map<String, Object> getUsers(HttpServletRequest request, @RequestBody JSONObject json) {
+    @PostMapping(value = "getProjectUsers") // 用例筛选页面，通过用户筛选
+    @PrivPrj(perms = {"belongs_to:project"})
+    public Map<String, Object> getProjectUsers(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -43,16 +43,16 @@ public class UserAction extends BaseAction {
         return ret;
     }
 
-    @PostMapping(value = "search") // 任务指定用户时调用
+    @PostMapping(value = "searchProjectUser") // 任务指定用户时调用
     @PrivPrj(perms = {"test_plan-maintain"})
-    public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
+    public Map<String, Object> searchProjectUser(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 
         String keywords = json.getString("keywords");
         List<Integer> exceptIds = json.getObject("exceptIds", List.class);
 
-        List users = userService.searchPrjUser(user.getDefaultPrjId(), keywords, exceptIds);
+        List users = userService.searchProjectUser(user.getDefaultPrjId(), keywords, exceptIds);
 
         List<Object> vos = new ArrayList<>();
         vos.addAll(users);

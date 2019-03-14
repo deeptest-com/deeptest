@@ -38,7 +38,6 @@ public class CaseAction extends BaseAction {
     ProjectDao projectDao;
 
 	@RequestMapping(value = "query", method = RequestMethod.POST)
-	@ResponseBody
     @PrivPrj(perms = {"test_case-view"})
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
@@ -55,7 +54,6 @@ public class CaseAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "queryForSuiteSelection", method = RequestMethod.POST)
-	@ResponseBody
     @PrivPrj(perms = {"test_case-view"})
 	public Map<String, Object> queryForSuiteSelection(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
@@ -77,7 +75,6 @@ public class CaseAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "queryForTaskSelection", method = RequestMethod.POST)
-	@ResponseBody
     @PrivPrj(perms = {"test_case-view"})
 	public Map<String, Object> queryForTaskSelection(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
@@ -132,7 +129,6 @@ public class CaseAction extends BaseAction {
     }
 
 	@RequestMapping(value = "move", method = RequestMethod.POST)
-	@ResponseBody
     @PrivPrj(perms = {"test_case-maintain"})
 	public Map<String, Object> move(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
@@ -149,7 +145,6 @@ public class CaseAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	@ResponseBody
     @PrivPrj(perms = {"test_case-delete"})
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
@@ -185,7 +180,6 @@ public class CaseAction extends BaseAction {
 
     @PrivPrj(perms = {"test_case-maintain"})
 	@RequestMapping(value = "saveField", method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> saveField(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -201,7 +195,6 @@ public class CaseAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "changeContentType", method = RequestMethod.POST)
-	@ResponseBody
     @PrivPrj(perms = {"test_case-maintain"})
 	public Map<String, Object> changeContentType(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
@@ -220,7 +213,6 @@ public class CaseAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "reviewResult", method = RequestMethod.POST)
-	@ResponseBody
     @PrivPrj(perms = {"test_case-review"})
 	public Map<String, Object> reviewResult(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();

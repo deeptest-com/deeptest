@@ -33,7 +33,7 @@ public class ReportIssueAction extends BaseAction {
     ProjectService projectService;
 
     @PostMapping(value = "orgIssue")
-    @PrivOrg(perms = {"org_access:view"})
+    @PrivOrg(perms = {"belongs_to:org"})
     public Map<String, Object> orgIssue(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();
@@ -61,7 +61,7 @@ public class ReportIssueAction extends BaseAction {
     }
 
     @RequestMapping(value = "projectIssue")
-    @PrivPrj(perms = {"project_access:view"})
+    @PrivPrj(perms = {"belongs_to:project"})
     public Map<String, Object> projectIssue(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();

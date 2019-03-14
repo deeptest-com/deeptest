@@ -44,7 +44,6 @@ public class ProjectAction extends BaseAction {
   @Autowired
   IssueWorkflowTransitionService issueWorkflowTransitionService;
 
-  @ResponseBody
   @PostMapping("/list")
   @PrivOrg(perms = {"org_project:*"})
   public Object list(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -63,9 +62,8 @@ public class ProjectAction extends BaseAction {
     return ret;
   }
 
-  @ResponseBody
   @PostMapping("/get")
-  @PrivPrj(perms = {"project_access:view"})
+  @PrivPrj(perms = {"belongs_to:project"})
   public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
     Map<String, Object> ret = new HashMap<String, Object>();
     TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -82,9 +80,8 @@ public class ProjectAction extends BaseAction {
     return ret;
   }
 
-  @ResponseBody
   @PostMapping("/getInfo")
-  @PrivPrj(perms = {"project_access:view"})
+  @PrivPrj(perms = {"belongs_to:project"})
   public Map<String, Object> getInfo(HttpServletRequest request, @RequestBody JSONObject json) {
     Map<String, Object> ret = new HashMap<String, Object>();
     TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -112,9 +109,8 @@ public class ProjectAction extends BaseAction {
     return ret;
   }
 
-  @ResponseBody
   @PostMapping("/view")
-  @PrivPrj(perms = {"project_access:view"})
+  @PrivPrj(perms = {"belongs_to:project"})
   public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
     Map<String, Object> ret = new HashMap<String, Object>();
     TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -137,7 +133,6 @@ public class ProjectAction extends BaseAction {
     return ret;
   }
 
-  @ResponseBody
   @PostMapping("/save")
   @PrivOrg(perms = {"org_project:*"})
   public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
@@ -155,7 +150,6 @@ public class ProjectAction extends BaseAction {
   }
 
   @PostMapping(value = "delete")
-  @ResponseBody
   @PrivOrg(perms = {"org_project:*"})
   public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
     Map<String, Object> ret = new HashMap<String, Object>();
@@ -171,9 +165,8 @@ public class ProjectAction extends BaseAction {
   }
 
   // 来源于前端上下文的变化
-  @ResponseBody
   @PostMapping("/initContext")
-  @PrivPrj(perms = {"project_access:view"})
+  @PrivPrj(perms = {"belongs_to:project"})
   public Map<String, Object> initContext(HttpServletRequest request, @RequestBody JSONObject json) {
     Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -194,9 +187,8 @@ public class ProjectAction extends BaseAction {
   }
 
   // 来源于前端上下文的变化
-  @ResponseBody
   @PostMapping("/changeContext")
-  @PrivPrj(perms = {"project_access:view"})
+  @PrivPrj(perms = {"belongs_to:project"})
   public Map<String, Object> changeContext(HttpServletRequest request, @RequestBody JSONObject json) {
     Map<String, Object> ret = new HashMap<String, Object>();
 

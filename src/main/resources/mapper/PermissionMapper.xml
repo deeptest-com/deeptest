@@ -26,13 +26,13 @@
             order by "entityId", "code", "action")
 
             UNION
-             SELECT r."orgId" "entityId", 'org_access' "code", 'view' "action"
+             SELECT r."orgId" "entityId", 'belongs_to' "code", 'org' "action"
              from "TstOrgUserRelation" r
              WHERE r."userId" = ${userId}
 
             UNION
 
-             SELECT "entityId", 'project_access' "code", 'view' "action"
+             SELECT "entityId", 'belongs_to' "code", 'project' "action"
              from (
                   select relation."projectId" "entityId"
                   from "TstProjectRoleEntityRelation" relation

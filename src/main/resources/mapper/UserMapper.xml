@@ -193,7 +193,7 @@
         ORDER BY usr.id ASC
     </select>
 
-    <select id="searchPrjUser" resultType="TstUser">
+    <select id="searchProjectUser" resultType="TstUser">
         SELECT * FROM "TstUser" usr
 
         WHERE usr.id = any ( select "userId" from _project_user(#{projectId}) )

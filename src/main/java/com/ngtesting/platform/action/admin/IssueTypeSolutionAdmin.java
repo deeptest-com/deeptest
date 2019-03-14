@@ -32,7 +32,6 @@ public class IssueTypeSolutionAdmin extends BaseAction {
 	IssueTypeService typeService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> list(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -49,7 +48,6 @@ public class IssueTypeSolutionAdmin extends BaseAction {
 
 
 	@RequestMapping(value = "get", method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> get(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -77,7 +75,6 @@ public class IssueTypeSolutionAdmin extends BaseAction {
 	}
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 

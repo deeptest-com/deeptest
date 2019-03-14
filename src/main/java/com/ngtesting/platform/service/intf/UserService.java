@@ -25,7 +25,7 @@ public interface UserService {
 
     List<TstUser> searchOrgUser(Integer orgId, String keywords, List<Integer> exceptIds);
 
-    List<TstUser> searchPrjUser(Integer projectId, String keywords, List<Integer> exceptIds);
+    List<TstUser> searchProjectUser(Integer projectId, String keywords, List<Integer> exceptIds);
 
     TstUser setIssueView(TstUser user, String issueView);
 

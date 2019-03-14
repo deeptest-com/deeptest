@@ -33,8 +33,7 @@ public class OrgAction extends BaseAction {
     ProjectHistoryService historyService;
 
 	@RequestMapping(value = "view", method = RequestMethod.POST)
-	@ResponseBody
-    @PrivOrg(perms = {"org_access:view"})
+	@PrivOrg(perms = {"belongs_to:org"})
 	public Map<String, Object> view(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
@@ -57,8 +56,7 @@ public class OrgAction extends BaseAction {
 
 	// 来源于前端上下文的变化
 	@RequestMapping(value = "changeContext", method = RequestMethod.POST)
-	@ResponseBody
-    @PrivOrg(perms = {"org_access:view"})
+	@PrivOrg(perms = {"belongs_to:org"})
 	public Map<String, Object> changeContext(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 

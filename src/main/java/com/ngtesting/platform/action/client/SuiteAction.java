@@ -30,7 +30,6 @@ public class SuiteAction extends BaseAction {
 	TestSuiteService suiteService;
 
 	@RequestMapping(value = "query", method = RequestMethod.POST)
-	@ResponseBody
 	@PrivPrj(perms = {"test_suite-view"})
 	public Map<String, Object> query(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
@@ -68,7 +67,6 @@ public class SuiteAction extends BaseAction {
     }
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
 	@PrivPrj(perms = {"test_suite-maintain"})
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
@@ -108,7 +106,6 @@ public class SuiteAction extends BaseAction {
     }
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	@ResponseBody
 	@PrivPrj(perms = {"test_suite-delete"})
 	public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();

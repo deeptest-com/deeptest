@@ -10,9 +10,9 @@ public interface UserDao {
                         @Param("keywords") String keywords,
                         @Param("disabled") Boolean disabled);
 
-    List<TstUser> searchPrjUser(@Param("projectId") Integer projectId,
-                         @Param("keywords") String keywords,
-                         @Param("exceptIds")  List<Integer> exceptIds);
+    List<TstUser> searchProjectUser(@Param("projectId") Integer projectId,
+                                    @Param("keywords") String keywords,
+                                    @Param("exceptIds")  List<Integer> exceptIds);
 
     List<TstUser> searchOrgUser(@Param("orgId") Integer orgId,
                                     @Param("keywords") String keywords,

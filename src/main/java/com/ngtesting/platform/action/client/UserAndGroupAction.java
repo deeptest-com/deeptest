@@ -27,10 +27,9 @@ public class UserAndGroupAction extends BaseAction {
 	@Autowired
     OrgGroupService orgGroupService;
 
-	@PostMapping(value = "search")
-	@ResponseBody
-	@PrivOrg(perms = {"org_access:view"}) // 维护用户成员时访问
-	public Map<String, Object> search(HttpServletRequest request, @RequestBody JSONObject json) {
+	@PostMapping(value = "searchInOrg")
+	@PrivOrg(perms = {"belongs_to:org"}) // 维护用户成员时访问
+	public Map<String, Object> searchInOrg(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
 		Integer orgId = user.getDefaultOrgId();

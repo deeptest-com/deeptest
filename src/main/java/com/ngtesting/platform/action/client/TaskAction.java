@@ -44,7 +44,6 @@ public class TaskAction extends BaseAction {
     }
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
-	@ResponseBody
     @PrivPrj(perms = {"test_plan-maintain"})
 	public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();
@@ -66,7 +65,6 @@ public class TaskAction extends BaseAction {
 	}
 
 	@RequestMapping(value = "saveCases", method = RequestMethod.POST)
-	@ResponseBody
     @PrivPrj(perms = {"test_plan-maintain"})
 	public Map<String, Object> saveCases(HttpServletRequest request, @RequestBody JSONObject json) {
 		Map<String, Object> ret = new HashMap<String, Object>();

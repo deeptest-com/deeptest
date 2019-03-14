@@ -88,7 +88,6 @@ public class CustomFieldAdmin extends BaseAction {
     }
 
     @RequestMapping(value = "save", method = RequestMethod.POST)
-    @ResponseBody
     public Map<String, Object> save(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -107,7 +106,6 @@ public class CustomFieldAdmin extends BaseAction {
     }
 
     @RequestMapping(value = "delete", method = RequestMethod.POST)
-    @ResponseBody
     public Map<String, Object> delete(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 
@@ -126,7 +124,6 @@ public class CustomFieldAdmin extends BaseAction {
     }
 
     @RequestMapping(value = "changeOrder", method = RequestMethod.POST)
-    @ResponseBody
     public Map<String, Object> changeOrder(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
 

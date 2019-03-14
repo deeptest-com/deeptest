@@ -31,7 +31,7 @@ public class ReportTestAction extends BaseAction {
     ProjectService projectService;
 
     @PostMapping(value = "orgTest")
-    @PrivOrg(perms = {"org_access:view"})
+    @PrivOrg(perms = {"belongs_to:org"})
     public Map<String, Object> orgTest(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();
@@ -52,7 +52,7 @@ public class ReportTestAction extends BaseAction {
     }
 
     @RequestMapping(value = "projectTest")
-    @PrivPrj(perms = {"project_access:view"})
+    @PrivPrj(perms = {"belongs_to:project"})
     public Map<String, Object> projectTest(HttpServletRequest request, @RequestBody JSONObject json) {
         Map<String, Object> ret = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();

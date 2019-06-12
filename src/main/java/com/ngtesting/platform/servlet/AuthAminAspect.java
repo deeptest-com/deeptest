@@ -5,6 +5,8 @@ import com.ngtesting.platform.dao.AuthDao;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.AuthService;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.Permission;
+import org.apache.shiro.authz.permission.WildcardPermission;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -14,6 +16,8 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Aspect
@@ -36,18 +40,19 @@ public class AuthAminAspect extends AuthAspectBase {
         JSONObject json = (JSONObject) map.get("json");
 
         TstUser user = (TstUser) SecurityUtils.getSubject().getPrincipal();
-
+        List<Permission> ls = new ArrayList<>();
         if (authAnnotation != null && authAnnotation.check() != null
                 && authAnnotation.check().equals("false")) { // 不需要权限
-            log("NONE", signature, user, null, null);
+            log(ls, signature, user, null, null);
             return;
         }
 
         Integer orgId = json.getInteger("orgId") != null? json.getInteger("orgId") : user.getDefaultOrgId();
         String perm = "org_org:*:" + orgId;
+        ls.add(new WildcardPermission(perm));
         String opt = "and";
 
-        checkAndLog(perm, signature, user, orgId, opt);
+        checkAndLog(ls, signature, user, orgId, opt);
     }
 
     @AfterReturning(returning = "ret", pointcut = "authAmin()")

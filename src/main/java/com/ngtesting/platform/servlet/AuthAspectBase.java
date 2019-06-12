@@ -1,7 +1,9 @@
 package com.ngtesting.platform.servlet;
 
 import com.ngtesting.platform.model.TstUser;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.Permission;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
@@ -10,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class AuthAspectBase {
@@ -37,16 +40,16 @@ public abstract class AuthAspectBase {
         return map;
     }
 
-    protected void checkAndLog(String perm, MethodSignature classAndMethod, TstUser user, Integer orgId, String opt){
-        log(perm, classAndMethod, user, orgId, opt);
-        SecurityUtils.getSubject().checkPermission(perm);
+    protected void checkAndLog(List<Permission> perms, MethodSignature classAndMethod, TstUser user, Integer orgId, String opt){
+        log(perms, classAndMethod, user, orgId, opt);
+        SecurityUtils.getSubject().checkPermissions(perms);
     }
 
-    protected void log(String perm, MethodSignature signature, TstUser user, Integer orgId, String opt){
+    protected void log(List<Permission> perms, MethodSignature signature, TstUser user, Integer orgId, String opt){
         String classAndMethod = signature.getMethod().getDeclaringClass().getSimpleName()
                 + "." + signature.getMethod().getName();
 
-        logger.info("AuthAspect Require  = " + perm);
+        logger.info("AuthAspect Require  = " + StringUtils.join(perms, ", "));
 //        logger.info("AuthAspect Result  = " + success);
 
         logger.info("                    - " + classAndMethod);

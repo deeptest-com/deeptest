@@ -3,8 +3,9 @@ package com.ngtesting.platform.servlet;
 import com.alibaba.fastjson.JSONObject;
 import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.PermissionService;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.Permission;
+import org.apache.shiro.authz.permission.WildcardPermission;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -82,14 +83,13 @@ public class AuthClientAspect extends AuthAspectBase {
         }
 
         String perm = "";
-        List<String> ls = new ArrayList<>();
+        List<Permission> ls = new ArrayList<>();
         if (perms.length > 0) {
             for (String p : perms) {
-                ls.add(p + ":" + id);
+                ls.add(new WildcardPermission(p + ":" + id));
             }
-            perm = StringUtils.join(ls, ",");
         }
 
-        checkAndLog(perm, signature, user, id, opt);
+        checkAndLog(ls, signature, user, id, opt);
     }
 }

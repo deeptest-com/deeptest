@@ -7,4 +7,6 @@ public interface AuthService extends BaseService {
     Boolean noProjectAndProjectGroupPrivilege(Integer userId, TstProject project);
 
     Boolean hasOrgAdminPrivilege(Integer userId, Integer orgId);
+
+    void clearAuthenInfo();
 }

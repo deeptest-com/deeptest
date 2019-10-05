@@ -16,7 +16,7 @@ public interface AlertDao {
                               @Param("endTimeOfToday") Date endTimeOfToday);
 
     void create(TstAlert po);
-    void update(TstAlert po);
+//    void update(TstAlert po);
 
     void markAllRead(@Param("ids") String ids,
                      @Param("userId") Integer userId);

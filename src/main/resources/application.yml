@@ -21,8 +21,8 @@ spring:
           driver-class-name: org.postgresql.Driver
           #基本属性
           url: jdbc:postgresql://${config.db.host}:${config.db.port}/ngtesting-web?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&noAccessToProcedureBodies=true
-          username: ngtesting
-          password: P2ssw0rd
+          username: postgres
+          password: postgres
           #配置初始化大小/最小/最大
           initial-size: 1
           min-idle: 1

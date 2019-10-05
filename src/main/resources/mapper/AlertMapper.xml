@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ngtesting.platform.dao.AlertDao">
 
-    <select id="query" resultType="TstAlert">
-        SELECT * FROM "TstAlert" o
+    <select id="query" resultType="com.ngtesting.platform.model.TstAlert">
+        SELECT o.* FROM "TstAlert" o
 
         WHERE o."userId"=#{userId}
         <if test="isRead != null">

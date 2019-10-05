@@ -49,7 +49,7 @@
         SELECT usr.*, s."leftSizeDesign", s."leftSizeExe", s."issueView", s."issueColumns"
 
         FROM "TstUser" usr
-                 JOIN "TstUserSettings" s ON s."userId" = usr.id
+                 LEFT JOIN "TstUserSettings" s ON s."userId" = usr.id
 
         WHERE usr.email = #{email}
           AND NOT usr.disabled

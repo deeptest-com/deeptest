@@ -6,10 +6,13 @@ import com.ngtesting.platform.action.BaseAction;
 import com.ngtesting.platform.config.Constant;
 import com.ngtesting.platform.model.TstOrg;
 import com.ngtesting.platform.model.TstUser;
+import com.ngtesting.platform.service.intf.AuthService;
 import com.ngtesting.platform.service.intf.OrgService;
 import com.ngtesting.platform.service.intf.PushSettingsService;
 import com.ngtesting.platform.servlet.PrivCommon;
+import com.ngtesting.platform.shiro.ShiroRealm;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.mgt.RealmSecurityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +33,8 @@ public class OrgAdmin extends BaseAction {
 
 	@Autowired
 	PushSettingsService pushSettingsService;
+	@Autowired
+	AuthService authService;
 
 	@RequestMapping(value = "list", method = RequestMethod.POST)
 	@PrivCommon(check="false")
@@ -78,6 +83,8 @@ public class OrgAdmin extends BaseAction {
             user.setDefaultOrgName(org.getName());
             pushSettingsService.pushOrgSettings(user);
         }
+
+		authService.clearAuthenInfo();
 
 		ret.put("code", Constant.RespCode.SUCCESS.getCode());
 		return ret;

@@ -4,6 +4,9 @@ import com.ngtesting.platform.dao.AuthDao;
 import com.ngtesting.platform.model.TstProject;
 import com.ngtesting.platform.service.intf.AuthService;
 import com.ngtesting.platform.service.intf.OrgPrivilegeService;
+import com.ngtesting.platform.shiro.ShiroRealm;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.mgt.RealmSecurityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +40,14 @@ public class AuthServiceImpl extends BaseServiceImpl implements AuthService {
         }
 
         return false;
+    }
+
+    @Override
+    public void clearAuthenInfo() {
+        RealmSecurityManager securityManager =
+                (RealmSecurityManager) SecurityUtils.getSecurityManager();
+        ShiroRealm userRealm = (ShiroRealm) securityManager.getRealms().iterator().next();
+        userRealm.clearAuthorInfo(SecurityUtils.getSubject().getPrincipals());
     }
 
 }

@@ -1,4 +1,4 @@
-# Next Generation Testing Tools
+# Next Generation Testing Management Tool
 交流合作请加微信, Wechat: 462826
 
 Client side codes in https://github.com/aaronchen2k/ngtesting-client

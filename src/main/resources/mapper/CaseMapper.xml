@@ -186,12 +186,12 @@
     </update>
 
     <update id="moveUpdate">
-        update "TstCase" c
-        set c."pId"        = #{pId},
-            c.ordr         = #{ordr},
-            c."updateById" = #{updateById},
-            c."updateTime" = NOW()
-        where c.id = #{id}
+        update "TstCase"
+        set "pId"        = #{pId},
+            ordr         = #{ordr},
+            "updateById" = #{updateById},
+            "updateTime" = NOW()
+        where id = #{id}
     </update>
     <insert id="moveCopy" parameterType="TstCase" useGeneratedKeys="true" keyProperty="id">
         insert into "TstCase" (name,
@@ -230,17 +230,17 @@
             )}
         </update>-->
     <update id="addOrderForTargetAndNextCases">
-        update "TstCase" c
-        set c.ordr = c.ordr + 1
-        where c.ordr >= #{targetOrdr}
-          and c."pId" = #{targetPid}
+        update "TstCase"
+        set ordr = ordr + 1
+        where ordr >= #{targetOrdr}
+          and "pId" = #{targetPid}
           and id!=#{srcId}
     </update>
     <update id="addOrderForNextCases">
-        update "TstCase" c
-        set c.ordr = c.ordr + 1
-        where c.ordr > #{targetOrdr}
-          and c."pId" = #{targetPid}
+        update "TstCase"
+        set ordr = ordr + 1
+        where ordr > #{targetOrdr}
+          and "pId" = #{targetPid}
           and id!=#{srcId}
     </update>
 

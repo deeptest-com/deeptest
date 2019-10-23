@@ -67,14 +67,14 @@
     </insert>
 
     <update id="markAllRead">
-        update "TstAlert" alert
-        set alert."isRead" = true
+        update "TstAlert"
+        set "isRead" = true
 
-        where alert.id IN (${ids})
-          AND alert."assigneeId" = #{userId}
-          AND NOT alert."isRead"
-          AND NOT alert.deleted
-          AND NOT alert.disabled
+        where id IN (${ids})
+          AND "assigneeId" = #{userId}
+          AND NOT "isRead"
+          AND NOT deleted
+          AND NOT disabled
     </update>
 
     <delete id="removeOldIfNeeded">

@@ -282,7 +282,6 @@
         </collection>
     </resultMap>
 
-
     <resultMap id="queryCaseWithStepInfoByPrjMap" type="com.ngtesting.platform.model.TstCase">
         <id column="id" property="id" jdbcType="VARCHAR"/>
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="httptest">
+
+    <test name="httptest" preserve-order="true" verbose="3">
+        <packages>
+            <package name="com.ngtesting.platform.test.*" />
+        </packages>
+    </test>
+</suite>

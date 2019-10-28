@@ -375,7 +375,7 @@
 
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <phase>integration-test</phase>
                         <id>build-image</id>
                         <goals>
                             <goal>build</goal>

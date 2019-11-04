@@ -143,6 +143,7 @@ public class ProjectAction extends BaseAction {
     TstProject vo = json.getObject("model", TstProject.class);
 
     TstProject po = projectService.save(vo, orgId, user);
+    authService.clearAuthenInfo();
 
     ret.put("data", po);
     ret.put("code", Constant.RespCode.SUCCESS.getCode());

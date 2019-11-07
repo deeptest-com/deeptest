@@ -314,7 +314,7 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
-                        <configuration>
+                        <configuration>gen-postgres-image
                             <tasks>
                                 <echo message = "1"/>
                                 <exec executable="chmod">

@@ -1,6 +1,6 @@
 mvn clean verify
 
-docker rm -fv `docker ps -a | grep ngtesting-web | awk '{print $1}'`
+docker rm -fv `docker ps -a | grep ngtesting | awk '{print $1}'`
 docker-compose pull;
 docker-compose up -d;
 docker-compose logs -f;

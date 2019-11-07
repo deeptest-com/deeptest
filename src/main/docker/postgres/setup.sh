@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo '1. 检测postgres状态'
-export PGPASSWORD=postgres;
+export PGPASSWORD=P2ssw0rd;
 count=`psql -h ngtesting-postgres -U postgres ngtesting-web  -c "select tablename from pg_tables where schemaname='public'" | grep TstProject`
 echo "count=$count"
 

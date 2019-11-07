@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/")
 public class IndexAction {
-	@RequestMapping("/")
-	public String index()  {
-		return "forward:index.html";
-	}
+//	@RequestMapping("/")
+//	public String index()  {
+//		return "forward:index.html";
+//	}
 }

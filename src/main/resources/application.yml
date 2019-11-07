@@ -22,7 +22,7 @@ spring:
           #基本属性
           url: jdbc:postgresql://${config.db.host}:${config.db.port}/ngtesting-web?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&noAccessToProcedureBodies=true
           username: postgres
-          password: postgres
+          password: ${config.db.password}
           #配置初始化大小/最小/最大
           initial-size: 1
           min-idle: 1
@@ -59,10 +59,7 @@ spring:
         max-request-size: 150MB
 
 server:
- port: 8080
-
-http:
-  port: 8080
+ port: 80
 
 mybatis:
   mapperLocations: classpath:mapper/*.xml
@@ -105,25 +102,13 @@ logging:
 ---
 spring:
   profiles: dev
+server:
+  port: 8080
 config:
   db:
     host: localhost
     port: 5432
-
----
-spring:
-  profiles: docker-domain
-server:
-  port: 443
-  ssl:
-    key-store: classpath:springboot.keystore
-    key-store-password: P2ssw0rd
-    key-store-type: PKCS12
-    key-alias: springboot
-config:
-  db:
-    host: ngtesting-postgres
-    port: 5432
+    password: postgres
 
 ---
 spring:
@@ -132,6 +117,7 @@ config:
   db:
     host: ngtesting-postgres
     port: 5432
+    password: P2ssw0rd
 
 ---
 spring:
@@ -140,3 +126,4 @@ config:
   db:
     host: 47.99.102.138
     port: 5432
+    password: P2ssw0rd

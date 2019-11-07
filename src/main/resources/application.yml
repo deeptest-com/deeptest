@@ -99,6 +99,11 @@ sys:
 logging:
   config: classpath:logback-spring.xml
 
+config:
+  db:
+    password: P2ssw0rd
+    port: 5432
+
 ---
 spring:
   profiles: dev
@@ -107,17 +112,16 @@ server:
 config:
   db:
     host: localhost
-    port: 5432
     password: postgres
 
 ---
 spring:
   profiles: docker-ip
+  redis:
+    host: ngtesting-redis
 config:
   db:
     host: ngtesting-postgres
-    port: 5432
-    password: P2ssw0rd
 
 ---
 spring:
@@ -125,5 +129,3 @@ spring:
 config:
   db:
     host: 47.99.102.138
-    port: 5432
-    password: P2ssw0rd

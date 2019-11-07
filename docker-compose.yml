@@ -1,5 +1,10 @@
 version : '2'
 services:
+  ngtesting-redis:
+    image: registry.cn-shanghai.aliyuncs.com/aaron-share/redis
+    ports:
+    - "56379:6379"
+
   ngtesting-postgres:
     image: registry.cn-shanghai.aliyuncs.com/ngtesting/ngtesting-postgres:2.0.0
     environment:
@@ -13,6 +18,7 @@ services:
     image: registry.cn-shanghai.aliyuncs.com/ngtesting/ngtesting-web:2.0.0
     depends_on:
     - ngtesting-postgres
+    - ngtesting-redis
     ports:
     - "50080:80"
     command: sh /launch.sh

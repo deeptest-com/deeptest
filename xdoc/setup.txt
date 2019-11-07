@@ -1,10 +1,9 @@
 mvn clean verify
 
-docker-compose stop
-docker rm -f `docker ps -a -q`
+docker rm -fv `docker ps -a | grep ngtesting-web | awk '{print $1}'`
 docker-compose pull;
 docker-compose up -d;
-docker-compose logs -f
+docker-compose logs -f;
 
 docker image prune
 docker rmi -f `docker images -q`

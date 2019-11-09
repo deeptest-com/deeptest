@@ -40,4 +40,6 @@ public interface UserService {
     void saveIssueFields(String fieldStr, TstUser user);
 
     void updateUserInfoToPrincipal(TstUser userIn, TstUser principal);
+
+    void updateUserInfo(TstUser user);
 }

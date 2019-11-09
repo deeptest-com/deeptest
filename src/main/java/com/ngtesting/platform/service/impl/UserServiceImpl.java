@@ -8,6 +8,10 @@ import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.*;
 import com.ngtesting.platform.utils.PasswordEncoder;
 import com.ngtesting.platform.utils.StringUtil;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +51,9 @@ public class UserServiceImpl implements UserService {
     OrgGroupUserRelationService orgGroupUserRelationService;
     @Autowired
     OrgPrivilegeService orgPrivilegeService;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public List<TstUser> list(Integer orgId, String keywords, Boolean disabled, int pageNum, int pageSize) {
@@ -264,6 +271,18 @@ public class UserServiceImpl implements UserService {
         principal.setDefaultPrjId(user.getDefaultPrjId());
         principal.setDefaultPrjName(user.getDefaultPrjName());
         principal.setLocked(user.getLocked());
+
+        userService.updateUserInfo(user);
+    }
+
+    @Override
+    public void updateUserInfo(TstUser user) {
+        Subject subject = SecurityUtils.getSubject();
+        PrincipalCollection principalCollection = subject.getPrincipals();
+        String realmName = principalCollection.getRealmNames().iterator().next();
+        PrincipalCollection newPrincipalCollection =
+                new SimplePrincipalCollection(user, realmName);
+        subject.runAs(newPrincipalCollection);
     }
 
 }

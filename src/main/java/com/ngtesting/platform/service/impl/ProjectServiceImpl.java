@@ -230,6 +230,8 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
             user.setDefaultPrjId(null);
             user.setDefaultPrjName(null);
 
+            userService.updateUserInfo(user);
+
             pushSettingsService.pushRecentProjects(user);
             pushSettingsService.pushPrjSettings(user);
 
@@ -245,6 +247,8 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
             user.setDefaultPrjId(projectId);
             user.setDefaultPrjName(po.getName());
+
+            userService.updateUserInfo(user);
 
             if (pushMsg) {
                 pushSettingsService.pushRecentProjects(user);

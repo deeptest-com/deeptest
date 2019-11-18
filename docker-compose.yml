@@ -22,3 +22,4 @@ services:
     ports:
     - "50080:80"
     command: sh /launch.sh
+

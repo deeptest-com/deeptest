@@ -45,7 +45,7 @@ public class TstUser extends BaseModel {
     private Set<String> perms = new HashSet<>();
 
     public String getAuthCacheKey() {
-        return id.toString();
+        return id == null? "": id.toString();
     }
 
     public String getSalt() {

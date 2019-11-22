@@ -10,6 +10,7 @@ import com.ngtesting.platform.model.TstUser;
 import com.ngtesting.platform.service.intf.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -230,7 +231,10 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
             user.setDefaultPrjId(null);
             user.setDefaultPrjName(null);
 
-            userService.updateUserInfo(user);
+            TstUser currUser = (TstUser) SecurityUtils.getSubject().getPrincipal();
+            if (currUser.getId().longValue() == user.getId().longValue()) {
+                userService.updateUserInfo(user);
+            }
 
             pushSettingsService.pushRecentProjects(user);
             pushSettingsService.pushPrjSettings(user);
@@ -248,7 +252,10 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
             user.setDefaultPrjId(projectId);
             user.setDefaultPrjName(po.getName());
 
-            userService.updateUserInfo(user);
+            TstUser currUser = (TstUser) SecurityUtils.getSubject().getPrincipal();
+            if (currUser.getId().longValue() == user.getId().longValue()) {
+                userService.updateUserInfo(user);
+            }
 
             if (pushMsg) {
                 pushSettingsService.pushRecentProjects(user);

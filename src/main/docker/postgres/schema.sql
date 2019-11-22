@@ -6608,7 +6608,8 @@ CREATE TABLE public."TstUser" (
     deleted boolean,
     "createTime" timestamp without time zone,
     "updateTime" timestamp without time zone,
-    locked boolean
+    locked boolean,
+    token character varying(255)
 );
 
 

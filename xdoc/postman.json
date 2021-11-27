@@ -1,0 +1,38 @@
+{
+	"info": {
+		"_postman_id": "9362467d-073d-4be8-ae1d-9858e7ae28e8",
+		"name": "ruhoo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "init",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"clearData\": true,\n    \"sqlType\": \"mysql\",\n    \"cacheType\": \"redis\",\n    \"level\": \"debug\",\n    \"addr\": \"127.0.0.1:8085\",\n    \"sys\": {\n        \"adminPassword\": \"password\"\n    },\n    \"db\": {\n        \"host\": \"127.0.0.1\",\n        \"port\": \"3306\",\n        \"dbName\": \"ruhoo\",\n        \"userName\": \"root\",\n        \"password\": \"P2ssw0rd\",\n        \"logMode\": true\n    },\n    \"cache\": {\n        \"host\": \"127.0.0.1\",\n        \"port\": \"6379\",\n        \"password\": \"P2ssw0rd\",\n    }\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8085/api/v1/init/initdb",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8085",
+					"path": [
+						"api",
+						"v1",
+						"init",
+						"initdb"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

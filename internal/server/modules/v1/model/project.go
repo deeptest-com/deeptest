@@ -1,7 +1,5 @@
 package model
 
-import ()
-
 type Project struct {
 	BaseModel
 
@@ -11,7 +9,7 @@ type Project struct {
 	SchemaId uint `json:"schemaId"`
 	OrgId    uint `json:"orgId"`
 
-	Products []*Product `json:"products" gorm:"many2many:r_project_product;"`
+	//Products []*Product `json:"products" gorm:"many2many:biz_project_product_r;"`
 }
 
 func (Project) TableName() string {

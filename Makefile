@@ -1,7 +1,7 @@
 VERSION=1.0.0
-PROJECT=ruhoo.info
+PROJECT=deeptest
 PACKAGE=${PROJECT}-${VERSION}
-BINARY=ruhoo.info-server
+BINARY=deeptest
 BIN_DIR=bin
 BIN_ZIP_DIR=${BIN_DIR}/zip/${PROJECT}/${VERSION}/
 BIN_ZIP_RELAT=../../../zip/${PROJECT}/${VERSION}/

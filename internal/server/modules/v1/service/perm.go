@@ -35,7 +35,7 @@ func (s *PermService) Create(req serverDomain.PermRequest) (uint, error) {
 }
 
 // CreatenInBatches
-func (s *PermService) CreatenInBatches(perms []model.Permission) error {
+func (s *PermService) CreatenInBatches(perms []model.SysPerm) error {
 	return s.PermRepo.CreateInBatches(perms)
 }
 

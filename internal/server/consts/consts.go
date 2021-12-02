@@ -1,8 +1,6 @@
 package serverConsts
 
 const (
-	AppName = "ruhoo.info"
-
 	CasbinFileName = "rbac_model.conf" // casbin 规则文件名称
 
 	WebCheckInterval = 60 * 60

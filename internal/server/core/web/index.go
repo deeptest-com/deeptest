@@ -70,13 +70,13 @@ func Init() *WebServer {
 	app := iris.New()
 	app.Validator = validator.New() //参数验证
 	app.Logger().SetLevel(serverConsts.CONFIG.System.Level)
-	idleConnsClosed := make(chan struct{})
+	idleConnClosed := make(chan struct{})
 	iris.RegisterOnInterrupt(func() { //优雅退出
 		timeout := 10 * time.Second
 		ctx, cancel := stdContext.WithTimeout(stdContext.Background(), timeout)
 		defer cancel()
 		app.Shutdown(ctx) // close all hosts
-		close(idleConnsClosed)
+		close(idleConnClosed)
 	})
 
 	if serverConsts.CONFIG.System.Addr == "" { // 默认 8085
@@ -120,7 +120,7 @@ func Init() *WebServer {
 		staticPrefix:      serverConsts.CONFIG.System.StaticPrefix,
 		staticPath:        serverConsts.CONFIG.System.StaticPath,
 		webPath:           serverConsts.CONFIG.System.WebPath,
-		idleConnsClosed:   idleConnsClosed,
+		idleConnsClosed:   idleConnClosed,
 		globalMiddlewares: []context.Handler{},
 	}
 }

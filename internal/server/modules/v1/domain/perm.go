@@ -6,7 +6,7 @@ import (
 )
 
 type PermRequest struct {
-	model.BasePermission
+	model.BasePerm
 }
 
 type PermReqPaginate struct {
@@ -16,5 +16,5 @@ type PermReqPaginate struct {
 
 type PermResponse struct {
 	domain.Model
-	model.BasePermission
+	model.BasePerm
 }

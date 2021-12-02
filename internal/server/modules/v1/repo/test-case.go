@@ -12,19 +12,19 @@ import (
 	"gorm.io/gorm"
 )
 
-type ProductRepo struct {
+type TestCaseRepo struct {
 	DB       *gorm.DB  `inject:""`
 	RoleRepo *RoleRepo `inject:""`
 }
 
-func NewProductRepo() *ProductRepo {
-	return &ProductRepo{}
+func NewTestCaseRepo() *TestCaseRepo {
+	return &TestCaseRepo{}
 }
 
-func (r *ProductRepo) Paginate(req serverDomain.ProductReqPaginate) (products []*model.Product, data domain.PageData, err error) {
+func (r *TestCaseRepo) Paginate(req serverDomain.TestCaseReqPaginate) (data domain.PageData, err error) {
 	var count int64
 
-	db := r.DB.Model(&model.Product{}).
+	db := r.DB.Model(&model.TestCase{}).
 		Where("NOT deleted")
 	if req.Name != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%s%%", req.Name))
@@ -42,22 +42,24 @@ func (r *ProductRepo) Paginate(req serverDomain.ProductReqPaginate) (products []
 		return
 	}
 
+	testCases := make([]*model.TestCase, 0)
+
 	err = db.
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
-		Find(&products).Error
+		Find(&testCases).Error
 	if err != nil {
 		logUtils.Errorf("query product error", zap.String("error:", err.Error()))
 		return
 	}
 
-	data.Populate(products, count, req.Page, req.PageSize)
+	data.Populate(testCases, count, req.Page, req.PageSize)
 
 	return
 }
 
-func (r *ProductRepo) FindById(id uint) (serverDomain.ProductResponse, error) {
-	product := serverDomain.ProductResponse{}
-	err := r.DB.Model(&model.Product{}).Where("id = ?", id).First(&product).Error
+func (r *TestCaseRepo) FindById(id uint) (serverDomain.TestCaseResponse, error) {
+	product := serverDomain.TestCaseResponse{}
+	err := r.DB.Model(&model.TestCase{}).Where("id = ?", id).First(&product).Error
 	if err != nil {
 		logUtils.Errorf("find product by id error", zap.String("error:", err.Error()))
 		return product, err
@@ -66,9 +68,9 @@ func (r *ProductRepo) FindById(id uint) (serverDomain.ProductResponse, error) {
 	return product, nil
 }
 
-func (r *ProductRepo) FindByName(productname string, ids ...uint) (serverDomain.ProductResponse, error) {
-	product := serverDomain.ProductResponse{}
-	db := r.DB.Model(&model.Product{}).Where("name = ?", productname)
+func (r *TestCaseRepo) FindByName(productname string, ids ...uint) (serverDomain.TestCaseResponse, error) {
+	product := serverDomain.TestCaseResponse{}
+	db := r.DB.Model(&model.TestCase{}).Where("name = ?", productname)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
 	}
@@ -81,13 +83,13 @@ func (r *ProductRepo) FindByName(productname string, ids ...uint) (serverDomain.
 	return product, nil
 }
 
-func (r *ProductRepo) Create(req serverDomain.ProductRequest) (uint, error) {
+func (r *TestCaseRepo) Create(req serverDomain.TestCaseRequest) (uint, error) {
 	if _, err := r.FindByName(req.Name); !errors.Is(err, gorm.ErrRecordNotFound) {
 		return 0, fmt.Errorf("%d", domain.BizErrNameExist.Code)
 	}
-	product := req.Product
+	product := req.TestCase
 
-	err := r.DB.Model(&model.Product{}).Create(&product).Error
+	err := r.DB.Model(&model.TestCase{}).Create(&product).Error
 	if err != nil {
 		logUtils.Errorf("add product error", zap.String("error:", err.Error()))
 		return 0, err
@@ -96,9 +98,9 @@ func (r *ProductRepo) Create(req serverDomain.ProductRequest) (uint, error) {
 	return product.ID, nil
 }
 
-func (r *ProductRepo) Update(id uint, req serverDomain.ProductRequest) error {
-	product := req.Product
-	err := r.DB.Model(&model.Product{}).Where("id = ?", id).Updates(&product).Error
+func (r *TestCaseRepo) Update(id uint, req serverDomain.TestCaseRequest) error {
+	product := req.TestCase
+	err := r.DB.Model(&model.TestCase{}).Where("id = ?", id).Updates(&product).Error
 	if err != nil {
 		logUtils.Errorf("update product error", zap.String("error:", err.Error()))
 		return err
@@ -107,7 +109,7 @@ func (r *ProductRepo) Update(id uint, req serverDomain.ProductRequest) error {
 	return nil
 }
 
-func (r *ProductRepo) BatchDelete(id uint) (err error) {
+func (r *TestCaseRepo) BatchDelete(id uint) (err error) {
 	ids, err := r.GetChildrenIds(id)
 	if err != nil {
 		return err
@@ -130,8 +132,8 @@ func (r *ProductRepo) BatchDelete(id uint) (err error) {
 	return
 }
 
-func (r *ProductRepo) DeleteById(id uint, tx *gorm.DB) (err error) {
-	err = tx.Model(&model.Product{}).Where("id = ?", id).
+func (r *TestCaseRepo) DeleteById(id uint, tx *gorm.DB) (err error) {
+	err = tx.Model(&model.TestCase{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete product by id error", zap.String("error:", err.Error()))
@@ -141,8 +143,8 @@ func (r *ProductRepo) DeleteById(id uint, tx *gorm.DB) (err error) {
 	return
 }
 
-func (r *ProductRepo) DeleteChildren(ids []int, tx *gorm.DB) (err error) {
-	err = tx.Model(&model.Product{}).Where("id IN (?)", ids).
+func (r *TestCaseRepo) DeleteChildren(ids []int, tx *gorm.DB) (err error) {
+	err = tx.Model(&model.TestCase{}).Where("id IN (?)", ids).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("batch delete product error", zap.String("error:", err.Error()))
@@ -152,7 +154,7 @@ func (r *ProductRepo) DeleteChildren(ids []int, tx *gorm.DB) (err error) {
 	return nil
 }
 
-func (r *ProductRepo) GetChildrenIds(id uint) (ids []int, err error) {
+func (r *TestCaseRepo) GetChildrenIds(id uint) (ids []int, err error) {
 	tmpl := `
 		WITH RECURSIVE product AS (
 			SELECT * FROM biz_product WHERE id = %d

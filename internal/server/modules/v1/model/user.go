@@ -1,8 +1,6 @@
 package model
 
-import ()
-
-type User struct {
+type SysUser struct {
 	BaseModel
 
 	BaseUser
@@ -21,6 +19,6 @@ type Avatar struct {
 	Avatar string `json:"avatar"`
 }
 
-func (User) TableName() string {
+func (SysUser) TableName() string {
 	return "sys_user"
 }

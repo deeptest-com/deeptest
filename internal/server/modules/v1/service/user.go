@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
@@ -14,7 +15,7 @@ func NewUserService() *UserService {
 	return &UserService{}
 }
 
-func (s *UserService) Paginate(req serverDomain.UserReqPaginate) (map[string]interface{}, error) {
+func (s *UserService) Paginate(req serverDomain.UserReqPaginate) (domain.PageData, error) {
 	return s.UserRepo.Paginate(req)
 }
 
@@ -52,7 +53,7 @@ func (s *UserService) DeleteById(id uint) error {
 }
 
 // AddRoleForUser add roles for user
-func (s *UserService) AddRoleForUser(user *model.User) error {
+func (s *UserService) AddRoleForUser(user *model.SysUser) error {
 	return s.UserRepo.AddRoleForUser(user)
 }
 

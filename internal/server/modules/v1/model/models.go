@@ -7,37 +7,14 @@ import (
 var (
 	Models = []interface{}{
 		&middleware.Oplog{},
-		&Permission{},
+
+		&SysPerm{},
 		&SysRole{},
-		&User{},
+		&SysUser{},
 
-		&ProjectPermission{},
 		&Org{},
-		&Product{},
 		&Project{},
-		&ProjectRole{},
-		&ProjectUserRole{},
-		&Iteration{},
-
-		&Feature{},
-		&Issue{},
-		&Label{},
-		&ItemLink{},
-		&ItemLinkType{},
-		&Story{},
-		&Task{},
-
-		&CustomWorkitem{},
-		&CustomField{},
-		&CustomWorkitemField{},
-
-		&CustomSchema{},
-		&CustomSchemaItem{},
-		&CustomStatus{},
-		&CustomAction{},
-		&CustomTransaction{},
-		&CustomTransactionItem{},
-		&CustomPage{},
-		&CustomPageField{},
+		&TestCase{},
+		&TestScript{},
 	}
 )

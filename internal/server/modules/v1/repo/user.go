@@ -31,7 +31,7 @@ func NewUserRepo() *UserRepo {
 func (r *UserRepo) Paginate(req serverDomain.UserReqPaginate) (data domain.PageData, err error) {
 	var count int64
 
-	db := r.DB.Model(&model.User{})
+	db := r.DB.Model(&model.SysUser{})
 	if len(req.Name) > 0 {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%s%%", req.Name))
 	}
@@ -90,7 +90,7 @@ func (r *UserRepo) GetRoles(users ...*serverDomain.UserResponse) {
 
 func (r *UserRepo) FindByUserName(username string, ids ...uint) (serverDomain.UserResponse, error) {
 	user := serverDomain.UserResponse{}
-	db := r.DB.Model(&model.User{}).Where("username = ?", username)
+	db := r.DB.Model(&model.SysUser{}).Where("username = ?", username)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
 	}
@@ -105,7 +105,7 @@ func (r *UserRepo) FindByUserName(username string, ids ...uint) (serverDomain.Us
 
 func (r *UserRepo) FindPasswordByUserName(username string, ids ...uint) (serverDomain.LoginResponse, error) {
 	user := serverDomain.LoginResponse{}
-	db := r.DB.Model(&model.User{}).Select("id,password").Where("username = ?", username)
+	db := r.DB.Model(&model.SysUser{}).Select("id,password").Where("username = ?", username)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
 	}
@@ -121,7 +121,7 @@ func (r *UserRepo) Create(req serverDomain.UserRequest) (uint, error) {
 	if _, err := r.FindByUserName(req.Username); !errors.Is(err, gorm.ErrRecordNotFound) {
 		return 0, fmt.Errorf("用户名 %s 已经被使用", req.Username)
 	}
-	user := model.User{BaseUser: req.BaseUser, RoleIds: req.RoleIds}
+	user := model.SysUser{BaseUser: req.BaseUser, RoleIds: req.RoleIds}
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		logUtils.Errorf("密码加密错误", zap.String("错误:", err.Error()))
@@ -131,7 +131,7 @@ func (r *UserRepo) Create(req serverDomain.UserRequest) (uint, error) {
 	logUtils.Infof("添加用户", zap.String("hash:", req.Password), zap.ByteString("hash:", hash))
 
 	user.Password = string(hash)
-	err = r.DB.Model(&model.User{}).Create(&user).Error
+	err = r.DB.Model(&model.SysUser{}).Create(&user).Error
 	if err != nil {
 		logUtils.Errorf("添加用户错误", zap.String("错误:", err.Error()))
 		return 0, err
@@ -155,8 +155,8 @@ func (r *UserRepo) Update(id uint, req serverDomain.UserRequest) error {
 		return err
 	}
 
-	user := model.User{BaseUser: req.BaseUser}
-	err := r.DB.Model(&model.User{}).Where("id = ?", id).Updates(&user).Error
+	user := model.SysUser{BaseUser: req.BaseUser}
+	err := r.DB.Model(&model.SysUser{}).Where("id = ?", id).Updates(&user).Error
 	if err != nil {
 		logUtils.Errorf("更新用户错误", zap.String("错误:", err.Error()))
 		return err
@@ -180,7 +180,7 @@ func (r *UserRepo) IsAdminUser(id uint) (bool, error) {
 
 func (r *UserRepo) FindById(id uint) (serverDomain.UserResponse, error) {
 	user := serverDomain.UserResponse{}
-	err := r.DB.Model(&model.User{}).Where("id = ?", id).First(&user).Error
+	err := r.DB.Model(&model.SysUser{}).Where("id = ?", id).First(&user).Error
 	if err != nil {
 		logUtils.Errorf("find user err ", zap.String("错误:", err.Error()))
 		return user, err
@@ -192,7 +192,7 @@ func (r *UserRepo) FindById(id uint) (serverDomain.UserResponse, error) {
 }
 
 func (r *UserRepo) DeleteById(id uint) error {
-	err := r.DB.Unscoped().Delete(&model.User{}, id).Error
+	err := r.DB.Unscoped().Delete(&model.SysUser{}, id).Error
 	if err != nil {
 		logUtils.Errorf("delete user by id get  err ", zap.String("错误:", err.Error()))
 		return err
@@ -201,7 +201,7 @@ func (r *UserRepo) DeleteById(id uint) error {
 }
 
 // AddRoleForUser add roles for user
-func (r *UserRepo) AddRoleForUser(user *model.User) error {
+func (r *UserRepo) AddRoleForUser(user *model.SysUser) error {
 	userId := strconv.FormatUint(uint64(user.ID), 10)
 	oldRoleIds, err := casbin.Instance().GetRolesForUser(userId)
 	if err != nil {
@@ -253,7 +253,7 @@ func (r *UserRepo) CleanToken(authorityType int, userId string) error {
 }
 
 func (r *UserRepo) UpdatePasswordByName(name string, password string) (err error) {
-	err = r.DB.Model(&model.User{}).Where("username = ?", name).
+	err = r.DB.Model(&model.SysUser{}).Where("username = ?", name).
 		Updates(map[string]interface{}{"password": password}).Error
 	if err != nil {
 		logUtils.Errorf("更新用户错误", zap.String("错误:", err.Error()))

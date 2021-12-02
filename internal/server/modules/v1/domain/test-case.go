@@ -5,17 +5,17 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 )
 
-type ProductRequest struct {
-	model.Product
+type TestCaseRequest struct {
+	model.TestCase
 }
 
-type ProductReqPaginate struct {
+type TestCaseReqPaginate struct {
 	domain.PaginateReq
 	Name     string `json:"name"`
 	Category string `json:"name"`
 	Status   string `json:"status"`
 }
 
-type ProductResponse struct {
-	model.Product
+type TestCaseResponse struct {
+	model.TestCase
 }

@@ -40,8 +40,8 @@ func (s *UserSource) GetSources() ([]serverDomain.UserRequest, error) {
 
 func (s *UserSource) Init() error {
 	return s.UserRepo.DB.Transaction(func(tx *gorm.DB) error {
-		if tx.Model(&model.User{}).Where("id IN ?", []int{1}).Find(&[]model.User{}).RowsAffected == 1 {
-			color.Danger.Printf("\n[Mysql] --> %s 表的初始数据已存在!", model.User{}.TableName())
+		if tx.Model(&model.SysUser{}).Where("id IN ?", []int{1}).Find(&[]model.SysUser{}).RowsAffected == 1 {
+			color.Danger.Printf("\n[Mysql] --> %s 表的初始数据已存在!", model.SysUser{}.TableName())
 			return nil
 		}
 		sources, err := s.GetSources()
@@ -53,7 +53,7 @@ func (s *UserSource) Init() error {
 				return err
 			}
 		}
-		color.Info.Printf("\n[Mysql] --> %s 表初始数据成功!", model.User{}.TableName())
+		color.Info.Printf("\n[Mysql] --> %s 表初始数据成功!", model.SysUser{}.TableName())
 		return nil
 	})
 }

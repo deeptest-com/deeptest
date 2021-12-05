@@ -11,9 +11,8 @@ type ProjectRequest struct {
 
 type ProjectReqPaginate struct {
 	domain.PaginateReq
-	Name     string `json:"name"`
-	Category string `json:"name"`
-	Status   string `json:"status"`
+	Keywords string `json:"keywords"`
+	Enabled  string `json:"enabled"`
 }
 
 type ProjectResponse struct {

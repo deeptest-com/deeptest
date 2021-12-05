@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	commonUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/common"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
@@ -24,16 +25,13 @@ func NewProjectRepo() *ProjectRepo {
 func (r *ProjectRepo) Paginate(req serverDomain.ProjectReqPaginate) (data domain.PageData, err error) {
 	var count int64
 
-	db := r.DB.Model(&model.Project{}).
-		Where("NOT deleted")
-	if req.Name != "" {
-		db = db.Where("name LIKE ?", fmt.Sprintf("%s%%", req.Name))
+	db := r.DB.Model(&model.Project{}).Where("NOT deleted")
+
+	if req.Keywords != "" {
+		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
 	}
-	if req.Category != "" {
-		db = db.Where("category = ?", req.Category)
-	}
-	if req.Status != "" {
-		db = db.Where("status = ?", req.Status)
+	if req.Enabled != "" {
+		db = db.Where("disabled = ?", commonUtils.IsDisable(req.Enabled))
 	}
 
 	err = db.Count(&count).Error

@@ -107,3 +107,11 @@ func IsPortInUse(port int) bool {
 	}
 	return false
 }
+
+func IsDisable(enable string) bool {
+	if enable == "1" {
+		return false
+	} else {
+		return true
+	}
+}

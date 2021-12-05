@@ -5,6 +5,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
 	"strings"
 
@@ -14,6 +15,7 @@ import (
 
 type AccountCtrl struct {
 	AuthService *service.AccountService `inject:""`
+	UserRepo    *repo.UserRepo          `inject:""`
 }
 
 func NewAccountCtrl() *AccountCtrl {

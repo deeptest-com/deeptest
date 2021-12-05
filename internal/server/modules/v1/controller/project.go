@@ -22,7 +22,7 @@ func NewProjectCtrl() *ProjectCtrl {
 }
 
 // Query 分页列表
-func (c *ProjectCtrl) Query(ctx iris.Context) {
+func (c *ProjectCtrl) List(ctx iris.Context) {
 	var req serverDomain.ProjectReqPaginate
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)

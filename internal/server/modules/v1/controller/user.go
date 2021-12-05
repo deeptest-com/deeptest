@@ -72,6 +72,11 @@ func (c *UserCtrl) Profile(ctx iris.Context) {
 	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: user, Msg: domain.NoErr.Msg})
 }
 
+// Message 消息
+func (c *UserCtrl) Message(ctx iris.Context) {
+	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: nil, Msg: domain.NoErr.Msg})
+}
+
 // CreateUser 添加
 func (c *UserCtrl) CreateUser(ctx iris.Context) {
 	req := serverDomain.UserRequest{}

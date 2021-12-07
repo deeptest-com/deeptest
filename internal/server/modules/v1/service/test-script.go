@@ -38,5 +38,5 @@ func (s *TestScriptService) Update(id uint, req serverDomain.TestScriptRequest) 
 }
 
 func (s *TestScriptService) DeleteById(id uint) error {
-	return s.TestScriptRepo.BatchDelete(id)
+	return s.TestScriptRepo.DeleteById(id)
 }

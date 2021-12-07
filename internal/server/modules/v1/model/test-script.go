@@ -3,11 +3,12 @@ package model
 type TestScript struct {
 	BaseModel
 
-	Version int `json:"version"`
-	Name    string  `json:"name"`
-	Desc    string  `json:"desc"`
+	Version int    `json:"version"`
+	Name    string `json:"name"`
+	Code    string `json:"code"`
+	Desc    string `json:"desc"`
 
-	ProjectId    uint `json:"projectId"`
+	ProjectId uint `json:"projectId"`
 }
 
 func (TestScript) TableName() string {

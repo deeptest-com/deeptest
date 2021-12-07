@@ -1,10 +1,10 @@
 package index
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/aaronchen2k/deeptest/internal/server/core/module"
 	"github.com/aaronchen2k/deeptest/internal/server/middleware"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/controller"
+	"github.com/kataras/iris/v12"
 )
 
 type TestScriptModule struct {
@@ -15,15 +15,16 @@ func NewTestScriptModule() *TestScriptModule {
 	return &TestScriptModule{}
 }
 
-// Party 项目
+// Party 脚本
 func (m *TestScriptModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
-		index.Get("/", m.TestScriptCtrl.Query).Name = "项目查询"
-		index.Get("/{id:uint}", m.TestScriptCtrl.Get).Name = "项目详情"
-		index.Post("/", m.TestScriptCtrl.Create).Name = "创建项目"
-		index.Post("/{id:uint}", m.TestScriptCtrl.Update).Name = "编辑项目"
-		index.Delete("/{id:uint}", m.TestScriptCtrl.Delete).Name = "删除项目"
+
+		index.Get("/", m.TestScriptCtrl.List).Name = "脚本列表"
+		index.Get("/{id:uint}", m.TestScriptCtrl.Get).Name = "脚本详情"
+		index.Post("/", m.TestScriptCtrl.Create).Name = "创建脚本"
+		index.Put("/{id:uint}", m.TestScriptCtrl.Update).Name = "更新脚本"
+		index.Delete("/{id:uint}", m.TestScriptCtrl.Delete).Name = "删除脚本"
 	}
-	return module.NewModule("/TestScripts", handler)
+	return module.NewModule("/scripts", handler)
 }

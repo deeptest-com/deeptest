@@ -22,7 +22,7 @@ func NewTestScriptCtrl() *TestScriptCtrl {
 }
 
 // Query 分页列表
-func (c *TestScriptCtrl) Query(ctx iris.Context) {
+func (c *TestScriptCtrl) List(ctx iris.Context) {
 	var req serverDomain.TestScriptReqPaginate
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)
@@ -45,18 +45,19 @@ func (c *TestScriptCtrl) Query(ctx iris.Context) {
 
 // Get 详情
 func (c *TestScriptCtrl) Get(ctx iris.Context) {
-	var req domain.ReqId
-	if err := ctx.ReadParams(&req); err != nil {
+	var reqId domain.ReqId
+	if err := ctx.ReadParams(&reqId); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
 		ctx.JSON(domain.Response{Code: domain.ParamErr.Code, Data: nil, Msg: domain.ParamErr.Msg})
 		return
 	}
-	testScript, err := c.TestScriptService.FindById(req.Id)
+
+	script, err := c.TestScriptService.FindById(reqId.Id)
 	if err != nil {
 		ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: domain.SystemErr.Msg})
 		return
 	}
-	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: testScript, Msg: domain.NoErr.Msg})
+	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: script, Msg: domain.NoErr.Msg})
 }
 
 // Create 添加

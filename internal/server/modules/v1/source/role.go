@@ -1,10 +1,10 @@
 package source
 
 import (
-	"github.com/gookit/color"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
+	"github.com/gookit/color"
 	"gorm.io/gorm"
 )
 
@@ -25,7 +25,7 @@ func (s *RoleSource) GetSources() ([]serverDomain.RoleRequest, error) {
 	sources := []serverDomain.RoleRequest{
 		{
 			BaseRole: model.BaseRole{
-				Name:        "SuperAdmin",
+				Name:        "admin",
 				DisplayName: "超级管理员",
 				Description: "超级管理员",
 			},

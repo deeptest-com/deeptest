@@ -1,7 +1,7 @@
 # [DeepTest.com](http://deeptest.com)
 
-## DeepTest Software Testing Platform
-Golang, Iris, Gorm, Vue3, TypeScript, Protobuf, WebSocket, MySQL
+## DeepTest Software Testing Platform - Backend
+Golang, Iris, Gorm, Protobuf, WebSocket, MySQL
 
 ### Quick start
 TODO

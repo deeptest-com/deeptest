@@ -30,6 +30,7 @@ func (c *AccountCtrl) Login(ctx iris.Context) {
 	var req serverDomain.LoginRequest
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
+
 		if len(errs) > 0 {
 			logUtils.Errorf("参数验证失败", zap.String("ValidRequest()", strings.Join(errs, ";")))
 			ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})

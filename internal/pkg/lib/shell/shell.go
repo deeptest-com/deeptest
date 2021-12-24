@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/lib/i118"
 	"github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/pkg/lib/string"
+	"github.com/kataras/iris/v12/websocket"
 	"io"
 	"os"
 	"os/exec"
@@ -122,6 +123,55 @@ func ExeShellWithEnvVarsAndOutputInDir(cmdStr, dir string, envVars []string) ([]
 	cmd.Wait()
 
 	return output, nil
+}
+
+func ExeShellCallback(ch chan int, cmdStr, dir string, fun func(s string, msg websocket.Message), msg websocket.Message) (err error) {
+	var cmd *exec.Cmd
+	if commonUtils.IsWin() {
+		cmd = exec.Command("cmd", "/C", cmdStr)
+	} else {
+		cmd = exec.Command("/bin/bash", "-c", cmdStr)
+	}
+
+	if dir != "" {
+		cmd.Dir = dir
+	}
+
+	stdout, err := cmd.StdoutPipe()
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	cmd.Start()
+
+	if err != nil {
+		return
+	}
+
+	reader := bufio.NewReader(stdout)
+	for {
+		line, err2 := reader.ReadString('\n')
+		if err2 != nil || io.EOF == err2 {
+			break
+		}
+
+		line = strings.Trim(line, "\n")
+		fun(line, msg)
+
+		select {
+		case <-ch:
+			fmt.Println("exiting...")
+			ch <- 1
+			return
+		default:
+			fmt.Println("continue...")
+		}
+	}
+
+	cmd.Wait()
+	return
 }
 
 func GetProcess(app string) (string, error) {

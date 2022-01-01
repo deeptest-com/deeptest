@@ -57,8 +57,8 @@ func (r *TestCaseRepo) Paginate(req serverDomain.TestCaseReqPaginate) (data doma
 	return
 }
 
-func (r *TestCaseRepo) FindById(id uint) (serverDomain.TestCaseResponse, error) {
-	product := serverDomain.TestCaseResponse{}
+func (r *TestCaseRepo) FindById(id uint) (serverDomain.TestCaseResp, error) {
+	product := serverDomain.TestCaseResp{}
 	err := r.DB.Model(&model.TestCase{}).Where("id = ?", id).First(&product).Error
 	if err != nil {
 		logUtils.Errorf("find product by id error", zap.String("error:", err.Error()))
@@ -68,8 +68,8 @@ func (r *TestCaseRepo) FindById(id uint) (serverDomain.TestCaseResponse, error) 
 	return product, nil
 }
 
-func (r *TestCaseRepo) FindByName(productname string, ids ...uint) (serverDomain.TestCaseResponse, error) {
-	product := serverDomain.TestCaseResponse{}
+func (r *TestCaseRepo) FindByName(productname string, ids ...uint) (serverDomain.TestCaseResp, error) {
+	product := serverDomain.TestCaseResp{}
 	db := r.DB.Model(&model.TestCase{}).Where("name = ?", productname)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
@@ -83,7 +83,7 @@ func (r *TestCaseRepo) FindByName(productname string, ids ...uint) (serverDomain
 	return product, nil
 }
 
-func (r *TestCaseRepo) Create(req serverDomain.TestCaseRequest) (uint, error) {
+func (r *TestCaseRepo) Create(req serverDomain.TestCaseReq) (uint, error) {
 	if _, err := r.FindByName(req.Name); !errors.Is(err, gorm.ErrRecordNotFound) {
 		return 0, fmt.Errorf("%d", domain.BizErrNameExist.Code)
 	}
@@ -98,7 +98,7 @@ func (r *TestCaseRepo) Create(req serverDomain.TestCaseRequest) (uint, error) {
 	return product.ID, nil
 }
 
-func (r *TestCaseRepo) Update(id uint, req serverDomain.TestCaseRequest) error {
+func (r *TestCaseRepo) Update(id uint, req serverDomain.TestCaseReq) error {
 	product := req.TestCase
 	err := r.DB.Model(&model.TestCase{}).Where("id = ?", id).Updates(&product).Error
 	if err != nil {

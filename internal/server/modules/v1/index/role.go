@@ -21,7 +21,7 @@ func (m *RoleModule) Party() module.WebModule {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 		index.Get("/", m.RoleCtrl.GetAllRoles).Name = "角色列表"
 		index.Get("/{id:uint}", m.RoleCtrl.GetRole).Name = "角色详情"
-		index.Post("/", m.RoleCtrl.CreateRole).Name = "创建角色"
+		index.Post("/", m.RoleCtrl.CreateRole).Name = "新建角色"
 		index.Post("/{id:uint}", m.RoleCtrl.UpdateRole).Name = "编辑角色"
 		index.Delete("/{id:uint}", m.RoleCtrl.DeleteRole).Name = "删除角色"
 	}

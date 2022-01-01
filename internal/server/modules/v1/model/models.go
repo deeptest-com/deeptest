@@ -16,5 +16,6 @@ var (
 		&Project{},
 		&TestCase{},
 		&TestScript{},
+		&TestStep{},
 	}
 )

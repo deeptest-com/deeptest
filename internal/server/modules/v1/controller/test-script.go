@@ -52,7 +52,7 @@ func (c *TestScriptCtrl) Get(ctx iris.Context) {
 		return
 	}
 
-	script, err := c.TestScriptService.FindById(reqId.Id)
+	script, err := c.TestScriptService.GetDetail(reqId.Id)
 	if err != nil {
 		ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: domain.SystemErr.Msg})
 		return
@@ -62,7 +62,7 @@ func (c *TestScriptCtrl) Get(ctx iris.Context) {
 
 // Create 添加
 func (c *TestScriptCtrl) Create(ctx iris.Context) {
-	req := serverDomain.TestScriptRequest{}
+	req := serverDomain.TestScriptReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -92,7 +92,7 @@ func (c *TestScriptCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	var req serverDomain.TestScriptRequest
+	var req serverDomain.TestScriptReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {

@@ -55,7 +55,7 @@ func (s *DataService) refreshConfig(viper *viper.Viper, conf serverConfig.Config
 }
 
 // InitDB 创建数据库并初始化
-func (s *DataService) InitDB(req serverDomain.DataRequest) error {
+func (s *DataService) InitDB(req serverDomain.DataReq) error {
 	defaultConfig := serverConsts.CONFIG
 	if serverConsts.VIPER == nil {
 		logUtils.Errorf("初始化错误", zap.String("InitDB", ErrViperEmpty.Error()))

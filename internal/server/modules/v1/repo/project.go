@@ -55,8 +55,8 @@ func (r *ProjectRepo) Paginate(req serverDomain.ProjectReqPaginate) (data domain
 	return
 }
 
-func (r *ProjectRepo) FindById(id uint) (serverDomain.ProjectResponse, error) {
-	product := serverDomain.ProjectResponse{}
+func (r *ProjectRepo) FindById(id uint) (serverDomain.ProjectResp, error) {
+	product := serverDomain.ProjectResp{}
 	err := r.DB.Model(&model.Project{}).Where("id = ?", id).First(&product).Error
 	if err != nil {
 		logUtils.Errorf("find product by id error", zap.String("error:", err.Error()))
@@ -66,8 +66,8 @@ func (r *ProjectRepo) FindById(id uint) (serverDomain.ProjectResponse, error) {
 	return product, nil
 }
 
-func (r *ProjectRepo) FindByName(productname string, ids ...uint) (serverDomain.ProjectResponse, error) {
-	product := serverDomain.ProjectResponse{}
+func (r *ProjectRepo) FindByName(productname string, ids ...uint) (serverDomain.ProjectResp, error) {
+	product := serverDomain.ProjectResp{}
 	db := r.DB.Model(&model.Project{}).Where("name = ?", productname)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
@@ -81,7 +81,7 @@ func (r *ProjectRepo) FindByName(productname string, ids ...uint) (serverDomain.
 	return product, nil
 }
 
-func (r *ProjectRepo) Create(req serverDomain.ProjectRequest) (uint, error) {
+func (r *ProjectRepo) Create(req serverDomain.ProjectReq) (uint, error) {
 	if _, err := r.FindByName(req.Name); !errors.Is(err, gorm.ErrRecordNotFound) {
 		return 0, fmt.Errorf("%d", domain.BizErrNameExist.Code)
 	}
@@ -96,7 +96,7 @@ func (r *ProjectRepo) Create(req serverDomain.ProjectRequest) (uint, error) {
 	return product.ID, nil
 }
 
-func (r *ProjectRepo) Update(id uint, req serverDomain.ProjectRequest) error {
+func (r *ProjectRepo) Update(id uint, req serverDomain.ProjectReq) error {
 	product := req.Project
 	err := r.DB.Model(&model.Project{}).Where("id = ?", id).Updates(&product).Error
 	if err != nil {

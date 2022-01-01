@@ -17,12 +17,12 @@ func NewRoleSource() *RoleSource {
 	return &RoleSource{}
 }
 
-func (s *RoleSource) GetSources() ([]serverDomain.RoleRequest, error) {
+func (s *RoleSource) GetSources() ([]serverDomain.RoleReq, error) {
 	perms, err := s.PermRepo.GetPermsForRole()
 	if err != nil {
-		return []serverDomain.RoleRequest{}, err
+		return []serverDomain.RoleReq{}, err
 	}
-	sources := []serverDomain.RoleRequest{
+	sources := []serverDomain.RoleReq{
 		{
 			BaseRole: model.BaseRole{
 				Name:        "admin",

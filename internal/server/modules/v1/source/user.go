@@ -1,11 +1,11 @@
 package source
 
 import (
-	"github.com/gookit/color"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
+	"github.com/gookit/color"
 	"gorm.io/gorm"
 )
 
@@ -18,12 +18,12 @@ func NewUserSource() *UserSource {
 	return &UserSource{}
 }
 
-func (s *UserSource) GetSources() ([]serverDomain.UserRequest, error) {
+func (s *UserSource) GetSources() ([]serverDomain.UserReq, error) {
 	roleIds, err := s.RoleRepo.GetRoleIds()
 	if err != nil {
-		return []serverDomain.UserRequest{}, err
+		return []serverDomain.UserReq{}, err
 	}
-	users := []serverDomain.UserRequest{
+	users := []serverDomain.UserReq{
 		{
 			BaseUser: model.BaseUser{
 				Username: serverConsts.AdminUserName,

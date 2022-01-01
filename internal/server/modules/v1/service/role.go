@@ -20,15 +20,15 @@ func (s *RoleService) Paginate(req serverDomain.RoleReqPaginate) (ret domain.Pag
 }
 
 // FindByName
-func (s *RoleService) FindByName(name string, ids ...uint) (serverDomain.RoleResponse, error) {
+func (s *RoleService) FindByName(name string, ids ...uint) (serverDomain.RoleResp, error) {
 	return s.RoleRepo.FindByName(name, ids...)
 }
 
-func (s *RoleService) Create(req serverDomain.RoleRequest) (uint, error) {
+func (s *RoleService) Create(req serverDomain.RoleReq) (uint, error) {
 	return s.RoleRepo.Create(req)
 }
 
-func (s *RoleService) Update(id uint, req serverDomain.RoleRequest) error {
+func (s *RoleService) Update(id uint, req serverDomain.RoleReq) error {
 	return s.RoleRepo.Update(id, req)
 }
 
@@ -36,7 +36,7 @@ func (s *RoleService) IsAdminRole(id uint) (bool, error) {
 	return s.RoleRepo.IsAdminRole(id)
 }
 
-func (s *RoleService) FindById(id uint) (serverDomain.RoleResponse, error) {
+func (s *RoleService) FindById(id uint) (serverDomain.RoleResp, error) {
 	return s.RoleRepo.FindById(id)
 }
 
@@ -44,7 +44,7 @@ func (s *RoleService) DeleteById(id uint) error {
 	return s.RoleRepo.DeleteById(id)
 }
 
-func (s *RoleService) FindInId(ids []string) ([]*serverDomain.RoleResponse, error) {
+func (s *RoleService) FindInId(ids []string) ([]*serverDomain.RoleResp, error) {
 	return s.RoleRepo.FindInId(ids)
 }
 

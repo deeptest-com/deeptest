@@ -12,78 +12,18 @@ import (
 	"go.uber.org/zap"
 )
 
-type TestCaseCtrl struct {
-	TestCaseService *service.TestCaseService `inject:""`
+type TestStepCtrl struct {
+	TestStepService *service.TestStepService `inject:""`
+	FileService     *service.FileService     `inject:""`
 	BaseCtrl
 }
 
-func NewTestCaseCtrl() *TestCaseCtrl {
-	return &TestCaseCtrl{}
-}
-
-// Query 分页列表
-func (c *TestCaseCtrl) Query(ctx iris.Context) {
-	var req serverDomain.TestCaseReqPaginate
-	if err := ctx.ReadQuery(&req); err != nil {
-		errs := validate.ValidRequest(err)
-		if len(errs) > 0 {
-			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
-			ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
-			return
-		}
-	}
-	req.ConvertParams()
-
-	data, err := c.TestCaseService.Paginate(req)
-	if err != nil {
-		ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: err.Error()})
-		return
-	}
-
-	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: data, Msg: domain.NoErr.Msg})
+func NewTestStepCtrl() *TestStepCtrl {
+	return &TestStepCtrl{}
 }
 
 // Get 详情
-func (c *TestCaseCtrl) Get(ctx iris.Context) {
-	var req domain.ReqId
-	if err := ctx.ReadParams(&req); err != nil {
-		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
-		ctx.JSON(domain.Response{Code: domain.ParamErr.Code, Data: nil, Msg: domain.ParamErr.Msg})
-		return
-	}
-	testCase, err := c.TestCaseService.FindById(req.Id)
-	if err != nil {
-		ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: domain.SystemErr.Msg})
-		return
-	}
-	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: testCase, Msg: domain.NoErr.Msg})
-}
-
-// Create 添加
-func (c *TestCaseCtrl) Create(ctx iris.Context) {
-	req := serverDomain.TestCaseReq{}
-	if err := ctx.ReadJSON(&req); err != nil {
-		errs := validate.ValidRequest(err)
-		if len(errs) > 0 {
-			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
-			ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
-			return
-		}
-	}
-	id, err := c.TestCaseService.Create(req)
-	if err != nil {
-		ctx.JSON(domain.Response{
-			Code: c.ErrCode(err),
-			Data: nil,
-		})
-		return
-	}
-
-	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: iris.Map{"id": id}, Msg: domain.NoErr.Msg})
-}
-
-// Update 更新
-func (c *TestCaseCtrl) Update(ctx iris.Context) {
+func (c *TestStepCtrl) Get(ctx iris.Context) {
 	var reqId domain.ReqId
 	if err := ctx.ReadParams(&reqId); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
@@ -91,7 +31,60 @@ func (c *TestCaseCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	var req serverDomain.TestCaseReq
+	step, err := c.TestStepService.FindById(reqId.Id)
+	if err != nil {
+		ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: domain.SystemErr.Msg})
+		return
+	}
+	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: step, Msg: domain.NoErr.Msg})
+}
+
+// Create 添加
+func (c *TestStepCtrl) Create(ctx iris.Context) {
+	f, fh, err := ctx.FormFile("file")
+	if err != nil {
+		logUtils.Errorf("文件上传失败", zap.String("ctx.FormFile(\"file\")", err.Error()))
+		ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+	defer f.Close()
+
+	imagePath, err := c.FileService.UploadFile(ctx, fh)
+	if err != nil {
+		ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	req := serverDomain.TestStepReq{}
+	if err := ctx.ReadForm(&req); err != nil {
+		errs := validate.ValidRequest(err)
+		if len(errs) > 0 {
+			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
+			ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
+			return
+		}
+	}
+
+	req.Image = imagePath
+	id, err := c.TestStepService.Create(req)
+	if err != nil {
+		ctx.JSON(domain.Response{Code: c.ErrCode(err), Data: nil})
+		return
+	}
+
+	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: iris.Map{"id": id}, Msg: domain.NoErr.Msg})
+}
+
+// Update 更新
+func (c *TestStepCtrl) Update(ctx iris.Context) {
+	var reqId domain.ReqId
+	if err := ctx.ReadParams(&reqId); err != nil {
+		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
+		ctx.JSON(domain.Response{Code: domain.ParamErr.Code, Data: nil, Msg: domain.ParamErr.Msg})
+		return
+	}
+
+	var req serverDomain.TestStepReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -101,7 +94,7 @@ func (c *TestCaseCtrl) Update(ctx iris.Context) {
 		}
 	}
 
-	err := c.TestCaseService.Update(reqId.Id, req)
+	err := c.TestStepService.Update(reqId.Id, req)
 	if err != nil {
 		ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
@@ -110,14 +103,14 @@ func (c *TestCaseCtrl) Update(ctx iris.Context) {
 }
 
 // Delete 删除
-func (c *TestCaseCtrl) Delete(ctx iris.Context) {
+func (c *TestStepCtrl) Delete(ctx iris.Context) {
 	var req domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
 		ctx.JSON(domain.Response{Code: domain.ParamErr.Code, Data: nil, Msg: domain.ParamErr.Msg})
 		return
 	}
-	err := c.TestCaseService.DeleteById(req.Id)
+	err := c.TestStepService.DeleteById(req.Id)
 	if err != nil {
 		ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

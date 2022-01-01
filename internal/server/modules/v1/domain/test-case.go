@@ -5,7 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 )
 
-type TestCaseRequest struct {
+type TestCaseReq struct {
 	model.TestCase
 }
 
@@ -16,6 +16,6 @@ type TestCaseReqPaginate struct {
 	Status   string `json:"status"`
 }
 
-type TestCaseResponse struct {
+type TestCaseResp struct {
 	model.TestCase
 }

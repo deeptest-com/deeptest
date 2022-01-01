@@ -25,12 +25,12 @@ func (s *PermService) Paginate(req serverDomain.PermReqPaginate) (data domain.Pa
 // name 名称
 // act 方法
 // ids 当 ids 的 len = 1 ，排除次 id 数据
-func (s *PermService) FindByNameAndAct(name, act string, ids ...uint) (serverDomain.PermResponse, error) {
+func (s *PermService) FindByNameAndAct(name, act string, ids ...uint) (serverDomain.PermResp, error) {
 	return s.PermRepo.FindByNameAndAct(name, act, ids...)
 }
 
 // Create
-func (s *PermService) Create(req serverDomain.PermRequest) (uint, error) {
+func (s *PermService) Create(req serverDomain.PermReq) (uint, error) {
 	return s.PermRepo.Create(req)
 }
 
@@ -40,17 +40,17 @@ func (s *PermService) CreatenInBatches(perms []model.SysPerm) error {
 }
 
 // Update
-func (s *PermService) Update(id uint, req serverDomain.PermRequest) error {
+func (s *PermService) Update(id uint, req serverDomain.PermReq) error {
 	return s.PermRepo.Update(id, req)
 }
 
 // checkNameAndAct
-func (r *PermService) checkNameAndAct(req serverDomain.PermRequest, ids ...uint) bool {
+func (r *PermService) checkNameAndAct(req serverDomain.PermReq, ids ...uint) bool {
 	return r.PermRepo.CheckNameAndAct(req, ids...)
 }
 
 // FindById
-func (s *PermService) FindById(id uint) (serverDomain.PermResponse, error) {
+func (s *PermService) FindById(id uint) (serverDomain.PermResp, error) {
 	return s.PermRepo.FindById(id)
 }
 

@@ -42,7 +42,7 @@ func (r *UserRepo) Paginate(req serverDomain.UserReqPaginate) (data domain.PageD
 		return
 	}
 
-	users := make([]*serverDomain.UserResponse, 0)
+	users := make([]*serverDomain.UserResp, 0)
 	err = db.Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
 		Find(&users).Error
 	if err != nil {
@@ -60,7 +60,7 @@ func (r *UserRepo) Paginate(req serverDomain.UserReqPaginate) (data domain.PageD
 }
 
 // getRoles
-func (r *UserRepo) GetRoles(users ...*serverDomain.UserResponse) {
+func (r *UserRepo) GetRoles(users ...*serverDomain.UserResp) {
 	var roleIds []string
 	userRoleIds := make(map[uint][]string, 10)
 	if len(users) == 0 {
@@ -88,8 +88,8 @@ func (r *UserRepo) GetRoles(users ...*serverDomain.UserResponse) {
 	}
 }
 
-func (r *UserRepo) FindByUserName(username string, ids ...uint) (serverDomain.UserResponse, error) {
-	user := serverDomain.UserResponse{}
+func (r *UserRepo) FindByUserName(username string, ids ...uint) (serverDomain.UserResp, error) {
+	user := serverDomain.UserResp{}
 	db := r.DB.Model(&model.SysUser{}).Where("username = ?", username)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
@@ -103,8 +103,8 @@ func (r *UserRepo) FindByUserName(username string, ids ...uint) (serverDomain.Us
 	return user, nil
 }
 
-func (r *UserRepo) FindPasswordByUserName(username string, ids ...uint) (serverDomain.LoginResponse, error) {
-	user := serverDomain.LoginResponse{}
+func (r *UserRepo) FindPasswordByUserName(username string, ids ...uint) (serverDomain.LoginResp, error) {
+	user := serverDomain.LoginResp{}
 	db := r.DB.Model(&model.SysUser{}).Select("id,password").Where("username = ?", username)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
@@ -117,7 +117,7 @@ func (r *UserRepo) FindPasswordByUserName(username string, ids ...uint) (serverD
 	return user, nil
 }
 
-func (r *UserRepo) Create(req serverDomain.UserRequest) (uint, error) {
+func (r *UserRepo) Create(req serverDomain.UserReq) (uint, error) {
 	if _, err := r.FindByUserName(req.Username); !errors.Is(err, gorm.ErrRecordNotFound) {
 		return 0, fmt.Errorf("用户名 %s 已经被使用", req.Username)
 	}
@@ -145,7 +145,7 @@ func (r *UserRepo) Create(req serverDomain.UserRequest) (uint, error) {
 	return user.ID, nil
 }
 
-func (r *UserRepo) Update(id uint, req serverDomain.UserRequest) error {
+func (r *UserRepo) Update(id uint, req serverDomain.UserReq) error {
 	if b, err := r.IsAdminUser(id); err != nil {
 		return err
 	} else if b {
@@ -178,8 +178,8 @@ func (r *UserRepo) IsAdminUser(id uint) (bool, error) {
 	return arr.InArrayS(user.Roles, serverConsts.AdminRoleName), nil
 }
 
-func (r *UserRepo) FindById(id uint) (serverDomain.UserResponse, error) {
-	user := serverDomain.UserResponse{}
+func (r *UserRepo) FindById(id uint) (serverDomain.UserResp, error) {
+	user := serverDomain.UserResp{}
 	err := r.DB.Model(&model.SysUser{}).Where("id = ?", id).First(&user).Error
 	if err != nil {
 		logUtils.Errorf("find user err ", zap.String("错误:", err.Error()))

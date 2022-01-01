@@ -61,7 +61,7 @@ func (c *ProjectCtrl) Get(ctx iris.Context) {
 
 // Create 添加
 func (c *ProjectCtrl) Create(ctx iris.Context) {
-	req := serverDomain.ProjectRequest{}
+	req := serverDomain.ProjectReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -91,7 +91,7 @@ func (c *ProjectCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	var req serverDomain.ProjectRequest
+	var req serverDomain.ProjectReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {

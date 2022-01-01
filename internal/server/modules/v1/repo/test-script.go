@@ -36,71 +36,86 @@ func (r *TestScriptRepo) Paginate(req serverDomain.TestScriptReqPaginate) (data 
 
 	err = db.Count(&count).Error
 	if err != nil {
-		logUtils.Errorf("count product error", zap.String("error:", err.Error()))
+		logUtils.Errorf("count test script error", zap.String("error:", err.Error()))
 		return
 	}
 
-	testScripts := make([]*model.TestScript, 0)
+	scripts := make([]*model.TestScript, 0)
 
 	err = db.
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
-		Find(&testScripts).Error
+		Find(&scripts).Error
 	if err != nil {
-		logUtils.Errorf("query product error", zap.String("error:", err.Error()))
+		logUtils.Errorf("query test script error", zap.String("error:", err.Error()))
 		return
 	}
 
-	data.Populate(testScripts, count, req.Page, req.PageSize)
+	data.Populate(scripts, count, req.Page, req.PageSize)
 
 	return
 }
 
-func (r *TestScriptRepo) FindById(id uint) (serverDomain.TestScriptResponse, error) {
-	product := serverDomain.TestScriptResponse{}
-	err := r.DB.Model(&model.TestScript{}).Where("id = ?", id).First(&product).Error
+func (r *TestScriptRepo) GetDetail(id uint) (serverDomain.TestScriptResp, error) {
+	script := serverDomain.TestScriptResp{}
+	err := r.DB.Model(&model.TestScript{}).
+		Where("id = ?", id).
+		Preload("Steps", "NOT deleted").
+		First(&script).Error
+
 	if err != nil {
-		logUtils.Errorf("find product by id error", zap.String("error:", err.Error()))
-		return product, err
+		logUtils.Errorf("find test script by id error", zap.String("error:", err.Error()))
+		return script, err
 	}
 
-	return product, nil
+	return script, nil
 }
 
-func (r *TestScriptRepo) FindByName(productname string, ids ...uint) (serverDomain.TestScriptResponse, error) {
-	product := serverDomain.TestScriptResponse{}
-	db := r.DB.Model(&model.TestScript{}).Where("name = ?", productname)
+func (r *TestScriptRepo) FindById(id uint) (serverDomain.TestScriptResp, error) {
+	script := serverDomain.TestScriptResp{}
+	err := r.DB.Model(&model.TestScript{}).Where("id = ?", id).First(&script).Error
+	if err != nil {
+		logUtils.Errorf("find test script by id error", zap.String("error:", err.Error()))
+		return script, err
+	}
+
+	return script, nil
+}
+
+func (r *TestScriptRepo) FindByName(scriptName string, ids ...uint) (serverDomain.TestScriptResp, error) {
+	script := serverDomain.TestScriptResp{}
+	db := r.DB.Model(&model.TestScript{}).Where("name = ?", scriptName)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
 	}
-	err := db.First(&product).Error
+	err := db.First(&script).Error
 	if err != nil {
-		logUtils.Errorf("find product by name error", zap.String("name:", productname), zap.Uints("ids:", ids), zap.String("error:", err.Error()))
-		return product, err
+		logUtils.Errorf("find test script by name error", zap.String("name:", scriptName), zap.Uints("ids:", ids), zap.String("error:", err.Error()))
+		return script, err
 	}
 
-	return product, nil
+	return script, nil
 }
 
-func (r *TestScriptRepo) Create(req serverDomain.TestScriptRequest) (uint, error) {
+func (r *TestScriptRepo) Create(req serverDomain.TestScriptReq) (uint, error) {
 	if _, err := r.FindByName(req.Name); !errors.Is(err, gorm.ErrRecordNotFound) {
 		return 0, fmt.Errorf("%d", domain.BizErrNameExist.Code)
 	}
-	product := req.TestScript
+	script := req.TestScript
 
-	err := r.DB.Model(&model.TestScript{}).Create(&product).Error
+	err := r.DB.Model(&model.TestScript{}).Create(&script).Error
 	if err != nil {
-		logUtils.Errorf("add product error", zap.String("error:", err.Error()))
+		logUtils.Errorf("add test script error", zap.String("error:", err.Error()))
 		return 0, err
 	}
 
-	return product.ID, nil
+	return script.ID, nil
 }
 
-func (r *TestScriptRepo) Update(id uint, req serverDomain.TestScriptRequest) error {
-	product := req.TestScript
-	err := r.DB.Model(&model.TestScript{}).Where("id = ?", id).Updates(&product).Error
+func (r *TestScriptRepo) Update(id uint, req serverDomain.TestScriptReq) error {
+	script := req.TestScript
+	err := r.DB.Model(&model.TestScript{}).Where("id = ?", id).Updates(&script).Error
 	if err != nil {
-		logUtils.Errorf("update product error", zap.String("error:", err.Error()))
+		logUtils.Errorf("update test script error", zap.String("error:", err.Error()))
 		return err
 	}
 
@@ -111,7 +126,7 @@ func (r *TestScriptRepo) DeleteById(id uint) (err error) {
 	err = r.DB.Model(&model.TestScript{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
-		logUtils.Errorf("delete script by id error", zap.String("error:", err.Error()))
+		logUtils.Errorf("delete test script by id error", zap.String("error:", err.Error()))
 		return
 	}
 

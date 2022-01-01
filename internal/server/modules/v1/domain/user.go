@@ -7,7 +7,7 @@ import (
 	"regexp"
 )
 
-type UserRequest struct {
+type UserReq struct {
 	model.BaseUser
 	Password string `json:"password"`
 	RoleIds  []uint `json:"role_ids"`
@@ -18,13 +18,13 @@ type UserReqPaginate struct {
 	Name string `json:"name"`
 }
 
-type UserResponse struct {
+type UserResp struct {
 	domain.Model
 	model.BaseUser
 	Roles []string `gorm:"-" json:"roles"`
 }
 
-func (res *UserResponse) ToString() {
+func (res *UserResp) ToString() {
 	if res.Avatar == "" {
 		return
 	}
@@ -34,7 +34,7 @@ func (res *UserResponse) ToString() {
 	}
 }
 
-type LoginResponse struct {
+type LoginResp struct {
 	domain.ReqId
 	Password string `json:"password"`
 }

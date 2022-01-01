@@ -21,7 +21,7 @@ func (m *PermModule) Party() module.WebModule {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 		index.Get("/", m.PermCtrl.GetAllPerms).Name = "权限列表"
 		index.Get("/{id:uint}", m.PermCtrl.GetPerm).Name = "权限详情"
-		index.Post("/", m.PermCtrl.CreatePerm).Name = "创建权限"
+		index.Post("/", m.PermCtrl.CreatePerm).Name = "新建权限"
 		index.Post("/{id:uint}", m.PermCtrl.UpdatePerm).Name = "编辑权限"
 		index.Delete("/{id:uint}", m.PermCtrl.DeletePerm).Name = "删除权限"
 	}

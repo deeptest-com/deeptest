@@ -79,7 +79,7 @@ func (c *UserCtrl) Message(ctx iris.Context) {
 
 // CreateUser 添加
 func (c *UserCtrl) CreateUser(ctx iris.Context) {
-	req := serverDomain.UserRequest{}
+	req := serverDomain.UserReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -106,7 +106,7 @@ func (c *UserCtrl) UpdateUser(ctx iris.Context) {
 		return
 	}
 
-	var req serverDomain.UserRequest
+	var req serverDomain.UserReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {

@@ -5,7 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 )
 
-type TestScriptRequest struct {
+type TestScriptReq struct {
 	model.TestScript
 }
 
@@ -15,6 +15,6 @@ type TestScriptReqPaginate struct {
 	Enabled  string `json:"enabled"`
 }
 
-type TestScriptResponse struct {
+type TestScriptResp struct {
 	model.TestScript
 }

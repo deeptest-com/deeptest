@@ -25,15 +25,15 @@ func (s *TestScriptService) Paginate(req serverDomain.TestScriptReqPaginate) (re
 	return
 }
 
-func (s *TestScriptService) FindById(id uint) (serverDomain.TestScriptResponse, error) {
-	return s.TestScriptRepo.FindById(id)
+func (s *TestScriptService) GetDetail(id uint) (serverDomain.TestScriptResp, error) {
+	return s.TestScriptRepo.GetDetail(id)
 }
 
-func (s *TestScriptService) Create(req serverDomain.TestScriptRequest) (uint, error) {
+func (s *TestScriptService) Create(req serverDomain.TestScriptReq) (uint, error) {
 	return s.TestScriptRepo.Create(req)
 }
 
-func (s *TestScriptService) Update(id uint, req serverDomain.TestScriptRequest) error {
+func (s *TestScriptService) Update(id uint, req serverDomain.TestScriptReq) error {
 	return s.TestScriptRepo.Update(id, req)
 }
 

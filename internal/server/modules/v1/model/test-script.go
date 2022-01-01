@@ -8,7 +8,8 @@ type TestScript struct {
 	Code    string `json:"code"`
 	Desc    string `json:"desc"`
 
-	ProjectId uint `json:"projectId"`
+	ProjectId uint       `json:"projectId"`
+	Steps     []TestStep `json:"steps" gorm:"foreignKey:script_id"`
 }
 
 func (TestScript) TableName() string {

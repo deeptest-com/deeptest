@@ -5,19 +5,16 @@ import (
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 )
 
-// Model
 type Model struct {
 	Id        uint   `json:"id"`
 	UpdatedAt string `json:"updatedAt"`
 	CreatedAt string `json:"createdAt"`
 }
 
-// ReqId
 type ReqId struct {
 	Id uint `json:"id" param:"id"`
 }
 
-// PaginateReq
 type PaginateReq struct {
 	Page     int    `json:"page"`
 	PageSize int    `json:"pageSize"`
@@ -30,7 +27,6 @@ func (r *PaginateReq) ConvertParams() {
 	r.Order = serverConsts.SortMap[r.Order]
 }
 
-// Response
 type Response struct {
 	Code int64       `json:"code"`
 	Msg  string      `json:"msg"`
@@ -51,7 +47,6 @@ func (d *PageData) Populate(result interface{}, total int64, page, pageSize int)
 	d.PageSize = pageSize
 }
 
-// ErrMsg
 type ErrMsg struct {
 	Code int64  `json:"code"`
 	Msg  string `json:"message"`

@@ -25,19 +25,23 @@ func OperationRecord() iris.Handler {
 		if !strings.Contains(ctx.Path(), "/api/v1/upload") {
 			body, err = ctx.GetBody()
 			if err != nil {
-				logUtils.Errorf("获取请求内容错误", zap.String("错误:", err.Error()))
+				logUtils.Errorf("获取请求内容错误 %s", zap.String("错误:", err.Error()))
 			} else {
 				ctx.Request().Body = ioutil.NopCloser(bytes.NewBuffer(body))
 			}
 		}
 
 		userId := multi.GetUserId(ctx)
+		data := string(body)
+		if len(data) > 1000 {
+			data = "BIG DATA"
+		}
 		record := Oplog{
 			Ip:     ctx.RemoteAddr(),
 			Method: ctx.Method(),
 			Path:   ctx.Path(),
 			Agent:  ctx.Request().UserAgent(),
-			Body:   string(body),
+			Body:   data,
 			UserID: userId,
 		}
 
@@ -61,7 +65,7 @@ func OperationRecord() iris.Handler {
 		record.Resp = writer.body.String()
 
 		if err := CreateOplog(record); err != nil {
-			logUtils.Errorf("生成日志错误", zap.String("错误:", err.Error()))
+			logUtils.Errorf("生成日志错误 %s", zap.String("错误:", err.Error()))
 		}
 	}
 }
@@ -80,7 +84,7 @@ func (r responseBodyWriter) Write(b []byte) (int, error) {
 func CreateOplog(ol Oplog) error {
 	err := dao.GetDB().Model(&Oplog{}).Create(&ol).Error
 	if err != nil {
-		logUtils.Errorf("生成系统日志错误", zap.String("错误:", err.Error()))
+		logUtils.Errorf("生成系统日志错误 %s", zap.String("错误:", err.Error()))
 		return err
 	}
 	return nil

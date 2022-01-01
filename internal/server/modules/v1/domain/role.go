@@ -5,7 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 )
 
-type RoleRequest struct {
+type RoleReq struct {
 	model.BaseRole
 	Perms [][]string `json:"perms"`
 }
@@ -15,7 +15,7 @@ type RoleReqPaginate struct {
 	Name string `json:"name"`
 }
 
-type RoleResponse struct {
+type RoleResp struct {
 	domain.Model
 	model.BaseRole
 }

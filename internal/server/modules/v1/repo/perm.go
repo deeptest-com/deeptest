@@ -34,14 +34,14 @@ func (r *PermRepo) Paginate(req serverDomain.PermReqPaginate) (data domain.PageD
 
 	err = db.Count(&count).Error
 	if err != nil {
-		logUtils.Errorf("获取权限总数失败, 错误%s。",err.Error())
+		logUtils.Errorf("获取权限总数失败, 错误%s。", err.Error())
 		return
 	}
 
-	perms := make([]*serverDomain.PermResponse, 0)
+	perms := make([]*serverDomain.PermResp, 0)
 	err = db.Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).Find(&perms).Error
 	if err != nil {
-		logUtils.Errorf("获取权限分页数据失败, 错误%s。",  err.Error())
+		logUtils.Errorf("获取权限分页数据失败, 错误%s。", err.Error())
 		return
 	}
 
@@ -55,29 +55,29 @@ func (r *PermRepo) Paginate(req serverDomain.PermReqPaginate) (data domain.PageD
 // name 名称
 // act 方法
 // ids 当 ids 的 len = 1 ，排除次 id 数据
-func (r *PermRepo) FindByNameAndAct(name, act string, ids ...uint) (serverDomain.PermResponse, error) {
-	perm := serverDomain.PermResponse{}
+func (r *PermRepo) FindByNameAndAct(name, act string, ids ...uint) (serverDomain.PermResp, error) {
+	perm := serverDomain.PermResp{}
 	db := r.DB.Model(&model.SysPerm{}).Where("name = ?", name).Where("act = ?", act)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
 	}
 	err := db.First(&perm).Error
 	if err != nil {
-		logUtils.Errorf("根据名称和方法获取权限数据失败, 错误%s。",  err.Error())
+		logUtils.Errorf("根据名称和方法获取权限数据失败, 错误%s。", err.Error())
 		return perm, err
 	}
 	return perm, nil
 }
 
 // Create
-func (r *PermRepo) Create(req serverDomain.PermRequest) (uint, error) {
+func (r *PermRepo) Create(req serverDomain.PermReq) (uint, error) {
 	perm := model.SysPerm{BasePerm: req.BasePerm}
 	if !r.CheckNameAndAct(req) {
 		return perm.ID, fmt.Errorf("权限[%s-%s]已存在", req.Name, req.Act)
 	}
 	err := r.DB.Model(&model.SysPerm{}).Create(&perm).Error
 	if err != nil {
-		logUtils.Errorf("添加权限失败，错误%s。",  err.Error())
+		logUtils.Errorf("添加权限失败，错误%s。", err.Error())
 		return perm.ID, err
 	}
 	return perm.ID, nil
@@ -87,7 +87,7 @@ func (r *PermRepo) Create(req serverDomain.PermRequest) (uint, error) {
 func (r *PermRepo) CreateInBatches(perms []model.SysPerm) error {
 	err := r.DB.Model(&model.SysPerm{}).CreateInBatches(&perms, 500).Error
 	if err != nil {
-		logUtils.Errorf("添加权限失败，错误%s。",  err.Error())
+		logUtils.Errorf("添加权限失败，错误%s。", err.Error())
 		return err
 	}
 	return nil
@@ -117,7 +117,7 @@ func (r *PermRepo) CreateIfNotExist(perms []model.SysPerm) (count int, err error
 			// add to permission table
 			err = r.DB.Model(&model.SysPerm{}).Create(&perm).Error
 			if err != nil {
-				logUtils.Errorf("添加权限%s失败，错误%s。", perm.Name,  err.Error())
+				logUtils.Errorf("添加权限%s失败，错误%s。", perm.Name, err.Error())
 				return
 			}
 		}
@@ -129,31 +129,31 @@ func (r *PermRepo) CreateIfNotExist(perms []model.SysPerm) (count int, err error
 }
 
 // Update
-func (r *PermRepo) Update(id uint, req serverDomain.PermRequest) error {
+func (r *PermRepo) Update(id uint, req serverDomain.PermReq) error {
 	if !r.CheckNameAndAct(req, id) {
 		return fmt.Errorf("权限[%s-%s]已存在", req.Name, req.Act)
 	}
 	perm := model.SysPerm{BasePerm: req.BasePerm}
 	err := r.DB.Model(&model.SysPerm{}).Where("id = ?", id).Updates(&perm).Error
 	if err != nil {
-		logUtils.Errorf("更新权限失败, 错误%s。",  err.Error())
+		logUtils.Errorf("更新权限失败, 错误%s。", err.Error())
 		return err
 	}
 	return nil
 }
 
 // checkNameAndAct
-func (r *PermRepo) CheckNameAndAct(req serverDomain.PermRequest, ids ...uint) bool {
+func (r *PermRepo) CheckNameAndAct(req serverDomain.PermReq, ids ...uint) bool {
 	_, err := r.FindByNameAndAct(req.Name, req.Act, ids...)
 	return errors.Is(err, gorm.ErrRecordNotFound)
 }
 
 // FindById
-func (r *PermRepo) FindById(id uint) (serverDomain.PermResponse, error) {
-	res := serverDomain.PermResponse{}
+func (r *PermRepo) FindById(id uint) (serverDomain.PermResp, error) {
+	res := serverDomain.PermResp{}
 	err := r.DB.Model(&model.SysPerm{}).Where("id = ?", id).First(&res).Error
 	if err != nil {
-		logUtils.Errorf("获取权限失败, 错误%s。",  err.Error())
+		logUtils.Errorf("获取权限失败, 错误%s。", err.Error())
 		return res, err
 	}
 	return res, nil
@@ -163,7 +163,7 @@ func (r *PermRepo) FindById(id uint) (serverDomain.PermResponse, error) {
 func (r *PermRepo) DeleteById(id uint) error {
 	err := r.DB.Unscoped().Delete(&model.SysPerm{}, id).Error
 	if err != nil {
-		logUtils.Errorf("删除权限失败, 错误%s。",  err.Error())
+		logUtils.Errorf("删除权限失败, 错误%s。", err.Error())
 		return err
 	}
 	return nil
@@ -173,7 +173,7 @@ func (r *PermRepo) DeleteById(id uint) error {
 func (r *PermRepo) DeleteAll() error {
 	err := r.DB.Where("1 = 1").Delete(&model.SysPerm{}).Error
 	if err != nil {
-		logUtils.Errorf("删除权限失败, 错误%s。",  err.Error())
+		logUtils.Errorf("删除权限失败, 错误%s。", err.Error())
 		return err
 	}
 	return nil

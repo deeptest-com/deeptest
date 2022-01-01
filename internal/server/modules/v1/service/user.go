@@ -20,23 +20,23 @@ func (s *UserService) Paginate(req serverDomain.UserReqPaginate) (domain.PageDat
 }
 
 // getRoles
-func (s *UserService) getRoles(users ...*serverDomain.UserResponse) {
+func (s *UserService) getRoles(users ...*serverDomain.UserResp) {
 	s.UserRepo.GetRoles(users...)
 }
 
-func (s *UserService) FindByUserName(username string, ids ...uint) (serverDomain.UserResponse, error) {
+func (s *UserService) FindByUserName(username string, ids ...uint) (serverDomain.UserResp, error) {
 	return s.UserRepo.FindByUserName(username, ids...)
 }
 
-func (s *UserService) FindPasswordByUserName(username string, ids ...uint) (serverDomain.LoginResponse, error) {
+func (s *UserService) FindPasswordByUserName(username string, ids ...uint) (serverDomain.LoginResp, error) {
 	return s.UserRepo.FindPasswordByUserName(username, ids...)
 }
 
-func (s *UserService) Create(req serverDomain.UserRequest) (uint, error) {
+func (s *UserService) Create(req serverDomain.UserReq) (uint, error) {
 	return s.UserRepo.Create(req)
 }
 
-func (s *UserService) Update(id uint, req serverDomain.UserRequest) error {
+func (s *UserService) Update(id uint, req serverDomain.UserReq) error {
 	return s.UserRepo.Update(id, req)
 }
 
@@ -44,7 +44,7 @@ func (s *UserService) IsAdminUser(id uint) (bool, error) {
 	return s.UserRepo.IsAdminUser(id)
 }
 
-func (s *UserService) FindById(id uint) (serverDomain.UserResponse, error) {
+func (s *UserService) FindById(id uint) (serverDomain.UserResp, error) {
 	return s.UserRepo.FindById(id)
 }
 

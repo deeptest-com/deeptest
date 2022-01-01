@@ -24,7 +24,7 @@ func NewDataCtrl() *DataCtrl {
 
 // InitDB 初始化项目接口
 func (c *DataCtrl) Init(ctx iris.Context) {
-	req := serverDomain.DataRequest{}
+	req := serverDomain.DataReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {

@@ -59,7 +59,7 @@ func (c *RoleCtrl) GetRole(ctx iris.Context) {
 
 // CreateRole 添加
 func (c *RoleCtrl) CreateRole(ctx iris.Context) {
-	req := serverDomain.RoleRequest{}
+	req := serverDomain.RoleReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -86,7 +86,7 @@ func (c *RoleCtrl) UpdateRole(ctx iris.Context) {
 		return
 	}
 
-	var req serverDomain.RoleRequest
+	var req serverDomain.RoleReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -120,4 +120,3 @@ func (c *RoleCtrl) DeleteRole(ctx iris.Context) {
 
 	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: nil, Msg: domain.NoErr.Msg})
 }
-

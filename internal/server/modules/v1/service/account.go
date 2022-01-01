@@ -26,7 +26,7 @@ func NewAuthService() *AccountService {
 }
 
 // GetAccessToken 登录
-func (s *AccountService) GetAccessToken(req serverDomain.LoginRequest) (string, error) {
+func (s *AccountService) GetAccessToken(req serverDomain.LoginReq) (string, error) {
 	admin, err := s.UserRepo.FindPasswordByUserName(req.Username)
 	if err != nil {
 		return "", err

@@ -24,15 +24,15 @@ func (s *TestCaseService) Paginate(req serverDomain.TestCaseReqPaginate) (ret do
 	return
 }
 
-func (s *TestCaseService) FindById(id uint) (serverDomain.TestCaseResponse, error) {
+func (s *TestCaseService) FindById(id uint) (serverDomain.TestCaseResp, error) {
 	return s.TestCaseRepo.FindById(id)
 }
 
-func (s *TestCaseService) Create(req serverDomain.TestCaseRequest) (uint, error) {
+func (s *TestCaseService) Create(req serverDomain.TestCaseReq) (uint, error) {
 	return s.TestCaseRepo.Create(req)
 }
 
-func (s *TestCaseService) Update(id uint, req serverDomain.TestCaseRequest) error {
+func (s *TestCaseService) Update(id uint, req serverDomain.TestCaseReq) error {
 	return s.TestCaseRepo.Update(id, req)
 }
 

@@ -27,10 +27,10 @@ func (c *FileCtrl) Upload(ctx iris.Context) {
 	}
 	defer f.Close()
 
-	data, err := c.FileService.UploadFile(ctx, fh)
+	pth, err := c.FileService.UploadFile(ctx, fh)
 	if err != nil {
 		ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
-	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: data, Msg: domain.NoErr.Msg})
+	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: pth, Msg: domain.NoErr.Msg})
 }

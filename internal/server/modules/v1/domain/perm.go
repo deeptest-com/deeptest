@@ -5,7 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 )
 
-type PermRequest struct {
+type PermReq struct {
 	model.BasePerm
 }
 
@@ -14,7 +14,7 @@ type PermReqPaginate struct {
 	Name string `json:"name"`
 }
 
-type PermResponse struct {
+type PermResp struct {
 	domain.Model
 	model.BasePerm
 }

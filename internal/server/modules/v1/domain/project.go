@@ -5,7 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 )
 
-type ProjectRequest struct {
+type ProjectReq struct {
 	model.Project
 }
 
@@ -15,6 +15,6 @@ type ProjectReqPaginate struct {
 	Enabled  string `json:"enabled"`
 }
 
-type ProjectResponse struct {
+type ProjectResp struct {
 	model.Project
 }

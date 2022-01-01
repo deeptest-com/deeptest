@@ -1,6 +1,6 @@
 package serverDomain
 
-type DataRequest struct {
+type DataReq struct {
 	Sys       DataSys   `json:"sys"`
 	Db        DataDb    `json:"db"`
 	SqlType   string    `json:"sqlType" validate:"required"`

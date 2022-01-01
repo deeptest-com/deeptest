@@ -39,7 +39,7 @@ func (r *RoleRepo) Paginate(req serverDomain.RoleReqPaginate) (data domain.PageD
 		return
 	}
 
-	var roles []*serverDomain.RoleResponse
+	var roles []*serverDomain.RoleResp
 	err = db.Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).Find(&roles).Error
 	if err != nil {
 		logUtils.Errorf("获取角色分页数据错误", zap.String("错误:", err.Error()))
@@ -53,8 +53,8 @@ func (r *RoleRepo) Paginate(req serverDomain.RoleReqPaginate) (data domain.PageD
 }
 
 // FindByName
-func (r *RoleRepo) FindByName(name string, ids ...uint) (serverDomain.RoleResponse, error) {
-	role := serverDomain.RoleResponse{}
+func (r *RoleRepo) FindByName(name string, ids ...uint) (serverDomain.RoleResp, error) {
+	role := serverDomain.RoleResp{}
 	db := r.DB.Model(&model.SysRole{}).Where("name = ?", name)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
@@ -68,9 +68,9 @@ func (r *RoleRepo) FindByName(name string, ids ...uint) (serverDomain.RoleRespon
 }
 
 // FindByName
-func (r *RoleRepo) FindFirstAdminUser() (serverDomain.RoleResponse, error) {
-	role := serverDomain.RoleResponse{}
-	err :=r.DB.Model(&model.SysRole{}).Where("true").First(&role).Error
+func (r *RoleRepo) FindFirstAdminUser() (serverDomain.RoleResp, error) {
+	role := serverDomain.RoleResp{}
+	err := r.DB.Model(&model.SysRole{}).Where("true").First(&role).Error
 
 	if err != nil {
 		logUtils.Errorf("管理员角色不存在，错误%s。", err.Error())
@@ -79,7 +79,7 @@ func (r *RoleRepo) FindFirstAdminUser() (serverDomain.RoleResponse, error) {
 	return role, nil
 }
 
-func (r *RoleRepo) Create(req serverDomain.RoleRequest) (uint, error) {
+func (r *RoleRepo) Create(req serverDomain.RoleReq) (uint, error) {
 	role := model.SysRole{BaseRole: req.BaseRole}
 	_, err := r.FindByName(req.Name)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -102,7 +102,7 @@ func (r *RoleRepo) Create(req serverDomain.RoleRequest) (uint, error) {
 	return role.ID, nil
 }
 
-func (r *RoleRepo) Update(id uint, req serverDomain.RoleRequest) error {
+func (r *RoleRepo) Update(id uint, req serverDomain.RoleReq) error {
 	if b, err := r.IsAdminRole(id); err != nil {
 		return err
 	} else if b {
@@ -135,8 +135,8 @@ func (r *RoleRepo) IsAdminRole(id uint) (bool, error) {
 	return role.Name == serverConsts.AdminRoleName, nil
 }
 
-func (r *RoleRepo) FindById(id uint) (serverDomain.RoleResponse, error) {
-	role := serverDomain.RoleResponse{}
+func (r *RoleRepo) FindById(id uint) (serverDomain.RoleResp, error) {
+	role := serverDomain.RoleResp{}
 	err := r.DB.Model(&model.SysRole{}).Where("id = ?", id).First(&role).Error
 	if err != nil {
 		logUtils.Errorf("根据id查询角色错误", zap.String("错误:", err.Error()))
@@ -159,8 +159,8 @@ func (r *RoleRepo) DeleteById(id uint) error {
 	return nil
 }
 
-func (r *RoleRepo) FindInId(ids []string) ([]*serverDomain.RoleResponse, error) {
-	roles := []*serverDomain.RoleResponse{}
+func (r *RoleRepo) FindInId(ids []string) ([]*serverDomain.RoleResp, error) {
+	roles := []*serverDomain.RoleResp{}
 	err := r.DB.Model(&model.SysRole{}).Where("id in ?", ids).Find(&roles).Error
 	if err != nil {
 		logUtils.Errorf("通过ids查询角色错误", zap.String("错误:", err.Error()))

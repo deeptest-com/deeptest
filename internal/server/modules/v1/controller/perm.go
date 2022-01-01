@@ -59,7 +59,7 @@ func (c *PermCtrl) GetPerm(ctx iris.Context) {
 
 // CreatePerm 添加
 func (c *PermCtrl) CreatePerm(ctx iris.Context) {
-	req := serverDomain.PermRequest{}
+	req := serverDomain.PermReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -86,7 +86,7 @@ func (c *PermCtrl) UpdatePerm(ctx iris.Context) {
 		return
 	}
 
-	var req serverDomain.PermRequest
+	var req serverDomain.PermReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {

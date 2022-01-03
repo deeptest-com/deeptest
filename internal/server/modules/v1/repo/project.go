@@ -36,7 +36,7 @@ func (r *ProjectRepo) Paginate(req serverDomain.ProjectReqPaginate) (data domain
 
 	err = db.Count(&count).Error
 	if err != nil {
-		logUtils.Errorf("count product error", zap.String("error:", err.Error()))
+		logUtils.Errorf("count project error", zap.String("error:", err.Error()))
 		return
 	}
 
@@ -46,7 +46,7 @@ func (r *ProjectRepo) Paginate(req serverDomain.ProjectReqPaginate) (data domain
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
 		Find(&projects).Error
 	if err != nil {
-		logUtils.Errorf("query product error", zap.String("error:", err.Error()))
+		logUtils.Errorf("query project error", zap.String("error:", err.Error()))
 		return
 	}
 
@@ -56,51 +56,51 @@ func (r *ProjectRepo) Paginate(req serverDomain.ProjectReqPaginate) (data domain
 }
 
 func (r *ProjectRepo) FindById(id uint) (serverDomain.ProjectResp, error) {
-	product := serverDomain.ProjectResp{}
-	err := r.DB.Model(&model.Project{}).Where("id = ?", id).First(&product).Error
+	project := serverDomain.ProjectResp{}
+	err := r.DB.Model(&model.Project{}).Where("id = ?", id).First(&project).Error
 	if err != nil {
-		logUtils.Errorf("find product by id error", zap.String("error:", err.Error()))
-		return product, err
+		logUtils.Errorf("find project by id error", zap.String("error:", err.Error()))
+		return project, err
 	}
 
-	return product, nil
+	return project, nil
 }
 
-func (r *ProjectRepo) FindByName(productname string, ids ...uint) (serverDomain.ProjectResp, error) {
-	product := serverDomain.ProjectResp{}
-	db := r.DB.Model(&model.Project{}).Where("name = ?", productname)
+func (r *ProjectRepo) FindByName(projectname string, ids ...uint) (serverDomain.ProjectResp, error) {
+	project := serverDomain.ProjectResp{}
+	db := r.DB.Model(&model.Project{}).Where("name = ?", projectname)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
 	}
-	err := db.First(&product).Error
+	err := db.First(&project).Error
 	if err != nil {
-		logUtils.Errorf("find product by name error", zap.String("name:", productname), zap.Uints("ids:", ids), zap.String("error:", err.Error()))
-		return product, err
+		logUtils.Errorf("find project by name error", zap.String("name:", projectname), zap.Uints("ids:", ids), zap.String("error:", err.Error()))
+		return project, err
 	}
 
-	return product, nil
+	return project, nil
 }
 
 func (r *ProjectRepo) Create(req serverDomain.ProjectReq) (uint, error) {
 	if _, err := r.FindByName(req.Name); !errors.Is(err, gorm.ErrRecordNotFound) {
 		return 0, fmt.Errorf("%d", domain.BizErrNameExist.Code)
 	}
-	product := req.Project
+	project := req.Project
 
-	err := r.DB.Model(&model.Project{}).Create(&product).Error
+	err := r.DB.Model(&model.Project{}).Create(&project).Error
 	if err != nil {
-		logUtils.Errorf("add product error", zap.String("error:", err.Error()))
+		logUtils.Errorf("add project error", zap.String("error:", err.Error()))
 		return 0, err
 	}
 
-	return product.ID, nil
+	return project.ID, nil
 }
 
 func (r *ProjectRepo) Update(id uint, req serverDomain.ProjectReq) error {
-	product := req.Project
-	err := r.DB.Model(&model.Project{}).Where("id = ?", id).Updates(&product).Error
+	project := req.Project
+	err := r.DB.Model(&model.Project{}).Where("id = ?", id).Updates(&project).Error
 	if err != nil {
-		logUtils.Errorf("update product error", zap.String("error:", err.Error()))
+		logUtils.Errorf("update project error", zap.String("error:", err.Error()))
 		return err
 	}
 
@@ -134,7 +134,7 @@ func (r *ProjectRepo) DeleteById(id uint, tx *gorm.DB) (err error) {
 	err = tx.Model(&model.Project{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
-		logUtils.Errorf("delete product by id error", zap.String("error:", err.Error()))
+		logUtils.Errorf("delete project by id error", zap.String("error:", err.Error()))
 		return
 	}
 
@@ -145,7 +145,7 @@ func (r *ProjectRepo) DeleteChildren(ids []int, tx *gorm.DB) (err error) {
 	err = tx.Model(&model.Project{}).Where("id IN (?)", ids).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
-		logUtils.Errorf("batch delete product error", zap.String("error:", err.Error()))
+		logUtils.Errorf("batch delete project error", zap.String("error:", err.Error()))
 		return err
 	}
 
@@ -154,19 +154,45 @@ func (r *ProjectRepo) DeleteChildren(ids []int, tx *gorm.DB) (err error) {
 
 func (r *ProjectRepo) GetChildrenIds(id uint) (ids []int, err error) {
 	tmpl := `
-		WITH RECURSIVE product AS (
-			SELECT * FROM biz_product WHERE id = %d
+		WITH RECURSIVE project AS (
+			SELECT * FROM biz_project WHERE id = %d
 			UNION ALL
-			SELECT child.* FROM biz_product child, product WHERE child.parent_id = product.id
+			SELECT child.* FROM biz_project child, project WHERE child.parent_id = project.id
 		)
-		SELECT id FROM product WHERE id != %d
+		SELECT id FROM project WHERE id != %d
     `
 	sql := fmt.Sprintf(tmpl, id, id)
 	err = r.DB.Raw(sql).Scan(&ids).Error
 	if err != nil {
-		logUtils.Errorf("get children product error", zap.String("error:", err.Error()))
+		logUtils.Errorf("get children project error", zap.String("error:", err.Error()))
 		return
 	}
+
+	return
+}
+
+func (r *ProjectRepo) ListProjectByUser(userId int) (projects []model.Project, err error) {
+	var projectIds []uint
+	r.DB.Model(&model.ProjectMember{}).
+		Select("project_id").Where("user_id = ?", userId).Scan(&projectIds)
+
+	err = r.DB.Model(&model.Project{}).
+		Where("id IN ?", projectIds).
+		Find(&projects).Error
+
+	return
+}
+
+func (r *ProjectRepo) GetCurrProjectByUser(userId int) (currProject model.Project, err error) {
+	var user model.SysUser
+	err = r.DB.Preload("Profile").
+		Where("id = ?", userId).
+		First(&user).
+		Error
+
+	err = r.DB.Model(&model.Project{}).
+		Where("id = ?", user.Profile.CurrProjectId).
+		First(&currProject).Error
 
 	return
 }

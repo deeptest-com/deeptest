@@ -125,3 +125,23 @@ func (c *ProjectCtrl) Delete(ctx iris.Context) {
 
 	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: nil, Msg: domain.NoErr.Msg})
 }
+
+// Query 分页列表
+func (c *ProjectCtrl) GetByUser(ctx iris.Context) {
+	userId, _ := ctx.URLParamInt("userId")
+	if userId == 0 {
+		msg := "缺少参数userId"
+		logUtils.Errorf(msg)
+		ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: msg})
+		return
+	}
+
+	projects, currProject, err := c.ProjectService.GetByUser(userId)
+	if err != nil {
+		ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	ret := iris.Map{"projects": projects, "currProject": currProject}
+	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: ret, Msg: domain.NoErr.Msg})
+}

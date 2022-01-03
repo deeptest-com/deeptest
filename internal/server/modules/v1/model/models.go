@@ -11,9 +11,12 @@ var (
 		&SysPerm{},
 		&SysRole{},
 		&SysUser{},
+		&SysUserProfile{},
 
+		&ProjectRole{},
 		&Org{},
 		&Project{},
+		&ProjectMember{},
 		&TestCase{},
 		&TestScript{},
 		&TestStep{},

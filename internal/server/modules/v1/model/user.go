@@ -5,7 +5,10 @@ type SysUser struct {
 
 	BaseUser
 	Password string `gorm:"type:varchar(250)" json:"password" validate:"required"`
-	RoleIds  []uint `gorm:"-" json:"role_ids"`
+
+	Profile SysUserProfile `gorm:"foreignKey:user_id"`
+
+	RoleIds []uint `gorm:"-" json:"role_ids"`
 }
 
 type BaseUser struct {

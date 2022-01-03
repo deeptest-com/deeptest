@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 )
 
@@ -39,4 +40,11 @@ func (s *ProjectService) Update(id uint, req serverDomain.ProjectReq) error {
 
 func (s *ProjectService) DeleteById(id uint) error {
 	return s.ProjectRepo.BatchDelete(id)
+}
+
+func (s *ProjectService) GetByUser(userId int) (projects []model.Project, currProject model.Project, err error) {
+	projects, err = s.ProjectRepo.ListProjectByUser(userId)
+	currProject, err = s.ProjectRepo.GetCurrProjectByUser(userId)
+
+	return
 }

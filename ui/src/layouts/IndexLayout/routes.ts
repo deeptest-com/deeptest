@@ -56,6 +56,28 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
   },
 
   {
+    icon: 'project',
+    title: 'index-layout.menu.project',
+    path: '/~/project',
+    redirect: '/~/project/list',
+    component: BlankLayout,
+    children: [
+      {
+        title: 'index-layout.menu.project.list',
+        path: 'list',
+        component: () => import('@/views/project/list/index.vue'),
+        hidden: true,
+      },
+      {
+        title: 'index-layout.menu.project.edit',
+        path: 'edit/:id',
+        component: () => import('@/views/project/edit/index.vue'),
+        hidden: true,
+      },
+    ],
+  },
+
+  {
     icon: 'script',
     title: 'index-layout.menu.script',
     path: '/~/script',

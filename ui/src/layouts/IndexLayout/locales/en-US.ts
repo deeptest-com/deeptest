@@ -8,6 +8,10 @@ export default {
   'index-layout.menu.home.custom-breadcrumbs.liqingsong.cc': 'liqingsong.cc',
   'index-layout.menu.home.docs': 'Using document',
 
+  'index-layout.menu.project': 'Project',
+  'index-layout.menu.project.list': 'Project List',
+  'index-layout.menu.project.edit': 'Project Edit',
+
   'index-layout.menu.script': 'Script',
   'index-layout.menu.script.list': 'Script List',
   'index-layout.menu.script.edit': 'Script Edit',

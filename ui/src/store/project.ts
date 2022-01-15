@@ -1,9 +1,9 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
+import settings from '@/config/settings';
 import {getByUser} from '@/services/project';
 import {setCache} from "@/utils/localCache";
-import settings from '@/config/settings';
 
 export interface StateType {
   projects: any[]

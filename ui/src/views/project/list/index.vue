@@ -5,7 +5,7 @@
         <a-button type="primary" @click="() => edit(0)">新建项目</a-button>
       </template>
       <template #extra>
-        <a-select @change="onSearch" v-model:value="queryParams.enabled" :options="statusArr">
+        <a-select @change="onSearch" v-model:value="queryParams.enabled" :options="statusArr" class="status-select">
         </a-select>
         <a-input-search @change="onSearch" @search="onSearch" v-model:value="queryParams.keywords"
                         placeholder="输入关键字搜索" style="width:270px;margin-left: 16px;"/>
@@ -82,11 +82,11 @@ export default defineComponent({
     const statusArr = ref<SelectTypes['options']>([
       {
         label: '所有状态',
-        value: '1',
+        value: '',
       },
       {
         label: '启用',
-        value: '0',
+        value: '1',
       },
       {
         label: '禁用',
@@ -206,3 +206,9 @@ export default defineComponent({
 
 })
 </script>
+
+<style lang="less" scoped>
+  .status-select {
+    width: 100px;
+  }
+</style>

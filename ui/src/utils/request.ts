@@ -126,7 +126,7 @@ request.interceptors.request.use(
  */
 request.interceptors.response.use(
     async (response: AxiosResponse) => {
-        console.log('=== response ===', response)
+        console.log('=== response ===', response.config.url, response)
 
         const res: ResponseData = response.data;
         const { code, token } = res;

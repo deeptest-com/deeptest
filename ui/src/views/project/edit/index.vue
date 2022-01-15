@@ -1,7 +1,14 @@
 <template>
   <div class="indexlayout-main-conent">
     <a-card :bordered="false">
-      编辑项目
+      <template #title>
+        <div>编辑项目</div>
+      </template>
+      <template #extra>
+        <a-button type="link" @click="() => back()">返回</a-button>
+      </template>
+
+      <div>表单</div>
     </a-card>
   </div>
 </template>

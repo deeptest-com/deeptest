@@ -79,26 +79,6 @@ func Init() *WebServer {
 		close(idleConnClosed)
 	})
 
-	if serverConsts.CONFIG.System.Addr == "" { // 默认 8085
-		serverConsts.CONFIG.System.Addr = "127.0.0.1:8085"
-	}
-
-	if serverConsts.CONFIG.System.StaticPath == "" { // 默认 /static/upload
-		serverConsts.CONFIG.System.StaticPath = "/static/upload"
-	}
-
-	if serverConsts.CONFIG.System.StaticPrefix == "" { // 默认 /upload
-		serverConsts.CONFIG.System.StaticPrefix = "/upload"
-	}
-
-	if serverConsts.CONFIG.System.WebPath == "" { // 默认 /./dist
-		serverConsts.CONFIG.System.WebPath = "./dist"
-	}
-
-	if serverConsts.CONFIG.System.TimeFormat == "" { // 默认 80
-		serverConsts.CONFIG.System.TimeFormat = time.RFC3339
-	}
-
 	// init grpc
 	mvc.New(app)
 

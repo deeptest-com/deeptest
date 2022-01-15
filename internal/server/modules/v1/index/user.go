@@ -19,7 +19,7 @@ func NewUserModule() *UserModule {
 func (m *UserModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
-		index.Get("/", m.UserCtrl.GetAllUsers).Name = "用户列表"
+		index.Get("/", m.UserCtrl.ListAll).Name = "用户列表"
 		index.Get("/{id:uint}", m.UserCtrl.GetUser).Name = "用户详情"
 		index.Post("/", m.UserCtrl.CreateUser).Name = "新建用户"
 		index.Post("/{id:uint}", m.UserCtrl.UpdateUser).Name = "编辑用户"

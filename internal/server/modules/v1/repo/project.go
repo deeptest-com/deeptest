@@ -171,19 +171,19 @@ func (r *ProjectRepo) GetChildrenIds(id uint) (ids []int, err error) {
 	return
 }
 
-func (r *ProjectRepo) ListProjectByUser(userId int) (projects []model.Project, err error) {
+func (r *ProjectRepo) ListProjectByUser(userId uint) (projects []model.Project, err error) {
 	var projectIds []uint
 	r.DB.Model(&model.ProjectMember{}).
 		Select("project_id").Where("user_id = ?", userId).Scan(&projectIds)
 
 	err = r.DB.Model(&model.Project{}).
-		Where("id IN ?", projectIds).
+		Where("id IN (?)", projectIds).
 		Find(&projects).Error
 
 	return
 }
 
-func (r *ProjectRepo) GetCurrProjectByUser(userId int) (currProject model.Project, err error) {
+func (r *ProjectRepo) GetCurrProjectByUser(userId uint) (currProject model.Project, err error) {
 	var user model.SysUser
 	err = r.DB.Preload("Profile").
 		Where("id = ?", userId).

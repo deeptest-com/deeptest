@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
+	"github.com/snowlyg/multi"
 	"strings"
 
 	"github.com/kataras/iris/v12"
@@ -21,7 +22,6 @@ func NewProjectCtrl() *ProjectCtrl {
 	return &ProjectCtrl{}
 }
 
-// Query 分页列表
 func (c *ProjectCtrl) List(ctx iris.Context) {
 	var req serverDomain.ProjectReqPaginate
 	if err := ctx.ReadQuery(&req); err != nil {
@@ -43,7 +43,6 @@ func (c *ProjectCtrl) List(ctx iris.Context) {
 	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: data, Msg: domain.NoErr.Msg})
 }
 
-// Get 详情
 func (c *ProjectCtrl) Get(ctx iris.Context) {
 	var req domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
@@ -59,7 +58,6 @@ func (c *ProjectCtrl) Get(ctx iris.Context) {
 	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: product, Msg: domain.NoErr.Msg})
 }
 
-// Create 添加
 func (c *ProjectCtrl) Create(ctx iris.Context) {
 	req := serverDomain.ProjectReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
@@ -82,7 +80,6 @@ func (c *ProjectCtrl) Create(ctx iris.Context) {
 	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: iris.Map{"id": id}, Msg: domain.NoErr.Msg})
 }
 
-// Update 更新
 func (c *ProjectCtrl) Update(ctx iris.Context) {
 	var reqId domain.ReqId
 	if err := ctx.ReadParams(&reqId); err != nil {
@@ -109,7 +106,6 @@ func (c *ProjectCtrl) Update(ctx iris.Context) {
 	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: nil, Msg: domain.NoErr.Msg})
 }
 
-// Delete 删除
 func (c *ProjectCtrl) Delete(ctx iris.Context) {
 	var req domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
@@ -126,15 +122,8 @@ func (c *ProjectCtrl) Delete(ctx iris.Context) {
 	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: nil, Msg: domain.NoErr.Msg})
 }
 
-// Query 分页列表
 func (c *ProjectCtrl) GetByUser(ctx iris.Context) {
-	userId, _ := ctx.URLParamInt("userId")
-	if userId == 0 {
-		msg := "缺少参数userId"
-		logUtils.Errorf(msg)
-		ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: msg})
-		return
-	}
+	userId := multi.GetUserId(ctx)
 
 	projects, currProject, err := c.ProjectService.GetByUser(userId)
 	if err != nil {

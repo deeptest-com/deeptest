@@ -42,7 +42,7 @@ func (s *ProjectService) DeleteById(id uint) error {
 	return s.ProjectRepo.BatchDelete(id)
 }
 
-func (s *ProjectService) GetByUser(userId int) (projects []model.Project, currProject model.Project, err error) {
+func (s *ProjectService) GetByUser(userId uint) (projects []model.Project, currProject model.Project, err error) {
 	projects, err = s.ProjectRepo.ListProjectByUser(userId)
 	currProject, err = s.ProjectRepo.GetCurrProjectByUser(userId)
 

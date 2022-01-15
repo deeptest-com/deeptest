@@ -34,7 +34,12 @@ export interface SettingsType {
      * 站点本地存储Token 的 Key值
      */
     siteTokenKey: string;
-  
+
+    /**
+     * 站点本地存储当前项目 的 Key值
+     */
+    currProjectId: string;
+
     /**
      * Ajax请求头发送Token 的 Key值
      */
@@ -63,6 +68,7 @@ const settings: SettingsType = {
         component: ()=> import('@/views/home/index.vue')
     },
     siteTokenKey: 'admin_antd_vue_token',
+    currProjectId: 'curr_project_id',
     // ajaxHeadersTokenKey: 'x-token',
     ajaxHeadersTokenKey: 'Authorization',
     ajaxResponseNoVerifyUrl: [

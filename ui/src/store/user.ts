@@ -14,9 +14,6 @@ export interface CurrentUser {
 export interface StateType {
   currentUser: CurrentUser;
   message: number;
-
-  projects: any[];
-  currProject: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -24,12 +21,10 @@ export interface ModuleType extends StoreModuleType<StateType> {
   mutations: {
     saveCurrentUser: Mutation<StateType>;
     saveMessage: Mutation<StateType>;
-    saveProjects: Mutation<StateType>;
   };
   actions: {
     fetchCurrent: Action<StateType, StateType>;
     fetchMessage: Action<StateType, StateType>;
-    fetchProject: Action<StateType, StateType>;
     logout: Action<StateType, StateType>;
   };
 }
@@ -42,8 +37,6 @@ const initState: StateType = {
     roles: [],
   },
   message: 0,
-  projects: [],
-  currProject: {}
 }
 
 const StoreModel: ModuleType = {
@@ -62,10 +55,6 @@ const StoreModel: ModuleType = {
     saveMessage(state, payload) {
       state.message = payload;
     },
-    saveProjects(state, payload) {
-      state.projects = payload.projects;
-      state.currProject = payload.currProject;
-    }
   },
   actions: {
     async fetchCurrent({ commit }) {
@@ -84,17 +73,6 @@ const StoreModel: ModuleType = {
         const response: ResponseData = await queryMessage();
         const { data } = response;        
         commit('saveMessage', data || 0);
-        return true;
-      } catch (error) {
-        return false;
-      }
-    },
-    async fetchProject({ commit }) {
-      try {
-        const response: ResponseData = await queryProject();
-        const { data } = response;
-        commit('saveProjects', data || 0);
-
         return true;
       } catch (error) {
         return false;

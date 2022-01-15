@@ -2,9 +2,9 @@ package controller
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
+	"github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
-	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
@@ -24,8 +24,7 @@ func NewUserCtrl() *UserCtrl {
 	return &UserCtrl{}
 }
 
-// GetAllUsers 分页列表
-func (c *UserCtrl) GetAllUsers(ctx iris.Context) {
+func (c *UserCtrl) ListAll(ctx iris.Context) {
 	var req serverDomain.UserReqPaginate
 
 	if err := ctx.ReadQuery(&req); err != nil {

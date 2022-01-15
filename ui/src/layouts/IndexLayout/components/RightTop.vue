@@ -30,7 +30,7 @@
                 </div>
             </div>
             <div class="indexlayout-top-menu-right">
-                <right-top-project-selection />
+                <right-top-project />
 
                 <right-top-message />
 
@@ -57,7 +57,7 @@ import { BreadcrumbType, RoutesDataItem } from '@/utils/routes';
 import BreadCrumbs from '@/components/BreadCrumbs/index.vue';
 import SelectLang from '@/components/SelectLang/index.vue';
 import ALink from '@/components/ALink/index.vue';
-import RightTopProjectSelection from './RightTopProjectSelection.vue';
+import RightTopProject from './RightTopProject.vue';
 import RightTopMessage from './RightTopMessage.vue';
 import RightTopUser from './RightTopUser.vue';
 import RightTabNav from './RightTabNav.vue';
@@ -77,7 +77,7 @@ export default defineComponent({
       MenuFoldOutlined,
       MenuUnfoldOutlined,
       EnvironmentOutlined,
-      RightTopProjectSelection,
+      RightTopProject,
       RightTopMessage,
       RightTopUser,
       SelectLang,

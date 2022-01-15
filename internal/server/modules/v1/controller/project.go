@@ -81,13 +81,6 @@ func (c *ProjectCtrl) Create(ctx iris.Context) {
 }
 
 func (c *ProjectCtrl) Update(ctx iris.Context) {
-	var reqId domain.ReqId
-	if err := ctx.ReadParams(&reqId); err != nil {
-		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
-		ctx.JSON(domain.Response{Code: domain.ParamErr.Code, Data: nil, Msg: domain.ParamErr.Msg})
-		return
-	}
-
 	var req serverDomain.ProjectReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
@@ -98,7 +91,7 @@ func (c *ProjectCtrl) Update(ctx iris.Context) {
 		}
 	}
 
-	err := c.ProjectService.Update(reqId.Id, req)
+	err := c.ProjectService.Update(req)
 	if err != nil {
 		ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

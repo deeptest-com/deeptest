@@ -34,12 +34,12 @@ func (s *ProjectService) Create(req serverDomain.ProjectReq) (uint, error) {
 	return s.ProjectRepo.Create(req)
 }
 
-func (s *ProjectService) Update(id uint, req serverDomain.ProjectReq) error {
-	return s.ProjectRepo.Update(id, req)
+func (s *ProjectService) Update(req serverDomain.ProjectReq) error {
+	return s.ProjectRepo.Update(req)
 }
 
 func (s *ProjectService) DeleteById(id uint) error {
-	return s.ProjectRepo.BatchDelete(id)
+	return s.ProjectRepo.DeleteById(id)
 }
 
 func (s *ProjectService) GetByUser(userId uint) (projects []model.Project, currProject model.Project, err error) {

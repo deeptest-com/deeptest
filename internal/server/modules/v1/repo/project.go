@@ -96,9 +96,9 @@ func (r *ProjectRepo) Create(req serverDomain.ProjectReq) (uint, error) {
 	return project.ID, nil
 }
 
-func (r *ProjectRepo) Update(id uint, req serverDomain.ProjectReq) error {
+func (r *ProjectRepo) Update(req serverDomain.ProjectReq) error {
 	project := req.Project
-	err := r.DB.Model(&model.Project{}).Where("id = ?", id).Updates(&project).Error
+	err := r.DB.Model(&model.Project{}).Where("id = ?", req.ID).Updates(&project).Error
 	if err != nil {
 		logUtils.Errorf("update project error", zap.String("error:", err.Error()))
 		return err
@@ -107,31 +107,8 @@ func (r *ProjectRepo) Update(id uint, req serverDomain.ProjectReq) error {
 	return nil
 }
 
-func (r *ProjectRepo) BatchDelete(id uint) (err error) {
-	ids, err := r.GetChildrenIds(id)
-	if err != nil {
-		return err
-	}
-
-	r.DB.Transaction(func(tx *gorm.DB) (err error) {
-		err = r.DeleteChildren(ids, tx)
-		if err != nil {
-			return
-		}
-
-		err = r.DeleteById(id, tx)
-		if err != nil {
-			return
-		}
-
-		return
-	})
-
-	return
-}
-
-func (r *ProjectRepo) DeleteById(id uint, tx *gorm.DB) (err error) {
-	err = tx.Model(&model.Project{}).Where("id = ?", id).
+func (r *ProjectRepo) DeleteById(id uint) (err error) {
+	err = r.DB.Model(&model.Project{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete project by id error", zap.String("error:", err.Error()))

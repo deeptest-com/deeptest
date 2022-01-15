@@ -3,12 +3,12 @@ import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
 import { Project, QueryResult, QueryParams, PaginationConfig } from './data.d';
 import {
-    query, remove, create, detail, update,
+    query, save, remove, detail,
 } from './service';
 
 export interface StateType {
     queryResult: QueryResult;
-    detailResult: Partial<Project>;
+    detailResult: Project;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -19,10 +19,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
     };
     actions: {
         queryProject: Action<StateType, StateType>;
-        deleteProject: Action<StateType, StateType>;
-        createProject: Action<StateType, StateType>;
         getProject: Action<StateType, StateType>;
-        updateProject: Action<StateType, StateType>;
+        saveProject: Action<StateType, StateType>;
+        removeProject: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -36,12 +35,12 @@ const initState: StateType = {
             showQuickJumper: true,
         },
     },
-    detailResult: {},
+    detailResult: {} as Project,
 };
 
 const StoreModel: ModuleType = {
     namespaced: true,
-    name: 'ListProject',
+    name: 'Project',
     state: {
         ...initState
     },
@@ -76,25 +75,15 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async deleteProject({ commit }, payload: number ) {
-            try {
-                await remove(payload);
-                return true;
-            } catch (error) {
-                return false;
+        async getProject({ commit }, id: number ) {
+            if (id === 0) {
+                commit('setItem',{
+                    ...initState.detailResult,
+                })
+                return
             }
-        },
-        async createProject({ commit }, payload: Pick<Project, "name" | "desc"> ) {
             try {
-                await create(payload);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async getProject({ commit }, payload: number ) {
-            try {
-                const response: ResponseData = await detail(payload);
+                const response: ResponseData = await detail(id);
                 const { data } = response;
                 commit('setItem',{
                     ...initState.detailResult,
@@ -105,10 +94,17 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async updateProject({ commit }, payload: Project ) {
+        async saveProject({ commit }, payload: Pick<Project, "name" | "desc"> ) {
             try {
-                const { id, ...params } = payload;
-                await update(id, { ...params });
+                await save(payload);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async removeProject({ commit }, payload: number ) {
+            try {
+                await remove(payload);
                 return true;
             } catch (error) {
                 return false;

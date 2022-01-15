@@ -11,18 +11,10 @@ export async function query(params?: QueryParams): Promise<any> {
     });
 }
 
-export async function create(params: Omit<Project, 'id'>): Promise<any> {
+export async function save(params: Partial<Project>): Promise<any> {
     return request({
         url: `/${apiPath}`,
-        method: 'POST',
-        data: params,
-    });
-}
-
-export async function update(id: number, params: Omit<Project, 'id'>): Promise<any> {
-    return request({
-        url: `/${apiPath}/${id}`,
-        method: 'PUT',
+        method: params.id? 'PUT': 'POST',
         data: params,
     });
 }

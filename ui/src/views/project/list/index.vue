@@ -2,7 +2,7 @@
   <div class="indexlayout-main-conent">
     <a-card :bordered="false">
       <template #title>
-        <a-button type="primary" @click="() => setCreateFormVisible(true)">新建脚本</a-button>
+        <a-button type="primary" @click="() => edit(0)">新建项目</a-button>
       </template>
       <template #extra>
         <a-select @change="onSearch" v-model:value="queryParams.enabled" :options="statusArr">
@@ -36,9 +36,9 @@
             <a-tag v-else color="cyan">禁用</a-tag>
           </template>
           <template #action="{ record }">
-            <a-button type="link" @click="() => editProject(record.id)">编辑
+            <a-button type="link" @click="() => edit(record.id)">编辑
             </a-button>
-            <a-button type="link" @click="() => deleteProject(record.id)">删除
+            <a-button type="link" @click="() => remove(record.id)">删除
             </a-button>
           </template>
 
@@ -54,9 +54,10 @@ import {SelectTypes} from 'ant-design-vue/es/select';
 import {PaginationConfig, QueryParams, Project} from '../data.d';
 import {useStore} from "vuex";
 
-import {StateType as ListStateType} from "../store";
+import {StateType} from "../store";
 import debounce from "lodash.debounce";
 import {useRouter} from "vue-router";
+import {message, Modal} from "ant-design-vue";
 
 interface ListProjectPageSetupData {
   statusArr,
@@ -67,8 +68,8 @@ interface ListProjectPageSetupData {
   loading: Ref<boolean>;
   getList: (current: number) => Promise<void>;
 
-  editProject: (id: number) => Promise<void>;
-  deleteProject: (id: number) => void;
+  edit: (id: number) => Promise<void>;
+  remove: (id: number) => void;
 
   onSearch: () => void;
 }
@@ -94,10 +95,10 @@ export default defineComponent({
     ]);
 
     const router = useRouter();
-    const store = useStore<{ ListProject: ListStateType }>();
+    const store = useStore<{ Project: StateType }>();
 
-    const list = computed<Project[]>(() => store.state.ListProject.queryResult.list);
-    let pagination = computed<PaginationConfig>(() => store.state.ListProject.queryResult.pagination);
+    const list = computed<Project[]>(() => store.state.Project.queryResult.list);
+    let pagination = computed<PaginationConfig>(() => store.state.Project.queryResult.pagination);
     let queryParams = reactive<QueryParams>({
       keywords: '', enabled: '1',
       page: pagination.value.current, pageSize: pagination.value.pageSize
@@ -143,7 +144,7 @@ export default defineComponent({
     const getList = async (current: number): Promise<void> => {
       loading.value = true;
 
-      await store.dispatch('ListProject/queryProject', {
+      await store.dispatch('Project/queryProject', {
         keywords: queryParams.keywords,
         enabled: queryParams.enabled,
         pageSize: pagination.value.pageSize,
@@ -152,13 +153,31 @@ export default defineComponent({
       loading.value = false;
     }
 
-    const editProject = async (id: number) => {
-      console.log('editProject')
+    const edit = async (id: number) => {
+      console.log('edit')
       router.replace(`/~/project/edit/${id}`)
     }
 
-    const deleteProject = (id: number) => {
-      console.log('deleteProject')
+    const remove = (id: number) => {
+      console.log('remove')
+
+      Modal.confirm({
+        title: '删除项目',
+        content: '确定删除？',
+        okText: '确认',
+        cancelText: '取消',
+        onOk: async () => {
+          store.dispatch('Project/removeProject', id).then((res) => {
+            console.log('res', res)
+            if (res === true) {
+              message.success(`删除项目成功`)
+              store.dispatch('Project/queryProject', id)
+            } else {
+              message.error(`删除项目失败`)
+            }
+          })
+        }
+      });
     }
 
     const onSearch = debounce(() => {
@@ -178,8 +197,8 @@ export default defineComponent({
       loading,
       getList,
 
-      editProject,
-      deleteProject,
+      edit,
+      remove,
 
       onSearch,
     }

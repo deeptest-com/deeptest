@@ -3,7 +3,7 @@ import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
 import { Script, QueryResult, QueryParams, PaginationConfig } from './data.d';
 import {
-    query, remove, create, detail, update,
+    query, get, remove, create, update,
 } from './service';
 
 export interface StateType {
@@ -76,14 +76,6 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async deleteScript({ commit }, payload: number ) {
-            try {
-                await remove(payload);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
         async createScript({ commit }, payload: Pick<Script, "name" | "desc"> ) {
             try {
                 await create(payload);
@@ -94,7 +86,7 @@ const StoreModel: ModuleType = {
         },
         async getScript({ commit }, payload: number ) {
             try {
-                const response: ResponseData = await detail(payload);
+                const response: ResponseData = await get(payload);
                 const { data } = response;
                 commit('setItem',{
                     ...initState.detailResult,
@@ -109,6 +101,14 @@ const StoreModel: ModuleType = {
             try {
                 const { id, ...params } = payload;
                 await update(id, { ...params });
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async deleteScript({ commit }, payload: number ) {
+            try {
+                await remove(payload);
                 return true;
             } catch (error) {
                 return false;

@@ -143,7 +143,7 @@ export default defineComponent({
     const getList = async (current: number): Promise<void> => {
       loading.value = true;
 
-      await store.dispatch('project/queryProject', {
+      await store.dispatch('ListProject/queryProject', {
         keywords: queryParams.keywords,
         enabled: queryParams.enabled,
         pageSize: pagination.value.pageSize,
@@ -154,10 +154,11 @@ export default defineComponent({
 
     const editProject = async (id: number) => {
       console.log('editProject')
+      router.replace(`/~/project/edit/${id}`)
     }
 
     const deleteProject = (id: number) => {
-      console.log('editProject')
+      console.log('deleteProject')
     }
 
     const onSearch = debounce(() => {

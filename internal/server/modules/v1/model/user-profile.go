@@ -7,7 +7,7 @@ type SysUserProfile struct {
 	Phone         string `json:"phone"`
 	CurrProjectId uint   `json:"currProjectId"`
 
-	UserId string `json:"userId"`
+	UserId uint `json:"userId"`
 }
 
 func (SysUserProfile) TableName() string {

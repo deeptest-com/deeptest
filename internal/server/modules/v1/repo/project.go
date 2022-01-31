@@ -167,10 +167,6 @@ func (r *ProjectRepo) GetCurrProjectByUser(userId uint) (currProject model.Proje
 		First(&user).
 		Error
 
-	if err != nil {
-		return
-	}
-
 	err = r.DB.Model(&model.Project{}).
 		Where("id = ?", user.Profile.CurrProjectId).
 		First(&currProject).Error

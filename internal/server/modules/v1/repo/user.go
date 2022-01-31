@@ -20,8 +20,10 @@ import (
 )
 
 type UserRepo struct {
-	DB       *gorm.DB  `inject:""`
-	RoleRepo *RoleRepo `inject:""`
+	DB          *gorm.DB     `inject:""`
+	ProfileRepo *ProfileRepo `inject:""`
+	RoleRepo    *RoleRepo    `inject:""`
+	ProjectRepo *ProjectRepo `inject:""`
 }
 
 func NewUserRepo() *UserRepo {
@@ -137,6 +139,17 @@ func (r *UserRepo) Create(req serverDomain.UserReq) (uint, error) {
 		return 0, err
 	}
 
+	project, err := r.AddProjectForUser(&user)
+	if err != nil {
+		logUtils.Errorf("添加用户项目错误", zap.String("错误:", err.Error()))
+		return 0, err
+	}
+
+	if err := r.AddProfileForUser(&user, project); err != nil {
+		logUtils.Errorf("添加用户信息错误", zap.String("错误:", err.Error()))
+		return 0, err
+	}
+
 	if err := r.AddRoleForUser(&user); err != nil {
 		logUtils.Errorf("添加用户角色错误", zap.String("错误:", err.Error()))
 		return 0, err
@@ -200,6 +213,22 @@ func (r *UserRepo) DeleteById(id uint) error {
 	return nil
 }
 
+func (r *UserRepo) AddProfileForUser(user *model.SysUser, project model.Project) (err error) {
+	_, err = r.ProfileRepo.FindByUserId(user.ID)
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return fmt.Errorf("用户 %s 信息已经被使用", user.Name)
+	}
+
+	profile := model.SysUserProfile{UserId: user.ID, Email: "chenqi@deeptest.com", CurrProjectId: project.ID}
+	err = r.DB.Create(&profile).Error
+	if err != nil {
+		logUtils.Errorf("添加用户错误", zap.String("错误:", err.Error()))
+		return err
+	}
+
+	return
+}
+
 // AddRoleForUser add roles for user
 func (r *UserRepo) AddRoleForUser(user *model.SysUser) error {
 	userId := strconv.FormatUint(uint64(user.ID), 10)
@@ -230,6 +259,23 @@ func (r *UserRepo) AddRoleForUser(user *model.SysUser) error {
 	}
 
 	return nil
+}
+
+func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project, err error) {
+	_, err = r.ProjectRepo.GetCurrProjectByUser(user.ID)
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		err = fmt.Errorf("用户%s的默认项目已存在", user.Name)
+		return
+	}
+
+	project = model.Project{Name: fmt.Sprintf("%s的项目", user.Name)}
+	err = r.DB.Create(&project).Error
+	if err != nil {
+		logUtils.Errorf("添加项目错误", zap.String("错误:", err.Error()))
+		return
+	}
+
+	return
 }
 
 // DelToken 删除token

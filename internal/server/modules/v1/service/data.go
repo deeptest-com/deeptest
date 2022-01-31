@@ -20,11 +20,12 @@ var (
 )
 
 type DataService struct {
-	DataRepo   *repo.DataRepo     `inject:""`
-	UserRepo   *repo.UserRepo     `inject:""`
-	UserSource *source.UserSource `inject:""`
-	RoleSource *source.RoleSource `inject:""`
-	PermSource *source.PermSource `inject:""`
+	DataRepo          *repo.DataRepo            `inject:""`
+	UserRepo          *repo.UserRepo            `inject:""`
+	UserSource        *source.UserSource        `inject:""`
+	RoleSource        *source.RoleSource        `inject:""`
+	PermSource        *source.PermSource        `inject:""`
+	ProjectRoleSource *source.ProjectRoleSource `inject:""`
 }
 
 func NewDataService() *DataService {
@@ -98,6 +99,7 @@ func (s *DataService) InitDB(req serverDomain.DataReq) error {
 		err = s.initData(
 			s.PermSource,
 			s.RoleSource,
+			s.ProjectRoleSource,
 			s.UserSource,
 		)
 		if err != nil {

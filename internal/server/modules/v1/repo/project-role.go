@@ -15,7 +15,12 @@ func NewProjectRoleRepo() *ProjectRoleRepo {
 	return &ProjectRoleRepo{}
 }
 
-// FindByName
+func (r *ProjectRoleRepo) GetFirstOne() (projectRole model.ProjectRole, err error) {
+	db := r.DB.Model(&model.ProjectRole{}).Where("1=1").Order("id ASC")
+	err = db.First(&projectRole).Error
+	return
+}
+
 func (r *ProjectRoleRepo) FindByName(name string) (projectRole model.ProjectRole, err error) {
 	db := r.DB.Model(&model.ProjectRole{}).Where("name = ?", name)
 

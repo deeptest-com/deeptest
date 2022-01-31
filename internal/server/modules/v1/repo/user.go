@@ -20,10 +20,11 @@ import (
 )
 
 type UserRepo struct {
-	DB          *gorm.DB     `inject:""`
-	ProfileRepo *ProfileRepo `inject:""`
-	RoleRepo    *RoleRepo    `inject:""`
-	ProjectRepo *ProjectRepo `inject:""`
+	DB              *gorm.DB         `inject:""`
+	ProfileRepo     *ProfileRepo     `inject:""`
+	RoleRepo        *RoleRepo        `inject:""`
+	ProjectRepo     *ProjectRepo     `inject:""`
+	ProjectRoleRepo *ProjectRoleRepo `inject:""`
 }
 
 func NewUserRepo() *UserRepo {
@@ -272,6 +273,14 @@ func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project
 	err = r.DB.Create(&project).Error
 	if err != nil {
 		logUtils.Errorf("添加项目错误", zap.String("错误:", err.Error()))
+		return
+	}
+
+	projectRole, _ := r.ProjectRoleRepo.GetFirstOne()
+	projectMember := model.ProjectMember{UserId: user.ID, ProjectId: project.ID, ProjectRoleId: projectRole.ID}
+	err = r.DB.Create(&projectMember).Error
+	if err != nil {
+		logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
 		return
 	}
 

@@ -26,7 +26,7 @@ func (s *UserSource) GetSources() ([]serverDomain.UserReq, error) {
 		{
 			BaseUser: model.BaseUser{
 				Username: serverConsts.AdminUserName,
-				Name:     "超级管理员",
+				Name:     "管理员",
 				Intro:    "超级管理员",
 				Avatar:   "images/avatar-m.svg",
 			},

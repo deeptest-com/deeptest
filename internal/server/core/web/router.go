@@ -4,7 +4,6 @@ import (
 	"fmt"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
-	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/module"
 	"github.com/aaronchen2k/deeptest/internal/server/middleware"
 	"strings"
@@ -35,7 +34,7 @@ func (webServer *WebServer) InitRouter() error {
 			return fmt.Errorf("build router %w", err)
 		}
 
-		serverConsts.PermRoutes = webServer.GetSources()
+		serverConfig.PermRoutes = webServer.GetSources()
 
 		return nil
 	}

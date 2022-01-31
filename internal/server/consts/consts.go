@@ -1,6 +1,7 @@
 package serverConsts
 
 const (
+	ConfigFileName = "server.yaml"
 	CasbinFileName = "rbac_model.conf" // casbin 规则文件名称
 
 	WebCheckInterval = 60 * 60

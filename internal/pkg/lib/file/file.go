@@ -123,24 +123,22 @@ func GetFilesFromParams(arguments []string) []string {
 	return ret
 }
 
-func GetExeDir() string { // where ztf command in
+func GetExeDir(workDir string) string { // where zd.exe file in
 	var dir string
 	arg1 := strings.ToLower(os.Args[0])
 
-	name := filepath.Base(arg1)
-	if strings.Index(name, "ztf") == 0 && strings.Index(arg1, "go-build") < 0 {
+	if strings.Index(arg1, "go-build") < 0 { // release
 		p, _ := exec.LookPath(os.Args[0])
 		if strings.Index(p, _consts.PthSep) > -1 {
 			dir = p[:strings.LastIndex(p, _consts.PthSep)]
 		}
 	} else { // debug
-		dir, _ = os.Getwd()
+		dir = workDir
 	}
 
 	dir, _ = filepath.Abs(dir)
-	dir = AddPathSepIfNeeded(dir)
+	dir = AddSepIfNeeded(dir)
 
-	//fmt.Printf("Debug: UpdateStatus %s in %s \n", arg1, dir)
 	return dir
 }
 

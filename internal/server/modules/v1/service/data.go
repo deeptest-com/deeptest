@@ -2,18 +2,14 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/server/config"
-	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/module"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/source"
-	"golang.org/x/crypto/bcrypt"
-
 	"github.com/snowlyg/helper/str"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -57,30 +53,16 @@ func (s *DataService) refreshConfig(viper *viper.Viper, conf serverConfig.Config
 // InitDB 创建数据库并初始化
 func (s *DataService) InitDB(req serverDomain.DataReq) error {
 	defaultConfig := serverConfig.CONFIG
-	if serverConsts.VIPER == nil {
+	if serverConfig.VIPER == nil {
 		logUtils.Errorf("初始化错误", zap.String("InitDB", ErrViperEmpty.Error()))
 		return ErrViperEmpty
 	}
 
-	level := req.Level
-	if level == "" {
-		level = "debug"
-	}
-	addr := req.Addr
-	if addr == "" {
-		addr = "127.0.0.1:8085"
-	}
-
-	serverConfig.CONFIG.System.CacheType = req.CacheType
-	serverConfig.CONFIG.System.Level = level
-	serverConfig.CONFIG.System.Addr = addr
-	serverConfig.CONFIG.System.DbType = req.SqlType
-
 	if serverConfig.CONFIG.System.CacheType == "redis" {
 		serverConfig.CONFIG.Redis = serverConfig.Redis{
-			DB:       req.Cache.DB,
-			Addr:     fmt.Sprintf("%s:%s", req.Cache.Host, req.Cache.Port),
-			Password: req.Cache.Password,
+			DB:       serverConfig.CONFIG.Redis.DB,
+			Addr:     serverConfig.CONFIG.Redis.Addr,
+			Password: serverConfig.CONFIG.Redis.Password,
 		}
 		err := cache.Init() // redis缓存
 		if err != nil {
@@ -89,46 +71,26 @@ func (s *DataService) InitDB(req serverDomain.DataReq) error {
 		}
 	}
 
-	if req.Db.Host == "" {
-		req.Db.Host = "127.0.0.1"
+	if serverConfig.CONFIG.System.DbType == "mysql" {
+		if err := s.DataRepo.CreateMySqlDb(); err != nil {
+			return err
+		}
 	}
 
-	if req.Db.Port == "" {
-		req.Db.Port = "3306"
-	}
-
-	if err := s.DataRepo.CreateTable(req.Db); err != nil {
-		return err
-	}
-
-	logUtils.Infof("新建数据库", zap.String("库名", req.Db.DBName))
-
-	serverConfig.CONFIG.Mysql.Path = fmt.Sprintf("%s:%s", req.Db.Host, req.Db.Port)
-	serverConfig.CONFIG.Mysql.Dbname = req.Db.DBName
-	serverConfig.CONFIG.Mysql.Username = req.Db.UserName
-	serverConfig.CONFIG.Mysql.Password = req.Db.Password
-	serverConfig.CONFIG.Mysql.LogMode = req.Db.LogMode
-
-	m := serverConfig.CONFIG.Mysql
-	if m.Dbname == "" {
-		logUtils.Errorf("缺少数据库参数")
-		return errors.New("缺少数据库参数")
-	}
-
-	if err := s.writeConfig(serverConsts.VIPER, serverConfig.CONFIG); err != nil {
+	if err := s.writeConfig(serverConfig.VIPER, serverConfig.CONFIG); err != nil {
 		logUtils.Errorf("更新配置文件错误", zap.String("writeConfig(consts.VIPER)", err.Error()))
 	}
 
 	if s.DataRepo.DB == nil {
 		logUtils.Error("数据库初始化错误")
-		s.refreshConfig(serverConsts.VIPER, defaultConfig)
+		s.refreshConfig(serverConfig.VIPER, defaultConfig)
 		return errors.New("数据库初始化错误")
 	}
 
 	err := s.DataRepo.DB.AutoMigrate(model.Models...)
 	if err != nil {
 		logUtils.Errorf("迁移数据表错误", zap.String("错误:", err.Error()))
-		s.refreshConfig(serverConsts.VIPER, defaultConfig)
+		s.refreshConfig(serverConfig.VIPER, defaultConfig)
 		return err
 	}
 
@@ -140,19 +102,8 @@ func (s *DataService) InitDB(req serverDomain.DataReq) error {
 		)
 		if err != nil {
 			logUtils.Errorf("填充数据错误", zap.String("错误:", err.Error()))
-			s.refreshConfig(serverConsts.VIPER, defaultConfig)
+			s.refreshConfig(serverConfig.VIPER, defaultConfig)
 			return err
-		}
-
-		// update password
-		if req.Sys.AdminPassword != "" {
-			hash, err := bcrypt.GenerateFromPassword([]byte(req.Sys.AdminPassword), bcrypt.DefaultCost)
-			if err != nil {
-				logUtils.Errorf("密码加密错误", zap.String("错误:", err.Error()))
-				return nil
-			}
-			req.Sys.AdminPassword = string(hash)
-			s.UserRepo.UpdatePasswordByName(serverConsts.AdminUserName, req.Sys.AdminPassword)
 		}
 	}
 

@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
-	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"strings"
 	"time"
 
@@ -20,11 +19,11 @@ func Init() error {
 		PoolSize:    serverConfig.CONFIG.Redis.PoolSize,
 		IdleTimeout: 300 * time.Second,
 	}
-	serverConsts.CACHE = redis.NewUniversalClient(universalOptions)
+	serverConfig.CACHE = redis.NewUniversalClient(universalOptions)
 	err := multi.InitDriver(
 		&multi.Config{
 			DriverType:      serverConfig.CONFIG.System.CacheType,
-			UniversalClient: serverConsts.CACHE},
+			UniversalClient: serverConfig.CACHE},
 	)
 	if err != nil {
 		return err
@@ -38,7 +37,7 @@ func Init() error {
 
 // SetCache 缓存数据
 func SetCache(key string, value interface{}, expiration time.Duration) error {
-	err := serverConsts.CACHE.Set(context.Background(), key, value, expiration).Err()
+	err := serverConfig.CACHE.Set(context.Background(), key, value, expiration).Err()
 	if err != nil {
 		return err
 	}
@@ -47,20 +46,20 @@ func SetCache(key string, value interface{}, expiration time.Duration) error {
 
 // DeleteCache 删除缓存数据
 func DeleteCache(key string) (int64, error) {
-	return serverConsts.CACHE.Del(context.Background(), key).Result()
+	return serverConfig.CACHE.Del(context.Background(), key).Result()
 }
 
 // GetCacheString 获取字符串类型数据
 func GetCacheString(key string) (string, error) {
-	return serverConsts.CACHE.Get(context.Background(), key).Result()
+	return serverConfig.CACHE.Get(context.Background(), key).Result()
 }
 
 // GetCacheBytes 获取bytes类型数据
 func GetCacheBytes(key string) ([]byte, error) {
-	return serverConsts.CACHE.Get(context.Background(), key).Bytes()
+	return serverConfig.CACHE.Get(context.Background(), key).Bytes()
 }
 
 // GetCacheUint 获取uint类型数据
 func GetCacheUint(key string) (uint64, error) {
-	return serverConsts.CACHE.Get(context.Background(), key).Uint64()
+	return serverConfig.CACHE.Get(context.Background(), key).Uint64()
 }

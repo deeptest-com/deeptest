@@ -40,7 +40,7 @@ type Redis struct {
 }
 
 type Mysql struct {
-	Path         string `mapstructure:"path" json:"path" yaml:"path"`
+	Url          string `mapstructure:"url" json:"url" yaml:"url"`
 	Config       string `mapstructure:"config" json:"config" yaml:"config"`
 	Dbname       string `mapstructure:"db-name" json:"dbname" yaml:"db-name"`
 	Username     string `mapstructure:"username" json:"username" yaml:"username"`
@@ -52,7 +52,7 @@ type Mysql struct {
 }
 
 func (m *Mysql) Dsn() string {
-	return fmt.Sprintf("%s:%s@tcp(%s)/%s?%s", m.Username, m.Password, m.Path, m.Dbname, m.Config)
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s?%s", m.Username, m.Password, m.Url, m.Dbname, m.Config)
 }
 
 type Captcha struct {

@@ -1,9 +1,9 @@
-package serverViper
+package serverConfig
 
 import (
 	"bytes"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/comm/consts"
 	myZap "github.com/aaronchen2k/deeptest/internal/pkg/core/zap"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"path/filepath"
@@ -11,6 +11,10 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/snowlyg/helper/dir"
 	"github.com/spf13/viper"
+)
+
+var (
+	CONFIG Config // 配置
 )
 
 // Init 初始化系统配置
@@ -74,7 +78,7 @@ zap:
 			panic(fmt.Errorf("读取默认配置文件错误: %w ", err))
 		}
 
-		if err := serverConsts.VIPER.Unmarshal(&serverConsts.CONFIG); err != nil {
+		if err := serverConsts.VIPER.Unmarshal(&CONFIG); err != nil {
 			panic(fmt.Errorf("同步配置文件错误: %w ", err))
 		}
 
@@ -95,14 +99,14 @@ zap:
 	serverConsts.VIPER.WatchConfig()
 	serverConsts.VIPER.OnConfigChange(func(e fsnotify.Event) {
 		fmt.Println("配置发生变化:", e.Name)
-		if err := serverConsts.VIPER.Unmarshal(&serverConsts.CONFIG); err != nil {
+		if err := serverConsts.VIPER.Unmarshal(&CONFIG); err != nil {
 			fmt.Println(err)
 		}
 	})
-	if err := v.Unmarshal(&serverConsts.CONFIG); err != nil {
+	if err := v.Unmarshal(&CONFIG); err != nil {
 		fmt.Println(err)
 	}
-	myZap.ZapInst = serverConsts.CONFIG.Zap
+	myZap.ZapInst = CONFIG.Zap
 
 	casbinPath := filepath.Join(dir.GetCurrentAbPath(), serverConsts.CasbinFileName)
 	fmt.Printf("casbin rbac_model.conf 位于： %s\n\n", casbinPath)

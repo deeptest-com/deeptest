@@ -41,9 +41,9 @@ func Init() {
 	}
 
 	if level == zap.DebugLevel || level == zap.ErrorLevel {
-		logger = zap.New(myZap.GetEncoderCore(level), zap.AddStacktrace(level))
+		logger = zap.New(_zap.GetEncoderCore(level), zap.AddStacktrace(level))
 	} else {
-		logger = zap.New(myZap.GetEncoderCore(level))
+		logger = zap.New(_zap.GetEncoderCore(level))
 	}
 	if agentConsts.CONFIG.Zap.ShowLine {
 		logger = logger.WithOptions(zap.AddCaller())

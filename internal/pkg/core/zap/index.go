@@ -1,4 +1,4 @@
-package myZap
+package _zap
 
 import (
 	"fmt"

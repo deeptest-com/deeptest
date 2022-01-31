@@ -1,10 +1,16 @@
 package dao
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/comm/consts"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
-	"github.com/aaronchen2k/deeptest/internal/server/consts"
+	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm/schema"
+	"gorm.io/plugin/dbresolver"
 	"os"
+	"path/filepath"
 	"sync"
+	"time"
 
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
@@ -20,11 +26,13 @@ var (
 // GetDB 数据库单例
 func GetDB() *gorm.DB {
 	once.Do(func() {
-		switch serverConsts.CONFIG.System.DbType {
+		switch serverConfig.CONFIG.System.DbType {
+		case "sqlite":
+			db = GormSQLLite()
 		case "mysql":
-			db = GormMysql()
+			db = GormMySQL()
 		default:
-			db = GormMysql()
+			db = GormSQLLite()
 		}
 	})
 
@@ -41,9 +49,52 @@ func MysqlTables(db *gorm.DB) {
 	logUtils.Infof("注册数据表成功")
 }
 
-// GormMysql 初始化Mysql数据库
-func GormMysql() *gorm.DB {
-	m := serverConsts.CONFIG.Mysql
+func GormSQLLite() *gorm.DB {
+	conn := DBFile()
+	dialector := sqlite.Open(conn)
+
+	db, err := gorm.Open(dialector, &gorm.Config{
+		SkipDefaultTransaction: false,
+		Logger:                 logger.Default.LogMode(logger.Info),
+		NamingStrategy: schema.NamingStrategy{
+			TablePrefix:   "",
+			SingularTable: false,
+		},
+	})
+
+	if err != nil {
+		logUtils.Info(err.Error())
+	}
+
+	_ = db.Use(
+		dbresolver.Register(
+			dbresolver.Config{ /* xxx */ }).
+			SetConnMaxIdleTime(time.Hour).
+			SetConnMaxLifetime(24 * time.Hour).
+			SetMaxIdleConns(100).
+			SetMaxOpenConns(200),
+	)
+
+	db.Session(&gorm.Session{FullSaveAssociations: true, AllowGlobalUpdate: false})
+
+	//err = db.AutoMigrate(
+	//	model.Models...,
+	//)
+	//if err != nil {
+	//	logUtils.Info(err.Error())
+	//}
+
+	return db
+}
+
+func DBFile() string {
+	path := filepath.Join(consts.WorkDir, consts.App+".db")
+	return path
+}
+
+// GormMySQL 初始化Mysql数据库
+func GormMySQL() *gorm.DB {
+	m := serverConfig.CONFIG.Mysql
 	if m.Dbname == "" {
 		return nil
 	}
@@ -68,7 +119,7 @@ func GormMysql() *gorm.DB {
 // gormConfig 根据配置决定是否开启日志
 func gormConfig(mod bool) *gorm.Config {
 	var config = &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true}
-	switch serverConsts.CONFIG.Mysql.LogZap {
+	switch serverConfig.CONFIG.Mysql.LogZap {
 	case "silent", "Silent":
 		config.Logger = Default.LogMode(logger.Silent)
 	case "error", "Error":

@@ -28,7 +28,7 @@ func NewUserRepo() *UserRepo {
 	return &UserRepo{}
 }
 
-func (r *UserRepo) Paginate(req serverDomain.UserReqPaginate) (data domain.PageData, err error) {
+func (r *UserRepo) Paginate(req serverDomain.UserReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 
 	db := r.DB.Model(&model.SysUser{})

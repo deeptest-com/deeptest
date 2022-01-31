@@ -15,7 +15,7 @@ func NewRoleService() *RoleService {
 }
 
 // Paginate
-func (s *RoleService) Paginate(req serverDomain.RoleReqPaginate) (ret domain.PageData, err error) {
+func (s *RoleService) Paginate(req serverDomain.RoleReqPaginate) (ret _domain.PageData, err error) {
 	return s.RoleRepo.Paginate(req)
 }
 

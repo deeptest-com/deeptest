@@ -1,4 +1,4 @@
-package fileUtils
+package _fileUtils
 
 import (
 	"archive/zip"
@@ -35,7 +35,7 @@ func GetZipSingleDir(path string) string {
 					folder = zfh.Name
 				} else {
 					if strings.Index(zfh.Name, folder) != 0 {
-						return errUtils.New("found more than one folder")
+						return _errUtils.New("found more than one folder")
 					}
 				}
 			}

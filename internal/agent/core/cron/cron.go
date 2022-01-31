@@ -24,7 +24,7 @@ func (s *AgentCron) Init() {
 	s.syncMap.Store("isRunning", false)
 	s.syncMap.Store("lastCompletedTime", int64(0))
 
-	cronUtils.AddTask(
+	_cronUtils.AddTask(
 		"check",
 		fmt.Sprintf("@every %ds", serverConsts.WebCheckInterval),
 		func() {
@@ -32,7 +32,7 @@ func (s *AgentCron) Init() {
 			lastCompletedTime, _ := s.syncMap.Load("lastCompletedTime")
 
 			if isRunning.(bool) || time.Now().Unix()-lastCompletedTime.(int64) < serverConsts.WebCheckInterval {
-				logUtils.Infof("skip this iteration " + dateUtils.DateTimeStr(time.Now()))
+				_logUtils.Infof("skip this iteration " + _dateUtils.DateTimeStr(time.Now()))
 				return
 			}
 
@@ -46,6 +46,6 @@ func (s *AgentCron) Init() {
 	)
 
 	iris.RegisterOnInterrupt(func() {
-		cronUtils.Stop()
+		_cronUtils.Stop()
 	})
 }

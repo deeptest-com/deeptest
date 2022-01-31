@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
-	"github.com/aaronchen2k/deeptest/internal/server/consts"
+	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
 	"io/ioutil"
 	"log"
 	"os"
@@ -134,7 +134,7 @@ func (c *customLogger) Trace(ctx context.Context, begin time.Time, fc func() (st
 }
 
 func (c *customLogger) Printf(message string, data ...interface{}) {
-	if serverConsts.CONFIG.Mysql.LogZap != "" {
+	if serverConfig.CONFIG.Mysql.LogZap != "" {
 		switch len(data) {
 		case 0:
 			logUtils.Infof(message)

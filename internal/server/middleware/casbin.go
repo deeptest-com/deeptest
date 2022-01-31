@@ -20,7 +20,7 @@ func Casbin() iris.Handler {
 	return func(ctx *context.Context) {
 		check, err := Check(ctx.Request(), strconv.FormatUint(uint64(multi.GetUserId(ctx)), 10))
 		if err != nil || !check {
-			_, _ = ctx.JSON(domain.Response{Code: domain.AuthActionErr.Code, Data: nil, Msg: err.Error()})
+			_, _ = ctx.JSON(_domain.Response{Code: _domain.AuthActionErr.Code, Data: nil, Msg: err.Error()})
 			ctx.StopExecution()
 			return
 		}

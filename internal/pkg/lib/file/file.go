@@ -1,9 +1,9 @@
-package fileUtils
+package _fileUtils
 
 import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	_commonUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/common"
+	_commonUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/comm"
 	"io"
 	"io/ioutil"
 	"os"
@@ -93,7 +93,7 @@ func IsAbosutePath(pth string) bool {
 }
 
 func AddPathSepIfNeeded(pth string) string {
-	sep := consts.PthSep
+	sep := _consts.PthSep
 
 	if strings.LastIndex(pth, sep) < len(pth)-1 {
 		pth += sep
@@ -108,7 +108,7 @@ func GetFilesFromParams(arguments []string) []string {
 		if strings.Index(arg, "-") != 0 {
 			if arg == "." {
 				arg = AbsolutePath(".")
-			} else if strings.Index(arg, "."+consts.PthSep) == 0 {
+			} else if strings.Index(arg, "."+_consts.PthSep) == 0 {
 				arg = AbsolutePath(".") + arg[2:]
 			} else if !IsAbosutePath(arg) {
 				arg = AbsolutePath(".") + arg
@@ -130,8 +130,8 @@ func GetExeDir() string { // where ztf command in
 	name := filepath.Base(arg1)
 	if strings.Index(name, "ztf") == 0 && strings.Index(arg1, "go-build") < 0 {
 		p, _ := exec.LookPath(os.Args[0])
-		if strings.Index(p, consts.PthSep) > -1 {
-			dir = p[:strings.LastIndex(p, consts.PthSep)]
+		if strings.Index(p, _consts.PthSep) > -1 {
+			dir = p[:strings.LastIndex(p, _consts.PthSep)]
 		}
 	} else { // debug
 		dir, _ = os.Getwd()
@@ -178,7 +178,7 @@ func CopyFile(src, dst string) (int64, error) {
 }
 
 func GetFileName(pathOrUrl string) string {
-	index := strings.LastIndex(pathOrUrl, consts.PthSep)
+	index := strings.LastIndex(pathOrUrl, _consts.PthSep)
 
 	name := pathOrUrl[index+1:]
 	return name
@@ -207,8 +207,8 @@ func GetAbosutePath(pth string) string {
 }
 
 func AddSepIfNeeded(pth string) string {
-	if strings.LastIndex(pth, consts.PthSep) < len(pth)-1 {
-		pth += consts.PthSep
+	if strings.LastIndex(pth, _consts.PthSep) < len(pth)-1 {
+		pth += _consts.PthSep
 	}
 	return pth
 }

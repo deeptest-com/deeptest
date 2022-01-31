@@ -15,7 +15,7 @@ func NewUserService() *UserService {
 	return &UserService{}
 }
 
-func (s *UserService) Paginate(req serverDomain.UserReqPaginate) (domain.PageData, error) {
+func (s *UserService) Paginate(req serverDomain.UserReqPaginate) (_domain.PageData, error) {
 	return s.UserRepo.Paginate(req)
 }
 

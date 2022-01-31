@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	commonUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/common"
+	commonUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
@@ -22,7 +22,7 @@ func NewTestScriptRepo() *TestScriptRepo {
 	return &TestScriptRepo{}
 }
 
-func (r *TestScriptRepo) Paginate(req serverDomain.TestScriptReqPaginate) (data domain.PageData, err error) {
+func (r *TestScriptRepo) Paginate(req serverDomain.TestScriptReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 
 	db := r.DB.Model(&model.TestScript{}).Where("NOT deleted")
@@ -99,7 +99,7 @@ func (r *TestScriptRepo) FindByName(scriptName string, ids ...uint) (script serv
 
 func (r *TestScriptRepo) Create(req serverDomain.TestScriptReq) (id uint, err error) {
 	if _, err := r.FindByName(req.Name); !errors.Is(err, gorm.ErrRecordNotFound) {
-		return 0, fmt.Errorf("%d", domain.BizErrNameExist.Code)
+		return 0, fmt.Errorf("%d", _domain.BizErrNameExist.Code)
 	}
 	script := req.TestScript
 

@@ -10,7 +10,7 @@ import (
 )
 
 func TestUpload(t *testing.T) {
-	myZap.Init()
+	_zap.Init()
 	result := domain.TestResult{Name: "RasaResult Title"}
 
 	zipFile := "/Users/aaron/testResult.zip"

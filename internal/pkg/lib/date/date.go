@@ -1,4 +1,4 @@
-package dateUtils
+package _dateUtils
 
 import (
 	"time"

@@ -14,7 +14,7 @@ func NewTestScriptService() *TestScriptService {
 	return &TestScriptService{}
 }
 
-func (s *TestScriptService) Paginate(req serverDomain.TestScriptReqPaginate) (ret domain.PageData, err error) {
+func (s *TestScriptService) Paginate(req serverDomain.TestScriptReqPaginate) (ret _domain.PageData, err error) {
 
 	ret, err = s.TestScriptRepo.Paginate(req)
 

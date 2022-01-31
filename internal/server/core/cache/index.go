@@ -3,6 +3,7 @@ package cache
 import (
 	"context"
 	"errors"
+	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"strings"
 	"time"
@@ -14,15 +15,15 @@ import (
 // Init 初始化缓存服务
 func Init() error {
 	universalOptions := &redis.UniversalOptions{
-		Addrs:       strings.Split(serverConsts.CONFIG.Redis.Addr, ","),
-		Password:    serverConsts.CONFIG.Redis.Password,
-		PoolSize:    serverConsts.CONFIG.Redis.PoolSize,
+		Addrs:       strings.Split(serverConfig.CONFIG.Redis.Addr, ","),
+		Password:    serverConfig.CONFIG.Redis.Password,
+		PoolSize:    serverConfig.CONFIG.Redis.PoolSize,
 		IdleTimeout: 300 * time.Second,
 	}
 	serverConsts.CACHE = redis.NewUniversalClient(universalOptions)
 	err := multi.InitDriver(
 		&multi.Config{
-			DriverType:      serverConsts.CONFIG.System.CacheType,
+			DriverType:      serverConfig.CONFIG.System.CacheType,
 			UniversalClient: serverConsts.CACHE},
 	)
 	if err != nil {

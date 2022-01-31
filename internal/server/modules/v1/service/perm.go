@@ -16,7 +16,7 @@ func NewPermService() *PermService {
 }
 
 // Paginate
-func (s *PermService) Paginate(req serverDomain.PermReqPaginate) (data domain.PageData, err error) {
+func (s *PermService) Paginate(req serverDomain.PermReqPaginate) (data _domain.PageData, err error) {
 	return s.PermRepo.Paginate(req)
 }
 

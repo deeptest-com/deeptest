@@ -1,4 +1,4 @@
-package logUtils
+package _logUtils
 
 import (
 	"encoding/json"

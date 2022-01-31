@@ -1,8 +1,5 @@
-package consts
-
-import ()
+package _consts
 
 var (
 	Verbose bool
-	WorkDir string
 )

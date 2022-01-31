@@ -1,4 +1,4 @@
-package domain
+package _domain
 
 import (
 	stringUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/string"

@@ -1,4 +1,4 @@
-package stringUtils
+package _stringUtils
 
 import (
 	"encoding/base64"

@@ -37,7 +37,7 @@ func NewDataService() *DataService {
 
 // writeConfig 写入配置文件
 func (s *DataService) writeConfig(viper *viper.Viper, conf serverConfig.Config) error {
-	cs := str.StructToMap(serverConsts.CONFIG)
+	cs := str.StructToMap(serverConfig.CONFIG)
 	for k, v := range cs {
 		viper.Set(k, v)
 	}
@@ -56,7 +56,7 @@ func (s *DataService) refreshConfig(viper *viper.Viper, conf serverConfig.Config
 
 // InitDB 创建数据库并初始化
 func (s *DataService) InitDB(req serverDomain.DataReq) error {
-	defaultConfig := serverConsts.CONFIG
+	defaultConfig := serverConfig.CONFIG
 	if serverConsts.VIPER == nil {
 		logUtils.Errorf("初始化错误", zap.String("InitDB", ErrViperEmpty.Error()))
 		return ErrViperEmpty
@@ -71,13 +71,13 @@ func (s *DataService) InitDB(req serverDomain.DataReq) error {
 		addr = "127.0.0.1:8085"
 	}
 
-	serverConsts.CONFIG.System.CacheType = req.CacheType
-	serverConsts.CONFIG.System.Level = level
-	serverConsts.CONFIG.System.Addr = addr
-	serverConsts.CONFIG.System.DbType = req.SqlType
+	serverConfig.CONFIG.System.CacheType = req.CacheType
+	serverConfig.CONFIG.System.Level = level
+	serverConfig.CONFIG.System.Addr = addr
+	serverConfig.CONFIG.System.DbType = req.SqlType
 
-	if serverConsts.CONFIG.System.CacheType == "redis" {
-		serverConsts.CONFIG.Redis = serverConfig.Redis{
+	if serverConfig.CONFIG.System.CacheType == "redis" {
+		serverConfig.CONFIG.Redis = serverConfig.Redis{
 			DB:       req.Cache.DB,
 			Addr:     fmt.Sprintf("%s:%s", req.Cache.Host, req.Cache.Port),
 			Password: req.Cache.Password,
@@ -103,19 +103,19 @@ func (s *DataService) InitDB(req serverDomain.DataReq) error {
 
 	logUtils.Infof("新建数据库", zap.String("库名", req.Db.DBName))
 
-	serverConsts.CONFIG.Mysql.Path = fmt.Sprintf("%s:%s", req.Db.Host, req.Db.Port)
-	serverConsts.CONFIG.Mysql.Dbname = req.Db.DBName
-	serverConsts.CONFIG.Mysql.Username = req.Db.UserName
-	serverConsts.CONFIG.Mysql.Password = req.Db.Password
-	serverConsts.CONFIG.Mysql.LogMode = req.Db.LogMode
+	serverConfig.CONFIG.Mysql.Path = fmt.Sprintf("%s:%s", req.Db.Host, req.Db.Port)
+	serverConfig.CONFIG.Mysql.Dbname = req.Db.DBName
+	serverConfig.CONFIG.Mysql.Username = req.Db.UserName
+	serverConfig.CONFIG.Mysql.Password = req.Db.Password
+	serverConfig.CONFIG.Mysql.LogMode = req.Db.LogMode
 
-	m := serverConsts.CONFIG.Mysql
+	m := serverConfig.CONFIG.Mysql
 	if m.Dbname == "" {
 		logUtils.Errorf("缺少数据库参数")
 		return errors.New("缺少数据库参数")
 	}
 
-	if err := s.writeConfig(serverConsts.VIPER, serverConsts.CONFIG); err != nil {
+	if err := s.writeConfig(serverConsts.VIPER, serverConfig.CONFIG); err != nil {
 		logUtils.Errorf("更新配置文件错误", zap.String("writeConfig(consts.VIPER)", err.Error()))
 	}
 

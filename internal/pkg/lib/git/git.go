@@ -1,4 +1,4 @@
-package gitUtils
+package _gitUtils
 
 import "strings"
 

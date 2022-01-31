@@ -1,4 +1,4 @@
-package domain
+package _domain
 
 import (
 	"fmt"
@@ -15,31 +15,31 @@ type RpcReq struct {
 }
 
 type RpcResp struct {
-	Code    consts.ResultCode `json:"code"`
-	Msg     string            `json:"msg"`
-	Payload interface{}       `json:"payload"`
+	Code    _consts.ResultCode `json:"code"`
+	Msg     string             `json:"msg"`
+	Payload interface{}        `json:"payload"`
 }
 
 func (result *RpcResp) Pass(msg string) {
-	result.Code = consts.ResultCodeSuccess
+	result.Code = _consts.ResultCodeSuccess
 	result.Msg = msg
 }
 
 func (result *RpcResp) Passf(str string, args ...interface{}) {
-	result.Code = consts.ResultCodeSuccess
+	result.Code = _consts.ResultCodeSuccess
 	result.Msg = fmt.Sprintf(str, args...)
 }
 
 func (result *RpcResp) Fail(msg string) {
-	result.Code = consts.ResultCodeFail
+	result.Code = _consts.ResultCodeFail
 	result.Msg = msg
 }
 
 func (result *RpcResp) Failf(str string, args ...interface{}) {
-	result.Code = consts.ResultCodeFail
+	result.Code = _consts.ResultCodeFail
 	result.Msg = fmt.Sprintf(str, args...)
 }
 
 func (result *RpcResp) IsSuccess() bool {
-	return result.Code == consts.ResultCodeSuccess
+	return result.Code == _consts.ResultCodeSuccess
 }

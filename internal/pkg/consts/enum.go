@@ -1,4 +1,4 @@
-package consts
+package _consts
 
 type ResultCode int
 

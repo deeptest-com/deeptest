@@ -10,11 +10,11 @@ type PermReq struct {
 }
 
 type PermReqPaginate struct {
-	domain.PaginateReq
+	_domain.PaginateReq
 	Name string `json:"name"`
 }
 
 type PermResp struct {
-	domain.Model
+	_domain.Model
 	model.BasePerm
 }

@@ -46,5 +46,5 @@ func injectModule(ws *web.WebServer) {
 
 	ws.AddModule(indexModule.Party())
 
-	logUtils.Infof("start server")
+	_logUtils.Infof("start server")
 }

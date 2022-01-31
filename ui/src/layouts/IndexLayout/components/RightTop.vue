@@ -1,16 +1,13 @@
 <template>
     <div id="indexlayout-right-top" :class="{'topNavEnable': !topNavEnable, 'tabNavEnable': !tabNavEnable }">
         <div class="indexlayout-right-top-top">
-            <div class="indexlayout-flexible" 
-              @click="() => {
-                if(toggleCollapsed) {
-                  toggleCollapsed();
-                }
-              }"
-            >
-               <MenuUnfoldOutlined v-if="collapsed" />
-               <MenuFoldOutlined v-else />
-            </div>
+          <div class="indexlayout-left-logo">
+            <router-link to="/" class="logo-url">
+              <img v-if="collapsed" alt="Vue logo" src="../../../assets/images/logo.png" width="30">
+              <h3 v-else class="logo-title">DeepTest</h3>
+            </router-link>
+          </div>
+
             <div class="indexlayout-top-menu">
                 <div ref="topMenuCon" :style="{width: topMenuWidth}">
                     <template v-if="topNavEnable">
@@ -74,8 +71,6 @@ export default defineComponent({
     components: {
       ALink,
       BreadCrumbs,
-      MenuFoldOutlined,
-      MenuUnfoldOutlined,
       EnvironmentOutlined,
       RightTopProject,
       RightTopMessage,
@@ -147,15 +142,29 @@ export default defineComponent({
     height: @headerHeight;
     background-color: @menu-dark-bg;
     color: #c0c4cc;
-    .indexlayout-flexible {
-      width: @headerHeight;
+
+    .indexlayout-left-logo {
+      width: 150px;
       height: @headerHeight;
       line-height: @headerHeight;
       text-align: center;
-      cursor: pointer;
-      &:hover {
-        background-color: @menu-dark-bg;
-        color: @menu-dark-highlight-color;
+      vertical-align: middle;
+      /* background-color: $subMenuBg; */
+      .logo-url {
+        display: inline-block;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        .logo-title {
+          display: inline-block;
+          margin: 0;
+          font-size: 16px;
+          font-family: Roboto, sans-serif;
+          color: #c0c4cc;
+        }
+      }
+      img {
+        vertical-align: middle;
       }
     }
 

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	commonUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/common"
+	commonUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
@@ -22,7 +22,7 @@ func NewProjectRepo() *ProjectRepo {
 	return &ProjectRepo{}
 }
 
-func (r *ProjectRepo) Paginate(req serverDomain.ProjectReqPaginate) (data domain.PageData, err error) {
+func (r *ProjectRepo) Paginate(req serverDomain.ProjectReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 
 	db := r.DB.Model(&model.Project{}).Where("NOT deleted")
@@ -83,7 +83,7 @@ func (r *ProjectRepo) FindByName(projectname string, ids ...uint) (serverDomain.
 
 func (r *ProjectRepo) Create(req serverDomain.ProjectReq) (uint, error) {
 	if _, err := r.FindByName(req.Name); !errors.Is(err, gorm.ErrRecordNotFound) {
-		return 0, fmt.Errorf("%d", domain.BizErrNameExist.Code)
+		return 0, fmt.Errorf("%d", _domain.BizErrNameExist.Code)
 	}
 	project := req.Project
 

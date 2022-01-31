@@ -1,9 +1,7 @@
-package consts
+package _consts
 
 import "os"
 
 const (
-	PthSep           = string(os.PathSeparator)
-	ConfigFileServer = "server.yaml"
-	ConfigFileAgent  = "agent.yaml"
+	PthSep = string(os.PathSeparator)
 )

@@ -27,24 +27,24 @@ type TestResult struct {
 }
 
 func (result *TestResult) Pass(msg string) {
-	result.Code = consts.ResultCodeSuccess.Int()
+	result.Code = _consts.ResultCodeSuccess.Int()
 	result.Msg = msg
 }
 func (result *TestResult) Passf(str string, args ...interface{}) {
-	result.Code = consts.ResultCodeSuccess.Int()
+	result.Code = _consts.ResultCodeSuccess.Int()
 	result.Msg = fmt.Sprintf(str+"\n", args...)
 }
 
 func (result *TestResult) Fail(msg string) {
-	result.Code = consts.ResultCodeFail.Int()
+	result.Code = _consts.ResultCodeFail.Int()
 	result.Msg = msg
 }
 
 func (result *TestResult) Failf(str string, args ...interface{}) {
-	result.Code = consts.ResultCodeFail.Int()
+	result.Code = _consts.ResultCodeFail.Int()
 	result.Msg = fmt.Sprintf(str+"\n", args...)
 }
 
 func (result *TestResult) IsSuccess() bool {
-	return result.Code == consts.ResultCodeSuccess.Int()
+	return result.Code == _consts.ResultCodeSuccess.Int()
 }

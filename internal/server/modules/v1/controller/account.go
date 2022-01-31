@@ -29,14 +29,14 @@ func (c *AccountCtrl) Login(ctx iris.Context) {
 
 		if len(errs) > 0 {
 			logUtils.Errorf("参数验证失败", zap.String("ValidRequest()", strings.Join(errs, ";")))
-			ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
 			return
 		}
 	}
 	token, err := c.AuthService.GetAccessToken(req)
 	if err != nil {
-		ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
-	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: iris.Map{"token": token}, Msg: domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{"token": token}, Msg: _domain.NoErr.Msg})
 }

@@ -25,7 +25,7 @@ func NewPermRepo() *PermRepo {
 }
 
 // Paginate
-func (r *PermRepo) Paginate(req serverDomain.PermReqPaginate) (data domain.PageData, err error) {
+func (r *PermRepo) Paginate(req serverDomain.PermReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 	db := r.DB.Model(&model.SysPerm{})
 	if req.Name != "" {

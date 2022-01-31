@@ -1,15 +1,5 @@
 <template>
     <div id="indexlayout">
-        <left
-          :collapsed="collapsed"
-          :topNavEnable="topNavEnable"
-          :belongTopMenu="belongTopMenu"
-          :selectedKeys="selectedKeys"
-          :openKeys="leftOpenKeys"
-          :menuData="permissionMenuData"
-          :onOpenChange="onOpenChange"
-        >          
-        </left>
         <div
           id="indexlayout-right"
           :class="{'fiexd-header': headFixed}"
@@ -63,7 +53,7 @@ interface IndexLayoutSetupData {
   tabNavEnable: ComputedRef<boolean>;
   topNavEnable: ComputedRef<boolean>;
   belongTopMenu: ComputedRef<string>;
-  headFixed: ComputedRef<boolean>;  
+  headFixed: ComputedRef<boolean>;
   selectedKeys: ComputedRef<string[]>;
   leftOpenKeys: Ref<string[]>;
   breadCrumbs: ComputedRef<BreadcrumbType[]>;
@@ -76,7 +66,6 @@ export default defineComponent({
     name: 'IndexLayout',
     components: {
         Permission,
-        Left,
         RightTop,
         RightFooter,
         Settings

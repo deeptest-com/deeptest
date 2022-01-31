@@ -25,7 +25,7 @@ func NewRoleRepo() *RoleRepo {
 }
 
 // Paginate
-func (r *RoleRepo) Paginate(req serverDomain.RoleReqPaginate) (data domain.PageData, err error) {
+func (r *RoleRepo) Paginate(req serverDomain.RoleReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 
 	db := r.DB.Model(&model.SysRole{})

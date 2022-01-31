@@ -1,10 +1,10 @@
-package shellUtils
+package _shellUtils
 
 import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/lib/common"
+	"github.com/aaronchen2k/deeptest/internal/pkg/lib/comm"
 	"github.com/aaronchen2k/deeptest/internal/pkg/lib/i118"
 	"github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/pkg/lib/string"
@@ -18,7 +18,7 @@ import (
 
 func ExeSysCmd(cmdStr string) (string, error) {
 	var cmd *exec.Cmd
-	if commonUtils.IsWin() {
+	if _commUtils.IsWin() {
 		cmd = exec.Command("cmd", "/C", cmdStr)
 	} else {
 		cmd = exec.Command("/bin/bash", "-c", cmdStr)
@@ -49,7 +49,7 @@ func ExeShellWithPid(cmdStr string) (string, error, int) {
 
 func ExeShellInDirWithPid(cmdStr string, dir string) (ret string, err error, pid int) {
 	var cmd *exec.Cmd
-	if commonUtils.IsWin() {
+	if _commUtils.IsWin() {
 		cmd = exec.Command("cmd", "/C", cmdStr)
 	} else {
 		cmd = exec.Command("/bin/bash", "-c", cmdStr)
@@ -63,11 +63,11 @@ func ExeShellInDirWithPid(cmdStr string, dir string) (ret string, err error, pid
 
 	err = cmd.Run()
 	if err != nil {
-		logUtils.Error(i118Utils.Sprintf("fail_to_exec_command", cmdStr, cmd.Dir, err))
+		_logUtils.Error(_i118Utils.Sprintf("fail_to_exec_command", cmdStr, cmd.Dir, err))
 	}
 
 	pid = cmd.Process.Pid
-	ret = stringUtils.TrimAll(out.String())
+	ret = _stringUtils.TrimAll(out.String())
 	return
 }
 
@@ -81,7 +81,7 @@ func ExeShellWithOutputInDir(cmdStr string, dir string) ([]string, error) {
 
 func ExeShellWithEnvVarsAndOutputInDir(cmdStr, dir string, envVars []string) ([]string, error) {
 	var cmd *exec.Cmd
-	if commonUtils.IsWin() {
+	if _commUtils.IsWin() {
 		cmd = exec.Command("cmd", "/C", cmdStr)
 	} else {
 		cmd = exec.Command("/bin/bash", "-c", cmdStr)
@@ -116,7 +116,7 @@ func ExeShellWithEnvVarsAndOutputInDir(cmdStr, dir string, envVars []string) ([]
 		if err2 != nil || io.EOF == err2 {
 			break
 		}
-		logUtils.Info(strings.TrimRight(line, "\n"))
+		_logUtils.Info(strings.TrimRight(line, "\n"))
 		output = append(output, line)
 	}
 
@@ -125,9 +125,11 @@ func ExeShellWithEnvVarsAndOutputInDir(cmdStr, dir string, envVars []string) ([]
 	return output, nil
 }
 
-func ExeShellCallback(ch chan int, cmdStr, dir string, fun func(s string, msg websocket.Message), msg websocket.Message) (err error) {
+func ExeShellCallback(ch chan int, cmdStr, dir string,
+	fun func(s string, msg websocket.Message), msg websocket.Message) (err error) {
+
 	var cmd *exec.Cmd
-	if commonUtils.IsWin() {
+	if _commUtils.IsWin() {
 		cmd = exec.Command("cmd", "/C", cmdStr)
 	} else {
 		cmd = exec.Command("/bin/bash", "-c", cmdStr)
@@ -179,7 +181,7 @@ func GetProcess(app string) (string, error) {
 
 	tmpl := ""
 	cmdStr := ""
-	if commonUtils.IsWin() {
+	if _commUtils.IsWin() {
 		tmpl = `tasklist`
 		cmdStr = fmt.Sprintf(tmpl)
 
@@ -196,7 +198,7 @@ func GetProcess(app string) (string, error) {
 
 	err := cmd.Run()
 	output := ""
-	if commonUtils.IsWin() {
+	if _commUtils.IsWin() {
 		arr := strings.Split(out.String(), "\n")
 		for _, line := range arr {
 			if strings.Index(line, app+".exe") > -1 {
@@ -217,7 +219,7 @@ func KillProcess(app string) (string, error) {
 
 	tmpl := ""
 	cmdStr := ""
-	if commonUtils.IsWin() {
+	if _commUtils.IsWin() {
 		// tasklist | findstr ztf.exe
 		tmpl = `taskkill.exe /f /im %s.exe`
 		cmdStr = fmt.Sprintf(tmpl, app)

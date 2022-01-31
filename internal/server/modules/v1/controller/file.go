@@ -22,15 +22,15 @@ func (c *FileCtrl) Upload(ctx iris.Context) {
 	f, fh, err := ctx.FormFile("file")
 	if err != nil {
 		logUtils.Errorf("文件上传失败", zap.String("ctx.FormFile(\"file\")", err.Error()))
-		ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
 	defer f.Close()
 
 	pth, err := c.FileService.UploadFile(ctx, fh)
 	if err != nil {
-		ctx.JSON(domain.Response{Code: domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
-	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: pth, Msg: domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: pth, Msg: _domain.NoErr.Msg})
 }

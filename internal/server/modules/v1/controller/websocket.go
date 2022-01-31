@@ -89,5 +89,5 @@ func (c *WsCtrl) TestWs(ctx iris.Context) {
 	data := map[string]interface{}{"action": "taskUpdate", "taskId": 1, "msg": ""}
 	c.WebSocketService.Broadcast(serverConsts.WsDefaultNameSpace, serverConsts.WsDefaultRoom, serverConsts.WsEvent, data)
 
-	ctx.JSON(domain.Response{Code: domain.NoErr.Code, Data: nil, Msg: domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
 }

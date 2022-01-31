@@ -10,7 +10,7 @@ type TestScriptReq struct {
 }
 
 type TestScriptReqPaginate struct {
-	domain.PaginateReq
+	_domain.PaginateReq
 	Keywords string `json:"keywords"`
 	Enabled  string `json:"enabled"`
 }

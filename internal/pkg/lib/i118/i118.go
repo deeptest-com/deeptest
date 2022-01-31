@@ -1,4 +1,4 @@
-package i118Utils
+package _i118Utils
 
 import (
 	"encoding/json"
@@ -18,7 +18,7 @@ func InitI118(lang string, app string) {
 
 	langRes := filepath.Join("res", app, lang, "messages.json")
 
-	bytes, _ := resUtils.ReadRes(langRes)
+	bytes, _ := _resUtils.ReadRes(langRes)
 	InitResFromAsset(bytes)
 
 	if lang == "zh" {

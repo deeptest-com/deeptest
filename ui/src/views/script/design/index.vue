@@ -145,6 +145,7 @@ export default defineComponent({
         }
 
         getScript(1);
+
         if (init) {
           proxy.$sub(WsEventName, (data) => {
             console.log(data[0].msg);
@@ -153,6 +154,7 @@ export default defineComponent({
           });
           init = false;
         }
+
       });
       onBeforeUnmount(() => {
         proxy.$unsub(WsEventName, () => {

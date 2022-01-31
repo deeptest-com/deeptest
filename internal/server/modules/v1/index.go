@@ -1,6 +1,7 @@
 package v1
 
 import (
+	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/module"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/index"
@@ -11,7 +12,6 @@ import (
 )
 
 type IndexModule struct {
-	TestModule *index.TestModule `inject:""`
 	DataModule *index.DataModule `inject:""`
 	FileModule *index.FileModule `inject:""`
 
@@ -32,16 +32,15 @@ func NewIndexModule() *IndexModule {
 // Party v1 模块
 func (m *IndexModule) Party() module.WebModule {
 	handler := func(v1 iris.Party) {
-		if !serverConsts.CONFIG.Limit.Disable {
+		if !serverConfig.CONFIG.Limit.Disable {
 			limitV1 := rate.Limit(
-				serverConsts.CONFIG.Limit.Limit,
-				serverConsts.CONFIG.Limit.Burst,
+				serverConfig.CONFIG.Limit.Limit,
+				serverConfig.CONFIG.Limit.Burst,
 				rate.PurgeEvery(time.Minute, 5*time.Minute))
 			v1.Use(limitV1)
 		}
 	}
 	modules := []module.WebModule{
-		m.TestModule.Party(),
 		m.DataModule.Party(),
 		m.FileModule.Party(),
 		m.AccountModule.Party(),

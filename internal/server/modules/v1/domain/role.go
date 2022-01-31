@@ -11,11 +11,11 @@ type RoleReq struct {
 }
 
 type RoleReqPaginate struct {
-	domain.PaginateReq
+	_domain.PaginateReq
 	Name string `json:"name"`
 }
 
 type RoleResp struct {
-	domain.Model
+	_domain.Model
 	model.BaseRole
 }

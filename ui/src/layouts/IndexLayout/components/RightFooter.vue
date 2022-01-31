@@ -1,28 +1,10 @@
 <template>
     <div class="indexlayout-right-footer">
       <div class="footer-links">
-        <a
-          href="http://demo.admin-antd-vue.liqingsong.cc"
-          target="_blank"
-          rel="noreferrer"
-        >
-          DEMO
-        </a>
-        <a
-          href="https://github.com/lqsong/admin-antd-vue"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Github
-        </a>
-        <a href="http://liqingsong.cc" target="_blank" rel="noreferrer">
-          博客
-        </a>
-        <a href="http://www.wyxgn.com" target="_blank" rel="noreferrer">
-          网页小功能
-        </a>
+        <a href="https://github.com/lqsong/admin-antd-vue"
+           target="_blank">Github</a>
       </div>
-      <div>Copyright © 2020 LIQINGSONG.CC, All Rights Reserved</div>
+      <div class="footer-copyright">Copyright © 2022 deeptest.com, All Rights Reserved</div>
     </div>
 </template>
 <script lang="ts">
@@ -35,13 +17,12 @@ export default defineComponent({
 </script>
 <style lang="less" scoped>
 .indexlayout-right-footer {
-  height: 50px;
   overflow: hidden;
   text-align: center;
   font-size: 14px;
   color: #808695;
   .footer-links {
-    margin-bottom: 10px;
+    margin-bottom: 3px;
     a {
       margin-right: 30px;
       color: #808695;
@@ -53,6 +34,9 @@ export default defineComponent({
         color: #515a6e;
       }
     }
+  }
+  .footer-copyright {
+    margin-bottom: 5px;
   }
 }
 </style>

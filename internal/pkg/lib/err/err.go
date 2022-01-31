@@ -1,4 +1,4 @@
-package errUtils
+package _errUtils
 
 func New(text string) error {
 	return &errorStr{text}

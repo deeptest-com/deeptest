@@ -1,4 +1,4 @@
-package httpUtils
+package _httpUtils
 
 import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 
@@ -19,11 +19,11 @@ type PageResult struct {
 	Total int64       `json:"totalPage"`
 }
 
-func ApiRes(code consts.ResultCode, msg string, objects interface{}) (r *Response) {
+func ApiRes(code _consts.ResultCode, msg string, objects interface{}) (r *Response) {
 	r = &Response{Code: code.Int(), Message: msg, Result: objects}
 	return
 }
-func ApiResPage(code consts.ResultCode, msg string, objects interface{}, pageNo, pageSize int, total int64) (r *Response) {
+func ApiResPage(code _consts.ResultCode, msg string, objects interface{}, pageNo, pageSize int, total int64) (r *Response) {
 	result := PageResult{Total: total, Items: objects}
 	r = &Response{Code: code.Int(), Message: msg, Result: result}
 	return

@@ -1,4 +1,4 @@
-package myZap
+package _zap
 
 type Zap struct {
 	Level         string `mapstructure:"level" json:"level" yaml:"level"` //debug ,info,warn,error,panic,fatal

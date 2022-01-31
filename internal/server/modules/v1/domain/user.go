@@ -14,12 +14,12 @@ type UserReq struct {
 }
 
 type UserReqPaginate struct {
-	domain.PaginateReq
+	_domain.PaginateReq
 	Name string `json:"name"`
 }
 
 type UserResp struct {
-	domain.Model
+	_domain.Model
 	model.BaseUser
 	Roles []string `gorm:"-" json:"roles"`
 }
@@ -35,6 +35,6 @@ func (res *UserResp) ToString() {
 }
 
 type LoginResp struct {
-	domain.ReqId
+	_domain.ReqId
 	Password string `json:"password"`
 }

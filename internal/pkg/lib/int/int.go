@@ -1,4 +1,4 @@
-package intUtils
+package _intUtils
 
 func FindInArr(val int, arr []int) bool {
 	for _, i := range arr {

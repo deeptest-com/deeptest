@@ -1,4 +1,4 @@
-package httpUtils
+package _httpUtils
 
 import (
 	"encoding/json"
@@ -19,48 +19,48 @@ func Get(url string) (interface{}, bool) {
 func GetObj(url string, requestTo string) (interface{}, bool) {
 	client := &http.Client{}
 
-	if consts.Verbose {
-		logUtils.Info(url)
+	if _consts.Verbose {
+		_logUtils.Info(url)
 	}
 
 	req, reqErr := http.NewRequest("GET", url, nil)
 	if reqErr != nil {
-		logUtils.Error(reqErr.Error())
+		_logUtils.Error(reqErr.Error())
 		return nil, false
 	}
 
 	resp, respErr := client.Do(req)
 
 	if respErr != nil {
-		logUtils.Error(respErr.Error())
+		_logUtils.Error(respErr.Error())
 		return nil, false
 	}
 
 	bodyStr, _ := ioutil.ReadAll(resp.Body)
-	if consts.Verbose {
-		logUtils.PrintUnicode(bodyStr)
+	if _consts.Verbose {
+		_logUtils.PrintUnicode(bodyStr)
 	}
 	defer resp.Body.Close()
 
 	if requestTo == "farm" {
-		var bodyJson domain.RpcResp
+		var bodyJson _domain.RpcResp
 		jsonErr := json.Unmarshal(bodyStr, &bodyJson)
 		if jsonErr != nil {
 			if strings.Index(string(bodyStr), "<html>") > -1 {
-				logUtils.Error(i118Utils.Sprintf("wrong_response_format", "html"))
+				_logUtils.Error(_i118Utils.Sprintf("wrong_response_format", "html"))
 				return nil, false
 			} else {
-				logUtils.Error(jsonErr.Error())
+				_logUtils.Error(jsonErr.Error())
 				return nil, false
 			}
 		}
 		code := bodyJson.Code
-		return bodyJson.Payload, code == consts.ResultCodeSuccess
+		return bodyJson.Payload, code == _consts.ResultCodeSuccess
 	} else {
 		var bodyJson map[string]interface{}
 		jsonErr := json.Unmarshal(bodyStr, &bodyJson)
 		if jsonErr != nil {
-			logUtils.Error(jsonErr.Error())
+			_logUtils.Error(jsonErr.Error())
 			return nil, false
 		} else {
 			return bodyJson, true
@@ -69,20 +69,20 @@ func GetObj(url string, requestTo string) (interface{}, bool) {
 }
 
 func Post(url string, params interface{}) (interface{}, bool) {
-	if consts.Verbose {
-		logUtils.Info(url)
+	if _consts.Verbose {
+		_logUtils.Info(url)
 	}
 	client := &http.Client{}
 
 	paramStr, err := json.Marshal(params)
 	if err != nil {
-		logUtils.Error(err.Error())
+		_logUtils.Error(err.Error())
 		return nil, false
 	}
 
 	req, reqErr := http.NewRequest("POST", url, strings.NewReader(string(paramStr)))
 	if reqErr != nil {
-		logUtils.Error(reqErr.Error())
+		_logUtils.Error(reqErr.Error())
 		return nil, false
 	}
 
@@ -90,22 +90,22 @@ func Post(url string, params interface{}) (interface{}, bool) {
 
 	resp, respErr := client.Do(req)
 	if respErr != nil {
-		logUtils.Error(respErr.Error())
+		_logUtils.Error(respErr.Error())
 		return nil, false
 	}
 
 	bodyStr, _ := ioutil.ReadAll(resp.Body)
-	if consts.Verbose {
-		logUtils.PrintUnicode(bodyStr)
+	if _consts.Verbose {
+		_logUtils.PrintUnicode(bodyStr)
 	}
 
-	var result domain.RpcResp
+	var result _domain.RpcResp
 	json.Unmarshal(bodyStr, &result)
 
 	defer resp.Body.Close()
 
 	code := result.Code
-	return result, code == consts.ResultCodeSuccess
+	return result, code == _consts.ResultCodeSuccess
 }
 
 func GenUrl(server string, path string) string {

@@ -1,4 +1,4 @@
-package commonUtils
+package _commUtils
 
 import (
 	"strings"

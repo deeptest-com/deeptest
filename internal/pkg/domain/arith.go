@@ -1,4 +1,4 @@
-package domain
+package _domain
 
 type ArithArgs struct {
 	A int

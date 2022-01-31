@@ -4,10 +4,10 @@ import (
 	stdContext "context"
 	"fmt"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
+	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/module"
-	"github.com/aaronchen2k/deeptest/internal/server/core/viper"
 	serverZap "github.com/aaronchen2k/deeptest/internal/server/core/zap"
 	myWs "github.com/aaronchen2k/deeptest/internal/server/modules/v1/controller"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
@@ -58,7 +58,7 @@ type WebServer struct {
 
 // Init 初始化web服务
 func Init() *WebServer {
-	serverViper.Init()
+	serverConfig.Init()
 	serverZap.Init()
 
 	err := cache.Init()
@@ -69,7 +69,7 @@ func Init() *WebServer {
 
 	app := iris.New()
 	app.Validator = validator.New() //参数验证
-	app.Logger().SetLevel(serverConsts.CONFIG.System.Level)
+	app.Logger().SetLevel(serverConfig.CONFIG.System.Level)
 	idleConnClosed := make(chan struct{})
 	iris.RegisterOnInterrupt(func() { //优雅退出
 		timeout := 10 * time.Second
@@ -95,11 +95,11 @@ func Init() *WebServer {
 
 	return &WebServer{
 		app:               app,
-		addr:              serverConsts.CONFIG.System.Addr,
-		timeFormat:        serverConsts.CONFIG.System.TimeFormat,
-		staticPrefix:      serverConsts.CONFIG.System.StaticPrefix,
-		staticPath:        serverConsts.CONFIG.System.StaticPath,
-		webPath:           serverConsts.CONFIG.System.WebPath,
+		addr:              serverConfig.CONFIG.System.Addr,
+		timeFormat:        serverConfig.CONFIG.System.TimeFormat,
+		staticPrefix:      serverConfig.CONFIG.System.StaticPrefix,
+		staticPath:        serverConfig.CONFIG.System.StaticPath,
+		webPath:           serverConfig.CONFIG.System.WebPath,
 		idleConnsClosed:   idleConnClosed,
 		globalMiddlewares: []context.Handler{},
 	}

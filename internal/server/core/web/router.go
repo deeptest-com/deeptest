@@ -3,6 +3,7 @@ package web
 import (
 	"fmt"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
+	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/module"
 	"github.com/aaronchen2k/deeptest/internal/server/middleware"
@@ -22,7 +23,7 @@ func (webServer *WebServer) InitRouter() error {
 	app := webServer.app.Party("/").AllowMethods(iris.MethodOptions)
 	{
 		app.Use(middleware.InitCheck())
-		if serverConsts.CONFIG.System.Level == "debug" {
+		if serverConfig.CONFIG.System.Level == "debug" {
 			debug := DebugParty()
 			app.PartyFunc(debug.RelativePath, debug.Handler)
 		}
@@ -53,7 +54,7 @@ func (webServer *WebServer) GetSources() []map[string]string {
 		// 去除非接口路径
 		handerNames := context.HandlersNames(r.Handlers)
 		if !arr.InArrayS([]string{"GET", "POST", "PUT", "DELETE"}, r.Method) ||
-				!arr.InArrayS(strings.Split(handerNames, ","), "github.com/snowlyg/multi.(*Verifier).Verify") {
+			!arr.InArrayS(strings.Split(handerNames, ","), "github.com/snowlyg/multi.(*Verifier).Verify") {
 			routeLen--
 			continue
 		}

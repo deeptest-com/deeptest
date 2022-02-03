@@ -1,0 +1,14 @@
+version: "2.0"
+name: 源码
+intents:
+  - id: 46
+    name: 获取源
+    examples:
+      - id: 233
+        example: ^获取源代码$
+      - id: 234
+        example: ^获取源码$
+      - id: 235
+        example: ^获取页面源代码$
+      - id: 236
+        example: ^获取页面源码$

@@ -1,0 +1,13 @@
+version: "2.0"
+name: 弹窗
+intents:
+  - id: 43
+    name: 确定
+    examples:
+      - id: 219
+        example: ^确定$
+  - id: 44
+    name: 取消
+    examples:
+      - id: 220
+        example: ^取消$

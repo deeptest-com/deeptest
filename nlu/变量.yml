@@ -1,0 +1,20 @@
+version: "2.0"
+name: 变量
+intents:
+  - id: 17
+    name: 设置变量为表达式
+    examples:
+      - id: 75
+        example: ^设置(.+)为(.+)$
+        slots:
+          - variable
+          - expression
+  - id: 45
+    name: 设置变量为元素属性
+    examples:
+      - id: 222
+        example: ^设置(.+)为(.+)的(.+)属性$
+        slots:
+          - variable
+          - element
+          - property

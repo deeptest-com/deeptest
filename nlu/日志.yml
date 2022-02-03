@@ -1,0 +1,11 @@
+version: "2.0"
+name: 日志
+intents:
+- id: 1
+  name: 打印日志
+  examples:
+  - id: 9
+    example: ^打印(消息|警告|错误)(.+)$
+    slots:
+    - level
+    - expression

@@ -1,0 +1,19 @@
+version: "2.0"
+name: Cookie
+intents:
+  - id: 7
+    name: Cookie设置
+    examples:
+      - id: 37
+        example: ^设置cookie(.+)为(.+)$
+        slots:
+          - name
+          - expression
+  - id: 8
+    name: Cookie获取
+    examples:
+      - id: 82
+        example: ^获取cookie(.+)为(.+)$
+        slots:
+          - name
+          - variable

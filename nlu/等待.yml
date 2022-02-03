@@ -1,0 +1,11 @@
+version: "2.0"
+name: 等待
+intents:
+  - id: 15
+    name: 等待
+    examples:
+      - id: 64
+        example: ^等待(.+)(小时|时|分|分钟|秒|天|周|日|月|年)$
+        slots:
+          - expression
+          - unit

@@ -85,10 +85,12 @@ func (s *NluParsePatternService) popEntities(slotArr []string, text string,
 	}
 
 	for index, item := range slotArr {
-		sent.Slots[index] = slotArr[index]
-
-		entity := serverDomain.Entity{Extractor: consts.Pattern, ConfidenceEntity: 1}
-		entity.Value = item
+		entity := serverDomain.Entity{
+			Extractor:        consts.Pattern,
+			ConfidenceEntity: 1,
+			Entity:           sent.Slots[index],
+			Value:            item,
+		}
 
 		resp.Entities = append(resp.Entities, entity)
 

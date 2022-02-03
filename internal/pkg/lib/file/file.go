@@ -210,3 +210,18 @@ func AddSepIfNeeded(pth string) string {
 	}
 	return pth
 }
+
+func ListDir(pth string) (ret []string, err error) {
+	dir, err := ioutil.ReadDir(pth)
+	if err != nil {
+		return
+	}
+
+	for _, fi := range dir {
+		name := fi.Name()
+
+		ret = append(ret, filepath.Join(pth, name))
+	}
+
+	return
+}

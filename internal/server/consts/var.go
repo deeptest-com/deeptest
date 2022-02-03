@@ -1,5 +1,9 @@
 package serverConsts
 
-import ()
+import (
+	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
+)
 
-var ()
+var (
+	NluPatterns = []serverDomain.NluTask{}
+)

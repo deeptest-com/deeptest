@@ -82,6 +82,7 @@ func (s *NluParsePatternService) popEntities(slotArr []string, text string,
 
 	if len(slotArr) <= len(sent.Slots) {
 		_logUtils.Errorf("error to parse %s with pattern %s", text, sent.Example)
+		return
 	}
 
 	for index, item := range slotArr {
@@ -93,7 +94,5 @@ func (s *NluParsePatternService) popEntities(slotArr []string, text string,
 		}
 
 		resp.Entities = append(resp.Entities, entity)
-
-		index += 2
 	}
 }

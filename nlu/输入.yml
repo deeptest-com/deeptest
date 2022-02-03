@@ -1,0 +1,18 @@
+version: "2.0"
+name: 输入
+intents:
+  - id: 21
+    name: 输入
+    examples:
+      - id: 93
+        example: ^输入(.+)为(.+)$
+        slots:
+          - element
+          - expression
+  - id: 22
+    name: 清除
+    examples:
+      - id: 94
+        example: ^清除(.+)$
+        slots:
+          - element

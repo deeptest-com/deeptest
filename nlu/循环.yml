@@ -1,0 +1,33 @@
+version: "2.0"
+name: 循环
+intents:
+  - id: 10
+    name: 迭代永久
+    examples:
+      - id: 49
+        example: ^迭代$
+  - id: 11
+    name: 迭代次数
+    examples:
+      - id: 50
+        example: ^迭代(.+)次$
+        slots:
+          - expression
+  - id: 12
+    name: 迭代数据
+    examples:
+      - id: 55
+        example: ^迭代(.+)为(.+)$
+        slots:
+          - data
+          - variable
+  - id: 13
+    name: 迭代退出
+    examples:
+      - id: 58
+        example: ^退出$
+  - id: 14
+    name: 迭代继续
+    examples:
+      - id: 63
+        example: ^继续$

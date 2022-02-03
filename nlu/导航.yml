@@ -1,0 +1,18 @@
+version: "2.0"
+name: 导航
+intents:
+  - id: 40
+    name: 前进
+    examples:
+      - id: 214
+        example: ^前进$
+  - id: 41
+    name: 后退
+    examples:
+      - id: 215
+        example: ^后退$
+  - id: 42
+    name: 刷新
+    examples:
+      - id: 217
+        example: ^刷新$

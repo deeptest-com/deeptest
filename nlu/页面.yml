@@ -1,0 +1,10 @@
+version: "2.0"
+name: 页面
+intents:
+  - id: 5
+    name: 加载
+    examples:
+      - id: 25
+        example: ^打开(.+)$
+        slots:
+          - expression

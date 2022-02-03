@@ -1,0 +1,10 @@
+version: "2.0"
+name: 断言
+intents:
+  - id: 3
+    name: 断言
+    examples:
+      - id: 15
+        example: ^断言(.+)$
+        slots:
+          - expression

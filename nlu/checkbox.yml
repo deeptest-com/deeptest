@@ -1,0 +1,8 @@
+version: "2.0"
+name: Identify
+name_zh: 元素标注
+intents:
+  - name: Select Checkbox
+  - name: Unselect Checkbox
+  - name: Checkbox Should Be Selected
+  - name: Checkbox Should Not Be Selected

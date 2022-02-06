@@ -1,11 +1,12 @@
 version: "2.0"
 name: Cookie
+name_zh: Cookie
 intents:
   - name: Set Cookie
     name_zh: 设置Cookie
     examples:
       - sent: Set cookie ${name} ${value}
-        sent_zh: 设置cookie${name}为${value}
+        sent_zh: 设置cookie ${name} 为 ${value}
         params:
           - name: name
             type: string
@@ -39,12 +40,14 @@ intents:
 
   - name: 获取Cookie
     examples:
-      sent: 设置cookie${name}为${variable}
+      sent: Get cookie ${name}
+      sent_zh: 获取cookie ${name}
       slots:
         - name: name
           type: string
           desc: The name of a cookie.
           desc_zh: Cookie名称
+      return:
         - name: variable
           type: variable
           desc: The variable set to.
@@ -81,15 +84,17 @@ intents:
           desc: Possible attributes outside of the WebDriver specification
           desc_zh: 其他扩展属性
 
-  - name: 获取所有Cookie
+  - name: Get all cookie
+    name_zh: 获取所有Cookie
     examples:
-      sent: Get cookie${name} ${variable}
-      sent_zh: 获取cookie${name}为${variable}
+      sent: Get all cookie ${name}
+      sent_zh: 获取cookie ${name}
       slots:
         - name: name
           type: string
           desc: The name of a cookie.
           desc_zh: Cookie名称
+      return:
         - name: variable
           type: map
           desc: The variable to set.
@@ -101,10 +106,11 @@ intents:
           desc: If true, returned a map, otherwise return a single string in format name1=value1;name2=value2;name3=value3.
           desc_zh: 如果为真返回一个map，否则返回一个形如name1=value1;name2=value2;name3=value3的字符串。
 
-  - name: 删除Cookie
+  - name: Delete cookie
+    name_zh: 删除Cookie
     examples:
       sent: Delete cookie ${name}
-      sent_zh: 删除cookie${name}
+      sent_zh: 删除cookie ${name}
       slots:
         - name: name
           type: string

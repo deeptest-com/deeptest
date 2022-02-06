@@ -1,0 +1,75 @@
+version: "2.0"
+name: Alert
+intents:
+  - name: Alert Present
+    name_zh: 警告窗口存在
+    examples:
+      - sent: Alert Should Be Present ${text}
+        sent_zh: 警告窗口存在${text}
+        params:
+          - name: text
+            type: string
+            desc: Alert's message contains.
+            desc_zh: 警告内容包含
+
+          - name: action
+            type: string
+            enums:
+            - ACCEPT
+            - DISMISS
+            - LEAVE
+            optional: true
+            desc: Alert's actions.
+            desc_zh: 警告窗口操作
+          - name: timeout
+            type: second
+            optional: true
+            desc: How long to wait for the alert to appear.
+            desc_zh: 等待警告窗口出现的时间。
+
+  - name: Alert Not Present
+    name_zh: 警告窗口不存在
+    examples:
+      - sent: Alert Should Not Be Present ${text}
+        sent_zh: 警告窗口不存在${text}
+        params:
+          - name: text
+            type: string
+            desc: Alert's message contains.
+            desc_zh: 警告内容包含
+
+          - name: action
+            type: string
+            enums:
+              - ACCEPT
+              - DISMISS
+              - LEAVE
+            optional: true
+            desc: Alert's actions.
+            desc_zh: 警告窗口操作
+          - name: timeout
+            type: second
+            optional: true
+            desc: How long to wait for the alert to appear.
+            desc_zh: 等待警告窗口出现的时间。
+
+  - name: Alert Handle
+    name_zh: 警告窗口处理
+    examples:
+      - sent: Handle Alert ${action}
+        sent_zh: 警告窗口处理${action}
+        params:
+          - name: action
+            type: string
+            enums:
+              - ACCEPT
+              - DISMISS
+              - LEAVE
+            optional: true
+            desc: Alert's actions.
+            desc_zh: 警告窗口操作
+          - name: timeout
+            type: second
+            optional: true
+            desc: How long to wait for the alert to appear.
+            desc_zh: 等待警告窗口出现的时间。

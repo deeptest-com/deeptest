@@ -6,7 +6,7 @@ intents:
     examples:
       - sent: Set cookie ${name} ${value}
         sent_zh: 设置cookie${name}为${value}
-        slots:
+        params:
           - name: name
             type: string
             desc: The name of a cookie.
@@ -15,7 +15,7 @@ intents:
             type: string
             desc: Value of the cookie.
             desc_zh: Cookie值
-        params:
+
           - name: path
             type: string
             optional: true

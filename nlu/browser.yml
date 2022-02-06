@@ -1,0 +1,10 @@
+version: "2.0"
+name: Identify
+name_zh: 元素标注
+intents:
+  - name: Open Browser
+  - name: Close Browser
+  - name: Close All Browsers
+  - name: Maximize Browser Window
+  - name: Get Browser Ids
+  - name: Get Browser Aliases

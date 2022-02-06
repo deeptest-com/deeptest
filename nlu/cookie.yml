@@ -2,34 +2,40 @@ version: "2.0"
 name: Cookie
 intents:
   - name: Set Cookie
-    zh: 设置Cookie
+    name_zh: 设置Cookie
     examples:
       - sent: Set cookie ${name} ${value}
-        zh: 设置cookie${name}为${value}
+        sent_zh: 设置cookie${name}为${value}
         slots:
           - name: name
             type: string
             desc: The name of a cookie.
+            desc_zh: Cookie名称
           - name: value
             type: string
             desc: Value of the cookie.
+            desc_zh: Cookie值
         params:
           - name: path
             type: string
             optional: true
             desc: Indicates a URL path, for example /.
+            desc_zh: 有效的路径
           - name: domain
             type: string
             optional: true
             desc: The domain, the cookie is visible to.
+            desc_zh: 有效的域
           - name: secure
             type: bool
             optional: true
             desc: When true, the cookie is only used with HTTPS connections.
+            desc_zh: 仅在HTTPS请求中有效
           - name: expiry
             type: string
             optional: true
             desc: Datetime object indicating when the cookie expires.
+            desc_zh: 过期时间
 
   - name: 获取Cookie
     examples:
@@ -38,62 +44,73 @@ intents:
         - name: name
           type: string
           desc: The name of a cookie.
+          desc_zh: Cookie名称
         - name: variable
           type: variable
           desc: The variable set to.
+          desc_zh: 接受cookie值的变量
       params:
         - name: path
           type: string
           optional: true
           desc: Indicates a URL path, for example /.
+          desc_zh: 有效的路径
         - name: domain
           type: string
           optional: true
           desc: The domain, the cookie is visible to.
+          desc_zh: 有效的域
         - name: secure
           type: bool
           optional: true
           desc: When true, the cookie is only used with HTTPS connections.
+          desc_zh: 仅在HTTPS请求中有效。
         - name: httpOnly
           type: bool
           optional: true
           desc: When true, the cookie is not accessible via JavaScript.
+          desc_zh: 仅在请求中有效，JavaScript不可访问。
         - name: expiry
           type: string
           optional: true
           desc: Datetime object indicating when the cookie expires.
+          desc_zh: 过期时间
         - name: extra
           type: map
           optional: true
           desc: Possible attributes outside of the WebDriver specification
+          desc_zh: 其他扩展属性
 
   - name: 获取所有Cookie
     examples:
       sent: Get cookie${name} ${variable}
-      zh: 获取cookie${name}为${variable}
+      sent_zh: 获取cookie${name}为${variable}
       slots:
         - name: name
           type: string
           desc: The name of a cookie.
+          desc_zh: Cookie名称
         - name: variable
-          type: variable
-          desc: The variable set to.
+          type: map
+          desc: The variable to set.
+          desc_zh: 接受返回值的变量
       params:
         - name: asDict
           type: bool
           optional: true
-          desc: If true, returned as map format, or a single string in format name1=value1; name2=value2; name3=value3.
+          desc: If true, returned a map, otherwise return a single string in format name1=value1;name2=value2;name3=value3.
+          desc_zh: 如果为真返回一个map，否则返回一个形如name1=value1;name2=value2;name3=value3的字符串。
 
   - name: 删除Cookie
     examples:
       sent: Delete cookie ${name}
-      zh: 删除cookie${name}
+      sent_zh: 删除cookie${name}
       slots:
         - name: name
           type: string
           desc: The name of a cookie.
-
+          desc_zh: Cookie名称
   - name: 删除所有Cookie
     examples:
       sent: Delete all cookies
-      zh: 删除所有cookie
+      sent_zh: 删除所有cookie

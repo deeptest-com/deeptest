@@ -1,0 +1,99 @@
+version: "2.0"
+name: Cookie
+intents:
+  - name: Set Cookie
+    zh: 设置Cookie
+    examples:
+      - sent: Set cookie ${name} ${value}
+        zh: 设置cookie${name}为${value}
+        slots:
+          - name: name
+            type: string
+            desc: The name of a cookie.
+          - name: value
+            type: string
+            desc: Value of the cookie.
+        params:
+          - name: path
+            type: string
+            optional: true
+            desc: Indicates a URL path, for example /.
+          - name: domain
+            type: string
+            optional: true
+            desc: The domain, the cookie is visible to.
+          - name: secure
+            type: bool
+            optional: true
+            desc: When true, the cookie is only used with HTTPS connections.
+          - name: expiry
+            type: string
+            optional: true
+            desc: Datetime object indicating when the cookie expires.
+
+  - name: 获取Cookie
+    examples:
+      sent: 设置cookie${name}为${variable}
+      slots:
+        - name: name
+          type: string
+          desc: The name of a cookie.
+        - name: variable
+          type: variable
+          desc: The variable set to.
+      params:
+        - name: path
+          type: string
+          optional: true
+          desc: Indicates a URL path, for example /.
+        - name: domain
+          type: string
+          optional: true
+          desc: The domain, the cookie is visible to.
+        - name: secure
+          type: bool
+          optional: true
+          desc: When true, the cookie is only used with HTTPS connections.
+        - name: httpOnly
+          type: bool
+          optional: true
+          desc: When true, the cookie is not accessible via JavaScript.
+        - name: expiry
+          type: string
+          optional: true
+          desc: Datetime object indicating when the cookie expires.
+        - name: extra
+          type: map
+          optional: true
+          desc: Possible attributes outside of the WebDriver specification
+
+  - name: 获取所有Cookie
+    examples:
+      sent: Get cookie${name} ${variable}
+      zh: 获取cookie${name}为${variable}
+      slots:
+        - name: name
+          type: string
+          desc: The name of a cookie.
+        - name: variable
+          type: variable
+          desc: The variable set to.
+      params:
+        - name: asDict
+          type: bool
+          optional: true
+          desc: If true, returned as map format, or a single string in format name1=value1; name2=value2; name3=value3.
+
+  - name: 删除Cookie
+    examples:
+      sent: Delete cookie ${name}
+      zh: 删除cookie${name}
+      slots:
+        - name: name
+          type: string
+          desc: The name of a cookie.
+
+  - name: 删除所有Cookie
+    examples:
+      sent: Delete all cookies
+      zh: 删除所有cookie

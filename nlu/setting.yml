@@ -1,0 +1,8 @@
+version: "2.0"
+name: Identify
+name_zh: 元素标注
+intents:
+  - name: Set Selenium Implicit Wait
+  - name: Set Browser Implicit Wait
+  - name: Get Wait Time
+  - name: Register Keyword To Run On Failure

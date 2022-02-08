@@ -1,0 +1,22 @@
+version: "2.0"
+name: Identify
+name_zh: 元素标注
+intents:
+
+  - name: Wait Until Location Contains
+  - name: Wait Until Location Does Not Contain
+  - name: Wait Until Location Is
+  - name: Wait Until Location Is Not
+
+  - name: Wait Until Page Contains
+  - name: Wait Until Page Does Not Contain
+  - name: Wait Until Page Contains Element
+  - name: Wait Until Page Does Not Contain Element
+
+  - name: Wait Until Element Contains
+  - name: Wait Until Element Does Not Contain
+  - name: Wait Until Element Is Enabled
+  - name: Wait Until Element Is Not Visible
+  - name: Wait Until Element Is Visible
+
+

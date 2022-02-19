@@ -67,7 +67,7 @@ func (c *TestInterfaceCtrl) Create(ctx iris.Context) {
 	}
 
 	req.ProjectId = projectId
-	id, err := c.TestInterfaceService.Create(req)
+	intf, err := c.TestInterfaceService.Create(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{
 			Code: c.ErrCode(err),
@@ -76,7 +76,7 @@ func (c *TestInterfaceCtrl) Create(ctx iris.Context) {
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{"id": id}, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: intf, Msg: _domain.NoErr.Msg})
 }
 
 // Update 更新

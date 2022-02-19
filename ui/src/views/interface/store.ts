@@ -77,9 +77,11 @@ const StoreModel: ModuleType = {
         },
         async createInterface({ commit }, payload: any ) {
             try {
-                await create(payload);
+                const resp = await create(payload);
+                console.log('resp', resp.data)
+
                 await this.dispatch('Interface/loadInterface');
-                return true;
+                return resp.data;
             } catch (error) {
                 return false;
             }

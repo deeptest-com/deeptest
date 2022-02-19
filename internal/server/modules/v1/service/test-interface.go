@@ -35,15 +35,7 @@ func (s *TestInterfaceService) Create(req serverDomain.TestInterfaceReq) (interf
 	interf = &model.TestInterface{Name: req.Name, ProjectId: uint(req.ProjectId),
 		IsDir: req.Type == serverConsts.Dir}
 
-	target, err := s.InterfaceRepo.Get(uint(req.Target))
-	if req.Mode == serverConsts.Child {
-		interf.ParentId = target.ID
-	} else {
-		interf.ParentId = target.ParentId
-	}
-
-	interf.Ordr = s.InterfaceRepo.GetMaxOrder(interf.ParentId)
-
+	interf.ParentId, interf.Ordr = s.InterfaceRepo.UpdateOrder(req.Mode, uint(req.Target))
 	err = s.InterfaceRepo.Save(interf)
 
 	return
@@ -59,10 +51,9 @@ func (s *TestInterfaceService) Move(srcId, targetId uint, mode string) (projectI
 	srcInterface, err = s.InterfaceRepo.Get(srcId)
 	targetInterface, err := s.InterfaceRepo.Get(targetId)
 
-	if "0" == mode {
-		srcInterface.ParentId = targetId
-		srcInterface.Ordr = s.InterfaceRepo.GetMaxOrder(srcInterface.ParentId)
-	} else if "-1" == mode {
+	if "0" == mode { // inner
+		srcInterface.ParentId, srcInterface.Ordr = s.InterfaceRepo.UpdateOrder(serverConsts.Child, srcInterface.ParentId)
+	} else if "-1" == mode { // before
 		err = s.InterfaceRepo.AddOrderForTargetAndNextCases(srcInterface.ID, targetInterface.Ordr, targetInterface.ParentId)
 		if err != nil {
 			return
@@ -70,7 +61,7 @@ func (s *TestInterfaceService) Move(srcId, targetId uint, mode string) (projectI
 
 		srcInterface.ParentId = targetInterface.ParentId
 		srcInterface.Ordr = targetInterface.Ordr
-	} else if "1" == mode {
+	} else if "1" == mode { // after
 		err = s.InterfaceRepo.AddOrderForNextCases(srcInterface.ID, targetInterface.Ordr, targetInterface.ParentId)
 		if err != nil {
 			return

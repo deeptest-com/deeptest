@@ -39,7 +39,7 @@
               <span>创建子节点</span>
             </a-menu-item>
 
-            <a-menu-item key="add_brother_dir)" class="menu-item" v-if="treeNode.id > 0">
+            <a-menu-item key="add_brother_dir" class="menu-item" v-if="treeNode.id > 0">
               <PlusOutlined/>
               <span>创建兄弟目录</span>
             </a-menu-item>

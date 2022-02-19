@@ -2,10 +2,15 @@
   <div id="main">
     <div id="left">
       <div class="toolbar">
-        <a-button @click="expandAll" type="link">
-          <span v-if="!isExpand">展开全部</span>
-          <span v-if="isExpand">收缩全部</span>
-        </a-button>
+        <div class="tips">
+          <span>{{tips}}</span>
+        </div>
+        <div class="buttons">
+          <a-button @click="expandAll" type="link">
+            <span v-if="!isExpand">展开全部</span>
+            <span v-if="isExpand">收缩全部</span>
+          </a-button>
+        </div>
       </div>
       <div>
         <a-tree
@@ -102,6 +107,7 @@ interface InterfaceIndexPageSetupData {
   selectedKeys: Ref<string[]>
   checkedKeys: Ref<string[]>
   expandedKeys: Ref<number[]>
+  tips: Ref<string>
   tree: Ref;
   treeNode: Ref;
   menuStyle: Ref;
@@ -167,7 +173,8 @@ export default defineComponent({
       console.log('expandNode', keys[0], e)
     }
     const selectNode = (keys, e) => {
-      console.log('selectNode', selectedKeys)
+      const nodeData = treeMap[selectedKeys.value[0]]
+      console.log('selectNode', nodeData.id)
     }
     const checkNode = (keys, e) => {
       console.log('checkNode', checkedKeys)
@@ -176,6 +183,7 @@ export default defineComponent({
     let treeNode = ref({} as any)
     let menuStyle = ref({} as any)
     const treeMap = {}
+    let tips = ref('')
     let rightVisible = false
     const onRightClick = (e) => {
       console.log('onRightClick', e)
@@ -219,8 +227,13 @@ export default defineComponent({
 
     const getNodeMapCall = throttle(async () => {
       getNodeMap(treeData.value[0], treeMap)}, 300)
+
     watch(treeData, () => {
       getNodeMapCall()
+      console.log('treeMap', Object.keys(treeMap), treeMap)
+      if (!treeData.value[0].children || treeData.value[0].children.length === 0) {
+        tips.value = '右键树状节点操作'
+      }
     })
 
     const treeLoading = ref<boolean>(true);
@@ -355,6 +368,7 @@ export default defineComponent({
       isDir,
 
       treeLoading,
+      tips,
       getTree,
       createFormVisible,
       setCreateFormVisible,
@@ -386,9 +400,19 @@ export default defineComponent({
     height: 100%;
 
     .toolbar {
+      display: flex;
       height: 32px;
       border-bottom: 1px solid #D0D7DE;
-      text-align: right;
+      .tips {
+        flex: 1;
+        padding: 0 3px 0 6px;
+        line-height: 31px;
+        color: #5a5e66;
+      }
+      .buttons {
+        width: 100px;
+        text-align: right;
+      }
     }
   }
 

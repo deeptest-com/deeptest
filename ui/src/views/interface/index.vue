@@ -148,7 +148,6 @@ export default defineComponent({
     const queryTree = throttle(async () => {
       treeLoading.value = true;
       await store.dispatch('Interface/loadInterface');
-      console.log('treeData', treeData.value)
       treeLoading.value = false;
     }, 600)
     queryTree();
@@ -218,8 +217,10 @@ export default defineComponent({
       document.removeEventListener("click", clearMenu)
     })
 
+    const getNodeMapCall = throttle(async () => {
+      getNodeMap(treeData.value[0], treeMap)}, 300)
     watch(treeData, () => {
-      getNodeMap(treeData.value[0], treeMap)
+      getNodeMapCall()
     })
 
     const treeLoading = ref<boolean>(true);

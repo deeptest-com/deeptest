@@ -2,6 +2,7 @@ package repo
 
 import (
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"gorm.io/gorm"
 )
@@ -24,38 +25,27 @@ func (r *InterfaceRepo) GetInterfaceTree(projectId int) (root *model.TestInterfa
 	return
 }
 
-func (r *InterfaceRepo) CreateTreeNode(defId, targetId uint, name string, mode string) (field *model.TestInterface, err error) {
-	field = &model.TestInterface{}
-	field.Name = name
-	if mode == "root" {
-	} else {
-		var target model.TestInterface
+func (r *InterfaceRepo) UpdateOrder(mode serverConsts.NodeCreateMode, targetId uint) (parentId uint, ordr int) {
+	if mode == serverConsts.Brother {
+		brother, _ := r.Get(targetId)
+		parentId = brother.ParentId
 
-		err = r.DB.Where("id=?", targetId).First(&target).Error
+		r.DB.Model(&model.TestInterface{}).
+			Where("NOT deleted AND parent_id=? AND ordr >= ?", parentId, brother.Ordr).
+			Update("ordr", gorm.Expr("ordr + 1"))
 
-		if mode == "child" {
-			field.ParentId = target.ID
-		} else {
-			field.ParentId = target.ParentId
-		}
-		field.Ordr = r.GetMaxOrder(field.ParentId)
+		ordr = brother.Ordr + 1
+
+	} else if mode == serverConsts.Child {
+		parentId = uint(targetId)
+
+		var preChild model.TestInterface
+		r.DB.Where("parent_id=?", parentId).
+			Order("ordr DESC").Limit(1).
+			First(&preChild)
+		ordr = preChild.Ordr + 1
+
 	}
-
-	err = r.DB.Save(field).Error
-	return
-}
-
-func (r *InterfaceRepo) GetMaxOrder(parentId uint) (ord int) {
-	var preChild model.TestInterface
-	err := r.DB.
-		Where("parent_id=?", parentId).
-		Order("ord DESC").Limit(1).
-		First(&preChild).Error
-
-	if err != nil {
-		ord = 1
-	}
-	ord = preChild.Ordr + 1
 
 	return
 }

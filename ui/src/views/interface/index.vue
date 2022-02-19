@@ -268,7 +268,12 @@ export default defineComponent({
     const addNode = (mode, type) => {
       console.log('addNode', targetModelId)
       store.dispatch('Interface/createInterface',
-          {mode: mode, type: type, target: targetModelId, name: type === 'dir' ? '新目录' : '新接口'});
+          {mode: mode, type: type, target: targetModelId, name: type === 'dir' ? '新目录' : '新接口'})
+          .then((newNode) => {
+            console.log('newNode', newNode)
+            selectedKeys.value = [newNode.id]
+          } // select
+      )
     }
     const removeNode = () => {
       store.dispatch('Interface/deleteInterface', targetModelId);

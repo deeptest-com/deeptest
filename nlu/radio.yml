@@ -1,7 +1,0 @@
-version: "2.0"
-name: Identify
-name_zh: 元素标注
-intents:
-  - name: Select Radio Button
-  - name: Radio Button Should Be Set To
-  - name: Radio Button Should Not Be Selected

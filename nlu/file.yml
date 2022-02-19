@@ -1,5 +1,0 @@
-version: "2.0"
-name: Identify
-name_zh: 元素标注
-intents:
-  - name: Choose File

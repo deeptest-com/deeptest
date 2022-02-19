@@ -10,23 +10,17 @@ type InterfaceRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func (r *InterfaceRepo) GetDefInterfaceTree(projectId int) (root *model.TestInterface, err error) {
-	fields, err := r.ListByProject(projectId)
+func (r *InterfaceRepo) GetInterfaceTree(projectId int) (root *model.TestInterface, err error) {
+	pos, err := r.ListByProject(projectId)
 
 	if err != nil {
-		return nil, err
-	}
-	if len(fields) == 0 {
-		return nil, fmt.Errorf("no fields")
+		return
 	}
 
-	root = fields[0]
-	children := make([]*model.TestInterface, 0)
-	if len(fields) > 1 {
-		children = fields[1:]
-	}
+	root = &model.TestInterface{Name: "root", IsDir: true}
+	root.ID = 0
 
-	r.makeTree(children, root)
+	r.makeTree(pos, root)
 	return
 }
 
@@ -40,11 +34,11 @@ func (r *InterfaceRepo) CreateTreeNode(defId, targetId uint, name string, mode s
 		err = r.DB.Where("id=?", targetId).First(&target).Error
 
 		if mode == "child" {
-			field.ParentID = target.ID
+			field.ParentId = target.ID
 		} else {
-			field.ParentID = target.ParentID
+			field.ParentId = target.ParentId
 		}
-		field.Ordr = r.GetMaxOrder(field.ParentID)
+		field.Ordr = r.GetMaxOrder(field.ParentId)
 	}
 
 	err = r.DB.Save(field).Error
@@ -54,7 +48,7 @@ func (r *InterfaceRepo) CreateTreeNode(defId, targetId uint, name string, mode s
 func (r *InterfaceRepo) GetMaxOrder(parentId uint) (ord int) {
 	var preChild model.TestInterface
 	err := r.DB.
-		Where("parentID=?", parentId).
+		Where("parent_id=?", parentId).
 		Order("ord DESC").Limit(1).
 		First(&preChild).Error
 
@@ -66,8 +60,10 @@ func (r *InterfaceRepo) GetMaxOrder(parentId uint) (ord int) {
 	return
 }
 
-func (r *InterfaceRepo) ListByProject(projectId int) (fields []*model.TestInterface, err error) {
-	err = r.DB.Where("project_id=?", projectId).Order("parentID ASC ,ord ASC").Find(&fields).Error
+func (r *InterfaceRepo) ListByProject(projectId int) (pos []*model.TestInterface, err error) {
+	err = r.DB.Where("project_id=?", projectId).
+		Order("parent_id ASC, ordr ASC").
+		Find(&pos).Error
 	return
 }
 
@@ -101,7 +97,7 @@ func (r *InterfaceRepo) makeTree(Data []*model.TestInterface, node *model.TestIn
 
 func (r *InterfaceRepo) haveChild(Data []*model.TestInterface, node *model.TestInterface) (child []*model.TestInterface, yes bool) {
 	for _, v := range Data {
-		if v.ParentID == node.ID {
+		if v.ParentId == node.ID {
 			child = append(child, v)
 		}
 	}
@@ -148,7 +144,7 @@ func (r *InterfaceRepo) AddOrderForNextCases(srcID uint, targetOrder int, target
 }
 
 func (r *InterfaceRepo) UpdateOrdAndParent(field model.TestInterface) (err error) {
-	//err = r.DB.Model(&field).UpdateColumn(model.TestInterface{Ordr: field.Ordr, ParentID: field.ParentID}).Error
+	//err = r.DB.Model(&field).UpdateColumn(model.TestInterface{Ordr: field.Ordr, ParentId: field.ParentId}).Error
 
 	return
 }

@@ -2,9 +2,9 @@ package controller
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
+	"github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
-	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
 	"strings"
@@ -28,7 +28,7 @@ func (c *AccountCtrl) Login(ctx iris.Context) {
 		errs := validate.ValidRequest(err)
 
 		if len(errs) > 0 {
-			logUtils.Errorf("参数验证失败", zap.String("ValidRequest()", strings.Join(errs, ";")))
+			_logUtils.Errorf("参数验证失败", zap.String("ValidRequest()", strings.Join(errs, ";")))
 			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
 			return
 		}

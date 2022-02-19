@@ -1,6 +1,7 @@
 package service
 
 import (
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
@@ -15,7 +16,7 @@ func NewTestInterfaceService() *TestInterfaceService {
 }
 
 func (s *TestInterfaceService) GetTree(projectId int) (root *model.TestInterface, err error) {
-	root, err = s.InterfaceRepo.GetDefInterfaceTree(projectId)
+	root, err = s.InterfaceRepo.GetInterfaceTree(projectId)
 	return
 }
 
@@ -31,24 +32,20 @@ func (s *TestInterfaceService) Save(interf *model.TestInterface) (err error) {
 	return
 }
 func (s *TestInterfaceService) Create(req serverDomain.TestInterfaceReq) (interf *model.TestInterface, err error) {
-	interf = &model.TestInterface{}
-	interf.Name = req.Name
-	if req.Mode == "root" {
-		interf.ParentID = 0
+	interf = &model.TestInterface{Name: req.Name, ProjectId: uint(req.ProjectId),
+		IsDir: req.Type == serverConsts.Dir}
+
+	target, err := s.InterfaceRepo.Get(uint(req.Target))
+	if req.Mode == serverConsts.Child {
+		interf.ParentId = target.ID
 	} else {
-		var target model.TestInterface
-
-		target, err = s.InterfaceRepo.Get(uint(req.TargetId))
-
-		if req.Mode == "child" {
-			interf.ParentID = target.ID
-		} else {
-			interf.ParentID = target.ParentID
-		}
-		interf.Ordr = s.InterfaceRepo.GetMaxOrder(interf.ParentID)
+		interf.ParentId = target.ParentId
 	}
 
+	interf.Ordr = s.InterfaceRepo.GetMaxOrder(interf.ParentId)
+
 	err = s.InterfaceRepo.Save(interf)
+
 	return
 }
 
@@ -65,23 +62,23 @@ func (s *TestInterfaceService) Move(srcId, targetId uint, mode string) (projectI
 	targetInterface, err := s.InterfaceRepo.Get(targetId)
 
 	if "0" == mode {
-		srcInterface.ParentID = targetId
-		srcInterface.Ordr = s.InterfaceRepo.GetMaxOrder(srcInterface.ParentID)
+		srcInterface.ParentId = targetId
+		srcInterface.Ordr = s.InterfaceRepo.GetMaxOrder(srcInterface.ParentId)
 	} else if "-1" == mode {
-		err = s.InterfaceRepo.AddOrderForTargetAndNextCases(srcInterface.ID, targetInterface.Ordr, targetInterface.ParentID)
+		err = s.InterfaceRepo.AddOrderForTargetAndNextCases(srcInterface.ID, targetInterface.Ordr, targetInterface.ParentId)
 		if err != nil {
 			return
 		}
 
-		srcInterface.ParentID = targetInterface.ParentID
+		srcInterface.ParentId = targetInterface.ParentId
 		srcInterface.Ordr = targetInterface.Ordr
 	} else if "1" == mode {
-		err = s.InterfaceRepo.AddOrderForNextCases(srcInterface.ID, targetInterface.Ordr, targetInterface.ParentID)
+		err = s.InterfaceRepo.AddOrderForNextCases(srcInterface.ID, targetInterface.Ordr, targetInterface.ParentId)
 		if err != nil {
 			return
 		}
 
-		srcInterface.ParentID = targetInterface.ParentID
+		srcInterface.ParentId = targetInterface.ParentId
 		srcInterface.Ordr = targetInterface.Ordr + 1
 	}
 

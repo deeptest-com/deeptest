@@ -11,8 +11,7 @@
     "svgo": "svgo -f src/assets/iconsvg --config=src/assets/iconsvg/svgo.yml"
   },
   "dependencies": {
-    "@ckeditor/ckeditor5-build-decoupled-document": "^23.1.0",
-    "@ckeditor/ckeditor5-vue": "^2.0.1",
+    "@ant-design/icons-vue": "^6.0.1",
     "@toast-ui/editor": "^2.5.3",
     "ant-design-vue": "^2.2.8",
     "axios": "^0.21.4",
@@ -24,6 +23,7 @@
     "nprogress": "^0.2.0",
     "vue": "^3.2.18",
     "vue-i18n": "^9.1.7",
+    "vue-loader-v16": "^16.0.0-beta.5.4",
     "vue-router": "^4.0.11",
     "vuex": "^4.0.2"
   },

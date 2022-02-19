@@ -78,22 +78,16 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
   },
 
   {
-    icon: 'script',
-    title: 'index-layout.menu.script',
-    path: '/~/script',
-    redirect: '/~/script/list',
+    icon: 'interface',
+    title: 'index-layout.menu.interface',
+    path: '/~/interface',
+    redirect: '/~/interface/index',
     component: BlankLayout,
     children: [
       {
-        title: 'index-layout.menu.script.list',
-        path: 'list',
-        component: () => import('@/views/script/list/index.vue'),
-        hidden: true,
-      },
-      {
-        title: 'index-layout.menu.script.design',
-        path: 'design/:id',
-        component: () => import('@/views/script/design/index.vue'),
+        title: 'index-layout.menu.interface',
+        path: 'index',
+        component: () => import('@/views/interface/index.vue'),
         hidden: true,
       },
     ],

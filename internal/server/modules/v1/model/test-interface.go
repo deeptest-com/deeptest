@@ -6,12 +6,13 @@ type TestInterface struct {
 	Name string `json:"name"`
 	Desc string `json:"desc"`
 
-	ParentID  uint `json:"parentId"`
+	IsDir     bool `json:"isDir"`
+	ParentId  uint `json:"parentId"`
 	ProjectId uint `json:"projectId"`
 	UseID     uint `json:"useId"`
 
 	Ordr     int              `json:"ordr"`
-	Children []*TestInterface `json:"fields"`
+	Children []*TestInterface `gorm:"-" json:"children"`
 }
 
 func (TestInterface) TableName() string {

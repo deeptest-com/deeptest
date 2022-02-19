@@ -22,9 +22,9 @@ func NewTestInterfaceCtrl() *TestInterfaceCtrl {
 	return &TestInterfaceCtrl{}
 }
 
-// GetTree
-func (c *TestInterfaceCtrl) GetTree(ctx iris.Context) {
-	projectId, err := ctx.URLParamInt("id")
+// Load
+func (c *TestInterfaceCtrl) Load(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("currProjectId")
 
 	data, err := c.TestInterfaceService.GetTree(projectId)
 	if err != nil {
@@ -53,15 +53,20 @@ func (c *TestInterfaceCtrl) Get(ctx iris.Context) {
 
 // Create 添加
 func (c *TestInterfaceCtrl) Create(ctx iris.Context) {
-	req := serverDomain.TestInterfaceReq{}
-	if err := ctx.ReadJSON(&req); err != nil {
-		errs := validate.ValidRequest(err)
-		if len(errs) > 0 {
-			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
-			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
-			return
-		}
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
 	}
+
+	req := serverDomain.TestInterfaceReq{}
+	err = ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	req.ProjectId = projectId
 	id, err := c.TestInterfaceService.Create(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{

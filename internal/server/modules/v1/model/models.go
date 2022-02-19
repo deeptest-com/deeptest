@@ -17,8 +17,6 @@ var (
 		&Org{},
 		&Project{},
 		&ProjectMember{},
-		&TestCase{},
-		&TestScript{},
-		&TestStep{},
+		&TestInterface{},
 	}
 )

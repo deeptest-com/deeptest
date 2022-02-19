@@ -1,9 +1,0 @@
-version: "2.0"
-name: Identify
-name_zh: 元素标注
-intents:
-  - name: Select Frame
-  - name: Unselect Frame
-  - name: Frame Should Contain
-  - name: Current Frame Should Contain
-  - name: Current Frame Should Not Contain

@@ -12,10 +12,7 @@ export default {
   'index-layout.menu.project.list': '项目列表',
   'index-layout.menu.project.edit': '项目编辑',
 
-  'index-layout.menu.script': '脚本',
-  'index-layout.menu.script.list': '脚本列表',
-  'index-layout.menu.script.edit': '脚本编辑',
-  'index-layout.menu.script.design': '脚本设计',
+  'index-layout.menu.interface': '接口',
 
   'index-layout.menu.component': '组件',
   'index-layout.menu.component.icon': '图标',

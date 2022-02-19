@@ -22,7 +22,7 @@ export default defineComponent({
   font-size: 14px;
   color: #808695;
   .footer-links {
-    margin-bottom: 3px;
+    margin-top: 3px;
     a {
       margin-right: 30px;
       color: #808695;

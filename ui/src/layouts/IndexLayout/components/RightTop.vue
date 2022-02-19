@@ -23,7 +23,7 @@
                         </a-link>
                       </template>
                     </template>             
-                    <bread-crumbs v-else class="breadcrumb" :list="breadCrumbs"></bread-crumbs>
+<!--                    <bread-crumbs v-else class="breadcrumb" :list="breadCrumbs"></bread-crumbs>-->
                 </div>
             </div>
             <div class="indexlayout-top-menu-right">
@@ -37,13 +37,15 @@
 
             </div>
         </div>
-        <div v-if="topNavEnable" class="indexlayout-right-top-bot">
+<!--        <div v-if="topNavEnable" class="indexlayout-right-top-bot">
             <div class="indexlayout-right-top-bot-home">
               <EnvironmentOutlined />
             </div>
             <bread-crumbs class="breadcrumb" :list="breadCrumbs"></bread-crumbs>
         </div>
         <right-tab-nav v-if="tabNavEnable" :routeItem="routeItem"></right-tab-nav>
+-->
+
     </div>
 </template>
 <script lang="ts">
@@ -70,13 +72,13 @@ export default defineComponent({
     name: 'RightTop',
     components: {
       ALink,
-      BreadCrumbs,
-      EnvironmentOutlined,
       RightTopProject,
       RightTopMessage,
       RightTopUser,
       SelectLang,
-      RightTabNav,
+      // BreadCrumbs,
+      // EnvironmentOutlined,
+      // RightTabNav,
     },
     props: {
       collapsed: {
@@ -239,7 +241,7 @@ export default defineComponent({
     }
   }
   &.tabNavEnable {
-    height: (@headerHeight + @headerBreadcrumbHeight);
+    height: (@headerHeight) // + @headerBreadcrumbHeight);
   }
   &.topNavEnable {
     height: (@headerHeight + @headerTabNavHeight);

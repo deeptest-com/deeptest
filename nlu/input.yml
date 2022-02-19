@@ -1,9 +1,0 @@
-version: "2.0"
-name: Identify
-name_zh: 元素标注
-intents:
-  - name: Get Text
-  - name: Input Text
-  - name: Input Password
-  - name: Clear Element Text
-  - name: Input Text Into Alert

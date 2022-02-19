@@ -2,7 +2,7 @@
     <a-modal
       :destroy-on-close="true"
       :mask-closable="false"
-      title="编辑脚本"
+      title="新建脚本"
       :visible="visible"
       :onCancel="onCancel"
     >
@@ -19,6 +19,8 @@
                 <a-input v-model:value="modelRef.desc" placeholder="" />
             </a-form-item>
         </a-form>
+
+
     </a-modal>
 </template>
 <script lang="ts">
@@ -29,23 +31,17 @@ import { Props, validateInfos } from 'ant-design-vue/lib/form/useForm';
 import { message, Form } from 'ant-design-vue';
 const useForm = Form.useForm;
 
-import { Script } from '../../data.d';
-
-interface UpdateFormSetupData {
-    modelRef: Omit<Script, 'id'>;
+interface CreateFormSetupData {
+    modelRef: any;
     validateInfos: validateInfos;
     onFinish: () => Promise<void>;
 }
 
 export default defineComponent({
-    name: 'UpdateForm',
+    name: 'CreateForm',
     props: {
         visible: {
             type: Boolean,
-            required: true
-        },
-        values: {
-            type: Object as PropType<Partial<Script>>,
             required: true
         },
         onCancel: {
@@ -57,24 +53,23 @@ export default defineComponent({
             required: true
         },
         onSubmit: {
-            type: Function as PropType<(values: Script, resetFields: (newValues?: Props | undefined) => void) => void>,
+            type: Function as PropType<(values: any, resetFields: (newValues?: Props | undefined) => void) => void>,
             required: true
         }
     },
     components: {
     },
-    setup(props): UpdateFormSetupData {
+    setup(props): CreateFormSetupData {
+
         const { t } = useI18n();
 
         // 表单值
-        const modelRef = reactive<Script>({
-            id: props.values.id || 0,
-            name: props.values.name || '',
-            desc: props.values.desc || '',
+        const modelRef = reactive<any>({
+            name: '',
+            desc: '',
         });
         // 表单验证
         const rulesRef = reactive({
-            id: [],
             name: [
                 {
                     required: true,
@@ -94,7 +89,7 @@ export default defineComponent({
         // 提交
         const onFinish = async () => {           
             try {
-                const fieldsValue = await validate<Script>();
+                const fieldsValue = await validate<any>();
                 props.onSubmit(fieldsValue, resetFields);
             } catch (error) {
                 // console.log('error', error);

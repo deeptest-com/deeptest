@@ -4,9 +4,11 @@
  */
 import axios, { AxiosPromise, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { notification } from "ant-design-vue";
+import i18n from "@/config/i18n";
 import router from '@/config/routes';
 import settings from '@/config/settings';
 import { getToken, setToken } from '@/utils/localToken';
+import { getCache } from '@/utils/localCache';
 
 export interface ResponseData {
     code: number;
@@ -113,6 +115,10 @@ request.interceptors.request.use(
 
         // 加随机数清除缓存
         config.params = { ...config.params, ts: Date.now() };
+        if (!config.params.currProjectId) {
+            const projectId = await getCache(settings.currProjectId);
+            config.params = { ...config.params, currProjectId: projectId, lang: i18n.global.locale.value };
+        }
 
         console.log('=== request ===', config)
         return config;

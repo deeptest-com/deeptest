@@ -20,9 +20,8 @@ type IndexModule struct {
 	RoleModule    *index.RoleModule    `inject:""`
 	PermModule    *index.PermModule    `inject:""`
 
-	ProjectModule    *index.ProjectModule    `inject:""`
-	TestScriptModule *index.TestScriptModule `inject:""`
-	TestStepModule   *index.TestStepModule   `inject:""`
+	ProjectModule       *index.ProjectModule       `inject:""`
+	TestInterfaceModule *index.TestInterfaceModule `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -49,8 +48,7 @@ func (m *IndexModule) Party() module.WebModule {
 		m.UserModule.Party(),
 
 		m.ProjectModule.Party(),
-		m.TestScriptModule.Party(),
-		m.TestStepModule.Party(),
+		m.TestInterfaceModule.Party(),
 	}
 	return module.NewModule(serverConsts.ApiPath, handler, modules...)
 }

@@ -61,14 +61,19 @@ func (r *InterfaceRepo) GetMaxOrder(parentId uint) (ord int) {
 }
 
 func (r *InterfaceRepo) ListByProject(projectId int) (pos []*model.TestInterface, err error) {
-	err = r.DB.Where("project_id=?", projectId).
+	err = r.DB.
+		Where("project_id=?", projectId).
+		Where("NOT deleted").
 		Order("parent_id ASC, ordr ASC").
 		Find(&pos).Error
 	return
 }
 
 func (r *InterfaceRepo) Get(fieldId uint) (field model.TestInterface, err error) {
-	err = r.DB.Where("id=?", fieldId).First(&field).Error
+	err = r.DB.
+		Where("id=?", fieldId).
+		Where("NOT deleted").
+		First(&field).Error
 	return
 }
 
@@ -108,9 +113,14 @@ func (r *InterfaceRepo) haveChild(Data []*model.TestInterface, node *model.TestI
 }
 
 func (r *InterfaceRepo) Delete(id uint) (err error) {
-	field := model.TestInterface{}
-	field.ID = id
-	err = r.DB.Delete(field).Error
+	err = r.DB.Model(&model.TestInterface{}).
+		Where("id=?", id).
+		Update("deleted", true).
+		Error
+
+	//field := model.TestInterface{}
+	//field.ID = id
+	//err = r.DB.Delete(field).Error
 
 	return
 }

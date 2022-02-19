@@ -39,7 +39,7 @@ const StoreModel: ModuleType = {
     },
     mutations: {
         setTree(state, payload) {
-            payload.name = '所有'
+            payload.name = '所有接口'
             state.treeResult = [payload];
         },
         setItem(state, payload) {
@@ -96,6 +96,7 @@ const StoreModel: ModuleType = {
         async deleteInterface({ commit }, payload: number ) {
             try {
                 await remove(payload);
+                await this.dispatch('Interface/loadInterface');
                 return true;
             } catch (error) {
                 return false;

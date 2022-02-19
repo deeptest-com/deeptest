@@ -103,17 +103,19 @@ func (c *TestInterfaceCtrl) Update(ctx iris.Context) {
 
 // Delete 删除
 func (c *TestInterfaceCtrl) Delete(ctx iris.Context) {
-	var req serverDomain.TestInterfaceReq
-	if err := ctx.ReadParams(&req); err != nil {
-		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
-		return
-	}
-	err := c.TestInterfaceService.Delete(uint(req.ProjectId), uint(req.Id))
+	projectId, _ := ctx.URLParamInt("currProjectId")
+
+	id, err := ctx.Params().GetInt("id")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+	err = c.TestInterfaceService.Delete(uint(projectId), uint(id))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }

@@ -50,9 +50,7 @@ func (s *TestInterfaceService) Create(req serverDomain.TestInterfaceReq) (interf
 }
 
 func (s *TestInterfaceService) Delete(projectId, id uint) (err error) {
-	interf, _ := s.InterfaceRepo.Get(id)
-
-	err = s.deleteInterfaceAndChildren(projectId, interf.ID)
+	err = s.deleteInterfaceAndChildren(projectId, id)
 
 	return
 }

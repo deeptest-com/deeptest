@@ -12,7 +12,7 @@
           </a-button>
         </div>
       </div>
-      <div>
+      <div class="tree-panel">
         <a-tree
             ref="tree"
             :tree-data="treeData"
@@ -213,6 +213,7 @@ export default defineComponent({
 
     const getNodeMapCall = throttle(async () => {getNodeMap(treeData.value[0], treeMap)}, 300)
     watch(treeData, () => {
+      console.log('watch', treeData)
       getNodeMapCall()
       console.log('treeMap', Object.keys(treeMap), treeMap)
       if (!treeData.value[0].children || treeData.value[0].children.length === 0) {
@@ -255,8 +256,9 @@ export default defineComponent({
           {mode: mode, type: type, target: targetModelId, name: type === 'dir' ? '新目录' : '新接口'})
           .then((newNode) => {
             console.log('newNode', newNode)
-            expandOneKey(treeMap, newNode.parentId, expandedKeys.value) // expend new node
             selectedKeys.value = [newNode.id] // select new node
+            expandOneKey(treeMap, newNode.parentId, expandedKeys.value) // expend new node
+            console.log('***', expandedKeys.value)
           }
       )
     }
@@ -337,11 +339,16 @@ export default defineComponent({
         text-align: right;
       }
     }
+    .tree-panel {
+      height: calc(100% - 32px);
+      overflow: auto;
+    }
   }
 
   #right {
     flex: 1;
     height: 100%;
+    overflow: auto;
   }
 
   #resize {

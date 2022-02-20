@@ -72,7 +72,7 @@ export function expandAllKeys(treeMap: any, isExpand: boolean): number[] {
 }
 
 export function expandOneKey(treeMap: any, key: number, expandedKeys: number[]) {
-    expandedKeys.push(+key)
+    expandedKeys.push(key)
 
     const parentId = treeMap[key].parentId
     if (parentId) {

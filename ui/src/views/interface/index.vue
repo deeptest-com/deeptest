@@ -26,6 +26,10 @@
             v-model:selectedKeys="selectedKeys"
             v-model:checkedKeys="checkedKeys"
             v-model:expandedKeys="expandedKeys"
+
+            draggable
+            @dragenter="onDragEnter"
+            @drop="onDrop"
         >
           <template #icon="slotProps">
             <FolderOutlined v-if="slotProps.isDir && !slotProps.expanded" />
@@ -36,7 +40,7 @@
 
         <div v-if="treeNode.id >= 0" :style="menuStyle" class="tree-context-menu">
           <a-menu @click="menuClick" mode="inline">
-            <a-menu-item key="add_brother_node" class="menu-item" v-if="treeNode.id > 0">
+            <a-menu-item key="add_brother_node" class="menu-item" v-if="treeNode.parentId > 0">
               <PlusOutlined/>
               <span>创建兄弟节点</span>
             </a-menu-item>
@@ -45,7 +49,7 @@
               <span>创建子节点</span>
             </a-menu-item>
 
-            <a-menu-item key="add_brother_dir" class="menu-item" v-if="treeNode.id > 0">
+            <a-menu-item key="add_brother_dir" class="menu-item" v-if="treeNode.parentId > 0">
               <PlusOutlined/>
               <span>创建兄弟目录</span>
             </a-menu-item>
@@ -68,14 +72,6 @@
     <div id="content">
 
     </div>
-
-    <create-form
-        :visible="createFormVisible"
-        :onCancel="() => setCreateFormVisible(false)"
-        :onSubmitLoading="createSubmitLoading"
-        :onSubmit="createSubmit"
-    />
-
   </div>
 </template>
 
@@ -87,6 +83,7 @@ import {useStore} from "vuex";
 import {Props} from 'ant-design-vue/lib/form/useForm';
 import {Form, message, Modal} from "ant-design-vue";
 import {CloseOutlined, PlusOutlined, FolderOutlined, FileOutlined, FolderOpenOutlined} from "@ant-design/icons-vue";
+import { TreeDataItem, TreeDragEvent, DropEvent } from 'ant-design-vue/es/tree/Tree';
 
 import {getNodeMap, expandAllKeys, expandOneKey} from "./service";
 import {StateType as ListStateType} from "./store";
@@ -116,24 +113,13 @@ interface InterfaceIndexPageSetupData {
   menuClick: (event) => void;
   isDir: ComputedRef<boolean>;
 
+  onDragEnter: (info) => void;
+  onDrop: (info) => void;
+
   treeData: ComputedRef<any[]>;
   treeLoading: Ref<boolean>;
   getTree: (current: number) => Promise<void>;
-  createFormVisible: Ref<boolean>;
-  setCreateFormVisible: (val: boolean) => void;
-  createSubmitLoading: Ref<boolean>;
-  createSubmit: (values: any, resetFields: (newValues?: Props | undefined) => void) => Promise<void>;
-
   modelData: ComputedRef;
-  getLoading: Ref<number[]>;
-  editInterface: (id: number) => Promise<void>;
-  updateFormVisible: Ref<boolean>;
-  updateFormCancel: () => void;
-  updateSubmitLoading: Ref<boolean>;
-  updateSubmit: (values: any, resetFields: (newValues?: Props | undefined) => void) => Promise<void>;
-
-  deleteLoading: Ref<number[]>;
-  deleteInterface: (id: number) => void;
 }
 
 export default defineComponent({
@@ -141,7 +127,6 @@ export default defineComponent({
   components: {
     PlusOutlined, CloseOutlined,
     FolderOutlined, FolderOpenOutlined, FileOutlined,
-    CreateForm,
   },
   setup(): InterfaceIndexPageSetupData {
     const router = useRouter();
@@ -200,7 +185,7 @@ export default defineComponent({
         id: node.eventKey,
         title: node.title,
         isDir: treeNodeData.isDir,
-        parentID: node.dataRef.parentID || null
+        parentId: node.dataRef.parentId
       }
       console.log('---', treeNode)
 
@@ -270,8 +255,8 @@ export default defineComponent({
           {mode: mode, type: type, target: targetModelId, name: type === 'dir' ? '新目录' : '新接口'})
           .then((newNode) => {
             console.log('newNode', newNode)
-            selectedKeys.value = [newNode.id] // select new node
             expandOneKey(treeMap, newNode.parentId, expandedKeys.value) // expend new node
+            selectedKeys.value = [newNode.id] // select new node
           }
       )
     }
@@ -283,74 +268,18 @@ export default defineComponent({
       treeNode.value = ref({})
     }
 
-    // 创建
-    const createFormVisible = ref<boolean>(false);
-    const setCreateFormVisible = (val: boolean) => {
-      createFormVisible.value = val;
+    const onDragEnter = (info: TreeDragEvent) => {
+      console.log(info);
+      // expandedKeys.value = info.expandedKeys
     };
-    const createSubmitLoading = ref<boolean>(false);
-    const createSubmit = async (values: any, resetFields: (newValues?: Props | undefined) => void) => {
-      createSubmitLoading.value = true;
-      const res: boolean = await store.dispatch('Interface/createInterface', values);
-      if (res === true) {
-        resetFields();
-        setCreateFormVisible(false);
-        message.success('新增成功！');
-        getTree();
-      }
-      createSubmitLoading.value = false;
-    }
+    const onDrop = (info: DropEvent) => {
+      const dragKey = info.dragNode.eventKey;
+      const dropKey = info.node.eventKey;
+      let dropPos = info.dropPosition > 1? 1: info.dropPosition;
+      if (!treeMap[dropKey].isDir && dropPos === 0) dropPos = 1
+      console.log(dragKey, dropKey, dropPos);
 
-    // 更新
-    const updateFormVisible = ref<boolean>(false);
-    const setUpdateFormVisible = (val: boolean) => {
-      updateFormVisible.value = val;
-    }
-    const updateFormCancel = () => {
-      setUpdateFormVisible(false);
-      store.commit('ListInterface/setItem', {});
-    }
-    const updateSubmitLoading = ref<boolean>(false);
-    const updateSubmit = async (values: any, resetFields: (newValues?: Props | undefined) => void) => {
-      updateSubmitLoading.value = true;
-      const res: boolean = await store.dispatch('ListInterface/updateInterface', values);
-      if (res === true) {
-        updateFormCancel();
-        message.success('编辑成功！');
-        getTree();
-      }
-      updateSubmitLoading.value = false;
-    }
-
-    // 编辑
-    const getLoading = ref<number[]>([]);
-    const editInterface = async (id: number) => {
-      getLoading.value = [id];
-      const res: boolean = await store.dispatch('Interface/getInterface', id);
-      if (res === true) {
-        setUpdateFormVisible(true);
-      }
-      getLoading.value = [];
-    }
-
-    // 删除
-    const deleteLoading = ref<number[]>([]);
-    const deleteInterface = (id: number) => {
-      Modal.confirm({
-        title: '删除脚本',
-        content: '确定删除吗？',
-        okText: '确认',
-        cancelText: '取消',
-        onOk: async () => {
-          deleteLoading.value = [id];
-          const res: boolean = await store.dispatch('ListInterface/deleteInterface', id);
-          if (res === true) {
-            message.success('删除成功！');
-            await getTree();
-          }
-          deleteLoading.value = [];
-        }
-      });
+      store.dispatch('Interface/moveInterface', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPos});
     }
 
     return {
@@ -371,24 +300,13 @@ export default defineComponent({
       onRightClick,
       menuClick,
       isDir,
+      onDragEnter,
+      onDrop,
 
       treeLoading,
       tips,
       getTree,
-      createFormVisible,
-      setCreateFormVisible,
-      createSubmitLoading,
-      createSubmit,
-      getLoading,
-      editInterface,
-
       modelData,
-      updateFormVisible,
-      updateFormCancel,
-      updateSubmitLoading,
-      updateSubmit,
-      deleteLoading,
-      deleteInterface,
     }
   }
 

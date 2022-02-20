@@ -1,7 +1,6 @@
 package repo
 
 import (
-	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/kataras/iris/v12"
@@ -12,6 +11,10 @@ type InterfaceRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
+func NewInterfaceRepo(db *gorm.DB) *InterfaceRepo {
+	return &InterfaceRepo{DB: db}
+}
+
 func (r *InterfaceRepo) GetInterfaceTree(projectId int) (root *model.TestInterface, err error) {
 	pos, err := r.ListByProject(projectId)
 
@@ -19,15 +22,24 @@ func (r *InterfaceRepo) GetInterfaceTree(projectId int) (root *model.TestInterfa
 		return
 	}
 
-	root = &model.TestInterface{Name: "root", IsDir: true, Slots: iris.Map{"icon": "icon"}}
-	root.ID = 0
-
-	r.makeTree(pos, root)
+	root = pos[0]
+	root.Slots = iris.Map{"icon": "icon"}
+	r.makeTree(pos[1:], root)
 	return
 }
 
-func (r *InterfaceRepo) UpdateOrder(mode serverConsts.NodeCreateMode, targetId uint) (parentId uint, ordr int) {
-	if mode == serverConsts.Brother {
+func (r *InterfaceRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint) (parentId uint, ordr int) {
+	if pos == serverConsts.Inner {
+		parentId = targetId
+
+		var preChild model.TestInterface
+		r.DB.Where("parent_id=?", parentId).
+			Order("ordr DESC").Limit(1).
+			First(&preChild)
+
+		ordr = preChild.Ordr + 1
+
+	} else if pos == serverConsts.Before {
 		brother, _ := r.Get(targetId)
 		parentId = brother.ParentId
 
@@ -35,16 +47,17 @@ func (r *InterfaceRepo) UpdateOrder(mode serverConsts.NodeCreateMode, targetId u
 			Where("NOT deleted AND parent_id=? AND ordr >= ?", parentId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
+		ordr = brother.Ordr
+
+	} else if pos == serverConsts.After {
+		brother, _ := r.Get(targetId)
+		parentId = brother.ParentId
+
+		r.DB.Model(&model.TestInterface{}).
+			Where("NOT deleted AND parent_id=? AND ordr > ?", parentId, brother.Ordr).
+			Update("ordr", gorm.Expr("ordr + 1"))
+
 		ordr = brother.Ordr + 1
-
-	} else if mode == serverConsts.Child {
-		parentId = uint(targetId)
-
-		var preChild model.TestInterface
-		r.DB.Where("parent_id=?", parentId).
-			Order("ordr DESC").Limit(1).
-			First(&preChild)
-		ordr = preChild.Ordr + 1
 
 	}
 
@@ -129,28 +142,10 @@ func (r *InterfaceRepo) SetIsRange(fieldId uint, b bool) (err error) {
 	return
 }
 
-func (r *InterfaceRepo) AddOrderForTargetAndNextCases(srcID uint, targetOrder int, targetParentID uint) (err error) {
-	sql := fmt.Sprintf(`update %s set ord = ord + 1 where ord >= %d and parentID = %d and id!=%d`,
-		(&model.TestInterface{}).TableName(), targetOrder, targetParentID, srcID)
-	err = r.DB.Exec(sql).Error
+func (r *InterfaceRepo) UpdateOrdAndParent(interf model.TestInterface) (err error) {
+	err = r.DB.Model(&interf).
+		Updates(model.TestInterface{Ordr: interf.Ordr, ParentId: interf.ParentId}).
+		Error
 
 	return
-}
-
-func (r *InterfaceRepo) AddOrderForNextCases(srcID uint, targetOrder int, targetParentID uint) (err error) {
-	sql := fmt.Sprintf(`update %s set ord = ord + 1 where ord > %d and parentID = %d and id!=%d`,
-		(&model.TestInterface{}).TableName(), targetOrder, targetParentID, srcID)
-	err = r.DB.Exec(sql).Error
-
-	return
-}
-
-func (r *InterfaceRepo) UpdateOrdAndParent(field model.TestInterface) (err error) {
-	//err = r.DB.Model(&field).UpdateColumn(model.TestInterface{Ordr: field.Ordr, ParentId: field.ParentId}).Error
-
-	return
-}
-
-func NewInterfaceRepo(db *gorm.DB) *InterfaceRepo {
-	return &InterfaceRepo{DB: db}
 }

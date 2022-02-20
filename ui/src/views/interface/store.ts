@@ -2,7 +2,7 @@ import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
 import {
-    load, get, remove, create, update, expandAllKeys,
+    load, get, remove, create, update, expandAllKeys, move,
 } from './service';
 
 export interface StateType {
@@ -23,6 +23,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         createInterface: Action<StateType, StateType>;
         updateInterface: Action<StateType, StateType>;
         deleteInterface: Action<StateType, StateType>;
+        moveInterface: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -98,6 +99,15 @@ const StoreModel: ModuleType = {
         async deleteInterface({ commit }, payload: number ) {
             try {
                 await remove(payload);
+                await this.dispatch('Interface/loadInterface');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async moveInterface({ commit }, payload: any ) {
+            try {
+                await move(payload);
                 await this.dispatch('Interface/loadInterface');
                 return true;
             } catch (error) {

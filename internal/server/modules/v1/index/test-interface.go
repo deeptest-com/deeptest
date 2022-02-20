@@ -25,6 +25,7 @@ func (m *TestInterfaceModule) Party() module.WebModule {
 		index.Post("/", m.TestInterfaceCtrl.Create).Name = "新建接口"
 		index.Put("/{id:uint}", m.TestInterfaceCtrl.Update).Name = "更新接口"
 		index.Delete("/{id:uint}", m.TestInterfaceCtrl.Delete).Name = "删除接口"
+		index.Post("/move", m.TestInterfaceCtrl.Move).Name = "移动接口"
 	}
 	return module.NewModule("/interfaces", handler)
 }

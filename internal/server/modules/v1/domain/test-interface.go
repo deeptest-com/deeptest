@@ -14,6 +14,12 @@ type TestInterfaceReq struct {
 	ProjectId int                         `json:"projectId"`
 }
 
+type TestInterfaceMoveReq struct {
+	DragKey int                  `json:"dragKey"`
+	DropKey int                  `json:"dropKey"`
+	DropPos serverConsts.DropPos `json:"dropPos"`
+}
+
 type TestInterfaceResp struct {
 	model.TestInterface
 }

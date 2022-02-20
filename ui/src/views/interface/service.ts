@@ -38,6 +38,14 @@ export async function remove(id: number): Promise<any> {
     });
 }
 
+export async function move(data: any): Promise<any> {
+    return request({
+        url: `/${apiPath}/move`,
+        method: 'post',
+        data: data,
+    });
+}
+
 export function getNodeMap(treeNode: any, mp: any): void {
     if (!treeNode) return
 

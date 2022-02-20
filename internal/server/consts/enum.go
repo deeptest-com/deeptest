@@ -21,3 +21,15 @@ const (
 func (e NodeCreateType) String() string {
 	return string(e)
 }
+
+type DropPos int
+
+const (
+	Before DropPos = -1
+	Inner  DropPos = 0
+	After  DropPos = 1
+)
+
+func (e DropPos) Int() int {
+	return int(e)
+}

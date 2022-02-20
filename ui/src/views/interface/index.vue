@@ -59,7 +59,7 @@
             </a-menu-item>
 
 
-            <a-menu-item key="remove" class="menu-item" v-if="treeNode.id > 0">
+            <a-menu-item key="remove" class="menu-item" v-if="treeNode.parentId > 0">
               <CloseOutlined/>
               <span v-if="treeNode.isDir">删除目录</span>
               <span v-if="!treeNode.isDir">删除节点</span>
@@ -187,7 +187,6 @@ export default defineComponent({
         isDir: treeNodeData.isDir,
         parentId: node.dataRef.parentId
       }
-      console.log('---', treeNode)
 
       menuStyle.value = {
         position: 'fixed',
@@ -258,7 +257,6 @@ export default defineComponent({
             console.log('newNode', newNode)
             selectedKeys.value = [newNode.id] // select new node
             expandOneKey(treeMap, newNode.parentId, expandedKeys.value) // expend new node
-            console.log('***', expandedKeys.value)
           }
       )
     }

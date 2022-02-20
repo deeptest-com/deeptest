@@ -52,13 +52,22 @@ export function getNodeMap(treeNode: any, mp: any): void {
     return
 }
 
-export function getOpenKeys(treeMap: any, isAll: boolean): number[] {
+export function expandAllKeys(treeMap: any, isExpand: boolean): number[] {
     const keys = new Array<number>()
-    if (!isAll) return keys
+    if (!isExpand) return keys
 
     Object.keys(treeMap).forEach(key => {
         keys.push(+key)
     })
 
     return keys
+}
+
+export function expandOneKey(treeMap: any, key: number, expandedKeys: number[]) {
+    expandedKeys.push(+key)
+
+    const parentId = treeMap[key].parentId
+    if (parentId) {
+        expandOneKey(treeMap, parentId, expandedKeys)
+    }
 }

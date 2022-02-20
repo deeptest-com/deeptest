@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
+	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
 )
 
@@ -18,7 +19,7 @@ func (r *InterfaceRepo) GetInterfaceTree(projectId int) (root *model.TestInterfa
 		return
 	}
 
-	root = &model.TestInterface{Name: "root", IsDir: true}
+	root = &model.TestInterface{Name: "root", IsDir: true, Slots: iris.Map{"icon": "icon"}}
 	root.ID = 0
 
 	r.makeTree(pos, root)
@@ -93,6 +94,7 @@ func (r *InterfaceRepo) makeTree(Data []*model.TestInterface, node *model.TestIn
 func (r *InterfaceRepo) haveChild(Data []*model.TestInterface, node *model.TestInterface) (child []*model.TestInterface, yes bool) {
 	for _, v := range Data {
 		if v.ParentId == node.ID {
+			v.Slots = iris.Map{"icon": "icon"}
 			child = append(child, v)
 		}
 	}

@@ -172,6 +172,8 @@ export default defineComponent({
       console.log('expandNode', keys[0], e)
     }
     const selectNode = (keys, e) => {
+      if (selectedKeys.value.length === 0) return
+
       const nodeData = treeMap[selectedKeys.value[0]]
       console.log('selectNode', nodeData.id)
     }
@@ -224,9 +226,7 @@ export default defineComponent({
       document.removeEventListener("click", clearMenu)
     })
 
-    const getNodeMapCall = throttle(async () => {
-      getNodeMap(treeData.value[0], treeMap)}, 300)
-
+    const getNodeMapCall = throttle(async () => {getNodeMap(treeData.value[0], treeMap)}, 300)
     watch(treeData, () => {
       getNodeMapCall()
       console.log('treeMap', Object.keys(treeMap), treeMap)
@@ -279,7 +279,7 @@ export default defineComponent({
       store.dispatch('Interface/deleteInterface', targetModelId);
     }
     const clearMenu = () => {
-      console.log('clearMenu')
+      // console.log('clearMenu')
       treeNode.value = ref({})
     }
 

@@ -1,5 +1,7 @@
 package model
 
+import "github.com/kataras/iris/v12"
+
 type TestInterface struct {
 	BaseModel
 
@@ -13,6 +15,8 @@ type TestInterface struct {
 
 	Ordr     int              `json:"ordr"`
 	Children []*TestInterface `gorm:"-" json:"children"`
+
+	Slots iris.Map `gorm:"-" json:"slots"`
 }
 
 func (TestInterface) TableName() string {

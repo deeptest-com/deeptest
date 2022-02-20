@@ -28,8 +28,9 @@
             v-model:expandedKeys="expandedKeys"
         >
           <template #icon="slotProps">
-            <icon-svg v-if="slotProps.isDir" type="folder-outlined"></icon-svg>
-            <icon-svg v-if="!slotProps.isDir" type="file-outlined"></icon-svg>
+            <FolderOutlined v-if="slotProps.isDir && !slotProps.expanded" />
+            <FolderOpenOutlined v-if="slotProps.isDir && slotProps.expanded" />
+            <FileOutlined v-if="!slotProps.isDir" />
           </template>
         </a-tree>
 
@@ -85,12 +86,11 @@ import {useStore} from "vuex";
 
 import {Props} from 'ant-design-vue/lib/form/useForm';
 import {Form, message, Modal} from "ant-design-vue";
-import {CloseOutlined, PlusOutlined} from "@ant-design/icons-vue";
+import {CloseOutlined, PlusOutlined, FolderOutlined, FileOutlined, FolderOpenOutlined} from "@ant-design/icons-vue";
 
-import {getNodeMap, getOpenKeys} from "./service";
+import {getNodeMap, expandAllKeys, expandOneKey} from "./service";
 import {StateType as ListStateType} from "./store";
 import throttle from "lodash.debounce";
-import IconSvg from "@/components/IconSvg";
 
 import CreateForm from './components/CreateForm.vue';
 import {resizeWidth} from "@/utils/dom";
@@ -139,9 +139,8 @@ interface InterfaceIndexPageSetupData {
 export default defineComponent({
   name: 'InterfaceIndexPage',
   components: {
-    PlusOutlined,
-    CloseOutlined,
-    IconSvg,
+    PlusOutlined, CloseOutlined,
+    FolderOutlined, FolderOpenOutlined, FileOutlined,
     CreateForm,
   },
   setup(): InterfaceIndexPageSetupData {
@@ -246,7 +245,7 @@ export default defineComponent({
     const expandAll = () => {
       console.log('expandAll')
       isExpand.value = !isExpand.value
-      expandedKeys.value = getOpenKeys(treeMap, isExpand.value)
+      expandedKeys.value = expandAllKeys(treeMap, isExpand.value)
     }
 
     let targetModelId = 0
@@ -271,8 +270,9 @@ export default defineComponent({
           {mode: mode, type: type, target: targetModelId, name: type === 'dir' ? '新目录' : '新接口'})
           .then((newNode) => {
             console.log('newNode', newNode)
-            selectedKeys.value = [newNode.id]
-          } // select
+            selectedKeys.value = [newNode.id] // select new node
+            expandOneKey(treeMap, newNode.parentId, expandedKeys.value) // expend new node
+          }
       )
     }
     const removeNode = () => {

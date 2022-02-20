@@ -2,7 +2,7 @@ import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
 import {
-    load, get, remove, create, update, getOpenKeys,
+    load, get, remove, create, update, expandAllKeys,
 } from './service';
 
 export interface StateType {

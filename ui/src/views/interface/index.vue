@@ -38,14 +38,14 @@
           </template>
         </a-tree>
 
-        <div v-if="treeNode.id >= 0" :style="menuStyle" class="tree-context-menu">
-          <TreeContextMenu :onSubmit="menuClick" :treeNode="treeNode"/>
+        <div v-if="contextNode.id >= 0" :style="menuStyle" class="tree-context-menu">
+          <TreeContextMenu :contextNode="contextNode" :onSubmit="menuClick"/>
         </div>
       </div>
     </div>
     <div id="resize"></div>
     <div id="content">
-
+      <InterfaceDesigner :model="selectedNode" :onSubmit="saveInterface"></InterfaceDesigner>
     </div>
   </div>
 </template>
@@ -64,6 +64,7 @@ import {StateType as ListStateType} from "./store";
 import throttle from "lodash.debounce";
 
 import TreeContextMenu from './components/TreeContextMenu.vue';
+import InterfaceDesigner from './components/InterfaceDesigner.vue';
 import {resizeWidth} from "@/utils/dom";
 
 const useForm = Form.useForm;
@@ -80,39 +81,35 @@ interface InterfaceIndexPageSetupData {
   expandedKeys: Ref<number[]>
   tips: Ref<string>
   tree: Ref;
-  treeNode: Ref;
+  selectedNode: Ref;
+  contextNode: Ref;
   menuStyle: Ref;
   rightVisible: boolean
   onRightClick: (event, node) => void;
   menuClick: (selectedKey: string, targetId: number) => void;
+  saveInterface: (model: any) => void;
   isDir: ComputedRef<boolean>;
 
   onDragEnter: (info) => void;
   onDrop: (info) => void;
 
   treeData: ComputedRef<any[]>;
-  treeLoading: Ref<boolean>;
-  getTree: (current: number) => Promise<void>;
-  modelData: ComputedRef;
 }
 
 export default defineComponent({
   name: 'InterfaceIndexPage',
   components: {
     FolderOutlined, FolderOpenOutlined, FileOutlined,
-    TreeContextMenu,
+    TreeContextMenu, InterfaceDesigner,
   },
   setup(): InterfaceIndexPageSetupData {
     const router = useRouter();
     const store = useStore<{ Interface: ListStateType }>();
 
     const treeData = computed<any>(() => store.state.Interface.treeResult);
-    const modelData = computed<any>(() => store.state.Interface.detailResult);
 
     const queryTree = throttle(async () => {
-      treeLoading.value = true;
       await store.dispatch('Interface/loadInterface');
-      treeLoading.value = false;
     }, 600)
     queryTree();
 
@@ -123,26 +120,38 @@ export default defineComponent({
     let isExpand = ref(false);
 
     const isDir = computed<boolean>(() => {
-      return treeNode.value && treeNode.value.isDir;
+      return contextNode.value && contextNode.value.isDir;
     })
 
     let tree = ref(null)
     const expandNode = (keys: string[], e: any) => {
       console.log('expandNode', keys[0], e)
     }
+
+    let selectedNode = ref({})
     const selectNode = (keys, e) => {
+      console.log('selectNode')
+
       if (selectedKeys.value.length === 0) return
 
-      const nodeData = treeMap[selectedKeys.value[0]]
-      console.log('selectNode', nodeData.id)
+      const nodeData = treeDataMap[selectedKeys.value[0]]
+      if (nodeData.isDir) {
+        selectedNode.value = {}
+      } else {
+        selectedNode.value = nodeData
+      }
     }
+    const saveInterface= (data) => {
+      console.log('saveInterface', data)
+    }
+
     const checkNode = (keys, e) => {
       console.log('checkNode', checkedKeys)
     }
 
-    let treeNode = ref({} as any)
+    let contextNode = ref({} as any)
     let menuStyle = ref({} as any)
-    const treeMap = {}
+    const treeDataMap = {}
     let tips = ref('')
     let rightVisible = false
     const onRightClick = (e) => {
@@ -152,13 +161,13 @@ export default defineComponent({
       const y = event.currentTarget.getBoundingClientRect().top
       const x = event.currentTarget.getBoundingClientRect().right
 
-      const treeNodeData = treeMap[node.eventKey]
-      treeNode.value = {
+      const contextNodeData = treeDataMap[node.eventKey]
+      contextNode.value = {
         pageX: x,
         pageY: y,
         id: node.eventKey,
         title: node.title,
-        isDir: treeNodeData.isDir,
+        isDir: contextNodeData.isDir,
         parentId: node.dataRef.parentId
       }
 
@@ -176,7 +185,6 @@ export default defineComponent({
     onMounted(() => {
       console.log('onMounted')
       resizeWidth('main', 'left', 'resize', 'content', 280, 800)
-      getTree();
       document.addEventListener("click", clearMenu)
     })
     onUnmounted(() => {
@@ -184,27 +192,20 @@ export default defineComponent({
       document.removeEventListener("click", clearMenu)
     })
 
-    const getNodeMapCall = throttle(async () => {getNodeMap(treeData.value[0], treeMap)}, 300)
+    const getNodeMapCall = throttle(async () => {getNodeMap(treeData.value[0], treeDataMap)}, 300)
     watch(treeData, () => {
       console.log('watch', treeData)
       getNodeMapCall()
-      console.log('treeMap', Object.keys(treeMap), treeMap)
+      console.log('treeMap', Object.keys(treeDataMap), treeDataMap)
       if (!treeData.value[0].children || treeData.value[0].children.length === 0) {
         tips.value = '右键树状节点操作'
       }
     })
 
-    const treeLoading = ref<boolean>(true);
-    const getTree = async (): Promise<void> => {
-      treeLoading.value = true;
-
-      treeLoading.value = false;
-    }
-
     const expandAll = () => {
       console.log('expandAll')
       isExpand.value = !isExpand.value
-      expandedKeys.value = expandAllKeys(treeMap, isExpand.value)
+      expandedKeys.value = expandAllKeys(treeDataMap, isExpand.value)
     }
 
     let targetModelId = 0
@@ -230,7 +231,7 @@ export default defineComponent({
           .then((newNode) => {
             console.log('newNode', newNode)
             selectedKeys.value = [newNode.id] // select new node
-            expandOneKey(treeMap, newNode.parentId, expandedKeys.value) // expend new node
+            expandOneKey(treeDataMap, newNode.parentId, expandedKeys.value) // expend new node
           }
       )
     }
@@ -239,7 +240,7 @@ export default defineComponent({
     }
     const clearMenu = () => {
       // console.log('clearMenu')
-      treeNode.value = ref({})
+      contextNode.value = ref({})
     }
 
     const onDragEnter = (info: TreeDragEvent) => {
@@ -250,7 +251,7 @@ export default defineComponent({
       const dragKey = info.dragNode.eventKey;
       const dropKey = info.node.eventKey;
       let dropPos = info.dropPosition > 1? 1: info.dropPosition;
-      if (!treeMap[dropKey].isDir && dropPos === 0) dropPos = 1
+      if (!treeDataMap[dropKey].isDir && dropPos === 0) dropPos = 1
       console.log(dragKey, dropKey, dropPos);
 
       store.dispatch('Interface/moveInterface', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPos});
@@ -268,19 +269,18 @@ export default defineComponent({
       selectNode,
       checkNode,
       tree,
-      treeNode,
+      selectedNode,
+      contextNode,
       menuStyle,
       rightVisible,
       onRightClick,
       menuClick,
+      saveInterface,
       isDir,
       onDragEnter,
       onDrop,
 
-      treeLoading,
       tips,
-      getTree,
-      modelData,
     }
   }
 

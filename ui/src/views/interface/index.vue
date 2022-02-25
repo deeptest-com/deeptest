@@ -39,32 +39,7 @@
         </a-tree>
 
         <div v-if="treeNode.id >= 0" :style="menuStyle" class="tree-context-menu">
-          <a-menu @click="menuClick" mode="inline">
-            <a-menu-item key="add_brother_node" class="menu-item" v-if="treeNode.parentId > 0">
-              <PlusOutlined/>
-              <span>创建兄弟节点</span>
-            </a-menu-item>
-            <a-menu-item key="add_child_node" class="menu-item" v-if="treeNode.isDir">
-              <PlusOutlined/>
-              <span>创建子节点</span>
-            </a-menu-item>
-
-            <a-menu-item key="add_brother_dir" class="menu-item" v-if="treeNode.parentId > 0">
-              <PlusOutlined/>
-              <span>创建兄弟目录</span>
-            </a-menu-item>
-            <a-menu-item key="add_child_dir" class="menu-item" v-if="treeNode.isDir">
-              <PlusOutlined/>
-              <span>创建子目录</span>
-            </a-menu-item>
-
-
-            <a-menu-item key="remove" class="menu-item" v-if="treeNode.parentId > 0">
-              <CloseOutlined/>
-              <span v-if="treeNode.isDir">删除目录</span>
-              <span v-if="!treeNode.isDir">删除节点</span>
-            </a-menu-item>
-          </a-menu>
+          <TreeContextMenu :onSubmit="menuClick" :treeNode="treeNode"/>
         </div>
       </div>
     </div>
@@ -80,7 +55,6 @@ import {computed, ComputedRef, defineComponent, onMounted, onUnmounted, Ref, ref
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 
-import {Props} from 'ant-design-vue/lib/form/useForm';
 import {Form, message, Modal} from "ant-design-vue";
 import {CloseOutlined, PlusOutlined, FolderOutlined, FileOutlined, FolderOpenOutlined} from "@ant-design/icons-vue";
 import { TreeDataItem, TreeDragEvent, DropEvent } from 'ant-design-vue/es/tree/Tree';
@@ -89,7 +63,7 @@ import {getNodeMap, expandAllKeys, expandOneKey} from "./service";
 import {StateType as ListStateType} from "./store";
 import throttle from "lodash.debounce";
 
-import CreateForm from './components/CreateForm.vue';
+import TreeContextMenu from './components/TreeContextMenu.vue';
 import {resizeWidth} from "@/utils/dom";
 
 const useForm = Form.useForm;
@@ -110,7 +84,7 @@ interface InterfaceIndexPageSetupData {
   menuStyle: Ref;
   rightVisible: boolean
   onRightClick: (event, node) => void;
-  menuClick: (event) => void;
+  menuClick: (selectedKey: string, targetId: number) => void;
   isDir: ComputedRef<boolean>;
 
   onDragEnter: (info) => void;
@@ -125,8 +99,8 @@ interface InterfaceIndexPageSetupData {
 export default defineComponent({
   name: 'InterfaceIndexPage',
   components: {
-    PlusOutlined, CloseOutlined,
     FolderOutlined, FolderOpenOutlined, FileOutlined,
+    TreeContextMenu,
   },
   setup(): InterfaceIndexPageSetupData {
     const router = useRouter();
@@ -234,16 +208,16 @@ export default defineComponent({
     }
 
     let targetModelId = 0
-    const menuClick = (e) => {
-      console.log('menuClick', e, treeNode)
+    const menuClick = (selectedKey: string, targetId: number) => {
+      console.log('menuClick', selectedKey, targetId)
 
-      targetModelId = treeNode.value.id
-      if (e.key === 'remove') {
+      targetModelId = targetId
+      if (selectedKey === 'remove') {
         removeNode()
         return
       }
 
-      const arr = e.key.split('_')
+      const arr = selectedKey.split('_')
       addNode(arr[1], arr[2])
 
       clearMenu()

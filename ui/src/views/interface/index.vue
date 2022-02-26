@@ -64,7 +64,7 @@ import {StateType as ListStateType} from "./store";
 import throttle from "lodash.debounce";
 
 import TreeContextMenu from './components/TreeContextMenu.vue';
-import InterfaceDesigner from './components/InterfaceDesigner.vue';
+import InterfaceDesigner from './components/Designer.vue';
 import {resizeWidth} from "@/utils/dom";
 
 const useForm = Form.useForm;

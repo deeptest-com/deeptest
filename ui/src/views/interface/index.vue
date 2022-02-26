@@ -1,6 +1,6 @@
 <template>
   <div id="main">
-    <div id="left">
+    <div id="left-panel">
       <div class="toolbar">
         <div class="tips">
           <span>{{tips}}</span>
@@ -43,8 +43,8 @@
         </div>
       </div>
     </div>
-    <div id="resize"></div>
-    <div id="content">
+    <div id="splitter-h"></div>
+    <div id="right-panel">
       <InterfaceDesigner :model="selectedNode" :onSubmit="saveInterface"></InterfaceDesigner>
     </div>
   </div>
@@ -55,9 +55,9 @@ import {computed, ComputedRef, defineComponent, onMounted, onUnmounted, Ref, ref
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 
-import {Form, message, Modal} from "ant-design-vue";
-import {CloseOutlined, PlusOutlined, FolderOutlined, FileOutlined, FolderOpenOutlined} from "@ant-design/icons-vue";
-import { TreeDataItem, TreeDragEvent, DropEvent } from 'ant-design-vue/es/tree/Tree';
+import {Form} from "ant-design-vue";
+import {FolderOutlined, FileOutlined, FolderOpenOutlined} from "@ant-design/icons-vue";
+import { TreeDragEvent, DropEvent } from 'ant-design-vue/es/tree/Tree';
 
 import {getNodeMap, expandAllKeys, expandOneKey} from "./service";
 import {StateType as ListStateType} from "./store";
@@ -184,7 +184,7 @@ export default defineComponent({
 
     onMounted(() => {
       console.log('onMounted')
-      resizeWidth('main', 'left', 'resize', 'content', 280, 800)
+      resizeWidth('main', 'left-panel', 'splitter-h', 'right-panel', 260, 800)
       document.addEventListener("click", clearMenu)
     })
     onUnmounted(() => {
@@ -292,8 +292,8 @@ export default defineComponent({
   display: flex;
   height: 100%;
 
-  #left {
-    width: 300px;
+  #left-panel {
+    width: 260px;
     height: 100%;
 
     .toolbar {
@@ -317,19 +317,25 @@ export default defineComponent({
     }
   }
 
-  #right {
+  #right-panel {
     flex: 1;
     height: 100%;
     overflow: auto;
   }
 
-  #resize {
-    width: 2px;
+  #splitter-h {
+    width: 3px;
     height: 100%;
-    background-color: #D0D7DE;
+    background-color: #e6e9ec;
     cursor: ew-resize;
 
+    &:hover {
+      width: 3px;
+      background-color: #D0D7DE;
+    }
+
     &.active {
+      width: 3px;
       background-color: #a9aeb4;
     }
   }

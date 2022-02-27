@@ -7,15 +7,14 @@ import {
 
 export interface StateType {
     treeResult: any[];
-    expandedKeys: number[];
-    detailResult: any;
+    modelResult: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
         setTree: Mutation<StateType>;
-        setItem: Mutation<StateType>;
+        setModel: Mutation<StateType>;
     };
     actions: {
         loadInterface: Action<StateType, StateType>;
@@ -28,8 +27,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 }
 const initState: StateType = {
     treeResult: [],
-    expandedKeys: [],
-    detailResult: {},
+    modelResult: {},
 };
 
 const StoreModel: ModuleType = {
@@ -43,8 +41,8 @@ const StoreModel: ModuleType = {
             payload.name = '所有接口'
             state.treeResult = [payload];
         },
-        setItem(state, payload) {
-            state.detailResult = payload;
+        setModel(state, payload) {
+            state.modelResult = payload;
         },
     },
     actions: {
@@ -62,15 +60,17 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async getInterface({ commit }, payload: number ) {
+        async getInterface({ commit }, payload: any ) {
+            if (payload.isDir) {
+                commit('setModel', {});
+                return true;
+            }
+
             try {
-                const response: ResponseData = await get(payload);
+                const response: ResponseData = await get(payload.id);
                 const { data } = response;
 
-                commit('setItem',{
-                    ...initState.detailResult,
-                    ...data,
-                });
+                commit('setModel',data);
                 return true;
             } catch (error) {
                 return false;

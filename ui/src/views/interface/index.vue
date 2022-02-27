@@ -45,7 +45,7 @@
     </div>
     <div id="splitter-h"></div>
     <div id="right-panel">
-      <InterfaceDesigner :model="selectedNode" :onSubmit="saveInterface"></InterfaceDesigner>
+      <InterfaceDesigner :onSubmit="saveInterface"></InterfaceDesigner>
     </div>
   </div>
 </template>
@@ -60,7 +60,7 @@ import {FolderOutlined, FileOutlined, FolderOpenOutlined} from "@ant-design/icon
 import { TreeDragEvent, DropEvent } from 'ant-design-vue/es/tree/Tree';
 
 import {getNodeMap, expandAllKeys, expandOneKey} from "./service";
-import {StateType as ListStateType} from "./store";
+import {StateType} from "./store";
 import throttle from "lodash.debounce";
 
 import TreeContextMenu from './components/TreeContextMenu.vue';
@@ -81,7 +81,6 @@ interface InterfaceIndexPageSetupData {
   expandedKeys: Ref<number[]>
   tips: Ref<string>
   tree: Ref;
-  selectedNode: Ref;
   contextNode: Ref;
   menuStyle: Ref;
   rightVisible: boolean
@@ -94,6 +93,7 @@ interface InterfaceIndexPageSetupData {
   onDrop: (info) => void;
 
   treeData: ComputedRef<any[]>;
+  modelData: ComputedRef;
 }
 
 export default defineComponent({
@@ -104,9 +104,10 @@ export default defineComponent({
   },
   setup(): InterfaceIndexPageSetupData {
     const router = useRouter();
-    const store = useStore<{ Interface: ListStateType }>();
+    const store = useStore<{ Interface: StateType }>();
 
     const treeData = computed<any>(() => store.state.Interface.treeResult);
+    const modelData = computed<any>(() => store.state.Interface.modelResult);
 
     const queryTree = throttle(async () => {
       await store.dispatch('Interface/loadInterface');
@@ -128,18 +129,12 @@ export default defineComponent({
       console.log('expandNode', keys[0], e)
     }
 
-    let selectedNode = ref({})
     const selectNode = (keys, e) => {
       console.log('selectNode')
-
       if (selectedKeys.value.length === 0) return
 
-      const nodeData = treeDataMap[selectedKeys.value[0]]
-      if (nodeData.isDir) {
-        selectedNode.value = {}
-      } else {
-        selectedNode.value = nodeData
-      }
+      const selectedData = treeDataMap[selectedKeys.value[0]]
+      store.dispatch('Interface/getInterface', {id: selectedData.id, isDir: selectedData.isDir})
     }
     const saveInterface= (data) => {
       console.log('saveInterface', data)
@@ -259,6 +254,8 @@ export default defineComponent({
 
     return {
       treeData,
+      modelData,
+
       replaceFields,
       expandedKeys,
       selectedKeys,
@@ -269,7 +266,6 @@ export default defineComponent({
       selectNode,
       checkNode,
       tree,
-      selectedNode,
       contextNode,
       menuStyle,
       rightVisible,

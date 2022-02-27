@@ -7,30 +7,29 @@
     <div id="splitter-v"></div>
 
     <div id="bottom-panel">
-      {{ model.name }}
+      {{ modelData.name }}
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, PropType, Ref} from "vue";
+import {computed, ComputedRef, defineComponent, onMounted, PropType, Ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import {resizeHeight} from "@/utils/dom";
+import {useStore} from "vuex";
+import {StateType} from "@/views/interface/store";
 
 const useForm = Form.useForm;
 
 interface InterfaceDesignerSetupData {
+  modelData: ComputedRef;
   submit: (e) => void;
 }
 
 export default defineComponent({
   name: 'InterfaceDesigner',
   props: {
-    model: {
-      type: Object,
-      required: true
-    },
     onSubmit: {
       type: Function as PropType<(model: any) => void>,
       required: true
@@ -41,10 +40,13 @@ export default defineComponent({
   setup(props): InterfaceDesignerSetupData {
     const {t} = useI18n();
 
+    const store = useStore<{ Interface: StateType }>();
+    const modelData = computed<any>(() => store.state.Interface.modelResult);
+
     const submit = (e) => {
       console.log('submit')
 
-      props.onSubmit(props.model);
+      props.onSubmit(modelData.value);
     };
 
     onMounted(() => {
@@ -53,7 +55,8 @@ export default defineComponent({
     })
 
     return {
-      submit
+      modelData,
+      submit,
     }
   }
 })

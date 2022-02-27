@@ -37,18 +37,18 @@ func (c *TestInterfaceCtrl) Load(ctx iris.Context) {
 
 // Get 详情
 func (c *TestInterfaceCtrl) Get(ctx iris.Context) {
-	id, err := ctx.URLParamInt("id")
+	id, err := ctx.Params().GetInt("id")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	script, err := c.TestInterfaceService.Get(id)
+	interf, err := c.TestInterfaceService.Get(id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: script, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: interf})
 }
 
 // Create 添加

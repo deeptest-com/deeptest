@@ -17,6 +17,9 @@ type TestInterface struct {
 	Children []*TestInterface `gorm:"-" json:"children"`
 
 	Slots iris.Map `gorm:"-" json:"slots"`
+
+	// config
+	Method string `gorm:"default:GET" json:"method"`
 }
 
 func (TestInterface) TableName() string {

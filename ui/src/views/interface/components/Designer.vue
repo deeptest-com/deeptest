@@ -1,7 +1,7 @@
 <template>
-  <div id="content">
+  <div id="content" v-if="modelData.method">
     <div id="top-panel">
-
+      <RequestSender :onSend="sendRequest"></RequestSender>
     </div>
     
     <div id="splitter-v"></div>
@@ -19,34 +19,33 @@ import {Form, message} from 'ant-design-vue';
 import {resizeHeight} from "@/utils/dom";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
+import RequestSender from './designer/request/Sender.vue';
 
 const useForm = Form.useForm;
 
 interface InterfaceDesignerSetupData {
   modelData: ComputedRef;
-  submit: (e) => void;
+  sendRequest: (e) => void;
 }
 
 export default defineComponent({
   name: 'InterfaceDesigner',
   props: {
     onSubmit: {
-      type: Function as PropType<(model: any) => void>,
+      type: Function as PropType<() => void>,
       required: true
     }
   },
   components: {
+    RequestSender,
   },
   setup(props): InterfaceDesignerSetupData {
     const {t} = useI18n();
-
     const store = useStore<{ Interface: StateType }>();
     const modelData = computed<any>(() => store.state.Interface.modelResult);
 
-    const submit = (e) => {
-      console.log('submit')
-
-      props.onSubmit(modelData.value);
+    const sendRequest = (e) => {
+      console.log('sendRequest')
     };
 
     onMounted(() => {
@@ -56,7 +55,7 @@ export default defineComponent({
 
     return {
       modelData,
-      submit,
+      sendRequest,
     }
   }
 })
@@ -72,6 +71,7 @@ export default defineComponent({
   #top-panel {
     height: 200px;
     width: 100%;
+    padding: 6px;
   }
 
   #bottom-panel {
@@ -97,4 +97,5 @@ export default defineComponent({
     }
   }
 }
+
 </style>

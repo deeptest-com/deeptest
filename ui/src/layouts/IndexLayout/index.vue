@@ -23,8 +23,6 @@
             </div>
         </div>
 
-        <settings></settings>
-
     </div>
 </template>
 <script lang="ts">
@@ -42,10 +40,8 @@ import { mergeUnique as ArrayMergeUnique } from '@/utils/array';
 import useTitle from '@/composables/useTitle';
 import IndexLayoutRoutes from './routes';
 import Permission from '@/components/Permission/index.vue';
-import Left from '@/layouts/IndexLayout/components/Left.vue';
 import RightTop from '@/layouts/IndexLayout/components/RightTop.vue';
 import RightFooter from '@/layouts/IndexLayout/components/RightFooter.vue';
-import Settings from '@/layouts/IndexLayout/components/Settings.vue';
 
 interface IndexLayoutSetupData {
   collapsed: ComputedRef<boolean>;
@@ -68,7 +64,6 @@ export default defineComponent({
         Permission,
         RightTop,
         RightFooter,
-        Settings
     },
     setup(): IndexLayoutSetupData {
       const store = useStore<{

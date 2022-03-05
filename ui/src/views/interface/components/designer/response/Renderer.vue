@@ -1,71 +1,55 @@
 <template>
-  <SmartTabs styles="sticky z-10 bg-primary top-lowerPrimaryStickyFold">
-    <SmartTab
-      v-for="(lens, index) in validLenses"
-      :id="lens.renderer"
-      :key="`lens-${index}`"
-      :label="$t(lens.lensName)"
-      :selected="index === 0"
-      class="flex flex-col flex-1 w-full h-full"
-    >
-      <component :is="lens.renderer" :response="response" />
-    </SmartTab>
-    <SmartTab
-      v-if="headerLength"
-      id="headers"
-      :label="$t('response.headers')"
-      :info="`${headerLength}`"
-      class="flex flex-col flex-1"
-    >
-      <LensesHeadersRenderer :headers="response.headers" />
-    </SmartTab>
-    <SmartTab
-      id="results"
-      :label="$t('test.results')"
-      :indicator="
-        testResults &&
-        (testResults.expectResults.length || testResults.tests.length)
-          ? true
-          : false
-      "
-      class="flex flex-col flex-1"
-    >
-      <HttpTestResult />
-    </SmartTab>
-  </SmartTabs>
+  <div class="main">
+    <a-tabs v-model:activeKey="activeKey">
+      <a-tab-pane key="1" tab="JSON">
+      </a-tab-pane>
+
+      <a-tab-pane key="2" tab="原始内容"></a-tab-pane>
+      <a-tab-pane key="3" tab="响应头"></a-tab-pane>
+      <a-tab-pane key="4" tab="测试结果"></a-tab-pane>
+    </a-tabs>
+  </div>
 </template>
 
-<script>
-import { defineComponent } from "@nuxtjs/composition-api"
-import { getSuitableLenses, getLensRenderers } from "~/helpers/lenses/lenses"
-import { useReadonlyStream } from "~/helpers/utils/composables"
-import { restTestResults$ } from "~/newstore/RESTSession"
+<script lang="ts">
+import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+import {useI18n} from "vue-i18n";
+import {useStore} from "vuex";
+import {StateType} from "@/views/interface/store";
+
+interface ResponseRendererSetupData {
+  responseResult: ComputedRef;
+  activeKey: Ref<string>;
+  doSomething: (e) => void;
+}
 
 export default defineComponent({
+  name: 'ResponseRenderer',
   components: {
-    // Lens Renderers
-    ...getLensRenderers(),
   },
-  props: {
-    response: { type: Object, default: () => {} },
-  },
-  setup() {
-    const testResults = useReadonlyStream(restTestResults$, null)
+  setup(props): ResponseRendererSetupData {
+    const {t} = useI18n();
+    const store = useStore<{ Interface: StateType }>();
+    const responseResult = computed<any>(() => store.state.Interface.responseResult);
+    const activeKey = ref('1');
+
+    const doSomething = (e) => {
+      console.log('doSomething', e)
+    };
+
     return {
-      testResults,
+      responseResult,
+      activeKey,
+      doSomething,
     }
-  },
-  computed: {
-    headerLength() {
-      if (!this.response || !this.response.headers) return 0
-
-      return Object.keys(this.response.headers).length
-    },
-    validLenses() {
-      if (!this.response) return []
-
-      return getSuitableLenses(this.response)
-    },
-  },
+  }
 })
+
 </script>
+
+<style lang="less" scoped>
+.main {
+
+}
+
+</style>

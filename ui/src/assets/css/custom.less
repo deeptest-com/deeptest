@@ -1,38 +1,43 @@
+body {
+    background-color: #fff;
+}
+.dp-center {
+    text-align: center;
+}
+.dp-right {
+    text-align: right;
+}
+.dp-bg-light {
+    background-color: #fafafa;
+    button {
+        background-color: #fafafa;
+    }
+}
+.dp-bg-input {
+    background-color: #fafafa;
+    border: 0;
+}
+.dp-bg-input-transparent {
+    background-color: transparent;
+    border: 0;
+}
+.dp-icon-btn-container {
+    line-height: 32px;
+}
+.dp-icon-btn {
+    padding: 3px 5px;
+    cursor: pointer !important;
+}
+.dp-tip-small {
+    font-size: 12px;
+    line-height: 12px;
+    .ant-tooltip-inner {
+        padding: 6px 8px;
+        min-height: 24px;
+    }
+}
 
 // put here otherwise not work for popup div
-.tree-context-menu {
-    z-index: 9;
-    .ant-tree-node-content-wrapper {
-        display: block !important;
-    }
-    .ant-menu {
-        border: 1px solid #dedfe1;
-        background: #f0f2f5;
-        .ant-menu-item.menu-item {
-            padding-left: 12px !important;
-            height: 22px;
-            line-height: 21px;
-            text-align: left;
-            .ant-menu-title-content {
-                height: 22px;
-                line-height: 21px;
-            }
-        }
-    }
-}
-.edit-interface-name {
-    display: flex;
-    .left {
-        flex: 1;
-    }
-    .right {
-        width: 30px;
-        padding-left: 10px;
-        .save-button {
-          vertical-align: -5px
-        }
-    }
-}
 
 /* 滚动条 */
 ::-webkit-scrollbar {

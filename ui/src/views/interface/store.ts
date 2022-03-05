@@ -8,6 +8,7 @@ import {
 export interface StateType {
     treeResult: any[];
     modelResult: any;
+    responseResult: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -15,6 +16,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
     mutations: {
         setTree: Mutation<StateType>;
         setModel: Mutation<StateType>;
+        setResponse: Mutation<StateType>;
     };
     actions: {
         loadInterface: Action<StateType, StateType>;
@@ -23,11 +25,13 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateInterface: Action<StateType, StateType>;
         deleteInterface: Action<StateType, StateType>;
         moveInterface: Action<StateType, StateType>;
+        sendRequest: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
     treeResult: [],
     modelResult: {},
+    responseResult: {},
 };
 
 const StoreModel: ModuleType = {
@@ -43,6 +47,9 @@ const StoreModel: ModuleType = {
         },
         setModel(state, payload) {
             state.modelResult = payload;
+        },
+        setResponse(state, payload) {
+            state.responseResult = payload;
         },
     },
     actions: {
@@ -69,6 +76,10 @@ const StoreModel: ModuleType = {
             try {
                 const response: ResponseData = await get(payload.id);
                 const { data } = response;
+                if (!data.children) {
+                    data.children = []
+                }
+                data.children.push({})
 
                 commit('setModel',data);
                 return true;
@@ -109,6 +120,14 @@ const StoreModel: ModuleType = {
             try {
                 await move(payload);
                 await this.dispatch('Interface/loadInterface');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async sendRequest({ commit }, payload: any ) {
+            try {
+                // await sendRequest(payload);
                 return true;
             } catch (error) {
                 return false;

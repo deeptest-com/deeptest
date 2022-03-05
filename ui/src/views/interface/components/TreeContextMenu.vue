@@ -1,5 +1,6 @@
 <template>
-  <a-menu @click="menuClick" mode="inline">
+  <div class="dp-tree-context-menu">
+    <a-menu @click="menuClick" mode="inline">
     <a-menu-item key="add_brother_node" class="menu-item" v-if="treeNode.parentId > 0">
       <PlusOutlined/>
       <span>创建兄弟节点</span>
@@ -24,6 +25,7 @@
       <span v-if="!treeNode.isDir">删除节点</span>
     </a-menu-item>
   </a-menu>
+  </div>
 </template>
 
 <script lang="ts">
@@ -70,3 +72,26 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="less">
+.dp-tree-context-menu {
+  z-index: 9;
+  .ant-tree-node-content-wrapper {
+    display: block !important;
+  }
+  .ant-menu {
+    border: 1px solid #dedfe1;
+    background: #f0f2f5;
+    .ant-menu-item.menu-item {
+      padding-left: 12px !important;
+      height: 22px;
+      line-height: 21px;
+      text-align: left;
+      .ant-menu-title-content {
+        height: 22px;
+        line-height: 21px;
+      }
+    }
+  }
+}
+</style>

@@ -17,6 +17,7 @@
     "axios": "^0.21.4",
     "core-js": "^3.18.0",
     "echarts": "^4.9.0",
+    "json-editor-vue3": "^1.0.5",
     "localforage": "^1.10.0",
     "lodash.debounce": "^4.0.8",
     "neffos.js": "^0.1.25",
@@ -25,6 +26,7 @@
     "vue-i18n": "^9.1.7",
     "vue-loader-v16": "^16.0.0-beta.5.4",
     "vue-router": "^4.0.11",
+    "vue3-json-editor": "^1.1.4",
     "vuex": "^4.0.2"
   },
   "devDependencies": {

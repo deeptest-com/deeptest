@@ -1,98 +1,119 @@
 <template>
-  <div class="flex flex-col flex-1">
-    <div
-      class="sticky z-10 flex items-center justify-between pl-4 border-b bg-primary border-dividerLight top-upperSecondaryStickyFold"
-    >
-      <span class="flex items-center">
-        <label class="font-semibold text-secondaryLight">
-          {{ $t("request.content_type") }}
-        </label>
-        <tippy
-          ref="contentTypeOptions"
-          interactive
-          trigger="click"
-          theme="popover"
-          arrow
-        >
-          <template #trigger>
-            <span class="select-wrapper">
-              <ButtonSecondary
-                :label="contentType || $t('state.none').toLowerCase()"
-                class="pr-8 ml-2 rounded-none"
-              />
-            </span>
-          </template>
-          <SmartItem
-            :label="$t('state.none').toLowerCase()"
-            :info-icon="contentType === null ? 'done' : ''"
-            :active-info-icon="contentType === null"
-            @click.native="
-              () => {
-                contentType = null
-                $refs.contentTypeOptions.tippy().hide()
-              }
-            "
-          />
-          <SmartItem
-            v-for="(contentTypeItem, index) in validContentTypes"
-            :key="`contentTypeItem-${index}`"
-            :label="contentTypeItem"
-            :info-icon="contentTypeItem === contentType ? 'done' : ''"
-            :active-info-icon="contentTypeItem === contentType"
-            @click.native="
-              () => {
-                contentType = contentTypeItem
-                $refs.contentTypeOptions.tippy().hide()
-              }
-            "
-          />
-        </tippy>
-      </span>
+  <div class="request-body-main">
+    <div class="head">
+      <a-row type="flex">
+        <a-col flex="1">原始请求体</a-col>
+        <a-col flex="100px" class="dp-right">
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>帮助</template>
+            <QuestionCircleOutlined class="dp-icon-btn"/>
+          </a-tooltip>
+
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>全部清除</template>
+            <DeleteOutlined class="dp-icon-btn"/>
+          </a-tooltip>
+
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>格式化</template>
+            <ClearOutlined class="dp-icon-btn" />
+          </a-tooltip>
+
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>导入</template>
+            <ImportOutlined class="dp-icon-btn" />
+          </a-tooltip>
+        </a-col>
+      </a-row>
     </div>
-    <HttpBodyParameters v-if="contentType === 'multipart/form-data'" />
-    <HttpURLEncodedParams
-      v-else-if="contentType === 'application/x-www-form-urlencoded'"
-    />
-    <HttpRawBody v-else-if="contentType !== null" :content-type="contentType" />
-    <div
-      v-if="contentType == null"
-      class="flex flex-col items-center justify-center p-4 text-secondaryLight"
-    >
-      <img
-        :src="`/images/states/${$colorMode.value}/upload_single_file.svg`"
-        loading="lazy"
-        class="inline-flex flex-col object-contain object-center w-16 h-16 my-4"
-        :alt="`${$t('empty.body')}`"
-      />
-      <span class="pb-4 text-center">
-        {{ $t("empty.body") }}
-      </span>
-      <ButtonSecondary
-        outline
-        :label="`${$t('app.documentation')}`"
-        to="https://docs.hoppscotch.io/features/body"
-        blank
-        svg="external-link"
-        reverse
-        class="mb-4"
+
+    <div class="body">
+      <Vue3JsonEditor
+          v-model="modelData"
+          mode="code"
+          :show-btns="false"
+          :expandedOnStart="false"
+          @json-change="onJsonChange"
       />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@nuxtjs/composition-api"
-import { useStream } from "~/helpers/utils/composables"
-import { restContentType$, setRESTContentType } from "~/newstore/RESTSession"
-import { knownContentTypes } from "~/helpers/utils/contenttypes"
+import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+import {useI18n} from "vue-i18n";
+import {useStore} from "vuex";
+import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
+import {StateType} from "@/views/interface/store";
+import { Vue3JsonEditor } from 'vue3-json-editor'
+
+interface RequestBodySetupData {
+  modelData: ComputedRef;
+
+  onJsonChange: (v) => void;
+  doSomething: (e) => void;
+}
 
 export default defineComponent({
-  setup() {
-    return {
-      validContentTypes: Object.keys(knownContentTypes),
-
-      contentType: useStream(restContentType$, null, setRESTContentType),
-    }
+  name: 'RequestBody',
+  components: {
+    Vue3JsonEditor,
+    QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined,
   },
+  setup(props): RequestBodySetupData {
+    const {t} = useI18n();
+    const store = useStore<{ Interface: StateType }>();
+    const modelData = computed<any>(() => store.state.Interface.modelResult);
+
+    function onJsonChange (value) {
+      console.log('value:', value)
+    }
+    const doSomething = (e) => {
+      console.log('doSomething', e)
+    };
+
+    return {
+      modelData,
+      onJsonChange,
+      doSomething,
+    }
+  }
 })
+
 </script>
+
+<style lang="less">
+.request-body-main {
+  .jsoneditor-vue {
+    height: 100%;
+    .jsoneditor-menu {
+      display: none;
+    }
+    .jsoneditor-outer {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      .ace-jsoneditor {
+        height: 100%;
+      }
+    }
+  }
+}
+</style>
+
+<style lang="less" scoped>
+.request-body-main {
+  height: 100%;
+  .head {
+    padding: 2px 3px;
+    border-bottom: 1px solid #d9d9d9;
+  }
+  .body {
+    height: calc(100% - 43px);
+    overflow-y: auto;
+    &>div {
+      height: 100%;
+    }
+  }
+}
+</style>

@@ -1,13 +1,13 @@
 <template>
   <div id="content" v-if="modelData.method">
     <div id="top-panel">
-      <RequestSender :onSend="sendRequest"></RequestSender>
+      <InterfaceRequest></InterfaceRequest>
     </div>
     
     <div id="splitter-v"></div>
 
     <div id="bottom-panel">
-      {{ modelData.name }}
+      <InterfaceResponse></InterfaceResponse>
     </div>
   </div>
 </template>
@@ -18,44 +18,37 @@ import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import {resizeHeight} from "@/utils/dom";
 import {useStore} from "vuex";
+
 import {StateType} from "@/views/interface/store";
-import RequestSender from './designer/request/Sender.vue';
+import InterfaceRequest from './designer/request/Index.vue';
+import InterfaceResponse from './designer/response/Index.vue';
 
 const useForm = Form.useForm;
 
 interface InterfaceDesignerSetupData {
   modelData: ComputedRef;
-  sendRequest: (e) => void;
 }
 
 export default defineComponent({
   name: 'InterfaceDesigner',
   props: {
-    onSubmit: {
-      type: Function as PropType<() => void>,
-      required: true
-    }
   },
   components: {
-    RequestSender,
+    InterfaceRequest, InterfaceResponse,
   },
   setup(props): InterfaceDesignerSetupData {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
     const modelData = computed<any>(() => store.state.Interface.modelResult);
 
-    const sendRequest = (e) => {
-      console.log('sendRequest')
-    };
-
     onMounted(() => {
       console.log('onMounted')
-      resizeHeight('content', 'top-panel', 'splitter-v', 'bottom-panel', 200, 200, 50)
+      resizeHeight('content', 'top-panel', 'splitter-v', 'bottom-panel',
+          100, 100, 0)
     })
 
     return {
       modelData,
-      sendRequest,
     }
   }
 })
@@ -69,13 +62,14 @@ export default defineComponent({
   height: 100%;
 
   #top-panel {
-    height: 200px;
+    padding: 4px 4px 0 4px;
+    height: 300px;
     width: 100%;
-    padding: 6px;
   }
 
   #bottom-panel {
     flex: 1;
+    padding: 4px;
     width: 100%;
     overflow: auto;
   }

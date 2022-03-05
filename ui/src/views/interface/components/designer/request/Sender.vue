@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div class="sender-main">
     <div class="methods">
       <a-dropdown trigger="click">
         <template #overlay>
@@ -7,14 +7,14 @@
             <a-menu-item v-for="(item) in methods" :key="item">{{ item }}</a-menu-item>
           </a-menu>
         </template>
-        <a-button>
+        <a-button class="dp-bg-light">
           <span class="curr-method">{{ modelData.method }}</span>
           <DownOutlined />
         </a-button>
       </a-dropdown>
     </div>
     <div class="url">
-      <a-input v-model:value="modelData.url" />
+      <a-input v-model:value="modelData.url" class="dp-bg-light" />
     </div>
     <div class="send">
       <a-dropdown-button type="primary" trigger="click" @click="sendRequest">
@@ -31,13 +31,13 @@
       </a-dropdown-button>
     </div>
     <div class="save">
-      <a-dropdown-button trigger="click" @click="sendRequest">
+      <a-dropdown-button trigger="click" @click="sendRequest" class="dp-bg-light">
         <SaveOutlined />
         保存
         <template #overlay>
           <a-menu>
             <a-menu-item @click.prevent="none" key="copyLink" class="edit-name">
-              <div class="edit-interface-name">
+              <div class="dp-edit-interface-name">
                 <div class="left">
                   <a-input @click.stop v-model:value="modelData.name" />
                 </div>
@@ -145,10 +145,26 @@ export default defineComponent({
 
 </script>
 
-<style lang="less" scoped>
-.main {
+<style lang="less">
+.dp-edit-interface-name {
   display: flex;
-  padding: 0 18px 0 6px;
+  .left {
+    flex: 1;
+  }
+  .right {
+    width: 30px;
+    padding-left: 10px;
+    .save-button {
+      vertical-align: -5px
+    }
+  }
+}
+</style>
+
+<style lang="less" scoped>
+.sender-main {
+  display: flex;
+  padding: 0 18px 0 0px;
   .methods {
     width: 100px;
     .curr-method {

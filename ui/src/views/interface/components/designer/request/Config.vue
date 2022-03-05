@@ -1,78 +1,119 @@
 <template>
-  <div class="flex flex-col flex-1">
-    <SmartTabs styles="sticky bg-primary top-upperPrimaryStickyFold z-10">
-      <SmartTab
-          :id="'params'"
-          :label="`${$t('tab.parameters')}`"
-          :selected="true"
-          :info="`${newActiveParamsCount$}`"
-      >
-        <HttpParameters />
-      </SmartTab>
+  <div class="config-main">
+    <a-tabs v-model:activeKey="activeKey">
+      <a-tab-pane key="1" tab="查询参数">
+        <RequestParameters></RequestParameters>
+      </a-tab-pane>
 
-      <SmartTab :id="'bodyParams'" :label="`${$t('tab.body')}`">
-        <HttpBody />
-      </SmartTab>
+      <a-tab-pane key="2" tab="请求体">
+        <RequestBody></RequestBody>
+      </a-tab-pane>
 
-      <SmartTab
-          :id="'headers'"
-          :label="`${$t('tab.headers')}`"
-          :info="`${newActiveHeadersCount$}`"
-      >
-        <HttpHeaders />
-      </SmartTab>
+      <a-tab-pane key="3" tab="请求头"></a-tab-pane>
 
-      <SmartTab
-          :id="'authorization'"
-          :label="`${$t('tab.authorization')}`"
-      >
-        <HttpAuthorization />
-      </SmartTab>
+      <a-tab-pane key="4" tab="授权"></a-tab-pane>
 
-      <SmartTab
-          :id="'preRequestScript'"
-          :label="`${$t('tab.pre_request_script')}`"
-          :indicator="
-                preRequestScript && preRequestScript.length > 0 ? true : false
-              "
-      >
-        <HttpPreRequestScript />
-      </SmartTab>
+      <a-tab-pane key="5" tab="预处理脚本"></a-tab-pane>
 
-      <SmartTab
-          :id="'tests'"
-          :label="`${$t('tab.tests')}`"
-          :indicator="testScript && testScript.length > 0 ? true : false"
-      >
-        <HttpTests />
-      </SmartTab>
-    </SmartTabs>
+      <a-tab-pane key="6" tab="测试"></a-tab-pane>
+    </a-tabs>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "@nuxtjs/composition-api"
-import { useReadonlyStream } from "~/helpers/utils/composables"
-import { restResponse$ } from "~/newstore/RESTSession"
+import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+import { DownOutlined, UndoOutlined, SaveOutlined, LinkOutlined, CheckOutlined } from '@ant-design/icons-vue';
+import {useI18n} from "vue-i18n";
+import {useStore} from "vuex";
+import {StateType} from "@/views/interface/store";
+import {Methods} from "@/views/interface/consts";
+
+import RequestParameters from "./Config/Parameters.vue";
+import RequestBody from "./Config/Body.vue";
+
+interface RequestConfigSetupData {
+  modelData: ComputedRef;
+  activeKey: Ref<string>;
+  methods: string[]
+
+  selectMethod: (e) => void;
+  sendRequest: (e) => void;
+  clearAll: (e) => void;
+  saveName: (e) => void;
+  copyLink: (e) => void;
+  saveAs: (e) => void;
+  none: (e) => void;
+}
 
 export default defineComponent({
-  setup() {
-    const response = useReadonlyStream(restResponse$, null)
+  name: 'RequestConfig',
+  props: {
+  },
+  components: {
+    RequestParameters, RequestBody,
+  },
+  setup(props): RequestConfigSetupData {
+    const {t} = useI18n();
+    const store = useStore<{ Interface: StateType }>();
+    const modelData = computed<any>(() => store.state.Interface.modelResult);
+    const activeKey = ref('1');
+    const methods = Methods;
 
-    const hasResponse = computed(
-      () =>
-        response.value?.type === "success" || response.value?.type === "fail"
-    )
+    const selectMethod = (e) => {
+      console.log('selectMethod', e)
+    };
+    const sendRequest = (e) => {
+      console.log('sendRequest', e)
+    };
+    const clearAll = (e) => {
+      console.log('clearAll', e)
+    };
+    const saveName = (e) => {
+      console.log('saveName', e)
+      e.preventDefault();
+    };
+    const copyLink = (e) => {
+      console.log('copyLink', e)
+    };
+    const saveAs = (e) => {
+      console.log('saveAs', e)
+    };
+    const none = (e) => {
+      console.log('none', e)
+      e.preventDefault()
+    };
 
-    const loading = computed(
-      () => response.value === null || response.value.type === "loading"
-    )
 
     return {
-      hasResponse,
-      response,
-      loading,
+      modelData,
+      activeKey,
+      methods,
+      selectMethod,
+      sendRequest,
+      clearAll,
+      saveName,
+      copyLink,
+      saveAs,
+      none,
     }
-  },
+  }
 })
+
 </script>
+
+<style lang="less">
+.config-main {
+  height: calc(100% - 32px);
+
+  .ant-tabs-line {
+    height: 100%;
+    .ant-tabs-top-content {
+      height: calc(100% - 45px);
+    }
+  }
+}
+</style>
+
+<style lang="less" scoped>
+
+</style>

@@ -30,6 +30,8 @@
             draggable
             @dragenter="onDragEnter"
             @drop="onDrop"
+
+            class="interf-tree"
         >
           <template #icon="slotProps">
             <FolderOutlined v-if="slotProps.isDir && !slotProps.expanded" />
@@ -38,8 +40,8 @@
           </template>
         </a-tree>
 
-        <div v-if="contextNode.id >= 0" :style="menuStyle" class="tree-context-menu">
-          <TreeContextMenu :contextNode="contextNode" :onSubmit="menuClick"/>
+        <div v-if="contextNode.id >= 0" :style="menuStyle">
+          <TreeContextMenu :treeNode="contextNode" :onSubmit="menuClick"/>
         </div>
       </div>
     </div>
@@ -282,6 +284,15 @@ export default defineComponent({
 
 })
 </script>
+
+<style lang="less">
+.interf-tree {
+  .ant-tree-iconEle {
+    height: 20px !important;
+    line-height: 20px !important;
+  }
+}
+</style>
 
 <style lang="less" scoped>
 #main {

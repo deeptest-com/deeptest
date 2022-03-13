@@ -1,102 +1,138 @@
 <template>
-  <div class="flex flex-col flex-1">
-    <div
-      class="sticky z-10 flex items-center justify-between pl-4 border-b bg-primary border-dividerLight top-upperSecondaryStickyFold"
-    >
-      <label class="font-semibold text-secondaryLight">
-        {{ t("preRequest.javascript_code") }}
-      </label>
-      <div class="flex">
-        <ButtonSecondary
-          v-tippy="{ theme: 'tooltip' }"
-          to="https://docs.hoppscotch.io/features/pre-request-script"
-          blank
-          :title="t('app.wiki')"
-          svg="help-circle"
-        />
-        <ButtonSecondary
-          v-tippy="{ theme: 'tooltip' }"
-          :title="t('state.linewrap')"
-          :class="{ '!text-accent': linewrapEnabled }"
-          svg="wrap-text"
-          @click.native.prevent="linewrapEnabled = !linewrapEnabled"
-        />
-        <ButtonSecondary
-          v-tippy="{ theme: 'tooltip' }"
-          :title="t('action.clear')"
-          svg="trash-2"
-          @click.native="clearContent"
-        />
-      </div>
+  <div class="request-body-main">
+    <div class="head">
+      <a-row type="flex">
+        <a-col flex="1">
+          <span>
+            JavaScript代码
+          </span>
+        </a-col>
+
+        <a-col flex="100px" class="dp-right">
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>帮助</template>
+            <QuestionCircleOutlined class="dp-icon-btn"/>
+          </a-tooltip>
+
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>格式化</template>
+            <ClearOutlined class="dp-icon-btn" />
+          </a-tooltip>
+
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>清除</template>
+            <DeleteOutlined class="dp-icon-btn"/>
+          </a-tooltip>
+        </a-col>
+      </a-row>
     </div>
-    <div class="flex flex-1 border-b border-dividerLight">
-      <div class="w-2/3 border-r border-dividerLight">
-        <div ref="preRrequestEditor" class="h-full"></div>
+
+    <div class="body">
+      <div class="codes">
       </div>
-      <div
-        class="sticky h-full p-4 overflow-auto bg-primary top-upperTertiaryStickyFold min-w-46 max-w-1/3 z-9"
-      >
-        <div class="pb-2 text-secondaryLight">
-          {{ t("helpers.pre_request_script") }}
-        </div>
-        <SmartAnchor
-          :label="`${t('preRequest.learn')}`"
-          to="https://docs.hoppscotch.io/features/pre-request-script"
-          blank
-        />
-        <h4 class="pt-6 font-bold text-secondaryLight">
-          {{ t("preRequest.snippets") }}
-        </h4>
-        <div class="flex flex-col pt-4">
-          <TabSecondary
-            v-for="(snippet, index) in snippets"
-            :key="`snippet-${index}`"
-            :label="snippet.name"
-            active
-            @click.native="useSnippet(snippet.script)"
-          />
+      <div class="refer">
+        <div class="desc">预请求脚本使用 JavaScript 编写，并在请求发送前执行。</div>
+
+        <div class="title">代码片段：</div>
+        <div>
+          <a-link to="">Environment: Set an environment variable</a-link>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { reactive, ref } from "@nuxtjs/composition-api"
-import { usePreRequestScript } from "~/newstore/RESTSession"
-import snippets from "~/helpers/preRequestScriptSnippets"
-import { useCodemirror } from "~/helpers/editor/codemirror"
-import linter from "~/helpers/editor/linting/preRequest"
-import completer from "~/helpers/editor/completion/preRequest"
-import { useI18n } from "~/helpers/utils/composables"
+<script lang="ts">
+import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+import {useI18n} from "vue-i18n";
+import {useStore} from "vuex";
+import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined } from '@ant-design/icons-vue';
+import {StateType} from "@/views/interface/store";
+import { Vue3JsonEditor } from 'vue3-json-editor'
+import ALink from "@/components/ALink/index.vue";
 
-const t = useI18n()
+interface RequestPreRequestScriptSetupData {
+  modelData: ComputedRef;
 
-const preRequestScript = usePreRequestScript()
-
-const preRrequestEditor = ref<any | null>(null)
-const linewrapEnabled = ref(true)
-
-useCodemirror(
-  preRrequestEditor,
-  preRequestScript,
-  reactive({
-    extendedEditorConfig: {
-      mode: "application/javascript",
-      lineWrapping: linewrapEnabled,
-      placeholder: `${t("preRequest.javascript_code")}`,
-    },
-    linter,
-    completer,
-    environmentHighlights: false,
-  })
-)
-
-const useSnippet = (script: string) => {
-  preRequestScript.value += script
+  onJsonChange: (v) => void;
+  doSomething: (e) => void;
 }
 
-const clearContent = () => {
-  preRequestScript.value = ""
-}
+export default defineComponent({
+  name: 'RequestPreRequestScript',
+  components: {
+    ALink,
+    QuestionCircleOutlined, DeleteOutlined, ClearOutlined,
+  },
+  setup(props): RequestPreRequestScriptSetupData {
+    const {t} = useI18n();
+    const store = useStore<{ Interface: StateType }>();
+    const modelData = computed<any>(() => store.state.Interface.modelResult);
+
+    function onJsonChange (value) {
+      console.log('value:', value)
+    }
+    const doSomething = (e) => {
+      console.log('doSomething', e)
+    };
+
+    return {
+      modelData,
+      onJsonChange,
+      doSomething,
+    }
+  }
+})
+
 </script>
+
+<style lang="less">
+.request-body-main {
+  .jsoneditor-vue {
+    height: 100%;
+    .jsoneditor-menu {
+      display: none;
+    }
+    .jsoneditor-outer {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      .ace-jsoneditor {
+        height: 100%;
+      }
+    }
+  }
+}
+</style>
+
+<style lang="less" scoped>
+.request-body-main {
+  height: 100%;
+  .head {
+    padding: 2px 3px;
+    border-bottom: 1px solid #d9d9d9;
+  }
+  .body {
+    display: flex;
+    height: calc(100% - 43px);
+    overflow-y: auto;
+    &>div {
+      height: 100%;
+    }
+
+    .codes {
+      flex: 1;
+    }
+    .refer {
+      padding: 10px;
+      width: 500px;
+      .title {
+        margin-top: 12px;
+      }
+      .desc {
+
+      }
+    }
+  }
+}
+</style>

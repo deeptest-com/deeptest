@@ -6,7 +6,7 @@
           <span>{{tips}}</span>
         </div>
         <div class="buttons">
-          <a-button @click="expandAll" type="link">
+          <a-button @click="expandAll" type="link" class="dp-color-primary">
             <span v-if="!isExpand">展开全部</span>
             <span v-if="isExpand">收缩全部</span>
           </a-button>

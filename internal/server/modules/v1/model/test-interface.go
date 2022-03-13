@@ -19,7 +19,10 @@ type TestInterface struct {
 	Slots iris.Map `gorm:"-" json:"slots"`
 
 	// config
-	Method string `gorm:"default:GET" json:"method"`
+	Method            string `gorm:"default:GET" json:"method"`
+	Body              string `gorm:"default:{}" json:"body"`
+	BodyType          string `gorm:"default:json" json:"bodyType"`
+	AuthorizationType string `gorm:"default:''" json:"authorizationType"`
 }
 
 func (TestInterface) TableName() string {

@@ -9,13 +9,21 @@
         <RequestBody></RequestBody>
       </a-tab-pane>
 
-      <a-tab-pane key="3" tab="请求头"></a-tab-pane>
+      <a-tab-pane key="3" tab="请求头">
+        <RequestHeaders></RequestHeaders>
+      </a-tab-pane>
 
-      <a-tab-pane key="4" tab="授权"></a-tab-pane>
+      <a-tab-pane key="4" tab="授权">
+        <Authorization></Authorization>
+      </a-tab-pane>
 
-      <a-tab-pane key="5" tab="预处理脚本"></a-tab-pane>
+      <a-tab-pane key="5" tab="预处理">
+        <PreRequestScript></PreRequestScript>
+      </a-tab-pane>
 
-      <a-tab-pane key="6" tab="测试"></a-tab-pane>
+      <a-tab-pane key="6" tab="验证">
+        <Validation></Validation>
+      </a-tab-pane>
     </a-tabs>
   </div>
 </template>
@@ -30,6 +38,10 @@ import {Methods} from "@/views/interface/consts";
 
 import RequestParameters from "./Config/Parameters.vue";
 import RequestBody from "./Config/Body.vue";
+import RequestHeaders from "./Config/Headers.vue";
+import Authorization from "./Config/Authorization.vue";
+import PreRequestScript from "./Config/PreRequestScript.vue";
+import Validation from "./Config/Validation.vue";
 
 interface RequestConfigSetupData {
   modelData: ComputedRef;
@@ -50,7 +62,7 @@ export default defineComponent({
   props: {
   },
   components: {
-    RequestParameters, RequestBody,
+    RequestParameters, RequestBody, RequestHeaders, Authorization, PreRequestScript, Validation,
   },
   setup(props): RequestConfigSetupData {
     const {t} = useI18n();

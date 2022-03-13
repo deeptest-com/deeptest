@@ -4,18 +4,8 @@
       <a-row type="flex">
         <a-col flex="1">
           <span>
-            原始请求体
+            JavaScript代码
           </span>
-
-          <a-select
-              ref="bodyType"
-              :options="bodyTypes"
-              v-model:value="modelData.bodyType"
-              size="small"
-              :dropdownMatchSelectWidth="false"
-              :bordered="false"
-          >
-          </a-select>
         </a-col>
 
         <a-col flex="100px" class="dp-right">
@@ -25,31 +15,29 @@
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>全部清除</template>
-            <DeleteOutlined class="dp-icon-btn"/>
-          </a-tooltip>
-
-          <a-tooltip overlayClassName="dp-tip-small">
             <template #title>格式化</template>
             <ClearOutlined class="dp-icon-btn" />
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>导入</template>
-            <ImportOutlined class="dp-icon-btn" />
+            <template #title>清除</template>
+            <DeleteOutlined class="dp-icon-btn"/>
           </a-tooltip>
         </a-col>
       </a-row>
     </div>
 
     <div class="body">
-      <Vue3JsonEditor
-          v-model="modelData"
-          mode="code"
-          @json-change="onJsonChange"
-          :show-btns="false"
-          :expandedOnStart="false"
-      />
+      <div class="codes">
+      </div>
+      <div class="refer">
+        <div class="desc">验证脚本使用JavaScript编写，并在收到响应后执行。</div>
+
+        <div class="title">代码片段：</div>
+        <div>
+          <a-link to="">Environment: Set an environment variable</a-link>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -58,36 +46,28 @@
 import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
+import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import { Vue3JsonEditor } from 'vue3-json-editor'
+import ALink from "@/components/ALink/index.vue";
 
-interface RequestBodySetupData {
+interface RequestValidationSetupData {
   modelData: ComputedRef;
-  bodyTypes: Ref<any[]>
 
   onJsonChange: (v) => void;
   doSomething: (e) => void;
 }
 
 export default defineComponent({
-  name: 'RequestBody',
+  name: 'RequestValidation',
   components: {
-    Vue3JsonEditor,
-    QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined,
+    ALink,
+    QuestionCircleOutlined, DeleteOutlined, ClearOutlined,
   },
-  setup(props): RequestBodySetupData {
+  setup(props): RequestValidationSetupData {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
     const modelData = computed<any>(() => store.state.Interface.modelResult);
-    const bodyTypes = ref([
-      {value: 'json', label: 'application/json'},
-      {value: 'xml', label: 'application/xml'},
-      {value: 'formUrlencoded', label: 'application/x-www-form-urlencoded'},
-      {value: 'formData', label: 'application/form-data'},
-      {value: 'html', label: 'text/html'},
-      {value: 'text', label: 'text/text'},
-    ])
 
     function onJsonChange (value) {
       console.log('value:', value)
@@ -98,7 +78,6 @@ export default defineComponent({
 
     return {
       modelData,
-      bodyTypes,
       onJsonChange,
       doSomething,
     }
@@ -134,10 +113,25 @@ export default defineComponent({
     border-bottom: 1px solid #d9d9d9;
   }
   .body {
+    display: flex;
     height: calc(100% - 43px);
     overflow-y: auto;
     &>div {
       height: 100%;
+    }
+
+    .codes {
+      flex: 1;
+    }
+    .refer {
+      padding: 10px;
+      width: 500px;
+      .title {
+        margin-top: 12px;
+      }
+      .desc {
+
+      }
     }
   }
 }

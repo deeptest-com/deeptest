@@ -23,6 +23,8 @@ type TestInterface struct {
 	Body              string `gorm:"default:{}" json:"body"`
 	BodyType          string `gorm:"default:json" json:"bodyType"`
 	AuthorizationType string `gorm:"default:''" json:"authorizationType"`
+	PreRequestScript  string `gorm:"default:''" json:"preRequestScript"`
+	ValidationScript  string `gorm:"default:''" json:"validationScript"`
 }
 
 func (TestInterface) TableName() string {

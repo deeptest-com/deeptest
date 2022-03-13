@@ -60,16 +60,15 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
-import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {isInArray} from "@/utils/array";
+import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
+import {MonacoOptions} from "@/utils/const";
 
 interface RequestBodySetupData {
   modelData: ComputedRef;
   bodyTypes: Ref<any[]>
   editorOptions: Ref
-
   codeLang: ComputedRef<boolean>;
-  doSomething: (e) => void;
 }
 
 export default defineComponent({
@@ -89,15 +88,7 @@ export default defineComponent({
     const codeLang = computed(() => {
       return getCodeLang()
     })
-
-    const editorOptions = ref({
-      colorDecorators: true,
-      lineHeight: 24,
-      tabSize: 2,
-      autoIndent: true,
-      formatOnPaste: true,
-      formatOnType: true
-    })
+    const editorOptions = ref(MonacoOptions)
 
     const bodyTypes = ref([
       {value: 'json', label: 'application/json'},
@@ -116,16 +107,11 @@ export default defineComponent({
       }
     }
 
-    const doSomething = (e) => {
-      console.log('doSomething', e)
-    };
-
     return {
       modelData,
       editorOptions,
       bodyTypes,
       codeLang,
-      doSomething,
     }
   }
 })

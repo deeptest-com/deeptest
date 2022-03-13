@@ -22,7 +22,7 @@
       </a-tab-pane>
 
       <a-tab-pane key="6" tab="验证">
-        <Validation></Validation>
+        <ValidationScript></ValidationScript>
       </a-tab-pane>
     </a-tabs>
   </div>
@@ -41,7 +41,7 @@ import RequestBody from "./Config/Body.vue";
 import RequestHeaders from "./Config/Headers.vue";
 import Authorization from "./Config/Authorization.vue";
 import PreRequestScript from "./Config/PreRequestScript.vue";
-import Validation from "./Config/Validation.vue";
+import ValidationScript from "./Config/ValidationScript.vue";
 
 interface RequestConfigSetupData {
   modelData: ComputedRef;
@@ -62,7 +62,7 @@ export default defineComponent({
   props: {
   },
   components: {
-    RequestParameters, RequestBody, RequestHeaders, Authorization, PreRequestScript, Validation,
+    RequestParameters, RequestBody, RequestHeaders, Authorization, PreRequestScript, ValidationScript,
   },
   setup(props): RequestConfigSetupData {
     const {t} = useI18n();

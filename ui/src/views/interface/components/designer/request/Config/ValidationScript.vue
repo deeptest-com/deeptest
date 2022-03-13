@@ -29,6 +29,13 @@
 
     <div class="body">
       <div class="codes">
+        <MonacoEditor
+            class="editor"
+            :value="modelData.validationScript"
+            language="javascript"
+            theme="vs"
+            :options="editorOptions"
+        />
       </div>
       <div class="refer">
         <div class="desc">验证脚本使用JavaScript编写，并在收到响应后执行。</div>
@@ -48,38 +55,34 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
-import { Vue3JsonEditor } from 'vue3-json-editor'
 import ALink from "@/components/ALink/index.vue";
+import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
+import {MonacoOptions} from "@/utils/const";
 
-interface RequestValidationSetupData {
+interface RequestValidationScriptSetupData {
   modelData: ComputedRef;
-
-  onJsonChange: (v) => void;
-  doSomething: (e) => void;
+  editorOptions: Ref
 }
 
 export default defineComponent({
-  name: 'RequestValidation',
+  name: 'RequestValidationScript',
   components: {
     ALink,
-    QuestionCircleOutlined, DeleteOutlined, ClearOutlined,
+    QuestionCircleOutlined, DeleteOutlined, ClearOutlined, MonacoEditor,
   },
-  setup(props): RequestValidationSetupData {
+  setup(props): RequestValidationScriptSetupData {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
     const modelData = computed<any>(() => store.state.Interface.modelResult);
+    const editorOptions = ref(MonacoOptions)
 
     function onJsonChange (value) {
       console.log('value:', value)
     }
-    const doSomething = (e) => {
-      console.log('doSomething', e)
-    };
 
     return {
       modelData,
-      onJsonChange,
-      doSomething,
+      editorOptions,
     }
   }
 })

@@ -43,12 +43,12 @@
     </div>
 
     <div class="body">
-      <Vue3JsonEditor
-          v-model="modelData"
-          mode="code"
-          @json-change="onJsonChange"
-          :show-btns="false"
-          :expandedOnStart="false"
+      <MonacoEditor
+          class="editor"
+          :value="modelData.body"
+          :language="codeLang"
+          theme="vs"
+          :options="editorOptions"
       />
     </div>
   </div>
@@ -60,26 +60,45 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
-import { Vue3JsonEditor } from 'vue3-json-editor'
+import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
+import {isInArray} from "@/utils/array";
 
 interface RequestBodySetupData {
   modelData: ComputedRef;
   bodyTypes: Ref<any[]>
+  editorOptions: Ref
 
-  onJsonChange: (v) => void;
+  codeLang: ComputedRef<boolean>;
   doSomething: (e) => void;
 }
 
 export default defineComponent({
   name: 'RequestBody',
   components: {
-    Vue3JsonEditor,
+    MonacoEditor,
     QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined,
   },
+
+  computed: {
+  },
+
   setup(props): RequestBodySetupData {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
     const modelData = computed<any>(() => store.state.Interface.modelResult);
+    const codeLang = computed(() => {
+      return getCodeLang()
+    })
+
+    const editorOptions = ref({
+      colorDecorators: true,
+      lineHeight: 24,
+      tabSize: 2,
+      autoIndent: true,
+      formatOnPaste: true,
+      formatOnType: true
+    })
+
     const bodyTypes = ref([
       {value: 'json', label: 'application/json'},
       {value: 'xml', label: 'application/xml'},
@@ -89,17 +108,23 @@ export default defineComponent({
       {value: 'text', label: 'text/text'},
     ])
 
-    function onJsonChange (value) {
-      console.log('value:', value)
+    const getCodeLang = () => {
+      if (isInArray(modelData.value.bodyType, ['json', 'xml', 'html', 'text'])) {
+        return modelData.value.bodyType
+      } else {
+        return 'plaintext'
+      }
     }
+
     const doSomething = (e) => {
       console.log('doSomething', e)
     };
 
     return {
       modelData,
+      editorOptions,
       bodyTypes,
-      onJsonChange,
+      codeLang,
       doSomething,
     }
   }

@@ -2,6 +2,9 @@
 const bodyParser = require('body-parser')
 const mockServer = require('./src/utils/mock/server');
 const { NODE_ENV, VUE_APP_PORT, VUE_APP_MOCK } = process.env;
+
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
+
 module.exports = {
     publicPath: '/',
     outputDir: 'dist',
@@ -50,7 +53,6 @@ module.exports = {
         }
     },
     chainWebpack(config) {
-
         // 内置的 svg Rule 添加 exclude
         config.module
         .rule('svg')
@@ -80,5 +82,11 @@ module.exports = {
         });
 
         config.resolve.alias.set('vue-i18n', 'vue-i18n/dist/vue-i18n.cjs.js')
+
+        config.plugin('monaco-editor').use(MonacoWebpackPlugin, [
+            {
+                languages: ['plaintext', 'javascript', 'go', 'json']
+            }
+        ])
     }
 }

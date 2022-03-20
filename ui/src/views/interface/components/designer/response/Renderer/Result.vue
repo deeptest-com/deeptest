@@ -10,7 +10,9 @@
 
     <div class="body">
       <div class="line">
-        <span class="dp-color-fail dp-tip-small"><CloseOutlined class="dp-icon-btn" /></span>
+        <span class="dp-color-fail dp-tip-small">
+          <CloseOutlined class="dp-icon-btn dp-trans-80" />
+        </span>
         <span>期待结果'200'，实际为'400'。</span>
       </div>
     </div>

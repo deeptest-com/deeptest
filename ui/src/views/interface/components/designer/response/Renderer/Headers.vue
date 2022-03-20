@@ -6,7 +6,7 @@
         <a-col flex="80px" class="dp-right">
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>复制</template>
-            <CopyOutlined class="dp-icon-btn" />
+            <CopyOutlined class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
         </a-col>
       </a-row>

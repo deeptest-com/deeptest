@@ -9,17 +9,17 @@
         <a-col flex="100px" class="dp-right">
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>格式化</template>
-            <ClearOutlined class="dp-icon-btn" />
+            <ClearOutlined class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>复制</template>
-            <CopyOutlined class="dp-icon-btn" />
+            <CopyOutlined class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>下载</template>
-            <DownloadOutlined class="dp-icon-btn" />
+            <DownloadOutlined class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
         </a-col>
       </a-row>

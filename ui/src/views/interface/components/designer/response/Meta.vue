@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div class="response-meta">
     <a-row type="flex" :gutter="15">
       <a-col>
         <span>状态：200.OK</span>
@@ -49,7 +49,7 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-.main {
+.response-meta {
   padding: 6px;
 }
 

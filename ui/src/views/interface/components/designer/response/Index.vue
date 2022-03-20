@@ -1,5 +1,5 @@
 <template>
-  <div id="main">
+  <div class="response-main">
     <ResponseMeta></ResponseMeta>
     <ResponseRenderer></ResponseRenderer>
   </div>
@@ -52,6 +52,7 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-#main {
+.response-main {
+  height: 100%;
 }
 </style>

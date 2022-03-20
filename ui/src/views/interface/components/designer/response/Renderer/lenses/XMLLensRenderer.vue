@@ -1,90 +1,127 @@
 <template>
-  <div class="flex flex-col flex-1">
-    <div
-      class="sticky z-10 flex items-center justify-between pl-4 border-b bg-primary border-dividerLight top-lowerSecondaryStickyFold"
-    >
-      <label class="font-semibold text-secondaryLight">
-        {{ t("response.body") }}
-      </label>
-      <div class="flex">
-        <ButtonSecondary
-          v-if="response.body"
-          v-tippy="{ theme: 'tooltip' }"
-          :title="t('state.linewrap')"
-          :class="{ '!text-accent': linewrapEnabled }"
-          svg="wrap-text"
-          @click.native.prevent="linewrapEnabled = !linewrapEnabled"
-        />
-        <ButtonSecondary
-          v-if="response.body"
-          ref="downloadResponse"
-          v-tippy="{ theme: 'tooltip' }"
-          :title="t('action.download_file')"
-          :svg="downloadIcon"
-          @click.native="downloadResponse"
-        />
-        <ButtonSecondary
-          v-if="response.body"
-          ref="copyResponse"
-          v-tippy="{ theme: 'tooltip' }"
-          :title="t('action.copy')"
-          :svg="copyIcon"
-          @click.native="copyResponse"
-        />
-      </div>
+  <div class="response-json-main">
+    <div class="head">
+      <a-row type="flex">
+        <a-col flex="1">
+          <span>响应体</span>
+        </a-col>
+
+        <a-col flex="100px" class="dp-right">
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>格式化</template>
+            <ClearOutlined class="dp-icon-btn" />
+          </a-tooltip>
+
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>复制</template>
+            <CopyOutlined class="dp-icon-btn" />
+          </a-tooltip>
+
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>下载</template>
+            <DownloadOutlined class="dp-icon-btn" />
+          </a-tooltip>
+        </a-col>
+      </a-row>
     </div>
-    <div ref="xmlResponse" class="flex flex-col flex-1"></div>
+
+    <div class="body">
+      <MonacoEditor
+          class="editor"
+          :value="modelData.body"
+          :language="codeLang"
+          theme="vs"
+          :options="editorOptions"
+      />
+    </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed, ref, reactive } from "@nuxtjs/composition-api"
-import { useCodemirror } from "~/helpers/editor/codemirror"
-import { HoppRESTResponse } from "~/helpers/types/HoppRESTResponse"
-import { useI18n } from "~/helpers/utils/composables"
-import useResponseBody from "~/helpers/lenses/composables/useResponseBody"
-import useDownloadResponse from "~/helpers/lenses/composables/useDownloadResponse"
-import useCopyResponse from "~/helpers/lenses/composables/useCopyResponse"
+<script lang="ts">
+import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+import {useI18n} from "vue-i18n";
+import {useStore} from "vuex";
+import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';
+import {StateType} from "@/views/interface/store";
+import {isInArray} from "@/utils/array";
+import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
+import {MonacoOptions} from "@/utils/const";
 
-const t = useI18n()
+interface ResponseLensXmlSetupData {
+  modelData: ComputedRef;
+  editorOptions: Ref
+  codeLang: ComputedRef<boolean>;
+}
 
-const props = defineProps<{
-  response: HoppRESTResponse
-}>()
+export default defineComponent({
+  name: 'ResponseLensXml',
+  components: {
+    MonacoEditor,
+    CopyOutlined, DownloadOutlined, ClearOutlined,
+  },
 
-const { responseBodyText } = useResponseBody(props.response)
+  computed: {
+  },
 
-const responseType = computed(() => {
-  return (
-    props.response.headers.find((h) => h.key.toLowerCase() === "content-type")
-      .value || ""
-  )
-    .split(";")[0]
-    .toLowerCase()
+  setup(props): ResponseLensXmlSetupData {
+    const {t} = useI18n();
+    const store = useStore<{ Interface: StateType }>();
+    const modelData = computed<any>(() => store.state.Interface.modelResult);
+    const codeLang = computed(() => {
+      return getCodeLang()
+    })
+    const editorOptions = ref(MonacoOptions)
+
+    const getCodeLang = () => {
+      if (isInArray(modelData.value.bodyType, ['json', 'xml', 'html', 'text'])) {
+        return modelData.value.bodyType
+      } else {
+        return 'plaintext'
+      }
+    }
+
+    return {
+      modelData,
+      editorOptions,
+      codeLang,
+    }
+  }
 })
 
-const { downloadIcon, downloadResponse } = useDownloadResponse(
-  responseType.value,
-  responseBodyText
-)
-
-const { copyIcon, copyResponse } = useCopyResponse(responseBodyText)
-
-const xmlResponse = ref<any | null>(null)
-const linewrapEnabled = ref(true)
-
-useCodemirror(
-  xmlResponse,
-  responseBodyText,
-  reactive({
-    extendedEditorConfig: {
-      mode: "application/xml",
-      readOnly: true,
-      lineWrapping: linewrapEnabled,
-    },
-    linter: null,
-    completer: null,
-    environmentHighlights: true,
-  })
-)
 </script>
+
+<style lang="less">
+.response-json-main {
+  .jsoneditor-vue {
+    height: 100%;
+    .jsoneditor-menu {
+      display: none;
+    }
+    .jsoneditor-outer {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      .ace-jsoneditor {
+        height: 100%;
+      }
+    }
+  }
+}
+</style>
+
+<style lang="less" scoped>
+.response-json-main {
+  height: 100%;
+  .head {
+    padding: 2px 3px;
+    border-bottom: 1px solid #d9d9d9;
+  }
+  .body {
+    height: calc(100% - 30px);
+    overflow-y: hidden;
+    &>div {
+      height: 100%;
+    }
+  }
+}
+</style>

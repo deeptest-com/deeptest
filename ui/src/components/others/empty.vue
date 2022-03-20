@@ -1,6 +1,7 @@
 <template>
   <a-empty :image="simpleImage">
     <template #description>
+      暂无数据
     </template>
   </a-empty>
 </template>

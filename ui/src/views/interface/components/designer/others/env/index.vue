@@ -6,6 +6,14 @@
           <a-select-option value="">选择环境</a-select-option>
         </a-select>
       </div>
+    </div>
+    <div class="head">
+      <div class="title">
+        <span class="dp-link">
+          <PlusOutlined class="dp-icon-btn dp-trans-80" />
+          <span>新建</span>
+        </span>
+      </div>
       <div class="acts">
         <a-tooltip overlayClassName="dp-tip-small">
           <template #title>帮助</template>
@@ -35,7 +43,7 @@
                   <a-menu-item key="copy">复制</a-menu-item>
                 </a-menu>
               </template>
-              <a class="ant-dropdown-link more" @click.prevent>
+              <a class="more dp-color-text" @click.prevent>
                 <MoreOutlined />
               </a>
             </a-dropdown>
@@ -55,7 +63,7 @@
                   <a-menu-item key="copy">复制</a-menu-item>
                 </a-menu>
               </template>
-              <a class="ant-dropdown-link more" @click.prevent>
+              <a class="more dp-color-text" @click.prevent>
                 <MoreOutlined />
               </a>
             </a-dropdown>
@@ -65,9 +73,6 @@
 
       <div v-if="true">
         <Empty></Empty>
-        <div class="btn-wrapper">
-          <a-button type="link">新建环境</a-button>
-        </div>
       </div>
 
     </div>
@@ -78,7 +83,7 @@
 import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined,ImportOutlined, MoreOutlined, EnvironmentOutlined } from '@ant-design/icons-vue';
+import { QuestionCircleOutlined,ImportOutlined, MoreOutlined, EnvironmentOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import Empty from "@/components/others/empty.vue";
 
@@ -89,7 +94,7 @@ interface RequestEnvSetupData {
 export default defineComponent({
   name: 'RequestEnv',
   components: {
-    QuestionCircleOutlined, ImportOutlined, Empty, MoreOutlined, EnvironmentOutlined
+    QuestionCircleOutlined, ImportOutlined, Empty, MoreOutlined, EnvironmentOutlined, PlusOutlined
   },
 
   computed: {
@@ -133,13 +138,14 @@ export default defineComponent({
     .envs {
       .env {
         display: flex;
-        padding: 3px 2px 2px 8px;
+        padding: 3px 2px 2px 4px;
         line-height: 16px;
         .left {
           flex: 1;
           .name {
-            margin-left: 8px;
+            margin-left: 0;
           }
+          cursor: pointer;
         }
         .right {
           width: 20px;

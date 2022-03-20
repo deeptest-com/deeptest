@@ -47,7 +47,7 @@
     </div>
     <div id="splitter-h"></div>
     <div id="right-panel">
-      <InterfaceDesigner :onSubmit="saveInterface"></InterfaceDesigner>
+      <InterfaceDesigner v-if="modelData.id" :onSubmit="saveInterface"></InterfaceDesigner>
     </div>
   </div>
 </template>

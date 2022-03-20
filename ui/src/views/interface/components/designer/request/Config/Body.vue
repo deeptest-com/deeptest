@@ -21,22 +21,22 @@
         <a-col flex="100px" class="dp-right">
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>帮助</template>
-            <QuestionCircleOutlined class="dp-icon-btn"/>
+            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>全部清除</template>
-            <DeleteOutlined class="dp-icon-btn"/>
+            <DeleteOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>格式化</template>
-            <ClearOutlined class="dp-icon-btn" />
+            <ClearOutlined class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>导入</template>
-            <ImportOutlined class="dp-icon-btn" />
+            <ImportOutlined class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
         </a-col>
       </a-row>

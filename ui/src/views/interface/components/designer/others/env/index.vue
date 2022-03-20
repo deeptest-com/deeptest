@@ -9,12 +9,12 @@
       <div class="acts">
         <a-tooltip overlayClassName="dp-tip-small">
           <template #title>帮助</template>
-          <QuestionCircleOutlined class="dp-icon-btn"/>
+          <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
         </a-tooltip>
 
         <a-tooltip overlayClassName="dp-tip-small">
           <template #title>导入/导出</template>
-          <ImportOutlined class="dp-icon-btn" />
+          <ImportOutlined class="dp-icon-btn dp-trans-60" />
         </a-tooltip>
       </div>
     </div>
@@ -23,7 +23,7 @@
       <div v-if="true" class="envs">
         <div class="env">
           <div class="left">
-            <EnvironmentOutlined />
+            <EnvironmentOutlined class="dp-icon-btn dp-trans-80" />
             <span class="name">全局</span>
           </div>
           <div class="right">
@@ -43,7 +43,7 @@
         </div>
         <div class="env">
           <div class="left">
-            <EnvironmentOutlined />
+            <EnvironmentOutlined class="dp-icon-btn dp-trans-80" />
             <span class="name">测试环境</span>
           </div>
           <div class="right">

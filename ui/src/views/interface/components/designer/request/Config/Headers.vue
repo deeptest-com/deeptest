@@ -6,17 +6,17 @@
         <a-col flex="80px" class="dp-right">
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>帮助</template>
-            <QuestionCircleOutlined class="dp-icon-btn"/>
+            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>全部清除</template>
-            <DeleteOutlined class="dp-icon-btn"/>
+            <DeleteOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>新增</template>
-            <PlusOutlined class="dp-icon-btn"/>
+            <PlusOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
         </a-col>
       </a-row>
@@ -32,17 +32,17 @@
         <a-col flex="80px" class="dp-right dp-color-primary dp-icon-btn-container">
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>禁用</template>
-            <CheckCircleOutlined class="dp-icon-btn" />
+            <CheckCircleOutlined class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>启用</template>
-            <CloseCircleOutlined class="dp-icon-btn" />
+            <CloseCircleOutlined class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>移除</template>
-            <DeleteOutlined class="dp-icon-btn"/>
+            <DeleteOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
         </a-col>
       </a-row>

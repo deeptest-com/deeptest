@@ -120,7 +120,7 @@ export default defineComponent({
   .ant-tabs-line {
     height: 100%;
     .ant-tabs-top-content {
-      height: calc(100% - 45px);
+      height: calc(100% - 61px);
     }
   }
 }

@@ -16,7 +16,6 @@ func NewProjectService() *ProjectService {
 }
 
 func (s *ProjectService) Paginate(req serverDomain.ProjectReqPaginate) (ret _domain.PageData, err error) {
-
 	ret, err = s.ProjectRepo.Paginate(req)
 
 	if err != nil {

@@ -1,220 +1,127 @@
 <template>
-  <div class="flex flex-col flex-1">
-    <div
-      class="sticky z-10 flex items-center justify-between pl-4 border-b bg-primary border-dividerLight top-lowerSecondaryStickyFold"
-    >
-      <label class="font-semibold text-secondaryLight">{{
-        t("response.body")
-      }}</label>
-      <div class="flex">
-        <ButtonSecondary
-          v-if="response.body"
-          v-tippy="{ theme: 'tooltip' }"
-          :title="t('state.linewrap')"
-          :class="{ '!text-accent': linewrapEnabled }"
-          svg="wrap-text"
-          @click.native.prevent="linewrapEnabled = !linewrapEnabled"
-        />
-        <ButtonSecondary
-          v-if="response.body"
-          ref="downloadResponse"
-          v-tippy="{ theme: 'tooltip' }"
-          :title="t('action.download_file')"
-          :svg="downloadIcon"
-          @click.native="downloadResponse"
-        />
-        <ButtonSecondary
-          v-if="response.body"
-          ref="copyResponse"
-          v-tippy="{ theme: 'tooltip' }"
-          :title="t('action.copy')"
-          :svg="copyIcon"
-          @click.native="copyResponse"
-        />
-      </div>
+  <div class="response-json-main">
+    <div class="head">
+      <a-row type="flex">
+        <a-col flex="1">
+          <span>响应体</span>
+        </a-col>
+
+        <a-col flex="100px" class="dp-right">
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>格式化</template>
+            <ClearOutlined class="dp-icon-btn" />
+          </a-tooltip>
+
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>复制</template>
+            <CopyOutlined class="dp-icon-btn" />
+          </a-tooltip>
+
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>下载</template>
+            <DownloadOutlined class="dp-icon-btn" />
+          </a-tooltip>
+        </a-col>
+      </a-row>
     </div>
-    <div ref="jsonResponse" class="flex flex-col flex-1"></div>
-    <div
-      v-if="outlinePath"
-      class="sticky bottom-0 z-10 flex px-2 overflow-auto border-t bg-primaryLight border-dividerLight flex-nowrap hide-scrollbar"
-    >
-      <div
-        v-for="(item, index) in outlinePath"
-        :key="`item-${index}`"
-        class="flex items-center"
-      >
-        <tippy
-          ref="outlineOptions"
-          interactive
-          trigger="click"
-          theme="popover"
-          arrow
-        >
-          <template #trigger>
-            <div v-if="item.kind === 'RootObject'" class="outline">{}</div>
-            <div v-if="item.kind === 'RootArray'" class="outline">[]</div>
-            <div v-if="item.kind === 'ArrayMember'" class="outline">
-              {{ item.index }}
-            </div>
-            <div v-if="item.kind === 'ObjectMember'" class="outline">
-              {{ item.name }}
-            </div>
-          </template>
-          <div
-            v-if="item.kind === 'ArrayMember' || item.kind === 'ObjectMember'"
-          >
-            <div v-if="item.kind === 'ArrayMember'" class="flex flex-col">
-              <SmartItem
-                v-for="(arrayMember, astIndex) in item.astParent.values"
-                :key="`ast-${astIndex}`"
-                :label="`${astIndex}`"
-                @click.native="
-                  () => {
-                    jumpCursor(arrayMember)
-                    outlineOptions[index].tippy().hide()
-                  }
-                "
-              />
-            </div>
-            <div v-if="item.kind === 'ObjectMember'" class="flex flex-col">
-              <SmartItem
-                v-for="(objectMember, astIndex) in item.astParent.members"
-                :key="`ast-${astIndex}`"
-                :label="objectMember.key.value"
-                @click.native="
-                  () => {
-                    jumpCursor(objectMember)
-                    outlineOptions[index].tippy().hide()
-                  }
-                "
-              />
-            </div>
-          </div>
-          <div v-if="item.kind === 'RootObject'" class="flex flex-col">
-            <SmartItem
-              label="{}"
-              @click.native="
-                () => {
-                  jumpCursor(item.astValue)
-                  outlineOptions[index].tippy().hide()
-                }
-              "
-            />
-          </div>
-          <div v-if="item.kind === 'RootArray'" class="flex flex-col">
-            <SmartItem
-              label="[]"
-              @click.native="
-                () => {
-                  jumpCursor(item.astValue)
-                  outlineOptions[index].tippy().hide()
-                }
-              "
-            />
-          </div>
-        </tippy>
-        <i
-          v-if="index + 1 !== outlinePath.length"
-          class="opacity-50 text-secondaryLight material-icons"
-          >chevron_right</i
-        >
-      </div>
+
+    <div class="body">
+      <MonacoEditor
+          class="editor"
+          :value="modelData.body"
+          :language="codeLang"
+          theme="vs"
+          :options="editorOptions"
+      />
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed, ref, reactive } from "@nuxtjs/composition-api"
-import { useCodemirror } from "~/helpers/editor/codemirror"
-import { HoppRESTResponse } from "~/helpers/types/HoppRESTResponse"
-import jsonParse, { JSONObjectMember, JSONValue } from "~/helpers/jsonParse"
-import { getJSONOutlineAtPos } from "~/helpers/newOutline"
-import {
-  convertIndexToLineCh,
-  convertLineChToIndex,
-} from "~/helpers/editor/utils"
-import { useI18n } from "~/helpers/utils/composables"
-import useCopyResponse from "~/helpers/lenses/composables/useCopyResponse"
-import useResponseBody from "~/helpers/lenses/composables/useResponseBody"
-import useDownloadResponse from "~/helpers/lenses/composables/useDownloadResponse"
+<script lang="ts">
+import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+import {useI18n} from "vue-i18n";
+import {useStore} from "vuex";
+import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';
+import {StateType} from "@/views/interface/store";
+import {isInArray} from "@/utils/array";
+import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
+import {MonacoOptions} from "@/utils/const";
 
-const t = useI18n()
-
-const props = defineProps<{
-  response: HoppRESTResponse
-}>()
-
-const { responseBodyText } = useResponseBody(props.response)
-
-const { copyIcon, copyResponse } = useCopyResponse(responseBodyText)
-
-const { downloadIcon, downloadResponse } = useDownloadResponse(
-  "application/json",
-  responseBodyText
-)
-
-const jsonBodyText = computed(() => {
-  try {
-    return JSON.stringify(JSON.parse(responseBodyText.value), null, 2)
-  } catch (e) {
-    // Most probs invalid JSON was returned, so drop prettification (should we warn ?)
-    return responseBodyText.value
-  }
-})
-
-const ast = computed(() => {
-  try {
-    return jsonParse(jsonBodyText.value)
-  } catch (_: any) {
-    return null
-  }
-})
-
-const outlineOptions = ref<any | null>(null)
-const jsonResponse = ref<any | null>(null)
-const linewrapEnabled = ref(true)
-
-const { cursor } = useCodemirror(
-  jsonResponse,
-  jsonBodyText,
-  reactive({
-    extendedEditorConfig: {
-      mode: "application/ld+json",
-      readOnly: true,
-      lineWrapping: linewrapEnabled,
-    },
-    linter: null,
-    completer: null,
-    environmentHighlights: true,
-  })
-)
-
-const jumpCursor = (ast: JSONValue | JSONObjectMember) => {
-  const pos = convertIndexToLineCh(jsonBodyText.value, ast.start)
-  pos.line--
-  cursor.value = pos
+interface ResponseLensJsonSetupData {
+  modelData: ComputedRef;
+  editorOptions: Ref
+  codeLang: ComputedRef<boolean>;
 }
 
-const outlinePath = computed(() => {
-  if (ast.value) {
-    return getJSONOutlineAtPos(
-      ast.value,
-      convertLineChToIndex(jsonBodyText.value, cursor.value)
-    )
-  } else return null
+export default defineComponent({
+  name: 'ResponseLensJson',
+  components: {
+    MonacoEditor,
+    CopyOutlined, DownloadOutlined, ClearOutlined,
+  },
+
+  computed: {
+  },
+
+  setup(props): ResponseLensJsonSetupData {
+    const {t} = useI18n();
+    const store = useStore<{ Interface: StateType }>();
+    const modelData = computed<any>(() => store.state.Interface.modelResult);
+    const codeLang = computed(() => {
+      return getCodeLang()
+    })
+    const editorOptions = ref(MonacoOptions)
+
+    const getCodeLang = () => {
+      if (isInArray(modelData.value.bodyType, ['json', 'xml', 'html', 'text'])) {
+        return modelData.value.bodyType
+      } else {
+        return 'plaintext'
+      }
+    }
+
+    return {
+      modelData,
+      editorOptions,
+      codeLang,
+    }
+  }
 })
+
 </script>
 
-<style lang="scss" scoped>
-.outline {
-  @apply cursor-pointer;
-  @apply flex-grow-0 flex-shrink-0;
-  @apply text-secondaryLight;
-  @apply inline-flex;
-  @apply items-center;
-  @apply px-2;
-  @apply py-1;
-  @apply transition;
-  @apply hover:text-secondary;
+<style lang="less">
+.response-json-main {
+  .jsoneditor-vue {
+    height: 100%;
+    .jsoneditor-menu {
+      display: none;
+    }
+    .jsoneditor-outer {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      .ace-jsoneditor {
+        height: 100%;
+      }
+    }
+  }
+}
+</style>
+
+<style lang="less" scoped>
+.response-json-main {
+  height: 100%;
+  .head {
+    padding: 2px 3px;
+    border-bottom: 1px solid #d9d9d9;
+  }
+  .body {
+    height: calc(100% - 30px);
+    overflow-y: hidden;
+    &>div {
+      height: 100%;
+    }
+  }
 }
 </style>

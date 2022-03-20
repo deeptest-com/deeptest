@@ -145,8 +145,8 @@ export default defineComponent({
     border-bottom: 1px solid #d9d9d9;
   }
   .body {
-    height: calc(100% - 43px);
-    overflow-y: auto;
+    height: calc(100% - 30px);
+    overflow-y: hidden;
     &>div {
       height: 100%;
     }

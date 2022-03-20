@@ -1,65 +1,106 @@
 <template>
-  <div>
-    <div
-      class="sticky z-10 flex items-center justify-between pl-4 border-b bg-primary border-dividerLight top-lowerSecondaryStickyFold"
-    >
-      <label class="font-semibold text-secondaryLight">
-        {{ t("request.header_list") }}
-      </label>
-      <div class="flex">
-        <ButtonSecondary
-          v-if="headers"
-          ref="copyHeaders"
-          v-tippy="{ theme: 'tooltip' }"
-          :title="t('action.copy')"
-          :svg="copyIcon"
-          @click.native="copyHeaders"
-        />
-      </div>
+  <div class="headers-main">
+    <div class="head">
+      <a-row type="flex">
+        <a-col flex="1">响应头</a-col>
+        <a-col flex="80px" class="dp-right">
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>复制</template>
+            <CopyOutlined class="dp-icon-btn" />
+          </a-tooltip>
+        </a-col>
+      </a-row>
     </div>
-    <div
-      v-for="(header, index) in headers"
-      :key="`header-${index}`"
-      class="flex border-b divide-x divide-dividerLight border-dividerLight group"
-    >
-      <span
-        class="flex flex-1 min-w-0 px-4 py-2 transition group-hover:text-secondaryDark"
-      >
-        <span class="truncate rounded-sm select-all">
-          {{ header.key }}
-        </span>
-      </span>
-      <span
-        class="flex flex-1 min-w-0 px-4 py-2 transition group-hover:text-secondaryDark"
-      >
-        <span class="truncate rounded-sm select-all">
-          {{ header.value }}
-        </span>
-      </span>
+    <div class="params">
+      <a-row v-for="(item, idx) in modelData.children" :key="idx" type="flex" class="param">
+        <a-col flex="1">
+          <a-input v-model:value="item.key" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
+        </a-col>
+        <a-col flex="1">
+          <a-input v-model:value="item.val" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
+        </a-col>
+      </a-row>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from "@nuxtjs/composition-api"
-import { HoppRESTHeader } from "@hoppscotch/data"
-import { copyToClipboard } from "~/helpers/utils/clipboard"
-import { useI18n, useToast } from "~/helpers/utils/composables"
+<script lang="ts">
+import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+import {useI18n} from "vue-i18n";
+import {useStore} from "vuex";
+import {
+  QuestionCircleOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  CopyOutlined
+} from '@ant-design/icons-vue';
+import {StateType} from "@/views/interface/store";
 
-const t = useI18n()
+interface ResponseHeadersSetupData {
+  modelData: ComputedRef;
 
-const toast = useToast()
-
-const props = defineProps<{
-  headers: Array<HoppRESTHeader>
-}>()
-
-const copyIcon = ref("copy")
-
-const copyHeaders = () => {
-  copyToClipboard(JSON.stringify(props.headers))
-  copyIcon.value = "check"
-  toast.success(`${t("state.copied_to_clipboard")}`)
-  setTimeout(() => (copyIcon.value = "copy"), 1000)
+  onParamChange: (idx) => void;
+  doSomething: (e) => void;
 }
+
+export default defineComponent({
+  name: 'ResponseHeaders',
+  components: {
+    CopyOutlined,
+  },
+  setup(props): ResponseHeadersSetupData {
+    const {t} = useI18n();
+    const store = useStore<{ Interface: StateType }>();
+    const modelData = computed<any>(() => store.state.Interface.modelResult);
+
+    const onParamChange = (idx) => {
+      console.log('onParamChange', idx)
+      if (modelData.value.children.length <= idx + 1
+          && (modelData.value.children[idx].key !== '' || modelData.value.children[idx].val !== '')) {
+        modelData.value.children.push({})
+      }
+    };
+
+    const doSomething = (e) => {
+      console.log('doSomething', e)
+    };
+
+    return {
+      modelData,
+      onParamChange,
+      doSomething,
+    }
+  }
+})
+
 </script>
+
+<style lang="less" scoped>
+.headers-main {
+  height: 100%;
+  .head {
+    padding: 2px 3px;
+    border-bottom: 1px solid #d9d9d9;
+  }
+  .params {
+    height: calc(100% - 28px);
+    overflow-y: auto;
+    .param {
+      padding: 2px 3px;
+      border-bottom: 1px solid #d9d9d9;
+
+      .ant-col {
+        border-right: 1px solid #d9d9d9;
+
+        input {
+          margin-top: 1px;
+        }
+      }
+    }
+  }
+
+}
+
+</style>

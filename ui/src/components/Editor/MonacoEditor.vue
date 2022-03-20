@@ -48,6 +48,11 @@ export default defineComponent({
     initMonaco(){
       this.$emit('editorWillMount', this.monaco)
       const { value, language, theme, options } = this;
+      Object.assign(options, {scrollbar: {
+          useShadows: false,
+          verticalScrollbarSize: 6,
+          horizontalScrollbarSize: 6
+        }})
       this.editor = monaco.editor[this.diffEditor ? 'createDiffEditor' : 'create'](this.$el, {
         value: value,
         language: language,

@@ -1,12 +1,16 @@
 <template>
-  <div class="main">
+  <div class="response-renderer">
     <a-tabs v-model:activeKey="activeKey">
       <a-tab-pane key="1" tab="JSON">
+        <ResponseLensJson></ResponseLensJson>
       </a-tab-pane>
 
-      <a-tab-pane key="2" tab="原始内容"></a-tab-pane>
-      <a-tab-pane key="3" tab="响应头"></a-tab-pane>
-      <a-tab-pane key="4" tab="测试结果"></a-tab-pane>
+      <a-tab-pane key="3" tab="响应头">
+        <ResponseHeaders></ResponseHeaders>
+      </a-tab-pane>
+      <a-tab-pane key="4" tab="测试结果">
+        <ResponseResult></ResponseResult>
+      </a-tab-pane>
     </a-tabs>
   </div>
 </template>
@@ -16,6 +20,9 @@ import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
+import ResponseLensJson from "./Renderer/lenses/JSONLensRenderer.vue";
+import ResponseHeaders from "./Renderer/Headers.vue";
+import ResponseResult from "./Renderer/Result.vue";
 
 interface ResponseRendererSetupData {
   responseResult: ComputedRef;
@@ -26,6 +33,7 @@ interface ResponseRendererSetupData {
 export default defineComponent({
   name: 'ResponseRenderer',
   components: {
+    ResponseHeaders, ResponseResult, ResponseLensJson,
   },
   setup(props): ResponseRendererSetupData {
     const {t} = useI18n();
@@ -47,9 +55,20 @@ export default defineComponent({
 
 </script>
 
-<style lang="less" scoped>
-.main {
+<style lang="less">
+.response-renderer {
+  height: calc(100% - 32px);
 
+  .ant-tabs-line {
+    height: 100%;
+    .ant-tabs-top-content {
+      height: calc(100% - 61px);
+    }
+  }
 }
+</style>
+
+<style lang="less" scoped>
+
 
 </style>

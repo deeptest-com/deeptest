@@ -18,15 +18,15 @@
             :data-source="list"
             :loading="loading"
             :pagination="{
-                    ...pagination,
-                    onChange: (page) => {
-                        getList(page);
-                    },
-                    onShowSizeChange: (page, size) => {
-                        pagination.pageSize = size
-                        getList(page);
-                    },
-                }"
+                ...pagination,
+                onChange: (page) => {
+                    getList(page);
+                },
+                onShowSizeChange: (page, size) => {
+                    pagination.pageSize = size
+                    getList(page);
+                },
+            }"
         >
           <template #name="{ text, record  }">
             <a :href="record.href" target="_blank">{{ text }}</a>
@@ -137,6 +137,7 @@ export default defineComponent({
     ];
 
     onMounted(() => {
+      console.log('onMounted')
       getList(1);
     })
 

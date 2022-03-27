@@ -1,6 +1,6 @@
 <template>
   <div class="config-main">
-    <a-tabs v-model:activeKey="activeKey">
+    <a-tabs v-model:activeKey="activeKey" :animated="false">
       <a-tab-pane key="1" tab="查询参数">
         <RequestParameters v-if="activeKey === '1'"></RequestParameters>
       </a-tab-pane>
@@ -126,5 +126,9 @@ export default defineComponent({
 </style>
 
 <style lang="less" scoped>
-
+.config-main {
+  .ant-tabs-tabpane-active {
+    height: 100%;
+  }
+}
 </style>

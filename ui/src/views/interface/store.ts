@@ -4,7 +4,7 @@ import { ResponseData } from '@/utils/request';
 import {
     load, get, remove, create, update, expandAllKeys, move,
 } from './service';
-import {Param, Request, Response} from "@/views/interface/data";
+import {ApiKey, BasicAuth, BearerToken, OAuth20, Param, Request, Response} from "@/views/interface/data";
 
 export interface StateType {
     treeData: any[];
@@ -47,9 +47,11 @@ const StoreModel: ModuleType = {
             state.treeData = [payload];
         },
         setRequest(state, data) {
-            if (!data.params) {
-                data.params = [{} as Param]
-            }
+            if (!data.params) data.params = [{} as Param]
+            if (!data.basicAuth) data.basicAuth = [{} as BasicAuth]
+            if (!data.bearerToken) data.bearerToken = [{} as BearerToken]
+            if (!data.oAuth20) data.oAuth20 = [{} as OAuth20]
+            if (!data.basicAuth) data.apiKey = [{transferMode: 'headers'} as ApiKey]
 
             //debug
             data.url = 'http://127.0.0.1:8085/api/v1/exec/test'

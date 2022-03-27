@@ -39,9 +39,11 @@ export default defineComponent({
     }
   },
   mounted() {
+    console.log('editor mounted')
     this.initMonaco()
   },
   beforeUnmount() {
+    console.log('editor beforeUnmount')
     this.editor && this.editor.dispose();
   },
   methods: {

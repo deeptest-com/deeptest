@@ -2,35 +2,34 @@
   <div class="config-main">
     <a-tabs v-model:activeKey="activeKey">
       <a-tab-pane key="1" tab="查询参数">
-        <RequestParameters></RequestParameters>
+        <RequestParameters v-if="activeKey === '1'"></RequestParameters>
       </a-tab-pane>
 
       <a-tab-pane key="2" tab="请求体">
-        <RequestBody></RequestBody>
+        <RequestBody v-if="activeKey === '2'"></RequestBody>
       </a-tab-pane>
 
       <a-tab-pane key="3" tab="请求头">
-        <RequestHeaders></RequestHeaders>
+        <RequestHeaders v-if="activeKey === '3'"></RequestHeaders>
       </a-tab-pane>
 
       <a-tab-pane key="4" tab="授权">
-        <Authorization></Authorization>
+        <Authorization v-if="activeKey === '4'"></Authorization>
       </a-tab-pane>
 
       <a-tab-pane key="5" tab="预处理">
-        <PreRequestScript></PreRequestScript>
+        <PreRequestScript v-if="activeKey === '5'"></PreRequestScript>
       </a-tab-pane>
 
       <a-tab-pane key="6" tab="验证">
-        <ValidationScript></ValidationScript>
+        <ValidationScript v-if="activeKey === '6'"></ValidationScript>
       </a-tab-pane>
     </a-tabs>
   </div>
 </template>
 
 <script lang="ts">
-import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
-import { DownOutlined, UndoOutlined, SaveOutlined, LinkOutlined, CheckOutlined } from '@ant-design/icons-vue';
+import {computed, ComputedRef, defineComponent, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";

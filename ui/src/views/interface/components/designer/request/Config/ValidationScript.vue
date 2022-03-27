@@ -110,8 +110,8 @@ export default defineComponent({
       flex: 1;
     }
     .refer {
+      width: 300px;
       padding: 10px;
-      width: 360px;
       .title {
         margin-top: 12px;
       }

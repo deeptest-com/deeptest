@@ -142,7 +142,7 @@
             <a-col flex="80px">传递方式</a-col>
             <a-col flex="1">
               <a-select
-                  v-model:value="requestData.basicAuth.transferMode"
+                  v-model:value="requestData.apiKey.transferMode"
                   size="small"
                   :dropdownMatchSelectWidth="false"
                   :bordered="false"

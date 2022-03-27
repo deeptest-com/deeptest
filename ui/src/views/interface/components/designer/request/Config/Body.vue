@@ -64,13 +64,6 @@ import {isInArray} from "@/utils/array";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
 
-interface RequestBodySetupData {
-  requestData: ComputedRef;
-  bodyTypes: Ref<any[]>
-  editorOptions: Ref
-  codeLang: ComputedRef<boolean>;
-}
-
 export default defineComponent({
   name: 'RequestBody',
   components: {
@@ -81,7 +74,7 @@ export default defineComponent({
   computed: {
   },
 
-  setup(props): RequestBodySetupData {
+  setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
     const requestData = computed<any>(() => store.state.Interface.requestData);

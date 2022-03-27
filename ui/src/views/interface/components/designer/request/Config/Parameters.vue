@@ -30,12 +30,12 @@
           <a-input v-model:value="item.value" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
         </a-col>
         <a-col flex="80px" class="dp-right dp-icon-btn-container">
-          <a-tooltip v-if="!item.disable" @click="disable(idx)" overlayClassName="dp-tip-small">
+          <a-tooltip v-if="!item.disabled" @click="disable(idx)" overlayClassName="dp-tip-small">
             <template #title>禁用</template>
             <CheckCircleOutlined class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
 
-          <a-tooltip v-if="item.disable" @click="disable(idx)" overlayClassName="dp-tip-small">
+          <a-tooltip v-if="item.disabled" @click="disable(idx)" overlayClassName="dp-tip-small">
             <template #title>启用</template>
             <CloseCircleOutlined class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
@@ -92,7 +92,7 @@ export default defineComponent({
 
     const disable = (idx) => {
       console.log('enable', idx)
-      requestData.value.params[idx].disable = !requestData.value.params[idx].disable
+      requestData.value.params[idx].disabled = !requestData.value.params[idx].disabled
     }
     const remove = (idx) => {
       console.log('remove')

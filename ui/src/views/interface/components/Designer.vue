@@ -1,6 +1,6 @@
 <template>
   <div class="designer-main">
-    <div id="design-content" v-if="modelData.method">
+    <div id="design-content" v-if="requestData.method">
       <div id="top-panel">
         <InterfaceRequest></InterfaceRequest>
       </div>
@@ -42,11 +42,6 @@ import RequestEnv from './designer/others/env/index.vue';
 
 const useForm = Form.useForm;
 
-interface InterfaceDesignerSetupData {
-  modelData: ComputedRef;
-  tabKey: Ref<string>
-}
-
 export default defineComponent({
   name: 'InterfaceDesigner',
   props: {
@@ -55,10 +50,10 @@ export default defineComponent({
     InterfaceRequest, InterfaceResponse,
     RequestEnv,
   },
-  setup(props): InterfaceDesignerSetupData {
+  setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const modelData = computed<any>(() => store.state.Interface.modelResult);
+    const requestData = computed<any>(() => store.state.Interface.requestData);
 
     const tabKey = ref('history')
 
@@ -70,7 +65,7 @@ export default defineComponent({
     })
 
     return {
-      modelData,
+      requestData,
       tabKey,
     }
   }
@@ -99,7 +94,7 @@ export default defineComponent({
     height: 100%;
 
     #top-panel {
-      padding: 4px 4px 0 4px;
+      padding: 2px;
       height: 200px;
       width: 100%;
     }

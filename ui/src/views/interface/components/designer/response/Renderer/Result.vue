@@ -27,7 +27,7 @@ import { CloseOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 
 interface ResponseResultSetupData {
-  modelData: ComputedRef;
+  requestData: ComputedRef;
 }
 
 export default defineComponent({
@@ -42,10 +42,10 @@ export default defineComponent({
   setup(props): ResponseResultSetupData {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const modelData = computed<any>(() => store.state.Interface.modelResult);
+    const requestData = computed<any>(() => store.state.Interface.requestData);
 
     return {
-      modelData,
+      requestData,
     }
   }
 })

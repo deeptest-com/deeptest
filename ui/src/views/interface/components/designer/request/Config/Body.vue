@@ -10,7 +10,7 @@
           <a-select
               ref="bodyType"
               :options="bodyTypes"
-              v-model:value="modelData.bodyType"
+              v-model:value="requestData.bodyType"
               size="small"
               :dropdownMatchSelectWidth="false"
               :bordered="false"
@@ -45,7 +45,7 @@
     <div class="body">
       <MonacoEditor
           class="editor"
-          :value="modelData.body"
+          :value="requestData.body"
           :language="codeLang"
           theme="vs"
           :options="editorOptions"
@@ -65,7 +65,7 @@ import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
 
 interface RequestBodySetupData {
-  modelData: ComputedRef;
+  requestData: ComputedRef;
   bodyTypes: Ref<any[]>
   editorOptions: Ref
   codeLang: ComputedRef<boolean>;
@@ -84,7 +84,7 @@ export default defineComponent({
   setup(props): RequestBodySetupData {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const modelData = computed<any>(() => store.state.Interface.modelResult);
+    const requestData = computed<any>(() => store.state.Interface.requestData);
     const codeLang = computed(() => {
       return getCodeLang()
     })
@@ -100,15 +100,15 @@ export default defineComponent({
     ])
 
     const getCodeLang = () => {
-      if (isInArray(modelData.value.bodyType, ['json', 'xml', 'html', 'text'])) {
-        return modelData.value.bodyType
+      if (isInArray(requestData.value.bodyType, ['json', 'xml', 'html', 'text'])) {
+        return requestData.value.bodyType
       } else {
         return 'plaintext'
       }
     }
 
     return {
-      modelData,
+      requestData,
       editorOptions,
       bodyTypes,
       codeLang,

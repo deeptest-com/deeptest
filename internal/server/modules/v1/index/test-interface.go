@@ -11,7 +11,7 @@ type TestInterfaceModule struct {
 	TestInterfaceCtrl *controller.TestInterfaceCtrl `inject:""`
 }
 
-func NewTestScriptModule() *TestInterfaceModule {
+func NewTestInterfaceModule() *TestInterfaceModule {
 	return &TestInterfaceModule{}
 }
 

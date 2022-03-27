@@ -4,18 +4,19 @@ import { ResponseData } from '@/utils/request';
 import {
     load, get, remove, create, update, expandAllKeys, move,
 } from './service';
+import {Param, Request, Response} from "@/views/interface/data";
 
 export interface StateType {
-    treeResult: any[];
-    modelResult: any;
-    responseResult: any;
+    treeData: any[];
+    requestData: Request;
+    responseData: Response;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
         setTree: Mutation<StateType>;
-        setModel: Mutation<StateType>;
+        setRequest: Mutation<StateType>;
         setResponse: Mutation<StateType>;
     };
     actions: {
@@ -29,9 +30,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
     };
 }
 const initState: StateType = {
-    treeResult: [],
-    modelResult: {},
-    responseResult: {},
+    treeData: [],
+    requestData: {} as Request,
+    responseData: {} as Response,
 };
 
 const StoreModel: ModuleType = {
@@ -43,13 +44,22 @@ const StoreModel: ModuleType = {
     mutations: {
         setTree(state, payload) {
             payload.name = '所有接口'
-            state.treeResult = [payload];
+            state.treeData = [payload];
         },
-        setModel(state, payload) {
-            state.modelResult = payload;
+        setRequest(state, data) {
+            if (!data.params) {
+                data.params = [{} as Param]
+            }
+
+            //debug
+            data.url = 'http://127.0.0.1:8085/api/v1/exec/test'
+            data.params = [{name: 'param1', value: 1} as Param,
+                {} as Param]
+
+            state.requestData = data;
         },
         setResponse(state, payload) {
-            state.responseResult = payload;
+            state.responseData = payload;
         },
     },
     actions: {
@@ -69,19 +79,15 @@ const StoreModel: ModuleType = {
         },
         async getInterface({ commit }, payload: any ) {
             if (payload.isDir) {
-                commit('setModel', {});
+                commit('setRequest', {});
                 return true;
             }
 
             try {
                 const response: ResponseData = await get(payload.id);
                 const { data } = response;
-                if (!data.children) {
-                    data.children = []
-                }
-                data.children.push({})
 
-                commit('setModel',data);
+                commit('setRequest',data);
                 return true;
             } catch (error) {
                 return false;

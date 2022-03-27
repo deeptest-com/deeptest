@@ -75,19 +75,6 @@ import {StateType} from "@/views/interface/store";
 import {Methods} from "@/views/interface/consts";
 import {regxUrl} from "@/utils/validation";
 
-interface RequestSenderSetupData {
-  requestData: ComputedRef;
-  methods: string[]
-
-  selectMethod: (e) => void;
-  sendRequest: (e) => void;
-  clearAll: (e) => void;
-  saveName: (e) => void;
-  copyLink: (e) => void;
-  saveAs: (e) => void;
-  none: (e) => void;
-}
-
 export default defineComponent({
   name: 'RequestSender',
   props: {
@@ -99,19 +86,20 @@ export default defineComponent({
   components: {
     DownOutlined, UndoOutlined, SaveOutlined, LinkOutlined, CheckOutlined,
   },
-  setup(props): RequestSenderSetupData {
+  setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
     const requestData = computed<any>(() => store.state.Interface.requestData);
 
     const methods = Methods;
 
-    const selectMethod = (e) => {
-      console.log('selectMethod', e)
+    const selectMethod = (val) => {
+      console.log('selectMethod', val.key)
+      requestData.value.method = val.key
     };
     const sendRequest = (e) => {
       requestData.value.params = requestData.value.params.filter((param) => {
-        return !!param.name
+        return !param.disabled && !!param.name
       })
 
       console.log('sendRequest', requestData.value)

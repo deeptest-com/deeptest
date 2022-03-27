@@ -6,7 +6,7 @@ export interface Request {
 export interface Param {
     name: string;
     value: any;
-    disable: boolean
+    disabled: boolean
 }
 
 export interface Response {

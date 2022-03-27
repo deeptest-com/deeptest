@@ -48,10 +48,10 @@ const StoreModel: ModuleType = {
         },
         setRequest(state, data) {
             if (!data.params) data.params = [{} as Param]
-            if (!data.basicAuth) data.basicAuth = [{} as BasicAuth]
-            if (!data.bearerToken) data.bearerToken = [{} as BearerToken]
-            if (!data.oAuth20) data.oAuth20 = [{} as OAuth20]
-            if (!data.basicAuth) data.apiKey = [{transferMode: 'headers'} as ApiKey]
+            if (!data.basicAuth) data.basicAuth = {} as BasicAuth
+            if (!data.bearerToken) data.bearerToken = {} as BearerToken
+            if (!data.oAuth20) data.oAuth20 = {} as OAuth20
+            if (!data.apiKey) data.apiKey = {transferMode: 'headers'} as ApiKey
 
             //debug
             data.url = 'http://127.0.0.1:8085/api/v1/exec/test'

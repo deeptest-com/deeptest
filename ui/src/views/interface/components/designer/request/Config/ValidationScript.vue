@@ -1,5 +1,5 @@
 <template>
-  <div class="request-body-main">
+  <div class="validation-script">
     <div class="head">
       <a-row type="flex">
         <a-col flex="1">
@@ -27,7 +27,7 @@
       </a-row>
     </div>
 
-    <div class="body">
+    <div class="content">
       <div class="codes">
         <MonacoEditor
             class="editor"
@@ -90,35 +90,18 @@ export default defineComponent({
 </script>
 
 <style lang="less">
-.request-body-main {
-  .jsoneditor-vue {
-    height: 100%;
-    .jsoneditor-menu {
-      display: none;
-    }
-    .jsoneditor-outer {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      .ace-jsoneditor {
-        height: 100%;
-      }
-    }
-  }
-}
 </style>
 
 <style lang="less" scoped>
-.request-body-main {
+.validation-script {
   height: 100%;
   .head {
     padding: 2px 3px;
     border-bottom: 1px solid #d9d9d9;
   }
-  .body {
+  .content {
     display: flex;
-    height: calc(100% - 43px);
-    overflow-y: auto;
+    height: calc(100% - 28px);
     &>div {
       height: 100%;
     }
@@ -128,7 +111,7 @@ export default defineComponent({
     }
     .refer {
       padding: 10px;
-      width: 500px;
+      width: 360px;
       .title {
         margin-top: 12px;
       }

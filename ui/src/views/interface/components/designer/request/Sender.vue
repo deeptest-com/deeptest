@@ -101,6 +101,9 @@ export default defineComponent({
       requestData.value.params = requestData.value.params.filter((param) => {
         return !param.disabled && !!param.name
       })
+      requestData.value.headers = requestData.value.headers.filter((param) => {
+        return !param.disabled && !!param.name
+      })
 
       console.log('sendRequest', requestData.value)
       validateInfo()

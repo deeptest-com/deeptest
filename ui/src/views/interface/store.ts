@@ -55,6 +55,8 @@ const StoreModel: ModuleType = {
             data.url = 'http://127.0.0.1:8085/api/v1/exec/test'
             data.params = [{name: 'param1', value: 1} as Param,
                 {} as Param]
+            data.headers = [{name: 'token', value: 'uuid'} as Param,
+                {} as Param]
 
             state.requestData = data;
         },

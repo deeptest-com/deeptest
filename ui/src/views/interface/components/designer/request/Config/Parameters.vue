@@ -61,7 +61,7 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
-import {Request} from "@/views/interface/data";
+import {Param, Request} from "@/views/interface/data";
 
 export default defineComponent({
   name: 'RequestParameters',
@@ -71,23 +71,23 @@ export default defineComponent({
   setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const requestData = computed<any>(() => store.state.Interface.requestData);
+    const requestData = computed<Request>(() => store.state.Interface.requestData);
 
     const onParamChange = (idx) => {
       console.log('onParamChange', idx)
       if (requestData.value.params.length <= idx + 1
             && (requestData.value.params[idx].name !== '' || requestData.value.params[idx].value !== '')) {
-        requestData.value.params.push({})
+        requestData.value.params.push({} as Param)
       }
     };
 
     const add = () => {
       console.log('add')
-      requestData.value.params.push({})
+      requestData.value.params.push({} as Param)
     }
     const removeAll = () => {
       console.log('removeAll', requestData.value.params)
-      requestData.value.params = [{}]
+      requestData.value.params = [{} as Param]
     }
 
     const disable = (idx) => {
@@ -101,7 +101,7 @@ export default defineComponent({
     }
     const insert = (idx) => {
       console.log('insert')
-      requestData.value.params.splice(idx+1, 0, {})
+      requestData.value.params.splice(idx+1, 0, {} as Param)
     }
 
     return {

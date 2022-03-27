@@ -10,7 +10,7 @@
           <a-select
               ref="bodyType"
               :options="bodyTypes"
-              v-model:value="requestData.bodyType"
+              v-model:value="requestData.apiKey.transferMode"
               size="small"
               :dropdownMatchSelectWidth="false"
               :bordered="false"

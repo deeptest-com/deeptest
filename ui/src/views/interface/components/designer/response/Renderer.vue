@@ -25,7 +25,7 @@ import ResponseHeaders from "./Renderer/Headers.vue";
 import ResponseResult from "./Renderer/Result.vue";
 
 interface ResponseRendererSetupData {
-  responseResult: ComputedRef;
+  responseData: ComputedRef;
   activeKey: Ref<string>;
   doSomething: (e) => void;
 }
@@ -38,7 +38,7 @@ export default defineComponent({
   setup(props): ResponseRendererSetupData {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const responseResult = computed<any>(() => store.state.Interface.responseResult);
+    const responseData = computed<any>(() => store.state.Interface.responseData);
     const activeKey = ref('1');
 
     const doSomething = (e) => {
@@ -46,7 +46,7 @@ export default defineComponent({
     };
 
     return {
-      responseResult,
+      responseData,
       activeKey,
       doSomething,
     }

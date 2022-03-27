@@ -21,7 +21,7 @@ import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
 
 interface ResponseMetaSetupData {
-  responseResult: ComputedRef;
+  responseData: ComputedRef;
 
   doSomething: (e) => void;
 }
@@ -33,14 +33,14 @@ export default defineComponent({
   setup(props): ResponseMetaSetupData {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const responseResult = computed<any>(() => store.state.Interface.modelResult);
+    const responseData = computed<any>(() => store.state.Interface.requestData);
 
     const doSomething = (e) => {
       console.log('doSomething', e)
     };
 
     return {
-      responseResult,
+      responseData,
       doSomething,
     }
   }

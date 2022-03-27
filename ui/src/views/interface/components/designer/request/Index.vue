@@ -17,7 +17,7 @@ import RequestConfig from './Config.vue';
 const useForm = Form.useForm;
 
 interface InterfaceRequestSetupData {
-  modelData: ComputedRef;
+  requestData: ComputedRef;
   sendRequest: (e) => void;
 }
 
@@ -31,7 +31,7 @@ export default defineComponent({
   setup(props): InterfaceRequestSetupData {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const modelData = computed<any>(() => store.state.Interface.modelResult);
+    const requestData = computed<any>(() => store.state.Interface.requestData);
 
     const sendRequest = (e) => {
       console.log('sendRequest')
@@ -42,7 +42,7 @@ export default defineComponent({
     })
 
     return {
-      modelData,
+      requestData,
       sendRequest,
     }
   }

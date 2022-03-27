@@ -10,7 +10,7 @@
           <a-select
               ref="authorizationType"
               :options="authorizationTypes"
-              v-model:value="modelData.authorizationType"
+              v-model:value="requestData.authorizationType"
               size="small"
               :dropdownMatchSelectWidth="false"
               :bordered="false"
@@ -36,7 +36,7 @@
       </a-row>
     </div>
     <div class="params">
-      <a-row v-for="(item, idx) in modelData.children" :key="idx" type="flex" class="param">
+      <a-row v-for="(item, idx) in requestData.children" :key="idx" type="flex" class="param">
         <a-col flex="1">
           <a-input v-model:value="item.key" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
         </a-col>
@@ -72,7 +72,7 @@ import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, CheckCircleOutlin
 import {StateType} from "@/views/interface/store";
 
 interface RequestAuthorizationSetupData {
-  modelData: ComputedRef;
+  requestData: ComputedRef;
   authorizationTypes: Ref<any[]>
 
   onParamChange: (idx) => void;
@@ -87,7 +87,7 @@ export default defineComponent({
   setup(props): RequestAuthorizationSetupData {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const modelData = computed<any>(() => store.state.Interface.modelResult);
+    const requestData = computed<any>(() => store.state.Interface.requestData);
     const authorizationTypes = ref([
       {value: '', label: 'None'},
       {value: 'basicAuth', label: 'Basic Auth'},
@@ -98,9 +98,9 @@ export default defineComponent({
 
     const onParamChange = (idx) => {
       console.log('onParamChange', idx)
-      if (modelData.value.children.length <= idx + 1
-          && (modelData.value.children[idx].key !== '' || modelData.value.children[idx].val !== '')) {
-        modelData.value.children.push({})
+      if (requestData.value.children.length <= idx + 1
+          && (requestData.value.children[idx].key !== '' || requestData.value.children[idx].val !== '')) {
+        requestData.value.children.push({})
       }
     };
 
@@ -109,7 +109,7 @@ export default defineComponent({
     };
 
     return {
-      modelData,
+      requestData,
       authorizationTypes,
       onParamChange,
       doSomething,

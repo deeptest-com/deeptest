@@ -8,17 +8,18 @@
           </a-menu>
         </template>
         <a-button class="dp-bg-light">
-          <span class="curr-method">{{ modelData.method }}</span>
+          <span class="curr-method">{{ requestData.method }}</span>
           <DownOutlined />
         </a-button>
       </a-dropdown>
     </div>
     <div class="url">
-      <a-input v-model:value="modelData.url" class="dp-bg-light" />
+      <a-input v-model:value="requestData.url" class="dp-bg-light" />
     </div>
     <div class="send">
       <a-dropdown-button type="primary" trigger="click" @click="sendRequest">
-        发送
+        <span>发送</span>
+
         <template #overlay>
           <a-menu>
             <a-menu-item @click="clearAll" key="clearAll">
@@ -39,7 +40,7 @@
             <a-menu-item @click.prevent="none" key="copyLink" class="edit-name">
               <div class="dp-edit-interface-name">
                 <div class="left">
-                  <a-input @click.stop v-model:value="modelData.name" />
+                  <a-input @click.stop v-model:value="requestData.name" />
                 </div>
                 <div class="right">
                   <CheckOutlined @click.stop="saveName" class="save-button" />
@@ -66,14 +67,16 @@
 
 <script lang="ts">
 import {computed, ComputedRef, defineComponent, PropType} from "vue";
+import { notification, message } from 'ant-design-vue';
 import { DownOutlined, UndoOutlined, SaveOutlined, LinkOutlined, CheckOutlined } from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
 import {Methods} from "@/views/interface/consts";
+import {regxUrl} from "@/utils/validation";
 
 interface RequestSenderSetupData {
-  modelData: ComputedRef;
+  requestData: ComputedRef;
   methods: string[]
 
   selectMethod: (e) => void;
@@ -99,7 +102,7 @@ export default defineComponent({
   setup(props): RequestSenderSetupData {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const modelData = computed<any>(() => store.state.Interface.modelResult);
+    const requestData = computed<any>(() => store.state.Interface.requestData);
 
     const methods = Methods;
 
@@ -107,7 +110,12 @@ export default defineComponent({
       console.log('selectMethod', e)
     };
     const sendRequest = (e) => {
-      console.log('sendRequest', e)
+      requestData.value.params = requestData.value.params.filter((param) => {
+        return !!param.name
+      })
+
+      console.log('sendRequest', requestData.value)
+      validateInfo()
       props.onSend()
     };
     const clearAll = (e) => {
@@ -128,9 +136,24 @@ export default defineComponent({
       e.preventDefault()
     };
 
+    const validateInfo = () => {
+      let msg = ''
+      if (!requestData.value.url) {
+        msg = '请求地址不能为空'
+      } else if (!regxUrl.test(requestData.value.url)) {
+        msg = '请求地址格式错误'
+      }
+
+      if (msg) {
+        notification.warn({
+          message: msg,
+          placement: 'bottomLeft'
+        });
+      }
+    };
 
     return {
-      modelData,
+      requestData,
       methods,
       selectMethod,
       sendRequest,
@@ -178,7 +201,7 @@ export default defineComponent({
     width: 100px;
   }
   .save {
-    width: 100px;
+    width: 93px;
   }
 }
 

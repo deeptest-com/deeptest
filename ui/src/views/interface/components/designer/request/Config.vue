@@ -44,7 +44,7 @@ import PreRequestScript from "./Config/PreRequestScript.vue";
 import ValidationScript from "./Config/ValidationScript.vue";
 
 interface RequestConfigSetupData {
-  modelData: ComputedRef;
+  requestData: ComputedRef;
   activeKey: Ref<string>;
   methods: string[]
 
@@ -67,7 +67,7 @@ export default defineComponent({
   setup(props): RequestConfigSetupData {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const modelData = computed<any>(() => store.state.Interface.modelResult);
+    const requestData = computed<any>(() => store.state.Interface.requestData);
     const activeKey = ref('1');
     const methods = Methods;
 
@@ -97,7 +97,7 @@ export default defineComponent({
 
 
     return {
-      modelData,
+      requestData,
       activeKey,
       methods,
       selectMethod,

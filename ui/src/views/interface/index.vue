@@ -47,7 +47,7 @@
     </div>
     <div id="splitter-h"></div>
     <div id="right-panel">
-      <InterfaceDesigner v-if="modelData.id" :onSubmit="saveInterface"></InterfaceDesigner>
+      <InterfaceDesigner v-if="requestData.id" :onSubmit="saveInterface"></InterfaceDesigner>
     </div>
   </div>
 </template>
@@ -71,45 +71,18 @@ import {resizeWidth} from "@/utils/dom";
 
 const useForm = Form.useForm;
 
-interface InterfaceIndexPageSetupData {
-  replaceFields: any,
-  expandNode: (expandedKeys: string[], e: any) => void;
-  selectNode: (keys, e) => void;
-  checkNode: (keys, e) => void;
-  isExpand: Ref<boolean>;
-  expandAll: (e) => void;
-  selectedKeys: Ref<string[]>
-  checkedKeys: Ref<string[]>
-  expandedKeys: Ref<number[]>
-  tips: Ref<string>
-  tree: Ref;
-  contextNode: Ref;
-  menuStyle: Ref;
-  rightVisible: boolean
-  onRightClick: (event, node) => void;
-  menuClick: (selectedKey: string, targetId: number) => void;
-  saveInterface: (model: any) => void;
-  isDir: ComputedRef<boolean>;
-
-  onDragEnter: (info) => void;
-  onDrop: (info) => void;
-
-  treeData: ComputedRef<any[]>;
-  modelData: ComputedRef;
-}
-
 export default defineComponent({
   name: 'InterfaceIndexPage',
   components: {
     FolderOutlined, FolderOpenOutlined, FileOutlined,
     TreeContextMenu, InterfaceDesigner,
   },
-  setup(): InterfaceIndexPageSetupData {
+  setup() {
     const router = useRouter();
     const store = useStore<{ Interface: StateType }>();
 
-    const treeData = computed<any>(() => store.state.Interface.treeResult);
-    const modelData = computed<any>(() => store.state.Interface.modelResult);
+    const treeData = computed<any>(() => store.state.Interface.treeData);
+    const requestData = computed<any>(() => store.state.Interface.requestData);
 
     const queryTree = throttle(async () => {
       await store.dispatch('Interface/loadInterface');
@@ -256,7 +229,7 @@ export default defineComponent({
 
     return {
       treeData,
-      modelData,
+      requestData,
 
       replaceFields,
       expandedKeys,
@@ -305,15 +278,16 @@ export default defineComponent({
 
     .toolbar {
       display: flex;
-      height: 32px;
+      height: 34px;
       border-bottom: 1px solid #D0D7DE;
       .tips {
         flex: 1;
-        padding: 0 3px 0 6px;
+        padding: 2px 3px 0 6px;
         line-height: 31px;
         color: #5a5e66;
       }
       .buttons {
+        padding: 2px;
         width: 100px;
         text-align: right;
       }

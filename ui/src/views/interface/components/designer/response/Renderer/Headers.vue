@@ -12,12 +12,12 @@
       </a-row>
     </div>
     <div class="params">
-      <a-row v-for="(item, idx) in requestData.children" :key="idx" type="flex" class="param">
+      <a-row v-for="(item, idx) in responseData.headers" :key="idx" type="flex" class="param">
         <a-col flex="1">
-          <a-input v-model:value="item.key" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
+          <a-input v-model:value="item.key" class="dp-bg-input-transparent" />
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="item.val" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
+          <a-input v-model:value="item.val" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
     </div>
@@ -37,39 +37,24 @@ import {
   CopyOutlined
 } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
-
-interface ResponseHeadersSetupData {
-  requestData: ComputedRef;
-
-  onParamChange: (idx) => void;
-  doSomething: (e) => void;
-}
+import {Interface, Response} from "@/views/interface/data";
 
 export default defineComponent({
   name: 'ResponseHeaders',
   components: {
     CopyOutlined,
   },
-  setup(props): ResponseHeadersSetupData {
+  setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const requestData = computed<any>(() => store.state.Interface.requestData);
-
-    const onParamChange = (idx) => {
-      console.log('onParamChange', idx)
-      if (requestData.value.children.length <= idx + 1
-          && (requestData.value.children[idx].key !== '' || requestData.value.children[idx].val !== '')) {
-        requestData.value.children.push({})
-      }
-    };
+    const responseData = computed<Response>(() => store.state.Interface.responseData);
 
     const doSomething = (e) => {
       console.log('doSomething', e)
     };
 
     return {
-      requestData,
-      onParamChange,
+      responseData,
       doSomething,
     }
   }

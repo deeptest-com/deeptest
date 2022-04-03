@@ -14,6 +14,9 @@ type TestRequest struct {
 	AuthorizationType string `gorm:"default:''" json:"authorizationType"`
 	PreRequestScript  string `gorm:"default:''" json:"preRequestScript"`
 	ValidationScript  string `gorm:"default:''" json:"validationScript"`
+
+	InterfaceId uint `json:"interfaceId"`
+	ProjectId   uint `json:"projectId"`
 }
 
 func (TestRequest) TableName() string {

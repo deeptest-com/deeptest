@@ -5,6 +5,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
 	"strings"
 
@@ -12,44 +13,20 @@ import (
 	"go.uber.org/zap"
 )
 
-type TestInterfaceCtrl struct {
-	TestInterfaceService *service.TestInterfaceService `inject:""`
+type TestRequestCtrl struct {
+	TestRequestService *service.TestRequestService `inject:""`
 	BaseCtrl
 }
 
-func NewTestInterfaceCtrl() *TestInterfaceCtrl {
-	return &TestInterfaceCtrl{}
+func NewTestRequestCtrl() *TestRequestCtrl {
+	return &TestRequestCtrl{}
 }
 
-// Test
-func (c *TestInterfaceCtrl) Test(ctx iris.Context) {
-	projectId, err := ctx.URLParamInt("currProjectId")
-	if projectId == 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
-		return
-	}
+// List
+func (c *TestRequestCtrl) List(ctx iris.Context) {
+	interfaceId, err := ctx.URLParamInt("interfaceId")
 
-	req := serverDomain.TestInterfaceReq{}
-	err = ctx.ReadJSON(&req)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
-		return
-	}
-
-	resp, err := c.TestInterfaceService.Test(req)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
-}
-
-// Load
-func (c *TestInterfaceCtrl) Load(ctx iris.Context) {
-	projectId, err := ctx.URLParamInt("currProjectId")
-
-	data, err := c.TestInterfaceService.GetTree(projectId)
+	data, err := c.TestRequestService.ListByInterface(interfaceId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
@@ -59,14 +36,14 @@ func (c *TestInterfaceCtrl) Load(ctx iris.Context) {
 }
 
 // Get 详情
-func (c *TestInterfaceCtrl) Get(ctx iris.Context) {
+func (c *TestRequestCtrl) Get(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	interf, err := c.TestInterfaceService.Get(id)
+	interf, err := c.TestRequestService.Get(id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
 		return
@@ -75,22 +52,22 @@ func (c *TestInterfaceCtrl) Get(ctx iris.Context) {
 }
 
 // Create 添加
-func (c *TestInterfaceCtrl) Create(ctx iris.Context) {
+func (c *TestRequestCtrl) Create(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	req := serverDomain.TestInterfaceReq{}
+	req := serverDomain.TestRequestReq{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	req.ProjectId = projectId
-	intf, err := c.TestInterfaceService.Create(req)
+	req.ProjectId = uint(projectId)
+	intf, err := c.TestRequestService.Create(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{
 			Code: c.ErrCode(err),
@@ -103,10 +80,8 @@ func (c *TestInterfaceCtrl) Create(ctx iris.Context) {
 }
 
 // Update 更新
-func (c *TestInterfaceCtrl) Update(ctx iris.Context) {
-	id, err := ctx.URLParamInt("id")
-
-	var req serverDomain.TestInterfaceReq
+func (c *TestRequestCtrl) Update(ctx iris.Context) {
+	var req model.TestRequest
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -116,7 +91,7 @@ func (c *TestInterfaceCtrl) Update(ctx iris.Context) {
 		}
 	}
 
-	err = c.TestInterfaceService.Update(id, req)
+	err := c.TestRequestService.Update(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
@@ -125,35 +100,14 @@ func (c *TestInterfaceCtrl) Update(ctx iris.Context) {
 }
 
 // Delete 删除
-func (c *TestInterfaceCtrl) Delete(ctx iris.Context) {
-	projectId, _ := ctx.URLParamInt("currProjectId")
-
+func (c *TestRequestCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.TestInterfaceService.Delete(uint(projectId), uint(id))
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
-}
-
-func (c *TestInterfaceCtrl) Move(ctx iris.Context) {
-	projectId, _ := ctx.URLParamInt("currProjectId")
-
-	var req serverDomain.TestInterfaceMoveReq
-	err := ctx.ReadJSON(&req)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	_, err = c.TestInterfaceService.Move(uint(req.DragKey), uint(req.DropKey), req.DropPos, uint(projectId))
+	err = c.TestRequestService.Delete(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

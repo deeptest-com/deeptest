@@ -13,13 +13,10 @@ import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
 import RequestSender from './Sender.vue';
 import RequestConfig from './Config.vue';
+import {test} from "@/views/interface/service";
+import {Interface} from "@/views/interface/data";
 
 const useForm = Form.useForm;
-
-interface InterfaceRequestSetupData {
-  requestData: ComputedRef;
-  sendRequest: (e) => void;
-}
 
 export default defineComponent({
   name: 'InterfaceRequest',
@@ -28,13 +25,15 @@ export default defineComponent({
   components: {
     RequestSender, RequestConfig,
   },
-  setup(props): InterfaceRequestSetupData {
+  setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const requestData = computed<any>(() => store.state.Interface.requestData);
+    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
     const sendRequest = (e) => {
       console.log('sendRequest')
+
+      store.dispatch('Interface/send', interfaceData.value)
     };
 
     onMounted(() => {
@@ -42,7 +41,7 @@ export default defineComponent({
     })
 
     return {
-      requestData,
+      interfaceData,
       sendRequest,
     }
   }

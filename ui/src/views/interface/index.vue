@@ -47,7 +47,7 @@
     </div>
     <div id="splitter-h"></div>
     <div id="right-panel">
-      <InterfaceDesigner v-if="requestData.id" :onSubmit="saveInterface"></InterfaceDesigner>
+      <InterfaceDesigner v-if="interfaceData.id" :onSubmit="saveInterface"></InterfaceDesigner>
     </div>
   </div>
 </template>
@@ -68,6 +68,7 @@ import throttle from "lodash.debounce";
 import TreeContextMenu from './components/TreeContextMenu.vue';
 import InterfaceDesigner from './components/Designer.vue';
 import {resizeWidth} from "@/utils/dom";
+import {Interface} from "@/views/interface/data";
 
 const useForm = Form.useForm;
 
@@ -82,7 +83,7 @@ export default defineComponent({
     const store = useStore<{ Interface: StateType }>();
 
     const treeData = computed<any>(() => store.state.Interface.treeData);
-    const requestData = computed<any>(() => store.state.Interface.requestData);
+    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
     const queryTree = throttle(async () => {
       await store.dispatch('Interface/loadInterface');
@@ -229,7 +230,7 @@ export default defineComponent({
 
     return {
       treeData,
-      requestData,
+      interfaceData,
 
       replaceFields,
       expandedKeys,

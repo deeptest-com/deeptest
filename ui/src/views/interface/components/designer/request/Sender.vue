@@ -8,13 +8,13 @@
           </a-menu>
         </template>
         <a-button class="dp-bg-light">
-          <span class="curr-method">{{ requestData.method }}</span>
+          <span class="curr-method">{{ interfaceData.method }}</span>
           <DownOutlined />
         </a-button>
       </a-dropdown>
     </div>
     <div class="url">
-      <a-input v-model:value="requestData.url" class="dp-bg-light" />
+      <a-input v-model:value="interfaceData.url" class="dp-bg-light" />
     </div>
     <div class="send">
       <a-dropdown-button type="primary" trigger="click" @click="sendRequest">
@@ -40,7 +40,7 @@
             <a-menu-item @click.prevent="none" key="copyLink" class="edit-name">
               <div class="dp-edit-interface-name">
                 <div class="left">
-                  <a-input @click.stop v-model:value="requestData.name" />
+                  <a-input @click.stop v-model:value="interfaceData.name" />
                 </div>
                 <div class="right">
                   <CheckOutlined @click.stop="saveName" class="save-button" />
@@ -74,6 +74,7 @@ import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
 import {Methods} from "@/views/interface/consts";
 import {regxUrl} from "@/utils/validation";
+import {Interface} from "@/views/interface/data";
 
 export default defineComponent({
   name: 'RequestSender',
@@ -89,25 +90,27 @@ export default defineComponent({
   setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const requestData = computed<any>(() => store.state.Interface.requestData);
+    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
     const methods = Methods;
 
     const selectMethod = (val) => {
       console.log('selectMethod', val.key)
-      requestData.value.method = val.key
+      interfaceData.value.method = val.key
     };
     const sendRequest = (e) => {
-      requestData.value.params = requestData.value.params.filter((param) => {
+      interfaceData.value.params = interfaceData.value.params.filter((param) => {
         return !param.disabled && !!param.name
       })
-      requestData.value.headers = requestData.value.headers.filter((param) => {
+      interfaceData.value.headers = interfaceData.value.headers.filter((param) => {
         return !param.disabled && !!param.name
       })
 
-      console.log('sendRequest', requestData.value)
-      validateInfo()
-      props.onSend()
+      console.log('sendRequest', interfaceData.value)
+
+      if (validateInfo()) {
+        props.onSend()
+      }
     };
     const clearAll = (e) => {
       console.log('clearAll', e)
@@ -129,9 +132,9 @@ export default defineComponent({
 
     const validateInfo = () => {
       let msg = ''
-      if (!requestData.value.url) {
+      if (!interfaceData.value.url) {
         msg = '请求地址不能为空'
-      } else if (!regxUrl.test(requestData.value.url)) {
+      } else if (!regxUrl.test(interfaceData.value.url)) {
         msg = '请求地址格式错误'
       }
 
@@ -140,11 +143,15 @@ export default defineComponent({
           message: msg,
           placement: 'bottomLeft'
         });
+
+        return false
       }
+
+      return true
     };
 
     return {
-      requestData,
+      interfaceData,
       methods,
       selectMethod,
       sendRequest,

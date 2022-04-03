@@ -28,7 +28,7 @@
     <div class="body">
       <MonacoEditor
           class="editor"
-          :value="requestData.body"
+          :value="responseData.body"
           :language="codeLang"
           theme="vs"
           :options="editorOptions"
@@ -46,12 +46,7 @@ import {StateType} from "@/views/interface/store";
 import {isInArray} from "@/utils/array";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
-
-interface ResponseLensRawSetupData {
-  requestData: ComputedRef;
-  editorOptions: Ref
-  codeLang: ComputedRef<boolean>;
-}
+import {Interface, Response} from "@/views/interface/data";
 
 export default defineComponent({
   name: 'ResponseLensRaw',
@@ -63,25 +58,25 @@ export default defineComponent({
   computed: {
   },
 
-  setup(props): ResponseLensRawSetupData {
+  setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const requestData = computed<any>(() => store.state.Interface.requestData);
+    const responseData = computed<Response>(() => store.state.Interface.responseData);
     const codeLang = computed(() => {
       return getCodeLang()
     })
     const editorOptions = ref(MonacoOptions)
 
     const getCodeLang = () => {
-      if (isInArray(requestData.value.bodyType, ['json', 'xml', 'html', 'text'])) {
-        return requestData.value.bodyType
+      if (isInArray(responseData.value.bodyType, ['json', 'xml', 'html', 'text'])) {
+        return responseData.value.bodyType
       } else {
         return 'plaintext'
       }
     }
 
     return {
-      requestData,
+      responseData,
       editorOptions,
       codeLang,
     }

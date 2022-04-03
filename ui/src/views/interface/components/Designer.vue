@@ -1,6 +1,6 @@
 <template>
   <div class="designer-main">
-    <div id="design-content" v-if="requestData.method">
+    <div id="design-content" v-if="interfaceData.method">
       <div id="top-panel">
         <InterfaceRequest></InterfaceRequest>
       </div>
@@ -16,7 +16,7 @@
       <a-tabs v-model:activeKey="tabKey" size="small" class="tabs-bar-center">
         <a-tab-pane key="history" tab="历史">
           <div class="history">
-            历史
+
           </div>
         </a-tab-pane>
         <a-tab-pane key="env" tab="环境">
@@ -39,6 +39,7 @@ import {StateType} from "@/views/interface/store";
 import InterfaceRequest from './designer/request/Index.vue';
 import InterfaceResponse from './designer/response/Index.vue';
 import RequestEnv from './designer/others/env/index.vue';
+import {Interface} from "@/views/interface/data";
 
 const useForm = Form.useForm;
 
@@ -53,7 +54,7 @@ export default defineComponent({
   setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const requestData = computed<any>(() => store.state.Interface.requestData);
+    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
     const tabKey = ref('history')
 
@@ -65,7 +66,7 @@ export default defineComponent({
     })
 
     return {
-      requestData,
+      interfaceData,
       tabKey,
     }
   }
@@ -125,7 +126,7 @@ export default defineComponent({
   }
 
   .design-right {
-    width: 200px;
+    width: 260px;
 
     border-left: solid 2px #e6e9ec;
   }

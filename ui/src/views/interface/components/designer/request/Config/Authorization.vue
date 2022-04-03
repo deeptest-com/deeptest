@@ -9,7 +9,7 @@
 
           <a-select
               ref="authorizationType"
-              v-model:value="requestData.authorizationType"
+              v-model:value="interfaceData.authorizationType"
               :options="authorizationTypes"
               size="small"
               :dropdownMatchSelectWidth="false"
@@ -36,34 +36,20 @@
       </a-row>
     </div>
 
-      <template v-if="!requestData.authorizationType" class="none">
+      <template v-if="!interfaceData.authorizationType" class="none">
         <EmptyPage desc="无授权信息"></EmptyPage>
       </template>
 
-      <div v-if="requestData.authorizationType === 'basicAuth'" class="content">
+      <div v-if="interfaceData.authorizationType === 'basicAuth'" class="content">
         <div class="params">
           <a-row class="param">
             <a-col flex="1">
-              <a-input v-model:value="requestData.basicAuth.username" placeholder="用户名" class="dp-bg-input-transparent" />
+              <a-input v-model:value="interfaceData.basicAuth.username" placeholder="用户名" class="dp-bg-input-transparent" />
             </a-col>
           </a-row>
           <a-row class="param">
             <a-col flex="1">
-              <a-input v-model:value="requestData.basicAuth.password" placeholder="密码" class="dp-bg-input-transparent" />
-            </a-col>
-          </a-row>
-        </div>
-        <div class="tips">
-          <div class="dp-light">授权头将会在你发送请求时自动生成。</div>
-          <div class="dp-link-primary">了解更多 <ArrowRightOutlined /></div>
-        </div>
-      </div>
-
-      <div v-if="requestData.authorizationType === 'bearerToken'" class="content">
-        <div class="params">
-          <a-row class="param">
-            <a-col flex="1">
-              <a-input v-model:value="requestData.bearerToken.username" placeholder="用户名" class="dp-bg-input-transparent" />
+              <a-input v-model:value="interfaceData.basicAuth.password" placeholder="密码" class="dp-bg-input-transparent" />
             </a-col>
           </a-row>
         </div>
@@ -73,41 +59,55 @@
         </div>
       </div>
 
-      <div v-if="requestData.authorizationType === 'oAuth20'" class="content">
+      <div v-if="interfaceData.authorizationType === 'bearerToken'" class="content">
         <div class="params">
           <a-row class="param">
             <a-col flex="1">
-              <a-input v-model:value="requestData.oAuth20.key"
+              <a-input v-model:value="interfaceData.bearerToken.username" placeholder="用户名" class="dp-bg-input-transparent" />
+            </a-col>
+          </a-row>
+        </div>
+        <div class="tips">
+          <div class="dp-light">授权头将会在你发送请求时自动生成。</div>
+          <div class="dp-link-primary">了解更多 <ArrowRightOutlined /></div>
+        </div>
+      </div>
+
+      <div v-if="interfaceData.authorizationType === 'oAuth20'" class="content">
+        <div class="params">
+          <a-row class="param">
+            <a-col flex="1">
+              <a-input v-model:value="interfaceData.oAuth20.key"
                        placeholder="Key" class="dp-bg-input-transparent" />
             </a-col>
           </a-row>
           <a-row class="param">
             <a-col flex="1">
-              <a-input v-model:value="requestData.oAuth20.oidcDiscoveryURL"
+              <a-input v-model:value="interfaceData.oAuth20.oidcDiscoveryURL"
                        placeholder="OpenID Connect Discovery URL" class="dp-bg-input-transparent" />
             </a-col>
           </a-row>
           <a-row class="param">
             <a-col flex="1">
-              <a-input v-model:value="requestData.oAuth20.authURL"
+              <a-input v-model:value="interfaceData.oAuth20.authURL"
                        placeholder="Authentication URL" class="dp-bg-input-transparent" />
             </a-col>
           </a-row>
           <a-row class="param">
             <a-col flex="1">
-              <a-input v-model:value="requestData.oAuth20.accessTokenURL"
+              <a-input v-model:value="interfaceData.oAuth20.accessTokenURL"
                        placeholder="Access Token URL" class="dp-bg-input-transparent" />
             </a-col>
           </a-row>
           <a-row class="param">
             <a-col flex="1">
-              <a-input v-model:value="requestData.oAuth20.clientID"
+              <a-input v-model:value="interfaceData.oAuth20.clientID"
                        placeholder="Client ID" class="dp-bg-input-transparent" />
             </a-col>
           </a-row>
           <a-row class="param">
             <a-col flex="1">
-              <a-input v-model:value="requestData.basicAuth.scope"
+              <a-input v-model:value="interfaceData.basicAuth.scope"
                        placeholder="Scope" class="dp-bg-input-transparent" />
             </a-col>
           </a-row>
@@ -126,23 +126,23 @@
         </div>
       </div>
 
-      <div v-if="requestData.authorizationType === 'apiKey'" class="content">
+      <div v-if="interfaceData.authorizationType === 'apiKey'" class="content">
         <div class="params">
           <a-row class="param">
             <a-col flex="1">
-              <a-input v-model:value="requestData.basicAuth.username" placeholder="用户名" class="dp-bg-input-transparent" />
+              <a-input v-model:value="interfaceData.basicAuth.username" placeholder="用户名" class="dp-bg-input-transparent" />
             </a-col>
           </a-row>
           <a-row class="param">
             <a-col flex="1">
-              <a-input v-model:value="requestData.basicAuth.password" placeholder="取值" class="dp-bg-input-transparent" />
+              <a-input v-model:value="interfaceData.basicAuth.password" placeholder="取值" class="dp-bg-input-transparent" />
             </a-col>
           </a-row>
           <a-row class="param">
             <a-col flex="80px">传递方式</a-col>
             <a-col flex="1">
               <a-select
-                  v-model:value="requestData.apiKey.transferMode"
+                  v-model:value="interfaceData.apiKey.transferMode"
                   size="small"
                   :dropdownMatchSelectWidth="false"
                   :bordered="false"
@@ -167,7 +167,7 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, ArrowRightOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
-import {Request} from "@/views/interface/data";
+import {Interface} from "@/views/interface/data";
 
 import EmptyPage from "@/components/others/empty.vue";
 
@@ -180,7 +180,7 @@ export default defineComponent({
   setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const requestData = computed<Request>(() => store.state.Interface.requestData);
+    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
     const authorizationTypes = ref([
       {value: '', label: 'None'},
@@ -196,7 +196,7 @@ export default defineComponent({
     };
 
     return {
-      requestData,
+      interfaceData,
       authorizationTypes,
       onParamChange,
     }

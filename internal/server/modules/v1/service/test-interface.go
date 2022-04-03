@@ -8,11 +8,16 @@ import (
 )
 
 type TestInterfaceService struct {
-	InterfaceRepo *repo.InterfaceRepo `inject:""`
+	InterfaceRepo *repo.TestInterfaceRepo `inject:""`
 }
 
 func NewTestInterfaceService() *TestInterfaceService {
 	return &TestInterfaceService{}
+}
+
+func (s *TestInterfaceService) Test(req serverDomain.TestInterfaceReq) (resp model.TestResponse, err error) {
+
+	return
 }
 
 func (s *TestInterfaceService) GetTree(projectId int) (root *model.TestInterface, err error) {
@@ -22,6 +27,13 @@ func (s *TestInterfaceService) GetTree(projectId int) (root *model.TestInterface
 
 func (s *TestInterfaceService) Get(interfId int) (interf model.TestInterface, err error) {
 	interf, err = s.InterfaceRepo.Get(uint(interfId))
+
+	if interf.Params == nil {
+		interf.Params = make([]model.Param, 0)
+	}
+	if interf.Headers == nil {
+		interf.Headers = make([]model.Header, 0)
+	}
 
 	return
 }
@@ -76,7 +88,7 @@ func (s *TestInterfaceService) deleteInterfaceAndChildren(projectId, interfId ui
 	return
 }
 
-func (s *TestInterfaceService) Update(id int, req model.TestInterface) (err error) {
+func (s *TestInterfaceService) Update(id int, req serverDomain.TestInterfaceReq) (err error) {
 
 	return
 }

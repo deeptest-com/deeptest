@@ -19,12 +19,53 @@ type TestInterface struct {
 	Slots iris.Map `gorm:"-" json:"slots"`
 
 	// config
-	Method            string `gorm:"default:GET" json:"method"`
-	Body              string `gorm:"default:{}" json:"body"`
-	BodyType          string `gorm:"default:json" json:"bodyType"`
-	AuthorizationType string `gorm:"default:''" json:"authorizationType"`
-	PreRequestScript  string `gorm:"default:''" json:"preRequestScript"`
-	ValidationScript  string `gorm:"default:''" json:"validationScript"`
+	Url               string   `json:"url"`
+	Method            string   `gorm:"default:GET" json:"method"`
+	Params            []Param  `gorm:"-" json:"params"`
+	Headers           []Header `gorm:"-" json:"heads"`
+	Body              string   `gorm:"default:{}" json:"body"`
+	BodyType          string   `gorm:"default:json" json:"bodyType"`
+	AuthorizationType string   `gorm:"default:''" json:"authorizationType"`
+	PreRequestScript  string   `gorm:"default:''" json:"preRequestScript"`
+	ValidationScript  string   `gorm:"default:''" json:"validationScript"`
+
+	BasicAuth   BasicAuth   `gorm:" -" json:"basicAuth"`
+	BearerToken BearerToken `gorm:" -" json:"bearerToken"`
+	OAuth20     OAuth20     `gorm:" -" json:"oAuth20"`
+	ApiKey      ApiKey      `gorm:" -" json:"apiKey"`
+}
+
+type Param struct {
+	name     string
+	value    string
+	disabled bool
+}
+
+type Header struct {
+	name     string
+	value    string
+	disabled bool
+}
+
+type BasicAuth struct {
+	username string
+	password string
+}
+type BearerToken struct {
+	username string
+}
+type OAuth20 struct {
+	key              string // key
+	oidcDiscoveryURL string // OpenID Connect Discovery URL
+	authURL          string // Authentication URL
+	accessTokenURL   string // Access Token URL
+	clientID         string // Client ID
+	scope            string // Scope
+}
+type ApiKey struct {
+	username     string
+	value        string
+	transferMode string
 }
 
 func (TestInterface) TableName() string {

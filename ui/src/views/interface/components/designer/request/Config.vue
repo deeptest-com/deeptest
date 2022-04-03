@@ -17,13 +17,13 @@
         <Authorization v-if="activeKey === '4'"></Authorization>
       </a-tab-pane>
 
-      <a-tab-pane key="5" tab="预处理">
+<!--      <a-tab-pane key="5" tab="预处理">
         <PreRequestScript v-if="activeKey === '5'"></PreRequestScript>
       </a-tab-pane>
 
       <a-tab-pane key="6" tab="验证">
         <ValidationScript v-if="activeKey === '6'"></ValidationScript>
-      </a-tab-pane>
+      </a-tab-pane>-->
     </a-tabs>
   </div>
 </template>
@@ -41,32 +41,20 @@ import RequestHeaders from "./Config/Headers.vue";
 import Authorization from "./Config/Authorization.vue";
 import PreRequestScript from "./Config/PreRequestScript.vue";
 import ValidationScript from "./Config/ValidationScript.vue";
-
-interface RequestConfigSetupData {
-  requestData: ComputedRef;
-  activeKey: Ref<string>;
-  methods: string[]
-
-  selectMethod: (e) => void;
-  sendRequest: (e) => void;
-  clearAll: (e) => void;
-  saveName: (e) => void;
-  copyLink: (e) => void;
-  saveAs: (e) => void;
-  none: (e) => void;
-}
+import {Interface} from "@/views/interface/data";
 
 export default defineComponent({
   name: 'RequestConfig',
   props: {
   },
   components: {
-    RequestParameters, RequestBody, RequestHeaders, Authorization, PreRequestScript, ValidationScript,
+    RequestParameters, RequestBody, RequestHeaders, Authorization,
+    // PreRequestScript, ValidationScript,
   },
-  setup(props): RequestConfigSetupData {
+  setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const requestData = computed<any>(() => store.state.Interface.requestData);
+    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
     const activeKey = ref('1');
     const methods = Methods;
 
@@ -96,7 +84,7 @@ export default defineComponent({
 
 
     return {
-      requestData,
+      interfaceData,
       activeKey,
       methods,
       selectMethod,

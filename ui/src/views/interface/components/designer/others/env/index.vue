@@ -86,10 +86,7 @@ import {useStore} from "vuex";
 import { QuestionCircleOutlined,ImportOutlined, MoreOutlined, EnvironmentOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import Empty from "@/components/others/empty.vue";
-
-interface RequestEnvSetupData {
-  requestData: ComputedRef;
-}
+import {Interface} from "@/views/interface/data";
 
 export default defineComponent({
   name: 'RequestEnv',
@@ -100,13 +97,13 @@ export default defineComponent({
   computed: {
   },
 
-  setup(props): RequestEnvSetupData {
+  setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const requestData = computed<any>(() => store.state.Interface.requestData);
+    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
     return {
-      requestData,
+      interfaceData,
     }
   }
 })

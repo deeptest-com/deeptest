@@ -22,7 +22,7 @@ type TestInterface struct {
 	Url               string   `json:"url"`
 	Method            string   `gorm:"default:GET" json:"method"`
 	Params            []Param  `gorm:"-" json:"params"`
-	Headers           []Header `gorm:"-" json:"heads"`
+	Headers           []Header `gorm:"-" json:"headers"`
 	Body              string   `gorm:"default:{}" json:"body"`
 	BodyType          string   `gorm:"default:json" json:"bodyType"`
 	AuthorizationType string   `gorm:"default:''" json:"authorizationType"`

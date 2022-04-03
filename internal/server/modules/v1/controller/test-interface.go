@@ -67,6 +67,7 @@ func (c *TestInterfaceCtrl) Get(ctx iris.Context) {
 	}
 
 	interf, err := c.TestInterfaceService.Get(id)
+
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
 		return

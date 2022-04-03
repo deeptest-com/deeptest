@@ -54,6 +54,7 @@ export default defineComponent({
   setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
+
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
     const tabKey = ref('history')

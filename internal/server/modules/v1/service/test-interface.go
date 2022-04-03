@@ -26,7 +26,9 @@ func (s *TestInterfaceService) GetTree(projectId int) (root *model.TestInterface
 }
 
 func (s *TestInterfaceService) Get(interfId int) (interf model.TestInterface, err error) {
-	interf, err = s.InterfaceRepo.Get(uint(interfId))
+	if interfId > 0 {
+		interf, err = s.InterfaceRepo.Get(uint(interfId))
+	}
 
 	if interf.Params == nil {
 		interf.Params = []model.Param{{Name: "", Value: ""}}

@@ -8,7 +8,7 @@ import (
 )
 
 type TestExecModule struct {
-	TestExecCtrl *controller.TestExecCtrl `inject:""`
+	MockCtrl *controller.MockCtrl `inject:""`
 }
 
 func NewTestExecModule() *TestExecModule {
@@ -20,7 +20,8 @@ func (m *TestExecModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
-		index.Get("/test", m.TestExecCtrl.Test).Name = "测试接口"
+		index.Get("/get", m.MockCtrl.Get).Name = "用于接口GET测试"
+		index.Post("/post", m.MockCtrl.Post).Name = "用于接口POST测试"
 	}
-	return module.NewModule("/exec", handler)
+	return module.NewModule("/mock", handler)
 }

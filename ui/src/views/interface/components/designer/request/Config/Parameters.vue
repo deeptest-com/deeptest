@@ -22,7 +22,7 @@
       </a-row>
     </div>
     <div class="params">
-      <a-row v-for="(item, idx) in requestData.params" :key="idx" type="flex" class="param">
+      <a-row v-for="(item, idx) in interfaceData.params" :key="idx" type="flex" class="param">
         <a-col flex="1">
           <a-input v-model:value="item.name" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
         </a-col>
@@ -61,7 +61,7 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
-import {Param, Request} from "@/views/interface/data";
+import {Param, Interface} from "@/views/interface/data";
 
 export default defineComponent({
   name: 'RequestParameters',
@@ -71,41 +71,41 @@ export default defineComponent({
   setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const requestData = computed<Request>(() => store.state.Interface.requestData);
+    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
     const onParamChange = (idx) => {
       console.log('onParamChange', idx)
-      if (requestData.value.params.length <= idx + 1
-            && (requestData.value.params[idx].name !== '' || requestData.value.params[idx].value !== '')) {
-        requestData.value.params.push({} as Param)
+      if (interfaceData.value.params.length <= idx + 1
+            && (interfaceData.value.params[idx].name !== '' || interfaceData.value.params[idx].value !== '')) {
+        interfaceData.value.params.push({} as Param)
       }
     };
 
     const add = () => {
       console.log('add')
-      requestData.value.params.push({} as Param)
+      interfaceData.value.params.push({} as Param)
     }
     const removeAll = () => {
-      console.log('removeAll', requestData.value.params)
-      requestData.value.params = [{} as Param]
+      console.log('removeAll', interfaceData.value.params)
+      interfaceData.value.params = [{} as Param]
     }
 
     const disable = (idx) => {
       console.log('enable', idx)
-      requestData.value.params[idx].disabled = !requestData.value.params[idx].disabled
+      interfaceData.value.params[idx].disabled = !interfaceData.value.params[idx].disabled
     }
     const remove = (idx) => {
       console.log('remove')
-      requestData.value.params.splice(idx, 1)
+      interfaceData.value.params.splice(idx, 1)
       add()
     }
     const insert = (idx) => {
       console.log('insert')
-      requestData.value.params.splice(idx+1, 0, {} as Param)
+      interfaceData.value.params.splice(idx+1, 0, {} as Param)
     }
 
     return {
-      requestData,
+      interfaceData,
       onParamChange,
       add,
       removeAll,

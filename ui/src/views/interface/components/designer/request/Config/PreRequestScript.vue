@@ -31,7 +31,7 @@
       <div class="codes">
         <MonacoEditor
             class="editor"
-            :value="requestData.preRequestScript"
+            :value="interfaceData.preRequestScript"
             language="javascript"
             theme="vs"
             :options="editorOptions"
@@ -59,9 +59,10 @@ import {StateType} from "@/views/interface/store";
 import ALink from "@/components/ALink/index.vue";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
+import {Interface} from "@/views/interface/data";
 
 interface RequestPreRequestScriptSetupData {
-  requestData: ComputedRef;
+  interfaceData: ComputedRef;
   editorOptions: Ref
 }
 
@@ -74,7 +75,7 @@ export default defineComponent({
   setup(props): RequestPreRequestScriptSetupData {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const requestData = computed<any>(() => store.state.Interface.requestData);
+    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
     const editorOptions = ref(MonacoOptions)
 
     function onJsonChange (value) {
@@ -82,7 +83,7 @@ export default defineComponent({
     }
 
     return {
-      requestData,
+      interfaceData,
       editorOptions,
     }
   }

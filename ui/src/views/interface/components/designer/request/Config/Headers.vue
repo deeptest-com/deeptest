@@ -22,7 +22,7 @@
       </a-row>
     </div>
     <div class="headers">
-      <a-row v-for="(item, idx) in requestData.headers" :key="idx" type="flex" class="header">
+      <a-row v-for="(item, idx) in interfaceData.headers" :key="idx" type="flex" class="header">
         <a-col flex="1">
           <a-input v-model:value="item.name" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
         </a-col>
@@ -61,7 +61,7 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
-import {Header, Request} from "@/views/interface/data";
+import {Header, Interface} from "@/views/interface/data";
 
 export default defineComponent({
   name: 'RequestHeaders',
@@ -71,41 +71,41 @@ export default defineComponent({
   setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const requestData = computed<Request>(() => store.state.Interface.requestData);
+    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
     const onParamChange = (idx) => {
       console.log('onParamChange', idx)
-      if (requestData.value.headers.length <= idx + 1
-          && (requestData.value.headers[idx].name !== '' || requestData.value.headers[idx].value !== '')) {
-        requestData.value.headers.push({} as Header)
+      if (interfaceData.value.headers.length <= idx + 1
+          && (interfaceData.value.headers[idx].name !== '' || interfaceData.value.headers[idx].value !== '')) {
+        interfaceData.value.headers.push({} as Header)
       }
     };
 
     const add = () => {
       console.log('add')
-      requestData.value.params.push({} as Header)
+      interfaceData.value.params.push({} as Header)
     }
     const removeAll = () => {
-      console.log('removeAll', requestData.value.headers)
-      requestData.value.headers = [{} as Header]
+      console.log('removeAll', interfaceData.value.headers)
+      interfaceData.value.headers = [{} as Header]
     }
 
     const disable = (idx) => {
       console.log('enable', idx)
-      requestData.value.headers[idx].disabled = !requestData.value.headers[idx].disabled
+      interfaceData.value.headers[idx].disabled = !interfaceData.value.headers[idx].disabled
     }
     const remove = (idx) => {
       console.log('remove')
-      requestData.value.headers.splice(idx, 1)
+      interfaceData.value.headers.splice(idx, 1)
       add()
     }
     const insert = (idx) => {
       console.log('insert')
-      requestData.value.headers.splice(idx+1, 0, {} as Header)
+      interfaceData.value.headers.splice(idx+1, 0, {} as Header)
     }
 
     return {
-      requestData,
+      interfaceData,
       onParamChange,
       add,
       removeAll,

@@ -33,7 +33,7 @@ export default defineComponent({
   setup(props): ResponseMetaSetupData {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const responseData = computed<any>(() => store.state.Interface.requestData);
+    const responseData = computed<any>(() => store.state.Interface.responseData);
 
     const doSomething = (e) => {
       console.log('doSomething', e)

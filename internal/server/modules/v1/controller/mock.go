@@ -12,17 +12,17 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-type TestExecCtrl struct {
-	TestExecService *service.TestExecService `inject:""`
+type MockCtrl struct {
+	MockService *service.MockService `inject:""`
 	BaseCtrl
 }
 
-func NewTestExecCtrl() *TestExecCtrl {
-	return &TestExecCtrl{}
+func NewTestExecCtrl() *MockCtrl {
+	return &MockCtrl{}
 }
 
-// Load
-func (c *TestExecCtrl) Test(ctx iris.Context) {
+// Get
+func (c *MockCtrl) Get(ctx iris.Context) {
 	var req model.TestRequest
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)
@@ -33,11 +33,17 @@ func (c *TestExecCtrl) Test(ctx iris.Context) {
 		}
 	}
 
-	data, err := c.TestExecService.Exec(req)
+	data, err := c.MockService.Exec(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+}
+
+// Post
+func (c *MockCtrl) Post(ctx iris.Context) {
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
 }

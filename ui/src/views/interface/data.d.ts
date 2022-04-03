@@ -1,7 +1,11 @@
-export interface Request {
+export interface Interface {
     url: string;
+    method: string;
     headers: Header[];
     params: Param[];
+
+    body: string;
+    bodyType: string;
 
     authorizationType: string
     basicAuth: BasicAuth
@@ -44,6 +48,8 @@ export interface ApiKey {
 }
 
 export interface Response {
-    header: any;
+    headers: Header[];
     body: string;
+
+    bodyType: string;
 }

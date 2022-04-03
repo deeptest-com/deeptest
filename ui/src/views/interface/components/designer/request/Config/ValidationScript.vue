@@ -31,7 +31,7 @@
       <div class="codes">
         <MonacoEditor
             class="editor"
-            :value="requestData.validationScript"
+            :value="interfaceData.validationScript"
             language="javascript"
             theme="vs"
             :options="editorOptions"
@@ -58,11 +58,7 @@ import {StateType} from "@/views/interface/store";
 import ALink from "@/components/ALink/index.vue";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
-
-interface RequestValidationScriptSetupData {
-  requestData: ComputedRef;
-  editorOptions: Ref
-}
+import {Interface} from "@/views/interface/data";
 
 export default defineComponent({
   name: 'RequestValidationScript',
@@ -70,10 +66,10 @@ export default defineComponent({
     ALink,
     QuestionCircleOutlined, DeleteOutlined, ClearOutlined, MonacoEditor,
   },
-  setup(props): RequestValidationScriptSetupData {
+  setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
-    const requestData = computed<any>(() => store.state.Interface.requestData);
+    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
     const editorOptions = ref(MonacoOptions)
 
     function onJsonChange (value) {
@@ -81,7 +77,7 @@ export default defineComponent({
     }
 
     return {
-      requestData,
+      interfaceData,
       editorOptions,
     }
   }

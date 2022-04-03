@@ -8,6 +8,7 @@
       <a-tab-pane key="3" tab="响应头">
         <ResponseHeaders></ResponseHeaders>
       </a-tab-pane>
+
       <a-tab-pane key="4" tab="测试结果">
         <ResponseResult></ResponseResult>
       </a-tab-pane>

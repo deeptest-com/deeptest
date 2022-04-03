@@ -5,7 +5,8 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 )
 
-type TestInterfaceReq struct {
+// maintain
+type TestInterfaceMaintReq struct {
 	Mode      serverConsts.NodeCreateMode `json:"mode"`
 	Type      serverConsts.NodeCreateType `json:"type"`
 	Target    int                         `json:"target"`
@@ -20,6 +21,6 @@ type TestInterfaceMoveReq struct {
 	DropPos serverConsts.DropPos `json:"dropPos"`
 }
 
-type TestInterfaceResp struct {
+type TestInterfaceMaintResp struct {
 	model.TestInterface
 }

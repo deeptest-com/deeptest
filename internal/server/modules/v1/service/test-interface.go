@@ -1,6 +1,9 @@
 package service
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/comm/consts"
+	"github.com/aaronchen2k/deeptest/internal/comm/domain"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/comm/helper/http"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
@@ -15,7 +18,16 @@ func NewTestInterfaceService() *TestInterfaceService {
 	return &TestInterfaceService{}
 }
 
-func (s *TestInterfaceService) Test(req serverDomain.TestInterfaceReq) (resp model.TestResponse, err error) {
+func (s *TestInterfaceService) Test(req serverDomain.TestRequestReq) (ret serverDomain.TestRequestResp, err error) {
+	var code int
+	var resp []byte
+
+	if req.Method == consts.GET {
+		code, resp, err = httpHelper.Get(req.Url, req.Params)
+	}
+
+	ret.Code = consts.HttpRespCode(code)
+	ret.Body = string(resp)
 
 	return
 }
@@ -31,10 +43,10 @@ func (s *TestInterfaceService) Get(interfId int) (interf model.TestInterface, er
 	}
 
 	if interf.Params == nil {
-		interf.Params = []model.Param{{Name: "", Value: ""}}
+		interf.Params = []domain.Param{{Name: "", Value: ""}}
 	}
 	if interf.Headers == nil {
-		interf.Headers = []model.Header{{Name: "", Value: ""}}
+		interf.Headers = []domain.Header{{Name: "", Value: ""}}
 	}
 
 	return
@@ -45,7 +57,7 @@ func (s *TestInterfaceService) Save(interf *model.TestInterface) (err error) {
 
 	return
 }
-func (s *TestInterfaceService) Create(req serverDomain.TestInterfaceReq) (interf *model.TestInterface, err error) {
+func (s *TestInterfaceService) Create(req serverDomain.TestInterfaceMaintReq) (interf *model.TestInterface, err error) {
 	interf = &model.TestInterface{Name: req.Name, ProjectId: uint(req.ProjectId),
 		IsDir: req.Type == serverConsts.Dir}
 
@@ -90,7 +102,7 @@ func (s *TestInterfaceService) deleteInterfaceAndChildren(projectId, interfId ui
 	return
 }
 
-func (s *TestInterfaceService) Update(id int, req serverDomain.TestInterfaceReq) (err error) {
+func (s *TestInterfaceService) Update(id int, req serverDomain.TestInterfaceMaintReq) (err error) {
 
 	return
 }

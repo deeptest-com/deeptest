@@ -14,6 +14,13 @@ export interface Interface {
     apiKey: ApiKey
 }
 
+export interface Response {
+    code: number
+    headers: Header[];
+    body: string;
+    bodyType: string;
+}
+
 export interface Param {
     name: string;
     value: any;
@@ -45,11 +52,4 @@ export interface ApiKey {
     username: string;
     value: string;
     transferMode: string
-}
-
-export interface Response {
-    headers: Header[];
-    body: string;
-
-    bodyType: string;
 }

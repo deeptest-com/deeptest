@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/comm/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
@@ -29,7 +30,7 @@ func (c *TestInterfaceCtrl) Test(ctx iris.Context) {
 		return
 	}
 
-	req := serverDomain.TestInterfaceReq{}
+	req := serverDomain.TestRequestReq{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -42,6 +43,7 @@ func (c *TestInterfaceCtrl) Test(ctx iris.Context) {
 		return
 	}
 
+	resp.BodyType = consts.RespJSON
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
 }
 
@@ -83,7 +85,7 @@ func (c *TestInterfaceCtrl) Create(ctx iris.Context) {
 		return
 	}
 
-	req := serverDomain.TestInterfaceReq{}
+	req := serverDomain.TestInterfaceMaintReq{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -107,7 +109,7 @@ func (c *TestInterfaceCtrl) Create(ctx iris.Context) {
 func (c *TestInterfaceCtrl) Update(ctx iris.Context) {
 	id, err := ctx.URLParamInt("id")
 
-	var req serverDomain.TestInterfaceReq
+	var req serverDomain.TestInterfaceMaintReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {

@@ -2,6 +2,7 @@ package source
 
 import (
 	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
+	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	"github.com/gookit/color"
@@ -22,7 +23,7 @@ func (s *PermSource) GetSources() []model.SysPerm {
 	for _, permRoute := range serverConfig.PermRoutes {
 		p := permRoute
 		go func(permRoute map[string]string) {
-			perm := model.SysPerm{BasePerm: model.BasePerm{
+			perm := model.SysPerm{PermBase: serverDomain.PermBase{
 				Name:        permRoute["path"],
 				DisplayName: permRoute["name"],
 				Description: permRoute["name"],

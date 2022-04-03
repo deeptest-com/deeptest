@@ -2,11 +2,11 @@ package serverDomain
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 )
 
 type ProjectReq struct {
-	model.Project
+	_domain.Model
+	ProjectBase
 }
 
 type ProjectReqPaginate struct {
@@ -16,5 +16,14 @@ type ProjectReqPaginate struct {
 }
 
 type ProjectResp struct {
-	model.Project
+	_domain.PaginateReq
+	ProjectBase
+}
+
+type ProjectBase struct {
+	Name string `json:"name"`
+	Desc string `json:"desc" gorm:"column:descr"`
+
+	SchemaId uint `json:"schemaId"`
+	OrgId    uint `json:"orgId"`
 }

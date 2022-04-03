@@ -79,12 +79,7 @@ func (c *RoleCtrl) CreateRole(ctx iris.Context) {
 
 // UpdateRole 更新
 func (c *RoleCtrl) UpdateRole(ctx iris.Context) {
-	var reqId _domain.ReqId
-	if err := ctx.ReadParams(&reqId); err != nil {
-		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
-		return
-	}
+	id, _ := ctx.Params().GetInt("id")
 
 	var req serverDomain.RoleReq
 	if err := ctx.ReadJSON(&req); err != nil {
@@ -96,7 +91,7 @@ func (c *RoleCtrl) UpdateRole(ctx iris.Context) {
 		}
 	}
 
-	err := c.RoleService.Update(reqId.Id, req)
+	err := c.RoleService.Update(uint(id), req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

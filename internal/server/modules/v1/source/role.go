@@ -23,12 +23,12 @@ func (s *RoleSource) GetSources() ([]serverDomain.RoleReq, error) {
 	}
 	sources := []serverDomain.RoleReq{
 		{
-			BaseRole: model.BaseRole{
+			RoleBase: serverDomain.RoleBase{
 				Name:        "admin",
 				DisplayName: "超级管理员",
 				Description: "超级管理员",
+				Perms:       perms,
 			},
-			Perms: perms,
 		},
 	}
 	return sources, err

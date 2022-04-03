@@ -85,7 +85,7 @@ func (r *ProjectRepo) Create(req serverDomain.ProjectReq) (uint, error) {
 	if _, err := r.FindByName(req.Name); !errors.Is(err, gorm.ErrRecordNotFound) {
 		return 0, fmt.Errorf("%d", _domain.BizErrNameExist.Code)
 	}
-	project := req.Project
+	project := model.Project{ProjectBase: req.ProjectBase}
 
 	err := r.DB.Model(&model.Project{}).Create(&project).Error
 	if err != nil {
@@ -96,9 +96,9 @@ func (r *ProjectRepo) Create(req serverDomain.ProjectReq) (uint, error) {
 	return project.ID, nil
 }
 
-func (r *ProjectRepo) Update(req serverDomain.ProjectReq) error {
-	project := req.Project
-	err := r.DB.Model(&model.Project{}).Where("id = ?", req.ID).Updates(&project).Error
+func (r *ProjectRepo) Update(id uint, req serverDomain.ProjectReq) error {
+	project := model.Project{ProjectBase: req.ProjectBase}
+	err := r.DB.Model(&model.Project{}).Where("id = ?", req.Id).Updates(&project).Error
 	if err != nil {
 		logUtils.Errorf("update project error", zap.String("error:", err.Error()))
 		return err

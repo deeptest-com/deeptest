@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/comm/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
@@ -43,7 +42,6 @@ func (c *TestInterfaceCtrl) Test(ctx iris.Context) {
 		return
 	}
 
-	resp.BodyType = consts.RespJSON
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
 }
 

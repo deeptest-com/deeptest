@@ -1,17 +1,16 @@
 package model
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/comm/consts"
-	"github.com/aaronchen2k/deeptest/internal/comm/domain"
+	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 )
 
 type TestResponse struct {
 	BaseModel
 
-	Code     consts.HttpRespCode     `json:"code"`
-	Headers  []domain.Header         `gorm:"-" json:"headers"`
-	Body     string                  `gorm:"default:''" json:"body"`
-	BodyType consts.HttpRespBodyType `gorm:"default:json" json:"bodyType"`
+	serverDomain.TestRequestResp
+
+	InterfaceId uint `json:"interfaceId"`
+	ProjectId   uint `json:"projectId"`
 }
 
 func (TestResponse) TableName() string {

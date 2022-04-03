@@ -2,11 +2,11 @@ package serverDomain
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 )
 
 type PermReq struct {
-	model.BasePerm
+	_domain.Model
+	PermBase
 }
 
 type PermReqPaginate struct {
@@ -16,5 +16,12 @@ type PermReqPaginate struct {
 
 type PermResp struct {
 	_domain.Model
-	model.BasePerm
+	PermReq
+}
+
+type PermBase struct {
+	Name        string `gorm:"index:perm_index,unique;not null ;type:varchar(256)" json:"name" validate:"required,gte=4,lte=50"`
+	DisplayName string `gorm:"type:varchar(256)" json:"displayName"`
+	Description string `gorm:"type:varchar(256)" json:"description"`
+	Act         string `gorm:"index:perm_index;type:varchar(256)" json:"act" validate:"required"`
 }

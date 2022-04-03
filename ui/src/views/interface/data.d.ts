@@ -17,8 +17,14 @@ export interface Interface {
 export interface Response {
     code: number
     headers: Header[];
-    body: string;
-    bodyType: string;
+
+
+
+    content: string;
+    contentType: string;
+
+    contentLang: string;
+    contentCharset: string;
 }
 
 export interface Param {

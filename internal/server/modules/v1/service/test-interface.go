@@ -8,6 +8,7 @@ import (
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
+	"strings"
 )
 
 type TestInterfaceService struct {
@@ -19,15 +20,24 @@ func NewTestInterfaceService() *TestInterfaceService {
 }
 
 func (s *TestInterfaceService) Test(req serverDomain.TestRequestReq) (ret serverDomain.TestRequestResp, err error) {
-	var code int
-	var resp []byte
-
 	if req.Method == consts.GET {
-		code, resp, err = httpHelper.Get(req.Url, req.Params)
+		ret, _ = httpHelper.Get(req.Url, req.Params)
 	}
 
-	ret.Code = consts.HttpRespCode(code)
-	ret.Body = string(resp)
+	ret.ContentLang, ret.ContentCharset = s.GetContentProps(ret.ContentType)
+
+	return
+}
+
+func (s *TestInterfaceService) GetContentProps(contentType consts.HttpContentType) (
+	contentLang consts.HttpRespLangType, charset consts.HttpRespCharset) {
+	arr := strings.Split(string(contentType), ";")
+
+	arr1 := strings.Split(arr[0], "/")
+	contentLang = consts.HttpRespLangType(arr1[1])
+
+	arr2 := strings.Split(arr[1], "=")
+	charset = consts.HttpRespCharset(arr2[1])
 
 	return
 }

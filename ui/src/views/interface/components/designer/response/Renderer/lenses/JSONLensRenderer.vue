@@ -28,7 +28,7 @@
     <div class="body">
       <MonacoEditor
           class="editor"
-          :value="responseData.body"
+          :value="responseData.content"
           :language="codeLang"
           theme="vs"
           :options="editorOptions"
@@ -68,8 +68,8 @@ export default defineComponent({
     const editorOptions = ref(MonacoOptions)
 
     const getCodeLang = () => {
-      if (isInArray(responseData.value.bodyType, ['json', 'xml', 'html', 'text'])) {
-        return responseData.value.bodyType
+      if (isInArray(responseData.value.contentLang, ['json', 'xml', 'html', 'text'])) {
+        return responseData.value.contentLang
       } else {
         return 'plaintext'
       }

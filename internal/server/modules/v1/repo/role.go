@@ -80,7 +80,7 @@ func (r *RoleRepo) FindFirstAdminUser() (serverDomain.RoleResp, error) {
 }
 
 func (r *RoleRepo) Create(req serverDomain.RoleReq) (uint, error) {
-	role := model.SysRole{BaseRole: req.BaseRole}
+	role := model.SysRole{RoleBase: req.RoleBase}
 	_, err := r.FindByName(req.Name)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		logUtils.Errorf("角色名称已经被使用")
@@ -113,7 +113,7 @@ func (r *RoleRepo) Update(id uint, req serverDomain.RoleReq) error {
 		logUtils.Errorf("角色名称已经被使用")
 		return err
 	}
-	role := model.SysRole{BaseRole: req.BaseRole}
+	role := model.SysRole{RoleBase: req.RoleBase}
 	err = r.DB.Model(&model.SysRole{}).Where("id = ?", id).Updates(&role).Error
 	if err != nil {
 		logUtils.Errorf("更新角色错误", zap.String("错误:", err.Error()))

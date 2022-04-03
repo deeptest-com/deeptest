@@ -77,6 +77,9 @@ export default defineComponent({
       })
 
       this.$emit('editorDidMount', this.editor)
+      setTimeout(() => {
+        editor.getAction('editor.action.formatDocument').run()
+      }, 600)
     },
     _setModel(value, original) {
       const { language } = this;

@@ -124,7 +124,7 @@ func (r *UserRepo) Create(req serverDomain.UserReq) (uint, error) {
 	if _, err := r.FindByUserName(req.Username); !errors.Is(err, gorm.ErrRecordNotFound) {
 		return 0, fmt.Errorf("用户名 %s 已经被使用", req.Username)
 	}
-	user := model.SysUser{BaseUser: req.BaseUser, RoleIds: req.RoleIds}
+	user := model.SysUser{UserBase: req.UserBase, RoleIds: req.RoleIds}
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		logUtils.Errorf("密码加密错误", zap.String("错误:", err.Error()))
@@ -169,7 +169,7 @@ func (r *UserRepo) Update(id uint, req serverDomain.UserReq) error {
 		return err
 	}
 
-	user := model.SysUser{BaseUser: req.BaseUser}
+	user := model.SysUser{UserBase: req.UserBase}
 	err := r.DB.Model(&model.SysUser{}).Where("id = ?", id).Updates(&user).Error
 	if err != nil {
 		logUtils.Errorf("更新用户错误", zap.String("错误:", err.Error()))
@@ -269,7 +269,7 @@ func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project
 		return
 	}
 
-	project = model.Project{Name: fmt.Sprintf("%s的项目", user.Name)}
+	project = model.Project{ProjectBase: serverDomain.ProjectBase{Name: fmt.Sprintf("%s的项目", user.Name)}}
 	err = r.DB.Create(&project).Error
 	if err != nil {
 		logUtils.Errorf("添加项目错误", zap.String("错误:", err.Error()))

@@ -1,21 +1,17 @@
 package model
 
+import serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
+
 type SysUser struct {
 	BaseModel
 
-	BaseUser
+	serverDomain.UserBase
+
 	Password string `gorm:"type:varchar(250)" json:"password" validate:"required"`
 
 	Profile SysUserProfile `gorm:"foreignKey:user_id"`
 
 	RoleIds []uint `gorm:"-" json:"role_ids"`
-}
-
-type BaseUser struct {
-	Username string `gorm:"uniqueIndex;not null;type:varchar(60)" json:"username" validate:"required"`
-	Name     string `gorm:"index;not null; type:varchar(60)" json:"name"`
-	Intro    string `gorm:"not null; type:varchar(512)" json:"intro"`
-	Avatar   string `gorm:"type:varchar(1024)" json:"avatar"`
 }
 
 type Avatar struct {

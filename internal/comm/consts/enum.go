@@ -23,32 +23,42 @@ func (e HttpRespCode) Int() int {
 	return int(e)
 }
 
-type HttpReqBodyType string
+type HttpContentType string
 
 const (
-	ReqJSON HttpReqBodyType = "application/json"
-	ReqXML  HttpReqBodyType = "application/xml"
-	ReqHTML HttpReqBodyType = "text/html"
-	ReqTEXT HttpReqBodyType = "text/text"
+	ReqJSON HttpContentType = "application/json"
+	ReqXML  HttpContentType = "application/xml"
+	ReqHTML HttpContentType = "text/html"
+	ReqTEXT HttpContentType = "text/text"
 
-	ReqFormData       HttpReqBodyType = "application/form-data"
-	ReqFormUrlencoded HttpReqBodyType = "application/x-www-form-urlencoded"
+	ReqFormData       HttpContentType = "application/form-data"
+	ReqFormUrlencoded HttpContentType = "application/x-www-form-urlencoded"
 )
 
-func (e HttpReqBodyType) String() string {
+func (e HttpContentType) String() string {
 	return string(e)
 }
 
-type HttpRespBodyType string
+type HttpRespLangType string
 
 const (
-	RespJSON HttpRespBodyType = "json"
-	RespXML  HttpRespBodyType = "xml"
-	RespHTML HttpRespBodyType = "html"
-	RespTEXT HttpRespBodyType = "text"
+	RespJSON HttpRespLangType = "json"
+	RespXML  HttpRespLangType = "xml"
+	RespHTML HttpRespLangType = "html"
+	RespTEXT HttpRespLangType = "text"
 )
 
-func (e HttpRespBodyType) String() string {
+func (e HttpRespLangType) String() string {
+	return string(e)
+}
+
+type HttpRespCharset string
+
+const (
+	UTF8 HttpRespCharset = "utf-8"
+)
+
+func (e HttpRespCharset) String() string {
 	return string(e)
 }
 

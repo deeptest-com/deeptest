@@ -14,10 +14,10 @@
     <div class="params">
       <a-row v-for="(item, idx) in responseData.headers" :key="idx" type="flex" class="param">
         <a-col flex="1">
-          <a-input v-model:value="item.key" class="dp-bg-input-transparent" />
+          <a-input v-model:value="item.name" class="dp-bg-input-transparent" />
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="item.val" class="dp-bg-input-transparent" />
+          <a-input v-model:value="item.value" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
     </div>

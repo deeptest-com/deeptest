@@ -7,7 +7,7 @@ import (
 type TestResponse struct {
 	BaseModel
 
-	serverDomain.TestRequestResp
+	serverDomain.TestResponse
 
 	InterfaceId uint `json:"interfaceId"`
 	ProjectId   uint `json:"projectId"`

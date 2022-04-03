@@ -19,7 +19,7 @@ func NewTestInterfaceService() *TestInterfaceService {
 	return &TestInterfaceService{}
 }
 
-func (s *TestInterfaceService) Test(req serverDomain.TestRequestReq) (ret serverDomain.TestRequestResp, err error) {
+func (s *TestInterfaceService) Test(req serverDomain.TestRequest) (ret serverDomain.TestResponse, err error) {
 	if req.Method == consts.GET {
 		ret, _ = httpHelper.Get(req.Url, req.Params)
 	}
@@ -67,7 +67,7 @@ func (s *TestInterfaceService) Save(interf *model.TestInterface) (err error) {
 
 	return
 }
-func (s *TestInterfaceService) Create(req serverDomain.TestInterfaceMaintReq) (interf *model.TestInterface, err error) {
+func (s *TestInterfaceService) Create(req serverDomain.TestInterfaceReq) (interf *model.TestInterface, err error) {
 	interf = &model.TestInterface{Name: req.Name, ProjectId: uint(req.ProjectId),
 		IsDir: req.Type == serverConsts.Dir}
 
@@ -112,7 +112,7 @@ func (s *TestInterfaceService) deleteInterfaceAndChildren(projectId, interfId ui
 	return
 }
 
-func (s *TestInterfaceService) Update(id int, req serverDomain.TestInterfaceMaintReq) (err error) {
+func (s *TestInterfaceService) Update(id int, req serverDomain.TestInterfaceReq) (err error) {
 
 	return
 }

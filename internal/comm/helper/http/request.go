@@ -16,7 +16,7 @@ import (
 	"strings"
 )
 
-func Get(reqUrl string, reqParams []domain.Param) (ret serverDomain.TestRequestResp, err error) {
+func Get(reqUrl string, reqParams []domain.Param) (ret serverDomain.TestResponse, err error) {
 	client := &http.Client{}
 
 	if _consts.Verbose {

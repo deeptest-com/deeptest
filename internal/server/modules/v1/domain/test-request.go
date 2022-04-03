@@ -5,7 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/comm/domain"
 )
 
-type TestRequestReq struct {
+type TestRequest struct {
 	Url               string            `json:"url"`
 	Method            consts.HttpMethod `gorm:"default:GET" json:"method"`
 	Params            []domain.Param    `gorm:"-" json:"params"`

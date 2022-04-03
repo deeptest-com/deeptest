@@ -21,7 +21,7 @@ type TestInterface struct {
 
 	Slots iris.Map `gorm:"-" json:"slots"`
 
-	serverDomain.TestInterfaceMaintResp
+	serverDomain.TestInterfaceResp
 }
 
 func (TestInterface) TableName() string {

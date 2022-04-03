@@ -45,6 +45,7 @@ func Get(reqUrl string, reqParams []domain.Param) (ret serverDomain.TestResponse
 
 	ret.Code = consts.HttpRespCode(resp.StatusCode)
 	ret.ContentType = consts.HttpContentType(resp.Header.Get("Content-Type"))
+	ret.Headers = getHeaders(resp.Header)
 
 	content, _ := ioutil.ReadAll(resp.Body)
 	if _consts.Verbose {
@@ -52,6 +53,16 @@ func Get(reqUrl string, reqParams []domain.Param) (ret serverDomain.TestResponse
 	}
 
 	ret.Content = string(content)
+
+	return
+}
+
+func getHeaders(header http.Header) (headers []domain.Header) {
+	for key, val := range header {
+		header := domain.Header{Name: key, Value: val[0]}
+
+		headers = append(headers, header)
+	}
 
 	return
 }

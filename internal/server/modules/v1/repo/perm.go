@@ -71,7 +71,7 @@ func (r *PermRepo) FindByNameAndAct(name, act string, ids ...uint) (serverDomain
 
 // Create
 func (r *PermRepo) Create(req serverDomain.PermReq) (uint, error) {
-	perm := model.SysPerm{BasePerm: req.BasePerm}
+	perm := model.SysPerm{PermBase: req.PermBase}
 	if !r.CheckNameAndAct(req) {
 		return perm.ID, fmt.Errorf("权限[%s-%s]已存在", req.Name, req.Act)
 	}
@@ -133,7 +133,7 @@ func (r *PermRepo) Update(id uint, req serverDomain.PermReq) error {
 	if !r.CheckNameAndAct(req, id) {
 		return fmt.Errorf("权限[%s-%s]已存在", req.Name, req.Act)
 	}
-	perm := model.SysPerm{BasePerm: req.BasePerm}
+	perm := model.SysPerm{PermBase: req.PermBase}
 	err := r.DB.Model(&model.SysPerm{}).Where("id = ?", id).Updates(&perm).Error
 	if err != nil {
 		logUtils.Errorf("更新权限失败, 错误%s。", err.Error())

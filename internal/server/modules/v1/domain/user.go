@@ -2,15 +2,13 @@ package serverDomain
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/snowlyg/helper/str"
 	"regexp"
 )
 
 type UserReq struct {
-	model.BaseUser
-	Password string `json:"password"`
-	RoleIds  []uint `json:"role_ids"`
+	_domain.Model
+	UserBase
 }
 
 type UserReqPaginate struct {
@@ -20,8 +18,18 @@ type UserReqPaginate struct {
 
 type UserResp struct {
 	_domain.Model
-	model.BaseUser
+	UserBase
 	Roles []string `gorm:"-" json:"roles"`
+}
+
+type UserBase struct {
+	Username string `gorm:"uniqueIndex;not null;type:varchar(60)" json:"username" validate:"required"`
+	Name     string `gorm:"index;not null; type:varchar(60)" json:"name"`
+	Intro    string `gorm:"not null; type:varchar(512)" json:"intro"`
+	Avatar   string `gorm:"type:varchar(1024)" json:"avatar"`
+
+	Password string `json:"password"`
+	RoleIds  []uint `gorm:"-" json:"role_ids"`
 }
 
 func (res *UserResp) ToString() {

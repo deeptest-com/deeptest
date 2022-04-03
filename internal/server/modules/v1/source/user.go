@@ -24,14 +24,14 @@ func (s *UserSource) GetSources() ([]serverDomain.UserReq, error) {
 	}
 	users := []serverDomain.UserReq{
 		{
-			BaseUser: model.BaseUser{
+			UserBase: serverDomain.UserBase{
 				Username: serverConsts.AdminUserName,
 				Name:     "管理员",
 				Intro:    "超级管理员",
 				Avatar:   "images/avatar-m.svg",
+				Password: serverConsts.AdminUserPassword,
+				RoleIds:  roleIds,
 			},
-			Password: serverConsts.AdminUserPassword,
-			RoleIds:  roleIds,
 		},
 	}
 	return users, nil

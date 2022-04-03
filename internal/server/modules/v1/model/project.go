@@ -1,14 +1,11 @@
 package model
 
+import serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
+
 type Project struct {
 	BaseModel
 
-	Name string `json:"name"`
-	Desc string `json:"desc" gorm:"column:descr"`
-
-	SchemaId uint `json:"schemaId"`
-	OrgId    uint `json:"orgId"`
-
+	serverDomain.ProjectBase
 	//Products []*Product `json:"products" gorm:"many2many:biz_project_product_r;"`
 }
 

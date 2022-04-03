@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/comm/consts"
 	"github.com/aaronchen2k/deeptest/internal/comm/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
+	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/fatih/color"
 	"io/ioutil"
 	"net/http"
@@ -14,7 +16,7 @@ import (
 	"strings"
 )
 
-func Get(reqUrl string, reqParams []domain.Param) (code int, ret []byte, err error) {
+func Get(reqUrl string, reqParams []domain.Param) (ret serverDomain.TestRequestResp, err error) {
 	client := &http.Client{}
 
 	if _consts.Verbose {
@@ -41,12 +43,15 @@ func Get(reqUrl string, reqParams []domain.Param) (code int, ret []byte, err err
 		return
 	}
 
-	code = resp.StatusCode
+	ret.Code = consts.HttpRespCode(resp.StatusCode)
+	ret.ContentType = consts.HttpContentType(resp.Header.Get("Content-Type"))
 
-	ret, _ = ioutil.ReadAll(resp.Body)
+	content, _ := ioutil.ReadAll(resp.Body)
 	if _consts.Verbose {
-		_logUtils.PrintUnicode(ret)
+		_logUtils.PrintUnicode(content)
 	}
+
+	ret.Content = string(content)
 
 	return
 }

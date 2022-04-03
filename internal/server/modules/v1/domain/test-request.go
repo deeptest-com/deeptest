@@ -9,5 +9,5 @@ type TestRequestReq struct {
 }
 
 type TestRequestResp struct {
-	model.TestRequest
+	model.TestResponse
 }

@@ -1,5 +1,57 @@
 package consts
 
+type HttpMethod string
+
+const (
+	GET    HttpMethod = "GET"
+	POST   HttpMethod = "POST"
+	PUT    HttpMethod = "PUT"
+	DELETE HttpMethod = "DELETE"
+)
+
+func (e HttpMethod) string() string {
+	return string(e)
+}
+
+type HttpRespCode int
+
+const (
+	OK HttpRespCode = 200
+)
+
+func (e HttpRespCode) Int() int {
+	return int(e)
+}
+
+type HttpReqBodyType string
+
+const (
+	ReqJSON HttpReqBodyType = "application/json"
+	ReqXML  HttpReqBodyType = "application/xml"
+	ReqHTML HttpReqBodyType = "text/html"
+	ReqTEXT HttpReqBodyType = "text/text"
+
+	ReqFormData       HttpReqBodyType = "application/form-data"
+	ReqFormUrlencoded HttpReqBodyType = "application/x-www-form-urlencoded"
+)
+
+func (e HttpReqBodyType) String() string {
+	return string(e)
+}
+
+type HttpRespBodyType string
+
+const (
+	RespJSON HttpRespBodyType = "json"
+	RespXML  HttpRespBodyType = "xml"
+	RespHTML HttpRespBodyType = "html"
+	RespTEXT HttpRespBodyType = "text"
+)
+
+func (e HttpRespBodyType) String() string {
+	return string(e)
+}
+
 type FieldSource string
 
 const (

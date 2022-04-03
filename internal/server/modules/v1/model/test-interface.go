@@ -1,6 +1,9 @@
 package model
 
-import "github.com/kataras/iris/v12"
+import (
+	"github.com/aaronchen2k/deeptest/internal/comm/domain"
+	"github.com/kataras/iris/v12"
+)
 
 type TestInterface struct {
 	BaseModel
@@ -19,53 +22,20 @@ type TestInterface struct {
 	Slots iris.Map `gorm:"-" json:"slots"`
 
 	// config
-	Url               string   `json:"url"`
-	Method            string   `gorm:"default:GET" json:"method"`
-	Params            []Param  `gorm:"-" json:"params"`
-	Headers           []Header `gorm:"-" json:"headers"`
-	Body              string   `gorm:"default:{}" json:"body"`
-	BodyType          string   `gorm:"default:json" json:"bodyType"`
-	AuthorizationType string   `gorm:"default:''" json:"authorizationType"`
-	PreRequestScript  string   `gorm:"default:''" json:"preRequestScript"`
-	ValidationScript  string   `gorm:"default:''" json:"validationScript"`
+	Url               string          `json:"url"`
+	Method            string          `gorm:"default:GET" json:"method"`
+	Params            []domain.Param  `gorm:"-" json:"params"`
+	Headers           []domain.Header `gorm:"-" json:"headers"`
+	Body              string          `gorm:"default:{}" json:"body"`
+	BodyType          string          `gorm:"default:json" json:"bodyType"`
+	AuthorizationType string          `gorm:"default:''" json:"authorizationType"`
+	PreRequestScript  string          `gorm:"default:''" json:"preRequestScript"`
+	ValidationScript  string          `gorm:"default:''" json:"validationScript"`
 
-	BasicAuth   BasicAuth   `gorm:" -" json:"basicAuth"`
-	BearerToken BearerToken `gorm:" -" json:"bearerToken"`
-	OAuth20     OAuth20     `gorm:" -" json:"oAuth20"`
-	ApiKey      ApiKey      `gorm:" -" json:"apiKey"`
-}
-
-type Param struct {
-	Name     string `json:"name"`
-	Value    string `json:"value"`
-	Disabled bool   `json:"disabled"`
-}
-
-type Header struct {
-	Name     string `json:"name"`
-	Value    string `json:"value"`
-	Disabled bool   `json:"disabled"`
-}
-
-type BasicAuth struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-type BearerToken struct {
-	Username string `json:"username"`
-}
-type OAuth20 struct {
-	Key              string `json:"key"`              // key
-	OidcDiscoveryURL string `json:"oidcDiscoveryURL"` // OpenID Connect Discovery URL
-	AuthURL          string `json:"authURL"`          // Authentication URL
-	AccessTokenURL   string `json:"accessTokenURL"`   // Access Token URL
-	ClientID         string `json:"clientID"`         // Client ID
-	Scope            string `json:"scope"`            // Scope
-}
-type ApiKey struct {
-	Username     string `json:"username"`
-	Value        string `json:"value"`
-	TransferMode string `json:"transferMode"`
+	BasicAuth   domain.BasicAuth   `gorm:" -" json:"basicAuth"`
+	BearerToken domain.BearerToken `gorm:" -" json:"bearerToken"`
+	OAuth20     domain.OAuth20     `gorm:" -" json:"oAuth20"`
+	ApiKey      domain.ApiKey      `gorm:" -" json:"apiKey"`
 }
 
 func (TestInterface) TableName() string {

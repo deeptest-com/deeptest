@@ -7,7 +7,7 @@ const apiPath = 'interfaces';
 
 export async function test(interf: Interface): Promise<any> {
     return request({
-        url: `/${apiPath}`,
+        url: `/${apiPath}/test`,
         method: 'post',
         data: interf,
     });

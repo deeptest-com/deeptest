@@ -1,7 +1,6 @@
 package service
 
 import (
-	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 )
@@ -25,7 +24,7 @@ func (s *TestRequestService) Get(reqId int) (interf model.TestRequest, err error
 	return
 }
 
-func (s *TestRequestService) Create(req serverDomain.TestRequestReq) (interf *model.TestRequest, err error) {
+func (s *TestRequestService) Create(req model.TestRequest) (interf *model.TestRequest, err error) {
 
 	return
 }

@@ -70,12 +70,13 @@ export default defineComponent({
         if (this.value !== value) {
           this.$emit('change', value, event)
         }
+
+        setTimeout(() => {
+          editor.getAction('editor.action.formatDocument').run()
+        }, 60)
       })
 
       this.$emit('editorDidMount', this.editor)
-      setTimeout(() => {
-        editor.getAction('editor.action.formatDocument').run()
-      }, 100)
     },
     _setModel(value, original) {
       const { language } = this;

@@ -2,7 +2,7 @@ import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 
 import {
-    load, get, remove, create, update, expandAllKeys, move,
+    load, get, remove, create, update, expandAllKeys, move, test,
 } from './service';
 import {Interface, Response} from "@/views/interface/data";
 
@@ -20,6 +20,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setResponse: Mutation<StateType>;
     };
     actions: {
+        test: Action<StateType, StateType>;
+
         loadInterface: Action<StateType, StateType>;
         getInterface: Action<StateType, StateType>;
         createInterface: Action<StateType, StateType>;
@@ -55,19 +57,26 @@ const StoreModel: ModuleType = {
         },
     },
     actions: {
+        async test({ commit }, payload: any ) {
+            test(payload).then((json) => {
+                if (json.code === 0) {
+                    commit('setResponse',json.data);
+                    return true;
+                } else {
+                    return false
+                }
+            })
+        },
+
         async loadInterface({ commit }) {
-            try {
-                const response = await load();
-                if (response.code != 0) return;
+            const response = await load();
+            if (response.code != 0) return;
 
-                const { data } = response;
-                console.log('data', data)
+            const { data } = response;
+            console.log('data', data)
 
-                commit('setTree',data || {});
-                return true;
-            } catch (error) {
-                return false;
-            }
+            commit('setTree',data || {});
+            return true;
         },
         async getInterface({ commit }, payload: any ) {
             if (payload.isDir) {

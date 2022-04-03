@@ -36,36 +36,36 @@ type TestInterface struct {
 }
 
 type Param struct {
-	name     string
-	value    string
-	disabled bool
+	Name     string `json:"name"`
+	Value    string `json:"value"`
+	Disabled bool   `json:"disabled"`
 }
 
 type Header struct {
-	name     string
-	value    string
-	disabled bool
+	Name     string `json:"name"`
+	Value    string `json:"value"`
+	Disabled bool   `json:"disabled"`
 }
 
 type BasicAuth struct {
-	username string
-	password string
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 type BearerToken struct {
-	username string
+	Username string `json:"username"`
 }
 type OAuth20 struct {
-	key              string // key
-	oidcDiscoveryURL string // OpenID Connect Discovery URL
-	authURL          string // Authentication URL
-	accessTokenURL   string // Access Token URL
-	clientID         string // Client ID
-	scope            string // Scope
+	Key              string `json:"key"`              // key
+	OidcDiscoveryURL string `json:"oidcDiscoveryURL"` // OpenID Connect Discovery URL
+	AuthURL          string `json:"authURL"`          // Authentication URL
+	AccessTokenURL   string `json:"accessTokenURL"`   // Access Token URL
+	ClientID         string `json:"clientID"`         // Client ID
+	Scope            string `json:"scope"`            // Scope
 }
 type ApiKey struct {
-	username     string
-	value        string
-	transferMode string
+	Username     string `json:"username"`
+	Value        string `json:"value"`
+	TransferMode string `json:"transferMode"`
 }
 
 func (TestInterface) TableName() string {

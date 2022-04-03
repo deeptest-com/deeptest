@@ -29,10 +29,10 @@ func (s *TestInterfaceService) Get(interfId int) (interf model.TestInterface, er
 	interf, err = s.InterfaceRepo.Get(uint(interfId))
 
 	if interf.Params == nil {
-		interf.Params = make([]model.Param, 0)
+		interf.Params = []model.Param{{Name: "", Value: ""}}
 	}
 	if interf.Headers == nil {
-		interf.Headers = make([]model.Header, 0)
+		interf.Headers = []model.Header{{Name: "", Value: ""}}
 	}
 
 	return

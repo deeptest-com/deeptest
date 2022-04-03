@@ -5,8 +5,7 @@ import (
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 )
 
-// maintain
-type TestInterfaceMaintReq struct {
+type TestInterfaceReq struct {
 	Mode      serverConsts.NodeCreateMode `json:"mode"`
 	Type      serverConsts.NodeCreateType `json:"type"`
 	Target    int                         `json:"target"`
@@ -21,7 +20,7 @@ type TestInterfaceMoveReq struct {
 	DropPos serverConsts.DropPos `json:"dropPos"`
 }
 
-type TestInterfaceMaintResp struct {
+type TestInterfaceResp struct {
 	Url               string          `json:"url"`
 	Method            string          `gorm:"default:GET" json:"method"`
 	Params            []domain.Param  `gorm:"-" json:"params"`

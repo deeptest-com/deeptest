@@ -29,7 +29,7 @@ func (c *TestInterfaceCtrl) Test(ctx iris.Context) {
 		return
 	}
 
-	req := serverDomain.TestRequestReq{}
+	req := serverDomain.TestRequest{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -83,7 +83,7 @@ func (c *TestInterfaceCtrl) Create(ctx iris.Context) {
 		return
 	}
 
-	req := serverDomain.TestInterfaceMaintReq{}
+	req := serverDomain.TestInterfaceReq{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -107,7 +107,7 @@ func (c *TestInterfaceCtrl) Create(ctx iris.Context) {
 func (c *TestInterfaceCtrl) Update(ctx iris.Context) {
 	id, err := ctx.URLParamInt("id")
 
-	var req serverDomain.TestInterfaceMaintReq
+	var req serverDomain.TestInterfaceReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {

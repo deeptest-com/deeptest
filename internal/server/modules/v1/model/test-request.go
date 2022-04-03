@@ -10,7 +10,7 @@ type TestRequest struct {
 	Name string `json:"name"`
 	Desc string `json:"desc"`
 
-	serverDomain.TestRequestReq
+	serverDomain.TestRequest
 
 	InterfaceId uint `json:"interfaceId"`
 	ProjectId   uint `json:"projectId"`

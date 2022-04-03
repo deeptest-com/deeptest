@@ -5,7 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/comm/domain"
 )
 
-type TestRequestResp struct {
+type TestResponse struct {
 	Code        consts.HttpRespCode    `json:"code"`
 	Headers     []domain.Header        `gorm:"-" json:"headers"`
 	Content     string                 `gorm:"default:''" json:"content"`

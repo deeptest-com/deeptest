@@ -2,7 +2,7 @@ import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 
 import {
-    load, get, remove, create, update, expandAllKeys, move, test,
+    load, get, remove, create, update, expandAllKeys, move, test, getCodeLang,
 } from './service';
 import {Interface, Response} from "@/views/interface/data";
 
@@ -54,6 +54,7 @@ const StoreModel: ModuleType = {
         },
         setResponse(state, payload) {
             state.responseData = payload;
+            state.responseData.contentLang = getCodeLang(state.responseData.contentLang)
         },
     },
     actions: {

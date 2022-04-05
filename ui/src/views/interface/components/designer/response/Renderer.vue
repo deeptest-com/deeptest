@@ -50,11 +50,11 @@ export default defineComponent({
     const responseData = computed<any>(() => store.state.Interface.responseData);
     const codeLang = ref('')
 
-    codeLang.value = getCodeLang(responseData.value)
+    codeLang.value = getCodeLang(responseData.value.contentLang)
 
     watch(responseData, () => {
       console.log('watch responseData')
-      codeLang.value = getCodeLang(responseData.value)
+      codeLang.value = getCodeLang(responseData.value.contentLang)
     }, {deep: true})
 
     const activeKey = ref('1');

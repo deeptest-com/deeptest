@@ -90,11 +90,13 @@ export function expandOneKey(treeMap: any, key: number, expandedKeys: number[]) 
     }
 }
 
-export function getCodeLang (resp) {
+export function getCodeLang (contentLang) {
+    console.log('getCodeLang', contentLang)
+
     let codeLang = 'plaintext'
 
-    if (isInArray(resp.contentLang, ['json', 'xml', 'html', 'text'])) {
-        codeLang = resp.contentLang
+    if (isInArray(contentLang, ['json', 'xml', 'html', 'paintext'])) {
+        codeLang = contentLang
     } else {
         codeLang = 'plaintext'
     }

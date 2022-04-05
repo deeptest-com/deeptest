@@ -51,7 +51,11 @@ func (s *TestInterfaceService) GetContentProps(contentType consts.HttpContentTyp
 		return
 	}
 
-	contentLang = consts.HttpRespLangType(arr1[1])
+	typeName := arr1[1]
+	if typeName == "text" {
+		typeName = "plaintext"
+	}
+	contentLang = consts.HttpRespLangType(typeName)
 
 	arr2 := strings.Split(arr[1], "=")
 	if len(arr2) == 1 {

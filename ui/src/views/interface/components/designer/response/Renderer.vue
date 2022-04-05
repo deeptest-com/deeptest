@@ -1,12 +1,12 @@
 <template>
   <div class="response-renderer">
     <a-tabs v-model:activeKey="activeKey">
-      <a-tab-pane key="1" :tab="t(codeLang)">
-        <ResponseLensJson v-if="codeLang === 'json'"></ResponseLensJson>
-        <ResponseLensXml v-if="codeLang === 'xml'"></ResponseLensXml>
-        <ResponseLensHtml v-if="codeLang === 'html'"></ResponseLensHtml>
-        <ResponseLensImage v-if="codeLang === 'image'"></ResponseLensImage>
-        <ResponseLensRaw v-if="codeLang === 'plaintext'"></ResponseLensRaw>
+      <a-tab-pane key="1" :tab="title">
+        <ResponseLensJson v-if="responseData.contentLang === 'json'"></ResponseLensJson>
+        <ResponseLensXml v-if="responseData.contentLang === 'xml'"></ResponseLensXml>
+        <ResponseLensHtml v-if="responseData.contentLang === 'html'"></ResponseLensHtml>
+        <ResponseLensRaw v-if="responseData.contentLang === 'plaintext'"></ResponseLensRaw>
+        <ResponseLensImage v-if="responseData.contentLang === 'image'"></ResponseLensImage>
       </a-tab-pane>
 
       <a-tab-pane key="3" tab="响应头">
@@ -28,8 +28,6 @@ import {StateType} from "@/views/interface/store";
 import ResponseLensJson from "./Renderer/lenses/JSONLensRenderer.vue";
 import ResponseHeaders from "./Renderer/Headers.vue";
 import ResponseResult from "./Renderer/Result.vue";
-import {isInArray} from "@/utils/array";
-import {getCodeLang} from "@/views/interface/service";
 import ResponseLensXml from "@/views/interface/components/designer/response/Renderer/lenses/XMLLensRenderer.vue";
 import ResponseLensHtml from "@/views/interface/components/designer/response/Renderer/lenses/HTMLLensRenderer.vue";
 import ResponseLensImage from "@/views/interface/components/designer/response/Renderer/lenses/ImageLensRenderer.vue";
@@ -48,13 +46,11 @@ export default defineComponent({
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
     const responseData = computed<any>(() => store.state.Interface.responseData);
-    const codeLang = ref('')
-
-    codeLang.value = getCodeLang(responseData.value.contentLang)
+    const title = ref('')
 
     watch(responseData, () => {
       console.log('watch responseData')
-      codeLang.value = getCodeLang(responseData.value.contentLang)
+      title.value = t(responseData.value.contentLang)
     }, {deep: true})
 
     const activeKey = ref('1');
@@ -63,7 +59,7 @@ export default defineComponent({
       t,
       responseData,
       activeKey,
-      codeLang,
+      title,
     }
   }
 })

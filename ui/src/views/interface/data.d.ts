@@ -18,8 +18,6 @@ export interface Response {
     code: number
     headers: Header[];
 
-
-
     content: string;
     contentType: string;
 

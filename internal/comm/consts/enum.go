@@ -42,10 +42,10 @@ func (e HttpContentType) String() string {
 type HttpRespLangType string
 
 const (
-	LangJSON HttpRespLangType = "json"
-	LangXML  HttpRespLangType = "xml"
-	LangHTML HttpRespLangType = "html"
-	LangTEXT HttpRespLangType = "text"
+	LangJSON      HttpRespLangType = "json"
+	LangXML       HttpRespLangType = "xml"
+	LangHTML      HttpRespLangType = "html"
+	LangPlainTEXT HttpRespLangType = "plaintext"
 )
 
 func (e HttpRespLangType) String() string {

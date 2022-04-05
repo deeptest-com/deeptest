@@ -9,7 +9,7 @@ const (
 	DELETE HttpMethod = "DELETE"
 )
 
-func (e HttpMethod) string() string {
+func (e HttpMethod) String() string {
 	return string(e)
 }
 
@@ -26,13 +26,13 @@ func (e HttpRespCode) Int() int {
 type HttpContentType string
 
 const (
-	ReqJSON HttpContentType = "application/json"
-	ReqXML  HttpContentType = "application/xml"
-	ReqHTML HttpContentType = "text/html"
-	ReqTEXT HttpContentType = "text/text"
+	ContentTypeJSON HttpContentType = "application/json"
+	ContentTypeXML  HttpContentType = "application/xml"
+	ContentTypeHTML HttpContentType = "text/html"
+	ContentTypeTEXT HttpContentType = "text/text"
 
-	ReqFormData       HttpContentType = "application/form-data"
-	ReqFormUrlencoded HttpContentType = "application/x-www-form-urlencoded"
+	ContentTypeFormData       HttpContentType = "application/form-data"
+	ContentTypeFormUrlencoded HttpContentType = "application/x-www-form-urlencoded"
 )
 
 func (e HttpContentType) String() string {
@@ -42,10 +42,10 @@ func (e HttpContentType) String() string {
 type HttpRespLangType string
 
 const (
-	RespJSON HttpRespLangType = "json"
-	RespXML  HttpRespLangType = "xml"
-	RespHTML HttpRespLangType = "html"
-	RespTEXT HttpRespLangType = "text"
+	LangJSON HttpRespLangType = "json"
+	LangXML  HttpRespLangType = "xml"
+	LangHTML HttpRespLangType = "html"
+	LangTEXT HttpRespLangType = "text"
 )
 
 func (e HttpRespLangType) String() string {

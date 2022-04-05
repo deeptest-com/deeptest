@@ -2,6 +2,7 @@ import request from '@/utils/request';
 import {dataURItoBlob} from "@/utils/form";
 import throttle from "lodash.debounce";
 import {Interface} from "@/views/interface/data";
+import {isInArray} from "@/utils/array";
 
 const apiPath = 'interfaces';
 
@@ -87,4 +88,16 @@ export function expandOneKey(treeMap: any, key: number, expandedKeys: number[]) 
     if (parentId) {
         expandOneKey(treeMap, parentId, expandedKeys)
     }
+}
+
+export function getCodeLang (resp) {
+    let codeLang = 'plaintext'
+
+    if (isInArray(resp.contentLang, ['json', 'xml', 'html', 'text'])) {
+        codeLang = resp.contentLang
+    } else {
+        codeLang = 'plaintext'
+    }
+
+    return codeLang
 }

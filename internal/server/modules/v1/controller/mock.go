@@ -1,14 +1,11 @@
 package controller
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/comm/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
-	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
-	"go.uber.org/zap"
-	"strings"
-
 	"github.com/kataras/iris/v12"
 )
 
@@ -21,14 +18,14 @@ func NewTestExecCtrl() *MockCtrl {
 	return &MockCtrl{}
 }
 
-// Get
-func (c *MockCtrl) Get(ctx iris.Context) {
+// Request
+func (c *MockCtrl) Request(ctx iris.Context) {
 	var req model.TestRequest
-	if err := ctx.ReadQuery(&req); err != nil {
-		errs := validate.ValidRequest(err)
-		if len(errs) > 0 {
-			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
-			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
+	err := ctx.ReadQuery(&req)
+	if err != nil {
+		if err != nil {
+			logUtils.Errorf("参数获取失败", err.Error())
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 			return
 		}
 	}
@@ -39,11 +36,18 @@ func (c *MockCtrl) Get(ctx iris.Context) {
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
-}
+	//reqBodyType := ctx.GetContentType()
+	reqBodyType := ctx.GetHeader(consts.ContentType)
 
-// Post
-func (c *MockCtrl) Post(ctx iris.Context) {
+	if reqBodyType == consts.ContentTypeJSON.String() {
+		ctx.Header(consts.ContentType, consts.ContentTypeJSON.String()+";charset=utf-8")
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+	} else if reqBodyType == consts.ContentTypeXML.String() {
+		ctx.Header(consts.ContentType, consts.ContentTypeXML.String()+";charset=utf-8")
+		ctx.XML(_domain.Response{Code: _domain.NoErr.Code, Data: req, Msg: _domain.NoErr.Msg})
+	} else {
+		ctx.Header(consts.ContentType, consts.ContentTypeHTML.String()+";charset=utf-8")
+		ctx.HTML("<html>Hello World!<html>")
+	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
 }

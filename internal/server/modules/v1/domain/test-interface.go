@@ -26,7 +26,7 @@ type TestInterfaceResp struct {
 	Params            []domain.Param  `gorm:"-" json:"params"`
 	Headers           []domain.Header `gorm:"-" json:"headers"`
 	Body              string          `gorm:"default:{}" json:"body"`
-	BodyType          string          `gorm:"default:json" json:"bodyType"`
+	BodyType          string          `gorm:"default:''" json:"bodyType"`
 	AuthorizationType string          `gorm:"default:''" json:"authorizationType"`
 	PreRequestScript  string          `gorm:"default:''" json:"preRequestScript"`
 	ValidationScript  string          `gorm:"default:''" json:"validationScript"`

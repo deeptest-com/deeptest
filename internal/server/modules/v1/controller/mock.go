@@ -47,7 +47,7 @@ func (c *MockCtrl) Request(ctx iris.Context) {
 		ctx.XML(_domain.Response{Code: _domain.NoErr.Code, Data: req, Msg: _domain.NoErr.Msg})
 	} else {
 		ctx.Header(consts.ContentType, consts.ContentTypeHTML.String()+";charset=utf-8")
-		ctx.HTML("<html>Hello World!<html>")
+		ctx.HTML("<html><p>Hello World!</p><html>")
 	}
 
 }

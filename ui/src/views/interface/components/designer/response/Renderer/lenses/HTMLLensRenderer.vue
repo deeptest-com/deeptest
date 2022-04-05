@@ -29,7 +29,7 @@
       <MonacoEditor
           class="editor"
           :value="responseData.content"
-          :language="codeLang"
+          :language="responseData.contentLang"
           theme="vs"
           :options="editorOptions"
       />
@@ -62,23 +62,12 @@ export default defineComponent({
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
     const responseData = computed<Response>(() => store.state.Interface.responseData);
-    const codeLang = computed(() => {
-      return getCodeLang()
-    })
-    const editorOptions = ref(MonacoOptions)
 
-    const getCodeLang = () => {
-      if (isInArray(responseData.value.contentLang, ['html', 'xml', 'html', 'text'])) {
-        return responseData.value.contentLang
-      } else {
-        return 'plaintext'
-      }
-    }
+    const editorOptions = ref(MonacoOptions)
 
     return {
       responseData,
       editorOptions,
-      codeLang,
     }
   }
 })

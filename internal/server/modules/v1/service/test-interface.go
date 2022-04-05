@@ -22,6 +22,12 @@ func NewTestInterfaceService() *TestInterfaceService {
 func (s *TestInterfaceService) Test(req serverDomain.TestRequest) (ret serverDomain.TestResponse, err error) {
 	if req.Method == consts.GET {
 		ret, _ = httpHelper.Get(req.Url, req.Params)
+	} else if req.Method == consts.POST {
+		ret, _ = httpHelper.Post(req.Url, req.Params, req.Body, req.BodyType)
+	} else if req.Method == consts.PUT {
+		ret, _ = httpHelper.Put(req.Url, req.Params, req.Body, req.BodyType)
+	} else if req.Method == consts.DELETE {
+		ret, _ = httpHelper.Delete(req.Url, req.Params, req.Body, req.BodyType)
 	}
 
 	ret.ContentLang, ret.ContentCharset = s.GetContentProps(ret.ContentType)
@@ -31,12 +37,27 @@ func (s *TestInterfaceService) Test(req serverDomain.TestRequest) (ret serverDom
 
 func (s *TestInterfaceService) GetContentProps(contentType consts.HttpContentType) (
 	contentLang consts.HttpRespLangType, charset consts.HttpRespCharset) {
+
+	contentLang = "plaintext"
+
+	if contentType == "" {
+		return
+	}
+
 	arr := strings.Split(string(contentType), ";")
 
 	arr1 := strings.Split(arr[0], "/")
+	if len(arr1) == 1 {
+		return
+	}
+
 	contentLang = consts.HttpRespLangType(arr1[1])
 
 	arr2 := strings.Split(arr[1], "=")
+	if len(arr2) == 1 {
+		return
+	}
+
 	charset = consts.HttpRespCharset(arr2[1])
 
 	return

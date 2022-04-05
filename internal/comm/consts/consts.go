@@ -1,6 +1,8 @@
 package consts
 
 const (
-	App            = "deeptest"
-	Pattern string = "pattern"
+	App     = "deeptest"
+	Pattern = "pattern"
+
+	ContentType = "Content-Type"
 )

@@ -73,12 +73,14 @@ export default defineComponent({
 
         setTimeout(() => {
           editor.getAction('editor.action.formatDocument').run()
+          console.log('format codes')
         }, 60)
       })
 
       this.$emit('editorDidMount', this.editor)
       setTimeout(() => {
         editor.getAction('editor.action.formatDocument').run()
+        console.log('format codes')
       }, 600)
     },
     _setModel(value, original) {

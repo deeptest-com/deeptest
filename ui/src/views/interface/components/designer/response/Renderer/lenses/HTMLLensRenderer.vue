@@ -1,5 +1,5 @@
 <template>
-  <div class="response-json-main">
+  <div class="response-html-main">
     <div class="head">
       <a-row type="flex">
         <a-col flex="1">
@@ -28,7 +28,7 @@
     <div class="body">
       <MonacoEditor
           class="editor"
-          :value="responseData.body"
+          :value="responseData.content"
           :language="codeLang"
           theme="vs"
           :options="editorOptions"
@@ -68,8 +68,8 @@ export default defineComponent({
     const editorOptions = ref(MonacoOptions)
 
     const getCodeLang = () => {
-      if (isInArray(responseData.value.bodyType, ['json', 'xml', 'html', 'text'])) {
-        return responseData.value.bodyType
+      if (isInArray(responseData.value.contentLang, ['html', 'xml', 'html', 'text'])) {
+        return responseData.value.contentLang
       } else {
         return 'plaintext'
       }
@@ -86,17 +86,17 @@ export default defineComponent({
 </script>
 
 <style lang="less">
-.response-json-main {
-  .jsoneditor-vue {
+.response-html-main {
+  .htmleditor-vue {
     height: 100%;
-    .jsoneditor-menu {
+    .htmleditor-menu {
       display: none;
     }
-    .jsoneditor-outer {
+    .htmleditor-outer {
       margin: 0;
       padding: 0;
       height: 100%;
-      .ace-jsoneditor {
+      .ace-htmleditor {
         height: 100%;
       }
     }
@@ -105,7 +105,7 @@ export default defineComponent({
 </style>
 
 <style lang="less" scoped>
-.response-json-main {
+.response-html-main {
   height: 100%;
   .head {
     padding: 2px 3px;

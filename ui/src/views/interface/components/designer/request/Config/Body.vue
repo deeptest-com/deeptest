@@ -10,7 +10,7 @@
           <a-select
               ref="bodyType"
               :options="bodyTypes"
-              v-model:value="interfaceData.apiKey.transferMode"
+              v-model:value="interfaceData.bodyType"
               size="small"
               :dropdownMatchSelectWidth="false"
               :bordered="false"
@@ -85,12 +85,12 @@ export default defineComponent({
     const editorOptions = ref(MonacoOptions)
 
     const bodyTypes = ref([
-      {value: 'json', label: 'application/json'},
-      {value: 'xml', label: 'application/xml'},
-      {value: 'formUrlencoded', label: 'application/x-www-form-urlencoded'},
-      {value: 'formData', label: 'application/form-data'},
-      {value: 'html', label: 'text/html'},
-      {value: 'text', label: 'text/text'},
+      {value: 'application/json', label: 'application/json'},
+      {value: 'application/xml', label: 'application/xml'},
+      {value: 'application/x-www-form-urlencoded', label: 'application/x-www-form-urlencoded'},
+      {value: 'application/form-data', label: 'application/form-data'},
+      {value: 'application/form-data', label: 'application/form-data'},
+      {value: 'text/text', label: 'text/text'},
     ])
 
     const getCodeLang = () => {

@@ -6,7 +6,9 @@ import (
 )
 
 type TestResponse struct {
-	Code        consts.HttpRespCode    `json:"code"`
+	StatusCode    consts.HttpRespCode `json:"statusCode"`
+	StatusContent string              `json:"statusContent"`
+
 	Headers     []domain.Header        `gorm:"-" json:"headers"`
 	Content     string                 `gorm:"default:''" json:"content"`
 	ContentType consts.HttpContentType `json:"contentType"`

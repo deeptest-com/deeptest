@@ -7,6 +7,12 @@ const (
 	POST   HttpMethod = "POST"
 	PUT    HttpMethod = "PUT"
 	DELETE HttpMethod = "DELETE"
+
+	PATCH   HttpMethod = "PATCH"
+	HEAD    HttpMethod = "HEAD"
+	CONNECT HttpMethod = "CONNECT"
+	OPTIONS HttpMethod = "OPTIONS"
+	TRACE   HttpMethod = "TRACE"
 )
 
 func (e HttpMethod) String() string {
@@ -33,6 +39,8 @@ const (
 
 	ContentTypeFormData       HttpContentType = "application/form-data"
 	ContentTypeFormUrlencoded HttpContentType = "application/x-www-form-urlencoded"
+
+	ContentTypeUnixDir HttpContentType = "httpd/unix-directory"
 )
 
 func (e HttpContentType) String() string {

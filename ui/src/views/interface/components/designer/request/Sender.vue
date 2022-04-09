@@ -187,9 +187,9 @@ export default defineComponent({
   display: flex;
   padding: 0 18px 0 0px;
   .methods {
-    width: 100px;
+    width: 120px;
     .curr-method {
-      width: 55px;
+      width: 65px;
     }
   }
   .url {

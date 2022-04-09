@@ -1,4 +1,4 @@
-// Code generated for package res by go-bindata DO NOT EDIT. (@generated)
+// StatusCode generated for package res by go-bindata DO NOT EDIT. (@generated)
 // sources:
 // res/en/messages_en.json
 // res/en/usage.txt

@@ -2,7 +2,7 @@
   <div class="response-meta">
     <a-row type="flex" :gutter="15">
       <a-col>
-        <span>状态：200.OK</span>
+        <span>状态：{{ responseData.statusContent }}</span>
       </a-col>
       <a-col>
         <span>耗时：200毫秒</span>

@@ -51,3 +51,23 @@ func (c *MockCtrl) Request(ctx iris.Context) {
 	}
 
 }
+
+func (c *MockCtrl) Head(ctx iris.Context) {
+	ctx.Header(consts.Server, "kataras iris v12")
+}
+
+func (c *MockCtrl) Connect(ctx iris.Context) {
+	ctx.Header(consts.Server, "kataras iris v12")
+}
+
+func (c *MockCtrl) Options(ctx iris.Context) {
+	ctx.Header(consts.Server, "kataras iris v12")
+	ctx.Header(consts.Allow, "GET, POST, PUT, DELETE, PATCH, HEAD, CONNECT, OPTIONS, TRACE")
+	ctx.Header(consts.ContentType, consts.ContentTypeUnixDir.String())
+}
+
+func (c *MockCtrl) Trace(ctx iris.Context) {
+	ctx.Header(consts.Server, "kataras iris v12")
+	ctx.Header(consts.Connection, "close")
+	ctx.Header(consts.Host, "deeptest.com")
+}

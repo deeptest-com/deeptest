@@ -28,6 +28,16 @@ func (s *TestInterfaceService) Test(req serverDomain.TestRequest) (ret serverDom
 		ret, _ = httpHelper.Put(req.Url, req.Params, req.Body, req.BodyType)
 	} else if req.Method == consts.DELETE {
 		ret, _ = httpHelper.Delete(req.Url, req.Params, req.Body, req.BodyType)
+	} else if req.Method == consts.PATCH {
+		ret, _ = httpHelper.Patch(req.Url, req.Params, req.Body, req.BodyType)
+	} else if req.Method == consts.HEAD {
+		ret, _ = httpHelper.Head(req.Url, req.Params)
+	} else if req.Method == consts.CONNECT {
+		ret, _ = httpHelper.Connect(req.Url, req.Params)
+	} else if req.Method == consts.OPTIONS {
+		ret, _ = httpHelper.Options(req.Url, req.Params)
+	} else if req.Method == consts.TRACE {
+		ret, _ = httpHelper.Trace(req.Url, req.Params)
 	}
 
 	ret.ContentLang, ret.ContentCharset = s.GetContentProps(ret.ContentType)
@@ -52,7 +62,7 @@ func (s *TestInterfaceService) GetContentProps(contentType consts.HttpContentTyp
 	}
 
 	typeName := arr1[1]
-	if typeName == "text" {
+	if typeName == "text" || typeName == "plain" {
 		typeName = "plaintext"
 	}
 	contentLang = consts.HttpRespLangType(typeName)

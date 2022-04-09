@@ -22,6 +22,12 @@ func (m *MockModule) Party() module.WebModule {
 			party.Post("/request", m.MockCtrl.Request).Name = "模拟接口测试"
 			party.Put("/request", m.MockCtrl.Request).Name = "模拟接口测试"
 			party.Delete("/request", m.MockCtrl.Request).Name = "模拟接口测试"
+
+			party.Patch("/request", m.MockCtrl.Request).Name = "模拟接口测试"
+			party.Head("/request", m.MockCtrl.Head).Name = "模拟接口测试"
+
+			party.Connect("/request", m.MockCtrl.Connect).Name = "模拟接口测试"
+			party.Trace("/request", m.MockCtrl.Trace).Name = "模拟接口测试"
 		})
 	}
 	return module.NewModule("/mock", handler)

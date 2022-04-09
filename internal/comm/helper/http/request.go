@@ -17,80 +17,61 @@ import (
 )
 
 func Get(reqUrl string, reqParams []domain.Param) (ret serverDomain.TestResponse, err error) {
-	client := &http.Client{}
-
-	if _consts.Verbose {
-		_logUtils.Info(reqUrl)
-	}
-
-	req, err := http.NewRequest("GET", reqUrl, nil)
-	if err != nil {
-		_logUtils.Error(err.Error())
-		return
-	}
-
-	queryParams := url.Values{}
-	for _, param := range reqParams {
-		queryParams.Add(param.Name, param.Value)
-	}
-	req.URL.RawQuery = queryParams.Encode()
-
-	resp, err := client.Do(req)
-	defer resp.Body.Close()
-
-	if err != nil {
-		_logUtils.Error(err.Error())
-		return
-	}
-
-	ret.Code = consts.HttpRespCode(resp.StatusCode)
-	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
-	ret.Headers = getHeaders(resp.Header)
-
-	content, _ := ioutil.ReadAll(resp.Body)
-	if _consts.Verbose {
-		_logUtils.PrintUnicode(content)
-	}
-
-	ret.Content = string(content)
-
-	return
+	return gets(reqUrl, consts.GET, reqParams, true)
 }
 
 func Post(reqUrl string, reqParams []domain.Param, data interface{}, bodyType consts.HttpContentType) (
 	ret serverDomain.TestResponse, err error) {
 
-	return postOrPut(reqUrl, consts.POST, reqParams, data, bodyType)
+	return posts(reqUrl, consts.POST, reqParams, data, bodyType, true)
 }
 
 func Put(reqUrl string, reqParams []domain.Param, data interface{}, bodyType consts.HttpContentType) (
 	ret serverDomain.TestResponse, err error) {
 
-	return postOrPut(reqUrl, consts.PUT, reqParams, data, bodyType)
+	return posts(reqUrl, consts.PUT, reqParams, data, bodyType, true)
+}
+
+func Patch(reqUrl string, reqParams []domain.Param, data interface{}, bodyType consts.HttpContentType) (
+	ret serverDomain.TestResponse, err error) {
+
+	return posts(reqUrl, consts.PATCH, reqParams, data, bodyType, true)
 }
 
 func Delete(reqUrl string, reqParams []domain.Param, data interface{}, bodyType consts.HttpContentType) (
 	ret serverDomain.TestResponse, err error) {
 
+	return posts(reqUrl, consts.DELETE, reqParams, data, bodyType, true)
+}
+
+func Head(reqUrl string, reqParams []domain.Param) (ret serverDomain.TestResponse, err error) {
+	return gets(reqUrl, consts.HEAD, reqParams, false)
+}
+
+func Connect(reqUrl string, reqParams []domain.Param) (ret serverDomain.TestResponse, err error) {
+	return gets(reqUrl, consts.CONNECT, reqParams, false)
+}
+
+func Options(reqUrl string, reqParams []domain.Param) (ret serverDomain.TestResponse, err error) {
+	return gets(reqUrl, consts.OPTIONS, reqParams, false)
+}
+
+func Trace(reqUrl string, reqParams []domain.Param) (ret serverDomain.TestResponse, err error) {
+	return gets(reqUrl, consts.TRACE, reqParams, false)
+}
+
+func gets(reqUrl string, method consts.HttpMethod, reqParams []domain.Param, readRespData bool) (
+	ret serverDomain.TestResponse, err error) {
+
+	client := &http.Client{}
+
 	if _consts.Verbose {
 		_logUtils.Info(reqUrl)
 	}
 
-	client := &http.Client{}
-
-	dataBytes, err := json.Marshal(data)
+	req, err := http.NewRequest(method.String(), reqUrl, nil)
 	if err != nil {
-		_logUtils.Infof(color.RedString("marshal request failed, error: %s.", err.Error()))
-		return
-	}
-
-	if _consts.Verbose {
-		_logUtils.Infof(string(dataBytes))
-	}
-
-	req, reqErr := http.NewRequest(consts.DELETE.String(), reqUrl, bytes.NewReader(dataBytes))
-	if reqErr != nil {
-		_logUtils.Error(reqErr.Error())
+		_logUtils.Error(err.Error())
 		return
 	}
 
@@ -100,7 +81,7 @@ func Delete(reqUrl string, reqParams []domain.Param, data interface{}, bodyType 
 	}
 	req.URL.RawQuery = queryParams.Encode()
 
-	req.Header.Set(consts.ContentType, bodyType.String())
+	req.Header.Set("Origin", "DEEPTEST")
 
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
@@ -110,22 +91,27 @@ func Delete(reqUrl string, reqParams []domain.Param, data interface{}, bodyType 
 		return
 	}
 
-	ret.Code = consts.HttpRespCode(resp.StatusCode)
+	ret.StatusCode = consts.HttpRespCode(resp.StatusCode)
+	ret.StatusContent = resp.Status
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
 	ret.Headers = getHeaders(resp.Header)
 
-	content, _ := ioutil.ReadAll(resp.Body)
-	if _consts.Verbose {
-		_logUtils.PrintUnicode(content)
-	}
+	if readRespData {
+		content, _ := ioutil.ReadAll(resp.Body)
+		if _consts.Verbose {
+			_logUtils.PrintUnicode(content)
+		}
 
-	ret.Content = string(content)
+		ret.Content = string(content)
+	}
 
 	return
 }
 
-func postOrPut(reqUrl string, method consts.HttpMethod, reqParams []domain.Param, data interface{}, bodyType consts.HttpContentType) (
+func posts(reqUrl string, method consts.HttpMethod, reqParams []domain.Param, data interface{},
+	bodyType consts.HttpContentType, readRespData bool) (
 	ret serverDomain.TestResponse, err error) {
+
 	if _consts.Verbose {
 		_logUtils.Info(reqUrl)
 	}
@@ -164,16 +150,20 @@ func postOrPut(reqUrl string, method consts.HttpMethod, reqParams []domain.Param
 		return
 	}
 
-	ret.Code = consts.HttpRespCode(resp.StatusCode)
+	ret.StatusCode = consts.HttpRespCode(resp.StatusCode)
+	ret.StatusContent = resp.Status
+
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
 	ret.Headers = getHeaders(resp.Header)
 
-	content, _ := ioutil.ReadAll(resp.Body)
-	if _consts.Verbose {
-		_logUtils.PrintUnicode(content)
-	}
+	if readRespData {
+		content, _ := ioutil.ReadAll(resp.Body)
+		if _consts.Verbose {
+			_logUtils.PrintUnicode(content)
+		}
 
-	ret.Content = string(content)
+		ret.Content = string(content)
+	}
 
 	return
 }

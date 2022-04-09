@@ -5,4 +5,8 @@ const (
 	Pattern = "pattern"
 
 	ContentType = "Content-Type"
+	Server      = "Server"
+	Allow       = "Allow"
+	Connection  = "Connection"
+	Host        = "Host"
 )

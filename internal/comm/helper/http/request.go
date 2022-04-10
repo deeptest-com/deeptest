@@ -8,12 +8,14 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/comm/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
+	stringUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/string"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/fatih/color"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 func Get(reqUrl string, reqParams []domain.Param) (ret serverDomain.TestResponse, err error) {
@@ -83,8 +85,13 @@ func gets(reqUrl string, method consts.HttpMethod, reqParams []domain.Param, rea
 
 	req.Header.Set("Origin", "DEEPTEST")
 
+	startTime := time.Now().UnixMilli()
+
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
+
+	endTime := time.Now().UnixMilli()
+	ret.Time = endTime - startTime
 
 	if err != nil {
 		_logUtils.Error(err.Error())
@@ -94,6 +101,7 @@ func gets(reqUrl string, method consts.HttpMethod, reqParams []domain.Param, rea
 	ret.StatusCode = consts.HttpRespCode(resp.StatusCode)
 	ret.StatusContent = resp.Status
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
+	ret.ContentLength = stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
 	ret.Headers = getHeaders(resp.Header)
 
 	if readRespData {
@@ -142,8 +150,13 @@ func posts(reqUrl string, method consts.HttpMethod, reqParams []domain.Param, da
 
 	req.Header.Set(consts.ContentType, bodyType.String())
 
+	startTime := time.Now().UnixMilli()
+
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
+
+	endTime := time.Now().UnixMilli()
+	ret.Time = endTime - startTime
 
 	if err != nil {
 		_logUtils.Error(err.Error())
@@ -154,6 +167,7 @@ func posts(reqUrl string, method consts.HttpMethod, reqParams []domain.Param, da
 	ret.StatusContent = resp.Status
 
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
+	ret.ContentLength = stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
 	ret.Headers = getHeaders(resp.Header)
 
 	if readRespData {

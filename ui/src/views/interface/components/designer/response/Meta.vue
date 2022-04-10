@@ -5,10 +5,10 @@
         <span>状态：{{ responseData.statusContent }}</span>
       </a-col>
       <a-col>
-        <span>耗时：200毫秒</span>
+        <span>耗时：{{ responseData.time }} 毫秒</span>
       </a-col>
       <a-col>
-        <span>大小：600字节</span>
+        <span>大小：{{ responseData.contentLength }} 字节</span>
       </a-col>
     </a-row>
   </div>

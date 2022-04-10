@@ -1,4 +1,5 @@
 import { RoutesDataItem } from "@/utils/routes";
+import {getShowRightBar} from "@/utils/cache";
 
 /**
  * 站点配置
@@ -40,6 +41,9 @@ export interface SettingsType {
      */
     currProjectId: string;
 
+    settings: string;
+    showRightBar: string;
+
     /**
      * Ajax请求头发送Token 的 Key值
      */
@@ -69,6 +73,10 @@ const settings: SettingsType = {
     },
     siteTokenKey: 'admin_antd_vue_token',
     currProjectId: 'curr_project_id',
+
+    settings: 'settings',
+    showRightBar: 'showRightBar',
+
     // ajaxHeadersTokenKey: 'x-token',
     ajaxHeadersTokenKey: 'Authorization',
     ajaxResponseNoVerifyUrl: [

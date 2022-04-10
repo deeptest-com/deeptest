@@ -1,8 +1,8 @@
 <template>
   <div class="env-main">
-    <div class="head">
+    <div class="head no-padding">
       <div class="title">
-        <a-select :value="''" size="small" style="width: 100%;">
+        <a-select :value="''" style="width: 100%;">
           <a-select-option value="">选择环境</a-select-option>
         </a-select>
       </div>
@@ -114,9 +114,14 @@ export default defineComponent({
 .env-main {
   height: 100%;
   .head {
-    padding: 2px 3px;
+    padding: 0 3px;
+    height: 32px;
+    line-height: 32px;
     border-bottom: 1px solid #d9d9d9;
     display: flex;
+    &.no-padding {
+      padding: 0;
+    }
     .title {
       flex: 1;
     }
@@ -135,7 +140,7 @@ export default defineComponent({
     .envs {
       .env {
         display: flex;
-        padding: 3px 2px 2px 4px;
+        padding: 3px 2px 4px 4px;
         line-height: 16px;
         .left {
           flex: 1;

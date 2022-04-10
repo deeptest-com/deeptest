@@ -115,6 +115,7 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .config-main {
+  padding: 3px;
   .ant-tabs-tabpane-active {
     height: 100%;
   }

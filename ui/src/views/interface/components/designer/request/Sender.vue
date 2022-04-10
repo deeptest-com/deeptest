@@ -185,9 +185,9 @@ export default defineComponent({
 <style lang="less" scoped>
 .sender-main {
   display: flex;
-  padding: 0 18px 0 0px;
+  padding: 0;
   .methods {
-    width: 120px;
+    width: 118px;
     .curr-method {
       width: 65px;
     }
@@ -196,10 +196,10 @@ export default defineComponent({
     flex: 1;
   }
   .send {
-    width: 100px;
+    width: 96px;
   }
   .save {
-    width: 93px;
+    width: 110px;
   }
 }
 

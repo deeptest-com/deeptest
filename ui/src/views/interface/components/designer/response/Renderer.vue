@@ -13,9 +13,9 @@
         <ResponseHeaders></ResponseHeaders>
       </a-tab-pane>
 
-      <a-tab-pane key="4" tab="测试结果">
+<!--      <a-tab-pane key="4" tab="测试结果">
         <ResponseResult></ResponseResult>
-      </a-tab-pane>
+      </a-tab-pane>-->
     </a-tabs>
   </div>
 </template>
@@ -40,13 +40,13 @@ export default defineComponent({
     ResponseLensImage,
     ResponseLensHtml,
     ResponseLensXml,
-    ResponseHeaders, ResponseResult, ResponseLensJson,
+    ResponseHeaders, ResponseLensJson,
   },
   setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
     const responseData = computed<any>(() => store.state.Interface.responseData);
-    const title = ref('')
+    const title = ref(t('text'))
 
     watch(responseData, () => {
       console.log('watch responseData')

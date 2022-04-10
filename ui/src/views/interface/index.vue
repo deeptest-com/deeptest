@@ -279,16 +279,16 @@ export default defineComponent({
 
     .toolbar {
       display: flex;
-      height: 34px;
+      height: 32px;
       border-bottom: 1px solid #D0D7DE;
       .tips {
         flex: 1;
-        padding: 2px 3px 0 6px;
+        padding: 0px 3px 0 6px;
         line-height: 31px;
         color: #5a5e66;
       }
       .buttons {
-        padding: 2px;
+        padding: 0px;
         width: 100px;
         text-align: right;
       }
@@ -306,7 +306,7 @@ export default defineComponent({
   }
 
   #splitter-h {
-    width: 3px;
+    width: 1px;
     height: 100%;
     background-color: #e6e9ec;
     cursor: ew-resize;

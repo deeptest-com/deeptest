@@ -313,12 +313,12 @@ export default defineComponent({
     cursor: ew-resize;
 
     &:hover {
-      width: 3px;
+      width: 1px;
       background-color: #D0D7DE;
     }
 
     &.active {
-      width: 3px;
+      width: 1px;
       background-color: #a9aeb4;
     }
   }

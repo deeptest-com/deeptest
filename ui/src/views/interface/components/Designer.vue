@@ -12,7 +12,7 @@
       </div>
     </div>
 
-    <div  v-if="showRightBar" class="design-right">
+    <div v-if="showRightBar" class="design-right">
       <a-tabs v-model:activeKey="tabKey"
               tabPosition="right"
               :tabBarGutter="0"
@@ -151,17 +151,17 @@ export default defineComponent({
 
     #design-splitter-v {
       width: 100%;
-      height: 3px;
+      height: 2px;
       background-color: #e6e9ec;
       cursor: ns-resize;
 
       &:hover {
-        height: 3px;
+        height: 2px;
         background-color: #D0D7DE;
       }
 
       &.active {
-        height: 3px;
+        height: 2px;
         background-color: #a9aeb4;
       }
     }
@@ -169,7 +169,7 @@ export default defineComponent({
 
   .design-right {
     width: 260px;
-    border-left: solid 2px #e6e9ec;
+    border-left: solid 1px #e6e9ec;
   }
 
   .switcher {

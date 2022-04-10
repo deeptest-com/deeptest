@@ -96,7 +96,7 @@ export default defineComponent({
     height: 100%;
 
     #top-panel {
-      padding: 2px;
+      padding: 0;
       height: 200px;
       width: 100%;
     }

@@ -269,7 +269,7 @@ func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project
 		return
 	}
 
-	project = model.Project{ProjectBase: serverDomain.ProjectBase{Name: fmt.Sprintf("%s的项目", user.Name)}}
+	project = model.Project{ProjectBase: serverDomain.ProjectBase{Name: "默认项目"}}
 	err = r.DB.Create(&project).Error
 	if err != nil {
 		logUtils.Errorf("添加项目错误", zap.String("错误:", err.Error()))

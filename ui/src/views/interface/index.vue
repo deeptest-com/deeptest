@@ -302,7 +302,8 @@ export default defineComponent({
   #right-panel {
     flex: 1;
     height: 100%;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
   #splitter-h {

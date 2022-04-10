@@ -60,7 +60,7 @@ const StoreModel: ModuleType = {
         async test({ commit }, payload: any ) {
             test(payload).then((json) => {
                 if (json.code === 0) {
-                    commit('setResponse',json.data);
+                    commit('setResponse', json.data);
                     return true;
                 } else {
                     return false
@@ -88,7 +88,7 @@ const StoreModel: ModuleType = {
                 const response = await get(payload.id);
                 const { data } = response;
 
-                commit('setInterface',data);
+                commit('setInterface', data);
                 return true;
             } catch (error) {
                 return false;

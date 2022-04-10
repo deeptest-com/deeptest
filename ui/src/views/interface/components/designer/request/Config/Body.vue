@@ -64,6 +64,7 @@ import {isInArray} from "@/utils/array";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
 import {Interface} from "@/views/interface/data";
+import {getCodeLangByType} from "@/views/interface/service";
 
 export default defineComponent({
   name: 'RequestBody',
@@ -88,17 +89,14 @@ export default defineComponent({
       {value: 'application/json', label: 'application/json'},
       {value: 'application/xml', label: 'application/xml'},
       {value: 'application/x-www-form-urlencoded', label: 'application/x-www-form-urlencoded'},
-      {value: 'application/form-data', label: 'application/form-data'},
-      {value: 'application/form-data', label: 'application/form-data'},
-      {value: 'text/text', label: 'text/text'},
+      {value: 'multipart/form-data', label: 'multipart/form-data'},
+      {value: 'text/html', label: 'text/html'},
+      {value: 'text/plain', label: 'text/plain'},
     ])
 
     const getCodeLang = () => {
-      if (isInArray(interfaceData.value.bodyType, ['json', 'xml', 'html', 'text'])) {
-        return interfaceData.value.bodyType
-      } else {
-        return 'plaintext'
-      }
+      console.log('interfaceData.value.bodyType', interfaceData.value.bodyType)
+      return getCodeLangByType(interfaceData.value.bodyType)
     }
 
     return {

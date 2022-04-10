@@ -85,7 +85,13 @@ module.exports = {
 
         config.plugin('monaco-editor').use(MonacoWebpackPlugin, [
             {
-                languages: ['plaintext', 'json', 'xml', 'html', 'javascript', 'typescript', 'go']
+                languages: [
+                    'javascript',
+                    'html',
+                    'xml',
+                    'json',
+                    'plaintext',
+                ]
             }
         ])
     }

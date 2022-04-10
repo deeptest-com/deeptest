@@ -97,12 +97,12 @@ export default defineComponent({
 
     #top-panel {
       padding: 0;
-      height: 200px;
+      flex: 4;
       width: 100%;
     }
 
     #bottom-panel {
-      flex: 1;
+      flex: 6;
       padding: 4px;
       width: 100%;
       overflow: auto;

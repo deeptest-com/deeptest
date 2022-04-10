@@ -32,7 +32,6 @@ export default defineComponent({
 
     const sendRequest = (e) => {
       console.log('sendRequest')
-
       store.dispatch('Interface/test', interfaceData.value)
     };
 

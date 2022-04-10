@@ -1,5 +1,6 @@
 import request from '@/utils/request';
 import {Interface} from "@/views/interface/data";
+import {isInArray} from "@/utils/array";
 
 const apiPath = 'interfaces';
 
@@ -84,5 +85,15 @@ export function expandOneKey(treeMap: any, key: number, expandedKeys: number[]) 
     const parentId = treeMap[key].parentId
     if (parentId) {
         expandOneKey(treeMap, parentId, expandedKeys)
+    }
+}
+
+export function getCodeLangByType(type) {
+    type = type.split('/')[1]
+
+    if (isInArray(type, ['json', 'xml', 'html'])) {
+        return type
+    } else {
+        return 'plaintext'
     }
 }

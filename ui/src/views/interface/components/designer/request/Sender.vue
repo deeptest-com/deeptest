@@ -99,14 +99,16 @@ export default defineComponent({
       interfaceData.value.method = val.key
     };
     const sendRequest = (e) => {
-      interfaceData.value.params = interfaceData.value.params.filter((param) => {
+      let data = JSON.parse(JSON.stringify(interfaceData.value))
+
+      data.params = interfaceData.value.params.filter((param) => {
         return !param.disabled && !!param.name
       })
-      interfaceData.value.headers = interfaceData.value.headers.filter((param) => {
+      data.headers = interfaceData.value.headers.filter((param) => {
         return !param.disabled && !!param.name
       })
 
-      console.log('sendRequest', interfaceData.value)
+      console.log('sendRequest', data)
 
       if (validateInfo()) {
         props.onSend()

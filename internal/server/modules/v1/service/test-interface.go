@@ -40,21 +40,19 @@ func (s *TestInterfaceService) Test(req serverDomain.TestRequest) (ret serverDom
 		ret, _ = httpHelper.Trace(req.Url, req.Params)
 	}
 
-	ret.ContentLang, ret.ContentCharset = s.GetContentProps(ret.ContentType)
+	s.GetContentProps(&ret)
 
 	return
 }
 
-func (s *TestInterfaceService) GetContentProps(contentType consts.HttpContentType) (
-	contentLang consts.HttpRespLangType, charset consts.HttpRespCharset) {
+func (s *TestInterfaceService) GetContentProps(ret *serverDomain.TestResponse) {
+	ret.ContentLang = "plaintext"
 
-	contentLang = "plaintext"
-
-	if contentType == "" {
+	if ret.ContentLang == "" {
 		return
 	}
 
-	arr := strings.Split(string(contentType), ";")
+	arr := strings.Split(string(ret.ContentType), ";")
 
 	arr1 := strings.Split(arr[0], "/")
 	if len(arr1) == 1 {
@@ -65,14 +63,14 @@ func (s *TestInterfaceService) GetContentProps(contentType consts.HttpContentTyp
 	if typeName == "text" || typeName == "plain" {
 		typeName = "plaintext"
 	}
-	contentLang = consts.HttpRespLangType(typeName)
+	ret.ContentLang = consts.HttpRespLangType(typeName)
 
 	arr2 := strings.Split(arr[1], "=")
 	if len(arr2) == 1 {
 		return
 	}
 
-	charset = consts.HttpRespCharset(arr2[1])
+	ret.ContentCharset = consts.HttpRespCharset(arr2[1])
 
 	return
 }

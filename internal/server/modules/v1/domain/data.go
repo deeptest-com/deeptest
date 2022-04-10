@@ -1,7 +1,8 @@
 package serverDomain
 
 type DataReq struct {
-	ClearData bool `json:"clearData"`
+	ClearData bool    `json:"clearData"`
+	Sys       DataSys `json:"sys"`
 }
 
 type DataSys struct {

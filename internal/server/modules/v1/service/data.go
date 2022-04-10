@@ -4,6 +4,7 @@ import (
 	"errors"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/server/config"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/module"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
@@ -13,6 +14,7 @@ import (
 	"github.com/snowlyg/helper/str"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var (
@@ -107,6 +109,17 @@ func (s *DataService) InitDB(req serverDomain.DataReq) error {
 			s.refreshConfig(serverConfig.VIPER, defaultConfig)
 			return err
 		}
+	}
+
+	if req.Sys.AdminPassword != "" {
+		hash, err := bcrypt.GenerateFromPassword([]byte(req.Sys.AdminPassword), bcrypt.DefaultCost)
+		if err != nil {
+			logUtils.Errorf("密码加密错误", zap.String("错误:", err.Error()))
+			return nil
+		}
+
+		req.Sys.AdminPassword = string(hash)
+		s.UserRepo.UpdatePasswordByName(serverConsts.AdminUserName, req.Sys.AdminPassword)
 	}
 
 	return nil

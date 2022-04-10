@@ -15,4 +15,7 @@ type TestResponse struct {
 
 	ContentLang    consts.HttpRespLangType `json:"contentLang"`
 	ContentCharset consts.HttpRespCharset  `json:"contentCharset"`
+	ContentLength  int                     `json:"contentLength"`
+
+	Time int64 `json:"time"`
 }

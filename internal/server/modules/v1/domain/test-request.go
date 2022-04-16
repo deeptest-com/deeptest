@@ -6,7 +6,8 @@ import (
 )
 
 type TestRequest struct {
-	Id uint `gorm:"-" json:"id"`
+	Id   uint   `gorm:"-" json:"id"`
+	Name string `json:"name"`
 
 	Url               string                 `json:"url"`
 	Method            consts.HttpMethod      `gorm:"default:GET" json:"method"`

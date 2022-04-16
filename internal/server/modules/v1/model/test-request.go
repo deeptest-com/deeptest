@@ -1,16 +1,13 @@
 package model
 
-import (
-	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
-)
-
 type TestRequest struct {
 	BaseModel
 
 	Name string `json:"name"`
 	Desc string `json:"desc"`
 
-	serverDomain.TestRequest
+	ReqContent  string `json:"reqContent"`
+	RespContent string `json:"respContent"`
 
 	InterfaceId uint `json:"interfaceId"`
 	ProjectId   uint `json:"projectId"`

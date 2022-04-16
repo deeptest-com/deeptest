@@ -30,7 +30,7 @@ func (r *TestRequestRepo) Get(fieldId uint) (field model.TestRequest, err error)
 	return
 }
 
-func (r *TestRequestRepo) Save(field *model.TestRequest) (err error) {
-	err = r.DB.Save(field).Error
+func (r *TestRequestRepo) Save(request *model.TestRequest) (err error) {
+	err = r.DB.Save(request).Error
 	return
 }

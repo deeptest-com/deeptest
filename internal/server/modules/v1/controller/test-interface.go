@@ -14,6 +14,8 @@ import (
 
 type TestInterfaceCtrl struct {
 	TestInterfaceService *service.TestInterfaceService `inject:""`
+	TestRequestService   *service.TestRequestService   `inject:""`
+
 	BaseCtrl
 }
 
@@ -43,6 +45,12 @@ func (c *TestInterfaceCtrl) TestInterface(ctx iris.Context) {
 	}
 
 	resp, err := c.TestInterfaceService.Test(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	_, err = c.TestRequestService.Create(req, resp, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

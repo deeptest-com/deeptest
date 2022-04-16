@@ -17,8 +17,11 @@ var (
 		&Org{},
 		&Project{},
 		&ProjectMember{},
+
 		&TestInterface{},
 		&TestInterfaceParam{},
 		&TestInterfaceHeader{},
+
+		&TestRequest{},
 	}
 )

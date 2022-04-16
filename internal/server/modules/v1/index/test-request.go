@@ -22,8 +22,6 @@ func (m *TestRequestModule) Party() module.WebModule {
 
 		index.Get("/", m.TestRequestCtrl.List).Name = "请求列表"
 		index.Get("/{id:uint}", m.TestRequestCtrl.Get).Name = "请求详情"
-		index.Post("/", m.TestRequestCtrl.Create).Name = "新建请求"
-		index.Put("/{id:uint}", m.TestRequestCtrl.Update).Name = "更新请求"
 		index.Delete("/{id:uint}", m.TestRequestCtrl.Delete).Name = "删除请求"
 	}
 	return module.NewModule("/interfaces", handler)

@@ -87,14 +87,71 @@ func (r *TestInterfaceRepo) Save(field *model.TestInterface) (err error) {
 }
 
 func (r *TestInterfaceRepo) Update(interf model.TestInterface) (err error) {
-	err = r.DB.Updates(interf).Error
+	r.DB.Transaction(func(tx *gorm.DB) error {
+		err = r.DB.Updates(interf).Error
+		if err != nil {
+			return err
+		}
 
-	err = r.UpdateParams(interf.ID, interf.Params)
+		err = r.UpdateParams(interf.ID, interf.Params)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateHeaders(interf.ID, interf.Headers)
+		if err != nil {
+			return err
+		}
+
+		return err
+	})
 
 	return
 }
 func (r *TestInterfaceRepo) UpdateParams(id uint, params []model.TestInterfaceParam) (err error) {
-	//err = r.DB.Updates(interf).Error
+	err = r.RemoveParams(id)
+
+	if len(params) == 0 {
+		return
+	}
+
+	for idx, _ := range params {
+		params[idx].ID = 0
+		params[idx].InterfaceId = id
+	}
+
+	err = r.DB.Create(&params).Error
+
+	return
+}
+func (r *TestInterfaceRepo) UpdateHeaders(id uint, headers []model.TestInterfaceHeader) (err error) {
+	err = r.RemoveHeaders(id)
+
+	if len(headers) == 0 {
+		return
+	}
+
+	for idx, _ := range headers {
+		headers[idx].ID = 0
+		headers[idx].InterfaceId = id
+	}
+
+	err = r.DB.Create(&headers).Error
+
+	return
+}
+
+func (r *TestInterfaceRepo) RemoveParams(id uint) (err error) {
+	err = r.DB.
+		Where("interface_id = ?", id).
+		Delete(&model.TestInterfaceParam{}, "").Error
+
+	return
+}
+func (r *TestInterfaceRepo) RemoveHeaders(id uint) (err error) {
+	err = r.DB.
+		Where("interface_id = ?", id).
+		Delete(&model.TestInterfaceHeader{}, "").Error
 
 	return
 }

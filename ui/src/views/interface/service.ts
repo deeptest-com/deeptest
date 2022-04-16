@@ -54,7 +54,7 @@ export async function move(data: any): Promise<any> {
     });
 }
 
-export function clearDataForRequest(data: any) {
+export function prepareDataForRequest(data: any) {
     data.params = data.params.filter((item) => {
         return !!item.name
     })

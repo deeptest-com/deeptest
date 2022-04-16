@@ -75,7 +75,7 @@ import {StateType} from "@/views/interface/store";
 import {Methods} from "@/views/interface/consts";
 import {regxUrl} from "@/utils/validation";
 import {Interface} from "@/views/interface/data";
-import {clearDataForRequest} from "@/views/interface/service";
+import {prepareDataForRequest} from "@/views/interface/service";
 
 export default defineComponent({
   name: 'RequestSender',
@@ -101,7 +101,7 @@ export default defineComponent({
     };
     const sendRequest = (e) => {
       let data = JSON.parse(JSON.stringify(interfaceData.value))
-      data = clearDataForRequest(data)
+      data = prepareDataForRequest(data)
       console.log('sendRequest', data)
 
       if (validateInfo()) {

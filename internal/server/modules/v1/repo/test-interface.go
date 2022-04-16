@@ -86,6 +86,14 @@ func (r *TestInterfaceRepo) Save(field *model.TestInterface) (err error) {
 	return
 }
 
+func (r *TestInterfaceRepo) UpdateName(id int, name string) (err error) {
+	err = r.DB.Model(&model.TestInterface{}).
+		Where("id = ?", id).
+		Update("name", name).Error
+
+	return
+}
+
 func (r *TestInterfaceRepo) Update(interf model.TestInterface) (err error) {
 	r.DB.Transaction(func(tx *gorm.DB) error {
 		err = r.DB.Updates(interf).Error

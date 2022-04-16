@@ -46,6 +46,15 @@ export async function update(id: number, params: any): Promise<any> {
     });
 }
 
+export async function updateNameReq(id: number, name: string): Promise<any> {
+    const data = {id: id, name: name}
+    return request({
+        url: `/${apiPath}/updateName`,
+        method: 'PUT',
+        data: data,
+    });
+}
+
 export async function remove(id: number): Promise<any> {
     return request({
         url: `/${apiPath}/${id}`,

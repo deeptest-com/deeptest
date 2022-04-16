@@ -169,6 +169,25 @@ func (c *TestInterfaceCtrl) Update(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
 }
 
+// UpdateName 更新
+func (c *TestInterfaceCtrl) UpdateName(ctx iris.Context) {
+	var req serverDomain.TestInterfaceReq
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		logUtils.Errorf("参数验证失败", err.Error())
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	err = c.TestInterfaceService.UpdateName(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+}
+
 // Delete 删除
 func (c *TestInterfaceCtrl) Delete(ctx iris.Context) {
 	projectId, _ := ctx.URLParamInt("currProjectId")

@@ -33,6 +33,21 @@
 
             class="interf-tree"
         >
+          <template #title="slotProps">
+            <span v-if="!slotProps.isEdit">{{ slotProps.name }}</span>
+
+            <span v-else class="name-editor">
+              <a-input v-model:value="editedData[slotProps.id]"
+                       @keyup.enter=updateName(slotProps.id)
+                       @click.stop />
+
+              <span class="btns">
+                <CheckOutlined @click.stop="updateName(slotProps.id)" />
+                <CloseOutlined @click.stop="cancelUpdate(slotProps.id)" />
+              </span>
+            </span>
+          </template>
+
           <template #icon="slotProps">
             <FolderOutlined v-if="slotProps.isDir && !slotProps.expanded" />
             <FolderOpenOutlined v-if="slotProps.isDir && slotProps.expanded" />
@@ -58,10 +73,11 @@ import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 
 import {Form} from "ant-design-vue";
-import {FolderOutlined, FileOutlined, FolderOpenOutlined} from "@ant-design/icons-vue";
+import {FolderOutlined, FileOutlined, FolderOpenOutlined,
+  CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
 import { TreeDragEvent, DropEvent } from 'ant-design-vue/es/tree/Tree';
 
-import {getNodeMap, expandAllKeys, expandOneKey} from "./service";
+import {getNodeMap, expandAllKeys, expandOneKey, updateNameReq} from "./service";
 import {StateType} from "./store";
 import throttle from "lodash.debounce";
 
@@ -76,6 +92,7 @@ export default defineComponent({
   name: 'InterfaceIndexPage',
   components: {
     FolderOutlined, FolderOpenOutlined, FileOutlined,
+    CheckOutlined, CloseOutlined,
     TreeContextMenu, InterfaceDesigner,
   },
   setup() {
@@ -92,9 +109,11 @@ export default defineComponent({
 
     const replaceFields = {key: 'id', title: 'name'};
     let expandedKeys = ref<number[]>([]);
-    let selectedKeys = ref<string[]>([]);
-    let checkedKeys = ref<string[]>([])
+    let selectedKeys = ref<number[]>([]);
+    let checkedKeys = ref<number[]>([])
     let isExpand = ref(false);
+
+    const editedData = ref<any>({})
 
     const isDir = computed<boolean>(() => {
       return contextNode.value && contextNode.value.isDir;
@@ -105,8 +124,8 @@ export default defineComponent({
       console.log('expandNode', keys[0], e)
     }
 
-    const selectNode = (keys, e) => {
-      console.log('selectNode')
+    const selectNode = (keys) => {
+      console.log('selectNode', keys)
       if (selectedKeys.value.length === 0) return
 
       const selectedData = treeDataMap[selectedKeys.value[0]]
@@ -118,6 +137,21 @@ export default defineComponent({
 
     const checkNode = (keys, e) => {
       console.log('checkNode', checkedKeys)
+    }
+
+    const updateName = (id) => {
+      const name = editedData.value[id]
+      console.log('updateName', id, name)
+      updateNameReq(id, name).then((json) => {
+        if (json.code === 0) {
+          treeDataMap[id].name = name
+          treeDataMap[id].isEdit = false
+        }
+      })
+    }
+    const cancelUpdate = (id) => {
+      console.log('cancelUpdate', id)
+      treeDataMap[id].isEdit = false
     }
 
     let contextNode = ref({} as any)
@@ -184,6 +218,17 @@ export default defineComponent({
       console.log('menuClick', selectedKey, targetId)
 
       targetModelId = targetId
+
+      if (selectedKey === 'rename') {
+        selectedKeys.value = [targetModelId]
+        selectNode(selectedKeys.value)
+        console.log('rename', treeDataMap[targetModelId])
+        editedData.value[targetModelId] = treeDataMap[targetModelId].name
+
+        treeDataMap[targetModelId].isEdit = true
+        return
+      }
+
       if (selectedKey === 'remove') {
         removeNode()
         return
@@ -231,6 +276,7 @@ export default defineComponent({
     return {
       treeData,
       interfaceData,
+      editedData,
 
       replaceFields,
       expandedKeys,
@@ -252,6 +298,9 @@ export default defineComponent({
       onDragEnter,
       onDrop,
 
+      updateName,
+      cancelUpdate,
+
       tips,
     }
   }
@@ -264,6 +313,24 @@ export default defineComponent({
   .ant-tree-iconEle {
     height: 20px !important;
     line-height: 20px !important;
+  }
+
+  .name-editor {
+    vertical-align: 5px;
+
+    input {
+      margin-top: -2px;
+      height: 24px;
+      width: 120px;
+      background-color: transparent;
+    }
+    .btns {
+      display: inline-block;
+      padding-left: 4px;
+      .anticon {
+        padding: 0 2px;
+      }
+    }
   }
 }
 </style>

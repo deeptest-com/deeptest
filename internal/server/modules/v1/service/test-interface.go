@@ -117,6 +117,11 @@ func (s *TestInterfaceService) Create(req serverDomain.TestInterfaceReq) (interf
 	return
 }
 
+func (s *TestInterfaceService) UpdateName(req serverDomain.TestInterfaceReq) (err error) {
+	err = s.InterfaceRepo.UpdateName(req.Id, req.Name)
+	return
+}
+
 func (s *TestInterfaceService) Delete(projectId, id uint) (err error) {
 	err = s.deleteInterfaceAndChildren(projectId, id)
 

@@ -1,6 +1,6 @@
 <template>
     <router-link to="/" class="indexlayout-top-message">
-      <BellOutlined :style="{ fontSize: '16px' }" />
+
       <a-badge
         class="indexlayout-top-message-badge"
         :count="message"

@@ -85,8 +85,16 @@ func (r *TestInterfaceRepo) Save(field *model.TestInterface) (err error) {
 	err = r.DB.Save(field).Error
 	return
 }
-func (r *TestInterfaceRepo) UpdateRange(rang string, id uint) (err error) {
-	err = r.DB.Model(&model.TestInterface{}).Where("id=?", id).Update("range", rang).Error
+
+func (r *TestInterfaceRepo) Update(interf model.TestInterface) (err error) {
+	err = r.DB.Updates(interf).Error
+
+	err = r.UpdateParams(interf.ID, interf.Params)
+
+	return
+}
+func (r *TestInterfaceRepo) UpdateParams(id uint, params []model.TestInterfaceParam) (err error) {
+	//err = r.DB.Updates(interf).Error
 
 	return
 }
@@ -146,6 +154,25 @@ func (r *TestInterfaceRepo) UpdateOrdAndParent(interf model.TestInterface) (err 
 	err = r.DB.Model(&interf).
 		Updates(model.TestInterface{Ordr: interf.Ordr, ParentId: interf.ParentId}).
 		Error
+
+	return
+}
+
+func (r *TestInterfaceRepo) ListParams(interfaceId uint) (pos []model.TestInterfaceParam, err error) {
+	err = r.DB.
+		Where("interface_id=?", interfaceId).
+		Where("NOT deleted").
+		Order("id ASC").
+		Find(&pos).Error
+	return
+}
+
+func (r *TestInterfaceRepo) ListHeaders(interfaceId uint) (pos []model.TestInterfaceHeader, err error) {
+	err = r.DB.
+		Where("interface_id=?", interfaceId).
+		Where("NOT deleted").
+		Order("id ASC").
+		Find(&pos).Error
 
 	return
 }

@@ -54,6 +54,17 @@ export async function move(data: any): Promise<any> {
     });
 }
 
+export function clearDataForRequest(data: any) {
+    data.params = data.params.filter((item) => {
+        return !!item.name
+    })
+    data.headers = data.headers.filter((item) => {
+        return !!item.name
+    })
+
+    return data
+}
+
 export function getNodeMap(treeNode: any, mp: any): void {
     if (!treeNode) return
 

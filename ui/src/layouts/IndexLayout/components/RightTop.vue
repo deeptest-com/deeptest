@@ -29,37 +29,19 @@
             <div class="indexlayout-top-menu-right">
                 <right-top-project />
 
-                <right-top-message />
-
-                <right-top-user />
-
-                <select-lang class="indexlayout-top-selectlang" />
-
+                <RightTopSettings></RightTopSettings>
             </div>
         </div>
-<!--        <div v-if="topNavEnable" class="indexlayout-right-top-bot">
-            <div class="indexlayout-right-top-bot-home">
-              <EnvironmentOutlined />
-            </div>
-            <bread-crumbs class="breadcrumb" :list="breadCrumbs"></bread-crumbs>
-        </div>
-        <right-tab-nav v-if="tabNavEnable" :routeItem="routeItem"></right-tab-nav>
--->
 
     </div>
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, PropType, Ref, toRefs } from "vue";
 import { useI18n } from "vue-i18n";
-import { MenuFoldOutlined, MenuUnfoldOutlined, EnvironmentOutlined } from '@ant-design/icons-vue';
 import { BreadcrumbType, RoutesDataItem } from '@/utils/routes';
-import BreadCrumbs from '@/components/BreadCrumbs/index.vue';
-import SelectLang from '@/components/SelectLang/index.vue';
 import ALink from '@/components/ALink/index.vue';
 import RightTopProject from './RightTopProject.vue';
-import RightTopMessage from './RightTopMessage.vue';
-import RightTopUser from './RightTopUser.vue';
-import RightTabNav from './RightTabNav.vue';
+import RightTopSettings from './RightTopSettings.vue';
 import useTopMenuWidth from "../composables/useTopMenuWidth";
 
 interface RightTopSetupData {
@@ -73,12 +55,7 @@ export default defineComponent({
     components: {
       ALink,
       RightTopProject,
-      RightTopMessage,
-      RightTopUser,
-      SelectLang,
-      // BreadCrumbs,
-      // EnvironmentOutlined,
-      // RightTabNav,
+      RightTopSettings,
     },
     props: {
       collapsed: {
@@ -184,12 +161,12 @@ export default defineComponent({
         text-decoration: none;
         color: #c0c4cc;
         font-size: 15px;
-        border-bottom: solid 3px transparent;
+        //border-bottom: solid 3px transparent;
         &:hover,
         &.active {
           background-color: @menu-dark-bg;
           color: @menu-dark-highlight-color;
-          border-bottom-color: @primary-color;
+          //border-bottom-color: @primary-color;
         }
       }
 
@@ -199,25 +176,21 @@ export default defineComponent({
     }
 
     .indexlayout-top-menu-right {
-      width: 320px;
-      .indexlayout-top-message {
-        margin: 0 0 0 8px;
-        height: @headerHeight;
-        line-height: @headerHeight;
-        /* display: inline-block; */
-        display: inline;
+      width: 238px;
+
+      .indexlayout-top-project {
+        float: left;
+        padding: 10px 0;
+      }
+
+      .indexlayout-top-settings {
+        float: left;
+        padding: 15px 0 15px 20px;
         color: #c0c4cc;
-        .indexlayout-top-message-badge {
-          margin-left: -5px;
-          margin-top: -20px;
+
+        .indexlayout-top-usermenu {
+          color: #c0c4cc;
         }
-      }
-      .indexlayout-top-usermenu {
-        padding-left: 10px;
-        color: #c0c4cc;
-      }
-      .indexlayout-top-selectlang {
-        padding-left: 10px;
       }
     }
 

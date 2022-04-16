@@ -16,7 +16,7 @@ func JwtHandler() iris.Handler {
 	verifier.Extractors = []multi.TokenExtractor{multi.FromHeader} // extract token only from Authorization: Bearer $token
 	verifier.ErrorHandler = func(ctx *context.Context, err error) {
 		ctx.JSON(_domain.Response{Code: _domain.AuthErr.Code, Data: nil, Msg: _domain.AuthErr.Msg})
-		//ctx.StopWithError(http.StatusUnauthorized, err)
+		// ctx.StopWithError(http.StatusUnauthorized, err)
 	} // extract token only from Authorization: Bearer $token
 	return verifier.Verify()
 }

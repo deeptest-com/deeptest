@@ -36,6 +36,12 @@ func (c *TestInterfaceCtrl) Test(ctx iris.Context) {
 		return
 	}
 
+	err = c.TestInterfaceService.UpdateByRequest(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
 	resp, err := c.TestInterfaceService.Test(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})

@@ -87,7 +87,7 @@ export default defineComponent({
       console.log('onMounted')
 
       resizeHeight('design-content', 'top-panel', 'design-splitter-v', 'bottom-panel',
-          200, 100, 0)
+          200, 100, 50)
     })
 
     return {
@@ -131,19 +131,19 @@ export default defineComponent({
   #design-content {
     flex: 1;
 
-    display: flex;
     flex-direction: column;
     position: relative;
     height: 100%;
 
+    display: flex;
     #top-panel {
+      height: 200px;
       padding: 0;
-      flex: 4;
       width: 100%;
     }
 
     #bottom-panel {
-      flex: 6;
+      flex: 1;
       padding: 4px;
       width: 100%;
       overflow: auto;

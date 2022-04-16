@@ -1,4 +1,5 @@
 <template>
+  <div class="indexlayout-top-project">
   <a-select
       ref="select"
       v-model:value="currProject.id"
@@ -8,6 +9,7 @@
   >
     <a-select-option v-for="item in projects" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
   </a-select>
+  </div>
 </template>
 
 <script lang="ts">

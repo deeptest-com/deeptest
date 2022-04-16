@@ -1,7 +1,6 @@
 <template>
     <div class="user-layout">      
       <div class="lang">
-        <SelectLang />
       </div>
       <router-view></router-view>
     </div>
@@ -11,13 +10,11 @@ import { computed, defineComponent, ref } from "vue";
 import { useRoute } from 'vue-router';
 import { getRouteItem, RoutesDataItem, vueRoutes } from '@/utils/routes';
 import UserLayoutRoutes from './routes';
-import SelectLang from '@/components/SelectLang/index.vue';
 import useTitle from '@/composables/useTitle';
 
 export default defineComponent({
     name: 'UserLayout',
     components: {
-        SelectLang
     },
     setup() {
         const route = useRoute();

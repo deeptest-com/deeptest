@@ -4,9 +4,16 @@ import {isInArray} from "@/utils/array";
 
 const apiPath = 'interfaces';
 
-export async function test(interf: Interface): Promise<any> {
+export async function testInterface(interf: Interface): Promise<any> {
     return request({
-        url: `/${apiPath}/test`,
+        url: `/${apiPath}/testInterface`,
+        method: 'post',
+        data: interf,
+    });
+}
+export async function saveInterface(interf: Interface): Promise<any> {
+    return request({
+        url: `/${apiPath}/saveInterface`,
         method: 'post',
         data: interf,
     });

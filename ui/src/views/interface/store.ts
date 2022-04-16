@@ -2,7 +2,7 @@ import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 
 import {
-    load, get, remove, create, update, move, test,
+    load, get, remove, create, update, move, testInterface, saveInterface,
 } from './service';
 import {Interface, Response} from "@/views/interface/data";
 
@@ -20,7 +20,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setResponse: Mutation<StateType>;
     };
     actions: {
-        test: Action<StateType, StateType>;
+        sendRequest: Action<StateType, StateType>;
+        saveInterface: Action<StateType, StateType>;
 
         loadInterface: Action<StateType, StateType>;
         getInterface: Action<StateType, StateType>;
@@ -28,7 +29,6 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateInterface: Action<StateType, StateType>;
         deleteInterface: Action<StateType, StateType>;
         moveInterface: Action<StateType, StateType>;
-        sendInterface: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -57,10 +57,19 @@ const StoreModel: ModuleType = {
         },
     },
     actions: {
-        async test({ commit }, payload: any ) {
-            test(payload).then((json) => {
+        async sendRequest({ commit }, payload: any ) {
+            testInterface(payload).then((json) => {
                 if (json.code === 0) {
                     commit('setResponse', json.data);
+                    return true;
+                } else {
+                    return false
+                }
+            })
+        },
+        async saveInterface({ commit }, payload: any ) {
+            saveInterface(payload).then((json) => {
+                if (json.code === 0) {
                     return true;
                 } else {
                     return false
@@ -127,14 +136,6 @@ const StoreModel: ModuleType = {
             try {
                 await move(payload);
                 await this.dispatch('Interface/loadInterface');
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async sendInterface({ commit }, payload: any ) {
-            try {
-                // await sendInterface(payload);
                 return true;
             } catch (error) {
                 return false;

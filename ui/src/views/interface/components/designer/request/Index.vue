@@ -1,6 +1,6 @@
 <template>
   <div id="request-main">
-    <RequestSender :onSend="sendRequest"></RequestSender>
+    <RequestSender :onSend="sendRequest" :onSave="saveInterface"></RequestSender>
     <RequestConfig></RequestConfig>
   </div>
 </template>
@@ -13,7 +13,6 @@ import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
 import RequestSender from './Sender.vue';
 import RequestConfig from './Config.vue';
-import {test} from "@/views/interface/service";
 import {Interface} from "@/views/interface/data";
 
 const useForm = Form.useForm;
@@ -32,7 +31,12 @@ export default defineComponent({
 
     const sendRequest = (data) => {
       console.log('sendRequest', data)
-      store.dispatch('Interface/test', data)
+      store.dispatch('Interface/sendRequest', data)
+    };
+
+    const saveInterface = (data) => {
+      console.log('saveInterface', data)
+      store.dispatch('Interface/saveInterface', data)
     };
 
     onMounted(() => {
@@ -42,6 +46,7 @@ export default defineComponent({
     return {
       interfaceData,
       sendRequest,
+      saveInterface,
     }
   }
 })

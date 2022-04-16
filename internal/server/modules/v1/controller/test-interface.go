@@ -21,8 +21,8 @@ func NewTestInterfaceCtrl() *TestInterfaceCtrl {
 	return &TestInterfaceCtrl{}
 }
 
-// Test
-func (c *TestInterfaceCtrl) Test(ctx iris.Context) {
+// TestInterface
+func (c *TestInterfaceCtrl) TestInterface(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
@@ -37,6 +37,36 @@ func (c *TestInterfaceCtrl) Test(ctx iris.Context) {
 	}
 
 	err = c.TestInterfaceService.UpdateByRequest(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	resp, err := c.TestInterfaceService.Test(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
+}
+
+// SaveInterface
+func (c *TestInterfaceCtrl) SaveInterface(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if projectId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
+		return
+	}
+
+	req := serverDomain.TestRequest{}
+	err = ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	err = c.TestInterfaceService.UpdateByConfig(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

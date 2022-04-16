@@ -150,6 +150,14 @@ func (s *TestInterfaceService) Update(id int, req serverDomain.TestInterfaceReq)
 	return
 }
 
+func (s *TestInterfaceService) UpdateByConfig(req serverDomain.TestRequest) (err error) {
+	interf := model.TestInterface{}
+	s.CopyValueFromRequest(&interf, req)
+
+	err = s.InterfaceRepo.Update(interf)
+
+	return
+}
 func (s *TestInterfaceService) UpdateByRequest(req serverDomain.TestRequest) (err error) {
 	interf := model.TestInterface{}
 	s.CopyValueFromRequest(&interf, req)

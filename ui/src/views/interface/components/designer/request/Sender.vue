@@ -83,6 +83,10 @@ export default defineComponent({
     onSend: {
       type: Function as PropType<(data) => void>,
       required: true
+    },
+    onSave: {
+      type: Function as PropType<(data) => void>,
+      required: true
     }
   },
   components: {
@@ -108,18 +112,30 @@ export default defineComponent({
         props.onSend(data)
       }
     };
-    const clearAll = (e) => {
-      console.log('clearAll', e)
+
+    const save = (e) => {
+      let data = JSON.parse(JSON.stringify(interfaceData.value))
+      data = prepareDataForRequest(data)
+      console.log('save', data)
+
+      if (validateInfo()) {
+        props.onSave(data)
+      }
     };
+
     const saveName = (e) => {
       console.log('saveName', e)
       e.preventDefault();
     };
+    const saveAs = (e) => {
+      console.log('saveAs', e)
+    };
+
     const copyLink = (e) => {
       console.log('copyLink', e)
     };
-    const saveAs = (e) => {
-      console.log('saveAs', e)
+    const clearAll = (e) => {
+      console.log('clearAll', e)
     };
     const none = (e) => {
       console.log('none', e)
@@ -151,6 +167,7 @@ export default defineComponent({
       methods,
       selectMethod,
       sendRequest,
+      save,
       clearAll,
       saveName,
       copyLink,

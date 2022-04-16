@@ -18,16 +18,18 @@ func NewTestExecCtrl() *MockCtrl {
 	return &MockCtrl{}
 }
 
-// Request
+func (c *MockCtrl) Get(ctx iris.Context) {
+	ctx.Header(consts.ContentType, consts.ContentTypeJSON.String()+";charset=utf-8")
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+}
+
 func (c *MockCtrl) Request(ctx iris.Context) {
 	var req model.TestRequest
 	err := ctx.ReadQuery(&req)
 	if err != nil {
-		if err != nil {
-			logUtils.Errorf("参数获取失败", err.Error())
-			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-			return
-		}
+		logUtils.Errorf("参数获取失败", err.Error())
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
 	}
 
 	data, err := c.MockService.Exec(req)
@@ -36,7 +38,6 @@ func (c *MockCtrl) Request(ctx iris.Context) {
 		return
 	}
 
-	//reqBodyType := ctx.GetContentType()
 	reqBodyType := ctx.GetHeader(consts.ContentType)
 
 	if reqBodyType == consts.ContentTypeJSON.String() {

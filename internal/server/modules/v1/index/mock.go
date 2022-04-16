@@ -18,7 +18,7 @@ func NewMockModule() *MockModule {
 func (m *MockModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.PartyFunc("/json", func(party iris.Party) {
-			party.Get("/request", m.MockCtrl.Request).Name = "模拟接口测试"
+			party.Get("/request", m.MockCtrl.Get).Name = "模拟接口测试"
 			party.Post("/request", m.MockCtrl.Request).Name = "模拟接口测试"
 			party.Put("/request", m.MockCtrl.Request).Name = "模拟接口测试"
 			party.Delete("/request", m.MockCtrl.Request).Name = "模拟接口测试"

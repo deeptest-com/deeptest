@@ -1,8 +1,11 @@
 <template>
     <a-dropdown>
-        <a class="indexlayout-top-usermenu ant-dropdown-link" @click="e => e.preventDefault()">
-            {{currentUser.name}} <DownOutlined />
+        <a @click="e => e.preventDefault()"
+           class="indexlayout-top-usermenu ant-dropdown-link">
+          <span>设置</span>
+          <DownOutlined />
         </a>
+
         <template #overlay>
             <a-menu @click="onMenuClick">
                 <a-menu-item key="userinfo">

@@ -2,8 +2,9 @@
     <div class="indexlayout-right-footer">
 <!--      <div class="footer-links">
         <a href="https://github.com/lqsong/admin-antd-vue" target="_blank">Github</a>
-      </div>-->
+      </div>
       <div class="footer-copyright">Copyright © 2022 deeptest.com, All Rights Reserved</div>
+-->
     </div>
 </template>
 <script lang="ts">

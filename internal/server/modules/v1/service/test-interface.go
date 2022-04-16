@@ -2,12 +2,12 @@ package service
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/comm/consts"
-	"github.com/aaronchen2k/deeptest/internal/comm/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/comm/helper/http"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
+	"github.com/jinzhu/copier"
 	"strings"
 )
 
@@ -83,14 +83,14 @@ func (s *TestInterfaceService) GetTree(projectId int) (root *model.TestInterface
 func (s *TestInterfaceService) Get(interfId int) (interf model.TestInterface, err error) {
 	if interfId > 0 {
 		interf, err = s.InterfaceRepo.Get(uint(interfId))
+
+		interf.Params, _ = s.InterfaceRepo.ListParams(uint(interfId))
+		interf.Headers, _ = s.InterfaceRepo.ListHeaders(uint(interfId))
 	}
 
-	if interf.Params == nil {
-		interf.Params = []domain.Param{{Name: "", Value: ""}}
-	}
-	if interf.Headers == nil {
-		interf.Headers = []domain.Header{{Name: "", Value: ""}}
-	}
+	interf.Params = append(interf.Params, model.TestInterfaceParam{Name: "", Value: ""})
+
+	interf.Headers = append(interf.Headers, model.TestInterfaceHeader{Name: "", Value: ""})
 
 	return
 }
@@ -146,6 +146,23 @@ func (s *TestInterfaceService) deleteInterfaceAndChildren(projectId, interfId ui
 }
 
 func (s *TestInterfaceService) Update(id int, req serverDomain.TestInterfaceReq) (err error) {
+
+	return
+}
+
+func (s *TestInterfaceService) UpdateByRequest(req serverDomain.TestRequest) (err error) {
+	interf := model.TestInterface{}
+	s.CopyValueFromRequest(&interf, req)
+
+	err = s.InterfaceRepo.Update(interf)
+
+	return
+}
+
+func (s *TestInterfaceService) CopyValueFromRequest(interf *model.TestInterface, req serverDomain.TestRequest) (err error) {
+	interf.ID = req.Id
+
+	copier.Copy(interf, req)
 
 	return
 }

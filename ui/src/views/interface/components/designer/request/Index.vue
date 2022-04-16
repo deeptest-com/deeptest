@@ -30,9 +30,9 @@ export default defineComponent({
     const store = useStore<{ Interface: StateType }>();
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
-    const sendRequest = (e) => {
-      console.log('sendRequest')
-      store.dispatch('Interface/test', interfaceData.value)
+    const sendRequest = (data) => {
+      console.log('sendRequest', data)
+      store.dispatch('Interface/test', data)
     };
 
     onMounted(() => {

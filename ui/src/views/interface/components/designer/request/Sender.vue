@@ -75,12 +75,13 @@ import {StateType} from "@/views/interface/store";
 import {Methods} from "@/views/interface/consts";
 import {regxUrl} from "@/utils/validation";
 import {Interface} from "@/views/interface/data";
+import {clearDataForRequest} from "@/views/interface/service";
 
 export default defineComponent({
   name: 'RequestSender',
   props: {
     onSend: {
-      type: Function as PropType<() => void>,
+      type: Function as PropType<(data) => void>,
       required: true
     }
   },
@@ -100,18 +101,11 @@ export default defineComponent({
     };
     const sendRequest = (e) => {
       let data = JSON.parse(JSON.stringify(interfaceData.value))
-
-      data.params = interfaceData.value.params.filter((param) => {
-        return !param.disabled && !!param.name
-      })
-      data.headers = interfaceData.value.headers.filter((param) => {
-        return !param.disabled && !!param.name
-      })
-
+      data = clearDataForRequest(data)
       console.log('sendRequest', data)
 
       if (validateInfo()) {
-        props.onSend()
+        props.onSend(data)
       }
     };
     const clearAll = (e) => {
@@ -189,7 +183,7 @@ export default defineComponent({
   display: flex;
   padding: 0;
   .methods {
-    width: 118px;
+    width: 116px;
     .curr-method {
       width: 65px;
     }

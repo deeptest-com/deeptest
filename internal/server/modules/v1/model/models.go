@@ -18,5 +18,7 @@ var (
 		&Project{},
 		&ProjectMember{},
 		&TestInterface{},
+		&TestInterfaceParam{},
+		&TestInterfaceHeader{},
 	}
 )

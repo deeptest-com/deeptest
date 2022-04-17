@@ -15,6 +15,7 @@ func NewRequestRepo(db *gorm.DB) *TestRequestRepo {
 
 func (r *TestRequestRepo) List(interfaceId int) (pos []model.TestRequest, err error) {
 	err = r.DB.
+		Select("id", "name").
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
 		Order("created_at DESC").

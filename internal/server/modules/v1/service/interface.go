@@ -15,7 +15,7 @@ type InterfaceService struct {
 	InterfaceRepo *repo.InterfaceRepo `inject:""`
 }
 
-func (s *InterfaceService) Test(req serverDomain.TestRequest) (ret serverDomain.TestResponse, err error) {
+func (s *InterfaceService) Test(req serverDomain.InvocationRequest) (ret serverDomain.InvocationResponse, err error) {
 	if req.Method == consts.GET {
 		ret, _ = httpHelper.Get(req.Url, req.Params)
 	} else if req.Method == consts.POST {
@@ -41,7 +41,7 @@ func (s *InterfaceService) Test(req serverDomain.TestRequest) (ret serverDomain.
 	return
 }
 
-func (s *InterfaceService) GetContentProps(ret *serverDomain.TestResponse) {
+func (s *InterfaceService) GetContentProps(ret *serverDomain.InvocationResponse) {
 	ret.ContentLang = "plaintext"
 
 	if ret.ContentLang == "" {
@@ -151,7 +151,7 @@ func (s *InterfaceService) Update(id int, req serverDomain.InterfaceReq) (err er
 	return
 }
 
-func (s *InterfaceService) UpdateByConfig(req serverDomain.TestRequest) (err error) {
+func (s *InterfaceService) UpdateByConfig(req serverDomain.InvocationRequest) (err error) {
 	interf := model.Interface{}
 	s.CopyValueFromRequest(&interf, req)
 
@@ -159,7 +159,7 @@ func (s *InterfaceService) UpdateByConfig(req serverDomain.TestRequest) (err err
 
 	return
 }
-func (s *InterfaceService) UpdateByRequest(req serverDomain.TestRequest) (err error) {
+func (s *InterfaceService) UpdateByRequest(req serverDomain.InvocationRequest) (err error) {
 	interf := model.Interface{}
 	s.CopyValueFromRequest(&interf, req)
 
@@ -168,7 +168,7 @@ func (s *InterfaceService) UpdateByRequest(req serverDomain.TestRequest) (err er
 	return
 }
 
-func (s *InterfaceService) CopyValueFromRequest(interf *model.Interface, req serverDomain.TestRequest) (err error) {
+func (s *InterfaceService) CopyValueFromRequest(interf *model.Interface, req serverDomain.InvocationRequest) (err error) {
 	interf.ID = req.Id
 
 	copier.Copy(interf, req)

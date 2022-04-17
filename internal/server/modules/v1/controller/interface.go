@@ -27,7 +27,7 @@ func (c *InterfaceCtrl) InvokeInterface(ctx iris.Context) {
 		return
 	}
 
-	req := serverDomain.TestRequest{}
+	req := serverDomain.InvocationRequest{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -63,7 +63,7 @@ func (c *InterfaceCtrl) SaveInterface(ctx iris.Context) {
 		return
 	}
 
-	req := serverDomain.TestRequest{}
+	req := serverDomain.InvocationRequest{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})

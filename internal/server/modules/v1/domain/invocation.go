@@ -5,7 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/comm/domain"
 )
 
-type TestRequest struct {
+type InvocationRequest struct {
 	Id   uint   `gorm:"-" json:"id"`
 	Name string `json:"name"`
 
@@ -23,4 +23,19 @@ type TestRequest struct {
 	BearerToken domain.BearerToken `gorm:"-" json:"bearerToken"`
 	OAuth20     domain.OAuth20     `gorm:"-" json:"oAuth20"`
 	ApiKey      domain.ApiKey      `gorm:"-" json:"apiKey"`
+}
+
+type InvocationResponse struct {
+	StatusCode    consts.HttpRespCode `json:"statusCode"`
+	StatusContent string              `json:"statusContent"`
+
+	Headers     []domain.Header        `gorm:"-" json:"headers"`
+	Content     string                 `gorm:"default:''" json:"content"`
+	ContentType consts.HttpContentType `json:"contentType"`
+
+	ContentLang    consts.HttpRespLangType `json:"contentLang"`
+	ContentCharset consts.HttpRespCharset  `json:"contentCharset"`
+	ContentLength  int                     `json:"contentLength"`
+
+	Time int64 `json:"time"`
 }

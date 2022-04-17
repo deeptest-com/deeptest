@@ -4,13 +4,13 @@ type TestRequest struct {
 	BaseModel
 
 	Name string `json:"name"`
-	Desc string `json:"desc"`
+	Desc string `json:"desc,omitempty"`
 
-	ReqContent  string `json:"reqContent"`
-	RespContent string `json:"respContent"`
+	ReqContent  string `json:"reqContent,omitempty"`
+	RespContent string `json:"respContent,omitempty"`
 
-	InterfaceId uint `json:"interfaceId"`
-	ProjectId   uint `json:"projectId"`
+	InterfaceId uint `json:"interfaceId,omitempty"`
+	ProjectId   uint `json:"projectId,omitempty"`
 }
 
 func (TestRequest) TableName() string {

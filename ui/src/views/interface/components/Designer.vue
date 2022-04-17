@@ -1,5 +1,5 @@
 <template>
-  <div class="designer-main">
+  <div v-if="interfaceData.id" class="designer-main">
     <div id="design-content" v-if="interfaceData.method">
       <div id="top-panel">
         <InterfaceRequest></InterfaceRequest>

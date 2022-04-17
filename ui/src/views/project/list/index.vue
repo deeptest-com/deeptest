@@ -28,8 +28,8 @@
                 },
             }"
         >
-          <template #name="{ text, record  }">
-            <a :href="record.href" target="_blank">{{ text }}</a>
+          <template #name="{ text  }">
+            {{ text }}
           </template>
           <template #status="{ record }">
             <a-tag v-if="record.disabled == 0" color="green">启用</a-tag>

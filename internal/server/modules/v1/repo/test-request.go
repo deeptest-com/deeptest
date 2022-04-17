@@ -13,18 +13,18 @@ func NewRequestRepo(db *gorm.DB) *TestRequestRepo {
 	return &TestRequestRepo{DB: db}
 }
 
-func (r *TestRequestRepo) ListByProject(projectId int) (pos []*model.TestRequest, err error) {
+func (r *TestRequestRepo) List(interfaceId int) (pos []model.TestRequest, err error) {
 	err = r.DB.
-		Where("project_id=?", projectId).
+		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
-		Order("parent_id ASC, ordr ASC").
+		Order("created_at DESC").
 		Find(&pos).Error
 	return
 }
 
-func (r *TestRequestRepo) Get(fieldId uint) (field model.TestRequest, err error) {
+func (r *TestRequestRepo) Get(id uint) (field model.TestRequest, err error) {
 	err = r.DB.
-		Where("id=?", fieldId).
+		Where("id=?", id).
 		Where("NOT deleted").
 		First(&field).Error
 	return
@@ -32,5 +32,14 @@ func (r *TestRequestRepo) Get(fieldId uint) (field model.TestRequest, err error)
 
 func (r *TestRequestRepo) Save(request *model.TestRequest) (err error) {
 	err = r.DB.Save(request).Error
+	return
+}
+
+func (r *TestRequestRepo) Delete(id uint) (err error) {
+	err = r.DB.Model(&model.TestRequest{}).
+		Where("id=?", id).
+		Update("deleted", true).
+		Error
+
 	return
 }

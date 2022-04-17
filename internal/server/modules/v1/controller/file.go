@@ -12,12 +12,7 @@ type FileCtrl struct {
 	FileService *service.FileService `inject:""`
 }
 
-func NewFileCtrl() *FileCtrl {
-	return &FileCtrl{}
-}
-
 // Upload 上传文件
-// - 需要 file 表单文件字段
 func (c *FileCtrl) Upload(ctx iris.Context) {
 	f, fh, err := ctx.FormFile("file")
 	if err != nil {

@@ -20,10 +20,6 @@ type UserCtrl struct {
 	UserRepo    *repo.UserRepo       `inject:""`
 }
 
-func NewUserCtrl() *UserCtrl {
-	return &UserCtrl{}
-}
-
 func (c *UserCtrl) ListAll(ctx iris.Context) {
 	var req serverDomain.UserReqPaginate
 

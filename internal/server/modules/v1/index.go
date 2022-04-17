@@ -22,9 +22,9 @@ type IndexModule struct {
 
 	MockModule *index.MockModule `inject:""`
 
-	ProjectModule       *index.ProjectModule       `inject:""`
-	TestInterfaceModule *index.TestInterfaceModule `inject:""`
-	TestRequestModule   *index.TestRequestModule   `inject:""`
+	ProjectModule    *index.ProjectModule    `inject:""`
+	InterfaceModule  *index.InterfaceModule  `inject:""`
+	InvocationModule *index.InvocationModule `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -53,8 +53,8 @@ func (m *IndexModule) Party() module.WebModule {
 		m.MockModule.Party(),
 
 		m.ProjectModule.Party(),
-		m.TestInterfaceModule.Party(),
-		m.TestRequestModule.Party(),
+		m.InterfaceModule.Party(),
+		m.InvocationModule.Party(),
 	}
 	return module.NewModule(serverConsts.ApiPath, handler, modules...)
 }

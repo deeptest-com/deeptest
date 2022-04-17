@@ -8,11 +8,7 @@ import (
 type MockService struct {
 }
 
-func NewMockService() *MockService {
-	return &MockService{}
-}
-
-func (s *MockService) Exec(req model.TestRequest) (resp iris.Map, err error) {
+func (s *MockService) Exec(req model.Invocation) (resp iris.Map, err error) {
 	resp["mockData"] = "mockData"
 
 	return

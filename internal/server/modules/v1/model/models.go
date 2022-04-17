@@ -18,10 +18,10 @@ var (
 		&Project{},
 		&ProjectMember{},
 
-		&TestInterface{},
-		&TestInterfaceParam{},
-		&TestInterfaceHeader{},
+		&Interface{},
+		&InterfaceParam{},
+		&InterfaceHeader{},
 
-		&TestRequest{},
+		&Invocation{},
 	}
 )

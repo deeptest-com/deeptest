@@ -286,7 +286,7 @@ func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project
 	}
 
 	// add root interface
-	interf := model.TestInterface{Name: "所有接口", ProjectId: project.ID, IsDir: true}
+	interf := model.Interface{Name: "所有接口", ProjectId: project.ID, IsDir: true}
 	err = r.DB.Create(&interf).Error
 	if err != nil {
 		logUtils.Errorf("添加接口错误", zap.String("错误:", err.Error()))

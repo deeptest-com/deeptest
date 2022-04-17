@@ -16,10 +16,6 @@ type RoleCtrl struct {
 	RoleService *service.RoleService `inject:""`
 }
 
-func NewRoleCtrl() *RoleCtrl {
-	return &RoleCtrl{}
-}
-
 // GetAllRoles 分页列表
 func (c *RoleCtrl) GetAllRoles(ctx iris.Context) {
 	var req serverDomain.RoleReqPaginate

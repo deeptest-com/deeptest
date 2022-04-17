@@ -43,6 +43,7 @@ export interface SettingsType {
 
     settings: string;
     showRightBar: string;
+    expandedKeys: string;
 
     /**
      * Ajax请求头发送Token 的 Key值
@@ -76,6 +77,7 @@ const settings: SettingsType = {
 
     settings: 'settings',
     showRightBar: 'showRightBar',
+    expandedKeys: 'deeptest-expandedKeys',
 
     // ajaxHeadersTokenKey: 'x-token',
     ajaxHeadersTokenKey: 'Authorization',

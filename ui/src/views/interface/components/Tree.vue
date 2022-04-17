@@ -75,6 +75,8 @@ import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
 
 import TreeContextMenu from "./TreeContextMenu.vue";
+import {StateType as ProjectStateType} from "@/store/project";
+import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
 
 const useForm = Form.useForm;
 
@@ -88,8 +90,10 @@ export default defineComponent({
   setup(props) {
     const {t} = useI18n();
 
-    const store = useStore<{ Interface: StateType }>();
+    const projectStore = useStore<{ project: ProjectStateType }>();
+    const currProject = computed<any>(() => projectStore.state.project.currProject);
 
+    const store = useStore<{ Interface: StateType }>();
     const treeData = computed<any>(() => store.state.Interface.treeData);
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
@@ -113,6 +117,8 @@ export default defineComponent({
     let tree = ref(null)
     const expandNode = (keys: string[], e: any) => {
       console.log('expandNode', keys[0], e)
+
+      setExpandedKeys(currProject.value.id, expandedKeys.value)
     }
 
     const selectNode = (keys) => {
@@ -181,6 +187,20 @@ export default defineComponent({
     const getNodeMapCall = throttle(async () => {
       getNodeMap(treeData.value[0], treeDataMap)
     }, 300)
+
+    const getOpenKeys = (treeNode, isAll) => {
+      if (!treeNode) return
+
+      expandedKeys.value.push(treeNode.id)
+      if (treeNode.children && isAll) {
+        treeNode.children.forEach((item, index) => {
+          getOpenKeys(item, isAll)
+        })
+      }
+    }
+    getOpenKeys(treeData.value[0], false)
+    console.log('expandedKeys.value', expandedKeys.value)
+
     watch(treeData, () => {
       console.log('watch', treeData)
       getNodeMapCall()
@@ -188,12 +208,26 @@ export default defineComponent({
       if (!treeData.value[0].children || treeData.value[0].children.length === 0) {
         tips.value = '右键树状节点操作'
       }
+
+      getExpandedKeys(currProject.value.id).then(async keys => {
+        console.log('keys', keys)
+        if (keys)
+          expandedKeys.value = keys
+
+        if (!expandedKeys.value || expandedKeys.value.length === 0) {
+          getOpenKeys(treeData.value[0], false) // expend first level folder
+          console.log('expandedKeys.value', expandedKeys.value)
+          await setExpandedKeys(currProject.value.id, expandedKeys.value)
+        }
+      })
     })
 
     const expandAll = () => {
       console.log('expandAll')
       isExpand.value = !isExpand.value
       expandedKeys.value = expandAllKeys(treeDataMap, isExpand.value)
+
+      setExpandedKeys(currProject.value.id, expandedKeys.value)
     }
 
     let targetModelId = 0

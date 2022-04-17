@@ -8,7 +8,7 @@
 
     <div class="body">
       <div class="histories">
-        <div v-for="(item, idx) in requestsData" :key="idx" class="history">
+        <div v-for="(item, idx) in invocationsData" :key="idx" class="history">
           <div class="left">
             <span @click="loadHistory(item.id)" class="dp-link" title="点击加载历史请求数据">{{item.name}}</span>
           </div>
@@ -43,7 +43,7 @@ export default defineComponent({
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
-    const requestsData = computed<any[]>(() => store.state.Interface.requestsData);
+    const invocationsData = computed<any[]>(() => store.state.Interface.invocationsData);
 
     const loadHistory = (id) => {
       console.log('loadHistory', id)
@@ -57,7 +57,7 @@ export default defineComponent({
 
     return {
       interfaceData,
-      requestsData,
+      invocationsData,
 
       loadHistory,
       removeHistory,

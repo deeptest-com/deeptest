@@ -18,10 +18,6 @@ type AccountCtrl struct {
 	UserRepo    *repo.UserRepo          `inject:""`
 }
 
-func NewAccountCtrl() *AccountCtrl {
-	return &AccountCtrl{}
-}
-
 func (c *AccountCtrl) Login(ctx iris.Context) {
 	var req serverDomain.LoginReq
 	if err := ctx.ReadJSON(&req); err != nil {

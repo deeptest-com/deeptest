@@ -11,15 +11,11 @@ import (
 	"strings"
 )
 
-type TestInterfaceService struct {
-	InterfaceRepo *repo.TestInterfaceRepo `inject:""`
+type InterfaceService struct {
+	InterfaceRepo *repo.InterfaceRepo `inject:""`
 }
 
-func NewTestInterfaceService() *TestInterfaceService {
-	return &TestInterfaceService{}
-}
-
-func (s *TestInterfaceService) Test(req serverDomain.TestRequest) (ret serverDomain.TestResponse, err error) {
+func (s *InterfaceService) Test(req serverDomain.TestRequest) (ret serverDomain.TestResponse, err error) {
 	if req.Method == consts.GET {
 		ret, _ = httpHelper.Get(req.Url, req.Params)
 	} else if req.Method == consts.POST {
@@ -45,7 +41,7 @@ func (s *TestInterfaceService) Test(req serverDomain.TestRequest) (ret serverDom
 	return
 }
 
-func (s *TestInterfaceService) GetContentProps(ret *serverDomain.TestResponse) {
+func (s *InterfaceService) GetContentProps(ret *serverDomain.TestResponse) {
 	ret.ContentLang = "plaintext"
 
 	if ret.ContentLang == "" {
@@ -75,12 +71,12 @@ func (s *TestInterfaceService) GetContentProps(ret *serverDomain.TestResponse) {
 	return
 }
 
-func (s *TestInterfaceService) GetTree(projectId int) (root *model.TestInterface, err error) {
+func (s *InterfaceService) GetTree(projectId int) (root *model.Interface, err error) {
 	root, err = s.InterfaceRepo.GetInterfaceTree(projectId)
 	return
 }
 
-func (s *TestInterfaceService) Get(interfId int) (interf model.TestInterface, err error) {
+func (s *InterfaceService) Get(interfId int) (interf model.Interface, err error) {
 	if interfId > 0 {
 		interf, err = s.InterfaceRepo.Get(uint(interfId))
 
@@ -88,20 +84,20 @@ func (s *TestInterfaceService) Get(interfId int) (interf model.TestInterface, er
 		interf.Headers, _ = s.InterfaceRepo.ListHeaders(uint(interfId))
 	}
 
-	interf.Params = append(interf.Params, model.TestInterfaceParam{Name: "", Value: ""})
+	interf.Params = append(interf.Params, model.InterfaceParam{Name: "", Value: ""})
 
-	interf.Headers = append(interf.Headers, model.TestInterfaceHeader{Name: "", Value: ""})
+	interf.Headers = append(interf.Headers, model.InterfaceHeader{Name: "", Value: ""})
 
 	return
 }
 
-func (s *TestInterfaceService) Save(interf *model.TestInterface) (err error) {
+func (s *InterfaceService) Save(interf *model.Interface) (err error) {
 	err = s.InterfaceRepo.Save(interf)
 
 	return
 }
-func (s *TestInterfaceService) Create(req serverDomain.TestInterfaceReq) (interf *model.TestInterface, err error) {
-	interf = &model.TestInterface{Name: req.Name, ProjectId: uint(req.ProjectId),
+func (s *InterfaceService) Create(req serverDomain.InterfaceReq) (interf *model.Interface, err error) {
+	interf = &model.Interface{Name: req.Name, ProjectId: uint(req.ProjectId),
 		IsDir: req.Type == serverConsts.Dir}
 
 	var dropPos serverConsts.DropPos
@@ -117,19 +113,19 @@ func (s *TestInterfaceService) Create(req serverDomain.TestInterfaceReq) (interf
 	return
 }
 
-func (s *TestInterfaceService) UpdateName(req serverDomain.TestInterfaceReq) (err error) {
+func (s *InterfaceService) UpdateName(req serverDomain.InterfaceReq) (err error) {
 	err = s.InterfaceRepo.UpdateName(req.Id, req.Name)
 	return
 }
 
-func (s *TestInterfaceService) Delete(projectId, id uint) (err error) {
+func (s *InterfaceService) Delete(projectId, id uint) (err error) {
 	err = s.deleteInterfaceAndChildren(projectId, id)
 
 	return
 }
 
-func (s *TestInterfaceService) Move(srcId, targetId uint, pos serverConsts.DropPos, projectId uint) (
-	srcInterface model.TestInterface, err error) {
+func (s *InterfaceService) Move(srcId, targetId uint, pos serverConsts.DropPos, projectId uint) (
+	srcInterface model.Interface, err error) {
 	srcInterface, err = s.InterfaceRepo.Get(srcId)
 
 	srcInterface.ParentId, srcInterface.Ordr = s.InterfaceRepo.UpdateOrder(pos, targetId)
@@ -138,7 +134,7 @@ func (s *TestInterfaceService) Move(srcId, targetId uint, pos serverConsts.DropP
 	return
 }
 
-func (s *TestInterfaceService) deleteInterfaceAndChildren(projectId, interfId uint) (err error) {
+func (s *InterfaceService) deleteInterfaceAndChildren(projectId, interfId uint) (err error) {
 	err = s.InterfaceRepo.Delete(interfId)
 	if err == nil {
 		children, _ := s.InterfaceRepo.GetChildren(projectId, interfId)
@@ -150,21 +146,21 @@ func (s *TestInterfaceService) deleteInterfaceAndChildren(projectId, interfId ui
 	return
 }
 
-func (s *TestInterfaceService) Update(id int, req serverDomain.TestInterfaceReq) (err error) {
+func (s *InterfaceService) Update(id int, req serverDomain.InterfaceReq) (err error) {
 
 	return
 }
 
-func (s *TestInterfaceService) UpdateByConfig(req serverDomain.TestRequest) (err error) {
-	interf := model.TestInterface{}
+func (s *InterfaceService) UpdateByConfig(req serverDomain.TestRequest) (err error) {
+	interf := model.Interface{}
 	s.CopyValueFromRequest(&interf, req)
 
 	err = s.InterfaceRepo.Update(interf)
 
 	return
 }
-func (s *TestInterfaceService) UpdateByRequest(req serverDomain.TestRequest) (err error) {
-	interf := model.TestInterface{}
+func (s *InterfaceService) UpdateByRequest(req serverDomain.TestRequest) (err error) {
+	interf := model.Interface{}
 	s.CopyValueFromRequest(&interf, req)
 
 	err = s.InterfaceRepo.Update(interf)
@@ -172,7 +168,7 @@ func (s *TestInterfaceService) UpdateByRequest(req serverDomain.TestRequest) (er
 	return
 }
 
-func (s *TestInterfaceService) CopyValueFromRequest(interf *model.TestInterface, req serverDomain.TestRequest) (err error) {
+func (s *InterfaceService) CopyValueFromRequest(interf *model.Interface, req serverDomain.TestRequest) (err error) {
 	interf.ID = req.Id
 
 	copier.Copy(interf, req)

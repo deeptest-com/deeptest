@@ -3,11 +3,11 @@ import {Interface} from "@/views/interface/data";
 import {isInArray} from "@/utils/array";
 
 const apiPath = 'interfaces';
-const apiRequest = 'requests';
+const apiRequest = 'invocations';
 
-export async function testInterface(interf: Interface): Promise<any> {
+export async function invokeInterface(interf: Interface): Promise<any> {
     return request({
-        url: `/${apiPath}/testInterface`,
+        url: `/${apiPath}/invokeInterface`,
         method: 'post',
         data: interf,
     });

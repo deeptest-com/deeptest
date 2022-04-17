@@ -16,10 +16,6 @@ type PermCtrl struct {
 	PermService *service.PermService `inject:""`
 }
 
-func NewPermCtrl() *PermCtrl {
-	return &PermCtrl{}
-}
-
 // GetAllPerms 分页列表
 func (c *PermCtrl) GetAllPerms(ctx iris.Context) {
 	var req serverDomain.PermReqPaginate

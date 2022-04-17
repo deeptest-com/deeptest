@@ -1,6 +1,6 @@
 package model
 
-type TestRequest struct {
+type Invocation struct {
 	BaseModel
 
 	Name string `json:"name"`
@@ -13,6 +13,6 @@ type TestRequest struct {
 	ProjectId   uint `json:"projectId,omitempty"`
 }
 
-func (TestRequest) TableName() string {
-	return "biz_test_request"
+func (Invocation) TableName() string {
+	return "biz_invocation"
 }

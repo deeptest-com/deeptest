@@ -1,5 +1,5 @@
 <template>
-  <div class="sender-main">
+  <div class="invocation-main">
     <div class="methods">
       <a-dropdown trigger="click">
         <template #overlay>
@@ -78,7 +78,7 @@ import {Interface} from "@/views/interface/data";
 import {prepareDataForRequest} from "@/views/interface/service";
 
 export default defineComponent({
-  name: 'RequestSender',
+  name: 'RequestInvocation',
   props: {
     onSend: {
       type: Function as PropType<(data) => void>,
@@ -103,10 +103,10 @@ export default defineComponent({
       console.log('selectMethod', val.key)
       interfaceData.value.method = val.key
     };
-    const sendRequest = (e) => {
+    const invoke = (e) => {
       let data = JSON.parse(JSON.stringify(interfaceData.value))
       data = prepareDataForRequest(data)
-      console.log('sendRequest', data)
+      console.log('invoke', data)
 
       if (validateInfo()) {
         props.onSend(data)
@@ -166,7 +166,7 @@ export default defineComponent({
       interfaceData,
       methods,
       selectMethod,
-      sendRequest,
+      sendRequest: invoke,
       save,
       clearAll,
       saveName,
@@ -196,7 +196,7 @@ export default defineComponent({
 </style>
 
 <style lang="less" scoped>
-.sender-main {
+.invocation-main {
   display: flex;
   padding: 0;
   .methods {

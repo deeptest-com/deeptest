@@ -1,6 +1,6 @@
 <template>
   <div id="request-main">
-    <RequestSender :onSend="sendRequest" :onSave="saveInterface"></RequestSender>
+    <RequestInvocation :onSend="invoke" :onSave="saveInterface"></RequestInvocation>
     <RequestConfig></RequestConfig>
   </div>
 </template>
@@ -11,7 +11,7 @@ import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
-import RequestSender from './Sender.vue';
+import RequestInvocation from './Invocation.vue';
 import RequestConfig from './Config.vue';
 import {Interface} from "@/views/interface/data";
 
@@ -22,16 +22,16 @@ export default defineComponent({
   props: {
   },
   components: {
-    RequestSender, RequestConfig,
+    RequestInvocation, RequestConfig,
   },
   setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
-    const sendRequest = (data) => {
-      console.log('sendRequest', data)
-      store.dispatch('Interface/sendRequest', data)
+    const invoke = (data) => {
+      console.log('invoke', data)
+      store.dispatch('Interface/invoke', data)
     };
 
     const saveInterface = (data) => {
@@ -45,7 +45,7 @@ export default defineComponent({
 
     return {
       interfaceData,
-      sendRequest,
+      invoke,
       saveInterface,
     }
   }

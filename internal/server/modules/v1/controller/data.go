@@ -18,10 +18,6 @@ type DataCtrl struct {
 	DataService *service.DataService `inject:""`
 }
 
-func NewDataCtrl() *DataCtrl {
-	return &DataCtrl{}
-}
-
 // InitDB 初始化项目接口
 func (c *DataCtrl) Init(ctx iris.Context) {
 	req := serverDomain.DataReq{}

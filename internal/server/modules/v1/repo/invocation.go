@@ -5,15 +5,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type TestRequestRepo struct {
+type InvocationRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func NewRequestRepo(db *gorm.DB) *TestRequestRepo {
-	return &TestRequestRepo{DB: db}
-}
-
-func (r *TestRequestRepo) List(interfaceId int) (pos []model.TestRequest, err error) {
+func (r *InvocationRepo) List(interfaceId int) (pos []model.Invocation, err error) {
 	err = r.DB.
 		Select("id", "name").
 		Where("interface_id=?", interfaceId).
@@ -23,7 +19,7 @@ func (r *TestRequestRepo) List(interfaceId int) (pos []model.TestRequest, err er
 	return
 }
 
-func (r *TestRequestRepo) Get(id uint) (field model.TestRequest, err error) {
+func (r *InvocationRepo) Get(id uint) (field model.Invocation, err error) {
 	err = r.DB.
 		Where("id=?", id).
 		Where("NOT deleted").
@@ -31,13 +27,13 @@ func (r *TestRequestRepo) Get(id uint) (field model.TestRequest, err error) {
 	return
 }
 
-func (r *TestRequestRepo) Save(request *model.TestRequest) (err error) {
+func (r *InvocationRepo) Save(request *model.Invocation) (err error) {
 	err = r.DB.Save(request).Error
 	return
 }
 
-func (r *TestRequestRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.TestRequest{}).
+func (r *InvocationRepo) Delete(id uint) (err error) {
+	err = r.DB.Model(&model.Invocation{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error

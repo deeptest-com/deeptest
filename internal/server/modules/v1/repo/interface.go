@@ -7,15 +7,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type TestInterfaceRepo struct {
+type InterfaceRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func NewInterfaceRepo(db *gorm.DB) *TestInterfaceRepo {
-	return &TestInterfaceRepo{DB: db}
-}
-
-func (r *TestInterfaceRepo) GetInterfaceTree(projectId int) (root *model.TestInterface, err error) {
+func (r *InterfaceRepo) GetInterfaceTree(projectId int) (root *model.Interface, err error) {
 	pos, err := r.ListByProject(projectId)
 
 	if err != nil {
@@ -28,11 +24,11 @@ func (r *TestInterfaceRepo) GetInterfaceTree(projectId int) (root *model.TestInt
 	return
 }
 
-func (r *TestInterfaceRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint) (parentId uint, ordr int) {
+func (r *InterfaceRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint) (parentId uint, ordr int) {
 	if pos == serverConsts.Inner {
 		parentId = targetId
 
-		var preChild model.TestInterface
+		var preChild model.Interface
 		r.DB.Where("parent_id=?", parentId).
 			Order("ordr DESC").Limit(1).
 			First(&preChild)
@@ -43,7 +39,7 @@ func (r *TestInterfaceRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint)
 		brother, _ := r.Get(targetId)
 		parentId = brother.ParentId
 
-		r.DB.Model(&model.TestInterface{}).
+		r.DB.Model(&model.Interface{}).
 			Where("NOT deleted AND parent_id=? AND ordr >= ?", parentId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
@@ -53,7 +49,7 @@ func (r *TestInterfaceRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint)
 		brother, _ := r.Get(targetId)
 		parentId = brother.ParentId
 
-		r.DB.Model(&model.TestInterface{}).
+		r.DB.Model(&model.Interface{}).
 			Where("NOT deleted AND parent_id=? AND ordr > ?", parentId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
@@ -64,7 +60,7 @@ func (r *TestInterfaceRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint)
 	return
 }
 
-func (r *TestInterfaceRepo) ListByProject(projectId int) (pos []*model.TestInterface, err error) {
+func (r *InterfaceRepo) ListByProject(projectId int) (pos []*model.Interface, err error) {
 	err = r.DB.
 		Where("project_id=?", projectId).
 		Where("NOT deleted").
@@ -73,7 +69,7 @@ func (r *TestInterfaceRepo) ListByProject(projectId int) (pos []*model.TestInter
 	return
 }
 
-func (r *TestInterfaceRepo) Get(fieldId uint) (field model.TestInterface, err error) {
+func (r *InterfaceRepo) Get(fieldId uint) (field model.Interface, err error) {
 	err = r.DB.
 		Where("id=?", fieldId).
 		Where("NOT deleted").
@@ -81,20 +77,20 @@ func (r *TestInterfaceRepo) Get(fieldId uint) (field model.TestInterface, err er
 	return
 }
 
-func (r *TestInterfaceRepo) Save(field *model.TestInterface) (err error) {
+func (r *InterfaceRepo) Save(field *model.Interface) (err error) {
 	err = r.DB.Save(field).Error
 	return
 }
 
-func (r *TestInterfaceRepo) UpdateName(id int, name string) (err error) {
-	err = r.DB.Model(&model.TestInterface{}).
+func (r *InterfaceRepo) UpdateName(id int, name string) (err error) {
+	err = r.DB.Model(&model.Interface{}).
 		Where("id = ?", id).
 		Update("name", name).Error
 
 	return
 }
 
-func (r *TestInterfaceRepo) Update(interf model.TestInterface) (err error) {
+func (r *InterfaceRepo) Update(interf model.Interface) (err error) {
 	r.DB.Transaction(func(tx *gorm.DB) error {
 		err = r.DB.Updates(interf).Error
 		if err != nil {
@@ -116,7 +112,7 @@ func (r *TestInterfaceRepo) Update(interf model.TestInterface) (err error) {
 
 	return
 }
-func (r *TestInterfaceRepo) UpdateParams(id uint, params []model.TestInterfaceParam) (err error) {
+func (r *InterfaceRepo) UpdateParams(id uint, params []model.InterfaceParam) (err error) {
 	err = r.RemoveParams(id)
 
 	if len(params) == 0 {
@@ -132,7 +128,7 @@ func (r *TestInterfaceRepo) UpdateParams(id uint, params []model.TestInterfacePa
 
 	return
 }
-func (r *TestInterfaceRepo) UpdateHeaders(id uint, headers []model.TestInterfaceHeader) (err error) {
+func (r *InterfaceRepo) UpdateHeaders(id uint, headers []model.InterfaceHeader) (err error) {
 	err = r.RemoveHeaders(id)
 
 	if len(headers) == 0 {
@@ -149,22 +145,22 @@ func (r *TestInterfaceRepo) UpdateHeaders(id uint, headers []model.TestInterface
 	return
 }
 
-func (r *TestInterfaceRepo) RemoveParams(id uint) (err error) {
+func (r *InterfaceRepo) RemoveParams(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
-		Delete(&model.TestInterfaceParam{}, "").Error
+		Delete(&model.InterfaceParam{}, "").Error
 
 	return
 }
-func (r *TestInterfaceRepo) RemoveHeaders(id uint) (err error) {
+func (r *InterfaceRepo) RemoveHeaders(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
-		Delete(&model.TestInterfaceHeader{}, "").Error
+		Delete(&model.InterfaceHeader{}, "").Error
 
 	return
 }
 
-func (r *TestInterfaceRepo) makeTree(Data []*model.TestInterface, node *model.TestInterface) { //参数为父节点，添加父节点的子节点指针切片
+func (r *InterfaceRepo) makeTree(Data []*model.Interface, node *model.Interface) { //参数为父节点，添加父节点的子节点指针切片
 	children, _ := r.haveChild(Data, node) //判断节点是否有子节点并返回
 	if children != nil {
 		node.Children = append(node.Children, children[0:]...) //添加子节点
@@ -177,7 +173,7 @@ func (r *TestInterfaceRepo) makeTree(Data []*model.TestInterface, node *model.Te
 	}
 }
 
-func (r *TestInterfaceRepo) haveChild(Data []*model.TestInterface, node *model.TestInterface) (child []*model.TestInterface, yes bool) {
+func (r *InterfaceRepo) haveChild(Data []*model.Interface, node *model.Interface) (child []*model.Interface, yes bool) {
 	for _, v := range Data {
 		if v.ParentId == node.ID {
 			v.Slots = iris.Map{"icon": "icon"}
@@ -190,40 +186,40 @@ func (r *TestInterfaceRepo) haveChild(Data []*model.TestInterface, node *model.T
 	return
 }
 
-func (r *TestInterfaceRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.TestInterface{}).
+func (r *InterfaceRepo) Delete(id uint) (err error) {
+	err = r.DB.Model(&model.Interface{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
 
-	//field := model.TestInterface{}
+	//field := model.Interface{}
 	//field.ID = id
 	//err = r.DB.Delete(field).Error
 
 	return
 }
 
-func (r *TestInterfaceRepo) GetChildren(defId, fieldId uint) (children []*model.TestInterface, err error) {
+func (r *InterfaceRepo) GetChildren(defId, fieldId uint) (children []*model.Interface, err error) {
 	err = r.DB.Where("defID=? AND parentID=?", defId, fieldId).Find(&children).Error
 	return
 }
 
-func (r *TestInterfaceRepo) SetIsRange(fieldId uint, b bool) (err error) {
-	err = r.DB.Model(&model.TestInterface{}).
+func (r *InterfaceRepo) SetIsRange(fieldId uint, b bool) (err error) {
+	err = r.DB.Model(&model.Interface{}).
 		Where("id = ?", fieldId).Update("isRange", b).Error
 
 	return
 }
 
-func (r *TestInterfaceRepo) UpdateOrdAndParent(interf model.TestInterface) (err error) {
+func (r *InterfaceRepo) UpdateOrdAndParent(interf model.Interface) (err error) {
 	err = r.DB.Model(&interf).
-		Updates(model.TestInterface{Ordr: interf.Ordr, ParentId: interf.ParentId}).
+		Updates(model.Interface{Ordr: interf.Ordr, ParentId: interf.ParentId}).
 		Error
 
 	return
 }
 
-func (r *TestInterfaceRepo) ListParams(interfaceId uint) (pos []model.TestInterfaceParam, err error) {
+func (r *InterfaceRepo) ListParams(interfaceId uint) (pos []model.InterfaceParam, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
@@ -232,7 +228,7 @@ func (r *TestInterfaceRepo) ListParams(interfaceId uint) (pos []model.TestInterf
 	return
 }
 
-func (r *TestInterfaceRepo) ListHeaders(interfaceId uint) (pos []model.TestInterfaceHeader, err error) {
+func (r *InterfaceRepo) ListHeaders(interfaceId uint) (pos []model.InterfaceHeader, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").

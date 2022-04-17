@@ -18,10 +18,6 @@ type ProjectCtrl struct {
 	BaseCtrl
 }
 
-func NewProjectCtrl() *ProjectCtrl {
-	return &ProjectCtrl{}
-}
-
 func (c *ProjectCtrl) List(ctx iris.Context) {
 	var req serverDomain.ProjectReqPaginate
 	if err := ctx.ReadQuery(&req); err != nil {

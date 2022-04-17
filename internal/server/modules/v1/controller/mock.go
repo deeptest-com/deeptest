@@ -14,17 +14,13 @@ type MockCtrl struct {
 	BaseCtrl
 }
 
-func NewTestExecCtrl() *MockCtrl {
-	return &MockCtrl{}
-}
-
 func (c *MockCtrl) Get(ctx iris.Context) {
 	ctx.Header(consts.ContentType, consts.ContentTypeJSON.String()+";charset=utf-8")
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
 }
 
 func (c *MockCtrl) Request(ctx iris.Context) {
-	var req model.TestRequest
+	var req model.Invocation
 	err := ctx.ReadQuery(&req)
 	if err != nil {
 		logUtils.Errorf("参数获取失败", err.Error())

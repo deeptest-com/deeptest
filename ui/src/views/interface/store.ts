@@ -2,7 +2,7 @@ import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 
 import {
-    load, get, remove, create, update, move, testInterface, saveInterface, listRequest, removeRequest, loadHistory,
+    load, get, remove, create, update, move, invokeInterface, saveInterface, listRequest, removeRequest, loadHistory,
 } from './service';
 import {Interface, Response} from "@/views/interface/data";
 
@@ -11,7 +11,7 @@ export interface StateType {
     interfaceData: Interface;
     responseData: Response;
 
-    requestsData: any[];
+    invocationsData: any[];
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -21,10 +21,10 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setInterface: Mutation<StateType>;
         setResponse: Mutation<StateType>;
 
-        setRequests: Mutation<StateType>;
+        setInvocations: Mutation<StateType>;
     };
     actions: {
-        sendRequest: Action<StateType, StateType>;
+        invoke: Action<StateType, StateType>;
         saveInterface: Action<StateType, StateType>;
 
         loadInterface: Action<StateType, StateType>;
@@ -44,7 +44,7 @@ const initState: StateType = {
     interfaceData: {} as Interface,
     responseData: {} as Response,
 
-    requestsData: [],
+    invocationsData: [],
 };
 
 const StoreModel: ModuleType = {
@@ -66,13 +66,13 @@ const StoreModel: ModuleType = {
             state.responseData = payload;
         },
 
-        setRequests(state, payload) {
-            state.requestsData = payload;
+        setInvocations(state, payload) {
+            state.invocationsData = payload;
         },
     },
     actions: {
-        async sendRequest({ commit }, payload: any ) {
-            testInterface(payload).then((json) => {
+        async invoke({ commit }, payload: any ) {
+            invokeInterface(payload).then((json) => {
                 if (json.code === 0) {
                     commit('setResponse', json.data);
                     this.dispatch('Interface/listRequest', payload.id);
@@ -160,7 +160,7 @@ const StoreModel: ModuleType = {
             try {
                 const resp = await listRequest(interfaceId);
                 const { data } = resp;
-                commit('setRequests', data);
+                commit('setInvocations', data);
                 return true;
             } catch (error) {
                 return false;

@@ -6,7 +6,7 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-type TestInterface struct {
+type Interface struct {
 	BaseModel
 
 	Name string `json:"name"`
@@ -17,15 +17,15 @@ type TestInterface struct {
 	ProjectId uint `json:"projectId"`
 	UseID     uint `json:"useId"`
 
-	Ordr     int              `json:"ordr"`
-	Children []*TestInterface `gorm:"-" json:"children"`
+	Ordr     int          `json:"ordr"`
+	Children []*Interface `gorm:"-" json:"children"`
 
 	Slots iris.Map `gorm:"-" json:"slots"`
 
 	Url               string                 `json:"url"`
 	Method            string                 `gorm:"default:GET" json:"method"`
-	Params            []TestInterfaceParam   `gorm:"-" json:"params"`
-	Headers           []TestInterfaceHeader  `gorm:"-" json:"headers"`
+	Params            []InterfaceParam       `gorm:"-" json:"params"`
+	Headers           []InterfaceHeader      `gorm:"-" json:"headers"`
 	Body              string                 `gorm:"default:{}" json:"body"`
 	BodyType          consts.HttpContentType `gorm:"default:''" json:"bodyType"`
 	AuthorizationType string                 `gorm:"default:''" json:"authorizationType"`
@@ -38,28 +38,28 @@ type TestInterface struct {
 	ApiKey      domain.ApiKey      `gorm:"-" json:"apiKey"`
 }
 
-func (TestInterface) TableName() string {
-	return "biz_test_interface"
+func (Interface) TableName() string {
+	return "biz_interface"
 }
 
-type TestInterfaceParam struct {
+type InterfaceParam struct {
 	BaseModel
 	Name        string `json:"name"`
 	Value       string `json:"value"`
 	InterfaceId uint   `json:"interfaceId"`
 }
 
-func (TestInterfaceParam) TableName() string {
-	return "biz_test_interface_param"
+func (InterfaceParam) TableName() string {
+	return "biz_interface_param"
 }
 
-type TestInterfaceHeader struct {
+type InterfaceHeader struct {
 	BaseModel
 	Name        string `json:"name"`
 	Value       string `json:"value"`
 	InterfaceId uint   `json:"interfaceId"`
 }
 
-func (TestInterfaceHeader) TableName() string {
-	return "biz_test_interface_header"
+func (InterfaceHeader) TableName() string {
+	return "biz_interface_header"
 }

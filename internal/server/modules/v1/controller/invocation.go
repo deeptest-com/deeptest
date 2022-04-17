@@ -6,24 +6,20 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-type TestRequestCtrl struct {
-	TestRequestService *service.TestRequestService `inject:""`
+type InvocationCtrl struct {
+	InvocationService *service.InvocationService `inject:""`
 	BaseCtrl
 }
 
-func NewTestRequestCtrl() *TestRequestCtrl {
-	return &TestRequestCtrl{}
-}
-
 // List
-func (c *TestRequestCtrl) List(ctx iris.Context) {
+func (c *InvocationCtrl) List(ctx iris.Context) {
 	interfaceId, err := ctx.URLParamInt("interfaceId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
 
-	data, err := c.TestRequestService.ListByInterface(interfaceId)
+	data, err := c.InvocationService.ListByInterface(interfaceId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
@@ -33,14 +29,14 @@ func (c *TestRequestCtrl) List(ctx iris.Context) {
 }
 
 // Get 详情
-func (c *TestRequestCtrl) Get(ctx iris.Context) {
+func (c *InvocationCtrl) Get(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	request, err := c.TestRequestService.Get(id)
+	request, err := c.InvocationService.Get(id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
 		return
@@ -49,14 +45,14 @@ func (c *TestRequestCtrl) Get(ctx iris.Context) {
 }
 
 // Get 详情
-func (c *TestRequestCtrl) LoadHistory(ctx iris.Context) {
+func (c *InvocationCtrl) LoadHistory(ctx iris.Context) {
 	id, err := ctx.URLParamInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	interf, err := c.TestRequestService.LoadHistoryAsInterface(id)
+	interf, err := c.InvocationService.LoadHistoryAsInterface(id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
 		return
@@ -67,14 +63,14 @@ func (c *TestRequestCtrl) LoadHistory(ctx iris.Context) {
 // Created by interface test api
 
 // Delete 删除
-func (c *TestRequestCtrl) Delete(ctx iris.Context) {
+func (c *InvocationCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.TestRequestService.Delete(uint(id))
+	err = c.InvocationService.Delete(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

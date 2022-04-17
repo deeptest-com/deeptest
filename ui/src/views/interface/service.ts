@@ -3,6 +3,7 @@ import {Interface} from "@/views/interface/data";
 import {isInArray} from "@/utils/array";
 
 const apiPath = 'interfaces';
+const apiRequest = 'requests';
 
 export async function testInterface(interf: Interface): Promise<any> {
     return request({
@@ -67,6 +68,31 @@ export async function move(data: any): Promise<any> {
         url: `/${apiPath}/move`,
         method: 'post',
         data: data,
+    });
+}
+
+export async function listRequest(interfaceId: number): Promise<any> {
+    const params = {interfaceId: interfaceId}
+
+    return request({
+        url: `/${apiRequest}`,
+        method: 'GET',
+        params,
+    });
+}
+export async function loadHistory(id: number): Promise<any> {
+    const params = {id: id}
+
+    return request({
+        url: `/${apiRequest}/loadHistory`,
+        method: 'GET',
+        params,
+    });
+}
+export async function removeRequest(id: number): Promise<any> {
+    return request({
+        url: `/${apiRequest}/${id}`,
+        method: 'DELETE',
     });
 }
 

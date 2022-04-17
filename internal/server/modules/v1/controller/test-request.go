@@ -18,6 +18,10 @@ func NewTestRequestCtrl() *TestRequestCtrl {
 // List
 func (c *TestRequestCtrl) List(ctx iris.Context) {
 	interfaceId, err := ctx.URLParamInt("interfaceId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
 
 	data, err := c.TestRequestService.ListByInterface(interfaceId)
 	if err != nil {
@@ -25,7 +29,7 @@ func (c *TestRequestCtrl) List(ctx iris.Context) {
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }
 
 // Get 详情
@@ -36,7 +40,23 @@ func (c *TestRequestCtrl) Get(ctx iris.Context) {
 		return
 	}
 
-	interf, err := c.TestRequestService.Get(id)
+	request, err := c.TestRequestService.Get(id)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
+		return
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: request})
+}
+
+// Get 详情
+func (c *TestRequestCtrl) LoadHistory(ctx iris.Context) {
+	id, err := ctx.URLParamInt("id")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	interf, err := c.TestRequestService.LoadHistoryAsInterface(id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
 		return

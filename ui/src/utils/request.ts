@@ -47,7 +47,7 @@ const errorHandler = (error: any) => {
         const reqUrl = url.split("?")[0].replace(baseURL, '');
         const noVerifyBool = settings.ajaxResponseNoVerifyUrl.includes(reqUrl);
         if (!noVerifyBool) {
-            notification.error({
+            notification.warn({
               message: `提示`,
               description: customCodeMessage[code] || msg || 'Error',
             });

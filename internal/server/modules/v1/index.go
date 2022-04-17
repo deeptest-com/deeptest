@@ -24,6 +24,7 @@ type IndexModule struct {
 
 	ProjectModule       *index.ProjectModule       `inject:""`
 	TestInterfaceModule *index.TestInterfaceModule `inject:""`
+	TestRequestModule   *index.TestRequestModule   `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -53,6 +54,7 @@ func (m *IndexModule) Party() module.WebModule {
 
 		m.ProjectModule.Party(),
 		m.TestInterfaceModule.Party(),
+		m.TestRequestModule.Party(),
 	}
 	return module.NewModule(serverConsts.ApiPath, handler, modules...)
 }

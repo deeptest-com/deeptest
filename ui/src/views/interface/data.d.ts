@@ -1,4 +1,5 @@
 export interface Interface {
+    id: number,
     url: string;
     method: string;
     headers: Header[];

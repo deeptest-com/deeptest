@@ -2,7 +2,7 @@ import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 
 import {
-    load, get, remove, create, update, move, testInterface, saveInterface,
+    load, get, remove, create, update, move, testInterface, saveInterface, listRequest, removeRequest, loadHistory,
 } from './service';
 import {Interface, Response} from "@/views/interface/data";
 
@@ -10,6 +10,8 @@ export interface StateType {
     treeData: any[];
     interfaceData: Interface;
     responseData: Response;
+
+    requestsData: any[];
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -18,6 +20,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setTree: Mutation<StateType>;
         setInterface: Mutation<StateType>;
         setResponse: Mutation<StateType>;
+
+        setRequests: Mutation<StateType>;
     };
     actions: {
         sendRequest: Action<StateType, StateType>;
@@ -29,12 +33,18 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateInterface: Action<StateType, StateType>;
         deleteInterface: Action<StateType, StateType>;
         moveInterface: Action<StateType, StateType>;
+
+        listRequest: Action<StateType, StateType>;
+        loadHistory: Action<StateType, StateType>;
+        removeRequest: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
     treeData: [],
     interfaceData: {} as Interface,
     responseData: {} as Response,
+
+    requestsData: [],
 };
 
 const StoreModel: ModuleType = {
@@ -55,12 +65,17 @@ const StoreModel: ModuleType = {
         setResponse(state, payload) {
             state.responseData = payload;
         },
+
+        setRequests(state, payload) {
+            state.requestsData = payload;
+        },
     },
     actions: {
         async sendRequest({ commit }, payload: any ) {
             testInterface(payload).then((json) => {
                 if (json.code === 0) {
                     commit('setResponse', json.data);
+                    this.dispatch('Interface/listRequest', payload.id);
                     return true;
                 } else {
                     return false
@@ -106,7 +121,6 @@ const StoreModel: ModuleType = {
         async createInterface({ commit }, payload: any ) {
             try {
                 const resp = await create(payload);
-                console.log('resp', resp.data)
 
                 await this.dispatch('Interface/loadInterface');
                 return resp.data;
@@ -136,6 +150,36 @@ const StoreModel: ModuleType = {
             try {
                 await move(payload);
                 await this.dispatch('Interface/loadInterface');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async listRequest({ commit }, interfaceId: number ) {
+            try {
+                const resp = await listRequest(interfaceId);
+                const { data } = resp;
+                commit('setRequests', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async loadHistory({ commit }, requestId: number ) {
+            try {
+                const resp = await loadHistory(requestId);
+                const { data } = resp;
+                commit('setInterface', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async removeRequest({ commit }, data: any ) {
+            try {
+               await removeRequest(data.id);
+                await this.dispatch('Interface/listRequest', data.interfaceId);
                 return true;
             } catch (error) {
                 return false;

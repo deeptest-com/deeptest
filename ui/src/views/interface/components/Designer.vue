@@ -137,7 +137,7 @@ export default defineComponent({
 
     display: flex;
     #top-panel {
-      height: 200px;
+      height: 220px;
       padding: 0;
       width: 100%;
     }

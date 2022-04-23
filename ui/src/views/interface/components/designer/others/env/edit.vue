@@ -1,6 +1,6 @@
 <template>
   <a-modal
-      :title="modelRef.id ? '编辑' : '创建'"
+      :title="modelRef.id ? '编辑' : '创建' + '环境'"
       :destroy-on-close="true"
       :mask-closable="false"
       :visible="true"
@@ -61,9 +61,7 @@ export default defineComponent({
 
   setup(props) {
     const { t } = useI18n();
-
     const store = useStore<{ Interface: StateType }>();
-    const environmentsData = computed<any[]>(() => store.state.Interface.environmentsData);
 
     const rulesRef = reactive({
       name: [
@@ -71,7 +69,7 @@ export default defineComponent({
       ],
     });
 
-    const modelRef = reactive<any>({name: ''})
+    const modelRef = ref<any>({name: ''})
 
     const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
 
@@ -79,7 +77,10 @@ export default defineComponent({
       if (props.modelId === 0) {
         modelRef.value = {name: '', interfaceId: props.interfaceId}
       } else {
-        modelRef.value = await getEnvironment(props.modelId, 0)
+       getEnvironment(props.modelId, 0).then((json) => {
+         console.log('json', json)
+         modelRef.value = json.data
+       })
       }
     }
     getModel()
@@ -88,7 +89,7 @@ export default defineComponent({
       console.log('onSubmit', modelRef)
 
       validate().then(async () => {
-        store.dispatch('Interface/saveEnvironment', modelRef).then(() => {
+        store.dispatch('Interface/saveEnvironment', modelRef.value).then(() => {
           props.onFinish();
         })
       }).catch(err => { console.log('') })

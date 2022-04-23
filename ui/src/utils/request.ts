@@ -18,7 +18,9 @@ export interface ResponseData {
 }
 
 const customCodeMessage: {[key: number]: string} = {
-  10002: '当前用户登入信息已失效，请重新登入再操作', // 未登陆
+  10002: '当前用户登入信息已失效，请重新登入再操作。',
+  10100: '已存在相同的记录。',
+  99999: '无法连接到服务器。',
 };
 
 const serverCodeMessage: {[key: number]: string} = {
@@ -42,6 +44,8 @@ const errorHandler = (error: any) => {
     if (message === 'CustomError') {
         // 自定义错误
         const { config, data } = response;
+        console.log('data', data)
+
         const { url, baseURL} = config;
         const { code, msg } = data;
         const reqUrl = url.split("?")[0].replace(baseURL, '');
@@ -56,10 +60,11 @@ const errorHandler = (error: any) => {
                 router.replace('/user/login');
             }
         }
+
     } else if (message === 'CancelToken') {
         // 取消请求 Token
-        // eslint-disable-next-line no-console
         console.log(message);
+
     } else if (response && response.status) {
         const errorText = serverCodeMessage[response.status] || response.statusText;
         const { status, request } = response;
@@ -67,10 +72,11 @@ const errorHandler = (error: any) => {
             message: `请求错误 ${status}: ${request.responseURL}`,
             description: errorText,
         });
+
     } else if (!response) {
         notification.error({
             message: '请求失败',
-            description: '无法连接到服务器！',
+            description: serverCodeMessage[99999],
         });
     }
 

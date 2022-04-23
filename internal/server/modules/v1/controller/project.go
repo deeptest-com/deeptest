@@ -56,14 +56,12 @@ func (c *ProjectCtrl) Get(ctx iris.Context) {
 
 func (c *ProjectCtrl) Create(ctx iris.Context) {
 	req := serverDomain.ProjectReq{}
-	if err := ctx.ReadJSON(&req); err != nil {
-		errs := validate.ValidRequest(err)
-		if len(errs) > 0 {
-			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
-			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
-			return
-		}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
 	}
+
 	id, err := c.ProjectService.Create(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{
@@ -80,16 +78,13 @@ func (c *ProjectCtrl) Update(ctx iris.Context) {
 	id, _ := ctx.Params().GetInt("id")
 
 	var req serverDomain.ProjectReq
-	if err := ctx.ReadJSON(&req); err != nil {
-		errs := validate.ValidRequest(err)
-		if len(errs) > 0 {
-			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
-			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
-			return
-		}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
 	}
 
-	err := c.ProjectService.Update(uint(id), req)
+	err = c.ProjectService.Update(uint(id), req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
@@ -99,12 +94,13 @@ func (c *ProjectCtrl) Update(ctx iris.Context) {
 
 func (c *ProjectCtrl) Delete(ctx iris.Context) {
 	var req _domain.ReqId
-	if err := ctx.ReadParams(&req); err != nil {
-		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
+	err := ctx.ReadParams(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
-	err := c.ProjectService.DeleteById(req.Id)
+
+	err = c.ProjectService.DeleteById(req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

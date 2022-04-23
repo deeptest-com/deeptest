@@ -128,7 +128,9 @@ export default defineComponent({
       const selectedData = treeDataMap[selectedKeys.value[0]]
       store.dispatch('Interface/getInterface', {id: selectedData.id, isDir: selectedData.isDir})
       if (!selectedData.isDir) {
-        store.dispatch('Interface/listRequest', selectedData.id)
+        store.dispatch('Interface/listInvocation', selectedData.id)
+        store.dispatch('Interface/listEnvironment')
+        store.dispatch('Interface/getEnvironment', {id: 0, interfaceId: selectedData.id})
       }
     }
 

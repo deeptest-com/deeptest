@@ -107,6 +107,19 @@ func (r *ProjectRepo) Update(id uint, req serverDomain.ProjectReq) error {
 	return nil
 }
 
+func (r *ProjectRepo) UpdateDefaultEnvironment(id, envId uint) (err error) {
+	err = r.DB.Model(&model.Project{}).
+		Where("id = ?", id).
+		Updates(map[string]interface{}{"default_environment_id": envId}).Error
+
+	if err != nil {
+		logUtils.Errorf("update project environment error", err.Error())
+		return err
+	}
+
+	return
+}
+
 func (r *ProjectRepo) DeleteById(id uint) (err error) {
 	err = r.DB.Model(&model.Project{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error

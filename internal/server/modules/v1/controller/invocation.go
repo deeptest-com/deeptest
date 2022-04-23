@@ -28,36 +28,20 @@ func (c *InvocationCtrl) List(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }
 
-// Get 详情
-func (c *InvocationCtrl) Get(ctx iris.Context) {
+// GetAsInterface 详情
+func (c *InvocationCtrl) GetAsInterface(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	request, err := c.InvocationService.Get(id)
+	invocation, err := c.InvocationService.GetAsInterface(id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: request})
-}
-
-// Get 详情
-func (c *InvocationCtrl) LoadHistory(ctx iris.Context) {
-	id, err := ctx.URLParamInt("id")
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
-		return
-	}
-
-	interf, err := c.InvocationService.LoadHistoryAsInterface(id)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
-		return
-	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: interf})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: invocation})
 }
 
 // Created by interface test api

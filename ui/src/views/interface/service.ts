@@ -4,7 +4,9 @@ import {isInArray} from "@/utils/array";
 
 const apiPath = 'interfaces';
 const apiRequest = 'invocations';
+const apiEnvironment = 'environments'
 
+// interface
 export async function invokeInterface(interf: Interface): Promise<any> {
     return request({
         url: `/${apiPath}/invokeInterface`,
@@ -71,7 +73,8 @@ export async function move(data: any): Promise<any> {
     });
 }
 
-export async function listRequest(interfaceId: number): Promise<any> {
+// request
+export async function listInvocation(interfaceId: number): Promise<any> {
     const params = {interfaceId: interfaceId}
 
     return request({
@@ -80,22 +83,60 @@ export async function listRequest(interfaceId: number): Promise<any> {
         params,
     });
 }
-export async function loadHistory(id: number): Promise<any> {
-    const params = {id: id}
-
-    return request({
-        url: `/${apiRequest}/loadHistory`,
-        method: 'GET',
-        params,
-    });
+export async function getInvocationAsInterface(id: number): Promise<any> {
+    return request({url: `/${apiPath}/${id}`});
 }
-export async function removeRequest(id: number): Promise<any> {
+export async function removeInvocation(id: number): Promise<any> {
     return request({
         url: `/${apiRequest}/${id}`,
         method: 'DELETE',
     });
 }
 
+// environment
+export async function listEnvironment(): Promise<any> {
+    const params = {}
+
+    return request({
+        url: `/${apiEnvironment}`,
+        method: 'GET',
+        params,
+    });
+}
+export async function getEnvironment(id: number, interfaceId: number): Promise<any> {
+    const params = {interfaceId: interfaceId}
+    return request({
+        url: `/${apiEnvironment}/${id}`,
+        method: 'GET',
+        params
+    });
+}
+
+export async function changeEnvironment(id, interfaceId): Promise<any> {
+    const params = {id, interfaceId}
+
+    return request({
+        url: `/${apiEnvironment}/changeEnvironment`,
+        method: 'POST',
+        params,
+    });
+}
+export async function saveEnvironment(data): Promise<any> {
+    return request({
+        url: `/${apiEnvironment}`,
+        method: data.id ? 'PUT' : 'POST',
+        data: data,
+    });
+}
+
+export async function removeEnvironment(id: number): Promise<any> {
+    return request({
+        url: `/${apiEnvironment}/${id}`,
+        method: 'DELETE',
+    });
+}
+
+// helper
 export function prepareDataForRequest(data: any) {
     data.params = data.params.filter((item) => {
         return !!item.name

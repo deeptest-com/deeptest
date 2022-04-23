@@ -16,7 +16,7 @@ import {
     listEnvironment,
     removeEnvironment,
     getEnvironment,
-    saveEnvironment, changeEnvironment, saveEnvironmentVar, removeEnvironmentVar, clearEnvironmentVar,
+    saveEnvironment, changeEnvironment, saveEnvironmentVar, removeEnvironmentVar, clearEnvironmentVar, copyEnvironment,
 
 } from './service';
 import {Interface, Response} from "@/views/interface/data";
@@ -63,6 +63,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getEnvironment: Action<StateType, StateType>;
         changeEnvironment: Action<StateType, StateType>;
         saveEnvironment: Action<StateType, StateType>;
+        copyEnvironment: Action<StateType, StateType>;
         removeEnvironment: Action<StateType, StateType>;
 
         saveEnvironmentVar: Action<StateType, StateType>;
@@ -250,17 +251,21 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async changeEnvironment({ commit }, id: Number ) {
-            const interfaceData = this.state['Interface'].interfaceData
-            await changeEnvironment(id, interfaceData.id);
-
-            await this.dispatch('Interface/listEnvironment');
-            await this.dispatch('Interface/getEnvironment', {id: 0, interfaceId: interfaceData.id})
-            return true
-        },
         async saveEnvironment({ commit }, payload: any ) {
             try {
                 const resp = await saveEnvironment(payload);
+
+                const interfaceData = this.state['Interface'].interfaceData
+                this.dispatch('Interface/listEnvironment');
+                this.dispatch('Interface/getEnvironment', {id: 0, interfaceId: interfaceData.id})
+                return resp.data;
+            } catch (error) {
+                return false;
+            }
+        },
+        async copyEnvironment({ commit }, id: number ) {
+            try {
+                const resp = await copyEnvironment(id);
 
                 const interfaceData = this.state['Interface'].interfaceData
                 this.dispatch('Interface/listEnvironment');
@@ -282,7 +287,16 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
+        async changeEnvironment({ commit }, id: Number ) {
+            const interfaceData = this.state['Interface'].interfaceData
+            await changeEnvironment(id, interfaceData.id);
 
+            await this.dispatch('Interface/listEnvironment');
+            await this.dispatch('Interface/getEnvironment', {id: 0, interfaceId: interfaceData.id})
+            return true
+        },
+
+        // environment var
         async saveEnvironmentVar({ commit }, payload: any ) {
             try {
                 const resp = await saveEnvironmentVar(payload);

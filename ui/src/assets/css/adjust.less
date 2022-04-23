@@ -1,4 +1,5 @@
 @import './antd-variables.less';
+@import './variables.less';
 
 body {
     background-color: #fff;
@@ -7,7 +8,7 @@ body {
     color: @primary-color;
 }
 .ant-tree li .ant-tree-node-content-wrapper.ant-tree-node-selected {
-    background-color: #dce0e3;
+    background-color: @itemSelectedBackground;
 }
 
 // put here otherwise not work for popup div

@@ -129,7 +129,14 @@ export async function saveEnvironment(data): Promise<any> {
         data: data,
     });
 }
-
+export async function copyEnvironment(id): Promise<any> {
+    const params = {id: id}
+    return request({
+        url: `/${apiEnvironment}/copyEnvironment`,
+        method: 'POST',
+        params,
+    });
+}
 export async function removeEnvironment(id: number): Promise<any> {
     return request({
         url: `/${apiEnvironment}/${id}`,

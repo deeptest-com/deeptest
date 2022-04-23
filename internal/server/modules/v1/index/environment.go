@@ -18,11 +18,11 @@ func (m *EnvironmentModule) Party() module.WebModule {
 
 		index.Get("/", m.EnvironmentCtrl.List).Name = "环境列表"
 		index.Get("/{id:uint}", m.EnvironmentCtrl.Get).Name = "环境详情"
-		index.Post("/changeEnvironment", m.EnvironmentCtrl.Change).Name = "修改环境"
-
 		index.Post("/", m.EnvironmentCtrl.Create).Name = "新建环境"
 		index.Put("/", m.EnvironmentCtrl.Update).Name = "更新环境"
+		index.Post("/copyEnvironment", m.EnvironmentCtrl.Copy).Name = "复制环境"
 		index.Delete("/{id:uint}", m.EnvironmentCtrl.Delete).Name = "删除环境"
+		index.Post("/changeEnvironment", m.EnvironmentCtrl.Change).Name = "修改环境"
 
 		index.PartyFunc("/vars", func(party iris.Party) {
 			party.Post("/", m.EnvironmentCtrl.CreateVar).Name = "新建环境变量"

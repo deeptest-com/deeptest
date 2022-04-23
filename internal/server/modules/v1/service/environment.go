@@ -32,6 +32,12 @@ func (s *EnvironmentService) Get(id, interfaceId uint) (env model.Environment, e
 	return
 }
 
+func (s *EnvironmentService) Copy(envId int) (err error) {
+	err = s.EnvironmentRepo.Copy(envId)
+
+	return
+}
+
 func (s *EnvironmentService) Create(env *model.Environment) (err error) {
 	err = s.EnvironmentRepo.Save(env)
 
@@ -66,7 +72,7 @@ func (s *EnvironmentService) GetVar(id uint) (env model.EnvironmentVar, err erro
 }
 
 func (s *EnvironmentService) CreateVar(po *model.EnvironmentVar) (err error) {
-	temp, _ := s.EnvironmentRepo.FindVarByName(po.Name, 0, po.EnvironmentId)
+	temp, _ := s.EnvironmentRepo.GetVarByName(po.Name, 0, po.EnvironmentId)
 
 	if temp.ID > 0 {
 		err = errors.New("")
@@ -79,7 +85,7 @@ func (s *EnvironmentService) CreateVar(po *model.EnvironmentVar) (err error) {
 }
 
 func (s *EnvironmentService) UpdateVar(po *model.EnvironmentVar) (err error) {
-	temp, _ := s.EnvironmentRepo.FindVarByName(po.Name, po.ID, po.EnvironmentId)
+	temp, _ := s.EnvironmentRepo.GetVarByName(po.Name, po.ID, po.EnvironmentId)
 	if temp.ID > 0 {
 		err = errors.New("")
 		return

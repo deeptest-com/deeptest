@@ -13,16 +13,16 @@
           <template #icon><DownOutlined /></template>
           <template #overlay>
             <a-menu @click="select" class="select-env-menu">
-              <template v-for="item in environmentsData">
-                <a-menu-item v-if="item.id !== environmentData.id" :key="item.id">
-                  <span class="menu-item-var">
-                    <span class="title">{{item.name}}</span>
+              <a-menu-item v-for="item in environmentsData" :key="item.id"
+                           :class="[{'dp-bg-selected-light':item.id === environmentData.id}]">
+                <span class="menu-item-var">
+                  <span class="title">{{item.name}}</span>
 
-                    <span @click.stop="edit(item)" class="act"><EditOutlined /></span>
-                    <span @click.stop="remove(item)" class="act"><DeleteOutlined /></span>
-                  </span>
-                </a-menu-item>
-              </template>
+                  <span @click.stop="edit(item)" class="act"><EditOutlined /></span>
+                  <span @click.stop="remove(item)" class="act"><DeleteOutlined /></span>
+                  <span @click.stop="copy(item)" class="act"><CopyOutlined /></span>
+                </span>
+              </a-menu-item>
             </a-menu>
           </template>
         </a-dropdown-button>
@@ -33,12 +33,6 @@
       <div class="title">
         <span @click="create" class="dp-link">
           <PlusOutlined class="dp-icon-btn dp-trans-80" />
-        </span>
-        <span v-if="environmentData.id" @click="edit(environmentData)" class="dp-icon-btn dp-trans-80">
-          <EditOutlined />
-        </span>
-        <span v-if="environmentData.id" @click="remove(environmentData)" class="dp-icon-btn dp-trans-80">
-          <DeleteOutlined />
         </span>
       </div>
       <div class="acts">
@@ -81,7 +75,6 @@
                 <a-menu>
                   <a-menu-item @click="editVar(item)" key="edit">编辑</a-menu-item>
                   <a-menu-item @click="removeVar(item)" key="edit">删除</a-menu-item>
-                  <a-menu-item @click="copyVar(item)" key="copy">复制</a-menu-item>
                 </a-menu>
               </template>
             </a-dropdown>
@@ -119,7 +112,7 @@ import {computed, defineComponent, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined,ImportOutlined, MoreOutlined, ClearOutlined, PlusOutlined,
-  DownOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons-vue';
+  DownOutlined, EditOutlined, DeleteOutlined, CopyOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import Empty from "@/components/others/empty.vue";
 import {Interface} from "@/views/interface/data";
@@ -131,7 +124,7 @@ export default defineComponent({
   components: {
     EnvEdit, EnvVarEdit,
     QuestionCircleOutlined, ImportOutlined, Empty, MoreOutlined, PlusOutlined, ClearOutlined,
-    DownOutlined, EditOutlined, DeleteOutlined,
+    DownOutlined, EditOutlined, DeleteOutlined, CopyOutlined,
   },
 
   computed: {
@@ -173,7 +166,8 @@ export default defineComponent({
     }
 
     const copy = (val) => {
-      console.log('edit', val)
+      console.log('copy', val)
+      store.dispatch('Interface/copyEnvironment', val.id)
     }
 
     const get = (id) => {
@@ -259,7 +253,7 @@ export default defineComponent({
       flex: 1;
     }
     .act {
-      width: 22px;
+      width: 18px;
     }
   }
 }

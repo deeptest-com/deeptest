@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 )
@@ -17,7 +18,7 @@ func (s *EnvironmentService) List(projectId int) (envs []model.Environment, err 
 	return
 }
 
-func (s *EnvironmentService) Get(id, interfaceId int) (env model.Environment, err error) {
+func (s *EnvironmentService) Get(id, interfaceId uint) (env model.Environment, err error) {
 	if id > 0 {
 		env, err = s.EnvironmentRepo.Get(uint(id))
 	} else {
@@ -54,6 +55,49 @@ func (s *EnvironmentService) Delete(reqId uint) (err error) {
 func (s *EnvironmentService) Change(id, interfaceId, projectId int) (err error) {
 	err = s.InterfaceRepo.UpdateDefaultEnvironment(uint(interfaceId), uint(id))
 	err = s.ProjectRepo.UpdateDefaultEnvironment(uint(projectId), uint(id))
+
+	return
+}
+
+func (s *EnvironmentService) GetVar(id uint) (env model.EnvironmentVar, err error) {
+	env, err = s.EnvironmentRepo.GetVar(id)
+
+	return
+}
+
+func (s *EnvironmentService) CreateVar(po *model.EnvironmentVar) (err error) {
+	temp, _ := s.EnvironmentRepo.FindVarByName(po.Name, 0, po.EnvironmentId)
+
+	if temp.ID > 0 {
+		err = errors.New("")
+		return
+	}
+
+	err = s.EnvironmentRepo.SaveVar(po)
+
+	return
+}
+
+func (s *EnvironmentService) UpdateVar(po *model.EnvironmentVar) (err error) {
+	temp, _ := s.EnvironmentRepo.FindVarByName(po.Name, po.ID, po.EnvironmentId)
+	if temp.ID > 0 {
+		err = errors.New("")
+		return
+	}
+
+	err = s.EnvironmentRepo.SaveVar(po)
+
+	return
+}
+
+func (s *EnvironmentService) DeleteVar(id uint) (err error) {
+	err = s.EnvironmentRepo.DeleteVar(id)
+
+	return
+}
+
+func (s *EnvironmentService) ClearAllVar(environmentId uint) (err error) {
+	err = s.EnvironmentRepo.ClearAllVar(environmentId)
 
 	return
 }

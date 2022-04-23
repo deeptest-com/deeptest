@@ -14,7 +14,7 @@ func (r *EnvironmentRepo) List(projectId int) (pos []model.Environment, err erro
 		Select("id", "name").
 		Where("project_id=?", projectId).
 		Where("NOT deleted").
-		Order("created_at DESC").
+		Order("created_at ASC").
 		Find(&pos).Error
 	return
 }
@@ -47,7 +47,7 @@ func (r *EnvironmentRepo) GetVars(envId uint) (vars []model.EnvironmentVar, err 
 	err = r.DB.
 		Where("environment_id=?", envId).
 		Where("NOT deleted").
-		Order("created_at DESC").
+		Order("created_at ASC").
 		Find(&vars).Error
 
 	return
@@ -63,6 +63,61 @@ func (r *EnvironmentRepo) Delete(id uint) (err error) {
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
+
+	return
+}
+
+func (r *EnvironmentRepo) GetVar(id uint) (po model.EnvironmentVar, err error) {
+	err = r.DB.
+		Where("id=?", id).
+		Where("NOT deleted").
+		First(&po).Error
+	return
+}
+
+func (r *EnvironmentRepo) SaveVar(po *model.EnvironmentVar) (err error) {
+
+	err = r.DB.Save(po).Error
+
+	return
+}
+
+func (r *EnvironmentRepo) DeleteVar(id uint) (err error) {
+	err = r.DB.Model(&model.EnvironmentVar{}).
+		Where("id=?", id).
+		Update("deleted", true).
+		Error
+
+	return
+}
+
+func (r *EnvironmentRepo) ClearAllVar(environmentId uint) (err error) {
+	err = r.DB.Model(&model.EnvironmentVar{}).
+		Where("environment_id=?", environmentId).
+		Update("deleted", true).
+		Error
+
+	return
+}
+
+func (r *EnvironmentRepo) FindVarByName(name string, id, environmentId uint) (envVar model.EnvironmentVar, err error) {
+	var envVars []model.EnvironmentVar
+
+	db := r.DB.Model(&envVar).
+		Where("name = ? AND environment_id =? AND not deleted", name, environmentId)
+	if id > 0 {
+		db.Where("id != ?", id)
+	}
+
+	err = db.Find(&envVars).Error
+
+	if err != nil {
+		return
+	}
+
+	if len(envVars) > 0 {
+		envVar = envVars[0]
+	}
 
 	return
 }

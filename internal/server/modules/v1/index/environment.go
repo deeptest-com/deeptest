@@ -20,9 +20,17 @@ func (m *EnvironmentModule) Party() module.WebModule {
 		index.Get("/{id:uint}", m.EnvironmentCtrl.Get).Name = "环境详情"
 		index.Post("/changeEnvironment", m.EnvironmentCtrl.Change).Name = "修改环境"
 
-		index.Post("/", m.EnvironmentCtrl.Create).Name = "新建接口"
-		index.Put("/", m.EnvironmentCtrl.Update).Name = "更新接口"
+		index.Post("/", m.EnvironmentCtrl.Create).Name = "新建环境"
+		index.Put("/", m.EnvironmentCtrl.Update).Name = "更新环境"
 		index.Delete("/{id:uint}", m.EnvironmentCtrl.Delete).Name = "删除环境"
+
+		index.PartyFunc("/vars", func(party iris.Party) {
+			party.Post("/", m.EnvironmentCtrl.CreateVar).Name = "新建环境变量"
+			party.Put("/", m.EnvironmentCtrl.UpdateVar).Name = "更新环境变量"
+			party.Delete("/{id:uint}", m.EnvironmentCtrl.DeleteVar).Name = "删除环境变量"
+			party.Post("/clear", m.EnvironmentCtrl.ClearVar).Name = "清空环境变量"
+		})
 	}
+
 	return module.NewModule("/environments", handler)
 }

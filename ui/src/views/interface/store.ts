@@ -16,7 +16,7 @@ import {
     listEnvironment,
     removeEnvironment,
     getEnvironment,
-    saveEnvironment, changeEnvironment,
+    saveEnvironment, changeEnvironment, saveEnvironmentVar, removeEnvironmentVar, clearEnvironmentVar,
 
 } from './service';
 import {Interface, Response} from "@/views/interface/data";
@@ -64,6 +64,10 @@ export interface ModuleType extends StoreModuleType<StateType> {
         changeEnvironment: Action<StateType, StateType>;
         saveEnvironment: Action<StateType, StateType>;
         removeEnvironment: Action<StateType, StateType>;
+
+        saveEnvironmentVar: Action<StateType, StateType>;
+        removeEnvironmentVar: Action<StateType, StateType>;
+        clearEnvironmentVar: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -266,10 +270,47 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async removeEnvironment({ commit }, data: any ) {
+        async removeEnvironment({ commit }, id: number ) {
             try {
-                await removeEnvironment(data.id);
-                await this.dispatch('Interface/listEnvironment', data.interfaceId);
+                await removeEnvironment(id);
+
+                const interfaceData = this.state['Interface'].interfaceData
+                await this.dispatch('Interface/listEnvironment', interfaceData.id);
+                this.dispatch('Interface/getEnvironment', {id: 0, interfaceId: interfaceData.id})
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async saveEnvironmentVar({ commit }, payload: any ) {
+            try {
+                const resp = await saveEnvironmentVar(payload);
+                const { data } = resp;
+                commit('setEnvironment', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async removeEnvironmentVar({ commit }, id: number ) {
+            try {
+                const resp = await removeEnvironmentVar(id);
+                const { data } = resp;
+                commit('setEnvironment', data);
+
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async clearEnvironmentVar({ commit }) {
+            try {
+                const environmentData = this.state['Interface'].environmentData
+                const resp = await clearEnvironmentVar(environmentData.id);
+                const { data } = resp;
+                commit('setEnvironment', data);
+
                 return true;
             } catch (error) {
                 return false;

@@ -1,6 +1,6 @@
 <template>
   <a-modal
-      :title="modelRef.id ? '编辑' : '创建' + '环境'"
+      :title="modelRef.id ? '编辑' : '创建' + '变量'"
       :destroy-on-close="true"
       :mask-closable="false"
       :visible="true"
@@ -12,6 +12,10 @@
         <a-form-item label="名称" v-bind="validateInfos.name">
           <a-input v-model:value="modelRef.name"
                    @blur="validate('name', { trigger: 'blur' }).catch(() => {})" />
+        </a-form-item>
+        <a-form-item label="取值" v-bind="validateInfos.val">
+          <a-input v-model:value="modelRef.val"
+                   @blur="validate('val', { trigger: 'blur' }).catch(() => {})" />
         </a-form-item>
 
         <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
@@ -36,13 +40,12 @@ import {StateType} from "@/views/interface/store";
 const useForm = Form.useForm;
 
 export default defineComponent({
-  name: 'EnvEdit',
+  name: 'EnvVarEdit',
   props: {
-    modelId: {
-      type: Number,
+    model: {
       required: true
     },
-    interfaceId: {
+    environmentId: {
       type: Number,
       required: true
     },
@@ -61,35 +64,33 @@ export default defineComponent({
 
   setup(props) {
     const { t } = useI18n();
+
     const store = useStore<{ Interface: StateType }>();
 
     const rulesRef = reactive({
       name: [
         { required: true, message: '请输入变量名', trigger: 'blur' },
       ],
+      val: [
+        { required: true, message: '请输入取值', trigger: 'blur' },
+      ],
     });
 
-    const modelRef = ref<any>({name: ''})
+    const model = props.model as any
+    const modelRef = reactive<any>({
+      id: model.id,
+      name: model.name,
+      val: model.val,
+      environmentId: props.environmentId,
+    })
 
     const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
-
-    const getModel = async () => {
-      if (props.modelId === 0) {
-        modelRef.value = {name: '', interfaceId: props.interfaceId}
-      } else {
-       getEnvironment(props.modelId, 0).then((json) => {
-         console.log('json', json)
-         modelRef.value = json.data
-       })
-      }
-    }
-    getModel()
 
     const onSubmit = async () => {
       console.log('onSubmit', modelRef)
 
       validate().then(async () => {
-        store.dispatch('Interface/saveEnvironment', modelRef.value).then(() => {
+        store.dispatch('Interface/saveEnvironmentVar', modelRef).then(() => {
           props.onFinish();
         })
       }).catch(err => { console.log('') })

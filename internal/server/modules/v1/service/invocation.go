@@ -13,69 +13,69 @@ type InvocationService struct {
 	InvocationRepo *repo.InvocationRepo `inject:""`
 }
 
-func (s *InvocationService) ListByInterface(interfId int) (requests []model.Invocation, err error) {
-	requests, err = s.InvocationRepo.List(interfId)
+func (s *InvocationService) ListByInterface(interfId int) (invocations []model.Invocation, err error) {
+	invocations, err = s.InvocationRepo.List(interfId)
 
 	return
 }
 
-func (s *InvocationService) Get(reqId int) (interf model.Invocation, err error) {
-	interf, err = s.InvocationRepo.Get(uint(reqId))
+func (s *InvocationService) Get(id int) (invocation model.Invocation, err error) {
+	invocation, err = s.InvocationRepo.Get(uint(id))
 
 	return
 }
 
-func (s *InvocationService) LoadHistoryAsInterface(requestId int) (interf model.Interface, err error) {
-	request, err := s.InvocationRepo.Get(uint(requestId))
+func (s *InvocationService) GetAsInterface(id int) (interf model.Interface, err error) {
+	invocation, err := s.InvocationRepo.Get(uint(id))
 
 	interfReq := serverDomain.InvocationRequest{}
 	interfResp := serverDomain.InvocationResponse{}
 
-	json.Unmarshal([]byte(request.ReqContent), &interfReq)
-	json.Unmarshal([]byte(request.RespContent), &interfResp)
+	json.Unmarshal([]byte(invocation.ReqContent), &interfReq)
+	json.Unmarshal([]byte(invocation.RespContent), &interfResp)
 
 	copier.Copy(&interf, interfResp)
 	copier.Copy(&interf, interfReq)
 
-	interf.ID = request.InterfaceId
+	interf.ID = invocation.InterfaceId
 
 	return
 }
 
 func (s *InvocationService) Create(req serverDomain.InvocationRequest,
-	resp serverDomain.InvocationResponse, projectId int) (request model.Invocation, err error) {
-	request = model.Invocation{
+	resp serverDomain.InvocationResponse, projectId int) (invocation model.Invocation, err error) {
+	invocation = model.Invocation{
 		Name:        time.Now().Format("01-02 15:04:05"),
 		InterfaceId: req.Id,
 		ProjectId:   uint(projectId),
 	}
 
 	bytesReq, _ := json.Marshal(req)
-	request.ReqContent = string(bytesReq)
+	invocation.ReqContent = string(bytesReq)
 
 	bytesReps, _ := json.Marshal(resp)
-	request.RespContent = string(bytesReps)
+	invocation.RespContent = string(bytesReps)
 
-	err = s.InvocationRepo.Save(&request)
-
-	return
-}
-
-func (s *InvocationService) Update(req model.Invocation) (err error) {
+	err = s.InvocationRepo.Save(&invocation)
 
 	return
 }
 
-func (s *InvocationService) Delete(reqId uint) (err error) {
-	err = s.InvocationRepo.Delete(reqId)
+func (s *InvocationService) Update(invocation model.Invocation) (err error) {
 
 	return
 }
 
-func (s *InvocationService) CopyValueFromRequest(interf *model.Invocation, req serverDomain.InvocationRequest) (err error) {
-	interf.ID = req.Id
+func (s *InvocationService) Delete(id uint) (err error) {
+	err = s.InvocationRepo.Delete(id)
 
-	copier.Copy(interf, req)
+	return
+}
+
+func (s *InvocationService) CopyValueFromRequest(invocation *model.Invocation, req serverDomain.InvocationRequest) (err error) {
+	invocation.ID = req.Id
+
+	copier.Copy(invocation, req)
 
 	return
 }

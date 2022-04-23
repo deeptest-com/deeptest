@@ -1,6 +1,7 @@
 package repo
 
 import (
+	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/kataras/iris/v12"
@@ -82,14 +83,6 @@ func (r *InterfaceRepo) Save(field *model.Interface) (err error) {
 	return
 }
 
-func (r *InterfaceRepo) UpdateName(id int, name string) (err error) {
-	err = r.DB.Model(&model.Interface{}).
-		Where("id = ?", id).
-		Update("name", name).Error
-
-	return
-}
-
 func (r *InterfaceRepo) Update(interf model.Interface) (err error) {
 	r.DB.Transaction(func(tx *gorm.DB) error {
 		err = r.DB.Updates(interf).Error
@@ -109,6 +102,25 @@ func (r *InterfaceRepo) Update(interf model.Interface) (err error) {
 
 		return err
 	})
+
+	return
+}
+func (r *InterfaceRepo) UpdateName(id int, name string) (err error) {
+	err = r.DB.Model(&model.Interface{}).
+		Where("id = ?", id).
+		Update("name", name).Error
+
+	return
+}
+func (r *InterfaceRepo) UpdateDefaultEnvironment(id, envId uint) (err error) {
+	err = r.DB.Model(&model.Interface{}).
+		Where("id = ?", id).
+		Updates(map[string]interface{}{"environment_id": envId}).Error
+
+	if err != nil {
+		logUtils.Errorf("update project environment error", err.Error())
+		return err
+	}
 
 	return
 }

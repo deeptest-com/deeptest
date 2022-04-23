@@ -2,7 +2,22 @@ import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 
 import {
-    load, get, remove, create, update, move, invokeInterface, saveInterface, listRequest, removeRequest, loadHistory,
+    load,
+    get,
+    remove,
+    create,
+    update,
+    move,
+    invokeInterface,
+    saveInterface,
+    listInvocation,
+    getInvocationAsInterface,
+    removeInvocation,
+    listEnvironment,
+    removeEnvironment,
+    getEnvironment,
+    saveEnvironment, changeEnvironment,
+
 } from './service';
 import {Interface, Response} from "@/views/interface/data";
 
@@ -12,6 +27,9 @@ export interface StateType {
     responseData: Response;
 
     invocationsData: any[];
+
+    environmentsData: any[];
+    environmentData: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -22,6 +40,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setResponse: Mutation<StateType>;
 
         setInvocations: Mutation<StateType>;
+
+        setEnvironments: Mutation<StateType>;
+        setEnvironment: Mutation<StateType>;
     };
     actions: {
         invoke: Action<StateType, StateType>;
@@ -34,9 +55,15 @@ export interface ModuleType extends StoreModuleType<StateType> {
         deleteInterface: Action<StateType, StateType>;
         moveInterface: Action<StateType, StateType>;
 
-        listRequest: Action<StateType, StateType>;
-        loadHistory: Action<StateType, StateType>;
-        removeRequest: Action<StateType, StateType>;
+        listInvocation: Action<StateType, StateType>;
+        getInvocationAsInterface: Action<StateType, StateType>;
+        removeInvocation: Action<StateType, StateType>;
+
+        listEnvironment: Action<StateType, StateType>;
+        getEnvironment: Action<StateType, StateType>;
+        changeEnvironment: Action<StateType, StateType>;
+        saveEnvironment: Action<StateType, StateType>;
+        removeEnvironment: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -45,6 +72,9 @@ const initState: StateType = {
     responseData: {} as Response,
 
     invocationsData: [],
+
+    environmentsData: [],
+    environmentData: [],
 };
 
 const StoreModel: ModuleType = {
@@ -69,13 +99,20 @@ const StoreModel: ModuleType = {
         setInvocations(state, payload) {
             state.invocationsData = payload;
         },
+
+        setEnvironments(state, payload) {
+            state.environmentsData = payload;
+        },
+        setEnvironment(state, data) {
+            state.environmentData = data;
+        },
     },
     actions: {
         async invoke({ commit }, payload: any ) {
             invokeInterface(payload).then((json) => {
                 if (json.code === 0) {
                     commit('setResponse', json.data);
-                    this.dispatch('Interface/listRequest', payload.id);
+                    this.dispatch('Interface/listInvocation', payload.id);
                     return true;
                 } else {
                     return false
@@ -156,9 +193,10 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async listRequest({ commit }, interfaceId: number ) {
+        // invocation
+        async listInvocation({ commit }, interfaceId: number ) {
             try {
-                const resp = await listRequest(interfaceId);
+                const resp = await listInvocation(interfaceId);
                 const { data } = resp;
                 commit('setInvocations', data);
                 return true;
@@ -166,9 +204,9 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async loadHistory({ commit }, requestId: number ) {
+        async getInvocationAsInterface({ commit }, id: number ) {
             try {
-                const resp = await loadHistory(requestId);
+                const resp = await getInvocationAsInterface(id);
                 const { data } = resp;
                 commit('setInterface', data);
                 return true;
@@ -176,10 +214,62 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async removeRequest({ commit }, data: any ) {
+        async removeInvocation({ commit }, data: any ) {
             try {
-               await removeRequest(data.id);
-                await this.dispatch('Interface/listRequest', data.interfaceId);
+               await removeInvocation(data.id);
+                await this.dispatch('Interface/listInvocation', data.interfaceId);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        // environment
+        async listEnvironment({ commit }) {
+            try {
+                const resp = await listEnvironment();
+                const { data } = resp;
+                commit('setEnvironments', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async getEnvironment({ commit }, payload: any ) {
+            try {
+                const response = await getEnvironment(payload.id, payload.interfaceId);
+                const { data } = response;
+
+                commit('setEnvironment', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async changeEnvironment({ commit }, id: Number ) {
+            const interfaceData = this.state['Interface'].interfaceData
+            await changeEnvironment(id, interfaceData.id);
+
+            await this.dispatch('Interface/listEnvironment');
+            await this.dispatch('Interface/getEnvironment', {id: 0, interfaceId: interfaceData.id})
+            return true
+        },
+        async saveEnvironment({ commit }, payload: any ) {
+            try {
+                const resp = await saveEnvironment(payload);
+
+                const interfaceData = this.state['Interface'].interfaceData
+                this.dispatch('Interface/listEnvironment');
+                this.dispatch('Interface/getEnvironment', {id: 0, interfaceId: interfaceData.id})
+                return resp.data;
+            } catch (error) {
+                return false;
+            }
+        },
+        async removeEnvironment({ commit }, data: any ) {
+            try {
+                await removeEnvironment(data.id);
+                await this.dispatch('Interface/listEnvironment', data.interfaceId);
                 return true;
             } catch (error) {
                 return false;

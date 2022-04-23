@@ -10,7 +10,7 @@
       <div class="histories">
         <div v-for="(item, idx) in invocationsData" :key="idx" class="history">
           <div class="left">
-            <span @click="loadHistory(item.id)" class="dp-link" title="点击加载历史请求数据">{{item.name}}</span>
+            <span @click="getRequestAsInterface(item.id)" class="dp-link" title="点击加载历史请求数据">{{item.name}}</span>
           </div>
           <div class="right">
             <span @click="removeHistory(item.id)" class="dp-link"><DeleteOutlined /></span>
@@ -22,12 +22,11 @@
 </template>
 
 <script lang="ts">
-import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+import {computed, defineComponent} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DeleteOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
-import Empty from "@/components/others/empty.vue";
 import {Interface} from "@/views/interface/data";
 
 export default defineComponent({
@@ -45,9 +44,9 @@ export default defineComponent({
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
     const invocationsData = computed<any[]>(() => store.state.Interface.invocationsData);
 
-    const loadHistory = (id) => {
-      console.log('loadHistory', id)
-      store.dispatch('Interface/loadHistory', id)
+    const getRequestAsInterface = (id) => {
+      console.log('getRequestAsInterface', id)
+      store.dispatch('Interface/getRequestAsInterface', id)
     }
 
     const removeHistory = (id) => {
@@ -59,7 +58,7 @@ export default defineComponent({
       interfaceData,
       invocationsData,
 
-      loadHistory,
+      getRequestAsInterface,
       removeHistory,
     }
   }

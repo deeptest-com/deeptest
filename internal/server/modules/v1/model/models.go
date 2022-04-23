@@ -23,5 +23,7 @@ var (
 		&InterfaceHeader{},
 
 		&Invocation{},
+		&Environment{},
+		&EnvironmentVar{},
 	}
 )

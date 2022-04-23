@@ -19,16 +19,16 @@ func (r *InvocationRepo) List(interfaceId int) (pos []model.Invocation, err erro
 	return
 }
 
-func (r *InvocationRepo) Get(id uint) (field model.Invocation, err error) {
+func (r *InvocationRepo) Get(id uint) (invocation model.Invocation, err error) {
 	err = r.DB.
 		Where("id=?", id).
 		Where("NOT deleted").
-		First(&field).Error
+		First(&invocation).Error
 	return
 }
 
-func (r *InvocationRepo) Save(request *model.Invocation) (err error) {
-	err = r.DB.Save(request).Error
+func (r *InvocationRepo) Save(invocation *model.Invocation) (err error) {
+	err = r.DB.Save(invocation).Error
 	return
 }
 

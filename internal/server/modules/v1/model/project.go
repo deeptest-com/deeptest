@@ -6,6 +6,9 @@ type Project struct {
 	BaseModel
 
 	serverDomain.ProjectBase
+
+	DefaultEnvironmentId uint `json:"defaultEnvironmentId"`
+
 	//Products []*Product `json:"products" gorm:"many2many:biz_project_product_r;"`
 }
 

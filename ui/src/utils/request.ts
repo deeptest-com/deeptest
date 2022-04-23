@@ -18,20 +18,21 @@ export interface ResponseData {
 }
 
 const customCodeMessage: {[key: number]: string} = {
-  10002: '当前用户登入信息已失效，请重新登入再操作。',
-  10100: '已存在相同的记录。',
+  10002: '请重新登录。',
+  10100: '已存在相同记录。',
+
   99999: '无法连接到服务器。',
 };
 
 const serverCodeMessage: {[key: number]: string} = {
-  200: '服务器成功返回请求的数据',
-  400: 'Bad Request',
-  401: 'Unauthorized',
-  403: 'Forbidden',
-  404: 'Not Found',
-  500: '服务器发生错误，请检查服务器(Internal Server Error)',
+  200: '成功（OK）',
+  400: '错误请求（Bad Request）',
+  401: '未授权（Unauthorized）',
+  403: '禁止访问（Forbidden）',
+  404: '未找到（Not Found）',
+  500: '服务器内部错误(Internal Server Error)',
   502: '网关错误(Bad Gateway)',
-  503: '服务不可用，服务器暂时过载或维护(Service Unavailable)',
+  503: '服务不可用(Service Unavailable)',
   504: '网关超时(Gateway Timeout)',
 };
 

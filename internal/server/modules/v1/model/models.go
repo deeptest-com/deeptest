@@ -21,6 +21,8 @@ var (
 		&Interface{},
 		&InterfaceParam{},
 		&InterfaceHeader{},
+		&InterfaceExtractor{},
+		&InterfaceCheckpoint{},
 
 		&Invocation{},
 		&Environment{},

@@ -8,4 +8,12 @@ export default {
     'html': 'HTML',
     'text': 'TEXT',
     'plaintext': 'TEXT',
-};
+
+    'header':  '响应头',
+    'body':  '响应体',
+    'regular':  '正则表达式',
+    'xpath':  'XPath',
+    'jsonPath':  'JsonPath',
+    'cssSelector':  'CSS选择器',
+    'boundary':  '边界选择器',
+}

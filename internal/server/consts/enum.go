@@ -33,3 +33,31 @@ const (
 func (e DropPos) Int() int {
 	return int(e)
 }
+
+type ExtractorSrc string
+
+const (
+	Header ExtractorSrc = "header"
+	Body   ExtractorSrc = "body"
+)
+
+type ExtractorType string
+
+const (
+	Regular     ExtractorType = "regular"
+	XPath       ExtractorType = "xpath"
+	JsonPath    ExtractorType = "jsonPath"
+	CssSelector ExtractorType = "cssSelector"
+	Boundary    ExtractorType = "boundary"
+)
+
+type CheckpointOperator string
+
+const (
+	Equal              CheckpointOperator = "="
+	NotEqual           CheckpointOperator = "!="
+	GreaterThan        CheckpointOperator = ">"
+	LessThan           CheckpointOperator = ">"
+	GreaterThanOrEqual CheckpointOperator = ">="
+	LessThanOrEqual    CheckpointOperator = "<="
+)

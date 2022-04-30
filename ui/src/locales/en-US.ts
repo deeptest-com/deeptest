@@ -7,4 +7,12 @@ export default {
     'xml"': 'XML',
     'html"': 'HTML',
     'text"': 'TEXT',
+
+    'header':  'Header',
+    'body':  'Body',
+    'regular':  'Regular Expression',
+    'xpath':  'XPath',
+    'jsonPath':  'JsonPath',
+    'cssSelector':  'CSS Selector',
+    'boundary':  'Boundary Selector',
 };

@@ -13,9 +13,13 @@
         <ResponseHeaders></ResponseHeaders>
       </a-tab-pane>
 
-<!--      <a-tab-pane key="4" tab="测试结果">
-        <ResponseResult></ResponseResult>
-      </a-tab-pane>-->
+      <a-tab-pane key="4" tab="提取器">
+        <ResponseExtractor></ResponseExtractor>
+      </a-tab-pane>
+
+      <a-tab-pane key="5" tab="验证点">
+        <ResponseCheckpoint></ResponseCheckpoint>
+      </a-tab-pane>
     </a-tabs>
   </div>
 </template>
@@ -27,7 +31,8 @@ import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
 import ResponseLensJson from "./Renderer/lenses/JSONLensRenderer.vue";
 import ResponseHeaders from "./Renderer/Headers.vue";
-import ResponseResult from "./Renderer/Result.vue";
+import ResponseExtractor from "./Extractor.vue";
+import ResponseCheckpoint from "./Checkpoint.vue";
 import ResponseLensXml from "@/views/interface/components/designer/response/Renderer/lenses/XMLLensRenderer.vue";
 import ResponseLensHtml from "@/views/interface/components/designer/response/Renderer/lenses/HTMLLensRenderer.vue";
 import ResponseLensImage from "@/views/interface/components/designer/response/Renderer/lenses/ImageLensRenderer.vue";
@@ -41,6 +46,7 @@ export default defineComponent({
     ResponseLensHtml,
     ResponseLensXml,
     ResponseHeaders, ResponseLensJson,
+    ResponseExtractor, ResponseCheckpoint,
   },
   setup(props) {
     const {t} = useI18n();

@@ -1,3 +1,5 @@
+import {CheckpointOperator, ExtractorSrc, ExtractorType} from "@/views/interface/consts";
+
 export interface Interface {
     id: number,
     url: string;
@@ -13,6 +15,9 @@ export interface Interface {
     bearerToken: BearerToken
     oAuth20: OAuth20
     apiKey: ApiKey
+
+    extractors: Extractor[],
+    checkpoints: Checkpoint[],
 }
 
 export interface Response {
@@ -57,4 +62,20 @@ export interface ApiKey {
     username: string;
     value: string;
     transferMode: string
+}
+
+export interface Extractor {
+    id: number,
+    src: string,
+    type: string,
+    expression: string,
+}
+export interface Checkpoint {
+    id: number,
+    src: ExtractorSrc,
+    type: ExtractorType,
+    expression: string,
+
+    operator: CheckpointOperator,
+    value: any,
 }

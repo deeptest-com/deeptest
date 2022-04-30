@@ -1,23 +1,27 @@
-import { Mutation, Action } from 'vuex';
-import { StoreModuleType } from "@/utils/store";
+import {Action, Mutation} from 'vuex';
+import {StoreModuleType} from "@/utils/store";
 
 import {
-    load,
-    get,
-    remove,
+    changeEnvironment,
+    clearEnvironmentVar,
+    copyEnvironment,
     create,
-    update,
-    move,
-    invokeInterface,
-    saveInterface,
-    listInvocation,
-    getInvocationAsInterface,
-    removeInvocation,
-    listEnvironment,
-    removeEnvironment,
+    get,
     getEnvironment,
-    saveEnvironment, changeEnvironment, saveEnvironmentVar, removeEnvironmentVar, clearEnvironmentVar, copyEnvironment,
-
+    getInvocationAsInterface,
+    invokeInterface,
+    listEnvironment,
+    listInvocation,
+    load,
+    move,
+    remove,
+    removeEnvironment,
+    removeEnvironmentVar,
+    removeInvocation,
+    saveEnvironment,
+    saveEnvironmentVar,
+    saveInterface,
+    update,
 } from './service';
 import {Interface, Response} from "@/views/interface/data";
 
@@ -71,6 +75,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         clearEnvironmentVar: Action<StateType, StateType>;
     };
 }
+
 const initState: StateType = {
     treeData: [],
     interfaceData: {} as Interface,
@@ -113,18 +118,18 @@ const StoreModel: ModuleType = {
         },
     },
     actions: {
-        async invoke({ commit }, payload: any ) {
+        async invoke({commit, dispatch, state}, payload: any) {
             invokeInterface(payload).then((json) => {
                 if (json.code === 0) {
                     commit('setResponse', json.data);
-                    this.dispatch('Interface/listInvocation', payload.id);
+                    dispatch('listInvocation', payload.id);
                     return true;
                 } else {
                     return false
                 }
             })
         },
-        async saveInterface({ commit }, payload: any ) {
+        async saveInterface({commit}, payload: any) {
             saveInterface(payload).then((json) => {
                 if (json.code === 0) {
                     return true;
@@ -134,17 +139,17 @@ const StoreModel: ModuleType = {
             })
         },
 
-        async loadInterface({ commit }) {
+        async loadInterface({commit}) {
             const response = await load();
             if (response.code != 0) return;
 
-            const { data } = response;
+            const {data} = response;
             console.log('data', data)
 
-            commit('setTree',data || {});
+            commit('setTree', data || {});
             return true;
         },
-        async getInterface({ commit }, payload: any ) {
+        async getInterface({commit}, payload: any) {
             if (payload.isDir) {
                 commit('setInterface', {});
                 return true;
@@ -152,7 +157,7 @@ const StoreModel: ModuleType = {
 
             try {
                 const response = await get(payload.id);
-                const { data } = response;
+                const {data} = response;
 
                 commit('setInterface', data);
                 return true;
@@ -160,38 +165,38 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async createInterface({ commit }, payload: any ) {
+        async createInterface({commit, dispatch, state}, payload: any) {
             try {
                 const resp = await create(payload);
 
-                await this.dispatch('Interface/loadInterface');
+                await dispatch('loadInterface');
                 return resp.data;
             } catch (error) {
                 return false;
             }
         },
-        async updateInterface({ commit }, payload: any ) {
+        async updateInterface({commit}, payload: any) {
             try {
-                const { id, ...params } = payload;
-                await update(id, { ...params });
+                const {id, ...params} = payload;
+                await update(id, {...params});
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async deleteInterface({ commit }, payload: number ) {
+        async deleteInterface({commit, dispatch, state}, payload: number) {
             try {
                 await remove(payload);
-                await this.dispatch('Interface/loadInterface');
+                await dispatch('loadInterface');
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async moveInterface({ commit }, payload: any ) {
+        async moveInterface({commit, dispatch, state}, payload: any) {
             try {
                 await move(payload);
-                await this.dispatch('Interface/loadInterface');
+                await dispatch('loadInterface');
                 return true;
             } catch (error) {
                 return false;
@@ -199,30 +204,30 @@ const StoreModel: ModuleType = {
         },
 
         // invocation
-        async listInvocation({ commit }, interfaceId: number ) {
+        async listInvocation({commit}, interfaceId: number) {
             try {
                 const resp = await listInvocation(interfaceId);
-                const { data } = resp;
+                const {data} = resp;
                 commit('setInvocations', data);
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async getInvocationAsInterface({ commit }, id: number ) {
+        async getInvocationAsInterface({commit}, id: number) {
             try {
                 const resp = await getInvocationAsInterface(id);
-                const { data } = resp;
+                const {data} = resp;
                 commit('setInterface', data);
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async removeInvocation({ commit }, data: any ) {
+        async removeInvocation({commit, dispatch, state}, data: any) {
             try {
-               await removeInvocation(data.id);
-                await this.dispatch('Interface/listInvocation', data.interfaceId);
+                await removeInvocation(data.id);
+                dispatch('listInvocation', data.interfaceId);
                 return true;
             } catch (error) {
                 return false;
@@ -230,20 +235,20 @@ const StoreModel: ModuleType = {
         },
 
         // environment
-        async listEnvironment({ commit }) {
+        async listEnvironment({commit}) {
             try {
                 const resp = await listEnvironment();
-                const { data } = resp;
+                const {data} = resp;
                 commit('setEnvironments', data);
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async getEnvironment({ commit }, payload: any ) {
+        async getEnvironment({commit}, payload: any) {
             try {
                 const response = await getEnvironment(payload.id, payload.interfaceId);
-                const { data } = response;
+                const {data} = response;
 
                 commit('setEnvironment', data);
                 return true;
@@ -251,66 +256,62 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async saveEnvironment({ commit }, payload: any ) {
+        async saveEnvironment({commit, dispatch, state}, payload: any) {
             try {
                 const resp = await saveEnvironment(payload);
 
-                const interfaceData = this.state['Interface'].interfaceData
-                this.dispatch('Interface/listEnvironment');
-                this.dispatch('Interface/getEnvironment', {id: 0, interfaceId: interfaceData.id})
+                dispatch('listEnvironment');
+                dispatch('getEnvironment', {id: 0, interfaceId: state.interfaceData.id})
                 return resp.data;
             } catch (error) {
                 return false;
             }
         },
-        async copyEnvironment({ commit }, id: number ) {
+        async copyEnvironment({commit, dispatch, state}, id: number) {
             try {
                 const resp = await copyEnvironment(id);
 
-                const interfaceData = this.state['Interface'].interfaceData
-                this.dispatch('Interface/listEnvironment');
-                this.dispatch('Interface/getEnvironment', {id: 0, interfaceId: interfaceData.id})
+                dispatch('listEnvironment');
+                dispatch('getEnvironment', {id: 0, interfaceId: state.interfaceData.id})
                 return resp.data;
             } catch (error) {
                 return false;
             }
         },
-        async removeEnvironment({ commit }, id: number ) {
+        async removeEnvironment({commit, dispatch, state}, id: number) {
             try {
                 await removeEnvironment(id);
 
-                const interfaceData = this.state['Interface'].interfaceData
-                await this.dispatch('Interface/listEnvironment', interfaceData.id);
-                this.dispatch('Interface/getEnvironment', {id: 0, interfaceId: interfaceData.id})
+                dispatch('listEnvironment', state.interfaceData.id);
+                dispatch('getEnvironment', {id: 0, interfaceId: state.interfaceData.id})
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async changeEnvironment({ commit }, id: Number ) {
-            const interfaceData = this.state['Interface'].interfaceData
-            await changeEnvironment(id, interfaceData.id);
+        async changeEnvironment({commit, dispatch, state}, id: Number) {
+            await changeEnvironment(id, state.interfaceData.id);
 
-            await this.dispatch('Interface/listEnvironment');
-            await this.dispatch('Interface/getEnvironment', {id: 0, interfaceId: interfaceData.id})
+            dispatch('listEnvironment');
+            dispatch('getEnvironment', {id: 0, interfaceId: state.interfaceData.id})
             return true
         },
 
         // environment var
-        async saveEnvironmentVar({ commit }, payload: any ) {
+        async saveEnvironmentVar({commit}, payload: any) {
             try {
                 const resp = await saveEnvironmentVar(payload);
-                const { data } = resp;
+                const {data} = resp;
                 commit('setEnvironment', data);
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async removeEnvironmentVar({ commit }, id: number ) {
+        async removeEnvironmentVar({commit}, id: number) {
             try {
                 const resp = await removeEnvironmentVar(id);
-                const { data } = resp;
+                const {data} = resp;
                 commit('setEnvironment', data);
 
                 return true;
@@ -318,11 +319,10 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async clearEnvironmentVar({ commit }) {
+        async clearEnvironmentVar({commit, dispatch, state}) {
             try {
-                const environmentData = this.state['Interface'].environmentData
-                const resp = await clearEnvironmentVar(environmentData.id);
-                const { data } = resp;
+                const resp = await clearEnvironmentVar(state.environmentData.id);
+                const {data} = resp;
                 commit('setEnvironment', data);
 
                 return true;

@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/aaronchen2k/deeptest/internal/comm/consts"
 	"github.com/aaronchen2k/deeptest/internal/comm/domain"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/kataras/iris/v12"
 )
 
@@ -38,6 +39,9 @@ type Interface struct {
 	ApiKey      domain.ApiKey      `gorm:"-" json:"apiKey"`
 
 	EnvironmentId uint `json:"environmentId"`
+
+	InterfaceExtractors  []InterfaceExtractor  `gorm:"-" json:"interfaceExtractors"`
+	InterfaceCheckpoints []InterfaceCheckpoint `gorm:"-" json:"interfaceCheckpoints"`
 }
 
 func (Interface) TableName() string {
@@ -64,4 +68,29 @@ type InterfaceHeader struct {
 
 func (InterfaceHeader) TableName() string {
 	return "biz_interface_header"
+}
+
+type InterfaceExtractor struct {
+	BaseModel
+	Src        serverConsts.ExtractorSrc
+	Type       serverConsts.ExtractorType
+	Expression string
+}
+
+func (InterfaceExtractor) TableName() string {
+	return "biz_interface_extractor"
+}
+
+type InterfaceCheckpoint struct {
+	BaseModel
+	Src        serverConsts.ExtractorSrc
+	Type       serverConsts.ExtractorType
+	Expression string
+
+	Operator serverConsts.CheckpointOperator
+	Value    string
+}
+
+func (InterfaceCheckpoint) TableName() string {
+	return "biz_interface_checkpoint"
 }

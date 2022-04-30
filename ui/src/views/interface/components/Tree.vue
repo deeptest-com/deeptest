@@ -206,7 +206,7 @@ export default defineComponent({
     watch(treeData, () => {
       console.log('watch', treeData)
       getNodeMapCall()
-      console.log('treeMap', Object.keys(treeDataMap), treeDataMap)
+      // console.log('treeMap', Object.keys(treeDataMap), treeDataMap)
       if (!treeData.value[0].children || treeData.value[0].children.length === 0) {
         tips.value = '右键树状节点操作'
       }
@@ -271,10 +271,11 @@ export default defineComponent({
           )
     }
     const removeNode = () => {
+      console.log('removeNode')
       store.dispatch('Interface/deleteInterface', targetModelId);
     }
     const clearMenu = () => {
-      // console.log('clearMenu')
+      console.log('clearMenu')
       contextNode.value = ref({})
     }
 

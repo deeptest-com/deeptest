@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
@@ -83,6 +84,9 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 	s.ExtractorRepo.UpdateResult(extractor)
 
 	serverConsts.EnvVar.Store(extractor.Variable, extractor.Result)
+
+	val, _ := serverConsts.EnvVar.Load(extractor.Variable)
+	logUtils.Infof("%s", extractor.Variable, val)
 
 	return
 }

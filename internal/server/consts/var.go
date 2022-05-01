@@ -1,5 +1,7 @@
 package serverConsts
 
-import ()
+import "sync"
 
-var ()
+var (
+	EnvVar sync.Map
+)

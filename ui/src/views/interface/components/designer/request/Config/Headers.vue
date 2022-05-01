@@ -29,7 +29,7 @@
         <a-col flex="1">
           <a-input v-model:value="item.value" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
         </a-col>
-        <a-col flex="80px" class="dp-right dp-color-primary dp-icon-btn-container">
+        <a-col flex="80px" class="dp-right dp-icon-btn-container">
           <a-tooltip v-if="!item.disabled" @click="disable(idx)" overlayClassName="dp-tip-small">
             <template #title>禁用</template>
             <CheckCircleOutlined class="dp-icon-btn dp-trans-80" />
@@ -37,7 +37,7 @@
 
           <a-tooltip v-if="item.disabled" @click="disable(idx)" overlayClassName="dp-tip-small">
             <template #title>启用</template>
-            <CloseCircleOutlined class="dp-icon-btn dp-trans-80" />
+            <CloseCircleOutlined class="dp-icon-btn dp-trans-80 dp-light" />
           </a-tooltip>
 
           <a-tooltip @click="remove(idx)" overlayClassName="dp-tip-small">

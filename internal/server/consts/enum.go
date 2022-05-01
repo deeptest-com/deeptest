@@ -44,6 +44,7 @@ const (
 type ExtractorType string
 
 const (
+	FullText    ExtractorType = "fulltext"
 	Regular     ExtractorType = "regular"
 	XPath       ExtractorType = "xpath"
 	JsonPath    ExtractorType = "jsonPath"

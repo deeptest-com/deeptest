@@ -37,7 +37,7 @@
 
           <a-tooltip v-if="item.disabled" @click="disable(idx)" overlayClassName="dp-tip-small">
             <template #title>启用</template>
-            <CloseCircleOutlined class="dp-icon-btn dp-trans-80" />
+            <CloseCircleOutlined class="dp-icon-btn dp-trans-80 dp-light" />
           </a-tooltip>
 
           <a-tooltip @click="remove(idx)" overlayClassName="dp-tip-small">

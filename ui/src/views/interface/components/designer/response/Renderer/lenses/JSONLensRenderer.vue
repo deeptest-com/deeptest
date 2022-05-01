@@ -102,6 +102,7 @@ export default defineComponent({
   }
   .body {
     height: calc(100% - 30px);
+    overflow-x: hidden;
     overflow-y: hidden;
     &>div {
       height: 100%;

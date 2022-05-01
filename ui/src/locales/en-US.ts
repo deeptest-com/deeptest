@@ -10,6 +10,13 @@ export default {
 
     'header':  'Header',
     'body':  'Body',
+
+    'statusCode': 'Status Code',
+    'responseHeader': 'Response Header',
+    'responseBody': 'Response Body',
+    'extractor': 'Extractor',
+
+    'fulltext': 'Full Text',
     'regular':  'Regular Expression',
     'xpath':  'XPath',
     'jsonPath':  'JsonPath',

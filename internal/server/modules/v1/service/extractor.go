@@ -86,7 +86,7 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 	serverConsts.EnvVar.Store(extractor.Variable, extractor.Result)
 
 	val, _ := serverConsts.EnvVar.Load(extractor.Variable)
-	logUtils.Infof("%s", extractor.Variable, val)
+	logUtils.Infof("%s = %v", extractor.Variable, val)
 
 	return
 }

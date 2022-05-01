@@ -2,14 +2,14 @@
   <div class="response-extractor-main">
     <div class="head">
       <a-row type="flex" class="extractor">
-        <a-col flex="50px">编号</a-col>
-        <a-col flex="50px">来源</a-col>
-        <a-col flex="80px">提取类型</a-col>
-        <a-col style="flex: 1;width: 0;">表达式</a-col>
-        <a-col flex="80px">环境变量</a-col>
-        <a-col flex="80px">提取结果</a-col>
+        <a-col flex="60px">编号</a-col>
+        <a-col flex="80px">来源</a-col>
+        <a-col flex="100px">提取类型</a-col>
+        <a-col flex="1">表达式</a-col>
+        <a-col flex="150px">环境变量</a-col>
+        <a-col flex="100px">提取结果</a-col>
 
-        <a-col flex="80px" class="dp-right">
+        <a-col flex="100px" class="dp-right">
           <PlusOutlined @click.stop="add" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
@@ -17,14 +17,14 @@
 
     <div class="items">
       <a-row v-for="(item, idx) in checkpointsData" :key="idx" type="flex" class="item">
-        <a-col flex="50px">{{idx + 1}}</a-col>
-        <a-col flex="50px">{{ item.src }}</a-col>
-        <a-col flex="80px">{{ item.type }}</a-col>
-        <a-col style="flex: 1;width: 0;">{{ item.expression }}</a-col>
-        <a-col flex="80px">{{ item.variable }}</a-col>
-        <a-col flex="80px">{{results[model.id]}}</a-col>
+        <a-col flex="60px">{{idx + 1}}</a-col>
+        <a-col flex="80px">{{ item.src }}</a-col>
+        <a-col flex="100px">{{ item.type }}</a-col>
+        <a-col flex="1">{{ item.expression }}</a-col>
+        <a-col flex="150px">{{ item.variable }}</a-col>
+        <a-col flex="100px">{{item.result}}</a-col>
 
-        <a-col flex="80px" class="dp-right">
+        <a-col flex="100px" class="dp-right">
           <a-tooltip v-if="!item.disabled" @click="disable(item)" overlayClassName="dp-tip-small">
             <template #title>禁用</template>
             <CheckCircleOutlined class="dp-icon-btn dp-trans-80" />

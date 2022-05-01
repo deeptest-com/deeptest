@@ -1,7 +1,6 @@
 package repo
 
 import (
-	"errors"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	commonUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/comm"
@@ -66,34 +65,39 @@ func (r *ProjectRepo) FindById(id uint) (serverDomain.ProjectResp, error) {
 	return project, nil
 }
 
-func (r *ProjectRepo) FindByName(projectname string, ids ...uint) (serverDomain.ProjectResp, error) {
-	project := serverDomain.ProjectResp{}
-	db := r.DB.Model(&model.Project{}).Where("name = ?", projectname)
-	if len(ids) == 1 {
-		db.Where("id != ?", ids[0])
-	}
-	err := db.First(&project).Error
-	if err != nil {
-		logUtils.Errorf("find project by name error", zap.String("name:", projectname), zap.Uints("ids:", ids), zap.String("error:", err.Error()))
-		return project, err
+func (r *ProjectRepo) FindByName(projectName string, id uint) (project serverDomain.ProjectResp, err error) {
+	db := r.DB.Model(&model.Project{}).
+		Where("name = ?", projectName)
+
+	if id > 0 {
+		db.Where("id != ?", id)
 	}
 
-	return project, nil
+	db.First(&project)
+
+	return
 }
 
-func (r *ProjectRepo) Create(req serverDomain.ProjectReq) (uint, error) {
-	if _, err := r.FindByName(req.Name); !errors.Is(err, gorm.ErrRecordNotFound) {
-		return 0, fmt.Errorf("%d", _domain.BizErrNameExist.Code)
+func (r *ProjectRepo) Create(req serverDomain.ProjectReq) (id uint, err error) {
+	po, err := r.FindByName(req.Name, 0)
+	if po.Name != "" {
+		err = fmt.Errorf("%d", _domain.BizErrNameExist.Code)
+		return
 	}
+
 	project := model.Project{ProjectBase: req.ProjectBase}
 
-	err := r.DB.Model(&model.Project{}).Create(&project).Error
+	err = r.DB.Model(&model.Project{}).Create(&project).Error
 	if err != nil {
 		logUtils.Errorf("add project error", zap.String("error:", err.Error()))
-		return 0, err
+		err = fmt.Errorf("%d", _domain.BizErrNameExist.Code)
+
+		return
 	}
 
-	return project.ID, nil
+	id = project.ID
+
+	return
 }
 
 func (r *ProjectRepo) Update(id uint, req serverDomain.ProjectReq) error {

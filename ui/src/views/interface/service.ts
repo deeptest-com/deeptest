@@ -7,6 +7,9 @@ const apiRequest = 'invocations';
 const apiEnvironment = 'environments'
 const apiEnvironmentVar = `${apiEnvironment}/vars`
 
+const apiExtractor = 'extractors'
+const apiCheckpoint = 'checkpoints'
+
 // interface
 export async function invokeInterface(interf: Interface): Promise<any> {
     return request({
@@ -232,4 +235,64 @@ export const getEnumSelectItems = (enumDef) => {
     }
 
     return arr
+}
+
+// extractor
+export async function listExtractor(interfaceId: number): Promise<any> {
+    const params = {interfaceId}
+
+    return request({
+        url: `/${apiExtractor}`,
+        method: 'GET',
+        params,
+    });
+}
+export async function getExtractor(id: number): Promise<any> {
+    return request({
+        url: `/${apiExtractor}/${id}`,
+        method: 'GET',
+    });
+}
+export async function saveExtractor(data): Promise<any> {
+    return request({
+        url: `/${apiExtractor}`,
+        method: data.id ? 'PUT' : 'POST',
+        data: data,
+    });
+}
+export async function removeExtractor(id: number): Promise<any> {
+    return request({
+        url: `/${apiExtractor}/${id}`,
+        method: 'DELETE',
+    });
+}
+
+// checkpoint
+export async function listCheckpoint(): Promise<any> {
+    const params = {}
+
+    return request({
+        url: `/${apiCheckpoint}`,
+        method: 'GET',
+        params,
+    });
+}
+export async function getCheckpoint(id: number): Promise<any> {
+    return request({
+        url: `/${apiCheckpoint}/${id}`,
+        method: 'GET',
+    });
+}
+export async function saveCheckpoint(data): Promise<any> {
+    return request({
+        url: `/${apiCheckpoint}`,
+        method: data.id ? 'PUT' : 'POST',
+        data: data,
+    });
+}
+export async function removeCheckpoint(id: number): Promise<any> {
+    return request({
+        url: `/${apiCheckpoint}/${id}`,
+        method: 'DELETE',
+    });
 }

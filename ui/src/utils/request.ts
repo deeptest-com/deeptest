@@ -19,7 +19,7 @@ export interface ResponseData {
 
 const customCodeMessage: {[key: number]: string} = {
   10002: '请重新登录。',
-  10100: '已存在相同记录。',
+  10100: '相同记录已存在。',
 
   99999: '无法连接到服务器。',
 };

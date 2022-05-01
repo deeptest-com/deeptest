@@ -26,6 +26,8 @@ type IndexModule struct {
 	InterfaceModule   *index.InterfaceModule   `inject:""`
 	InvocationModule  *index.InvocationModule  `inject:""`
 	EnvironmentModule *index.EnvironmentModule `inject:""`
+	ExtractorModule   *index.ExtractorModule   `inject:""`
+	CheckpointModule  *index.CheckpointModule  `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -57,6 +59,8 @@ func (m *IndexModule) Party() module.WebModule {
 		m.InterfaceModule.Party(),
 		m.InvocationModule.Party(),
 		m.EnvironmentModule.Party(),
+		m.ExtractorModule.Party(),
+		m.CheckpointModule.Party(),
 	}
 	return module.NewModule(serverConsts.ApiPath, handler, modules...)
 }

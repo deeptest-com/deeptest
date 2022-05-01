@@ -11,6 +11,13 @@ export default {
 
     'header':  '响应头',
     'body':  '响应体',
+
+    'statusCode': '状态码',
+    'responseHeader': '响应头',
+    'responseBody': '响应体',
+    'extractor': '提取器',
+
+    'fulltext': '全文本',
     'regular':  '正则表达式',
     'xpath':  'XPath',
     'jsonPath':  'JsonPath',

@@ -25,17 +25,20 @@ export default defineComponent({
   ],
   setup(props){
     const { width, height } = toRefs(props)
+
     const style = computed(()=>{
       const fixedWidth = width.value.toString().includes('%') ? width.value : `${width.value}px`
       const fixedHeight = height.value.toString().includes('%')? height.value : `${height.value}px`
+
       return {
+        // maxWidth: 0,
         width: fixedWidth,
         height: fixedHeight,
         'text-align': 'left'
       }
     })
     return {
-      style
+      style,
     }
   },
   mounted() {
@@ -49,9 +52,11 @@ export default defineComponent({
   methods: {
     initMonaco(){
       this.$emit('editorWillMount', this.monaco)
+
       const { value, language, theme, options } = this;
       Object.assign(options, {scrollbar: {
           useShadows: false,
+          automaticLayout: true,
           verticalScrollbarSize: 6,
           horizontalScrollbarSize: 6
         }})
@@ -74,6 +79,11 @@ export default defineComponent({
         setTimeout(() => {
           editor.getAction('editor.action.formatDocument').run()
           console.log('format codes')
+
+          const elems= document.getElementsByClassName('monaco-editor-vue3');
+          for(let i=0; i < elems.length; i++) {
+            elems[i].style.maxWidth = 0 // elems[i].clientWidth - 200 + 'px'
+          }
         }, 60)
       })
 
@@ -138,3 +148,10 @@ export default defineComponent({
   }
 });
 </script>
+
+<style lang="less">
+  .monaco-editor-vue3 {
+    .monaco-editor {
+    }
+  }
+</style>

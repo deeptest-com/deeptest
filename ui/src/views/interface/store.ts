@@ -22,8 +22,18 @@ import {
     saveEnvironmentVar,
     saveInterface,
     update,
+
+    listExtractor,
+    getExtractor,
+    saveExtractor,
+    removeExtractor,
+
+    listCheckpoint,
+    getCheckpoint,
+    saveCheckpoint,
+    removeCheckpoint,
 } from './service';
-import {Interface, Response} from "@/views/interface/data";
+import {Checkpoint, Extractor, Interface, Response} from "@/views/interface/data";
 
 export interface StateType {
     treeData: any[];
@@ -34,6 +44,12 @@ export interface StateType {
 
     environmentsData: any[];
     environmentData: any;
+
+    extractorsData: any[];
+    extractorData: any;
+
+    checkpointsData: any[];
+    checkpointData: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -47,6 +63,12 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setEnvironments: Mutation<StateType>;
         setEnvironment: Mutation<StateType>;
+
+        setExtractors: Mutation<StateType>;
+        setExtractor: Mutation<StateType>;
+
+        setCheckpoints: Mutation<StateType>;
+        setCheckpoint: Mutation<StateType>;
     };
     actions: {
         invoke: Action<StateType, StateType>;
@@ -73,6 +95,16 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveEnvironmentVar: Action<StateType, StateType>;
         removeEnvironmentVar: Action<StateType, StateType>;
         clearEnvironmentVar: Action<StateType, StateType>;
+
+        listExtractor: Action<StateType, StateType>;
+        getExtractor: Action<StateType, StateType>;
+        saveExtractor: Action<StateType, StateType>;
+        removeExtractor: Action<StateType, StateType>;
+
+        listCheckpoint: Action<StateType, StateType>;
+        getCheckpoint: Action<StateType, StateType>;
+        saveCheckpoint: Action<StateType, StateType>;
+        removeCheckpoint: Action<StateType, StateType>;
     };
 }
 
@@ -85,6 +117,12 @@ const initState: StateType = {
 
     environmentsData: [],
     environmentData: [],
+
+    extractorsData: [],
+    extractorData: {} as Extractor,
+
+    checkpointsData: [],
+    checkpointData: {} as Checkpoint,
 };
 
 const StoreModel: ModuleType = {
@@ -113,8 +151,22 @@ const StoreModel: ModuleType = {
         setEnvironments(state, payload) {
             state.environmentsData = payload;
         },
-        setEnvironment(state, data) {
-            state.environmentData = data;
+        setEnvironment(state, payload) {
+            state.environmentData = payload;
+        },
+
+        setExtractors(state, payload) {
+            state.extractorsData = payload;
+        },
+        setExtractor(state, payload) {
+            state.extractorData = payload;
+        },
+
+        setCheckpoints(state, payload) {
+            state.checkpointsData = payload;
+        },
+        setCheckpoint(state, payload) {
+            state.checkpointData = payload;
         },
     },
     actions: {
@@ -325,6 +377,91 @@ const StoreModel: ModuleType = {
                 const {data} = resp;
                 commit('setEnvironment', data);
 
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        // extractor
+        async listExtractor({commit, dispatch, state}) {
+            try {
+                const resp = await listExtractor(state.interfaceData.id);
+                const {data} = resp;
+                commit('setExtractors', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async getExtractor({commit}, id: number) {
+            try {
+                const response = await getExtractor(id);
+                const {data} = response;
+
+                commit('setExtractor', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async saveExtractor({commit, dispatch, state}, payload: any) {
+            try {
+                await saveExtractor(payload);
+                dispatch('listExtractor');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async removeExtractor({commit, dispatch, state}, id: number) {
+            try {
+                await removeExtractor(id);
+
+                dispatch('listExtractor', state.interfaceData.id);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        // checkpoint
+        async listCheckpoint({commit}) {
+            try {
+                const resp = await listCheckpoint();
+                const {data} = resp;
+                commit('setCheckpoints', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async getCheckpoint({commit}, id: number) {
+            try {
+                const response = await getCheckpoint(id);
+                const {data} = response;
+
+                commit('setCheckpoint', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async saveCheckpoint({commit, dispatch, state}, payload: any) {
+            try {
+                const resp = await saveCheckpoint(payload);
+
+                dispatch('listCheckpoint');
+                return resp.data;
+            } catch (error) {
+                return false;
+            }
+        },
+        async removeCheckpoint({commit, dispatch, state}, id: number) {
+            try {
+                await removeCheckpoint(id);
+
+                dispatch('listCheckpoint', state.interfaceData.id);
                 return true;
             } catch (error) {
                 return false;

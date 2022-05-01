@@ -17,17 +17,25 @@ export enum ExtractorSrc {
     body = 'body',
 }
 export enum ExtractorType {
+    fulltext = 'fulltext',
     regular = 'regular',
     xpath = 'xpath',
     jsonPath = 'jsonPath',
     cssSelector = 'cssSelector',
     boundary = 'boundary',
 }
+export enum CheckpointType {
+    statusCode = 'statusCode',
+    responseHeader = 'responseHeader',
+    responseBody = 'responseBody',
+    extractor = 'extractor',
+}
 export enum CheckpointOperator {
+    contain = 'contain',
     equal = '=',
     notEqual = '!=',
     greaterThan = '>',
-    lessThan = '>',
+    lessThan = '<',
     greaterThanOrEqual = '>=',
     lessThanOrEqual = '<=',
 }

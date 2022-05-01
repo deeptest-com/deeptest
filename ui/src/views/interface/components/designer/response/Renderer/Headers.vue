@@ -11,12 +11,12 @@
         </a-col>
       </a-row>
     </div>
-    <div class="params">
-      <a-row v-for="(item, idx) in responseData.headers" :key="idx" type="flex" class="param">
+    <div class="items">
+      <a-row v-for="(item, idx) in responseData.headers" :key="idx" type="flex" class="item">
         <a-col flex="1">
           <a-input v-model:value="item.name" class="dp-bg-input-transparent" />
         </a-col>
-        <a-col flex="1">
+        <a-col flex="80px">
           <a-input v-model:value="item.value" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
@@ -69,10 +69,10 @@ export default defineComponent({
     padding: 2px 3px;
     border-bottom: 1px solid #d9d9d9;
   }
-  .params {
+  .items {
     height: calc(100% - 28px);
     overflow-y: auto;
-    .param {
+    .item {
       padding: 2px 3px;
       border-bottom: 1px solid #d9d9d9;
 

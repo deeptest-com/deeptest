@@ -82,5 +82,7 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 
 	s.ExtractorRepo.UpdateResult(extractor)
 
+	serverConsts.EnvVar.Store(extractor.Variable, extractor.Result)
+
 	return
 }

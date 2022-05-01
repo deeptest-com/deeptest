@@ -16,7 +16,11 @@ type MockCtrl struct {
 
 func (c *MockCtrl) Get(ctx iris.Context) {
 	ctx.Header(consts.ContentType, consts.ContentTypeJSON.String()+";charset=utf-8")
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+
+	data := iris.Map{}
+	data["content"] = "test"
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
 func (c *MockCtrl) Request(ctx iris.Context) {

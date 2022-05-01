@@ -174,7 +174,10 @@ const StoreModel: ModuleType = {
             invokeInterface(payload).then((json) => {
                 if (json.code === 0) {
                     commit('setResponse', json.data);
+
                     dispatch('listInvocation', payload.id);
+                    dispatch('listExtractor', payload.id);
+
                     return true;
                 } else {
                     return false

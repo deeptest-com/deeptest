@@ -43,6 +43,7 @@ require (
 	github.com/miekg/dns v1.1.43 // indirect
 	github.com/mitchellh/mapstructure v1.4.2 // indirect
 	github.com/nats-io/nats-server/v2 v2.6.6 // indirect
+	github.com/oliveagle/jsonpath v0.0.0-20180606110733-2e52cf6e6852 // indirect
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rpcxio/rpcx-gateway v0.0.0-20210512062600-6dcb6be40a61
 	github.com/rs/cors v1.8.0 // indirect

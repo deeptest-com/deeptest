@@ -11,7 +11,7 @@ type ExtractorRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func (r *ExtractorRepo) List(interfaceId int) (pos []model.InterfaceExtractor, err error) {
+func (r *ExtractorRepo) List(interfaceId uint) (pos []model.InterfaceExtractor, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
@@ -59,6 +59,15 @@ func (r *ExtractorRepo) Delete(id uint) (err error) {
 	err = r.DB.Model(&model.InterfaceExtractor{}).
 		Where("id=?", id).
 		Update("deleted", true).
+		Error
+
+	return
+}
+
+func (r *ExtractorRepo) UpdateResult(extractor model.InterfaceExtractor) (err error) {
+	err = r.DB.Model(&model.InterfaceExtractor{}).
+		Where("id=?", extractor.ID).
+		Update("result", extractor.Result).
 		Error
 
 	return

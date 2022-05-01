@@ -77,7 +77,8 @@ type InterfaceExtractor struct {
 	Expression string                     `json:"expression"`
 	Variable   string                     `json:"variable"`
 
-	InterfaceId uint `json:"interfaceId"`
+	Result      string `json:"result"`
+	InterfaceId uint   `json:"interfaceId"`
 }
 
 func (InterfaceExtractor) TableName() string {

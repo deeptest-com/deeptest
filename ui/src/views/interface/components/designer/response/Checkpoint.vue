@@ -152,15 +152,17 @@ export default defineComponent({
     const variables = ref([])
     const editVisible = ref(false)
 
+    const extractorVariableRequired = { required: true, message: '请选择变量', trigger: 'change' }
+    const expressionRequired = { required: true, message: '请输入键值', trigger: 'blur' }
     const rules = reactive({
       type: [
         { required: true, message: '请选择类型', trigger: 'blur' },
       ],
       extractorVariable: [
-        { required: true, message: '请选择变量', trigger: 'change' },
+        extractorVariableRequired
       ],
       expression: [
-        { required: true, message: '请输入键值', trigger: 'blur' },
+        expressionRequired
       ],
       operator: [
         { required: true, message: '请选择操作', trigger: 'change' },
@@ -246,17 +248,13 @@ export default defineComponent({
       console.log('===', model.value.type)
 
       if (model.value.type === CheckpointType.responseHeader) {
-        rules.expression = [
-          {required: true, message: '请输入键值', trigger: 'blur'},
-        ]
+        rules.expression = [expressionRequired]
       } else {
         rules.expression = []
       }
 
       if (model.value.type === CheckpointType.extractor) {
-        rules.extractorVariable = [
-          { required: true, message: '请选择变量', trigger: 'change' },
-        ]
+        rules.extractorVariable = [extractorVariableRequired]
 
         listExtractorVariable(interfaceData.value.id).then((jsn) => {
           variables.value = jsn.data

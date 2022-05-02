@@ -52,9 +52,19 @@ const (
 	Boundary    ExtractorType = "boundary"
 )
 
+type CheckpointType string
+
+const (
+	ResponseStatus CheckpointType = "responseStatus"
+	ResponseHeader CheckpointType = "responseHeader"
+	ResponseBody   CheckpointType = "responseBody"
+	Extractor      CheckpointType = "extractor"
+)
+
 type CheckpointOperator string
 
 const (
+	Contain            CheckpointOperator = "contain"
 	Equal              CheckpointOperator = "="
 	NotEqual           CheckpointOperator = "!="
 	GreaterThan        CheckpointOperator = ">"

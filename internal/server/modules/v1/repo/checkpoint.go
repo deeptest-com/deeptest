@@ -9,7 +9,7 @@ type CheckpointRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func (r *CheckpointRepo) List(interfaceId int) (pos []model.InterfaceCheckpoint, err error) {
+func (r *CheckpointRepo) List(interfaceId uint) (pos []model.InterfaceCheckpoint, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
@@ -54,6 +54,15 @@ func (r *CheckpointRepo) Delete(id uint) (err error) {
 	err = r.DB.Model(&model.InterfaceCheckpoint{}).
 		Where("id=?", id).
 		Update("deleted", true).
+		Error
+
+	return
+}
+
+func (r *CheckpointRepo) UpdateResult(checkpoint model.InterfaceCheckpoint) (err error) {
+	err = r.DB.Model(&checkpoint).
+		Where("id=?", checkpoint.ID).
+		Update("result", checkpoint.Result).
 		Error
 
 	return

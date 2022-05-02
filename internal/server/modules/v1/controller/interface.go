@@ -16,6 +16,7 @@ type InterfaceCtrl struct {
 	InterfaceService  *service.InterfaceService  `inject:""`
 	InvocationService *service.InvocationService `inject:""`
 	ExtractorService  *service.ExtractorService  `inject:""`
+	CheckpointService *service.CheckpointService `inject:""`
 
 	BaseCtrl
 }
@@ -54,6 +55,7 @@ func (c *InterfaceCtrl) InvokeInterface(ctx iris.Context) {
 	}
 
 	c.ExtractorService.ExtractByInterface(req.Id, resp)
+	c.CheckpointService.CheckByInterface(req.Id, resp)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
 }

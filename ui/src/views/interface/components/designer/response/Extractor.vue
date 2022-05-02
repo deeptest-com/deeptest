@@ -52,12 +52,6 @@
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-form-item label="数据来源" v-bind="validateInfos.src">
-<!--            <a-select v-model:value="model.src"
-                      @blur="validate('src', { trigger: 'change' }).catch(() => {})">
-              <a-select-option>
-
-              </a-select-option>
-            </a-select>-->
             <a-radio-group name="srcGroup" v-model:value="model.src"
                            @blur="validate('src', { trigger: 'change' }).catch(() => {})">
               <a-radio v-for="(item, idx) in srcOptions" :key="idx" :value="item.value">
@@ -168,11 +162,13 @@ export default defineComponent({
 
     const save = () => {
       console.log('save')
-      model.value.interfaceId = interfaceData.value.id
-      store.dispatch('Interface/saveExtractor', model.value).then((result) => {
-        if (result) {
-          editVisible.value = false
-        }
+      validate().then(() => {
+        model.value.interfaceId = interfaceData.value.id
+        store.dispatch('Interface/saveExtractor', model.value).then((result) => {
+          if (result) {
+            editVisible.value = false
+          }
+        })
       })
     }
 

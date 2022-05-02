@@ -100,3 +100,20 @@ func (c *ExtractorCtrl) Delete(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
+
+// ListExtractorVariable
+func (c *ExtractorCtrl) ListExtractorVariable(ctx iris.Context) {
+	interfaceId, err := ctx.URLParamInt("interfaceId")
+	if interfaceId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "interfaceId"})
+		return
+	}
+
+	data, err := c.ExtractorService.ListExtractorVariable(interfaceId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+}

@@ -40,124 +40,10 @@
         <EmptyPage desc="无授权信息"></EmptyPage>
       </template>
 
-      <div v-if="interfaceData.authorizationType === 'basicAuth'" class="content">
-        <div class="params">
-          <a-row class="param">
-            <a-col flex="1">
-              <a-input v-model:value="interfaceData.basicAuth.username" placeholder="用户名" class="dp-bg-input-transparent" />
-            </a-col>
-          </a-row>
-          <a-row class="param">
-            <a-col flex="1">
-              <a-input v-model:value="interfaceData.basicAuth.password" placeholder="密码" class="dp-bg-input-transparent" />
-            </a-col>
-          </a-row>
-        </div>
-        <div class="tips">
-          <div class="dp-light">授权头将会在你发送请求时自动生成。</div>
-          <div class="dp-link-primary">了解更多 <ArrowRightOutlined /></div>
-        </div>
-      </div>
-
-      <div v-if="interfaceData.authorizationType === 'bearerToken'" class="content">
-        <div class="params">
-          <a-row class="param">
-            <a-col flex="1">
-              <a-input v-model:value="interfaceData.bearerToken.username" placeholder="用户名" class="dp-bg-input-transparent" />
-            </a-col>
-          </a-row>
-        </div>
-        <div class="tips">
-          <div class="dp-light">授权头将会在你发送请求时自动生成。</div>
-          <div class="dp-link-primary">了解更多 <ArrowRightOutlined /></div>
-        </div>
-      </div>
-
-      <div v-if="interfaceData.authorizationType === 'oAuth20'" class="content">
-        <div class="params">
-          <a-row class="param">
-            <a-col flex="1">
-              <a-input v-model:value="interfaceData.oAuth20.key"
-                       placeholder="Key" class="dp-bg-input-transparent" />
-            </a-col>
-          </a-row>
-          <a-row class="param">
-            <a-col flex="1">
-              <a-input v-model:value="interfaceData.oAuth20.oidcDiscoveryURL"
-                       placeholder="OpenID Connect Discovery URL" class="dp-bg-input-transparent" />
-            </a-col>
-          </a-row>
-          <a-row class="param">
-            <a-col flex="1">
-              <a-input v-model:value="interfaceData.oAuth20.authURL"
-                       placeholder="Authentication URL" class="dp-bg-input-transparent" />
-            </a-col>
-          </a-row>
-          <a-row class="param">
-            <a-col flex="1">
-              <a-input v-model:value="interfaceData.oAuth20.accessTokenURL"
-                       placeholder="Access Token URL" class="dp-bg-input-transparent" />
-            </a-col>
-          </a-row>
-          <a-row class="param">
-            <a-col flex="1">
-              <a-input v-model:value="interfaceData.oAuth20.clientID"
-                       placeholder="Client ID" class="dp-bg-input-transparent" />
-            </a-col>
-          </a-row>
-          <a-row class="param">
-            <a-col flex="1">
-              <a-input v-model:value="interfaceData.basicAuth.scope"
-                       placeholder="Scope" class="dp-bg-input-transparent" />
-            </a-col>
-          </a-row>
-          <a-row class="param">
-            <a-col flex="1">
-              <a-button class="dp-bg-light">
-                <span class="curr-method">生成令牌</span>
-              </a-button>
-            </a-col>
-          </a-row>
-
-        </div>
-        <div class="tips">
-          <div class="dp-light">授权头将会在你发送请求时自动生成。</div>
-          <div class="dp-link-primary">了解更多 <ArrowRightOutlined /></div>
-        </div>
-      </div>
-
-      <div v-if="interfaceData.authorizationType === 'apiKey'" class="content">
-        <div class="params">
-          <a-row class="param">
-            <a-col flex="1">
-              <a-input v-model:value="interfaceData.basicAuth.username" placeholder="用户名" class="dp-bg-input-transparent" />
-            </a-col>
-          </a-row>
-          <a-row class="param">
-            <a-col flex="1">
-              <a-input v-model:value="interfaceData.basicAuth.password" placeholder="取值" class="dp-bg-input-transparent" />
-            </a-col>
-          </a-row>
-          <a-row class="param">
-            <a-col flex="80px">传递方式</a-col>
-            <a-col flex="1">
-              <a-select
-                  v-model:value="interfaceData.apiKey.transferMode"
-                  size="small"
-                  :dropdownMatchSelectWidth="false"
-                  :bordered="false"
-              >
-                <a-select-option value="headers">请求头</a-select-option>
-                <a-select-option value="queryParams">查询参数</a-select-option>
-              </a-select>
-            </a-col>
-          </a-row>
-        </div>
-        <div class="tips">
-          <div class="dp-light">授权头将会在你发送请求时自动生成。</div>
-          <div class="dp-link-primary">了解更多 <ArrowRightOutlined /></div>
-        </div>
-      </div>
+      <RequestAuthorBasic v-if="interfaceData.authorizationType === 'basicAuth'"></RequestAuthorBasic>
+      <RequestAuthorBearerToken v-if="interfaceData.authorizationType === 'bearerToken'"></RequestAuthorBearerToken>
+      <RequestAuthorOAuth2 v-if="interfaceData.authorizationType === 'oAuth2'"></RequestAuthorOAuth2>
+      <RequestAuthorApiKey v-if="interfaceData.authorizationType === 'apiKey'"></RequestAuthorApiKey>
   </div>
 </template>
 
@@ -165,17 +51,22 @@
 import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, ArrowRightOutlined } from '@ant-design/icons-vue';
+import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import {Interface} from "@/views/interface/data";
 
 import EmptyPage from "@/components/others/empty.vue";
+import RequestAuthorBasic from "./author/BasicAuthor.vue"
+import RequestAuthorBearerToken from "./author/BearerToken.vue"
+import RequestAuthorOAuth2 from "./author/OAuth2.vue"
+import RequestAuthorApiKey from "./author/ApiKey.vue"
 
 export default defineComponent({
   name: 'RequestAuthorization',
   components: {
+    RequestAuthorBasic, RequestAuthorBearerToken, RequestAuthorOAuth2, RequestAuthorApiKey,
     EmptyPage,
-    QuestionCircleOutlined, DeleteOutlined, PlusOutlined, ArrowRightOutlined,
+    QuestionCircleOutlined, DeleteOutlined, PlusOutlined,
   },
   setup(props) {
     const {t} = useI18n();
@@ -186,7 +77,7 @@ export default defineComponent({
       {value: '', label: 'None'},
       {value: 'basicAuth', label: 'Basic Auth'},
       {value: 'bearerToken', label: 'Bearer Token'},
-      {value: 'oAuth20', label: 'OAuth 2.0'},
+      {value: 'oAuth2', label: 'OAuth 2.0'},
       {value: 'apiKey', label: 'API Key'},
     ])
 
@@ -205,7 +96,7 @@ export default defineComponent({
 
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 .authorization-main {
   height: 100%;
   .head {
@@ -213,7 +104,7 @@ export default defineComponent({
     border-bottom: 1px solid #d9d9d9;
   }
 
-  .content {
+  .author-content {
     display: flex;
     height: 100%;
 

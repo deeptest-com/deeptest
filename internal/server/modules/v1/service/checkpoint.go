@@ -64,10 +64,10 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 	}
 
 	if checkpoint.Type == serverConsts.ResponseStatus {
-		checkpoint.Result = "FAIL"
+		checkpoint.Result = serverConsts.Fail
 
 		if checkpoint.Value == checkpoint.Value {
-			checkpoint.Result = "PASS"
+			checkpoint.Result = serverConsts.Pass
 		}
 
 		s.CheckpointRepo.UpdateResult(checkpoint)
@@ -75,13 +75,18 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 	}
 
 	if checkpoint.Type == serverConsts.ResponseHeader {
-		checkpoint.Result = "FAIL"
+		checkpoint.Result = serverConsts.Fail
 		for _, h := range resp.Headers {
 			if h.Name == checkpoint.Expression {
-				if h.Value == checkpoint.Value {
-					checkpoint.Result = "PASS"
+				if checkpoint.Operator == serverConsts.Contain && strings.Contains(h.Value, checkpoint.Value) {
+					checkpoint.Result = serverConsts.Pass
+					break
+
+				} else if checkpoint.Operator == serverConsts.Equal && h.Value == checkpoint.Value {
+					checkpoint.Result = serverConsts.Pass
+					break
+
 				}
-				break
 			}
 		}
 
@@ -95,9 +100,9 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 	if checkpoint.Type == serverConsts.ResponseBody {
 		if checkpoint.Operator == serverConsts.Contain {
 			if strings.Index(resp.Content, checkpoint.Value) > -1 {
-				checkpoint.Result = "PASS"
+				checkpoint.Result = serverConsts.Pass
 			} else {
-				checkpoint.Result = "FAIL"
+				checkpoint.Result = serverConsts.Fail
 			}
 		}
 
@@ -111,9 +116,9 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 
 		if checkpoint.Operator == serverConsts.Equal {
 			if checkpoint.Value == extractorValue {
-				checkpoint.Result = "PASS"
+				checkpoint.Result = serverConsts.Pass
 			} else {
-				checkpoint.Result = "FAIL"
+				checkpoint.Result = serverConsts.Fail
 			}
 		}
 

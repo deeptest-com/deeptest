@@ -65,10 +65,17 @@ type CheckpointOperator string
 
 const (
 	Contain            CheckpointOperator = "contain"
-	Equal              CheckpointOperator = "="
-	NotEqual           CheckpointOperator = "!="
-	GreaterThan        CheckpointOperator = ">"
-	LessThan           CheckpointOperator = ">"
-	GreaterThanOrEqual CheckpointOperator = ">="
-	LessThanOrEqual    CheckpointOperator = "<="
+	Equal              CheckpointOperator = "equal"
+	NotEqual           CheckpointOperator = "notEqual"
+	GreaterThan        CheckpointOperator = "greaterThan"
+	LessThan           CheckpointOperator = "lessThan"
+	GreaterThanOrEqual CheckpointOperator = "greaterThanOrEqual"
+	LessThanOrEqual    CheckpointOperator = "lessThanOrEqual"
+)
+
+type CheckpointResult string
+
+const (
+	Pass CheckpointResult = "PASS"
+	Fail CheckpointResult = "FAIL"
 )

@@ -3,7 +3,8 @@
     <div class="params">
       <a-row class="param">
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.bearerToken.username" placeholder="用户名" class="dp-bg-input-transparent" />
+          <a-input v-model:value="interfaceData.bearerToken.username"
+                   placeholder="Token" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
     </div>

@@ -24,7 +24,9 @@
         <a-col flex="1">{{ item.extractorVariable }}</a-col>
         <a-col flex="100px">{{ t(item.operator) }}</a-col>
         <a-col flex="100px">{{ item.value }}</a-col>
-        <a-col flex="100px">{{ item.result }}</a-col>
+        <a-col flex="100px" :class="getResultCls(item.result)">
+          {{ item.result }}
+      </a-col>
 
         <a-col flex="100px" class="dp-right">
           <a-tooltip v-if="!item.disabled" @click="disable(item)" overlayClassName="dp-tip-small">
@@ -209,6 +211,17 @@ export default defineComponent({
       store.dispatch('Interface/saveCheckpoint', item)
     }
 
+    const getResultCls = (result) => {
+      result = result.toLowerCase()
+      if (result === 'pass') {
+        return 'dp-color-pass'
+      } else if (result === 'fail') {
+        return 'dp-color-fail'
+      } else {
+        return 'dp-color-unknown'
+      }
+    }
+
     const selectType = () => {
       console.log('selectType')
 
@@ -233,6 +246,7 @@ export default defineComponent({
       disable,
       save,
       cancel,
+      getResultCls,
       selectType,
 
       rules,

@@ -8,6 +8,7 @@ import (
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
+	"github.com/kataras/iris/v12"
 	"github.com/oliveagle/jsonpath"
 )
 
@@ -93,6 +94,12 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 
 	val, _ := serverConsts.EnvVar.Load(extractor.Variable)
 	logUtils.Infof("%s = %v", extractor.Variable, val)
+
+	return
+}
+
+func (s *ExtractorService) ListExtractorVariable(interfaceId int) (variables []iris.Map, err error) {
+	variables, err = s.ExtractorRepo.ListExtractorVariable(interfaceId)
 
 	return
 }

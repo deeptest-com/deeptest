@@ -266,6 +266,14 @@ export async function removeExtractor(id: number): Promise<any> {
         method: 'DELETE',
     });
 }
+export async function listExtractorVariable(interfaceId: number): Promise<any> {
+    const params = {interfaceId}
+    return request({
+        url: `/${apiExtractor}/listExtractorVariable`,
+        method: 'GET',
+        params,
+    });
+}
 
 // checkpoint
 export async function listCheckpoint(interfaceId: number): Promise<any> {

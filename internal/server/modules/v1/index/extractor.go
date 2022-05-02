@@ -21,6 +21,8 @@ func (m *ExtractorModule) Party() module.WebModule {
 		index.Post("/", m.ExtractorCtrl.Create).Name = "新建提取器"
 		index.Put("/", m.ExtractorCtrl.Update).Name = "更新提取器"
 		index.Delete("/{id:uint}", m.ExtractorCtrl.Delete).Name = "删除提取器"
+
+		index.Get("/listExtractorVariable", m.ExtractorCtrl.ListExtractorVariable).Name = "提取器变量列表"
 	}
 
 	return module.NewModule("/extractors", handler)

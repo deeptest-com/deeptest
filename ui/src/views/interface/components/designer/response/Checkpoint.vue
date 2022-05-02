@@ -71,8 +71,13 @@
           </a-form-item>
 
           <a-form-item v-if="model.type === 'extractor'" label="变量名称" v-bind="validateInfos.extractorVariable">
-            <a-input v-model:value="model.extractorVariable"
-                     @blur="validate('extractorVariable', { trigger: 'blur' }).catch(() => {})" />
+            <a-select v-model:value="model.extractorVariable"
+                      @blur="validate('extractorVariable', { trigger: 'blur' }).catch(() => {})">
+              <a-select-option key="" value=""></a-select-option>
+              <a-select-option v-for="(item, idx) in variables" :key="idx" :value="item.name">
+                {{ item.name }}
+              </a-select-option>
+            </a-select>
           </a-form-item>
 
           <a-form-item label="运算符" v-bind="validateInfos.operator">
@@ -110,7 +115,7 @@ import {message, Form} from 'ant-design-vue';
 import { PlusOutlined, EditOutlined, DeleteOutlined, CloseCircleOutlined, CheckCircleOutlined} from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import {Checkpoint, Extractor, Interface, Response} from "@/views/interface/data";
-import {getEnumSelectItems} from "@/views/interface/service";
+import {getEnumSelectItems, listExtractorVariable} from "@/views/interface/service";
 import {CheckpointOperator, CheckpointType} from "@/views/interface/consts";
 
 const useForm = Form.useForm;
@@ -144,17 +149,18 @@ export default defineComponent({
       operator: CheckpointOperator.equal,
       value: ''} as Checkpoint)
 
+    const variables = ref([])
     const editVisible = ref(false)
 
     const rules = reactive({
       type: [
         { required: true, message: '请选择类型', trigger: 'blur' },
       ],
-      expression: [
-        { required: true, message: '请选择类型', trigger: 'blur' },
-      ],
       extractorVariable: [
-        { required: true, message: '请输入变量名', trigger: 'blur' },
+        { required: true, message: '请选择变量', trigger: 'change' },
+      ],
+      expression: [
+        { required: true, message: '请输入键值', trigger: 'blur' },
       ],
       operator: [
         { required: true, message: '请选择操作', trigger: 'change' },
@@ -162,7 +168,7 @@ export default defineComponent({
       value: [
         { required: true, message: '请输入数值', trigger: 'blur' },
       ],
-    });
+    } as any);
 
     const { resetFields, validate, validateInfos } = useForm(model, rules);
 
@@ -181,15 +187,19 @@ export default defineComponent({
       console.log('edit')
       model.value = item
       editVisible.value = true
+
+      loadExtractorVariable()
     }
 
     const save = () => {
       console.log('save')
-      model.value.interfaceId = interfaceData.value.id
-      store.dispatch('Interface/saveCheckpoint', model.value).then((result) => {
-        if (result) {
-          editVisible.value = false
-        }
+      validate().then(() => {
+        model.value.interfaceId = interfaceData.value.id
+        store.dispatch('Interface/saveCheckpoint', model.value).then((result) => {
+          if (result) {
+            editVisible.value = false
+          }
+        })
       })
     }
 
@@ -228,6 +238,32 @@ export default defineComponent({
       } else {
         model.value.operator = CheckpointOperator.equal
       }
+
+      loadExtractorVariable()
+    }
+
+    const loadExtractorVariable = () => {
+      console.log('===', model.value.type)
+
+      if (model.value.type === CheckpointType.responseHeader) {
+        rules.expression = [
+          {required: true, message: '请输入键值', trigger: 'blur'},
+        ]
+      } else {
+        rules.expression = []
+      }
+
+      if (model.value.type === CheckpointType.extractor) {
+        rules.extractorVariable = [
+          { required: true, message: '请选择变量', trigger: 'change' },
+        ]
+
+        listExtractorVariable(interfaceData.value.id).then((jsn) => {
+          variables.value = jsn.data
+        })
+      } else {
+        rules.extractorVariable = []
+      }
     }
 
     return {
@@ -236,6 +272,7 @@ export default defineComponent({
       responseData,
       checkpointsData,
       model,
+      variables,
       editVisible,
 
       add,

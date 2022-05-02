@@ -57,6 +57,12 @@ func (s *ExtractorService) ExtractByInterface(interfaceId uint, resp serverDomai
 }
 
 func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serverDomain.InvocationResponse) (err error) {
+	if extractor.Disabled {
+		extractor.Result = ""
+		s.ExtractorRepo.UpdateResult(extractor)
+		return
+	}
+
 	if extractor.Src == serverConsts.Header {
 		for _, h := range resp.Headers {
 			if h.Name == extractor.Expression {

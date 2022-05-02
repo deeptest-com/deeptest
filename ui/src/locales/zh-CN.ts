@@ -1,4 +1,5 @@
 export default {
+    '': '',
     'empty': 'empty',
     'app.global.menu.notfound': 'Not Found',
     'app.global.form.validatefields.catch': '验证不通过，请检查输入',
@@ -12,7 +13,7 @@ export default {
     'header':  '响应头',
     'body':  '响应体',
 
-    'statusCode': '状态码',
+    'responseStatus': '响应码',
     'responseHeader': '响应头',
     'responseBody': '响应体',
     'extractor': '提取器',
@@ -23,4 +24,12 @@ export default {
     'jsonPath':  'JsonPath',
     'cssSelector':  'CSS选择器',
     'boundary':  '边界选择器',
+
+    'contain':  '包含',
+    'equal':  '=',
+    'notEqual':  '!=',
+    'greaterThan':  '>',
+    'lessThan':  '<',
+    'greaterThanOrEqual':  '>=',
+    'lessThanOrEqual':  '<=',
 }

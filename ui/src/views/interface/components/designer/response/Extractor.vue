@@ -5,7 +5,7 @@
         <a-col flex="60px">编号</a-col>
         <a-col flex="80px">来源</a-col>
         <a-col flex="100px">提取类型</a-col>
-        <a-col flex="1">表达式</a-col>
+        <a-col flex="1">表达式/键值</a-col>
         <a-col flex="150px">环境变量</a-col>
         <a-col flex="100px">提取结果</a-col>
 
@@ -16,10 +16,10 @@
     </div>
 
     <div class="items">
-      <a-row v-for="(item, idx) in checkpointsData" :key="idx" type="flex" class="item">
+      <a-row v-for="(item, idx) in extractorsData" :key="idx" type="flex" class="item">
         <a-col flex="60px">{{idx + 1}}</a-col>
-        <a-col flex="80px">{{ item.src }}</a-col>
-        <a-col flex="100px">{{ item.type }}</a-col>
+        <a-col flex="80px">{{ t(item.src) }}</a-col>
+        <a-col flex="100px">{{ item.type ? t(item.type) : '' }}</a-col>
         <a-col flex="1">{{ item.expression }}</a-col>
         <a-col flex="150px">{{ item.variable }}</a-col>
         <a-col flex="100px">{{item.result}}</a-col>
@@ -51,13 +51,20 @@
     >
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-form-item label="来源" v-bind="validateInfos.src">
-            <a-select v-model:value="model.src"
+          <a-form-item label="数据来源" v-bind="validateInfos.src">
+<!--            <a-select v-model:value="model.src"
                       @blur="validate('src', { trigger: 'change' }).catch(() => {})">
-              <a-select-option v-for="(item, idx) in srcOptions" :key="idx" :value="item.value">
-                {{ t(item.label) }}
+              <a-select-option>
+
               </a-select-option>
-            </a-select>
+            </a-select>-->
+            <a-radio-group name="srcGroup" v-model:value="model.src"
+                           @blur="validate('src', { trigger: 'change' }).catch(() => {})">
+              <a-radio v-for="(item, idx) in srcOptions" :key="idx" :value="item.value">
+                {{ t(item.label) }}
+              </a-radio>
+            </a-radio-group>
+
           </a-form-item>
 
           <a-form-item v-if="model.src === 'body'" label="提取方法" v-bind="validateInfos.type">
@@ -123,11 +130,11 @@ export default defineComponent({
 
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
     const responseData = computed<Response>(() => store.state.Interface.responseData);
-    const checkpointsData = computed(() => store.state.Interface.extractorsData);
+    const extractorsData = computed(() => store.state.Interface.extractorsData);
 
     store.dispatch('Interface/listExtractor')
 
-    const model = ref({src: '', type: '', expression: '', variable: ''} as Extractor)
+    const model = ref({src: ExtractorSrc.header, type: ExtractorType.jsonPath, expression: '', variable: ''} as Extractor)
     const results = ref({})
     const editVisible = ref(false)
 
@@ -150,8 +157,7 @@ export default defineComponent({
 
     const add = () => {
       editVisible.value = true
-      console.log('add', editVisible.value)
-      model.value = {src: '', type: '', expression: '', variable: ''} as Extractor
+      model.value = {src: ExtractorSrc.header, type: ExtractorType.jsonPath, expression: '', variable: ''} as Extractor
     }
 
     const edit = (item) => {
@@ -190,7 +196,7 @@ export default defineComponent({
       t,
       interfaceData,
       responseData,
-      checkpointsData,
+      extractorsData,
       model,
       results,
       editVisible,

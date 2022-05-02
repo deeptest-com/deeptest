@@ -2,11 +2,13 @@
   <div class="response-checkpoint-main">
     <div class="head">
       <a-row type="flex">
-        <a-col flex="80px">编号</a-col>
-        <a-col flex="100px">类型</a-col>
-        <a-col flex="150px">变量名</a-col>
-        <a-col flex="1">运算符</a-col>
+        <a-col flex="60px">编号</a-col>
+        <a-col flex="80px">类型</a-col>
+        <a-col flex="1">键值</a-col>
+        <a-col flex="1">变量名</a-col>
+        <a-col flex="100px">运算符</a-col>
         <a-col flex="100px">数值</a-col>
+        <a-col flex="100px">结果</a-col>
 
         <a-col flex="100px" class="dp-right">
           <PlusOutlined @click.stop="add" class="dp-icon-btn dp-trans-80" />
@@ -15,12 +17,14 @@
     </div>
 
     <div class="body">
-      <a-row v-for="(item, idx) in interfaceData.checkpoints" :key="idx" type="flex">
-        <a-col flex="80px">{{idx + 1}}</a-col>
-        <a-col flex="100px">{{ item.src }}</a-col>
-        <a-col flex="150px">{{ item.type }}</a-col>
+      <a-row v-for="(item, idx) in checkpointsData" :key="idx" type="flex">
+        <a-col flex="60px">{{idx + 1}}</a-col>
+        <a-col flex="80px">{{ t(item.type) }}</a-col>
         <a-col flex="1">{{ item.expression }}</a-col>
-        <a-col flex="100px">{{ item.variable }}</a-col>
+        <a-col flex="1">{{ item.extractorVariable }}</a-col>
+        <a-col flex="100px">{{ t(item.operator) }}</a-col>
+        <a-col flex="100px">{{ item.value }}</a-col>
+        <a-col flex="100px">{{ item.result }}</a-col>
 
         <a-col flex="100px" class="dp-right">
           <a-tooltip v-if="!item.disabled" @click="disable(item)" overlayClassName="dp-tip-small">
@@ -33,8 +37,8 @@
             <CloseCircleOutlined class="dp-icon-btn dp-trans-80 dp-light" />
           </a-tooltip>
 
-          <EditOutlined @click.stop="edit" class="dp-icon-btn dp-trans-80" />
-          <DeleteOutlined @click.stop="remove" class="dp-icon-btn dp-trans-80" />=
+          <EditOutlined @click.stop="edit(item)" class="dp-icon-btn dp-trans-80" />
+          <DeleteOutlined @click.stop="remove(item)" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
     </div>
@@ -51,6 +55,7 @@
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-form-item label="类型" v-bind="validateInfos.type">
             <a-select v-model:value="model.type"
+                      @change="selectType"
                       @blur="validate('type', { trigger: 'change' }).catch(() => {})">
               <a-select-option v-for="(item, idx) in types" :key="idx" :value="item.value">
                 {{ t(item.label) }}
@@ -58,16 +63,23 @@
             </a-select>
           </a-form-item>
 
-          <a-form-item v-if="model.type === 'extractor'" label="变量名" v-bind="validateInfos.variable">
-            <a-input v-model:value="model.variable"
-                     @blur="validate('variable', { trigger: 'blur' }).catch(() => {})" />
+          <a-form-item v-if="model.type === 'responseHeader'"
+                       :label="model.type === 'responseHeader' ? '键值' : ''"
+                       v-bind="validateInfos.expression">
+            <a-input v-model:value="model.expression"
+                     @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
+          </a-form-item>
+
+          <a-form-item v-if="model.type === 'extractor'" label="变量名" v-bind="validateInfos.extractorVariable">
+            <a-input v-model:value="model.extractorVariable"
+                     @blur="validate('extractorVariable', { trigger: 'blur' }).catch(() => {})" />
           </a-form-item>
 
           <a-form-item label="运算符" v-bind="validateInfos.operator">
             <a-select v-model:value="model.operator"
                       @blur="validate('operator', { trigger: 'change' }).catch(() => {})">
               <a-select-option v-for="(item, idx) in operators" :key="idx" :value="item.value">
-                {{ item.label }}
+                {{ t(item.label) }}
               </a-select-option>
             </a-select>
           </a-form-item>
@@ -97,9 +109,9 @@ import {useStore} from "vuex";
 import {message, Form} from 'ant-design-vue';
 import { PlusOutlined, EditOutlined, DeleteOutlined, CloseCircleOutlined, CheckCircleOutlined} from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
-import {Interface, Response} from "@/views/interface/data";
+import {Checkpoint, Extractor, Interface, Response} from "@/views/interface/data";
 import {getEnumSelectItems} from "@/views/interface/service";
-import {CheckpointOperator, CheckpointType, ExtractorSrc, ExtractorType} from "@/views/interface/consts";
+import {CheckpointOperator, CheckpointType} from "@/views/interface/consts";
 
 const useForm = Form.useForm;
 
@@ -121,17 +133,27 @@ export default defineComponent({
 
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
     const responseData = computed<Response>(() => store.state.Interface.responseData);
+    const checkpointsData = computed(() => store.state.Interface.checkpointsData);
 
     store.dispatch('Interface/listCheckpoint')
 
-    const model = ref({})
+    const model = ref({
+      type: CheckpointType.responseStatus,
+      expression: '',
+      extractorVariable: '',
+      operator: CheckpointOperator.equal,
+      value: ''} as Checkpoint)
+
     const editVisible = ref(false)
 
     const rules = reactive({
       type: [
         { required: true, message: '请选择类型', trigger: 'blur' },
       ],
-      variable: [
+      expression: [
+        { required: true, message: '请选择类型', trigger: 'blur' },
+      ],
+      extractorVariable: [
         { required: true, message: '请输入变量名', trigger: 'blur' },
       ],
       operator: [
@@ -145,16 +167,30 @@ export default defineComponent({
     const { resetFields, validate, validateInfos } = useForm(model, rules);
 
     const add = () => {
+      console.log('add')
       editVisible.value = true
-      console.log('add', editVisible.value)
+      model.value = {
+        type: CheckpointType.responseStatus,
+        expression: '',
+        extractorVariable: '',
+        operator: CheckpointOperator.equal,
+        value: ''} as Checkpoint
     }
 
-    const edit = () => {
+    const edit = (item) => {
       console.log('edit')
+      model.value = item
+      editVisible.value = true
     }
 
     const save = () => {
       console.log('save')
+      model.value.interfaceId = interfaceData.value.id
+      store.dispatch('Interface/saveCheckpoint', model.value).then((result) => {
+        if (result) {
+          editVisible.value = false
+        }
+      })
     }
 
     const cancel = () => {
@@ -162,19 +198,32 @@ export default defineComponent({
       editVisible.value = false
     }
 
-    const remove = () => {
+    const remove = (item) => {
       console.log('remove')
+      store.dispatch('Interface/removeCheckpoint', item.id)
     }
 
     const disable = (item) => {
       console.log('disabled')
       item.disabled = !item.disabled
+      store.dispatch('Interface/saveCheckpoint', item)
+    }
+
+    const selectType = () => {
+      console.log('selectType')
+
+      if (model.value.type === CheckpointType.responseBody) {
+        model.value.operator = CheckpointOperator.contain
+      } else {
+        model.value.operator = CheckpointOperator.equal
+      }
     }
 
     return {
       t,
       interfaceData,
       responseData,
+      checkpointsData,
       model,
       editVisible,
 
@@ -184,6 +233,7 @@ export default defineComponent({
       disable,
       save,
       cancel,
+      selectType,
 
       rules,
       validate,

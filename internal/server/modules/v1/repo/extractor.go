@@ -65,7 +65,7 @@ func (r *ExtractorRepo) Delete(id uint) (err error) {
 }
 
 func (r *ExtractorRepo) UpdateResult(extractor model.InterfaceExtractor) (err error) {
-	err = r.DB.Model(&model.InterfaceExtractor{}).
+	err = r.DB.Model(&extractor).
 		Where("id=?", extractor.ID).
 		Update("result", extractor.Result).
 		Error

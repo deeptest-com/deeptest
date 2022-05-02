@@ -268,8 +268,8 @@ export async function removeExtractor(id: number): Promise<any> {
 }
 
 // checkpoint
-export async function listCheckpoint(): Promise<any> {
-    const params = {}
+export async function listCheckpoint(interfaceId: number): Promise<any> {
+    const params = {interfaceId}
 
     return request({
         url: `/${apiCheckpoint}`,

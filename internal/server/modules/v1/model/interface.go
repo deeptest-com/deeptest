@@ -87,14 +87,16 @@ func (InterfaceExtractor) TableName() string {
 
 type InterfaceCheckpoint struct {
 	BaseModel
-	Src        serverConsts.ExtractorSrc  `json:"src"`
-	Type       serverConsts.ExtractorType `json:"type"`
-	Expression string                     `json:"expression"`
+	Type serverConsts.CheckpointType `json:"type"`
+
+	Expression        string `json:"expression"`
+	ExtractorVariable string `json:"extractorVariable"`
 
 	Operator serverConsts.CheckpointOperator `json:"operator"`
 	Value    string                          `json:"value"`
 
-	InterfaceId uint `json:"interfaceId"`
+	Result      string `json:"result"`
+	InterfaceId uint   `json:"interfaceId"`
 }
 
 func (InterfaceCheckpoint) TableName() string {

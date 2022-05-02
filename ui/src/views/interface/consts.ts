@@ -11,7 +11,6 @@ export const Methods = [
     "CUSTOM",
 ]
 
-
 export enum ExtractorSrc {
     header = 'header',
     body = 'body',
@@ -25,17 +24,17 @@ export enum ExtractorType {
     boundary = 'boundary',
 }
 export enum CheckpointType {
-    statusCode = 'statusCode',
+    responseStatus = 'responseStatus',
     responseHeader = 'responseHeader',
     responseBody = 'responseBody',
     extractor = 'extractor',
 }
 export enum CheckpointOperator {
     contain = 'contain',
-    equal = '=',
-    notEqual = '!=',
-    greaterThan = '>',
-    lessThan = '<',
-    greaterThanOrEqual = '>=',
-    lessThanOrEqual = '<=',
+    equal = 'equal',
+    notEqual = 'notEqual',
+    greaterThan = 'greaterThan',
+    lessThan = 'lessThan',
+    greaterThanOrEqual = 'greaterThanOrEqual',
+    lessThanOrEqual = 'lessThanOrEqual',
 }

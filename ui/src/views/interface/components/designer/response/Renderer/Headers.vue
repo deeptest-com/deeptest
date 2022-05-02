@@ -16,7 +16,7 @@
         <a-col flex="1">
           <a-input v-model:value="item.name" class="dp-bg-input-transparent" />
         </a-col>
-        <a-col flex="80px">
+        <a-col flex="1">
           <a-input v-model:value="item.value" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>

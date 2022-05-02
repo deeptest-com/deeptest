@@ -177,6 +177,7 @@ const StoreModel: ModuleType = {
 
                     dispatch('listInvocation', payload.id);
                     dispatch('listExtractor', payload.id);
+                    dispatch('listCheckpoint', payload.id);
 
                     return true;
                 } else {
@@ -429,9 +430,9 @@ const StoreModel: ModuleType = {
         },
 
         // checkpoint
-        async listCheckpoint({commit}) {
+        async listCheckpoint({commit, state}) {
             try {
-                const resp = await listCheckpoint();
+                const resp = await listCheckpoint(state.interfaceData.id);
                 const {data} = resp;
                 commit('setCheckpoints', data);
                 return true;
@@ -452,10 +453,9 @@ const StoreModel: ModuleType = {
         },
         async saveCheckpoint({commit, dispatch, state}, payload: any) {
             try {
-                const resp = await saveCheckpoint(payload);
-
-                dispatch('listCheckpoint');
-                return resp.data;
+                await saveCheckpoint(payload);
+                dispatch('listCheckpoint', state.interfaceData.id);
+                return true
             } catch (error) {
                 return false;
             }

@@ -1,4 +1,5 @@
 export default {
+    '': '',
     'empty': 'empty',
     'app.global.menu.notfound': 'Not Found',
     'app.global.form.validatefields.catch': 'The validation did not pass, please check the input',
@@ -11,7 +12,7 @@ export default {
     'header':  'Header',
     'body':  'Body',
 
-    'statusCode': 'Status Code',
+    'responseStatus': 'Response Code',
     'responseHeader': 'Response Header',
     'responseBody': 'Response Body',
     'extractor': 'Extractor',
@@ -22,4 +23,12 @@ export default {
     'jsonPath':  'JsonPath',
     'cssSelector':  'CSS Selector',
     'boundary':  'Boundary Selector',
+
+    'contain':  'Contain',
+    'equal':  '=',
+    'notEqual':  '!=',
+    'greaterThan':  '>',
+    'lessThan':  '<',
+    'greaterThanOrEqual':  '>=',
+    'lessThanOrEqual':  '<=',
 };

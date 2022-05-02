@@ -1,4 +1,4 @@
-import {CheckpointOperator, ExtractorSrc, ExtractorType} from "@/views/interface/consts";
+import {CheckpointOperator, CheckpointType, ExtractorSrc, ExtractorType} from "@/views/interface/consts";
 
 export interface Interface {
     id: number;
@@ -65,20 +65,20 @@ export interface ApiKey {
 }
 
 export interface Extractor {
-    id: number;
-    src: string;
-    type: string;
-    expression: string;
-    variable: string;
-    interfaceId: number;
-}
-export interface Checkpoint {
-    id: number;
+    id?: number;
     src: ExtractorSrc;
     type: ExtractorType;
+    expression: string;
+    variable: string;
+    interfaceId?: number;
+}
+
+export interface Checkpoint {
+    id?: number;
+    type: CheckpointType;
     expression: string;
 
     operator: CheckpointOperator;
     value: any;
-    interfaceId: number;
+    interfaceId?: number;
 }

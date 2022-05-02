@@ -95,8 +95,8 @@ type InterfaceCheckpoint struct {
 	Operator serverConsts.CheckpointOperator `json:"operator"`
 	Value    string                          `json:"value"`
 
-	Result      string `json:"result"`
-	InterfaceId uint   `json:"interfaceId"`
+	Result      serverConsts.CheckpointResult `json:"result"`
+	InterfaceId uint                          `json:"interfaceId"`
 }
 
 func (InterfaceCheckpoint) TableName() string {

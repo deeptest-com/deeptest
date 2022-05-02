@@ -5,7 +5,7 @@
         <a-col flex="60px">编号</a-col>
         <a-col flex="80px">来源</a-col>
         <a-col flex="100px">提取类型</a-col>
-        <a-col flex="1">表达式/键值</a-col>
+        <a-col flex="1">表达式 / 键值</a-col>
         <a-col flex="150px">环境变量</a-col>
         <a-col flex="100px">提取结果</a-col>
 
@@ -81,7 +81,7 @@
                      @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
           </a-form-item>
 
-          <a-form-item label="环境变量" v-bind="validateInfos.variable">
+          <a-form-item label="变量名称" v-bind="validateInfos.variable">
             <a-input v-model:value="model.variable"
                      @blur="validate('variable', { trigger: 'blur' }).catch(() => {})" />
           </a-form-item>

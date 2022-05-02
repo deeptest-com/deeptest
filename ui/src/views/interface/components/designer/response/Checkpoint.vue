@@ -3,9 +3,8 @@
     <div class="head">
       <a-row type="flex">
         <a-col flex="60px">编号</a-col>
-        <a-col flex="80px">类型</a-col>
-        <a-col flex="1">键值</a-col>
-        <a-col flex="1">变量名</a-col>
+        <a-col flex="120px">类型</a-col>
+        <a-col flex="1">变量 / 键值</a-col>
         <a-col flex="100px">运算符</a-col>
         <a-col flex="100px">数值</a-col>
         <a-col flex="100px">结果</a-col>
@@ -19,9 +18,8 @@
     <div class="body">
       <a-row v-for="(item, idx) in checkpointsData" :key="idx" type="flex">
         <a-col flex="60px">{{idx + 1}}</a-col>
-        <a-col flex="80px">{{ t(item.type) }}</a-col>
-        <a-col flex="1">{{ item.expression }}</a-col>
-        <a-col flex="1">{{ item.extractorVariable }}</a-col>
+        <a-col flex="120px">{{ t(item.type) }}</a-col>
+        <a-col flex="1">{{ item.extractorVariable }} {{ item.expression }} </a-col>
         <a-col flex="100px">{{ t(item.operator) }}</a-col>
         <a-col flex="100px">{{ item.value }}</a-col>
         <a-col flex="100px" :class="getResultCls(item.result)">
@@ -72,7 +70,7 @@
                      @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
           </a-form-item>
 
-          <a-form-item v-if="model.type === 'extractor'" label="变量名" v-bind="validateInfos.extractorVariable">
+          <a-form-item v-if="model.type === 'extractor'" label="变量名称" v-bind="validateInfos.extractorVariable">
             <a-input v-model:value="model.extractorVariable"
                      @blur="validate('extractorVariable', { trigger: 'blur' }).catch(() => {})" />
           </a-form-item>

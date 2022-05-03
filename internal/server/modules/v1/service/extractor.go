@@ -88,6 +88,10 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 
 	} else if extractor.Type == serverConsts.CssSelector {
 		extractorHelper.ParserCssSelector(resp.Content, &extractor)
+
+	} else if extractor.Type == serverConsts.Boundary {
+		extractorHelper.ParserBoundary(resp.Content, &extractor)
+
 	}
 
 	s.ExtractorRepo.UpdateResult(extractor)

@@ -67,3 +67,26 @@ func ParserCssSelector(content string, extractor *model.InterfaceExtractor) {
 
 	extractor.Result = strings.Join(results, ", ")
 }
+
+func ParserBoundary(content string, extractor *model.InterfaceExtractor) {
+	doc, err := htmlquery.Parse(strings.NewReader(content))
+	if err != nil {
+		return
+	}
+
+	elems := htmlquery.Find(doc, extractor.Expression)
+
+	results := make([]string, 0)
+	for _, elem := range elems {
+		result := ""
+		if extractor.Prop == "text" || extractor.Prop == "" {
+			result = htmlquery.InnerText(elem)
+		} else {
+			result = htmlquery.SelectAttr(elem, extractor.Prop)
+		}
+
+		results = append(results, result)
+	}
+
+	extractor.Result = strings.Join(results, ", ")
+}

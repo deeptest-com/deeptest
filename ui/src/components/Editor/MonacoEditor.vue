@@ -91,7 +91,7 @@ export default defineComponent({
       setTimeout(() => {
         editor.getAction('editor.action.formatDocument').run()
         console.log('format codes')
-      }, 600)
+      }, 60)
     },
     _setModel(value, original) {
       const { language } = this;

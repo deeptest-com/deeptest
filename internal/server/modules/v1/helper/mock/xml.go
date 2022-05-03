@@ -1,6 +1,8 @@
 package mockHelper
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+)
 
 var (
 	str = `
@@ -31,6 +33,15 @@ func GetXmlData() (result Result) {
 	return
 }
 
+func FormatXml(str string) (ret string) {
+	x := node{}
+	_ = xml.Unmarshal([]byte(str), &x)
+	buf, _ := xml.MarshalIndent(x, "", "\t")
+
+	ret = string(buf)
+	return
+}
+
 type Email struct {
 	Where string `xml:"where,attr"`
 	Addr  string
@@ -49,4 +60,11 @@ type Result struct {
 type Root struct {
 	XMLName xml.Name `xml:"root"`
 	Res     Result   `xml:"Person"`
+}
+
+type node struct {
+	Attr     []xml.Attr
+	XMLName  xml.Name
+	Children []node `xml:",any"`
+	Text     string `xml:",chardata"`
 }

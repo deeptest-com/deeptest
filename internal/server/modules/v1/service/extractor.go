@@ -2,14 +2,13 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
 	_cacheUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/cache"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
+	extractorHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/extractor"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
-	"github.com/oliveagle/jsonpath"
 	"strconv"
 )
 
@@ -68,7 +67,7 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 
 	if extractor.Src == serverConsts.Header {
 		for _, h := range resp.Headers {
-			if h.Name == extractor.Expression {
+			if h.Name == extractor.Key {
 				extractor.Result = h.Value
 				break
 			}
@@ -82,12 +81,13 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 	json.Unmarshal([]byte(resp.Content), &jsonData)
 
 	if extractor.Type == serverConsts.JsonPath {
-		pat, _ := jsonpath.Compile(extractor.Expression)
-		result, err := pat.Lookup(jsonData)
+		extractorHelper.ParserJsonPath(resp.Content, &extractor)
 
-		if err == nil && result != nil {
-			extractor.Result = fmt.Sprintf("%v", result)
-		}
+	} else if extractor.Type == serverConsts.XPath {
+		extractorHelper.ParserXPath(resp.Content, &extractor)
+
+	} else if extractor.Type == serverConsts.CssSelector {
+		extractorHelper.ParserCssSelector(resp.Content, &extractor)
 	}
 
 	s.ExtractorRepo.UpdateResult(extractor)

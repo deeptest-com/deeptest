@@ -72,10 +72,14 @@ func (InterfaceHeader) TableName() string {
 
 type InterfaceExtractor struct {
 	BaseModel
-	Src        serverConsts.ExtractorSrc  `json:"src"`
-	Type       serverConsts.ExtractorType `json:"type"`
-	Expression string                     `json:"expression"`
-	Variable   string                     `json:"variable"`
+	Src  serverConsts.ExtractorSrc  `json:"src"`
+	Type serverConsts.ExtractorType `json:"type"`
+	Key  string                     `json:"key"`
+
+	Expression string `json:"expression"`
+	Prop       string `json:"prop"`
+
+	Variable string `json:"variable"`
 
 	Result      string `json:"result"`
 	InterfaceId uint   `json:"interfaceId"`

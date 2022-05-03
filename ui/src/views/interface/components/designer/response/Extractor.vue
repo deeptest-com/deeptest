@@ -21,7 +21,7 @@
         <a-col flex="80px">{{ t(item.src) }}</a-col>
         <a-col flex="100px">{{ item.type ? t(item.type) : '' }}</a-col>
         <a-col flex="1">
-          {{ item.src === ExtractorSrc.body ? item.expression + ' -> ' + item.prop + '' : item.key }}
+          {{ item.src === ExtractorSrc.body ? item.expression : item.key }}
         </a-col>
         <a-col flex="150px">{{ item.variable }}</a-col>
         <a-col flex="1">{{item.result}}</a-col>
@@ -64,7 +64,7 @@
           </a-form-item>
 
           <a-form-item v-if="model.src === 'body'" label="提取方法" v-bind="validateInfos.type">
-            <a-select v-model:value="model.type" @change="selectType"
+            <a-select v-model:value="model.type"
                       @blur="validate('type', { trigger: 'change' }).catch(() => {})">
               <a-select-option v-for="(item, idx) in typeOptions" :key="idx" :value="item.value">
                 {{ t(item.label) }}
@@ -80,12 +80,6 @@
           <a-form-item v-if="model.src === 'body'" label="元素路径" v-bind="validateInfos.expression">
             <a-input v-model:value="model.expression"
                      @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
-          </a-form-item>
-
-          <a-form-item v-if="model.type === 'xpath' || model.type === 'cssSelector'" label="元素属性"
-                       v-bind="validateInfos.prop">
-            <a-input v-model:value="model.prop"
-                     @blur="validate('prop', { trigger: 'blur' }).catch(() => {})" />
           </a-form-item>
 
           <a-form-item label="变量名称" v-bind="validateInfos.variable">
@@ -147,14 +141,13 @@ export default defineComponent({
 
     store.dispatch('Interface/listExtractor')
 
-    const model = ref({src: ExtractorSrc.header, type: ExtractorType.jsonPath, expression: '', variable: ''} as Extractor)
+    const model = ref({src: ExtractorSrc.header, type: ExtractorType.jsonquery, expression: '', variable: ''} as Extractor)
     const results = ref({})
     const editVisible = ref(false)
 
     const typeRequired = { required: true, message: '请选择类型', trigger: 'change' }
     const expressionRequired = { required: true, message: '请输入元素路径', trigger: 'blur' }
     const keyRequired = { required: true, message: '请输入键值', trigger: 'blur' }
-    const propRequired = { required: true, message: '请输入元素属性', trigger: 'blur' }
 
     const rules = reactive({
       src: [
@@ -169,9 +162,6 @@ export default defineComponent({
       key: [
         keyRequired,
       ],
-      prop: [
-        propRequired,
-      ],
       variable: [
         { required: true, message: '请输入变量名', trigger: 'blur' },
       ],
@@ -181,7 +171,7 @@ export default defineComponent({
 
     const add = () => {
       editVisible.value = true
-      model.value = {src: ExtractorSrc.header, type: ExtractorType.jsonPath, expression: '', variable: ''} as Extractor
+      model.value = {src: ExtractorSrc.header, type: ExtractorType.jsonquery, expression: '', variable: ''} as Extractor
 
       selectSrc()
     }
@@ -229,24 +219,10 @@ export default defineComponent({
         rules.key = [keyRequired]
         rules.expression = []
         rules.type = []
-        rules.prop = []
-
       } else {
         rules.key = []
         rules.expression = [expressionRequired]
         rules.type = [typeRequired]
-      }
-
-      selectType()
-    }
-
-    const selectType = () => {
-      console.log('selectType')
-
-      if (model.value.type === ExtractorType.xpath || model.value.type === ExtractorType.cssSelector) {
-        rules.prop = [propRequired]
-      } else {
-        rules.prop = []
       }
     }
 
@@ -267,7 +243,6 @@ export default defineComponent({
       save,
       cancel,
       selectSrc,
-      selectType,
 
       rules,
       validate,

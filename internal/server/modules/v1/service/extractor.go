@@ -7,6 +7,7 @@ import (
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/extractor"
+	requestHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/request"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	"strconv"
@@ -80,14 +81,14 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 	var jsonData interface{}
 	json.Unmarshal([]byte(resp.Content), &jsonData)
 
-	if extractor.Type == serverConsts.JsonPath {
-		extractorHelper.ParserJsonPath(resp.Content, &extractor)
-
-	} else if extractor.Type == serverConsts.XPath {
+	if requestHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == serverConsts.XmlQuery {
 		extractorHelper.ParserXPath(resp.Content, &extractor)
 
-	} else if extractor.Type == serverConsts.CssSelector {
+	} else if requestHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == serverConsts.HtmlQuery {
 		extractorHelper.ParserCssSelector(resp.Content, &extractor)
+
+	} else if requestHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == serverConsts.JsonQuery {
+		extractorHelper.ParserJsonPath(resp.Content, &extractor)
 
 	} else if extractor.Type == serverConsts.Boundary {
 		extractorHelper.ParserBoundary(resp.Content, &extractor)

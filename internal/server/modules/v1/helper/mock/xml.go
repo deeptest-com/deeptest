@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	str = `
+	XmlStr = `
 		<Person>
 			<FullName>Aaron Chen</FullName>
 			<Company>Example Inc.</Company>
@@ -26,36 +26,12 @@ var (
 )
 
 func GetXmlData() (result Result) {
-	result = Result{Name: "none", Phone: "none"}
-
-	xml.Unmarshal([]byte(str), &result)
+	result = Result{}
+	xml.Unmarshal([]byte(XmlStr), &result)
 
 	return
 }
 
-func FormatXml(str string) (ret string) {
-	x := node{}
-	_ = xml.Unmarshal([]byte(str), &x)
-	buf, _ := xml.MarshalIndent(x, "", "\t")
-
-	ret = string(buf)
-	return
-}
-
-type node struct {
-	Attr     []xml.Attr
-	XMLName  xml.Name
-	Children []node `xml:",any"`
-	Text     string `xml:",chardata"`
-}
-
-type Email struct {
-	Where string `xml:"where,attr"`
-	Addr  string
-}
-type Address struct {
-	City, State string
-}
 type Result struct {
 	XMLName xml.Name `xml:"Person"`
 	Name    string   `xml:"FullName"`
@@ -63,4 +39,11 @@ type Result struct {
 	Email   []Email
 	Groups  []string `xml:"Group>Value"`
 	Address
+}
+type Email struct {
+	Where string `xml:"where,attr"`
+	Addr  string
+}
+type Address struct {
+	City, State string
 }

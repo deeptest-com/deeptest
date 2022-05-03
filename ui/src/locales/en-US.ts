@@ -19,9 +19,9 @@ export default {
 
     'fulltext': 'Full Text',
     'regular':  'Regular Expression',
-    'xpath':  'XPath',
-    'jsonPath':  'JsonPath',
-    'cssSelector':  'CSS Selector',
+    'xmlquery':  'XML Query',
+    'htmlquery':  'HTML Query',
+    'jsonquery':  'JSON Query',
     'boundary':  'Boundary Selector',
 
     'contain':  'Contain',

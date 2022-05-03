@@ -31,15 +31,10 @@ func (c *MockCtrl) Get(ctx iris.Context) {
 
 	if respType == "xml" {
 		ctx.XML(mockHelper.GetXmlData())
-
 	} else if respType == "html" {
 		ctx.HTML(mockHelper.GetHtmlData())
-
 	} else {
-		mp := iris.Map{}
-		mp["content"] = "test"
-
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: mp, Msg: _domain.NoErr.Msg})
+		ctx.JSON(mockHelper.GetJsonData())
 	}
 }
 

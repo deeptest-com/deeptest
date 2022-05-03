@@ -20,9 +20,9 @@ export default {
 
     'fulltext': '全文本',
     'regular':  '正则表达式',
-    'xpath':  'XPath',
-    'jsonPath':  'JsonPath',
-    'cssSelector':  'CSS选择器',
+    'xmlquery':  'XML Query',
+    'htmlquery':  'HTML Query',
+    'jsonquery':  'JSON Query',
     'boundary':  '边界选择器',
 
     'contain':  '包含',

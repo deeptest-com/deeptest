@@ -18,9 +18,9 @@ export enum ExtractorSrc {
 export enum ExtractorType {
     fulltext = 'fulltext',
     regular = 'regular',
-    xpath = 'xpath',
-    jsonPath = 'jsonPath',
-    cssSelector = 'cssSelector',
+    xmlquery = 'xmlquery',
+    htmlquery = 'htmlquery',
+    jsonquery = 'jsonquery',
     boundary = 'boundary',
 }
 export enum CheckpointType {

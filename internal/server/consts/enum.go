@@ -45,10 +45,10 @@ type ExtractorType string
 
 const (
 	FullText  ExtractorType = "fulltext"
-	Regular   ExtractorType = "regular"
-	XmlQuery  ExtractorType = "xmlquery"
-	HtmlQuery ExtractorType = "htmlquery"
 	JsonQuery ExtractorType = "jsonquery"
+	HtmlQuery ExtractorType = "htmlquery"
+	XmlQuery  ExtractorType = "xmlquery"
+	Regular   ExtractorType = "regular"
 	Boundary  ExtractorType = "boundary"
 )
 

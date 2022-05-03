@@ -16,11 +16,11 @@ export enum ExtractorSrc {
     body = 'body',
 }
 export enum ExtractorType {
-    fulltext = 'fulltext',
-    regular = 'regular',
-    xmlquery = 'xmlquery',
-    htmlquery = 'htmlquery',
+    // fulltext = 'fulltext',
     jsonquery = 'jsonquery',
+    htmlquery = 'htmlquery',
+    xmlquery = 'xmlquery',
+    regular = 'regular',
     boundary = 'boundary',
 }
 export enum CheckpointType {

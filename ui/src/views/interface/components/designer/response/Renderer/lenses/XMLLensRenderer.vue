@@ -65,8 +65,7 @@ export default defineComponent({
     const responseData = computed<Response>(() => store.state.Interface.responseData);
 
     const editorOptions = ref(MonacoOptions)
-    const content = ref('')
-    content.value = formatXml(responseData.value.content)
+    const content = ref(formatXml(responseData.value.content))
 
     watch(responseData, () => {
       console.log('watch responseData')

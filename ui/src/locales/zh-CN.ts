@@ -19,10 +19,10 @@ export default {
     'extractor': '提取器',
 
     'fulltext': '全文本',
+    'jsonquery':  'JSON查询',
+    'htmlquery':  'HTML查询',
+    'xmlquery':  'XML查询',
     'regular':  '正则表达式',
-    'xmlquery':  'XML Query',
-    'htmlquery':  'HTML Query',
-    'jsonquery':  'JSON Query',
     'boundary':  '边界选择器',
 
     'contain':  '包含',

@@ -18,10 +18,10 @@ export default {
     'extractor': 'Extractor',
 
     'fulltext': 'Full Text',
-    'regular':  'Regular Expression',
-    'xmlquery':  'XML Query',
-    'htmlquery':  'HTML Query',
     'jsonquery':  'JSON Query',
+    'htmlquery':  'HTML Query',
+    'xmlquery':  'XML Query',
+    'regular':  'Regular Expression',
     'boundary':  'Boundary Selector',
 
     'contain':  'Contain',

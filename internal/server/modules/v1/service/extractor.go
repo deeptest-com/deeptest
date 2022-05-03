@@ -81,13 +81,16 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 	var jsonData interface{}
 	json.Unmarshal([]byte(resp.Content), &jsonData)
 
-	if requestHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == serverConsts.XmlQuery {
-		extractorHelper.XmlQuery(resp.Content, &extractor)
+	if requestHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == serverConsts.JsonQuery {
+		extractorHelper.JsonQuery(resp.Content, &extractor)
 
 	} else if requestHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == serverConsts.HtmlQuery {
 		extractorHelper.HtmlQuery(resp.Content, &extractor)
 
-	} else if requestHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == serverConsts.JsonQuery {
+	} else if requestHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == serverConsts.XmlQuery {
+		extractorHelper.XmlQuery(resp.Content, &extractor)
+
+	} else if extractor.Type == serverConsts.Regular {
 		extractorHelper.JsonQuery(resp.Content, &extractor)
 
 	} else if extractor.Type == serverConsts.Boundary {

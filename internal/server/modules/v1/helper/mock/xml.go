@@ -7,7 +7,7 @@ import (
 var (
 	str = `
 		<Person>
-			<FullName>Aaron</FullName>
+			<FullName>Aaron Chen</FullName>
 			<Company>Example Inc.</Company>
 			<Email where="home">
 				<Addr>462826@qq.com</Addr>
@@ -42,6 +42,13 @@ func FormatXml(str string) (ret string) {
 	return
 }
 
+type node struct {
+	Attr     []xml.Attr
+	XMLName  xml.Name
+	Children []node `xml:",any"`
+	Text     string `xml:",chardata"`
+}
+
 type Email struct {
 	Where string `xml:"where,attr"`
 	Addr  string
@@ -56,15 +63,4 @@ type Result struct {
 	Email   []Email
 	Groups  []string `xml:"Group>Value"`
 	Address
-}
-type Root struct {
-	XMLName xml.Name `xml:"root"`
-	Res     Result   `xml:"Person"`
-}
-
-type node struct {
-	Attr     []xml.Attr
-	XMLName  xml.Name
-	Children []node `xml:",any"`
-	Text     string `xml:",chardata"`
 }

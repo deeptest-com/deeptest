@@ -5,6 +5,7 @@ import (
 	httpHelper "github.com/aaronchen2k/deeptest/internal/comm/helper/http"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
+	mockHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/mock"
 	requestHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/request"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
@@ -70,6 +71,8 @@ func (s *InterfaceService) GetContentProps(ret *serverDomain.InvocationResponse)
 	}
 
 	ret.ContentCharset = consts.HttpRespCharset(arr2[1])
+
+	ret.Content = mockHelper.FormatXml(ret.Content)
 
 	return
 }

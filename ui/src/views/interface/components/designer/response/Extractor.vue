@@ -274,7 +274,9 @@ export default defineComponent({
     height: calc(100% - 30px);
   }
   .item {
-
+    .ant-col {
+      word-break: break-all;
+    }
   }
 }
 </style>

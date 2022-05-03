@@ -8,12 +8,11 @@ var (
 	XmlStr = `
 		<Person>
 			<FullName>Aaron Chen</FullName>
-			<Company>Example Inc.</Company>
 			<Email where="home">
-				<Addr>462826@qq.com</Addr>
+				<Address>462826@qq.com</Address>
 			</Email>
 			<Email where='work'>
-				<Addr>master@deeptest.com</Addr>
+				<Address>master@deeptest.com</Address>
 			</Email>
 			<Group>
 				<Value>admin</Value>
@@ -41,8 +40,8 @@ type Result struct {
 	Address
 }
 type Email struct {
-	Where string `xml:"where,attr"`
-	Addr  string
+	Where   string `xml:"where,attr"`
+	Address string
 }
 type Address struct {
 	City, State string

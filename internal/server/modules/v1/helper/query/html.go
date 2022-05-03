@@ -1,4 +1,4 @@
-package extractorHelper
+package queryHelper
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
@@ -9,14 +9,14 @@ import (
 func HtmlQuery(content string, extractor *model.InterfaceExtractor) {
 	doc, err := htmlquery.Parse(strings.NewReader(content))
 	if err != nil {
-		extractor.Result = ""
+		extractor.Result = "ContentErr"
 		return
 	}
 
 	expression, propName := getExpressionForCssSelector(extractor.Expression)
 	list, err := htmlquery.QueryAll(doc, expression)
 	if err != nil {
-		extractor.Result = ""
+		extractor.Result = "QueryErr"
 		return
 	}
 

@@ -1,4 +1,4 @@
-package extractorHelper
+package queryHelper
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
@@ -9,13 +9,13 @@ import (
 func XmlQuery(content string, extractor *model.InterfaceExtractor) {
 	doc, err := xmlquery.Parse(strings.NewReader(content))
 	if err != nil {
-		extractor.Result = ""
+		extractor.Result = "ContentErr"
 		return
 	}
 
 	list, err := xmlquery.QueryAll(doc, extractor.Expression)
 	if err != nil {
-		extractor.Result = ""
+		extractor.Result = "QueryErr"
 		return
 	}
 

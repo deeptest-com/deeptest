@@ -1,6 +1,7 @@
 package requestHelper
 
 import (
+	"encoding/base64"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/comm/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
@@ -81,7 +82,8 @@ func genVariableArr(environmentVariables []model.EnvironmentVar, extractorVariab
 }
 
 func ReplaceValue(value string, variableArr [][]string, index int) (ret string) {
-	if len(variableArr) == 0 || !strings.Contains(value, "${") {
+	if len(variableArr) == 0 || len(variableArr) <= index || !strings.Contains(value, "${") {
+		ret = value
 		return
 	}
 
@@ -89,9 +91,13 @@ func ReplaceValue(value string, variableArr [][]string, index int) (ret string) 
 	new := variableArr[index][1]
 	ret = strings.ReplaceAll(value, old, new)
 
-	if len(variableArr) > index+1 {
-		ret = ReplaceValue(ret, variableArr, index+1)
-	}
+	ret = ReplaceValue(ret, variableArr, index+1)
+
+	return
+}
+
+func Base64(str string) (ret string) {
+	ret = base64.StdEncoding.EncodeToString([]byte(str))
 
 	return
 }

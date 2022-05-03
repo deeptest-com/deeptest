@@ -10,6 +10,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	stringUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/string"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
+	requestHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/request"
 	"github.com/fatih/color"
 	"io/ioutil"
 	"net/http"
@@ -18,52 +19,55 @@ import (
 	"time"
 )
 
-func Get(reqUrl string, reqParams []domain.Param) (ret serverDomain.InvocationResponse, err error) {
-	return gets(reqUrl, consts.GET, reqParams, true)
+func Get(req serverDomain.InvocationRequest) (ret serverDomain.InvocationResponse, err error) {
+	return gets(req, consts.GET, true)
 }
 
-func Post(reqUrl string, reqParams []domain.Param, data interface{}, bodyType consts.HttpContentType) (
+func Post(req serverDomain.InvocationRequest) (
 	ret serverDomain.InvocationResponse, err error) {
 
-	return posts(reqUrl, consts.POST, reqParams, data, bodyType, true)
+	return posts(req, consts.POST, true)
 }
 
-func Put(reqUrl string, reqParams []domain.Param, data interface{}, bodyType consts.HttpContentType) (
+func Put(req serverDomain.InvocationRequest) (
 	ret serverDomain.InvocationResponse, err error) {
 
-	return posts(reqUrl, consts.PUT, reqParams, data, bodyType, true)
+	return posts(req, consts.PUT, true)
 }
 
-func Patch(reqUrl string, reqParams []domain.Param, data interface{}, bodyType consts.HttpContentType) (
+func Patch(req serverDomain.InvocationRequest) (
 	ret serverDomain.InvocationResponse, err error) {
 
-	return posts(reqUrl, consts.PATCH, reqParams, data, bodyType, true)
+	return posts(req, consts.PATCH, true)
 }
 
-func Delete(reqUrl string, reqParams []domain.Param, data interface{}, bodyType consts.HttpContentType) (
+func Delete(req serverDomain.InvocationRequest) (
 	ret serverDomain.InvocationResponse, err error) {
 
-	return posts(reqUrl, consts.DELETE, reqParams, data, bodyType, true)
+	return posts(req, consts.DELETE, true)
 }
 
-func Head(reqUrl string, reqParams []domain.Param) (ret serverDomain.InvocationResponse, err error) {
-	return gets(reqUrl, consts.HEAD, reqParams, false)
+func Head(req serverDomain.InvocationRequest) (ret serverDomain.InvocationResponse, err error) {
+	return gets(req, consts.HEAD, false)
 }
 
-func Connect(reqUrl string, reqParams []domain.Param) (ret serverDomain.InvocationResponse, err error) {
-	return gets(reqUrl, consts.CONNECT, reqParams, false)
+func Connect(req serverDomain.InvocationRequest) (ret serverDomain.InvocationResponse, err error) {
+	return gets(req, consts.CONNECT, false)
 }
 
-func Options(reqUrl string, reqParams []domain.Param) (ret serverDomain.InvocationResponse, err error) {
-	return gets(reqUrl, consts.OPTIONS, reqParams, false)
+func Options(req serverDomain.InvocationRequest) (ret serverDomain.InvocationResponse, err error) {
+	return gets(req, consts.OPTIONS, false)
 }
 
-func Trace(reqUrl string, reqParams []domain.Param) (ret serverDomain.InvocationResponse, err error) {
-	return gets(reqUrl, consts.TRACE, reqParams, false)
+func Trace(req serverDomain.InvocationRequest) (ret serverDomain.InvocationResponse, err error) {
+	return gets(req, consts.TRACE, false)
 }
 
-func gets(reqUrl string, method consts.HttpMethod, reqParams []domain.Param, readRespData bool) (
+func gets(req serverDomain.InvocationRequest, method consts.HttpMethod, readRespData bool) (
 	ret serverDomain.InvocationResponse, err error) {
+
+	reqUrl := req.Url
+	reqParams := req.Params
 
 	client := &http.Client{}
 
@@ -71,7 +75,7 @@ func gets(reqUrl string, method consts.HttpMethod, reqParams []domain.Param, rea
 		_logUtils.Info(reqUrl)
 	}
 
-	req, err := http.NewRequest(method.String(), reqUrl, nil)
+	request, err := http.NewRequest(method.String(), reqUrl, nil)
 	if err != nil {
 		_logUtils.Error(err.Error())
 		return
@@ -81,13 +85,14 @@ func gets(reqUrl string, method consts.HttpMethod, reqParams []domain.Param, rea
 	for _, param := range reqParams {
 		queryParams.Add(param.Name, param.Value)
 	}
-	req.URL.RawQuery = queryParams.Encode()
+	request.URL.RawQuery = queryParams.Encode()
 
-	req.Header.Set("Origin", "DEEPTEST")
+	request.Header.Set("Origin", "DEEPTEST")
+	addAuthorInfo(req, request)
 
 	startTime := time.Now().UnixMilli()
 
-	resp, err := client.Do(req)
+	resp, err := client.Do(request)
 	defer resp.Body.Close()
 
 	endTime := time.Now().UnixMilli()
@@ -116,9 +121,13 @@ func gets(reqUrl string, method consts.HttpMethod, reqParams []domain.Param, rea
 	return
 }
 
-func posts(reqUrl string, method consts.HttpMethod, reqParams []domain.Param, data interface{},
-	bodyType consts.HttpContentType, readRespData bool) (
+func posts(req serverDomain.InvocationRequest, method consts.HttpMethod, readRespData bool) (
 	ret serverDomain.InvocationResponse, err error) {
+
+	reqUrl := req.Url
+	reqParams := req.Params
+	reqData := req.Body
+	bodyType := req.BodyType
 
 	if _consts.Verbose {
 		_logUtils.Info(reqUrl)
@@ -126,7 +135,7 @@ func posts(reqUrl string, method consts.HttpMethod, reqParams []domain.Param, da
 
 	client := &http.Client{}
 
-	dataBytes, err := json.Marshal(data)
+	dataBytes, err := json.Marshal(reqData)
 	if err != nil {
 		_logUtils.Infof(color.RedString("marshal request failed, error: %s.", err.Error()))
 		return
@@ -136,7 +145,7 @@ func posts(reqUrl string, method consts.HttpMethod, reqParams []domain.Param, da
 		_logUtils.Infof(string(dataBytes))
 	}
 
-	req, reqErr := http.NewRequest(method.String(), reqUrl, bytes.NewReader(dataBytes))
+	request, reqErr := http.NewRequest(method.String(), reqUrl, bytes.NewReader(dataBytes))
 	if reqErr != nil {
 		_logUtils.Error(reqErr.Error())
 		return
@@ -146,13 +155,14 @@ func posts(reqUrl string, method consts.HttpMethod, reqParams []domain.Param, da
 	for _, param := range reqParams {
 		queryParams.Add(param.Name, param.Value)
 	}
-	req.URL.RawQuery = queryParams.Encode()
+	request.URL.RawQuery = queryParams.Encode()
 
-	req.Header.Set(consts.ContentType, bodyType.String())
+	request.Header.Set(consts.ContentType, bodyType.String())
+	addAuthorInfo(req, request)
 
 	startTime := time.Now().UnixMilli()
 
-	resp, err := client.Do(req)
+	resp, err := client.Do(request)
 	defer resp.Body.Close()
 
 	endTime := time.Now().UnixMilli()
@@ -180,6 +190,22 @@ func posts(reqUrl string, method consts.HttpMethod, reqParams []domain.Param, da
 	}
 
 	return
+}
+
+func addAuthorInfo(req serverDomain.InvocationRequest, request *http.Request) {
+	if req.AuthorizationType == consts.BasicAuth {
+		str := fmt.Sprintf("%s:%s", req.BasicAuth.Username, req.BasicAuth.Password)
+		str = fmt.Sprintf("Basic %s", requestHelper.Base64(str))
+
+		request.Header.Set(consts.Authorization, str)
+
+	} else if req.AuthorizationType == consts.BearerToken {
+
+	} else if req.AuthorizationType == consts.OAuth2 {
+
+	} else if req.AuthorizationType == consts.ApiKey {
+
+	}
 }
 
 func getHeaders(header http.Header) (headers []domain.Header) {

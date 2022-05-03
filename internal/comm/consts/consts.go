@@ -10,4 +10,6 @@ const (
 	Allow         = "Allow"
 	Connection    = "Connection"
 	Host          = "Host"
+
+	Authorization = "Authorization"
 )

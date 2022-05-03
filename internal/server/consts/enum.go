@@ -44,12 +44,12 @@ const (
 type ExtractorType string
 
 const (
-	FullText    ExtractorType = "fulltext"
-	Regular     ExtractorType = "regular"
-	XPath       ExtractorType = "xpath"
-	JsonPath    ExtractorType = "jsonPath"
-	CssSelector ExtractorType = "cssSelector"
-	Boundary    ExtractorType = "boundary"
+	FullText  ExtractorType = "fulltext"
+	Regular   ExtractorType = "regular"
+	XmlQuery  ExtractorType = "xmlquery"
+	HtmlQuery ExtractorType = "htmlquery"
+	JsonQuery ExtractorType = "jsonquery"
+	Boundary  ExtractorType = "boundary"
 )
 
 type CheckpointType string

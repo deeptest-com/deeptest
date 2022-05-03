@@ -101,3 +101,13 @@ func Base64(str string) (ret string) {
 
 	return
 }
+
+func IsXmlContent(str string) bool {
+	return strings.Contains(str, "xml")
+}
+func IsHtmlContent(str string) bool {
+	return strings.Contains(str, "html")
+}
+func IsJsonContent(str string) bool {
+	return strings.Contains(str, "json")
+}

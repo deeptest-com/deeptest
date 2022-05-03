@@ -3,6 +3,8 @@ module github.com/aaronchen2k/deeptest
 go 1.16
 
 require (
+	github.com/antchfx/htmlquery v1.2.4 // indirect
+	github.com/antchfx/xmlquery v1.3.10 // indirect
 	github.com/apache/thrift v0.15.0 // indirect
 	github.com/armon/go-metrics v0.3.9 // indirect
 	github.com/casbin/casbin/v2 v2.37.2

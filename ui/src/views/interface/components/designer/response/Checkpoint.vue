@@ -19,7 +19,7 @@
       <a-row v-for="(item, idx) in checkpointsData" :key="idx" type="flex">
         <a-col flex="60px">{{idx + 1}}</a-col>
         <a-col flex="120px">{{ t(item.type) }}</a-col>
-        <a-col flex="1">{{ item.extractorVariable }} {{ item.expression }} </a-col>
+        <a-col flex="1">{{ item.type === CheckpointType.extractor ? item.extractorVariable : item.expression }} </a-col>
         <a-col flex="100px">{{ t(item.operator) }}</a-col>
         <a-col flex="100px">{{ item.value }}</a-col>
         <a-col flex="100px" :class="getResultCls(item.result)">
@@ -272,6 +272,7 @@ export default defineComponent({
       model,
       variables,
       editVisible,
+      CheckpointType,
 
       add,
       edit,

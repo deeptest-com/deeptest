@@ -82,6 +82,12 @@ func gets(req serverDomain.InvocationRequest, method consts.HttpMethod, readResp
 	}
 
 	queryParams := url.Values{}
+	for _, queryParam := range strings.Split(request.URL.RawQuery, "&") {
+		arr := strings.Split(queryParam, "=")
+		if len(arr) > 1 {
+			queryParams.Add(arr[0], arr[1])
+		}
+	}
 	for _, param := range reqParams {
 		queryParams.Add(param.Name, param.Value)
 	}
@@ -152,6 +158,12 @@ func posts(req serverDomain.InvocationRequest, method consts.HttpMethod, readRes
 	}
 
 	queryParams := url.Values{}
+	for _, queryParam := range strings.Split(request.URL.RawQuery, "&") {
+		arr := strings.Split(queryParam, "=")
+		if len(arr) > 1 {
+			queryParams.Add(arr[0], arr[1])
+		}
+	}
 	for _, param := range reqParams {
 		queryParams.Add(param.Name, param.Value)
 	}

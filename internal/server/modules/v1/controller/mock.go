@@ -4,6 +4,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/comm/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
+	mockHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/mock"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
 	"github.com/kataras/iris/v12"
@@ -15,6 +16,8 @@ type MockCtrl struct {
 }
 
 func (c *MockCtrl) Get(ctx iris.Context) {
+	respType := ctx.URLParam("respType")
+
 	username, password, ok := ctx.Request().BasicAuth()
 	if ok {
 		logUtils.Infof("BasicAuth - username: %s, password: %s, ok: %t", username, password, ok)
@@ -26,12 +29,18 @@ func (c *MockCtrl) Get(ctx iris.Context) {
 	value := ctx.GetHeader("k1")
 	logUtils.Infof("API KEY - %s: %s", "k1", value)
 
-	ctx.Header(consts.ContentType, consts.ContentTypeJSON.String()+";charset=utf-8")
+	if respType == "xml" {
+		ctx.XML(mockHelper.GetXmlData())
 
-	data := iris.Map{}
-	data["content"] = "test"
+	} else if respType == "html" {
+		ctx.HTML(mockHelper.GetHtmlData())
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+	} else {
+		mp := iris.Map{}
+		mp["content"] = "test"
+
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: mp, Msg: _domain.NoErr.Msg})
+	}
 }
 
 func (c *MockCtrl) Request(ctx iris.Context) {

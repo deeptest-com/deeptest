@@ -1,4 +1,4 @@
-package extractorHelper
+package queryHelper
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
@@ -7,10 +7,15 @@ import (
 )
 
 func JsonQuery(content string, extractor *model.InterfaceExtractor) {
-	doc, _ := jsonquery.Parse(strings.NewReader(content))
+	doc, err := jsonquery.Parse(strings.NewReader(content))
+	if err != nil {
+		extractor.Result = "ContentErr"
+		return
+	}
+
 	list, err := jsonquery.QueryAll(doc, extractor.Expression)
 	if err != nil {
-		extractor.Result = ""
+		extractor.Result = "QueryErr"
 		return
 	}
 

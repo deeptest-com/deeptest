@@ -6,7 +6,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
-	extractorHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/extractor"
+	extractorHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/query"
 	requestHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/request"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"

@@ -2,9 +2,12 @@
   <div class="bearer-token-main author-content">
     <div class="params">
       <a-row class="param">
+        <a-col flex="160px">
+          <span class="label">Token</span>
+        </a-col>
+
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.bearerToken.username"
-                   placeholder="Token" class="dp-bg-input-transparent" />
+          <a-input v-model:value="interfaceData.bearerToken.token" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
     </div>

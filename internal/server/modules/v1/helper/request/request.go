@@ -46,7 +46,7 @@ func replaceAuthor(req *serverDomain.InvocationRequest, variableArr [][]string) 
 		req.BasicAuth.Password = ReplaceValue(req.BasicAuth.Password, variableArr, 0)
 
 	} else if req.AuthorizationType == consts.BearerToken {
-		req.BearerToken.Username = ReplaceValue(req.BearerToken.Username, variableArr, 0)
+		req.BearerToken.Token = ReplaceValue(req.BearerToken.Token, variableArr, 0)
 
 	} else if req.AuthorizationType == consts.OAuth2 {
 		req.OAuth20.Key = ReplaceValue(req.OAuth20.Key, variableArr, 0)

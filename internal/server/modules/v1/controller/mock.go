@@ -20,6 +20,9 @@ func (c *MockCtrl) Get(ctx iris.Context) {
 		logUtils.Infof("BasicAuth - username: %s, password: %s, ok: %t", username, password, ok)
 	}
 
+	authorization := ctx.GetHeader(consts.Authorization)
+	logUtils.Infof("JWT Token - %s", authorization)
+
 	ctx.Header(consts.ContentType, consts.ContentTypeJSON.String()+";charset=utf-8")
 
 	data := iris.Map{}

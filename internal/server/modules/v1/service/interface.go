@@ -6,6 +6,7 @@ import (
 	httpHelper "github.com/aaronchen2k/deeptest/internal/comm/helper/http"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
+	requestHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/request"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	"github.com/jinzhu/copier"
@@ -187,48 +188,48 @@ func (s *InterfaceService) ReplaceVariables(req *serverDomain.InvocationRequest,
 	environmentVariables, _ := s.EnvironmentRepo.GetVars(environment.ID)
 	extractorVariables, _ := s.ExtractorRepo.ListExtractorVariable(interfaceId)
 
-	// gen variable
-	variableArr := genVariableArr(environmentVariables, extractorVariables)
-
-	// replace url
-	req.Url = s.ReplaceValue(req.Url, variableArr, 0)
-
-	// replace params
-	for idx, param := range req.Params {
-		req.Params[idx].Value = s.ReplaceValue(param.Value, variableArr, 0)
-	}
-
-	// replace headers
-	for idx, header := range req.Headers {
-		req.Headers[idx].Value = s.ReplaceValue(header.Value, variableArr, 0)
-	}
-
-	// replace body
-	req.Body = s.ReplaceValue(req.Body, variableArr, 0)
-
-	// replace author
-	if req.AuthorizationType == consts.BasicAuth {
-		req.BasicAuth.Username = s.ReplaceValue(req.BasicAuth.Username, variableArr, 0)
-		req.BasicAuth.Password = s.ReplaceValue(req.BasicAuth.Password, variableArr, 0)
-
-	} else if req.AuthorizationType == consts.BearerToken {
-		req.BearerToken.Username = s.ReplaceValue(req.BearerToken.Username, variableArr, 0)
-
-	} else if req.AuthorizationType == consts.OAuth2 {
-		req.OAuth20.Key = s.ReplaceValue(req.OAuth20.Key, variableArr, 0)
-		req.OAuth20.OidcDiscoveryURL = s.ReplaceValue(req.OAuth20.OidcDiscoveryURL, variableArr, 0)
-		req.OAuth20.AuthURL = s.ReplaceValue(req.OAuth20.AuthURL, variableArr, 0)
-		req.OAuth20.AccessTokenURL = s.ReplaceValue(req.OAuth20.AccessTokenURL, variableArr, 0)
-		req.OAuth20.ClientID = s.ReplaceValue(req.OAuth20.ClientID, variableArr, 0)
-		req.OAuth20.Scope = s.ReplaceValue(req.OAuth20.Scope, variableArr, 0)
-
-	} else if req.AuthorizationType == consts.ApiKey {
-		req.ApiKey.Username = s.ReplaceValue(req.ApiKey.Username, variableArr, 0)
-		req.ApiKey.Value = s.ReplaceValue(req.ApiKey.Value, variableArr, 0)
-		req.ApiKey.TransferMode = s.ReplaceValue(req.ApiKey.TransferMode, variableArr, 0)
-	}
+	requestHelper.ReplaceVariables(req, environmentVariables, extractorVariables)
 
 	return
+}
+
+func replaceUrl(req *serverDomain.InvocationRequest, variableArr [][]string) {
+	req.Url = ReplaceValue(req.Url, variableArr, 0)
+}
+func replaceParams(req *serverDomain.InvocationRequest, variableArr [][]string) {
+	for idx, param := range req.Params {
+		req.Params[idx].Value = ReplaceValue(param.Value, variableArr, 0)
+	}
+}
+func replaceHeaders(req *serverDomain.InvocationRequest, variableArr [][]string) {
+	for idx, header := range req.Headers {
+		req.Headers[idx].Value = ReplaceValue(header.Value, variableArr, 0)
+	}
+}
+func replaceBody(req *serverDomain.InvocationRequest, variableArr [][]string) {
+	req.Body = ReplaceValue(req.Body, variableArr, 0)
+}
+func replaceAuthor(req *serverDomain.InvocationRequest, variableArr [][]string) {
+	if req.AuthorizationType == consts.BasicAuth {
+		req.BasicAuth.Username = ReplaceValue(req.BasicAuth.Username, variableArr, 0)
+		req.BasicAuth.Password = ReplaceValue(req.BasicAuth.Password, variableArr, 0)
+
+	} else if req.AuthorizationType == consts.BearerToken {
+		req.BearerToken.Username = ReplaceValue(req.BearerToken.Username, variableArr, 0)
+
+	} else if req.AuthorizationType == consts.OAuth2 {
+		req.OAuth20.Key = ReplaceValue(req.OAuth20.Key, variableArr, 0)
+		req.OAuth20.OidcDiscoveryURL = ReplaceValue(req.OAuth20.OidcDiscoveryURL, variableArr, 0)
+		req.OAuth20.AuthURL = ReplaceValue(req.OAuth20.AuthURL, variableArr, 0)
+		req.OAuth20.AccessTokenURL = ReplaceValue(req.OAuth20.AccessTokenURL, variableArr, 0)
+		req.OAuth20.ClientID = ReplaceValue(req.OAuth20.ClientID, variableArr, 0)
+		req.OAuth20.Scope = ReplaceValue(req.OAuth20.Scope, variableArr, 0)
+
+	} else if req.AuthorizationType == consts.ApiKey {
+		req.ApiKey.Username = ReplaceValue(req.ApiKey.Username, variableArr, 0)
+		req.ApiKey.Value = ReplaceValue(req.ApiKey.Value, variableArr, 0)
+		req.ApiKey.TransferMode = ReplaceValue(req.ApiKey.TransferMode, variableArr, 0)
+	}
 }
 
 func genVariableArr(environmentVariables []model.EnvironmentVar, extractorVariables []serverDomain.Variable) (
@@ -249,7 +250,7 @@ func genVariableArr(environmentVariables []model.EnvironmentVar, extractorVariab
 	return
 }
 
-func (s *InterfaceService) ReplaceValue(value string, variableArr [][]string, index int) (ret string) {
+func ReplaceValue(value string, variableArr [][]string, index int) (ret string) {
 	if len(variableArr) == 0 || !strings.Contains(value, "${") {
 		return
 	}
@@ -259,7 +260,7 @@ func (s *InterfaceService) ReplaceValue(value string, variableArr [][]string, in
 	ret = strings.ReplaceAll(value, old, new)
 
 	if len(variableArr) > index+1 {
-		ret = s.ReplaceValue(ret, variableArr, index+1)
+		ret = ReplaceValue(ret, variableArr, index+1)
 	}
 
 	return

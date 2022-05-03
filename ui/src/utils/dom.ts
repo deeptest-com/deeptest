@@ -94,7 +94,7 @@ export function hasClass( elements, cName ){
     if (!elements) return false
     return !!elements.className.match( new RegExp( "(\\s|^)" + cName + "(\\s|$)") )
 }
-export function addClass( elements, cName ){
+export function addClass(elements, cName){
     if (!elements) return
     if( !hasClass( elements,cName ) ){
         elements.className += " " + cName
@@ -114,4 +114,29 @@ export function scroll(id: string): void {
             elem.scrollTop = elem.scrollHeight + 100;
         },300);
     }
+}
+
+export function formatXml(xml: any) : string {
+    const PADDING = ' '.repeat(2);
+    const reg = /(>)(<)(\/*)/g;
+    let pad = 0;
+
+    xml = xml.replace(reg, '$1\r\n$2$3');
+
+    return xml.split('\r\n').map((node: any, index: number) => {
+        let indent = 0;
+        if (node.match(/.+<\/\w[^>]*>$/)) {
+            indent = 0;
+        } else if (node.match(/^<\/\w/) && pad > 0) {
+            pad -= 1;
+        } else if (node.match(/^<\w[^>]*[^/]>.*$/)) {
+            indent = 1;
+        } else {
+            indent = 0;
+        }
+
+        pad += indent;
+
+        return PADDING.repeat(pad - indent) + node;
+    }).join('\r\n');
 }

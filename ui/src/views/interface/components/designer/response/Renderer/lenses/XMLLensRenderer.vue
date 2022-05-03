@@ -28,7 +28,7 @@
     <div class="body">
       <MonacoEditor
           class="editor"
-          :value="responseData.content"
+          :value="content"
           :language="responseData.contentLang"
           theme="vs"
           :options="editorOptions"
@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+import {computed, ComputedRef, defineComponent, PropType, Ref, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';
@@ -47,6 +47,7 @@ import {isInArray} from "@/utils/array";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
 import {Interface, Response} from "@/views/interface/data";
+import {formatXml} from "@/utils/dom";
 
 export default defineComponent({
   name: 'ResponseLensXml',
@@ -64,10 +65,18 @@ export default defineComponent({
     const responseData = computed<Response>(() => store.state.Interface.responseData);
 
     const editorOptions = ref(MonacoOptions)
+    const content = ref('')
+    content.value = formatXml(responseData.value.content)
+
+    watch(responseData, () => {
+      console.log('watch responseData')
+      content.value = formatXml(responseData.value.content)
+    }, {deep: true})
 
     return {
       responseData,
       editorOptions,
+      content,
     }
   }
 })

@@ -17,7 +17,7 @@ type BasicAuth struct {
 	Password string `json:"password"`
 }
 type BearerToken struct {
-	Username string `json:"username"`
+	Token string `json:"token"`
 }
 type OAuth20 struct {
 	Key              string `json:"key"`              // key

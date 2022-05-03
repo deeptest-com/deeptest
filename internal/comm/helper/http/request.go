@@ -200,6 +200,8 @@ func addAuthorInfo(req serverDomain.InvocationRequest, request *http.Request) {
 		request.Header.Set(consts.Authorization, str)
 
 	} else if req.AuthorizationType == consts.BearerToken {
+		str := fmt.Sprintf("Bearer %s", req.BearerToken.Token)
+		request.Header.Set(consts.Authorization, str)
 
 	} else if req.AuthorizationType == consts.OAuth2 {
 

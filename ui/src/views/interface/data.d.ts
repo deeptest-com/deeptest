@@ -59,7 +59,7 @@ export interface OAuth20 {
     scope: string; // Scope
 }
 export interface ApiKey {
-    username: string;
+    key: string;
     value: string;
     transferMode: string;
 }

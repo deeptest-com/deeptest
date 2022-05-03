@@ -28,7 +28,7 @@ type OAuth20 struct {
 	Scope            string `json:"scope"`            // Scope
 }
 type ApiKey struct {
-	Username     string `json:"username"`
+	Key          string `json:"key"`
 	Value        string `json:"value"`
 	TransferMode string `json:"transferMode"`
 }

@@ -2,13 +2,21 @@
   <div class="author-basic-main author-content">
     <div class="params">
       <a-row class="param">
+        <a-col flex="160px">
+          <span class="label">键值</span>
+        </a-col>
+
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.basicAuth.username" placeholder="用户名" class="dp-bg-input-transparent" />
+          <a-input v-model:value="interfaceData.apiKey.key" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
       <a-row class="param">
+        <a-col flex="160px">
+          <span class="label">取值</span>
+        </a-col>
+
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.basicAuth.password" placeholder="取值" class="dp-bg-input-transparent" />
+          <a-input v-model:value="interfaceData.apiKey.value" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
       <a-row class="param">

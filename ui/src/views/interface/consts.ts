@@ -38,3 +38,11 @@ export enum CheckpointOperator {
     greaterThanOrEqual = 'greaterThanOrEqual',
     lessThanOrEqual = 'lessThanOrEqual',
 }
+
+export enum AuthorizationTypes {
+    '' = 'None',
+    'basicAuth' = 'Basic Auth',
+    'bearerToken' = 'Bearer Token',
+    'oAuth2' = 'OAuth 2.0',
+    'apiKey' = 'API Key',
+}

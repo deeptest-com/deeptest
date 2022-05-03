@@ -13,9 +13,9 @@
           <a-input v-model:value="modelRef.name"
                    @blur="validate('name', { trigger: 'blur' }).catch(() => {})" />
         </a-form-item>
-        <a-form-item label="取值" v-bind="validateInfos.val">
-          <a-input v-model:value="modelRef.val"
-                   @blur="validate('val', { trigger: 'blur' }).catch(() => {})" />
+        <a-form-item label="取值" v-bind="validateInfos.value">
+          <a-input v-model:value="modelRef.value"
+                   @blur="validate('value', { trigger: 'blur' }).catch(() => {})" />
         </a-form-item>
 
         <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
@@ -71,7 +71,7 @@ export default defineComponent({
       name: [
         { required: true, message: '请输入变量名', trigger: 'blur' },
       ],
-      val: [
+      value: [
         { required: true, message: '请输入取值', trigger: 'blur' },
       ],
     });
@@ -80,7 +80,7 @@ export default defineComponent({
     const modelRef = reactive<any>({
       id: model.id,
       name: model.name,
-      val: model.val,
+      value: model.value,
       environmentId: props.environmentId,
     })
 

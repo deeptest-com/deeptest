@@ -35,3 +35,9 @@ type InterfaceMoveReq struct {
 	OAuth20     domain.OAuth20     `gorm:"-" json:"oAuth20"`
 	ApiKey      domain.ApiKey      `gorm:"-" json:"apiKey"`
 }*/
+
+type Variable struct {
+	id    int    `json:"id"`
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}

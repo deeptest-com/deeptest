@@ -16,7 +16,6 @@ func (m *InterfaceModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
-		index.Post("/invokeInterface", m.InterfaceCtrl.InvokeInterface).Name = "测试接口"
 		index.Post("/saveInterface", m.InterfaceCtrl.SaveInterface).Name = "测试接口"
 
 		index.Get("/", m.InterfaceCtrl.Load).Name = "接口数据"

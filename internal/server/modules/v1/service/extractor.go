@@ -3,13 +3,14 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	_cacheUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/cache"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
-	"github.com/kataras/iris/v12"
 	"github.com/oliveagle/jsonpath"
+	"strconv"
 )
 
 type ExtractorService struct {
@@ -47,17 +48,18 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *ExtractorService) ExtractByInterface(interfaceId uint, resp serverDomain.InvocationResponse) (err error) {
+func (s *ExtractorService) ExtractByInterface(interfaceId uint, resp serverDomain.InvocationResponse, projectId int) (err error) {
 	extractors, _ := s.ExtractorRepo.List(interfaceId)
 
 	for _, extractor := range extractors {
-		s.Extract(extractor, resp)
+		s.Extract(extractor, resp, projectId)
 	}
 
 	return
 }
 
-func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serverDomain.InvocationResponse) (err error) {
+func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serverDomain.InvocationResponse,
+	projectId int) (err error) {
 	if extractor.Disabled {
 		extractor.Result = ""
 		s.ExtractorRepo.UpdateResult(extractor)
@@ -90,16 +92,16 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 
 	s.ExtractorRepo.UpdateResult(extractor)
 
-	serverConsts.EnvVar.Store(extractor.Variable, extractor.Result)
+	_cacheUtils.SetCache(strconv.Itoa(projectId), extractor.Variable, extractor.Result)
 
-	val, _ := serverConsts.EnvVar.Load(extractor.Variable)
+	val := _cacheUtils.GetCache(strconv.Itoa(projectId), extractor.Variable)
 	logUtils.Infof("%s = %v", extractor.Variable, val)
 
 	return
 }
 
-func (s *ExtractorService) ListExtractorVariable(interfaceId int) (variables []iris.Map, err error) {
-	variables, err = s.ExtractorRepo.ListExtractorVariable(interfaceId)
+func (s *ExtractorService) ListExtractorVariable(interfaceId int) (variables []serverDomain.Variable, err error) {
+	variables, err = s.ExtractorRepo.ListExtractorVariable(uint(interfaceId))
 
 	return
 }

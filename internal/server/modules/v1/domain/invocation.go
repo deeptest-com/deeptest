@@ -15,7 +15,7 @@ type InvocationRequest struct {
 	Headers           []domain.Header        `gorm:"-" json:"headers"`
 	Body              string                 `gorm:"default:{}" json:"body"`
 	BodyType          consts.HttpContentType `gorm:"default:json" json:"bodyType"`
-	AuthorizationType string                 `gorm:"default:''" json:"authorizationType"`
+	AuthorizationType consts.AuthorType      `gorm:"default:''" json:"authorizationType"`
 	PreRequestScript  string                 `gorm:"default:''" json:"preRequestScript"`
 	ValidationScript  string                 `gorm:"default:''" json:"validationScript"`
 

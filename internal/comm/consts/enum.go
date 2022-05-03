@@ -47,6 +47,19 @@ func (e HttpContentType) String() string {
 	return string(e)
 }
 
+type AuthorType string
+
+const (
+	BasicAuth   AuthorType = "basicAuth"
+	BearerToken AuthorType = "bearerToken"
+	OAuth2      AuthorType = "oAuth2"
+	ApiKey      AuthorType = "apiKey"
+)
+
+func (e AuthorType) String() string {
+	return string(e)
+}
+
 type HttpRespLangType string
 
 const (

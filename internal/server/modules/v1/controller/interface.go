@@ -15,49 +15,8 @@ import (
 type InterfaceCtrl struct {
 	InterfaceService  *service.InterfaceService  `inject:""`
 	InvocationService *service.InvocationService `inject:""`
-	ExtractorService  *service.ExtractorService  `inject:""`
-	CheckpointService *service.CheckpointService `inject:""`
 
 	BaseCtrl
-}
-
-// InvokeInterface
-func (c *InterfaceCtrl) InvokeInterface(ctx iris.Context) {
-	projectId, err := ctx.URLParamInt("currProjectId")
-	if projectId == 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
-		return
-	}
-
-	req := serverDomain.InvocationRequest{}
-	err = ctx.ReadJSON(&req)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
-		return
-	}
-
-	err = c.InterfaceService.UpdateByRequest(req)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
-		return
-	}
-
-	resp, err := c.InterfaceService.Test(req)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
-		return
-	}
-
-	_, err = c.InvocationService.Create(req, resp, projectId)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
-		return
-	}
-
-	c.ExtractorService.ExtractByInterface(req.Id, resp)
-	c.CheckpointService.CheckByInterface(req.Id, resp)
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
 }
 
 // SaveInterface

@@ -3,7 +3,7 @@ import {Interface} from "@/views/interface/data";
 import {isInArray} from "@/utils/array";
 
 const apiPath = 'interfaces';
-const apiRequest = 'invocations';
+const apiVocation = 'invocations';
 const apiEnvironment = 'environments'
 const apiEnvironmentVar = `${apiEnvironment}/vars`
 
@@ -11,13 +11,6 @@ const apiExtractor = 'extractors'
 const apiCheckpoint = 'checkpoints'
 
 // interface
-export async function invokeInterface(interf: Interface): Promise<any> {
-    return request({
-        url: `/${apiPath}/invokeInterface`,
-        method: 'post',
-        data: interf,
-    });
-}
 export async function saveInterface(interf: Interface): Promise<any> {
     return request({
         url: `/${apiPath}/saveInterface`,
@@ -77,12 +70,19 @@ export async function move(data: any): Promise<any> {
     });
 }
 
-// request
+// invocation
+export async function invoke(interf: Interface): Promise<any> {
+    return request({
+        url: `/${apiVocation}/invoke`,
+        method: 'post',
+        data: interf,
+    });
+}
 export async function listInvocation(interfaceId: number): Promise<any> {
     const params = {interfaceId: interfaceId}
 
     return request({
-        url: `/${apiRequest}`,
+        url: `/${apiVocation}`,
         method: 'GET',
         params,
     });
@@ -92,7 +92,7 @@ export async function getInvocationAsInterface(id: number): Promise<any> {
 }
 export async function removeInvocation(id: number): Promise<any> {
     return request({
-        url: `/${apiRequest}/${id}`,
+        url: `/${apiVocation}/${id}`,
         method: 'DELETE',
     });
 }

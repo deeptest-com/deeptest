@@ -2,13 +2,62 @@ package controller
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
 	"github.com/kataras/iris/v12"
 )
 
 type InvocationCtrl struct {
 	InvocationService *service.InvocationService `inject:""`
+	InterfaceService  *service.InterfaceService  `inject:""`
+	ExtractorService  *service.ExtractorService  `inject:""`
+	CheckpointService *service.CheckpointService `inject:""`
 	BaseCtrl
+}
+
+// Invoke
+func (c *InvocationCtrl) Invoke(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if projectId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
+		return
+	}
+
+	req := serverDomain.InvocationRequest{}
+	err = ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	err = c.InterfaceService.UpdateByInvocation(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	err = c.InterfaceService.ReplaceVariables(&req, projectId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	resp, err := c.InterfaceService.Test(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	_, err = c.InvocationService.Create(req, resp, projectId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	c.ExtractorService.ExtractByInterface(req.Id, resp, projectId)
+	c.CheckpointService.CheckByInterface(req.Id, resp, projectId)
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
 }
 
 // List

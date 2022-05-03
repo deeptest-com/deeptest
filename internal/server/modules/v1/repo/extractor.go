@@ -3,8 +3,8 @@ package repo
 import (
 	"fmt"
 	_domain "github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
-	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
 )
 
@@ -74,9 +74,9 @@ func (r *ExtractorRepo) UpdateResult(extractor model.InterfaceExtractor) (err er
 	return
 }
 
-func (r *ExtractorRepo) ListExtractorVariable(interfaceId int) (variables []iris.Map, err error) {
+func (r *ExtractorRepo) ListExtractorVariable(interfaceId uint) (variables []serverDomain.Variable, err error) {
 	err = r.DB.Model(&model.InterfaceExtractor{}).
-		Select("id, variable AS name").
+		Select("id, variable AS name, result AS value").
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted AND NOT disabled").
 		Order("created_at ASC").

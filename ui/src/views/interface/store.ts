@@ -7,11 +7,11 @@ import {
     copyEnvironment,
     create,
     get,
+    invoke,
+    listInvocation,
     getEnvironment,
     getInvocationAsInterface,
-    invokeInterface,
     listEnvironment,
-    listInvocation,
     load,
     move,
     remove,
@@ -171,7 +171,7 @@ const StoreModel: ModuleType = {
     },
     actions: {
         async invoke({commit, dispatch, state}, payload: any) {
-            invokeInterface(payload).then((json) => {
+            invoke(payload).then((json) => {
                 if (json.code === 0) {
                     commit('setResponse', json.data);
 

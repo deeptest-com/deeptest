@@ -2,11 +2,13 @@ package service
 
 import (
 	"encoding/json"
+	_cacheUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/cache"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
+	"strconv"
 	"strings"
 )
 
@@ -46,17 +48,17 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *CheckpointService) CheckByInterface(interfaceId uint, resp serverDomain.InvocationResponse) (err error) {
+func (s *CheckpointService) CheckByInterface(interfaceId uint, resp serverDomain.InvocationResponse, projectId int) (err error) {
 	checkpoints, _ := s.CheckpointRepo.List(interfaceId)
 
 	for _, checkpoint := range checkpoints {
-		s.Check(checkpoint, resp)
+		s.Check(checkpoint, resp, projectId)
 	}
 
 	return
 }
 
-func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp serverDomain.InvocationResponse) (err error) {
+func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp serverDomain.InvocationResponse, projectId int) (err error) {
 	if checkpoint.Disabled {
 		checkpoint.Result = ""
 		s.CheckpointRepo.UpdateResult(checkpoint)
@@ -111,7 +113,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 	}
 
 	if checkpoint.Type == serverConsts.Extractor {
-		extractorValue, _ := serverConsts.EnvVar.Load(checkpoint.ExtractorVariable)
+		extractorValue := _cacheUtils.GetCache(strconv.Itoa(projectId), checkpoint.ExtractorVariable)
 		logUtils.Infof("%s = %v", checkpoint.ExtractorVariable, extractorValue)
 
 		if checkpoint.Operator == serverConsts.Equal {

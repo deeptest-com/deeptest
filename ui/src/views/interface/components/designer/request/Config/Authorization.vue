@@ -60,6 +60,8 @@ import RequestAuthorBasic from "./author/BasicAuthor.vue"
 import RequestAuthorBearerToken from "./author/BearerToken.vue"
 import RequestAuthorOAuth2 from "./author/OAuth2.vue"
 import RequestAuthorApiKey from "./author/ApiKey.vue"
+import {AuthorizationTypes} from "@/views/interface/consts";
+import {getEnumSelectItems} from "@/views/interface/service";
 
 export default defineComponent({
   name: 'RequestAuthorization',
@@ -73,13 +75,7 @@ export default defineComponent({
     const store = useStore<{ Interface: StateType }>();
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
-    const authorizationTypes = ref([
-      {value: '', label: 'None'},
-      {value: 'basicAuth', label: 'Basic Auth'},
-      {value: 'bearerToken', label: 'Bearer Token'},
-      {value: 'oAuth2', label: 'OAuth 2.0'},
-      {value: 'apiKey', label: 'API Key'},
-    ])
+    const authorizationTypes = getEnumSelectItems(AuthorizationTypes)
 
     const onParamChange = (idx) => {
       console.log('onParamChange', idx)

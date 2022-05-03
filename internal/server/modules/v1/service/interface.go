@@ -22,23 +22,23 @@ type InterfaceService struct {
 
 func (s *InterfaceService) Test(req serverDomain.InvocationRequest) (ret serverDomain.InvocationResponse, err error) {
 	if req.Method == consts.GET {
-		ret, _ = httpHelper.Get(req.Url, req.Params)
+		ret, _ = httpHelper.Get(req)
 	} else if req.Method == consts.POST {
-		ret, _ = httpHelper.Post(req.Url, req.Params, req.Body, req.BodyType)
+		ret, _ = httpHelper.Post(req)
 	} else if req.Method == consts.PUT {
-		ret, _ = httpHelper.Put(req.Url, req.Params, req.Body, req.BodyType)
+		ret, _ = httpHelper.Put(req)
 	} else if req.Method == consts.DELETE {
-		ret, _ = httpHelper.Delete(req.Url, req.Params, req.Body, req.BodyType)
+		ret, _ = httpHelper.Delete(req)
 	} else if req.Method == consts.PATCH {
-		ret, _ = httpHelper.Patch(req.Url, req.Params, req.Body, req.BodyType)
+		ret, _ = httpHelper.Patch(req)
 	} else if req.Method == consts.HEAD {
-		ret, _ = httpHelper.Head(req.Url, req.Params)
+		ret, _ = httpHelper.Head(req)
 	} else if req.Method == consts.CONNECT {
-		ret, _ = httpHelper.Connect(req.Url, req.Params)
+		ret, _ = httpHelper.Connect(req)
 	} else if req.Method == consts.OPTIONS {
-		ret, _ = httpHelper.Options(req.Url, req.Params)
+		ret, _ = httpHelper.Options(req)
 	} else if req.Method == consts.TRACE {
-		ret, _ = httpHelper.Trace(req.Url, req.Params)
+		ret, _ = httpHelper.Trace(req)
 	}
 
 	s.GetContentProps(&ret)

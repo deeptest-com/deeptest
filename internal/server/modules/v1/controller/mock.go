@@ -15,6 +15,11 @@ type MockCtrl struct {
 }
 
 func (c *MockCtrl) Get(ctx iris.Context) {
+	username, password, ok := ctx.Request().BasicAuth()
+	if ok {
+		logUtils.Infof("BasicAuth - username: %s, password: %s, ok: %t", username, password, ok)
+	}
+
 	ctx.Header(consts.ContentType, consts.ContentTypeJSON.String()+";charset=utf-8")
 
 	data := iris.Map{}

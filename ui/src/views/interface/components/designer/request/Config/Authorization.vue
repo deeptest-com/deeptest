@@ -116,6 +116,11 @@ export default defineComponent({
         .ant-col {
           border-right: 1px solid #d9d9d9;
 
+          .label {
+            display: inline-block;
+            padding: 4px;
+          }
+
           input {
             margin-top: 1px;
           }

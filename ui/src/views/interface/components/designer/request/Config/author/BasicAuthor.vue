@@ -2,13 +2,19 @@
   <div class="author-basic-main author-content">
     <div class="params">
       <a-row class="param">
+        <a-col flex="160px">
+          <span class="label">Username</span>
+        </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.basicAuth.username" placeholder="用户名" class="dp-bg-input-transparent"/>
+          <a-input v-model:value="interfaceData.basicAuth.username" class="dp-bg-input-transparent"/>
         </a-col>
       </a-row>
       <a-row class="param">
+        <a-col flex="160px">
+          <span class="label">Password</span>
+        </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.basicAuth.password" placeholder="密码" class="dp-bg-input-transparent"/>
+          <a-input v-model:value="interfaceData.basicAuth.password" class="dp-bg-input-transparent"/>
         </a-col>
       </a-row>
     </div>

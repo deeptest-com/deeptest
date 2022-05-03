@@ -206,7 +206,12 @@ func addAuthorInfo(req serverDomain.InvocationRequest, request *http.Request) {
 	} else if req.AuthorizationType == consts.OAuth2 {
 
 	} else if req.AuthorizationType == consts.ApiKey {
+		key := req.ApiKey.Key
+		Value := req.ApiKey.Value
 
+		if key != "" && Value != "" {
+			request.Header.Set(key, Value)
+		}
 	}
 }
 

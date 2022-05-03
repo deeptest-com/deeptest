@@ -57,7 +57,7 @@ func replaceAuthor(req *serverDomain.InvocationRequest, variableArr [][]string) 
 		req.OAuth20.Scope = ReplaceValue(req.OAuth20.Scope, variableArr, 0)
 
 	} else if req.AuthorizationType == consts.ApiKey {
-		req.ApiKey.Username = ReplaceValue(req.ApiKey.Username, variableArr, 0)
+		req.ApiKey.Key = ReplaceValue(req.ApiKey.Key, variableArr, 0)
 		req.ApiKey.Value = ReplaceValue(req.ApiKey.Value, variableArr, 0)
 		req.ApiKey.TransferMode = ReplaceValue(req.ApiKey.TransferMode, variableArr, 0)
 	}

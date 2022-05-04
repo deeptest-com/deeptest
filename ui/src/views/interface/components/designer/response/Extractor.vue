@@ -26,7 +26,7 @@
           </span>
           <span v-if="item.src === ExtractorSrc.body">
             {{ item.type === ExtractorType.boundary ?
-                `${item.boundaryStart} - ${item.boundaryEnd} [${item.boundaryIndex}]` :
+                `${item.boundaryStart}-${item.boundaryEnd}[${item.boundaryIndex}] ${item.boundaryIncluded}` :
                 item.expression }}
           </span>
         </a-col>

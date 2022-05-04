@@ -79,6 +79,11 @@ type InterfaceExtractor struct {
 	Expression string `json:"expression"`
 	Prop       string `json:"prop"`
 
+	BoundaryStart    string `json:"boundaryStart"`
+	BoundaryEnd      string `json:"boundaryEnd"`
+	BoundaryIndex    int    `json:"boundaryIndex"`
+	BoundaryIncluded bool   `json:"boundaryIncluded"`
+
 	Variable string `json:"variable"`
 
 	Result      string `json:"result"`

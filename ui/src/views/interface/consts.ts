@@ -16,12 +16,12 @@ export enum ExtractorSrc {
     body = 'body',
 }
 export enum ExtractorType {
-    // fulltext = 'fulltext',
+    boundary = 'boundary',
     jsonquery = 'jsonquery',
     htmlquery = 'htmlquery',
     xmlquery = 'xmlquery',
-    regular = 'regular',
-    boundary = 'boundary',
+    // regular = 'regular',
+    // fulltext = 'fulltext',
 }
 export enum CheckpointType {
     responseStatus = 'responseStatus',

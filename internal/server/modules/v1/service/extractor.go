@@ -90,12 +90,8 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 	} else if requestHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == serverConsts.XmlQuery {
 		extractorHelper.XmlQuery(resp.Content, &extractor)
 
-	} else if extractor.Type == serverConsts.Regular {
-		extractorHelper.JsonQuery(resp.Content, &extractor)
-
 	} else if extractor.Type == serverConsts.Boundary {
 		extractorHelper.BoundaryQuery(resp.Content, &extractor)
-
 	}
 
 	s.ExtractorRepo.UpdateResult(extractor)

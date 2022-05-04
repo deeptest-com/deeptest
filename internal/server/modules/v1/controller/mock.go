@@ -29,12 +29,14 @@ func (c *MockCtrl) Get(ctx iris.Context) {
 	value := ctx.GetHeader("k1")
 	logUtils.Infof("API KEY - %s: %s", "k1", value)
 
-	if respType == "xml" {
+	if respType == "json" {
+		ctx.JSON(mockHelper.GetJsonData())
+	} else if respType == "xml" {
 		ctx.XML(mockHelper.GetXmlData())
 	} else if respType == "html" {
 		ctx.HTML(mockHelper.GetHtmlData())
 	} else {
-		ctx.JSON(mockHelper.GetJsonData())
+		ctx.HTML(mockHelper.GetTextData())
 	}
 }
 
@@ -61,11 +63,13 @@ func (c *MockCtrl) Request(ctx iris.Context) {
 	} else if reqBodyType == consts.ContentTypeXML.String() {
 		ctx.Header(consts.ContentType, consts.ContentTypeXML.String()+";charset=utf-8")
 		ctx.XML(_domain.Response{Code: _domain.NoErr.Code, Data: req, Msg: _domain.NoErr.Msg})
-	} else {
+	} else if reqBodyType == consts.ContentTypeHTML.String() {
 		ctx.Header(consts.ContentType, consts.ContentTypeHTML.String()+";charset=utf-8")
-		ctx.HTML("<html><p>Hello World!</p><html>")
+		ctx.HTML(mockHelper.GetHtmlData())
+	} else {
+		ctx.Header(consts.ContentType, consts.ContentTypeTEXT.String()+";charset=utf-8")
+		ctx.Text(mockHelper.GetTextData())
 	}
-
 }
 
 func (c *MockCtrl) Head(ctx iris.Context) {

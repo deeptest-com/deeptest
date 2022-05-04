@@ -69,6 +69,12 @@ export interface Extractor {
     src: ExtractorSrc;
     type: ExtractorType;
     expression: string;
+
+    boundaryStart: string;
+    boundaryEnd: string;
+    boundaryIndex: number;
+    boundaryIncluded: boolean;
+
     variable: string;
     interfaceId?: number;
 }

@@ -59,26 +59,11 @@ import debounce from "lodash.debounce";
 import {useRouter} from "vue-router";
 import {message, Modal} from "ant-design-vue";
 
-interface ListProjectPageSetupData {
-  statusArr,
-  queryParams,
-  columns: any;
-  list: ComputedRef<Project[]>;
-  pagination: ComputedRef<PaginationConfig>;
-  loading: Ref<boolean>;
-  getList: (current: number) => Promise<void>;
-
-  edit: (id: number) => Promise<void>;
-  remove: (id: number) => void;
-
-  onSearch: () => void;
-}
-
 export default defineComponent({
   name: 'ProjectListPage',
   components: {
   },
-  setup(): ListProjectPageSetupData {
+  setup() {
     const statusArr = ref<SelectTypes['options']>([
       {
         label: '所有状态',

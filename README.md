@@ -1,7 +1,7 @@
 # [DeepTest.com (ngTesting)](http://deeptest.com)
 
 ## DeepTest Continue Testing Platform
-Golang, Iris, Gorm, MySQL, Protobuf, WebSocket
+Written in Golang using Iris, Gorm, MySQL, Protobuf, WebSocket.
 
 ### Quick start
 TODO

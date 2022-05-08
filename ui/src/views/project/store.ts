@@ -40,7 +40,7 @@ const initState: StateType = {
 
 const StoreModel: ModuleType = {
     namespaced: true,
-    name: 'Project',
+    name: 'project',
     state: {
         ...initState
     },

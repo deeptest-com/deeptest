@@ -25,7 +25,7 @@ const initState: StateType = {
 
 const StoreModel: ModuleType = {
     namespaced: true,
-    name: 'userlogin',
+    name: 'UserLogin',
     state: {
         ...initState
     },

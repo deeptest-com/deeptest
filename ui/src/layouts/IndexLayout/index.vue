@@ -1,5 +1,16 @@
 <template>
     <div id="indexlayout">
+      <left
+          :collapsed="collapsed"
+          :topNavEnable="topNavEnable"
+          :belongTopMenu="belongTopMenu"
+          :selectedKeys="selectedKeys"
+          :openKeys="leftOpenKeys"
+          :menuData="permissionMenuData"
+          :onOpenChange="onOpenChange"
+      >
+      </left>
+
         <div
           id="indexlayout-right"
           :class="{'fiexd-header': headFixed}"
@@ -40,36 +51,20 @@ import { mergeUnique as ArrayMergeUnique } from '@/utils/array';
 import useTitle from '@/composables/useTitle';
 import IndexLayoutRoutes from './routes';
 import Permission from '@/components/Permission/index.vue';
+import Left from '@/layouts/IndexLayout/components/Left.vue';
 import RightTop from '@/layouts/IndexLayout/components/RightTop.vue';
 import RightFooter from '@/layouts/IndexLayout/components/RightFooter.vue';
-
-interface IndexLayoutSetupData {
-  collapsed: ComputedRef<boolean>;
-  toggleCollapsed: () => void;
-  tabNavEnable: ComputedRef<boolean>;
-  topNavEnable: ComputedRef<boolean>;
-  belongTopMenu: ComputedRef<string>;
-  headFixed: ComputedRef<boolean>;
-  selectedKeys: ComputedRef<string[]>;
-  leftOpenKeys: Ref<string[]>;
-  breadCrumbs: ComputedRef<BreadcrumbType[]>;
-  permissionMenuData: ComputedRef<RoutesDataItem[]>;
-  onOpenChange: (key: any) => void;
-  routeItem: ComputedRef<RoutesDataItem>;
-}
 
 export default defineComponent({
     name: 'IndexLayout',
     components: {
         Permission,
+      Left,
         RightTop,
         RightFooter,
     },
-    setup(): IndexLayoutSetupData {
-      const store = useStore<{
-        global: GlobalStateType;
-        user: UserStateType;
-      }>(); 
+    setup() {
+      const store = useStore<{ Global: GlobalStateType; User: UserStateType; }>();
       const route = useRoute();
 
       // 所有菜单路由
@@ -79,7 +74,7 @@ export default defineComponent({
       const routeItem = computed<RoutesDataItem>(()=> getRouteItem(route.path, menuData));
 
       // 有权限的菜单
-      const permissionMenuData = computed<RoutesDataItem[]>(()=> getPermissionMenuData(store.state.user.currentUser.roles, menuData));
+      const permissionMenuData = computed<RoutesDataItem[]>(()=> getPermissionMenuData(store.state.User.currentUser.roles, menuData));
 
       // 当前路由的顶部菜单path
       const belongTopMenu = computed<string>(()=>getRouteBelongTopMenu(routeItem.value))
@@ -88,19 +83,19 @@ export default defineComponent({
       const routeParentPaths = computed<string[]>(()=>formatRoutePathTheParents(routeItem.value.path));
 
       // 收缩左侧
-      const collapsed = computed<boolean>(()=> store.state.global.collapsed);
+      const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
       const toggleCollapsed = (): void => {
-        store.commit('global/changeLayoutCollapsed', !collapsed.value);
+        store.commit('Global/changeLayoutCollapsed', !collapsed.value);
       }
 
       // 右侧顶部tabNav是否开启
-      const tabNavEnable = computed<boolean>(()=> store.state.global.tabNavEnable);
+      const tabNavEnable = computed<boolean>(()=> store.state.Global.tabNavEnable);
 
       // 右侧顶部导航是否开启
-      const topNavEnable = computed<boolean>(()=> store.state.global.topNavEnable);
+      const topNavEnable = computed<boolean>(()=> store.state.Global.topNavEnable);
 
       // 右侧顶部是否固定
-      const headFixed = computed<boolean>(()=> store.state.global.headFixed);
+      const headFixed = computed<boolean>(()=> store.state.Global.headFixed);
 
 
       // 左侧选择菜单key

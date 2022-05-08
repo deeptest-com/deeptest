@@ -1,18 +1,18 @@
 <template>
-  <div v-if="interfaceData.id" class="designer-main">
-    <div id="design-content" v-if="interfaceData.method">
+  <div class="designer-main">
+    <div id="design-content">
       <div id="top-panel">
-        <InterfaceRequest></InterfaceRequest>
+        <InterfaceRequest v-if="interfaceData.id"></InterfaceRequest>
       </div>
 
-      <div id="design-splitter-v"></div>
+      <div id="design-splitter-v" :hidden="!interfaceData.id"></div>
 
       <div id="bottom-panel">
-        <InterfaceResponse></InterfaceResponse>
+        <InterfaceResponse v-if="interfaceData.id"></InterfaceResponse>
       </div>
     </div>
 
-    <div v-if="showRightBar" class="design-right">
+    <div v-if="interfaceData.id && showRightBar" class="design-right">
       <a-tabs v-model:activeKey="tabKey"
               tabPosition="right"
               :tabBarGutter="0"
@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import {computed, ComputedRef, defineComponent, onMounted, PropType, Ref, ref} from "vue";
+import {computed, ComputedRef, defineComponent, onMounted, PropType, Ref, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import { HistoryOutlined, EnvironmentOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue';
@@ -85,10 +85,18 @@ export default defineComponent({
 
     onMounted(() => {
       console.log('onMounted')
+      resize()
+    })
 
+    watch(interfaceData, () => {
+      console.log('watch interfaceData')
+      // resize()
+    }, {deep: true})
+
+    const resize = () => {
       resizeHeight('design-content', 'top-panel', 'design-splitter-v', 'bottom-panel',
           200, 100, 50)
-    })
+    }
 
     return {
       interfaceData,
@@ -130,22 +138,22 @@ export default defineComponent({
 
   #design-content {
     flex: 1;
+    display: flex;
 
     flex-direction: column;
     position: relative;
     height: 100%;
 
-    display: flex;
     #top-panel {
       height: 220px;
-      padding: 0;
       width: 100%;
+      padding: 0;
     }
 
     #bottom-panel {
       flex: 1;
-      padding: 4px;
       width: 100%;
+      padding: 4px;
       overflow: auto;
     }
 

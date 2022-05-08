@@ -46,3 +46,16 @@ export enum AuthorizationTypes {
     'oAuth2' = 'OAuth 2.0',
     'apiKey' = 'API Key',
 }
+
+export enum OAuth2GrantTypes {
+    'AuthorizationCode' = 'Authorization Code',
+    'AuthorizationCodeWithPKCE' = 'Authorization Code (With PKCE)',
+    'Implicit GrantType' = 'Implicit',
+    'PasswordCredential' = 'Password Credential',
+    'ClientCredential' = 'Client Credential',
+}
+
+export enum OAuth2ClientAuthenticationWay {
+    'SendAsBasicAuthHeader' = 'Send as Basic Auth header',
+    'SendClientCredentialsInBody' = 'Send client credentials in body',
+}

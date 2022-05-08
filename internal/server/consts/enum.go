@@ -73,6 +73,10 @@ const (
 	LessThanOrEqual    CheckpointOperator = "lessThanOrEqual"
 )
 
+func (e CheckpointOperator) String() string {
+	return string(e)
+}
+
 type CheckpointResult string
 
 const (

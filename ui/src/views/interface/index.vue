@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, onUnmounted, Ref, ref, watch} from "vue";
+import {computed, defineComponent, onMounted, onUnmounted, Ref, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 
 import {Form} from "ant-design-vue";
@@ -21,6 +21,9 @@ import {Form} from "ant-design-vue";
 import InterfaceDesigner from './components/Designer.vue';
 import {resizeWidth} from "@/utils/dom";
 import InterfaceTree from "./components/Tree.vue"
+import {useStore} from "vuex";
+import {StateType as GlobalStateType} from "@/store/global";
+import {StateType as UserStateType} from "@/store/user";
 
 export default defineComponent({
   name: 'InterfaceIndexPage',
@@ -29,14 +32,27 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
+    const store = useStore<{ Global: GlobalStateType; User: UserStateType; }>();
+
+    const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
 
     onMounted(() => {
       console.log('onMounted')
-      resizeWidth('main', 'left-panel', 'splitter-h', 'right-panel', 260, 800)
+      resize()
     })
     onUnmounted(() => {
       console.log('onUnmounted')
     })
+
+    watch(collapsed, () => {
+      console.log('watch collapsed')
+      resize()
+    }, {deep: true})
+
+    const resize = () => {
+      resizeWidth('main', 'left-panel', 'splitter-h', 'right-panel',
+          260, 800, collapsed.value ? 55 - 15 : 100 - 25)
+    }
 
     return {
 

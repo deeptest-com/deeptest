@@ -169,7 +169,7 @@ export default defineComponent({
 
 
         const store = useStore<{global: GlobalStateType}>();
-        const tabNavList = computed<TabNavItem[]>(()=> store.state.global.headTabNavList);
+        const tabNavList = computed<TabNavItem[]>(()=> store.state.Global.headTabNavList);
         const router = useRouter();
         const route = useRoute();
 
@@ -194,7 +194,7 @@ export default defineComponent({
                 }                
             }); 
             if(!isRoute) {
-                store.commit('global/setHeadTabNavList', [
+                store.commit('Global/setHeadTabNavList', [
                     ...tabNavList.value,
                     {
                         route: {
@@ -211,7 +211,7 @@ export default defineComponent({
             let index = tabNavList.value.findIndex(item => equalTabNavRoute(item.route, route, routeItem.value.tabNavType))            
             if(index < 0) {
                 index = tabNavList.value.length;
-                store.commit('global/setHeadTabNavList', [
+                store.commit('Global/setHeadTabNavList', [
                     ...tabNavList.value,
                     {
                         route: {
@@ -240,7 +240,7 @@ export default defineComponent({
             }
 
             let navList: TabNavItem[] = tabNavList.value.filter((item2: TabNavItem) => !equalTabNavRoute(item2.route, item.route, item.menu.tabNavType))
-            store.commit('global/setHeadTabNavList', [
+            store.commit('Global/setHeadTabNavList', [
                 ...navList
             ]);
 
@@ -257,7 +257,7 @@ export default defineComponent({
 
             // 有关闭回调的无法关闭
             let navList: TabNavItem[] = tabNavList.value.filter((item: TabNavItem) => item.menu.tabNavCloseBefore && typeof item.menu.tabNavCloseBefore === 'function')
-            store.commit('global/setHeadTabNavList', [
+            store.commit('Global/setHeadTabNavList', [
                 {
                     ...homeRoute
                 },
@@ -272,7 +272,7 @@ export default defineComponent({
 
             // 有关闭回调的和当前打开的和首页无法关闭
             let navList: TabNavItem[] = tabNavList.value.filter((item: TabNavItem, i: number) => (item.menu.tabNavCloseBefore && typeof item.menu.tabNavCloseBefore === 'function') || equalTabNavRoute(route, item.route, item.menu.tabNavType) || i===0)
-            store.commit('global/setHeadTabNavList', [
+            store.commit('Global/setHeadTabNavList', [
                 ...navList
             ]);
         }
@@ -285,7 +285,7 @@ export default defineComponent({
             // 有关闭回调的和当前打开的和首页和左侧或右侧无法关闭
             let navList: TabNavItem[] = tabNavList.value.filter((item: TabNavItem, i: number) => (item.menu.tabNavCloseBefore && typeof item.menu.tabNavCloseBefore === 'function') || ( param === 'left' ? i>=index : i<=index ) || i===0);
 
-            store.commit('global/setHeadTabNavList', [
+            store.commit('Global/setHeadTabNavList', [
                 ...navList
             ]);
         }

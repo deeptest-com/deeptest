@@ -1,34 +1,21 @@
 <template>
     <div id="indexlayout-right-top" :class="{'topNavEnable': !topNavEnable, 'tabNavEnable': !tabNavEnable }">
         <div class="indexlayout-right-top-top">
-          <div class="indexlayout-left-logo">
-            <router-link to="/" class="logo-url">
-              <img v-if="collapsed" alt="Vue logo" src="../../../assets/images/logo.png" width="30">
-              <h3 v-else class="logo-title">DeepTest</h3>
-            </router-link>
+          <div class="indexlayout-flexible"
+               @click="() => {
+                if(toggleCollapsed) {
+                  toggleCollapsed();
+                }
+              }"
+          >
+            <MenuUnfoldOutlined v-if="collapsed" />
+            <MenuFoldOutlined v-else />
           </div>
 
             <div class="indexlayout-top-menu">
-                <div ref="topMenuCon" :style="{width: topMenuWidth}">
-                    <template v-if="topNavEnable">
-                      <template v-for="(item, key) in menuData">
-                        <a-link
-                          :key="key"
-                          v-if="!item.hidden"
-                          :to="item.path"
-                          :class="{'active': belongTopMenu === item.path }"
-                          class="indexlayout-top-menu-li"
-                        >
-                        {{t(item.title)}}
-                        </a-link>
-                      </template>
-                    </template>             
-<!--                    <bread-crumbs v-else class="breadcrumb" :list="breadCrumbs"></bread-crumbs>-->
-                </div>
             </div>
             <div class="indexlayout-top-menu-right">
                 <right-top-project />
-
                 <RightTopSettings></RightTopSettings>
             </div>
         </div>
@@ -39,7 +26,7 @@
 import { defineComponent, onMounted, PropType, Ref, toRefs } from "vue";
 import { useI18n } from "vue-i18n";
 import { BreadcrumbType, RoutesDataItem } from '@/utils/routes';
-import ALink from '@/components/ALink/index.vue';
+import { MenuFoldOutlined, MenuUnfoldOutlined, EnvironmentOutlined } from '@ant-design/icons-vue';
 import RightTopProject from './RightTopProject.vue';
 import RightTopSettings from './RightTopSettings.vue';
 import useTopMenuWidth from "../composables/useTopMenuWidth";
@@ -53,7 +40,7 @@ interface RightTopSetupData {
 export default defineComponent({
     name: 'RightTop',
     components: {
-      ALink,
+      MenuFoldOutlined, MenuUnfoldOutlined,
       RightTopProject,
       RightTopSettings,
     },
@@ -121,6 +108,14 @@ export default defineComponent({
     height: @headerHeight;
     background-color: @menu-dark-bg;
     color: #c0c4cc;
+
+    .indexlayout-flexible {
+      width: 16px;
+      height: 50px;
+      line-height: 50px;
+      text-align: center;
+      cursor: pointer;
+    }
 
     .indexlayout-left-logo {
       width: 150px;

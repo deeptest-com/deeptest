@@ -23,10 +23,10 @@ export default defineComponent({
     name: 'SecurityLayout',
     setup(): SecurityLayoutSetupData {
         const router = useRouter();
-        const store = useStore<{user: UserStateType}>();
+        const store = useStore<{User: UserStateType}>();
 
         // 获取当前登录用户信息
-        const currentUser = computed<CurrentUser>(()=> store.state.user.currentUser);
+        const currentUser = computed<CurrentUser>(()=> store.state.User.currentUser);
 
         // 判断是否登录
         const isLogin = computed<boolean>(()=> currentUser.value ? currentUser.value.id > 0 : false);
@@ -36,7 +36,7 @@ export default defineComponent({
         const loading = ref<boolean>(false);
         const getUser = async () => {
             loading.value = true;
-            await store.dispatch('user/fetchCurrent');
+            await store.dispatch('User/fetchCurrent');
             if(!isLogin.value && router.currentRoute.value.path !== '/user/login') {
                 router.replace({
                     path: '/user/login',
@@ -45,7 +45,8 @@ export default defineComponent({
                         ...router.currentRoute.value.query
                     }
                 })
-            }            
+            }
+
             loading.value = false;
             isReady.value = true;
         }

@@ -49,8 +49,8 @@ func replaceAuthor(req *serverDomain.InvocationRequest, variableArr [][]string) 
 		req.BearerToken.Token = ReplaceValue(req.BearerToken.Token, variableArr, 0)
 
 	} else if req.AuthorizationType == consts.OAuth2 {
-		req.OAuth20.Key = ReplaceValue(req.OAuth20.Key, variableArr, 0)
-		req.OAuth20.OidcDiscoveryURL = ReplaceValue(req.OAuth20.OidcDiscoveryURL, variableArr, 0)
+		req.OAuth20.Name = ReplaceValue(req.OAuth20.Name, variableArr, 0)
+		req.OAuth20.CallbackUrl = ReplaceValue(req.OAuth20.CallbackUrl, variableArr, 0)
 		req.OAuth20.AuthURL = ReplaceValue(req.OAuth20.AuthURL, variableArr, 0)
 		req.OAuth20.AccessTokenURL = ReplaceValue(req.OAuth20.AccessTokenURL, variableArr, 0)
 		req.OAuth20.ClientID = ReplaceValue(req.OAuth20.ClientID, variableArr, 0)

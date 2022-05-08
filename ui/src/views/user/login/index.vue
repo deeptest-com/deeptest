@@ -64,7 +64,7 @@ export default defineComponent({
     setup(): UserLoginSetupData {
         const router = useRouter();
         const { currentRoute } = router;
-        const store = useStore<{userlogin: UserLoginStateType}>();
+        const store = useStore<{UserLogin: UserLoginStateType}>();
         const { t } = useI18n();
 
         // 表单值
@@ -97,7 +97,7 @@ export default defineComponent({
             submitLoading.value = true;
             try {
                 const fieldsValue = await validate<LoginParamsType>();
-                const res: boolean = await store.dispatch('userlogin/login',fieldsValue);        
+                const res: boolean = await store.dispatch('UserLogin/login',fieldsValue);
                 if (res === true) {
                     message.success(t('page.user.login.form.login-success'));
                     const { redirect, ...query } = currentRoute.value.query;
@@ -116,7 +116,7 @@ export default defineComponent({
         };
 
         // 登录状态
-        const loginStatus = computed<"ok" | "error" | undefined>(()=> store.state.userlogin.loginStatus);
+        const loginStatus = computed<"ok" | "error" | undefined>(()=> store.state.UserLogin.loginStatus);
 
         // 重置 validateInfos
         const validateInfosNew = useI18nAntdFormVaildateInfos(validateInfos);

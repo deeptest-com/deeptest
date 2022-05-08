@@ -48,7 +48,7 @@ const initState: StateType = {
 
 const StoreModel: ModuleType = {
   namespaced: true,
-  name: 'global',
+  name: 'Global',
   state: {
     ...initState
   },

@@ -17,7 +17,7 @@ export default defineComponent({
     setup(): FooterToolbarSetupData {
         const store = useStore<{global: GlobalStateType}>(); 
 
-        const collapsed = computed<boolean>(() => store.state.global.collapsed);
+        const collapsed = computed<boolean>(() => store.state.Global.collapsed);
 
         return {
             collapsed

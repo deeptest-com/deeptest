@@ -1,7 +1,5 @@
 # [DeepTest.com (ngTesting)](http://deeptest.com)
-
-## DeepTest Continue Testing Platform
-Written in Golang using Iris, Gorm, MySQL, Protobuf, WebSocket.
+DeepTest is a Continue Testing Platform written in Go with Iris, Gorm, MySQL, Protobuf and WebSocket.
 
 ### Quick start
 TODO

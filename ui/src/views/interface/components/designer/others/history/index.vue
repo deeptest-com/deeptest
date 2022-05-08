@@ -46,12 +46,12 @@ export default defineComponent({
 
     const getRequestAsInterface = (id) => {
       console.log('getRequestAsInterface', id)
-      store.dispatch('Interface/getRequestAsInterface', id)
+      store.dispatch('Interface/getInvocationAsInterface', id)
     }
 
     const removeHistory = (id) => {
       console.log('removeHistory', id)
-      store.dispatch('Interface/removeRequest', {id: id, interfaceId: interfaceData.value.id})
+      store.dispatch('Interface/removeInvocation', {id: id, interfaceId: interfaceData.value.id})
     }
 
     return {

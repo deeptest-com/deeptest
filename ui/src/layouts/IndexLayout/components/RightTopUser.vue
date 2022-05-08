@@ -36,20 +36,19 @@ export default defineComponent({
         DownOutlined
     },
     setup(): RightTopUserSetupData {
-        const store = useStore<{user: UserStateType}>();
+        const store = useStore<{User: UserStateType}>();
         const router = useRouter();
         const { t } = useI18n();
 
-
         // 获取当前登录用户信息
-        const currentUser = computed<CurrentUser>(()=> store.state.user.currentUser);
+        const currentUser = computed<CurrentUser>(()=> store.state.User.currentUser);
 
         // 点击菜单
         const onMenuClick = async (event: any) => {
             const { key } = event;
 
             if (key === 'logout') {
-                const res: boolean = await store.dispatch('user/logout');
+                const res: boolean = await store.dispatch('User/logout');
                 if(res === true) {
                     router.replace({
                         path: '/user/login',

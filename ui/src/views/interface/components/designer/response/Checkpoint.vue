@@ -81,11 +81,16 @@
           </a-form-item>
 
           <a-form-item label="运算符" v-bind="validateInfos.operator">
+            {{ void (options = model.type === 'responseStatus' ? operatorsForCode :
+              isInArray(model.type, ['responseHeader', 'responseBody']) ? operatorsForString : operators) }}
+
             <a-select v-model:value="model.operator"
                       @blur="validate('operator', { trigger: 'change' }).catch(() => {})">
-              <a-select-option v-for="(item, idx) in operators" :key="idx" :value="item.value">
+
+              <a-select-option v-for="(item, idx) in options" :key="idx" :value="item.value">
                 {{ t(item.label) }}
               </a-select-option>
+
             </a-select>
           </a-form-item>
 
@@ -115,8 +120,14 @@ import {message, Form} from 'ant-design-vue';
 import { PlusOutlined, EditOutlined, DeleteOutlined, CloseCircleOutlined, CheckCircleOutlined} from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import {Checkpoint, Extractor, Interface, Response} from "@/views/interface/data";
-import {getEnumSelectItems, listExtractorVariable} from "@/views/interface/service";
+import {
+  getEnumSelectItems,
+  getOperatorsForCode,
+  getOperatorsForString,
+  listExtractorVariable
+} from "@/views/interface/service";
 import {CheckpointOperator, CheckpointType} from "@/views/interface/consts";
+import {isInArray} from "@/utils/array";
 
 const useForm = Form.useForm;
 
@@ -135,6 +146,8 @@ export default defineComponent({
 
     const types = getEnumSelectItems(CheckpointType)
     const operators = getEnumSelectItems(CheckpointOperator)
+    const operatorsForString = getOperatorsForString()
+    const operatorsForCode = getOperatorsForCode()
 
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
     const responseData = computed<Response>(() => store.state.Interface.responseData);
@@ -282,6 +295,7 @@ export default defineComponent({
       cancel,
       getResultCls,
       selectType,
+      isInArray,
 
       rules,
       validate,
@@ -290,6 +304,8 @@ export default defineComponent({
 
       types,
       operators,
+      operatorsForString,
+      operatorsForCode,
       labelCol: { span: 6 },
       wrapperCol: { span: 16 },
     }

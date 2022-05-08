@@ -3,17 +3,17 @@ import BlankLayout from '@/layouts/BlankLayout.vue';
 
 const IndexLayoutRoutes: Array<RoutesDataItem> = [
   {
-    icon: 'project',
-    title: 'index-layout.menu.project',
+    title: 'index-layout.menu',
     path: '/project',
     redirect: '/project/list',
     component: BlankLayout,
     children: [
       {
-        title: 'index-layout.menu.project.list',
+        icon: 'project',
+        title: 'index-layout.menu.project',
         path: 'list',
         component: () => import('@/views/project/list/index.vue'),
-        hidden: true,
+        hidden: false,
       },
       {
         title: 'index-layout.menu.project.edit',
@@ -25,17 +25,33 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
   },
 
   {
-    icon: 'interface',
-    title: 'index-layout.menu.interface',
+    title: 'index-layout.menu',
     path: '/interface',
     redirect: '/interface/index',
     component: BlankLayout,
     children: [
       {
+        icon: 'interface',
         title: 'index-layout.menu.interface',
         path: 'index',
         component: () => import('@/views/interface/index.vue'),
-        hidden: true,
+        hidden: false,
+      },
+    ],
+  },
+
+  {
+    title: 'index-layout.menu',
+    path: '/scene',
+    redirect: '/scene/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'scene',
+        title: 'index-layout.menu.scene',
+        path: 'scene',
+        component: () => import('@/views/interface/index.vue'),
+        hidden: false,
       },
     ],
   },

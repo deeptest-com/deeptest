@@ -21,17 +21,16 @@ interface RightTopMessageSetupData {
 export default defineComponent({
     name: 'RightTopMessage',
     components: {
-        BellOutlined
     },
     setup(): RightTopMessageSetupData {
 
-        const store = useStore<{user: UserStateType}>();
+        const store = useStore<{User: UserStateType}>();
         
-        const message = computed<number>(()=> store.state.user.message);
+        const message = computed<number>(()=> store.state.User.message);
 
 
         onMounted(()=>{
-            store.dispatch("user/fetchMessage");
+            store.dispatch("User/fetchMessage");
         })
 
 

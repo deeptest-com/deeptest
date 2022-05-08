@@ -32,10 +32,10 @@ export default defineComponent({
         }
     },
     setup(props): PermissionSetupData {
-        const store = useStore<{user: UserStateType}>(); 
+        const store = useStore<{User: UserStateType}>();
 
         // 是否有权限
-        const isPermission = computed(()=> hasPermissionRouteRoles(store.state.user.currentUser.roles, props.roles));
+        const isPermission = computed(()=> hasPermissionRouteRoles(store.state.User.currentUser.roles, props.roles));
 
         return {
             isPermission

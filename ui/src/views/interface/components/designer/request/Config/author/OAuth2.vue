@@ -2,29 +2,77 @@
   <div class="author-basic-main author-content">
     <div class="params">
       <a-row class="param">
+        <a-col flex="160px">
+          <span class="label">Access Token</span>
+        </a-col>
         <a-col flex="1">
-          <a-button class="dp-bg-light">
-            <span class="curr-method">生成令牌</span>
+          <a-select
+              v-model:value="interfaceData.oAuth20.accessToken"
+              :options="accessTokens"
+              size="small"
+              :bordered="false"
+              style="width: calc(100% - 10px)"
+          >
+          </a-select>
+        </a-col>
+      </a-row>
+      <a-row class="param">
+        <a-col flex="160px"></a-col>
+        <a-col flex="1">
+          <a-input v-model:value="interfaceData.oAuth20.accessToken" class="dp-bg-input-transparent" />
+        </a-col>
+      </a-row>
+
+      <a-row class="param">
+        <a-col flex="160px">
+          <span class="label">Header Prefix</span>
+        </a-col>
+        <a-col flex="1">
+          <a-input v-model:value="interfaceData.oAuth20.headerPrefix" class="dp-bg-input-transparent" />
+        </a-col>
+      </a-row>
+
+      <br />
+
+      <a-row class="param">
+        <a-col flex="1" class="dp-right">
+          <a-button size="small" class="dp-bg-light">
+            <span class="curr-method">生成新令牌</span>
           </a-button>
         </a-col>
       </a-row>
 
       <a-row class="param">
         <a-col flex="160px">
-          <span class="label">Token</span>
+          <span class="label">Token Name</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oAuth20.key"
-                   placeholder="Key" class="dp-bg-input-transparent" />
+          <a-input v-model:value="interfaceData.oAuth20.name" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
       <a-row class="param">
         <a-col flex="160px">
-          <span class="label">OpenID Connect Discovery URL</span>
+          <span class="label">Grant Type</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oAuth20.oidcDiscoveryURL" class="dp-bg-input-transparent" />
+          <a-select
+              v-model:value="interfaceData.oAuth20.grantType"
+              :options="oauth2GrantTypes"
+              size="small"
+              :bordered="false"
+              style="width: calc(100% - 10px)"
+          >
+          </a-select>
+        </a-col>
+      </a-row>
+
+      <a-row class="param">
+        <a-col flex="160px">
+          <span class="label">Callback URL</span>
+        </a-col>
+        <a-col flex="1">
+          <a-input v-model:value="interfaceData.oAuth20.callbackUrl" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
@@ -44,6 +92,7 @@
           <a-input v-model:value="interfaceData.oAuth20.accessTokenURL" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
+
       <a-row class="param">
         <a-col flex="160px">
           <span class="label">Client ID</span>
@@ -54,12 +103,47 @@
       </a-row>
       <a-row class="param">
         <a-col flex="160px">
+          <span class="label">Client Secret</span>
+        </a-col>
+        <a-col flex="1">
+          <a-input v-model:value="interfaceData.oAuth20.clientSecret" class="dp-bg-input-transparent" />
+        </a-col>
+      </a-row>
+
+      <a-row class="param">
+        <a-col flex="160px">
           <span class="label">Scope</span>
         </a-col>
         <a-col flex="1">
           <a-input v-model:value="interfaceData.basicAuth.scope" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
+
+      <a-row class="param">
+        <a-col flex="160px">
+          <span class="label">State</span>
+        </a-col>
+        <a-col flex="1">
+          <a-input v-model:value="interfaceData.basicAuth.state" class="dp-bg-input-transparent" />
+        </a-col>
+      </a-row>
+
+      <a-row class="param">
+        <a-col flex="160px">
+          <span class="label">Grant Type</span>
+        </a-col>
+        <a-col flex="1">
+          <a-select
+              v-model:value="interfaceData.oAuth20.clientAuthentication"
+              :options="oauth2ClientAuthWays"
+              size="small"
+              :bordered="false"
+              style="width: calc(100% - 10px)"
+          >
+          </a-select>
+        </a-col>
+      </a-row>
+
     </div>
     <div class="tips">
       <div class="dp-light">授权头将会在你发送请求时自动生成。</div>
@@ -75,6 +159,8 @@ import {useStore} from "vuex";
 import {ArrowRightOutlined, DeleteOutlined, PlusOutlined, QuestionCircleOutlined} from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import {Interface} from "@/views/interface/data";
+import {getEnumSelectItems} from "@/views/interface/service";
+import {AuthorizationTypes, OAuth2ClientAuthenticationWay, OAuth2GrantTypes} from "@/views/interface/consts";
 
 export default defineComponent({
   name: 'RequestAuthorOAuth2',
@@ -86,8 +172,16 @@ export default defineComponent({
     const store = useStore<{ Interface: StateType }>();
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
+    const oauth2GrantTypes = getEnumSelectItems(OAuth2GrantTypes)
+    const oauth2ClientAuthWays = getEnumSelectItems(OAuth2ClientAuthenticationWay)
+
+    const accessTokens = ref([])
+
     return {
       interfaceData,
+      oauth2GrantTypes,
+      oauth2ClientAuthWays,
+      accessTokens,
     }
   }
 })

@@ -71,8 +71,8 @@ export default defineComponent({
         ],
       });
 
-      const store = useStore<{ Project: StateType }>();
-      const modelRef = computed<Partial<Project>>(() => store.state.Project.detailResult);
+      const store = useStore<{ project: StateType }>();
+      const modelRef = computed<Partial<Project>>(() => store.state.project.detailResult);
       const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
 
       const get = async (id: number): Promise<void> => {

@@ -56,7 +56,7 @@ export default defineComponent({
     name: 'UserRegister',
     setup(): UserRegisterSetupData {
         const router = useRouter();
-        const store = useStore<{userregister: RegisterStateType}>();
+        const store = useStore<{UserRegister: RegisterStateType}>();
         const { t } = useI18n();
 
         // 表单值
@@ -103,7 +103,7 @@ export default defineComponent({
             submitLoading.value = true;
             try {
                 const fieldsValue = await validate<RegisterParamsType>();
-                const res: boolean = await store.dispatch('userregister/register',fieldsValue);                
+                const res: boolean = await store.dispatch('UserRegister/register',fieldsValue);
                 if (res === true) {
                     message.success(t('page.user.register.form.register-success'));
                     router.replace('/user/login');
@@ -119,7 +119,7 @@ export default defineComponent({
         const validateInfosNew = useI18nAntdFormVaildateInfos(validateInfos);
 
          // 注册状态
-        const errorMsg = computed<string | undefined>(()=> store.state.userregister.errorMsg);
+        const errorMsg = computed<string | undefined>(()=> store.state.UserRegister.errorMsg);
 
 
         return {

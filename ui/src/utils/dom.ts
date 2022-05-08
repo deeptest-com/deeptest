@@ -1,6 +1,6 @@
 
 export function resizeWidth(mainId: string, leftId: string, splitterId: string, rightId: string,
-                            leftMin: number, rightMin: number): boolean {
+                            leftMin: number, rightMin: number, gap: number): boolean {
     const main = document.getElementById(mainId) as any;
     const left = document.getElementById(leftId) as any;
     const splitter = document.getElementById(splitterId) as any;
@@ -12,12 +12,13 @@ export function resizeWidth(mainId: string, leftId: string, splitterId: string, 
     splitter.onmousedown = function (e) {
         //色彩高亮
         splitter.classList.add('active');
-        const startX = e.clientX;
+        const startX = e.clientX - gap;
 
         // 鼠标拖动事件
         document.onmousemove = function (e) {
             splitter.left = startX;
-            const endX = e.clientX;
+            const endX = e.clientX - gap;
+
             let moveLen = splitter.left + (endX - startX); // （endx-startx）=挪动的间隔。splitter.left+挪动的间隔=右边区域最初的宽度
             const maxT = main.clientWidth - splitter.offsetWidth; // 容器宽度 - 右边区域的宽度 = 左边区域的宽度
             if (moveLen < leftMin) moveLen = leftMin; // 右边区域的最小宽度
@@ -46,6 +47,7 @@ export function resizeWidth(mainId: string, leftId: string, splitterId: string, 
 
 export function resizeHeight(contentId: string, topId: string, splitterId: string, bottomId: string,
                             topMin: number, bottomMin: number, gap: number): boolean {
+
     const content = document.getElementById(contentId) as any;
     const top = document.getElementById(topId) as any;
     const splitter = document.getElementById(splitterId) as any;
@@ -63,6 +65,7 @@ export function resizeHeight(contentId: string, topId: string, splitterId: strin
         document.onmousemove = function (e) {
             splitter.top = startY;
             const endY = e.clientY - gap;
+
             let moveLen = splitter.top + (endY - startY); // （endY-startY）=挪动的间隔。splitter.top+挪动的间隔=上边区域最初的高度
             const maxT = content.clientHeight - splitter.offsetHeight; // 容器高度 - 下边区域的宽度 = 上边区域的宽度
             if (moveLen < topMin) moveLen = topMin; // 下边区域的最小宽度

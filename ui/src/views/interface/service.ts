@@ -1,6 +1,7 @@
 import request from '@/utils/request';
 import {Interface} from "@/views/interface/data";
 import {isInArray} from "@/utils/array";
+import {CheckpointOperator} from "@/views/interface/consts";
 
 const apiPath = 'interfaces';
 const apiVocation = 'invocations';
@@ -88,7 +89,7 @@ export async function listInvocation(interfaceId: number): Promise<any> {
     });
 }
 export async function getInvocationAsInterface(id: number): Promise<any> {
-    return request({url: `/${apiPath}/${id}`});
+    return request({url: `/${apiVocation}/${id}`});
 }
 export async function removeInvocation(id: number): Promise<any> {
     return request({
@@ -230,9 +231,27 @@ export const getEnumSelectItems = (enumDef) => {
     const arr : any[] = []
 
     for (const item in enumDef) {
-        console.log(item, enumDef[item])
+        console.log('======' , item, enumDef[item])
         arr.push({label: enumDef[item], value: item})
     }
+
+    return arr
+}
+export const getOperatorsForString = () => {
+    const arr : any[] = []
+
+    arr.push({label: CheckpointOperator.equal, value: CheckpointOperator[CheckpointOperator.equal]})
+    arr.push({label: CheckpointOperator.notEqual, value: CheckpointOperator[CheckpointOperator.notEqual]})
+    arr.push({label: CheckpointOperator.contain, value: CheckpointOperator[CheckpointOperator.contain]})
+
+    return arr
+}
+
+export const getOperatorsForCode = () => {
+    const arr : any[] = []
+
+    arr.push({label: CheckpointOperator.equal, value: CheckpointOperator[CheckpointOperator.equal]})
+    arr.push({label: CheckpointOperator.notEqual, value: CheckpointOperator[CheckpointOperator.notEqual]})
 
     return arr
 }

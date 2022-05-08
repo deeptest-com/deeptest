@@ -13,6 +13,7 @@ export default {
   'index-layout.menu.project.edit': '项目编辑',
 
   'index-layout.menu.interface': '接口',
+  'index-layout.menu.scene': '场景',
 
   'index-layout.menu.component': '组件',
   'index-layout.menu.component.icon': '图标',

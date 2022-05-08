@@ -22,7 +22,52 @@ func (e HttpMethod) String() string {
 type HttpRespCode int
 
 const (
-	OK HttpRespCode = 200
+	Continue          HttpRespCode = 100
+	SwitchingProtocol HttpRespCode = 101
+
+	OK                          HttpRespCode = 200
+	Created                     HttpRespCode = 201
+	Accepted                    HttpRespCode = 202
+	NonAuthoritativeInformation HttpRespCode = 203
+	NoContent                   HttpRespCode = 204
+	ResetContent                HttpRespCode = 205
+	PartialContent              HttpRespCode = 206
+
+	MultipleChoice    HttpRespCode = 300
+	MovedPermanently  HttpRespCode = 301
+	Found             HttpRespCode = 302
+	SeeOther          HttpRespCode = 303
+	NotModified       HttpRespCode = 304
+	UseProxy          HttpRespCode = 305
+	unused            HttpRespCode = 306
+	TemporaryRedirect HttpRespCode = 307
+	PermanentRedirect HttpRespCode = 308
+
+	BadRequest                   HttpRespCode = 400
+	Unauthorized                 HttpRespCode = 401
+	PaymentRequired              HttpRespCode = 402
+	Forbidden                    HttpRespCode = 403
+	NotFound                     HttpRespCode = 404
+	MethodNotAllowed             HttpRespCode = 405
+	NotAcceptable                HttpRespCode = 406
+	ProxyAuthenticationRequired  HttpRespCode = 407
+	RequestTimeout               HttpRespCode = 408
+	Conflict                     HttpRespCode = 409
+	Gone                         HttpRespCode = 410
+	LengthRequired               HttpRespCode = 411
+	PreconditionFailed           HttpRespCode = 412
+	RequestEntityTooLarge        HttpRespCode = 413
+	RequestURITooLong            HttpRespCode = 414
+	UnsupportedMediaType         HttpRespCode = 415
+	RequestedRangeNotSatisfiable HttpRespCode = 416
+	ExpectationFailed            HttpRespCode = 417
+
+	InternalServerError     HttpRespCode = 500
+	Implemented             HttpRespCode = 501
+	BadGateway              HttpRespCode = 502
+	ServiceUnavailable      HttpRespCode = 503
+	GatewayTimeout          HttpRespCode = 504
+	HTTPVersionNotSupported HttpRespCode = 505
 )
 
 func (e HttpRespCode) Int() int {
@@ -57,6 +102,31 @@ const (
 )
 
 func (e AuthorType) String() string {
+	return string(e)
+}
+
+type GrantType string
+
+const (
+	AuthorizationCode         GrantType = "authorizationCode"
+	AuthorizationCodeWithPKCE GrantType = "authorizationCodeWithPKCE"
+	Implicit                  GrantType = "implicit"
+	PasswordCredential        GrantType = "passwordCredential"
+	ClientCredential          GrantType = "clientCredential"
+)
+
+func (e GrantType) String() string {
+	return string(e)
+}
+
+type ClientAuthenticationWay string
+
+const (
+	SendAsBasicAuthHeader       ClientAuthenticationWay = "sendAsBasicAuthHeader"
+	SendClientCredentialsInBody ClientAuthenticationWay = "sendClientCredentialsInBody"
+)
+
+func (e ClientAuthenticationWay) String() string {
 	return string(e)
 }
 
@@ -144,7 +214,7 @@ func (e FieldFormat) String() string {
 type Progress string
 
 const (
-	Created    Progress = "created"
+	New        Progress = "new"
 	InProgress Progress = "inProgress"
 	Completed  Progress = "completed"
 	Cancel     Progress = "cancel"

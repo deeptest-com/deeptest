@@ -178,57 +178,29 @@ func (r *InterfaceRepo) UpdateHeaders(id uint, headers []model.InterfaceHeader) 
 }
 
 func (r *InterfaceRepo) UpdateBasicAuth(id uint, payload model.InterfaceBasicAuth) (err error) {
-	old, _ := r.GetBasicAuth(id)
-
-	if old.ID == 0 {
-		payload.InterfaceId = id
-		err = r.DB.Create(&payload).Error
-	} else {
-		payload.ID = old.ID
-		err = r.DB.Updates(&old).Error
-	}
+	payload.InterfaceId = id
+	err = r.DB.Save(&payload).Error
 
 	return
 }
 
 func (r *InterfaceRepo) UpdateBearerToken(id uint, payload model.InterfaceBearerToken) (err error) {
-	old, _ := r.GetBearerToken(id)
-
-	if old.ID == 0 {
-		payload.InterfaceId = id
-		err = r.DB.Create(&payload).Error
-	} else {
-		payload.ID = old.ID
-		err = r.DB.Updates(&old).Error
-	}
+	payload.InterfaceId = id
+	err = r.DB.Save(&payload).Error
 
 	return
 }
 
 func (r *InterfaceRepo) UpdateOAuth20(id uint, payload model.InterfaceOAuth20) (err error) {
-	old, _ := r.GetOAuth20(id)
-
-	if old.ID == 0 {
-		payload.InterfaceId = id
-		err = r.DB.Create(&payload).Error
-	} else {
-		payload.ID = old.ID
-		err = r.DB.Updates(&payload).Error
-	}
+	payload.InterfaceId = id
+	err = r.DB.Save(&payload).Error
 
 	return
 }
 
 func (r *InterfaceRepo) UpdateApiKey(id uint, payload model.InterfaceApiKey) (err error) {
-	old, _ := r.GetApiKey(id)
-
-	if old.ID == 0 {
-		payload.InterfaceId = id
-		err = r.DB.Create(&payload).Error
-	} else {
-		payload.ID = old.ID
-		err = r.DB.Updates(&old).Error
-	}
+	payload.InterfaceId = id
+	err = r.DB.Save(&payload).Error
 
 	return
 }

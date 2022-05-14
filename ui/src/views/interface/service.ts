@@ -1,10 +1,11 @@
 import request from '@/utils/request';
-import {Interface} from "@/views/interface/data";
+import {Interface, OAuth20} from "@/views/interface/data";
 import {isInArray} from "@/utils/array";
 import {CheckpointOperator} from "@/views/interface/consts";
 
 const apiPath = 'interfaces';
 const apiVocation = 'invocations';
+const apiAuth = 'auth';
 const apiEnvironment = 'environments'
 const apiEnvironmentVar = `${apiEnvironment}/vars`
 
@@ -95,6 +96,15 @@ export async function removeInvocation(id: number): Promise<any> {
     return request({
         url: `/${apiVocation}/${id}`,
         method: 'DELETE',
+    });
+}
+
+// auth
+export async function genOAuth2AccessToken(oauth: OAuth20): Promise<any> {
+    return request({
+        url: `/${apiAuth}/genOAuth2AccessToken`,
+        method: 'post',
+        data: oauth,
     });
 }
 

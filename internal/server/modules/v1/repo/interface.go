@@ -213,7 +213,7 @@ func (r *InterfaceRepo) UpdateOAuth20(id uint, payload model.InterfaceOAuth20) (
 		err = r.DB.Create(&payload).Error
 	} else {
 		payload.ID = old.ID
-		err = r.DB.Updates(&old).Error
+		err = r.DB.Updates(&payload).Error
 	}
 
 	return

@@ -159,7 +159,7 @@ import {useStore} from "vuex";
 import {ArrowRightOutlined, DeleteOutlined, PlusOutlined, QuestionCircleOutlined} from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import {Interface} from "@/views/interface/data";
-import {getEnumSelectItems} from "@/views/interface/service";
+import {genOAuth2AccessToken, getEnumSelectItems} from "@/views/interface/service";
 import {AuthorizationTypes, OAuth2ClientAuthenticationWay, OAuth2GrantTypes} from "@/views/interface/consts";
 
 const {t} = useI18n();
@@ -172,7 +172,11 @@ const oauth2ClientAuthWays = getEnumSelectItems(OAuth2ClientAuthenticationWay)
 const accessTokens = ref([])
 
 const generateToken = () => {
-  console.log('generateToken')
+  console.log('generateToken', interfaceData.value.oauth20)
+
+  genOAuth2AccessToken(interfaceData.value.oauth20).then((result) => {
+    console.log(result)
+  })
 }
 
 </script>

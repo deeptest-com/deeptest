@@ -48,14 +48,14 @@ export enum AuthorizationTypes {
 }
 
 export enum OAuth2GrantTypes {
-    'AuthorizationCode' = 'Authorization Code',
-    'AuthorizationCodeWithPKCE' = 'Authorization Code (With PKCE)',
-    'Implicit GrantType' = 'Implicit',
-    'PasswordCredential' = 'Password Credential',
-    'ClientCredential' = 'Client Credential',
+    'authorizationCode' = 'Authorization Code',
+    'authorizationCodeWithPKCE' = 'Authorization Code (With PKCE)',
+    'implicit' = 'Implicit',
+    'passwordCredential' = 'Password Credential',
+    'clientCredential' = 'Client Credential',
 }
 
 export enum OAuth2ClientAuthenticationWay {
-    'SendAsBasicAuthHeader' = 'Send as Basic Auth header',
-    'SendClientCredentialsInBody' = 'Send client credentials in body',
+    'sendAsBasicAuthHeader' = 'Send as Basic Auth header',
+    'sendClientCredentialsInBody' = 'Send client credentials in body',
 }

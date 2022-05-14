@@ -87,10 +87,14 @@ func (s *InterfaceService) Get(interfId int) (interf model.Interface, err error)
 
 		interf.Params, _ = s.InterfaceRepo.ListParams(uint(interfId))
 		interf.Headers, _ = s.InterfaceRepo.ListHeaders(uint(interfId))
+
+		interf.BasicAuth, _ = s.InterfaceRepo.GetBasicAuth(uint(interfId))
+		interf.BearerToken, _ = s.InterfaceRepo.GetBearerToken(uint(interfId))
+		interf.OAuth20, _ = s.InterfaceRepo.GetOAuth20(uint(interfId))
+		interf.ApiKey, _ = s.InterfaceRepo.GetApiKey(uint(interfId))
 	}
 
 	interf.Params = append(interf.Params, model.InterfaceParam{Name: "", Value: ""})
-
 	interf.Headers = append(interf.Headers, model.InterfaceHeader{Name: "", Value: ""})
 
 	return

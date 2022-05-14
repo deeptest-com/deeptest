@@ -110,11 +110,15 @@ export default defineComponent({
 
 <style lang="less">
 .right-tab {
+  height: 100%;
+
   .ant-tabs-left-content {
     padding-left: 0px;
   }
   .ant-tabs-right-content {
     padding-right: 0px;
+    height: 100%;
+    overflow-y: auto;
   }
   .ant-tabs-nav-scroll {
     text-align: center;
@@ -177,6 +181,7 @@ export default defineComponent({
 
   .design-right {
     width: 260px;
+    height: 100%;
     border-left: solid 1px #e6e9ec;
   }
 

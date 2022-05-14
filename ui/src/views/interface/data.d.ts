@@ -13,7 +13,7 @@ export interface Interface {
     authorizationType: string
     basicAuth: BasicAuth;
     bearerToken: BearerToken;
-    oAuth20: OAuth20;
+    oauth20: OAuth20;
     apiKey: ApiKey;
 
     extractors: Extractor[];

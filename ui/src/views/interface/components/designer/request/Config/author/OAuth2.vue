@@ -7,7 +7,7 @@
         </a-col>
         <a-col flex="1">
           <a-select
-              v-model:value="interfaceData.oAuth20.accessToken"
+              v-model:value="interfaceData.oauth20.accessToken"
               :options="accessTokens"
               size="small"
               :bordered="false"
@@ -19,7 +19,7 @@
       <a-row class="param">
         <a-col flex="160px"></a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oAuth20.accessToken" class="dp-bg-input-transparent" />
+          <a-input v-model:value="interfaceData.oauth20.accessToken" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
@@ -28,7 +28,7 @@
           <span class="label">Header Prefix</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oAuth20.headerPrefix" class="dp-bg-input-transparent" />
+          <a-input v-model:value="interfaceData.oauth20.headerPrefix" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
@@ -36,7 +36,7 @@
 
       <a-row class="param">
         <a-col flex="1" class="dp-right">
-          <a-button size="small" class="dp-bg-light">
+          <a-button @click="generateToken" type="link" size="small">
             <span class="curr-method">生成新令牌</span>
           </a-button>
         </a-col>
@@ -47,7 +47,7 @@
           <span class="label">Token Name</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oAuth20.name" class="dp-bg-input-transparent" />
+          <a-input v-model:value="interfaceData.oauth20.name" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
@@ -57,7 +57,7 @@
         </a-col>
         <a-col flex="1">
           <a-select
-              v-model:value="interfaceData.oAuth20.grantType"
+              v-model:value="interfaceData.oauth20.grantType"
               :options="oauth2GrantTypes"
               size="small"
               :bordered="false"
@@ -72,7 +72,7 @@
           <span class="label">Callback URL</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oAuth20.callbackUrl" class="dp-bg-input-transparent" />
+          <a-input v-model:value="interfaceData.oauth20.callbackUrl" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
@@ -81,7 +81,7 @@
           <span class="label">Authentication URL</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oAuth20.authURL" class="dp-bg-input-transparent" />
+          <a-input v-model:value="interfaceData.oauth20.authURL" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
       <a-row class="param">
@@ -89,7 +89,7 @@
           <span class="label">Access Token URL</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oAuth20.accessTokenURL" class="dp-bg-input-transparent" />
+          <a-input v-model:value="interfaceData.oauth20.accessTokenURL" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
@@ -98,7 +98,7 @@
           <span class="label">Client ID</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oAuth20.clientID" class="dp-bg-input-transparent" />
+          <a-input v-model:value="interfaceData.oauth20.clientID" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
       <a-row class="param">
@@ -106,7 +106,7 @@
           <span class="label">Client Secret</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oAuth20.clientSecret" class="dp-bg-input-transparent" />
+          <a-input v-model:value="interfaceData.oauth20.clientSecret" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
@@ -115,7 +115,7 @@
           <span class="label">Scope</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.basicAuth.scope" class="dp-bg-input-transparent" />
+          <a-input v-model:value="interfaceData.oauth20.scope" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
@@ -124,17 +124,17 @@
           <span class="label">State</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.basicAuth.state" class="dp-bg-input-transparent" />
+          <a-input v-model:value="interfaceData.oauth20.state" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
       <a-row class="param">
         <a-col flex="160px">
-          <span class="label">Grant Type</span>
+          <span class="label">Client Authentication</span>
         </a-col>
         <a-col flex="1">
           <a-select
-              v-model:value="interfaceData.oAuth20.clientAuthentication"
+              v-model:value="interfaceData.oauth20.clientAuthentication"
               :options="oauth2ClientAuthWays"
               size="small"
               :bordered="false"
@@ -152,7 +152,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, defineComponent, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
@@ -162,29 +162,18 @@ import {Interface} from "@/views/interface/data";
 import {getEnumSelectItems} from "@/views/interface/service";
 import {AuthorizationTypes, OAuth2ClientAuthenticationWay, OAuth2GrantTypes} from "@/views/interface/consts";
 
-export default defineComponent({
-  name: 'RequestAuthorOAuth2',
-  components: {
-    ArrowRightOutlined,
-  },
-  setup(props) {
-    const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const {t} = useI18n();
+const store = useStore<{ Interface: StateType }>();
+const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
-    const oauth2GrantTypes = getEnumSelectItems(OAuth2GrantTypes)
-    const oauth2ClientAuthWays = getEnumSelectItems(OAuth2ClientAuthenticationWay)
+const oauth2GrantTypes = getEnumSelectItems(OAuth2GrantTypes)
+const oauth2ClientAuthWays = getEnumSelectItems(OAuth2ClientAuthenticationWay)
 
-    const accessTokens = ref([])
+const accessTokens = ref([])
 
-    return {
-      interfaceData,
-      oauth2GrantTypes,
-      oauth2ClientAuthWays,
-      accessTokens,
-    }
-  }
-})
+const generateToken = () => {
+  console.log('generateToken')
+}
 
 </script>
 

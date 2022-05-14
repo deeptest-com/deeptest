@@ -26,7 +26,7 @@ type OAuth20 struct {
 	HeaderPrefix string `json:"headerPrefix" gorm:"default:Bearer"`
 
 	Name           string           `json:"name"`
-	GrantType      consts.GrantType `json:"grantType" gorm:"default:AuthorizationCode"`
+	GrantType      consts.GrantType `json:"grantType" gorm:"default:authorizationCode"`
 	CallbackUrl    string           `json:"callbackUrl"`
 	AuthURL        string           `json:"authURL"`
 	AccessTokenURL string           `json:"accessTokenURL"`

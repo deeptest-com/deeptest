@@ -100,6 +100,26 @@ func (r *InterfaceRepo) Update(interf model.Interface) (err error) {
 			return err
 		}
 
+		err = r.UpdateBasicAuth(interf.ID, interf.BasicAuth)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateBearerToken(interf.ID, interf.BearerToken)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateOAuth20(interf.ID, interf.OAuth20)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateApiKey(interf.ID, interf.ApiKey)
+		if err != nil {
+			return err
+		}
+
 		return err
 	})
 
@@ -157,6 +177,62 @@ func (r *InterfaceRepo) UpdateHeaders(id uint, headers []model.InterfaceHeader) 
 	return
 }
 
+func (r *InterfaceRepo) UpdateBasicAuth(id uint, payload model.InterfaceBasicAuth) (err error) {
+	old, _ := r.GetBasicAuth(id)
+
+	if old.ID == 0 {
+		payload.InterfaceId = id
+		err = r.DB.Create(&payload).Error
+	} else {
+		payload.ID = old.ID
+		err = r.DB.Updates(&old).Error
+	}
+
+	return
+}
+
+func (r *InterfaceRepo) UpdateBearerToken(id uint, payload model.InterfaceBearerToken) (err error) {
+	old, _ := r.GetBearerToken(id)
+
+	if old.ID == 0 {
+		payload.InterfaceId = id
+		err = r.DB.Create(&payload).Error
+	} else {
+		payload.ID = old.ID
+		err = r.DB.Updates(&old).Error
+	}
+
+	return
+}
+
+func (r *InterfaceRepo) UpdateOAuth20(id uint, payload model.InterfaceOAuth20) (err error) {
+	old, _ := r.GetOAuth20(id)
+
+	if old.ID == 0 {
+		payload.InterfaceId = id
+		err = r.DB.Create(&payload).Error
+	} else {
+		payload.ID = old.ID
+		err = r.DB.Updates(&old).Error
+	}
+
+	return
+}
+
+func (r *InterfaceRepo) UpdateApiKey(id uint, payload model.InterfaceApiKey) (err error) {
+	old, _ := r.GetApiKey(id)
+
+	if old.ID == 0 {
+		payload.InterfaceId = id
+		err = r.DB.Create(&payload).Error
+	} else {
+		payload.ID = old.ID
+		err = r.DB.Updates(&old).Error
+	}
+
+	return
+}
+
 func (r *InterfaceRepo) RemoveParams(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
@@ -168,6 +244,34 @@ func (r *InterfaceRepo) RemoveHeaders(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
 		Delete(&model.InterfaceHeader{}, "").Error
+
+	return
+}
+func (r *InterfaceRepo) GetBasicAuth(id uint) (po model.InterfaceBasicAuth, err error) {
+	err = r.DB.
+		Where("interface_id = ?", id).
+		First(&po).Error
+
+	return
+}
+func (r *InterfaceRepo) GetBearerToken(id uint) (po model.InterfaceBearerToken, err error) {
+	err = r.DB.
+		Where("interface_id = ?", id).
+		First(&po).Error
+
+	return
+}
+func (r *InterfaceRepo) GetOAuth20(id uint) (po model.InterfaceOAuth20, err error) {
+	err = r.DB.
+		Where("interface_id = ?", id).
+		First(&po).Error
+
+	return
+}
+func (r *InterfaceRepo) GetApiKey(id uint) (po model.InterfaceApiKey, err error) {
+	err = r.DB.
+		Where("interface_id = ?", id).
+		First(&po).Error
 
 	return
 }

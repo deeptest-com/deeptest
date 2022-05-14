@@ -2,7 +2,6 @@ package model
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/comm/consts"
-	"github.com/aaronchen2k/deeptest/internal/comm/domain"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/kataras/iris/v12"
 )
@@ -33,10 +32,10 @@ type Interface struct {
 	PreRequestScript  string                 `gorm:"default:''" json:"preRequestScript"`
 	ValidationScript  string                 `gorm:"default:''" json:"validationScript"`
 
-	BasicAuth   domain.BasicAuth   `gorm:"-" json:"basicAuth"`
-	BearerToken domain.BearerToken `gorm:"-" json:"bearerToken"`
-	OAuth20     domain.OAuth20     `gorm:"-" json:"oAuth20"`
-	ApiKey      domain.ApiKey      `gorm:"-" json:"apiKey"`
+	BasicAuth   InterfaceBasicAuth   `gorm:"-" json:"basicAuth"`
+	BearerToken InterfaceBearerToken `gorm:"-" json:"bearerToken"`
+	OAuth20     InterfaceOAuth20     `gorm:"-" json:"oauth20"`
+	ApiKey      InterfaceApiKey      `gorm:"-" json:"apiKey"`
 
 	EnvironmentId uint `json:"environmentId"`
 
@@ -68,6 +67,69 @@ type InterfaceHeader struct {
 
 func (InterfaceHeader) TableName() string {
 	return "biz_interface_header"
+}
+
+type InterfaceBasicAuth struct {
+	BaseModel
+
+	Username string `json:"username"`
+	Password string `json:"password"`
+
+	InterfaceId uint `json:"interfaceId"`
+}
+
+func (InterfaceBasicAuth) TableName() string {
+	return "biz_interface_basic_auth"
+}
+
+type InterfaceBearerToken struct {
+	BaseModel
+
+	Token       string `json:"token"`
+	InterfaceId uint   `json:"interfaceId"`
+}
+
+func (InterfaceBearerToken) TableName() string {
+	return "biz_interface_bearer_token"
+}
+
+type InterfaceOAuth20 struct {
+	BaseModel
+
+	AccessToken  string `json:"accessToken"`
+	HeaderPrefix string `json:"headerPrefix" gorm:"default:Bearer"`
+
+	Name           string           `json:"name"`
+	GrantType      consts.GrantType `json:"grantType" gorm:"default:authorizationCode"`
+	CallbackUrl    string           `json:"callbackUrl"`
+	AuthURL        string           `json:"authURL"`
+	AccessTokenURL string           `json:"accessTokenURL"`
+	ClientID       string           `json:"clientID"`
+	ClientSecret   string           `json:"clientSecret"`
+	Scope          string           `json:"scope"`
+	State          string           `json:"state"`
+
+	ClientAuthentication consts.ClientAuthenticationWay `json:"clientAuthentication" gorm:"default:sendAsBasicAuthHeader"`
+
+	InterfaceId uint `json:"interfaceId"`
+}
+
+func (InterfaceOAuth20) TableName() string {
+	return "biz_interface_oauth20"
+}
+
+type InterfaceApiKey struct {
+	BaseModel
+
+	Key          string `json:"key"`
+	Value        string `json:"value"`
+	TransferMode string `json:"transferMode"`
+
+	InterfaceId uint `json:"interfaceId"`
+}
+
+func (InterfaceApiKey) TableName() string {
+	return "biz_interface_apikey"
 }
 
 type InterfaceExtractor struct {

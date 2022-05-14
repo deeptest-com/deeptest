@@ -21,7 +21,7 @@ type InvocationRequest struct {
 
 	BasicAuth   domain.BasicAuth   `gorm:"-" json:"basicAuth"`
 	BearerToken domain.BearerToken `gorm:"-" json:"bearerToken"`
-	OAuth20     domain.OAuth20     `gorm:"-" json:"oAuth20"`
+	OAuth20     domain.OAuth20     `gorm:"-" json:"oauth20"`
 	ApiKey      domain.ApiKey      `gorm:"-" json:"apiKey"`
 }
 

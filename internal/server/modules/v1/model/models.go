@@ -21,6 +21,10 @@ var (
 		&Interface{},
 		&InterfaceParam{},
 		&InterfaceHeader{},
+		&InterfaceBasicAuth{},
+		&InterfaceBearerToken{},
+		&InterfaceOAuth20{},
+		&InterfaceApiKey{},
 		&InterfaceExtractor{},
 		&InterfaceCheckpoint{},
 

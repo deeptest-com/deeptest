@@ -68,6 +68,7 @@ func gets(req serverDomain.InvocationRequest, method consts.HttpMethod, readResp
 
 	reqUrl := req.Url
 	reqParams := req.Params
+	reqHeaders := req.Headers
 
 	client := &http.Client{}
 
@@ -92,6 +93,10 @@ func gets(req serverDomain.InvocationRequest, method consts.HttpMethod, readResp
 		queryParams.Add(param.Name, param.Value)
 	}
 	request.URL.RawQuery = queryParams.Encode()
+
+	for _, header := range reqHeaders {
+		request.Header.Set(header.Name, header.Value)
+	}
 
 	request.Header.Set("Origin", "DEEPTEST")
 	addAuthorInfo(req, request)

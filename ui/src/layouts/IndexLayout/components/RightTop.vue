@@ -15,11 +15,12 @@
             <div class="indexlayout-top-menu">
             </div>
             <div class="indexlayout-top-menu-right">
-                <right-top-project />
-                <RightTopSettings></RightTopSettings>
+                <RightTopProject />
+                <RightTopSettings />
             </div>
         </div>
 
+        <RightTopWebsocket />
     </div>
 </template>
 <script lang="ts">
@@ -29,6 +30,7 @@ import { BreadcrumbType, RoutesDataItem } from '@/utils/routes';
 import { MenuFoldOutlined, MenuUnfoldOutlined, EnvironmentOutlined } from '@ant-design/icons-vue';
 import RightTopProject from './RightTopProject.vue';
 import RightTopSettings from './RightTopSettings.vue';
+import RightTopWebsocket from './RightTopWebsocket.vue';
 import useTopMenuWidth from "../composables/useTopMenuWidth";
 
 interface RightTopSetupData {
@@ -43,6 +45,7 @@ export default defineComponent({
       MenuFoldOutlined, MenuUnfoldOutlined,
       RightTopProject,
       RightTopSettings,
+      RightTopWebsocket,
     },
     props: {
       collapsed: {

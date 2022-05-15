@@ -153,7 +153,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineComponent, ref} from "vue";
+import {computed, defineComponent, onBeforeUnmount, onMounted, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {ArrowRightOutlined, DeleteOutlined, PlusOutlined, QuestionCircleOutlined} from '@ant-design/icons-vue';
@@ -161,6 +161,9 @@ import {StateType} from "@/views/interface/store";
 import {Interface} from "@/views/interface/data";
 import {genOAuth2AccessToken, getEnumSelectItems} from "@/views/interface/service";
 import {AuthorizationTypes, OAuth2ClientAuthenticationWay, OAuth2GrantTypes} from "@/views/interface/consts";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
+import {WsMsg} from "@/types/data";
 
 const {t} = useI18n();
 const store = useStore<{ Interface: StateType }>();
@@ -180,6 +183,21 @@ const generateToken = () => {
       window.open(result.data.url, '_blank');
     }
   })
+}
+
+onMounted(() => {
+  console.log('onMounted')
+  bus.on(settings.eventWebSocketMsg, OnWebSocketMsg);
+})
+onBeforeUnmount( () => {
+  bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
+})
+
+const OnWebSocketMsg = (data: any) => {
+  console.log('OnWebSocketMsg in OAuth2', data.msg)
+
+  const jsn = JSON.parse(data.msg) as WsMsg
+  console.log(jsn)
 }
 
 </script>

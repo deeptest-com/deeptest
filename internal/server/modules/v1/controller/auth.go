@@ -2,13 +2,15 @@ package controller
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
 	"github.com/kataras/iris/v12"
 )
 
 type AuthCtrl struct {
-	AuthService *service.AuthService `inject:""`
+	AuthService      *service.AuthService      `inject:""`
+	WebSocketService *service.WebSocketService `inject:""`
 	BaseCtrl
 }
 
@@ -48,6 +50,12 @@ func (c *AuthCtrl) GetOAuth2AccessToken(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
+
+	c.WebSocketService.Broadcast(
+		serverConsts.WsDefaultNameSpace,
+		serverConsts.WsDefaultRoom,
+		serverConsts.WsMsgEvent,
+		data)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }

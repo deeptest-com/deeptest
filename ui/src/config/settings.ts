@@ -45,6 +45,13 @@ export interface SettingsType {
     showRightBar: string;
     expandedKeys: string;
 
+    eventNotify,
+    eventWebSocketConnStatus: string,
+    eventWebSocketMsg: string,
+    webSocketRoom: string,
+    electronMsg: string,
+    electronMsgReplay: string,
+
     /**
      * Ajax请求头发送Token 的 Key值
      */
@@ -78,6 +85,13 @@ const settings: SettingsType = {
     settings: 'settings',
     showRightBar: 'showRightBar',
     expandedKeys: 'deeptest-expandedKeys',
+
+    eventNotify: 'eventNotify',
+    eventWebSocketConnStatus: 'eventWebSocketStatus',
+    eventWebSocketMsg: 'eventWebSocketMsg',
+    webSocketRoom: 'webSocketRoom',
+    electronMsg: 'electronMsg',
+    electronMsgReplay: 'electronMsgReplay',
 
     // ajaxHeadersTokenKey: 'x-token',
     ajaxHeadersTokenKey: 'Authorization',

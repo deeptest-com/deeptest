@@ -1,27 +1,24 @@
 import * as neffos from 'neffos.js';
-import { getCurrentInstance } from 'vue';
 import {NSConn} from "neffos.js";
 
-const WebSocketPath = 'api/v1/ws';
-export const WebSocketBaseDev = 'ws://127.0.0.1:8085/';
-export type WsObject = {
-  conn?: any;
-};
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
+
 export type WsEvent = {
   room: string;
   code: string;
   data: any;
 };
 
-export const WsEventName = 'ws_event'
 export const WsDefaultNameSpace = 'default'
-// export const WsDefaultRoom = 'default'
+export const WsDefaultRoom = 'default'
 
 export class WebSocket {
   static conn: NSConn
 
-  static async init(proxy: any) {
+  static async init(): Promise<any> {
     console.log(`init websocket`)
+
     if (!WebSocket.conn) {
       try {
         const conn = await neffos.dial(getWebSocketApi(), {
@@ -33,17 +30,21 @@ export class WebSocket {
 
               console.log('connected to namespace: ' + msg.Namespace)
               WebSocket.conn = nsConn
+              bus.emit(settings.eventWebSocketConnStatus, {msg: '{"conn": "success"}'});
             },
+
             _OnNamespaceDisconnect: (_nsConn, msg) => {
               console.log('disconnected from namespace: ' + msg.Namespace)
             },
+
             OnVisit: (_nsConn, msg) => {
               console.log('OnVisit', msg)
             },
+
             // implement in webpage
             OnChat: (_nsConn, msg) => {
               console.log('OnChat in util cls', msg, msg.Room + ': response ' + msg.Body)
-              proxy.$pub(WsEventName, {room: msg.Room, msg: msg.Body});
+              bus.emit(settings.eventWebSocketMsg, {room: msg.Room, msg: msg.Body});
             }
           }
         })
@@ -51,49 +52,44 @@ export class WebSocket {
         await conn.connect(WsDefaultNameSpace)
 
       } catch (err) {
-        console.log(err)
+        console.log('failed connect to websocket', err)
+        bus.emit(settings.eventWebSocketConnStatus, {msg: '{"conn": "fail"}'});
       }
     }
     return WebSocket
   }
 
-  static sentMsg(roomName, msg) {
-    console.log(`send msg to room ${roomName}`)
+  static joinRoomAndSend(roomName: string, msg: string): void {
+    if (!WebSocket.conn) return
 
-    if (!WebSocket.conn.room(roomName)) {
-      WebSocket.conn.leaveAll()
-
-      WebSocket.conn.joinRoom(roomName).then((room) => {
-
-        console.log(`success to join room ${roomName}`)
-        WebSocket.conn.room(roomName).emit('OnChat', msg)
-
-      }).catch(err => {
-        console.log(`fail to join room ${roomName}`, err)
-      })
-    } else {
+    WebSocket.conn.joinRoom(roomName).then((room) => {
+      console.log(`success to join room "${roomName}"`)
       WebSocket.conn.room(roomName).emit('OnChat', msg)
-    }
+
+    }).catch(err => {
+      console.log(`fail to join room ${roomName}`, err)
+      bus.emit(settings.eventWebSocketConnStatus, {msg: '{"conn": "fail"}'});
+    })
+  }
+
+  static sentMsg(roomName: string, msg: string): void {
+    console.log(`send msg to room "${roomName}"`)
+    if (!WebSocket.conn) return
+
+    WebSocket.conn.leaveAll().then(() =>
+        this.joinRoomAndSend(roomName, msg)
+    )
   }
 }
 
-export function getWebSocketApi () {
+export function getWebSocketApi (): string {
   const isProd = process.env.NODE_ENV === 'production'
+  const loc = window.location
+  console.log(`${isProd}, ${loc.toString()}`)
 
-  let wsUri = ''
-  if (!isProd) {
-    wsUri = WebSocketBaseDev
-  } else {
-    const loc = window.location
+  const apiHost = process.env.VUE_APP_APIHOST ? process.env.VUE_APP_APIHOST : ''
+  const url = apiHost.replace('http', 'ws') + '/ws'
+  console.log(`websocket url = ${url}`)
 
-    if (loc.protocol === 'https:') {
-      wsUri = 'wss:'
-    } else {
-      wsUri = 'ws:'
-    }
-    wsUri += '//' + loc.host
-    wsUri += loc.pathname
-  }
-
-  return wsUri + WebSocketPath
+  return url
 }

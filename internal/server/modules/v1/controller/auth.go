@@ -46,16 +46,16 @@ func (c *AuthCtrl) GetOAuth2AccessToken(ctx iris.Context) {
 	code := ctx.URLParam("code")
 
 	data, err := c.AuthService.GenOAuth2AccessToken(accessTokenURL, clientId, clientSecret, code)
+
+	c.WebSocketService.SendMsg(
+		serverConsts.WsDefaultNameSpace,
+		serverConsts.WsDefaultRoom,
+		data)
+
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-
-	c.WebSocketService.Broadcast(
-		serverConsts.WsDefaultNameSpace,
-		serverConsts.WsDefaultRoom,
-		serverConsts.WsMsgEvent,
-		data)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }

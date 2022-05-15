@@ -7,13 +7,16 @@ import (
 	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
+	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/core/module"
 	serverZap "github.com/aaronchen2k/deeptest/internal/server/core/zap"
 	myWs "github.com/aaronchen2k/deeptest/internal/server/modules/v1/controller"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
+	"github.com/facebookgo/inject"
 	gorillaWs "github.com/gorilla/websocket"
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/kataras/neffos/gorilla"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"path/filepath"
 	"sync"
@@ -83,12 +86,15 @@ func Init() *WebServer {
 	mvc.New(app)
 
 	// init websocket
+	websocketCtrl := myWs.NewWsCtrl()
+	injectWsModule(websocketCtrl)
+
 	websocketAPI := app.Party(serverConsts.WsPath)
 	m := mvc.New(websocketAPI)
 	m.Register(
 		&service.PrefixedLogger{Prefix: ""},
 	)
-	m.HandleWebsocket(myWs.NewWsCtrl())
+	m.HandleWebsocket(websocketCtrl)
 	websocketServer := websocket.New(
 		gorilla.Upgrader(gorillaWs.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}), m)
 	websocketAPI.Get("/", websocket.Handler(websocketServer))
@@ -192,4 +198,20 @@ func (webServer *WebServer) Run() {
 		iris.WithTimeFormat(webServer.timeFormat),
 	)
 	<-webServer.idleConnsClosed
+}
+
+func injectWsModule(websocketCtrl *myWs.WsCtrl) {
+	var g inject.Graph
+	g.Logger = logrus.StandardLogger()
+
+	if err := g.Provide(
+		&inject.Object{Value: dao.GetDB()},
+		&inject.Object{Value: websocketCtrl},
+	); err != nil {
+		logrus.Fatalf("provide usecase objects to the Graph: %v", err)
+	}
+	err := g.Populate()
+	if err != nil {
+		logrus.Fatalf("populate the incomplete Objects: %v", err)
+	}
 }

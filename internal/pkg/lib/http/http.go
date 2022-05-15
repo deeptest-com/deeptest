@@ -27,11 +27,11 @@ func Get(url string) (ret []byte, err error) {
 	}
 
 	resp, err := client.Do(req)
-	defer resp.Body.Close()
 	if err != nil {
 		_logUtils.Infof(color.RedString("get request failed, error: %s.", err.Error()))
 		return
 	}
+	defer resp.Body.Close()
 
 	if !IsSuccessCode(resp.StatusCode) {
 		_logUtils.Infof(color.RedString("read response failed, StatusCode: %d.", resp.StatusCode))

@@ -8,8 +8,7 @@ const (
 
 	WsDefaultNameSpace = "default"
 	WsDefaultRoom      = "default"
-	WsEvent            = "OnChat"
-	WsMsgEvent         = "eventWebSocketMsg"
+	WsChatEvent        = "OnChat"
 
 	ApiPath = "/api/v1"
 	WsPath  = ApiPath + "/ws"

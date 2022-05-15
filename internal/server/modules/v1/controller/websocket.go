@@ -3,7 +3,6 @@ package controller
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
-	shellUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/shell"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
 	"github.com/kataras/iris/v12"
@@ -37,7 +36,7 @@ func (c *WsCtrl) OnNamespaceConnected(msg websocket.Message) error {
 	_logUtils.Infof("WebSocket OnNamespaceConnected: ConnID=%s, Room=%s", c.Conn.ID(), msg.Room)
 
 	data := map[string]string{"msg": "from server: connected to websocket"}
-	c.WebSocketService.Broadcast(msg.Namespace, "", "OnVisit", data)
+	c.WebSocketService.Broadcast(msg.Namespace, msg.Room, "OnVisit", data)
 	return nil
 }
 
@@ -48,7 +47,7 @@ func (c *WsCtrl) OnNamespaceDisconnect(msg websocket.Message) error {
 	_logUtils.Infof("WebSocket OnNamespaceDisconnect: ConnID=%s", c.Conn.ID())
 
 	data := map[string]string{"msg": "from server: disconnected to websocket"}
-	c.WebSocketService.Broadcast(msg.Namespace, "", "OnVisit", data)
+	c.WebSocketService.Broadcast(msg.Namespace, msg.Room, "OnVisit", data)
 	return nil
 }
 
@@ -58,36 +57,12 @@ func (c *WsCtrl) OnChat(msg websocket.Message) (err error) {
 
 	_logUtils.Infof("WebSocket OnChat: remote address=%s, room=%s, msg=%s", ctx.RemoteAddr(), msg.Room, string(msg.Body))
 
-	if ch != nil {
-		ch <- 1
-		<-ch
-		ch = nil
-
-		c.SendMsgByKey(result, "please wait previous request is in process", msg)
-	} else {
-		ch = make(chan int)
-		go shellUtils.ExeShellCallback(ch, "~/loop.sh", "", c.SendMsg, msg)
-	}
-
 	return
-}
-
-func (c *WsCtrl) SendMsg(value string, msg websocket.Message) {
-	c.SendMsgByKey("", value, msg)
-}
-func (c *WsCtrl) SendMsgByKey(key, value string, msg websocket.Message) {
-	if key == "" {
-		key = outPut
-	}
-	data := map[string]string{key: value}
-
-	_logUtils.Infof("WebSocket SendMsg: room=%s, msg=%s", msg.Room, string(msg.Body))
-	c.WebSocketService.Broadcast(msg.Namespace, msg.Room, msg.Event, data)
 }
 
 func (c *WsCtrl) TestWs(ctx iris.Context) {
 	data := map[string]interface{}{"action": "taskUpdate", "taskId": 1, "msg": ""}
-	c.WebSocketService.Broadcast(serverConsts.WsDefaultNameSpace, serverConsts.WsDefaultRoom, serverConsts.WsEvent, data)
+	c.WebSocketService.Broadcast(serverConsts.WsDefaultNameSpace, serverConsts.WsDefaultRoom, serverConsts.WsChatEvent, data)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
 }

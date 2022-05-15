@@ -241,7 +241,6 @@ export const getEnumSelectItems = (enumDef) => {
     const arr : any[] = []
 
     for (const item in enumDef) {
-        console.log('======' , item, enumDef[item])
         arr.push({label: enumDef[item], value: item})
     }
 

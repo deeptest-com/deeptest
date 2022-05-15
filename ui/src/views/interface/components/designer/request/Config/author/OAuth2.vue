@@ -198,6 +198,13 @@ const OnWebSocketMsg = (data: any) => {
 
   const jsn = JSON.parse(data.msg) as WsMsg
   console.log(jsn)
+  if (jsn.access_token) {
+    interfaceData.value.oauth20.accessToken = jsn.access_token
+
+    if (jsn.token_type === 'bearer') {
+      interfaceData.value.oauth20.headerPrefix = 'Bearer'
+    }
+  }
 }
 
 </script>

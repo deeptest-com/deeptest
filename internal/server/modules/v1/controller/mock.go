@@ -15,6 +15,10 @@ type MockCtrl struct {
 	BaseCtrl
 }
 
+func (c *MockCtrl) OAuth2Callback(ctx iris.Context) {
+
+}
+
 func (c *MockCtrl) Get(ctx iris.Context) {
 	respType := ctx.URLParam("respType")
 

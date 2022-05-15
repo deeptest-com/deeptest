@@ -24,6 +24,12 @@
           <div>TokenType: {{tokenType}}</div>
         </template>
 
+        <template v-if="error">
+          <div>Error: {{error}}</div>
+          <div>ErrorDescription: {{errorDescription}}</div>
+          <div>ErrorUri: {{errorUri}}</div>
+        </template>
+
       </div>
     </a-card>
   </div>
@@ -45,6 +51,10 @@ console.log(accessTokenURL, clientId, clientSecret, code)
 const accessToken = ref('')
 const tokenType = ref('')
 
+const error = ref('')
+const errorDescription = ref('')
+const errorUri = ref('')
+
 const getAccessToken = () => {
   console.log('getAccessToken')
 
@@ -54,6 +64,10 @@ const getAccessToken = () => {
 
         accessToken.value = jsn.data.access_token
         tokenType.value = jsn.data.token_type
+
+        error.value = jsn.data.error
+        errorDescription.value = jsn.data.error_description
+        errorUri.value = jsn.data.error_uri
       }
   )
 }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/comm/consts"
 	_httpUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/http"
-	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	"github.com/kataras/iris/v12"
@@ -57,7 +56,6 @@ func (s AuthService) GenOAuth2AccessToken(accessTokenURL, clientId, clientSecret
 	)
 
 	bytes, err := _httpUtils.Get(url)
-	logUtils.Infof("#v", bytes)
 
 	result = iris.Map{}
 

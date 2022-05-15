@@ -38,9 +38,7 @@ import { Props, validateInfos } from 'ant-design-vue/lib/form/useForm';
 import {message, Form, notification} from 'ant-design-vue';
 const useForm = Form.useForm;
 import {StateType} from "../store";
-import {save} from "@/views/project/service";
 import {Project} from "@/views/project/data";
-import project from "@/store/project";
 
 interface EditProjectPageSetupData {
   formRef: any
@@ -71,8 +69,8 @@ export default defineComponent({
         ],
       });
 
-      const store = useStore<{ project: StateType }>();
-      const modelRef = computed<Partial<Project>>(() => store.state.project.detailResult);
+      const store = useStore<{ Project: StateType }>();
+      const modelRef = computed<Partial<Project>>(() => store.state.Project.detailResult);
       const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
 
       const get = async (id: number): Promise<void> => {

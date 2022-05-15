@@ -80,10 +80,10 @@ export default defineComponent({
     ]);
 
     const router = useRouter();
-    const store = useStore<{ project: StateType }>();
+    const store = useStore<{ Project: StateType }>();
 
-    const list = computed<Project[]>(() => store.state.project.queryResult.list);
-    let pagination = computed<PaginationConfig>(() => store.state.project.queryResult.pagination);
+    const list = computed<Project[]>(() => store.state.Project.queryResult.list);
+    let pagination = computed<PaginationConfig>(() => store.state.Project.queryResult.pagination);
     let queryParams = reactive<QueryParams>({
       keywords: '', enabled: '1',
       page: pagination.value.current, pageSize: pagination.value.pageSize

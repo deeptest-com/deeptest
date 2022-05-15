@@ -31,20 +31,20 @@ export default defineComponent({
   components: {},
   setup(): RightTopProject {
     const userStore = useStore<{ User: UserStateType }>();
-    const projectStore = useStore<{ Project: ProjectStateType }>();
+    const projectStore = useStore<{ ProjectData: ProjectStateType }>();
 
     const message = computed<number>(() => userStore.state.User.message);
-    const projects = computed<any>(() => projectStore.state.Project.projects);
-    const currProject = computed<any>(() => projectStore.state.Project.currProject);
+    const projects = computed<any>(() => projectStore.state.ProjectData.projects);
+    const currProject = computed<any>(() => projectStore.state.ProjectData.currProject);
 
     onMounted(() => {
       userStore.dispatch("User/fetchMessage");
-      projectStore.dispatch("Project/fetchProject");
+      projectStore.dispatch("ProjectData/fetchProject");
     })
 
     const selectProject = (value): void => {
       console.log('selectProject', value)
-      projectStore.dispatch('Project/fetchProject', value);
+      projectStore.dispatch('ProjectData/fetchProject', value);
     }
 
     return {

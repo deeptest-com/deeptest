@@ -59,3 +59,21 @@ func (c *AuthCtrl) GetOAuth2AccessToken(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }
+
+// useOAuth2AccessToken
+func (c *AuthCtrl) UseOAuth2AccessToken(ctx iris.Context) {
+	token := ctx.URLParam("token")
+	tokenType := ctx.URLParam("tokenType")
+
+	data := iris.Map{
+		"token":     token,
+		"tokenType": tokenType,
+	}
+
+	c.WebSocketService.SendMsg(
+		serverConsts.WsDefaultNameSpace,
+		serverConsts.WsDefaultRoom,
+		data)
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+}

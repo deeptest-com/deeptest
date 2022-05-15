@@ -8,3 +8,13 @@ export async function getOAuth2AccessToken(params): Promise<any> {
         params
     });
 }
+
+export async function useOAuth2AccessToken(token, tokenType): Promise<any> {
+    const params = {token: token, tokenType: tokenType}
+
+    return request({
+        url: '/auth/useOAuth2AccessToken',
+        method: 'post',
+        params
+    });
+}

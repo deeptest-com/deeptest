@@ -22,6 +22,10 @@
         <template v-if="accessToken">
           <div>AccessToken: {{accessToken}}</div>
           <div>TokenType: {{tokenType}}</div>
+
+          <br />
+
+          <a-button type="primary" @click="useAccessToken">使用访问令牌</a-button>
         </template>
 
         <template v-if="error">
@@ -38,7 +42,7 @@
 <script setup lang="ts">
 import {computed, defineComponent, ref} from "vue";
 import {getUrlKey} from "@/utils/url";
-import {getOAuth2AccessToken} from "@/services/mock";
+import {getOAuth2AccessToken, useOAuth2AccessToken} from "@/services/mock";
 
 const url = window.location.href
 
@@ -70,6 +74,11 @@ const getAccessToken = () => {
         errorUri.value = jsn.data.error_uri
       }
   )
+}
+
+const useAccessToken = () => {
+  console.log('useOAuth2AccessToken')
+  useOAuth2AccessToken(accessToken.value, tokenType.value)
 }
 
 const onMounted = () => {

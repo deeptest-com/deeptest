@@ -172,6 +172,7 @@ const interfaceData = computed<Interface>(() => store.state.Interface.interfaceD
 const oauth2GrantTypes = getEnumSelectItems(OAuth2GrantTypes)
 const oauth2ClientAuthWays = getEnumSelectItems(OAuth2ClientAuthenticationWay)
 
+// TODO: load from backend
 const accessTokens = ref([])
 
 const generateToken = () => {

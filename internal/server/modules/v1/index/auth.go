@@ -16,7 +16,8 @@ func (m *AuthModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
-		index.Post("/genOAuth2AccessToken", m.AuthCtrl.GenOAuth2AccessToken).Name = "生成OAuth认证信息"
+		index.Post("/oauth2Authorization", m.AuthCtrl.OAuth2Authorization).Name = "生成OAuth认证信息"
+		index.Post("/getOAuth2AccessToken", m.AuthCtrl.GetOAuth2AccessToken).Name = "调用认证服务生成访问令牌"
 	}
 	return module.NewModule("/auth", handler)
 }

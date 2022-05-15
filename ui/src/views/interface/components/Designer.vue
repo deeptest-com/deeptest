@@ -149,7 +149,7 @@ export default defineComponent({
     height: 100%;
 
     #top-panel {
-      height: 220px;
+      height: 360px;
       width: 100%;
       padding: 0;
     }

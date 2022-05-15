@@ -176,6 +176,9 @@ const generateToken = () => {
 
   genOAuth2AccessToken(interfaceData.value.oauth20).then((result) => {
     console.log(result)
+    if (result.code === 0) {
+      window.open(result.data.url, '_blank');
+    }
   })
 }
 

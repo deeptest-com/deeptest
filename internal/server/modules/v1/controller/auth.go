@@ -12,8 +12,8 @@ type AuthCtrl struct {
 	BaseCtrl
 }
 
-// GenOAuth2AccessToken
-func (c *AuthCtrl) GenOAuth2AccessToken(ctx iris.Context) {
+// OAuth2Authorization
+func (c *AuthCtrl) OAuth2Authorization(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
@@ -27,11 +27,27 @@ func (c *AuthCtrl) GenOAuth2AccessToken(ctx iris.Context) {
 		return
 	}
 
-	err = c.AuthService.GenOAuth2AccessToken(req)
+	data, err := c.AuthService.OAuth2Authorization(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+}
+
+// GetOAuth2AccessToken
+func (c *AuthCtrl) GetOAuth2AccessToken(ctx iris.Context) {
+	accessTokenURL := ctx.URLParam("accessTokenURL")
+	clientId := ctx.URLParam("clientId")
+	clientSecret := ctx.URLParam("clientSecret")
+	code := ctx.URLParam("code")
+
+	data, err := c.AuthService.GenOAuth2AccessToken(accessTokenURL, clientId, clientSecret, code)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }

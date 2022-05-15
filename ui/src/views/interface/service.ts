@@ -102,7 +102,7 @@ export async function removeInvocation(id: number): Promise<any> {
 // auth
 export async function genOAuth2AccessToken(oauth: OAuth20): Promise<any> {
     return request({
-        url: `/${apiAuth}/genOAuth2AccessToken`,
+        url: `/${apiAuth}/oauth2Authorization`,
         method: 'post',
         data: oauth,
     });

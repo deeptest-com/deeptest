@@ -17,8 +17,23 @@ import IndexLayout from '@/layouts/IndexLayout/index.vue';
 
 import UserLayoutRoutes from '@/layouts/UserLayout/routes';
 import UserLayout from '@/layouts/UserLayout/index.vue';
+import BlankLayout from "@/layouts/BlankLayout.vue";
 
 const routes: RoutesDataItem[] = [
+  {
+    title: 'empty',
+    path: '/mock',
+    component: BlankLayout,
+    children: [
+      {
+        title: 'mock.oauth2.callback',
+        path: 'oauth2/callback',
+        component: () => import('@/views/mock/oauth2-callback.vue'),
+        hidden: true,
+      },
+    ],
+  },
+
   {
     title: 'empty',
     path: '/',

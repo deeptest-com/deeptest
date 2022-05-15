@@ -50,19 +50,25 @@ func Debugf(str string, args ...interface{}) {
 }
 
 func PrintUnicode(str []byte) {
+	msg := ConvertUnicode(str)
+
+	Logger.Info(msg)
+	log.Print(msg)
+}
+
+func ConvertUnicode(str []byte) (msg string) {
 	var a interface{}
 
 	temp := strings.Replace(string(str), "\\\\", "\\", -1)
 
 	err := json.Unmarshal([]byte(temp), &a)
 
-	var msg string
 	if err == nil {
-		msg = fmt.Sprint(a)
+		bytes, _ := json.Marshal(a)
+		msg = string(bytes)
 	} else {
 		msg = temp
 	}
 
-	Logger.Info(msg)
-	log.Print(msg)
+	return
 }

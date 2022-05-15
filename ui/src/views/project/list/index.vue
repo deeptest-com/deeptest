@@ -1,5 +1,5 @@
 <template>
-  <div class="indexlayout-main-conent">
+  <div class="indexlayout-main-content">
     <a-card :bordered="false">
       <template #title>
         <a-button type="primary" @click="() => edit(0)">新建项目</a-button>

@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 )
 
 const (
@@ -18,7 +19,9 @@ const (
 func Get(url string) (ret []byte, err error) {
 	_logUtils.Infof("===DEBUG===  request: %s", url)
 
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: 3 * time.Second,
+	}
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -60,7 +63,9 @@ func Put(url string, data interface{}) (ret []byte, err error) {
 func PostOrPut(url string, method string, data interface{}) (ret []byte, err error) {
 	_logUtils.Infof("===DEBUG===  request: %s", url)
 
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: 3 * time.Second,
+	}
 
 	dataBytes, err := json.Marshal(data)
 	if Verbose {

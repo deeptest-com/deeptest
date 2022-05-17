@@ -68,7 +68,11 @@ func (c *AuthCtrl) UseOAuth2AccessToken(ctx iris.Context) {
 	token := ctx.URLParam("token")
 	tokenType := ctx.URLParam("tokenType")
 
-	c.AuthService.AddToken(name, token, tokenType, interfaceId, currProjectId)
+	err := c.AuthService.AddToken(name, token, tokenType, interfaceId, currProjectId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
 
 	data := iris.Map{
 		"token":     token,

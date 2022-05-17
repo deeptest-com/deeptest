@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"errors"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
@@ -18,6 +19,18 @@ func NewAuthRepo() *AuthRepo {
 }
 
 func (r *AuthRepo) CreateToken(name, token, tokenType string, projectId int) (po model.Auth2Token, err error) {
+	pos, _ := r.FindByToken(token)
+	if len(pos) > 0 {
+		err = errors.New("Token值已存在")
+		return
+	}
+
+	pos, _ = r.FindByName(token)
+	if len(pos) > 0 {
+		err = errors.New("Token名已存在")
+		return
+	}
+
 	po = model.Auth2Token{
 		Name:      name,
 		Token:     token,
@@ -43,6 +56,21 @@ func (r *AuthRepo) ListOAuth2Token(projectId int) (pos []model.Auth2Token, err e
 		Find(&pos).Error
 	return
 
+	return
+}
+
+func (r *AuthRepo) FindByToken(token string) (pos []model.Auth2Token, err error) {
+	err = r.DB.
+		Where("token=?", token).
+		Where("NOT deleted").
+		Find(&pos).Error
+	return
+}
+func (r *AuthRepo) FindByName(name string) (pos []model.Auth2Token, err error) {
+	err = r.DB.
+		Where("name=?", name).
+		Where("NOT deleted").
+		Find(&pos).Error
 	return
 }
 

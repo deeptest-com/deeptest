@@ -25,7 +25,8 @@
 
           <br />
 
-          <a-button type="primary" @click="useAccessToken">使用访问令牌</a-button>
+          <a-button type="primary" @click="useAccessToken">在接口中使用访问令牌</a-button>
+          <div v-if="useSuccess">成功设置接口访问令牌。</div>
         </template>
 
         <template v-if="error">
@@ -60,6 +61,8 @@ const code = getUrlKey('code', url)
 const accessToken = ref('')
 const tokenType = ref('')
 
+const useSuccess = ref(undefined)
+
 const error = ref('')
 const errorDescription = ref('')
 const errorUri = ref('')
@@ -84,6 +87,9 @@ const getAccessToken = () => {
 const useAccessToken = () => {
   console.log('useOAuth2AccessToken')
   useOAuth2AccessToken(name, accessToken.value, tokenType.value, interfaceId, currProject.value.id)
+      .then((result) => {
+        useSuccess.value = result.code === 0
+      })
 }
 
 const onMounted = () => {

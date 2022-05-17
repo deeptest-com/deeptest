@@ -72,6 +72,10 @@ func (s AuthService) GenOAuth2AccessToken(accessTokenURL, clientId, clientSecret
 
 func (s AuthService) AddToken(name, token, tokenType string, interfaceId, projectId int) (err error) {
 	_, err = s.AuthRepo.CreateToken(name, token, tokenType, projectId)
+	if err != nil {
+		return
+	}
+
 	err = s.InterfaceRepo.SetOAuth2AccessToken(token, interfaceId)
 
 	return

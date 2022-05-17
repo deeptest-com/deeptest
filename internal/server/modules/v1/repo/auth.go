@@ -27,8 +27,7 @@ func (r *AuthRepo) CreateToken(name, token, tokenType string, projectId int) (po
 
 	pos, _ = r.FindByName(name)
 	if len(pos) > 0 {
-		err = errors.New("Token名已存在")
-		return
+		r.RemoveToken(pos[0].ID)
 	}
 
 	po = model.Auth2Token{
@@ -74,7 +73,7 @@ func (r *AuthRepo) FindByName(name string) (pos []model.Auth2Token, err error) {
 	return
 }
 
-func (r *AuthRepo) RemoveToken(id int) (err error) {
+func (r *AuthRepo) RemoveToken(id uint) (err error) {
 	err = r.DB.Model(&model.Auth2Token{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {

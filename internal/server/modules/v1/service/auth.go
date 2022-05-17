@@ -88,7 +88,7 @@ func (s AuthService) ListOAuth2Token(projectId int) (pos []model.Auth2Token, err
 }
 
 func (s AuthService) RemoveToken(id int) (err error) {
-	err = s.AuthRepo.RemoveToken(id)
+	err = s.AuthRepo.RemoveToken(uint(id))
 
 	return
 }

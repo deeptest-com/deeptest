@@ -12,8 +12,8 @@ import (
 )
 
 type AuthService struct {
-	InvocationRepo *repo.InvocationRepo `inject:""`
-	InterfaceRepo  *repo.InterfaceRepo  `inject:""`
+	AuthRepo      *repo.AuthRepo      `inject:""`
+	InterfaceRepo *repo.InterfaceRepo `inject:""`
 }
 
 func (s AuthService) OAuth2Authorization(req model.InterfaceOAuth20) (result iris.Map, err error) {
@@ -26,9 +26,11 @@ func (s AuthService) OAuth2Authorization(req model.InterfaceOAuth20) (result iri
 
 	callbackUrl := req.CallbackUrl
 	params := map[string]interface{}{
+		"interfaceId":    req.InterfaceId,
 		"accessTokenURL": req.AccessTokenURL,
 		"clientId":       req.ClientID,
 		"clientSecret":   req.ClientSecret,
+		"name":           req.Name,
 	}
 	callbackUrl = _httpUtils.GenUrlWithParams("", params, callbackUrl)
 
@@ -64,6 +66,25 @@ func (s AuthService) GenOAuth2AccessToken(accessTokenURL, clientId, clientSecret
 		items := strings.Split(pair, "=")
 		result[items[0]] = items[1]
 	}
+
+	return
+}
+
+func (s AuthService) AddToken(name, token, tokenType string, interfaceId, projectId int) (err error) {
+	_, err = s.AuthRepo.CreateToken(name, token, tokenType, projectId)
+	err = s.InterfaceRepo.SetOAuth2AccessToken(token, interfaceId)
+
+	return
+}
+
+func (s AuthService) ListOAuth2Token(projectId int) (pos []model.Auth2Token, err error) {
+	pos, err = s.AuthRepo.ListOAuth2Token(projectId)
+
+	return
+}
+
+func (s AuthService) RemoveToken(id int) (err error) {
+	err = s.AuthRepo.RemoveToken(id)
 
 	return
 }

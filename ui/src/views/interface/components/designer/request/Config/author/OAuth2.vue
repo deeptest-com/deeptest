@@ -6,14 +6,23 @@
           <span class="label">Access Token</span>
         </a-col>
         <a-col flex="1">
-          <a-select
-              v-model:value="interfaceData.oauth20.accessToken"
-              :options="accessTokens"
-              size="small"
-              :bordered="false"
-              style="width: calc(100% - 10px)"
-          >
-          </a-select>
+
+          <a-dropdown class="dropdown-access-token-button"
+                      overlayClassName="dropdown-access-token-menu">
+            <span>
+              <span class="text">{{ accessTokenMap[interfaceData.oauth20.accessToken] }}</span>
+              <span class="action"><DownOutlined /></span>
+            </span>
+            <template #overlay>
+              <a-menu @click="selectAccessToken">
+                <a-menu-item v-for="item in accessTokens" :key="item.token">
+                  <span class="content">{{ item.name }}</span>
+                  <span @click.stop="removeToken(item.id)" class="action dp-link-primary"><DeleteOutlined /></span>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+
         </a-col>
       </a-row>
       <a-row class="param">
@@ -156,24 +165,57 @@
 import {computed, defineComponent, onBeforeUnmount, onMounted, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {ArrowRightOutlined, DeleteOutlined, PlusOutlined, QuestionCircleOutlined} from '@ant-design/icons-vue';
+import { DownOutlined, ArrowRightOutlined, DeleteOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import {Interface} from "@/views/interface/data";
-import {genOAuth2AccessToken, getEnumSelectItems} from "@/views/interface/service";
+import {genOAuth2AccessToken, getEnumSelectItems, listOAuth2Token, removeOAuth2Token} from "@/views/interface/service";
 import {AuthorizationTypes, OAuth2ClientAuthenticationWay, OAuth2GrantTypes} from "@/views/interface/consts";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import {WsMsg} from "@/types/data";
+import {StateType as ProjectStateType} from "@/store/project";
 
 const {t} = useI18n();
 const store = useStore<{ Interface: StateType }>();
 const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
+const projectStore = useStore<{ ProjectData: ProjectStateType }>();
+const currProject = computed<any>(() => projectStore.state.ProjectData.currProject);
+
 const oauth2GrantTypes = getEnumSelectItems(OAuth2GrantTypes)
 const oauth2ClientAuthWays = getEnumSelectItems(OAuth2ClientAuthenticationWay)
 
-// TODO: load from backend
+const selectAccessToken = (e) => {
+  console.log('selectAccessToken', e.key)
+  interfaceData.value.oauth20.accessToken = e.key
+}
+
+const removeToken = (id) => {
+  console.log('removeToken', id)
+  removeOAuth2Token(id).then((result) => {
+    listToken()
+  })
+}
+
+const accessTokenMap = ref({})
 const accessTokens = ref([])
+
+const listToken = () => {
+  console.log('listToken', currProject.value.id)
+
+  listOAuth2Token(currProject.value.id).then((result) => {
+    console.log(result)
+    if (result.code === 0) {
+      accessTokens.value = result.data
+
+      accessTokens.value.forEach((item, index) => {
+        accessTokenMap.value[item.token] = item.name
+      })
+    }
+  })
+}
+
+listToken()
 
 const generateToken = () => {
   console.log('generateToken', interfaceData.value.oauth20)
@@ -197,21 +239,54 @@ onBeforeUnmount( () => {
 const OnWebSocketMsg = (data: any) => {
   console.log('OnWebSocketMsg in OAuth2', data.msg)
 
+  listToken()
+
   const jsn = JSON.parse(data.msg) as WsMsg
   console.log(jsn)
   if (jsn.token) {
     interfaceData.value.oauth20.accessToken = jsn.token
-
     if (jsn.tokenType === 'bearer') {
       interfaceData.value.oauth20.headerPrefix = 'Bearer'
     }
+
+
   }
 }
 
 </script>
 
-<style lang="less" scoped>
-.author-basic-main {
+<style lang="less">
+.dropdown-access-token-button {
+  line-height: 30px;
+  display: inline-block;
+  width: 100%;
+  .text {
+    display: inline-block;
+    padding: 0 10px;
+    width: calc(100% - 30px);
+  }
+  .action {
+    display: inline-block;
+    width: 30px;
+  }
+}
+.dropdown-access-token-menu {
+  .ant-dropdown-menu {
+    .ant-dropdown-menu-item {
+      .ant-dropdown-menu-title-content {
+        display: inline-block;
+        width: 100%;
+        .content {
+          display: inline-block;
+          width: calc(100% - 30px);
+        }
+        .action {
+          display: inline-block;
+          width: 30px;
+        }
+      }
+    }
+  }
 }
 
 </style>

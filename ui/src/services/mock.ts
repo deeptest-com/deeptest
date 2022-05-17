@@ -9,8 +9,8 @@ export async function getOAuth2AccessToken(params): Promise<any> {
     });
 }
 
-export async function useOAuth2AccessToken(token, tokenType): Promise<any> {
-    const params = {token: token, tokenType: tokenType}
+export async function useOAuth2AccessToken(name, token, tokenType, interfaceId, projectId): Promise<any> {
+    const params = {name, token, tokenType, interfaceId, projectId}
 
     return request({
         url: '/auth/useOAuth2AccessToken',

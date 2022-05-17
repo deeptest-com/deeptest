@@ -191,9 +191,18 @@ func (r *InterfaceRepo) UpdateBearerToken(id uint, payload model.InterfaceBearer
 	return
 }
 
-func (r *InterfaceRepo) UpdateOAuth20(id uint, payload model.InterfaceOAuth20) (err error) {
-	payload.InterfaceId = id
+func (r *InterfaceRepo) UpdateOAuth20(interfaceId uint, payload model.InterfaceOAuth20) (err error) {
+	r.RemoveOAuth20(interfaceId)
+
+	payload.InterfaceId = interfaceId
 	err = r.DB.Save(&payload).Error
+
+	return
+}
+func (r *InterfaceRepo) RemoveOAuth20(interfaceId uint) (err error) {
+	err = r.DB.
+		Where("interface_id = ?", interfaceId).
+		Delete(&model.InterfaceOAuth20{}).Error
 
 	return
 }
@@ -303,6 +312,14 @@ func (r *InterfaceRepo) UpdateOrdAndParent(interf model.Interface) (err error) {
 	err = r.DB.Model(&interf).
 		Updates(model.Interface{Ordr: interf.Ordr, ParentId: interf.ParentId}).
 		Error
+
+	return
+}
+
+func (r *InterfaceRepo) SetOAuth2AccessToken(token string, interfaceId int) (err error) {
+	err = r.DB.Model(&model.InterfaceOAuth20{}).
+		Where("interface_id = ?", interfaceId).
+		Update("access_token", token).Error
 
 	return
 }

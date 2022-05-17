@@ -31,5 +31,7 @@ var (
 		&Invocation{},
 		&Environment{},
 		&EnvironmentVar{},
+
+		&Auth2Token{},
 	}
 )

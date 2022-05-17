@@ -20,6 +20,9 @@ func (m *AuthModule) Party() module.WebModule {
 		index.Post("/getOAuth2AccessToken", m.AuthCtrl.GetOAuth2AccessToken).Name = "调用认证服务生成访问令牌"
 		index.Post("/useOAuth2AccessToken", m.AuthCtrl.UseOAuth2AccessToken).Name = "加载访问令牌到接口"
 
+		index.Get("/listOAuth2Token", m.AuthCtrl.ListOAuth2Token).Name = "加载访问令牌到接口"
+		index.Get("/removeToken", m.AuthCtrl.RemoveToken).Name = "加载访问令牌到接口"
+
 	}
 	return module.NewModule("/auth", handler)
 }

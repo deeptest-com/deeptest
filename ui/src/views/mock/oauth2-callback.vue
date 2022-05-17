@@ -43,14 +43,19 @@
 import {computed, defineComponent, ref} from "vue";
 import {getUrlKey} from "@/utils/url";
 import {getOAuth2AccessToken, useOAuth2AccessToken} from "@/services/mock";
+import {useStore} from "vuex";
+import {StateType as ProjectStateType} from "@/store/project";
+
+const projectStore = useStore<{ ProjectData: ProjectStateType }>();
+const currProject = computed<any>(() => projectStore.state.ProjectData.currProject);
 
 const url = window.location.href
-
+const interfaceId = getUrlKey('interfaceId', url)
+const name = getUrlKey('name', url)
 const accessTokenURL = getUrlKey('accessTokenURL', url)
 const clientId = getUrlKey('clientId', url)
 const clientSecret = getUrlKey('clientSecret', url)
 const code = getUrlKey('code', url)
-console.log(accessTokenURL, clientId, clientSecret, code)
 
 const accessToken = ref('')
 const tokenType = ref('')
@@ -78,7 +83,7 @@ const getAccessToken = () => {
 
 const useAccessToken = () => {
   console.log('useOAuth2AccessToken')
-  useOAuth2AccessToken(accessToken.value, tokenType.value)
+  useOAuth2AccessToken(name, accessToken.value, tokenType.value, interfaceId, currProject.value.id)
 }
 
 const onMounted = () => {

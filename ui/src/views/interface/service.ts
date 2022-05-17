@@ -107,6 +107,24 @@ export async function genOAuth2AccessToken(oauth: OAuth20): Promise<any> {
         data: oauth,
     });
 }
+export async function listOAuth2Token(projectId): Promise<any> {
+    const params = {projectId}
+
+    return request({
+        url: `/${apiAuth}/listOAuth2Token`,
+        method: 'get',
+        params,
+    });
+}
+export async function removeOAuth2Token(id): Promise<any> {
+    const params = {id}
+
+    return request({
+        url: `/${apiAuth}/removeToken`,
+        method: 'get',
+        params,
+    });
+}
 
 // environment
 export async function listEnvironment(): Promise<any> {

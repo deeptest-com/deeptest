@@ -60,20 +60,50 @@ func (c *AuthCtrl) GetOAuth2AccessToken(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }
 
-// useOAuth2AccessToken
+// UseOAuth2AccessToken
 func (c *AuthCtrl) UseOAuth2AccessToken(ctx iris.Context) {
+	currProjectId, _ := ctx.URLParamInt("currProjectId")
+	interfaceId, _ := ctx.URLParamInt("interfaceId")
+	name := ctx.URLParam("name")
 	token := ctx.URLParam("token")
 	tokenType := ctx.URLParam("tokenType")
+
+	c.AuthService.AddToken(name, token, tokenType, interfaceId, currProjectId)
 
 	data := iris.Map{
 		"token":     token,
 		"tokenType": tokenType,
 	}
-
 	c.WebSocketService.SendMsg(
 		serverConsts.WsDefaultNameSpace,
 		serverConsts.WsDefaultRoom,
 		data)
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+}
+
+// ListOAuth2Token
+func (c *AuthCtrl) ListOAuth2Token(ctx iris.Context) {
+	projectId, _ := ctx.URLParamInt("projectId")
+
+	pos, err := c.AuthService.ListOAuth2Token(projectId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: pos})
+}
+
+// RemoveToken
+func (c *AuthCtrl) RemoveToken(ctx iris.Context) {
+	tokenId, _ := ctx.URLParamInt("id")
+
+	err := c.AuthService.RemoveToken(tokenId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }

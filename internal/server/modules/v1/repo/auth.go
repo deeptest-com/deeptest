@@ -25,7 +25,7 @@ func (r *AuthRepo) CreateToken(name, token, tokenType string, projectId int) (po
 		return
 	}
 
-	pos, _ = r.FindByName(token)
+	pos, _ = r.FindByName(name)
 	if len(pos) > 0 {
 		err = errors.New("Token名已存在")
 		return

@@ -31,6 +31,7 @@ type ProcessorFlow struct {
 	ProcessorBase
 
 	Condition string `json:"condition" yaml:"condition"`
+	Judgement bool   `json:"judgement" yaml:"judgement"`
 }
 
 func (ProcessorFlow) TableName() string {
@@ -40,6 +41,11 @@ func (ProcessorFlow) TableName() string {
 type ProcessorIterator struct {
 	BaseModel
 	ProcessorBase
+
+	Times int `json:"times" yaml:"times"` // how many
+	Count int `json:"count" yaml:"count"` // left
+
+	BreakIfExpression string `json:"breakExpr" yaml:"breakIfExpression"`
 }
 
 func (ProcessorIterator) TableName() string {
@@ -49,6 +55,11 @@ func (ProcessorIterator) TableName() string {
 type ProcessorTimer struct {
 	BaseModel
 	ProcessorBase
+
+	SleepBefore int `json:"sleepBefore" yaml:"sleepBefore"`
+	SleepAfter  int `json:"sleepAfter" yaml:"sleepAfter"`
+
+	Unit string `json:"unit" yaml:"unit"`
 }
 
 func (ProcessorTimer) TableName() string {
@@ -58,6 +69,9 @@ func (ProcessorTimer) TableName() string {
 type ProcessorAssertion struct {
 	BaseModel
 	ProcessorBase
+
+	Expression string `json:"expression" yaml:"expression"`
+	Expect     string `json:"expect" yaml:"expect"`
 }
 
 func (ProcessorAssertion) TableName() string {
@@ -112,6 +126,10 @@ func (ProcessorData) TableName() string {
 type ProcessorCookie struct {
 	BaseModel
 	ProcessorBase
+
+	Action   consts.ValueAction `json:"action"`
+	Name     string             `json:"name"`
+	Variable string             `json:"variable"`
 }
 
 func (ProcessorCookie) TableName() string {

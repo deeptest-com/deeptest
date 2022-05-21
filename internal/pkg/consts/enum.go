@@ -329,3 +329,27 @@ const (
 func (e DataSource) ToString() string {
 	return string(e)
 }
+
+type TimeUnit string
+
+const (
+	Second TimeUnit = "sec"
+	Minute TimeUnit = "min"
+	Hour   TimeUnit = "hour"
+)
+
+func (e TimeUnit) ToString() string {
+	return string(e)
+}
+
+type ValueAction string
+
+const (
+	Get   ValueAction = "get"
+	Set   ValueAction = "set"
+	Clear ValueAction = "clear"
+)
+
+func (e ValueAction) ToString() string {
+	return string(e)
+}

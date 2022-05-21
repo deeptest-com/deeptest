@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1"
+	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"
 	"github.com/sirupsen/logrus"
 )

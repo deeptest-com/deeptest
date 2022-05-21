@@ -2,9 +2,9 @@ package service
 
 import (
 	"errors"
-	dateUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/date"
-	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
-	stringUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/string"
+	dateUtils "github.com/aaronchen2k/deeptest/pkg/lib/date"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"mime/multipart"
 	"path/filepath"
 	"strings"

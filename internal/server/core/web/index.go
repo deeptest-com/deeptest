@@ -3,7 +3,6 @@ package web
 import (
 	stdContext "context"
 	"fmt"
-	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
@@ -12,6 +11,7 @@ import (
 	serverZap "github.com/aaronchen2k/deeptest/internal/server/core/zap"
 	myWs "github.com/aaronchen2k/deeptest/internal/server/modules/v1/controller"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"
 	gorillaWs "github.com/gorilla/websocket"
 	"github.com/kataras/iris/v12/websocket"

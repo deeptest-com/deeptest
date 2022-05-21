@@ -33,5 +33,18 @@ var (
 		&EnvironmentVar{},
 
 		&Auth2Token{},
+
+		&TestConfig{},
+		&TestScenario{},
+		&TestSet{},
+		&TestProcessor{},
+		&ProcessorSimple{},
+		&ProcessorFlow{},
+		&ProcessorIterator{},
+		&ProcessorTimer{},
+		&ProcessorAssertion{},
+		&ProcessorExtractor{},
+		&ProcessorData{},
+		&ProcessorCookie{},
 	}
 )

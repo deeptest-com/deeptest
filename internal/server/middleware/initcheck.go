@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
+	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"net/http"
 
 	"github.com/kataras/iris/v12"

@@ -2,8 +2,8 @@ package _fileUtils
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	_commonUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/comm"
+	"github.com/aaronchen2k/deeptest/pkg/consts"
+	_commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"io"
 	"io/ioutil"
 	"os"

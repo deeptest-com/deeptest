@@ -3,9 +3,9 @@ package serverConfig
 import (
 	"bytes"
 	"fmt"
-	myZap "github.com/aaronchen2k/deeptest/internal/pkg/core/zap"
-	"github.com/aaronchen2k/deeptest/internal/pkg/lib/res"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
+	myZap "github.com/aaronchen2k/deeptest/pkg/core/zap"
+	_resUtils "github.com/aaronchen2k/deeptest/pkg/lib/res"
 	"github.com/go-redis/redis/v8"
 	"path/filepath"
 

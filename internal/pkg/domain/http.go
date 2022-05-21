@@ -1,6 +1,8 @@
 package domain
 
-import "github.com/aaronchen2k/deeptest/internal/comm/consts"
+import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+)
 
 type Param struct {
 	Name     string `json:"name"`

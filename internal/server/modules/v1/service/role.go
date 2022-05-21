@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
+	"github.com/aaronchen2k/deeptest/pkg/domain"
 )
 
 type RoleService struct {

@@ -1,7 +1,7 @@
 package serverDomain
 
 import (
-	_consts "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	_consts "github.com/aaronchen2k/deeptest/pkg/consts"
 	"time"
 )
 

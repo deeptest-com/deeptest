@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
-	pb "github.com/aaronchen2k/deeptest/internal/comm/grpc/proto/greater"
-	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
+	pb "github.com/aaronchen2k/deeptest/internal/pkg/grpc/proto/greater"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"log"

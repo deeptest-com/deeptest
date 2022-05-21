@@ -284,13 +284,14 @@ export default defineComponent({
       // expandedKeys.value = info.expandedKeys
     };
     const onDrop = (info: DropEvent) => {
-      const dragKey = info.dragNode.eventKey;
       const dropKey = info.node.eventKey;
-      let dropPos = info.dropPosition > 1 ? 1 : info.dropPosition;
-      if (!treeDataMap[dropKey].isDir && dropPos === 0) dropPos = 1
-      console.log(dragKey, dropKey, dropPos);
+      const dragKey = info.dragNode.eventKey;
+      const dropPos = info.node.pos.split('-');
+      let dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+      if (!treeDataMap[dropKey].isDir && dropPosition === 0) dropPosition = 1
+      console.log(dragKey, dropKey, dropPosition);
 
-      store.dispatch('Interface/moveInterface', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPos});
+      store.dispatch('Interface/moveInterface', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition});
     }
 
     onMounted(() => {

@@ -1,7 +1,7 @@
 package kvm
 
 import (
-	pb "github.com/aaronchen2k/deeptest/internal/comm/grpc/proto/greater"
+	pb "github.com/aaronchen2k/deeptest/pkg/grpc/proto/greater"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"

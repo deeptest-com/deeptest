@@ -1,8 +1,7 @@
 package model
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/comm/consts"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12"
 )
 
@@ -134,9 +133,9 @@ func (InterfaceApiKey) TableName() string {
 
 type InterfaceExtractor struct {
 	BaseModel
-	Src  serverConsts.ExtractorSrc  `json:"src"`
-	Type serverConsts.ExtractorType `json:"type"`
-	Key  string                     `json:"key"`
+	Src  consts.ExtractorSrc  `json:"src"`
+	Type consts.ExtractorType `json:"type"`
+	Key  string               `json:"key"`
 
 	Expression string `json:"expression"`
 	Prop       string `json:"prop"`
@@ -158,16 +157,16 @@ func (InterfaceExtractor) TableName() string {
 
 type InterfaceCheckpoint struct {
 	BaseModel
-	Type serverConsts.CheckpointType `json:"type"`
+	Type consts.CheckpointType `json:"type"`
 
 	Expression        string `json:"expression"`
 	ExtractorVariable string `json:"extractorVariable"`
 
-	Operator serverConsts.CheckpointOperator `json:"operator"`
-	Value    string                          `json:"value"`
+	Operator consts.CheckpointOperator `json:"operator"`
+	Value    string                    `json:"value"`
 
-	Result      serverConsts.CheckpointResult `json:"result"`
-	InterfaceId uint                          `json:"interfaceId"`
+	Result      consts.CheckpointResult `json:"result"`
+	InterfaceId uint                    `json:"interfaceId"`
 }
 
 func (InterfaceCheckpoint) TableName() string {

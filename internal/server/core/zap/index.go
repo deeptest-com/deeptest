@@ -1,9 +1,9 @@
 package serverZap
 
 import (
-	myZap "github.com/aaronchen2k/deeptest/internal/pkg/core/zap"
-	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
+	myZap "github.com/aaronchen2k/deeptest/pkg/core/zap"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/snowlyg/helper/dir"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

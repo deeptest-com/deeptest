@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"bytes"
-	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"io/ioutil"
 	"strings"
 	"time"

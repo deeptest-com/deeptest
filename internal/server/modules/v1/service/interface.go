@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/comm/consts"
-	httpHelper "github.com/aaronchen2k/deeptest/internal/comm/helper/http"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	requestHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/request"

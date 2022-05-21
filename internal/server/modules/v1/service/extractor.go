@@ -2,14 +2,14 @@ package service
 
 import (
 	"encoding/json"
-	_cacheUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/cache"
-	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/query"
 	requestHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/request"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
+	_cacheUtils "github.com/aaronchen2k/deeptest/pkg/lib/cache"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strconv"
 )
 
@@ -66,7 +66,7 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 		return
 	}
 
-	if extractor.Src == serverConsts.Header {
+	if extractor.Src == consts.Header {
 		for _, h := range resp.Headers {
 			if h.Name == extractor.Key {
 				extractor.Result = h.Value
@@ -81,16 +81,16 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 	var jsonData interface{}
 	json.Unmarshal([]byte(resp.Content), &jsonData)
 
-	if requestHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == serverConsts.JsonQuery {
+	if requestHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
 		extractorHelper.JsonQuery(resp.Content, &extractor)
 
-	} else if requestHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == serverConsts.HtmlQuery {
+	} else if requestHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
 		extractorHelper.HtmlQuery(resp.Content, &extractor)
 
-	} else if requestHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == serverConsts.XmlQuery {
+	} else if requestHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
 		extractorHelper.XmlQuery(resp.Content, &extractor)
 
-	} else if extractor.Type == serverConsts.Boundary {
+	} else if extractor.Type == consts.Boundary {
 		extractorHelper.BoundaryQuery(resp.Content, &extractor)
 	}
 

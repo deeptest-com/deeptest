@@ -1,6 +1,6 @@
 package agentConfig
 
-import myZap "github.com/aaronchen2k/deeptest/internal/pkg/core/zap"
+import myZap "github.com/aaronchen2k/deeptest/pkg/core/zap"
 
 type Config struct {
 	System System    `mapstructure:"system" json:"system" yaml:"system"`

@@ -1,9 +1,9 @@
 package dao
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/comm/consts"
-	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm/schema"
 	"gorm.io/plugin/dbresolver"

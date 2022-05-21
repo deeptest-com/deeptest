@@ -2,8 +2,8 @@ package agentZap
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/agent/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/core/zap"
-	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
+	"github.com/aaronchen2k/deeptest/pkg/core/zap"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 
 	"github.com/snowlyg/helper/dir"
 	"go.uber.org/zap"

@@ -1,7 +1,7 @@
 package serverDomain
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/snowlyg/helper/str"
 	"regexp"
 )

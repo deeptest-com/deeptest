@@ -1,6 +1,6 @@
 package httpHelper
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import "github.com/aaronchen2k/deeptest/pkg/consts"
 
 type Request struct {
 	PageSize int `json:"pageSize"`

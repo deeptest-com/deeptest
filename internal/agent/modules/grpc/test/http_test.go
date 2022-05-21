@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
-	pb "github.com/aaronchen2k/deeptest/internal/comm/grpc/proto/greater"
+	pb "github.com/aaronchen2k/deeptest/pkg/grpc/proto/greater"
 	"log"
 	"net/http"
 	"testing"

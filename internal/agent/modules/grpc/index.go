@@ -3,12 +3,12 @@ package grpc
 import (
 	agentConsts "github.com/aaronchen2k/deeptest/internal/agent/consts"
 	"github.com/aaronchen2k/deeptest/internal/agent/modules/grpc/service"
-	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"google.golang.org/grpc/credentials"
 	"net"
 
 	// [...]
-	pb "github.com/aaronchen2k/deeptest/internal/comm/grpc/proto/greater"
+	pb "github.com/aaronchen2k/deeptest/pkg/grpc/proto/greater"
 	"google.golang.org/grpc"
 )
 

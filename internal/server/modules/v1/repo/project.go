@@ -2,12 +2,12 @@ package repo
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	commonUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/comm"
-	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
+	"github.com/aaronchen2k/deeptest/pkg/domain"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )

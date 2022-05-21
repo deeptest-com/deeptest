@@ -1,7 +1,7 @@
 package _resUtils
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/lib/comm"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/aaronchen2k/deeptest/res"
 	"io/ioutil"
 )

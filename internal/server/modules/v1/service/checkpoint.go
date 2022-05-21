@@ -2,13 +2,13 @@ package service
 
 import (
 	"encoding/json"
-	_cacheUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/cache"
-	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
-	stringUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/string"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
+	_cacheUtils "github.com/aaronchen2k/deeptest/pkg/lib/cache"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"strconv"
 	"strings"
 )
@@ -66,14 +66,14 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 		return
 	}
 
-	checkpoint.Result = serverConsts.Fail
+	checkpoint.Result = consts.Fail
 
 	// Response Status
-	if checkpoint.Type == serverConsts.ResponseStatus {
+	if checkpoint.Type == consts.ResponseStatus {
 		expectCode := stringUtils.ParseInt(checkpoint.Value)
 
-		if checkpoint.Operator == serverConsts.Equal && resp.StatusCode.Int() == expectCode {
-			checkpoint.Result = serverConsts.Pass
+		if checkpoint.Operator == consts.Equal && resp.StatusCode.Int() == expectCode {
+			checkpoint.Result = consts.Pass
 		}
 
 		s.CheckpointRepo.UpdateResult(checkpoint)
@@ -81,7 +81,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 	}
 
 	// Response Header
-	if checkpoint.Type == serverConsts.ResponseHeader {
+	if checkpoint.Type == consts.ResponseHeader {
 		headerValue := ""
 		for _, h := range resp.Headers {
 			if h.Name == checkpoint.Expression {
@@ -90,12 +90,12 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 			}
 		}
 
-		if checkpoint.Operator == serverConsts.Equal && headerValue == checkpoint.Value {
-			checkpoint.Result = serverConsts.Pass
-		} else if checkpoint.Operator == serverConsts.NotEqual && headerValue != checkpoint.Value {
-			checkpoint.Result = serverConsts.Pass
-		} else if checkpoint.Operator == serverConsts.Contain && strings.Contains(headerValue, checkpoint.Value) {
-			checkpoint.Result = serverConsts.Pass
+		if checkpoint.Operator == consts.Equal && headerValue == checkpoint.Value {
+			checkpoint.Result = consts.Pass
+		} else if checkpoint.Operator == consts.NotEqual && headerValue != checkpoint.Value {
+			checkpoint.Result = consts.Pass
+		} else if checkpoint.Operator == consts.Contain && strings.Contains(headerValue, checkpoint.Value) {
+			checkpoint.Result = consts.Pass
 		}
 
 		s.CheckpointRepo.UpdateResult(checkpoint)
@@ -106,13 +106,13 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 	json.Unmarshal([]byte(resp.Content), &jsonData)
 
 	// Response Body
-	if checkpoint.Type == serverConsts.ResponseBody {
-		if checkpoint.Operator == serverConsts.Equal && resp.Content == checkpoint.Value {
-			checkpoint.Result = serverConsts.Pass
-		} else if checkpoint.Operator == serverConsts.NotEqual && resp.Content != checkpoint.Value {
-			checkpoint.Result = serverConsts.Pass
-		} else if checkpoint.Operator == serverConsts.Contain && strings.Contains(resp.Content, checkpoint.Value) {
-			checkpoint.Result = serverConsts.Pass
+	if checkpoint.Type == consts.ResponseBody {
+		if checkpoint.Operator == consts.Equal && resp.Content == checkpoint.Value {
+			checkpoint.Result = consts.Pass
+		} else if checkpoint.Operator == consts.NotEqual && resp.Content != checkpoint.Value {
+			checkpoint.Result = consts.Pass
+		} else if checkpoint.Operator == consts.Contain && strings.Contains(resp.Content, checkpoint.Value) {
+			checkpoint.Result = consts.Pass
 		}
 
 		s.CheckpointRepo.UpdateResult(checkpoint)
@@ -120,21 +120,21 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 	}
 
 	// Extractor
-	if checkpoint.Type == serverConsts.Extractor {
+	if checkpoint.Type == consts.Extractor {
 		extractorValue := _cacheUtils.GetCache(strconv.Itoa(projectId), checkpoint.ExtractorVariable)
 		logUtils.Infof("%s = %v", checkpoint.ExtractorVariable, extractorValue)
 
-		if checkpoint.Operator == serverConsts.Equal {
+		if checkpoint.Operator == consts.Equal {
 			if extractorValue == checkpoint.Value {
-				checkpoint.Result = serverConsts.Pass
+				checkpoint.Result = consts.Pass
 			}
-		} else if checkpoint.Operator == serverConsts.NotEqual {
+		} else if checkpoint.Operator == consts.NotEqual {
 			if extractorValue != checkpoint.Value {
-				checkpoint.Result = serverConsts.Pass
+				checkpoint.Result = consts.Pass
 			}
-		} else if checkpoint.Operator == serverConsts.Contain {
+		} else if checkpoint.Operator == consts.Contain {
 			if strings.Contains(extractorValue, checkpoint.Value) {
-				checkpoint.Result = serverConsts.Pass
+				checkpoint.Result = consts.Pass
 			}
 		} else {
 			checkpoint.Result = s.Compare(checkpoint.Operator, extractorValue, checkpoint.Value)
@@ -147,10 +147,10 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 	return
 }
 
-func (s *CheckpointService) Compare(operator serverConsts.CheckpointOperator, actual, expect string) (
-	result serverConsts.CheckpointResult) {
+func (s *CheckpointService) Compare(operator consts.CheckpointOperator, actual, expect string) (
+	result consts.CheckpointResult) {
 
-	result = serverConsts.Fail
+	result = consts.Fail
 
 	actualFloat, err1 := strconv.ParseFloat(actual, 64)
 	expectFloat, err2 := strconv.ParseFloat(expect, 64)
@@ -160,16 +160,16 @@ func (s *CheckpointService) Compare(operator serverConsts.CheckpointOperator, ac
 	}
 
 	switch operator.String() {
-	case serverConsts.GreaterThan.String():
+	case consts.GreaterThan.String():
 		result = GetResult(actualFloat > expectFloat)
 
-	case serverConsts.LessThan.String():
+	case consts.LessThan.String():
 		result = GetResult(actualFloat < expectFloat)
 
-	case serverConsts.GreaterThanOrEqual.String():
+	case consts.GreaterThanOrEqual.String():
 		result = GetResult(actualFloat >= expectFloat)
 
-	case serverConsts.LessThanOrEqual.String():
+	case consts.LessThanOrEqual.String():
 		result = GetResult(actualFloat <= expectFloat)
 
 	default:
@@ -180,12 +180,12 @@ func (s *CheckpointService) Compare(operator serverConsts.CheckpointOperator, ac
 }
 
 func GetResult(b bool) (
-	result serverConsts.CheckpointResult) {
+	result consts.CheckpointResult) {
 
 	if b {
-		result = serverConsts.Pass
+		result = consts.Pass
 	} else {
-		result = serverConsts.Fail
+		result = consts.Fail
 	}
 
 	return

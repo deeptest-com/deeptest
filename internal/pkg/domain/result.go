@@ -2,7 +2,7 @@ package domain
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/pkg/consts"
 	"time"
 )
 

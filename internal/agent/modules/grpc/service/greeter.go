@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	pb "github.com/aaronchen2k/deeptest/internal/comm/grpc/proto/greater"
+	pb "github.com/aaronchen2k/deeptest/pkg/grpc/proto/greater"
 )
 
 type Greeter struct {

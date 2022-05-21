@@ -2,9 +2,9 @@ package repo
 
 import (
 	"fmt"
-	_domain "github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
+	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"gorm.io/gorm"
 )
 

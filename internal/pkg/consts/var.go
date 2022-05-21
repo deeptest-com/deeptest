@@ -1,5 +1,9 @@
-package _consts
+package consts
 
 var (
-	Verbose bool
+	Language  = "zh"
+	Verbose   = true
+	IsRelease bool
+	ExeDir    string
+	WorkDir   string
 )

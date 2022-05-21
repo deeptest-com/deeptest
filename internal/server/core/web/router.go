@@ -2,10 +2,10 @@ package web
 
 import (
 	"fmt"
-	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
 	"github.com/aaronchen2k/deeptest/internal/server/core/module"
 	"github.com/aaronchen2k/deeptest/internal/server/middleware"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
 
 	"github.com/kataras/iris/v12"

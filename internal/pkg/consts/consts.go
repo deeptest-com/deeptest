@@ -1,7 +1,15 @@
-package _consts
-
-import "os"
+package consts
 
 const (
-	PthSep = string(os.PathSeparator)
+	App     = "deeptest"
+	Pattern = "pattern"
+
+	ContentType   = "Content-Type"
+	ContentLength = "Content-Length"
+	Server        = "Server"
+	Allow         = "Allow"
+	Connection    = "Connection"
+	Host          = "Host"
+
+	Authorization = "Authorization"
 )

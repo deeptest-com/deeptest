@@ -3,8 +3,8 @@ package dao
 import (
 	"context"
 	"fmt"
-	logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
 	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"io/ioutil"
 	"log"
 	"os"

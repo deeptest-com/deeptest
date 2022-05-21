@@ -2,8 +2,8 @@ package _fileUtils
 
 import (
 	"bytes"
-	_i118Utils "github.com/aaronchen2k/deeptest/internal/pkg/lib/i118"
-	_logUtils "github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
+	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
+	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"io"
 	"io/ioutil"
 	"mime/multipart"

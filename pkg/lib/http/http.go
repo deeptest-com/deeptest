@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/lib/log"
+	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/fatih/color"
 	"io/ioutil"
 	"net/http"

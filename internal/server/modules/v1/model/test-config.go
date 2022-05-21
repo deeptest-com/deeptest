@@ -12,7 +12,7 @@ type TestConfig struct {
 	LoopCount int  `json:"loopCount,omitempty" yaml:"loopCount,omitempty"`
 	Forever   bool `json:"forever,omitempty" yaml:"forever,omitempty"`
 
-	ErrorAction consts.ErrorAction `json:"errorAction,omitempty" yaml:"errorAction,omitempty"`
+	ErrorAction consts.ErrorAction `json:"errorAction,omitempty" yaml:"errorAction,omitempty" gorm:"-"`
 }
 
 func (TestConfig) TableName() string {

@@ -9,7 +9,7 @@ type TestSet struct {
 	Name    string  `json:"name" yaml:"name"`
 	Desc    string  `json:"desc" yaml:"desc"`
 
-	Processor TestProcessor `json:"processor" yaml:"processor"`
+	Processor TestProcessor `json:"processor" yaml:"processor" gorm:"-"`
 }
 
 func (TestSet) TableName() string {

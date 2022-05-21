@@ -1,14 +1,14 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
-import { Project, QueryResult, QueryParams, PaginationConfig } from './data.d';
+import { Scenario, QueryResult, QueryParams, PaginationConfig } from './data.d';
 import {
     query, save, remove, detail,
 } from './service';
 
 export interface StateType {
     queryResult: QueryResult;
-    detailResult: Project;
+    detailResult: Scenario;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -18,10 +18,10 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setItem: Mutation<StateType>;
     };
     actions: {
-        queryProject: Action<StateType, StateType>;
-        getProject: Action<StateType, StateType>;
-        saveProject: Action<StateType, StateType>;
-        removeProject: Action<StateType, StateType>;
+        queryScenario: Action<StateType, StateType>;
+        getScenario: Action<StateType, StateType>;
+        saveScenario: Action<StateType, StateType>;
+        removeScenario: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -35,12 +35,12 @@ const initState: StateType = {
             showQuickJumper: true,
         },
     },
-    detailResult: {} as Project,
+    detailResult: {} as Scenario,
 };
 
 const StoreModel: ModuleType = {
     namespaced: true,
-    name: 'Project',
+    name: 'Scenario',
     state: {
         ...initState
     },
@@ -53,7 +53,7 @@ const StoreModel: ModuleType = {
         },
     },
     actions: {
-        async queryProject({ commit }, params: QueryParams ) {
+        async queryScenario({ commit }, params: QueryParams ) {
             try {
                 const response: ResponseData = await query(params);
                 if (response.code != 0) return;
@@ -75,7 +75,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async getProject({ commit }, id: number ) {
+        async getScenario({ commit }, id: number ) {
             if (id === 0) {
                 commit('setItem',{
                     ...initState.detailResult,
@@ -94,7 +94,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async saveProject({ commit }, payload: Pick<Project, "name" | "desc"> ) {
+        async saveScenario({ commit }, payload: Pick<Scenario, "name" | "desc"> ) {
             try {
                 await save(payload);
                 return true;
@@ -102,7 +102,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async removeProject({ commit }, payload: number ) {
+        async removeScenario({ commit }, payload: number ) {
             try {
                 await remove(payload);
                 return true;

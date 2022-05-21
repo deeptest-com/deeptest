@@ -1,8 +1,8 @@
 <template>
-  <div class="indexlayout-main-content">
+  <div class="scenario-list-main">
     <a-card :bordered="false">
       <template #title>
-        <a-button type="primary" @click="() => edit(0)">新建项目</a-button>
+        <a-button type="primary" @click="() => edit(0)">新建场景</a-button>
       </template>
       <template #extra>
         <a-select @change="onSearch" v-model:value="queryParams.enabled" :options="statusArr" class="status-select">
@@ -51,7 +51,7 @@
 <script lang="ts">
 import {computed, ComputedRef, defineComponent, onMounted, reactive, Ref, ref} from "vue";
 import {SelectTypes} from 'ant-design-vue/es/select';
-import {PaginationConfig, QueryParams, Project} from '../data.d';
+import {PaginationConfig, QueryParams, Scenario} from '../data.d';
 import {useStore} from "vuex";
 
 import {StateType} from "../store";
@@ -60,7 +60,7 @@ import {useRouter} from "vue-router";
 import {message, Modal} from "ant-design-vue";
 
 export default defineComponent({
-  name: 'ProjectListPage',
+  name: 'ScenarioListPage',
   components: {
   },
   setup() {
@@ -80,10 +80,10 @@ export default defineComponent({
     ]);
 
     const router = useRouter();
-    const store = useStore<{ Project: StateType }>();
+    const store = useStore<{ Scenario: StateType }>();
 
-    const list = computed<Project[]>(() => store.state.Project.queryResult.list);
-    let pagination = computed<PaginationConfig>(() => store.state.Project.queryResult.pagination);
+    const list = computed<Scenario[]>(() => store.state.Scenario.queryResult.list);
+    let pagination = computed<PaginationConfig>(() => store.state.Scenario.queryResult.pagination);
     let queryParams = reactive<QueryParams>({
       keywords: '', enabled: '1',
       page: pagination.value.current, pageSize: pagination.value.pageSize
@@ -130,7 +130,7 @@ export default defineComponent({
     const getList = async (current: number): Promise<void> => {
       loading.value = true;
 
-      await store.dispatch('Project/queryProject', {
+      await store.dispatch('Scenario/queryScenario', {
         keywords: queryParams.keywords,
         enabled: queryParams.enabled,
         pageSize: pagination.value.pageSize,
@@ -141,7 +141,7 @@ export default defineComponent({
 
     const edit = async (id: number) => {
       console.log('edit')
-      router.replace(`/~/project/edit/${id}`)
+      router.replace(`/~/scenario/edit/${id}`)
     }
 
     const remove = (id: number) => {
@@ -153,11 +153,11 @@ export default defineComponent({
         okText: '确认',
         cancelText: '取消',
         onOk: async () => {
-          store.dispatch('Project/removeProject', id).then((res) => {
+          store.dispatch('Scenario/removeScenario', id).then((res) => {
             console.log('res', res)
             if (res === true) {
               message.success(`删除项目成功`)
-              store.dispatch('Project/queryProject', id)
+              store.dispatch('Scenario/queryScenario', id)
             } else {
               message.error(`删除项目失败`)
             }
@@ -194,7 +194,7 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-  .status-select {
-    width: 100px;
+  .scenario-list-main {
+
   }
 </style>

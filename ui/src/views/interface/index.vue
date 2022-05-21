@@ -1,5 +1,5 @@
 <template>
-  <div id="main">
+  <div id="main" class-interface-main>
     <div id="left-panel">
       <InterfaceTree />
     </div>

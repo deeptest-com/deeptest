@@ -1,7 +1,7 @@
 import request from '@/utils/request';
-import { Project, QueryParams } from './data.d';
+import { Scenario, QueryParams } from './data.d';
 
-const apiPath = 'projects';
+const apiPath = 'scenarios';
 
 export async function query(params?: QueryParams): Promise<any> {
     return request({
@@ -11,7 +11,7 @@ export async function query(params?: QueryParams): Promise<any> {
     });
 }
 
-export async function save(params: Partial<Project>): Promise<any> {
+export async function save(params: Partial<Scenario>): Promise<any> {
     return request({
         url: `/${apiPath}`,
         method: params.id? 'PUT': 'POST',

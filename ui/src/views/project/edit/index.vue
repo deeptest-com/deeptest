@@ -1,5 +1,5 @@
 <template>
-  <div class="indexlayout-main-conent">
+  <div class="project-edit-main">
     <a-card :bordered="false">
       <template #title>
         <div>编辑项目</div>
@@ -121,5 +121,7 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+.project-edit-main {
 
+}
 </style>

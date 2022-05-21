@@ -1,5 +1,5 @@
 <template>
-  <div class="indexlayout-main-content">
+  <div class="project-main-list">
     <a-card :bordered="false">
       <template #title>
         <a-button type="primary" @click="() => edit(0)">新建项目</a-button>
@@ -194,7 +194,9 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+.project-main-list {
   .status-select {
     width: 100px;
   }
+}
 </style>

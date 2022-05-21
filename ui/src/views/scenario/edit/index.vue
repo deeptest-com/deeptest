@@ -1,8 +1,8 @@
 <template>
-  <div class="indexlayout-main-conent">
+  <div class="scenario-edit-main">
     <a-card :bordered="false">
       <template #title>
-        <div>编辑项目</div>
+        <div>编辑场景</div>
       </template>
       <template #extra>
         <a-button type="link" @click="() => back()">返回</a-button>
@@ -38,11 +38,11 @@ import { Props, validateInfos } from 'ant-design-vue/lib/form/useForm';
 import {message, Form, notification} from 'ant-design-vue';
 const useForm = Form.useForm;
 import {StateType} from "../store";
-import {Project} from "@/views/project/data";
+import {Scenario} from "@/views/scenario/data";
 
-interface EditProjectPageSetupData {
+interface EditScenarioPageSetupData {
   formRef: any
-  modelRef: ComputedRef<Partial<Project>>
+  modelRef: ComputedRef<Partial<Scenario>>
   rulesRef: any
   labelCol: any
   wrapperCol: any
@@ -56,7 +56,7 @@ interface EditProjectPageSetupData {
 
 export default defineComponent({
     name: 'ScriptEditPage',
-    setup(): EditProjectPageSetupData {
+    setup(): EditScenarioPageSetupData {
       const router = useRouter();
 
       const { t } = useI18n();
@@ -69,12 +69,12 @@ export default defineComponent({
         ],
       });
 
-      const store = useStore<{ Project: StateType }>();
-      const modelRef = computed<Partial<Project>>(() => store.state.Project.detailResult);
+      const store = useStore<{ Scenario: StateType }>();
+      const modelRef = computed<Partial<Scenario>>(() => store.state.Scenario.detailResult);
       const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
 
       const get = async (id: number): Promise<void> => {
-        await store.dispatch('Project/getProject', id);
+        await store.dispatch('Scenario/getScenario', id);
       }
       const id = +router.currentRoute.value.params.id
       get(id)
@@ -84,11 +84,11 @@ export default defineComponent({
             .then(() => {
               console.log(modelRef);
 
-              store.dispatch('Project/saveProject', modelRef.value).then((res) => {
+              store.dispatch('Scenario/saveScenario', modelRef.value).then((res) => {
                 console.log('res', res)
                 if (res === true) {
                   message.success(`保存项目成功`);
-                  router.replace('/project/list')
+                  router.replace('/scenario/list')
                 } else {
                   message.error(`保存项目失败`);
                 }
@@ -100,7 +100,7 @@ export default defineComponent({
       };
 
       const back = ():void =>  {
-        router.push(`/project/list`)
+        router.push(`/scenario/list`)
       }
 
       return {
@@ -121,5 +121,7 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+.scenario-edit-main {
 
+}
 </style>

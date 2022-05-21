@@ -10,13 +10,14 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     children: [
       {
         icon: 'project',
-        title: 'index-layout.menu.project',
+        title: 'project',
         path: 'list',
         component: () => import('@/views/project/list/index.vue'),
         hidden: false,
       },
       {
-        title: 'index-layout.menu.project.edit',
+        icon: 'project',
+        title: 'project.edit',
         path: 'edit/:id',
         component: () => import('@/views/project/edit/index.vue'),
         hidden: true,
@@ -32,7 +33,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     children: [
       {
         icon: 'interface',
-        title: 'index-layout.menu.interface',
+        title: 'interface',
         path: 'index',
         component: () => import('@/views/interface/index.vue'),
         hidden: false,
@@ -42,16 +43,23 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
 
   {
     title: 'index-layout.menu',
-    path: '/scene',
-    redirect: '/scene/index',
+    path: '/scenario',
+    redirect: '/scenario/index',
     component: BlankLayout,
     children: [
       {
-        icon: 'scene',
-        title: 'index-layout.menu.scene',
-        path: 'scene',
-        component: () => import('@/views/interface/index.vue'),
+        icon: 'scenario',
+        title: 'scenario',
+        path: 'list',
+        component: () => import('@/views/scenario/list/index.vue'),
         hidden: false,
+      },
+      {
+        icon: 'scenario',
+        title: 'scenario.edit',
+        path: 'edit/:id',
+        component: () => import('@/views/scenario/edit/index.vue'),
+        hidden: true,
       },
     ],
   },

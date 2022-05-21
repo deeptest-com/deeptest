@@ -4,6 +4,22 @@ export default {
     'app.global.menu.notfound': 'Not Found',
     'app.global.form.validatefields.catch': '验证不通过，请检查输入',
 
+    'user-info': '个人信息',
+    'logout': '退出',
+
+    'home': '首页',
+    'workplace': '工作台',
+    'docs': '使用文档',
+    'menu': '菜单',
+
+    'project': '项目',
+    'project.list': '项目列表',
+    'project.edit': '项目编辑',
+
+    'interface': '接口',
+    'scenario': '场景',
+    'scenario.edit': '场景编排',
+
     'mock.oauth2.callback': 'OAuth2回调模拟',
 
     'json': 'JSON',

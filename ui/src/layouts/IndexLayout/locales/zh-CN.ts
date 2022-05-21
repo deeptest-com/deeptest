@@ -1,17 +1,5 @@
 export default {
-  'index-layout.topmenu.userinfo': '个人信息',
-  'index-layout.topmenu.logout': '退出',
 
-  'index-layout.menu.home': '首页',
-  'index-layout.menu.home.workplace': '工作台',
-  'index-layout.menu.home.docs': '使用文档',
-
-  'index-layout.menu.project': '项目',
-  'index-layout.menu.project.list': '项目列表',
-  'index-layout.menu.project.edit': '项目编辑',
-
-  'index-layout.menu.interface': '接口',
-  'index-layout.menu.scene': '场景',
 
   'index-layout.menu.component': '组件',
   'index-layout.menu.component.icon': '图标',

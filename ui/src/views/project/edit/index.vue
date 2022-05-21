@@ -35,7 +35,7 @@ import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import { useI18n } from "vue-i18n";
 import { Props, validateInfos } from 'ant-design-vue/lib/form/useForm';
-import {message, Form, notification} from 'ant-design-vue';
+import {message, Form} from 'ant-design-vue';
 const useForm = Form.useForm;
 import {StateType} from "../store";
 import {Project} from "@/views/project/data";

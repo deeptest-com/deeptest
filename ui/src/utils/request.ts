@@ -3,11 +3,10 @@
  * @author LiQingSong
  */
 import axios, { AxiosPromise, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { notification } from "ant-design-vue";
 import i18n from "@/config/i18n";
-import router from '@/config/routes';
+import bus from "@/utils/eventBus";
 import settings from '@/config/settings';
-import { getToken, setToken } from '@/utils/localToken';
+import { getToken } from '@/utils/localToken';
 import { getCache } from '@/utils/localCache';
 
 export interface ResponseData {
@@ -16,72 +15,36 @@ export interface ResponseData {
     msg?: string;
     token?: string;
 }
-
-const customCodeMessage: {[key: number]: string} = {
-  10002: '请重新登录。',
-  10100: '相同记录已存在。',
-
-  99999: '无法连接到服务器。',
-};
-
-const serverCodeMessage: {[key: number]: string} = {
-  200: '成功（OK）',
-  400: '错误请求（Bad Request）',
-  401: '未授权（Unauthorized）',
-  403: '禁止访问（Forbidden）',
-  404: '未找到（Not Found）',
-  500: '服务器内部错误(Internal Server Error)',
-  502: '网关错误(Bad Gateway)',
-  503: '服务不可用(Service Unavailable)',
-  504: '网关超时(Gateway Timeout)',
-};
+export interface ResultErr {
+    httpCode: number;
+    resultCode: number;
+    resultMsg: string;
+}
 
 /**
  * 异常处理程序
  */
-const errorHandler = (error: any) => {
+const errorHandler = (axiosResponse: AxiosResponse) => {
+    console.log(axiosResponse)
 
-    const { response, message } = error;
-    if (message === 'CustomError') {
-        // 自定义错误
-        const { config, data } = response;
-        console.log('data', data)
+    if (!axiosResponse) axiosResponse = {status: 500} as AxiosResponse
 
-        const { url, baseURL} = config;
-        const { code, msg } = data;
-        const reqUrl = url.split("?")[0].replace(baseURL, '');
-        const noVerifyBool = settings.ajaxResponseNoVerifyUrl.includes(reqUrl);
-        if (!noVerifyBool) {
-            notification.warn({
-              message: `提示`,
-              description: customCodeMessage[code] || msg || 'Error',
-            });
-      
-            if (code === 4001) {
-                router.replace('/user/login');
-            }
-        }
+    if (axiosResponse.status === 200) {
+        const result ={
+            httpCode: axiosResponse.status,
+            resultCode: axiosResponse.data.code,
+            resultMsg: axiosResponse.data.msg
+        } as ResultErr
 
-    } else if (message === 'CancelToken') {
-        // 取消请求 Token
-        console.log(message);
+        bus.emit(settings.eventNotify, result)
 
-    } else if (response && response.status) {
-        const errorText = serverCodeMessage[response.status] || response.statusText;
-        const { status, request } = response;
-        notification.error({
-            message: `请求错误 ${status}: ${request.responseURL}`,
-            description: errorText,
-        });
-
-    } else if (!response) {
-        notification.error({
-            message: '请求失败',
-            description: serverCodeMessage[99999],
-        });
+    } else {
+        bus.emit(settings.eventNotify, {
+            httpCode: axiosResponse.status
+        })
     }
 
-    return Promise.reject(error);
+    return Promise.reject({})
 }
 
 /**
@@ -97,7 +60,6 @@ const request = axios.create({
 // request.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
 
 /**
- * 请求前
  * 请求拦截器
  */
 request.interceptors.request.use(
@@ -134,30 +96,21 @@ request.interceptors.request.use(
 );
 
 /**
- * 请求后
  * 响应拦截器
  */
 request.interceptors.response.use(
-    async (response: AxiosResponse) => {
-        console.log('=== response ===', response.config.url, response)
+    async (axiosResponse: AxiosResponse) => {
+        console.log('=== response ===', axiosResponse.config.url, axiosResponse)
 
-        const res: ResponseData = response.data;
+        const res: ResponseData = axiosResponse.data;
         const { code, token } = res;
 
         // 自定义状态码验证
         if (code !== 0) {
-            return Promise.reject({
-                response,
-                message: 'CustomError',
-            });
+            return Promise.reject(axiosResponse);
         }
 
-        // 重置刷新token
-        if (token) {
-            await setToken(token);
-        }
-
-        return response;
+        return axiosResponse;
     },
     /* error => {} */ // 已在 export default catch
 );

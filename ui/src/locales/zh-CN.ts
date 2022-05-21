@@ -50,4 +50,11 @@ export default {
     'lessThan':  '<',
     'greaterThanOrEqual':  '>=',
     'lessThanOrEqual':  '<=',
+
+    'http_500': '服务器内部错误',
+    'biz_100': '请求错误',
+    'biz_200': '参数错误',
+    'biz_401': '未授权',
+
+    'biz_4001': '请重新登录',
 }

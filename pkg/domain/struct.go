@@ -55,13 +55,10 @@ type ErrMsg struct {
 var (
 	NoErr         = ErrMsg{0, "请求成功"}
 	NeedInitErr   = ErrMsg{2001, "前往初始化数据库"}
-	AuthErr       = ErrMsg{4001, "会话超时，请重新登录！"}
-	AuthExpireErr = ErrMsg{4002, "token 过期，请刷新token"}
+	AuthErr       = ErrMsg{4001, "请重新登录"}
 	AuthActionErr = ErrMsg{4003, "权限错误"}
 	ParamErr      = ErrMsg{4004, "参数解析失败"}
 	SystemErr     = ErrMsg{5000, "系统错误"}
-	DataEmptyErr  = ErrMsg{5001, "数据为空"}
-	TokenCacheErr = ErrMsg{5002, "TOKEN CACHE 错误"}
 
-	BizErrNameExist = ErrMsg{10100, "biz.err.name_exist"}
+	BizErrNameExist = ErrMsg{10100, "指定名称的记录不存在"}
 )

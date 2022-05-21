@@ -7,15 +7,13 @@ import (
 	"github.com/snowlyg/multi"
 )
 
-/**
- * 验证 jwt
- * @method JwtHandler
- */
 func JwtHandler() iris.Handler {
 	verifier := multi.NewVerifier()
 	verifier.Extractors = []multi.TokenExtractor{multi.FromHeader} // extract token only from Authorization: Bearer $token
 	verifier.ErrorHandler = func(ctx *context.Context, err error) {
-		ctx.JSON(_domain.Response{Code: _domain.AuthErr.Code, Data: nil, Msg: _domain.AuthErr.Msg})
+		ctx.JSON(_domain.Response{
+			Code: _domain.AuthErr.Code,
+		})
 		// ctx.StopWithError(http.StatusUnauthorized, err)
 	} // extract token only from Authorization: Bearer $token
 	return verifier.Verify()

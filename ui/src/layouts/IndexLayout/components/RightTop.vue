@@ -1,110 +1,107 @@
 <template>
-    <div id="indexlayout-right-top" :class="{'topNavEnable': !topNavEnable, 'tabNavEnable': !tabNavEnable }">
-        <div class="indexlayout-right-top-top">
-          <div class="indexlayout-flexible"
-               @click="() => {
+  <div id="indexlayout-right-top" :class="{'topNavEnable': !topNavEnable, 'tabNavEnable': !tabNavEnable }">
+    <div class="indexlayout-right-top-top">
+      <div class="indexlayout-flexible"
+           @click="() => {
                 if(toggleCollapsed) {
                   toggleCollapsed();
                 }
               }"
-          >
-            <MenuUnfoldOutlined v-if="collapsed" />
-            <MenuFoldOutlined v-else />
-          </div>
+      >
+        <MenuUnfoldOutlined v-if="collapsed"/>
+        <MenuFoldOutlined v-else/>
+      </div>
 
-            <div class="indexlayout-top-menu">
-            </div>
-            <div class="indexlayout-top-menu-right">
-                <RightTopProject />
-                <RightTopSettings />
-            </div>
-        </div>
-
-        <RightTopWebsocket />
+      <div class="indexlayout-top-menu">
+      </div>
+      <div class="indexlayout-top-menu-right">
+        <RightTopProject/>
+        <RightTopSettings/>
+      </div>
     </div>
+
+    <RightTopWebsocket/>
+  </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, PropType, Ref, toRefs } from "vue";
-import { useI18n } from "vue-i18n";
-import { BreadcrumbType, RoutesDataItem } from '@/utils/routes';
-import { MenuFoldOutlined, MenuUnfoldOutlined, EnvironmentOutlined } from '@ant-design/icons-vue';
+import {defineComponent, PropType, toRefs} from "vue";
+import {useI18n} from "vue-i18n";
+import {BreadcrumbType, RoutesDataItem} from '@/utils/routes';
+import {MenuFoldOutlined, MenuUnfoldOutlined} from '@ant-design/icons-vue';
 import RightTopProject from './RightTopProject.vue';
 import RightTopSettings from './RightTopSettings.vue';
+import RightTopNotification from './RightTopNotification.vue';
 import RightTopWebsocket from './RightTopWebsocket.vue';
 import useTopMenuWidth from "../composables/useTopMenuWidth";
 
-interface RightTopSetupData {
-  t: (key: string | number) => string;
-  topMenuCon: Ref;
-  topMenuWidth: Ref;
-}
-
 export default defineComponent({
-    name: 'RightTop',
-    components: {
-      MenuFoldOutlined, MenuUnfoldOutlined,
-      RightTopProject,
-      RightTopSettings,
-      RightTopWebsocket,
+  name: 'RightTop',
+  components: {
+    MenuFoldOutlined, MenuUnfoldOutlined,
+    RightTopProject,
+    RightTopSettings,
+    RightTopWebsocket,
+  },
+  props: {
+    collapsed: {
+      type: Boolean,
+      default: false
     },
-    props: {
-      collapsed: {
-        type: Boolean,
-        default: false
-      },
-      tabNavEnable: {
-        type: Boolean,
-        default: true
-      },
-      topNavEnable: {
-        type: Boolean,
-        default: true
-      },
-      belongTopMenu: {
-        type: String,
-        default: ''
-      },
-      toggleCollapsed: {
-        type: Function as PropType<() => void>
-      },
-      breadCrumbs: {
-        type: Array as PropType<BreadcrumbType[]>,
-        default: () => {
-          return [];
-        }
-      },
-      menuData: {
-        type: Array as PropType<RoutesDataItem[]>,
-        default: () => {
-          return [];
-        }
-      },
-      routeItem: {
-        type: Object as PropType<RoutesDataItem>,
-        required: true
+    tabNavEnable: {
+      type: Boolean,
+      default: true
+    },
+    topNavEnable: {
+      type: Boolean,
+      default: true
+    },
+    belongTopMenu: {
+      type: String,
+      default: ''
+    },
+    toggleCollapsed: {
+      type: Function as PropType<() => void>
+    },
+    breadCrumbs: {
+      type: Array as PropType<BreadcrumbType[]>,
+      default: () => {
+        return [];
       }
     },
-    setup(props): RightTopSetupData {
-      const { t } = useI18n();
-      const { topNavEnable } = toRefs(props);
-
-      const { topMenuCon, topMenuWidth } = useTopMenuWidth(topNavEnable);
-
-      return {
-        t,
-        topMenuCon,
-        topMenuWidth
+    menuData: {
+      type: Array as PropType<RoutesDataItem[]>,
+      default: () => {
+        return [];
       }
+    },
+    routeItem: {
+      type: Object as PropType<RoutesDataItem>,
+      required: true
     }
+  },
+  setup(props) {
+    const {t} = useI18n();
+    const {topNavEnable} = toRefs(props);
+
+    const {topMenuCon, topMenuWidth} = useTopMenuWidth(topNavEnable);
+
+    return {
+      t,
+      topMenuCon,
+      topMenuWidth
+    }
+  }
 })
 </script>
 <style lang="less">
 @import '../../../assets/css/global.less';
+
 #indexlayout-right-top {
   width: 100%;
   height: (@headerHeight + @headerBreadcrumbHeight + @headerTabNavHeight);
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
   z-index: 9;
+
   .indexlayout-right-top-top {
     display: flex;
     width: 100%;
@@ -127,11 +124,13 @@ export default defineComponent({
       text-align: center;
       vertical-align: middle;
       /* background-color: $subMenuBg; */
+
       .logo-url {
         display: inline-block;
         width: 100%;
         height: 100%;
         overflow: hidden;
+
         .logo-title {
           display: inline-block;
           margin: 0;
@@ -140,6 +139,7 @@ export default defineComponent({
           color: #c0c4cc;
         }
       }
+
       img {
         vertical-align: middle;
       }
@@ -152,6 +152,7 @@ export default defineComponent({
       /* display: flex; */
       overflow: hidden;
       overflow-x: auto;
+
       .indexlayout-top-menu-li {
         display: inline-block;
         padding: 0 15px;
@@ -195,45 +196,55 @@ export default defineComponent({
     .scrollbar();
 
   }
+
   .indexlayout-right-top-bot {
     display: flex;
     width: 100%;
     height: @headerBreadcrumbHeight;
     background-color: @mainBgColor;
+
     .indexlayout-right-top-bot-home {
       width: @headerBreadcrumbHeight;
       height: @headerBreadcrumbHeight;
       line-height: @headerBreadcrumbHeight;
       text-align: center;
     }
+
     .breadcrumb {
       line-height: @headerBreadcrumbHeight;
       margin-left: 10px;
     }
   }
+
   &.tabNavEnable {
     height: (@headerHeight) // + @headerBreadcrumbHeight);
   }
+
   &.topNavEnable {
     height: (@headerHeight + @headerTabNavHeight);
+
     .indexlayout-right-top-top {
       background-color: #ffffff;
       color: @text-color;
+
       .indexlayout-flexible {
         &:hover {
           background-color: @mainBgColor;
           color: @heading-color;
         }
       }
+
       .indexlayout-top-menu-right {
         .indexlayout-top-message {
           color: @heading-color;
         }
+
         .indexlayout-top-usermenu {
           color: @heading-color;
         }
       }
     }
+
     &.tabNavEnable {
       height: (@headerHeight);
     }

@@ -61,7 +61,6 @@ import Permission from '@/components/Permission/index.vue';
 import Left from '@/layouts/IndexLayout/components/Left.vue';
 import RightTop from '@/layouts/IndexLayout/components/RightTop.vue';
 import RightFooter from '@/layouts/IndexLayout/components/RightFooter.vue';
-import RightTopNotification from "@/layouts/IndexLayout/components/RightTopNotification.vue";
 
 export default defineComponent({
   name: 'IndexLayout',
@@ -70,7 +69,6 @@ export default defineComponent({
     Left,
     RightTop,
     RightFooter,
-    RightTopNotification,
   },
   setup() {
     const store = useStore<{ Global: GlobalStateType; User: UserStateType; }>();

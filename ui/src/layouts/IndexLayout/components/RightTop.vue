@@ -30,7 +30,6 @@ import {BreadcrumbType, RoutesDataItem} from '@/utils/routes';
 import {MenuFoldOutlined, MenuUnfoldOutlined} from '@ant-design/icons-vue';
 import RightTopProject from './RightTopProject.vue';
 import RightTopSettings from './RightTopSettings.vue';
-import RightTopNotification from './RightTopNotification.vue';
 import RightTopWebsocket from './RightTopWebsocket.vue';
 import useTopMenuWidth from "../composables/useTopMenuWidth";
 

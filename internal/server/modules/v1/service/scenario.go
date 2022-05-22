@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 )
@@ -24,16 +25,16 @@ func (s *ScenarioService) Paginate(req serverDomain.ScenarioReqPaginate) (ret _d
 	return
 }
 
-func (s *ScenarioService) FindById(id uint) (serverDomain.ScenarioResp, error) {
+func (s *ScenarioService) FindById(id uint) (model.TestScenario, error) {
 	return s.ScenarioRepo.FindById(id)
 }
 
-func (s *ScenarioService) Create(req serverDomain.ScenarioReq) (uint, error) {
+func (s *ScenarioService) Create(req model.TestScenario) (uint, error) {
 	return s.ScenarioRepo.Create(req)
 }
 
-func (s *ScenarioService) Update(id uint, req serverDomain.ScenarioReq) error {
-	return s.ScenarioRepo.Update(id, req)
+func (s *ScenarioService) Update(req model.TestScenario) error {
+	return s.ScenarioRepo.Update(req)
 }
 
 func (s *ScenarioService) DeleteById(id uint) error {

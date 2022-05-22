@@ -3,6 +3,7 @@
  * @author LiQingSong
  */
 import axios, { AxiosPromise, AxiosRequestConfig, AxiosResponse } from 'axios';
+import router from '@/config/routes';
 import i18n from "@/config/i18n";
 import bus from "@/utils/eventBus";
 import settings from '@/config/settings';
@@ -37,6 +38,16 @@ const errorHandler = (axiosResponse: AxiosResponse) => {
         } as ResultErr
 
         bus.emit(settings.eventNotify, result)
+
+        const { config, data } = axiosResponse;
+        const { url, baseURL } = config;
+        const { code, msg } = data
+
+        const reqUrl = (url + '').split("?")[0].replace(baseURL + '', '');
+        const noNeedLogin = settings.ajaxResponseNoVerifyUrl.includes(reqUrl);
+        if (!noNeedLogin || code === 401) {
+            router.replace('/user/login');
+        }
 
     } else {
         bus.emit(settings.eventNotify, {

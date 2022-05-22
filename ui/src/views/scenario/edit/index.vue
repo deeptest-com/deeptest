@@ -2,7 +2,7 @@
   <div class="scenario-edit-main">
     <a-card :bordered="false">
       <template #title>
-        <div>编辑场景</div>
+        <div>{{id === 0 ? '新建场景' : '编辑场景'}}</div>
       </template>
       <template #extra>
         <a-button type="link" @click="() => back()">返回</a-button>
@@ -40,28 +40,11 @@ const useForm = Form.useForm;
 import {StateType} from "../store";
 import {Scenario} from "@/views/scenario/data";
 
-interface EditScenarioPageSetupData {
-  formRef: any
-  modelRef: ComputedRef<Partial<Scenario>>
-  rulesRef: any
-  labelCol: any
-  wrapperCol: any
-  validate: any
-  validateInfos: validateInfos
-  submitForm:  () => void;
-  resetFields:  () => void;
-
-  back: () => void;
-}
-
 export default defineComponent({
     name: 'ScriptEditPage',
-    setup(): EditScenarioPageSetupData {
+    setup() {
       const router = useRouter();
-
       const { t } = useI18n();
-
-      const formRef = ref();
 
       const rulesRef = reactive({
         name: [
@@ -76,8 +59,8 @@ export default defineComponent({
       const get = async (id: number): Promise<void> => {
         await store.dispatch('Scenario/getScenario', id);
       }
-      const id = +router.currentRoute.value.params.id
-      get(id)
+      const id = ref(+router.currentRoute.value.params.id)
+      get(id.value)
 
       const submitForm = async() => {
         validate()
@@ -106,7 +89,7 @@ export default defineComponent({
       return {
         labelCol: { span: 4 },
         wrapperCol: { span: 14 },
-        formRef,
+        id,
         modelRef,
         rulesRef,
         resetFields,

@@ -33,8 +33,6 @@
         <right-footer></right-footer>
       </div>
     </div>
-
-    <RightTopNotification/>
   </div>
 </template>
 <script lang="ts">

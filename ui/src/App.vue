@@ -1,7 +1,7 @@
 <template>
     <a-config-provider :locale="antdLocales">
       <router-view></router-view>
-      <RightTopNotification></RightTopNotification>
+      <Notification></Notification>
     </a-config-provider>
 </template>
 <script lang="ts">
@@ -9,11 +9,11 @@ import { defineComponent, computed, onMounted } from "vue";
 import { antdMessages } from "@/config/i18n";
 import { setHtmlLang } from "@/utils/i18n";
 import { useI18n } from "vue-i18n";
-import RightTopNotification from "./components/others/Notification.vue";
+import Notification from "./components/others/Notification.vue";
 export default defineComponent({
   name: 'App',
   components: {
-    RightTopNotification,
+    Notification,
   },
   setup() {
     const { locale } = useI18n();

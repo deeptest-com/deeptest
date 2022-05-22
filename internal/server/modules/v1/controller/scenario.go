@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -54,7 +55,7 @@ func (c *ScenarioCtrl) Get(ctx iris.Context) {
 }
 
 func (c *ScenarioCtrl) Create(ctx iris.Context) {
-	req := serverDomain.ScenarioReq{}
+	req := model.TestScenario{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
@@ -71,16 +72,14 @@ func (c *ScenarioCtrl) Create(ctx iris.Context) {
 }
 
 func (c *ScenarioCtrl) Update(ctx iris.Context) {
-	id, _ := ctx.Params().GetInt("id")
-
-	var req serverDomain.ScenarioReq
+	var req model.TestScenario
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
 
-	err = c.ScenarioService.Update(uint(id), req)
+	err = c.ScenarioService.Update(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

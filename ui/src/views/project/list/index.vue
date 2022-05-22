@@ -141,7 +141,7 @@ export default defineComponent({
 
     const edit = async (id: number) => {
       console.log('edit')
-      router.replace(`/~/project/edit/${id}`)
+      router.replace(`/project/edit/${id}`)
     }
 
     const remove = (id: number) => {

@@ -124,6 +124,8 @@ const loading = ref<boolean>(true);
 const getList = async (current: number): Promise<void> => {
   loading.value = true;
 
+  console.log('===', store)
+
   await store.dispatch('Scenario/queryScenario', {
     keywords: queryParams.keywords,
     enabled: queryParams.enabled,

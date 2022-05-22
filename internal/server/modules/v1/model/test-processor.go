@@ -2,15 +2,26 @@ package model
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/kataras/iris/v12"
 )
 
 type TestProcessor struct {
 	BaseModel
 
-	Name          string               `json:"name" yaml:"name"`
-	Desc          string               `json:"desc" yaml:"desc"`
+	Name string `json:"name" yaml:"name"`
+	Desc string `json:"desc" yaml:"desc"`
+
+	IsDir     bool `json:"isDir"`
+	ParentId  uint `json:"parentId"`
+	ProjectId uint `json:"projectId"`
+	UseID     uint `json:"useId"`
+
 	ProcessorType consts.ProcessorType `json:"processorType" yaml:"processorType"`
 	ProcessorId   uint                 `json:"processorId" yaml:"processorId"`
+
+	Ordr     int              `json:"ordr"`
+	Children []*TestProcessor `gorm:"-" json:"children"`
+	Slots    iris.Map         `gorm:"-" json:"slots"`
 }
 
 func (TestProcessor) TableName() string {

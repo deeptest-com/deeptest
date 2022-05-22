@@ -53,7 +53,7 @@ export default defineComponent({
       });
 
       const store = useStore<{ Scenario: StateType }>();
-      const modelRef = computed<Partial<Scenario>>(() => store.state.Scenario.detailResult);
+      const modelRef = computed<Partial<Scenario>>(() => store.state.Scenario.scenarioData);
       const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
 
       const get = async (id: number): Promise<void> => {

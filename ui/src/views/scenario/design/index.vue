@@ -28,7 +28,6 @@ const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; Global: GlobalStateType; }>();
 
 const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
-const detailResult = computed<boolean>(() => store.state.Scenario.detailResult);
 
 onMounted(() => {
   console.log('onMounted')

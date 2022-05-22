@@ -3,39 +3,35 @@ import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
 import { Scenario, QueryResult, QueryParams, PaginationConfig } from './data.d';
 import {
-    query, save, remove, detail,
+    saveScenario, load, getNode, createNode, updateNode, removeNode, moveNode,
 } from './service';
 
 export interface StateType {
-    queryResult: QueryResult;
-    detailResult: Scenario;
+    treeData: Scenario[];
+    scenarioData: Scenario;
+    nodeData: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
-        setList: Mutation<StateType>;
-        setItem: Mutation<StateType>;
+        setScenario: Mutation<StateType>;
+        setNode: Mutation<StateType>;
     };
     actions: {
-        queryScenario: Action<StateType, StateType>;
-        getScenario: Action<StateType, StateType>;
+        loadScenario: Action<StateType, StateType>;
         saveScenario: Action<StateType, StateType>;
-        removeScenario: Action<StateType, StateType>;
+        getNode: Action<StateType, StateType>;
+        createNode: Action<StateType, StateType>;
+        updateNode: Action<StateType, StateType>;
+        removeNode: Action<StateType, StateType>;
+        moveNode: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
-    queryResult: {
-        list: [],
-        pagination: {
-            total: 0,
-            current: 1,
-            pageSize: 10,
-            showSizeChanger: true,
-            showQuickJumper: true,
-        },
-    },
-    detailResult: {} as Scenario,
+    treeData: [],
+    scenarioData: {} as Scenario,
+    nodeData: {},
 };
 
 const StoreModel: ModuleType = {
@@ -45,66 +41,80 @@ const StoreModel: ModuleType = {
         ...initState
     },
     mutations: {
-        setList(state, payload) {
-            state.queryResult = payload;
+        setScenario(state, data) {
+            state.scenarioData = data;
         },
-        setItem(state, payload) {
-            state.detailResult = payload;
+        setNode(state, data) {
+            state.nodeData = data;
         },
     },
     actions: {
-        async queryScenario({ commit }, params: QueryParams ) {
-            try {
-                const response: ResponseData = await query(params);
-                if (response.code != 0) return;
+        async loadScenario({commit}) {
+            const response = await load();
+            if (response.code != 0) return;
 
-                const data = response.data;
+            const {data} = response;
+            commit('setScenario', data || {});
+            return true;
+        },
+        async saveScenario({commit}, payload: any) {
+            saveScenario(payload).then((json) => {
+                if (json.code === 0) {
+                    return true;
+                } else {
+                    return false
+                }
+            })
+        },
 
-                commit('setList',{
-                    ...initState.queryResult,
-                    list: data.result || [],
-                    pagination: {
-                        ...initState.queryResult.pagination,
-                        current: params.page,
-                        pageSize: params.pageSize,
-                        total: data.total || 0,
-                    },
-                });
+        async getNode({commit}, payload: any) {
+            if (payload.isDir) {
+                commit('setNode', {});
+                return true;
+            }
+
+            try {
+                const response = await getNode(payload.id);
+                const {data} = response;
+
+                commit('setNode', data);
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async getScenario({ commit }, id: number ) {
-            if (id === 0) {
-                commit('setItem',{
-                    ...initState.detailResult,
-                })
-                return
-            }
+        async createNode({commit, dispatch, state}, payload: any) {
             try {
-                const response: ResponseData = await detail(id);
-                const { data } = response;
-                commit('setItem',{
-                    ...initState.detailResult,
-                    ...data,
-                });
+                const resp = await createNode(payload);
+
+                await dispatch('loadScenario');
+                return resp.data;
+            } catch (error) {
+                return false;
+            }
+        },
+        async updateNode({commit}, payload: any) {
+            try {
+                const {id, ...params} = payload;
+                await updateNode(id, {...params});
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async saveScenario({ commit }, payload: Pick<Scenario, "name" | "desc"> ) {
+        async removeNode({commit, dispatch, state}, payload: number) {
             try {
-                await save(payload);
+                await removeNode(payload);
+                await dispatch('loadScenario');
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async removeScenario({ commit }, payload: number ) {
+        async moveNode({commit, dispatch, state}, payload: any) {
             try {
-                await remove(payload);
+                await moveNode(payload);
+                await dispatch('loadScenario');
                 return true;
             } catch (error) {
                 return false;

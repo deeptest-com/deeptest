@@ -8,7 +8,8 @@ import (
 )
 
 type ScenarioModule struct {
-	ScenarioCtrl *controller.ScenarioCtrl `inject:""`
+	ScenarioCtrl     *controller.ScenarioCtrl     `inject:""`
+	ScenarioNodeCtrl *controller.ScenarioNodeCtrl `inject:""`
 }
 
 func NewScenarioModule() *ScenarioModule {
@@ -24,6 +25,17 @@ func (m *ScenarioModule) Party() module.WebModule {
 		index.Post("/", m.ScenarioCtrl.Create).Name = "新建场景"
 		index.Put("/", m.ScenarioCtrl.Update).Name = "更新场景"
 		index.Delete("/{id:uint}", m.ScenarioCtrl.Delete).Name = "删除场景"
+
+		index.Get("/", m.ScenarioNodeCtrl.LoadTree).Name = "场景树状数据"
+		index.PartyFunc("node", func(party iris.Party) {
+			//party.Get("/{id:uint}", m.ScenarioNodeCtrl.Get).Name = "场景节点详情"
+			//party.Post("/", m.ScenarioNodeCtrl.Create).Name = "新建节点"
+			//party.Put("/{id:uint}", m.ScenarioNodeCtrl.Update).Name = "更新节点"
+			//party.Put("/{id:uint}/updateName", m.ScenarioNodeCtrl.UpdateName).Name = "更新节点名称"
+			//party.Delete("/{id:uint}", m.ScenarioNodeCtrl.Delete).Name = "删除节点"
+			//party.Post("/move", m.ScenarioNodeCtrl.Move).Name = "移动节点"
+		})
 	}
+
 	return module.NewModule("/scenarios", handler)
 }

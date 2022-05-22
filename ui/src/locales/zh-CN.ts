@@ -18,7 +18,8 @@ export default {
 
     'interface': '接口',
     'scenario': '场景',
-    'scenario.edit': '场景编排',
+    'scenario.edit': '场景编辑',
+    'scenario.design': '场景设计',
 
     'mock.oauth2.callback': 'OAuth2回调模拟',
 

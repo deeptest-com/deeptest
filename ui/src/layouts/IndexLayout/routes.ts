@@ -56,6 +56,13 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
       {
         icon: 'scenario',
+        title: 'scenario.design',
+        path: 'design/:id',
+        component: () => import('@/views/scenario/design/index.vue'),
+        hidden: true,
+      },
+      {
+        icon: 'scenario',
         title: 'scenario.edit',
         path: 'edit/:id',
         component: () => import('@/views/scenario/edit/index.vue'),

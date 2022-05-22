@@ -288,12 +288,13 @@ const (
 type ProcessorType string
 
 const (
-	ProcessorSimple    ProcessorType = "processor_simple"
-	ProcessorFlow      ProcessorType = "processor_flow"
-	ProcessorIterator  ProcessorType = "processor_iterator"
-	ProcessorTimer     ProcessorType = "processor_timer"
-	ProcessorAssertion ProcessorType = "processor_assertion"
-	ProcessorExtractor ProcessorType = "processor_extractor"
+	ProcessorThreadGroup ProcessorType = "processor_thread_group"
+	ProcessorSimple      ProcessorType = "processor_simple"
+	ProcessorFlow        ProcessorType = "processor_flow"
+	ProcessorIterator    ProcessorType = "processor_iterator"
+	ProcessorTimer       ProcessorType = "processor_timer"
+	ProcessorAssertion   ProcessorType = "processor_assertion"
+	ProcessorExtractor   ProcessorType = "processor_extractor"
 
 	ProcessorCookie ProcessorType = "processor_cookie"
 	ProcessorData   ProcessorType = "processor_data"

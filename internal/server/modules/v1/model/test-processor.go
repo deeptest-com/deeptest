@@ -17,6 +17,24 @@ func (TestProcessor) TableName() string {
 	return "test_processor"
 }
 
+type ProcessorThreadGroup struct {
+	BaseModel
+	ProcessorBase
+
+	Count int `json:"count" yaml:"count"`
+	Loop  int `json:"loop" yaml:"loop"`
+
+	StartupDelay int `json:"startupDelay" yaml:"startupDelay"`
+	RampUpPeriod int `json:"rampUpPeriod" yaml:"rampUpPeriod"`
+	Duration     int `json:"duration" yaml:"duration"`
+
+	ErrorAction consts.ErrorAction
+}
+
+func (ProcessorThreadGroup) TableName() string {
+	return "biz_test_processor_thread_group"
+}
+
 type ProcessorSimple struct {
 	BaseModel
 	ProcessorBase

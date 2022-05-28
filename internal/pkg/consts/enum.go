@@ -290,6 +290,7 @@ type ProcessorType string
 const (
 	ProcessorInterface ProcessorType = "processor_interface"
 
+	ProcessorRoot        ProcessorType = "processor_root"
 	ProcessorThreadGroup ProcessorType = "processor_thread_group"
 	ProcessorSimple      ProcessorType = "processor_simple"
 	ProcessorFlow        ProcessorType = "processor_flow"

@@ -1,36 +1,50 @@
 <template>
   <div class="dp-tree-context-menu">
+    {{treeNode}}
     <a-menu @click="menuClick" mode="inline">
-      <a-menu-item key="rename" class="menu-item" v-if="treeNode.parentId > 0">
-        <EditOutlined />
-        <span>重命名</span>
-      </a-menu-item>
+      <template v-if="treeNode.processorType === 'processor_root'">
+        <a-menu-item key="addProcessor" class="menu-item">
+          <PlusOutlined />
+          <span>新建处理器</span>
+        </a-menu-item>
+        <a-menu-item key="addInterface" class="menu-item">
+          <PlusOutlined />
+          <span>新建请求</span>
+        </a-menu-item>
+      </template>
 
-      <a-menu-item key="add_brother_node" class="menu-item" v-if="treeNode.parentId > 0">
-        <PlusOutlined />
-        <span>创建兄弟节点</span>
-      </a-menu-item>
+      <template v-if="false">
+        <a-menu-item key="rename" class="menu-item" v-if="treeNode.parentId > 0">
+          <EditOutlined />
+          <span>重命名</span>
+        </a-menu-item>
 
-      <a-menu-item key="add_child_node" class="menu-item" v-if="treeNode.isDir">
-        <PlusOutlined />
-        <span>创建子节点</span>
-      </a-menu-item>
+        <a-menu-item key="add_brother_node" class="menu-item" v-if="treeNode.parentId > 0">
+          <PlusOutlined />
+          <span>创建兄弟节点</span>
+        </a-menu-item>
 
-      <a-menu-item key="add_brother_dir" class="menu-item" v-if="treeNode.parentId > 0">
-        <PlusOutlined />
-        <span>创建兄弟目录</span>
-      </a-menu-item>
+        <a-menu-item key="add_child_node" class="menu-item" v-if="treeNode.isDir">
+          <PlusOutlined />
+          <span>创建子节点</span>
+        </a-menu-item>
 
-      <a-menu-item key="add_child_dir" class="menu-item" v-if="treeNode.isDir">
-        <PlusOutlined />
-        <span>创建子目录</span>
-      </a-menu-item>
+        <a-menu-item key="add_brother_dir" class="menu-item" v-if="treeNode.parentId > 0">
+          <PlusOutlined />
+          <span>创建兄弟目录</span>
+        </a-menu-item>
 
-      <a-menu-item key="remove" class="menu-item" v-if="treeNode.parentId > 0">
-        <CloseOutlined />
-        <span v-if="treeNode.isDir">删除目录</span>
-        <span v-if="!treeNode.isDir">删除节点</span>
-      </a-menu-item>
+        <a-menu-item key="add_child_dir" class="menu-item" v-if="treeNode.isDir">
+          <PlusOutlined />
+          <span>创建子目录</span>
+        </a-menu-item>
+
+        <a-menu-item key="remove" class="menu-item" v-if="treeNode.parentId > 0">
+          <CloseOutlined />
+          <span v-if="treeNode.isDir">删除目录</span>
+          <span v-if="!treeNode.isDir">删除节点</span>
+        </a-menu-item>
+      </template>
     </a-menu>
   </div>
 </template>

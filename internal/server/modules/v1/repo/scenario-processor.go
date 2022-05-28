@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
@@ -60,9 +61,11 @@ func (r *ScenarioProcessorRepo) haveChild(Data []*model.TestProcessor, node *mod
 
 func (r *ScenarioProcessorRepo) CreateDefault(scenarioId uint) (po model.TestProcessor, err error) {
 	po = model.TestProcessor{
-		ScenarioId: scenarioId,
-		Name:       "root",
-		IsDir:      true,
+		ScenarioId:    scenarioId,
+		Name:          "root",
+		ProcessorType: consts.ProcessorRoot,
+		ProcessorId:   0,
+		IsDir:         true,
 	}
 	err = r.DB.Create(&po).Error
 

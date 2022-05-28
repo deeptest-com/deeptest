@@ -161,7 +161,9 @@ const onRightClick = (e) => {
     id: node.eventKey,
     title: node.title,
     isDir: contextNodeData.isDir,
-    parentId: node.dataRef.parentId
+    parentId: node.dataRef.parentId,
+    processorId: node.dataRef.processorId,
+    processorType: node.dataRef.processorType,
   }
 
   menuStyle.value = {

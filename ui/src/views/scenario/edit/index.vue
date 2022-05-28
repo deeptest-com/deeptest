@@ -18,6 +18,9 @@
             <a-input v-model:value="modelRef.desc"
                      @blur="validate('desc', { trigger: 'blur' }).catch(() => {})" />
           </a-form-item>
+          <a-form-item label="是否禁用">
+            <a-switch v-model:checked="modelRef.disabled" />
+          </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
@@ -53,7 +56,7 @@ export default defineComponent({
       });
 
       const store = useStore<{ Scenario: StateType }>();
-      const modelRef = computed<Partial<Scenario>>(() => store.state.Scenario.scenarioData);
+      const modelRef = computed<Partial<Scenario>>(() => store.state.Scenario.detailResult);
       const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
 
       const get = async (id: number): Promise<void> => {
@@ -63,23 +66,22 @@ export default defineComponent({
       get(id.value)
 
       const submitForm = async() => {
-        validate()
-            .then(() => {
-              console.log(modelRef);
+        validate().then(() => {
+          console.log(modelRef);
 
-              store.dispatch('Scenario/saveScenario', modelRef.value).then((res) => {
-                console.log('res', res)
-                if (res === true) {
-                  message.success(`保存项目成功`);
-                  router.replace('/scenario/list')
-                } else {
-                  message.error(`保存项目失败`);
-                }
-              })
-            })
-            .catch(err => {
-              console.log('error', err);
-            });
+          store.dispatch('Scenario/saveScenario', modelRef.value).then((res) => {
+            console.log('res', res)
+            if (res === true) {
+              notification.success({
+                message: `保存成功`,
+              });
+              router.replace('/scenario/list')
+            }
+          })
+        })
+        .catch(err => {
+          console.log('error', err);
+        });
       };
 
       const back = ():void =>  {

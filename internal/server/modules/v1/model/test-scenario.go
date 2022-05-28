@@ -8,6 +8,8 @@ type TestScenario struct {
 	Desc    string  `json:"desc" yaml:"desc"`
 
 	Processor TestProcessor `json:"processor" yaml:"processor" gorm:"-"`
+
+	ProjectId uint `json:"projectId"`
 }
 
 func (TestScenario) TableName() string {

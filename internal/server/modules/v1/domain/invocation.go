@@ -23,6 +23,8 @@ type InvocationRequest struct {
 	BearerToken domain.BearerToken `gorm:"-" json:"bearerToken"`
 	OAuth20     domain.OAuth20     `gorm:"-" json:"oauth20"`
 	ApiKey      domain.ApiKey      `gorm:"-" json:"apiKey"`
+
+	ProjectId uint `json:"projectId"`
 }
 
 type InvocationResponse struct {

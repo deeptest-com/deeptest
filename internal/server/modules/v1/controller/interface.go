@@ -34,6 +34,7 @@ func (c *InterfaceCtrl) SaveInterface(ctx iris.Context) {
 		return
 	}
 
+	req.ProjectId = uint(projectId)
 	err = c.InterfaceService.UpdateByConfig(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})

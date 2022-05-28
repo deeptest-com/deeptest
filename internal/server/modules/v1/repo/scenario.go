@@ -77,16 +77,14 @@ func (r *ScenarioRepo) FindByName(scenarioName string, id uint) (scenario model.
 	return
 }
 
-func (r *ScenarioRepo) Create(req model.TestScenario) (id uint, err error) {
-	po, err := r.FindByName(req.Name, 0)
+func (r *ScenarioRepo) Create(scenario model.TestScenario) (id uint, err error) {
+	po, err := r.FindByName(scenario.Name, 0)
 	if po.Name != "" {
 		err = fmt.Errorf("%d", _domain.BizErrNameExist.Code)
 		return
 	}
 
-	scenario := model.TestScenario{}
-
-	err = r.DB.Model(&model.TestScenario{}).Create(&req).Error
+	err = r.DB.Model(&model.TestScenario{}).Create(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("add scenario error", zap.String("error:", err.Error()))
 		err = fmt.Errorf("%d", _domain.BizErrNameExist.Code)
@@ -100,7 +98,12 @@ func (r *ScenarioRepo) Create(req model.TestScenario) (id uint, err error) {
 }
 
 func (r *ScenarioRepo) Update(req model.TestScenario) error {
-	err := r.DB.Model(&req).Where("id = ?", req.ID).Updates(&req).Error
+	values := map[string]interface{}{
+		"name":     req.Name,
+		"desc":     req.Desc,
+		"disabled": req.Disabled,
+	}
+	err := r.DB.Model(&req).Where("id = ?", req.ID).Updates(values).Error
 	if err != nil {
 		logUtils.Errorf("update scenario error", zap.String("error:", err.Error()))
 		return err

@@ -23,16 +23,12 @@ export default defineComponent({
     components: {
     },
     setup(): RightTopMessageSetupData {
-
         const store = useStore<{User: UserStateType}>();
-        
         const message = computed<number>(()=> store.state.User.message);
-
 
         onMounted(()=>{
             store.dispatch("User/fetchMessage");
         })
-
 
         return {
             message

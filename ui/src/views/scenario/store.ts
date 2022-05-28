@@ -3,10 +3,13 @@ import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
 import { Scenario, QueryResult, QueryParams, PaginationConfig } from './data.d';
 import {
-    saveScenario, load, getNode, createNode, updateNode, removeNode, moveNode,
+    query, get, save, load, getNode, createNode, updateNode, removeNode, moveNode,
 } from './service';
 
 export interface StateType {
+    listResult: QueryResult;
+    detailResult: Scenario;
+
     treeData: Scenario[];
     scenarioData: Scenario;
     nodeData: any;
@@ -15,10 +18,16 @@ export interface StateType {
 export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
+        setList: Mutation<StateType>;
+        setDetail: Mutation<StateType>;
+
         setScenario: Mutation<StateType>;
         setNode: Mutation<StateType>;
     };
     actions: {
+        listScenario: Action<StateType, StateType>;
+        getScenario: Action<StateType, StateType>;
+
         loadScenario: Action<StateType, StateType>;
         saveScenario: Action<StateType, StateType>;
         getNode: Action<StateType, StateType>;
@@ -29,6 +38,18 @@ export interface ModuleType extends StoreModuleType<StateType> {
     };
 }
 const initState: StateType = {
+    listResult: {
+        list: [],
+        pagination: {
+            total: 0,
+            current: 1,
+            pageSize: 10,
+            showSizeChanger: true,
+            showQuickJumper: true,
+        },
+    },
+    detailResult: {} as Scenario,
+
     treeData: [],
     scenarioData: {} as Scenario,
     nodeData: {},
@@ -41,6 +62,13 @@ const StoreModel: ModuleType = {
         ...initState
     },
     mutations: {
+        setList(state, payload) {
+            state.listResult = payload;
+        },
+        setDetail(state, payload) {
+            state.detailResult = payload;
+        },
+        
         setScenario(state, data) {
             state.scenarioData = data;
         },
@@ -49,6 +77,57 @@ const StoreModel: ModuleType = {
         },
     },
     actions: {
+        async listScenario({ commit }, params: QueryParams ) {
+            try {
+                const response: ResponseData = await query(params);
+                if (response.code != 0) return;
+
+                const data = response.data;
+
+                commit('setList',{
+                    ...initState.listResult,
+                    list: data.result || [],
+                    pagination: {
+                        ...initState.listResult.pagination,
+                        current: params.page,
+                        pageSize: params.pageSize,
+                        total: data.total || 0,
+                    },
+                });
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async getScenario({ commit }, id: number ) {
+            if (id === 0) {
+                commit('setDetail',{
+                    ...initState.detailResult,
+                })
+                return
+            }
+            try {
+                const response: ResponseData = await get(id);
+                const { data } = response;
+                commit('setDetail',{
+                    ...initState.detailResult,
+                    ...data,
+                });
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async saveScenario({commit}, payload: any) {
+            const jsn = await save(payload)
+            if (jsn.code === 0) {
+                return true;
+            } else {
+                return false
+            }
+        },
+
         async loadScenario({commit}) {
             const response = await load();
             if (response.code != 0) return;
@@ -56,15 +135,6 @@ const StoreModel: ModuleType = {
             const {data} = response;
             commit('setScenario', data || {});
             return true;
-        },
-        async saveScenario({commit}, payload: any) {
-            saveScenario(payload).then((json) => {
-                if (json.code === 0) {
-                    return true;
-                } else {
-                    return false
-                }
-            })
         },
 
         async getNode({commit}, payload: any) {

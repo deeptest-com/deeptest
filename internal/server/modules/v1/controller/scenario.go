@@ -55,13 +55,20 @@ func (c *ScenarioCtrl) Get(ctx iris.Context) {
 }
 
 func (c *ScenarioCtrl) Create(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if projectId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
+		return
+	}
+
 	req := model.TestScenario{}
-	err := ctx.ReadJSON(&req)
+	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
 
+	req.ProjectId = uint(projectId)
 	id, err := c.ScenarioService.Create(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: c.ErrCode(err), Data: nil})

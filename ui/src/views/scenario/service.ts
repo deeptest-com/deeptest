@@ -2,15 +2,26 @@ import request from '@/utils/request';
 import {Interface, OAuth20} from "@/views/interface/data";
 import {isInArray} from "@/utils/array";
 import {CheckpointOperator} from "@/views/interface/consts";
+import {QueryParams} from "@/views/project/data";
 
 const apiPath = 'scenarios';
 
-// scenario
-export async function saveScenario(interf: Interface): Promise<any> {
+export async function query(params?: QueryParams): Promise<any> {
     return request({
-        url: `/${apiPath}/saveScenario`,
-        method: 'post',
-        data: interf,
+        url: `/${apiPath}`,
+        method: 'get',
+        params,
+    });
+}
+export async function get(id: number): Promise<any> {
+    return request({url: `/${apiPath}/${id}`});
+}
+
+export async function save(data: any): Promise<any> {
+    return request({
+        url: `/${apiPath}`,
+        method: data.id? 'PUT': 'POST',
+        data: data,
     });
 }
 

@@ -58,8 +58,8 @@ var (
 	AuthActionErr = ErrMsg{403, "权限不足"}
 
 	NeedInitErr = ErrMsg{1000, "前往初始化数据库"}
-	ParamErr    = ErrMsg{4004, "参数解析失败"}
-	SystemErr   = ErrMsg{5000, "系统错误"}
+	ParamErr    = ErrMsg{2000, "参数解析失败"}
+	SystemErr   = ErrMsg{3000, "系统错误"}
 
-	BizErrNameExist = ErrMsg{10100, "指定名称的记录不存在"}
+	BizErrNameExist = ErrMsg{10100, "指定名称的记录已存在"}
 )

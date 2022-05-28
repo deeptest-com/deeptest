@@ -32,8 +32,8 @@
             {{ text }}
           </template>
           <template #status="{ record }">
-            <a-tag v-if="record.disabled == 0" color="green">启用</a-tag>
-            <a-tag v-else color="cyan">禁用</a-tag>
+            <a-tag v-if="record.disabled" color="green">禁用</a-tag>
+            <a-tag v-else color="cyan">启用</a-tag>
           </template>
           <template #action="{ record }">
             <a-button type="link" @click="() => design(record.id)">设计</a-button>
@@ -76,8 +76,8 @@ const statusArr = ref<SelectTypes['options']>([
 const router = useRouter();
 const store = useStore<{ Scenario: StateType }>();
 
-const list = computed<Scenario[]>(() => store.state.Scenario.queryResult.list);
-let pagination = computed<PaginationConfig>(() => store.state.Scenario.queryResult.pagination);
+const list = computed<Scenario[]>(() => store.state.Scenario.listResult.list);
+let pagination = computed<PaginationConfig>(() => store.state.Scenario.listResult.pagination);
 let queryParams = reactive<QueryParams>({
   keywords: '', enabled: '1',
   page: pagination.value.current, pageSize: pagination.value.pageSize
@@ -124,9 +124,7 @@ const loading = ref<boolean>(true);
 const getList = async (current: number): Promise<void> => {
   loading.value = true;
 
-  console.log('===', store)
-
-  await store.dispatch('Scenario/queryScenario', {
+  await store.dispatch('Scenario/listScenario', {
     keywords: queryParams.keywords,
     enabled: queryParams.enabled,
     pageSize: pagination.value.pageSize,
@@ -172,7 +170,7 @@ const onSearch = debounce(() => {
 }, 500);
 
 onMounted(() => {
-  getList(1);
+  console.log('onMounted')
 })
 
 </script>

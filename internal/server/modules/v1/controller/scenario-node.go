@@ -14,9 +14,9 @@ type ScenarioNodeCtrl struct {
 
 // LoadTree
 func (c *ScenarioNodeCtrl) LoadTree(ctx iris.Context) {
-	projectId, err := ctx.URLParamInt("currProjectId")
+	scenarioId, err := ctx.URLParamInt("scenarioId")
 
-	data, err := c.ScenarioNodeService.GetTree(projectId)
+	data, err := c.ScenarioNodeService.GetTree(scenarioId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

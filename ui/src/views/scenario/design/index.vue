@@ -1,7 +1,7 @@
 <template>
   <div id="main" class="scenario-design-main">
     <div id="left-panel">
-      <ScenarioTree />
+      <ScenarioTree :scenarioId="id" />
     </div>
 
     <div id="splitter-h"></div>
@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, watch} from "vue";
+import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 
 import {resizeWidth} from "@/utils/dom";
@@ -28,6 +28,8 @@ const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; Global: GlobalStateType; }>();
 
 const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
+
+const id = ref(+router.currentRoute.value.params.id)
 
 onMounted(() => {
   console.log('onMounted')

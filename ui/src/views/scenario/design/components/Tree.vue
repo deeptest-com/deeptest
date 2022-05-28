@@ -63,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineComponent, onMounted, onUnmounted, ref, watch} from "vue";
+import {computed, defineProps, onMounted, onUnmounted, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form} from 'ant-design-vue';
 import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
@@ -80,16 +80,18 @@ import {StateType as ProjectStateType} from "@/store/project";
 import TreeContextMenu from "./TreeContextMenu.vue";
 import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
 
+const props = defineProps<{ scenarioId: number }>()
+
 const useForm = Form.useForm;
 
 const {t} = useI18n();
 
 const store = useStore<{ Scenario: ScenarioStateType; Project: ProjectStateType; }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
-const currProject = computed<any>(() => store.state.Project.currProject);
 
 const queryTree = throttle(async () => {
-  await store.dispatch('Scenario/loadScenario');
+  console.log('scenarioId', props.scenarioId)
+  await store.dispatch('Scenario/loadScenario', props.scenarioId);
 }, 600)
 queryTree();
 
@@ -109,7 +111,7 @@ let tree = ref(null)
 const expandNode = (keys: string[], e: any) => {
   console.log('expandNode', keys[0], e)
 
-  setExpandedKeys(currProject.value.id, expandedKeys.value)
+  setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
 }
 
 const selectNode = (keys) => {
@@ -202,7 +204,7 @@ watch(treeData, () => {
     tips.value = '右键树状节点操作'
   }
 
-  getExpandedKeys(currProject.value.id).then(async keys => {
+  getExpandedKeys(treeData.value[0].scenarioId).then(async keys => {
     console.log('keys', keys)
     if (keys)
       expandedKeys.value = keys
@@ -210,7 +212,7 @@ watch(treeData, () => {
     if (!expandedKeys.value || expandedKeys.value.length === 0) {
       getOpenKeys(treeData.value[0], false) // expend first level folder
       console.log('expandedKeys.value', expandedKeys.value)
-      await setExpandedKeys(currProject.value.id, expandedKeys.value)
+      await setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
     }
   })
 })
@@ -220,7 +222,7 @@ const expandAll = () => {
   isExpand.value = !isExpand.value
   expandedKeys.value = expandAllKeys(treeDataMap, isExpand.value)
 
-  setExpandedKeys(currProject.value.id, expandedKeys.value)
+  setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
 }
 
 let targetModelId = 0

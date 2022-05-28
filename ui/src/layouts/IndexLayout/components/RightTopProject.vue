@@ -37,10 +37,8 @@ export default defineComponent({
     const projects = computed<any>(() => projectStore.state.ProjectData.projects);
     const currProject = computed<any>(() => projectStore.state.ProjectData.currProject);
 
-    onMounted(() => {
-      userStore.dispatch("User/fetchMessage");
-      projectStore.dispatch("ProjectData/fetchProject");
-    })
+    userStore.dispatch("User/fetchMessage");
+    projectStore.dispatch("ProjectData/fetchProject");
 
     const selectProject = (value): void => {
       console.log('selectProject', value)

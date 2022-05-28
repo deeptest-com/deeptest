@@ -25,10 +25,12 @@ export async function save(data: any): Promise<any> {
     });
 }
 
-export async function load(): Promise<any> {
+export async function load(scenarioId): Promise<any> {
+    const params = {scenarioId}
     return request({
         url: `/${apiPath}/load`,
         method: 'get',
+        params,
     });
 }
 

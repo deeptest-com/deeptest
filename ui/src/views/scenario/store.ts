@@ -11,7 +11,6 @@ export interface StateType {
     detailResult: Scenario;
 
     treeData: Scenario[];
-    scenarioData: Scenario;
     nodeData: any;
 }
 
@@ -21,7 +20,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
 
-        setScenario: Mutation<StateType>;
+        setTree: Mutation<StateType>;
         setNode: Mutation<StateType>;
     };
     actions: {
@@ -51,7 +50,6 @@ const initState: StateType = {
     detailResult: {} as Scenario,
 
     treeData: [],
-    scenarioData: {} as Scenario,
     nodeData: {},
 };
 
@@ -69,8 +67,8 @@ const StoreModel: ModuleType = {
             state.detailResult = payload;
         },
         
-        setScenario(state, data) {
-            state.scenarioData = data;
+        setTree(state, data) {
+            state.treeData = [data];
         },
         setNode(state, data) {
             state.nodeData = data;
@@ -128,12 +126,12 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async loadScenario({commit}) {
-            const response = await load();
+        async loadScenario({commit}, scenarioId) {
+            const response = await load(scenarioId);
             if (response.code != 0) return;
 
             const {data} = response;
-            commit('setScenario', data || {});
+            commit('setTree', data || {});
             return true;
         },
 

@@ -13,5 +13,5 @@ type TestScenario struct {
 }
 
 func (TestScenario) TableName() string {
-	return "test_scenario"
+	return "biz_test_scenario"
 }

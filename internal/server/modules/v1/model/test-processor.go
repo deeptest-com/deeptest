@@ -11,10 +11,11 @@ type TestProcessor struct {
 	Name string `json:"name" yaml:"name"`
 	Desc string `json:"desc" yaml:"desc"`
 
-	IsDir     bool `json:"isDir"`
-	ParentId  uint `json:"parentId"`
-	ProjectId uint `json:"projectId"`
-	UseID     uint `json:"useId"`
+	IsDir      bool `json:"isDir"`
+	ParentId   uint `json:"parentId"`
+	ScenarioId uint `json:"scenarioId"`
+	ProjectId  uint `json:"projectId"`
+	UseID      uint `json:"useId"`
 
 	ProcessorType consts.ProcessorType `json:"processorType" yaml:"processorType"`
 	ProcessorId   uint                 `json:"processorId" yaml:"processorId"`
@@ -25,7 +26,7 @@ type TestProcessor struct {
 }
 
 func (TestProcessor) TableName() string {
-	return "test_processor"
+	return "biz_test_processor"
 }
 
 type ProcessorThreadGroup struct {

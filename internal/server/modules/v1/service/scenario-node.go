@@ -6,11 +6,14 @@ import (
 )
 
 type ScenarioNodeService struct {
-	ScenarioNodeRepo *repo.ScenarioNodeRepo `inject:""`
+	ScenarioNodeRepo      *repo.ScenarioNodeRepo      `inject:""`
+	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
+	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
 }
 
-func (s *ScenarioNodeService) GetTree(scenarioId int) (root *model.TestScenario, err error) {
-	root, err = s.ScenarioNodeRepo.GetTree(scenarioId)
+func (s *ScenarioNodeService) GetTree(scenarioId int) (root *model.TestProcessor, err error) {
+	root, err = s.ScenarioProcessorRepo.GetTree(scenarioId)
+
 	return
 }
 

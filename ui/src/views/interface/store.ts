@@ -200,8 +200,6 @@ const StoreModel: ModuleType = {
             if (response.code != 0) return;
 
             const {data} = response;
-            console.log('data', data)
-
             commit('setTree', data || {});
             return true;
         },

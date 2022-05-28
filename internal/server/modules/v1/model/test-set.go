@@ -13,5 +13,5 @@ type TestSet struct {
 }
 
 func (TestSet) TableName() string {
-	return "test_set"
+	return "biz_test_set"
 }

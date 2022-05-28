@@ -54,7 +54,7 @@ func (r *ScenarioRepo) Paginate(req serverDomain.ScenarioReqPaginate) (data _dom
 	return
 }
 
-func (r *ScenarioRepo) FindById(id uint) (scenario model.TestScenario, err error) {
+func (r *ScenarioRepo) Get(id uint) (scenario model.TestScenario, err error) {
 	err = r.DB.Model(&model.TestScenario{}).Where("id = ?", id).First(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("find scenario by id error", zap.String("error:", err.Error()))

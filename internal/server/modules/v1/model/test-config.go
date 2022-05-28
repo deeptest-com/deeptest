@@ -16,5 +16,5 @@ type TestConfig struct {
 }
 
 func (TestConfig) TableName() string {
-	return "test_config"
+	return "biz_test_config"
 }

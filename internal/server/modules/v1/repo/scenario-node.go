@@ -1,26 +1,11 @@
 package repo
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"gorm.io/gorm"
 )
 
 type ScenarioNodeRepo struct {
 	DB *gorm.DB `inject:""`
-}
-
-func (r *ScenarioNodeRepo) GetTree(scenarioId int) (root *model.TestScenario, err error) {
-	//pos, err := r.ListByProject(projectId)
-	//
-	//if err != nil {
-	//	return
-	//}
-	//
-	//root = pos[0]
-	//root.Slots = iris.Map{"icon": "icon"}
-	//r.makeTree(pos[1:], root)
-
-	return
 }
 
 //func (r *ScenarioNodeRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint) (parentId uint, ordr int) {

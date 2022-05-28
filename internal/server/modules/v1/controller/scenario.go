@@ -69,13 +69,13 @@ func (c *ScenarioCtrl) Create(ctx iris.Context) {
 	}
 
 	req.ProjectId = uint(projectId)
-	id, err := c.ScenarioService.Create(req)
+	po, err := c.ScenarioService.Create(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: c.ErrCode(err), Data: nil})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{"id": id}, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: po, Msg: _domain.NoErr.Msg})
 }
 
 func (c *ScenarioCtrl) Update(ctx iris.Context) {

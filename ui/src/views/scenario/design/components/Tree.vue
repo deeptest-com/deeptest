@@ -33,7 +33,7 @@
           class="interf-tree"
       >
         <template #title="slotProps">
-          <span v-if="!slotProps.isEdit">{{ slotProps.name }}</span>
+          <span v-if="!slotProps.isEdit">{{ slotProps.name === 'root' ? '场景' : slotProps.name }}</span>
 
           <span v-else class="name-editor">
               <a-input v-model:value="editedData[slotProps.id]"
@@ -89,11 +89,10 @@ const {t} = useI18n();
 const store = useStore<{ Scenario: ScenarioStateType; Project: ProjectStateType; }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
 
-const queryTree = throttle(async () => {
-  console.log('scenarioId', props.scenarioId)
+const loadTree = throttle(async () => {
   await store.dispatch('Scenario/loadScenario', props.scenarioId);
-}, 600)
-queryTree();
+}, 60)
+loadTree();
 
 const replaceFields = {key: 'id', title: 'name'};
 let expandedKeys = ref<number[]>([]);
@@ -119,12 +118,9 @@ const selectNode = (keys) => {
   if (selectedKeys.value.length === 0) return
 
   const selectedData = treeDataMap[selectedKeys.value[0]]
-  store.dispatch('Scenario/getScenario', {id: selectedData.id, isDir: selectedData.isDir})
-  if (!selectedData.isDir) {
-    store.dispatch('Scenario/listInvocation', selectedData.id)
-    store.dispatch('Scenario/listEnvironment')
-    store.dispatch('Scenario/getEnvironment', {id: 0, interfaceId: selectedData.id})
-  }
+  if (selectedData.isDir) return
+
+  store.dispatch('Scenario/getScenario', selectedData.id)
 }
 
 const checkNode = (keys, e) => {

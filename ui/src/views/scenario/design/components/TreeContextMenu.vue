@@ -12,7 +12,7 @@
           <span>新建请求</span>
         </a-menu-item>
 
-        <a-sub-menu key="test" class="menu-item" popupClassName="popup-menu">
+        <a-sub-menu key="test" class="menu-item" popupClassName="dp-tree-context-submenu">
           <template #title>
             <PlusOutlined />
             <span>创建父处理器</span>
@@ -115,9 +115,6 @@ const isInterface = (type) => {
 <style lang="less">
 .dp-tree-context-menu {
   z-index: 9;
-  .ant-tree-node-content-wrapper {
-    display: block !important;
-  }
   .ant-menu {
     border: 1px solid #dedfe1;
     background: #f0f2f5;
@@ -128,11 +125,6 @@ const isInterface = (type) => {
       padding-left: 12px !important;
       height: 22px;
       line-height: 21px;
-      text-align: left;
-      .ant-menu-title-content {
-        height: 22px;
-        line-height: 21px;
-      }
     }
     .menu-item .ant-menu-submenu-title {
       padding-left: 0 !important;
@@ -140,21 +132,15 @@ const isInterface = (type) => {
   }
 }
 
-.popup-menu {
+.dp-tree-context-submenu {
   border: 1px solid #dedfe1;
   background: #f0f2f5;
   .menu-item {
     margin-bottom: 8px;
     margin-top: 8px;
-
     padding-left: 22px !important;
     height: 22px;
     line-height: 21px;
-    text-align: left;
-    .ant-menu-title-content {
-      height: 22px;
-      line-height: 21px;
-    }
   }
 }
 </style>

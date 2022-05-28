@@ -79,9 +79,6 @@ export default defineComponent({
 <style lang="less">
 .dp-tree-context-menu {
   z-index: 9;
-  .ant-tree-node-content-wrapper {
-    display: block !important;
-  }
   .ant-menu {
     border: 1px solid #dedfe1;
     background: #f0f2f5;
@@ -89,11 +86,6 @@ export default defineComponent({
       padding-left: 12px !important;
       height: 22px;
       line-height: 21px;
-      text-align: left;
-      .ant-menu-title-content {
-        height: 22px;
-        line-height: 21px;
-      }
     }
   }
 }

@@ -26,8 +26,8 @@ func (m *ScenarioModule) Party() module.WebModule {
 		index.Put("/", m.ScenarioCtrl.Update).Name = "更新场景"
 		index.Delete("/{id:uint}", m.ScenarioCtrl.Delete).Name = "删除场景"
 
+		index.Get("/load", m.ScenarioNodeCtrl.LoadTree).Name = "场景树状数据"
 		index.PartyFunc("node", func(party iris.Party) {
-			//index.Get("/", m.ScenarioNodeCtrl.LoadTree).Name = "场景树状数据"
 			//party.Get("/{id:uint}", m.ScenarioNodeCtrl.Get).Name = "场景节点详情"
 			//party.Post("/", m.ScenarioNodeCtrl.Create).Name = "新建节点"
 			//party.Put("/{id:uint}", m.ScenarioNodeCtrl.Update).Name = "更新节点"

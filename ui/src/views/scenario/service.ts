@@ -27,7 +27,7 @@ export async function save(data: any): Promise<any> {
 
 export async function load(): Promise<any> {
     return request({
-        url: `/${apiPath}`,
+        url: `/${apiPath}/load`,
         method: 'get',
     });
 }

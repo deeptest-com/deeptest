@@ -1,8 +1,29 @@
 <template>
   <div class="dp-tree-context-menu">
-    {{treeNode}}
-    <a-menu @click="menuClick" mode="inline">
-      <template v-if="treeNode.processorType === 'processor_root'">
+    <a-menu @click="menuClick" mode="vertical">
+      <template v-if="isRoot(treeNode.processorType)">
+        <a-menu-item key="addProcessor" class="menu-item">
+          <PlusOutlined />
+          <span>新建处理器</span>
+        </a-menu-item>
+
+        <a-menu-item key="addInterface" class="menu-item">
+          <PlusOutlined />
+          <span>新建请求</span>
+        </a-menu-item>
+
+        <a-sub-menu key="test" class="menu-item" popupClassName="popup-menu">
+          <template #title>
+            <PlusOutlined />
+            <span>创建父处理器</span>
+          </template>
+
+          <a-menu-item class="menu-item">处理器1</a-menu-item>
+          <a-menu-item class="menu-item">处理器2</a-menu-item>
+        </a-sub-menu>
+      </template>
+
+      <template v-if="isProcessor(treeNode.processorType)">
         <a-menu-item key="addProcessor" class="menu-item">
           <PlusOutlined />
           <span>新建处理器</span>
@@ -10,6 +31,13 @@
         <a-menu-item key="addInterface" class="menu-item">
           <PlusOutlined />
           <span>新建请求</span>
+        </a-menu-item>
+      </template>
+
+      <template v-if="isInterface(treeNode.processorType)">
+        <a-menu-item key="addInterface" class="menu-item">
+          <PlusOutlined />
+          <span>新建父</span>
         </a-menu-item>
       </template>
 
@@ -49,45 +77,39 @@
   </div>
 </template>
 
-<script lang="ts">
-import {defineComponent, PropType, Ref} from "vue";
+<script setup lang="ts">
+import {defineComponent, defineProps, PropType, Ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import {EditOutlined, CloseOutlined, PlusOutlined} from "@ant-design/icons-vue";
 
 const useForm = Form.useForm;
 
-export default defineComponent({
-  name: 'TreeContextMenu',
-  props: {
-    treeNode: {
-      type: Object,
-      required: true
-    },
-    onSubmit: {
-      type: Function as PropType<(selectedKey: string, targetId: number) => void>,
-      required: true
-    }
-  },
-  components: {
-    EditOutlined, PlusOutlined, CloseOutlined,
-  },
-  setup(props) {
-    const {t} = useI18n();
+const props = defineProps<{
+  treeNode: Object,
+  onSubmit: Function,
+}>()
 
-    const menuClick = (e) => {
-      console.log('menuClick', e, props.treeNode)
-      const targetId = props.treeNode.id
-      const key = e.key
+const {t} = useI18n();
 
-      props.onSubmit(key, targetId);
-    };
+const menuClick = (e) => {
+  console.log('menuClick', e, props.treeNode)
+  const targetId = props.treeNode.id
+  const key = e.key
 
-    return {
-      menuClick
-    }
-  }
-})
+  props.onSubmit(key, targetId);
+};
+
+const isRoot = (type) => {
+  return type === 'processor_root'
+}
+const isProcessor = (type) => {
+  return type.indexOf('processor_') > -1 && type !== 'processor_root'
+}
+const isInterface = (type) => {
+  return type.indexOf('processor_') < 0
+}
+
 </script>
 
 <style lang="less">
@@ -99,7 +121,10 @@ export default defineComponent({
   .ant-menu {
     border: 1px solid #dedfe1;
     background: #f0f2f5;
-    .ant-menu-item.menu-item {
+    .menu-item, .menu-item .ant-menu-submenu-title {
+      margin-bottom: 8px;
+      margin-top: 4px;
+
       padding-left: 12px !important;
       height: 22px;
       line-height: 21px;
@@ -108,6 +133,27 @@ export default defineComponent({
         height: 22px;
         line-height: 21px;
       }
+    }
+    .menu-item .ant-menu-submenu-title {
+      padding-left: 0 !important;
+    }
+  }
+}
+
+.popup-menu {
+  border: 1px solid #dedfe1;
+  background: #f0f2f5;
+  .menu-item {
+    margin-bottom: 8px;
+    margin-top: 8px;
+
+    padding-left: 22px !important;
+    height: 22px;
+    line-height: 21px;
+    text-align: left;
+    .ant-menu-title-content {
+      height: 22px;
+      line-height: 21px;
     }
   }
 }

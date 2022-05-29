@@ -38,6 +38,7 @@ var (
 		&TestScenario{},
 		&TestSet{},
 		&TestProcessor{},
+		&ProcessorInterface{},
 		&ProcessorThreadGroup{},
 		&ProcessorSimple{},
 		&ProcessorFlow{},

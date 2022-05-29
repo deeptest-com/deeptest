@@ -14,7 +14,6 @@ type TestProcessor struct {
 	IsDir      bool `json:"isDir"`
 	ParentId   uint `json:"parentId"`
 	ScenarioId uint `json:"scenarioId"`
-	ProjectId  uint `json:"projectId"`
 	UseID      uint `json:"useId"`
 
 	ProcessorType consts.ProcessorType `json:"processorType" yaml:"processorType"`
@@ -27,6 +26,35 @@ type TestProcessor struct {
 
 func (TestProcessor) TableName() string {
 	return "biz_test_processor"
+}
+
+type ProcessorInterface struct {
+	BaseModel
+	ProcessorBase
+
+	Url               string                 `json:"url"`
+	Method            string                 `gorm:"default:GET" json:"method"`
+	Params            []InterfaceParam       `gorm:"-" json:"params"`
+	Headers           []InterfaceHeader      `gorm:"-" json:"headers"`
+	Body              string                 `gorm:"default:{}" json:"body"`
+	BodyType          consts.HttpContentType `gorm:"default:''" json:"bodyType"`
+	AuthorizationType string                 `gorm:"default:''" json:"authorizationType"`
+	PreRequestScript  string                 `gorm:"default:''" json:"preRequestScript"`
+	ValidationScript  string                 `gorm:"default:''" json:"validationScript"`
+
+	BasicAuth   InterfaceBasicAuth   `gorm:"-" json:"basicAuth"`
+	BearerToken InterfaceBearerToken `gorm:"-" json:"bearerToken"`
+	OAuth20     InterfaceOAuth20     `gorm:"-" json:"oauth20"`
+	ApiKey      InterfaceApiKey      `gorm:"-" json:"apiKey"`
+
+	EnvironmentId uint `json:"environmentId"`
+
+	InterfaceExtractors  []InterfaceExtractor  `gorm:"-" json:"interfaceExtractors"`
+	InterfaceCheckpoints []InterfaceCheckpoint `gorm:"-" json:"interfaceCheckpoints"`
+}
+
+func (ProcessorInterface) TableName() string {
+	return "biz_test_processor_interface"
 }
 
 type ProcessorThreadGroup struct {

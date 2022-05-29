@@ -52,6 +52,17 @@ export default {
     'greaterThanOrEqual':  '>=',
     'lessThanOrEqual':  '<=',
 
+    'processor_thread_group':  '线程组',
+    'processor_simple':  '分组',
+    'processor_flow':  '流转',
+    'processor_iterator':  '迭代',
+    'processor_timer':  '计时器',
+    'processor_assertion':  '断言',
+    'processor_extractor':  '提取器',
+
+    'processor_cookie':  'Cookie',
+    'processor_data':  '数据',
+
     'biz_401': '请重新登录',
     'biz_403': '权限不足',
 

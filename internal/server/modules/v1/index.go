@@ -30,7 +30,8 @@ type IndexModule struct {
 	ExtractorModule   *index.ExtractorModule   `inject:""`
 	CheckpointModule  *index.CheckpointModule  `inject:""`
 
-	ScenarioModule *index.ScenarioModule `inject:""`
+	ScenarioModule     *index.ScenarioModule     `inject:""`
+	ScenarioNodeModule *index.ScenarioNodeModule `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -66,6 +67,7 @@ func (m *IndexModule) Party() module.WebModule {
 		m.ExtractorModule.Party(),
 		m.CheckpointModule.Party(),
 		m.ScenarioModule.Party(),
+		m.ScenarioNodeModule.Party(),
 	}
 	return module.NewModule(serverConsts.ApiPath, handler, modules...)
 }

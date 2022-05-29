@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"gorm.io/gorm"
 )
 
@@ -73,49 +74,20 @@ type ScenarioNodeRepo struct {
 //			return err
 //		}
 //
-//		err = r.UpdateParams(interf.ID, interf.Params)
-//		if err != nil {
-//			return err
-//		}
-//
-//		err = r.UpdateHeaders(interf.ID, interf.Headers)
-//		if err != nil {
-//			return err
-//		}
-//
-//		err = r.UpdateBasicAuth(interf.ID, interf.BasicAuth)
-//		if err != nil {
-//			return err
-//		}
-//
-//		err = r.UpdateBearerToken(interf.ID, interf.BearerToken)
-//		if err != nil {
-//			return err
-//		}
-//
-//		err = r.UpdateOAuth20(interf.ID, interf.OAuth20)
-//		if err != nil {
-//			return err
-//		}
-//
-//		err = r.UpdateApiKey(interf.ID, interf.ApiKey)
-//		if err != nil {
-//			return err
-//		}
-//
 //		return err
 //	})
 //
 //	return
 //}
-//func (r *ScenarioNodeRepo) UpdateName(id int, name string) (err error) {
-//	err = r.DB.Model(&model.ScenarioNode{}).
-//		Where("id = ?", id).
-//		Update("name", name).Error
-//
-//	return
-//}
-//
+
+func (r *ScenarioNodeRepo) UpdateName(id int, name string) (err error) {
+	err = r.DB.Model(&model.TestProcessor{}).
+		Where("id = ?", id).
+		Update("name", name).Error
+
+	return
+}
+
 //func (r *ScenarioNodeRepo) makeTree(Data []*model.ScenarioNode, node *model.ScenarioNode) { //参数为父节点，添加父节点的子节点指针切片
 //	children, _ := r.haveChild(Data, node) //判断节点是否有子节点并返回
 //	if children != nil {

@@ -1,6 +1,7 @@
 package service
 
 import (
+	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 )
@@ -61,11 +62,11 @@ func (s *ScenarioNodeService) GetTree(scenarioId int) (root *model.TestProcessor
 //
 //	return
 //}
-//func (s *ScenarioNodeService) UpdateName(req serverDomain.ScenarioNodeReq) (err error) {
-//	err = s.ScenarioNodeRepo.UpdateName(req.Id, req.Name)
-//	return
-//}
-//
+func (s *ScenarioNodeService) UpdateName(req serverDomain.ScenarioNodeReq) (err error) {
+	err = s.ScenarioNodeRepo.UpdateName(req.Id, req.Name)
+	return
+}
+
 //func (s *ScenarioNodeService) Delete(projectId, id uint) (err error) {
 //	err = s.deleteScenarioNodeAndChildren(projectId, id)
 //

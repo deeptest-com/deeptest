@@ -1,8 +1,10 @@
 package controller
 
 import (
+	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 
 	"github.com/kataras/iris/v12"
 )
@@ -91,26 +93,26 @@ func (c *ScenarioNodeCtrl) LoadTree(ctx iris.Context) {
 //	}
 //	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
 //}
-//
-//// UpdateName 更新
-//func (c *ScenarioNodeCtrl) UpdateName(ctx iris.Context) {
-//	var req serverDomain.ScenarioReq
-//	err := ctx.ReadJSON(&req)
-//	if err != nil {
-//		logUtils.Errorf("参数验证失败", err.Error())
-//		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
-//		return
-//	}
-//
-//	err = c.ScenarioNodeService.UpdateName(req)
-//	if err != nil {
-//		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
-//		return
-//	}
-//
-//	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
-//}
-//
+
+// UpdateName 更新
+func (c *ScenarioNodeCtrl) UpdateName(ctx iris.Context) {
+	var req serverDomain.ScenarioNodeReq
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		logUtils.Errorf("参数验证失败", err.Error())
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	err = c.ScenarioNodeService.UpdateName(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+}
+
 //// Delete 删除
 //func (c *ScenarioNodeCtrl) Delete(ctx iris.Context) {
 //	projectId, _ := ctx.URLParamInt("currProjectId")

@@ -75,7 +75,7 @@ const useForm = Form.useForm;
 
 const props = defineProps<{
   treeNode: Object,
-  onSubmit: Function,
+  onMenuClick: Function,
 }>()
 
 const {t} = useI18n();
@@ -88,8 +88,7 @@ const menuClick = (e) => {
   const targetId = props.treeNode.id
 
   console.log(key, targetId)
-
-  // props.onSubmit(key, targetId);
+  props.onMenuClick(key, targetId);
 };
 
 const isRoot = (type) => {

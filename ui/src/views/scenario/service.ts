@@ -5,6 +5,7 @@ import {CheckpointOperator} from "@/views/interface/consts";
 import {QueryParams} from "@/views/project/data";
 
 const apiPath = 'scenarios';
+const apiNodePath = `${apiPath}/nodes`;
 
 export async function query(params?: QueryParams): Promise<any> {
     return request({
@@ -55,10 +56,10 @@ export async function updateNode(id: number, params: any): Promise<any> {
 }
 
 export async function updateNodeName(id: number, name: string): Promise<any> {
-    const data = {name: name}
+    const data = {id: id, name: name}
 
     return request({
-        url: `/${apiPath}/node/${id}/updateName`,
+        url: `/${apiNodePath}/${id}/updateName`,
         method: 'PUT',
         data: data,
     });

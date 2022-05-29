@@ -50,7 +50,7 @@ export default defineComponent({
       type: Object,
       required: true
     },
-    onSubmit: {
+    onMenuClick: {
       type: Function as PropType<(selectedKey: string, targetId: number) => void>,
       required: true
     }
@@ -66,7 +66,7 @@ export default defineComponent({
       const targetId = props.treeNode.id
       const key = e.key
 
-      props.onSubmit(key, targetId);
+      props.onMenuClick(key, targetId);
     };
 
     return {

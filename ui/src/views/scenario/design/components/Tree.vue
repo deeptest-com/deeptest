@@ -55,7 +55,7 @@
       </a-tree>
 
       <div v-if="contextNode.id >= 0" :style="menuStyle">
-        <TreeContextMenu :treeNode="contextNode" :onSubmit="menuClick"/>
+        <TreeContextMenu :treeNode="contextNode" :onMenuClick="menuClick"/>
       </div>
     </div>
 
@@ -66,11 +66,12 @@
 import {computed, defineProps, onMounted, onUnmounted, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form} from 'ant-design-vue';
+import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
 
 import throttle from "lodash.debounce";
-import {expandAllKeys, expandOneKey, getNodeMap, updateNameReq} from "@/views/interface/service";
-import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
+import {expandAllKeys, expandOneKey, getNodeMap} from "@/services/tree";
+import {updateNodeName} from "../../service";
 import {useStore} from "vuex";
 import {Scenario} from "../../data";
 
@@ -130,7 +131,7 @@ const checkNode = (keys, e) => {
 const updateName = (id) => {
   const name = editedData.value[id]
   console.log('updateName', id, name)
-  updateNameReq(id, name).then((json) => {
+  updateNodeName(id, name).then((json) => {
     if (json.code === 0) {
       treeDataMap[id].name = name
       treeDataMap[id].isEdit = false
@@ -224,27 +225,26 @@ const expandAll = () => {
 }
 
 let targetModelId = 0
-const menuClick = (selectedKey: string, targetId: number) => {
-  console.log('menuClick', selectedKey, targetId)
+const menuClick = (menuKey: string, targetId: number) => {
+  console.log('menuClick', menuKey, targetId)
 
   targetModelId = targetId
 
-  if (selectedKey === 'rename') {
+  if (menuKey === 'rename') {
     selectedKeys.value = [targetModelId]
-    selectNode(selectedKeys.value)
-    console.log('rename', treeDataMap[targetModelId])
+    // selectNode(selectedKeys.value)
     editedData.value[targetModelId] = treeDataMap[targetModelId].name
 
     treeDataMap[targetModelId].isEdit = true
     return
   }
 
-  if (selectedKey === 'remove') {
+  if (menuKey === 'remove') {
     removeNode()
     return
   }
 
-  const arr = selectedKey.split('_')
+  const arr = menuKey.split('_')
   addNode(arr[1], arr[2])
 
   clearMenu()

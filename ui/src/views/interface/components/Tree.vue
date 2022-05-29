@@ -55,7 +55,7 @@
       </a-tree>
 
       <div v-if="contextNode.id >= 0" :style="menuStyle">
-        <TreeContextMenu :treeNode="contextNode" :onSubmit="menuClick"/>
+        <TreeContextMenu :treeNode="contextNode" :onMenuClick="menuClick"/>
       </div>
     </div>
 
@@ -69,7 +69,8 @@ import {Form} from 'ant-design-vue';
 import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
 import {Interface} from "@/views/interface/data";
 import throttle from "lodash.debounce";
-import {expandAllKeys, expandOneKey, getNodeMap, updateNameReq} from "@/views/interface/service";
+import {updateNodeName} from "@/views/interface/service";
+import {expandAllKeys, expandOneKey, getNodeMap} from "@/services/tree";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
@@ -141,7 +142,7 @@ export default defineComponent({
     const updateName = (id) => {
       const name = editedData.value[id]
       console.log('updateName', id, name)
-      updateNameReq(id, name).then((json) => {
+      updateNodeName(id, name).then((json) => {
         if (json.code === 0) {
           treeDataMap[id].name = name
           treeDataMap[id].isEdit = false
@@ -233,27 +234,26 @@ export default defineComponent({
     }
 
     let targetModelId = 0
-    const menuClick = (selectedKey: string, targetId: number) => {
-      console.log('menuClick', selectedKey, targetId)
+    const menuClick = (menuKey: string, targetId: number) => {
+      console.log('menuClick', menuKey, targetId)
 
       targetModelId = targetId
 
-      if (selectedKey === 'rename') {
+      if (menuKey === 'rename') {
         selectedKeys.value = [targetModelId]
         selectNode(selectedKeys.value)
-        console.log('rename', treeDataMap[targetModelId])
         editedData.value[targetModelId] = treeDataMap[targetModelId].name
 
         treeDataMap[targetModelId].isEdit = true
         return
       }
 
-      if (selectedKey === 'remove') {
+      if (menuKey === 'remove') {
         removeNode()
         return
       }
 
-      const arr = selectedKey.split('_')
+      const arr = menuKey.split('_')
       addNode(arr[1], arr[2])
 
       clearMenu()

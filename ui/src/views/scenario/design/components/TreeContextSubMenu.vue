@@ -1,7 +1,7 @@
 <template>
   <div class="dp-tree-context-submenu">
     <template v-if="processorTypes?.length > 1">
-      <a-sub-menu @click.stop :key="category.value" class="menu-item" popupClassName="dp-tree-context-submenu">
+      <a-sub-menu @click.stop :key="category.value" trigger="['click']" class="menu-item" popupClassName="dp-tree-context-submenu">
         <template #title>
           <span>{{t(category.label)}}</span>
         </template>

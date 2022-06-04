@@ -1,8 +1,8 @@
 <template>
   <div class="dp-tree-context-menu">
-    <a-menu @click="menuClick" mode="vertical">
+    <a-menu @click="menuClick" trigger="['click']" mode="vertical">
       <template v-if="isRoot(treeNode.processorType)">
-        <a-sub-menu @click.stop key="addProcessor" class="menu-item" popupClassName="dp-tree-context-submenu">
+        <a-sub-menu @click.stop key="addProcessor" trigger="['click']" class="menu-item" popupClassName="dp-tree-context-submenu">
           <template #title>
             <FolderAddOutlined />
             <span>新建处理器</span>
@@ -137,8 +137,7 @@ const isInterface = (type) => {
   }
 
   .ant-menu-submenu.menu-item {
-    margin-top: -10px !important;
-    margin-bottom: 13px !important;
+    margin: 0px !important;
   }
 
   .menu-item {
@@ -146,6 +145,11 @@ const isInterface = (type) => {
     margin-bottom: 5px !important;
     height: 22px;
     line-height: 21px;
+
+    .ant-menu-submenu-title {
+      height: 22px;
+      line-height: 21px;
+    }
   }
 }
 </style>

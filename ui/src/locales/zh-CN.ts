@@ -1,3 +1,5 @@
+import {ProcessorExtractor} from "@/utils/enum";
+
 export default {
     '': '',
     'empty': 'empty',
@@ -52,16 +54,47 @@ export default {
     'greaterThanOrEqual':  '>=',
     'lessThanOrEqual':  '<=',
 
-    'processor_thread_group':  '线程组',
+    // 处理器分类
+    'processor_thread':  '线程',
     'processor_simple':  '分组',
-    'processor_flow':  '流转',
-    'processor_iterator':  '迭代',
+    'processor_logic':  '逻辑',
+    'processor_loop':  '循环',
     'processor_timer':  '计时器',
     'processor_assertion':  '断言',
     'processor_extractor':  '提取器',
-
     'processor_cookie':  'Cookie',
     'processor_data':  '数据',
+
+    // 处理器类型
+    'processor_thread_default':  '线程',
+    'processor_simple_default':  '分组',
+    'processor_time_default':  '计时器',
+
+    'processor_logic_if':  '如果',
+    'processor_logic_else':  '否则',
+
+    'processor_loop_repeat_time':  '次数',
+    'processor_loop_repeat_while':  '直到',
+    'processor_loop_repeat_in':  '列表',
+    'processor_loop_range':  '区间',
+    'processor_loop_break':  '跳出',
+
+    'processor_extractor_boundary':  '边界',
+    'processor_extractor_jsonquery':  'JSON查询',
+    'processor_extractor_htmlquery':  'HTML查询',
+    'processor_extractor_xmlquery':  'XML查询',
+
+    'processor_variable_get': '取值',
+    'processor_variable_set': '赋值',
+    'processor_variable_clear': '清除',
+
+    'processor_cookie_get':  '取值',
+    'processor_cookie_set':  '赋值',
+    'processor_cookie_clear':  '清除',
+
+    'processor_data_text':  '文件',
+    'processor_data_excel':  'Excel',
+    'processor_data_zendata':  'ZenData',
 
     'biz_401': '请重新登录',
     'biz_403': '权限不足',

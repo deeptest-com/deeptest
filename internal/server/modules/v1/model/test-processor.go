@@ -16,8 +16,8 @@ type TestProcessor struct {
 	ScenarioId uint `json:"scenarioId"`
 	UseID      uint `json:"useId"`
 
-	ProcessorType consts.ProcessorType `json:"processorType" yaml:"processorType"`
-	ProcessorId   uint                 `json:"processorId" yaml:"processorId"`
+	ProcessorType consts.ProcessorCategory `json:"processorType" yaml:"processorType"`
+	ProcessorId   uint                     `json:"processorId" yaml:"processorId"`
 
 	Ordr     int              `json:"ordr"`
 	Children []*TestProcessor `gorm:"-" json:"children"`

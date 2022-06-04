@@ -244,22 +244,22 @@ const menuClick = (menuKey: string, targetId: number) => {
     return
   }
 
-  const arr = menuKey.split('_')
-  addNode(arr[1], arr[2])
+  const arr = menuKey.split('-')
+  addNode(arr[1], arr[2], targetId)
 
   clearMenu()
 }
 
-const addNode = (mode, type) => {
-  console.log('addNode', targetModelId)
-  store.dispatch('Scenario/createScenario',
-      {mode: mode, type: type, target: targetModelId, name: type === 'dir' ? '新目录' : '新接口'})
-      .then((newNode) => {
-            console.log('newNode', newNode)
-            selectedKeys.value = [newNode.id] // select new node
-            expandOneKey(treeDataMap, newNode.parentId, expandedKeys.value) // expend new node
-          }
-      )
+const addNode = (mode, type, targetId) => {
+  console.log('addNode', mode, type, targetId)
+  // store.dispatch('Scenario/createScenario',
+  //     {mode: mode, type: type, target: targetModelId, name: type === 'dir' ? '新目录' : '新接口'})
+  //     .then((newNode) => {
+  //           console.log('newNode', newNode)
+  //           selectedKeys.value = [newNode.id] // select new node
+  //           expandOneKey(treeDataMap, newNode.parentId, expandedKeys.value) // expend new node
+  //         }
+  //     )
 }
 const removeNode = () => {
   console.log('removeNode')

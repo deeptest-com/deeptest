@@ -285,22 +285,61 @@ const (
 	Fail CheckpointResult = "FAIL"
 )
 
+type ProcessorCategory string
+
+const (
+	ProcessorInterface ProcessorCategory = "processor_interface"
+
+	ProcessorRoot        ProcessorCategory = "processor_root"
+	ProcessorThreadGroup ProcessorCategory = "processor_thread_group"
+	ProcessorSimple      ProcessorCategory = "processor_simple"
+	ProcessorLogic       ProcessorCategory = "processor_logic"
+	ProcessorLoop        ProcessorCategory = "processor_loop"
+	ProcessorTimer       ProcessorCategory = "processor_timer"
+	ProcessorAssertion   ProcessorCategory = "processor_assertion"
+	ProcessorExtractor   ProcessorCategory = "processor_extractor"
+
+	ProcessorCookie ProcessorCategory = "processor_cookie"
+	ProcessorData   ProcessorCategory = "processor_data"
+)
+
+func (e ProcessorCategory) ToString() string {
+	return string(e)
+}
+
 type ProcessorType string
 
 const (
-	ProcessorInterface ProcessorType = "processor_interface"
+	ProcessorLogicIf   ProcessorType = "processor_logic_if"
+	ProcessorLogicElse ProcessorType = "processor_logic_else"
 
-	ProcessorRoot        ProcessorType = "processor_root"
-	ProcessorThreadGroup ProcessorType = "processor_thread_group"
-	ProcessorSimple      ProcessorType = "processor_simple"
-	ProcessorFlow        ProcessorType = "processor_flow"
-	ProcessorIterator    ProcessorType = "processor_iterator"
-	ProcessorTimer       ProcessorType = "processor_timer"
-	ProcessorAssertion   ProcessorType = "processor_assertion"
-	ProcessorExtractor   ProcessorType = "processor_extractor"
+	ProcessorLoopRepeatTime  ProcessorType = "processor_loop_repeat_time"
+	ProcessorLoopRepeatWhile ProcessorType = "processor_loop_repeat_while"
+	ProcessorLoopRepeatIn    ProcessorType = "processor_loop_repeat_in"
+	ProcessorLoopRepeatRange ProcessorType = "processor_loop_range"
+	ProcessorLoopRepeatBreak ProcessorType = "processor_loop_break"
 
-	ProcessorCookie ProcessorType = "processor_cookie"
-	ProcessorData   ProcessorType = "processor_data"
+	ProcessorVariableSet   ProcessorType = "processor_variable_set"
+	ProcessorVariableGet   ProcessorType = "processor_variable_get"
+	ProcessorVariableClear ProcessorType = "processor_variable_clear"
+
+	ProcessorAssertionEqual      ProcessorType = "processor_assertion_equal"
+	ProcessorAssertionNotEqual   ProcessorType = "processor_assertion_not_equal"
+	ProcessorAssertionContain    ProcessorType = "processor_assertion_contain"
+	ProcessorAssertionNotContain ProcessorType = "processor_assertion_not_contain"
+
+	ProcessorExtractorBoundary  ProcessorType = "processor_extractor_boundary"
+	ProcessorExtractorJsonQuery ProcessorType = "processor_extractor_jsonquery"
+	ProcessorExtractorHtmlQuery ProcessorType = "processor_extractor_htmlquery"
+	ProcessorExtractorXmlQuery  ProcessorType = "processor_extractor_xmlquery"
+
+	ProcessorCookieGet   ProcessorType = "processor_cookie_get"
+	ProcessorCookieSet   ProcessorType = "processor_cookie_set"
+	ProcessorCookieClear ProcessorType = "processor_cookie_clear"
+
+	ProcessorDataText    ProcessorType = "processor_data_text"
+	ProcessorDataExcel   ProcessorType = "processor_data_excel"
+	ProcessorDataZenData ProcessorType = "processor_data_zendata"
 )
 
 func (e ProcessorType) ToString() string {

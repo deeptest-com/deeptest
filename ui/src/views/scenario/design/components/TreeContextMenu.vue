@@ -7,9 +7,13 @@
             <FolderAddOutlined />
             <span>新建处理器</span>
           </template>
-          <a-menu-item v-for="(item) in processorTypes" :key="'add'+item.value" class="menu-item">
-            {{t(item.label)}}
-          </a-menu-item>
+
+          <template v-for="(category) in processorTypes" :key="category.value">
+            <TreeContextSubMenu
+                :processorTypes="processorTypeMap[category.label]"
+                :category="category" />
+          </template>
+
         </a-sub-menu>
 
         <a-menu-item key="addInterface" class="menu-item">
@@ -24,9 +28,11 @@
             <FolderAddOutlined />
             <span>新建处理器</span>
           </template>
-          <a-menu-item v-for="(item) in processorTypes" :key="'add'+item.value" class="menu-item">
-            {{t(item.label)}}
-          </a-menu-item>
+          <template v-for="(category) in processorTypes" :key="category.value">
+            <TreeContextSubMenu
+                :processorTypes="processorTypeMap[category.label]"
+                :category="category" />
+          </template>
         </a-sub-menu>
 
         <a-menu-item key="addInterface" class="menu-item">
@@ -41,9 +47,11 @@
             <FolderAddOutlined />
             <span>新建父处理器</span>
           </template>
-          <a-menu-item v-for="(item) in processorTypes" :key="'add'+item.value" class="menu-item">
-            {{t(item.label)}}
-          </a-menu-item>
+          <template v-for="(category) in processorTypes" :key="category.value">
+            <TreeContextSubMenu
+                :processorTypes="processorTypeMap[category.label]"
+                :category="category" />
+          </template>
         </a-sub-menu>
       </template>
 
@@ -67,20 +75,21 @@ import {defineComponent, defineProps, PropType, Ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import {FolderAddOutlined, FileAddOutlined, EditOutlined, CloseOutlined, PlusOutlined} from "@ant-design/icons-vue";
-import {getEnumSelectItems} from "@/views/interface/service";
-import {OAuth2ClientAuthenticationWay} from "@/views/interface/consts";
-import {ProcessorType} from "@/utils/enum";
+
+import {getProcessorTypeMap, getProcessorTypes} from "@/views/scenario/service";
+import TreeContextSubMenu from "./TreeContextSubMenu.vue";
 
 const useForm = Form.useForm;
 
 const props = defineProps<{
-  treeNode: Object,
+  treeNode: any,
   onMenuClick: Function,
 }>()
 
 const {t} = useI18n();
 
-const processorTypes = getEnumSelectItems(ProcessorType)
+const processorTypes = getProcessorTypes()
+const processorTypeMap = getProcessorTypeMap()
 
 const menuClick = (e) => {
   console.log('menuClick')
@@ -106,11 +115,12 @@ const isInterface = (type) => {
 <style lang="less">
 .dp-tree-context-menu {
   z-index: 9;
+
   .ant-menu {
     border: 1px solid #dedfe1;
-    background: #f0f2f5;
-    .menu-item, .menu-item .ant-menu-submenu-title {
+    background-color: #fff !important;
 
+    .menu-item, .menu-item .ant-menu-submenu-title {
       padding-left: 12px !important;
       height: 22px;
       line-height: 21px;
@@ -122,10 +132,18 @@ const isInterface = (type) => {
 }
 
 .dp-tree-context-submenu {
-  border: 1px solid #dedfe1;
-  background: #f0f2f5;
+  .ant-menu.ant-menu-sub.ant-menu-vertical {
+    overflow-y: hidden;
+  }
+
+  .ant-menu-submenu.menu-item {
+    margin-top: -10px !important;
+    margin-bottom: 13px !important;
+  }
+
   .menu-item {
-    padding-left: 22px !important;
+    margin-top: 5px !important;
+    margin-bottom: 5px !important;
     height: 22px;
     line-height: 21px;
   }

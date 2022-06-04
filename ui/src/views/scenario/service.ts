@@ -3,6 +3,15 @@ import {Interface, OAuth20} from "@/views/interface/data";
 import {isInArray} from "@/utils/array";
 import {CheckpointOperator} from "@/views/interface/consts";
 import {QueryParams} from "@/views/project/data";
+import {getEnumSelectItems} from "@/views/interface/service";
+import {
+    ProcessorCookie, ProcessorData,
+    ProcessorExtractor,
+    ProcessorLogic,
+    ProcessorLoop, ProcessorSimple, ProcessorThread, ProcessorTimer,
+    ProcessorType,
+    ProcessorVariable
+} from "@/utils/enum";
 
 const apiPath = 'scenarios';
 const apiNodePath = `${apiPath}/nodes`;
@@ -78,4 +87,23 @@ export async function moveNode(data: any): Promise<any> {
         method: 'post',
         data: data,
     });
+}
+
+export function getProcessorTypes() {
+    return getEnumSelectItems(ProcessorType)
+}
+
+export function getProcessorTypeMap() {
+    return {
+        processor_thread: getEnumSelectItems(ProcessorThread),
+        processor_simple: getEnumSelectItems(ProcessorSimple),
+        processor_timer: getEnumSelectItems(ProcessorTimer),
+        processor_logic: getEnumSelectItems(ProcessorLogic),
+
+        processor_loop: getEnumSelectItems(ProcessorLoop),
+        processor_extractor: getEnumSelectItems(ProcessorExtractor),
+        processor_variable: getEnumSelectItems(ProcessorVariable),
+        processor_cookie: getEnumSelectItems(ProcessorCookie),
+        processor_data: getEnumSelectItems(ProcessorData),
+    }
 }

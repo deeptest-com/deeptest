@@ -30,7 +30,7 @@
           @dragenter="onDragEnter"
           @drop="onDrop"
 
-          class="interf-tree"
+          class="interface-tree"
       >
         <template #title="slotProps">
           <span v-if="!slotProps.isEdit">{{ slotProps.name }}</span>
@@ -336,7 +336,7 @@ export default defineComponent({
 </script>
 
 <style lang="less">
-.interf-tree {
+.interface-tree {
   .ant-tree-iconEle {
     height: 20px !important;
     line-height: 20px !important;

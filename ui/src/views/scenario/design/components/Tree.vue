@@ -59,6 +59,12 @@
       </div>
     </div>
 
+    <InterfaceSelection
+        v-if="interfaceSelectionVisible"
+        :onFinish="interfaceSelectionFinish"
+        :onCancel="interfaceSelectionCancel"
+    />
+
   </div>
 </template>
 
@@ -78,8 +84,10 @@ import {Scenario} from "../../data";
 import {StateType as ScenarioStateType} from "../../store";
 import {StateType as ProjectStateType} from "@/store/project";
 
-import TreeContextMenu from "./TreeContextMenu.vue";
 import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
+
+import TreeContextMenu from "./TreeContextMenu.vue";
+import InterfaceSelection from "./InterfaceSelection.vue";
 
 const props = defineProps<{ scenarioId: number }>()
 
@@ -252,6 +260,12 @@ const menuClick = (menuKey: string, targetId: number) => {
 
 const addNode = (mode, type, targetId) => {
   console.log('addNode', mode, type, targetId)
+
+  if (!type) {
+    console.log('selectInterface')
+    interfaceSelectionVisible.value = true
+  }
+
   // store.dispatch('Scenario/createScenario',
   //     {mode: mode, type: type, target: targetModelId, name: type === 'dir' ? '新目录' : '新接口'})
   //     .then((newNode) => {
@@ -283,6 +297,15 @@ const onDrop = (info: DropEvent) => {
   console.log(dragKey, dropKey, dropPosition);
 
   store.dispatch('Scenario/moveScenario', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition});
+}
+
+const interfaceSelectionVisible = ref(false)
+const interfaceSelectionFinish = (selectedKeys) => {
+  console.log('interfaceSelectionFinish', selectedKeys)
+}
+const interfaceSelectionCancel = () => {
+  console.log('interfaceSelectionCancel')
+  interfaceSelectionVisible.value = false
 }
 
 onMounted(() => {

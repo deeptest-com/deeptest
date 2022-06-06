@@ -261,8 +261,9 @@ const menuClick = (menuKey: string, targetId: number) => {
 const addNode = (mode, category, type, processorType, processorId) => {
   console.log('addNode', mode, category, type, processorType, processorId)
 
-  if (!type) { // select a interface
+  if (category === 'interface') { // select a interface
     interfaceSelectionVisible.value = true
+    return
   }
 
   // store.dispatch('Scenario/createScenario',

@@ -11,12 +11,13 @@
           <template v-for="(category) in processorTypes" :key="category.value">
             <TreeContextSubMenu
                 :processorTypes="processorTypeMap[category.label]"
-                :category="category" />
+                :category="category"
+                mode="child" />
           </template>
 
         </a-sub-menu>
 
-        <a-menu-item key="addInterface" class="menu-item">
+        <a-menu-item key="add-child-interface" class="menu-item">
           <FileAddOutlined />
           <span>新建请求</span>
         </a-menu-item>
@@ -31,11 +32,12 @@
           <template v-for="(category) in processorTypes" :key="category.value">
             <TreeContextSubMenu
                 :processorTypes="processorTypeMap[category.label]"
-                :category="category" />
+                :category="category"
+                mode="child"/>
           </template>
         </a-sub-menu>
 
-        <a-menu-item key="addInterface" class="menu-item">
+        <a-menu-item key="add-child-interface" class="menu-item">
           <FileAddOutlined />
           <span>新建请求</span>
         </a-menu-item>
@@ -50,7 +52,8 @@
           <template v-for="(category) in processorTypes" :key="category.value">
             <TreeContextSubMenu
                 :processorTypes="processorTypeMap[category.label]"
-                :category="category" />
+                :category="category"
+                mode="parent"/>
           </template>
         </a-sub-menu>
       </template>

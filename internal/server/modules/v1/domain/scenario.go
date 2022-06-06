@@ -17,7 +17,8 @@ type ScenarioAddInterfacesReq struct {
 	ProcessorType string     `json:"processorType"`
 	ProcessorId   int        `json:"processorId"`
 
-	ProjectId int `json:"projectId"`
+	Mode      string `json:"mode"`
+	ProjectId int    `json:"projectId"`
 }
 
 type ScenarioNodeReq struct {

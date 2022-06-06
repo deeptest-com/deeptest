@@ -6,14 +6,14 @@
           <span>{{t(category.label)}}</span>
         </template>
         <a-menu-item v-for="(item) in processorTypes"
-                     :key="'add-'+category.label+'-'+item.label" class="menu-item">
+                     :key="'add-'+mode+'-'+category.label+'-'+item.label" class="menu-item">
           {{t(item.label)}}
         </a-menu-item>
       </a-sub-menu>
     </template>
 
     <template v-if="processorTypes?.length === 1">
-      <a-menu-item :key="'add-'+category.label+'-'+processorTypes[0].label" class="menu-item">
+      <a-menu-item :key="'add-'+mode+'-'+category.label+'-'+processorTypes[0].label" class="menu-item">
         {{t(processorTypes[0].label)}}
       </a-menu-item>
     </template>
@@ -36,6 +36,7 @@ const useForm = Form.useForm;
 const props = defineProps<{
   processorTypes: any,
   category: any,
+  mode: string,
 }>()
 
 const {t} = useI18n();

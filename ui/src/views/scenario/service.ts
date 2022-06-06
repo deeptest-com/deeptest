@@ -48,9 +48,17 @@ export async function getNode(id: number): Promise<any> {
     return request({url: `/${apiPath}/node/${id}`});
 }
 
+export async function addInterfaces(data): Promise<any> {
+    return request({
+        url: `/${apiNodePath}/addInterfaces`,
+        method: 'POST',
+        data: data,
+    });
+}
+
 export async function createNode(data): Promise<any> {
     return request({
-        url: `/${apiPath}/node`,
+        url: `/${apiNodePath}`,
         method: 'POST',
         data: data,
     });
@@ -58,7 +66,7 @@ export async function createNode(data): Promise<any> {
 
 export async function updateNode(id: number, params: any): Promise<any> {
     return request({
-        url: `/${apiPath}/node/${id}`,
+        url: `/${apiNodePath}/${id}`,
         method: 'PUT',
         data: params,
     });
@@ -76,14 +84,14 @@ export async function updateNodeName(id: number, name: string): Promise<any> {
 
 export async function removeNode(id: number): Promise<any> {
     return request({
-        url: `/${apiPath}/node/${id}`,
+        url: `/${apiNodePath}/${id}`,
         method: 'delete',
     });
 }
 
 export async function moveNode(data: any): Promise<any> {
     return request({
-        url: `/${apiPath}/node/move`,
+        url: `/${apiNodePath}/move`,
         method: 'post',
         data: data,
     });

@@ -27,6 +27,35 @@ func (c *ScenarioNodeCtrl) LoadTree(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
+// Create 添加
+func (c *ScenarioNodeCtrl) AddInterfaces(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	req := serverDomain.ScenarioAddInterfacesReq{}
+	err = ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	req.ProjectId = projectId
+
+	//intf, err := c.ScenarioNodeService.Create(req)
+	//if err != nil {
+	//	ctx.JSON(_domain.Response{
+	//		Code: c.ErrCode(err),
+	//		Data: nil,
+	//	})
+	//	return
+	//}
+	//
+	//ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: intf, Msg: _domain.NoErr.Msg})
+}
+
 //// Get 详情
 //func (c *ScenarioNodeCtrl) Get(ctx iris.Context) {
 //	id, err := ctx.Params().GetInt("id")

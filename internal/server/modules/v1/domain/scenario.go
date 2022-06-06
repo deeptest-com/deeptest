@@ -3,12 +3,21 @@ package serverDomain
 import (
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/kataras/iris/v12"
 )
 
 type ScenarioReqPaginate struct {
 	_domain.PaginateReq
 	Keywords string `json:"keywords"`
 	Enabled  string `json:"enabled"`
+}
+
+type ScenarioAddInterfacesReq struct {
+	SelectedNodes []iris.Map `json:"selectedNodes"`
+	ProcessorType string     `json:"processorType"`
+	ProcessorId   int        `json:"processorId"`
+
+	ProjectId int `json:"projectId"`
 }
 
 type ScenarioNodeReq struct {

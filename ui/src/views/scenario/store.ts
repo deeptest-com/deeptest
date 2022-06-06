@@ -3,7 +3,7 @@ import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
 import { Scenario, QueryResult, QueryParams, PaginationConfig } from './data.d';
 import {
-    query, get, save, load, getNode, createNode, updateNode, removeNode, moveNode,
+    query, get, save, load, getNode, createNode, updateNode, removeNode, moveNode, addInterfaces,
 } from './service';
 
 export interface StateType {
@@ -30,6 +30,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         loadScenario: Action<StateType, StateType>;
         saveScenario: Action<StateType, StateType>;
         getNode: Action<StateType, StateType>;
+
+        addInterfaces: Action<StateType, StateType>;
         createNode: Action<StateType, StateType>;
         updateNode: Action<StateType, StateType>;
         removeNode: Action<StateType, StateType>;
@@ -147,6 +149,17 @@ const StoreModel: ModuleType = {
 
                 commit('setNode', data);
                 return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async addInterfaces({commit, dispatch, state}, payload: any) {
+            try {
+                const resp = await addInterfaces(payload);
+
+                await dispatch('loadScenario');
+                return resp.data;
             } catch (error) {
                 return false;
             }

@@ -66,6 +66,7 @@ import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOu
 import {StateType} from "@/views/interface/store";
 import {StateType as ProjectStateType} from "@/store/project";
 import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
+import {isInArray} from "@/utils/array";
 
 const {t} = useI18n();
 
@@ -144,7 +145,15 @@ const expandAll = () => {
 
 const onSubmit = async () => {
   console.log('onSubmit', checkedKeys)
-  props.onFinish(checkedKeys.value);
+
+  const selectedNodes = [] as any[]
+  Object.keys(treeDataMap).forEach((id, index) => {
+    if (!treeDataMap[id].isDir && isInArray(+id, checkedKeys.value)) {
+      selectedNodes.push(treeDataMap[id])
+    }
+  })
+
+  props.onFinish(selectedNodes);
 }
 
 onMounted(() => {

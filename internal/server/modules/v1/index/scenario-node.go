@@ -19,6 +19,7 @@ func NewScenarioNodeModule() *ScenarioNodeModule {
 func (m *ScenarioNodeModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Post("/addInterfaces", m.ScenarioNodeCtrl.AddInterfaces).Name = "新建节点"
 
 		//party.Get("/{id:uint}", m.ScenarioNodeNodeCtrl.Get).Name = "场景节点详情"
 		//party.Post("/", m.ScenarioNodeNodeCtrl.Create).Name = "新建节点"

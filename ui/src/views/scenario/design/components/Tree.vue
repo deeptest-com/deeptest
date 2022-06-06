@@ -253,16 +253,15 @@ const menuClick = (menuKey: string, targetId: number) => {
   }
 
   const arr = menuKey.split('-')
-  addNode(arr[1], arr[2], targetId)
+  addNode(arr[1], arr[2], treeDataMap[targetModelId].processorType, treeDataMap[targetModelId].processorId)
 
   clearMenu()
 }
 
-const addNode = (mode, type, targetId) => {
-  console.log('addNode', mode, type, targetId)
+const addNode = (category, type, processorType, processorId) => {
+  console.log('addNode', category, type, processorType, processorId)
 
-  if (!type) {
-    console.log('selectInterface')
+  if (!type) { // select a interface
     interfaceSelectionVisible.value = true
   }
 
@@ -300,9 +299,16 @@ const onDrop = (info: DropEvent) => {
 }
 
 const interfaceSelectionVisible = ref(false)
-const interfaceSelectionFinish = (selectedKeys) => {
-  console.log('interfaceSelectionFinish', selectedKeys)
+const interfaceSelectionFinish = (selectedNodes) => {
+  console.log('interfaceSelectionFinish', selectedNodes,
+      treeDataMap[targetModelId].processorType, treeDataMap[targetModelId].processorId)
+
+  store.dispatch('Scenario/addInterfaces',
+    {selectedNodes: selectedNodes,
+      processorType: treeDataMap[targetModelId].processorType, processorId: treeDataMap[targetModelId].processorId
+    })
 }
+
 const interfaceSelectionCancel = () => {
   console.log('interfaceSelectionCancel')
   interfaceSelectionVisible.value = false

@@ -7,6 +7,8 @@ import {
 } from './service';
 
 export interface StateType {
+    scenarioId: number;
+
     listResult: QueryResult;
     detailResult: Scenario;
 
@@ -17,6 +19,8 @@ export interface StateType {
 export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
+        setScenarioId: Mutation<StateType>;
+
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
 
@@ -39,6 +43,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
     };
 }
 const initState: StateType = {
+    scenarioId: 0,
+
     listResult: {
         list: [],
         pagination: {
@@ -62,6 +68,10 @@ const StoreModel: ModuleType = {
         ...initState
     },
     mutations: {
+        setScenarioId(state, id) {
+            state.scenarioId = id;
+        },
+
         setList(state, payload) {
             state.listResult = payload;
         },
@@ -77,7 +87,7 @@ const StoreModel: ModuleType = {
         },
     },
     actions: {
-        async listScenario({ commit }, params: QueryParams ) {
+        async listScenario({ commit, dispatch }, params: QueryParams ) {
             try {
                 const response: ResponseData = await query(params);
                 if (response.code != 0) return;
@@ -94,6 +104,7 @@ const StoreModel: ModuleType = {
                         total: data.total || 0,
                     },
                 });
+
                 return true;
             } catch (error) {
                 return false;
@@ -134,6 +145,8 @@ const StoreModel: ModuleType = {
 
             const {data} = response;
             commit('setTree', data || {});
+            commit('setScenarioId', scenarioId );
+
             return true;
         },
 
@@ -158,7 +171,7 @@ const StoreModel: ModuleType = {
             try {
                 const resp = await addInterfaces(payload);
 
-                await dispatch('loadScenario');
+                await dispatch('loadScenario', state.scenarioId);
                 return resp.data;
             } catch (error) {
                 return false;

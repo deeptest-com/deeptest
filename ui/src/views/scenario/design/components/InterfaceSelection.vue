@@ -13,7 +13,7 @@
   <div class="tree-main">
     <div class="toolbar">
       <div class="tips">
-        <a-button type="primary" size="small" @click="onSubmit" class="dp-btn-gap">保存</a-button> &nbsp;
+        <a-button type="primary" size="small" @click="onSubmit" class="dp-btn-gap">添加</a-button> &nbsp;
         <a-button @click="() => onCancel()" size="small" class="dp-btn-gap">取消</a-button>
       </div>
       <div class="buttons">
@@ -94,7 +94,7 @@ let tree = ref(null)
 const expandNode = (keys: string[], e: any) => {
   console.log('expandNode', keys[0], e)
 
-  setExpandedKeys(currProject.value.id, expandedKeys.value)
+  setExpandedKeys('selection_' + currProject.value.id, expandedKeys.value)
 }
 
 const checkNode = (keys, e) => {
@@ -122,7 +122,7 @@ watch(treeData, () => {
   console.log('watch', treeData)
   getNodeMapCall()
 
-  getExpandedKeys(currProject.value.id).then(async keys => {
+  getExpandedKeys('selection_' + currProject.value.id).then(async keys => {
     console.log('keys', keys)
     if (keys)
       expandedKeys.value = keys
@@ -130,7 +130,7 @@ watch(treeData, () => {
     if (!expandedKeys.value || expandedKeys.value.length === 0) {
       getOpenKeys(treeData.value[0], false) // expend first level folder
       console.log('expandedKeys.value', expandedKeys.value)
-      await setExpandedKeys(currProject.value.id, expandedKeys.value)
+      await setExpandedKeys('selection_' + currProject.value.id, expandedKeys.value)
     }
   })
 })
@@ -140,20 +140,44 @@ const expandAll = () => {
   isExpand.value = !isExpand.value
   expandedKeys.value = expandAllKeys(treeDataMap, isExpand.value)
 
-  setExpandedKeys(currProject.value.id, expandedKeys.value)
+  setExpandedKeys('selection_' + currProject.value.id, expandedKeys.value)
 }
 
 const onSubmit = async () => {
   console.log('onSubmit', checkedKeys)
 
+  const childrenMap = {}
   const selectedNodes = [] as any[]
+  checkedKeys.value.forEach((id, index) => {
+    if (treeDataMap[id].children) {
+      treeDataMap[id].children.forEach((child, index) => {
+        getChildren(treeDataMap[child.id], childrenMap)
+      })
+    }
+  })
+
+  console.log('childrenMap', childrenMap)
+
   Object.keys(treeDataMap).forEach((id, index) => {
-    // if (!treeDataMap[id].isDir && isInArray(+id, checkedKeys.value)) {
-      selectedNodes.push(treeDataMap[id])
-    // }
+    if (!childrenMap[id] && isInArray(+id, checkedKeys.value)) {
+      const node = treeDataMap[id]
+      if (!(node.isDir && !node.children)) {
+        selectedNodes.push(node)
+      }
+    }
   })
 
   props.onFinish(selectedNodes);
+}
+
+const getChildren = (node, mp) => {
+  mp[node.id] = true
+
+  if (node.children) {
+    node.children.forEach((child, index) => {
+      getChildren(child, mp)
+    })
+  }
 }
 
 onMounted(() => {

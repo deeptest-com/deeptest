@@ -3,6 +3,7 @@ export function getNodeMap(treeNode: any, mp: any): void {
     if (!treeNode) return
 
     mp[treeNode.id] = treeNode
+    // console.log('treeNode.id', treeNode.id)
 
     if (treeNode.children) {
         treeNode.children.forEach((item, index) => {

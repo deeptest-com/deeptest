@@ -47,19 +47,24 @@ func (d *PageData) Populate(result interface{}, total int64, page, pageSize int)
 	d.PageSize = pageSize
 }
 
-type ErrMsg struct {
+type BizErr struct {
 	Code int64  `json:"code"`
 	Msg  string `json:"message"`
 }
 
 var (
-	NoErr         = ErrMsg{0, "请求成功"}
-	AuthErr       = ErrMsg{401, "请重新登录"}
-	AuthActionErr = ErrMsg{403, "权限不足"}
+	NoErr         = BizErr{0, "请求成功"}
+	AuthErr       = BizErr{401, "请重新登录"}
+	AuthActionErr = BizErr{403, "权限不足"}
 
-	NeedInitErr = ErrMsg{1000, "前往初始化数据库"}
-	ParamErr    = ErrMsg{2000, "参数解析失败"}
-	SystemErr   = ErrMsg{3000, "系统错误"}
+	NeedInitErr = BizErr{1000, "前往初始化数据库"}
+	ParamErr    = BizErr{2000, "参数解析失败"}
+	SystemErr   = BizErr{3000, "系统错误"}
 
-	BizErrNameExist = ErrMsg{10100, "指定名称的记录已存在"}
+	ErrComm      = BizErr{10000, "数据库操作失败"}
+	ErrNameExist = BizErr{10100, "指定名称的记录已存在"}
 )
+
+func (e BizErr) Error() string {
+	return e.Msg
+}

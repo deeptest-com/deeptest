@@ -44,16 +44,16 @@ func (c *ScenarioNodeCtrl) AddInterfaces(ctx iris.Context) {
 
 	req.ProjectId = projectId
 
-	//intf, err := c.ScenarioNodeService.Create(req)
-	//if err != nil {
-	//	ctx.JSON(_domain.Response{
-	//		Code: c.ErrCode(err),
-	//		Data: nil,
-	//	})
-	//	return
-	//}
-	//
-	//ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: intf, Msg: _domain.NoErr.Msg})
+	bizErr := c.ScenarioNodeService.AddInterfaces(req)
+	if bizErr != nil {
+		ctx.JSON(_domain.Response{
+			Code: _domain.ErrComm.Code,
+			Data: nil,
+		})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
 //// Get 详情

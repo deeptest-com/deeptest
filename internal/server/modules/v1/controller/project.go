@@ -62,9 +62,9 @@ func (c *ProjectCtrl) Create(ctx iris.Context) {
 		return
 	}
 
-	id, err := c.ProjectService.Create(req)
+	id, bizErr := c.ProjectService.Create(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: c.ErrCode(err), Data: nil})
+		ctx.JSON(_domain.Response{Code: bizErr.Code, Data: nil})
 		return
 	}
 

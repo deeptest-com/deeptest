@@ -61,11 +61,11 @@ func (r *ScenarioProcessorRepo) haveChild(Data []*model.TestProcessor, node *mod
 
 func (r *ScenarioProcessorRepo) CreateDefault(scenarioId uint) (po model.TestProcessor, err error) {
 	po = model.TestProcessor{
-		ScenarioId:    scenarioId,
-		Name:          "root",
-		ProcessorType: consts.ProcessorRoot,
-		ProcessorId:   0,
-		IsDir:         true,
+		ScenarioId:     scenarioId,
+		Name:           "root",
+		EntityCategory: consts.ProcessorRoot,
+		EntityId:       0,
+		IsDir:          true,
 	}
 	err = r.DB.Create(&po).Error
 

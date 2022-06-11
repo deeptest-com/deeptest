@@ -8,6 +8,7 @@ import (
 	requestHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/request"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
+	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_cacheUtils "github.com/aaronchen2k/deeptest/pkg/lib/cache"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strconv"
@@ -30,13 +31,13 @@ func (s *ExtractorService) Get(id uint) (extractor model.InterfaceExtractor, err
 	return
 }
 
-func (s *ExtractorService) Create(extractor *model.InterfaceExtractor) (err error) {
-	_, err = s.ExtractorRepo.Save(extractor)
+func (s *ExtractorService) Create(extractor *model.InterfaceExtractor) (bizErr _domain.BizErr) {
+	_, bizErr = s.ExtractorRepo.Save(extractor)
 
 	return
 }
 
-func (s *ExtractorService) Update(extractor *model.InterfaceExtractor) (err error) {
+func (s *ExtractorService) Update(extractor *model.InterfaceExtractor) (err _domain.BizErr) {
 	_, err = s.ExtractorRepo.Save(extractor)
 
 	return

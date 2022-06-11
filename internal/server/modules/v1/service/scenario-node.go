@@ -4,6 +4,7 @@ import (
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
+	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 )
 
 type ScenarioNodeService struct {
@@ -14,6 +15,23 @@ type ScenarioNodeService struct {
 
 func (s *ScenarioNodeService) GetTree(scenarioId int) (root *model.TestProcessor, err error) {
 	root, err = s.ScenarioProcessorRepo.GetTree(scenarioId)
+
+	return
+}
+
+func (s *ScenarioNodeService) AddInterfaces(req serverDomain.ScenarioAddInterfacesReq) (err *_domain.BizErr) {
+	//interf = &model.ScenarioNode{Name: req.Name, ProjectId: uint(req.ProjectId),
+	//	IsDir: req.Type == serverConsts.Dir}
+	//
+	//var dropPos serverConsts.DropPos
+	//if req.Mode == serverConsts.Child {
+	//	dropPos = serverConsts.Inner
+	//} else {
+	//	dropPos = serverConsts.After
+	//}
+	//
+	//interf.ParentId, interf.Ordr = s.ScenarioNodeRepo.UpdateOrder(dropPos, uint(req.Target))
+	//err = s.ScenarioNodeRepo.Save(interf)
 
 	return
 }

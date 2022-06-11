@@ -148,9 +148,9 @@ const onSubmit = async () => {
 
   const selectedNodes = [] as any[]
   Object.keys(treeDataMap).forEach((id, index) => {
-    if (!treeDataMap[id].isDir && isInArray(+id, checkedKeys.value)) {
+    // if (!treeDataMap[id].isDir && isInArray(+id, checkedKeys.value)) {
       selectedNodes.push(treeDataMap[id])
-    }
+    // }
   })
 
   props.onFinish(selectedNodes);

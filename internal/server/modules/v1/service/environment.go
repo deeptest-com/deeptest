@@ -40,7 +40,6 @@ func (s *EnvironmentService) Copy(envId int) (err error) {
 
 func (s *EnvironmentService) Create(env *model.Environment) (err error) {
 	err = s.EnvironmentRepo.Save(env)
-
 	err = s.ProjectRepo.UpdateDefaultEnvironment(env.ProjectId, env.ID)
 
 	return

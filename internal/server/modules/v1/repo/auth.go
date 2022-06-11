@@ -39,7 +39,7 @@ func (r *AuthRepo) CreateToken(name, token, tokenType string, projectId int) (po
 	err = r.DB.Model(&po).Create(&po).Error
 	if err != nil {
 		logUtils.Errorf("add token error", zap.String("error:", err.Error()))
-		err = fmt.Errorf("%d", _domain.BizErrNameExist.Code)
+		err = fmt.Errorf("%d", _domain.ErrNameExist.Code)
 
 		return
 	}

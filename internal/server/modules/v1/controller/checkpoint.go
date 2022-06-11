@@ -57,7 +57,7 @@ func (c *CheckpointCtrl) Create(ctx iris.Context) {
 	err = c.CheckpointService.Create(&checkpoint)
 	if err != nil {
 		ctx.JSON(_domain.Response{
-			Code: c.ErrCode(err),
+			Code: _domain.ErrComm.Code,
 			Data: nil,
 		})
 		return

@@ -99,7 +99,7 @@ func (c *InterfaceCtrl) Create(ctx iris.Context) {
 	intf, err := c.InterfaceService.Create(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{
-			Code: c.ErrCode(err),
+			Code: _domain.ErrComm.Code,
 			Data: nil,
 		})
 		return

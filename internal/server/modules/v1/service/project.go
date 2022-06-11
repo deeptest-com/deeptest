@@ -29,7 +29,7 @@ func (s *ProjectService) FindById(id uint) (serverDomain.ProjectResp, error) {
 	return s.ProjectRepo.FindById(id)
 }
 
-func (s *ProjectService) Create(req serverDomain.ProjectReq) (uint, error) {
+func (s *ProjectService) Create(req serverDomain.ProjectReq) (uint, *_domain.BizErr) {
 	return s.ProjectRepo.Create(req)
 }
 

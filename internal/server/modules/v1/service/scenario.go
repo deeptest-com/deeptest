@@ -30,8 +30,8 @@ func (s *ScenarioService) FindById(id uint) (model.TestScenario, error) {
 	return s.ScenarioRepo.Get(id)
 }
 
-func (s *ScenarioService) Create(req model.TestScenario) (po model.TestScenario, err error) {
-	po, err = s.ScenarioRepo.Create(req)
+func (s *ScenarioService) Create(req model.TestScenario) (po model.TestScenario, bizErr *_domain.BizErr) {
+	po, bizErr = s.ScenarioRepo.Create(req)
 
 	s.ScenarioProcessorRepo.CreateDefault(po.ID)
 

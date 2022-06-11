@@ -77,17 +77,17 @@ func (r *ScenarioRepo) FindByName(scenarioName string, id uint) (scenario model.
 	return
 }
 
-func (r *ScenarioRepo) Create(scenario model.TestScenario) (ret model.TestScenario, err error) {
+func (r *ScenarioRepo) Create(scenario model.TestScenario) (ret model.TestScenario, bizErr *_domain.BizErr) {
 	po, err := r.FindByName(scenario.Name, 0)
 	if po.Name != "" {
-		err = fmt.Errorf("%d", _domain.BizErrNameExist.Code)
+		bizErr.Code = _domain.ErrNameExist.Code
 		return
 	}
 
 	err = r.DB.Model(&model.TestScenario{}).Create(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("add scenario error", zap.String("error:", err.Error()))
-		err = fmt.Errorf("%d", _domain.BizErrNameExist.Code)
+		bizErr.Code = _domain.ErrComm.Code
 
 		return
 	}

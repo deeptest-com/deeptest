@@ -1,7 +1,6 @@
 package repo
 
 import (
-	"fmt"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -43,14 +42,19 @@ func (r *ExtractorRepo) GetByVariable(variable string, id uint, interfaceId uint
 	return
 }
 
-func (r *ExtractorRepo) Save(extractor *model.InterfaceExtractor) (id uint, err error) {
+func (r *ExtractorRepo) Save(extractor *model.InterfaceExtractor) (id uint, bizErr _domain.BizErr) {
 	po, _ := r.GetByVariable(extractor.Variable, extractor.ID, extractor.InterfaceId)
 	if po.ID > 0 {
-		err = fmt.Errorf("%d", _domain.BizErrNameExist.Code)
+		bizErr.Code = _domain.ErrNameExist.Code
 		return
 	}
 
-	err = r.DB.Save(extractor).Error
+	err := r.DB.Save(extractor).Error
+	if err != nil {
+		bizErr.Code = _domain.ErrComm.Code
+		return
+	}
+
 	id = extractor.ID
 
 	return

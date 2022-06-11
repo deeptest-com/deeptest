@@ -69,9 +69,9 @@ func (c *ScenarioCtrl) Create(ctx iris.Context) {
 	}
 
 	req.ProjectId = uint(projectId)
-	po, err := c.ScenarioService.Create(req)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: c.ErrCode(err), Data: nil})
+	po, bizErr := c.ScenarioService.Create(req)
+	if bizErr != nil {
+		ctx.JSON(_domain.Response{Code: bizErr.Code, Data: nil})
 		return
 	}
 

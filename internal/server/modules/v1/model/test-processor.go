@@ -16,8 +16,9 @@ type TestProcessor struct {
 	ScenarioId uint `json:"scenarioId"`
 	UseID      uint `json:"useId"`
 
-	ProcessorType consts.ProcessorCategory `json:"processorType" yaml:"processorType"`
-	ProcessorId   uint                     `json:"processorId" yaml:"processorId"`
+	EntityCategory consts.ProcessorCategory `json:"entityCategory"`
+	EntityType     consts.ProcessorType     `json:"entityType"`
+	EntityId       uint                     `json:"entityId"`
 
 	Ordr     int              `json:"ordr"`
 	Children []*TestProcessor `gorm:"-" json:"children"`
@@ -31,6 +32,19 @@ func (TestProcessor) TableName() string {
 type ProcessorInterface struct {
 	BaseModel
 	ProcessorBase
+
+	Name string `json:"name"`
+	Desc string `json:"desc"`
+
+	IsDir     bool `json:"isDir"`
+	ParentId  uint `json:"parentId"`
+	ProjectId uint `json:"projectId"`
+	UseID     uint `json:"useId"`
+
+	Ordr     int          `json:"ordr"`
+	Children []*Interface `gorm:"-" json:"children"`
+
+	Slots iris.Map `gorm:"-" json:"slots"`
 
 	Url               string                 `json:"url"`
 	Method            string                 `gorm:"default:GET" json:"method"`

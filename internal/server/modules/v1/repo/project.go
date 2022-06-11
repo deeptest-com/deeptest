@@ -78,10 +78,10 @@ func (r *ProjectRepo) FindByName(projectName string, id uint) (project serverDom
 	return
 }
 
-func (r *ProjectRepo) Create(req serverDomain.ProjectReq) (id uint, err error) {
+func (r *ProjectRepo) Create(req serverDomain.ProjectReq) (id uint, bizErr *_domain.BizErr) {
 	po, err := r.FindByName(req.Name, 0)
 	if po.Name != "" {
-		err = fmt.Errorf("%d", _domain.BizErrNameExist.Code)
+		bizErr.Code = _domain.ErrNameExist.Code
 		return
 	}
 
@@ -90,7 +90,7 @@ func (r *ProjectRepo) Create(req serverDomain.ProjectReq) (id uint, err error) {
 	err = r.DB.Model(&model.Project{}).Create(&project).Error
 	if err != nil {
 		logUtils.Errorf("add project error", zap.String("error:", err.Error()))
-		err = fmt.Errorf("%d", _domain.BizErrNameExist.Code)
+		bizErr.Code = _domain.ErrComm.Code
 
 		return
 	}

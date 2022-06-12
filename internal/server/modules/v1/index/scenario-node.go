@@ -21,12 +21,12 @@ func (m *ScenarioNodeModule) Party() module.WebModule {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 		index.Post("/addInterfaces", m.ScenarioNodeCtrl.AddInterfaces).Name = "新建节点"
 
-		//party.Get("/{id:uint}", m.ScenarioNodeNodeCtrl.Get).Name = "场景节点详情"
-		//party.Post("/", m.ScenarioNodeNodeCtrl.Create).Name = "新建节点"
-		//party.Put("/{id:uint}", m.ScenarioNodeNodeCtrl.Update).Name = "更新节点"
+		index.Get("/{id:uint}", m.ScenarioNodeCtrl.Get).Name = "场景节点详情"
+		//index.Post("/", m.ScenarioNodeNodeCtrl.Create).Name = "新建节点"
+		//index.Put("/{id:uint}", m.ScenarioNodeNodeCtrl.Update).Name = "更新节点"
 		index.Put("/{id:uint}/updateName", m.ScenarioNodeCtrl.UpdateName).Name = "更新节点名称"
-		//party.Delete("/{id:uint}", m.ScenarioNodeNodeCtrl.Delete).Name = "删除节点"
-		//party.Post("/move", m.ScenarioNodeNodeCtrl.Move).Name = "移动节点"
+		//index.Delete("/{id:uint}", m.ScenarioNodeNodeCtrl.Delete).Name = "删除节点"
+		//index.Post("/move", m.ScenarioNodeNodeCtrl.Move).Name = "移动节点"
 	}
 
 	return module.NewModule("/scenarios/nodes", handler)

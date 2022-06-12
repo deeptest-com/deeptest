@@ -71,3 +71,14 @@ func (r *ScenarioProcessorRepo) CreateDefault(scenarioId uint) (po model.TestPro
 
 	return
 }
+
+func (r *ScenarioProcessorRepo) Get(id uint) (processor model.TestProcessor, err error) {
+	err = r.DB.Where("id = ?", id).First(&processor).Error
+	return
+}
+
+func (r *ScenarioProcessorRepo) Save(processor *model.TestProcessor) (err error) {
+	err = r.DB.Create(processor).Error
+
+	return
+}

@@ -129,7 +129,7 @@ const selectNode = (keys) => {
   const selectedData = treeDataMap[selectedKeys.value[0]]
   if (selectedData.isDir) return
 
-  store.dispatch('Scenario/getScenario', selectedData.id)
+  store.dispatch('Scenario/getNode', selectedData)
 }
 
 const checkNode = (keys, e) => {
@@ -301,13 +301,19 @@ const onDrop = (info: DropEvent) => {
 
 const interfaceSelectionVisible = ref(false)
 const interfaceSelectionFinish = (selectedNodes) => {
-  console.log('interfaceSelectionFinish', selectedNodes,
-      treeDataMap[targetModelId].processorType, treeDataMap[targetModelId].processorId)
+  const node = treeDataMap[targetModelId]
+  console.log('interfaceSelectionFinish', selectedNodes, node)
 
   store.dispatch('Scenario/addInterfaces',
     {selectedNodes: selectedNodes, mode: 'child',
-      processorType: treeDataMap[targetModelId].processorType, processorId: treeDataMap[targetModelId].processorId
-    })
+      id: node.id,
+      entityCategory: node.entityCategory,
+      entityType: node.entityType,
+      entityId: node.entityId,
+      interfaceId: node.interfaceId,
+    }).then(() => {
+    interfaceSelectionVisible.value = false
+  })
 }
 
 const interfaceSelectionCancel = () => {

@@ -19,6 +19,7 @@ type TestProcessor struct {
 	EntityCategory consts.ProcessorCategory `json:"entityCategory"`
 	EntityType     consts.ProcessorType     `json:"entityType"`
 	EntityId       uint                     `json:"entityId"`
+	InterfaceId    uint                     `json:"interfaceId"`
 
 	Ordr     int              `json:"ordr"`
 	Children []*TestProcessor `gorm:"-" json:"children"`

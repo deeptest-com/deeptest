@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
@@ -20,41 +21,51 @@ func (s *ScenarioNodeService) GetTree(scenarioId int) (root *model.TestProcessor
 }
 
 func (s *ScenarioNodeService) AddInterfaces(req serverDomain.ScenarioAddInterfacesReq) (err *_domain.BizErr) {
-	//interf = &model.ScenarioNode{Name: req.Name, ProjectId: uint(req.ProjectId),
-	//	IsDir: req.Type == serverConsts.Dir}
-	//
-	//var dropPos serverConsts.DropPos
-	//if req.Mode == serverConsts.Child {
-	//	dropPos = serverConsts.Inner
-	//} else {
-	//	dropPos = serverConsts.After
-	//}
-	//
-	//interf.ParentId, interf.Ordr = s.ScenarioNodeRepo.UpdateOrder(dropPos, uint(req.Target))
-	//err = s.ScenarioNodeRepo.Save(interf)
+	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.Id)
+
+	for _, node := range req.SelectedNodes {
+		s.CreateDirOrInterface(node, targetProcessor)
+	}
 
 	return
 }
 
-//func (s *ScenarioNodeService) Get(interfId int) (interf model.ScenarioNode, err error) {
-//	if interfId > 0 {
-//		interf, err = s.ScenarioNodeRepo.Get(uint(interfId))
-//
-//		interf.Params, _ = s.ScenarioNodeRepo.ListParams(uint(interfId))
-//		interf.Headers, _ = s.ScenarioNodeRepo.ListHeaders(uint(interfId))
-//
-//		interf.BasicAuth, _ = s.ScenarioNodeRepo.GetBasicAuth(uint(interfId))
-//		interf.BearerToken, _ = s.ScenarioNodeRepo.GetBearerToken(uint(interfId))
-//		interf.OAuth20, _ = s.ScenarioNodeRepo.GetOAuth20(uint(interfId))
-//		interf.ApiKey, _ = s.ScenarioNodeRepo.GetApiKey(uint(interfId))
-//	}
-//
-//	interf.Params = append(interf.Params, model.ScenarioNodeParam{Name: "", Value: ""})
-//	interf.Headers = append(interf.Headers, model.ScenarioNodeHeader{Name: "", Value: ""})
-//
-//	return
-//}
-//
+func (s *ScenarioNodeService) CreateDirOrInterface(node serverDomain.InterfaceSimple, parentProcessor model.TestProcessor) (
+	err *_domain.BizErr) {
+	if !node.IsDir {
+		processor := model.TestProcessor{
+			Name:           node.Name,
+			ScenarioId:     parentProcessor.ScenarioId,
+			EntityCategory: consts.ProcessorInterface,
+			IsDir:          false,
+			InterfaceId:    uint(node.Id),
+			ParentId:       parentProcessor.ID,
+		}
+		s.ScenarioProcessorRepo.Save(&processor)
+
+	} else {
+		processor := model.TestProcessor{
+			Name:           node.Name,
+			ScenarioId:     parentProcessor.ScenarioId,
+			EntityCategory: consts.ProcessorSimple,
+			IsDir:          true,
+			ParentId:       parentProcessor.ID,
+		}
+		s.ScenarioProcessorRepo.Save(&processor)
+
+		for _, child := range node.Children {
+			s.CreateDirOrInterface(child, processor)
+		}
+	}
+
+	return
+}
+
+func (s *ScenarioNodeService) Get(id int) (po model.TestProcessor, err error) {
+	po, _ = s.ScenarioProcessorRepo.Get(uint(id))
+	return
+}
+
 //func (s *ScenarioNodeService) Save(interf *model.ScenarioNode) (err error) {
 //	err = s.ScenarioNodeRepo.Save(interf)
 //

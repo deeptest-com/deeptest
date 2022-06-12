@@ -19,6 +19,16 @@ type InterfaceMoveReq struct {
 	DropPos serverConsts.DropPos `json:"dropPos"`
 }
 
+type InterfaceSimple struct {
+	Id        int    `json:"id"`
+	Name      string `json:"name"`
+	ProjectId int    `json:"projectId"`
+	IsDir     bool   `json:"isDir"`
+
+	Ordr     int               `json:"ordr"`
+	Children []InterfaceSimple `json:"children"`
+}
+
 /*type InterfaceResp struct {
 	Url               string          `json:"url"`
 	Method            string          `gorm:"default:GET" json:"method"`

@@ -32,6 +32,7 @@ func (s *ScenarioNodeService) AddInterfaces(req serverDomain.ScenarioAddInterfac
 
 func (s *ScenarioNodeService) CreateDirOrInterface(node serverDomain.InterfaceSimple, parentProcessor model.TestProcessor) (
 	err *_domain.BizErr) {
+
 	if !node.IsDir {
 		processor := model.TestProcessor{
 			Name:           node.Name,

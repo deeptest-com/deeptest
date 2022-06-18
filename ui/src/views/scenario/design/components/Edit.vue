@@ -1,12 +1,7 @@
 <template>
   <div class="scenario-node-edit-main">
-    <div>id: {{selectedNode.id}}</div>
-    <div>name: {{selectedNode.name}}</div>
+    <ProcessorSimpleDefault v-if="selectedNode.entityType === 'processor_simple_default'" />
 
-    <div>entityCategory: {{selectedNode.entityCategory}}</div>
-    <div>entityType: {{selectedNode.entityType}}</div>
-    <div>entityId: {{selectedNode.entityId}}</div>
-    <div>interfaceId: {{selectedNode.interfaceId}}</div>
   </div>
 </template>
 
@@ -17,6 +12,7 @@ import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 
 import {StateType as ScenarioStateType} from "../../store";
+import ProcessorSimpleDefault from "./proccessors/simple/default.vue";
 
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; }>();

@@ -296,6 +296,7 @@ const (
 	ProcessorLogic       ProcessorCategory = "processor_logic"
 	ProcessorLoop        ProcessorCategory = "processor_loop"
 	ProcessorTimer       ProcessorCategory = "processor_timer"
+	ProcessorVariable    ProcessorCategory = "processor_variable"
 	ProcessorAssertion   ProcessorCategory = "processor_assertion"
 	ProcessorExtractor   ProcessorCategory = "processor_extractor"
 
@@ -318,7 +319,7 @@ const (
 	ProcessorLogicElse ProcessorType = "processor_logic_else"
 
 	ProcessorLoopRepeatTime  ProcessorType = "processor_loop_repeat_time"
-	ProcessorLoopRepeatWhile ProcessorType = "processor_loop_repeat_while"
+	ProcessorLoopRepeatUntil ProcessorType = "processor_loop_repeat_until"
 	ProcessorLoopRepeatIn    ProcessorType = "processor_loop_repeat_in"
 	ProcessorLoopRepeatRange ProcessorType = "processor_loop_range"
 	ProcessorLoopRepeatBreak ProcessorType = "processor_loop_break"

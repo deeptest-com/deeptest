@@ -110,7 +110,7 @@ export function getProcessorCategories() {
 
 export function getProcessorTypeNames() {
     return {
-        ...getEnumMap(ProcessorThread),
+        // ...getEnumMap(ProcessorThread),
         ...getEnumMap(ProcessorSimple),
         ...getEnumMap(ProcessorTimer),
         ...getEnumMap(ProcessorLogic),
@@ -136,7 +136,7 @@ export const getEnumMap = (enumDef) => {
 
 export function getProcessorTypeMap() {
     return {
-        processor_thread: getEnumSelectItems(ProcessorThread),
+        // processor_thread: getEnumSelectItems(ProcessorThread),
         processor_simple: getEnumSelectItems(ProcessorSimple),
         processor_timer: getEnumSelectItems(ProcessorTimer),
         processor_logic: getEnumSelectItems(ProcessorLogic),

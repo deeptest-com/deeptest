@@ -73,6 +73,7 @@ import {computed, defineProps, onMounted, onUnmounted, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form} from 'ant-design-vue';
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
+import {isRoot, isProcessor, isInterface} from '../../service'
 import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
 
 import throttle from "lodash.debounce";
@@ -111,10 +112,6 @@ let isExpand = ref(false);
 
 const editedData = ref<any>({})
 
-const isDir = computed<boolean>(() => {
-  return contextNode.value && contextNode.value.isDir;
-})
-
 let tree = ref(null)
 const expandNode = (keys: string[], e: any) => {
   console.log('expandNode', keys[0], e)
@@ -127,7 +124,7 @@ const selectNode = (keys) => {
   if (selectedKeys.value.length === 0) return
 
   const selectedData = treeDataMap[selectedKeys.value[0]]
-  if (selectedData.isDir) return
+  if (isRoot(selectedData.entityCategory)) return
 
   store.dispatch('Scenario/getNode', selectedData)
 }
@@ -336,7 +333,7 @@ const onDrop = (info: DropEvent) => {
   const dragKey = info.dragNode.eventKey;
   const dropPos = info.node.pos.split('-');
   let dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
-  if (!treeDataMap[dropKey].isDir && dropPosition === 0) dropPosition = 1
+  if (isInterface(treeDataMap[dropKey].processorCategory) && dropPosition === 0) dropPosition = 1
   console.log(dragKey, dropKey, dropPosition);
 
   store.dispatch('Scenario/moveScenario', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition});

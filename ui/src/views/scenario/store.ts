@@ -153,11 +153,6 @@ const StoreModel: ModuleType = {
         },
 
         async getNode({commit}, payload: any) {
-            if (payload.isDir) {
-                commit('setNode', {});
-                return true;
-            }
-
             try {
                 const response = await getNode(payload.id);
                 const {data} = response;

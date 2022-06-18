@@ -106,8 +106,11 @@ func (s *InterfaceService) Save(interf *model.Interface) (err error) {
 	return
 }
 func (s *InterfaceService) Create(req serverDomain.InterfaceReq) (interf *model.Interface, err error) {
-	interf = &model.Interface{Name: req.Name, ProjectId: uint(req.ProjectId),
-		IsDir: req.Type == serverConsts.Dir}
+	interf = &model.Interface{
+		Name:      req.Name,
+		ProjectId: uint(req.ProjectId),
+		IsDir:     req.Type == serverConsts.Dir,
+	}
 
 	var dropPos serverConsts.DropPos
 	if req.Mode == serverConsts.Child {

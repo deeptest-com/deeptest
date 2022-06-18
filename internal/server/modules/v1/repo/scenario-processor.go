@@ -65,7 +65,6 @@ func (r *ScenarioProcessorRepo) CreateDefault(scenarioId uint) (po model.TestPro
 		Name:           "root",
 		EntityCategory: consts.ProcessorRoot,
 		EntityId:       0,
-		IsDir:          true,
 	}
 	err = r.DB.Create(&po).Error
 

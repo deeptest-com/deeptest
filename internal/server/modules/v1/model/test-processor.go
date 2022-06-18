@@ -11,7 +11,6 @@ type TestProcessor struct {
 	Name string `json:"name" yaml:"name"`
 	Desc string `json:"desc" yaml:"desc"`
 
-	IsDir      bool `json:"isDir"`
 	ParentId   uint `json:"parentId"`
 	ScenarioId uint `json:"scenarioId"`
 	UseID      uint `json:"useId"`

@@ -148,3 +148,14 @@ export function getProcessorTypeMap() {
         processor_data: getEnumSelectItems(ProcessorData),
     }
 }
+
+
+export const isRoot = (type) => {
+    return type === 'processor_root'
+}
+export const isProcessor = (type) => {
+    return type !==  'processor_interface' && type !== 'processor_root'
+}
+export const isInterface = (type) => {
+    return type ===  'processor_interface'
+}

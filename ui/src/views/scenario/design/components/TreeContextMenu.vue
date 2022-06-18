@@ -77,6 +77,7 @@
 import {defineComponent, defineProps, PropType, Ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
+import {isRoot, isProcessor, isInterface} from '../../service'
 import {FolderAddOutlined, FileAddOutlined, EditOutlined, CloseOutlined, PlusOutlined} from "@ant-design/icons-vue";
 
 import {getProcessorTypeMap, getProcessorCategories} from "@/views/scenario/service";
@@ -102,16 +103,6 @@ const menuClick = (e) => {
   console.log(key, targetId)
   props.onMenuClick(key, targetId);
 };
-
-const isRoot = (type) => {
-  return type === 'processor_root'
-}
-const isProcessor = (type) => {
-  return type !==  'processor_interface' && type !== 'processor_root'
-}
-const isInterface = (type) => {
-  return type ===  'processor_interface'
-}
 
 </script>
 

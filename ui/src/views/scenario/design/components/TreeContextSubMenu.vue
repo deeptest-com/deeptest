@@ -28,8 +28,8 @@ import {Form, message} from 'ant-design-vue';
 import {FolderAddOutlined, FileAddOutlined, EditOutlined, CloseOutlined, PlusOutlined} from "@ant-design/icons-vue";
 import {getEnumSelectItems} from "@/views/interface/service";
 import {OAuth2ClientAuthenticationWay} from "@/views/interface/consts";
-import {ProcessorType} from "@/utils/enum";
-import {getProcessorTypeMap, getProcessorTypes} from "@/views/scenario/service";
+import {ProcessorCategory} from "@/utils/enum";
+import {getProcessorTypeMap, getProcessorCategories} from "@/views/scenario/service";
 
 const useForm = Form.useForm;
 

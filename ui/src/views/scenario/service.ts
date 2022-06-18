@@ -9,7 +9,7 @@ import {
     ProcessorExtractor,
     ProcessorLogic,
     ProcessorLoop, ProcessorSimple, ProcessorThread, ProcessorTimer,
-    ProcessorType,
+    ProcessorCategory,
     ProcessorVariable
 } from "@/utils/enum";
 
@@ -51,6 +51,13 @@ export async function getNode(id: number): Promise<any> {
 export async function addInterfaces(data): Promise<any> {
     return request({
         url: `/${apiPathNodes}/addInterfaces`,
+        method: 'POST',
+        data: data,
+    });
+}
+export async function addProcessor(data): Promise<any> {
+    return request({
+        url: `/${apiPathNodes}/addProcessor`,
         method: 'POST',
         data: data,
     });
@@ -97,8 +104,34 @@ export async function moveNode(data: any): Promise<any> {
     });
 }
 
-export function getProcessorTypes() {
-    return getEnumSelectItems(ProcessorType)
+export function getProcessorCategories() {
+    return getEnumSelectItems(ProcessorCategory)
+}
+
+export function getProcessorTypeNames() {
+    return {
+        ...getEnumMap(ProcessorThread),
+        ...getEnumMap(ProcessorSimple),
+        ...getEnumMap(ProcessorTimer),
+        ...getEnumMap(ProcessorLogic),
+
+        ...getEnumMap(ProcessorLoop),
+        ...getEnumMap(ProcessorExtractor),
+        ...getEnumMap(ProcessorVariable),
+        ...getEnumMap(ProcessorCookie),
+        ...getEnumMap(ProcessorData),
+    }
+}
+
+
+export const getEnumMap = (enumDef) => {
+    const ret = {}
+
+    for (const item in enumDef) {
+        ret[item] = enumDef[item]
+    }
+
+    return ret
 }
 
 export function getProcessorTypeMap() {

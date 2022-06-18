@@ -78,7 +78,7 @@ func (r *ScenarioProcessorRepo) Get(id uint) (processor model.TestProcessor, err
 }
 
 func (r *ScenarioProcessorRepo) Save(processor *model.TestProcessor) (err error) {
-	err = r.DB.Create(processor).Error
+	err = r.DB.Save(processor).Error
 
 	return
 }

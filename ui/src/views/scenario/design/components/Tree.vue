@@ -48,9 +48,9 @@
         </template>
 
         <template #icon="slotProps">
-          <FolderOutlined v-if="slotProps.isDir && !slotProps.expanded"/>
-          <FolderOpenOutlined v-if="slotProps.isDir && slotProps.expanded"/>
-          <FileOutlined v-if="!slotProps.isDir"/>
+          <FolderOutlined v-if="slotProps.entityCategory !==  'processor_interface' && !slotProps.expanded"/>
+          <FolderOpenOutlined v-if="slotProps.entityCategory !==  'processor_interface' && slotProps.expanded"/>
+          <FileOutlined v-if="slotProps.entityCategory ===  'processor_interface'"/>
         </template>
       </a-tree>
 
@@ -77,7 +77,7 @@ import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOu
 
 import throttle from "lodash.debounce";
 import {expandAllKeys, expandOneKey, getNodeMap} from "@/services/tree";
-import {updateNodeName} from "../../service";
+import {getProcessorTypeNames, updateNodeName} from "../../service";
 import {useStore} from "vuex";
 import {Scenario} from "../../data";
 
@@ -163,16 +163,16 @@ const onRightClick = (e) => {
   const y = event.currentTarget.getBoundingClientRect().top
   const x = event.currentTarget.getBoundingClientRect().right
 
-  const contextNodeData = treeDataMap[node.eventKey]
   contextNode.value = {
     pageX: x,
     pageY: y,
     id: node.eventKey,
     title: node.title,
-    isDir: contextNodeData.isDir,
+    entityCategory: node.dataRef.entityCategory,
+    entityType: node.dataRef.entityType,
+    entityId: node.dataRef.entityId,
+    interfaceId: node.dataRef.interfaceId,
     parentId: node.dataRef.parentId,
-    processorId: node.dataRef.processorId,
-    processorType: node.dataRef.processorType,
   }
 
   menuStyle.value = {
@@ -188,6 +188,19 @@ const onRightClick = (e) => {
 
 const getNodeMapCall = throttle(async () => {
   getNodeMap(treeData.value[0], treeDataMap)
+}, 300)
+const getExpandedKeysCall = throttle(async () => {
+  getExpandedKeys(treeData.value[0].scenarioId).then(async keys => {
+    console.log('keys', keys)
+    if (keys)
+      expandedKeys.value = keys
+
+    if (!expandedKeys.value || expandedKeys.value.length === 0) {
+      getOpenKeys(treeData.value[0], false) // expend first level folder
+      console.log('expandedKeys.value', expandedKeys.value)
+      await setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
+    }
+  })
 }, 300)
 
 const getOpenKeys = (treeNode, isAll) => {
@@ -211,17 +224,7 @@ watch(treeData, () => {
     tips.value = '右键树状节点操作'
   }
 
-  getExpandedKeys(treeData.value[0].scenarioId).then(async keys => {
-    console.log('keys', keys)
-    if (keys)
-      expandedKeys.value = keys
-
-    if (!expandedKeys.value || expandedKeys.value.length === 0) {
-      getOpenKeys(treeData.value[0], false) // expend first level folder
-      console.log('expandedKeys.value', expandedKeys.value)
-      await setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
-    }
-  })
+  getExpandedKeysCall()
 })
 
 const expandAll = () => {
@@ -252,29 +255,69 @@ const menuClick = (menuKey: string, targetId: number) => {
     return
   }
 
+  // add-child-interface
+  // add-child-processor_logic-processor_logic_if
   const arr = menuKey.split('-')
-  addNode(arr[1], arr[2], arr[3], treeDataMap[targetModelId].processorType, treeDataMap[targetModelId].processorId)
+  const mode = arr[1]
+  const processorCategory = arr[2]
+  const processorType = arr[3]
+
+  const targetProcessorCategory = treeDataMap[targetModelId].entityCategory
+  const targetProcessorType = treeDataMap[targetModelId].entityType
+
+  const targetProcessorId = targetModelId
+
+  addNode(mode, processorCategory, processorType,
+      targetProcessorCategory, targetProcessorType, targetProcessorId)
 
   clearMenu()
 }
 
-const addNode = (mode, category, type, processorType, processorId) => {
-  console.log('addNode', mode, category, type, processorType, processorId)
+const addNode = (mode, processorCategory, processorType,
+                 targetProcessorCategory, targetProcessorType, targetProcessorId) => {
+  console.log('addNode', mode, processorCategory, processorType,
+      targetProcessorCategory, targetProcessorType, targetProcessorId)
 
-  if (category === 'interface') { // select a interface
+  if (processorCategory === 'interface') { // select a interface
     interfaceSelectionVisible.value = true
     return
-  }
 
-  // store.dispatch('Scenario/createScenario',
-  //     {mode: mode, type: type, target: targetModelId, name: type === 'dir' ? '新目录' : '新接口'})
-  //     .then((newNode) => {
-  //           console.log('newNode', newNode)
-  //           selectedKeys.value = [newNode.id] // select new node
-  //           expandOneKey(treeDataMap, newNode.parentId, expandedKeys.value) // expend new node
-  //         }
-  //     )
+  } else {
+    store.dispatch('Scenario/addProcessor',
+        {mode, processorCategory, processorType,
+          targetProcessorCategory, targetProcessorType, targetProcessorId,
+          name: t(processorType)
+        }).then((newNode) => {
+          console.log('newNode', newNode)
+          selectNode([newNode.id])
+          expandOneKey(treeDataMap, newNode.parentId, expandedKeys.value) // expend new node
+          setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
+        })
+  }
 }
+
+const interfaceSelectionVisible = ref(false)
+const interfaceSelectionFinish = (selectedNodes) => {
+  const targetNode = treeDataMap[targetModelId]
+  console.log('interfaceSelectionFinish', selectedNodes, targetNode)
+
+  store.dispatch('Scenario/addInterfaces',
+      {
+        selectedNodes: selectedNodes,
+        targetId: targetNode.id,
+      }).then(() => {
+    interfaceSelectionVisible.value = false
+    selectNode([targetNode.id])
+    expandOneKey(treeDataMap, targetNode.parentId, expandedKeys.value) // expend new node
+    setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
+  })
+}
+
+const interfaceSelectionCancel = () => {
+  console.log('interfaceSelectionCancel')
+  interfaceSelectionVisible.value = false
+}
+
 const removeNode = () => {
   console.log('removeNode')
   store.dispatch('Scenario/deleteScenario', targetModelId);
@@ -297,28 +340,6 @@ const onDrop = (info: DropEvent) => {
   console.log(dragKey, dropKey, dropPosition);
 
   store.dispatch('Scenario/moveScenario', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition});
-}
-
-const interfaceSelectionVisible = ref(false)
-const interfaceSelectionFinish = (selectedNodes) => {
-  const node = treeDataMap[targetModelId]
-  console.log('interfaceSelectionFinish', selectedNodes, node)
-
-  store.dispatch('Scenario/addInterfaces',
-    {selectedNodes: selectedNodes, mode: 'child',
-      id: node.id,
-      entityCategory: node.entityCategory,
-      entityType: node.entityType,
-      entityId: node.entityId,
-      interfaceId: node.interfaceId,
-    }).then(() => {
-    interfaceSelectionVisible.value = false
-  })
-}
-
-const interfaceSelectionCancel = () => {
-  console.log('interfaceSelectionCancel')
-  interfaceSelectionVisible.value = false
 }
 
 onMounted(() => {

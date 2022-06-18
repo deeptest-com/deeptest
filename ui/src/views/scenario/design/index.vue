@@ -7,7 +7,7 @@
     <div id="splitter-h"></div>
 
     <div id="right-panel">
-
+      <Edit></Edit>
     </div>
   </div>
 </template>
@@ -23,6 +23,7 @@ import {StateType as GlobalStateType} from "@/store/global";
 import {StateType as ScenarioStateType} from "../store";
 
 import ScenarioTree from "./components/Tree.vue"
+import Edit from "./components/Edit.vue"
 
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; Global: GlobalStateType; }>();

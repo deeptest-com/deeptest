@@ -1,4 +1,4 @@
-export enum ProcessorType {
+export enum ProcessorCategory {
     ProcessorThread = "processor_thread",
     ProcessorSimple = "processor_simple",
     ProcessorLogic = "processor_logic",

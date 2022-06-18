@@ -23,7 +23,7 @@
         </a-menu-item>
       </template>
 
-      <template v-if="isProcessor(treeNode.processorType)">
+      <template v-if="isProcessor(treeNode.entityCategory)">
         <a-sub-menu @click.stop key="addProcessor" class="menu-item" popupClassName="dp-tree-context-submenu">
           <template #title>
             <FolderAddOutlined />
@@ -43,7 +43,7 @@
         </a-menu-item>
       </template>
 
-      <template v-if="isInterface(treeNode.processorType)">
+      <template v-if="isInterface(treeNode.entityCategory)">
         <a-sub-menu @click.stop key="addProcessor" class="menu-item" popupClassName="dp-tree-context-submenu">
           <template #title>
             <FolderAddOutlined />
@@ -58,7 +58,7 @@
         </a-sub-menu>
       </template>
 
-      <template v-if="!isRoot(treeNode.processorType)">
+      <template v-if="!isRoot(treeNode.entityCategory)">
         <a-menu-item key="rename" class="menu-item">
           <EditOutlined />
           <span>重命名</span>
@@ -79,7 +79,7 @@ import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import {FolderAddOutlined, FileAddOutlined, EditOutlined, CloseOutlined, PlusOutlined} from "@ant-design/icons-vue";
 
-import {getProcessorTypeMap, getProcessorTypes} from "@/views/scenario/service";
+import {getProcessorTypeMap, getProcessorCategories} from "@/views/scenario/service";
 import TreeContextSubMenu from "./TreeContextSubMenu.vue";
 
 const useForm = Form.useForm;
@@ -91,7 +91,7 @@ const props = defineProps<{
 
 const {t} = useI18n();
 
-const processorTypes = getProcessorTypes()
+const processorTypes = getProcessorCategories()
 const processorTypeMap = getProcessorTypeMap()
 
 const menuClick = (e) => {

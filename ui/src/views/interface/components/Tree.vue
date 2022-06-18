@@ -116,11 +116,6 @@ export default defineComponent({
     })
 
     let tree = ref(null)
-    const expandNode = (keys: string[], e: any) => {
-      console.log('expandNode', keys[0], e)
-
-      setExpandedKeys(currProject.value.id, expandedKeys.value)
-    }
 
     const selectNode = (keys) => {
       console.log('selectNode', keys)
@@ -191,6 +186,20 @@ export default defineComponent({
       getNodeMap(treeData.value[0], treeDataMap)
     }, 300)
 
+    const getExpandedKeysCall = throttle(async () => {
+      getExpandedKeys(currProject.value.id).then(async keys => {
+        console.log('keys', keys)
+        if (keys)
+          expandedKeys.value = keys
+
+        if (!expandedKeys.value || expandedKeys.value.length === 0) { // init, expend first level folder
+          getOpenKeys(treeData.value[0], false)
+          console.log('expandedKeys.value', expandedKeys.value)
+          await setExpandedKeys(currProject.value.id, expandedKeys.value)
+        }
+      })
+    }, 300)
+
     const getOpenKeys = (treeNode, isAll) => {
       if (!treeNode) return
 
@@ -212,19 +221,14 @@ export default defineComponent({
         tips.value = '右键树状节点操作'
       }
 
-      getExpandedKeys(currProject.value.id).then(async keys => {
-        console.log('keys', keys)
-        if (keys)
-          expandedKeys.value = keys
-
-        if (!expandedKeys.value || expandedKeys.value.length === 0) {
-          getOpenKeys(treeData.value[0], false) // expend first level folder
-          console.log('expandedKeys.value', expandedKeys.value)
-          await setExpandedKeys(currProject.value.id, expandedKeys.value)
-        }
-      })
+      getExpandedKeysCall()
     })
 
+    const expandNode = (keys: string[], e: any) => {
+      console.log('expandNode', keys[0], e)
+
+      setExpandedKeys(currProject.value.id, expandedKeys.value)
+    }
     const expandAll = () => {
       console.log('expandAll')
       isExpand.value = !isExpand.value
@@ -254,7 +258,10 @@ export default defineComponent({
       }
 
       const arr = menuKey.split('_')
-      addNode(arr[1], arr[2])
+      const mode = arr[1]
+      const type = arr[2]
+
+      addNode(mode, type)
 
       clearMenu()
     }
@@ -262,12 +269,13 @@ export default defineComponent({
     const addNode = (mode, type) => {
       console.log('addNode', targetModelId)
       store.dispatch('Interface/createInterface',
-          {mode: mode, type: type, target: targetModelId, name: type === 'dir' ? '新目录' : '新接口'})
+          {target: targetModelId, name: type === 'dir' ? '新目录' : '新接口'})
           .then((newNode) => {
-                console.log('newNode', newNode)
-                selectedKeys.value = [newNode.id] // select new node
-                expandOneKey(treeDataMap, newNode.parentId, expandedKeys.value) // expend new node
-              }
+              console.log('newNode', newNode)
+              selectNode([newNode.id])
+              expandOneKey(treeDataMap, newNode.parentId, expandedKeys.value) // expend new node
+              setExpandedKeys(currProject.value.id, expandedKeys.value)
+            }
           )
     }
     const removeNode = () => {

@@ -56,6 +56,35 @@ func (c *ScenarioNodeCtrl) AddInterfaces(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
+// AddProcessor 添加
+func (c *ScenarioNodeCtrl) AddProcessor(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	req := serverDomain.ScenarioAddScenarioReq{}
+	err = ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	req.ProjectId = projectId
+
+	po, bizErr := c.ScenarioNodeService.AddProcessor(req)
+	if bizErr != nil {
+		ctx.JSON(_domain.Response{
+			Code: _domain.ErrComm.Code,
+			Data: nil,
+		})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: po})
+}
+
 // Get 详情
 func (c *ScenarioNodeCtrl) Get(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")

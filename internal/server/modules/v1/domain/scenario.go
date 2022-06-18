@@ -15,14 +15,20 @@ type ScenarioReqPaginate struct {
 type ScenarioAddInterfacesReq struct {
 	SelectedNodes []InterfaceSimple `json:"selectedNodes"`
 
-	Id             uint                     `json:"id"`
-	EntityCategory consts.ProcessorCategory `json:"entityCategory"`
-	EntityType     consts.ProcessorType     `json:"entityType"`
-	EntityId       uint                     `json:"entityId"`
-	InterfaceId    uint                     `json:"interfaceId"`
+	TargetId  uint `json:"targetId"`
+	ProjectId int  `json:"projectId"`
+}
 
-	Mode      string `json:"mode"`
-	ProjectId int    `json:"projectId"`
+type ScenarioAddScenarioReq struct {
+	Name              string                   `json:"name"`
+	Mode              string                   `json:"mode"`
+	ProcessorCategory consts.ProcessorCategory `json:"processorCategory"`
+	ProcessorType     consts.ProcessorType     `json:"processorType"`
+
+	TargetProcessorCategory consts.ProcessorCategory `json:"targetProcessorCategory"`
+	TargetProcessorType     consts.ProcessorType     `json:"targetProcessorType"`
+	TargetProcessorId       int                      `json:"targetProcessorId"`
+	ProjectId               int                      `json:"projectId"`
 }
 
 type ScenarioNodeReq struct {

@@ -21,16 +21,47 @@ func (s *ScenarioNodeService) GetTree(scenarioId int) (root *model.TestProcessor
 }
 
 func (s *ScenarioNodeService) AddInterfaces(req serverDomain.ScenarioAddInterfacesReq) (err *_domain.BizErr) {
-	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.Id)
+	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
 
 	for _, node := range req.SelectedNodes {
-		s.CreateDirOrInterface(node, targetProcessor)
+		s.createDirOrInterface(node, targetProcessor)
 	}
 
 	return
 }
 
-func (s *ScenarioNodeService) CreateDirOrInterface(node serverDomain.InterfaceSimple, parentProcessor model.TestProcessor) (
+func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioReq) (ret model.TestProcessor, err *_domain.BizErr) {
+	targetProcessor, _ := s.ScenarioProcessorRepo.Get(uint(req.TargetProcessorId))
+	if targetProcessor.ID == 0 {
+		return
+	}
+
+	ret = model.TestProcessor{
+		Name:           req.Name,
+		EntityCategory: req.ProcessorCategory,
+		EntityType:     req.ProcessorType,
+
+		ScenarioId: targetProcessor.ScenarioId,
+	}
+
+	if req.Mode == "child" {
+		ret.ParentId = targetProcessor.ID
+
+	} else if req.Mode == "parent" && req.TargetProcessorCategory == consts.ProcessorInterface {
+		ret.ParentId = targetProcessor.ParentId
+	}
+
+	s.ScenarioProcessorRepo.Save(&ret)
+
+	if req.Mode == "parent" {
+		targetProcessor.ParentId = ret.ID
+		s.ScenarioProcessorRepo.Save(&targetProcessor)
+	}
+
+	return
+}
+
+func (s *ScenarioNodeService) createDirOrInterface(node serverDomain.InterfaceSimple, parentProcessor model.TestProcessor) (
 	err *_domain.BizErr) {
 
 	if !node.IsDir {
@@ -55,7 +86,7 @@ func (s *ScenarioNodeService) CreateDirOrInterface(node serverDomain.InterfaceSi
 		s.ScenarioProcessorRepo.Save(&processor)
 
 		for _, child := range node.Children {
-			s.CreateDirOrInterface(child, processor)
+			s.createDirOrInterface(child, processor)
 		}
 	}
 

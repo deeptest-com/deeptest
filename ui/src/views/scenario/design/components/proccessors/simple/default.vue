@@ -31,7 +31,8 @@
           </a-form-item>
 
           <a-form-item label="描述" v-bind="validateInfos.desc">
-            <a-input v-model:value="modelRef.desc"/>
+            <a-textarea v-model:value="modelRef.desc"
+                        :auto-size="{ minRows: 3, maxRows: 6 }" />
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 2 }">

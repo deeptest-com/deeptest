@@ -313,7 +313,7 @@ type ProcessorType string
 const (
 	ProcessorThreadDefault ProcessorType = "processor_thread_default"
 	ProcessorSimpleDefault ProcessorType = "processor_simple_default"
-	ProcessorTimerDefault  ProcessorType = "processor_time_default"
+	ProcessorTimerDefault  ProcessorType = "processor_timer_default"
 
 	ProcessorLogicIf   ProcessorType = "processor_logic_if"
 	ProcessorLogicElse ProcessorType = "processor_logic_else"

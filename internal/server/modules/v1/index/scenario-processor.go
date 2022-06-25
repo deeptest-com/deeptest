@@ -19,7 +19,9 @@ func NewScenarioProcessorModule() *ScenarioProcessorModule {
 func (m *ScenarioProcessorModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+
 		index.Put("/updateName", m.ScenarioProcessorCtrl.UpdateName).Name = "更新名称"
+		index.Put("/save", m.ScenarioProcessorCtrl.Save).Name = "保存"
 	}
 
 	return module.NewModule("/scenarios/processors", handler)

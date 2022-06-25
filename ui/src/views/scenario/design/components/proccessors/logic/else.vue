@@ -30,8 +30,8 @@
             </a-row>
           </a-form-item>
 
-          <a-form-item label="描述" v-bind="validateInfos.desc">
-            <a-input v-model:value="modelRef.desc"/>
+          <a-form-item label="备注" v-bind="validateInfos.comments">
+            <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
@@ -71,12 +71,16 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<boolean>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const editMap = ref({})
+const editMap = ref({} as any)
 const editName = () => {
   editMap.value.name = !editMap.value.name
 }
 const saveName = () => {
-  editMap.value.name = false
+  store.dispatch('Scenario/saveProcessorName', modelRef.value).then((res) => {
+    if (res === true) {
+      editMap.value.name = false
+    }
+  })
 }
 const cancelName = () => {
   editMap.value.name = false

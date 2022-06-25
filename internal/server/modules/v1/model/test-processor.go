@@ -89,25 +89,25 @@ func (ProcessorThreadGroup) TableName() string {
 	return "biz_test_processor_thread_group"
 }
 
-type ProcessorSimple struct {
+type ProcessorGroup struct {
 	BaseModel
 	ProcessorBase
 }
 
-func (ProcessorSimple) TableName() string {
-	return "biz_test_processor_simple"
+func (ProcessorGroup) TableName() string {
+	return "biz_test_processor_group"
 }
 
-type ProcessorFlow struct {
+type ProcessorLogic struct {
 	BaseModel
 	ProcessorBase
 
-	Condition string `json:"condition" yaml:"condition"`
-	Judgement bool   `json:"judgement" yaml:"judgement"`
+	Expression string `json:"expression" yaml:"expression"`
+	//Judgement bool   `json:"judgement" yaml:"judgement"`
 }
 
-func (ProcessorFlow) TableName() string {
-	return "biz_test_processor_flow"
+func (ProcessorLogic) TableName() string {
+	return "biz_test_processor_logic"
 }
 
 type ProcessorIterator struct {
@@ -217,4 +217,6 @@ type ProcessorBase struct {
 	Children []interface{} `json:"children" yaml:"children" gorm:"-"`
 	// results
 	Results []string `json:"results" yaml:"results" gorm:"-"`
+
+	Comments string `json:"comments" yaml:"comments"`
 }

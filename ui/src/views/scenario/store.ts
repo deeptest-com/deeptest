@@ -14,7 +14,7 @@ import {
     moveNode,
     addInterfaces,
     addProcessor,
-    saveProcessorName,
+    saveProcessorName, saveProcessor,
 } from './service';
 
 export interface StateType {
@@ -55,6 +55,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         moveNode: Action<StateType, StateType>;
 
         saveProcessorName: Action<StateType, StateType>;
+        saveProcessor: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -236,6 +237,15 @@ const StoreModel: ModuleType = {
             }
         },
 
+        async saveProcessor({commit, dispatch, state}, payload: any) {
+            const jsn = await saveProcessor(payload)
+            if (jsn.code === 0) {
+                await dispatch('loadScenario', state.scenarioId);
+                return true;
+            } else {
+                return false
+            }
+        },
         async saveProcessorName({commit, dispatch, state}, payload: any) {
             const jsn = await saveProcessorName(payload)
             if (jsn.code === 0) {

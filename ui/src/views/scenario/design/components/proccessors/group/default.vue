@@ -30,9 +30,8 @@
             </a-row>
           </a-form-item>
 
-          <a-form-item label="描述" v-bind="validateInfos.desc">
-            <a-textarea v-model:value="modelRef.desc"
-                        :auto-size="{ minRows: 3, maxRows: 6 }" />
+          <a-form-item label="备注" v-bind="validateInfos.comments">
+            <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
@@ -50,7 +49,7 @@ import {computed, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
-import {Form} from 'ant-design-vue';
+import {message, Form, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../store";
 import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
 
@@ -90,17 +89,13 @@ const cancelName = () => {
 const submitForm = async () => {
   validate()
       .then(() => {
-        console.log(modelRef);
-
-        // store.dispatch('Project/saveProject', modelRef.value).then((res) => {
-        //   console.log('res', res)
-        //   if (res === true) {
-        //     message.success(`保存项目成功`);
-        //     router.replace('/project/list')
-        //   } else {
-        //     message.error(`保存项目失败`);
-        //   }
-        // })
+        store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
+          if (res === true) {
+            message.success(`保存成功`);
+          } else {
+            message.error(`保存失败`);
+          }
+        })
       })
 };
 

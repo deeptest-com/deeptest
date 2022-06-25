@@ -13,3 +13,8 @@ func (s *ScenarioProcessorService) UpdateName(req serverDomain.ScenarioProcessor
 	err = s.ScenarioProcessorRepo.UpdateName(req.Id, req.Name)
 	return
 }
+
+func (s *ScenarioProcessorService) Save(req serverDomain.ScenarioProcessorReq) (err error) {
+	err = s.ScenarioProcessorRepo.Save(req)
+	return
+}

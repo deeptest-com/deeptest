@@ -112,6 +112,13 @@ export async function saveProcessorName(data: any): Promise<any> {
         data: data,
     });
 }
+export async function saveProcessor(data: any): Promise<any> {
+    return request({
+        url: `/${apiPathProcessors}/save`,
+        method: 'PUT',
+        data: data,
+    });
+}
 
 export function getProcessorCategories() {
     return getEnumSelectItems(ProcessorCategory)

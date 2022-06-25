@@ -15,6 +15,7 @@ import {
 
 const apiPath = 'scenarios';
 const apiPathNodes = `${apiPath}/nodes`;
+const apiPathProcessors = `${apiPath}/processors`;
 
 export async function query(params?: QueryParams): Promise<any> {
     return request({
@@ -100,6 +101,14 @@ export async function moveNode(data: any): Promise<any> {
     return request({
         url: `/${apiPathNodes}/move`,
         method: 'post',
+        data: data,
+    });
+}
+
+export async function saveProcessorName(data: any): Promise<any> {
+    return request({
+        url: `/${apiPathProcessors}/updateName`,
+        method: 'PUT',
         data: data,
     });
 }

@@ -8,8 +8,8 @@ import (
 )
 
 type ScenarioService struct {
-	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
-	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
+	ScenarioRepo     *repo.ScenarioRepo     `inject:""`
+	ScenarioNodeRepo *repo.ScenarioNodeRepo `inject:""`
 }
 
 func NewScenarioService() *ScenarioService {
@@ -33,7 +33,7 @@ func (s *ScenarioService) FindById(id uint) (model.TestScenario, error) {
 func (s *ScenarioService) Create(req model.TestScenario) (po model.TestScenario, bizErr *_domain.BizErr) {
 	po, bizErr = s.ScenarioRepo.Create(req)
 
-	s.ScenarioProcessorRepo.CreateDefault(po.ID)
+	s.ScenarioNodeRepo.CreateDefault(po.ID)
 
 	return
 }

@@ -3,7 +3,18 @@ import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
 import { Scenario, QueryResult, QueryParams, PaginationConfig } from './data.d';
 import {
-    query, get, save, load, getNode, createNode, updateNode, removeNode, moveNode, addInterfaces, addProcessor,
+    query,
+    get,
+    save,
+    load,
+    getNode,
+    createNode,
+    updateNode,
+    removeNode,
+    moveNode,
+    addInterfaces,
+    addProcessor,
+    saveProcessorName,
 } from './service';
 
 export interface StateType {
@@ -42,6 +53,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateNode: Action<StateType, StateType>;
         removeNode: Action<StateType, StateType>;
         moveNode: Action<StateType, StateType>;
+
+        saveProcessorName: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -207,7 +220,7 @@ const StoreModel: ModuleType = {
         async removeNode({commit, dispatch, state}, payload: number) {
             try {
                 await removeNode(payload);
-                await dispatch('loadScenario');
+                await dispatch('loadScenario', state.scenarioId);
                 return true;
             } catch (error) {
                 return false;
@@ -216,10 +229,20 @@ const StoreModel: ModuleType = {
         async moveNode({commit, dispatch, state}, payload: any) {
             try {
                 await moveNode(payload);
-                await dispatch('loadScenario');
+                await dispatch('loadScenario', state.scenarioId);
                 return true;
             } catch (error) {
                 return false;
+            }
+        },
+
+        async saveProcessorName({commit, dispatch, state}, payload: any) {
+            const jsn = await saveProcessorName(payload)
+            if (jsn.code === 0) {
+                await dispatch('loadScenario', state.scenarioId);
+                return true;
+            } else {
+                return false
             }
         },
     }

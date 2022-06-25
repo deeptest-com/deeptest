@@ -9,19 +9,18 @@ import (
 )
 
 type ScenarioNodeService struct {
-	ScenarioNodeRepo      *repo.ScenarioNodeRepo      `inject:""`
-	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
-	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
+	ScenarioNodeRepo *repo.ScenarioNodeRepo `inject:""`
+	ScenarioRepo     *repo.ScenarioRepo     `inject:""`
 }
 
 func (s *ScenarioNodeService) GetTree(scenarioId int) (root *model.TestProcessor, err error) {
-	root, err = s.ScenarioProcessorRepo.GetTree(scenarioId)
+	root, err = s.ScenarioNodeRepo.GetTree(scenarioId)
 
 	return
 }
 
 func (s *ScenarioNodeService) AddInterfaces(req serverDomain.ScenarioAddInterfacesReq) (err *_domain.BizErr) {
-	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
+	targetProcessor, _ := s.ScenarioNodeRepo.Get(req.TargetId)
 
 	for _, interfaceNode := range req.SelectedNodes {
 		s.createDirOrInterface(interfaceNode, targetProcessor)
@@ -31,7 +30,7 @@ func (s *ScenarioNodeService) AddInterfaces(req serverDomain.ScenarioAddInterfac
 }
 
 func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioReq) (ret model.TestProcessor, err *_domain.BizErr) {
-	targetProcessor, _ := s.ScenarioProcessorRepo.Get(uint(req.TargetProcessorId))
+	targetProcessor, _ := s.ScenarioNodeRepo.Get(uint(req.TargetProcessorId))
 	if targetProcessor.ID == 0 {
 		return
 	}
@@ -51,11 +50,11 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 		ret.ParentId = targetProcessor.ParentId
 	}
 
-	s.ScenarioProcessorRepo.Save(&ret)
+	s.ScenarioNodeRepo.Save(&ret)
 
 	if req.Mode == "parent" {
 		targetProcessor.ParentId = ret.ID
-		s.ScenarioProcessorRepo.Save(&targetProcessor)
+		s.ScenarioNodeRepo.Save(&targetProcessor)
 	}
 
 	return
@@ -72,16 +71,16 @@ func (s *ScenarioNodeService) createDirOrInterface(interfaceNode serverDomain.In
 			InterfaceId:    uint(interfaceNode.Id),
 			ParentId:       parentProcessor.ID,
 		}
-		s.ScenarioProcessorRepo.Save(&processor)
+		s.ScenarioNodeRepo.Save(&processor)
 
 	} else {
 		processor := model.TestProcessor{
 			Name:           interfaceNode.Name,
 			ScenarioId:     parentProcessor.ScenarioId,
-			EntityCategory: consts.ProcessorSimple,
+			EntityCategory: consts.ProcessorGroup,
 			ParentId:       parentProcessor.ID,
 		}
-		s.ScenarioProcessorRepo.Save(&processor)
+		s.ScenarioNodeRepo.Save(&processor)
 
 		for _, child := range interfaceNode.Children {
 			s.createDirOrInterface(child, processor)
@@ -92,7 +91,7 @@ func (s *ScenarioNodeService) createDirOrInterface(interfaceNode serverDomain.In
 }
 
 func (s *ScenarioNodeService) Get(id int) (po model.TestProcessor, err error) {
-	po, _ = s.ScenarioProcessorRepo.Get(uint(id))
+	po, _ = s.ScenarioNodeRepo.Get(uint(id))
 	return
 }
 

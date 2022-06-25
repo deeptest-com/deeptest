@@ -1,5 +1,5 @@
 <template>
-  <div class="processor_simple-main">
+  <div class="processor_group-main">
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -72,12 +72,16 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<boolean>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const editMap = ref({})
+const editMap = ref({} as any)
 const editName = () => {
   editMap.value.name = !editMap.value.name
 }
 const saveName = () => {
-  editMap.value.name = false
+  store.dispatch('Scenario/saveProcessorName', modelRef.value).then((res) => {
+    if (res === true) {
+     editMap.value.name = false
+    }
+  })
 }
 const cancelName = () => {
   editMap.value.name = false
@@ -98,11 +102,7 @@ const submitForm = async () => {
         //   }
         // })
       })
-      .catch(err => {
-        console.log('error', err);
-      });
 };
-
 
 const labelCol = { span: 2 }
 const wrapperCol = { span: 16 }
@@ -110,7 +110,7 @@ const wrapperCol = { span: 16 }
 </script>
 
 <style lang="less" scoped>
-.processor_simple-main {
+.processor_group-main {
   .icons {
     text-align: right;
     line-height: 32px;

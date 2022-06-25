@@ -290,15 +290,15 @@ type ProcessorCategory string
 const (
 	ProcessorInterface ProcessorCategory = "processor_interface"
 
-	ProcessorRoot        ProcessorCategory = "processor_root"
-	ProcessorThreadGroup ProcessorCategory = "processor_thread_group"
-	ProcessorSimple      ProcessorCategory = "processor_simple"
-	ProcessorLogic       ProcessorCategory = "processor_logic"
-	ProcessorLoop        ProcessorCategory = "processor_loop"
-	ProcessorTimer       ProcessorCategory = "processor_timer"
-	ProcessorVariable    ProcessorCategory = "processor_variable"
-	ProcessorAssertion   ProcessorCategory = "processor_assertion"
-	ProcessorExtractor   ProcessorCategory = "processor_extractor"
+	ProcessorRoot ProcessorCategory = "processor_root"
+	//ProcessorThreadGroup ProcessorCategory = "processor_thread_group"
+	ProcessorGroup     ProcessorCategory = "processor_group"
+	ProcessorLogic     ProcessorCategory = "processor_logic"
+	ProcessorLoop      ProcessorCategory = "processor_loop"
+	ProcessorTimer     ProcessorCategory = "processor_timer"
+	ProcessorVariable  ProcessorCategory = "processor_variable"
+	ProcessorAssertion ProcessorCategory = "processor_assertion"
+	ProcessorExtractor ProcessorCategory = "processor_extractor"
 
 	ProcessorCookie ProcessorCategory = "processor_cookie"
 	ProcessorData   ProcessorCategory = "processor_data"
@@ -312,7 +312,7 @@ type ProcessorType string
 
 const (
 	ProcessorThreadDefault ProcessorType = "processor_thread_default"
-	ProcessorSimpleDefault ProcessorType = "processor_simple_default"
+	ProcessorGroupDefault  ProcessorType = "processor_group_default"
 	ProcessorTimerDefault  ProcessorType = "processor_timer_default"
 
 	ProcessorLogicIf   ProcessorType = "processor_logic_if"

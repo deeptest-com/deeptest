@@ -1,7 +1,7 @@
 <template>
   <div class="scenario-node-edit-main">
 <!--    <ProcessorThreadDefault v-if="selectedNode.entityType === 'processor_thread_default'" />-->
-    <ProcessorSimpleDefault v-if="selectedNode.entityType === 'processor_simple_default'" />
+    <ProcessorGroupDefault v-if="selectedNode.entityType === 'processor_group_default'" />
     <ProcessorTimerDefault  v-if="selectedNode.entityType === 'processor_time_default'" />
 
     <ProcessorLogicIf   v-if="selectedNode.entityType === 'processor_logic_if'" />
@@ -46,39 +46,39 @@ import {useStore} from "vuex";
 
 import {StateType as ScenarioStateType} from "../../store";
 
-import ProcessorSimpleDefault from "./proccessors/simple/default.vue";
-import ProcessorTimerDefault from "./proccessors/timer/default"
+import ProcessorGroupDefault from "./proccessors/group/default.vue";
+import ProcessorTimerDefault from "./proccessors/timer/default.vue"
 
-import ProcessorLogicIf  from "./proccessors/logic/if"
-import ProcessorLogicElse from "./proccessors/logic/else"
+import ProcessorLogicIf  from "./proccessors/logic/if.vue"
+import ProcessorLogicElse from "./proccessors/logic/else.vue"
 
-import ProcessorLoopRepeatTime from "./proccessors/loop/repeat_time"
-import ProcessorLoopRepeatUntil from "./proccessors/loop/repeat_until"
-import ProcessorLoopRepeatIn  from "./proccessors/loop/repeat_in"
-import ProcessorLoopRepeatRange from "./proccessors/loop/repeat_range"
-import ProcessorLoopRepeatBreak from "./proccessors/loop/repeat_break"
+import ProcessorLoopRepeatTime from "./proccessors/loop/repeat_time.vue"
+import ProcessorLoopRepeatUntil from "./proccessors/loop/repeat_until.vue"
+import ProcessorLoopRepeatIn  from "./proccessors/loop/repeat_in.vue"
+import ProcessorLoopRepeatRange from "./proccessors/loop/repeat_range.vue"
+import ProcessorLoopRepeatBreak from "./proccessors/loop/repeat_break.vue"
 
-import ProcessorVariableSet  from "./proccessors/variable/set"
-import ProcessorVariableGet  from "./proccessors/variable/get"
-import ProcessorVariableClear from "./proccessors/variable/clear"
+import ProcessorVariableSet  from "./proccessors/variable/set.vue"
+import ProcessorVariableGet  from "./proccessors/variable/get.vue"
+import ProcessorVariableClear from "./proccessors/variable/clear.vue"
 
-import ProcessorAssertionEqual     from "./proccessors/assertion/equal"
-import ProcessorAssertionNotEqual  from "./proccessors/assertion/not_equal"
-import ProcessorAssertionContain   from "./proccessors/assertion/contain"
-import ProcessorAssertionNotContain from "./proccessors/assertion/not_contain"
+import ProcessorAssertionEqual     from "./proccessors/assertion/equal.vue"
+import ProcessorAssertionNotEqual  from "./proccessors/assertion/not_equal.vue"
+import ProcessorAssertionContain   from "./proccessors/assertion/contain.vue"
+import ProcessorAssertionNotContain from "./proccessors/assertion/not_contain.vue"
 
-import ProcessorExtractorBoundary from "./proccessors/extractor/boundary"
-import ProcessorExtractorJsonQuery from "./proccessors/extractor/jsonquery"
-import ProcessorExtractorHtmlQuery from "./proccessors/extractor/htmlquery"
-import ProcessorExtractorXmlQuery from "./proccessors/extractor/xmlquery"
+import ProcessorExtractorBoundary from "./proccessors/extractor/boundary.vue"
+import ProcessorExtractorJsonQuery from "./proccessors/extractor/jsonquery.vue"
+import ProcessorExtractorHtmlQuery from "./proccessors/extractor/htmlquery.vue"
+import ProcessorExtractorXmlQuery from "./proccessors/extractor/xmlquery.vue"
 
-import ProcessorCookieGet  from "./proccessors/cookie/get"
-import ProcessorCookieSet  from "./proccessors/cookie/set"
-import ProcessorCookieClear from "./proccessors/cookie/clear"
+import ProcessorCookieGet  from "./proccessors/cookie/get.vue"
+import ProcessorCookieSet  from "./proccessors/cookie/set.vue"
+import ProcessorCookieClear from "./proccessors/cookie/clear.vue"
 
-import ProcessorDataText   from "./proccessors/data/text"
-import ProcessorDataExcel  from "./proccessors/data/excel"
-import ProcessorDataZenData from "./proccessors/data/zendata"
+import ProcessorDataText   from "./proccessors/data/text.vue"
+import ProcessorDataExcel  from "./proccessors/data/excel.vue"
+import ProcessorDataZenData from "./proccessors/data/zendata.vue"
 
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; }>();

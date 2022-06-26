@@ -1,39 +1,39 @@
 <template>
   <div class="scenario-node-edit-main">
-<!--    <ProcessorThreadDefault v-if="selectedNode.entityType === 'processor_thread_default'" />-->
-    <ProcessorGroupDefault v-if="selectedNode.entityType === 'processor_group_default'" />
-    <ProcessorTimerDefault  v-if="selectedNode.entityType === 'processor_time_default'" />
+<!--    <ProcessorThreadDefault v-if="selectedNode.processorType === 'processor_thread_default'" />-->
+    <ProcessorGroupDefault v-if="selectedNode.processorType === 'processor_group_default'" />
+    <ProcessorTimerDefault  v-if="selectedNode.processorType === 'processor_time_default'" />
 
-    <ProcessorLogicIf   v-if="selectedNode.entityType === 'processor_logic_if'" />
-    <ProcessorLogicElse v-if="selectedNode.entityType === 'processor_logic_else'" />
+    <ProcessorLogicIf   v-if="selectedNode.processorType === 'processor_logic_if'" />
+    <ProcessorLogicElse v-if="selectedNode.processorType === 'processor_logic_else'" />
 
-    <ProcessorLoopRepeatTime  v-if="selectedNode.entityType === 'processor_loop_repeat_time'" />
-    <ProcessorLoopRepeatUntil v-if="selectedNode.entityType === 'processor_loop_repeat_until'" />
-    <ProcessorLoopRepeatIn    v-if="selectedNode.entityType === 'processor_loop_repeat_in'" />
-    <ProcessorLoopRepeatRange v-if="selectedNode.entityType === 'processor_loop_range'" />
-    <ProcessorLoopRepeatBreak v-if="selectedNode.entityType === 'processor_loop_break'" />
+    <ProcessorLoopRepeatTime  v-if="selectedNode.processorType === 'processor_loop_repeat_time'" />
+    <ProcessorLoopRepeatUntil v-if="selectedNode.processorType === 'processor_loop_repeat_until'" />
+    <ProcessorLoopRepeatIn    v-if="selectedNode.processorType === 'processor_loop_repeat_in'" />
+    <ProcessorLoopRepeatRange v-if="selectedNode.processorType === 'processor_loop_range'" />
+    <ProcessorLoopRepeatBreak v-if="selectedNode.processorType === 'processor_loop_break'" />
 
-    <ProcessorVariableSet   v-if="selectedNode.entityType === 'processor_variable_set'" />
-    <ProcessorVariableGet   v-if="selectedNode.entityType === 'processor_variable_get'" />
-    <ProcessorVariableClear v-if="selectedNode.entityType === 'processor_variable_clear'" />
+    <ProcessorVariableSet   v-if="selectedNode.processorType === 'processor_variable_set'" />
+    <ProcessorVariableGet   v-if="selectedNode.processorType === 'processor_variable_get'" />
+    <ProcessorVariableClear v-if="selectedNode.processorType === 'processor_variable_clear'" />
 
-    <ProcessorAssertionEqual      v-if="selectedNode.entityType === 'processor_assertion_equal'" />
-    <ProcessorAssertionNotEqual   v-if="selectedNode.entityType === 'processor_assertion_not_equal'" />
-    <ProcessorAssertionContain    v-if="selectedNode.entityType === 'processor_assertion_contain'" />
-    <ProcessorAssertionNotContain v-if="selectedNode.entityType === 'processor_assertion_not_contain'" />
+    <ProcessorAssertionEqual      v-if="selectedNode.processorType === 'processor_assertion_equal'" />
+    <ProcessorAssertionNotEqual   v-if="selectedNode.processorType === 'processor_assertion_not_equal'" />
+    <ProcessorAssertionContain    v-if="selectedNode.processorType === 'processor_assertion_contain'" />
+    <ProcessorAssertionNotContain v-if="selectedNode.processorType === 'processor_assertion_not_contain'" />
 
-    <ProcessorExtractorBoundary  v-if="selectedNode.entityType === 'processor_extractor_boundary'" />
-    <ProcessorExtractorJsonQuery v-if="selectedNode.entityType === 'processor_extractor_jsonquery'" />
-    <ProcessorExtractorHtmlQuery v-if="selectedNode.entityType === 'processor_extractor_htmlquery'" />
-    <ProcessorExtractorXmlQuery  v-if="selectedNode.entityType === 'processor_extractor_xmlquery'" />
+    <ProcessorExtractorBoundary  v-if="selectedNode.processorType === 'processor_extractor_boundary'" />
+    <ProcessorExtractorJsonQuery v-if="selectedNode.processorType === 'processor_extractor_jsonquery'" />
+    <ProcessorExtractorHtmlQuery v-if="selectedNode.processorType === 'processor_extractor_htmlquery'" />
+    <ProcessorExtractorXmlQuery  v-if="selectedNode.processorType === 'processor_extractor_xmlquery'" />
 
-    <ProcessorCookieGet   v-if="selectedNode.entityType === 'processor_cookie_get'" />
-    <ProcessorCookieSet   v-if="selectedNode.entityType === 'processor_cookie_set'" />
-    <ProcessorCookieClear v-if="selectedNode.entityType === 'processor_cookie_clear'" />
+    <ProcessorCookieGet   v-if="selectedNode.processorType === 'processor_cookie_get'" />
+    <ProcessorCookieSet   v-if="selectedNode.processorType === 'processor_cookie_set'" />
+    <ProcessorCookieClear v-if="selectedNode.processorType === 'processor_cookie_clear'" />
 
-    <ProcessorDataText    v-if="selectedNode.entityType === 'processor_data_text'" />
-    <ProcessorDataExcel   v-if="selectedNode.entityType === 'processor_data_excel'" />
-    <ProcessorDataZenData v-if="selectedNode.entityType === 'processor_data_zendata'" />
+    <ProcessorDataText    v-if="selectedNode.processorType === 'processor_data_text'" />
+    <ProcessorDataExcel   v-if="selectedNode.processorType === 'processor_data_excel'" />
+    <ProcessorDataZenData v-if="selectedNode.processorType === 'processor_data_zendata'" />
 
   </div>
 </template>

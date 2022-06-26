@@ -9,8 +9,9 @@ import (
 )
 
 type ScenarioNodeService struct {
-	ScenarioNodeRepo *repo.ScenarioNodeRepo `inject:""`
-	ScenarioRepo     *repo.ScenarioRepo     `inject:""`
+	ScenarioNodeRepo      *repo.ScenarioNodeRepo      `inject:""`
+	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
+	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
 }
 
 func (s *ScenarioNodeService) GetTree(scenarioId int) (root *model.TestProcessor, err error) {
@@ -20,7 +21,7 @@ func (s *ScenarioNodeService) GetTree(scenarioId int) (root *model.TestProcessor
 }
 
 func (s *ScenarioNodeService) AddInterfaces(req serverDomain.ScenarioAddInterfacesReq) (err *_domain.BizErr) {
-	targetProcessor, _ := s.ScenarioNodeRepo.Get(req.TargetId)
+	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
 
 	for _, interfaceNode := range req.SelectedNodes {
 		s.createDirOrInterface(interfaceNode, targetProcessor)
@@ -30,7 +31,7 @@ func (s *ScenarioNodeService) AddInterfaces(req serverDomain.ScenarioAddInterfac
 }
 
 func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioReq) (ret model.TestProcessor, err *_domain.BizErr) {
-	targetProcessor, _ := s.ScenarioNodeRepo.Get(uint(req.TargetProcessorId))
+	targetProcessor, _ := s.ScenarioProcessorRepo.Get(uint(req.TargetProcessorId))
 	if targetProcessor.ID == 0 {
 		return
 	}
@@ -90,13 +91,8 @@ func (s *ScenarioNodeService) createDirOrInterface(interfaceNode serverDomain.In
 	return
 }
 
-func (s *ScenarioNodeService) Get(id int) (po model.TestProcessor, err error) {
-	po, _ = s.ScenarioNodeRepo.Get(uint(id))
-	return
-}
-
-//func (s *ScenarioNodeService) Save(interf *model.ScenarioNode) (err error) {
-//	err = s.ScenarioNodeRepo.Save(interf)
+//func (s *ScenarioNodeService) SaveLogic(interf *model.ScenarioNode) (err error) {
+//	err = s.ScenarioNodeRepo.SaveLogic(interf)
 //
 //	return
 //}
@@ -112,7 +108,7 @@ func (s *ScenarioNodeService) Get(id int) (po model.TestProcessor, err error) {
 //	}
 //
 //	interf.ParentId, interf.Ordr = s.ScenarioNodeRepo.UpdateOrder(dropPos, uint(req.Target))
-//	err = s.ScenarioNodeRepo.Save(interf)
+//	err = s.ScenarioNodeRepo.SaveLogic(interf)
 //
 //	return
 //}

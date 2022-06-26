@@ -8,8 +8,8 @@ import (
 type TestProcessor struct {
 	BaseModel
 
-	Name string `json:"name" yaml:"name"`
-	Desc string `json:"desc" yaml:"desc"`
+	Name     string `json:"name" yaml:"name"`
+	Comments string `json:"comments" yaml:"comments"`
 
 	ParentId   uint `json:"parentId"`
 	ScenarioId uint `json:"scenarioId"`
@@ -209,9 +209,12 @@ func (ProcessorCookie) TableName() string {
 }
 
 type ProcessorBase struct {
-	Name string `json:"name" yaml:"name"`
+	Name              string                   `json:"name" yaml:"name"`
+	ProcessorId       uint                     `json:"processorId" yaml:"processorId"`
+	ProcessorCategory consts.ProcessorCategory `json:"processorCategory" yaml:"processorCategory"`
+	ProcessorType     consts.ProcessorType     `json:"processorType" yaml:"processorType"`
 
-	ParentId uint `json:"parentId" yaml:"parentId"`
+	//ParentId uint `json:"parentId" yaml:"parentId"`
 
 	// interface or Processor
 	Children []interface{} `json:"children" yaml:"children" gorm:"-"`

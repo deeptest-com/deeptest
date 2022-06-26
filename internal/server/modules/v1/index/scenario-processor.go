@@ -20,6 +20,8 @@ func (m *ScenarioProcessorModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
+		index.Get("/{id:uint}", m.ScenarioProcessorCtrl.Get).Name = "场景节点详情"
+
 		index.Put("/updateName", m.ScenarioProcessorCtrl.UpdateName).Name = "更新名称"
 		index.Put("/save", m.ScenarioProcessorCtrl.Save).Name = "保存"
 	}

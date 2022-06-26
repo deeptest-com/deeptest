@@ -71,11 +71,6 @@ func (r *ScenarioNodeRepo) CreateDefault(scenarioId uint) (po model.TestProcesso
 	return
 }
 
-func (r *ScenarioNodeRepo) Get(id uint) (processor model.TestProcessor, err error) {
-	err = r.DB.Where("id = ?", id).First(&processor).Error
-	return
-}
-
 func (r *ScenarioNodeRepo) Save(processor *model.TestProcessor) (err error) {
 	err = r.DB.Save(processor).Error
 
@@ -135,8 +130,8 @@ func (r *ScenarioNodeRepo) Save(processor *model.TestProcessor) (err error) {
 //	return
 //}
 //
-//func (r *ScenarioNodeRepo) Save(field *model.ScenarioNode) (err error) {
-//	err = r.DB.Save(field).Error
+//func (r *ScenarioNodeRepo) SaveLogic(field *model.ScenarioNode) (err error) {
+//	err = r.DB.SaveLogic(field).Error
 //	return
 //}
 //

@@ -46,7 +46,7 @@ export async function load(scenarioId): Promise<any> {
 }
 
 export async function getNode(id: number): Promise<any> {
-    return request({url: `/${apiPathNodes}/${id}`});
+    return request({url: `/${apiPathProcessors}/${id}`});
 }
 
 export async function addInterfaces(data): Promise<any> {

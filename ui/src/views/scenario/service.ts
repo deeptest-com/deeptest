@@ -114,7 +114,7 @@ export async function saveProcessorName(data: any): Promise<any> {
 }
 export async function saveProcessor(data: any): Promise<any> {
     return request({
-        url: `/${apiPathProcessors}/save`,
+        url: `/${apiPathProcessors}/${data.processorCategory}/save`,
         method: 'PUT',
         data: data,
     });

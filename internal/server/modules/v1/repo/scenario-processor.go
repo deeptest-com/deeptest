@@ -55,7 +55,7 @@ func (r *ScenarioProcessorRepo) UpdateName(id int, name string) (err error) {
 }
 
 func (r *ScenarioProcessorRepo) Save(po model.ProcessorLogic) (err error) {
-	err = r.DB.Save(po).Error
+	err = r.DB.Save(&po).Error
 	r.UpdateEntityId(po.ProcessorId, po.ID)
 
 	return

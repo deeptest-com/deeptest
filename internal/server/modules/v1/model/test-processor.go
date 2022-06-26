@@ -209,7 +209,9 @@ func (ProcessorCookie) TableName() string {
 }
 
 type ProcessorBase struct {
-	Name              string                   `json:"name" yaml:"name"`
+	Name     string `json:"name" yaml:"name"`
+	Comments string `json:"comments" yaml:"comments"`
+
 	ProcessorId       uint                     `json:"processorId" yaml:"processorId"`
 	ProcessorCategory consts.ProcessorCategory `json:"processorCategory" yaml:"processorCategory"`
 	ProcessorType     consts.ProcessorType     `json:"processorType" yaml:"processorType"`
@@ -220,6 +222,4 @@ type ProcessorBase struct {
 	Children []interface{} `json:"children" yaml:"children" gorm:"-"`
 	// results
 	Results []string `json:"results" yaml:"results" gorm:"-"`
-
-	Comments string `json:"comments" yaml:"comments"`
 }

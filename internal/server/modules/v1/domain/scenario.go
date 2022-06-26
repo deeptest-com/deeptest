@@ -45,3 +45,13 @@ type ScenarioNodeMoveReq struct {
 	DropKey int                  `json:"dropKey"`
 	DropPos serverConsts.DropPos `json:"dropPos"`
 }
+
+type ScenarioProcessorReq struct {
+	ProcessorCategory consts.ProcessorCategory `json:"processorCategory"`
+	ProcessorType     consts.ProcessorType     `json:"processorType"`
+	ProcessorId       uint                     `json:"processorId"`
+	InterfaceId       uint                     `json:"interfaceId"`
+
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}

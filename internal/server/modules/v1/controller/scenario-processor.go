@@ -54,12 +54,14 @@ func (c *ScenarioProcessorCtrl) UpdateName(ctx iris.Context) {
 
 // Save 保存
 func (c *ScenarioProcessorCtrl) Save(ctx iris.Context) {
-	category, err := ctx.Params().GetInt("category")
+	processorCategory := ctx.Params().Get("category")
 
-	if consts.ProcessorCategory(category) == consts.ProcessorLogic {
-		var req model.ProcessorLogic
-		err = ctx.ReadJSON(&req)
-		err = c.ScenarioProcessorService.SaveLogic(req)
+	var err error
+
+	if processorCategory == consts.ProcessorLogic.ToString() {
+		var entity model.ProcessorLogic
+		err = ctx.ReadJSON(&entity)
+		err = c.ScenarioProcessorService.SaveLogic(entity)
 	}
 
 	if err != nil {

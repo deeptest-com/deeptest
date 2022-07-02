@@ -1,5 +1,5 @@
 <template>
-  <div class="processor_simple-main">
+  <div class="processor_login_else-main">
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -113,7 +113,7 @@ const wrapperCol = { span: 16 }
 </script>
 
 <style lang="less" scoped>
-.processor_simple-main {
+.processor_login_else-main {
   .icons {
     text-align: right;
     line-height: 32px;

@@ -1,37 +1,11 @@
 <template>
-  <div class="processor_simple-main">
+  <div class="processor_loop_break-main">
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
-            <a-row v-if="!editMap.name" type="flex">
-              <a-col flex="1">
-                <span class="icons">{{modelRef.name}}</span>
-              </a-col>
 
-              <a-col flex="16px" />
-
-              <a-col flex="36px" class="icons">
-                <EditOutlined @click="editName()" />
-              </a-col>
-            </a-row>
-
-            <a-row v-if="editMap.name" type="flex">
-              <a-col flex="1">
-                <a-input v-model:value="modelRef.name" />
-              </a-col>
-
-              <a-col flex="16px" />
-
-              <a-col flex="36px" class="icons">
-                <CheckOutlined @click="saveName()" />&nbsp;
-                <CloseOutlined @click="cancelName()" />
-              </a-col>
-            </a-row>
-          </a-form-item>
-
-          <a-form-item label="描述" v-bind="validateInfos.desc">
-            <a-input v-model:value="modelRef.desc"/>
+          <a-form-item label="备注" v-bind="validateInfos.comments">
+            <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
@@ -71,17 +45,6 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<boolean>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const editMap = ref({})
-const editName = () => {
-  editMap.value.name = !editMap.value.name
-}
-const saveName = () => {
-  editMap.value.name = false
-}
-const cancelName = () => {
-  editMap.value.name = false
-}
-
 const submitForm = async () => {
   validate()
       .then(() => {
@@ -109,7 +72,7 @@ const wrapperCol = { span: 16 }
 </script>
 
 <style lang="less" scoped>
-.processor_simple-main {
+.processor_loop_break-main {
   .icons {
     text-align: right;
     line-height: 32px;

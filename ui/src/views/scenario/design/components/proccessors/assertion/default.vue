@@ -1,37 +1,29 @@
 <template>
-  <div class="processor_simple-main">
+  <div class="processor_assertion_default-main">
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
-            <a-row v-if="!editMap.name" type="flex">
-              <a-col flex="1">
-                <span class="icons">{{modelRef.name}}</span>
-              </a-col>
 
-              <a-col flex="16px" />
-
-              <a-col flex="36px" class="icons">
-                <EditOutlined @click="editName()" />
-              </a-col>
-            </a-row>
-
-            <a-row v-if="editMap.name" type="flex">
-              <a-col flex="1">
-                <a-input v-model:value="modelRef.name" />
-              </a-col>
-
-              <a-col flex="16px" />
-
-              <a-col flex="36px" class="icons">
-                <CheckOutlined @click="saveName()" />&nbsp;
-                <CloseOutlined @click="cancelName()" />
-              </a-col>
-            </a-row>
+          <a-form-item label="备注" v-bind="validateInfos.comments">
+            <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
-          <a-form-item label="描述" v-bind="validateInfos.desc">
-            <a-input v-model:value="modelRef.desc"/>
+          <a-form-item label="变量" v-bind="validateInfos.variable">
+            <a-input v-model:value="model.variable"
+                     @blur="validate('variable', { trigger: 'blur' }).catch(() => {})" />
+          </a-form-item>
+
+          <a-form-item label="操作">
+            <a-select v-model:value="model.opt">
+              <a-select-option v-for="(item, idx) in optOptions" :key="idx" :value="item.value">
+                {{ t(item.label) }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+
+          <a-form-item label="取值" v-bind="validateInfos.value">
+            <a-input v-model:value="modelRef.value"/>
+            <div class="dp-tip-small">常量或用${name}表示的变量</div>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
@@ -46,12 +38,11 @@
 
 <script setup lang="ts">
 import {computed, reactive, ref} from "vue";
+import {Form} from "ant-design-vue";
 import {useRouter} from "vue-router";
-import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
-import {Form} from 'ant-design-vue';
-import {StateType as ScenarioStateType} from "../../../../store";
-import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
+import {useStore} from "vuex";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
 const useForm = Form.useForm;
 
@@ -62,25 +53,17 @@ const {t} = useI18n();
 const formRef = ref();
 
 const rulesRef = reactive({
-  name: [
-    {required: true, message: '请输入名称', trigger: 'blur'},
+  variable: [
+    {required: true, message: '请输入取值', trigger: 'blur'},
+  ],
+  value: [
+    {required: true, message: '请输入取值', trigger: 'blur'},
   ],
 });
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<boolean>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
-
-const editMap = ref({})
-const editName = () => {
-  editMap.value.name = !editMap.value.name
-}
-const saveName = () => {
-  editMap.value.name = false
-}
-const cancelName = () => {
-  editMap.value.name = false
-}
 
 const submitForm = async () => {
   validate()
@@ -102,6 +85,12 @@ const submitForm = async () => {
       });
 };
 
+const optOptions = [
+  {label: '等于', value: 'equal'},
+  {label: '不等于', value: 'not_equal'},
+  {label: '包含', value: 'contain'},
+  {label: '不包含', value: 'not_contain'},
+]
 
 const labelCol = { span: 2 }
 const wrapperCol = { span: 16 }
@@ -109,7 +98,7 @@ const wrapperCol = { span: 16 }
 </script>
 
 <style lang="less" scoped>
-.processor_simple-main {
+.processor_assertion_default-main {
   .icons {
     text-align: right;
     line-height: 32px;

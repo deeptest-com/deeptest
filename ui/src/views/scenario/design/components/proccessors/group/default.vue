@@ -1,9 +1,9 @@
 <template>
-  <div class="processor_group-main">
+  <div class="processor_group_default-main">
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
+<!--          <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
             <a-row v-if="!editMap.name" type="flex">
               <a-col flex="1">
                 <span class="icons">{{modelRef.name}}</span>
@@ -28,7 +28,7 @@
                 <CloseOutlined @click="cancelName()" />
               </a-col>
             </a-row>
-          </a-form-item>
+          </a-form-item>-->
 
           <a-form-item label="备注" v-bind="validateInfos.comments">
             <a-input v-model:value="modelRef.comments"/>
@@ -71,7 +71,7 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<boolean>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const editMap = ref({} as any)
+/*const editMap = ref({} as any)
 const editName = () => {
   editMap.value.name = !editMap.value.name
 }
@@ -84,7 +84,7 @@ const saveName = () => {
 }
 const cancelName = () => {
   editMap.value.name = false
-}
+}*/
 
 const submitForm = async () => {
   validate()
@@ -105,7 +105,7 @@ const wrapperCol = { span: 16 }
 </script>
 
 <style lang="less" scoped>
-.processor_group-main {
+.processor_group_default-main {
   .icons {
     text-align: right;
     line-height: 32px;

@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
@@ -91,60 +92,35 @@ func (s *ScenarioNodeService) createDirOrInterface(interfaceNode serverDomain.In
 	return
 }
 
-//func (s *ScenarioNodeService) SaveLogic(interf *model.ScenarioNode) (err error) {
-//	err = s.ScenarioNodeRepo.SaveLogic(interf)
-//
-//	return
-//}
-//func (s *ScenarioNodeService) Create(req serverDomain.ScenarioNodeReq) (interf *model.ScenarioNode, err error) {
-//	interf = &model.ScenarioNode{Name: req.Name, ProjectId: uint(req.ProjectId),
-//		IsDir: req.Type == serverConsts.Dir}
-//
-//	var dropPos serverConsts.DropPos
-//	if req.Mode == serverConsts.Child {
-//		dropPos = serverConsts.Inner
-//	} else {
-//		dropPos = serverConsts.After
-//	}
-//
-//	interf.ParentId, interf.Ordr = s.ScenarioNodeRepo.UpdateOrder(dropPos, uint(req.Target))
-//	err = s.ScenarioNodeRepo.SaveLogic(interf)
-//
-//	return
-//}
-//func (s *ScenarioNodeService) Update(id int, req serverDomain.ScenarioNodeReq) (err error) {
-//
-//	return
-//}
 func (s *ScenarioNodeService) UpdateName(req serverDomain.ScenarioNodeReq) (err error) {
 	err = s.ScenarioNodeRepo.UpdateName(req.Id, req.Name)
 	return
 }
 
-//func (s *ScenarioNodeService) Delete(projectId, id uint) (err error) {
-//	err = s.deleteScenarioNodeAndChildren(projectId, id)
-//
-//	return
-//}
-//
-//func (s *ScenarioNodeService) Move(srcId, targetId uint, pos serverConsts.DropPos, projectId uint) (
-//	srcScenarioNode model.ScenarioNode, err error) {
-//	srcScenarioNode, err = s.ScenarioNodeRepo.Get(srcId)
-//
-//	srcScenarioNode.ParentId, srcScenarioNode.Ordr = s.ScenarioNodeRepo.UpdateOrder(pos, targetId)
-//	err = s.ScenarioNodeRepo.UpdateOrdAndParent(srcScenarioNode)
-//
-//	return
-//}
-//
-//func (s *ScenarioNodeService) deleteScenarioNodeAndChildren(projectId, interfId uint) (err error) {
-//	err = s.ScenarioNodeRepo.Delete(interfId)
-//	if err == nil {
-//		children, _ := s.ScenarioNodeRepo.GetChildren(projectId, interfId)
-//		for _, child := range children {
-//			s.deleteScenarioNodeAndChildren(child.ProjectId, child.ID)
-//		}
-//	}
-//
-//	return
-//}
+func (s *ScenarioNodeService) Delete(id uint) (err error) {
+	err = s.deleteScenarioNodeAndChildren(id)
+
+	return
+}
+
+func (s *ScenarioNodeService) Move(srcId, targetId uint, pos serverConsts.DropPos, projectId uint) (
+	srcScenarioNode model.TestProcessor, err error) {
+	srcScenarioNode, err = s.ScenarioNodeRepo.Get(srcId)
+
+	srcScenarioNode.ParentId, srcScenarioNode.Ordr = s.ScenarioNodeRepo.UpdateOrder(pos, targetId)
+	err = s.ScenarioNodeRepo.UpdateOrdAndParent(srcScenarioNode)
+
+	return
+}
+
+func (s *ScenarioNodeService) deleteScenarioNodeAndChildren(nodeId uint) (err error) {
+	err = s.ScenarioNodeRepo.Delete(nodeId)
+	if err == nil {
+		children, _ := s.ScenarioNodeRepo.GetChildren(nodeId)
+		for _, child := range children {
+			s.deleteScenarioNodeAndChildren(child.ID)
+		}
+	}
+
+	return
+}

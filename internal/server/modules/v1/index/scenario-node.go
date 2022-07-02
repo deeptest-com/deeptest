@@ -22,11 +22,9 @@ func (m *ScenarioNodeModule) Party() module.WebModule {
 		index.Post("/addInterfaces", m.ScenarioNodeCtrl.AddInterfaces).Name = "新建接口"
 		index.Post("/addProcessor", m.ScenarioNodeCtrl.AddProcessor).Name = "新建处理器"
 
-		//index.Post("/", m.ScenarioNodeNodeCtrl.Create).Name = "新建节点"
-		//index.Put("/{id:uint}", m.ScenarioNodeNodeCtrl.Update).Name = "更新节点"
 		index.Put("/{id:uint}/updateName", m.ScenarioNodeCtrl.UpdateName).Name = "更新节点名称"
-		//index.Delete("/{id:uint}", m.ScenarioNodeNodeCtrl.Delete).Name = "删除节点"
-		//index.Post("/move", m.ScenarioNodeNodeCtrl.Move).Name = "移动节点"
+		index.Delete("/{id:uint}", m.ScenarioNodeCtrl.Delete).Name = "删除节点"
+		index.Post("/move", m.ScenarioNodeCtrl.Move).Name = "移动节点"
 	}
 
 	return module.NewModule("/scenarios/nodes", handler)

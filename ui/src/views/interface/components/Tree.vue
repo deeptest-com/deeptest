@@ -38,7 +38,8 @@
           <span v-else class="name-editor">
               <a-input v-model:value="editedData[slotProps.id]"
                        @keyup.enter=updateName(slotProps.id)
-                       @click.stop/>
+                       @click.stop
+                       :ref="'name-editor-' + slotProps.id" />
 
               <span class="btns">
                 <CheckOutlined @click.stop="updateName(slotProps.id)"/>
@@ -63,7 +64,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onMounted, onUnmounted, ref, watch} from "vue";
+import {computed, defineComponent, getCurrentInstance, onMounted, onUnmounted, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form} from 'ant-design-vue';
 import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
@@ -248,7 +249,16 @@ export default defineComponent({
         selectNode(selectedKeys.value)
         editedData.value[targetModelId] = treeDataMap[targetModelId].name
 
+        Object.keys(treeDataMap).forEach((key) => {
+          treeDataMap[key].isEdit = false
+        })
         treeDataMap[targetModelId].isEdit = true
+
+        setTimeout(() => {
+          console.log('==', currentInstance.ctx.$refs[`name-editor-${targetModelId}`])
+          currentInstance.ctx.$refs[`name-editor-${targetModelId}`].focus()
+        }, 50)
+
         return
       }
 
@@ -302,10 +312,13 @@ export default defineComponent({
       store.dispatch('Interface/moveInterface', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition});
     }
 
+    let currentInstance
     onMounted(() => {
       console.log('onMounted')
+      currentInstance = getCurrentInstance()
       document.addEventListener("click", clearMenu)
     })
+
     onUnmounted(() => {
       document.removeEventListener("click", clearMenu)
     })

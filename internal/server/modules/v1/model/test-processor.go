@@ -31,7 +31,7 @@ func (TestProcessor) TableName() string {
 
 type ProcessorInterface struct {
 	BaseModel
-	ProcessorBase
+	ProcessorEntity
 
 	Name string `json:"name"`
 	Desc string `json:"desc"`
@@ -73,7 +73,7 @@ func (ProcessorInterface) TableName() string {
 
 type ProcessorThreadGroup struct {
 	BaseModel
-	ProcessorBase
+	ProcessorEntity
 
 	Count int `json:"count" yaml:"count"`
 	Loop  int `json:"loop" yaml:"loop"`
@@ -91,7 +91,7 @@ func (ProcessorThreadGroup) TableName() string {
 
 type ProcessorGroup struct {
 	BaseModel
-	ProcessorBase
+	ProcessorEntity
 }
 
 func (ProcessorGroup) TableName() string {
@@ -100,7 +100,7 @@ func (ProcessorGroup) TableName() string {
 
 type ProcessorLogic struct {
 	BaseModel
-	ProcessorBase
+	ProcessorEntity
 
 	Expression string `json:"expression" yaml:"expression"`
 	//Judgement bool   `json:"judgement" yaml:"judgement"`
@@ -112,7 +112,7 @@ func (ProcessorLogic) TableName() string {
 
 type ProcessorIterator struct {
 	BaseModel
-	ProcessorBase
+	ProcessorEntity
 
 	Times int `json:"times" yaml:"times"` // how many
 	Count int `json:"count" yaml:"count"` // left
@@ -126,7 +126,7 @@ func (ProcessorIterator) TableName() string {
 
 type ProcessorTimer struct {
 	BaseModel
-	ProcessorBase
+	ProcessorEntity
 
 	SleepBefore int `json:"sleepBefore" yaml:"sleepBefore"`
 	SleepAfter  int `json:"sleepAfter" yaml:"sleepAfter"`
@@ -140,7 +140,7 @@ func (ProcessorTimer) TableName() string {
 
 type ProcessorAssertion struct {
 	BaseModel
-	ProcessorBase
+	ProcessorEntity
 
 	Expression string `json:"expression" yaml:"expression"`
 	Expect     string `json:"expect" yaml:"expect"`
@@ -152,7 +152,7 @@ func (ProcessorAssertion) TableName() string {
 
 type ProcessorExtractor struct {
 	BaseModel
-	ProcessorBase
+	ProcessorEntity
 
 	Src  consts.ExtractorSrc  `json:"src"`
 	Type consts.ExtractorType `json:"type"`
@@ -178,7 +178,7 @@ func (ProcessorExtractor) TableName() string {
 
 type ProcessorData struct {
 	BaseModel
-	ProcessorBase
+	ProcessorEntity
 
 	Type consts.DataSource `json:"type,omitempty" yaml:"type,omitempty"`
 	Path string            `json:"path,omitempty" yaml:"path,omitempty"`
@@ -197,7 +197,7 @@ func (ProcessorData) TableName() string {
 
 type ProcessorCookie struct {
 	BaseModel
-	ProcessorBase
+	ProcessorEntity
 
 	Action   consts.ValueAction `json:"action"`
 	Name     string             `json:"name"`
@@ -208,8 +208,13 @@ func (ProcessorCookie) TableName() string {
 	return "biz_test_processor_cookie"
 }
 
-type ProcessorBase struct {
-	Name     string `json:"name" yaml:"name"`
+type ProcessorComm struct {
+	Id uint `json:"id" yaml:"id"`
+	ProcessorEntity
+}
+
+type ProcessorEntity struct {
+	Name     string `gorm:"-" json:"name" yaml:"name"`
 	Comments string `json:"comments" yaml:"comments"`
 
 	ProcessorId       uint                     `json:"processorId" yaml:"processorId"`

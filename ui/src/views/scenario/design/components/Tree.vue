@@ -38,7 +38,8 @@
           <span v-else class="name-editor">
               <a-input v-model:value="editedData[slotProps.id]"
                        @keyup.enter=updateName(slotProps.id)
-                       @click.stop/>
+                       @click.stop
+                       :ref="'name-editor-' + slotProps.id" />
 
               <span class="btns">
                 <CheckOutlined @click.stop="updateName(slotProps.id)"/>
@@ -69,7 +70,8 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, onMounted, onUnmounted, ref, watch} from "vue";
+import {computed, defineProps, onMounted, onUnmounted, ref, watch, getCurrentInstance} from "vue";
+
 import {useI18n} from "vue-i18n";
 import {Form} from 'ant-design-vue';
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
@@ -98,6 +100,7 @@ const {t} = useI18n();
 
 const store = useStore<{ Scenario: ScenarioStateType; Project: ProjectStateType; }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
+const selectedNode = computed<any>(()=> store.state.Scenario.nodeData);
 
 const loadTree = throttle(async () => {
   await store.dispatch('Scenario/loadScenario', props.scenarioId);
@@ -140,6 +143,10 @@ const updateName = (id) => {
     if (json.code === 0) {
       treeDataMap[id].name = name
       treeDataMap[id].isEdit = false
+
+      if (id === selectedNode.value.processorId) {
+        store.dispatch('Scenario/getNode', {id: id})
+      }
     }
   })
 }
@@ -243,7 +250,16 @@ const menuClick = (menuKey: string, targetId: number) => {
     // selectNode(selectedKeys.value)
     editedData.value[targetModelId] = treeDataMap[targetModelId].name
 
+    Object.keys(treeDataMap).forEach((key) => {
+      treeDataMap[key].isEdit = false
+    })
     treeDataMap[targetModelId].isEdit = true
+
+    setTimeout(() => {
+      console.log('==', currentInstance.ctx.$refs[`name-editor-${targetModelId}`])
+      currentInstance.ctx.$refs[`name-editor-${targetModelId}`].focus()
+    }, 50)
+
     return
   }
 
@@ -317,7 +333,7 @@ const interfaceSelectionCancel = () => {
 
 const removeNode = () => {
   console.log('removeNode')
-  store.dispatch('Scenario/deleteScenario', targetModelId);
+  store.dispatch('Scenario/removeNode', targetModelId);
 }
 const clearMenu = () => {
   console.log('clearMenu')
@@ -336,11 +352,13 @@ const onDrop = (info: DropEvent) => {
   if (isInterface(treeDataMap[dropKey].processorCategory) && dropPosition === 0) dropPosition = 1
   console.log(dragKey, dropKey, dropPosition);
 
-  store.dispatch('Scenario/moveScenario', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition});
+  store.dispatch('Scenario/moveNode', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition});
 }
 
+let currentInstance
 onMounted(() => {
   console.log('onMounted')
+  currentInstance = getCurrentInstance()
   document.addEventListener("click", clearMenu)
 })
 onUnmounted(() => {

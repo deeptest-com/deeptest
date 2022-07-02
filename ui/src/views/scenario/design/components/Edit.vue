@@ -7,20 +7,17 @@
     <ProcessorLogicIf   v-if="selectedNode.processorType === 'processor_logic_if'" />
     <ProcessorLogicElse v-if="selectedNode.processorType === 'processor_logic_else'" />
 
-    <ProcessorLoopRepeatTime  v-if="selectedNode.processorType === 'processor_loop_repeat_time'" />
-    <ProcessorLoopRepeatUntil v-if="selectedNode.processorType === 'processor_loop_repeat_until'" />
-    <ProcessorLoopRepeatIn    v-if="selectedNode.processorType === 'processor_loop_repeat_in'" />
-    <ProcessorLoopRepeatRange v-if="selectedNode.processorType === 'processor_loop_range'" />
-    <ProcessorLoopRepeatBreak v-if="selectedNode.processorType === 'processor_loop_break'" />
+    <ProcessorLoopTime  v-if="selectedNode.processorType === 'processor_loop_repeat_time'" />
+    <ProcessorLoopUntil v-if="selectedNode.processorType === 'processor_loop_repeat_until'" />
+    <ProcessorLoopIn    v-if="selectedNode.processorType === 'processor_loop_repeat_in'" />
+    <ProcessorLoopRange v-if="selectedNode.processorType === 'processor_loop_range'" />
+    <ProcessorLoopBreak v-if="selectedNode.processorType === 'processor_loop_break'" />
 
     <ProcessorVariableSet   v-if="selectedNode.processorType === 'processor_variable_set'" />
     <ProcessorVariableGet   v-if="selectedNode.processorType === 'processor_variable_get'" />
     <ProcessorVariableClear v-if="selectedNode.processorType === 'processor_variable_clear'" />
 
-    <ProcessorAssertionEqual      v-if="selectedNode.processorType === 'processor_assertion_equal'" />
-    <ProcessorAssertionNotEqual   v-if="selectedNode.processorType === 'processor_assertion_not_equal'" />
-    <ProcessorAssertionContain    v-if="selectedNode.processorType === 'processor_assertion_contain'" />
-    <ProcessorAssertionNotContain v-if="selectedNode.processorType === 'processor_assertion_not_contain'" />
+    <ProcessorAssertionDefault      v-if="selectedNode.processorCategory === 'processor_assertion'" />
 
     <ProcessorExtractorBoundary  v-if="selectedNode.processorType === 'processor_extractor_boundary'" />
     <ProcessorExtractorJsonQuery v-if="selectedNode.processorType === 'processor_extractor_jsonquery'" />
@@ -52,20 +49,17 @@ import ProcessorTimerDefault from "./proccessors/timer/default.vue"
 import ProcessorLogicIf  from "./proccessors/logic/if.vue"
 import ProcessorLogicElse from "./proccessors/logic/else.vue"
 
-import ProcessorLoopRepeatTime from "./proccessors/loop/repeat_time.vue"
-import ProcessorLoopRepeatUntil from "./proccessors/loop/repeat_until.vue"
-import ProcessorLoopRepeatIn  from "./proccessors/loop/repeat_in.vue"
-import ProcessorLoopRepeatRange from "./proccessors/loop/repeat_range.vue"
-import ProcessorLoopRepeatBreak from "./proccessors/loop/repeat_break.vue"
+import ProcessorLoopTime from "./proccessors/loop/time.vue"
+import ProcessorLoopUntil from "./proccessors/loop/until.vue"
+import ProcessorLoopIn  from "./proccessors/loop/in.vue"
+import ProcessorLoopRange from "./proccessors/loop/range.vue"
+import ProcessorLoopBreak from "./proccessors/loop/break.vue"
 
 import ProcessorVariableSet  from "./proccessors/variable/set.vue"
 import ProcessorVariableGet  from "./proccessors/variable/get.vue"
 import ProcessorVariableClear from "./proccessors/variable/clear.vue"
 
-import ProcessorAssertionEqual     from "./proccessors/assertion/equal.vue"
-import ProcessorAssertionNotEqual  from "./proccessors/assertion/not_equal.vue"
-import ProcessorAssertionContain   from "./proccessors/assertion/contain.vue"
-import ProcessorAssertionNotContain from "./proccessors/assertion/not_contain.vue"
+import ProcessorAssertionDefault     from "./proccessors/assertion/default.vue"
 
 import ProcessorExtractorBoundary from "./proccessors/extractor/boundary.vue"
 import ProcessorExtractorJsonQuery from "./proccessors/extractor/jsonquery.vue"
@@ -82,7 +76,7 @@ import ProcessorDataZenData from "./proccessors/data/zendata.vue"
 
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; }>();
-const selectedNode = computed<boolean>(()=> store.state.Scenario.nodeData);
+const selectedNode = computed<any>(()=> store.state.Scenario.nodeData);
 
 </script>
 

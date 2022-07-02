@@ -18,6 +18,7 @@ func InitCheck() iris.Handler {
 		} else {
 			ctx.Next()
 		}
+
 		// 处理请求
 	}
 }

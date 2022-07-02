@@ -318,11 +318,11 @@ const (
 	ProcessorLogicIf   ProcessorType = "processor_logic_if"
 	ProcessorLogicElse ProcessorType = "processor_logic_else"
 
-	ProcessorLoopRepeatTime  ProcessorType = "processor_loop_repeat_time"
-	ProcessorLoopRepeatUntil ProcessorType = "processor_loop_repeat_until"
-	ProcessorLoopRepeatIn    ProcessorType = "processor_loop_repeat_in"
-	ProcessorLoopRepeatRange ProcessorType = "processor_loop_range"
-	ProcessorLoopRepeatBreak ProcessorType = "processor_loop_break"
+	ProcessorLoopTime  ProcessorType = "processor_loop_time"
+	ProcessorLoopUntil ProcessorType = "processor_loop_until"
+	ProcessorLoopIn    ProcessorType = "processor_loop_in"
+	ProcessorLoopRange ProcessorType = "processor_loop_range"
+	ProcessorLoopBreak ProcessorType = "processor_loop_break"
 
 	ProcessorVariableSet   ProcessorType = "processor_variable_set"
 	ProcessorVariableGet   ProcessorType = "processor_variable_get"

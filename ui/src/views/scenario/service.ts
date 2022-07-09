@@ -1,7 +1,4 @@
 import request from '@/utils/request';
-import {Interface, OAuth20} from "@/views/interface/data";
-import {isInArray} from "@/utils/array";
-import {CheckpointOperator} from "@/views/interface/consts";
 import {QueryParams} from "@/views/project/data";
 import {getEnumSelectItems} from "@/views/interface/service";
 import {

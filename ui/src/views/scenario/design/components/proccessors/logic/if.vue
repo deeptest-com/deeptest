@@ -8,9 +8,27 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
-          <a-form-item label="表达式" v-bind="validateInfos.expression">
-            <a-textarea v-model:value="modelRef.expression"
-                        :auto-size="{ minRows: 3, maxRows: 6 }" />
+          <a-form-item label="左值" v-bind="validateInfos.leftValue"
+                       @blur="validate('leftValue', { trigger: 'blur' }).catch(() => {})">
+            <a-input v-model:value="modelRef.leftValue" />
+          </a-form-item>
+
+          <a-form-item label="操作" v-bind="validateInfos.operator">
+            <a-select v-model:value="modelRef.operator"
+                      @blur="validate('operator', { trigger: 'change' }).catch(() => {})">
+              <a-select-option v-for="(item, idx) in operators" :key="idx" :value="item.value">
+                {{ t(item.label) }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+
+          <a-form-item label="右值" v-bind="validateInfos.rightValue"
+                       @blur="validate('rightValue', { trigger: 'change' }).catch(() => {})">
+            <a-input v-model:value="modelRef.rightValue" />
+          </a-form-item>
+
+          <a-form-item :wrapper-col="{ offset: 2 }">
+            左值、右值可以是常量或形如${name}的变量。
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
@@ -31,6 +49,7 @@ import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../store";
 import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
+import {getCompareOpts, getCompareOptsForString} from "@/utils/compare";
 
 const useForm = Form.useForm;
 
@@ -41,14 +60,22 @@ const {t} = useI18n();
 const formRef = ref();
 
 const rulesRef = reactive({
-  name: [
-    {required: true, message: '请输入名称', trigger: 'blur'},
+  leftValue: [
+    {required: true, message: '请输入左值', trigger: 'blur'},
+  ],
+  rightValue: [
+    {required: true, message: '请输入右值', trigger: 'blur'},
+  ],
+  operator: [
+    {required: true, message: '请选择操作', trigger: 'blur'},
   ],
 });
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<boolean>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
+
+const operators = getCompareOpts()
 
 const submitForm = async () => {
   validate()

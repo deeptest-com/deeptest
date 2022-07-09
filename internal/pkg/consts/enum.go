@@ -262,19 +262,20 @@ const (
 	Extractor      CheckpointType = "extractor"
 )
 
-type CheckpointOperator string
+type ComparisonOperator string
 
 const (
-	Contain            CheckpointOperator = "contain"
-	Equal              CheckpointOperator = "equal"
-	NotEqual           CheckpointOperator = "notEqual"
-	GreaterThan        CheckpointOperator = "greaterThan"
-	LessThan           CheckpointOperator = "lessThan"
-	GreaterThanOrEqual CheckpointOperator = "greaterThanOrEqual"
-	LessThanOrEqual    CheckpointOperator = "lessThanOrEqual"
+	Contain            ComparisonOperator = "contain"
+	NotContain         ComparisonOperator = "notContain"
+	Equal              ComparisonOperator = "equal"
+	NotEqual           ComparisonOperator = "notEqual"
+	GreaterThan        ComparisonOperator = "greaterThan"
+	GreaterThanOrEqual ComparisonOperator = "greaterThanOrEqual"
+	LessThan           ComparisonOperator = "lessThan"
+	LessThanOrEqual    ComparisonOperator = "lessThanOrEqual"
 )
 
-func (e CheckpointOperator) String() string {
+func (e ComparisonOperator) String() string {
 	return string(e)
 }
 

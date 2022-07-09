@@ -62,15 +62,15 @@ func (c *ScenarioProcessorCtrl) Save(ctx iris.Context) {
 		err = ctx.ReadJSON(&entity)
 		err = c.ScenarioProcessorService.SaveGroup(entity)
 
-	} else if processorCategory == consts.ProcessorTimer.ToString() {
-		var entity model.ProcessorTimer
-		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveTimer(entity)
-
 	} else if processorCategory == consts.ProcessorLogic.ToString() {
 		var entity model.ProcessorLogic
 		err = ctx.ReadJSON(&entity)
 		err = c.ScenarioProcessorService.SaveLogic(entity)
+
+	} else if processorCategory == consts.ProcessorTimer.ToString() {
+		var entity model.ProcessorTimer
+		err = ctx.ReadJSON(&entity)
+		err = c.ScenarioProcessorService.SaveTimer(entity)
 
 	}
 

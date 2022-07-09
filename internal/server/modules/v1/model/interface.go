@@ -162,7 +162,7 @@ type InterfaceCheckpoint struct {
 	Expression        string `json:"expression"`
 	ExtractorVariable string `json:"extractorVariable"`
 
-	Operator consts.CheckpointOperator `json:"operator"`
+	Operator consts.ComparisonOperator `json:"operator"`
 	Value    string                    `json:"value"`
 
 	Result      consts.CheckpointResult `json:"result"`

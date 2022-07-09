@@ -122,12 +122,11 @@ import {StateType} from "@/views/interface/store";
 import {Checkpoint, Extractor, Interface, Response} from "@/views/interface/data";
 import {
   getEnumSelectItems,
-  getOperatorsForCode,
-  getOperatorsForString,
   listExtractorVariable
 } from "@/views/interface/service";
-import {CheckpointOperator, CheckpointType} from "@/views/interface/consts";
+import {ComparisonOperator, CheckpointType} from "@/views/interface/consts";
 import {isInArray} from "@/utils/array";
+import {getCompareOptsForRespCode, getCompareOptsForString} from "@/utils/compare";
 
 const useForm = Form.useForm;
 
@@ -145,9 +144,9 @@ export default defineComponent({
     const store = useStore<{ Interface: StateType }>();
 
     const types = getEnumSelectItems(CheckpointType)
-    const operators = getEnumSelectItems(CheckpointOperator)
-    const operatorsForString = getOperatorsForString()
-    const operatorsForCode = getOperatorsForCode()
+    const operators = getEnumSelectItems(ComparisonOperator)
+    const operatorsForString = getCompareOptsForString()
+    const operatorsForCode = getCompareOptsForRespCode()
 
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
     const responseData = computed<Response>(() => store.state.Interface.responseData);
@@ -159,7 +158,7 @@ export default defineComponent({
       type: CheckpointType.responseStatus,
       expression: '',
       extractorVariable: '',
-      operator: CheckpointOperator.equal,
+      operator: ComparisonOperator.equal,
       value: ''} as Checkpoint)
 
     const variables = ref([])
@@ -194,7 +193,7 @@ export default defineComponent({
         type: CheckpointType.responseStatus,
         expression: '',
         extractorVariable: '',
-        operator: CheckpointOperator.equal,
+        operator: ComparisonOperator.equal,
         value: ''} as Checkpoint
     }
 
@@ -249,9 +248,9 @@ export default defineComponent({
       console.log('selectType')
 
       if (model.value.type === CheckpointType.responseBody) {
-        model.value.operator = CheckpointOperator.contain
+        model.value.operator = ComparisonOperator.contain
       } else {
-        model.value.operator = CheckpointOperator.equal
+        model.value.operator = ComparisonOperator.equal
       }
 
       loadExtractorVariable()

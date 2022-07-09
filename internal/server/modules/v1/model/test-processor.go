@@ -102,8 +102,9 @@ type ProcessorLogic struct {
 	BaseModel
 	ProcessorEntity
 
-	Expression string `json:"expression" yaml:"expression"`
-	//Judgement bool   `json:"judgement" yaml:"judgement"`
+	LeftValue  string                    `json:"leftValue" yaml:"leftValue"`
+	RightValue string                    `json:"rightValue" yaml:"rightValue"`
+	Operator   consts.ComparisonOperator `json:"operator" yaml:"operator"`
 }
 
 func (ProcessorLogic) TableName() string {

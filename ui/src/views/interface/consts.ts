@@ -11,6 +11,17 @@ export const Methods = [
     "CUSTOM",
 ]
 
+export enum ComparisonOperator {
+    contain = 'contain',
+    notContain = 'notContain',
+    equal = 'equal',
+    notEqual = 'notEqual',
+    greaterThan = 'greaterThan',
+    lessThan = 'lessThan',
+    greaterThanOrEqual = 'greaterThanOrEqual',
+    lessThanOrEqual = 'lessThanOrEqual',
+}
+
 export enum ExtractorSrc {
     header = 'header',
     body = 'body',
@@ -28,15 +39,6 @@ export enum CheckpointType {
     responseHeader = 'responseHeader',
     responseBody = 'responseBody',
     extractor = 'extractor',
-}
-export enum CheckpointOperator {
-    contain = 'contain',
-    equal = 'equal',
-    notEqual = 'notEqual',
-    greaterThan = 'greaterThan',
-    lessThan = 'lessThan',
-    greaterThanOrEqual = 'greaterThanOrEqual',
-    lessThanOrEqual = 'lessThanOrEqual',
 }
 
 export enum AuthorizationTypes {

@@ -1,4 +1,4 @@
-import {CheckpointOperator, CheckpointType, ExtractorSrc, ExtractorType} from "@/views/interface/consts";
+import {ComparisonOperator, CheckpointType, ExtractorSrc, ExtractorType} from "@/views/interface/consts";
 
 export interface Interface {
     id: number;
@@ -84,7 +84,7 @@ export interface Checkpoint {
     type: CheckpointType;
     expression: string;
 
-    operator: CheckpointOperator;
+    operator: ComparisonOperator;
     value: any;
     interfaceId?: number;
 }

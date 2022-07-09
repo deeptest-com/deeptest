@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 import {Interface, OAuth20} from "@/views/interface/data";
 import {isInArray} from "@/utils/array";
-import {CheckpointOperator} from "@/views/interface/consts";
+import {ComparisonOperator} from "@/views/interface/consts";
 
 const apiPath = 'interfaces';
 const apiVocation = 'invocations';
@@ -227,24 +227,6 @@ export const getEnumSelectItems = (enumDef) => {
     for (const item in enumDef) {
         arr.push({label: enumDef[item], value: item})
     }
-
-    return arr
-}
-export const getOperatorsForString = () => {
-    const arr : any[] = []
-
-    arr.push({label: CheckpointOperator.equal, value: CheckpointOperator[CheckpointOperator.equal]})
-    arr.push({label: CheckpointOperator.notEqual, value: CheckpointOperator[CheckpointOperator.notEqual]})
-    arr.push({label: CheckpointOperator.contain, value: CheckpointOperator[CheckpointOperator.contain]})
-
-    return arr
-}
-
-export const getOperatorsForCode = () => {
-    const arr : any[] = []
-
-    arr.push({label: CheckpointOperator.equal, value: CheckpointOperator[CheckpointOperator.equal]})
-    arr.push({label: CheckpointOperator.notEqual, value: CheckpointOperator[CheckpointOperator.notEqual]})
 
     return arr
 }

@@ -147,7 +147,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 	return
 }
 
-func (s *CheckpointService) Compare(operator consts.CheckpointOperator, actual, expect string) (
+func (s *CheckpointService) Compare(operator consts.ComparisonOperator, actual, expect string) (
 	result consts.CheckpointResult) {
 
 	result = consts.Fail

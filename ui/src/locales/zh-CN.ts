@@ -47,6 +47,7 @@ export default {
     'boundary':  '边界选择器',
 
     'contain':  '包含',
+    'notContain': '不包含',
     'equal':  '=',
     'notEqual':  '!=',
     'greaterThan':  '>',

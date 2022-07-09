@@ -72,6 +72,16 @@ func (c *ScenarioProcessorCtrl) Save(ctx iris.Context) {
 		err = ctx.ReadJSON(&entity)
 		err = c.ScenarioProcessorService.SaveTimer(entity)
 
+	} else if processorCategory == consts.ProcessorVariable.ToString() {
+		var entity model.ProcessorVariable
+		err = ctx.ReadJSON(&entity)
+		err = c.ScenarioProcessorService.SaveVariable(entity)
+
+	} else if processorCategory == consts.ProcessorCookie.ToString() {
+		var entity model.ProcessorCookie
+		err = ctx.ReadJSON(&entity)
+		err = c.ScenarioProcessorService.SaveCookie(entity)
+
 	}
 
 	if err != nil {

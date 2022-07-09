@@ -19,11 +19,17 @@ func (s *ScenarioProcessorService) Get(processorId int) (ret interface{}, err er
 	} else if processor.EntityCategory == consts.ProcessorGroup {
 		ret, _ = s.ScenarioProcessorRepo.GetGroup(uint(processorId), processor)
 
+	} else if processor.EntityCategory == consts.ProcessorLogic {
+		ret, _ = s.ScenarioProcessorRepo.GetLogic(uint(processorId), processor)
+
+	} else if processor.EntityCategory == consts.ProcessorVariable {
+		ret, _ = s.ScenarioProcessorRepo.GetVariable(uint(processorId), processor)
+
 	} else if processor.EntityCategory == consts.ProcessorTimer {
 		ret, _ = s.ScenarioProcessorRepo.GetTimer(uint(processorId), processor)
 
-	} else if processor.EntityCategory == consts.ProcessorLogic {
-		ret, _ = s.ScenarioProcessorRepo.GetLogic(uint(processorId), processor)
+	} else if processor.EntityCategory == consts.ProcessorCookie {
+		ret, _ = s.ScenarioProcessorRepo.GetCookie(uint(processorId), processor)
 
 	}
 
@@ -47,5 +53,15 @@ func (s *ScenarioProcessorService) SaveTimer(req model.ProcessorTimer) (err erro
 
 func (s *ScenarioProcessorService) SaveLogic(req model.ProcessorLogic) (err error) {
 	err = s.ScenarioProcessorRepo.SaveLogic(req)
+	return
+}
+
+func (s *ScenarioProcessorService) SaveVariable(req model.ProcessorVariable) (err error) {
+	err = s.ScenarioProcessorRepo.SaveVariable(req)
+	return
+}
+
+func (s *ScenarioProcessorService) SaveCookie(req model.ProcessorCookie) (err error) {
+	err = s.ScenarioProcessorRepo.SaveCookie(req)
 	return
 }

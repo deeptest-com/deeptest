@@ -36,7 +36,7 @@ export enum ProcessorLoop {
 }
 
 export enum ProcessorVariable {
-    Get = "processor_variable_get",
+    // Get = "processor_variable_get",
     Set = "processor_variable_set",
     Clear = "processor_variable_clear",
 }

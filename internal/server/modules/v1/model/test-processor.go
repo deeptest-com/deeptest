@@ -139,6 +139,19 @@ func (ProcessorTimer) TableName() string {
 	return "biz_test_processor_timer"
 }
 
+type ProcessorVariable struct {
+	BaseModel
+	ProcessorEntity
+
+	Operator   consts.ValueOperator `json:"operator" yaml:"operator"`
+	Name       string               `json:"name" yaml:"name"`
+	RightValue string               `json:"rightValue" yaml:"rightValue"`
+}
+
+func (ProcessorVariable) TableName() string {
+	return "biz_test_processor_variable"
+}
+
 type ProcessorAssertion struct {
 	BaseModel
 	ProcessorEntity
@@ -200,9 +213,10 @@ type ProcessorCookie struct {
 	BaseModel
 	ProcessorEntity
 
-	Action   consts.ValueAction `json:"action"`
-	Name     string             `json:"name"`
-	Variable string             `json:"variable"`
+	Operator consts.ValueOperator `json:"operator" yaml:"operator"`
+	Name     string               `json:"name" yaml:"name"`
+
+	RightValue string `json:"rightValue" yaml:"rightValue"`
 }
 
 func (ProcessorCookie) TableName() string {

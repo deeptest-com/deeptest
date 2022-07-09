@@ -279,6 +279,18 @@ func (e ComparisonOperator) String() string {
 	return string(e)
 }
 
+type ValueOperator string
+
+const (
+	Get   ValueOperator = "get"
+	Set   ValueOperator = "set"
+	Clear ValueOperator = "clear"
+)
+
+func (e ValueOperator) String() string {
+	return string(e)
+}
+
 type CheckpointResult string
 
 const (
@@ -389,17 +401,5 @@ const (
 )
 
 func (e TimeUnit) ToString() string {
-	return string(e)
-}
-
-type ValueAction string
-
-const (
-	Get   ValueAction = "get"
-	Set   ValueAction = "set"
-	Clear ValueAction = "clear"
-)
-
-func (e ValueAction) ToString() string {
 	return string(e)
 }

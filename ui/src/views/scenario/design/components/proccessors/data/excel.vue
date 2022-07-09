@@ -8,7 +8,7 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
-          <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
+          <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
             <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
           </a-form-item>
@@ -66,7 +66,7 @@ const submitForm = async () => {
 };
 
 
-const labelCol = { span: 2 }
+const labelCol = { span: 4 }
 const wrapperCol = { span: 16 }
 
 </script>

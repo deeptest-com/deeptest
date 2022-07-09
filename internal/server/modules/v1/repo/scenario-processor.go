@@ -31,6 +31,34 @@ func (r *ScenarioProcessorRepo) GetGroup(processorId uint, processor model.TestP
 	return
 }
 
+func (r *ScenarioProcessorRepo) GetLogic(processorId uint, processor model.TestProcessor) (ret interface{}, err error) {
+	var entity model.ProcessorLogic
+	err = r.DB.Where("processor_id = ?", processorId).First(&entity).Error
+
+	if entity.ID == 0 {
+		ret = r.genProcessorComm(processor)
+	} else {
+		entity.Name = processor.Name
+		ret = entity
+	}
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) GetVariable(processorId uint, processor model.TestProcessor) (ret interface{}, err error) {
+	var entity model.ProcessorVariable
+	err = r.DB.Where("processor_id = ?", processorId).First(&entity).Error
+
+	if entity.ID == 0 {
+		ret = r.genProcessorComm(processor)
+	} else {
+		entity.Name = processor.Name
+		ret = entity
+	}
+
+	return
+}
+
 func (r *ScenarioProcessorRepo) GetTimer(processorId uint, processor model.TestProcessor) (ret interface{}, err error) {
 	var entity model.ProcessorTimer
 	err = r.DB.Where("processor_id = ?", processorId).First(&entity).Error
@@ -45,8 +73,8 @@ func (r *ScenarioProcessorRepo) GetTimer(processorId uint, processor model.TestP
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetLogic(processorId uint, processor model.TestProcessor) (ret interface{}, err error) {
-	var entity model.ProcessorLogic
+func (r *ScenarioProcessorRepo) GetCookie(processorId uint, processor model.TestProcessor) (ret interface{}, err error) {
+	var entity model.ProcessorCookie
 	err = r.DB.Where("processor_id = ?", processorId).First(&entity).Error
 
 	if entity.ID == 0 {
@@ -89,6 +117,22 @@ func (r *ScenarioProcessorRepo) SaveTimer(po model.ProcessorTimer) (err error) {
 }
 
 func (r *ScenarioProcessorRepo) SaveLogic(po model.ProcessorLogic) (err error) {
+	err = r.DB.Save(&po).Error
+
+	r.UpdateEntityId(po.ProcessorId, po.ID)
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) SaveVariable(po model.ProcessorVariable) (err error) {
+	err = r.DB.Save(&po).Error
+
+	r.UpdateEntityId(po.ProcessorId, po.ID)
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) SaveCookie(po model.ProcessorCookie) (err error) {
 	err = r.DB.Save(&po).Error
 
 	r.UpdateEntityId(po.ProcessorId, po.ID)

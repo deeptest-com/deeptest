@@ -8,9 +8,9 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
-          <a-form-item label="左值" v-bind="validateInfos.leftValue"
-                       @blur="validate('leftValue', { trigger: 'blur' }).catch(() => {})">
-            <a-input v-model:value="modelRef.leftValue" />
+          <a-form-item label="左值" v-bind="validateInfos.leftValue">
+            <a-input v-model:value="modelRef.leftValue"
+                     @blur="validate('leftValue', { trigger: 'blur' }).catch(() => {})" />
           </a-form-item>
 
           <a-form-item label="操作" v-bind="validateInfos.operator">
@@ -22,9 +22,9 @@
             </a-select>
           </a-form-item>
 
-          <a-form-item label="右值" v-bind="validateInfos.rightValue"
-                       @blur="validate('rightValue', { trigger: 'change' }).catch(() => {})">
-            <a-input v-model:value="modelRef.rightValue" />
+          <a-form-item label="右值" v-bind="validateInfos.rightValue">
+            <a-input v-model:value="modelRef.rightValue"
+                     @blur="validate('rightValue', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ offset: 2 }">
@@ -91,7 +91,7 @@ const submitForm = async () => {
 };
 
 
-const labelCol = { span: 2 }
+const labelCol = { span: 4 }
 const wrapperCol = { span: 16 }
 
 </script>

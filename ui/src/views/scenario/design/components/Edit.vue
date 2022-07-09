@@ -14,7 +14,6 @@
     <ProcessorLoopBreak v-if="selectedNode.processorType === 'processor_loop_break'" />
 
     <ProcessorVariableSet   v-if="selectedNode.processorType === 'processor_variable_set'" />
-    <ProcessorVariableGet   v-if="selectedNode.processorType === 'processor_variable_get'" />
     <ProcessorVariableClear v-if="selectedNode.processorType === 'processor_variable_clear'" />
 
     <ProcessorAssertionDefault      v-if="selectedNode.processorCategory === 'processor_assertion'" />
@@ -56,7 +55,6 @@ import ProcessorLoopRange from "./proccessors/loop/range.vue"
 import ProcessorLoopBreak from "./proccessors/loop/break.vue"
 
 import ProcessorVariableSet  from "./proccessors/variable/set.vue"
-import ProcessorVariableGet  from "./proccessors/variable/get.vue"
 import ProcessorVariableClear from "./proccessors/variable/clear.vue"
 
 import ProcessorAssertionDefault     from "./proccessors/assertion/default.vue"

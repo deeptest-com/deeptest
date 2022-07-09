@@ -4,6 +4,7 @@ export enum ProcessorCategory {
     ProcessorLogic = "processor_logic",
     ProcessorLoop = "processor_loop",
     ProcessorTimer = "processor_timer",
+    ProcessorVariable  = "processor_variable",
     ProcessorAssertion = "processor_assertion",
     ProcessorExtractor = "processor_extractor",
 
@@ -27,11 +28,25 @@ export enum ProcessorLogic {
 }
 
 export enum ProcessorLoop {
-    RepeatTime = "processor_loop_repeat_time",
-    RepeatWhile = "processor_loop_repeat_while",
-    RepeatIn = "processor_loop_repeat_in",
+    RepeatTime = "processor_loop_time",
+    RepeatWhile = "processor_loop_while",
+    RepeatIn = "processor_loop_in",
     RepeatRange = "processor_loop_range",
     RepeatBreak = "processor_loop_break",
+}
+
+export enum ProcessorVariable {
+    Get = "processor_variable_get",
+    Set = "processor_variable_set",
+    Clear = "processor_variable_clear",
+}
+
+export enum ProcessorAssertion {
+    Assertion = "processor_assertion_default",
+    // Equal      = "processor_assertion_equal",
+    // NotEqual   = "processor_assertion_not_equal",
+    // Contain    = "processor_assertion_contain",
+    // NotContain = "processor_assertion_not_contain"
 }
 
 export enum ProcessorExtractor {
@@ -39,12 +54,6 @@ export enum ProcessorExtractor {
     JsonQuery = "processor_extractor_jsonquery",
     HtmlQuery = "processor_extractor_htmlquery",
     XmlQuery = "processor_extractor_xmlquery",
-}
-
-export enum ProcessorVariable {
-    Get = "processor_variable_get",
-    Set = "processor_variable_set",
-    Clear = "processor_variable_clear",
 }
 
 export enum ProcessorCookie {

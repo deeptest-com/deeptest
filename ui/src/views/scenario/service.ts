@@ -10,7 +10,7 @@ import {
     ProcessorLogic,
     ProcessorLoop, ProcessorSimple, ProcessorThread, ProcessorTimer,
     ProcessorCategory,
-    ProcessorVariable
+    ProcessorVariable, ProcessorAssertion
 } from "@/utils/enum";
 
 const apiPath = 'scenarios';
@@ -160,6 +160,7 @@ export function getProcessorTypeMap() {
         processor_loop: getEnumSelectItems(ProcessorLoop),
         processor_extractor: getEnumSelectItems(ProcessorExtractor),
         processor_variable: getEnumSelectItems(ProcessorVariable),
+        processor_assertion: getEnumSelectItems(ProcessorAssertion),
         processor_cookie: getEnumSelectItems(ProcessorCookie),
         processor_data: getEnumSelectItems(ProcessorData),
     }

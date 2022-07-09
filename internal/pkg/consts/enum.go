@@ -328,10 +328,11 @@ const (
 	ProcessorVariableGet   ProcessorType = "processor_variable_get"
 	ProcessorVariableClear ProcessorType = "processor_variable_clear"
 
-	ProcessorAssertionEqual      ProcessorType = "processor_assertion_equal"
-	ProcessorAssertionNotEqual   ProcessorType = "processor_assertion_not_equal"
-	ProcessorAssertionContain    ProcessorType = "processor_assertion_contain"
-	ProcessorAssertionNotContain ProcessorType = "processor_assertion_not_contain"
+	ProcessorAssertionDefault ProcessorType = "processor_assertion_default"
+	//ProcessorAssertionEqual      ProcessorType = "processor_assertion_equal"
+	//ProcessorAssertionNotEqual   ProcessorType = "processor_assertion_not_equal"
+	//ProcessorAssertionContain    ProcessorType = "processor_assertion_contain"
+	//ProcessorAssertionNotContain ProcessorType = "processor_assertion_not_contain"
 
 	ProcessorExtractorBoundary  ProcessorType = "processor_extractor_boundary"
 	ProcessorExtractorJsonQuery ProcessorType = "processor_extractor_jsonquery"

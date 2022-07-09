@@ -149,3 +149,18 @@ func (r *ScenarioNodeRepo) UpdateOrdAndParent(node model.TestProcessor) (err err
 
 	return
 }
+
+func (r *ScenarioNodeRepo) GetMaxOrder(parentId uint) (order int) {
+	node := model.TestProcessor{}
+
+	err := r.DB.Model(&model.TestProcessor{}).
+		Where("parentId=?", parentId).
+		Order("ordr DESC").
+		First(&node).Error
+
+	if err == nil {
+		order = node.Ordr + 1
+	}
+
+	return
+}

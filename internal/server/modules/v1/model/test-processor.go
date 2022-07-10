@@ -213,10 +213,9 @@ type ProcessorCookie struct {
 	BaseModel
 	ProcessorEntity
 
-	Operator consts.ValueOperator `json:"operator" yaml:"operator"`
-	Name     string               `json:"name" yaml:"name"`
-
-	RightValue string `json:"rightValue" yaml:"rightValue"`
+	Operator     consts.ValueOperator `json:"operator" yaml:"operator"`
+	CookieName   string               `json:"cookieName" yaml:"cookieName"`
+	VariableName string               `json:"variableName" yaml:"variableName"`
 }
 
 func (ProcessorCookie) TableName() string {
@@ -231,6 +230,7 @@ type ProcessorComm struct {
 type ProcessorEntity struct {
 	Name     string `gorm:"-" json:"name" yaml:"name"`
 	Comments string `json:"comments" yaml:"comments"`
+	Default  string `json:"default" yaml:"default"`
 
 	ProcessorId       uint                     `json:"processorId" yaml:"processorId"`
 	ProcessorCategory consts.ProcessorCategory `json:"processorCategory" yaml:"processorCategory"`

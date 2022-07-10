@@ -154,7 +154,7 @@ func (r *ScenarioNodeRepo) GetMaxOrder(parentId uint) (order int) {
 	node := model.TestProcessor{}
 
 	err := r.DB.Model(&model.TestProcessor{}).
-		Where("parentId=?", parentId).
+		Where("parent_id=?", parentId).
 		Order("ordr DESC").
 		First(&node).Error
 

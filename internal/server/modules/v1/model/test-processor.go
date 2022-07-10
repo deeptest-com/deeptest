@@ -143,9 +143,8 @@ type ProcessorVariable struct {
 	BaseModel
 	ProcessorEntity
 
-	Operator   consts.ValueOperator `json:"operator" yaml:"operator"`
-	Name       string               `json:"name" yaml:"name"`
-	RightValue string               `json:"rightValue" yaml:"rightValue"`
+	VariableName string `json:"variableName" yaml:"variableName"`
+	RightValue   string `json:"rightValue" yaml:"rightValue"`
 }
 
 func (ProcessorVariable) TableName() string {
@@ -213,9 +212,9 @@ type ProcessorCookie struct {
 	BaseModel
 	ProcessorEntity
 
-	Operator     consts.ValueOperator `json:"operator" yaml:"operator"`
-	CookieName   string               `json:"cookieName" yaml:"cookieName"`
-	VariableName string               `json:"variableName" yaml:"variableName"`
+	CookieName   string `json:"cookieName" yaml:"cookieName"`
+	VariableName string `json:"variableName" yaml:"variableName"`
+	RightValue   string `json:"rightValue" yaml:"rightValue"`
 }
 
 func (ProcessorCookie) TableName() string {

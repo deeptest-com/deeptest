@@ -8,13 +8,15 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
-          <a-form-item label="取值" v-bind="validateInfos.value">
-            <a-input v-model:value="modelRef.value"/>
-            <div class="dp-tip-small">常量或用${name}表示的变量</div>
+          <a-form-item label="Cookie名称" v-bind="validateInfos.cookieName">
+            <a-input v-model:value="modelRef.cookieName"
+                     @blur="validate('cookieName', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>
 
-          <a-form-item label="Cookie名称" v-bind="validateInfos.name">
-            <a-input v-model:value="modelRef.name"/>
+          <a-form-item label="取值" v-bind="validateInfos.rightValue">
+            <a-input v-model:value="modelRef.rightValue"
+                     @blur="validate('rightValue', { trigger: 'blur' }).catch(() => {})"/>
+            <div class="dp-tip-small">常量或用${name}表示的变量</div>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
@@ -32,7 +34,7 @@ import {computed, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
-import {Form} from 'ant-design-vue';
+import {Form, message} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../store";
 import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
 
@@ -45,8 +47,11 @@ const {t} = useI18n();
 const formRef = ref();
 
 const rulesRef = reactive({
-  name: [
-    {required: true, message: '请输入名称', trigger: 'blur'},
+  cookieName: [
+    {required: true, message: '请输入Cookie名称', trigger: 'blur'},
+  ],
+  rightValue: [
+    {required: true, message: '请输入取值', trigger: 'blur'},
   ],
 });
 
@@ -57,23 +62,15 @@ const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 const submitForm = async () => {
   validate()
       .then(() => {
-        console.log(modelRef);
-
-        // store.dispatch('Project/saveProject', modelRef.value).then((res) => {
-        //   console.log('res', res)
-        //   if (res === true) {
-        //     message.success(`保存项目成功`);
-        //     router.replace('/project/list')
-        //   } else {
-        //     message.error(`保存项目失败`);
-        //   }
-        // })
+        store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
+          if (res === true) {
+            message.success(`保存成功`);
+          } else {
+            message.error(`保存失败`);
+          }
+        })
       })
-      .catch(err => {
-        console.log('error', err);
-      });
 };
-
 
 const labelCol = { span: 4 }
 const wrapperCol = { span: 16 }

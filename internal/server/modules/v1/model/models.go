@@ -44,6 +44,7 @@ var (
 		&ProcessorLogic{},
 		&ProcessorIterator{},
 		&ProcessorTimer{},
+		&ProcessorVariable{},
 		&ProcessorAssertion{},
 		&ProcessorExtractor{},
 		&ProcessorData{},

@@ -8,6 +8,34 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
+          <a-form-item label="变量名称" v-bind="validateInfos.variableName">
+            <a-input v-model:value="modelRef.variableName"
+                     @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})"/>
+          </a-form-item>
+
+          <a-form-item label="接口地址" v-bind="validateInfos.url">
+            <a-input v-model:value="modelRef.url"
+                     @blur="validate('url', { trigger: 'blur' }).catch(() => {})"/>
+          </a-form-item>
+
+          <a-form-item label="重复次数" v-bind="validateInfos.repeatTimes">
+            <a-input-number v-model:value="modelRef.repeatTimes"
+                            @blur="validate('repeatTimes', { trigger: 'blur' }).catch(() => {})"/>
+          </a-form-item>
+
+          <a-form-item label="是否随机" v-bind="validateInfos.isRand">
+            <a-switch v-model:checked="modelRef.isRand"
+                      @blur="validate('isRand', { trigger: 'blur' }).catch(() => {})"/>
+          </a-form-item>
+          <a-form-item label="是否唯一" v-bind="validateInfos.isOnce">
+            <a-switch v-model:checked="modelRef.isOnce"
+                      @blur="validate('isOnce', { trigger: 'blur' }).catch(() => {})"/>
+          </a-form-item>
+          <a-form-item label="是否循环" v-bind="validateInfos.isLoop">
+            <a-switch :disabled="modelRef.isOnce" v-model:checked="modelRef.isLoop" v-model:value="modelRef.isLoop"
+                      @blur="validate('isLoop', { trigger: 'blur' }).catch(() => {})"/>
+          </a-form-item>
+
           <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
             <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
@@ -19,11 +47,11 @@
 </template>
 
 <script setup lang="ts">
-import {computed, reactive, ref} from "vue";
+import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
-import {Form} from 'ant-design-vue';
+import {Form, message} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../store";
 import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
 
@@ -36,35 +64,41 @@ const {t} = useI18n();
 const formRef = ref();
 
 const rulesRef = reactive({
-  name: [
-    {required: true, message: '请输入名称', trigger: 'blur'},
+  variableName: [
+    {required: true, message: '请输入变量名称', trigger: 'blur'},
+  ],
+  url: [
+    {required: true, message: '请输入文件路径', trigger: 'blur'},
   ],
 });
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
-const modelRef = computed<boolean>(() => store.state.Scenario.nodeData);
+const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
 const submitForm = async () => {
   validate()
       .then(() => {
-        console.log(modelRef);
-
-        // store.dispatch('Project/saveProject', modelRef.value).then((res) => {
-        //   console.log('res', res)
-        //   if (res === true) {
-        //     message.success(`保存项目成功`);
-        //     router.replace('/project/list')
-        //   } else {
-        //     message.error(`保存项目失败`);
-        //   }
-        // })
+        store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
+          if (res === true) {
+            message.success(`保存成功`);
+          } else {
+            message.error(`保存失败`);
+          }
+        })
       })
-      .catch(err => {
-        console.log('error', err);
-      });
 };
 
+onMounted(() => {
+  console.log('onMounted')
+  if (!modelRef.value.url) modelRef.value.url = ''
+  if (!modelRef.value.variableName) modelRef.value.variableName = ''
+  if (!modelRef.value.repeatTimes) modelRef.value.repeatTimes = 1
+})
+
+onUnmounted(() => {
+  console.log('onUnmounted')
+})
 
 const labelCol = { span: 4 }
 const wrapperCol = { span: 16 }

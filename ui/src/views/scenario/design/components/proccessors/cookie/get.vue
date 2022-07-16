@@ -79,7 +79,7 @@ const submitForm = async () => {
 
 onMounted(() => {
   console.log('onMounted')
-  if (!modelRef.value.name) modelRef.value.name = ''
+  if (!modelRef.value.cookieName) modelRef.value.cookieName = ''
   if (!modelRef.value.variable) modelRef.value.variable = ''
 })
 

@@ -60,7 +60,7 @@ import RequestAuthorBasic from "./author/BasicAuthor.vue"
 import RequestAuthorBearerToken from "./author/BearerToken.vue"
 import RequestAuthorOAuth2 from "./author/OAuth2.vue"
 import RequestAuthorApiKey from "./author/ApiKey.vue"
-import {AuthorizationTypes} from "@/views/interface/consts";
+import {AuthorizationTypes} from "@/utils/enum";
 import {getEnumSelectItems} from "@/views/interface/service";
 
 export default defineComponent({

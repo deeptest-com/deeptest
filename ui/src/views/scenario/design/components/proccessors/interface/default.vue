@@ -1,6 +1,6 @@
 <template>
   <div class="processor_interface_default-main">
-
+    <DesignInterface />
   </div>
 </template>
 
@@ -9,9 +9,8 @@ import {computed, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
-import {message, Form, notification} from 'ant-design-vue';
+import DesignInterface from '@/views/interface/components/designer/Interface.vue';
 import {StateType as ScenarioStateType} from "../../../../store";
-import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
 
 const router = useRouter();
 const {t} = useI18n();
@@ -23,6 +22,6 @@ const modelRef = computed<boolean>(() => store.state.Scenario.nodeData);
 
 <style lang="less" scoped>
 .processor_interface_default-main {
-
+  height: 100%;
 }
 </style>

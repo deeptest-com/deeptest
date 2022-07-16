@@ -72,7 +72,7 @@ import { DownOutlined, UndoOutlined, SaveOutlined, LinkOutlined, CheckOutlined }
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
-import {Methods} from "@/views/interface/consts";
+import {Methods} from "@/utils/enum";
 import {regxUrl} from "@/utils/validation";
 import {Interface} from "@/views/interface/data";
 import {prepareDataForRequest} from "@/views/interface/service";

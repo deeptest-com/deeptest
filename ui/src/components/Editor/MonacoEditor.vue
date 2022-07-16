@@ -5,6 +5,9 @@
 <script>
 import { defineComponent, computed, toRefs } from 'vue'
 import * as monaco from 'monaco-editor'
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
+import debounce from "lodash.debounce";
 
 export default defineComponent({
   name: "MonacoEditor",
@@ -31,7 +34,6 @@ export default defineComponent({
       const fixedHeight = height.value.toString().includes('%')? height.value : `${height.value}px`
 
       return {
-        // maxWidth: 0,
         width: fixedWidth,
         height: fixedHeight,
         'text-align': 'left'
@@ -41,13 +43,28 @@ export default defineComponent({
       style,
     }
   },
+
   mounted() {
     console.log('editor mounted')
     this.initMonaco()
+
+    const resizeIt = debounce(() => {
+      console.log('resizeIt')
+      const container = document.getElementsByClassName('response-renderer')[0]
+      const size = {width: container.clientWidth, height: container.clientHeight-30}
+      // console.log(size)
+      this.editor.layout(size)
+    }, 500);
+    bus.on(settings.eventEditorContainerHeightChanged, () => {
+      console.log('resizeIt')
+      resizeIt()
+    });
   },
+
   beforeUnmount() {
     console.log('editor beforeUnmount')
     this.editor && this.editor.dispose();
+    bus.off(settings.eventEditorContainerHeightChanged)
   },
   methods: {
     initMonaco(){

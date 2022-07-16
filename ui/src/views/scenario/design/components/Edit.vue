@@ -1,15 +1,17 @@
 <template>
   <div class="scenario-node-edit-main">
-<!--    <ProcessorThreadDefault v-if="selectedNode.processorType === 'processor_thread_default'" />-->
+    <!--    <ProcessorThreadDefault v-if="selectedNode.processorType === 'processor_thread_default'" />-->
+
+    <ProcessorInterfaceDefault v-if="selectedNode.processorType === 'processor_interface_default'" />
     <ProcessorGroupDefault v-if="selectedNode.processorType === 'processor_group_default'" />
     <ProcessorTimerDefault  v-if="selectedNode.processorType === 'processor_time_default'" />
 
     <ProcessorLogicIf   v-if="selectedNode.processorType === 'processor_logic_if'" />
     <ProcessorLogicElse v-if="selectedNode.processorType === 'processor_logic_else'" />
 
-    <ProcessorLoopTime  v-if="selectedNode.processorType === 'processor_loop_repeat_time'" />
-    <ProcessorLoopUntil v-if="selectedNode.processorType === 'processor_loop_repeat_until'" />
-    <ProcessorLoopIn    v-if="selectedNode.processorType === 'processor_loop_repeat_in'" />
+    <ProcessorLoopTime  v-if="selectedNode.processorType === 'processor_loop_time'" />
+    <ProcessorLoopUntil v-if="selectedNode.processorType === 'processor_loop_until'" />
+    <ProcessorLoopIn    v-if="selectedNode.processorType === 'processor_loop_in'" />
     <ProcessorLoopRange v-if="selectedNode.processorType === 'processor_loop_range'" />
     <ProcessorLoopBreak v-if="selectedNode.processorType === 'processor_loop_break'" />
 
@@ -43,6 +45,7 @@ import {useStore} from "vuex";
 import {StateType as ScenarioStateType} from "../../store";
 
 import ProcessorGroupDefault from "./proccessors/group/default.vue";
+import ProcessorInterfaceDefault from "./proccessors/interface/default.vue"
 import ProcessorTimerDefault from "./proccessors/timer/default.vue"
 
 import ProcessorLogicIf  from "./proccessors/logic/if.vue"
@@ -80,7 +83,8 @@ const selectedNode = computed<any>(()=> store.state.Scenario.nodeData);
 
 <style lang="less" scoped>
 .scenario-node-edit-main {
-  padding: 16px;
+  height: 100%;
+  padding: 0;
 }
 
 </style>

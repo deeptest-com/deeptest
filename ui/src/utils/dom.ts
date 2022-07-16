@@ -1,3 +1,6 @@
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
+import debounce from "lodash.debounce";
 
 export function resizeWidth(mainId: string, leftId: string, splitterId: string, rightId: string,
                             leftMin: number, rightMin: number, gap: number): boolean {
@@ -74,6 +77,8 @@ export function resizeHeight(contentId: string, topId: string, splitterId: strin
 
             top.style.height = (moveLen / content.clientHeight) * 100 + '%';
             bottom.style.height = ((content.clientHeight - moveLen) / content.clientHeight - 0.008) * 100 + '%';
+
+            resizeHandler()
         };
 
         // 鼠标松开事件
@@ -92,6 +97,9 @@ export function resizeHeight(contentId: string, topId: string, splitterId: strin
     return true
 }
 
+export const resizeHandler = debounce(() => {
+    bus.emit(settings.eventEditorContainerHeightChanged, '')
+}, 50);
 
 export function hasClass( elements, cName ){
     if (!elements) return false

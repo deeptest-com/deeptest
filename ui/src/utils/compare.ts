@@ -1,8 +1,7 @@
-import {ComparisonOperator} from "@/views/interface/consts";
+import {ComparisonOperator} from "./enum";
 
 export const getCompareOpts = () => {
   const arr : any[] = []
-
 
   arr.push({label: ComparisonOperator.contain, value: ComparisonOperator[ComparisonOperator.contain]})
   arr.push({label: ComparisonOperator.notContain, value: ComparisonOperator[ComparisonOperator.notContain]})

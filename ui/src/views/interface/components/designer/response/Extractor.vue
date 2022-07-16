@@ -141,7 +141,7 @@ import {
 import {StateType} from "@/views/interface/store";
 import {Extractor, Interface, Response} from "@/views/interface/data";
 import {getEnumSelectItems} from "@/views/interface/service";
-import {ExtractorSrc, ExtractorType} from "@/views/interface/consts";
+import {ExtractorSrc, ExtractorType} from "@/utils/enum";
 
 const useForm = Form.useForm;
 

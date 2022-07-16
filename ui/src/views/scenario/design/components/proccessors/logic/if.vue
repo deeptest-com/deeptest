@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, reactive, ref} from "vue";
+import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
@@ -72,7 +72,7 @@ const rulesRef = reactive({
 });
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
-const modelRef = computed<boolean>(() => store.state.Scenario.nodeData);
+const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
 const operators = getCompareOpts()
@@ -89,6 +89,17 @@ const submitForm = async () => {
         })
       })
 };
+
+onMounted(() => {
+  console.log('onMounted')
+  if (!modelRef.value.leftValue) modelRef.value.leftValue = ''
+  if (!modelRef.value.rightValue) modelRef.value.rightValue = ''
+  if (!modelRef.value.operator) modelRef.value.operator = ''
+})
+
+onUnmounted(() => {
+  console.log('onUnmounted')
+})
 
 const labelCol = { span: 4 }
 const wrapperCol = { span: 16 }

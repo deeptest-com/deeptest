@@ -33,7 +33,7 @@ import {computed, ComputedRef, defineComponent, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
-import {Methods} from "@/views/interface/consts";
+import {Methods} from "@/utils/enum";
 
 import RequestParameters from "./Config/Parameters.vue";
 import RequestBody from "./Config/Body.vue";

@@ -301,10 +301,9 @@ const (
 type ProcessorCategory string
 
 const (
-	ProcessorInterface ProcessorCategory = "processor_interface"
-
 	ProcessorRoot ProcessorCategory = "processor_root"
 	//ProcessorThreadGroup ProcessorCategory = "processor_thread_group"
+	ProcessorInterface ProcessorCategory = "processor_interface"
 	ProcessorGroup     ProcessorCategory = "processor_group"
 	ProcessorLogic     ProcessorCategory = "processor_logic"
 	ProcessorLoop      ProcessorCategory = "processor_loop"

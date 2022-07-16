@@ -1,4 +1,4 @@
-import {ComparisonOperator, CheckpointType, ExtractorSrc, ExtractorType} from "@/views/interface/consts";
+import {ComparisonOperator, CheckpointType, ExtractorSrc, ExtractorType} from "@/utils/enum";
 
 export interface Interface {
     id: number;

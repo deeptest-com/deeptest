@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 import {Interface, OAuth20} from "@/views/interface/data";
 import {isInArray} from "@/utils/array";
-import {ComparisonOperator} from "@/views/interface/consts";
+import {ComparisonOperator} from "@/utils/enum";
 
 const apiPath = 'interfaces';
 const apiVocation = 'invocations';

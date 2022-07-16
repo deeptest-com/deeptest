@@ -169,7 +169,7 @@ import { DownOutlined, ArrowRightOutlined, DeleteOutlined } from '@ant-design/ic
 import {StateType} from "@/views/interface/store";
 import {Interface} from "@/views/interface/data";
 import {genOAuth2AccessToken, getEnumSelectItems, listOAuth2Token, removeOAuth2Token} from "@/views/interface/service";
-import {AuthorizationTypes, OAuth2ClientAuthenticationWay, OAuth2GrantTypes} from "@/views/interface/consts";
+import {AuthorizationTypes, OAuth2ClientAuthenticationWay, OAuth2GrantTypes} from "@/utils/enum";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import {WsMsg} from "@/types/data";

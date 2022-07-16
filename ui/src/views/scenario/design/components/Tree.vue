@@ -1,5 +1,5 @@
 <template>
-  <div class="tree-main">
+  <div class="scenario-tree-main">
     <div class="toolbar">
       <div class="tips">
         <span>{{ tips }}</span>
@@ -85,12 +85,14 @@ import {useStore} from "vuex";
 import {Scenario} from "../../data";
 
 import {StateType as ScenarioStateType} from "../../store";
+import {StateType as InterfaceStateType} from "@/views/interface/store";
 import {StateType as ProjectStateType} from "@/store/project";
 
 import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
 
 import TreeContextMenu from "./TreeContextMenu.vue";
 import InterfaceSelection from "./InterfaceSelection.vue";
+import {StateType} from "@/views/interface/store";
 
 const props = defineProps<{ scenarioId: number }>()
 
@@ -98,7 +100,7 @@ const useForm = Form.useForm;
 
 const {t} = useI18n();
 
-const store = useStore<{ Scenario: ScenarioStateType; Project: ProjectStateType; }>();
+const store = useStore<{ Scenario: ScenarioStateType; Interface: InterfaceStateType, Project: ProjectStateType; }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
 const selectedNode = computed<any>(()=> store.state.Scenario.nodeData);
 
@@ -129,7 +131,19 @@ const selectNode = (keys) => {
   const selectedData = treeDataMap[selectedKeys.value[0]]
   if (isRoot(selectedData.entityCategory)) return
 
-  store.dispatch('Scenario/getNode', selectedData)
+  store.dispatch('Scenario/getNode', selectedData).then((ok) => {
+    console.log('===', selectedNode.value)
+    if (ok && selectedNode.value.processorType === 'processor_interface_default') {
+      const interfaceId = selectedNode.value.interfaceId
+      store.dispatch('Interface/getInterface', {
+        id: interfaceId
+      })
+
+      store.dispatch('Interface/listInvocation', interfaceId)
+      store.dispatch('Interface/listEnvironment')
+      store.dispatch('Interface/getEnvironment', {id: 0, interfaceId: interfaceId})
+    }
+  })
 }
 
 const checkNode = (keys, e) => {
@@ -397,7 +411,9 @@ onUnmounted(() => {
 </style>
 
 <style lang="less" scoped>
-.tree-main {
+.scenario-tree-main {
+  height: 100%;
+
   .toolbar {
     display: flex;
     height: 32px;

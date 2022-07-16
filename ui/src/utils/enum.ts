@@ -1,6 +1,7 @@
 export enum ProcessorCategory {
     ProcessorThread = "processor_thread",
     ProcessorSimple = "processor_simple",
+    ProcessorInterface = "processor_interface",
     ProcessorLogic = "processor_logic",
     ProcessorLoop = "processor_loop",
     ProcessorTimer = "processor_timer",
@@ -28,11 +29,11 @@ export enum ProcessorLogic {
 }
 
 export enum ProcessorLoop {
-    RepeatTime = "processor_loop_time",
-    RepeatWhile = "processor_loop_while",
-    RepeatIn = "processor_loop_in",
-    RepeatRange = "processor_loop_range",
-    RepeatBreak = "processor_loop_break",
+    Time = "processor_loop_time",
+    Until = "processor_loop_until",
+    In = "processor_loop_in",
+    Range = "processor_loop_range",
+    Break = "processor_loop_break",
 }
 
 export enum ProcessorVariable {
@@ -66,4 +67,68 @@ export enum ProcessorData {
     Text = "processor_data_text",
     Excel = "processor_data_excel",
     ZenData = "processor_data_zendata",
+}
+
+export const Methods = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "HEAD",
+    "CONNECT",
+    "OPTIONS",
+    "TRACE",
+    "CUSTOM",
+]
+
+export enum ComparisonOperator {
+    contain = 'contain',
+    notContain = 'notContain',
+    equal = 'equal',
+    notEqual = 'notEqual',
+    greaterThan = 'greaterThan',
+    lessThan = 'lessThan',
+    greaterThanOrEqual = 'greaterThanOrEqual',
+    lessThanOrEqual = 'lessThanOrEqual',
+}
+
+export enum ExtractorSrc {
+    header = 'header',
+    body = 'body',
+}
+export enum ExtractorType {
+    boundary = 'boundary',
+    jsonquery = 'jsonquery',
+    htmlquery = 'htmlquery',
+    xmlquery = 'xmlquery',
+    // regular = 'regular',
+    // fulltext = 'fulltext',
+}
+export enum CheckpointType {
+    responseStatus = 'responseStatus',
+    responseHeader = 'responseHeader',
+    responseBody = 'responseBody',
+    extractor = 'extractor',
+}
+
+export enum AuthorizationTypes {
+    '' = 'None',
+    'basicAuth' = 'Basic Auth',
+    'bearerToken' = 'Bearer Token',
+    'oAuth2' = 'OAuth 2.0',
+    'apiKey' = 'API Key',
+}
+
+export enum OAuth2GrantTypes {
+    'authorizationCode' = 'Authorization Code',
+    'authorizationCodeWithPKCE' = 'Authorization Code (With PKCE)',
+    'implicit' = 'Implicit',
+    'passwordCredential' = 'Password Credential',
+    'clientCredential' = 'Client Credential',
+}
+
+export enum OAuth2ClientAuthenticationWay {
+    'sendAsBasicAuthHeader' = 'Send as Basic Auth header',
+    'sendClientCredentialsInBody' = 'Send client credentials in body',
 }

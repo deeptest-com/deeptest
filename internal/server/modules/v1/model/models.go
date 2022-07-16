@@ -42,7 +42,7 @@ var (
 		&ProcessorThreadGroup{},
 		&ProcessorGroup{},
 		&ProcessorLogic{},
-		&ProcessorIterator{},
+		&ProcessorLoop{},
 		&ProcessorTimer{},
 		&ProcessorVariable{},
 		&ProcessorAssertion{},

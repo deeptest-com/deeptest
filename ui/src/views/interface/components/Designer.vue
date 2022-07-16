@@ -1,15 +1,7 @@
 <template>
   <div class="designer-main">
     <div id="design-content">
-      <div id="top-panel">
-        <InterfaceRequest v-if="interfaceData.id"></InterfaceRequest>
-      </div>
-
-      <div id="design-splitter-v" :hidden="!interfaceData.id"></div>
-
-      <div id="bottom-panel">
-        <InterfaceResponse v-if="interfaceData.id"></InterfaceResponse>
-      </div>
+      <DesignInterface />
     </div>
 
     <div v-if="interfaceData.id && showRightBar" class="design-right">
@@ -42,12 +34,10 @@ import {computed, ComputedRef, defineComponent, onMounted, PropType, Ref, ref, w
 import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import { HistoryOutlined, EnvironmentOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue';
-import {resizeHeight, resizeWidth} from "@/utils/dom";
 import {useStore} from "vuex";
 
 import {StateType} from "@/views/interface/store";
-import InterfaceRequest from './designer/request/Index.vue';
-import InterfaceResponse from './designer/response/Index.vue';
+import DesignInterface from './designer/Interface.vue';
 import RequestEnv from './designer/others/env/index.vue';
 import RequestHistory from './designer/others/history/index.vue';
 import {Interface} from "@/views/interface/data";
@@ -61,7 +51,7 @@ export default defineComponent({
   },
   components: {
     HistoryOutlined, EnvironmentOutlined, LeftCircleOutlined, RightCircleOutlined,
-    InterfaceRequest, InterfaceResponse,
+    DesignInterface,
     RequestEnv, RequestHistory,
   },
   setup(props) {
@@ -85,18 +75,11 @@ export default defineComponent({
 
     onMounted(() => {
       console.log('onMounted')
-      resize()
     })
 
     watch(interfaceData, () => {
       console.log('watch interfaceData')
-      // resize()
     }, {deep: true})
-
-    const resize = () => {
-      resizeHeight('design-content', 'top-panel', 'design-splitter-v', 'bottom-panel',
-          200, 100, 50)
-    }
 
     return {
       interfaceData,
@@ -141,42 +124,8 @@ export default defineComponent({
   height: 100%;
 
   #design-content {
-    flex: 1;
-    display: flex;
-
-    flex-direction: column;
-    position: relative;
     height: 100%;
-
-    #top-panel {
-      height: 360px;
-      width: 100%;
-      padding: 0;
-    }
-
-    #bottom-panel {
-      flex: 1;
-      width: 100%;
-      padding: 4px;
-      overflow: auto;
-    }
-
-    #design-splitter-v {
-      width: 100%;
-      height: 2px;
-      background-color: #e6e9ec;
-      cursor: ns-resize;
-
-      &:hover {
-        height: 2px;
-        background-color: #D0D7DE;
-      }
-
-      &.active {
-        height: 2px;
-        background-color: #a9aeb4;
-      }
-    }
+    width: 100%;
   }
 
   .design-right {

@@ -16,7 +16,7 @@
           <a-form-item label="取值" v-bind="validateInfos.rightValue">
             <a-input v-model:value="modelRef.rightValue"
                      @blur="validate('rightValue', { trigger: 'blur' }).catch(() => {})"/>
-            <div class="dp-tip-small">常量或用${name}表示的变量</div>
+            <div class="dp-input-tip">常量或用${name}表示的变量</div>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, reactive, ref} from "vue";
+import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
@@ -56,7 +56,7 @@ const rulesRef = reactive({
 });
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
-const modelRef = computed<boolean>(() => store.state.Scenario.nodeData);
+const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
 const submitForm = async () => {
@@ -71,6 +71,16 @@ const submitForm = async () => {
         })
       })
 };
+
+onMounted(() => {
+  console.log('onMounted')
+  if (!modelRef.value.cookieName) modelRef.value.cookieName = ''
+  if (!modelRef.value.rightValue) modelRef.value.rightValue = ''
+})
+
+onUnmounted(() => {
+  console.log('onUnmounted')
+})
 
 const labelCol = { span: 4 }
 const wrapperCol = { span: 16 }

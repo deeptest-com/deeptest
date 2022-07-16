@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, reactive, ref} from "vue";
+import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
@@ -41,13 +41,13 @@ const {t} = useI18n();
 const formRef = ref();
 
 const rulesRef = reactive({
-  name: [
-    {required: true, message: '请输入名称', trigger: 'blur'},
+  variableName: [
+    {required: true, message: '请输入变量名', trigger: 'blur'},
   ],
 });
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
-const modelRef = computed<boolean>(() => store.state.Scenario.nodeData);
+const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
 const submitForm = async () => {
@@ -62,6 +62,15 @@ const submitForm = async () => {
         })
       })
 };
+
+onMounted(() => {
+  console.log('onMounted')
+  if (!modelRef.value.variableName) modelRef.value.variableName = ''
+})
+
+onUnmounted(() => {
+  console.log('onUnmounted')
+})
 
 const labelCol = { span: 4 }
 const wrapperCol = { span: 16 }

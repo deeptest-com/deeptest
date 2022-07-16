@@ -10,12 +10,12 @@ export interface SettingsType {
      * 站点名称
      */
     siteTitle: string;
-  
+
     /**
      * 顶部菜单开启
      */
     topNavEnable: boolean;
-  
+
     /**
      * 头部固定开启
      */
@@ -30,7 +30,7 @@ export interface SettingsType {
      * 站点首页路由
      */
     homeRouteItem: RoutesDataItem;
-  
+
     /**
      * 站点本地存储Token 的 Key值
      */
@@ -48,6 +48,7 @@ export interface SettingsType {
     eventNotify,
     eventWebSocketConnStatus: string,
     eventWebSocketMsg: string,
+    eventEditorContainerHeightChanged: string,
     webSocketRoom: string,
     electronMsg: string,
     electronMsgReplay: string,
@@ -56,7 +57,7 @@ export interface SettingsType {
      * Ajax请求头发送Token 的 Key值
      */
     ajaxHeadersTokenKey: string;
-  
+
     /**
      * Ajax返回值不参加统一验证的api地址
      */
@@ -67,7 +68,7 @@ export interface SettingsType {
      */
     iconfontUrl: string[];
 }
-  
+
 const settings: SettingsType = {
     siteTitle: 'ADMIN-ANTD-VUE',
     topNavEnable: true,
@@ -89,6 +90,7 @@ const settings: SettingsType = {
     eventNotify: 'eventNotify',
     eventWebSocketConnStatus: 'eventWebSocketStatus',
     eventWebSocketMsg: 'eventWebSocketMsg',
+    eventEditorContainerHeightChanged: 'eventWebSocketMsg',
     webSocketRoom: 'webSocketRoom',
     electronMsg: 'electronMsg',
     electronMsgReplay: 'electronMsgReplay',
@@ -102,4 +104,3 @@ const settings: SettingsType = {
 };
 
 export default settings;
-  

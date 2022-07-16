@@ -76,7 +76,7 @@ export default {
     'processor_logic_else':  '否则',
 
     'processor_loop_time':  '迭代次数',
-    'processor_loop_while':  '迭代直到',
+    'processor_loop_until':  '迭代直到',
     'processor_loop_in':  '迭代列表',
     'processor_loop_range':  '迭代区间',
     'processor_loop_break':  '跳出迭代',

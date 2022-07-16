@@ -8,22 +8,24 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
-          <a-form-item label="变量" v-bind="validateInfos.variable">
-            <a-input v-model:value="model.variable"
-                     @blur="validate('variable', { trigger: 'blur' }).catch(() => {})" />
+          <a-form-item label="左值" v-bind="validateInfos.leftValue">
+            <a-input v-model:value="modelRef.leftValue"
+                     @blur="validate('leftValue', { trigger: 'blur' }).catch(() => {})" />
           </a-form-item>
 
-          <a-form-item label="操作">
-            <a-select v-model:value="model.opt">
+          <a-form-item label="操作" v-bind="validateInfos.operator">
+            <a-select v-model:value="modelRef.operator"
+                      @blur="validate('operator', { trigger: 'change' }).catch(() => {})">
               <a-select-option v-for="(item, idx) in optOptions" :key="idx" :value="item.value">
                 {{ t(item.label) }}
               </a-select-option>
             </a-select>
           </a-form-item>
 
-          <a-form-item label="取值" v-bind="validateInfos.value">
-            <a-input v-model:value="modelRef.value"/>
-            <div class="dp-tip-small">常量或用${name}表示的变量</div>
+          <a-form-item label="取值" v-bind="validateInfos.rightValue">
+            <a-input v-model:value="modelRef.rightValue"
+                     @blur="validate('rightValue', { trigger: 'change' }).catch(() => {})"/>
+            <div class="dp-input-tip">常量或用${name}表示的变量</div>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
@@ -37,12 +39,13 @@
 </template>
 
 <script setup lang="ts">
-import {computed, reactive, ref} from "vue";
-import {Form} from "ant-design-vue";
+import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
+import {Form, message} from "ant-design-vue";
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
+import {getCompareOpts} from "@/utils/compare";
 
 const useForm = Form.useForm;
 
@@ -53,44 +56,46 @@ const {t} = useI18n();
 const formRef = ref();
 
 const rulesRef = reactive({
-  variable: [
-    {required: true, message: '请输入取值', trigger: 'blur'},
+  leftValue: [
+    {required: true, message: '请输入左值', trigger: 'blur'},
   ],
-  value: [
-    {required: true, message: '请输入取值', trigger: 'blur'},
+  rightValue: [
+    {required: true, message: '请输入右值', trigger: 'blur'},
+  ],
+  operator: [
+    {required: true, message: '请选择操作', trigger: 'blur'},
   ],
 });
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
-const modelRef = computed<boolean>(() => store.state.Scenario.nodeData);
+const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
 const submitForm = async () => {
   validate()
       .then(() => {
-        console.log(modelRef);
-
-        // store.dispatch('Project/saveProject', modelRef.value).then((res) => {
-        //   console.log('res', res)
-        //   if (res === true) {
-        //     message.success(`保存项目成功`);
-        //     router.replace('/project/list')
-        //   } else {
-        //     message.error(`保存项目失败`);
-        //   }
-        // })
+        store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
+          if (res === true) {
+            message.success(`保存成功`);
+          } else {
+            message.error(`保存失败`);
+          }
+        })
       })
-      .catch(err => {
-        console.log('error', err);
-      });
 };
 
-const optOptions = [
-  {label: '等于', value: 'equal'},
-  {label: '不等于', value: 'not_equal'},
-  {label: '包含', value: 'contain'},
-  {label: '不包含', value: 'not_contain'},
-]
+const optOptions = getCompareOpts()
+
+onMounted(() => {
+  console.log('onMounted')
+  if (!modelRef.value.leftValue) modelRef.value.leftValue = ''
+  if (!modelRef.value.rightValue) modelRef.value.rightValue = ''
+  if (!modelRef.value.operator) modelRef.value.operator = 'equal'
+})
+
+onUnmounted(() => {
+  console.log('onUnmounted')
+})
 
 const labelCol = { span: 4 }
 const wrapperCol = { span: 16 }

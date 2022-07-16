@@ -17,7 +17,7 @@
         {{t(processorTypes[0].label)}}
       </a-menu-item>
     </template>
-    
+
   </div>
 </template>
 
@@ -27,7 +27,7 @@ import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import {FolderAddOutlined, FileAddOutlined, EditOutlined, CloseOutlined, PlusOutlined} from "@ant-design/icons-vue";
 import {getEnumSelectItems} from "@/views/interface/service";
-import {OAuth2ClientAuthenticationWay} from "@/views/interface/consts";
+import {OAuth2ClientAuthenticationWay} from "@/utils/enum";
 import {ProcessorCategory} from "@/utils/enum";
 import {getProcessorTypeMap, getProcessorCategories} from "@/views/scenario/service";
 

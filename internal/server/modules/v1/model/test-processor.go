@@ -111,18 +111,20 @@ func (ProcessorLogic) TableName() string {
 	return "biz_test_processor_logic"
 }
 
-type ProcessorIterator struct {
+type ProcessorLoop struct {
 	BaseModel
 	ProcessorEntity
 
-	Times int `json:"times" yaml:"times"` // how many
-	Count int `json:"count" yaml:"count"` // left
+	List  string `json:"list" yaml:"list"`   // in
+	Range string `json:"range" yaml:"range"` // range
+	Times int    `json:"times" yaml:"times"` // time
 
-	BreakIfExpression string `json:"breakExpr" yaml:"breakIfExpression"`
+	UntilExpression   string `json:"untilExpression" yaml:"untilExpression"` // until
+	BreakIfExpression string `json:"breakIfExpression" yaml:"breakIfExpression"`
 }
 
-func (ProcessorIterator) TableName() string {
-	return "biz_test_processor_iterator"
+func (ProcessorLoop) TableName() string {
+	return "biz_test_processor_loop"
 }
 
 type ProcessorTimer struct {
@@ -155,8 +157,9 @@ type ProcessorAssertion struct {
 	BaseModel
 	ProcessorEntity
 
-	Expression string `json:"expression" yaml:"expression"`
-	Expect     string `json:"expect" yaml:"expect"`
+	LeftValue  string                    `json:"leftValue" yaml:"leftValue"`
+	Operator   consts.ComparisonOperator `json:"operator" yaml:"operator"`
+	RightValue string                    `json:"rightValue" yaml:"rightValue"`
 }
 
 func (ProcessorAssertion) TableName() string {
@@ -194,14 +197,17 @@ type ProcessorData struct {
 	ProcessorEntity
 
 	Type consts.DataSource `json:"type,omitempty" yaml:"type,omitempty"`
-	Path string            `json:"path,omitempty" yaml:"path,omitempty"`
+	Url  string            `json:"url,omitempty" yaml:"url,omitempty"`
 
-	Loop           int    `json:"loop,omitempty" yaml:"loop,omitempty"`
-	StartIndex     int    `json:"startIndex,omitempty" yaml:"startIndex,omitempty"`
-	EndIndex       int    `json:"endIndex,omitempty" yaml:"endIndex,omitempty"`
-	IsRand         bool   `json:"isRand,omitempty" yaml:"isRand,omitempty"`
-	IsOnce         bool   `json:"isOnce,omitempty" yaml:"isOnce,omitempty"`
-	VarNamePostfix string `json:"varNamePostfix,omitempty" yaml:"varNamePostfix,omitempty"`
+	RepeatTimes int `json:"repeatTimes,omitempty" yaml:"repeatTimes,omitempty"`
+	//StartIndex     int    `json:"startIndex,omitempty" yaml:"startIndex,omitempty"`
+	//EndIndex       int    `json:"endIndex,omitempty" yaml:"endIndex,omitempty"`
+
+	IsLoop int  `json:"isLoop,omitempty" yaml:"isLoop,omitempty"`
+	IsRand bool `json:"isRand,omitempty" yaml:"isRand,omitempty"`
+	IsOnce bool `json:"isOnce,omitempty" yaml:"isOnce,omitempty"`
+
+	VariableName string `json:"variableName,omitempty" yaml:"variableName,omitempty"`
 }
 
 func (ProcessorData) TableName() string {
@@ -224,6 +230,7 @@ func (ProcessorCookie) TableName() string {
 type ProcessorComm struct {
 	Id uint `json:"id" yaml:"id"`
 	ProcessorEntity
+	InterfaceId uint `json:"interfaceId"`
 }
 
 type ProcessorEntity struct {

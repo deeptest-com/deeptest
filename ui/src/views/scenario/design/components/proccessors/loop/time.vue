@@ -8,6 +8,11 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
+          <a-form-item label="次数" v-bind="validateInfos.times">
+            <a-input-number v-model:value="modelRef.times"
+                     @blur="validate('times', { trigger: 'blur' }).catch(() => {})"/>
+          </a-form-item>
+
           <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
             <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
@@ -19,11 +24,11 @@
 </template>
 
 <script setup lang="ts">
-import {computed, reactive, ref} from "vue";
+import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
-import {Form} from 'ant-design-vue';
+import {Form, message} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../store";
 import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
 
@@ -36,35 +41,36 @@ const {t} = useI18n();
 const formRef = ref();
 
 const rulesRef = reactive({
-  name: [
-    {required: true, message: '请输入名称', trigger: 'blur'},
+  times: [
+    {required: true, type: 'number', message: '请输入迭代次数', trigger: 'blur'},
   ],
 });
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
-const modelRef = computed<boolean>(() => store.state.Scenario.nodeData);
+const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
 const submitForm = async () => {
   validate()
       .then(() => {
-        console.log(modelRef);
-
-        // store.dispatch('Project/saveProject', modelRef.value).then((res) => {
-        //   console.log('res', res)
-        //   if (res === true) {
-        //     message.success(`保存项目成功`);
-        //     router.replace('/project/list')
-        //   } else {
-        //     message.error(`保存项目失败`);
-        //   }
-        // })
+        store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
+          if (res === true) {
+            message.success(`保存成功`);
+          } else {
+            message.error(`保存失败`);
+          }
+        })
       })
-      .catch(err => {
-        console.log('error', err);
-      });
 };
 
+onMounted(() => {
+  console.log('onMounted')
+  if (!modelRef.value.times) modelRef.value.times = 1
+})
+
+onUnmounted(() => {
+  console.log('onUnmounted')
+})
 
 const labelCol = { span: 4 }
 const wrapperCol = { span: 16 }

@@ -124,7 +124,7 @@ import {
   getEnumSelectItems,
   listExtractorVariable
 } from "@/views/interface/service";
-import {ComparisonOperator, CheckpointType} from "@/views/interface/consts";
+import {ComparisonOperator, CheckpointType} from "@/utils/enum";
 import {isInArray} from "@/utils/array";
 import {getCompareOptsForRespCode, getCompareOptsForString} from "@/utils/compare";
 

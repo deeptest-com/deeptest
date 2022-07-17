@@ -5,13 +5,13 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
   {
     title: 'index-layout.menu',
     path: '/project',
-    redirect: '/project/list',
+    redirect: '/project/index',
     component: BlankLayout,
     children: [
       {
         icon: 'project',
         title: 'project',
-        path: 'list',
+        path: 'index',
         component: () => import('@/views/project/list/index.vue'),
         hidden: false,
       },
@@ -50,7 +50,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       {
         icon: 'scenario',
         title: 'scenario',
-        path: 'list',
+        path: 'index',
         component: () => import('@/views/scenario/list/index.vue'),
         hidden: false,
       },

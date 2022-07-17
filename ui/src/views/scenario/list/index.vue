@@ -139,17 +139,17 @@ const getList = async (current: number): Promise<void> => {
 
 const exec = (id: number) => {
   console.log('exec')
-  router.replace(`/scenario/exec/${id}`)
+  router.push(`/scenario/exec/${id}`)
 }
 
 const design = (id: number) => {
   console.log('edit')
-  router.replace(`/scenario/design/${id}`)
+  router.push(`/scenario/design/${id}`)
 }
 
 const edit = (id: number) => {
   console.log('edit')
-  router.replace(`/scenario/edit/${id}`)
+  router.push(`/scenario/edit/${id}`)
 }
 
 const remove = (id: number) => {

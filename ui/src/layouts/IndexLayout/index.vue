@@ -102,11 +102,10 @@ export default defineComponent({
     // 右侧顶部是否固定
     const headFixed = computed<boolean>(() => store.state.Global.headFixed);
 
-
     // 左侧选择菜单key
     const selectedKeys = computed<string[]>(() => {
-      const selectedKey = getSelectLeftMenuPath(routeItem.value);
-      return [selectedKey]
+      const selectedKeys = getSelectLeftMenuPath(routeItem.value);
+      return selectedKeys
     });
 
     // 左侧展开菜单keys
@@ -132,7 +131,6 @@ export default defineComponent({
 
     // 设置title
     useTitle(routeItem);
-
 
     return {
       collapsed,

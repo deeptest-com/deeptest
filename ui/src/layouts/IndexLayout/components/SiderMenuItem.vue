@@ -41,7 +41,6 @@ export default defineComponent({
     const { routeItem } = toRefs(props);
     const { t } = useI18n();
 
-
     const topMenuPath = computed<string>(()=> getRouteBelongTopMenu(routeItem.value as RoutesDataItem));
 
     return {

@@ -54,8 +54,8 @@ func (r *ProjectRepo) Paginate(req serverDomain.ProjectReqPaginate) (data _domai
 	return
 }
 
-func (r *ProjectRepo) FindById(id uint) (serverDomain.ProjectResp, error) {
-	project := serverDomain.ProjectResp{}
+func (r *ProjectRepo) FindById(id uint) (model.Project, error) {
+	project := model.Project{}
 	err := r.DB.Model(&model.Project{}).Where("id = ?", id).First(&project).Error
 	if err != nil {
 		logUtils.Errorf("find project by id error", zap.String("error:", err.Error()))

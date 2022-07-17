@@ -103,7 +103,6 @@ export const getRouteItem = (pathname: string, routesData: RoutesDataItem[]): Ro
       const pass = new RegExp(path).test(pathname)
 
       if (pass) {
-        // console.log('----', element.path, pathname)
         item = element;
         break;
       }
@@ -215,8 +214,15 @@ export const getBreadcrumbRoutes = (route: RoutesDataItem, pathname: string[], r
  * 获取当前路由选中的侧边栏菜单path
  * @param route route
  */
-export const getSelectLeftMenuPath = (route: RoutesDataItem): string => {
-  return route.selectLeftMenu || route.path;
+export const getSelectLeftMenuPath = (route: RoutesDataItem): string[] => {
+  if (route.selectLeftMenu) return [route.selectLeftMenu]
+
+  const ret = [] as string[]
+  ret.push(route.path)
+
+  ret.push('/' + route.path.split('/')[1] + '/index')
+
+  return ret
 };
 
 /**
@@ -243,7 +249,7 @@ export const vueRoutes = (routesData: RoutesDataItem[], parentPath = '/', headSt
     const itemChildren = children || [];
     const newItem: RoutesDataItem = { ...other };
     newItem.path = setRoutePathForParent(newItem.path, parentPath, headStart);
-    
+
     if (item.children) {
       newItem.children = [
         ...vueRoutes(itemChildren, newItem.path, headStart),
@@ -260,20 +266,20 @@ export const vueRoutes = (routesData: RoutesDataItem[], parentPath = '/', headSt
  */
  export const routesSetMeta = (routesData: RoutesDataItem[]): RoutesDataItem[] => {
   return routesData.map(item => {
-    const { children, tabNavType, meta, ...other } = item;    
+    const { children, tabNavType, meta, ...other } = item;
     const newItem: RoutesDataItem = {
       meta: {
         ...meta,
 
         // 自定义设置的 meta 值 S
 
-        tabNavType: tabNavType || 'path',  
+        tabNavType: tabNavType || 'path',
 
         // 自定义设置的 meta 值 E
       },
       ...other
      };
-    
+
     if (item.children) {
       const itemChildren = children || [];
       newItem.children = [
@@ -303,7 +309,7 @@ export const hasPermissionRouteRoles = (userRoles: string[], roles?: string | st
 
   if (typeof roles === 'string') {
     return userRoles.includes(roles);
-  } 
+  }
 
   if(roles instanceof Array && roles.length > 0) {
     return roles.some(role => userRoles.includes(role));
@@ -356,7 +362,7 @@ export const getPermissionMenuData = ( roles: string[], routes: RoutesDataItem[]
  * @param route1 vue-route
  * @param route2 vue-route
  * @param type 判断规则
- * @returns 
+ * @returns
  */
  export const equalTabNavRoute = (route1: RouteLocationNormalizedLoaded,
                                   route2: RouteLocationNormalizedLoaded,

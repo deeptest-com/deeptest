@@ -46,12 +46,12 @@ func (c *ProjectCtrl) Get(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	product, err := c.ProjectService.FindById(req.Id)
+	project, err := c.ProjectService.FindById(req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: product, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: project, Msg: _domain.NoErr.Msg})
 }
 
 func (c *ProjectCtrl) Create(ctx iris.Context) {

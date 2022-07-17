@@ -164,6 +164,7 @@ const cancelUpdate = (id) => {
 let contextNode = ref({} as any)
 let menuStyle = ref({} as any)
 const treeDataMap = {}
+const treeOrderedIds = []
 let tips = ref('')
 let rightVisible = false
 const onRightClick = (e) => {
@@ -191,17 +192,14 @@ const onRightClick = (e) => {
     textAlign: 'center',
     left: `${x + 10}px`,
     top: `${y + 6}px`
-    // display: 'flex',
-    // flexDirection: 'row'
   }
 }
 
 const getNodeMapCall = throttle(async () => {
-  getNodeMap(treeData.value[0], treeDataMap)
+  getNodeMap(treeData.value[0], treeDataMap, treeOrderedIds)
 }, 300)
 const getExpandedKeysCall = throttle(async () => {
   getExpandedKeys(treeData.value[0].scenarioId).then(async keys => {
-    console.log('keys', keys)
     if (keys)
       expandedKeys.value = keys
 

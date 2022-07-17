@@ -75,7 +75,7 @@ export default defineComponent({
               notification.success({
                 message: `保存成功`,
               });
-              router.replace('/scenario/list')
+              router.replace('/scenario/index')
             }
           })
         })
@@ -85,7 +85,7 @@ export default defineComponent({
       };
 
       const back = ():void =>  {
-        router.push(`/scenario/list`)
+        router.replace(`/scenario/index`)
       }
 
       return {

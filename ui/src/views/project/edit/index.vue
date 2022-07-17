@@ -88,7 +88,7 @@ export default defineComponent({
                 console.log('res', res)
                 if (res === true) {
                   message.success(`保存项目成功`);
-                  router.replace('/project/list')
+                  router.replace('/project/index')
                 } else {
                   message.error(`保存项目失败`);
                 }
@@ -100,7 +100,7 @@ export default defineComponent({
       };
 
       const back = ():void =>  {
-        router.push(`/project/list`)
+        router.replace(`/project/index`)
       }
 
       return {

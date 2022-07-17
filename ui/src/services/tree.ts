@@ -1,13 +1,16 @@
 
-export function getNodeMap(treeNode: any, mp: any): void {
+export function getNodeMap(treeNode: any, mp: any, ids?: number[]): void {
     if (!treeNode) return
 
     mp[treeNode.id] = treeNode
-    // console.log('treeNode.id', treeNode.id)
+    if (ids && treeNode.entityCategory !== 'processor_group') {
+        ids.push(treeNode.id)
+        // console.log('===', treeNode.entityCategory)
+    }
 
     if (treeNode.children) {
         treeNode.children.forEach((item, index) => {
-            getNodeMap(item, mp)
+            getNodeMap(item, mp, ids)
         })
     }
 

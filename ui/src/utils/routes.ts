@@ -219,8 +219,7 @@ export const getSelectLeftMenuPath = (route: RoutesDataItem): string[] => {
 
   const ret = [] as string[]
   ret.push(route.path)
-
-  ret.push('/' + route.path.split('/')[1] + '/index')
+  ret.push('/' + route.path.split('/')[1] + '/index') // module root path
 
   return ret
 };

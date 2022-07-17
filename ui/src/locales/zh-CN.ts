@@ -22,6 +22,7 @@ export default {
     'scenario': '场景',
     'scenario.edit': '场景编辑',
     'scenario.design': '场景设计',
+    'scenario.exec': '场景执行',
 
     'mock.oauth2.callback': 'OAuth2回调模拟',
 

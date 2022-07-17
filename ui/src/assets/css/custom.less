@@ -79,3 +79,45 @@
         min-height: 24px;
     }
 }
+
+.dp-table {
+    td {
+    }
+    .ant-btn-link {
+        padding: 0px 5px;
+    }
+}
+
+.dp-splits-v {
+    display: flex;
+    height: 100%;
+
+    .left {
+        width: 260px;
+        height: 100%;
+    }
+
+    .right {
+        flex: 1;
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .splitter {
+        width: 1px;
+        height: 100%;
+        background-color: #e6e9ec;
+        cursor: ew-resize;
+
+        &:hover {
+            width: 1px;
+            background-color: #D0D7DE;
+        }
+
+        &.active {
+            width: 1px;
+            background-color: #a9aeb4;
+        }
+    }
+}

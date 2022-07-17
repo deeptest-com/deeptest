@@ -1,12 +1,12 @@
 <template>
-  <div id="main" class="scenario-design-main">
-    <div id="left-panel">
+  <div id="scenario-design-main" class="scenario-design-main dp-splits-v">
+    <div id="scenario-design-left" class="left">
       <ScenarioTree :scenarioId="id" />
     </div>
 
-    <div id="splitter-h"></div>
+    <div id="scenario-design-splitter" class="splitter"></div>
 
-    <div id="right-panel">
+    <div id="scenario-design-right" class="right">
       <Edit></Edit>
     </div>
   </div>
@@ -47,45 +47,15 @@ watch(collapsed, () => {
 }, {deep: true})
 
 const resize = () => {
-  resizeWidth('main', 'left-panel', 'splitter-h', 'right-panel',
+  resizeWidth('scenario-design-main',
+      'scenario-design-left', 'scenario-design-splitter', 'scenario-design-right',
       260, 800, collapsed.value ? 55 - 15 : 100 - 25)
 }
 
 </script>
 
 <style lang="less" scoped>
-#main {
-  display: flex;
-  height: 100%;
+.scenario-design-main {
 
-  #left-panel {
-    width: 260px;
-    height: 100%;
-  }
-
-  #right-panel {
-    flex: 1;
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-
-  #splitter-h {
-    width: 1px;
-    height: 100%;
-    background-color: #e6e9ec;
-    cursor: ew-resize;
-
-    &:hover {
-      width: 1px;
-      background-color: #D0D7DE;
-    }
-
-    &.active {
-      width: 1px;
-      background-color: #a9aeb4;
-    }
-  }
 }
-
 </style>

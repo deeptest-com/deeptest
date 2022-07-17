@@ -1,12 +1,12 @@
 <template>
-  <div id="main" class-interface-main>
-    <div id="left-panel">
+  <div id="interface-design-main" class="interface-design-main dp-splits-v">
+    <div id="interface-design-left" class="left">
       <InterfaceTree />
     </div>
 
-    <div id="splitter-h"></div>
+    <div id="interface-design-splitter" class="splitter"></div>
 
-    <div id="right-panel">
+    <div id="interface-design-right" class="right">
       <InterfaceDesigner></InterfaceDesigner>
     </div>
   </div>
@@ -50,7 +50,8 @@ export default defineComponent({
     }, {deep: true})
 
     const resize = () => {
-      resizeWidth('main', 'left-panel', 'splitter-h', 'right-panel',
+      resizeWidth('interface-design-main',
+            'interface-design-left', 'interface-design-splitter', 'interface-design-right',
           260, 800, collapsed.value ? 55 - 15 : 100 - 25)
     }
 
@@ -63,38 +64,7 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-#main {
-  display: flex;
-  height: 100%;
+.interface-design-main {
 
-  #left-panel {
-    width: 260px;
-    height: 100%;
-  }
-
-  #right-panel {
-    flex: 1;
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-
-  #splitter-h {
-    width: 1px;
-    height: 100%;
-    background-color: #e6e9ec;
-    cursor: ew-resize;
-
-    &:hover {
-      width: 1px;
-      background-color: #D0D7DE;
-    }
-
-    &.active {
-      width: 1px;
-      background-color: #a9aeb4;
-    }
-  }
 }
-
 </style>

@@ -27,6 +27,7 @@
                     getList(page);
                 },
             }"
+            class="dp-table"
         >
           <template #name="{ text  }">
             {{ text }}
@@ -35,7 +36,10 @@
             <a-tag v-if="record.disabled" color="green">禁用</a-tag>
             <a-tag v-else color="cyan">启用</a-tag>
           </template>
+
           <template #action="{ record }">
+            <a-button type="link" @click="() => exec(record.id)">执行</a-button>
+
             <a-button type="link" @click="() => design(record.id)">设计</a-button>
             <a-button type="link" @click="() => edit(record.id)">编辑</a-button>
             <a-button type="link" @click="() => remove(record.id)">删除</a-button>
@@ -110,7 +114,7 @@ const columns = [
   {
     title: '操作',
     key: 'action',
-    width: 260,
+    width: 200,
     slots: {customRender: 'action'},
   },
 ];
@@ -131,6 +135,11 @@ const getList = async (current: number): Promise<void> => {
     page: current,
   });
   loading.value = false;
+}
+
+const exec = (id: number) => {
+  console.log('exec')
+  router.replace(`/scenario/exec/${id}`)
 }
 
 const design = (id: number) => {

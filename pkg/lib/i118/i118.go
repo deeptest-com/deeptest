@@ -12,7 +12,7 @@ import (
 
 var I118Prt *message.Printer
 
-func InitI118(lang string, app string) {
+func Init(lang string, app string) {
 	//var once sync.Once
 	//once.Do(func() {
 

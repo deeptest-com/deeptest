@@ -68,7 +68,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 
 	checkpoint.Result = consts.Fail
 
-	// Response Status
+	// Response ResultStatus
 	if checkpoint.Type == consts.ResponseStatus {
 		expectCode := stringUtils.ParseInt(checkpoint.Value)
 
@@ -148,7 +148,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 }
 
 func (s *CheckpointService) Compare(operator consts.ComparisonOperator, actual, expect string) (
-	result consts.CheckpointResult) {
+	result consts.ResultStatus) {
 
 	result = consts.Fail
 
@@ -180,7 +180,7 @@ func (s *CheckpointService) Compare(operator consts.ComparisonOperator, actual, 
 }
 
 func GetResult(b bool) (
-	result consts.CheckpointResult) {
+	result consts.ResultStatus) {
 
 	if b {
 		result = consts.Pass

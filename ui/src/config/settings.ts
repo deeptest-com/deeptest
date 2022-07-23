@@ -77,7 +77,7 @@ const settings: SettingsType = {
     homeRouteItem: {
         icon: 'project',
         title: 'index-layout.menu.project.list',
-        path: '/project/list',
+        path: '/project/index',
         component: ()=> import('@/views/home/index.vue')
     },
     siteTokenKey: 'admin_antd_vue_token',

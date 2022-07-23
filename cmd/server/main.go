@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1"
+	websocketHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/websocket"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"
 	"github.com/sirupsen/logrus"
@@ -17,6 +18,7 @@ import (
 // @contact.email 462626@qq.com
 func main() {
 	cron.NewServerCron().Init()
+	websocketHelper.InitMq()
 
 	webServer := web.Init()
 	if webServer == nil {

@@ -33,7 +33,7 @@
           class="interf-tree"
       >
         <template #title="slotProps">
-          <span v-if="!slotProps.isEdit">{{ slotProps.name === 'root' ? '场景' : slotProps.name }}</span>
+          <span v-if="!slotProps.isEdit">{{ slotProps.name }}</span>
 
           <span v-else class="name-editor">
               <a-input v-model:value="editedData[slotProps.id]"

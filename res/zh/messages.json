@@ -1,0 +1,25 @@
+{
+  "language": "zh",
+  "messages": [
+    {
+      "id": "for_example",
+      "translation": "例如 %s"
+    },
+    {
+      "id": "wrong_req_params",
+      "translation": "错误的请求参数：%s。\n"
+    },
+    {
+      "id": "start_exec",
+      "translation": "开始执行"
+    },
+    {
+      "id": "end_exec",
+      "translation": "退出执行"
+    },
+    {
+      "id": "pls_stop_previous",
+      "translation": "请先终止上一个任务。"
+    }
+  ]
+}

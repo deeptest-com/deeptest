@@ -11,15 +11,19 @@ import (
 type ScenarioNodeRepo struct {
 	DB                    *gorm.DB               `inject:""`
 	ScenarioProcessorRepo *ScenarioProcessorRepo `inject:""`
+	ScenarioRepo          *ScenarioRepo          `inject:""`
 }
 
 func (r *ScenarioNodeRepo) GetTree(scenarioId int) (root *model.TestProcessor, err error) {
+	scenario, err := r.ScenarioRepo.Get(uint(scenarioId))
+
 	pos, err := r.ListByScenario(scenarioId)
 	if err != nil {
 		return
 	}
 
 	root = pos[0]
+	root.Name = scenario.Name
 	root.Slots = iris.Map{"icon": "icon"}
 	r.makeTree(pos[1:], root)
 

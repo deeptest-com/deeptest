@@ -1,7 +1,7 @@
 <template>
   <div class="dp-tree-context-menu">
     <a-menu @click="menuClick" trigger="['click']" mode="vertical">
-      <template v-if="isRoot(treeNode.processorType)">
+      <template v-if="isRoot(treeNode.entityCategory)">
         <a-sub-menu @click.stop key="addProcessor" trigger="['click']" class="menu-item" popupClassName="dp-tree-context-submenu">
           <template #title>
             <FolderAddOutlined />

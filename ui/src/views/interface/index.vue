@@ -65,6 +65,11 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .interface-design-main {
-
+  .left {
+    width: 260px;
+  }
+  .right {
+    flex: 1;
+  }
 }
 </style>

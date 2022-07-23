@@ -3,6 +3,7 @@ package web
 import (
 	stdContext "context"
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
@@ -11,6 +12,7 @@ import (
 	serverZap "github.com/aaronchen2k/deeptest/internal/server/core/zap"
 	myWs "github.com/aaronchen2k/deeptest/internal/server/modules/v1/controller"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
+	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"
 	gorillaWs "github.com/gorilla/websocket"
@@ -63,6 +65,7 @@ type WebServer struct {
 func Init() *WebServer {
 	serverConfig.Init()
 	serverZap.Init()
+	_i118Utils.Init(consts.Language, "")
 
 	err := cache.Init()
 	if err != nil {
@@ -200,7 +203,7 @@ func (webServer *WebServer) Run() {
 	<-webServer.idleConnsClosed
 }
 
-func injectWsModule(websocketCtrl *myWs.WsCtrl) {
+func injectWsModule(websocketCtrl *myWs.WebSocketCtrl) {
 	var g inject.Graph
 	g.Logger = logrus.StandardLogger()
 

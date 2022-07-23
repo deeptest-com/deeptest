@@ -47,7 +47,7 @@ const StoreModel: ModuleType = {
     async connect({ commit }, room) {
       console.log("connect to websocket")
 
-      await WebSocket.init()
+      await WebSocket.init(false)
 
       if (!room) {
         room = WsDefaultRoom
@@ -68,4 +68,3 @@ const StoreModel: ModuleType = {
 }
 
 export default StoreModel;
-  

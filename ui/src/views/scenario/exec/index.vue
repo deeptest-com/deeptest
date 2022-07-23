@@ -1,13 +1,13 @@
 <template>
   <div id="scenario-exec-main" class="scenario-exec-main dp-splits-v">
     <div id="scenario-exec-left" class="left">
-      <ScenarioTree :scenarioId="id" />
+      <ScenarioExecInfo />
     </div>
 
     <div id="scenario-exec-splitter" class="splitter"></div>
 
     <div id="scenario-exec-right" class="right">
-      RIGHT
+      <ScenarioExecDetail />
     </div>
   </div>
 </template>
@@ -22,18 +22,28 @@ import debounce from "lodash.debounce";
 import {useRouter} from "vue-router";
 import {message, Modal} from "ant-design-vue";
 import {resizeWidth} from "@/utils/dom";
-import ScenarioTree from "./components/Tree.vue"
 import {StateType as GlobalStateType} from "@/store/global";
+
+import ScenarioExecInfo from "./components/Info.vue"
+import ScenarioExecDetail from "./components/Detail.vue"
 
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; Global: GlobalStateType; }>();
 const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
-const list = computed<Scenario[]>(() => store.state.Scenario.listResult.list);
+const execData = computed<any>(()=> store.state.Scenario.execData);
 
 const id = ref(+router.currentRoute.value.params.id)
 
+store.dispatch('Scenario/loadExecData', id.value);
+
+watch(collapsed, () => {
+  console.log('watch collapsed', collapsed.value)
+  resize()
+}, {deep: true})
+
 onMounted(() => {
   console.log('onMounted')
+  resize()
 })
 
 onMounted(() => {
@@ -43,13 +53,19 @@ onMounted(() => {
 const resize = () => {
   resizeWidth('scenario-exec-main',
       'scenario-exec-left', 'scenario-exec-splitter', 'scenario-exec-right',
-      260, 800, collapsed.value ? 55 - 15 : 100 - 25)
+       800, 260, collapsed.value ? 80 : 136)
 }
 
 </script>
 
 <style lang="less" scoped>
 .scenario-exec-main {
-
+  .left {
+    flex: 1;
+    width: auto;
+  }
+  .right {
+    width: 260px;
+  }
 }
 </style>

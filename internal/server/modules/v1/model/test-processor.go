@@ -246,6 +246,4 @@ type ProcessorEntity struct {
 
 	// interface or Processor
 	Children []interface{} `json:"children" yaml:"children" gorm:"-"`
-	// results
-	Results []string `json:"results" yaml:"results" gorm:"-"`
 }

@@ -165,8 +165,8 @@ type InterfaceCheckpoint struct {
 	Operator consts.ComparisonOperator `json:"operator"`
 	Value    string                    `json:"value"`
 
-	Result      consts.CheckpointResult `json:"result"`
-	InterfaceId uint                    `json:"interfaceId"`
+	Result      consts.ResultStatus `json:"result"`
+	InterfaceId uint                `json:"interfaceId"`
 }
 
 func (InterfaceCheckpoint) TableName() string {

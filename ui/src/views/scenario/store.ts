@@ -15,6 +15,8 @@ import {
     addInterfaces,
     addProcessor,
     saveProcessorName, saveProcessor,
+
+    loadExecData,
 } from './service';
 
 export interface StateType {
@@ -25,6 +27,8 @@ export interface StateType {
 
     treeData: Scenario[];
     nodeData: any;
+
+    execData: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -37,6 +41,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setTree: Mutation<StateType>;
         setNode: Mutation<StateType>;
+
+        setExecData: Mutation<StateType>;
     };
     actions: {
         listScenario: Action<StateType, StateType>;
@@ -56,6 +62,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         saveProcessorName: Action<StateType, StateType>;
         saveProcessor: Action<StateType, StateType>;
+
+        loadExecData: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -75,6 +83,7 @@ const initState: StateType = {
 
     treeData: [],
     nodeData: {},
+    execData: {},
 };
 
 const StoreModel: ModuleType = {
@@ -94,12 +103,16 @@ const StoreModel: ModuleType = {
         setDetail(state, payload) {
             state.detailResult = payload;
         },
-        
+
         setTree(state, data) {
             state.treeData = [data];
         },
         setNode(state, data) {
             state.nodeData = data;
+        },
+
+        setExecData(state, data) {
+            state.execData = data;
         },
     },
     actions: {
@@ -255,6 +268,17 @@ const StoreModel: ModuleType = {
             } else {
                 return false
             }
+        },
+
+        async loadExecData({commit, dispatch, state}, scenarioId) {
+            const response = await loadExecData(scenarioId);
+            if (response.code != 0) return;
+
+            const {data} = response;
+            commit('setExecData', data || {});
+            commit('setScenarioId', scenarioId );
+
+            return true;
         },
     }
 };

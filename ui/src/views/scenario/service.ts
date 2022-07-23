@@ -13,6 +13,7 @@ import {
 const apiPath = 'scenarios';
 const apiPathNodes = `${apiPath}/nodes`;
 const apiPathProcessors = `${apiPath}/processors`;
+const apiPathExec = `${apiPath}/exec`;
 
 export async function query(params?: QueryParams): Promise<any> {
     return request({
@@ -37,6 +38,15 @@ export async function load(scenarioId): Promise<any> {
     const params = {scenarioId}
     return request({
         url: `/${apiPath}/load`,
+        method: 'get',
+        params,
+    });
+}
+
+export async function loadExecData(scenarioId): Promise<any> {
+    const params = {scenarioId}
+    return request({
+        url: `/${apiPathExec}/loadExecData`,
         method: 'get',
         params,
     });

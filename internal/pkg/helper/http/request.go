@@ -98,6 +98,7 @@ func gets(req serverDomain.InvocationRequest, method consts.HttpMethod, readResp
 		request.Header.Set(header.Name, header.Value)
 	}
 
+	request.Header.Set("User-Agent", consts.UserAgentChrome)
 	request.Header.Set("Origin", "DEEPTEST")
 	addAuthorInfo(req, request)
 

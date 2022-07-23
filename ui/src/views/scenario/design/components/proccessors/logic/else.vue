@@ -95,7 +95,7 @@ const submitForm = async () => {
         //   console.log('res', res)
         //   if (res === true) {
         //     message.success(`保存项目成功`);
-        //     router.replace('/project/list')
+        //     router.replace('/project/index')
         //   } else {
         //     message.error(`保存项目失败`);
         //   }

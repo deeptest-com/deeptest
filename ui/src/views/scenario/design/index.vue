@@ -56,6 +56,11 @@ const resize = () => {
 
 <style lang="less" scoped>
 .scenario-design-main {
-
+  .left {
+    width: 260px;
+  }
+  .right {
+    flex: 1;
+  }
 }
 </style>

@@ -64,12 +64,12 @@ func (s *InterfaceService) GetContentProps(ret *serverDomain.InvocationResponse)
 	}
 	ret.ContentLang = consts.HttpRespLangType(typeName)
 
-	arr2 := strings.Split(arr[1], "=")
-	if len(arr2) == 1 {
-		return
+	if len(arr) > 1 {
+		arr2 := strings.Split(arr[1], "=")
+		if len(arr2) > 1 {
+			ret.ContentCharset = consts.HttpRespCharset(arr2[1])
+		}
 	}
-
-	ret.ContentCharset = consts.HttpRespCharset(arr2[1])
 
 	//ret.Content = mockHelper.FormatXml(ret.Content)
 

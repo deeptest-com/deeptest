@@ -49,5 +49,8 @@ var (
 		&ProcessorExtractor{},
 		&ProcessorData{},
 		&ProcessorCookie{},
+
+		&TestResult{},
+		&TestLog{},
 	}
 )

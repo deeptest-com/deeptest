@@ -211,19 +211,6 @@ func (e FieldFormat) String() string {
 	return string(e)
 }
 
-type Progress string
-
-const (
-	New        Progress = "new"
-	InProgress Progress = "inProgress"
-	Completed  Progress = "completed"
-	Cancel     Progress = "cancel"
-)
-
-func (e Progress) String() string {
-	return string(e)
-}
-
 type ProductStatus string
 
 const (
@@ -291,12 +278,32 @@ func (e ValueOperator) String() string {
 	return string(e)
 }
 
-type CheckpointResult string
+type ProgressStatus string
 
 const (
-	Pass CheckpointResult = "PASS"
-	Fail CheckpointResult = "FAIL"
+	New        ProgressStatus = "new"
+	InProgress ProgressStatus = "in_progress"
+	Completed  ProgressStatus = "completed"
+	Cancel     ProgressStatus = "cancel"
 )
+
+func (e ProgressStatus) String() string {
+	return string(e)
+}
+
+type ResultStatus string
+
+const (
+	Pass    ResultStatus = "pass"
+	Fail    ResultStatus = "fail"
+	Skip    ResultStatus = "skip"
+	Block   ResultStatus = "block"
+	Unknown ResultStatus = "unknown"
+)
+
+func (e ResultStatus) String() string {
+	return string(e)
+}
 
 type ProcessorCategory string
 
@@ -400,5 +407,18 @@ const (
 )
 
 func (e TimeUnit) ToString() string {
+	return string(e)
+}
+
+type ExecType string
+
+const (
+	ExecStart ExecType = "start"
+	ExecStop  ExecType = "stop"
+
+	ExecScenario ExecType = "execScenario"
+)
+
+func (e ExecType) String() string {
 	return string(e)
 }

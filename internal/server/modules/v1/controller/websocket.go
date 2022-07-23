@@ -90,36 +90,49 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 			}
 		}
 
-		execHelper.SetRunning(false)
+		c.End(wsMsg)
 
-		msg := _i118Utils.Sprintf("end_exec")
-		websocketHelper.SendExecMsg(msg, "false", _consts.Run, nil, &wsMsg)
-		_logUtils.Infof(_i118Utils.Sprintf(msg))
 		return
 	}
 
 	if execHelper.GetRunning() && (act == consts.ExecStart) { // already running
-		msg := _i118Utils.Sprintf("pls_stop_previous")
-		websocketHelper.SendExecMsg(msg, "true", _consts.Run, nil, &wsMsg)
-		_logUtils.Infof(msg)
-
+		c.AlreadyRunning(wsMsg)
 		return
 	}
 
 	ch = make(chan int, 1)
 	go func() {
 		c.ScenarioExecService.Exec(req.Id)
-		execHelper.SetRunning(false)
 
-		msg := _i118Utils.Sprintf("end_exec")
-		websocketHelper.SendExecMsg(msg, "false", _consts.Run, nil, &wsMsg)
-		_logUtils.Infof(_i118Utils.Sprintf(msg))
+		c.End(wsMsg)
 	}()
 
-	execHelper.SetRunning(true)
+	c.Start(wsMsg)
 
+	return
+}
+
+func (c *WebSocketCtrl) Start(wsMsg websocket.Message) (err error) {
+	execHelper.SetRunning(true)
 	msg := _i118Utils.Sprintf("start_exec")
 	websocketHelper.SendExecMsg(msg, "true", _consts.Run, iris.Map{"status": "start"}, &wsMsg)
+	_logUtils.Infof(msg)
+
+	return
+}
+
+func (c *WebSocketCtrl) End(wsMsg websocket.Message) (err error) {
+	execHelper.SetRunning(false)
+	msg := _i118Utils.Sprintf("end_exec")
+	websocketHelper.SendExecMsg(msg, "false", _consts.Run, nil, &wsMsg)
+	_logUtils.Infof(_i118Utils.Sprintf(msg))
+
+	return
+}
+
+func (c *WebSocketCtrl) AlreadyRunning(wsMsg websocket.Message) (err error) {
+	msg := _i118Utils.Sprintf("pls_stop_previous")
+	websocketHelper.SendExecMsg(msg, "true", _consts.Run, nil, &wsMsg)
 	_logUtils.Infof(msg)
 
 	return

@@ -112,7 +112,7 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	execHelper.SetRunning(true)
 
 	msg := _i118Utils.Sprintf("start_exec")
-	websocketHelper.SendExecMsg(msg, "true", _consts.Run, iris.Map{"status": "start-task"}, &wsMsg)
+	websocketHelper.SendExecMsg(msg, "true", _consts.Run, iris.Map{"status": "start"}, &wsMsg)
 	_logUtils.Infof(msg)
 
 	return

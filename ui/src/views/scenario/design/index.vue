@@ -16,6 +16,7 @@
 import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 
+import bus from "@/utils/eventBus";
 import {resizeWidth} from "@/utils/dom";
 import {useStore} from "vuex";
 
@@ -24,6 +25,7 @@ import {StateType as ScenarioStateType} from "../store";
 
 import ScenarioTree from "./components/Tree.vue"
 import Edit from "./components/Edit.vue"
+import settings from "@/config/settings";
 
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; Global: GlobalStateType; }>();

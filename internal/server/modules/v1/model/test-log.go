@@ -8,6 +8,17 @@ import (
 type TestLog struct {
 	BaseModel
 
+	Name           string                `json:"name"`
+	Desc           string                `json:"desc"`
+	ProgressStatus consts.ProgressStatus `json:"progressStatus"`
+	ResultStatus   consts.ResultStatus   `json:"resultStatus"`
+	StartTime      *time.Time            `json:"startTime"`
+	EndTime        *time.Time            `json:"endTime"`
+
+	ParentId uint `json:"parentId"`
+	ResultId uint `json:"resultId"`
+	UseID    uint `json:"useId"`
+
 	// type
 	ProcessorCategory consts.ProcessorCategory `json:"processorCategory" yaml:"processorCategory"`
 
@@ -21,13 +32,6 @@ type TestLog struct {
 	ProcessId      uint                 `json:"processId,omitempty"`
 	ProcessContent string               `json:"processContent,omitempty"`
 	ProcessResult  string               `json:"processResult,omitempty"`
-
-	Status    consts.ResultStatus `json:"status"`
-	StartTime *time.Time          `json:"startTime"`
-	EndTime   *time.Time          `json:"endTime"`
-
-	ResultId uint `json:"resultId"`
-	UseID    uint `json:"useId"`
 }
 
 func (TestLog) TableName() string {

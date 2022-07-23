@@ -11,7 +11,7 @@
         </div>
 
         <div class="status">
-          {{isRunning}}
+          {{isRunning === 'true' ? '运行中' : ''}}
         </div>
         <div class="opt">
           <a-button v-if="isRunning === 'false'" @click="execStart" type="link">开始执行</a-button>

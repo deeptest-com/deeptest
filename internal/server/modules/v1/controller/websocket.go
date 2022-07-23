@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/exec"
 	websocketHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/websocket"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
 	_consts "github.com/aaronchen2k/deeptest/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
@@ -28,6 +29,8 @@ var (
 type WebSocketCtrl struct {
 	Namespace         string
 	*websocket.NSConn `stateless:"true"`
+
+	ScenarioExecService *service.ScenarioExecService `inject:""`
 }
 
 func NewWsCtrl() *WebSocketCtrl {
@@ -105,8 +108,12 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 
 	ch = make(chan int, 1)
 	go func() {
-		// TODO
+		c.ScenarioExecService.Exec(req.Id)
 		execHelper.SetRunning(false)
+
+		msg := _i118Utils.Sprintf("end_exec")
+		websocketHelper.SendExecMsg(msg, "false", _consts.Run, nil, &wsMsg)
+		_logUtils.Infof(_i118Utils.Sprintf(msg))
 	}()
 
 	execHelper.SetRunning(true)

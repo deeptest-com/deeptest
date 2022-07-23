@@ -281,7 +281,6 @@ func (e ValueOperator) String() string {
 type ProgressStatus string
 
 const (
-	New        ProgressStatus = "new"
 	InProgress ProgressStatus = "in_progress"
 	Completed  ProgressStatus = "completed"
 	Cancel     ProgressStatus = "cancel"

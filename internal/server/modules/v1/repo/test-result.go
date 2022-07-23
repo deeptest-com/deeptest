@@ -40,7 +40,18 @@ func (r *TestResultRepo) Create(result *model.TestResult) (bizErr *_domain.BizEr
 	return
 }
 
-func (r *TestResultRepo) RefreshResult(result model.TestResult) error {
+func (r *TestResultRepo) DeleteById(id uint) (err error) {
+	err = r.DB.Model(&model.TestResult{}).Where("id = ?", id).
+		Updates(map[string]interface{}{"deleted": true}).Error
+	if err != nil {
+		logUtils.Errorf("delete scenario by id error", zap.String("error:", err.Error()))
+		return
+	}
+
+	return
+}
+
+func (r *TestResultRepo) ResetResult(result model.TestResult) error {
 	values := map[string]interface{}{
 		"name":       result.Name,
 		"start_time": result.StartTime,
@@ -54,11 +65,11 @@ func (r *TestResultRepo) RefreshResult(result model.TestResult) error {
 	return nil
 }
 
-func (r *TestResultRepo) DeleteById(id uint) (err error) {
-	err = r.DB.Model(&model.TestResult{}).Where("id = ?", id).
+func (r *TestResultRepo) ClearLogs(resultId uint) (err error) {
+	err = r.DB.Model(&model.TestLog{}).Where("result_id = ?", resultId).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
-		logUtils.Errorf("delete scenario by id error", zap.String("error:", err.Error()))
+		logUtils.Errorf("delete logs by result id error", zap.String("error:", err.Error()))
 		return
 	}
 

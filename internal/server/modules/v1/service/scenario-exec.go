@@ -30,19 +30,19 @@ func (s *ScenarioExecService) Exec(scenarioId int) (err error) {
 		return
 	}
 
-	po, err := s.TestResultRepo.FindInProgressResult(uint(scenarioId))
-	if po.ID > 0 {
-		s.RefreshResult(po, scenario)
+	result, err := s.TestResultRepo.FindInProgressResult(uint(scenarioId))
+	if result.ID > 0 {
+		s.ResetResult(&result, scenario)
 	} else {
-		s.CreateResult(scenario)
+		result, _ = s.CreateResult(scenario)
 	}
 
 	return
 }
 
-func (s *ScenarioExecService) CreateResult(scenario model.TestScenario) (err error) {
+func (s *ScenarioExecService) CreateResult(scenario model.TestScenario) (result model.TestResult, err error) {
 	startTime := time.Now()
-	result := model.TestResult{
+	result = model.TestResult{
 		Name:           scenario.Name,
 		StartTime:      &startTime,
 		ProgressStatus: consts.InProgress,
@@ -54,13 +54,14 @@ func (s *ScenarioExecService) CreateResult(scenario model.TestScenario) (err err
 	return
 }
 
-func (s *ScenarioExecService) RefreshResult(po model.TestResult, scenario model.TestScenario) (err error) {
-	po.Name = scenario.Name
+func (s *ScenarioExecService) ResetResult(result *model.TestResult, scenario model.TestScenario) (err error) {
+	result.Name = scenario.Name
 
 	startTime := time.Now()
-	po.StartTime = &startTime
+	result.StartTime = &startTime
 
-	s.TestResultRepo.RefreshResult(po)
+	s.TestResultRepo.ResetResult(*result)
+	s.TestResultRepo.ClearLogs(result.ID)
 
 	return
 }

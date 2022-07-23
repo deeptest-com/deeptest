@@ -19,6 +19,8 @@ type TestResult struct {
 
 	ScenarioId uint `json:"scenarioId"`
 	ProjectId  uint `json:"projectId"`
+
+	Logs []TestLog `gorm:"-" json:"logs"`
 }
 
 func (TestResult) TableName() string {

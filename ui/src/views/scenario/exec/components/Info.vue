@@ -7,15 +7,15 @@
         </div>
 
         <div class="progress">
-          {{execData.progress}}
+          {{execResult.progressStatus}}
         </div>
 
         <div class="status">
-          {{isRunning === 'true' ? '运行中' : ''}}
+          {{execResult.resultStatus}}
         </div>
         <div class="opt">
-          <a-button v-if="isRunning === 'false'" @click="execStart" type="link">开始执行</a-button>
-          <a-button v-if="isRunning === 'true'" @click="execStop" type="link">停止执行</a-button>
+          <a-button v-if="execResult.progressStatus !== 'in_progress'" @click="execStart" type="link">开始执行</a-button>
+          <a-button v-if="execResult.progressStatus === 'in_progress'" @click="execStop" type="link">停止执行</a-button>
         </div>
       </div>
 
@@ -43,11 +43,11 @@ const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType, Global: GlobalStateType, Exec: ExecStatus; }>();
 const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
 const execData = computed<any>(()=> store.state.Scenario.execData);
-const isRunning = computed<string>(() => store.state.Exec.isRunning);
+const execResult = ref({} as any)
 
 const scenarioId = ref(+router.currentRoute.value.params.id)
-
 store.dispatch('Scenario/loadExecData', scenarioId.value);
+
 
 const execStart = () => {
   console.log('execStart')
@@ -75,11 +75,15 @@ const OnWebSocketMsg = (data: any) => {
 
   const wsMsg = JSON.parse(data.msg) as WsMsg
 
-  if ('isRunning' in wsMsg) {
-    console.log(`change isRunning to ${wsMsg.isRunning}`)
-    store.dispatch('Exec/setRunning', wsMsg.isRunning)
-  }
+  const msgText = wsMsg.msg
+  execResult.value = wsMsg.data
+  console.log(msgText, execResult.value)
 
+  // if ('isRunning' in wsMsg) {
+  //   console.log(`change isRunning to ${wsMsg.isRunning}`)
+  //   store.dispatch('Exec/setRunning', wsMsg.isRunning)
+  // }
+  //
   // if (item.info?.status === 'start') {
   //   const key = item.info.key + '-' + caseCount.value
   //   caseDetail.value[key] = logContentExpand.value

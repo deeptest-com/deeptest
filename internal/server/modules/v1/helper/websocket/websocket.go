@@ -3,11 +3,10 @@ package websocketHelper
 import (
 	"encoding/json"
 	"fmt"
-	_consts "github.com/aaronchen2k/deeptest/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/kataras/neffos"
 	"strings"
@@ -17,24 +16,24 @@ var (
 	wsConn *neffos.Conn
 )
 
-func SendOutputMsg(msg, isRunning string, info iris.Map, wsMsg *websocket.Message) {
+func SendOutputMsg(msg string, data interface{}, wsMsg *websocket.Message) {
 	logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room,
 		strings.ReplaceAll(strings.TrimSpace(msg), `%`, `%%`)))
 
 	msg = strings.Trim(msg, "\n")
-	resp := _domain.WsResp{Msg: msg, Category: _consts.Output, Info: info}
+	resp := _domain.WsResp{Msg: msg, Data: data}
 
 	bytes, _ := json.Marshal(resp)
 	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
 	PubMsg(mqData)
 }
 
-func SendExecMsg(msg, isRunning string, category _consts.WsMsgCategory, info iris.Map, wsMsg *websocket.Message) {
+func SendExecMsg(msg string, result domain.Result, wsMsg *websocket.Message) {
 	logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room,
 		strings.ReplaceAll(strings.TrimSpace(msg), `%`, `%%`)))
 
 	msg = strings.TrimSpace(msg)
-	resp := _domain.WsResp{Msg: msg, IsRunning: isRunning, Category: category, Info: info}
+	resp := _domain.WsResp{Msg: msg, Data: result}
 
 	bytes, _ := json.Marshal(resp)
 	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}

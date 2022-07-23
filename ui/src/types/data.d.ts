@@ -1,11 +1,9 @@
 export interface WsMsg {
   msg:       string
-  isRunning: string
-  category:  string
-  conn: string
-
+  data: any
   time: string
-  info: any
+
+  conn: string
 }
 
 export interface QueryParams {

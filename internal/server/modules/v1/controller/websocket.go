@@ -9,11 +9,9 @@ import (
 	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/exec"
 	websocketHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/websocket"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
-	_consts "github.com/aaronchen2k/deeptest/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/websocket"
 )
 
@@ -72,9 +70,7 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	req := domain.WsReq{}
 	err = json.Unmarshal(wsMsg.Body, &req)
 	if err != nil {
-		msg := _i118Utils.Sprintf("wrong_req_params", err.Error())
-		websocketHelper.SendExecMsg(msg, "", _consts.Error, nil, &wsMsg)
-		_logUtils.Infof(msg)
+		c.Error(wsMsg)
 		return
 	}
 
@@ -90,7 +86,7 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 			}
 		}
 
-		c.End(wsMsg)
+		c.Cancel(wsMsg)
 
 		return
 	}
@@ -104,7 +100,7 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	go func() {
 		c.ScenarioExecService.Exec(req.Id)
 
-		c.End(wsMsg)
+		//c.Complete(wsMsg)
 	}()
 
 	c.Start(wsMsg)
@@ -115,24 +111,41 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 func (c *WebSocketCtrl) Start(wsMsg websocket.Message) (err error) {
 	execHelper.SetRunning(true)
 	msg := _i118Utils.Sprintf("start_exec")
-	websocketHelper.SendExecMsg(msg, "true", _consts.Run, iris.Map{"status": "start"}, &wsMsg)
+	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.InProgress}, &wsMsg)
 	_logUtils.Infof(msg)
 
 	return
 }
 
-func (c *WebSocketCtrl) End(wsMsg websocket.Message) (err error) {
+func (c *WebSocketCtrl) Complete(wsMsg websocket.Message) (err error) {
 	execHelper.SetRunning(false)
 	msg := _i118Utils.Sprintf("end_exec")
-	websocketHelper.SendExecMsg(msg, "false", _consts.Run, nil, &wsMsg)
+	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.Complete}, &wsMsg)
 	_logUtils.Infof(_i118Utils.Sprintf(msg))
+
+	return
+}
+
+func (c *WebSocketCtrl) Cancel(wsMsg websocket.Message) (err error) {
+	execHelper.SetRunning(false)
+	msg := _i118Utils.Sprintf("end_exec")
+	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.Cancel}, &wsMsg)
+	_logUtils.Infof(_i118Utils.Sprintf(msg))
+
+	return
+}
+
+func (c *WebSocketCtrl) Error(wsMsg websocket.Message) (err error) {
+	msg := _i118Utils.Sprintf("wrong_req_params", err.Error())
+	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.Error}, &wsMsg)
+	_logUtils.Infof(msg)
 
 	return
 }
 
 func (c *WebSocketCtrl) AlreadyRunning(wsMsg websocket.Message) (err error) {
 	msg := _i118Utils.Sprintf("pls_stop_previous")
-	websocketHelper.SendExecMsg(msg, "true", _consts.Run, nil, &wsMsg)
+	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.InProgress}, &wsMsg)
 	_logUtils.Infof(msg)
 
 	return

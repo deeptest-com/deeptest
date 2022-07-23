@@ -10,7 +10,8 @@ type WsResp struct {
 	IsRunning string                `json:"isRunning,omitempty"`
 	Category  _consts.WsMsgCategory `json:"category"`
 
-	Info iris.Map `json:"info,omitempty"`
+	Info iris.Map    `json:"info,omitempty"`
+	Data interface{} `json:"data,omitempty"`
 }
 
 type MqMsg struct {

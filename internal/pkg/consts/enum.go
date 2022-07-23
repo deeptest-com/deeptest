@@ -282,8 +282,9 @@ type ProgressStatus string
 
 const (
 	InProgress ProgressStatus = "in_progress"
-	Completed  ProgressStatus = "completed"
+	Complete   ProgressStatus = "end"
 	Cancel     ProgressStatus = "cancel"
+	Error      ProgressStatus = "error"
 )
 
 func (e ProgressStatus) String() string {

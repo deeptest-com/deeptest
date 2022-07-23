@@ -105,7 +105,7 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 
 	ch = make(chan int, 1)
 	go func() {
-		// TODO: exec scenario
+		// TODO
 		execHelper.SetRunning(false)
 	}()
 

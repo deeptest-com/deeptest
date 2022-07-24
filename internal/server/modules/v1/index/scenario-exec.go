@@ -19,7 +19,7 @@ func NewScenarioExecModule() *ScenarioExecModule {
 func (m *ScenarioExecModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
-		index.Get("/loadExecData", m.ScenarioExecCtrl.LoadExecData).Name = "加载场景"
+		index.Get("/loadExecResult", m.ScenarioExecCtrl.LoadExecData).Name = "加载场景"
 	}
 
 	return module.NewModule("/scenarios/exec/", handler)

@@ -16,7 +16,7 @@ import {
     addProcessor,
     saveProcessorName, saveProcessor,
 
-    loadExecData,
+    loadExecResult,
 } from './service';
 
 export interface StateType {
@@ -28,7 +28,7 @@ export interface StateType {
     treeData: Scenario[];
     nodeData: any;
 
-    execData: any;
+    execResult: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -42,7 +42,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setTree: Mutation<StateType>;
         setNode: Mutation<StateType>;
 
-        setExecData: Mutation<StateType>;
+        setExecResult: Mutation<StateType>;
     };
     actions: {
         listScenario: Action<StateType, StateType>;
@@ -63,8 +63,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveProcessorName: Action<StateType, StateType>;
         saveProcessor: Action<StateType, StateType>;
 
-        loadExecData: Action<StateType, StateType>;
-        updateExecData: Action<StateType, StateType>;
+        loadExecResult: Action<StateType, StateType>;
+        updateExecResult: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -84,7 +84,7 @@ const initState: StateType = {
 
     treeData: [],
     nodeData: {},
-    execData: {},
+    execResult: {},
 };
 
 const StoreModel: ModuleType = {
@@ -112,8 +112,8 @@ const StoreModel: ModuleType = {
             state.nodeData = data;
         },
 
-        setExecData(state, data) {
-            state.execData = data;
+        setExecResult(state, data) {
+            state.execResult = data;
         },
     },
     actions: {
@@ -271,18 +271,18 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async loadExecData({commit, dispatch, state}, scenarioId) {
-            const response = await loadExecData(scenarioId);
+        async loadExecResult({commit, dispatch, state}, scenarioId) {
+            const response = await loadExecResult(scenarioId);
             if (response.code != 0) return;
 
             const {data} = response;
-            commit('setExecData', data || {});
+            commit('setExecResult', data || {});
             commit('setScenarioId', scenarioId );
 
             return true;
         },
-        async updateExecData({commit, dispatch, state}, payload) {
-            commit('setExecData', payload);
+        async updateExecResult({commit, dispatch, state}, payload) {
+            commit('setExecResult', payload);
             commit('setScenarioId', payload.scenarioId);
 
             return true;

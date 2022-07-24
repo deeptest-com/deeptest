@@ -3,7 +3,7 @@
     <div class="scenario">
       <div class="header">
         <div class="title">
-          {{execData.name}}
+          {{execResult.name}}
         </div>
 
         <div class="progress">
@@ -42,11 +42,10 @@ import bus from "@/utils/eventBus";
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType, Global: GlobalStateType, Exec: ExecStatus; }>();
 const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
-const execData = computed<any>(()=> store.state.Scenario.execData);
-const execResult = ref({} as any)
+const execResult = computed<any>(()=> store.state.Scenario.execResult);
 
 const scenarioId = ref(+router.currentRoute.value.params.id)
-store.dispatch('Scenario/loadExecData', scenarioId.value);
+store.dispatch('Scenario/loadExecResult', scenarioId.value);
 
 const execStart = () => {
   console.log('execStart')
@@ -75,12 +74,9 @@ const OnWebSocketMsg = (data: any) => {
   const wsMsg = JSON.parse(data.msg) as WsMsg
 
   const msgText = wsMsg.msg
-  execResult.value = wsMsg.data
-  console.log(msgText, execResult.value)
-
-  if (execResult.value.id > 0) {
-    store.dispatch('Scenario/updateExecData', execResult.value);
-  }
+  store.dispatch('Scenario/updateExecResult', wsMsg.data).then(() => {
+    console.log('===', msgText, execResult.value)
+  })
 
   // if ('isRunning' in wsMsg) {
   //   console.log(`change isRunning to ${wsMsg.isRunning}`)

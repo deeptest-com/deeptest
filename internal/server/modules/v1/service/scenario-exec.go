@@ -102,6 +102,7 @@ func (s *ScenarioExecService) ResetResult(result *model.TestResult, scenario mod
 
 func (s *ScenarioExecService) isContainerProcessor(category consts.ProcessorCategory) bool {
 	arr := []string{
+		consts.ProcessorInterface.ToString(),
 		consts.ProcessorTimer.ToString(),
 		consts.ProcessorVariable.ToString(),
 		consts.ProcessorAssertion.ToString(),

@@ -15,7 +15,7 @@
         </div>
         <div class="opt">
           <a-button v-if="execResult.progressStatus !== 'in_progress'" @click="execStart" type="link">开始执行</a-button>
-          <a-button v-if="execResult.progressStatus === 'in_progress'" @click="execStop" type="link">停止执行</a-button>
+          <a-button v-if="execResult.progressStatus === 'in_progress'" @click="execCancel" type="link">停止执行</a-button>
         </div>
       </div>
 
@@ -48,15 +48,14 @@ const execResult = ref({} as any)
 const scenarioId = ref(+router.currentRoute.value.params.id)
 store.dispatch('Scenario/loadExecData', scenarioId.value);
 
-
 const execStart = () => {
   console.log('execStart')
   WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify({act: 'execScenario', id: scenarioId.value}))
 }
 
-const execStop = () => {
-  console.log('execStop')
-  const msg = {act: 'stop'}
+const execCancel = () => {
+  console.log('execCancel')
+  const msg = {act: 'stop', id: scenarioId.value}
   WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify(msg))
 }
 
@@ -78,6 +77,10 @@ const OnWebSocketMsg = (data: any) => {
   const msgText = wsMsg.msg
   execResult.value = wsMsg.data
   console.log(msgText, execResult.value)
+
+  if (execResult.value.id > 0) {
+    store.dispatch('Scenario/updateExecData', execResult.value);
+  }
 
   // if ('isRunning' in wsMsg) {
   //   console.log(`change isRunning to ${wsMsg.isRunning}`)

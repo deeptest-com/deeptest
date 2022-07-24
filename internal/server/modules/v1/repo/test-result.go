@@ -59,7 +59,7 @@ func (r *TestResultRepo) UpdateStatus(progressStatus consts.ProgressStatus, resu
 		"result_status":   resultStatus,
 	}
 	err = r.DB.Model(&model.TestResult{}).
-		Where("scenario_id = ?", scenarioId).
+		Where("scenario_id = ? AND progress_status = ?", scenarioId, consts.InProgress).
 		Updates(values).Error
 	if err != nil {
 		logUtils.Errorf("update test result error", zap.String("error:", err.Error()))

@@ -64,6 +64,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveProcessor: Action<StateType, StateType>;
 
         loadExecData: Action<StateType, StateType>;
+        updateExecData: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -277,6 +278,12 @@ const StoreModel: ModuleType = {
             const {data} = response;
             commit('setExecData', data || {});
             commit('setScenarioId', scenarioId );
+
+            return true;
+        },
+        async updateExecData({commit, dispatch, state}, payload) {
+            commit('setExecData', payload);
+            commit('setScenarioId', payload.scenarioId);
 
             return true;
         },

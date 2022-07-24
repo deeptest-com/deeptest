@@ -150,6 +150,8 @@ func (s *ScenarioExecService) SendStartMsg(result domain.Result, wsMsg websocket
 }
 
 func (s *ScenarioExecService) Complete(scenarioId int, wsMsg websocket.Message) (err error) {
+	s.TestResultRepo.UpdateStatus(consts.Complete, "", scenarioId)
+
 	execHelper.SetRunning(false)
 	msg := _i118Utils.Sprintf("end_exec")
 	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.Complete}, &wsMsg)

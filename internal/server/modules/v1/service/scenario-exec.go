@@ -43,28 +43,36 @@ func (s *ScenarioExecService) ExecScenario(scenarioId int) (err error) {
 		return
 	}
 
-	s.ExecProcessorNested(rootProcessor)
+	s.ExecRecursiveProcessor(rootProcessor)
 
 	return
 }
 
-func (s *ScenarioExecService) ExecProcessorNested(processor model.TestProcessor) (err error) {
+func (s *ScenarioExecService) ExecRecursiveProcessor(processor model.TestProcessor) (err error) {
 	if s.isContainerProcessor(processor.EntityCategory) {
-		children, _ := s.ScenarioProcessorRepo.GetChildrenProcessor(processor.ID, processor.ScenarioId)
+		if s.isExecutableContainerProcessor(processor.EntityCategory) {
+			s.ExecContainerProcessor(processor)
+		}
 
+		children, _ := s.ScenarioProcessorRepo.GetChildrenProcessor(processor.ID, processor.ScenarioId)
 		for _, child := range children {
-			s.ExecProcessorNested(child)
+			s.ExecRecursiveProcessor(child)
 		}
 	} else if processor.EntityCategory == consts.ProcessorInterface {
 		s.ExecInterface(processor)
 	} else {
-		s.ExecProcessor(processor)
+		s.ExecActionProcessor(processor)
 	}
 
 	return
 }
 
-func (s *ScenarioExecService) ExecProcessor(processor model.TestProcessor) (err error) {
+func (s *ScenarioExecService) ExecContainerProcessor(processor model.TestProcessor) (err error) {
+
+	return
+}
+
+func (s *ScenarioExecService) ExecActionProcessor(processor model.TestProcessor) (err error) {
 
 	return
 }
@@ -102,12 +110,21 @@ func (s *ScenarioExecService) ResetResult(result *model.TestResult, scenario mod
 
 func (s *ScenarioExecService) isContainerProcessor(category consts.ProcessorCategory) bool {
 	arr := []string{
-		consts.ProcessorInterface.ToString(),
-		consts.ProcessorTimer.ToString(),
-		consts.ProcessorVariable.ToString(),
-		consts.ProcessorAssertion.ToString(),
-		consts.ProcessorExtractor.ToString(),
-		consts.ProcessorCookie.ToString(),
+		consts.ProcessorRoot.ToString(),
+		//consts.ProcessorThreadGroup.ToString(),
+		consts.ProcessorGroup.ToString(),
+		consts.ProcessorLogic.ToString(),
+		consts.ProcessorLoop.ToString(),
+		consts.ProcessorData.ToString(),
 	}
-	return !_stringUtils.FindInArr(category.ToString(), arr)
+	return _stringUtils.FindInArr(category.ToString(), arr)
+}
+
+func (s *ScenarioExecService) isExecutableContainerProcessor(category consts.ProcessorCategory) bool {
+	arr := []string{
+		consts.ProcessorLogic.ToString(),
+		consts.ProcessorLoop.ToString(),
+		consts.ProcessorData.ToString(),
+	}
+	return _stringUtils.FindInArr(category.ToString(), arr)
 }

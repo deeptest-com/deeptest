@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"gorm.io/gorm"
 )
@@ -20,6 +21,20 @@ func (r *ScenarioProcessorRepo) UpdateName(id uint, name string) (err error) {
 	err = r.DB.Model(&model.TestProcessor{}).
 		Where("id = ?", id).
 		Update("name", name).Error
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) GetRootProcessor(scenarioId uint) (processor model.TestProcessor, err error) {
+	err = r.DB.Where("scenario_id = ? AND entity_category = ?", scenarioId, consts.ProcessorRoot).
+		First(&processor).Error
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) GetChildrenProcessor(parentId, scenarioId uint) (pos []model.TestProcessor, err error) {
+	err = r.DB.Where("parent_id = ? AND scenario_id = ?", parentId, scenarioId).
+		Find(&pos).Error
 
 	return
 }

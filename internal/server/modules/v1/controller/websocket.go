@@ -98,7 +98,7 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 
 	ch = make(chan int, 1)
 	go func() {
-		c.ScenarioExecService.Exec(req.Id)
+		c.ScenarioExecService.ExecScenario(req.Id)
 
 		//c.Complete(wsMsg)
 	}()

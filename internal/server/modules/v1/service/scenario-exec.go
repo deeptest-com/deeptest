@@ -4,6 +4,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"time"
 )
 
@@ -24,7 +25,7 @@ func (s *ScenarioExecService) Load(scenarioId int) (result model.TestResult, err
 	return
 }
 
-func (s *ScenarioExecService) Exec(scenarioId int) (err error) {
+func (s *ScenarioExecService) ExecScenario(scenarioId int) (err error) {
 	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
 	if err != nil {
 		return
@@ -36,6 +37,39 @@ func (s *ScenarioExecService) Exec(scenarioId int) (err error) {
 	} else {
 		result, _ = s.CreateResult(scenario)
 	}
+
+	rootProcessor, err := s.ScenarioProcessorRepo.GetRootProcessor(scenario.ID)
+	if err != nil {
+		return
+	}
+
+	s.ExecProcessorNested(rootProcessor)
+
+	return
+}
+
+func (s *ScenarioExecService) ExecProcessorNested(processor model.TestProcessor) (err error) {
+	if s.isContainerProcessor(processor.EntityCategory) {
+		children, _ := s.ScenarioProcessorRepo.GetChildrenProcessor(processor.ID, processor.ScenarioId)
+
+		for _, child := range children {
+			s.ExecProcessorNested(child)
+		}
+	} else if processor.EntityCategory == consts.ProcessorInterface {
+		s.ExecInterface(processor)
+	} else {
+		s.ExecProcessor(processor)
+	}
+
+	return
+}
+
+func (s *ScenarioExecService) ExecProcessor(processor model.TestProcessor) (err error) {
+
+	return
+}
+
+func (s *ScenarioExecService) ExecInterface(interf model.TestProcessor) (err error) {
 
 	return
 }
@@ -64,4 +98,15 @@ func (s *ScenarioExecService) ResetResult(result *model.TestResult, scenario mod
 	s.TestResultRepo.ClearLogs(result.ID)
 
 	return
+}
+
+func (s *ScenarioExecService) isContainerProcessor(category consts.ProcessorCategory) bool {
+	arr := []string{
+		consts.ProcessorTimer.ToString(),
+		consts.ProcessorVariable.ToString(),
+		consts.ProcessorAssertion.ToString(),
+		consts.ProcessorExtractor.ToString(),
+		consts.ProcessorCookie.ToString(),
+	}
+	return !_stringUtils.FindInArr(category.ToString(), arr)
 }

@@ -11,6 +11,16 @@ import (
 	"unicode"
 )
 
+func FindInArr(val string, arr []string) bool {
+	for _, i := range arr {
+		if val == i {
+			return true
+		}
+	}
+
+	return false
+}
+
 func TrimAll(str string) string {
 	str = strings.Trim(str, "\n")
 	str = strings.TrimSpace(str)

@@ -70,7 +70,7 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	req := domain.WsReq{}
 	err = json.Unmarshal(wsMsg.Body, &req)
 	if err != nil {
-		c.ScenarioExecService.Error(wsMsg)
+		c.ScenarioExecService.SendErrorMsg(req.Id, wsMsg)
 		return
 	}
 
@@ -86,13 +86,13 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 			}
 		}
 
-		c.ScenarioExecService.Cancel(wsMsg)
+		c.ScenarioExecService.CancelAndSendMsg(req.Id, wsMsg)
 
 		return
 	}
 
 	if execHelper.GetRunning() && (act == consts.ExecStart) { // already running
-		c.ScenarioExecService.AlreadyRunning(wsMsg)
+		c.ScenarioExecService.SendAlreadyRunningMsg(req.Id, wsMsg)
 		return
 	}
 

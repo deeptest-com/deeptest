@@ -51,18 +51,36 @@ func (r *TestResultRepo) DeleteById(id uint) (err error) {
 	return
 }
 
-func (r *TestResultRepo) ResetResult(result model.TestResult) error {
+func (r *TestResultRepo) UpdateStatus(progressStatus consts.ProgressStatus, resultStatus consts.ResultStatus, scenarioId int) (
+	err error) {
+
 	values := map[string]interface{}{
-		"name":       result.Name,
-		"start_time": result.StartTime,
+		"progress_status": progressStatus,
+		"result_status":   resultStatus,
 	}
-	err := r.DB.Model(&result).Where("id = ?", result.ID).Updates(values).Error
+	err = r.DB.Model(&model.TestResult{}).
+		Where("scenario_id = ?", scenarioId).
+		Updates(values).Error
 	if err != nil {
 		logUtils.Errorf("update test result error", zap.String("error:", err.Error()))
 		return err
 	}
 
 	return nil
+}
+
+func (r *TestResultRepo) ResetResult(result model.TestResult) (err error) {
+	values := map[string]interface{}{
+		"name":       result.Name,
+		"start_time": result.StartTime,
+	}
+	err = r.DB.Model(&result).Where("id = ?", result.ID).Updates(values).Error
+	if err != nil {
+		logUtils.Errorf("update test result error", zap.String("error:", err.Error()))
+		return
+	}
+
+	return
 }
 
 func (r *TestResultRepo) ClearLogs(resultId uint) (err error) {

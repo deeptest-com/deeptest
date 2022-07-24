@@ -81,7 +81,7 @@ func GormSQLLite() *gorm.DB {
 	//	model.Models...,
 	//)
 	//if err != nil {
-	//	logUtils.Info(err.Error())
+	//	logUtils.Info(err.SendErrorMsg())
 	//}
 
 	return db
@@ -122,7 +122,7 @@ func gormConfig(mod bool) *gorm.Config {
 	switch serverConfig.CONFIG.Mysql.LogZap {
 	case "silent", "Silent":
 		config.Logger = Default.LogMode(logger.Silent)
-	case "error", "Error":
+	case "error", "SendErrorMsg":
 		config.Logger = Default.LogMode(logger.Error)
 	case "warn", "Warn":
 		config.Logger = Default.LogMode(logger.Warn)

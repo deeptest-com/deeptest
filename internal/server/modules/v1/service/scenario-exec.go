@@ -40,13 +40,13 @@ func (s *ScenarioExecService) ExecScenario(scenarioId int, wsMsg websocket.Messa
 
 	resultPo, err := s.TestResultRepo.FindInProgressResult(uint(scenarioId))
 	if resultPo.ID > 0 {
-		s.ResetResult(&resultPo, scenario)
+		s.RestartResult(&resultPo, scenario)
 	} else {
 		resultPo, _ = s.CreateResult(scenario)
 	}
 
 	result := s.CopyResult(resultPo)
-	s.Start(result, wsMsg)
+	s.SendStartMsg(result, wsMsg)
 
 	rootProcessor, err := s.ScenarioProcessorRepo.GetRootProcessor(scenario.ID)
 	if err != nil {
@@ -106,7 +106,7 @@ func (s *ScenarioExecService) CreateResult(scenario model.TestScenario) (result 
 	return
 }
 
-func (s *ScenarioExecService) ResetResult(result *model.TestResult, scenario model.TestScenario) (err error) {
+func (s *ScenarioExecService) RestartResult(result *model.TestResult, scenario model.TestScenario) (err error) {
 	result.Name = scenario.Name
 
 	startTime := time.Now()
@@ -140,7 +140,7 @@ func (s *ScenarioExecService) isExecutableContainerProcessor(category consts.Pro
 	return _stringUtils.FindInArr(category.ToString(), arr)
 }
 
-func (s *ScenarioExecService) Start(result domain.Result, wsMsg websocket.Message) (err error) {
+func (s *ScenarioExecService) SendStartMsg(result domain.Result, wsMsg websocket.Message) (err error) {
 	execHelper.SetRunning(true)
 	msg := _i118Utils.Sprintf("start_exec")
 	websocketHelper.SendExecMsg(msg, result, &wsMsg)
@@ -149,7 +149,7 @@ func (s *ScenarioExecService) Start(result domain.Result, wsMsg websocket.Messag
 	return
 }
 
-func (s *ScenarioExecService) Complete(wsMsg websocket.Message) (err error) {
+func (s *ScenarioExecService) Complete(scenarioId int, wsMsg websocket.Message) (err error) {
 	execHelper.SetRunning(false)
 	msg := _i118Utils.Sprintf("end_exec")
 	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.Complete}, &wsMsg)
@@ -158,7 +158,9 @@ func (s *ScenarioExecService) Complete(wsMsg websocket.Message) (err error) {
 	return
 }
 
-func (s *ScenarioExecService) Cancel(wsMsg websocket.Message) (err error) {
+func (s *ScenarioExecService) CancelAndSendMsg(scenarioId int, wsMsg websocket.Message) (err error) {
+	s.TestResultRepo.UpdateStatus(consts.Cancel, "", scenarioId)
+
 	execHelper.SetRunning(false)
 	msg := _i118Utils.Sprintf("end_exec")
 	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.Cancel}, &wsMsg)
@@ -167,7 +169,7 @@ func (s *ScenarioExecService) Cancel(wsMsg websocket.Message) (err error) {
 	return
 }
 
-func (s *ScenarioExecService) Error(wsMsg websocket.Message) (err error) {
+func (s *ScenarioExecService) SendErrorMsg(scenarioId int, wsMsg websocket.Message) (err error) {
 	msg := _i118Utils.Sprintf("wrong_req_params", err.Error())
 	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.Error}, &wsMsg)
 	_logUtils.Infof(msg)
@@ -175,7 +177,7 @@ func (s *ScenarioExecService) Error(wsMsg websocket.Message) (err error) {
 	return
 }
 
-func (s *ScenarioExecService) AlreadyRunning(wsMsg websocket.Message) (err error) {
+func (s *ScenarioExecService) SendAlreadyRunningMsg(scenarioId int, wsMsg websocket.Message) (err error) {
 	msg := _i118Utils.Sprintf("pls_stop_previous")
 	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.InProgress}, &wsMsg)
 	_logUtils.Infof(msg)

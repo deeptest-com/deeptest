@@ -18,7 +18,7 @@ type WsMsgCategory string
 //
 //	Run    WsMsgCategory = "run"
 //	Result WsMsgCategory = "result"
-//	Error  WsMsgCategory = "error"
+//	SendErrorMsg  WsMsgCategory = "error"
 //
 //	Communication WsMsgCategory = "communication"
 //	Unknown       WsMsgCategory = ""

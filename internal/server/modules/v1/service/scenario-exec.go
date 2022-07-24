@@ -122,6 +122,7 @@ func (s *ScenarioExecService) isContainerProcessor(category consts.ProcessorCate
 
 func (s *ScenarioExecService) isExecutableContainerProcessor(category consts.ProcessorCategory) bool {
 	arr := []string{
+		//consts.ProcessorThreadGroup.ToString(),
 		consts.ProcessorLogic.ToString(),
 		consts.ProcessorLoop.ToString(),
 		consts.ProcessorData.ToString(),

@@ -45,8 +45,7 @@ func (s *ScenarioExecService) ExecScenario(scenarioId int, wsMsg websocket.Messa
 		resultPo, _ = s.CreateResult(scenario)
 	}
 
-	result := domain.Result{}
-	copier.Copy(&result, resultPo)
+	result := s.CopyResult(resultPo)
 	s.Start(result, wsMsg)
 
 	rootProcessor, err := s.ScenarioProcessorRepo.GetRootProcessor(scenario.ID)
@@ -181,5 +180,10 @@ func (s *ScenarioExecService) AlreadyRunning(wsMsg websocket.Message) (err error
 	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.InProgress}, &wsMsg)
 	_logUtils.Infof(msg)
 
+	return
+}
+
+func (s *ScenarioExecService) CopyResult(result model.TestResult) (to domain.Result) {
+	copier.Copy(&to, result)
 	return
 }

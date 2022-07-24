@@ -70,7 +70,7 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	req := domain.WsReq{}
 	err = json.Unmarshal(wsMsg.Body, &req)
 	if err != nil {
-		c.Error(wsMsg)
+		c.ScenarioExecService.Error(wsMsg)
 		return
 	}
 
@@ -86,67 +86,22 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 			}
 		}
 
-		c.Cancel(wsMsg)
+		c.ScenarioExecService.Cancel(wsMsg)
 
 		return
 	}
 
 	if execHelper.GetRunning() && (act == consts.ExecStart) { // already running
-		c.AlreadyRunning(wsMsg)
+		c.ScenarioExecService.AlreadyRunning(wsMsg)
 		return
 	}
 
 	ch = make(chan int, 1)
 	go func() {
-		c.ScenarioExecService.ExecScenario(req.Id)
+		c.ScenarioExecService.ExecScenario(req.Id, wsMsg)
 
 		//c.Complete(wsMsg)
 	}()
-
-	c.Start(wsMsg)
-
-	return
-}
-
-func (c *WebSocketCtrl) Start(wsMsg websocket.Message) (err error) {
-	execHelper.SetRunning(true)
-	msg := _i118Utils.Sprintf("start_exec")
-	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.InProgress}, &wsMsg)
-	_logUtils.Infof(msg)
-
-	return
-}
-
-func (c *WebSocketCtrl) Complete(wsMsg websocket.Message) (err error) {
-	execHelper.SetRunning(false)
-	msg := _i118Utils.Sprintf("end_exec")
-	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.Complete}, &wsMsg)
-	_logUtils.Infof(_i118Utils.Sprintf(msg))
-
-	return
-}
-
-func (c *WebSocketCtrl) Cancel(wsMsg websocket.Message) (err error) {
-	execHelper.SetRunning(false)
-	msg := _i118Utils.Sprintf("end_exec")
-	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.Cancel}, &wsMsg)
-	_logUtils.Infof(_i118Utils.Sprintf(msg))
-
-	return
-}
-
-func (c *WebSocketCtrl) Error(wsMsg websocket.Message) (err error) {
-	msg := _i118Utils.Sprintf("wrong_req_params", err.Error())
-	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.Error}, &wsMsg)
-	_logUtils.Infof(msg)
-
-	return
-}
-
-func (c *WebSocketCtrl) AlreadyRunning(wsMsg websocket.Message) (err error) {
-	msg := _i118Utils.Sprintf("pls_stop_previous")
-	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.InProgress}, &wsMsg)
-	_logUtils.Infof(msg)
 
 	return
 }

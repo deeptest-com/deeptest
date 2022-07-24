@@ -2,9 +2,16 @@ package service
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/exec"
+	websocketHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/websocket"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
+	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
+	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	"github.com/jinzhu/copier"
+	"github.com/kataras/iris/v12/websocket"
 	"time"
 )
 
@@ -14,7 +21,7 @@ type ScenarioExecService struct {
 	TestResultRepo        *repo.TestResultRepo        `inject:""`
 }
 
-func (s *ScenarioExecService) Load(scenarioId int) (result model.TestResult, err error) {
+func (s *ScenarioExecService) Load(scenarioId int) (result domain.Result, err error) {
 	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
 	if err != nil {
 		return
@@ -25,18 +32,22 @@ func (s *ScenarioExecService) Load(scenarioId int) (result model.TestResult, err
 	return
 }
 
-func (s *ScenarioExecService) ExecScenario(scenarioId int) (err error) {
+func (s *ScenarioExecService) ExecScenario(scenarioId int, wsMsg websocket.Message) (err error) {
 	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
 	if err != nil {
 		return
 	}
 
-	result, err := s.TestResultRepo.FindInProgressResult(uint(scenarioId))
-	if result.ID > 0 {
-		s.ResetResult(&result, scenario)
+	resultPo, err := s.TestResultRepo.FindInProgressResult(uint(scenarioId))
+	if resultPo.ID > 0 {
+		s.ResetResult(&resultPo, scenario)
 	} else {
-		result, _ = s.CreateResult(scenario)
+		resultPo, _ = s.CreateResult(scenario)
 	}
+
+	result := domain.Result{}
+	copier.Copy(&result, resultPo)
+	s.Start(result, wsMsg)
 
 	rootProcessor, err := s.ScenarioProcessorRepo.GetRootProcessor(scenario.ID)
 	if err != nil {
@@ -128,4 +139,47 @@ func (s *ScenarioExecService) isExecutableContainerProcessor(category consts.Pro
 		consts.ProcessorData.ToString(),
 	}
 	return _stringUtils.FindInArr(category.ToString(), arr)
+}
+
+func (s *ScenarioExecService) Start(result domain.Result, wsMsg websocket.Message) (err error) {
+	execHelper.SetRunning(true)
+	msg := _i118Utils.Sprintf("start_exec")
+	websocketHelper.SendExecMsg(msg, result, &wsMsg)
+	_logUtils.Infof(msg)
+
+	return
+}
+
+func (s *ScenarioExecService) Complete(wsMsg websocket.Message) (err error) {
+	execHelper.SetRunning(false)
+	msg := _i118Utils.Sprintf("end_exec")
+	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.Complete}, &wsMsg)
+	_logUtils.Infof(_i118Utils.Sprintf(msg))
+
+	return
+}
+
+func (s *ScenarioExecService) Cancel(wsMsg websocket.Message) (err error) {
+	execHelper.SetRunning(false)
+	msg := _i118Utils.Sprintf("end_exec")
+	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.Cancel}, &wsMsg)
+	_logUtils.Infof(_i118Utils.Sprintf(msg))
+
+	return
+}
+
+func (s *ScenarioExecService) Error(wsMsg websocket.Message) (err error) {
+	msg := _i118Utils.Sprintf("wrong_req_params", err.Error())
+	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.Error}, &wsMsg)
+	_logUtils.Infof(msg)
+
+	return
+}
+
+func (s *ScenarioExecService) AlreadyRunning(wsMsg websocket.Message) (err error) {
+	msg := _i118Utils.Sprintf("pls_stop_previous")
+	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.InProgress}, &wsMsg)
+	_logUtils.Infof(msg)
+
+	return
 }

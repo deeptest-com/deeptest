@@ -30,11 +30,11 @@ import ScenarioExecDetail from "./components/Detail.vue"
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; Global: GlobalStateType; }>();
 const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
-const execData = computed<any>(()=> store.state.Scenario.execData);
+const execData = computed<any>(()=> store.state.Scenario.execResult);
 
 const id = ref(+router.currentRoute.value.params.id)
 
-store.dispatch('Scenario/loadExecData', id.value);
+store.dispatch('Scenario/loadExecResult', id.value);
 
 watch(collapsed, () => {
   console.log('watch collapsed', collapsed.value)

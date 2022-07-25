@@ -20,7 +20,7 @@
       </div>
 
       <div class="logs">
-        <LogComp :logs="logTreeData.logs"></LogComp>
+        <LogComp v-if="logTreeData.logs" :logs="logTreeData.logs"></LogComp>
       </div>
 
     </div>

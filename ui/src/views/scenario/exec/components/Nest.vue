@@ -1,14 +1,15 @@
 <template>
   <div class="scenario-exec-log-main">
     <div v-for="(item, index) in logs" :key="index">
-      <div>{{index}} - {{ item.name }} - {{ item.logs }}</div>
-      - <LogComp :logs="item.logs"></LogComp>
+      <div>{{item.id}} - {{ item.name }}</div>
+      <LogComp v-if="item.logs" :logs="item.logs"></LogComp>
     </div>
   </div>
 </template>
 
-<script setup lang="ts" name="logComp">
+<script setup lang="ts" name="LogComp">
 import {defineProps} from "vue";
+import LogComp from "./Nest.vue"
 
 defineProps<{
   logs: []
@@ -19,7 +20,7 @@ defineProps<{
 <style lang="less" scoped>
 .scenario-exec-log-main {
   height: 100%;
-  padding: 6px;
+  padding: 10px;
 }
 
 </style>

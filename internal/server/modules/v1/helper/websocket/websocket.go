@@ -28,12 +28,12 @@ func SendOutputMsg(msg string, data interface{}, wsMsg *websocket.Message) {
 	PubMsg(mqData)
 }
 
-func SendExecMsg(msg string, result domain.Result, wsMsg *websocket.Message) {
+func SendExecMsg(msg string, log domain.Log, wsMsg *websocket.Message) {
 	logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room,
 		strings.ReplaceAll(strings.TrimSpace(msg), `%`, `%%`)))
 
 	msg = strings.TrimSpace(msg)
-	resp := _domain.WsResp{Msg: msg, Data: result}
+	resp := _domain.WsResp{Msg: msg, Data: log}
 
 	bytes, _ := json.Marshal(resp)
 	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}

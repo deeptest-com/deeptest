@@ -19,6 +19,10 @@
         </div>
       </div>
 
+      <div class="logs">
+        <LogComp :logs="logTreeData.logs"></LogComp>
+      </div>
+
     </div>
   </div>
 </template>
@@ -38,6 +42,7 @@ import {StateType as GlobalStateType} from "@/store/global";
 import {ExecStatus} from "@/store/exec";
 import {StateType as ScenarioStateType} from "../../store";
 import bus from "@/utils/eventBus";
+import LogComp from "./Nest.vue"
 
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType, Global: GlobalStateType, Exec: ExecStatus; }>();
@@ -68,15 +73,31 @@ onUnmounted(() => {
   bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
 })
 
+const logMap = ref({} as any)
+const logTreeData = ref({} as any)
 const OnWebSocketMsg = (data: any) => {
-  console.log('WebsocketMsgEvent in exec info', data.msg)
+  console.log('WebsocketMsgEvent in exec info')
 
   const wsMsg = JSON.parse(data.msg) as WsMsg
+  const log = wsMsg.data
+  console.log(1, log)
+  logMap.value[log.id] = log
 
-  const msgText = wsMsg.msg
-  store.dispatch('Scenario/updateExecResult', wsMsg.data).then(() => {
-    console.log('===', msgText, execResult.value)
-  })
+  if (log.parentId === 0) {
+    logTreeData.value = log
+  } else {
+    if (!logMap.value[log.parentId]) logMap.value[log.parentId] = {}
+    if (!logMap.value[log.parentId].logs) logMap.value[log.parentId].logs = []
+
+    logMap.value[log.parentId].logs.push(log)
+  }
+
+  console.log(2, logTreeData)
+
+  // const msgText = wsMsg.msg
+  // store.dispatch('Scenario/updateExecResult', wsMsg.data).then(() => {
+  //   console.log('===', msgText, execResult.value)
+  // })
 
   // if ('isRunning' in wsMsg) {
   //   console.log(`change isRunning to ${wsMsg.isRunning}`)
@@ -132,6 +153,9 @@ const OnWebSocketMsg = (data: any) => {
         width: 200px;
         text-align: right;
       }
+    }
+    .logs {
+      padding: 0px 12px;
     }
   }
 }

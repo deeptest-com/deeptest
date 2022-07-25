@@ -7,7 +7,7 @@
   </div>
 </template>
 
-<script setup lang="ts" name="LogComp">
+<script setup lang="ts">
 import {defineProps} from "vue";
 import LogComp from "./Nest.vue"
 

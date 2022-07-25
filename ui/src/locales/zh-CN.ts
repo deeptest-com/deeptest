@@ -58,7 +58,7 @@ export default {
 
     // 处理器分类
     'processor_thread':  '线程',
-    'processor_simple':  '分组',
+    'processor_group':  '分组',
     'processor_logic':  '逻辑',
     'processor_loop':  '循环',
     'processor_timer':  '计时器',
@@ -70,7 +70,7 @@ export default {
 
     // 处理器类型
     'processor_thread_default':  '线程',
-    'processor_simple_default':  '分组',
+    'processor_group_default':  '分组',
     'processor_time_default':  '计时器',
 
     'processor_logic_if':  '如果',

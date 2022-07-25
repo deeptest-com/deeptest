@@ -25,6 +25,13 @@ func (r *ScenarioProcessorRepo) UpdateName(id uint, name string) (err error) {
 	return
 }
 
+func (r *ScenarioProcessorRepo) GetAll(scenarioId uint) (processors []model.TestProcessor, err error) {
+	err = r.DB.Where("scenario_id = ?", scenarioId).
+		Find(&processors).Error
+
+	return
+}
+
 func (r *ScenarioProcessorRepo) GetRootProcessor(scenarioId uint) (processor model.TestProcessor, err error) {
 	err = r.DB.Where("scenario_id = ? AND entity_category = ?", scenarioId, consts.ProcessorRoot).
 		First(&processor).Error

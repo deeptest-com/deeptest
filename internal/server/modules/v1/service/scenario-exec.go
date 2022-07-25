@@ -53,41 +53,111 @@ func (s *ScenarioExecService) ExecScenario(scenarioId int, wsMsg websocket.Messa
 		return
 	}
 
-	s.ExecRecursiveProcessor(rootProcessor)
+	rootLog := domain.Log{
+		ID:                rootProcessor.ID,
+		Name:              rootProcessor.Name,
+		ProcessorCategory: rootProcessor.EntityCategory,
+		ProcessorType:     rootProcessor.EntityType,
+		ParentId:          0,
+	}
 
-	return
-}
-
-func (s *ScenarioExecService) ExecRecursiveProcessor(processor model.TestProcessor) (err error) {
-	if s.isContainerProcessor(processor.EntityCategory) {
-		if s.isExecutableContainerProcessor(processor.EntityCategory) {
-			s.ExecContainerProcessor(processor)
-		}
-
-		children, _ := s.ScenarioProcessorRepo.GetChildrenProcessor(processor.ID, processor.ScenarioId)
-		for _, child := range children {
-			s.ExecRecursiveProcessor(child)
-		}
-	} else if processor.EntityCategory == consts.ProcessorInterface {
-		s.ExecInterface(processor)
-	} else {
-		s.ExecActionProcessor(processor)
+	children, _ := s.ScenarioProcessorRepo.GetChildrenProcessor(rootProcessor.ID, rootProcessor.ScenarioId)
+	for _, child := range children {
+		s.ExecRecursiveProcessor(child, &rootLog)
 	}
 
 	return
 }
 
-func (s *ScenarioExecService) ExecContainerProcessor(processor model.TestProcessor) (err error) {
+func (s *ScenarioExecService) ExecRecursiveProcessor(processor model.TestProcessor, parentLog *domain.Log) (err error) {
+	if parentLog.Logs == nil {
+		logs := make([]*domain.Log, 0)
+		parentLog.Logs = &logs
+	}
+
+	if s.isContainerProcessor(processor.EntityCategory) {
+		var containerLog *domain.Log
+		if s.isExecutableContainerProcessor(processor.EntityCategory) {
+			containerLog, _ = s.ExecContainerProcessor(processor, parentLog)
+		} else {
+			containerLog, _ = s.AddContainerProcessor(processor, parentLog)
+		}
+
+		children, _ := s.ScenarioProcessorRepo.GetChildrenProcessor(processor.ID, processor.ScenarioId)
+		for _, child := range children {
+			s.ExecRecursiveProcessor(child, containerLog)
+		}
+	} else if processor.EntityCategory == consts.ProcessorInterface {
+		s.ExecInterface(processor, parentLog)
+	} else {
+		s.ExecActionProcessor(processor, parentLog)
+	}
 
 	return
 }
 
-func (s *ScenarioExecService) ExecActionProcessor(processor model.TestProcessor) (err error) {
+func (s *ScenarioExecService) AddContainerProcessor(processor model.TestProcessor, parentLog *domain.Log) (
+	containerLog *domain.Log, err error) {
+
+	containerLog = &domain.Log{
+		ID:                processor.ID,
+		Name:              processor.Name,
+		ProcessorCategory: processor.EntityCategory,
+		ProcessorType:     processor.EntityType,
+		ParentId:          processor.ParentId,
+	}
+
+	*parentLog.Logs = append(*parentLog.Logs, containerLog)
 
 	return
 }
 
-func (s *ScenarioExecService) ExecInterface(interf model.TestProcessor) (err error) {
+func (s *ScenarioExecService) ExecContainerProcessor(processor model.TestProcessor, parentLog *domain.Log) (
+	containerLog *domain.Log, err error) {
+
+	// TODO: exec
+
+	containerLog = &domain.Log{
+		ID:                processor.ID,
+		Name:              processor.Name,
+		ProcessorCategory: processor.EntityCategory,
+		ProcessorType:     processor.EntityType,
+		ParentId:          processor.ParentId,
+	}
+
+	*parentLog.Logs = append(*parentLog.Logs, containerLog)
+
+	return
+}
+
+func (s *ScenarioExecService) ExecActionProcessor(processor model.TestProcessor, parentLog *domain.Log) (err error) {
+	// TODO: exec
+
+	actionLog := &domain.Log{
+		ID:                processor.ID,
+		Name:              processor.Name,
+		ProcessorCategory: processor.EntityCategory,
+		ProcessorType:     processor.EntityType,
+		ParentId:          processor.ParentId,
+	}
+
+	*parentLog.Logs = append(*parentLog.Logs, actionLog)
+
+	return
+}
+
+func (s *ScenarioExecService) ExecInterface(interf model.TestProcessor, parentLog *domain.Log) (err error) {
+	// TODO: exec
+
+	interfaceLog := &domain.Log{
+		ID:                interf.ID,
+		Name:              interf.Name,
+		ProcessorCategory: interf.EntityCategory,
+		ProcessorType:     interf.EntityType,
+		ParentId:          interf.ParentId,
+	}
+
+	*parentLog.Logs = append(*parentLog.Logs, interfaceLog)
 
 	return
 }

@@ -371,6 +371,18 @@ func (e ProcessorType) ToString() string {
 	return string(e)
 }
 
+type LogType string
+
+const (
+	LogRoot      LogType = "root"
+	LogInterface LogType = "interface"
+	LogProcessor LogType = "processor"
+)
+
+func (e LogType) ToString() string {
+	return string(e)
+}
+
 type ErrorAction string
 
 const (

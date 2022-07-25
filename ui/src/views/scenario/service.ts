@@ -5,7 +5,7 @@ import {
     ProcessorCookie, ProcessorData,
     ProcessorExtractor,
     ProcessorLogic,
-    ProcessorLoop, ProcessorSimple, ProcessorThread, ProcessorTimer,
+    ProcessorLoop, ProcessorGroup, ProcessorThread, ProcessorTimer,
     ProcessorCategory,
     ProcessorVariable, ProcessorAssertion
 } from "@/utils/enum";
@@ -134,7 +134,7 @@ export function getProcessorCategories() {
 export function getProcessorTypeNames() {
     return {
         // ...getEnumMap(ProcessorThread),
-        ...getEnumMap(ProcessorSimple),
+        ...getEnumMap(ProcessorGroup),
         ...getEnumMap(ProcessorTimer),
         ...getEnumMap(ProcessorLogic),
 
@@ -160,7 +160,7 @@ export const getEnumMap = (enumDef) => {
 export function getProcessorTypeMap() {
     return {
         // processor_thread: getEnumSelectItems(ProcessorThread),
-        processor_simple: getEnumSelectItems(ProcessorSimple),
+        processor_group: getEnumSelectItems(ProcessorGroup),
         processor_timer: getEnumSelectItems(ProcessorTimer),
         processor_logic: getEnumSelectItems(ProcessorLogic),
 

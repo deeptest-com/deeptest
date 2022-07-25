@@ -270,14 +270,14 @@ func (r *InterfaceRepo) makeTree(Data []*model.Interface, node *model.Interface)
 	}
 }
 
-func (r *InterfaceRepo) haveChild(Data []*model.Interface, node *model.Interface) (child []*model.Interface, yes bool) {
+func (r *InterfaceRepo) haveChild(Data []*model.Interface, node *model.Interface) (children []*model.Interface, yes bool) {
 	for _, v := range Data {
 		if v.ParentId == node.ID {
 			v.Slots = iris.Map{"icon": "icon"}
-			child = append(child, v)
+			children = append(children, v)
 		}
 	}
-	if child != nil {
+	if children != nil {
 		yes = true
 	}
 	return

@@ -6,7 +6,7 @@ import (
 )
 
 type Log struct {
-	ID int `json:"id"`
+	ID uint `json:"id"`
 
 	Name           string                `json:"name"`
 	Desc           string                `json:"desc"`
@@ -15,7 +15,8 @@ type Log struct {
 	StartTime      *time.Time            `json:"startTime"`
 	EndTime        *time.Time            `json:"endTime"`
 
-	Logs []Log `json:"logs"`
+	ParentId uint    `json:"parentId"`
+	Logs     *[]*Log `json:"logs"`
 
 	// type
 	ProcessorCategory consts.ProcessorCategory `json:"processorCategory"`

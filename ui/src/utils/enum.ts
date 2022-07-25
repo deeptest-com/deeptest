@@ -1,6 +1,6 @@
 export enum ProcessorCategory {
     ProcessorThread = "processor_thread",
-    ProcessorSimple = "processor_simple",
+    ProcessorGroup = "processor_group",
     ProcessorInterface = "processor_interface",
     ProcessorLogic = "processor_logic",
     ProcessorLoop = "processor_loop",
@@ -16,8 +16,8 @@ export enum ProcessorCategory {
 export enum ProcessorThread {
     Thread = "processor_thread_default",
 }
-export enum ProcessorSimple {
-    Simple = "processor_simple_default",
+export enum ProcessorGroup {
+    Group = "processor_group_default",
 }
 export enum ProcessorTimer {
     Time = "processor_time_default",

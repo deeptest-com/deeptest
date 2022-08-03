@@ -149,6 +149,7 @@ type InterfaceExtractor struct {
 
 	Result      string `json:"result"`
 	InterfaceId uint   `json:"interfaceId"`
+	LogId       uint   `json:"logId"`
 }
 
 func (InterfaceExtractor) TableName() string {

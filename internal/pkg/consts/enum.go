@@ -1,5 +1,18 @@
 package consts
 
+type WsMsgCategory string
+
+const (
+	ProgressStart      WsMsgCategory = "start"
+	ProgressInProgress WsMsgCategory = "in_progress"
+	ProgressEnd        WsMsgCategory = "end"
+	Output             WsMsgCategory = "output"
+)
+
+func (e WsMsgCategory) String() string {
+	return string(e)
+}
+
 type HttpMethod string
 
 const (
@@ -281,8 +294,9 @@ func (e ValueOperator) String() string {
 type ProgressStatus string
 
 const (
+	Start      ProgressStatus = "start"
 	InProgress ProgressStatus = "in_progress"
-	Complete   ProgressStatus = "end"
+	End        ProgressStatus = "end"
 	Cancel     ProgressStatus = "cancel"
 	Error      ProgressStatus = "error"
 )
@@ -330,9 +344,10 @@ func (e ProcessorCategory) ToString() string {
 type ProcessorType string
 
 const (
-	ProcessorThreadDefault ProcessorType = "processor_thread_default"
-	ProcessorGroupDefault  ProcessorType = "processor_group_default"
-	ProcessorTimerDefault  ProcessorType = "processor_timer_default"
+	//ProcessorThreadDefault ProcessorType = "processor_thread_default"
+	ProcessorInterfaceDefault ProcessorType = "processor_interface_default"
+	ProcessorGroupDefault     ProcessorType = "processor_group_default"
+	ProcessorTimerDefault     ProcessorType = "processor_timer_default"
 
 	ProcessorLogicIf   ProcessorType = "processor_logic_if"
 	ProcessorLogicElse ProcessorType = "processor_logic_else"

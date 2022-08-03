@@ -6,8 +6,7 @@ import (
 )
 
 type Log struct {
-	ID uint `json:"id"`
-
+	Id             uint                  `json:"id"`
 	Name           string                `json:"name"`
 	Desc           string                `json:"desc"`
 	ProgressStatus consts.ProgressStatus `json:"progressStatus"`
@@ -22,9 +21,11 @@ type Log struct {
 	ProcessorCategory consts.ProcessorCategory `json:"processorCategory"`
 
 	// for interface
-	InterfaceId   uint   `json:"interfaceId"`
-	InterfaceReq  string `json:"interfaceReq,omitempty"`
-	InterfaceResp string `json:"interfaceResp,omitempty"`
+	InterfaceId uint     `json:"interfaceId"`
+	ReqContent  string   `json:"reqContent,omitempty"`
+	RespContent string   `json:"respContent,omitempty"`
+	RespSummary []string `json:"respSummary,omitempty"`
+	Output      Output   `json:"output,omitempty"`
 
 	// for processor
 	ProcessorType  consts.ProcessorType `json:"processorType"`

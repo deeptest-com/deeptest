@@ -23,9 +23,9 @@ type TestLog struct {
 	ProcessorCategory consts.ProcessorCategory `json:"processorCategory" yaml:"processorCategory"`
 
 	// for interface
-	InterfaceId   uint   `json:"interfaceId"`
-	InterfaceReq  string `json:"interfaceReq,omitempty"`
-	InterfaceResp string `json:"interfaceResp,omitempty"`
+	InterfaceId uint   `json:"interfaceId"`
+	ReqContent  string `json:"reqContent,omitempty"`
+	RespContent string `json:"respContent,omitempty"`
 
 	// for processor
 	ProcessorType  consts.ProcessorType `json:"processorType" yaml:"processorType"`

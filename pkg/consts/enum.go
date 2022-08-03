@@ -10,20 +10,3 @@ const (
 func (e ResultCode) Int() int {
 	return int(e)
 }
-
-type WsMsgCategory string
-
-//const (
-//	Output WsMsgCategory = "output"
-//
-//	Run    WsMsgCategory = "run"
-//	Result WsMsgCategory = "result"
-//	SendErrorMsg  WsMsgCategory = "error"
-//
-//	Communication WsMsgCategory = "communication"
-//	Unknown       WsMsgCategory = ""
-//)
-//
-//func (e WsMsgCategory) String() string {
-//	return string(e)
-//}

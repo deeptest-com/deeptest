@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func ReplaceVariables(req *serverDomain.InvocationRequest,
+func ReplaceVariablesForInvocation(req *serverDomain.InvocationRequest,
 	environmentVariables []model.EnvironmentVar, extractorVariables []serverDomain.Variable) (err error) {
 
 	variableArr := genVariableArr(environmentVariables, extractorVariables)

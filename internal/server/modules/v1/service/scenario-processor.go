@@ -14,34 +14,34 @@ func (s *ScenarioProcessorService) Get(processorId int) (ret interface{}, err er
 	processor, _ := s.ScenarioProcessorRepo.Get(uint(processorId))
 
 	if processor.EntityCategory == consts.ProcessorInterface {
-		ret, _ = s.ScenarioProcessorRepo.GetInterface(uint(processorId), processor)
+		ret, _ = s.ScenarioProcessorRepo.GetInterface(&processor)
 
 	} else if processor.EntityCategory == consts.ProcessorGroup {
-		ret, _ = s.ScenarioProcessorRepo.GetGroup(uint(processorId), processor)
+		ret, _ = s.ScenarioProcessorRepo.GetGroup(processor)
 
 	} else if processor.EntityCategory == consts.ProcessorLogic {
-		ret, _ = s.ScenarioProcessorRepo.GetLogic(uint(processorId), processor)
+		ret, _ = s.ScenarioProcessorRepo.GetLogic(processor)
 
 	} else if processor.EntityCategory == consts.ProcessorLoop {
-		ret, _ = s.ScenarioProcessorRepo.GetLoop(uint(processorId), processor)
+		ret, _ = s.ScenarioProcessorRepo.GetLoop(processor)
 
 	} else if processor.EntityCategory == consts.ProcessorVariable {
-		ret, _ = s.ScenarioProcessorRepo.GetVariable(uint(processorId), processor)
+		ret, _ = s.ScenarioProcessorRepo.GetVariable(processor)
 
 	} else if processor.EntityCategory == consts.ProcessorTimer {
-		ret, _ = s.ScenarioProcessorRepo.GetTimer(uint(processorId), processor)
+		ret, _ = s.ScenarioProcessorRepo.GetTimer(processor)
 
 	} else if processor.EntityCategory == consts.ProcessorCookie {
-		ret, _ = s.ScenarioProcessorRepo.GetCookie(uint(processorId), processor)
+		ret, _ = s.ScenarioProcessorRepo.GetCookie(processor)
 
 	} else if processor.EntityCategory == consts.ProcessorAssertion {
-		ret, _ = s.ScenarioProcessorRepo.GetAssertion(uint(processorId), processor)
+		ret, _ = s.ScenarioProcessorRepo.GetAssertion(processor)
 
 	} else if processor.EntityCategory == consts.ProcessorExtractor {
-		ret, _ = s.ScenarioProcessorRepo.GetExtractor(uint(processorId), processor)
+		ret, _ = s.ScenarioProcessorRepo.GetExtractor(processor)
 
 	} else if processor.EntityCategory == consts.ProcessorData {
-		ret, _ = s.ScenarioProcessorRepo.GetData(uint(processorId), processor)
+		ret, _ = s.ScenarioProcessorRepo.GetData(processor)
 
 	}
 

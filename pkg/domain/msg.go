@@ -1,14 +1,14 @@
 package _domain
 
 import (
-	_consts "github.com/aaronchen2k/deeptest/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12"
 )
 
 type WsResp struct {
-	Msg       string                `json:"msg"`
-	IsRunning string                `json:"isRunning,omitempty"`
-	Category  _consts.WsMsgCategory `json:"category"`
+	Msg       string               `json:"msg"`
+	IsRunning string               `json:"isRunning,omitempty"`
+	Category  consts.WsMsgCategory `json:"category"`
 
 	Info iris.Map    `json:"info,omitempty"`
 	Data interface{} `json:"data,omitempty"`

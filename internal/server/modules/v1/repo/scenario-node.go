@@ -17,15 +17,15 @@ type ScenarioNodeRepo struct {
 func (r *ScenarioNodeRepo) GetTree(scenarioId int) (root *model.TestProcessor, err error) {
 	scenario, err := r.ScenarioRepo.Get(uint(scenarioId))
 
-	pos, err := r.ListByScenario(scenarioId)
+	processors, err := r.ListByScenario(scenarioId)
 	if err != nil {
 		return
 	}
 
-	root = pos[0]
+	root = processors[0]
 	root.Name = scenario.Name
 	root.Slots = iris.Map{"icon": "icon"}
-	r.makeTree(pos[1:], root)
+	r.makeTree(processors[1:], root)
 
 	return
 }
@@ -44,14 +44,15 @@ func (r *ScenarioNodeRepo) Get(id uint) (processor model.TestProcessor, err erro
 	return
 }
 
-func (r *ScenarioNodeRepo) makeTree(Data []*model.TestProcessor, node *model.TestProcessor) { //参数为父节点，添加父节点的子节点指针切片
-	children, _ := r.haveChild(Data, node) //判断节点是否有子节点并返回
+func (r *ScenarioNodeRepo) makeTree(Data []*model.TestProcessor, parent *model.TestProcessor) { //参数为父节点，添加父节点的子节点指针切片
+	children, _ := r.haveChild(Data, parent) //判断节点是否有子节点并返回
+
 	if children != nil {
-		node.Children = append(node.Children, children[0:]...) //添加子节点
-		for _, v := range children {                           //查询子节点的子节点，并添加到子节点
-			_, has := r.haveChild(Data, v)
+		parent.Children = append(parent.Children, children[0:]...) //添加子节点
+		for _, child := range children {                           //查询子节点的子节点，并添加到子节点
+			_, has := r.haveChild(Data, child)
 			if has {
-				r.makeTree(Data, v) //递归添加节点
+				r.makeTree(Data, child) //递归添加节点
 			}
 		}
 	}
@@ -167,4 +168,35 @@ func (r *ScenarioNodeRepo) GetMaxOrder(parentId uint) (order int) {
 	}
 
 	return
+}
+
+func (r *ScenarioNodeRepo) GetScopeHierarchy(scenarioId int, scopeHierarchyMap *map[uint]*[]uint) {
+	processors, err := r.ListByScenario(scenarioId)
+	if err != nil {
+		return
+	}
+
+	childToParentIdMap := map[uint]uint{}
+	for _, processor := range processors {
+		childToParentIdMap[processor.ID] = processor.ParentId
+	}
+
+	for childId, parentId := range childToParentIdMap {
+		if (*scopeHierarchyMap)[childId] == nil {
+			arr := make([]uint, 0)
+			(*scopeHierarchyMap)[childId] = &arr
+		}
+		*(*scopeHierarchyMap)[childId] = append(*(*scopeHierarchyMap)[childId], parentId)
+
+		r.addSuperParent(childId, parentId, childToParentIdMap, scopeHierarchyMap)
+	}
+}
+
+func (r *ScenarioNodeRepo) addSuperParent(id, parentId uint, childToParentIdMap map[uint]uint, scopeHierarchyMap *map[uint]*[]uint) {
+	superId, ok := childToParentIdMap[parentId]
+	if ok {
+		*(*scopeHierarchyMap)[id] = append(*(*scopeHierarchyMap)[id], superId)
+
+		r.addSuperParent(id, superId, childToParentIdMap, scopeHierarchyMap)
+	}
 }

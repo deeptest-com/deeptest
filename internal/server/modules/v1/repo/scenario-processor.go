@@ -1,8 +1,8 @@
 package repo
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
+	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
 
@@ -32,28 +32,29 @@ func (r *ScenarioProcessorRepo) GetAll(scenarioId uint) (processors []model.Test
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetRootProcessor(scenarioId uint) (processor model.TestProcessor, err error) {
-	err = r.DB.Where("scenario_id = ? AND entity_category = ?", scenarioId, consts.ProcessorRoot).
-		First(&processor).Error
+//func (r *ScenarioProcessorRepo) GetRootProcessor(scenarioId uint) (processor model.TestProcessor, err error) {
+//	err = r.DB.Where("scenario_id = ? AND entity_category = ?", scenarioId, consts.ProcessorRoot).
+//		First(&processor).Error
+//
+//	return
+//}
+
+//func (r *ScenarioProcessorRepo) GetChildrenProcessor(parentId, scenarioId uint) (pos []model.TestProcessor, err error) {
+//	err = r.DB.Where("parent_id = ? AND scenario_id = ? AND NOT deleted", parentId, scenarioId).
+//		Find(&pos).Error
+//
+//	return
+//}
+
+func (r *ScenarioProcessorRepo) GetInterface(processor *model.TestProcessor) (ret interface{}, err error) {
+	ret = r.genProcessorComm(*processor)
 
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetChildrenProcessor(parentId, scenarioId uint) (pos []model.TestProcessor, err error) {
-	err = r.DB.Where("parent_id = ? AND scenario_id = ?", parentId, scenarioId).
-		Find(&pos).Error
-
-	return
-}
-
-func (r *ScenarioProcessorRepo) GetInterface(id uint, processor model.TestProcessor) (ret interface{}, err error) {
-	ret = r.genProcessorComm(processor)
-	return
-}
-
-func (r *ScenarioProcessorRepo) GetGroup(processorId uint, processor model.TestProcessor) (ret interface{}, err error) {
+func (r *ScenarioProcessorRepo) GetGroup(processor model.TestProcessor) (ret interface{}, err error) {
 	var entity model.ProcessorGroup
-	err = r.DB.Where("processor_id = ?", processorId).First(&entity).Error
+	err = r.DB.Where("processor_id = ?", processor.ID).First(&entity).Error
 
 	if entity.ID == 0 {
 		ret = r.genProcessorComm(processor)
@@ -65,113 +66,105 @@ func (r *ScenarioProcessorRepo) GetGroup(processorId uint, processor model.TestP
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetLogic(processorId uint, processor model.TestProcessor) (ret interface{}, err error) {
-	var entity model.ProcessorLogic
-	err = r.DB.Where("processor_id = ?", processorId).First(&entity).Error
+func (r *ScenarioProcessorRepo) GetLogic(processor model.TestProcessor) (ret model.ProcessorLogic, err error) {
+	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
-	if entity.ID == 0 {
-		ret = r.genProcessorComm(processor)
+	if ret.ID == 0 {
+		comm := r.genProcessorComm(processor)
+		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
-		entity.Name = processor.Name
-		ret = entity
+		ret.Name = processor.Name
 	}
 
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetLoop(processorId uint, processor model.TestProcessor) (ret interface{}, err error) {
-	var entity model.ProcessorLoop
-	err = r.DB.Where("processor_id = ?", processorId).First(&entity).Error
+func (r *ScenarioProcessorRepo) GetLoop(processor model.TestProcessor) (ret model.ProcessorLoop, err error) {
+	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
-	if entity.ID == 0 {
-		ret = r.genProcessorComm(processor)
+	if ret.ID == 0 {
+		comm := r.genProcessorComm(processor)
+		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
-		entity.Name = processor.Name
-		ret = entity
+		ret.Name = processor.Name
 	}
 
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetVariable(processorId uint, processor model.TestProcessor) (ret interface{}, err error) {
-	var entity model.ProcessorVariable
-	err = r.DB.Where("processor_id = ?", processorId).First(&entity).Error
+func (r *ScenarioProcessorRepo) GetVariable(processor model.TestProcessor) (ret model.ProcessorVariable, err error) {
+	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
-	if entity.ID == 0 {
-		ret = r.genProcessorComm(processor)
+	if ret.ID == 0 {
+		comm := r.genProcessorComm(processor)
+		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
-		entity.Name = processor.Name
-		ret = entity
+		ret.Name = processor.Name
 	}
 
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetTimer(processorId uint, processor model.TestProcessor) (ret interface{}, err error) {
-	var entity model.ProcessorTimer
-	err = r.DB.Where("processor_id = ?", processorId).First(&entity).Error
+func (r *ScenarioProcessorRepo) GetTimer(processor model.TestProcessor) (ret model.ProcessorTimer, err error) {
+	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
-	if entity.ID == 0 {
-		ret = r.genProcessorComm(processor)
+	if ret.ID == 0 {
+		comm := r.genProcessorComm(processor)
+		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
-		entity.Name = processor.Name
-		ret = entity
+		ret.Name = processor.Name
 	}
 
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetCookie(processorId uint, processor model.TestProcessor) (ret interface{}, err error) {
-	var entity model.ProcessorCookie
-	err = r.DB.Where("processor_id = ?", processorId).First(&entity).Error
+func (r *ScenarioProcessorRepo) GetCookie(processor model.TestProcessor) (ret model.ProcessorCookie, err error) {
+	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
-	if entity.ID == 0 {
-		ret = r.genProcessorComm(processor)
+	if ret.ID == 0 {
+		comm := r.genProcessorComm(processor)
+		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
-		entity.Name = processor.Name
-		ret = entity
+		ret.Name = processor.Name
 	}
 
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetAssertion(processorId uint, processor model.TestProcessor) (ret interface{}, err error) {
-	var entity model.ProcessorAssertion
-	err = r.DB.Where("processor_id = ?", processorId).First(&entity).Error
+func (r *ScenarioProcessorRepo) GetAssertion(processor model.TestProcessor) (ret model.ProcessorAssertion, err error) {
+	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
-	if entity.ID == 0 {
-		ret = r.genProcessorComm(processor)
+	if ret.ID == 0 {
+		comm := r.genProcessorComm(processor)
+		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
-		entity.Name = processor.Name
-		ret = entity
+		ret.Name = processor.Name
 	}
 
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetExtractor(processorId uint, processor model.TestProcessor) (ret interface{}, err error) {
-	var entity model.ProcessorExtractor
-	err = r.DB.Where("processor_id = ?", processorId).First(&entity).Error
+func (r *ScenarioProcessorRepo) GetExtractor(processor model.TestProcessor) (ret model.ProcessorExtractor, err error) {
+	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
-	if entity.ID == 0 {
-		ret = r.genProcessorComm(processor)
+	if ret.ID == 0 {
+		comm := r.genProcessorComm(processor)
+		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
-		entity.Name = processor.Name
-		ret = entity
+		ret.Name = processor.Name
 	}
 
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetData(processorId uint, processor model.TestProcessor) (ret interface{}, err error) {
-	var entity model.ProcessorData
-	err = r.DB.Where("processor_id = ?", processorId).First(&entity).Error
+func (r *ScenarioProcessorRepo) GetData(processor model.TestProcessor) (ret model.ProcessorData, err error) {
+	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
-	if entity.ID == 0 {
-		ret = r.genProcessorComm(processor)
+	if ret.ID == 0 {
+		comm := r.genProcessorComm(processor)
+		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
-		entity.Name = processor.Name
-		ret = entity
+		ret.Name = processor.Name
 	}
 
 	return

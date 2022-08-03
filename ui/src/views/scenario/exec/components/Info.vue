@@ -7,11 +7,11 @@
         </div>
 
         <div class="progress">
-          {{execResult.progressStatus}}
+          {{execResult.progressStatus ? t(execResult.progressStatus) : ''}}
         </div>
 
         <div class="status">
-          {{execResult.resultStatus}}
+          {{execResult.resultStatus ? t(execResult.resultStatus) : ''}}
         </div>
         <div class="opt">
           <a-button v-if="execResult.progressStatus !== 'in_progress'" @click="execStart" type="link">开始执行</a-button>
@@ -20,9 +20,8 @@
       </div>
 
       <div class="logs">
-        <LogComp v-if="logTreeData.logs" :logs="logTreeData.logs"></LogComp>
+        <Log v-if="logTreeData.logs" :logs="logTreeData.logs"></Log>
       </div>
-
     </div>
   </div>
 </template>
@@ -42,7 +41,9 @@ import {StateType as GlobalStateType} from "@/store/global";
 import {ExecStatus} from "@/store/exec";
 import {StateType as ScenarioStateType} from "../../store";
 import bus from "@/utils/eventBus";
-import LogComp from "./Nest.vue"
+import Log from "./Log.vue"
+import {useI18n} from "vue-i18n";
+const { t } = useI18n();
 
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType, Global: GlobalStateType, Exec: ExecStatus; }>();
@@ -79,6 +80,11 @@ const OnWebSocketMsg = (data: any) => {
   console.log('WebsocketMsgEvent in exec info')
 
   const wsMsg = JSON.parse(data.msg) as WsMsg
+  if (wsMsg.category != '') {
+    execResult.value.progressStatus = wsMsg.category
+    return
+  }
+
   const log = wsMsg.data
   console.log(1, log)
   logMap.value[log.id] = log

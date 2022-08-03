@@ -9,8 +9,8 @@ type InvocationRequest struct {
 	Id   uint   `gorm:"-" json:"id"`
 	Name string `json:"name"`
 
-	Url               string                 `json:"url"`
 	Method            consts.HttpMethod      `gorm:"default:GET" json:"method"`
+	Url               string                 `json:"url"`
 	Params            []domain.Param         `gorm:"-" json:"params"`
 	Headers           []domain.Header        `gorm:"-" json:"headers"`
 	Body              string                 `gorm:"default:{}" json:"body"`

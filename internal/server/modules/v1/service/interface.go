@@ -183,19 +183,19 @@ func (s *InterfaceService) UpdateByInvocation(req serverDomain.InvocationRequest
 func (s *InterfaceService) CopyValueFromRequest(interf *model.Interface, req serverDomain.InvocationRequest) (err error) {
 	interf.ID = req.Id
 
-	copier.Copy(interf, req)
+	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
 
 	return
 }
 
-func (s *InterfaceService) ReplaceVariables(req *serverDomain.InvocationRequest, projectId int) (err error) {
+func (s *InterfaceService) ReplaceVariables(req *serverDomain.InvocationRequest) (err error) {
 	interfaceId := req.Id
 
 	environment, _ := s.EnvironmentRepo.GetByInterface(interfaceId)
 	environmentVariables, _ := s.EnvironmentRepo.GetVars(environment.ID)
 	extractorVariables, _ := s.ExtractorRepo.ListExtractorVariable(interfaceId)
 
-	requestHelper.ReplaceVariables(req, environmentVariables, extractorVariables)
+	requestHelper.ReplaceVariablesForInvocation(req, environmentVariables, extractorVariables)
 
 	return
 }

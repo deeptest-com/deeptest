@@ -34,8 +34,8 @@ func (s *InvocationService) GetAsInterface(id int) (interf model.Interface, err 
 	json.Unmarshal([]byte(invocation.ReqContent), &interfReq)
 	json.Unmarshal([]byte(invocation.RespContent), &interfResp)
 
-	copier.Copy(&interf, interfResp)
-	copier.Copy(&interf, interfReq)
+	copier.CopyWithOption(&interf, interfResp, copier.Option{DeepCopy: true})
+	copier.CopyWithOption(&interf, interfReq, copier.Option{DeepCopy: true})
 
 	interf.ID = invocation.InterfaceId
 
@@ -75,7 +75,7 @@ func (s *InvocationService) Delete(id uint) (err error) {
 func (s *InvocationService) CopyValueFromRequest(invocation *model.Invocation, req serverDomain.InvocationRequest) (err error) {
 	invocation.ID = req.Id
 
-	copier.Copy(invocation, req)
+	copier.CopyWithOption(invocation, req, copier.Option{DeepCopy: true})
 
 	return
 }

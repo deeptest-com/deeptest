@@ -51,7 +51,7 @@ func (r *TestResultRepo) DeleteById(id uint) (err error) {
 	return
 }
 
-func (r *TestResultRepo) UpdateStatus(progressStatus consts.ProgressStatus, resultStatus consts.ResultStatus, scenarioId int) (
+func (r *TestResultRepo) UpdateStatus(progressStatus consts.ProgressStatus, resultStatus consts.ResultStatus, scenarioId uint) (
 	err error) {
 
 	values := map[string]interface{}{

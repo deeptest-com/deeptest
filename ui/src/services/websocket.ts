@@ -42,9 +42,9 @@ export class WebSocket {
             },
 
             // implement in webpage
-            OnChat: (_nsConn, msg) => {
-              console.log('OnChat in util cls', msg, msg.Room + ': response ' + msg.Body)
-              bus.emit(settings.eventWebSocketMsg, {room: msg.Room, msg: msg.Body});
+            OnChat: (_nsConn, json) => {
+              console.log('OnChat in util cls', json)
+              bus.emit(settings.eventWebSocketMsg, {room: json.Room, msg: json.Body});
             }
           }
         })

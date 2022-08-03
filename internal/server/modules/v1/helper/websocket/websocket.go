@@ -3,6 +3,7 @@ package websocketHelper
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
@@ -25,6 +26,16 @@ func SendOutputMsg(msg string, data interface{}, wsMsg *websocket.Message) {
 
 	bytes, _ := json.Marshal(resp)
 	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
+	PubMsg(mqData)
+}
+
+func SendExecResult(category consts.WsMsgCategory, wsMsg *websocket.Message) {
+	logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room, category))
+
+	resp := _domain.WsResp{Category: category}
+	bytes, _ := json.Marshal(resp)
+	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
+
 	PubMsg(mqData)
 }
 

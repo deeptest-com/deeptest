@@ -1,5 +1,6 @@
 export interface WsMsg {
   msg:       string
+  category: string,
   data: any
   time: string
 

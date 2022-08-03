@@ -71,6 +71,7 @@ func (s *ScenarioNodeService) createDirOrInterface(interfaceNode serverDomain.In
 			Name:           interfaceNode.Name,
 			ScenarioId:     parentProcessor.ScenarioId,
 			EntityCategory: consts.ProcessorInterface,
+			EntityType:     consts.ProcessorInterfaceDefault,
 			InterfaceId:    uint(interfaceNode.Id),
 			ParentId:       parentProcessor.ID,
 		}

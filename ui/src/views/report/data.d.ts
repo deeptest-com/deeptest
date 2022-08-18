@@ -1,17 +1,17 @@
-export interface Scenario {
+export interface Report {
   id: number;
   name: string;
   desc: string;
 }
 
 export interface QueryResult {
-  list: Scenario[];
+  list: Report[];
   pagination: PaginationConfig;
 }
 
 export interface QueryParams {
   keywords:  string,
-  enabled: string,
+  scenarioId: number,
   page: number,
   pageSize: number,
 }

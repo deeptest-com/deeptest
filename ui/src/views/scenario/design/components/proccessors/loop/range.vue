@@ -8,10 +8,21 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
+          <a-form-item label="变量名称" v-bind="validateInfos.variableName">
+            <a-input v-model:value="modelRef.variableName"
+                     @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})"/>
+          </a-form-item>
+
           <a-form-item label="区间" v-bind="validateInfos.range">
             <a-input v-model:value="modelRef.range"
                      @blur="validate('range', { trigger: 'blur' }).catch(() => {})"/>
             <div class="dp-input-tip">类似1-9或a-z的取值区间，可使用${name}引用变量</div>
+          </a-form-item>
+          <a-form-item label="间隔">
+            <a-input-number v-model:value="modelRef.step"/>
+          </a-form-item>
+          <a-form-item label="是否随机">
+            <a-switch v-model:checked="modelRef.isRand" />
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
@@ -42,6 +53,9 @@ const {t} = useI18n();
 const formRef = ref();
 
 const rulesRef = reactive({
+  variableName: [
+    {required: true, message: '请输入变量名称', trigger: 'blur'},
+  ],
   range: [
     {required: true, message: '请输入区间', trigger: 'blur'},
   ],
@@ -54,6 +68,7 @@ const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 const submitForm = async () => {
   validate()
       .then(() => {
+        modelRef.value.step = modelRef.value.step + ''
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
             message.success(`保存成功`);

@@ -449,3 +449,15 @@ const (
 func (e ExecType) String() string {
 	return string(e)
 }
+
+type RangeType string
+
+const (
+	RangeInt    RangeType = "int"
+	RangeFloat  RangeType = "float"
+	RangeString RangeType = "string"
+)
+
+func (e RangeType) String() string {
+	return string(e)
+}

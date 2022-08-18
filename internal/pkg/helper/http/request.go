@@ -105,15 +105,15 @@ func gets(req serverDomain.InvocationRequest, method consts.HttpMethod, readResp
 	startTime := time.Now().UnixMilli()
 
 	resp, err := client.Do(request)
-	defer resp.Body.Close()
-
-	endTime := time.Now().UnixMilli()
-	ret.Time = endTime - startTime
-
 	if err != nil {
 		_logUtils.Error(err.Error())
 		return
 	}
+
+	defer resp.Body.Close()
+
+	endTime := time.Now().UnixMilli()
+	ret.Time = endTime - startTime
 
 	ret.StatusCode = consts.HttpRespCode(resp.StatusCode)
 	ret.StatusContent = resp.Status

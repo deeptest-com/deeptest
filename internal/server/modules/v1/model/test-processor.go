@@ -115,9 +115,12 @@ type ProcessorLoop struct {
 	BaseModel
 	ProcessorEntity
 
-	List  string `json:"list" yaml:"list"`   // in
-	Range string `json:"range" yaml:"range"` // range
-	Times int    `json:"times" yaml:"times"` // time
+	Times        int    `json:"times" yaml:"times"` // time
+	Range        string `json:"range" yaml:"range"` // range
+	List         string `json:"list" yaml:"list"`   // in
+	Step         string `json:"step" yaml:"step"`
+	IsRand       bool   `json:"isRand" yaml:"isRand"`
+	VariableName string `json:"variableName" yaml:"variableName"`
 
 	UntilExpression   string `json:"untilExpression" yaml:"untilExpression"` // until
 	BreakIfExpression string `json:"breakIfExpression" yaml:"breakIfExpression"`

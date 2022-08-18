@@ -188,7 +188,7 @@ func (s *InterfaceService) CopyValueFromRequest(interf *model.Interface, req ser
 	return
 }
 
-func (s *InterfaceService) ReplaceVariables(req *serverDomain.InvocationRequest) (err error) {
+func (s *InterfaceService) ReplaceEnvironmentVariables(req *serverDomain.InvocationRequest) (err error) {
 	interfaceId := req.Id
 
 	environment, _ := s.EnvironmentRepo.GetByInterface(interfaceId)

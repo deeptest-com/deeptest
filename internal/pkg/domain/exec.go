@@ -5,6 +5,22 @@ import (
 	"time"
 )
 
+type Variable struct {
+	Id         uint        `json:"id"`
+	Name       string      `json:"name"`
+	Value      interface{} `json:"value"`
+	Expression string      `json:"expression"`
+}
+
+type Cookie struct {
+	Id    uint   `json:"id"`
+	Name  string `json:"name"`
+	Value string `json:"value"`
+
+	Domain     string    `json:"domain"`
+	ExpireTime time.Time `json:"expireTime"`
+}
+
 type Log struct {
 	Id             uint                  `json:"id"`
 	Name           string                `json:"name"`
@@ -32,4 +48,28 @@ type Log struct {
 	ProcessId      uint                 `json:"processId,omitempty"`
 	ProcessContent string               `json:"processContent,omitempty"`
 	ProcessResult  string               `json:"processResult,omitempty"`
+}
+
+type ExecIterator struct {
+	ProcessorCategory consts.ProcessorCategory
+	ProcessorType     consts.ProcessorType
+
+	// loop times
+	Times []int `json:"times"`
+
+	// loop range
+	Items     []interface{}    `json:"items"`
+	RangeType consts.RangeType `json:"rangeType"`
+}
+
+type Output struct {
+	// loop - times
+	Times int `json:"times"`
+	// loop - range
+	Range      string           `json:"range"`
+	RangeStart interface{}      `json:"rangeStart"`
+	RangeEnd   interface{}      `json:"rangeEnd"`
+	RangeType  consts.RangeType `json:"rangeType"`
+
+	Text string `json:"text"`
 }

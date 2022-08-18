@@ -15,13 +15,17 @@ func ReplaceVariablesForInvocation(req *serverDomain.InvocationRequest,
 
 	variableArr := genVariableArr(environmentVariables, extractorVariables)
 
+	ReplaceAll(req, variableArr)
+
+	return
+}
+
+func ReplaceAll(req *serverDomain.InvocationRequest, variableArr [][]string) {
 	replaceUrl(req, variableArr)
 	replaceParams(req, variableArr)
 	replaceHeaders(req, variableArr)
 	replaceBody(req, variableArr)
 	replaceAuthor(req, variableArr)
-
-	return
 }
 
 func replaceUrl(req *serverDomain.InvocationRequest, variableArr [][]string) {

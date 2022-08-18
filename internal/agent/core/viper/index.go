@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/consts"
-	"github.com/aaronchen2k/deeptest/pkg/consts"
 	myZap "github.com/aaronchen2k/deeptest/pkg/core/zap"
 	"github.com/fsnotify/fsnotify"
 	"github.com/snowlyg/helper/dir"
@@ -15,7 +14,7 @@ import (
 // - 第一次初始化系统配置，会自动生成配置文件 config.yaml 和 casbin 的规则文件 rbac_model.conf
 // - 热监控系统配置项，如果发生变化会重写配置文件内的配置项
 func Init() {
-	config := _consts.ConfigFileAgent
+	config := "" // _consts.ConfigFileAgent
 	fmt.Printf("配置文件路径为%s\n", config)
 
 	v := viper.New()

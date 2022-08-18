@@ -36,7 +36,7 @@ func (c *InvocationCtrl) Invoke(ctx iris.Context) {
 		return
 	}
 
-	err = c.InterfaceService.ReplaceVariables(&req)
+	err = c.InterfaceService.ReplaceEnvironmentVariables(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

@@ -17,7 +17,7 @@ type ScenarioNodeRepo struct {
 func (r *ScenarioNodeRepo) GetTree(scenarioId int) (root *model.TestProcessor, err error) {
 	scenario, err := r.ScenarioRepo.Get(uint(scenarioId))
 
-	processors, err := r.ListByScenario(scenarioId)
+	processors, err := r.ListByScenario(uint(scenarioId))
 	if err != nil {
 		return
 	}
@@ -30,7 +30,7 @@ func (r *ScenarioNodeRepo) GetTree(scenarioId int) (root *model.TestProcessor, e
 	return
 }
 
-func (r *ScenarioNodeRepo) ListByScenario(scenarioId int) (pos []*model.TestProcessor, err error) {
+func (r *ScenarioNodeRepo) ListByScenario(scenarioId uint) (pos []*model.TestProcessor, err error) {
 	err = r.DB.
 		Where("scenario_id=?", scenarioId).
 		Where("NOT deleted").
@@ -143,7 +143,7 @@ func (r *ScenarioNodeRepo) Delete(id uint) (err error) {
 }
 
 func (r *ScenarioNodeRepo) GetChildren(nodeId uint) (children []*model.TestProcessor, err error) {
-	err = r.DB.Where("parentId=?", nodeId).Find(&children).Error
+	err = r.DB.Where("parent_id=?", nodeId).Find(&children).Error
 	return
 }
 
@@ -170,7 +170,7 @@ func (r *ScenarioNodeRepo) GetMaxOrder(parentId uint) (order int) {
 	return
 }
 
-func (r *ScenarioNodeRepo) GetScopeHierarchy(scenarioId int, scopeHierarchyMap *map[uint]*[]uint) {
+func (r *ScenarioNodeRepo) GetScopeHierarchy(scenarioId uint, scopeHierarchyMap *map[uint]*[]uint) {
 	processors, err := r.ListByScenario(scenarioId)
 	if err != nil {
 		return
@@ -183,7 +183,7 @@ func (r *ScenarioNodeRepo) GetScopeHierarchy(scenarioId int, scopeHierarchyMap *
 
 	for childId, parentId := range childToParentIdMap {
 		if (*scopeHierarchyMap)[childId] == nil {
-			arr := make([]uint, 0)
+			arr := []uint{childId}
 			(*scopeHierarchyMap)[childId] = &arr
 		}
 		*(*scopeHierarchyMap)[childId] = append(*(*scopeHierarchyMap)[childId], parentId)

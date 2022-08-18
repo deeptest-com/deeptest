@@ -28,6 +28,8 @@ export default {
     'scenario.design': '场景设计',
     'scenario.exec': '场景执行',
 
+    'report': '报告',
+
     'mock.oauth2.callback': 'OAuth2回调模拟',
 
     'json': 'JSON',

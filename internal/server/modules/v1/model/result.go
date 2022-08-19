@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type TestResult struct {
+type Result struct {
 	BaseModel
 
 	Name string `json:"name" yaml:"name"`
@@ -20,9 +20,9 @@ type TestResult struct {
 	ScenarioId uint `json:"scenarioId"`
 	ProjectId  uint `json:"projectId"`
 
-	Logs []TestLog `gorm:"-" json:"logs"`
+	Logs []Log `gorm:"-" json:"logs"`
 }
 
-func (TestResult) TableName() string {
-	return "biz_test_result"
+func (Result) TableName() string {
+	return "biz_result"
 }

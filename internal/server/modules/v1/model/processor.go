@@ -5,7 +5,7 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-type TestProcessor struct {
+type Processor struct {
 	BaseModel
 
 	Name     string `json:"name" yaml:"name"`
@@ -20,55 +20,13 @@ type TestProcessor struct {
 	EntityId       uint                     `json:"entityId"`
 	InterfaceId    uint                     `json:"interfaceId"`
 
-	Ordr     int              `json:"ordr"`
-	Children []*TestProcessor `gorm:"-" json:"children"`
-	Slots    iris.Map         `gorm:"-" json:"slots"`
-}
-
-func (TestProcessor) TableName() string {
-	return "biz_test_processor"
-}
-
-type ProcessorInterface struct {
-	BaseModel
-	ProcessorEntity
-
-	Name string `json:"name"`
-	Desc string `json:"desc"`
-
-	IsDir     bool `json:"isDir"`
-	ParentId  uint `json:"parentId"`
-	ProjectId uint `json:"projectId"`
-	UseID     uint `json:"useId"`
-
 	Ordr     int          `json:"ordr"`
-	Children []*Interface `gorm:"-" json:"children"`
-
-	Slots iris.Map `gorm:"-" json:"slots"`
-
-	Url               string                 `json:"url"`
-	Method            string                 `gorm:"default:GET" json:"method"`
-	Params            []InterfaceParam       `gorm:"-" json:"params"`
-	Headers           []InterfaceHeader      `gorm:"-" json:"headers"`
-	Body              string                 `gorm:"default:{}" json:"body"`
-	BodyType          consts.HttpContentType `gorm:"default:''" json:"bodyType"`
-	AuthorizationType string                 `gorm:"default:''" json:"authorizationType"`
-	PreRequestScript  string                 `gorm:"default:''" json:"preRequestScript"`
-	ValidationScript  string                 `gorm:"default:''" json:"validationScript"`
-
-	BasicAuth   InterfaceBasicAuth   `gorm:"-" json:"basicAuth"`
-	BearerToken InterfaceBearerToken `gorm:"-" json:"bearerToken"`
-	OAuth20     InterfaceOAuth20     `gorm:"-" json:"oauth20"`
-	ApiKey      InterfaceApiKey      `gorm:"-" json:"apiKey"`
-
-	EnvironmentId uint `json:"environmentId"`
-
-	InterfaceExtractors  []InterfaceExtractor  `gorm:"-" json:"interfaceExtractors"`
-	InterfaceCheckpoints []InterfaceCheckpoint `gorm:"-" json:"interfaceCheckpoints"`
+	Children []*Processor `gorm:"-" json:"children"`
+	Slots    iris.Map     `gorm:"-" json:"slots"`
 }
 
-func (ProcessorInterface) TableName() string {
-	return "biz_test_processor_interface"
+func (Processor) TableName() string {
+	return "biz_processor"
 }
 
 type ProcessorThreadGroup struct {
@@ -86,7 +44,7 @@ type ProcessorThreadGroup struct {
 }
 
 func (ProcessorThreadGroup) TableName() string {
-	return "biz_test_processor_thread_group"
+	return "biz_processor_thread_group"
 }
 
 type ProcessorGroup struct {
@@ -95,7 +53,7 @@ type ProcessorGroup struct {
 }
 
 func (ProcessorGroup) TableName() string {
-	return "biz_test_processor_group"
+	return "biz_processor_group"
 }
 
 type ProcessorLogic struct {
@@ -108,7 +66,7 @@ type ProcessorLogic struct {
 }
 
 func (ProcessorLogic) TableName() string {
-	return "biz_test_processor_logic"
+	return "biz_processor_logic"
 }
 
 type ProcessorLoop struct {
@@ -127,7 +85,7 @@ type ProcessorLoop struct {
 }
 
 func (ProcessorLoop) TableName() string {
-	return "biz_test_processor_loop"
+	return "biz_processor_loop"
 }
 
 type ProcessorTimer struct {
@@ -141,7 +99,7 @@ type ProcessorTimer struct {
 }
 
 func (ProcessorTimer) TableName() string {
-	return "biz_test_processor_timer"
+	return "biz_processor_timer"
 }
 
 type ProcessorVariable struct {
@@ -153,7 +111,7 @@ type ProcessorVariable struct {
 }
 
 func (ProcessorVariable) TableName() string {
-	return "biz_test_processor_variable"
+	return "biz_processor_variable"
 }
 
 type ProcessorAssertion struct {
@@ -166,7 +124,7 @@ type ProcessorAssertion struct {
 }
 
 func (ProcessorAssertion) TableName() string {
-	return "biz_test_processor_assertion"
+	return "biz_processor_assertion"
 }
 
 type ProcessorExtractor struct {
@@ -192,7 +150,7 @@ type ProcessorExtractor struct {
 }
 
 func (ProcessorExtractor) TableName() string {
-	return "biz_test_processor_extractor"
+	return "biz_processor_extractor"
 }
 
 type ProcessorData struct {
@@ -214,7 +172,7 @@ type ProcessorData struct {
 }
 
 func (ProcessorData) TableName() string {
-	return "biz_test_processor_data"
+	return "biz_processor_data"
 }
 
 type ProcessorCookie struct {
@@ -227,7 +185,7 @@ type ProcessorCookie struct {
 }
 
 func (ProcessorCookie) TableName() string {
-	return "biz_test_processor_cookie"
+	return "biz_processor_cookie"
 }
 
 type ProcessorComm struct {

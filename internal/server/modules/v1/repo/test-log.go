@@ -16,8 +16,8 @@ func NewTestLogRepo() *TestLogRepo {
 	return &TestLogRepo{}
 }
 
-func (r *TestLogRepo) Get(id uint) (scenario model.TestLog, err error) {
-	err = r.DB.Model(&model.TestLog{}).Where("id = ?", id).First(&scenario).Error
+func (r *TestLogRepo) Get(id uint) (scenario model.Log, err error) {
+	err = r.DB.Model(&model.Log{}).Where("id = ?", id).First(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("find scenario by id error", zap.String("error:", err.Error()))
 		return scenario, err
@@ -26,14 +26,14 @@ func (r *TestLogRepo) Get(id uint) (scenario model.TestLog, err error) {
 	return scenario, nil
 }
 
-func (r *TestLogRepo) Save(log *model.TestLog) (err error) {
+func (r *TestLogRepo) Save(log *model.Log) (err error) {
 	err = r.DB.Save(log).Error
 
 	return
 }
 
 func (r *TestLogRepo) DeleteById(id uint) (err error) {
-	err = r.DB.Model(&model.TestLog{}).Where("id = ?", id).
+	err = r.DB.Model(&model.Log{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete scenario by id error", zap.String("error:", err.Error()))

@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type TestLog struct {
+type Log struct {
 	BaseModel
 
 	Name           string                `json:"name"`
@@ -34,6 +34,6 @@ type TestLog struct {
 	ProcessResult  string               `json:"processResult,omitempty"`
 }
 
-func (TestLog) TableName() string {
-	return "biz_test_log"
+func (Log) TableName() string {
+	return "biz_log"
 }

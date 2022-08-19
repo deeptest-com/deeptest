@@ -16,7 +16,7 @@ func NewExecRequestService() *ExecRequestService {
 	return &ExecRequestService{}
 }
 
-func (s *ExecRequestService) ReplaceProcessorVariables(req *serverDomain.InvocationRequest, interfaceProcessor *model.TestProcessor) (
+func (s *ExecRequestService) ReplaceProcessorVariables(req *serverDomain.InvocationRequest, interfaceProcessor *model.Processor) (
 	err error) {
 
 	variables := s.ExecContextService.ListVariable(interfaceProcessor.ID)

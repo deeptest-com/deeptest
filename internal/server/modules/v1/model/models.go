@@ -34,11 +34,8 @@ var (
 
 		&Auth2Token{},
 
-		&TestConfig{},
-		&TestScenario{},
-		&TestSet{},
-		&TestProcessor{},
-		&ProcessorInterface{},
+		&Scenario{},
+		&Processor{},
 		&ProcessorThreadGroup{},
 		&ProcessorGroup{},
 		&ProcessorLogic{},
@@ -50,7 +47,7 @@ var (
 		&ProcessorData{},
 		&ProcessorCookie{},
 
-		&TestResult{},
-		&TestLog{},
+		&Result{},
+		&Log{},
 	}
 )

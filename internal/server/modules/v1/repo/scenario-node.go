@@ -14,7 +14,7 @@ type ScenarioNodeRepo struct {
 	ScenarioRepo          *ScenarioRepo          `inject:""`
 }
 
-func (r *ScenarioNodeRepo) GetTree(scenarioId int) (root *model.TestProcessor, err error) {
+func (r *ScenarioNodeRepo) GetTree(scenarioId int) (root *model.Processor, err error) {
 	scenario, err := r.ScenarioRepo.Get(uint(scenarioId))
 
 	processors, err := r.ListByScenario(uint(scenarioId))
@@ -30,7 +30,7 @@ func (r *ScenarioNodeRepo) GetTree(scenarioId int) (root *model.TestProcessor, e
 	return
 }
 
-func (r *ScenarioNodeRepo) ListByScenario(scenarioId uint) (pos []*model.TestProcessor, err error) {
+func (r *ScenarioNodeRepo) ListByScenario(scenarioId uint) (pos []*model.Processor, err error) {
 	err = r.DB.
 		Where("scenario_id=?", scenarioId).
 		Where("NOT deleted").
@@ -39,12 +39,12 @@ func (r *ScenarioNodeRepo) ListByScenario(scenarioId uint) (pos []*model.TestPro
 	return
 }
 
-func (r *ScenarioNodeRepo) Get(id uint) (processor model.TestProcessor, err error) {
+func (r *ScenarioNodeRepo) Get(id uint) (processor model.Processor, err error) {
 	err = r.DB.Where("id = ?", id).First(&processor).Error
 	return
 }
 
-func (r *ScenarioNodeRepo) makeTree(Data []*model.TestProcessor, parent *model.TestProcessor) { //参数为父节点，添加父节点的子节点指针切片
+func (r *ScenarioNodeRepo) makeTree(Data []*model.Processor, parent *model.Processor) { //参数为父节点，添加父节点的子节点指针切片
 	children, _ := r.haveChild(Data, parent) //判断节点是否有子节点并返回
 
 	if children != nil {
@@ -58,7 +58,7 @@ func (r *ScenarioNodeRepo) makeTree(Data []*model.TestProcessor, parent *model.T
 	}
 }
 
-func (r *ScenarioNodeRepo) haveChild(Data []*model.TestProcessor, node *model.TestProcessor) (child []*model.TestProcessor, yes bool) {
+func (r *ScenarioNodeRepo) haveChild(Data []*model.Processor, node *model.Processor) (child []*model.Processor, yes bool) {
 	for _, v := range Data {
 		if v.ParentId == node.ID {
 			v.Slots = iris.Map{"icon": "icon"}
@@ -71,8 +71,8 @@ func (r *ScenarioNodeRepo) haveChild(Data []*model.TestProcessor, node *model.Te
 	return
 }
 
-func (r *ScenarioNodeRepo) CreateDefault(scenarioId uint) (po model.TestProcessor, err error) {
-	po = model.TestProcessor{
+func (r *ScenarioNodeRepo) CreateDefault(scenarioId uint) (po model.Processor, err error) {
+	po = model.Processor{
 		ScenarioId:     scenarioId,
 		Name:           "root",
 		EntityCategory: consts.ProcessorRoot,
@@ -83,7 +83,7 @@ func (r *ScenarioNodeRepo) CreateDefault(scenarioId uint) (po model.TestProcesso
 	return
 }
 
-func (r *ScenarioNodeRepo) Save(processor *model.TestProcessor) (err error) {
+func (r *ScenarioNodeRepo) Save(processor *model.Processor) (err error) {
 	err = r.DB.Save(processor).Error
 
 	return
@@ -93,7 +93,7 @@ func (r *ScenarioNodeRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint) 
 	if pos == serverConsts.Inner {
 		parentId = targetId
 
-		var preChild model.TestProcessor
+		var preChild model.Processor
 		r.DB.Where("parent_id=?", parentId).
 			Order("ordr DESC").Limit(1).
 			First(&preChild)
@@ -104,7 +104,7 @@ func (r *ScenarioNodeRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint) 
 		brother, _ := r.Get(targetId)
 		parentId = brother.ParentId
 
-		r.DB.Model(&model.TestProcessor{}).
+		r.DB.Model(&model.Processor{}).
 			Where("NOT deleted AND parent_id=? AND ordr >= ?", parentId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
@@ -114,7 +114,7 @@ func (r *ScenarioNodeRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint) 
 		brother, _ := r.Get(targetId)
 		parentId = brother.ParentId
 
-		r.DB.Model(&model.TestProcessor{}).
+		r.DB.Model(&model.Processor{}).
 			Where("NOT deleted AND parent_id=? AND ordr > ?", parentId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
@@ -126,7 +126,7 @@ func (r *ScenarioNodeRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint) 
 }
 
 func (r *ScenarioNodeRepo) UpdateName(id int, name string) (err error) {
-	err = r.DB.Model(&model.TestProcessor{}).
+	err = r.DB.Model(&model.Processor{}).
 		Where("id = ?", id).
 		Update("name", name).Error
 
@@ -134,7 +134,7 @@ func (r *ScenarioNodeRepo) UpdateName(id int, name string) (err error) {
 }
 
 func (r *ScenarioNodeRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.TestProcessor{}).
+	err = r.DB.Model(&model.Processor{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
@@ -142,23 +142,23 @@ func (r *ScenarioNodeRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *ScenarioNodeRepo) GetChildren(nodeId uint) (children []*model.TestProcessor, err error) {
+func (r *ScenarioNodeRepo) GetChildren(nodeId uint) (children []*model.Processor, err error) {
 	err = r.DB.Where("parent_id=?", nodeId).Find(&children).Error
 	return
 }
 
-func (r *ScenarioNodeRepo) UpdateOrdAndParent(node model.TestProcessor) (err error) {
+func (r *ScenarioNodeRepo) UpdateOrdAndParent(node model.Processor) (err error) {
 	err = r.DB.Model(&node).
-		Updates(model.TestProcessor{Ordr: node.Ordr, ParentId: node.ParentId}).
+		Updates(model.Processor{Ordr: node.Ordr, ParentId: node.ParentId}).
 		Error
 
 	return
 }
 
 func (r *ScenarioNodeRepo) GetMaxOrder(parentId uint) (order int) {
-	node := model.TestProcessor{}
+	node := model.Processor{}
 
-	err := r.DB.Model(&model.TestProcessor{}).
+	err := r.DB.Model(&model.Processor{}).
 		Where("parent_id=?", parentId).
 		Order("ordr DESC").
 		First(&node).Error

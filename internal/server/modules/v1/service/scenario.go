@@ -26,11 +26,11 @@ func (s *ScenarioService) Paginate(req serverDomain.ScenarioReqPaginate) (ret _d
 	return
 }
 
-func (s *ScenarioService) FindById(id uint) (model.TestScenario, error) {
+func (s *ScenarioService) FindById(id uint) (model.Scenario, error) {
 	return s.ScenarioRepo.Get(id)
 }
 
-func (s *ScenarioService) Create(req model.TestScenario) (po model.TestScenario, bizErr *_domain.BizErr) {
+func (s *ScenarioService) Create(req model.Scenario) (po model.Scenario, bizErr *_domain.BizErr) {
 	po, bizErr = s.ScenarioRepo.Create(req)
 
 	s.ScenarioNodeRepo.CreateDefault(po.ID)
@@ -38,7 +38,7 @@ func (s *ScenarioService) Create(req model.TestScenario) (po model.TestScenario,
 	return
 }
 
-func (s *ScenarioService) Update(req model.TestScenario) error {
+func (s *ScenarioService) Update(req model.Scenario) error {
 	return s.ScenarioRepo.Update(req)
 }
 

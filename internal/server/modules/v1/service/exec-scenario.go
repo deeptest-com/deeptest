@@ -16,23 +16,24 @@ import (
 	"time"
 )
 
-type ScenarioExecService struct {
-	ScenarioProcessorRepo        *repo.ScenarioProcessorRepo   `inject:""`
-	ScenarioRepo                 *repo.ScenarioRepo            `inject:""`
-	ScenarioNodeRepo             *repo.ScenarioNodeRepo        `inject:""`
-	TestResultRepo               *repo.TestResultRepo          `inject:""`
-	TestLogRepo                  *repo.TestLogRepo             `inject:""`
-	InterfaceRepo                *repo.InterfaceRepo           `inject:""`
-	InterfaceService             *InterfaceService             `inject:""`
-	ScenarioProcessorExecService *ScenarioProcessorExecService `inject:""`
+type ExecScenarioService struct {
+	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
+	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
+	ScenarioNodeRepo      *repo.ScenarioNodeRepo      `inject:""`
+	TestResultRepo        *repo.TestResultRepo        `inject:""`
+	TestLogRepo           *repo.TestLogRepo           `inject:""`
+	InterfaceRepo         *repo.InterfaceRepo         `inject:""`
+	InterfaceService      *InterfaceService           `inject:""`
+	ExecProcessorService  *ExecProcessorService       `inject:""`
 
 	ExecContextService  *business.ExecContextService  `inject:""`
 	ExecHelperService   *business.ExecHelperService   `inject:""`
 	ExecIteratorService *business.ExecIteratorService `inject:""`
 	ExecRequestService  *business.ExecRequestService  `inject:""`
+	ExecLogService      *ExecLogService               `inject:""`
 }
 
-func (s *ScenarioExecService) Load(scenarioId int) (result domain.Result, err error) {
+func (s *ExecScenarioService) Load(scenarioId int) (result domain.Result, err error) {
 	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
 	if err != nil {
 		return
@@ -43,7 +44,7 @@ func (s *ScenarioExecService) Load(scenarioId int) (result domain.Result, err er
 	return
 }
 
-func (s *ScenarioExecService) ExecScenario(scenarioId int, wsMsg websocket.Message) (err error) {
+func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg websocket.Message) (err error) {
 	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
 	if err != nil {
 		return
@@ -81,7 +82,7 @@ func (s *ScenarioExecService) ExecScenario(scenarioId int, wsMsg websocket.Messa
 	return
 }
 
-func (s *ScenarioExecService) ExecProcessorRecursively(processor *model.TestProcessor, parentLog *domain.Log,
+func (s *ExecScenarioService) ExecProcessorRecursively(processor *model.Processor, parentLog *domain.Log,
 	wsMsg websocket.Message) (err error) {
 	if parentLog.Logs == nil {
 		logs := make([]*domain.Log, 0)
@@ -99,7 +100,7 @@ func (s *ScenarioExecService) ExecProcessorRecursively(processor *model.TestProc
 		}
 
 	} else if processor.EntityCategory == consts.ProcessorInterface {
-		s.ExecInterfaceWithResp(processor, parentLog, wsMsg)
+		s.ExecInterfaceProcessor(processor, parentLog, wsMsg)
 
 	} else {
 		s.ExecActionProcessorWithResp(processor, parentLog, wsMsg)
@@ -109,7 +110,7 @@ func (s *ScenarioExecService) ExecProcessorRecursively(processor *model.TestProc
 	return
 }
 
-func (s *ScenarioExecService) ExecWrapperProcessor(processor *model.TestProcessor, parentLog *domain.Log,
+func (s *ExecScenarioService) ExecWrapperProcessor(processor *model.Processor, parentLog *domain.Log,
 	wsMsg websocket.Message) {
 	wrapperLog, _ := s.GetWrapperProcessorResp(processor, parentLog, wsMsg)
 
@@ -145,13 +146,13 @@ func (s *ScenarioExecService) ExecWrapperProcessor(processor *model.TestProcesso
 	}
 }
 
-func (s *ScenarioExecService) ExecChildren(processor *model.TestProcessor, parentLog *domain.Log, wsMsg websocket.Message) {
+func (s *ExecScenarioService) ExecChildren(processor *model.Processor, parentLog *domain.Log, wsMsg websocket.Message) {
 	for _, child := range processor.Children {
 		s.ExecProcessorRecursively(child, parentLog, wsMsg)
 	}
 }
 
-func (s *ScenarioExecService) AddWrapperProcessor(processor *model.TestProcessor, parentLog *domain.Log, wsMsg websocket.Message) (
+func (s *ExecScenarioService) AddWrapperProcessor(processor *model.Processor, parentLog *domain.Log, wsMsg websocket.Message) (
 	wrapperLog *domain.Log, err error) {
 
 	_, desc, _ := s.ExecIteratorService.RetrieveIteratorsVal(processor)
@@ -172,21 +173,26 @@ func (s *ScenarioExecService) AddWrapperProcessor(processor *model.TestProcessor
 	return
 }
 
-func (s *ScenarioExecService) GetWrapperProcessorResp(processor *model.TestProcessor, parentLog *domain.Log, wsMsg websocket.Message) (
+func (s *ExecScenarioService) GetWrapperProcessorResp(processor *model.Processor, parentLog *domain.Log, wsMsg websocket.Message) (
 	wrapperLog *domain.Log, err error) {
 
 	output := domain.Output{}
+
 	//if processor.EntityCategory == consts.ProcessorThreadGroup {
-	//	result, _ = s.ScenarioProcessorExecService.ExecThreadGroup(processor, parentLog, wsMsg)
+	//	result, _ = s.ExecLogService.ExecThreadGroup(processor, parentLog, wsMsg)
 	//} else
 	if processor.EntityCategory == consts.ProcessorLogic {
-		output, _ = s.ScenarioProcessorExecService.ExecLogic(processor, parentLog, wsMsg)
+		output, _ = s.ExecProcessorService.ExecLogic(processor, parentLog, wsMsg)
 
 	} else if processor.EntityCategory == consts.ProcessorLoop {
-		output, _ = s.ScenarioProcessorExecService.ExecLoop(processor, parentLog, wsMsg)
+		output, _ = s.ExecProcessorService.ExecLoop(processor, parentLog, wsMsg)
+		//_, err = s.ExecLogService.CreateInterfaceProcessorLog(invocation, resp)
+		//if err != nil {
+		//	return
+		//}
 
 	} else if processor.EntityCategory == consts.ProcessorData {
-		output, _ = s.ScenarioProcessorExecService.ExecData(processor, parentLog, wsMsg)
+		output, _ = s.ExecProcessorService.ExecData(processor, parentLog, wsMsg)
 
 	}
 
@@ -208,22 +214,22 @@ func (s *ScenarioExecService) GetWrapperProcessorResp(processor *model.TestProce
 	return
 }
 
-func (s *ScenarioExecService) ExecActionProcessorWithResp(processor *model.TestProcessor, parentLog *domain.Log, wsMsg websocket.Message) (err error) {
+func (s *ExecScenarioService) ExecActionProcessorWithResp(processor *model.Processor, parentLog *domain.Log, wsMsg websocket.Message) (err error) {
 	output := domain.Output{}
 	if processor.EntityCategory == consts.ProcessorTimer {
-		output, _ = s.ScenarioProcessorExecService.ExecTimer(processor, parentLog, wsMsg)
+		output, _ = s.ExecProcessorService.ExecTimer(processor, parentLog, wsMsg)
 
 	} else if processor.EntityCategory == consts.ProcessorVariable {
-		output, _ = s.ScenarioProcessorExecService.ExecVariable(processor, parentLog, wsMsg)
+		output, _ = s.ExecProcessorService.ExecVariable(processor, parentLog, wsMsg)
 
 	} else if processor.EntityCategory == consts.ProcessorAssertion {
-		output, _ = s.ScenarioProcessorExecService.ExecAssertion(processor, parentLog, wsMsg)
+		output, _ = s.ExecProcessorService.ExecAssertion(processor, parentLog, wsMsg)
 
 	} else if processor.EntityCategory == consts.ProcessorExtractor {
-		output, _ = s.ScenarioProcessorExecService.ExecExtractor(processor, parentLog, wsMsg)
+		output, _ = s.ExecProcessorService.ExecExtractor(processor, parentLog, wsMsg)
 
 	} else if processor.EntityCategory == consts.ProcessorCookie {
-		output, _ = s.ScenarioProcessorExecService.ExecCookie(processor, parentLog, wsMsg)
+		output, _ = s.ExecProcessorService.ExecCookie(processor, parentLog, wsMsg)
 
 	}
 
@@ -243,7 +249,7 @@ func (s *ScenarioExecService) ExecActionProcessorWithResp(processor *model.TestP
 	return
 }
 
-func (s *ScenarioExecService) ExecInterfaceWithResp(interfaceProcessor *model.TestProcessor, parentLog *domain.Log, wsMsg websocket.Message) (err error) {
+func (s *ExecScenarioService) ExecInterfaceProcessor(interfaceProcessor *model.Processor, parentLog *domain.Log, wsMsg websocket.Message) (err error) {
 	interf, err := s.InterfaceRepo.Get(interfaceProcessor.InterfaceId)
 	if err != nil {
 		return
@@ -267,7 +273,7 @@ func (s *ScenarioExecService) ExecInterfaceWithResp(interfaceProcessor *model.Te
 		return
 	}
 
-	_, err = s.CreateLog(invocation, resp)
+	_, err = s.ExecLogService.CreateInterfaceProcessorLog(invocation, resp)
 	if err != nil {
 		return
 	}
@@ -293,9 +299,9 @@ func (s *ScenarioExecService) ExecInterfaceWithResp(interfaceProcessor *model.Te
 	return
 }
 
-func (s *ScenarioExecService) CreateResult(scenario model.TestScenario) (result model.TestResult, err error) {
+func (s *ExecScenarioService) CreateResult(scenario model.Scenario) (result model.Result, err error) {
 	startTime := time.Now()
-	result = model.TestResult{
+	result = model.Result{
 		Name:           scenario.Name,
 		StartTime:      &startTime,
 		ProgressStatus: consts.InProgress,
@@ -307,7 +313,7 @@ func (s *ScenarioExecService) CreateResult(scenario model.TestScenario) (result 
 	return
 }
 
-func (s *ScenarioExecService) RestartResult(result *model.TestResult, scenario model.TestScenario) (err error) {
+func (s *ExecScenarioService) RestartResult(result *model.Result, scenario model.Scenario) (err error) {
 	result.Name = scenario.Name
 
 	startTime := time.Now()
@@ -319,25 +325,7 @@ func (s *ScenarioExecService) RestartResult(result *model.TestResult, scenario m
 	return
 }
 
-func (s *ScenarioExecService) CreateLog(req serverDomain.InvocationRequest, resp serverDomain.InvocationResponse) (
-	log model.TestLog, err error) {
-	log = model.TestLog{
-		Name:        time.Now().Format("01-02 15:04:05"),
-		InterfaceId: req.Id,
-	}
-
-	bytesReq, _ := json.Marshal(req)
-	log.ReqContent = string(bytesReq)
-
-	bytesReps, _ := json.Marshal(resp)
-	log.RespContent = string(bytesReps)
-
-	err = s.TestLogRepo.Save(&log)
-
-	return
-}
-
-func (s *ScenarioExecService) CancelAndSendMsg(scenarioId int, wsMsg websocket.Message) (err error) {
+func (s *ExecScenarioService) CancelAndSendMsg(scenarioId int, wsMsg websocket.Message) (err error) {
 	s.TestResultRepo.UpdateStatus(consts.Cancel, "", uint(scenarioId))
 	execHelper.SendCancelMsg(wsMsg)
 	return

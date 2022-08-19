@@ -28,7 +28,7 @@ type WebSocketCtrl struct {
 	Namespace         string
 	*websocket.NSConn `stateless:"true"`
 
-	ScenarioExecService *service.ScenarioExecService `inject:""`
+	ScenarioExecService *service.ExecScenarioService `inject:""`
 }
 
 func NewWsCtrl() *WebSocketCtrl {

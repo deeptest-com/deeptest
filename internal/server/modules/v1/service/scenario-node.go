@@ -15,7 +15,7 @@ type ScenarioNodeService struct {
 	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
 }
 
-func (s *ScenarioNodeService) GetTree(scenarioId int) (root *model.TestProcessor, err error) {
+func (s *ScenarioNodeService) GetTree(scenarioId int) (root *model.Processor, err error) {
 	root, err = s.ScenarioNodeRepo.GetTree(scenarioId)
 
 	return
@@ -31,13 +31,13 @@ func (s *ScenarioNodeService) AddInterfaces(req serverDomain.ScenarioAddInterfac
 	return
 }
 
-func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioReq) (ret model.TestProcessor, err *_domain.BizErr) {
+func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioReq) (ret model.Processor, err *_domain.BizErr) {
 	targetProcessor, _ := s.ScenarioProcessorRepo.Get(uint(req.TargetProcessorId))
 	if targetProcessor.ID == 0 {
 		return
 	}
 
-	ret = model.TestProcessor{
+	ret = model.Processor{
 		Name:           req.Name,
 		EntityCategory: req.ProcessorCategory,
 		EntityType:     req.ProcessorType,
@@ -63,11 +63,11 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 	return
 }
 
-func (s *ScenarioNodeService) createDirOrInterface(interfaceNode serverDomain.InterfaceSimple, parentProcessor model.TestProcessor) (
+func (s *ScenarioNodeService) createDirOrInterface(interfaceNode serverDomain.InterfaceSimple, parentProcessor model.Processor) (
 	err *_domain.BizErr) {
 
 	if !interfaceNode.IsDir {
-		processor := model.TestProcessor{
+		processor := model.Processor{
 			Name:           interfaceNode.Name,
 			ScenarioId:     parentProcessor.ScenarioId,
 			EntityCategory: consts.ProcessorInterface,
@@ -79,7 +79,7 @@ func (s *ScenarioNodeService) createDirOrInterface(interfaceNode serverDomain.In
 		s.ScenarioNodeRepo.Save(&processor)
 
 	} else {
-		processor := model.TestProcessor{
+		processor := model.Processor{
 			Name:           interfaceNode.Name,
 			ScenarioId:     parentProcessor.ScenarioId,
 			EntityCategory: consts.ProcessorGroup,
@@ -108,7 +108,7 @@ func (s *ScenarioNodeService) Delete(id uint) (err error) {
 }
 
 func (s *ScenarioNodeService) Move(srcId, targetId uint, pos serverConsts.DropPos, projectId uint) (
-	srcScenarioNode model.TestProcessor, err error) {
+	srcScenarioNode model.Processor, err error) {
 	srcScenarioNode, err = s.ScenarioNodeRepo.Get(srcId)
 
 	srcScenarioNode.ParentId, srcScenarioNode.Ordr = s.ScenarioNodeRepo.UpdateOrder(pos, targetId)

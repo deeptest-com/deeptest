@@ -12,47 +12,47 @@ type ScenarioProcessorRepo struct {
 	ScenarioNodeRepo *ScenarioNodeRepo `inject:""`
 }
 
-func (r *ScenarioProcessorRepo) Get(id uint) (processor model.TestProcessor, err error) {
+func (r *ScenarioProcessorRepo) Get(id uint) (processor model.Processor, err error) {
 	err = r.DB.Where("id = ?", id).First(&processor).Error
 	return
 }
 
 func (r *ScenarioProcessorRepo) UpdateName(id uint, name string) (err error) {
-	err = r.DB.Model(&model.TestProcessor{}).
+	err = r.DB.Model(&model.Processor{}).
 		Where("id = ?", id).
 		Update("name", name).Error
 
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetAll(scenarioId uint) (processors []model.TestProcessor, err error) {
+func (r *ScenarioProcessorRepo) GetAll(scenarioId uint) (processors []model.Processor, err error) {
 	err = r.DB.Where("scenario_id = ?", scenarioId).
 		Find(&processors).Error
 
 	return
 }
 
-//func (r *ScenarioProcessorRepo) GetRootProcessor(scenarioId uint) (processor model.TestProcessor, err error) {
+//func (r *ScenarioProcessorRepo) GetRootProcessor(scenarioId uint) (processor model.Processor, err error) {
 //	err = r.DB.Where("scenario_id = ? AND entity_category = ?", scenarioId, consts.ProcessorRoot).
 //		First(&processor).Error
 //
 //	return
 //}
 
-//func (r *ScenarioProcessorRepo) GetChildrenProcessor(parentId, scenarioId uint) (pos []model.TestProcessor, err error) {
+//func (r *ScenarioProcessorRepo) GetChildrenProcessor(parentId, scenarioId uint) (pos []model.Processor, err error) {
 //	err = r.DB.Where("parent_id = ? AND scenario_id = ? AND NOT deleted", parentId, scenarioId).
 //		Find(&pos).Error
 //
 //	return
 //}
 
-func (r *ScenarioProcessorRepo) GetInterface(processor *model.TestProcessor) (ret interface{}, err error) {
+func (r *ScenarioProcessorRepo) GetInterface(processor *model.Processor) (ret interface{}, err error) {
 	ret = r.genProcessorComm(*processor)
 
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetGroup(processor model.TestProcessor) (ret interface{}, err error) {
+func (r *ScenarioProcessorRepo) GetGroup(processor model.Processor) (ret interface{}, err error) {
 	var entity model.ProcessorGroup
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&entity).Error
 
@@ -66,7 +66,7 @@ func (r *ScenarioProcessorRepo) GetGroup(processor model.TestProcessor) (ret int
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetLogic(processor model.TestProcessor) (ret model.ProcessorLogic, err error) {
+func (r *ScenarioProcessorRepo) GetLogic(processor model.Processor) (ret model.ProcessorLogic, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
 	if ret.ID == 0 {
@@ -79,7 +79,7 @@ func (r *ScenarioProcessorRepo) GetLogic(processor model.TestProcessor) (ret mod
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetLoop(processor model.TestProcessor) (ret model.ProcessorLoop, err error) {
+func (r *ScenarioProcessorRepo) GetLoop(processor model.Processor) (ret model.ProcessorLoop, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
 	if ret.ID == 0 {
@@ -92,7 +92,7 @@ func (r *ScenarioProcessorRepo) GetLoop(processor model.TestProcessor) (ret mode
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetVariable(processor model.TestProcessor) (ret model.ProcessorVariable, err error) {
+func (r *ScenarioProcessorRepo) GetVariable(processor model.Processor) (ret model.ProcessorVariable, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
 	if ret.ID == 0 {
@@ -105,7 +105,7 @@ func (r *ScenarioProcessorRepo) GetVariable(processor model.TestProcessor) (ret 
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetTimer(processor model.TestProcessor) (ret model.ProcessorTimer, err error) {
+func (r *ScenarioProcessorRepo) GetTimer(processor model.Processor) (ret model.ProcessorTimer, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
 	if ret.ID == 0 {
@@ -118,7 +118,7 @@ func (r *ScenarioProcessorRepo) GetTimer(processor model.TestProcessor) (ret mod
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetCookie(processor model.TestProcessor) (ret model.ProcessorCookie, err error) {
+func (r *ScenarioProcessorRepo) GetCookie(processor model.Processor) (ret model.ProcessorCookie, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
 	if ret.ID == 0 {
@@ -131,7 +131,7 @@ func (r *ScenarioProcessorRepo) GetCookie(processor model.TestProcessor) (ret mo
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetAssertion(processor model.TestProcessor) (ret model.ProcessorAssertion, err error) {
+func (r *ScenarioProcessorRepo) GetAssertion(processor model.Processor) (ret model.ProcessorAssertion, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
 	if ret.ID == 0 {
@@ -144,7 +144,7 @@ func (r *ScenarioProcessorRepo) GetAssertion(processor model.TestProcessor) (ret
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetExtractor(processor model.TestProcessor) (ret model.ProcessorExtractor, err error) {
+func (r *ScenarioProcessorRepo) GetExtractor(processor model.Processor) (ret model.ProcessorExtractor, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
 	if ret.ID == 0 {
@@ -157,7 +157,7 @@ func (r *ScenarioProcessorRepo) GetExtractor(processor model.TestProcessor) (ret
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetData(processor model.TestProcessor) (ret model.ProcessorData, err error) {
+func (r *ScenarioProcessorRepo) GetData(processor model.Processor) (ret model.ProcessorData, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
 	if ret.ID == 0 {
@@ -243,14 +243,14 @@ func (r *ScenarioProcessorRepo) SaveData(po *model.ProcessorData) (err error) {
 }
 
 func (r *ScenarioProcessorRepo) UpdateEntityId(id, entityId uint) (err error) {
-	err = r.DB.Model(&model.TestProcessor{}).
+	err = r.DB.Model(&model.Processor{}).
 		Where("id = ?", id).
 		Update("entity_id", entityId).Error
 
 	return
 }
 
-func (r *ScenarioProcessorRepo) genProcessorComm(processor model.TestProcessor) (ret model.ProcessorComm) {
+func (r *ScenarioProcessorRepo) genProcessorComm(processor model.Processor) (ret model.ProcessorComm) {
 	ret.Id = 0
 	ret.Name = processor.Name
 	ret.Comments = processor.Comments

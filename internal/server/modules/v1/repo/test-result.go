@@ -18,8 +18,8 @@ func NewTestResultRepo() *TestResultRepo {
 	return &TestResultRepo{}
 }
 
-func (r *TestResultRepo) Get(id uint) (scenario model.TestResult, err error) {
-	err = r.DB.Model(&model.TestResult{}).Where("id = ?", id).First(&scenario).Error
+func (r *TestResultRepo) Get(id uint) (scenario model.Result, err error) {
+	err = r.DB.Model(&model.Result{}).Where("id = ?", id).First(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("find scenario by id error", zap.String("error:", err.Error()))
 		return scenario, err
@@ -28,8 +28,8 @@ func (r *TestResultRepo) Get(id uint) (scenario model.TestResult, err error) {
 	return scenario, nil
 }
 
-func (r *TestResultRepo) Create(result *model.TestResult) (bizErr *_domain.BizErr) {
-	err := r.DB.Model(&model.TestResult{}).Create(result).Error
+func (r *TestResultRepo) Create(result *model.Result) (bizErr *_domain.BizErr) {
+	err := r.DB.Model(&model.Result{}).Create(result).Error
 	if err != nil {
 		logUtils.Errorf("create test result error", zap.String("error:", err.Error()))
 		bizErr.Code = _domain.ErrComm.Code
@@ -41,7 +41,7 @@ func (r *TestResultRepo) Create(result *model.TestResult) (bizErr *_domain.BizEr
 }
 
 func (r *TestResultRepo) DeleteById(id uint) (err error) {
-	err = r.DB.Model(&model.TestResult{}).Where("id = ?", id).
+	err = r.DB.Model(&model.Result{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete scenario by id error", zap.String("error:", err.Error()))
@@ -58,7 +58,7 @@ func (r *TestResultRepo) UpdateStatus(progressStatus consts.ProgressStatus, resu
 		"progress_status": progressStatus,
 		"result_status":   resultStatus,
 	}
-	err = r.DB.Model(&model.TestResult{}).
+	err = r.DB.Model(&model.Result{}).
 		Where("scenario_id = ? AND progress_status = ?", scenarioId, consts.InProgress).
 		Updates(values).Error
 	if err != nil {
@@ -69,7 +69,7 @@ func (r *TestResultRepo) UpdateStatus(progressStatus consts.ProgressStatus, resu
 	return nil
 }
 
-func (r *TestResultRepo) ResetResult(result model.TestResult) (err error) {
+func (r *TestResultRepo) ResetResult(result model.Result) (err error) {
 	values := map[string]interface{}{
 		"name":       result.Name,
 		"start_time": result.StartTime,
@@ -84,7 +84,7 @@ func (r *TestResultRepo) ResetResult(result model.TestResult) (err error) {
 }
 
 func (r *TestResultRepo) ClearLogs(resultId uint) (err error) {
-	err = r.DB.Model(&model.TestLog{}).Where("result_id = ?", resultId).
+	err = r.DB.Model(&model.Log{}).Where("result_id = ?", resultId).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete logs by result id error", zap.String("error:", err.Error()))
@@ -94,7 +94,7 @@ func (r *TestResultRepo) ClearLogs(resultId uint) (err error) {
 	return
 }
 
-func (r *TestResultRepo) FindInProgressResult(scenarioId uint) (result model.TestResult, err error) {
+func (r *TestResultRepo) FindInProgressResult(scenarioId uint) (result model.Result, err error) {
 	err = r.DB.Model(&result).
 		Where("progress_status =? AND scenario_id = ? AND  not deleted", consts.InProgress, scenarioId).
 		First(&result).Error

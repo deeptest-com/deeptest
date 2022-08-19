@@ -61,7 +61,7 @@ func (c *ScenarioCtrl) Create(ctx iris.Context) {
 		return
 	}
 
-	req := model.TestScenario{}
+	req := model.Scenario{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
@@ -79,7 +79,7 @@ func (c *ScenarioCtrl) Create(ctx iris.Context) {
 }
 
 func (c *ScenarioCtrl) Update(ctx iris.Context) {
-	var req model.TestScenario
+	var req model.Scenario
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})

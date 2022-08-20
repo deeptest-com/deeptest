@@ -9,7 +9,7 @@
       </template>
 
       <div>
-        <Log v-if="modelRef.logs && modelRef.logs[0] && modelRef.logs[0].logs" :logs="modelRef.logs[0].logs"></Log>
+        <Log v-if="modelRef.logs" :logs="modelRef.logs"></Log>
       </div>
     </a-card>
   </div>

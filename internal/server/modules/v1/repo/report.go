@@ -60,7 +60,8 @@ func (r *ReportRepo) Get(id uint) (report model.Report, err error) {
 		return
 	}
 
-	report.Logs, err = r.getLogTree(report)
+	root, err := r.getLogTree(report)
+	report.Logs = root.Logs
 
 	return
 }
@@ -146,18 +147,16 @@ func (r *ReportRepo) FindInProgressResult(scenarioId uint) (result model.Report,
 	return
 }
 
-func (r *ReportRepo) getLogTree(report model.Report) (logs []model.Log, err error) {
+func (r *ReportRepo) getLogTree(report model.Report) (root model.Log, err error) {
 	pos, err := r.LogRepo.ListByReport(report.ID)
 	if err != nil {
 		return
 	}
 
-	root := model.Log{
+	root = model.Log{
 		Name: report.Name,
 	}
 	r.makeTree(pos, &root)
-
-	logs = append(logs, root)
 
 	return
 }

@@ -28,10 +28,13 @@ type Log struct {
 	RespContent string `json:"respContent,omitempty"`
 
 	// for processor
-	ProcessorType  consts.ProcessorType `json:"processorType" yaml:"processorType"`
-	ProcessId      uint                 `json:"processId,omitempty"`
-	ProcessContent string               `json:"processContent,omitempty"`
-	ProcessResult  string               `json:"processResult,omitempty"`
+	ProcessorType    consts.ProcessorType `json:"processorType" yaml:"processorType"`
+	ProcessorId      uint                 `json:"processorId,omitempty"`
+	ProcessorContent string               `json:"processorContent,omitempty"`
+	ProcessorResult  string               `json:"processorResult,omitempty"`
+
+	Summary string `json:"summary,omitempty"`
+	Output  string `json:"output,omitempty"`
 }
 
 func (Log) TableName() string {

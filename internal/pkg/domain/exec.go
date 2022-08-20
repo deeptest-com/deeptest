@@ -30,24 +30,28 @@ type Log struct {
 	StartTime      *time.Time            `json:"startTime"`
 	EndTime        *time.Time            `json:"endTime"`
 
-	ParentId uint    `json:"parentId"`
-	Logs     *[]*Log `json:"logs"`
+	ParentId     uint `json:"parentId"`
+	PersistentId uint `json:"persistentId"`
+	ResultId     uint `json:"resultId"`
+
+	Logs *[]*Log `json:"logs"`
 
 	// type
 	ProcessorCategory consts.ProcessorCategory `json:"processorCategory"`
 
 	// for interface
-	InterfaceId uint     `json:"interfaceId"`
-	ReqContent  string   `json:"reqContent,omitempty"`
-	RespContent string   `json:"respContent,omitempty"`
-	RespSummary []string `json:"respSummary,omitempty"`
-	Output      Output   `json:"output,omitempty"`
+	InterfaceId uint   `json:"interfaceId"`
+	ReqContent  string `json:"reqContent,omitempty"`
+	RespContent string `json:"respContent,omitempty"`
 
 	// for processor
 	ProcessorType  consts.ProcessorType `json:"processorType"`
 	ProcessId      uint                 `json:"processId,omitempty"`
 	ProcessContent string               `json:"processContent,omitempty"`
 	ProcessResult  string               `json:"processResult,omitempty"`
+
+	Summary []string `json:"summary,omitempty"`
+	Output  Output   `json:"output,omitempty"`
 }
 
 type ExecIterator struct {
@@ -64,12 +68,13 @@ type ExecIterator struct {
 
 type Output struct {
 	// loop - times
-	Times int `json:"times"`
+	Times int `json:"times,omitempty"`
 	// loop - range
-	Range      string           `json:"range"`
-	RangeStart interface{}      `json:"rangeStart"`
-	RangeEnd   interface{}      `json:"rangeEnd"`
-	RangeType  consts.RangeType `json:"rangeType"`
+	Range      string           `json:"range,omitempty"`
+	RangeStart interface{}      `json:"rangeStart,omitempty"`
+	RangeEnd   interface{}      `json:"rangeEnd,omitempty"`
+	RangeType  consts.RangeType `json:"rangeType,omitempty"`
 
-	Text string `json:"text"`
+	// common
+	Text string `json:"text,omitempty"`
 }

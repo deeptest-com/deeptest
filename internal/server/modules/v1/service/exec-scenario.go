@@ -68,6 +68,7 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg websocket.Messa
 		ProcessorCategory: rootProcessor.EntityCategory,
 		ProcessorType:     rootProcessor.EntityType,
 		ParentId:          0,
+		ResultId:          resultPo.ID,
 	}
 
 	execHelper.SendStartMsg(wsMsg)
@@ -95,6 +96,7 @@ func (s *ExecScenarioService) ExecProcessorRecursively(processor *model.Processo
 
 		} else {
 			wrapperLog, _ := s.AddWrapperProcessor(processor, parentLog, wsMsg)
+
 			s.ExecChildren(processor, wrapperLog, wsMsg)
 
 		}
@@ -120,8 +122,9 @@ func (s *ExecScenarioService) ExecWrapperProcessor(processor *model.Processor, p
 		s.ExecIteratorService.Push(iterator)
 
 		for range iterator.Times {
-			wrapperLog, _ = s.AddWrapperProcessor(processor, parentLog, wsMsg)
-			s.ExecChildren(processor, wrapperLog, wsMsg)
+			wrapperLogItem, _ := s.AddWrapperProcessor(processor, wrapperLog, wsMsg)
+
+			s.ExecChildren(processor, wrapperLogItem, wsMsg)
 		}
 
 		s.ExecIteratorService.Pop()
@@ -133,13 +136,13 @@ func (s *ExecScenarioService) ExecWrapperProcessor(processor *model.Processor, p
 		s.ExecIteratorService.Push(iterator)
 
 		for _, item := range iterator.Items {
-			wrapperLog, _ = s.AddWrapperProcessor(processor, parentLog, wsMsg)
+			wrapperLogItem, _ := s.AddWrapperProcessor(processor, wrapperLog, wsMsg)
 
 			s.ExecContextService.SetVariable(processor.ID, loopRangeProcessor.VariableName, item)
 			vari := s.ExecContextService.GetVariable(processor.ID, loopRangeProcessor.VariableName)
 			logUtils.Infof("%s = %v", vari.Name, vari.Value)
 
-			s.ExecChildren(processor, wrapperLog, wsMsg)
+			s.ExecChildren(processor, wrapperLogItem, wsMsg)
 		}
 
 		s.ExecIteratorService.Pop()
@@ -158,14 +161,16 @@ func (s *ExecScenarioService) AddWrapperProcessor(processor *model.Processor, pa
 	_, desc, _ := s.ExecIteratorService.RetrieveIteratorsVal(processor)
 
 	wrapperLog = &domain.Log{
-		Id:                processor.ID,
 		Name:              processor.Name,
 		ProcessId:         processor.ID,
 		ProcessorCategory: processor.EntityCategory,
 		ProcessorType:     processor.EntityType,
-		ParentId:          processor.ParentId,
-		RespSummary:       []string{desc},
+		ParentId:          parentLog.PersistentId,
+		Summary:           []string{desc},
+		ResultId:          parentLog.ResultId,
 	}
+
+	s.ExecLogService.CreateProcessorLog(processor, wrapperLog, parentLog.PersistentId)
 
 	*parentLog.Logs = append(*parentLog.Logs, wrapperLog)
 	execHelper.SendExecMsg(*wrapperLog, wsMsg)
@@ -186,10 +191,6 @@ func (s *ExecScenarioService) GetWrapperProcessorResp(processor *model.Processor
 
 	} else if processor.EntityCategory == consts.ProcessorLoop {
 		output, _ = s.ExecProcessorService.ExecLoop(processor, parentLog, wsMsg)
-		//_, err = s.ExecLogService.CreateInterfaceProcessorLog(invocation, resp)
-		//if err != nil {
-		//	return
-		//}
 
 	} else if processor.EntityCategory == consts.ProcessorData {
 		output, _ = s.ExecProcessorService.ExecData(processor, parentLog, wsMsg)
@@ -202,11 +203,17 @@ func (s *ExecScenarioService) GetWrapperProcessorResp(processor *model.Processor
 		ProcessId:         processor.ID,
 		ProcessorCategory: processor.EntityCategory,
 		ProcessorType:     processor.EntityType,
-		ParentId:          processor.ParentId,
+		ParentId:          parentLog.PersistentId,
+		ResultId:          parentLog.ResultId,
 
-		Output:      output,
-		RespSummary: []string{output.Text},
+		Output:  output,
+		Summary: []string{output.Text},
 	}
+
+	logs := make([]*domain.Log, 0)
+	wrapperLog.Logs = &logs
+
+	s.ExecLogService.CreateProcessorLog(processor, wrapperLog, parentLog.PersistentId)
 
 	*parentLog.Logs = append(*parentLog.Logs, wrapperLog)
 	execHelper.SendExecMsg(*wrapperLog, wsMsg)
@@ -273,7 +280,7 @@ func (s *ExecScenarioService) ExecInterfaceProcessor(interfaceProcessor *model.P
 		return
 	}
 
-	_, err = s.ExecLogService.CreateInterfaceProcessorLog(invocation, resp)
+	logPo, err := s.ExecLogService.CreateInterfaceLog(invocation, resp, parentLog)
 	if err != nil {
 		return
 	}
@@ -282,11 +289,11 @@ func (s *ExecScenarioService) ExecInterfaceProcessor(interfaceProcessor *model.P
 	respContent, _ := json.Marshal(resp)
 
 	interfaceLog := &domain.Log{
-		Id:                interfaceProcessor.ID,
+		Id:                logPo.ID,
 		Name:              fmt.Sprintf("%s - %s %s", interfaceProcessor.Name, invocation.Method, invocation.Url),
 		ProcessorCategory: consts.ProcessorInterface,
 		ProcessorType:     consts.ProcessorInterfaceDefault,
-		ParentId:          interfaceProcessor.ParentId,
+		ParentId:          parentLog.PersistentId,
 
 		InterfaceId: interf.ID,
 		ReqContent:  string(reqContent),

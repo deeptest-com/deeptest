@@ -3,11 +3,11 @@
     <div v-for="(item, index) in logs" :key="index" class="log">
       <div>
         <span v-if="!item.respContent">
-          {{ item.name }}&nbsp; {{ joinArr(item.respSummary) }}
+          {{ item.name }}&nbsp; {{ joinArr(item.summary) }}
         </span>
 
         <a-collapse v-if="item.respContent" expand-icon-position="right">
-          <a-collapse-panel key="index" :header="item.name + '&nbsp;' + joinArr(item.respSummary)">
+          <a-collapse-panel key="index" :header="item.name + '&nbsp;' + joinArr(item.summary)">
             <div class="resp-content">{{ item.respContent }}</div>
           </a-collapse-panel>
         </a-collapse>

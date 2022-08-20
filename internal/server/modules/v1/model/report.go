@@ -5,14 +5,14 @@ import (
 	"time"
 )
 
-type Result struct {
+type Report struct {
 	BaseModel
 
 	Name string `json:"name" yaml:"name"`
 	Desc string `json:"desc" yaml:"desc"`
 
 	ProgressStatus consts.ProgressStatus `json:"progressStatus" yaml:"progressStatus"`
-	ResultStatus   consts.ResultStatus   `json:"resultStatus" yaml:"resultStatus"`
+	ReportStatus   consts.ResultStatus   `json:"resultStatus" yaml:"resultStatus"`
 
 	StartTime *time.Time `json:"startTime"`
 	EndTime   *time.Time `json:"endTime"`
@@ -23,6 +23,6 @@ type Result struct {
 	Logs []Log `gorm:"-" json:"logs"`
 }
 
-func (Result) TableName() string {
-	return "biz_result"
+func (Report) TableName() string {
+	return "biz_report"
 }

@@ -1,7 +1,10 @@
 package repo
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
+	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -9,17 +12,50 @@ import (
 	"gorm.io/gorm"
 )
 
-type TestResultRepo struct {
+type ReportRepo struct {
 	DB       *gorm.DB  `inject:""`
 	RoleRepo *RoleRepo `inject:""`
 }
 
-func NewTestResultRepo() *TestResultRepo {
-	return &TestResultRepo{}
+func NewReportRepo() *ReportRepo {
+	return &ReportRepo{}
 }
 
-func (r *TestResultRepo) Get(id uint) (scenario model.Result, err error) {
-	err = r.DB.Model(&model.Result{}).Where("id = ?", id).First(&scenario).Error
+func (r *ReportRepo) Paginate(req serverDomain.ReportReqPaginate) (data _domain.PageData, err error) {
+	var count int64
+
+	db := r.DB.Model(&model.Report{}).Where("NOT deleted")
+
+	if req.Keywords != "" {
+		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+	}
+	if req.ScenarioId != 0 {
+		db = db.Where("scenario_id = ?", req.ScenarioId)
+	}
+
+	err = db.Count(&count).Error
+	if err != nil {
+		logUtils.Errorf("count result error", zap.String("error:", err.Error()))
+		return
+	}
+
+	results := make([]*model.Report, 0)
+
+	err = db.
+		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
+		Find(&results).Error
+	if err != nil {
+		logUtils.Errorf("query scenario error", zap.String("error:", err.Error()))
+		return
+	}
+
+	data.Populate(results, count, req.Page, req.PageSize)
+
+	return
+}
+
+func (r *ReportRepo) Get(id uint) (scenario model.Report, err error) {
+	err = r.DB.Model(&model.Report{}).Where("id = ?", id).First(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("find scenario by id error", zap.String("error:", err.Error()))
 		return scenario, err
@@ -28,8 +64,8 @@ func (r *TestResultRepo) Get(id uint) (scenario model.Result, err error) {
 	return scenario, nil
 }
 
-func (r *TestResultRepo) Create(result *model.Result) (bizErr *_domain.BizErr) {
-	err := r.DB.Model(&model.Result{}).Create(result).Error
+func (r *ReportRepo) Create(result *model.Report) (bizErr *_domain.BizErr) {
+	err := r.DB.Model(&model.Report{}).Create(result).Error
 	if err != nil {
 		logUtils.Errorf("create test result error", zap.String("error:", err.Error()))
 		bizErr.Code = _domain.ErrComm.Code
@@ -40,8 +76,8 @@ func (r *TestResultRepo) Create(result *model.Result) (bizErr *_domain.BizErr) {
 	return
 }
 
-func (r *TestResultRepo) DeleteById(id uint) (err error) {
-	err = r.DB.Model(&model.Result{}).Where("id = ?", id).
+func (r *ReportRepo) DeleteById(id uint) (err error) {
+	err = r.DB.Model(&model.Report{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete scenario by id error", zap.String("error:", err.Error()))
@@ -51,14 +87,14 @@ func (r *TestResultRepo) DeleteById(id uint) (err error) {
 	return
 }
 
-func (r *TestResultRepo) UpdateStatus(progressStatus consts.ProgressStatus, resultStatus consts.ResultStatus, scenarioId uint) (
+func (r *ReportRepo) UpdateStatus(progressStatus consts.ProgressStatus, resultStatus consts.ResultStatus, scenarioId uint) (
 	err error) {
 
 	values := map[string]interface{}{
 		"progress_status": progressStatus,
 		"result_status":   resultStatus,
 	}
-	err = r.DB.Model(&model.Result{}).
+	err = r.DB.Model(&model.Report{}).
 		Where("scenario_id = ? AND progress_status = ?", scenarioId, consts.InProgress).
 		Updates(values).Error
 	if err != nil {
@@ -69,7 +105,7 @@ func (r *TestResultRepo) UpdateStatus(progressStatus consts.ProgressStatus, resu
 	return nil
 }
 
-func (r *TestResultRepo) ResetResult(result model.Result) (err error) {
+func (r *ReportRepo) ResetResult(result model.Report) (err error) {
 	values := map[string]interface{}{
 		"name":       result.Name,
 		"start_time": result.StartTime,
@@ -83,7 +119,7 @@ func (r *TestResultRepo) ResetResult(result model.Result) (err error) {
 	return
 }
 
-func (r *TestResultRepo) ClearLogs(resultId uint) (err error) {
+func (r *ReportRepo) ClearLogs(resultId uint) (err error) {
 	err = r.DB.Model(&model.Log{}).Where("result_id = ?", resultId).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
@@ -94,7 +130,7 @@ func (r *TestResultRepo) ClearLogs(resultId uint) (err error) {
 	return
 }
 
-func (r *TestResultRepo) FindInProgressResult(scenarioId uint) (result model.Result, err error) {
+func (r *ReportRepo) FindInProgressResult(scenarioId uint) (result model.Report, err error) {
 	err = r.DB.Model(&result).
 		Where("progress_status =? AND scenario_id = ? AND  not deleted", consts.InProgress, scenarioId).
 		First(&result).Error

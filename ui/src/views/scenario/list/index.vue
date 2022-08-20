@@ -156,8 +156,8 @@ const remove = (id: number) => {
   console.log('remove')
 
   Modal.confirm({
-    title: '删除项目',
-    content: '确定删除？',
+    title: '删除场景',
+    content: '确定删除指定的场景？',
     okText: '确认',
     cancelText: '取消',
     onOk: async () => {

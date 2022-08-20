@@ -20,8 +20,8 @@ type ExecScenarioService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
 	ScenarioNodeRepo      *repo.ScenarioNodeRepo      `inject:""`
-	TestResultRepo        *repo.TestResultRepo        `inject:""`
-	TestLogRepo           *repo.TestLogRepo           `inject:""`
+	TestResultRepo        *repo.ReportRepo            `inject:""`
+	TestLogRepo           *repo.LogRepo               `inject:""`
 	InterfaceRepo         *repo.InterfaceRepo         `inject:""`
 	InterfaceService      *InterfaceService           `inject:""`
 	ExecProcessorService  *ExecProcessorService       `inject:""`
@@ -306,9 +306,9 @@ func (s *ExecScenarioService) ExecInterfaceProcessor(interfaceProcessor *model.P
 	return
 }
 
-func (s *ExecScenarioService) CreateResult(scenario model.Scenario) (result model.Result, err error) {
+func (s *ExecScenarioService) CreateResult(scenario model.Scenario) (result model.Report, err error) {
 	startTime := time.Now()
-	result = model.Result{
+	result = model.Report{
 		Name:           scenario.Name,
 		StartTime:      &startTime,
 		ProgressStatus: consts.InProgress,
@@ -320,7 +320,7 @@ func (s *ExecScenarioService) CreateResult(scenario model.Scenario) (result mode
 	return
 }
 
-func (s *ExecScenarioService) RestartResult(result *model.Result, scenario model.Scenario) (err error) {
+func (s *ExecScenarioService) RestartResult(result *model.Report, scenario model.Scenario) (err error) {
 	result.Name = scenario.Name
 
 	startTime := time.Now()

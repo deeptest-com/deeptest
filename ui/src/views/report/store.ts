@@ -2,18 +2,14 @@ import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
 import { Report, QueryResult, QueryParams, PaginationConfig } from './data';
-import {
-    query,
-    get,
-} from './service';
+import { query, get, remove} from './service';
 
 export interface StateType {
     ReportId: number;
 
     listResult: QueryResult;
     detailResult: Report;
-
-    scenarios: any[];
+    queryParams: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -23,10 +19,12 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
+        setQueryParams: Mutation<StateType>;
     };
     actions: {
-        listReport: Action<StateType, StateType>;
-        getReport: Action<StateType, StateType>;
+        list: Action<StateType, StateType>;
+        get: Action<StateType, StateType>;
+        remove: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -43,8 +41,7 @@ const initState: StateType = {
         },
     },
     detailResult: {} as Report,
-
-    scenarios: [],
+    queryParams: {},
 };
 
 const StoreModel: ModuleType = {
@@ -64,9 +61,12 @@ const StoreModel: ModuleType = {
         setDetail(state, payload) {
             state.detailResult = payload;
         },
+        setQueryParams(state, payload) {
+            state.queryParams = payload;
+        },
     },
     actions: {
-        async listReport({ commit, dispatch }, params: QueryParams ) {
+        async list({ commit, dispatch }, params: QueryParams ) {
             try {
                 const response: ResponseData = await query(params);
                 if (response.code != 0) return;
@@ -83,6 +83,7 @@ const StoreModel: ModuleType = {
                         total: data.total || 0,
                     },
                 });
+                commit('setQueryParams', params);
 
                 return true;
             } catch (error) {
@@ -90,7 +91,7 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async getReport({ commit }, id: number ) {
+        async get({ commit }, id: number ) {
             if (id === 0) {
                 commit('setDetail',{
                     ...initState.detailResult,
@@ -104,6 +105,18 @@ const StoreModel: ModuleType = {
                     ...initState.detailResult,
                     ...data,
                 });
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+
+        async remove({ commit, dispatch, state }, payload: number ) {
+            try {
+                await remove(payload);
+
+                await dispatch('list', state.queryParams)
                 return true;
             } catch (error) {
                 return false;

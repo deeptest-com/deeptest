@@ -7,16 +7,16 @@ import (
 	"gorm.io/gorm"
 )
 
-type TestLogRepo struct {
+type LogRepo struct {
 	DB       *gorm.DB  `inject:""`
 	RoleRepo *RoleRepo `inject:""`
 }
 
-func NewTestLogRepo() *TestLogRepo {
-	return &TestLogRepo{}
+func NewLogRepo() *LogRepo {
+	return &LogRepo{}
 }
 
-func (r *TestLogRepo) Get(id uint) (scenario model.Log, err error) {
+func (r *LogRepo) Get(id uint) (scenario model.Log, err error) {
 	err = r.DB.Model(&model.Log{}).Where("id = ?", id).First(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("find scenario by id error", zap.String("error:", err.Error()))
@@ -26,13 +26,13 @@ func (r *TestLogRepo) Get(id uint) (scenario model.Log, err error) {
 	return scenario, nil
 }
 
-func (r *TestLogRepo) Save(log *model.Log) (err error) {
+func (r *LogRepo) Save(log *model.Log) (err error) {
 	err = r.DB.Save(log).Error
 
 	return
 }
 
-func (r *TestLogRepo) DeleteById(id uint) (err error) {
+func (r *LogRepo) DeleteById(id uint) (err error) {
 	err = r.DB.Model(&model.Log{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {

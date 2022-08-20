@@ -41,7 +41,7 @@ export default defineComponent({
       get(id.value)
 
       const back = ():void =>  {
-        router.replace(`/scenario/index`)
+        router.replace(`/report/index`)
       }
 
       return {

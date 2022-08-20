@@ -149,7 +149,7 @@ export default defineComponent({
 
       Modal.confirm({
         title: '删除项目',
-        content: '确定删除？',
+        content: '确定删除指定的项目？',
         okText: '确认',
         cancelText: '取消',
         onOk: async () => {
@@ -157,7 +157,6 @@ export default defineComponent({
             console.log('res', res)
             if (res === true) {
               message.success(`删除项目成功`)
-              store.dispatch('Project/queryProject', id)
             } else {
               message.error(`删除项目失败`)
             }

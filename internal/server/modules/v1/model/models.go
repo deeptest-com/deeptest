@@ -47,7 +47,7 @@ var (
 		&ProcessorData{},
 		&ProcessorCookie{},
 
-		&Result{},
+		&Report{},
 		&Log{},
 	}
 )

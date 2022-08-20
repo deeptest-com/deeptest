@@ -12,8 +12,8 @@ import (
 type ExecProcessorService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo  `inject:""`
 	ScenarioRepo          *repo.ScenarioRepo           `inject:""`
-	TestResultRepo        *repo.TestResultRepo         `inject:""`
-	TestLogRepo           *repo.TestLogRepo            `inject:""`
+	TestResultRepo        *repo.ReportRepo             `inject:""`
+	TestLogRepo           *repo.LogRepo                `inject:""`
 	InterfaceRepo         *repo.InterfaceRepo          `inject:""`
 	InterfaceService      *InterfaceService            `inject:""`
 	ExecRequestService    *business.ExecRequestService `inject:""`

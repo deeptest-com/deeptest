@@ -33,6 +33,12 @@ export async function save(data: any): Promise<any> {
         data: data,
     });
 }
+export async function remove(id: number): Promise<any> {
+    return request({
+        url: `/${apiPath}/${id}`,
+        method: 'delete',
+    });
+}
 
 export async function load(scenarioId): Promise<any> {
     const params = {scenarioId}

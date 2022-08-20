@@ -6,6 +6,7 @@ import {
     query,
     get,
     save,
+    remove,
     load,
     getNode,
     createNode,
@@ -24,6 +25,7 @@ export interface StateType {
 
     listResult: QueryResult;
     detailResult: Scenario;
+    queryParams: any;
 
     treeData: Scenario[];
     nodeData: any;
@@ -38,6 +40,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
+        setQueryParams: Mutation<StateType>;
 
         setTree: Mutation<StateType>;
         setNode: Mutation<StateType>;
@@ -47,6 +50,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
     actions: {
         listScenario: Action<StateType, StateType>;
         getScenario: Action<StateType, StateType>;
+        removeScenario: Action<StateType, StateType>;
 
         loadScenario: Action<StateType, StateType>;
         saveScenario: Action<StateType, StateType>;
@@ -81,6 +85,7 @@ const initState: StateType = {
         },
     },
     detailResult: {} as Scenario,
+    queryParams: {},
 
     treeData: [],
     nodeData: {},
@@ -115,6 +120,9 @@ const StoreModel: ModuleType = {
         setExecResult(state, data) {
             state.execResult = data;
         },
+        setQueryParams(state, payload) {
+            state.queryParams = payload;
+        },
     },
     actions: {
         async listScenario({ commit, dispatch }, params: QueryParams ) {
@@ -134,6 +142,7 @@ const StoreModel: ModuleType = {
                         total: data.total || 0,
                     },
                 });
+                commit('setQueryParams', params);
 
                 return true;
             } catch (error) {
@@ -166,6 +175,15 @@ const StoreModel: ModuleType = {
                 return true;
             } else {
                 return false
+            }
+        },
+        async removeScenario({ commit, dispatch, state }, payload: number ) {
+            try {
+                await remove(payload);
+                await dispatch('listScenario', state.queryParams)
+                return true;
+            } catch (error) {
+                return false;
             }
         },
 

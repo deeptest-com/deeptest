@@ -9,6 +9,7 @@ import {
 export interface StateType {
     queryResult: QueryResult;
     detailResult: Project;
+    queryParams: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -16,6 +17,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
     mutations: {
         setList: Mutation<StateType>;
         setItem: Mutation<StateType>;
+        setQueryParams: Mutation<StateType>;
     };
     actions: {
         queryProject: Action<StateType, StateType>;
@@ -36,6 +38,7 @@ const initState: StateType = {
         },
     },
     detailResult: {} as Project,
+    queryParams: {},
 };
 
 const StoreModel: ModuleType = {
@@ -50,6 +53,9 @@ const StoreModel: ModuleType = {
         },
         setItem(state, payload) {
             state.detailResult = payload;
+        },
+        setQueryParams(state, payload) {
+            state.queryParams = payload;
         },
     },
     actions: {
@@ -70,6 +76,7 @@ const StoreModel: ModuleType = {
                         total: data.total || 0,
                     },
                 });
+                commit('setQueryParams', params);
                 return true;
             } catch (error) {
                 return false;
@@ -102,9 +109,10 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async removeProject({ commit }, payload: number ) {
+        async removeProject({ commit, dispatch, state }, payload: number ) {
             try {
                 await remove(payload);
+                await dispatch('queryProject', state.queryParams)
                 return true;
             } catch (error) {
                 return false;

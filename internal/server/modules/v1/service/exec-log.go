@@ -29,7 +29,7 @@ func (s *ExecLogService) CreateProcessorLog(processor *model.Processor, log *dom
 		ProcessorId:       processor.ID,
 
 		ParentId: parentPersistentId,
-		ResultId: log.ResultId,
+		ReportId: log.ResultId,
 	}
 
 	po.Summary = strings.Join(log.Summary, "; ")
@@ -53,7 +53,7 @@ func (s *ExecLogService) CreateInterfaceLog(req serverDomain.InvocationRequest, 
 		InterfaceId:       req.Id,
 
 		ParentId: parentLog.PersistentId,
-		ResultId: parentLog.ResultId,
+		ReportId: parentLog.ResultId,
 	}
 
 	bytesReq, _ := json.Marshal(req)

@@ -16,7 +16,7 @@ type Log struct {
 	EndTime        *time.Time            `json:"endTime"`
 
 	ParentId uint `json:"parentId"`
-	ResultId uint `json:"resultId"`
+	ReportId uint `json:"reportId"`
 	UseID    uint `json:"useId"`
 
 	// type
@@ -35,6 +35,8 @@ type Log struct {
 
 	Summary string `json:"summary,omitempty"`
 	Output  string `json:"output,omitempty"`
+
+	Logs []*Log `gorm:"-" json:"logs"`
 }
 
 func (Log) TableName() string {

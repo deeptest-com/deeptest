@@ -2,6 +2,7 @@
   <div class="report-main">
     <a-card :bordered="false">
       <template #title>
+        <div>测试报告</div>
       </template>
       <template #extra>
         <a-select @change="onSearch" v-model:value="queryParams.scenarioId" :dropdownMatchSelectWidth="false" class="scenario-select" >

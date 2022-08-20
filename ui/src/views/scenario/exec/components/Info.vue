@@ -86,7 +86,6 @@ const OnWebSocketMsg = (data: any) => {
   }
 
   const log = wsMsg.data
-  console.log(1, log)
   logMap.value[log.id] = log
 
   if (log.parentId === 0) {
@@ -98,7 +97,7 @@ const OnWebSocketMsg = (data: any) => {
     logMap.value[log.parentId].logs.push(log)
   }
 
-  console.log(2, logTreeData)
+  // console.log(2, logTreeData)
 
   // const msgText = wsMsg.msg
   // store.dispatch('Scenario/updateExecResult', wsMsg.data).then(() => {

@@ -8,13 +8,12 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
 type ReportRepo struct {
-	DB       *gorm.DB  `inject:""`
-	RoleRepo *RoleRepo `inject:""`
+	DB      *gorm.DB `inject:""`
+	LogRepo *LogRepo `inject:""`
 }
 
 func NewReportRepo() *ReportRepo {
@@ -35,7 +34,7 @@ func (r *ReportRepo) Paginate(req serverDomain.ReportReqPaginate) (data _domain.
 
 	err = db.Count(&count).Error
 	if err != nil {
-		logUtils.Errorf("count result error", zap.String("error:", err.Error()))
+		logUtils.Errorf("count report error %s", err.Error())
 		return
 	}
 
@@ -45,7 +44,7 @@ func (r *ReportRepo) Paginate(req serverDomain.ReportReqPaginate) (data _domain.
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
 		Find(&results).Error
 	if err != nil {
-		logUtils.Errorf("query scenario error", zap.String("error:", err.Error()))
+		logUtils.Errorf("query report error %s", err.Error())
 		return
 	}
 
@@ -54,20 +53,22 @@ func (r *ReportRepo) Paginate(req serverDomain.ReportReqPaginate) (data _domain.
 	return
 }
 
-func (r *ReportRepo) Get(id uint) (scenario model.Report, err error) {
-	err = r.DB.Model(&model.Report{}).Where("id = ?", id).First(&scenario).Error
+func (r *ReportRepo) Get(id uint) (report model.Report, err error) {
+	err = r.DB.Where("id = ?", id).First(&report).Error
 	if err != nil {
-		logUtils.Errorf("find scenario by id error", zap.String("error:", err.Error()))
-		return scenario, err
+		logUtils.Errorf("find report by id error %s", err.Error())
+		return
 	}
 
-	return scenario, nil
+	report.Logs, err = r.getLogTree(report)
+
+	return
 }
 
 func (r *ReportRepo) Create(result *model.Report) (bizErr *_domain.BizErr) {
 	err := r.DB.Model(&model.Report{}).Create(result).Error
 	if err != nil {
-		logUtils.Errorf("create test result error", zap.String("error:", err.Error()))
+		logUtils.Errorf("create report error %s", err.Error())
 		bizErr.Code = _domain.ErrComm.Code
 
 		return
@@ -80,7 +81,14 @@ func (r *ReportRepo) DeleteById(id uint) (err error) {
 	err = r.DB.Model(&model.Report{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
-		logUtils.Errorf("delete scenario by id error", zap.String("error:", err.Error()))
+		logUtils.Errorf("delete report by id error %s", err.Error())
+		return
+	}
+
+	err = r.DB.Model(&model.Log{}).Where("report_id = ?", id).
+		Updates(map[string]interface{}{"deleted": true}).Error
+	if err != nil {
+		logUtils.Errorf("delete report's logs by id error %s", err.Error())
 		return
 	}
 
@@ -95,10 +103,10 @@ func (r *ReportRepo) UpdateStatus(progressStatus consts.ProgressStatus, resultSt
 		"result_status":   resultStatus,
 	}
 	err = r.DB.Model(&model.Report{}).
-		Where("scenario_id = ? AND progress_status = ?", scenarioId, consts.InProgress).
+		Where("report_id = ? AND progress_status = ?", scenarioId, consts.InProgress).
 		Updates(values).Error
 	if err != nil {
-		logUtils.Errorf("update test result error", zap.String("error:", err.Error()))
+		logUtils.Errorf("update report error %s", err.Error())
 		return err
 	}
 
@@ -112,7 +120,7 @@ func (r *ReportRepo) ResetResult(result model.Report) (err error) {
 	}
 	err = r.DB.Model(&result).Where("id = ?", result.ID).Updates(values).Error
 	if err != nil {
-		logUtils.Errorf("update test result error", zap.String("error:", err.Error()))
+		logUtils.Errorf("update report error %s", err.Error())
 		return
 	}
 
@@ -123,7 +131,7 @@ func (r *ReportRepo) ClearLogs(resultId uint) (err error) {
 	err = r.DB.Model(&model.Log{}).Where("result_id = ?", resultId).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
-		logUtils.Errorf("delete logs by result id error", zap.String("error:", err.Error()))
+		logUtils.Errorf("delete logs by result id error %s", err.Error())
 		return
 	}
 
@@ -135,5 +143,47 @@ func (r *ReportRepo) FindInProgressResult(scenarioId uint) (result model.Report,
 		Where("progress_status =? AND scenario_id = ? AND  not deleted", consts.InProgress, scenarioId).
 		First(&result).Error
 
+	return
+}
+
+func (r *ReportRepo) getLogTree(report model.Report) (logs []model.Log, err error) {
+	pos, err := r.LogRepo.ListByReport(report.ID)
+	if err != nil {
+		return
+	}
+
+	root := model.Log{
+		Name: report.Name,
+	}
+	r.makeTree(pos, &root)
+
+	logs = append(logs, root)
+
+	return
+}
+
+func (r *ReportRepo) makeTree(Data []*model.Log, parent *model.Log) { //参数为父节点，添加父节点的子节点指针切片
+	children, _ := r.haveChild(Data, parent) //判断节点是否有子节点并返回
+
+	if children != nil {
+		parent.Logs = append(parent.Logs, children[0:]...) //添加子节点
+		for _, child := range children {                   //查询子节点的子节点，并添加到子节点
+			_, has := r.haveChild(Data, child)
+			if has {
+				r.makeTree(Data, child) //递归添加节点
+			}
+		}
+	}
+}
+
+func (r *ReportRepo) haveChild(Data []*model.Log, node *model.Log) (child []*model.Log, yes bool) {
+	for _, v := range Data {
+		if v.ParentId == node.ID {
+			child = append(child, v)
+		}
+	}
+	if child != nil {
+		yes = true
+	}
 	return
 }

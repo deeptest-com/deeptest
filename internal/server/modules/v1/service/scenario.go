@@ -26,7 +26,7 @@ func (s *ScenarioService) Paginate(req serverDomain.ScenarioReqPaginate) (ret _d
 	return
 }
 
-func (s *ScenarioService) FindById(id uint) (model.Scenario, error) {
+func (s *ScenarioService) GetById(id uint) (model.Scenario, error) {
 	return s.ScenarioRepo.Get(id)
 }
 

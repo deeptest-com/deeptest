@@ -21,8 +21,9 @@ func (s *ReportService) Paginate(req serverDomain.ReportReqPaginate) (ret _domai
 	return
 }
 
-func (s *ReportService) FindById(id uint) (model.Report, error) {
-	return s.ReportRepo.Get(id)
+func (s *ReportService) GetById(id uint) (report model.Report, err error) {
+	report, err = s.ReportRepo.Get(id)
+	return
 }
 
 func (s *ReportService) DeleteById(id uint) error {

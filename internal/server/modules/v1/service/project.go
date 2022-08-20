@@ -25,7 +25,7 @@ func (s *ProjectService) Paginate(req serverDomain.ProjectReqPaginate) (ret _dom
 	return
 }
 
-func (s *ProjectService) FindById(id uint) (model.Project, error) {
+func (s *ProjectService) GetById(id uint) (model.Project, error) {
 	return s.ProjectRepo.FindById(id)
 }
 

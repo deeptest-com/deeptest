@@ -29,7 +29,12 @@ defineProps<{
 
 const joinArr = (arr : string[]) => {
   if (!arr) return ''
-  return arr.join(' ')
+
+  if (Array.isArray(arr)) {
+    return arr.join(' ')
+  } else {
+    return arr + ''
+  }
 }
 
 </script>

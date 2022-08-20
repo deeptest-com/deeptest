@@ -29,6 +29,7 @@ export default {
     'scenario.exec': '场景执行',
 
     'report': '报告',
+    'report.detail': '报告细节',
 
     'mock.oauth2.callback': 'OAuth2回调模拟',
 

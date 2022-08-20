@@ -16,6 +16,15 @@ func NewLogRepo() *LogRepo {
 	return &LogRepo{}
 }
 
+func (r *LogRepo) ListByReport(reportId uint) (logs []*model.Log, err error) {
+	err = r.DB.
+		Where("report_id=?", reportId).
+		Where("NOT deleted").
+		Order("parent_id ASC, id ASC").
+		Find(&logs).Error
+	return
+}
+
 func (r *LogRepo) Get(id uint) (scenario model.Log, err error) {
 	err = r.DB.Model(&model.Log{}).Where("id = ?", id).First(&scenario).Error
 	if err != nil {

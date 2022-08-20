@@ -1,22 +1,21 @@
 package domain
 
 import (
-	"fmt"
-	"github.com/aaronchen2k/deeptest/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"time"
 )
 
-type TestReport struct {
-	TestSetId uint `json:"testSetId" yaml:"testSetId"`
+type Result struct {
+	ID   int    `json:"id" yaml:"id"`
+	Name string `json:"name" yaml:"name"`
+	Desc string `json:"desc" yaml:"desc"`
 
-	Version float64 `json:"version" yaml:"version"`
-	Name    string  `json:"name" yaml:"name"`
-	Code    int     `json:"code"`
-	Msg     string  `json:"msg"`
+	ProgressStatus consts.ProgressStatus `json:"progressStatus" yaml:"progressStatus"`
+	ResultStatus   consts.ResultStatus   `json:"resultStatus" yaml:"resultStatus"`
 
-	StartTime time.Time `json:"startTime" yaml:"startTime"`
-	EndTime   time.Time `json:"endTime" yaml:"endTime"`
-	Duration  int       `json:"duration" yaml:"duration"` // sec
+	StartTime *time.Time `json:"startTime"`
+	EndTime   *time.Time `json:"endTime"`
+	Duration  int        `json:"duration" yaml:"duration"` // sec
 
 	TotalNum  int `json:"totalNum" yaml:"totalNum"`
 	PassNum   int `json:"passNum" yaml:"passNum"`
@@ -24,27 +23,9 @@ type TestReport struct {
 	MissedNum int `json:"missedNum" yaml:"missedNum"`
 
 	Payload interface{} `json:"payload"`
-}
 
-func (result *TestReport) Pass(msg string) {
-	result.Code = _consts.ResultCodeSuccess.Int()
-	result.Msg = msg
-}
-func (result *TestReport) Passf(str string, args ...interface{}) {
-	result.Code = _consts.ResultCodeSuccess.Int()
-	result.Msg = fmt.Sprintf(str+"\n", args...)
-}
+	ScenarioId uint `json:"scenarioId"`
+	ProjectId  uint `json:"projectId"`
 
-func (result *TestReport) Fail(msg string) {
-	result.Code = _consts.ResultCodeFail.Int()
-	result.Msg = msg
-}
-
-func (result *TestReport) Failf(str string, args ...interface{}) {
-	result.Code = _consts.ResultCodeFail.Int()
-	result.Msg = fmt.Sprintf(str+"\n", args...)
-}
-
-func (result *TestReport) IsSuccess() bool {
-	return result.Code == _consts.ResultCodeSuccess.Int()
+	Logs []Log `gorm:"-" json:"logs"`
 }

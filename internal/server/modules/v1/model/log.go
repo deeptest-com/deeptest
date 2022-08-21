@@ -23,9 +23,11 @@ type Log struct {
 	ProcessorCategory consts.ProcessorCategory `json:"processorCategory" yaml:"processorCategory"`
 
 	// for interface
-	InterfaceId uint   `json:"interfaceId"`
-	ReqContent  string `json:"reqContent,omitempty"`
-	RespContent string `json:"respContent,omitempty"`
+	InterfaceId           uint                `json:"interfaceId"`
+	ReqContent            string              `json:"reqContent,omitempty"`
+	RespContent           string              `json:"respContent,omitempty"`
+	HttpRespStatusCode    consts.HttpRespCode `json:"httpStatusCode"`
+	HttpRespStatusContent string              `json:"httpStatusContent"`
 
 	// for processor
 	ProcessorType    consts.ProcessorType `json:"processorType" yaml:"processorType"`

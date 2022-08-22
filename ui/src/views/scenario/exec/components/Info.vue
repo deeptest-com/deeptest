@@ -23,8 +23,42 @@
         <Log v-if="logTreeData.logs" :logs="logTreeData.logs"></Log>
       </div>
 
-      <div>
-        {{result}}
+      <div v-if="result.totalRequestNum > 0" class="result">
+        <a-row>
+          <a-col :span="4">开始时间</a-col>
+          <a-col :span="4">{{ momentUtcDef(result.startTime) }}</a-col>
+          <a-col :span="4">结束时间</a-col>
+          <a-col :span="4">{{ momentUtcDef(result.endTime) }}</a-col>
+          <a-col :span="4">耗时</a-col>
+          <a-col :span="4">{{result.duration}}秒</a-col>
+        </a-row>
+
+        <a-row>
+          <a-col :span="4">断言数</a-col>
+          <a-col :span="4">{{result.totalAssertionNum}}</a-col>
+          <a-col :span="4">通过数</a-col>
+          <a-col :span="4">{{result.passAssertionNum}}</a-col>
+          <a-col :span="4">失败数</a-col>
+          <a-col :span="4">{{result.failAssertionNum}}</a-col>
+        </a-row>
+
+        <a-row>
+          <a-col :span="4">请求数</a-col>
+          <a-col :span="4">{{result.totalRequestNum}}</a-col>
+          <a-col :span="4">成功数</a-col>
+          <a-col :span="4">{{result.passRequestNum}}</a-col>
+          <a-col :span="4">失败数</a-col>
+          <a-col :span="4">{{result.failRequestNum}}</a-col>
+        </a-row>
+
+        <a-row>
+          <a-col :span="4">接口数</a-col>
+          <a-col :span="4">{{result.totalInterfaceNum}}</a-col>
+          <a-col :span="4">成功数</a-col>
+          <a-col :span="4">{{result.passInterfaceNum}}</a-col>
+          <a-col :span="4">失败数</a-col>
+          <a-col :span="4">{{result.failInterfaceNum}}</a-col>
+        </a-row>
       </div>
     </div>
   </div>
@@ -45,6 +79,7 @@ import {ExecStatus} from "@/store/exec";
 import {StateType as ScenarioStateType} from "../../store";
 import bus from "@/utils/eventBus";
 import Log from "./Log.vue"
+import { momentUtcDef } from "@/utils/datetime";
 import {useI18n} from "vue-i18n";
 const { t } = useI18n();
 
@@ -170,6 +205,12 @@ const OnWebSocketMsg = (data: any) => {
     }
     .logs {
       padding: 0px 12px;
+    }
+    .result {
+      padding: 6px 12px;
+      .ant-row {
+        margin: 6px 0;
+      }
     }
   }
 }

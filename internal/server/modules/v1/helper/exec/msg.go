@@ -23,7 +23,7 @@ func SendEndMsg(wsMsg websocket.Message) (err error) {
 	return
 }
 
-func SendResultMsg(report domain.Report, wsMsg websocket.Message) (err error) {
+func SendResultMsg(report domain.ReportSimple, wsMsg websocket.Message) (err error) {
 	websocketHelper.SendExecResult(consts.Result, report, &wsMsg)
 
 	return

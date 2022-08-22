@@ -82,8 +82,11 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg websocket.Messa
 	execHelper.SendEndMsg(wsMsg)
 
 	report := s.ExecReportService.UpdateTestReport(rootLog)
-	reportTo := domain.Report{}
+	reportTo := domain.ReportSimple{}
 	copier.CopyWithOption(&reportTo, report, copier.Option{DeepCopy: true})
+	reportTo.StartTime = report.StartTime
+	reportTo.EndTime = report.EndTime
+
 	execHelper.SendResultMsg(reportTo, wsMsg)
 
 	return

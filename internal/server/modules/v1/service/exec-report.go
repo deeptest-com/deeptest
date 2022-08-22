@@ -25,6 +25,7 @@ func (s ExecReportService) UpdateTestReport(rootLog domain.Log) (report model.Re
 	}
 
 	s.countRequest(rootLog, &report)
+	s.summarizeInterface(&report)
 
 	now := time.Now()
 	report.EndTime = &now
@@ -38,6 +39,8 @@ func (s ExecReportService) UpdateTestReport(rootLog domain.Log) (report model.Re
 func (s ExecReportService) countRequest(log domain.Log, report *model.Report) {
 	if log.ProcessorType == consts.ProcessorInterfaceDefault {
 		s.countInterface(log.InterfaceId, log.ResultStatus, report)
+
+		report.TotalRequestNum++
 
 		switch log.ResultStatus {
 		case consts.Pass:
@@ -87,5 +90,17 @@ func (s ExecReportService) countInterface(interfaceId uint, status consts.Result
 		report.InterfaceStatusMap[interfaceId][consts.Fail]++
 
 	default:
+	}
+}
+
+func (s ExecReportService) summarizeInterface(report *model.Report) {
+	for _, val := range report.InterfaceStatusMap {
+		if val[consts.Fail] > 0 {
+			report.FailInterfaceNum++
+		} else {
+			report.PassInterfaceNum++
+		}
+
+		report.TotalInterfaceNum++
 	}
 }

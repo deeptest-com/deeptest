@@ -37,7 +37,7 @@
           </template>
 
           <template #execTime="{ record }">
-            <span>{{ momentUtcDef(record.createdAt) }}</span>
+            <span>{{ momentUtc(record.createdAt) }}</span>
           </template>
 
           <template #action="{ record }">
@@ -57,7 +57,7 @@ import {SelectTypes} from 'ant-design-vue/es/select';
 import {useStore} from "vuex";
 
 import debounce from "lodash.debounce";
-import { momentUtcDef } from "@/utils/datetime";
+import { momentUtc } from "@/utils/datetime";
 import {useRouter} from "vue-router";
 import {message, Modal} from "ant-design-vue";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";

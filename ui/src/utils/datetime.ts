@@ -1,10 +1,10 @@
 import moment from "moment";
 
-export function momentUtcDef(dt) {
+export function momentUtc(dt) {
     return moment.parseZone(dt).format("YYYY-MM-DD HH:mm:ss")
 }
-export function momentUnixDef(dt) {
-    return moment.parseZone(dt).format("YYYY-MM-DD HH:mm:ss")
+export function momentShort(dt) {
+    return moment.parseZone(dt).format("MM-DD HH:mm:ss")
 }
 export function momentTime(dt) {
     return moment.parseZone(dt).format("HH:mm:ss")

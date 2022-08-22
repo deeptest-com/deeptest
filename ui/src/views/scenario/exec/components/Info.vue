@@ -26,9 +26,9 @@
       <div v-if="result.totalRequestNum > 0" class="result">
         <a-row>
           <a-col :span="4">开始时间</a-col>
-          <a-col :span="4">{{ momentUtcDef(result.startTime) }}</a-col>
+          <a-col :span="4">{{ momentShort(result.startTime) }}</a-col>
           <a-col :span="4">结束时间</a-col>
-          <a-col :span="4">{{ momentUtcDef(result.endTime) }}</a-col>
+          <a-col :span="4">{{ momentShort(result.endTime) }}</a-col>
           <a-col :span="4">耗时</a-col>
           <a-col :span="4">{{result.duration}}秒</a-col>
         </a-row>
@@ -79,7 +79,7 @@ import {ExecStatus} from "@/store/exec";
 import {StateType as ScenarioStateType} from "../../store";
 import bus from "@/utils/eventBus";
 import Log from "./Log.vue"
-import { momentUtcDef } from "@/utils/datetime";
+import { momentShort } from "@/utils/datetime";
 import {useI18n} from "vue-i18n";
 const { t } = useI18n();
 

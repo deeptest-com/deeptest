@@ -11,7 +11,7 @@ type Log struct {
 	Name           string                `json:"name"`
 	Desc           string                `json:"desc"`
 	ProgressStatus consts.ProgressStatus `json:"progressStatus"`
-	ResultStatus   consts.ResultStatus   `json:"resultStatus"`
+	ResultStatus   consts.ResultStatus   `json:"resultStatus" gorm:"default:pass"`
 	StartTime      *time.Time            `json:"startTime"`
 	EndTime        *time.Time            `json:"endTime"`
 

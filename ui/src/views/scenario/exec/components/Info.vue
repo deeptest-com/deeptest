@@ -125,6 +125,7 @@ const OnWebSocketMsg = (data: any) => {
 
   } else if (wsMsg.category != '') {
     execResult.value.progressStatus = wsMsg.category
+    if (wsMsg.category === 'in_progress') result.value = {}
     return
 
   }

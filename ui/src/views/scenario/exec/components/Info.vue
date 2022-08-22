@@ -22,6 +22,10 @@
       <div class="logs">
         <Log v-if="logTreeData.logs" :logs="logTreeData.logs"></Log>
       </div>
+
+      <div>
+        {{result}}
+      </div>
     </div>
   </div>
 </template>
@@ -34,7 +38,6 @@ import {useStore} from "vuex";
 
 import settings from "@/config/settings";
 import {WebSocket} from "@/services/websocket";
-import {WebSocketData} from "@/store/websoket";
 import {WsMsg} from "@/types/data";
 
 import {StateType as GlobalStateType} from "@/store/global";
@@ -74,15 +77,21 @@ onUnmounted(() => {
   bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
 })
 
+const result = ref({} as any)
 const logMap = ref({} as any)
 const logTreeData = ref({} as any)
 const OnWebSocketMsg = (data: any) => {
   console.log('WebsocketMsgEvent in exec info')
 
   const wsMsg = JSON.parse(data.msg) as WsMsg
-  if (wsMsg.category != '') {
+  if (wsMsg.category == 'result') {
+    result.value = wsMsg.data
+    return
+
+  } else if (wsMsg.category != '') {
     execResult.value.progressStatus = wsMsg.category
     return
+
   }
 
   const log = wsMsg.data

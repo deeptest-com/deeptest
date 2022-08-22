@@ -3,10 +3,9 @@ package consts
 type WsMsgCategory string
 
 const (
-	ProgressStart      WsMsgCategory = "start"
 	ProgressInProgress WsMsgCategory = "in_progress"
 	ProgressEnd        WsMsgCategory = "end"
-	Output             WsMsgCategory = "output"
+	Result             WsMsgCategory = "result"
 )
 
 func (e WsMsgCategory) String() string {

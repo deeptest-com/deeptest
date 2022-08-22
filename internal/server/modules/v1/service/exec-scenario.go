@@ -34,7 +34,7 @@ type ExecScenarioService struct {
 	ExecReportService   *ExecReportService            `inject:""`
 }
 
-func (s *ExecScenarioService) Load(scenarioId int) (result domain.Result, err error) {
+func (s *ExecScenarioService) Load(scenarioId int) (result domain.Report, err error) {
 	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
 	if err != nil {
 		return
@@ -81,7 +81,10 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg websocket.Messa
 
 	execHelper.SendEndMsg(wsMsg)
 
-	s.ExecReportService.UpdateTestReport(rootLog)
+	report := s.ExecReportService.UpdateTestReport(rootLog)
+	reportTo := domain.Report{}
+	copier.CopyWithOption(&reportTo, report, copier.Option{DeepCopy: true})
+	execHelper.SendResultMsg(reportTo, wsMsg)
 
 	return
 }

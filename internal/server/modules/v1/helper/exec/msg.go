@@ -11,14 +11,20 @@ import (
 
 func SendStartMsg(wsMsg websocket.Message) (err error) {
 	SetRunning(true)
-	websocketHelper.SendExecResult(consts.ProgressInProgress, &wsMsg)
+	websocketHelper.SendExecResult(consts.ProgressInProgress, nil, &wsMsg)
 
 	return
 }
 
 func SendEndMsg(wsMsg websocket.Message) (err error) {
 	SetRunning(false)
-	websocketHelper.SendExecResult(consts.ProgressEnd, &wsMsg)
+	websocketHelper.SendExecResult(consts.ProgressEnd, nil, &wsMsg)
+
+	return
+}
+
+func SendResultMsg(report domain.Report, wsMsg websocket.Message) (err error) {
+	websocketHelper.SendExecResult(consts.Result, report, &wsMsg)
 
 	return
 }
@@ -26,7 +32,7 @@ func SendEndMsg(wsMsg websocket.Message) (err error) {
 func SendCancelMsg(wsMsg websocket.Message) (err error) {
 	SetRunning(false)
 
-	websocketHelper.SendExecResult(consts.ProgressEnd, &wsMsg)
+	websocketHelper.SendExecResult(consts.ProgressEnd, nil, &wsMsg)
 
 	return
 }

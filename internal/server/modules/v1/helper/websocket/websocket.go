@@ -29,10 +29,13 @@ func SendOutputMsg(msg string, data interface{}, wsMsg *websocket.Message) {
 	PubMsg(mqData)
 }
 
-func SendExecResult(category consts.WsMsgCategory, wsMsg *websocket.Message) {
+func SendExecResult(category consts.WsMsgCategory, data interface{}, wsMsg *websocket.Message) {
 	logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room, category))
 
-	resp := _domain.WsResp{Category: category}
+	resp := _domain.WsResp{Category: category, Data: data}
+	if data != nil {
+		resp.Data = data
+	}
 	bytes, _ := json.Marshal(resp)
 	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
 

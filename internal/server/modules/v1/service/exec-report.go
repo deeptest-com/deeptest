@@ -18,8 +18,8 @@ type ExecReportService struct {
 	ExecRequestService    *business.ExecRequestService `inject:""`
 }
 
-func (s ExecReportService) UpdateTestReport(rootLog domain.Log) {
-	report, _ := s.ReportRepo.Get(rootLog.ReportId)
+func (s ExecReportService) UpdateTestReport(rootLog domain.Log) (report model.Report) {
+	report, _ = s.ReportRepo.Get(rootLog.ReportId)
 	if report.InterfaceStatusMap == nil {
 		report.InterfaceStatusMap = map[uint]map[consts.ResultStatus]int{}
 	}
@@ -31,6 +31,8 @@ func (s ExecReportService) UpdateTestReport(rootLog domain.Log) {
 	report.Duration = report.EndTime.Unix() - report.StartTime.Unix()
 
 	s.ReportRepo.UpdateResult(report)
+
+	return
 }
 
 func (s ExecReportService) countRequest(log domain.Log, report *model.Report) {

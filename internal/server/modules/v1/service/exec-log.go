@@ -29,7 +29,7 @@ func (s *ExecLogService) CreateProcessorLog(processor *model.Processor, log *dom
 		ProcessorId:       processor.ID,
 
 		ParentId: parentPersistentId,
-		ReportId: log.ResultId,
+		ReportId: log.ReportId,
 	}
 
 	po.Summary = strings.Join(log.Summary, "; ")
@@ -50,10 +50,11 @@ func (s *ExecLogService) CreateInterfaceLog(req serverDomain.InvocationRequest, 
 		Name:              req.Name,
 		ProcessorCategory: consts.ProcessorInterface,
 		ProcessorType:     consts.ProcessorInterfaceDefault,
+		ResultStatus:      consts.Pass, // TODO:
 		InterfaceId:       req.Id,
 
 		ParentId: parentLog.PersistentId,
-		ReportId: parentLog.ResultId,
+		ReportId: parentLog.ReportId,
 	}
 
 	bytesReq, _ := json.Marshal(req)

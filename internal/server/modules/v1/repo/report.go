@@ -106,12 +106,25 @@ func (r *ReportRepo) UpdateStatus(progressStatus consts.ProgressStatus, resultSt
 	err = r.DB.Model(&model.Report{}).
 		Where("report_id = ? AND progress_status = ?", scenarioId, consts.InProgress).
 		Updates(values).Error
-	if err != nil {
-		logUtils.Errorf("update report error %s", err.Error())
-		return err
-	}
 
-	return nil
+	return
+}
+
+func (r *ReportRepo) UpdateResult(report model.Report) (err error) {
+	values := map[string]interface{}{
+		"pass_num":        report.PassNum,
+		"fail_num":        report.FailNum,
+		"start_time":      report.StartTime,
+		"end_time":        report.EndTime,
+		"duration":        report.Duration,
+		"progress_status": consts.End,
+		"result_status":   report.ResultStatus,
+	}
+	err = r.DB.Model(&model.Report{}).
+		Where("id = ?", report.ID).
+		Updates(values).Error
+
+	return
 }
 
 func (r *ReportRepo) ResetResult(result model.Report) (err error) {

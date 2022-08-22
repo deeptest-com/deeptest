@@ -31,6 +31,7 @@ type ExecScenarioService struct {
 	ExecIteratorService *business.ExecIteratorService `inject:""`
 	ExecRequestService  *business.ExecRequestService  `inject:""`
 	ExecLogService      *ExecLogService               `inject:""`
+	ExecReportService   *ExecReportService            `inject:""`
 }
 
 func (s *ExecScenarioService) Load(scenarioId int) (result domain.Result, err error) {
@@ -68,7 +69,7 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg websocket.Messa
 		ProcessorCategory: rootProcessor.EntityCategory,
 		ProcessorType:     rootProcessor.EntityType,
 		ParentId:          0,
-		ResultId:          resultPo.ID,
+		ReportId:          resultPo.ID,
 	}
 
 	execHelper.SendStartMsg(wsMsg)
@@ -79,6 +80,8 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg websocket.Messa
 	}
 
 	execHelper.SendEndMsg(wsMsg)
+
+	s.ExecReportService.UpdateTestReport(rootLog)
 
 	return
 }
@@ -167,7 +170,7 @@ func (s *ExecScenarioService) AddWrapperProcessor(processor *model.Processor, pa
 		ProcessorType:     processor.EntityType,
 		ParentId:          parentLog.PersistentId,
 		Summary:           []string{desc},
-		ResultId:          parentLog.ResultId,
+		ReportId:          parentLog.ReportId,
 	}
 
 	s.ExecLogService.CreateProcessorLog(processor, wrapperLog, parentLog.PersistentId)
@@ -204,7 +207,7 @@ func (s *ExecScenarioService) GetWrapperProcessorResp(processor *model.Processor
 		ProcessorCategory: processor.EntityCategory,
 		ProcessorType:     processor.EntityType,
 		ParentId:          parentLog.PersistentId,
-		ResultId:          parentLog.ResultId,
+		ReportId:          parentLog.ReportId,
 
 		Output:  output,
 		Summary: []string{output.Text},
@@ -295,9 +298,10 @@ func (s *ExecScenarioService) ExecInterfaceProcessor(interfaceProcessor *model.P
 		ProcessorType:     consts.ProcessorInterfaceDefault,
 		ParentId:          parentLog.PersistentId,
 
-		InterfaceId: interf.ID,
-		ReqContent:  string(reqContent),
-		RespContent: string(respContent),
+		InterfaceId:  interf.ID,
+		ReqContent:   string(reqContent),
+		RespContent:  string(respContent),
+		ResultStatus: consts.Pass,
 	}
 
 	*parentLog.Logs = append(*parentLog.Logs, interfaceLog)

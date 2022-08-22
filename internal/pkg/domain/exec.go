@@ -32,7 +32,7 @@ type Log struct {
 
 	ParentId     uint `json:"parentId"`
 	PersistentId uint `json:"persistentId"`
-	ResultId     uint `json:"resultId"`
+	ReportId     uint `json:"reportId"`
 
 	Logs *[]*Log `json:"logs"`
 

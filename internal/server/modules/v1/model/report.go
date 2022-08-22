@@ -12,11 +12,11 @@ type Report struct {
 	Desc string `json:"desc" yaml:"desc"`
 
 	ProgressStatus consts.ProgressStatus `json:"progressStatus" yaml:"progressStatus"`
-	ReportStatus   consts.ResultStatus   `json:"resultStatus" yaml:"resultStatus"`
+	ResultStatus   consts.ResultStatus   `json:"resultStatus" yaml:"resultStatus" gorm:"default:pass"`
 
 	StartTime *time.Time `json:"startTime"`
 	EndTime   *time.Time `json:"endTime"`
-	Duration  int        `json:"duration" yaml:"duration"` // sec
+	Duration  int64      `json:"duration" yaml:"duration"` // sec
 
 	TotalNum  int `json:"totalNum" yaml:"totalNum"`
 	PassNum   int `json:"passNum" yaml:"passNum"`

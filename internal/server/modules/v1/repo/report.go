@@ -112,8 +112,8 @@ func (r *ReportRepo) UpdateStatus(progressStatus consts.ProgressStatus, resultSt
 
 func (r *ReportRepo) UpdateResult(report model.Report) (err error) {
 	values := map[string]interface{}{
-		"pass_num":        report.PassNum,
-		"fail_num":        report.FailNum,
+		"pass_num":        report.PassRequestNum,
+		"fail_num":        report.FailRequestNum,
 		"start_time":      report.StartTime,
 		"end_time":        report.EndTime,
 		"duration":        report.Duration,

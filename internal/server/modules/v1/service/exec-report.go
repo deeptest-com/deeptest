@@ -20,6 +20,10 @@ type ExecReportService struct {
 
 func (s ExecReportService) UpdateTestReport(rootLog domain.Log) {
 	report, _ := s.ReportRepo.Get(rootLog.ReportId)
+	if report.InterfaceStatusMap == nil {
+		report.InterfaceStatusMap = map[uint]map[consts.ResultStatus]int{}
+	}
+
 	s.countRequest(rootLog, &report)
 
 	now := time.Now()
@@ -31,12 +35,26 @@ func (s ExecReportService) UpdateTestReport(rootLog domain.Log) {
 
 func (s ExecReportService) countRequest(log domain.Log, report *model.Report) {
 	if log.ProcessorType == consts.ProcessorInterfaceDefault {
+		s.countInterface(log.InterfaceId, log.ResultStatus, report)
+
 		switch log.ResultStatus {
 		case consts.Pass:
-			report.PassNum++
+			report.PassRequestNum++
 
 		case consts.Fail:
-			report.FailNum++
+			report.FailRequestNum++
+			report.ResultStatus = consts.Fail
+
+		default:
+		}
+
+	} else if log.ProcessorType == consts.ProcessorAssertionDefault {
+		switch log.ResultStatus {
+		case consts.Pass:
+			report.PassAssertionNum++
+
+		case consts.Fail:
+			report.FailAssertionNum++
 			report.ResultStatus = consts.Fail
 
 		default:
@@ -49,5 +67,23 @@ func (s ExecReportService) countRequest(log domain.Log, report *model.Report) {
 
 	for _, log := range *log.Logs {
 		s.countRequest(*log, report)
+	}
+}
+
+func (s ExecReportService) countInterface(interfaceId uint, status consts.ResultStatus, report *model.Report) {
+	if report.InterfaceStatusMap[interfaceId] == nil {
+		report.InterfaceStatusMap[interfaceId] = map[consts.ResultStatus]int{}
+		report.InterfaceStatusMap[interfaceId][consts.Pass] = 0
+		report.InterfaceStatusMap[interfaceId][consts.Fail] = 0
+	}
+
+	switch status {
+	case consts.Pass:
+		report.InterfaceStatusMap[interfaceId][consts.Pass]++
+
+	case consts.Fail:
+		report.InterfaceStatusMap[interfaceId][consts.Fail]++
+
+	default:
 	}
 }

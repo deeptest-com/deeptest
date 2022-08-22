@@ -61,19 +61,19 @@ func (s *CheckpointService) CheckByInterface(interfaceId uint, resp serverDomain
 
 func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp serverDomain.InvocationResponse, projectId int) (err error) {
 	if checkpoint.Disabled {
-		checkpoint.Result = ""
+		checkpoint.ResultStatus = ""
 		s.CheckpointRepo.UpdateResult(checkpoint)
 		return
 	}
 
-	checkpoint.Result = consts.Fail
+	checkpoint.ResultStatus = consts.Fail
 
 	// Response ResultStatus
 	if checkpoint.Type == consts.ResponseStatus {
 		expectCode := stringUtils.ParseInt(checkpoint.Value)
 
 		if checkpoint.Operator == consts.Equal && resp.StatusCode.Int() == expectCode {
-			checkpoint.Result = consts.Pass
+			checkpoint.ResultStatus = consts.Pass
 		}
 
 		s.CheckpointRepo.UpdateResult(checkpoint)
@@ -91,11 +91,11 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 		}
 
 		if checkpoint.Operator == consts.Equal && headerValue == checkpoint.Value {
-			checkpoint.Result = consts.Pass
+			checkpoint.ResultStatus = consts.Pass
 		} else if checkpoint.Operator == consts.NotEqual && headerValue != checkpoint.Value {
-			checkpoint.Result = consts.Pass
+			checkpoint.ResultStatus = consts.Pass
 		} else if checkpoint.Operator == consts.Contain && strings.Contains(headerValue, checkpoint.Value) {
-			checkpoint.Result = consts.Pass
+			checkpoint.ResultStatus = consts.Pass
 		}
 
 		s.CheckpointRepo.UpdateResult(checkpoint)
@@ -108,11 +108,11 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 	// Response Body
 	if checkpoint.Type == consts.ResponseBody {
 		if checkpoint.Operator == consts.Equal && resp.Content == checkpoint.Value {
-			checkpoint.Result = consts.Pass
+			checkpoint.ResultStatus = consts.Pass
 		} else if checkpoint.Operator == consts.NotEqual && resp.Content != checkpoint.Value {
-			checkpoint.Result = consts.Pass
+			checkpoint.ResultStatus = consts.Pass
 		} else if checkpoint.Operator == consts.Contain && strings.Contains(resp.Content, checkpoint.Value) {
-			checkpoint.Result = consts.Pass
+			checkpoint.ResultStatus = consts.Pass
 		}
 
 		s.CheckpointRepo.UpdateResult(checkpoint)
@@ -126,18 +126,18 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 
 		if checkpoint.Operator == consts.Equal {
 			if extractorValue == checkpoint.Value {
-				checkpoint.Result = consts.Pass
+				checkpoint.ResultStatus = consts.Pass
 			}
 		} else if checkpoint.Operator == consts.NotEqual {
 			if extractorValue != checkpoint.Value {
-				checkpoint.Result = consts.Pass
+				checkpoint.ResultStatus = consts.Pass
 			}
 		} else if checkpoint.Operator == consts.Contain {
 			if strings.Contains(extractorValue, checkpoint.Value) {
-				checkpoint.Result = consts.Pass
+				checkpoint.ResultStatus = consts.Pass
 			}
 		} else {
-			checkpoint.Result = s.Compare(checkpoint.Operator, extractorValue, checkpoint.Value)
+			checkpoint.ResultStatus = s.Compare(checkpoint.Operator, extractorValue, checkpoint.Value)
 		}
 
 		s.CheckpointRepo.UpdateResult(checkpoint)

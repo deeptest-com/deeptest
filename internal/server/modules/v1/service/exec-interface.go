@@ -30,20 +30,20 @@ func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.
 		return
 	}
 
-	invocation := serverDomain.InvocationRequest{}
-	copier.CopyWithOption(&invocation, interf, copier.Option{DeepCopy: true})
+	req := serverDomain.InvocationRequest{}
+	copier.CopyWithOption(&req, interf, copier.Option{DeepCopy: true})
 
 	// replace variables
-	err = s.InterfaceService.ReplaceEnvironmentVariables(&invocation)
+	newReq, err := s.InterfaceService.ReplaceEnvironmentVariables(req)
 	if err != nil {
 		return
 	}
-	err = s.ExecRequestService.ReplaceProcessorVariables(&invocation, interfaceProcessor)
+	err = s.ExecRequestService.ReplaceProcessorVariables(&newReq, interfaceProcessor)
 	if err != nil {
 		return
 	}
 
-	resp, err := s.InterfaceService.Test(invocation)
+	resp, err := s.InterfaceService.Test(newReq)
 	if err != nil {
 		return
 	}
@@ -52,7 +52,7 @@ func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.
 	s.ExtractorService.ExtractByInterface(interf.ID, resp, interf.ProjectId)
 	s.CheckpointService.CheckByInterface(interf.ID, resp, interf.ProjectId)
 
-	logPo, err := s.ExecLogService.CreateInterfaceLog(invocation, resp, parentLog)
+	logPo, err := s.ExecLogService.CreateInterfaceLog(req, resp, parentLog)
 	if err != nil {
 		return
 	}
@@ -60,12 +60,12 @@ func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.
 	// TODO: set checkpoint results to interface log
 
 	// send msg to client
-	reqContent, _ := json.Marshal(invocation)
+	reqContent, _ := json.Marshal(req)
 	respContent, _ := json.Marshal(resp)
 
 	interfaceLog := &domain.Log{
 		Id:                logPo.ID,
-		Name:              fmt.Sprintf("%s - %s %s", interfaceProcessor.Name, invocation.Method, invocation.Url),
+		Name:              fmt.Sprintf("%s - %s %s", interfaceProcessor.Name, req.Method, req.Url),
 		ProcessorCategory: consts.ProcessorInterface,
 		ProcessorType:     consts.ProcessorInterfaceDefault,
 		ParentId:          parentLog.PersistentId,

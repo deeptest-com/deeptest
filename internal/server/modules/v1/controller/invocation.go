@@ -36,13 +36,13 @@ func (c *InvocationCtrl) Invoke(ctx iris.Context) {
 		return
 	}
 
-	err = c.InterfaceService.ReplaceEnvironmentVariables(&req)
+	reqNew, err := c.InterfaceService.ReplaceEnvironmentVariables(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
 
-	resp, err := c.InterfaceService.Test(req)
+	resp, err := c.InterfaceService.Test(reqNew)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
@@ -56,8 +56,6 @@ func (c *InvocationCtrl) Invoke(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
-
-	// TODO: set checkpoint results to invocation
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
 }

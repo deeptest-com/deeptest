@@ -49,7 +49,7 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *ExtractorService) ExtractByInterface(interfaceId uint, resp serverDomain.InvocationResponse, projectId int) (err error) {
+func (s *ExtractorService) ExtractByInterface(interfaceId uint, resp serverDomain.InvocationResponse, projectId uint) (err error) {
 	extractors, _ := s.ExtractorRepo.List(interfaceId)
 
 	for _, extractor := range extractors {
@@ -60,7 +60,7 @@ func (s *ExtractorService) ExtractByInterface(interfaceId uint, resp serverDomai
 }
 
 func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serverDomain.InvocationResponse,
-	projectId int) (err error) {
+	projectId uint) (err error) {
 	if extractor.Disabled {
 		extractor.Result = ""
 		s.ExtractorRepo.UpdateResult(extractor)
@@ -97,9 +97,9 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 
 	s.ExtractorRepo.UpdateResult(extractor)
 
-	_cacheUtils.SetCache(strconv.Itoa(projectId), extractor.Variable, extractor.Result)
+	_cacheUtils.SetCache(strconv.Itoa(int(projectId)), extractor.Variable, extractor.Result)
 
-	val := _cacheUtils.GetCache(strconv.Itoa(projectId), extractor.Variable)
+	val := _cacheUtils.GetCache(strconv.Itoa(int(projectId)), extractor.Variable)
 	logUtils.Infof("%s = %v", extractor.Variable, val)
 
 	return

@@ -13,7 +13,12 @@ type Invocation struct {
 
 	HttpRespStatusCode    consts.HttpRespCode `json:"httpStatusCode"`
 	HttpRespStatusContent string              `json:"httpStatusContent"`
-	ResultStatus          consts.ResultStatus `json:"resultStatus" gorm:"default:pass"`
+
+	InterfaceExtractorsResult  []InterfaceExtractor  `gorm:"-" json:"interfaceExtractors"`
+	InterfaceCheckpointsResult []InterfaceCheckpoint `gorm:"-" json:"interfaceCheckpoints"`
+
+	ResultStatus     consts.ResultStatus `json:"resultStatus" gorm:"default:pass"`
+	CheckpointStatus consts.ResultStatus `json:"checkpointStatus"`
 
 	InterfaceId uint `json:"interfaceId,omitempty"`
 	ProjectId   uint `json:"projectId,omitempty"`

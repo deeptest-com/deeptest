@@ -48,14 +48,16 @@ func (c *InvocationCtrl) Invoke(ctx iris.Context) {
 		return
 	}
 
+	c.ExtractorService.ExtractByInterface(req.Id, resp, uint(projectId))
+	c.CheckpointService.CheckByInterface(req.Id, resp, uint(projectId))
+
 	_, err = c.InvocationService.Create(req, resp, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
 
-	c.ExtractorService.ExtractByInterface(req.Id, resp, projectId)
-	c.CheckpointService.CheckByInterface(req.Id, resp, projectId)
+	// TODO: set checkpoint results to invocation
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
 }

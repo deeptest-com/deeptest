@@ -3,7 +3,7 @@
     <div class="head">
       <a-row type="flex">
         <a-col flex="1">
-          <span>合计6个验证点，<span class="dp-color-fail">3</span>个失败。</span>
+          <span>合计6个检查点，<span class="dp-color-fail">3</span>个失败。</span>
         </a-col>
       </a-row>
     </div>

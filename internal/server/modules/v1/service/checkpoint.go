@@ -49,7 +49,7 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *CheckpointService) CheckByInterface(interfaceId uint, resp serverDomain.InvocationResponse, projectId int) (err error) {
+func (s *CheckpointService) CheckByInterface(interfaceId uint, resp serverDomain.InvocationResponse, projectId uint) (err error) {
 	checkpoints, _ := s.CheckpointRepo.List(interfaceId)
 
 	for _, checkpoint := range checkpoints {
@@ -59,7 +59,8 @@ func (s *CheckpointService) CheckByInterface(interfaceId uint, resp serverDomain
 	return
 }
 
-func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp serverDomain.InvocationResponse, projectId int) (err error) {
+func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp serverDomain.InvocationResponse, projectId uint) (
+	err error) {
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""
 		s.CheckpointRepo.UpdateResult(checkpoint)
@@ -121,7 +122,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 
 	// Extractor
 	if checkpoint.Type == consts.Extractor {
-		extractorValue := _cacheUtils.GetCache(strconv.Itoa(projectId), checkpoint.ExtractorVariable)
+		extractorValue := _cacheUtils.GetCache(strconv.Itoa(int(projectId)), checkpoint.ExtractorVariable)
 		logUtils.Infof("%s = %v", checkpoint.ExtractorVariable, extractorValue)
 
 		if checkpoint.Operator == consts.Equal {

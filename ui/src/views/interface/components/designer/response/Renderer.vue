@@ -17,7 +17,7 @@
         <ResponseExtractor></ResponseExtractor>
       </a-tab-pane>
 
-      <a-tab-pane key="5" tab="验证点">
+      <a-tab-pane key="5" tab="检查点">
         <ResponseCheckpoint></ResponseCheckpoint>
       </a-tab-pane>
     </a-tabs>

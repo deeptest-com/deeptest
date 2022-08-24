@@ -36,6 +36,7 @@ func (s *InvocationService) GetAsInterface(id int) (interf model.Interface, err 
 
 	copier.CopyWithOption(&interf, interfResp, copier.Option{DeepCopy: true})
 	copier.CopyWithOption(&interf, interfReq, copier.Option{DeepCopy: true})
+	// TODO: not to replace variables
 
 	interf.ID = invocation.InterfaceId
 

@@ -77,6 +77,10 @@ func (r *ExtractorRepo) UpdateResult(extractor model.InterfaceExtractor) (err er
 
 	return
 }
+func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.InterfaceExtractor, log *model.Log) (err error) {
+
+	return
+}
 
 func (r *ExtractorRepo) ListExtractorVariable(interfaceId uint) (variables []serverDomain.Variable, err error) {
 	err = r.DB.Model(&model.InterfaceExtractor{}).

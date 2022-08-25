@@ -67,3 +67,8 @@ func (r *CheckpointRepo) UpdateResult(checkpoint model.InterfaceCheckpoint) (err
 
 	return
 }
+
+func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.InterfaceCheckpoint, log *model.Log) (err error) {
+
+	return
+}

@@ -68,7 +68,7 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 		if interfaceLog == nil { // run by interface
 			s.ExtractorRepo.UpdateResult(extractor)
 		} else { // run by processor
-
+			s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceLog)
 		}
 
 		return
@@ -85,7 +85,7 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 		if interfaceLog == nil { // run by interface
 			s.ExtractorRepo.UpdateResult(extractor)
 		} else { // run by processor
-
+			s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceLog)
 		}
 
 		return
@@ -110,6 +110,7 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 	if interfaceLog == nil { // run by interface
 		s.ExtractorRepo.UpdateResult(extractor)
 	} else { // run by processor
+		s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceLog)
 
 	}
 

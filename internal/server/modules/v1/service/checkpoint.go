@@ -114,7 +114,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 		if interfaceLog == nil { // run by interface
 			s.CheckpointRepo.UpdateResult(checkpoint)
 		} else { // run by processor
-
+			s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceLog)
 		}
 
 		return
@@ -136,7 +136,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 		if interfaceLog == nil { // run by interface
 			s.CheckpointRepo.UpdateResult(checkpoint)
 		} else { // run by processor
-
+			s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceLog)
 		}
 
 		return
@@ -166,7 +166,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 		if interfaceLog == nil { // run by interface
 			s.CheckpointRepo.UpdateResult(checkpoint)
 		} else { // run by processor
-
+			s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceLog)
 		}
 
 		return

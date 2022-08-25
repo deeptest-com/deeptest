@@ -28,7 +28,7 @@ type ScenarioAddScenarioReq struct {
 	TargetProcessorCategory consts.ProcessorCategory `json:"targetProcessorCategory"`
 	TargetProcessorType     consts.ProcessorType     `json:"targetProcessorType"`
 	TargetProcessorId       int                      `json:"targetProcessorId"`
-	ProjectId               int                      `json:"projectId"`
+	ProjectId               uint                     `json:"projectId"`
 }
 
 type ScenarioNodeReq struct {

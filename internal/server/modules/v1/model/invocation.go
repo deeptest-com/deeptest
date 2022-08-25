@@ -14,9 +14,6 @@ type Invocation struct {
 	HttpRespStatusCode    consts.HttpRespCode `json:"httpStatusCode"`
 	HttpRespStatusContent string              `json:"httpStatusContent"`
 
-	InterfaceExtractorsResult  []InterfaceExtractor  `gorm:"-" json:"interfaceExtractors"`
-	InterfaceCheckpointsResult []InterfaceCheckpoint `gorm:"-" json:"interfaceCheckpoints"`
-
 	ResultStatus     consts.ResultStatus `json:"resultStatus" gorm:"default:pass"`
 	CheckpointStatus consts.ResultStatus `json:"checkpointStatus"`
 

@@ -48,16 +48,13 @@ func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.
 		return
 	}
 
-	// TODO: save to
-	s.ExtractorService.ExtractByInterface(interf.ID, resp, interf.ProjectId)
-	s.CheckpointService.CheckByInterface(interf.ID, resp, interf.ProjectId)
-
 	logPo, err := s.ExecLogService.CreateInterfaceLog(req, resp, parentLog)
 	if err != nil {
 		return
 	}
 
-	// TODO: set checkpoint results to interface log
+	s.ExtractorService.ExtractInterface(interf, resp, &logPo)
+	s.CheckpointService.CheckInterface(interf, resp, &logPo)
 
 	// send msg to client
 	reqContent, _ := json.Marshal(req)

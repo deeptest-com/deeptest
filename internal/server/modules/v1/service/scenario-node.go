@@ -43,6 +43,7 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 		EntityType:     req.ProcessorType,
 
 		ScenarioId: targetProcessor.ScenarioId,
+		ProjectId:  req.ProjectId,
 	}
 
 	if req.Mode == "child" {
@@ -74,6 +75,7 @@ func (s *ScenarioNodeService) createDirOrInterface(interfaceNode serverDomain.In
 			EntityType:     consts.ProcessorInterfaceDefault,
 			InterfaceId:    uint(interfaceNode.Id),
 			ParentId:       parentProcessor.ID,
+			ProjectId:      parentProcessor.ProjectId,
 		}
 		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
 		s.ScenarioNodeRepo.Save(&processor)
@@ -84,6 +86,7 @@ func (s *ScenarioNodeService) createDirOrInterface(interfaceNode serverDomain.In
 			ScenarioId:     parentProcessor.ScenarioId,
 			EntityCategory: consts.ProcessorGroup,
 			ParentId:       parentProcessor.ID,
+			ProjectId:      parentProcessor.ProjectId,
 		}
 		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
 		s.ScenarioNodeRepo.Save(&processor)

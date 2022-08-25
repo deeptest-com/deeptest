@@ -48,8 +48,9 @@ func (c *InvocationCtrl) Invoke(ctx iris.Context) {
 		return
 	}
 
-	c.ExtractorService.ExtractByInterface(req.Id, resp, uint(projectId))
-	c.CheckpointService.CheckByInterface(req.Id, resp, uint(projectId))
+	interf, _ := c.InterfaceService.Get(req.Id)
+	c.ExtractorService.ExtractInterface(interf, resp, nil)
+	c.CheckpointService.CheckInterface(interf, resp, nil)
 
 	_, err = c.InvocationService.Create(req, resp, projectId)
 	if err != nil {

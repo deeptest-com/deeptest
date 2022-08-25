@@ -81,7 +81,7 @@ func (s *InterfaceService) GetTree(projectId int) (root *model.Interface, err er
 	return
 }
 
-func (s *InterfaceService) Get(interfId int) (interf model.Interface, err error) {
+func (s *InterfaceService) Get(interfId uint) (interf model.Interface, err error) {
 	if interfId > 0 {
 		interf, err = s.InterfaceRepo.Get(uint(interfId))
 

@@ -49,21 +49,28 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *ExtractorService) ExtractByInterface(interfaceId uint, resp serverDomain.InvocationResponse, projectId uint) (err error) {
-	extractors, _ := s.ExtractorRepo.List(interfaceId)
+func (s *ExtractorService) ExtractInterface(interf model.Interface, resp serverDomain.InvocationResponse,
+	interfaceLog *model.Log) (err error) {
+	extractors, _ := s.ExtractorRepo.List(interf.ID)
 
 	for _, extractor := range extractors {
-		s.Extract(extractor, resp, projectId)
+		s.Extract(extractor, resp, interf.ProjectId, interfaceLog)
 	}
 
 	return
 }
 
 func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serverDomain.InvocationResponse,
-	projectId uint) (err error) {
+	projectId uint, interfaceLog *model.Log) (err error) {
 	if extractor.Disabled {
 		extractor.Result = ""
-		s.ExtractorRepo.UpdateResult(extractor)
+
+		if interfaceLog == nil { // run by interface
+			s.ExtractorRepo.UpdateResult(extractor)
+		} else { // run by processor
+
+		}
+
 		return
 	}
 
@@ -75,7 +82,12 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 			}
 		}
 
-		s.ExtractorRepo.UpdateResult(extractor)
+		if interfaceLog == nil { // run by interface
+			s.ExtractorRepo.UpdateResult(extractor)
+		} else { // run by processor
+
+		}
+
 		return
 	}
 
@@ -95,7 +107,11 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 		extractorHelper.BoundaryQuery(resp.Content, &extractor)
 	}
 
-	s.ExtractorRepo.UpdateResult(extractor)
+	if interfaceLog == nil { // run by interface
+		s.ExtractorRepo.UpdateResult(extractor)
+	} else { // run by processor
+
+	}
 
 	_cacheUtils.SetCache(strconv.Itoa(int(projectId)), extractor.Variable, extractor.Result)
 

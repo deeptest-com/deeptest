@@ -49,21 +49,28 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *CheckpointService) CheckByInterface(interfaceId uint, resp serverDomain.InvocationResponse, projectId uint) (err error) {
-	checkpoints, _ := s.CheckpointRepo.List(interfaceId)
+func (s *CheckpointService) CheckInterface(interf model.Interface, resp serverDomain.InvocationResponse,
+	interfaceLog *model.Log) (err error) {
+	checkpoints, _ := s.CheckpointRepo.List(interf.ID)
 
 	for _, checkpoint := range checkpoints {
-		s.Check(checkpoint, resp, projectId)
+		s.Check(checkpoint, resp, interf.ProjectId, interfaceLog)
 	}
 
 	return
 }
 
-func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp serverDomain.InvocationResponse, projectId uint) (
-	err error) {
+func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp serverDomain.InvocationResponse,
+	projectId uint, interfaceLog *model.Log) (err error) {
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""
-		s.CheckpointRepo.UpdateResult(checkpoint)
+
+		if interfaceLog == nil { // run by interface
+			s.CheckpointRepo.UpdateResult(checkpoint)
+		} else { // run by processor
+
+		}
+
 		return
 	}
 
@@ -77,7 +84,12 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 			checkpoint.ResultStatus = consts.Pass
 		}
 
-		s.CheckpointRepo.UpdateResult(checkpoint)
+		if interfaceLog == nil { // run by interface
+			s.CheckpointRepo.UpdateResult(checkpoint)
+		} else { // run by processor
+
+		}
+
 		return
 	}
 
@@ -99,7 +111,12 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 			checkpoint.ResultStatus = consts.Pass
 		}
 
-		s.CheckpointRepo.UpdateResult(checkpoint)
+		if interfaceLog == nil { // run by interface
+			s.CheckpointRepo.UpdateResult(checkpoint)
+		} else { // run by processor
+
+		}
+
 		return
 	}
 
@@ -116,7 +133,12 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 			checkpoint.ResultStatus = consts.Pass
 		}
 
-		s.CheckpointRepo.UpdateResult(checkpoint)
+		if interfaceLog == nil { // run by interface
+			s.CheckpointRepo.UpdateResult(checkpoint)
+		} else { // run by processor
+
+		}
+
 		return
 	}
 
@@ -141,7 +163,12 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 			checkpoint.ResultStatus = s.Compare(checkpoint.Operator, extractorValue, checkpoint.Value)
 		}
 
-		s.CheckpointRepo.UpdateResult(checkpoint)
+		if interfaceLog == nil { // run by interface
+			s.CheckpointRepo.UpdateResult(checkpoint)
+		} else { // run by processor
+
+		}
+
 		return
 	}
 

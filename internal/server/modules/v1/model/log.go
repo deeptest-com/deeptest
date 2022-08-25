@@ -23,13 +23,14 @@ type Log struct {
 	ProcessorCategory consts.ProcessorCategory `json:"processorCategory" yaml:"processorCategory"`
 
 	// for interface
-	InterfaceId                uint                  `json:"interfaceId"`
-	ReqContent                 string                `json:"reqContent,omitempty"`
-	RespContent                string                `json:"respContent,omitempty"`
-	HttpRespStatusCode         consts.HttpRespCode   `json:"httpStatusCode"`
-	HttpRespStatusContent      string                `json:"httpStatusContent"`
-	InterfaceExtractorsResult  []InterfaceExtractor  `gorm:"-" json:"interfaceExtractors"`
-	InterfaceCheckpointsResult []InterfaceCheckpoint `gorm:"-" json:"interfaceCheckpoints"`
+	InterfaceId           uint                `json:"interfaceId"`
+	ReqContent            string              `json:"reqContent,omitempty"`
+	RespContent           string              `json:"respContent,omitempty"`
+	HttpRespStatusCode    consts.HttpRespCode `json:"httpStatusCode"`
+	HttpRespStatusContent string              `json:"httpStatusContent"`
+
+	InterfaceExtractorsResult  []InterfaceExtractor  `gorm:"-" json:"interfaceExtractorsResult"`
+	InterfaceCheckpointsResult []InterfaceCheckpoint `gorm:"-" json:"interfaceCheckpointsResult"`
 
 	// for processor
 	ProcessorType    consts.ProcessorType `json:"processorType" yaml:"processorType"`

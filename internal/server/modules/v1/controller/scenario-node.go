@@ -71,7 +71,7 @@ func (c *ScenarioNodeCtrl) AddProcessor(ctx iris.Context) {
 		return
 	}
 
-	req.ProjectId = projectId
+	req.ProjectId = uint(projectId)
 
 	po, bizErr := c.ScenarioNodeService.AddProcessor(req)
 	if bizErr != nil {

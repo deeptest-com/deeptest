@@ -53,8 +53,8 @@ func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.
 		return
 	}
 
-	s.ExtractorService.ExtractInterface(interf, resp, &logPo)
-	s.CheckpointService.CheckInterface(interf, resp, &logPo)
+	logExtractors, err := s.ExtractorService.ExtractInterface(interf, resp, &logPo)
+	logCheckpoints, err := s.CheckpointService.CheckInterface(interf, resp, &logPo)
 
 	// send msg to client
 	reqContent, _ := json.Marshal(req)
@@ -71,6 +71,9 @@ func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.
 		ReqContent:   string(reqContent),
 		RespContent:  string(respContent),
 		ResultStatus: consts.Pass,
+
+		InterfaceExtractorsResult:  logExtractors,
+		InterfaceCheckpointsResult: logCheckpoints,
 	}
 
 	*parentLog.Logs = append(*parentLog.Logs, interfaceLog)

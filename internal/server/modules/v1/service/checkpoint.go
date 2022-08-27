@@ -3,12 +3,14 @@ package service
 import (
 	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	_cacheUtils "github.com/aaronchen2k/deeptest/pkg/lib/cache"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	"github.com/jinzhu/copier"
 	"strconv"
 	"strings"
 )
@@ -50,25 +52,30 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 }
 
 func (s *CheckpointService) CheckInterface(interf model.Interface, resp serverDomain.InvocationResponse,
-	interfaceLog *model.Log) (err error) {
+	interfaceExecLog *model.Log) (logCheckpoints []domain.InterfaceCheckpoint, err error) {
 	checkpoints, _ := s.CheckpointRepo.List(interf.ID)
 
 	for _, checkpoint := range checkpoints {
-		s.Check(checkpoint, resp, interf.ProjectId, interfaceLog)
+		logCheckpoint, err := s.Check(checkpoint, resp, interf.ProjectId, interfaceExecLog)
+		if err == nil {
+			interfaceCheckpoint := domain.InterfaceCheckpoint{}
+			copier.CopyWithOption(&interfaceCheckpoint, logCheckpoint, copier.Option{DeepCopy: true})
+			logCheckpoints = append(logCheckpoints, interfaceCheckpoint)
+		}
 	}
 
 	return
 }
 
 func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp serverDomain.InvocationResponse,
-	projectId uint, interfaceLog *model.Log) (err error) {
+	projectId uint, interfaceExecLog *model.Log) (logCheckpoint model.LogCheckpoint, err error) {
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""
 
-		if interfaceLog == nil { // run by interface
+		if interfaceExecLog == nil { // run by interface
 			s.CheckpointRepo.UpdateResult(checkpoint)
 		} else { // run by processor
-
+			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
 		}
 
 		return
@@ -84,10 +91,10 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 			checkpoint.ResultStatus = consts.Pass
 		}
 
-		if interfaceLog == nil { // run by interface
+		if interfaceExecLog == nil { // run by interface
 			s.CheckpointRepo.UpdateResult(checkpoint)
 		} else { // run by processor
-
+			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
 		}
 
 		return
@@ -111,10 +118,10 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 			checkpoint.ResultStatus = consts.Pass
 		}
 
-		if interfaceLog == nil { // run by interface
+		if interfaceExecLog == nil { // run by interface
 			s.CheckpointRepo.UpdateResult(checkpoint)
 		} else { // run by processor
-			s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceLog)
+			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
 		}
 
 		return
@@ -133,10 +140,10 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 			checkpoint.ResultStatus = consts.Pass
 		}
 
-		if interfaceLog == nil { // run by interface
+		if interfaceExecLog == nil { // run by interface
 			s.CheckpointRepo.UpdateResult(checkpoint)
 		} else { // run by processor
-			s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceLog)
+			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
 		}
 
 		return
@@ -163,10 +170,10 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 			checkpoint.ResultStatus = s.Compare(checkpoint.Operator, extractorValue, checkpoint.Value)
 		}
 
-		if interfaceLog == nil { // run by interface
+		if interfaceExecLog == nil { // run by interface
 			s.CheckpointRepo.UpdateResult(checkpoint)
 		} else { // run by processor
-			s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceLog)
+			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
 		}
 
 		return

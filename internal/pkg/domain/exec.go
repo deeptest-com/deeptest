@@ -50,8 +50,42 @@ type Log struct {
 	ProcessContent string               `json:"processContent,omitempty"`
 	ProcessResult  string               `json:"processResult,omitempty"`
 
+	InterfaceExtractorsResult  []InterfaceExtractor  `gorm:"-" json:"interfaceExtractorsResult"`
+	InterfaceCheckpointsResult []InterfaceCheckpoint `gorm:"-" json:"interfaceCheckpointsResult"`
+
 	Summary []string `json:"summary,omitempty"`
 	Output  Output   `json:"output,omitempty"`
+}
+
+type InterfaceExtractor struct {
+	Src  consts.ExtractorSrc  `json:"src"`
+	Type consts.ExtractorType `json:"type"`
+	Key  string               `json:"key"`
+
+	Expression string `json:"expression"`
+	Prop       string `json:"prop"`
+
+	BoundaryStart    string `json:"boundaryStart"`
+	BoundaryEnd      string `json:"boundaryEnd"`
+	BoundaryIndex    int    `json:"boundaryIndex"`
+	BoundaryIncluded bool   `json:"boundaryIncluded"`
+
+	Variable string `json:"variable"`
+
+	Result      string `json:"result"`
+	InterfaceId uint   `json:"interfaceId"`
+}
+type InterfaceCheckpoint struct {
+	Type consts.CheckpointType `json:"type"`
+
+	Expression        string `json:"expression"`
+	ExtractorVariable string `json:"extractorVariable"`
+
+	Operator consts.ComparisonOperator `json:"operator"`
+	Value    string                    `json:"value"`
+
+	ResultStatus consts.ResultStatus `json:"result"`
+	InterfaceId  uint                `json:"interfaceId"`
 }
 
 type ExecIterator struct {

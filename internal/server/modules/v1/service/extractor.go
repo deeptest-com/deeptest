@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/query"
 	requestHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/request"
@@ -11,6 +12,7 @@ import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_cacheUtils "github.com/aaronchen2k/deeptest/pkg/lib/cache"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/jinzhu/copier"
 	"strconv"
 )
 
@@ -50,25 +52,30 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 }
 
 func (s *ExtractorService) ExtractInterface(interf model.Interface, resp serverDomain.InvocationResponse,
-	interfaceLog *model.Log) (err error) {
+	interfaceExecLog *model.Log) (logExtractors []domain.InterfaceExtractor, err error) {
 	extractors, _ := s.ExtractorRepo.List(interf.ID)
 
 	for _, extractor := range extractors {
-		s.Extract(extractor, resp, interf.ProjectId, interfaceLog)
+		logExtractor, err := s.Extract(extractor, resp, interf.ProjectId, interfaceExecLog)
+		if err == nil {
+			interfaceExtractor := domain.InterfaceExtractor{}
+			copier.CopyWithOption(&interfaceExtractor, logExtractor, copier.Option{DeepCopy: true})
+			logExtractors = append(logExtractors, interfaceExtractor)
+		}
 	}
 
 	return
 }
 
 func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serverDomain.InvocationResponse,
-	projectId uint, interfaceLog *model.Log) (err error) {
+	projectId uint, interfaceExecLog *model.Log) (logExtractor model.LogExtractor, err error) {
 	if extractor.Disabled {
 		extractor.Result = ""
 
-		if interfaceLog == nil { // run by interface
+		if interfaceExecLog == nil { // run by interface
 			s.ExtractorRepo.UpdateResult(extractor)
 		} else { // run by processor
-			s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceLog)
+			logExtractor, err = s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceExecLog)
 		}
 
 		return
@@ -82,10 +89,10 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 			}
 		}
 
-		if interfaceLog == nil { // run by interface
+		if interfaceExecLog == nil { // run by interface
 			s.ExtractorRepo.UpdateResult(extractor)
 		} else { // run by processor
-			s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceLog)
+			logExtractor, err = s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceExecLog)
 		}
 
 		return
@@ -107,11 +114,10 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 		extractorHelper.BoundaryQuery(resp.Content, &extractor)
 	}
 
-	if interfaceLog == nil { // run by interface
+	if interfaceExecLog == nil { // run by interface
 		s.ExtractorRepo.UpdateResult(extractor)
 	} else { // run by processor
-		s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceLog)
-
+		logExtractor, err = s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceExecLog)
 	}
 
 	_cacheUtils.SetCache(strconv.Itoa(int(projectId)), extractor.Variable, extractor.Result)

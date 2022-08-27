@@ -4,6 +4,7 @@ import (
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
 
@@ -77,7 +78,12 @@ func (r *ExtractorRepo) UpdateResult(extractor model.InterfaceExtractor) (err er
 
 	return
 }
-func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.InterfaceExtractor, log *model.Log) (err error) {
+func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.InterfaceExtractor, log *model.Log) (
+	logExtractor model.LogExtractor, err error) {
+	logExtractor.LogId = log.ID
+
+	copier.CopyWithOption(&logExtractor, extractor, copier.Option{DeepCopy: true})
+	err = r.DB.Save(&logExtractor).Error
 
 	return
 }

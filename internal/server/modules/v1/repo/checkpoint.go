@@ -2,6 +2,7 @@ package repo
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
+	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
 
@@ -68,7 +69,12 @@ func (r *CheckpointRepo) UpdateResult(checkpoint model.InterfaceCheckpoint) (err
 	return
 }
 
-func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.InterfaceCheckpoint, log *model.Log) (err error) {
+func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.InterfaceCheckpoint, log *model.Log) (
+	logCheckpoint model.LogCheckpoint, err error) {
+	logCheckpoint.LogId = log.ID
+
+	copier.CopyWithOption(&logCheckpoint, checkpoint, copier.Option{DeepCopy: true})
+	err = r.DB.Save(&logCheckpoint).Error
 
 	return
 }

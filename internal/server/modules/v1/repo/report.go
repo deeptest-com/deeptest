@@ -161,15 +161,20 @@ func (r *ReportRepo) FindInProgressResult(scenarioId uint) (result model.Report,
 }
 
 func (r *ReportRepo) getLogTree(report model.Report) (root model.Log, err error) {
-	pos, err := r.LogRepo.ListByReport(report.ID)
+	logs, err := r.LogRepo.ListByReport(report.ID)
 	if err != nil {
 		return
+	}
+
+	for _, log := range logs {
+		log.InterfaceExtractorsResult, _ = r.listLogExtractors(log.ID)
+		log.InterfaceCheckpointsResult, _ = r.listLogCheckpoints(log.ID)
 	}
 
 	root = model.Log{
 		Name: report.Name,
 	}
-	r.makeTree(pos, &root)
+	r.makeTree(logs, &root)
 
 	return
 }
@@ -179,7 +184,8 @@ func (r *ReportRepo) makeTree(Data []*model.Log, parent *model.Log) { //参数�
 
 	if children != nil {
 		parent.Logs = append(parent.Logs, children[0:]...) //添加子节点
-		for _, child := range children {                   //查询子节点的子节点，并添加到子节点
+
+		for _, child := range children { //查询子节点的子节点，并添加到子节点
 			_, has := r.haveChild(Data, child)
 			if has {
 				r.makeTree(Data, child) //递归添加节点
@@ -188,14 +194,32 @@ func (r *ReportRepo) makeTree(Data []*model.Log, parent *model.Log) { //参数�
 	}
 }
 
-func (r *ReportRepo) haveChild(Data []*model.Log, node *model.Log) (child []*model.Log, yes bool) {
+func (r *ReportRepo) haveChild(Data []*model.Log, node *model.Log) (children []*model.Log, yes bool) {
 	for _, v := range Data {
 		if v.ParentId == node.ID {
-			child = append(child, v)
+			children = append(children, v)
 		}
 	}
-	if child != nil {
+
+	if children != nil {
 		yes = true
 	}
+
+	return
+}
+
+func (r *ReportRepo) listLogExtractors(logId uint) (extractors []model.LogExtractor, err error) {
+	err = r.DB.
+		Where("log_id =? AND not deleted", logId).
+		Find(&extractors).Error
+
+	return
+}
+
+func (r *ReportRepo) listLogCheckpoints(logId uint) (checkpoints []model.LogCheckpoint, err error) {
+	err = r.DB.
+		Where("log_id =? AND not deleted", logId).
+		Find(&checkpoints).Error
+
 	return
 }

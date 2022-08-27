@@ -49,5 +49,7 @@ var (
 
 		&Report{},
 		&Log{},
+		&LogExtractor{},
+		&LogCheckpoint{},
 	}
 )

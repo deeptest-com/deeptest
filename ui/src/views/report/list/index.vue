@@ -64,11 +64,11 @@ import {StateType as ScenarioStateType} from "@/views/scenario/store";
 import {StateType} from "@/views/report/store";
 import {PaginationConfig, QueryParams, Report} from "@/views/report/data";
 import {Scenario} from "@/views/scenario/data";
+import {query} from "@/views/scenario/service";
 
 const router = useRouter();
 const store = useStore<{ Report: StateType, Scenario: ScenarioStateType }>();
 
-const scenarios = computed<Scenario[]>(() => store.state.Scenario.listResult.list);
 const list = computed<Report[]>(() => store.state.Report.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Report.listResult.pagination);
 let queryParams = reactive<QueryParams>({
@@ -111,7 +111,11 @@ onMounted(() => {
   getList(1);
 })
 
-store.dispatch('Scenario/listScenario', {});
+
+const scenarios = ref([] as any[])
+query().then(json => {
+  scenarios.value = json.data.result
+})
 
 const loading = ref<boolean>(true);
 const getList = async (current: number): Promise<void> => {

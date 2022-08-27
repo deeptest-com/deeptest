@@ -83,6 +83,7 @@ type LogCheckpoint struct {
 	Operator consts.ComparisonOperator `json:"operator"`
 	Value    string                    `json:"value"`
 
+	ActualResult string              `json:"actualResult"`
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	InterfaceId  uint                `json:"interfaceId"`
 	LogId        uint                `json:"logId"`

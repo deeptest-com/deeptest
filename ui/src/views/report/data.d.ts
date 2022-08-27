@@ -11,7 +11,7 @@ export interface QueryResult {
 
 export interface QueryParams {
   keywords:  string,
-  scenarioId: number,
+  scenarioId: string,
   page: number,
   pageSize: number,
 }

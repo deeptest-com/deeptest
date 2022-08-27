@@ -151,3 +151,16 @@ export function formatXml(xml: any) : string {
         return PADDING.repeat(pad - indent) + node;
     }).join('\r\n');
 }
+
+export function getResultCls (result) {
+    if (!result) return 'dp-color-unknown'
+
+    result = result.toLowerCase()
+    if (result === 'pass') {
+        return 'dp-color-pass'
+    } else if (result === 'fail') {
+        return 'dp-color-fail'
+    } else {
+        return 'dp-color-unknown'
+    }
+}

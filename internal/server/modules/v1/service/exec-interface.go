@@ -2,7 +2,6 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
@@ -62,7 +61,7 @@ func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.
 
 	interfaceLog := &domain.Log{
 		Id:                logPo.ID,
-		Name:              fmt.Sprintf("%s - %s %s", interfaceProcessor.Name, req.Method, req.Url),
+		Name:              interfaceProcessor.Name,
 		ProcessorCategory: consts.ProcessorInterface,
 		ProcessorType:     consts.ProcessorInterfaceDefault,
 		ParentId:          parentLog.PersistentId,

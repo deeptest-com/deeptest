@@ -29,8 +29,8 @@ type Log struct {
 	HttpRespStatusCode    consts.HttpRespCode `json:"httpStatusCode"`
 	HttpRespStatusContent string              `json:"httpStatusContent"`
 
-	InterfaceExtractorsResult  []LogExtractor  `gorm:"-" json:"interfaceExtractorsResult"`
-	InterfaceCheckpointsResult []LogCheckpoint `gorm:"-" json:"interfaceCheckpointsResult"`
+	InterfaceExtractorsResult  []LogExtractor  `gorm:"-" json:"interfaceExtractorsResult,omitempty"`
+	InterfaceCheckpointsResult []LogCheckpoint `gorm:"-" json:"interfaceCheckpointsResult,omitempty"`
 
 	// for processor
 	ProcessorType    consts.ProcessorType `json:"processorType" yaml:"processorType"`

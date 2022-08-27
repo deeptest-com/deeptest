@@ -130,6 +130,7 @@ import {
 } from "@/views/interface/service";
 import {ComparisonOperator, CheckpointType} from "@/utils/enum";
 import {isInArray} from "@/utils/array";
+import {getResultCls} from "@/utils/dom"
 import {getCompareOptsForRespCode, getCompareOptsForString} from "@/utils/compare";
 
 const useForm = Form.useForm;
@@ -238,17 +239,6 @@ export default defineComponent({
       store.dispatch('Interface/saveCheckpoint', item)
     }
 
-    const getResultCls = (result) => {
-      result = result.toLowerCase()
-      if (result === 'pass') {
-        return 'dp-color-pass'
-      } else if (result === 'fail') {
-        return 'dp-color-fail'
-      } else {
-        return 'dp-color-unknown'
-      }
-    }
-
     const selectType = () => {
       console.log('selectType')
 
@@ -295,7 +285,6 @@ export default defineComponent({
       disable,
       save,
       cancel,
-      getResultCls,
       selectType,
       isInArray,
 

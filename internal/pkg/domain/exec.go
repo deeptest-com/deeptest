@@ -50,8 +50,8 @@ type Log struct {
 	ProcessContent string               `json:"processContent,omitempty"`
 	ProcessResult  string               `json:"processResult,omitempty"`
 
-	InterfaceExtractorsResult  []InterfaceExtractor  `gorm:"-" json:"interfaceExtractorsResult"`
-	InterfaceCheckpointsResult []InterfaceCheckpoint `gorm:"-" json:"interfaceCheckpointsResult"`
+	InterfaceExtractorsResult  []InterfaceExtractor  `gorm:"-" json:"interfaceExtractorsResult,omitempty"`
+	InterfaceCheckpointsResult []InterfaceCheckpoint `gorm:"-" json:"interfaceCheckpointsResult,omitempty"`
 
 	Summary []string `json:"summary,omitempty"`
 	Output  Output   `json:"output,omitempty"`
@@ -84,7 +84,7 @@ type InterfaceCheckpoint struct {
 	Operator consts.ComparisonOperator `json:"operator"`
 	Value    string                    `json:"value"`
 
-	ResultStatus consts.ResultStatus `json:"result"`
+	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	InterfaceId  uint                `json:"interfaceId"`
 }
 

@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
@@ -87,6 +88,8 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 	if checkpoint.Type == consts.ResponseStatus {
 		expectCode := stringUtils.ParseInt(checkpoint.Value)
 
+		checkpoint.ActualResult = fmt.Sprintf("%d", resp.StatusCode.Int())
+
 		if checkpoint.Operator == consts.Equal && resp.StatusCode.Int() == expectCode {
 			checkpoint.ResultStatus = consts.Pass
 		}
@@ -110,6 +113,8 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 			}
 		}
 
+		checkpoint.ActualResult = headerValue
+
 		if checkpoint.Operator == consts.Equal && headerValue == checkpoint.Value {
 			checkpoint.ResultStatus = consts.Pass
 		} else if checkpoint.Operator == consts.NotEqual && headerValue != checkpoint.Value {
@@ -129,6 +134,8 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 
 	var jsonData interface{}
 	json.Unmarshal([]byte(resp.Content), &jsonData)
+
+	checkpoint.ActualResult = "<RESPONSE_BODY>"
 
 	// Response Body
 	if checkpoint.Type == consts.ResponseBody {
@@ -153,6 +160,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 	if checkpoint.Type == consts.Extractor {
 		extractorValue := _cacheUtils.GetCache(strconv.Itoa(int(projectId)), checkpoint.ExtractorVariable)
 		logUtils.Infof("%s = %v", checkpoint.ExtractorVariable, extractorValue)
+		checkpoint.ActualResult = extractorValue
 
 		if checkpoint.Operator == consts.Equal {
 			if extractorValue == checkpoint.Value {

@@ -7,7 +7,8 @@
         <a-col flex="1">变量 / 键值</a-col>
         <a-col flex="100px">运算符</a-col>
         <a-col flex="100px">数值</a-col>
-        <a-col flex="100px">结果</a-col>
+        <a-col flex="100px">实际结果</a-col>
+        <a-col flex="100px">状态</a-col>
 
         <a-col flex="100px" class="dp-right">
           <PlusOutlined @click.stop="add" class="dp-icon-btn dp-trans-80" />
@@ -22,9 +23,12 @@
         <a-col flex="1">{{ item.type === CheckpointType.extractor ? item.extractorVariable : item.expression }} </a-col>
         <a-col flex="100px">{{ t(item.operator) }}</a-col>
         <a-col flex="100px">{{ item.value }}</a-col>
-        <a-col flex="100px" :class="getResultCls(item.result)">
-          {{ item.result }}
-      </a-col>
+        <a-col flex="100px">
+          {{ item.actualResult }}
+        </a-col>
+        <a-col flex="100px" :class="getResultCls(item.resultStatus)">
+          {{ t(item.resultStatus) }}
+        </a-col>
 
         <a-col flex="100px" class="dp-right">
           <a-tooltip v-if="!item.disabled" @click="disable(item)" overlayClassName="dp-tip-small">
@@ -113,7 +117,7 @@
 </template>
 
 <script lang="ts">
-import {computed, ComputedRef, defineComponent, PropType, reactive, Ref, ref} from "vue";
+import {computed, ComputedRef, defineComponent, PropType, reactive, Ref, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {message, Form} from 'ant-design-vue';
@@ -195,6 +199,7 @@ export default defineComponent({
         extractorVariable: '',
         operator: ComparisonOperator.equal,
         value: ''} as Checkpoint
+      loadExtractorVariable()
     }
 
     const edit = (item) => {
@@ -257,8 +262,6 @@ export default defineComponent({
     }
 
     const loadExtractorVariable = () => {
-      console.log('===', model.value.type)
-
       if (model.value.type === CheckpointType.responseHeader) {
         rules.expression = [expressionRequired]
       } else {

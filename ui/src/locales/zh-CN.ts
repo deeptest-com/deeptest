@@ -116,6 +116,12 @@ export default {
     'processor_data_excel':  'Excel数据',
     'processor_data_zendata':  'ZenData数据',
 
+    'pass': '通过',
+    'fail': '失败',
+    'skip': '跳过',
+    'block': '阻塞',
+    'unknown': '位置',
+
     'biz_401': '请重新登录',
     'biz_403': '权限不足',
 

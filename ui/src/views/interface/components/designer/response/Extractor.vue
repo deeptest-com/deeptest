@@ -22,7 +22,7 @@
         <a-col flex="100px">{{ item.type ? t(item.type) : '' }}</a-col>
         <a-col flex="1">
           <span v-if="item.src === ExtractorSrc.header">
-            item.key
+            {{ item.key }}
           </span>
           <span v-if="item.src === ExtractorSrc.body">
             {{ item.type === ExtractorType.boundary ?

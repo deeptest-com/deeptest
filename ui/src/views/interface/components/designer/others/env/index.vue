@@ -3,7 +3,7 @@
     <div class="head no-padding">
       <div class="title">
         <a-dropdown-button trigger="click" placement="bottomLeft" overlayClassName="select-env-overlay">
-          <div style="width: 165px;">
+          <div style="width: 113px;">
             <a class="more dp-color-text">
               <span v-if="environmentData.id">{{environmentData.name}}</span>
               <span v-if="!environmentData.id">选择环境</span>
@@ -64,7 +64,7 @@
         <div v-for="(item, idx) in environmentData.vars" :key="idx" class="env">
           <div class="left">
             <span class="name">{{item.name}}</span>
-            <span class="val">{{item.val}}</span>
+            <span class="val">{{item.value}}</span>
           </div>
           <div class="right">
             <a-dropdown>

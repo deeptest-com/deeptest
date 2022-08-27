@@ -63,7 +63,8 @@ func (r *CheckpointRepo) Delete(id uint) (err error) {
 func (r *CheckpointRepo) UpdateResult(checkpoint model.InterfaceCheckpoint) (err error) {
 	err = r.DB.Model(&checkpoint).
 		Where("id=?", checkpoint.ID).
-		Update("result", checkpoint.ResultStatus).
+		Update("actual_result", checkpoint.ActualResult).
+		Update("result_status", checkpoint.ResultStatus).
 		Error
 
 	return

@@ -83,7 +83,7 @@ func (s *InterfaceService) GetTree(projectId int) (root *model.Interface, err er
 
 func (s *InterfaceService) Get(interfId uint) (interf model.Interface, err error) {
 	if interfId > 0 {
-		interf, err = s.InterfaceRepo.Get(uint(interfId))
+		interf, err = s.InterfaceRepo.Get(interfId)
 
 		interf.Params, _ = s.InterfaceRepo.ListParams(uint(interfId))
 		interf.Headers, _ = s.InterfaceRepo.ListHeaders(uint(interfId))

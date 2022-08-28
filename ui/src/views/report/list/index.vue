@@ -126,6 +126,7 @@ const getList = async (current: number): Promise<void> => {
     scenarioId: queryParams.scenarioId,
     pageSize: pagination.value.pageSize,
     page: current,
+    order: 'desc',
   });
   loading.value = false;
 }

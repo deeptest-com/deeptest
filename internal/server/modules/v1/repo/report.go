@@ -167,8 +167,10 @@ func (r *ReportRepo) getLogTree(report model.Report) (root model.Log, err error)
 	}
 
 	for _, log := range logs {
-		log.InterfaceExtractorsResult, _ = r.listLogExtractors(log.ID)
-		log.InterfaceCheckpointsResult, _ = r.listLogCheckpoints(log.ID)
+		if log.ProcessorType == consts.ProcessorInterfaceDefault {
+			log.InterfaceExtractorsResult, _ = r.listLogExtractors(log.ID)
+			log.InterfaceCheckpointsResult, _ = r.listLogCheckpoints(log.ID)
+		}
 	}
 
 	root = model.Log{

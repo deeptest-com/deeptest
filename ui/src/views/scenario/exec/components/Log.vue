@@ -14,17 +14,17 @@
 
             <div class="resp-content">
               <a-row class="url">
-                <a-col flex="60px">{{ getReq(item).method }}</a-col>
+                <a-col flex="110px">{{ getReq(item).method }}</a-col>
                 <a-col flex="1">{{ getReq(item).url }}</a-col>
               </a-row>
 
               <div v-if="item.interfaceExtractorsResult">
                 <div>提取器</div>
                 <a-row v-for="(extractor, idx) in item.interfaceExtractorsResult" :key="idx" type="flex" class="item">
-                  <a-col flex="60px">{{idx + 1}}</a-col>
+                  <a-col flex="30px">{{idx + 1}}</a-col>
                   <a-col flex="80px">{{ t(extractor.src) }}</a-col>
-                  <a-col flex="100px">{{ extractor.type ? t(extractor.type) : '' }}</a-col>
-                  <a-col flex="1">
+                  <a-col flex="80px">{{ extractor.type ? t(extractor.type) : '' }}</a-col>
+                  <a-col flex="80px">
                     <span v-if="item.src === ExtractorSrc.header">
                       {{ extractor.key }}
                     </span>
@@ -34,7 +34,7 @@
                                 extractor.expression }}
                     </span>
                   </a-col>
-                  <a-col flex="150px">{{ extractor.variable }}</a-col>
+                  <a-col flex="80px">{{ extractor.variable }}</a-col>
                   <a-col flex="1">{{extractor.result}}</a-col>
                 </a-row>
               </div>
@@ -42,15 +42,15 @@
               <div v-if="item.interfaceCheckpointsResult">
                 <div>检查点</div>
                 <a-row v-for="(checkpoint, idx) in item.interfaceCheckpointsResult" :key="idx" type="flex">
-                  <a-col flex="60px">{{idx + 1}}</a-col>
-                  <a-col flex="120px">{{ t(checkpoint.type) }}</a-col>
-                  <a-col flex="1">{{ checkpoint.type === CheckpointType.extractor ? checkpoint.extractorVariable : checkpoint.expression }} </a-col>
-                  <a-col flex="100px">{{ t(checkpoint.operator) }}</a-col>
-                  <a-col flex="100px">{{ checkpoint.value }}</a-col>
-                  <a-col flex="100px">
+                  <a-col flex="30px">{{idx + 1}}</a-col>
+                  <a-col flex="160px">{{checkpoint.type}}</a-col>
+                  <a-col flex="80px">{{ checkpoint.type === CheckpointType.extractor ? checkpoint.extractorVariable : checkpoint.expression }} </a-col>
+                  <a-col flex="80px">{{ t(checkpoint.operator) }}</a-col>
+                  <a-col flex="80px">{{ checkpoint.value }}</a-col>
+                  <a-col flex="1">
                     {{ checkpoint.actualResult }}
                   </a-col>
-                  <a-col flex="100px">
+                  <a-col flex="80px">
                     <span :class="getResultCls(checkpoint.resultStatus)">{{ t(checkpoint.resultStatus) }}</span>
                   </a-col>
                 </a-row>

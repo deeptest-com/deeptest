@@ -80,9 +80,10 @@ func (r *ExtractorRepo) UpdateResult(extractor model.InterfaceExtractor) (err er
 }
 func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.InterfaceExtractor, log *model.Log) (
 	logExtractor model.LogExtractor, err error) {
-	logExtractor.LogId = log.ID
 
 	copier.CopyWithOption(&logExtractor, extractor, copier.Option{DeepCopy: true})
+	logExtractor.ID = 0
+	logExtractor.LogId = log.ID
 	err = r.DB.Save(&logExtractor).Error
 
 	return

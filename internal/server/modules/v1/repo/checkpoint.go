@@ -75,6 +75,7 @@ func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.InterfaceCheckpo
 	logCheckpoint.LogId = log.ID
 
 	copier.CopyWithOption(&logCheckpoint, checkpoint, copier.Option{DeepCopy: true})
+	logCheckpoint.ID = 0
 	err = r.DB.Save(&logCheckpoint).Error
 
 	return

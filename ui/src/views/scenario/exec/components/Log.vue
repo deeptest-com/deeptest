@@ -13,58 +13,71 @@
             </template>
 
             <div class="resp-content">
-              <a-row class="url">
-                <a-col flex="150px">{{ getReq(item).method }}</a-col>
-                <a-col flex="200px">{{ getResp(item).statusCode }}</a-col>
+              <div class="section request">
+                <div class="title">请求</div>
+                <div class="content">
+                  <a-row class="url">
+                    <a-col flex="150px">{{ getReq(item).method }}</a-col>
+                    <a-col flex="200px">{{ getResp(item).statusCode }}</a-col>
 
-                <a-col flex="1">{{ getReq(item).url }}</a-col>
-              </a-row>
+                    <a-col flex="1">{{ getReq(item).url }}</a-col>
+                  </a-row>
+                </div>
+              </div>
 
-              <div class="extractor">
+              <div class="section extractor">
                 <div class="title">提取器</div>
-                <a-row v-for="(extractor, idx) in item.interfaceExtractorsResult" :key="idx" type="flex" class="item">
-                  <a-col flex="50px">{{idx + 1}}</a-col>
-                  <a-col flex="100px">{{ t(extractor.src) }}</a-col>
-                  <a-col flex="100px">{{ extractor.type ? t('processor_extractor_'+extractor.type) : '' }}</a-col>
-                  <a-col flex="100px">
-                    <span v-if="item.src === ExtractorSrc.header">
-                      {{ extractor.key }}
-                    </span>
-                    <span v-if="extractor.src === ExtractorSrc.body">
-                      {{ item.type === ExtractorType.boundary ?
-                                `${extractor.boundaryStart}-${extractor.boundaryEnd}[${extractor.boundaryIndex}] ${extractor.boundaryIncluded}` :
-                                extractor.expression }}
-                    </span>
-                  </a-col>
-                  <a-col flex="100px">{{ extractor.variable }}</a-col>
-                  <a-col flex="1">{{extractor.result}}</a-col>
-                </a-row>
+                <div class="content">
+                  <a-row v-for="(extractor, idx) in item.interfaceExtractorsResult" :key="idx" type="flex" class="item">
+                    <a-col flex="50px">{{idx + 1}}</a-col>
+                    <a-col flex="100px">{{ t(extractor.src) }}</a-col>
+                    <a-col flex="100px">{{ extractor.type ? t('processor_extractor_'+extractor.type) : '' }}</a-col>
+                    <a-col flex="100px">
+                      <span v-if="item.src === ExtractorSrc.header">
+                        {{ extractor.key }}
+                      </span>
+                      <span v-if="extractor.src === ExtractorSrc.body">
+                        {{ item.type === ExtractorType.boundary ?
+                                  `${extractor.boundaryStart}-${extractor.boundaryEnd}[${extractor.boundaryIndex}] ${extractor.boundaryIncluded}` :
+                                  extractor.expression }}
+                      </span>
+                    </a-col>
+                    <a-col flex="100px">{{ extractor.variable }}</a-col>
+                    <a-col flex="1">{{extractor.result}}</a-col>
+                  </a-row>
+                </div>
               </div>
 
-              <div class="checkpoint">
+              <div class="section checkpoint">
                 <div class="title">检查点</div>
-                <a-row v-for="(checkpoint, idx) in item.interfaceCheckpointsResult" :key="idx" type="flex">
-                  <a-col flex="50px">{{idx + 1}}</a-col>
-                  <a-col flex="100px">{{t(checkpoint.type)}}</a-col>
-                  <a-col flex="100px">{{ checkpoint.type === CheckpointType.extractor ? checkpoint.extractorVariable : checkpoint.expression }} </a-col>
-                  <a-col flex="100px">{{ t(checkpoint.operator) }}</a-col>
-                  <a-col flex="100px">{{ checkpoint.value }}</a-col>
-                  <a-col flex="1">
-                    {{ checkpoint.actualResult }}
-                  </a-col>
-                  <a-col flex="100px">
-                    <span :class="getResultCls(checkpoint.resultStatus)">{{ t(checkpoint.resultStatus) }}</span>
-                  </a-col>
-                </a-row>
+
+                <div class="content">
+                  <a-row v-for="(checkpoint, idx) in item.interfaceCheckpointsResult" :key="idx" type="flex" class="item">
+                    <a-col flex="50px">{{idx + 1}}</a-col>
+                    <a-col flex="100px">{{t(checkpoint.type)}}</a-col>
+                    <a-col flex="100px">{{ checkpoint.type === CheckpointType.extractor ? checkpoint.extractorVariable : checkpoint.expression }} </a-col>
+                    <a-col flex="100px">{{ t(checkpoint.operator) }}</a-col>
+                    <a-col flex="100px">{{ checkpoint.value }}</a-col>
+                    <a-col flex="1">
+                      {{ checkpoint.actualResult }}
+                    </a-col>
+                    <a-col flex="100px">
+                      <span :class="getResultCls(checkpoint.resultStatus)">{{ t(checkpoint.resultStatus) }}</span>
+                    </a-col>
+                  </a-row>
+                </div>
               </div>
 
-              <div class="header">
+              <div class="section header">
                 <div class="title">响应头</div>
-                <a-row v-for="(header, idx) in getResp(item).headers" :key="idx" type="flex" class="item">
-                  <a-col flex="50px">{{idx + 1}}</a-col>
-                  <a-col flex="300px">{{ header.name }}</a-col>
-                  <a-col flex="1">{{ header.value }}</a-col>
-                </a-row>
+
+                <div class="content">
+                  <a-row v-for="(header, idx) in getResp(item).headers" :key="idx" type="flex" class="item">
+                    <a-col flex="50px">{{idx + 1}}</a-col>
+                    <a-col flex="300px">{{ header.name }}</a-col>
+                    <a-col flex="1">{{ header.value }}</a-col>
+                  </a-row>
+                </div>
               </div>
 
               <div class="resp">
@@ -85,7 +98,15 @@
         width="100%"
         wrapClassName="dp-full-modal"
     >
-      <p>{{ respContent }}</p>
+      <div class="editor-wrapper">
+        <MonacoEditor
+            class="editor"
+            :value="resp.content"
+            :language="resp.contentLang"
+            theme="vs"
+            :options="editorOptions"
+        />
+      </div>
       <template #footer>
         <a-button key="back" @click="handleCancel">关闭</a-button>
       </template>
@@ -102,17 +123,21 @@ import {ExtractorSrc, ExtractorType, ComparisonOperator, CheckpointType} from "@
 import Log from "./Log.vue"
 import {getResultCls} from "@/utils/dom"
 import {useI18n} from "vue-i18n";
+import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
+import {MonacoOptions} from "@/utils/const";
 
 defineProps<{
   logs: []
 }>()
 
 const { t } = useI18n();
-const respContent = ref('')
+const editorOptions = ref(MonacoOptions)
+
+const resp = ref({})
 const visible = ref<boolean>(false);
 
 const showModal = (item) => {
-  respContent.value = getResp(item).content
+  resp.value = getResp(item)
   visible.value = true;
 };
 
@@ -153,34 +178,45 @@ const joinArr = (arr : string[]) => {
 
 </script>
 
+<style lang="less">
+.scenario-exec-log-main {
+  height: 100%;
+}
+</style>
+
 <style lang="less" scoped>
 .scenario-exec-log-main {
   height: 100%;
   padding: 10px;
-  .title {
-    font-weight: bolder;
-  }
-  .url {
-    margin-bottom: 10px;
-  }
-  .extractor {
-    margin-bottom: 10px;
-  }
-  .checkpoint {
-    margin-bottom: 10px;
-  }
-  .header {
-    margin-bottom: 10px;
-  }
-  .resp {
-    margin-top: 10px;
+
+  .editor-wrapper {
+    height: calc(100% - 30px);
+    overflow-x: hidden;
+    overflow-y: hidden;
+    &>div {
+      height: 100%;
+    }
   }
 
-  .log {
-    .resp-content {
-      width: 100%;
-      word-break:break-word;
-      overflow: auto;
+
+  .resp-content {
+    .section {
+      margin-bottom: 15px;
+      border: 1px solid #dedfe1;
+
+      .title {
+        padding: 6px;
+        border-bottom: 1px solid #dedfe1;
+        font-weight: bolder;
+      }
+      .content {
+        padding: 6px;
+        .item {
+          &:nth-child(even) {
+            background-color: #F8F8FF !important;
+          }
+        }
+      }
     }
   }
 }

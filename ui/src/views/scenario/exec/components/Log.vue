@@ -14,16 +14,16 @@
 
             <div class="resp-content">
               <a-row class="url">
-                <a-col flex="130px">{{ getReq(item).method }}</a-col>
-                <a-col flex="100px">{{ getResp(item).statusCode }}</a-col>
+                <a-col flex="150px">{{ getReq(item).method }}</a-col>
+                <a-col flex="200px">{{ getResp(item).statusCode }}</a-col>
 
                 <a-col flex="1">{{ getReq(item).url }}</a-col>
               </a-row>
 
-              <div v-if="item.interfaceExtractorsResult">
-                <div>提取器</div>
+              <div class="extractor">
+                <div class="title">提取器</div>
                 <a-row v-for="(extractor, idx) in item.interfaceExtractorsResult" :key="idx" type="flex" class="item">
-                  <a-col flex="30px">{{idx + 1}}</a-col>
+                  <a-col flex="50px">{{idx + 1}}</a-col>
                   <a-col flex="100px">{{ t(extractor.src) }}</a-col>
                   <a-col flex="100px">{{ extractor.type ? t('processor_extractor_'+extractor.type) : '' }}</a-col>
                   <a-col flex="100px">
@@ -41,10 +41,10 @@
                 </a-row>
               </div>
 
-              <div v-if="item.interfaceCheckpointsResult">
-                <div>检查点</div>
+              <div class="checkpoint">
+                <div class="title">检查点</div>
                 <a-row v-for="(checkpoint, idx) in item.interfaceCheckpointsResult" :key="idx" type="flex">
-                  <a-col flex="30px">{{idx + 1}}</a-col>
+                  <a-col flex="50px">{{idx + 1}}</a-col>
                   <a-col flex="100px">{{t(checkpoint.type)}}</a-col>
                   <a-col flex="100px">{{ checkpoint.type === CheckpointType.extractor ? checkpoint.extractorVariable : checkpoint.expression }} </a-col>
                   <a-col flex="100px">{{ t(checkpoint.operator) }}</a-col>
@@ -55,6 +55,15 @@
                   <a-col flex="100px">
                     <span :class="getResultCls(checkpoint.resultStatus)">{{ t(checkpoint.resultStatus) }}</span>
                   </a-col>
+                </a-row>
+              </div>
+
+              <div class="header">
+                <div class="title">响应头</div>
+                <a-row v-for="(header, idx) in getResp(item).headers" :key="idx" type="flex" class="item">
+                  <a-col flex="50px">{{idx + 1}}</a-col>
+                  <a-col flex="300px">{{ header.name }}</a-col>
+                  <a-col flex="1">{{ header.value }}</a-col>
                 </a-row>
               </div>
 
@@ -103,7 +112,7 @@ const respContent = ref('')
 const visible = ref<boolean>(false);
 
 const showModal = (item) => {
-  respContent.value = item.respContent
+  respContent.value = getResp(item).content
   visible.value = true;
 };
 
@@ -148,7 +157,19 @@ const joinArr = (arr : string[]) => {
 .scenario-exec-log-main {
   height: 100%;
   padding: 10px;
+  .title {
+    font-weight: bolder;
+  }
   .url {
+    margin-bottom: 10px;
+  }
+  .extractor {
+    margin-bottom: 10px;
+  }
+  .checkpoint {
+    margin-bottom: 10px;
+  }
+  .header {
     margin-bottom: 10px;
   }
   .resp {

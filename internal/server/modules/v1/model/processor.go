@@ -117,9 +117,7 @@ type ProcessorAssertion struct {
 	BaseModel
 	ProcessorEntity
 
-	LeftValue  string                    `json:"leftValue" yaml:"leftValue"`
-	Operator   consts.ComparisonOperator `json:"operator" yaml:"operator"`
-	RightValue string                    `json:"rightValue" yaml:"rightValue"`
+	Expression string `json:"expression" yaml:"expression"`
 }
 
 func (ProcessorAssertion) TableName() string {

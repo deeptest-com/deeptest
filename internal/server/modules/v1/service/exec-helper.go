@@ -145,6 +145,17 @@ func (s *ExecHelperService) HandleVariable(processor *model.ProcessorVariable, p
 func (s *ExecHelperService) HandleAssertion(processor *model.ProcessorAssertion, parentLog *domain.ExecLog, msg websocket.Message) (
 	output domain.ExecOutput, err error) {
 
+	expression := processor.Expression
+	result, err := s.ComputerExpress(expression, processor.ProcessorId)
+	output.Pass, _ = result.(bool)
+
+	status := "失败"
+	if output.Pass {
+		status = "通过"
+	}
+
+	output.Msg = fmt.Sprintf("断言表达式'%s'结果为%s。", expression, status)
+
 	return
 }
 
